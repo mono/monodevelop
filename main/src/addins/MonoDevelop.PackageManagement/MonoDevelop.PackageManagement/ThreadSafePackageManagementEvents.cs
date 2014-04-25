@@ -28,8 +28,9 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -239,6 +240,16 @@ namespace ICSharpCode.PackageManagement
 		public void OnPackagesRestored()
 		{
 			unsafeEvents.OnPackagesRestored ();
+		}
+
+		public event EventHandler<FileEventArgs> FileChanged {
+			add { unsafeEvents.FileChanged += value; }
+			remove { unsafeEvents.FileChanged -= value; }
+		}
+
+		public void OnFileChanged (string path)
+		{
+			unsafeEvents.OnFileChanged (path);
 		}
 	}
 }

@@ -41,8 +41,6 @@ using System.Globalization;
 
 namespace MonoDevelop.Projects.Policies
 {
-	
-	
 	public static class PolicyService
 	{
 		const string TYPE_EXT_POINT = "/MonoDevelop/ProjectModel/PolicyTypes";
@@ -1122,6 +1120,13 @@ namespace MonoDevelop.Projects.Policies
 		/// </param>
 		public static void AddUserPolicySet (PolicySet pset)
 		{
+			if (pset.Id != null)
+				throw new ArgumentException ("User policy cannot have ID");
+			if (string.IsNullOrEmpty (pset.Name))
+				throw new ArgumentException ("User policy cannot have null or empty name");
+			if (sets.Any (ps => ps.Name == pset.Name))
+				throw new ArgumentException ("There is already a policy with the name ' " + pset.Name +  "'");
+
 			userSets.Add (pset);
 			sets.Add (pset);
 		}
@@ -1200,7 +1205,14 @@ namespace MonoDevelop.Projects.Policies
 			
 			if (Directory.Exists (PoliciesFolder)) {
 				foreach (var file in Directory.GetFiles (PoliciesFolder, "*.mdpolicy.xml")) {
-					LoadPolicy (file);
+					try {
+						LoadPolicy (file);
+					} catch (Exception ex) {
+						LoggingService.LogError (
+							string.Format ("Failed to load policy file '{0}'", Path.GetFileName (file)),
+							ex
+						);
+					}
 				}
 			}
 			
@@ -1225,11 +1237,10 @@ namespace MonoDevelop.Projects.Policies
 					while (xr.NodeType != XmlNodeType.EndElement) {
 						PolicySet pset = new PolicySet ();
 						pset.LoadFromXml (xr);
-						if (pset.Id == "Default")
+						if (pset.Id == "Default") {
 							defaultPolicies = pset;
-						else {
-							userSets.Add (pset);
-							sets.Add (pset);
+						} else {
+							AddUserPolicySet (pset);
 						}
 						xr.MoveToContent ();
 					}

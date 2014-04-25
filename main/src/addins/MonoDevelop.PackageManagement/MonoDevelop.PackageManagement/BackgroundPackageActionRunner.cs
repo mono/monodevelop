@@ -86,10 +86,8 @@ namespace MonoDevelop.PackageManagement
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
 						eventMonitor.ReportResult (progressMessage);
 					} catch (Exception ex) {
-						LoggingService.LogInternalError (ex);
-						monitor.Log.WriteLine (ex.Message);
-						monitor.ReportError (progressMessage.Error, null);
-						monitor.ShowPackageConsole ();
+						RemoveInstallActions (installPackageActions);
+						eventMonitor.ReportError (progressMessage, ex);
 					} finally {
 						monitor.EndTask ();
 						DispatchService.GuiDispatch (() => {

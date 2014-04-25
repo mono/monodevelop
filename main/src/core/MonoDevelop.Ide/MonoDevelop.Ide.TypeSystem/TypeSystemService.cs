@@ -47,6 +47,7 @@ using MonoDevelop.Core.Assemblies;
 using System.Text;
 using ICSharpCode.NRefactory.Completion;
 using System.Diagnostics;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -349,8 +350,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		static readonly object projectWrapperUpdateLock = new object ();
-
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
+		
+		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, string content)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
@@ -360,7 +361,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
 			try {
-				var result = parser.Parse (true, fileName, content, project);
+				var result = parser.Parse (true, fileName, new StringReader (content), project);
 				lock (projectWrapperUpdateLock) {
 					ProjectContentWrapper wrapper;
 					if (project != null) {
@@ -383,11 +384,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (cnt.Key == project)
 							continue;
 						// Use the project context because file lookup is faster there than in the project class.
-						var file = cnt.Value.Content.GetFile (fileName);
+						var pcnt = cnt.Value;
+						var file = pcnt.Content.GetFile (fileName);
 						if (file != null) {
-							cnt.Value.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
-							cnt.Value.InformFileRemoved (new ParsedFileEventArgs (file));
-							cnt.Value.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
+							var newResult = parser.Parse (false, fileName, new StringReader (content), pcnt.Project);
+							pcnt.UpdateContent (c => c.AddOrUpdateFiles (newResult.ParsedFile));
+							pcnt.InformFileRemoved (new ParsedFileEventArgs (file));
+							pcnt.InformFileAdded (new ParsedFileEventArgs (newResult.ParsedFile));
 						}
 					}
 				}
@@ -400,10 +403,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, string content)
+		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
-			using (var reader = new StringReader (content))
-				return ParseFile (project, fileName, mimeType, reader);
+			return ParseFile (project, fileName, mimeType, content.ReadToEnd ());
 		}
 
 		public static ParsedDocument ParseFile (Project project, TextEditorData data)
@@ -1245,11 +1247,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public IEnumerable<Project> ReferencedProjects {
 				get {
-					foreach (var pr in Project.GetReferencedItems (ConfigurationSelector.Default)) {
-						var referencedProject = pr as Project;
-						if (referencedProject != null)
-							yield return referencedProject;
-					}
+					return Project.GetReferencedItems (ConfigurationSelector.Default).OfType<DotNetProject> ();
 				}
 			}
 

@@ -48,9 +48,7 @@ namespace MonoDevelop.PackageManagement
 				false,
 				pad);
 
-			var monitor = new AggregatedProgressMonitor (consoleMonitor);
-			monitor.AddSlaveMonitor (statusMonitor);
-			return monitor;
+			return new PackageManagementProgressMonitor (consoleMonitor, statusMonitor);
 		}
 
 		IProgressMonitor CreatePackageConsoleOutputMonitor ()

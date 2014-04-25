@@ -97,24 +97,23 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var rev = commit.ToObjectId ();
 			var prev = repo.Resolve (commit.Name + "^") ?? ObjectId.ZeroId;
-			return CompareCommits (repo, rev, prev);
+			return CompareCommits (repo, prev, rev);
 		}
 		
 		public static IEnumerable<DiffEntry> CompareCommits (NGit.Repository repo, AnyObjectId reference, ObjectId compared)
 		{
 			var diff = new MyersDiff (repo);
 
-			var firstTree = new CanonicalTreeParser ();
-			firstTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (reference));
-			diff.SetNewTree (firstTree);
-			
-			if (compared != ObjectId.ZeroId) {
-				var secondTree = new CanonicalTreeParser ();
-				secondTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (compared));
-
-				if (compared != ObjectId.ZeroId)
-					diff.SetOldTree (secondTree);
+			if (reference != ObjectId.ZeroId) {
+				var firstTree = new CanonicalTreeParser ();
+				firstTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (reference));
+				diff.SetOldTree (firstTree);
 			}
+
+			var secondTree = new CanonicalTreeParser ();
+			secondTree.Reset (repo.NewObjectReader (), new RevWalk (repo).ParseTree (compared));
+			diff.SetNewTree (secondTree);
+
 			return diff.Call ();
 		}
 
@@ -209,7 +208,7 @@ namespace MonoDevelop.VersionControl.Git
 				return null;
 			RevCommit headCommit = rw.ParseCommit (headId);
 			
-			return GitUtil.CompareCommits (repo, headCommit, remCommit);
+			return GitUtil.CompareCommits (repo, remCommit, headCommit);
 		}
 		
 		public static string GetUpstreamSource (NGit.Repository repo, string branch)

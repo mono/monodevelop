@@ -121,7 +121,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			//editing handlers
 			extensionTextRenderer.Edited += handleExtensionSet;
 			comboEditor.Edited += delegate (object sender, EditedArgs args) {
-				setAssocValAndMarkChanged (args.Path, COL_NS, args.NewText);
+				setAssocValAndMarkChanged (args.Path, COL_NS, args.NewText ?? "");
 			};
 			prefixTextRenderer.Edited += delegate (object sender, EditedArgs args) {
 				foreach (char c in args.NewText)

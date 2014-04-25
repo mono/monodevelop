@@ -1,123 +1,148 @@
 {
-	"name":"Visual Studio",
-	"version":"1.0",
-	"description": "Reminiscent of Microsoft Visual Studio's default colors.",
-	"originator": "Jeffrey Stedfast <fejj@novell.com>",
+    "name":"Visual Studio",
+    "version":"1.1",
+    "description":"Reminiscent of Microsoft Visual Studio's default colors.",
+    "originator":"Jeffrey Stedfast <fejj@novell.com>",
 
-	"palette":[
-		{ "name":"comment-green", "value":"#008000" },
-		{ "name":"keyword-blue", "value":"#0000ff" },
-		{ "name":"semantic-type", "value":"#2B90AF" },
-		{ "name":"aluminium2", "value":"#d3d7cf" }
-	],
+    "palette":[
+        { "name":"comment-green", "value":"#008000" },
+        { "name":"keyword-blue", "value":"#0000ff" },
+        { "name":"semantic-type", "value":"#2B90AF" },
+        { "name":"aluminium2", "value":"#d3d7cf" }
+    ],
 
-	"colors":[
-		{"name": "Background(Read Only)", "color":"#FFFFFF" },
-		{"name": "Fold Square", "color":"#A5A5A5" },
-		{"name": "Fold Cross", "color":"#555555", "secondcolor":"#E2E2E2" },
-		{"name": "Indentation Guide", "color":"aluminium2" },
-		
-		{ "name": "Quick Diff(Dirty)", "color":"yellow" },
-		{ "name": "Quick Diff(Changed)", "color":"green" },
-		
-		{ "name": "Current Line Marker", "color":"white", "secondcolor":"gray"},
-		{ "name": "Current Line Marker(Inactive)", "color":"white", "secondcolor":"gray"},
-		
-		{"name": "Indicator Margin", "color":"#F0F0F0" },
-		{"name": "Indicator Margin(Separator)", "color":"#F0F0F0" },
-		{"name": "Underline(Error)", "color":"#FF0000" },
-		{"name": "Underline(Warning)", "color":"comment-green" },
-		{"name": "Brace Matching(Rectangle)", "color":"#DBE0CC", "secondcolor":"#00000000" },
-		{ "name": "Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
-		{ "name": "Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" }
-	],
-	
-	"text":[
-		{"name": "Plain Text", "fore":"#000000", "back":"#FFFFFF" },
-		{"name": "Selected Text", "fore":"white", "back":"#3298FF" },
-		{"name": "Selected Text(Inactive)", "fore":"white", "back":"#BFCDDB" },
-		{"name": "Collapsed Text", "fore":"#808080" },
-		{"name": "Line Numbers", "fore":"semantic-type", "back":"#FFFFFF" },
-		{"name": "Punctuation" },
-		{"name": "Punctuation(Brackets)", "fore":"#000000", "back":"#FFFFFF" },
-		{"name": "Comment(Line)", "fore":"comment-green" },
-		{"name": "Comment(Block)", "fore":"comment-green" },
-		{"name": "Comment(Doc)", "fore":"comment-green" },
-		{"name": "Comment(DocTag)", "fore":"#808080" },
-		{"name": "Comment Tag", "fore":"comment-green" },
-		{"name": "Excluded Code", "fore":"comment-green" },
-		{"name": "String", "fore":"#A31515" },
-		{"name": "String(Escape)", "fore":"#A31515" },
-		{"name": "String(C# @ Verbatim)", "fore":"#A31515" },
-		{"name": "Number" },
-		{"name": "Preprocessor", "fore":"keyword-blue" },
-		{"name": "Preprocessor(Region Name)", "fore":"#000000" },
-		{"name": "Xml Text" },
-		{"name": "Xml Delimiter", "fore":"keyword-blue" },
-		{"name": "Xml Name", "fore":"#A31515" },
-		{"name": "Xml Attribute", "fore":"#FF0000" },
-		{"name": "Xml Attribute Quotes", "fore":"#000000" },
-		{"name": "Xml Attribute Value", "fore":"keyword-blue" },
-		{"name": "Xml Comment", "fore":"#006400" },
-		{"name": "Xml CData Section", "fore":"#808080" },
-		{"name": "Keyword(Access)", "fore":"keyword-blue" },
-		{"name": "Keyword(Type)", "fore":"keyword-blue" },
-		{"name": "Keyword(Operator)", "fore":"keyword-blue" },
-		{"name": "Keyword(Selection)", "fore":"keyword-blue" },
-		{"name": "Keyword(Iteration)", "fore":"keyword-blue" },
-		{"name": "Keyword(Jump)", "fore":"keyword-blue" },
-		{"name": "Keyword(Context)", "fore":"keyword-blue" },
-		{"name": "Keyword(Exception)", "fore":"keyword-blue" },
-		{"name": "Keyword(Modifiers)", "fore":"keyword-blue" },
-		{"name": "Keyword(Constants)", "fore":"keyword-blue" },
-		{"name": "Keyword(Void)", "fore":"keyword-blue" },
-		{"name": "Keyword(Namespace)", "fore":"keyword-blue" },
-		{"name": "Keyword(Property)", "fore":"keyword-blue" },
-		{"name": "Keyword(Declaration)", "fore":"keyword-blue" },
-		{"name": "Keyword(Parameter)", "fore":"keyword-blue" },
-		{"name": "Keyword(Operator Declaration)", "fore":"keyword-blue" },
-		{"name": "Keyword(Other)", "fore":"keyword-blue" },
-		{"name": "User Types", "fore":"semantic-type" },
-		{"name": "User Types(Enums)", "fore":"semantic-type" },
-		{"name": "User Types(Interfaces)", "fore":"semantic-type" },
-		{"name": "User Types(Delegates)", "fore":"semantic-type" },
-		{"name": "User Types(Value types)", "fore":"semantic-type" },
-		{"name": "User Field Usage" },
-		{"name": "User Field Declaration" },
-		{"name": "User Property Usage" },
-		{"name": "User Property Declaration" },
-		{"name": "User Event Usage" },
-		{"name": "User Event Declaration" },
-		{"name": "User Method Usage" },
-		{"name": "User Method Declaration" },
-		{"name": "User Parameter Usage" },
-		{"name": "User Parameter Declaration" },
-		{"name": "User Variable Usage" },
-		{"name": "User Variable Declaration" },
-		{"name": "Syntax Error", "fore":"#FF0000" },
-		{"name": "Breakpoint Text", "fore":"#FFFFFF", "back":"#963945" },
-		{"name": "Debugger Current Statement", "fore":"#000000", "back":"#FFEE61" },
-		{"name": "Html Attribute Name", "fore":"#FF0000" },
-		{"name": "Html Attribute Value", "fore":"keyword-blue" },
-		{"name": "Html Comment", "fore":"#006400" },
-		{"name": "Html Element Name", "fore":"#800000" },
-		{"name": "Html Entity", "fore":"#FF0000" },
-		{"name": "Html Operator", "fore":"keyword-blue" },
-		{"name": "Html Server-Side Script", "back":"#FEFF00" },
-		{"name": "Html Tag Delimiter", "fore":"keyword-blue" },
-		{"name": "Razor Code", "back":"#E7EFF2" },
-		{"name": "Css Comment", "fore":"#006400" },
-		{"name": "Css Property Name", "fore":"#FF0000" },
-		{"name": "Css Property Value", "fore":"keyword-blue" },
-		{"name": "Css Selector", "fore":"#800000" },
-		{"name": "Css String Value", "fore":"keyword-blue" },
-		{"name": "Css Keyword", "fore":"keyword-blue" },
+    "colors":[
+        { "name":"Background(Read Only)", "color":"#FFFFFF" },
 
-		{ "name": "Script Comment", "fore":"comment-green" },
-		{ "name": "Script Identifier" },
-		{ "name": "Script Keyword", "fore":"keyword-blue" },
-		{ "name": "Script Number" },
-		{ "name": "Script Operator" },
-		{ "name": "Script String" }
-	]
+        { "name":"Fold Square", "color":"#A5A5A5" },
+        { "name":"Fold Cross", "color":"#555555", "secondcolor":"#E2E2E2" },
+
+        { "name":"Indentation Guide", "color":"aluminium2" },
+
+        { "name":"Underline(Error)", "color":"#FF0000" },
+        { "name":"Underline(Warning)", "color":"comment-green" },
+
+        { "name":"Quick Diff(Dirty)", "color":"yellow" },
+        { "name":"Quick Diff(Changed)", "color":"green" },
+
+        { "name":"Brace Matching(Rectangle)", "color":"#DBE0CC", "secondcolor":"#00000000" },
+        { "name":"Usages(Rectangle)", "color":"#B1DFF9", "secondcolor":"#B1DFF9", "bordercolor":"#B1DFF9" },
+        { "name":"Changing usages(Rectangle)", "color":"#FFD6DD", "secondcolor":"#FFD6DD", "bordercolor":"#FFD6DD" },
+
+        { "name":"Current Line Marker", "color":"white", "secondcolor":"gray"},
+        { "name":"Current Line Marker(Inactive)", "color":"white", "secondcolor":"gray"},
+
+        { "name":"Indicator Margin", "color":"#F0F0F0" },
+        { "name":"Indicator Margin(Separator)", "color":"#F0F0F0" }
+    ],
+
+    "text":[
+        { "name":"Plain Text", "fore":"#000000", "back":"#FFFFFF" },
+        { "name":"Selected Text", "fore":"white", "back":"#3298FF" },
+        { "name":"Selected Text(Inactive)", "fore":"white", "back":"#BFCDDB" },
+
+        { "name":"Collapsed Text", "fore":"#808080" },
+
+        { "name":"Line Numbers", "fore":"semantic-type", "back":"#FFFFFF" },
+
+        { "name":"Punctuation" },
+        { "name":"Punctuation(Brackets)", "fore":"#000000", "back":"#FFFFFF" },
+
+        { "name":"Comment(Line)", "fore":"comment-green" },
+        { "name":"Comment(Block)", "fore":"comment-green" },
+        { "name":"Comment(Doc)", "fore":"comment-green" },
+        { "name":"Comment(DocTag)", "fore":"#808080" },
+        { "name":"Comment Tag", "fore":"comment-green" },
+        { "name":"Excluded Code", "fore":"comment-green" },
+
+        { "name":"String", "fore":"#A31515" },
+        { "name":"String(Escape)", "fore":"#A31515" },
+        { "name":"String(C# @ Verbatim)", "fore":"#A31515" },
+
+        { "name":"Number" },
+
+        { "name":"Preprocessor", "fore":"keyword-blue" },
+        { "name":"Preprocessor(Region Name)", "fore":"#000000" },
+
+        { "name":"Xml Text" },
+        { "name":"Xml Delimiter", "fore":"keyword-blue" },
+        { "name":"Xml Name", "fore":"#A31515" },
+        { "name":"Xml Attribute", "fore":"#FF0000" },
+        { "name":"Xml Attribute Quotes", "fore":"#000000" },
+        { "name":"Xml Attribute Value", "fore":"keyword-blue" },
+        { "name":"Xml Comment", "fore":"#006400" },
+        { "name":"Xml CData Section", "fore":"#808080" },
+
+        { "name":"Html Attribute Name", "fore":"#FF0000" },
+        { "name":"Html Attribute Value", "fore":"keyword-blue" },
+        { "name":"Html Comment", "fore":"#006400" },
+        { "name":"Html Element Name", "fore":"#800000" },
+        { "name":"Html Entity", "fore":"#FF0000" },
+        { "name":"Html Operator", "fore":"keyword-blue" },
+        { "name":"Html Server-Side Script", "back":"#FEFF00" },
+        { "name":"Html Tag Delimiter", "fore":"keyword-blue" },
+        { "name":"Razor Code", "back":"#E7EFF2" },
+
+        { "name":"Keyword(Access)", "fore":"keyword-blue" },
+        { "name":"Keyword(Type)", "fore":"keyword-blue" },
+        { "name":"Keyword(Operator)", "fore":"keyword-blue" },
+        { "name":"Keyword(Selection)", "fore":"keyword-blue" },
+        { "name":"Keyword(Iteration)", "fore":"keyword-blue" },
+        { "name":"Keyword(Jump)", "fore":"keyword-blue" },
+        { "name":"Keyword(Context)", "fore":"keyword-blue" },
+        { "name":"Keyword(Exception)", "fore":"keyword-blue" },
+        { "name":"Keyword(Modifiers)", "fore":"keyword-blue" },
+        { "name":"Keyword(Constants)", "fore":"keyword-blue" },
+        { "name":"Keyword(Void)", "fore":"keyword-blue" },
+        { "name":"Keyword(Namespace)", "fore":"keyword-blue" },
+        { "name":"Keyword(Property)", "fore":"keyword-blue" },
+        { "name":"Keyword(Declaration)", "fore":"keyword-blue" },
+        { "name":"Keyword(Parameter)", "fore":"keyword-blue" },
+        { "name":"Keyword(Operator Declaration)", "fore":"keyword-blue" },
+        { "name":"Keyword(Other)", "fore":"keyword-blue" },
+
+        { "name":"User Types", "fore":"semantic-type" },
+        { "name":"User Types(Enums)", "fore":"semantic-type" },
+        { "name":"User Types(Interfaces)", "fore":"semantic-type" },
+        { "name":"User Types(Delegates)", "fore":"semantic-type" },
+        { "name":"User Types(Value types)", "fore":"semantic-type" },
+
+        { "name":"User Field Usage" },
+        { "name":"User Field Declaration" },
+
+        { "name":"User Property Usage" },
+        { "name":"User Property Declaration" },
+
+        { "name":"User Event Usage" },
+        { "name":"User Event Declaration" },
+
+        { "name":"User Method Usage" },
+        { "name":"User Method Declaration" },
+
+        { "name":"User Parameter Usage" },
+        { "name":"User Parameter Declaration" },
+
+        { "name":"User Variable Usage" },
+        { "name":"User Variable Declaration" },
+
+        { "name":"Syntax Error", "fore":"#FF0000" },
+
+        { "name":"Breakpoint Text", "fore":"#000000", "back":"#963945" },
+
+        { "name":"Debugger Current Statement", "fore":"#000000", "back":"#FFEE61" },
+
+        { "name":"Css Comment", "fore":"#006400" },
+        { "name":"Css Property Name", "fore":"#FF0000" },
+        { "name":"Css Property Value", "fore":"keyword-blue" },
+        { "name":"Css Selector", "fore":"#800000" },
+        { "name":"Css String Value", "fore":"keyword-blue" },
+        { "name":"Css Keyword", "fore":"keyword-blue" },
+
+        { "name":"Script Comment", "fore":"comment-green" },
+        { "name":"Script Identifier" },
+        { "name":"Script Keyword", "fore":"keyword-blue" },
+        { "name":"Script Number" },
+        { "name":"Script Operator" },
+        { "name":"Script String" }
+    ]
 }

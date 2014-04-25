@@ -144,5 +144,14 @@ namespace ICSharpCode.PackageManagement
 				PackagesRestored(this, new EventArgs());
 			}
 		}
+
+		public event EventHandler<FileEventArgs> FileChanged;
+
+		public void OnFileChanged (string path)
+		{
+			if (FileChanged != null) {
+				FileChanged (this, new FileEventArgs (new FilePath (path), false));
+			}
+		}
 	}
 }

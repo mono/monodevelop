@@ -218,7 +218,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		readonly VBox descriptionBox = new VBox (false, 0);
 		readonly VBox vb2 = new VBox (false, 0);
-		readonly Cairo.Color foreColor;
+		Cairo.Color foreColor;
+
+		internal void SetDefaultScheme ()
+		{
+			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			Theme.SetSchemeColors (scheme);
+			foreColor = scheme.PlainText.Foreground;
+			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+		}
+
 		public TooltipInformationWindow () : base ()
 		{
 			TypeHint = Gdk.WindowTypeHint.Tooltip;
@@ -254,10 +263,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
 
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetSchemeColors (scheme);
-			foreColor = scheme.PlainText.Foreground;
-			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			SetDefaultScheme ();
 
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);

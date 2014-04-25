@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 
 using Gtk;
 
@@ -43,7 +44,7 @@ namespace MonoDevelop.Debugger
 {
 	class ExceptionCaughtDialog : Dialog
 	{
-		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-icon.png");
+		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-light-48.png");
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
 		protected TreeView StackTraceTreeView { get; private set; }
 		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
@@ -294,8 +295,12 @@ namespace MonoDevelop.Debugger
 
 			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
 
-			if (frame != null && !string.IsNullOrEmpty (frame.File))
-				IdeApp.Workbench.OpenDocument (frame.File, frame.Line, frame.Column);
+			if (frame != null && !string.IsNullOrEmpty (frame.File) && File.Exists (frame.File)) {
+				try {
+					IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column);
+				} catch (FileNotFoundException) {
+				}
+			}
 		}
 
 		static bool IsUserCode (ExceptionStackFrame frame)

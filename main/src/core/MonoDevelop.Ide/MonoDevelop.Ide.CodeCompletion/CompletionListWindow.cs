@@ -541,8 +541,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		void EnsureDeclarationViewWindow ()
 		{
-			if (declarationviewwindow == null)
+			if (declarationviewwindow == null) {
 				declarationviewwindow = new TooltipInformationWindow ();
+			} else {
+				declarationviewwindow.SetDefaultScheme ();
+			}
 		}
 
 		void RepositionDeclarationViewWindow ()

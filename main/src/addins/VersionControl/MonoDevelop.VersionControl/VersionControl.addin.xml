@@ -71,7 +71,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
-		<PadOption id = "ShowVersionControlOverlays" _label = "Show version control overlay icons" defaultValue = "True" />
+		<PadOption id = "ShowVersionControlOverlays" _label = "Show Version Control Overlay Icons" defaultValue = "True" />
 		<NodeBuilder id = "VersionControlNodeExtension" class = "MonoDevelop.VersionControl.VersionControlNodeExtension"/>
 	</Extension>
 
@@ -81,8 +81,8 @@
 		<StockIcon stockid = "vc-resolve-command" resource = "vcs-conflicted-16.png" size="Menu" />
 		<StockIcon stockid = "vc-revert-command" resource = "revert-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-diff" resource = "diff-light-16.png" size="Menu" />
-		<StockIcon stockid = "vc-log" resource = "menu_log.png" size="Menu" />
-		<StockIcon stockid = "vc-status" resource = "menu_status.png" size="Menu" />
+		<StockIcon stockid = "vc-log" resource = "log-light-16.png" size="Menu" />
+		<StockIcon stockid = "vc-status" resource = "local-status-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-update" resource = "pull-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-push" resource = "push-light-16.png" size="Menu" />
 		<StockIcon stockid = "vc-commit" resource = "commit-light-16.png" size="Menu" />

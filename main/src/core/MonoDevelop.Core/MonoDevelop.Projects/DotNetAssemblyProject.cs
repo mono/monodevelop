@@ -46,6 +46,13 @@ namespace MonoDevelop.Projects
 			base (languageName, projectCreateInfo, projectOptions)
 		{
 		}
+
+		public override System.Collections.Generic.IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "DotNetAssembly";
+			foreach (var pt in base.GetProjectTypes ())
+				yield return pt;
+		}
 		
 		public override bool SupportsFramework (TargetFramework framework)
 		{

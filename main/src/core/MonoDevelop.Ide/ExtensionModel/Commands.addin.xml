@@ -495,7 +495,7 @@
 	        _label = "Require Specific Version" />
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
-			_label = "C_lose all but this"
+			_label = "C_lose Others"
 			_description = "Closes all opened files except for the active file"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"

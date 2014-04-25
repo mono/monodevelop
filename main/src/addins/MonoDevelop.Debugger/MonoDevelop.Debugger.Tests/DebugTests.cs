@@ -25,14 +25,20 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Reflection;
+using System.Collections.Generic;
+
+using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
+
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
-using System.IO;
-using System.Threading;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.Core.Assemblies;
+
 using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
@@ -40,9 +46,20 @@ namespace MonoDevelop.Debugger.Tests
 	[TestFixture]
 	public abstract class DebugTests
 	{
-		readonly protected string EngineId;
+		readonly ManualResetEvent targetStoppedEvent = new ManualResetEvent (false);
+		readonly string EngineId;
 		DebuggerEngine engine;
-		
+		string TestName = "";
+		TextFile SourceFile;
+
+		SourceLocation lastStoppedPosition;
+
+		public bool AllowTargetInvokes{ get; set; }
+
+		public DebuggerSession Session{ get; private set; }
+
+		public StackFrame Frame{ get; private set; }
+
 		protected DebugTests (string engineId)
 		{
 			EngineId = engineId;
@@ -57,14 +74,21 @@ namespace MonoDevelop.Debugger.Tests
 					break;
 				}
 			}
+			if (engine == null)
+				Assert.Ignore ("Engine not found: {0}", EngineId);
 		}
 
 		[TestFixtureTearDown]
 		public virtual void TearDown ()
 		{
+			if (Session != null) {
+				Session.Exit ();
+				Session.Dispose ();
+				Session = null;
+			}
 		}
 
-		protected DebuggerSession Start (string test, bool allowTargetInvoke)
+		protected void Start (string test)
 		{
 			TargetRuntime runtime;
 
@@ -81,13 +105,14 @@ namespace MonoDevelop.Debugger.Tests
 			}
 
 			if (runtime == null)
-				return null;
+				Assert.Ignore ("Runtime not found for: {0}", EngineId);
 
 			// main/build/tests
 			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
+			var exe = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
 
 			var cmd = new DotNetExecutionCommand ();
-			cmd.Command = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
+			cmd.Command = exe;
 			cmd.Arguments = test;
 			cmd.TargetRuntime = runtime;
 
@@ -101,65 +126,198 @@ namespace MonoDevelop.Debugger.Tests
 				}
 			}
 
-			DebuggerStartInfo si = engine.CreateDebuggerStartInfo (cmd);
-			DebuggerSession session = engine.CreateSession ();
+			DebuggerStartInfo dsi = engine.CreateDebuggerStartInfo (cmd);
+			var soft = dsi as SoftDebuggerStartInfo;
+
+			if (soft != null) {
+				var assemblyName = AssemblyName.GetAssemblyName (exe);
+
+				soft.UserAssemblyNames = new List<AssemblyName> ();
+				soft.UserAssemblyNames.Add (assemblyName);
+			}
+
+			Session = engine.CreateSession ();
 			var ops = new DebuggerSessionOptions ();
 			ops.EvaluationOptions = EvaluationOptions.DefaultOptions;
-			ops.EvaluationOptions.AllowTargetInvoke = allowTargetInvoke;
+			ops.EvaluationOptions.AllowTargetInvoke = AllowTargetInvokes;
 			ops.EvaluationOptions.EvaluationTimeout = 100000;
 
-			path = path.ParentDirectory.ParentDirectory.Combine ("src","addins","MonoDevelop.Debugger","MonoDevelop.Debugger.Tests.TestApp","Main.cs").FullPath;
-			TextFile file = TextFile.ReadFile (path);
-			int i = file.Text.IndexOf ("void " + test, StringComparison.Ordinal);
-			if (i == -1)
-				throw new Exception ("Test not found: " + test);
-			i = file.Text.IndexOf ("/*break*/", i, StringComparison.Ordinal);
-			if (i == -1)
-				throw new Exception ("Break marker not found: " + test);
-			int line, col;
-			file.GetLineColumnFromPosition (i, out line, out col);
-			Breakpoint bp = session.Breakpoints.Add (path, line);
-			bp.Enabled = true;
+			path = path.ParentDirectory.ParentDirectory.Combine ("src", "addins", "MonoDevelop.Debugger", "MonoDevelop.Debugger.Tests.TestApp", test + ".cs").FullPath;
+			SourceFile = TextFile.ReadFile (path);
+			TestName = test;
+			AddBreakpoint ("break");
 			
 			var done = new ManualResetEvent (false);
 			
-			session.OutputWriter = (isStderr, text) => Console.WriteLine ("PROC:" + text);
-			
-			session.TargetHitBreakpoint += delegate {
+			Session.OutputWriter = (isStderr, text) => Console.WriteLine ("PROC:" + text);
+
+			Session.TargetHitBreakpoint += (object sender, TargetEventArgs e) => {
 				done.Set ();
+				Frame = e.Backtrace.GetFrame (0);
+				lastStoppedPosition = Frame.SourceLocation;
+				targetStoppedEvent.Set ();
 			};
-				
-			session.Run (si, ops);
+
+			Session.TargetStopped += (object sender, TargetEventArgs e) => {
+				Frame = e.Backtrace.GetFrame (0);
+				lastStoppedPosition = Frame.SourceLocation;
+				targetStoppedEvent.Set ();
+			};
+
+			Session.Run (dsi, ops);
 			if (!done.WaitOne (3000))
 				throw new Exception ("Timeout while waiting for initial breakpoint");
-			
-			return session;
+		}
+
+		public void AddBreakpoint (string breakpointMarker, int offset = 0)
+		{
+			int i = SourceFile.Text.IndexOf ("/*" + breakpointMarker + "*/", StringComparison.Ordinal);
+			if (i == -1)
+				Assert.Fail ("Break marker not found: " + breakpointMarker + " in " + SourceFile.Name);
+			int line, col;
+			SourceFile.GetLineColumnFromPosition (i, out line, out col);
+			Breakpoint bp = Session.Breakpoints.Add (SourceFile.Name, line + offset);
+			bp.Enabled = true;
+		}
+
+		public void InitializeTest ()
+		{
+			Session.Breakpoints.ClearBreakpoints ();
+			Session.Options.EvaluationOptions = EvaluationOptions.DefaultOptions;
+			Session.Options.ProjectAssembliesOnly = true;
+			Session.Options.StepOverPropertiesAndOperators = false;
+			AddBreakpoint ("break");
+			while (!CheckPosition ("break", 0, silent: true)) {
+				targetStoppedEvent.Reset ();
+				Session.Continue ();
+			}
+		}
+
+		public ObjectValue Eval (string exp)
+		{
+			return Frame.GetExpressionValue (exp, true).Sync ();
+		}
+
+		public bool CheckPosition (string guid, int offset = 0, string statement = null, bool silent = false)
+		{
+			if (!targetStoppedEvent.WaitOne (3000)) {
+				if (!silent)
+					Assert.Fail ("CheckPosition failure: Target stop timeout");
+				return false;
+			}
+			if (lastStoppedPosition.FileName == SourceFile.Name) {
+				int i = SourceFile.Text.IndexOf ("/*" + guid + "*/", StringComparison.Ordinal);
+				if (i == -1) {
+					if (!silent)
+						Assert.Fail ("CheckPosition failure: Guid marker not found:" + guid + " in file:" + SourceFile.Name);
+					return false;
+				}
+				int line, col;
+				SourceFile.GetLineColumnFromPosition (i, out line, out col);
+				if ((line + offset) != lastStoppedPosition.Line) {
+					if (!silent)
+						Assert.Fail ("CheckPosition failure: Wrong line Expected:" + (line + offset) + " Actual:" + lastStoppedPosition.Line + " in file:" + SourceFile.Name);
+					return false;
+				}
+				if (!string.IsNullOrEmpty (statement)) {
+					int position = SourceFile.GetPositionFromLineColumn (lastStoppedPosition.Line, lastStoppedPosition.Column);
+					string actualStatement = SourceFile.GetText (position, position + statement.Length);
+					if (statement != actualStatement) {
+						if (!silent)
+							Assert.AreEqual (statement, actualStatement);
+						return false;
+					}
+				}
+			} else {
+				if (!silent)
+					Assert.Fail ("CheckPosition failure: Wrong file Excpected:" + SourceFile.Name + " Actual:" + lastStoppedPosition.FileName);
+				return false;
+			}
+			return true;
+		}
+
+		public void StepIn (string guid, string statement)
+		{
+			StepIn (guid, 0, statement);
+		}
+
+		public void StepIn (string guid, int offset = 0, string statement = null)
+		{
+			targetStoppedEvent.Reset ();
+			Session.StepLine ();
+			CheckPosition (guid, offset, statement);
+		}
+
+		public void StepOver (string guid, string statement)
+		{
+			StepOver (guid, 0, statement);
+		}
+
+		public void StepOver (string guid, int offset = 0, string statement = null)
+		{
+			targetStoppedEvent.Reset ();
+			Session.NextLine ();
+			CheckPosition (guid, offset, statement);
+		}
+
+		public void StepOut (string guid, string statement)
+		{
+			StepOut (guid, 0, statement);
+		}
+
+		public void StepOut (string guid, int offset = 0, string statement = null)
+		{
+			targetStoppedEvent.Reset ();
+			Session.Finish ();
+			CheckPosition (guid, offset, statement);
+		}
+
+		public void Continue (string guid, string statement)
+		{
+			Continue (guid, 0, statement);
+		}
+
+		public void Continue (string guid, int offset = 0, string statement = null)
+		{
+			targetStoppedEvent.Reset ();
+			Session.Continue ();
+			CheckPosition (guid, offset, statement);
+		}
+
+		public void StartTest (string methodName)
+		{
+			if (!targetStoppedEvent.WaitOne (3000)) {
+				Assert.Fail ("StartTest failure: Target stop timeout");
+			}
+			Assert.AreEqual ('"' + methodName + '"', Eval ("MonoDevelop.Debugger.Tests.TestApp.BreakpointsAndStepping.NextMethodToCall = \"" + methodName + "\";").Value);
+			targetStoppedEvent.Reset ();
+			Session.Continue ();
 		}
 	}
-	
+
 	static class EvalHelper
 	{
 		public static ObjectValue Sync (this ObjectValue val)
 		{
 			if (!val.IsEvaluating)
 				return val;
-			
+
 			object locker = new object ();
 			EventHandler h = delegate {
 				lock (locker) {
 					Monitor.PulseAll (locker);
 				}
 			};
-			
+
 			val.ValueChanged += h;
-			
+
 			lock (locker) {
 				while (val.IsEvaluating) {
 					if (!Monitor.Wait (locker, 4000))
 						throw new Exception ("Timeout while waiting for value evaluation");
 				}
 			}
-			
+
 			val.ValueChanged -= h;
 			return val;
 		}

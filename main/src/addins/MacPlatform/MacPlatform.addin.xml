@@ -27,8 +27,12 @@
 			<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers"
 					defaultHandler = "MonoDevelop.MacIntegration.MacHideOthersHandler"
 					_label = "_Hide Others"
-					_description = "Hide other windows"
+					_description = "Hide other applications' windows"
 					macShortcut = "Meta|Alt|H" />
+			<Command id  = "MonoDevelop.MacIntegration.MacIntegrationCommands.ShowOthers"
+					defaultHandler = "MonoDevelop.MacIntegration.MacShowOthersHandler"
+					_label = "Show All"
+					_description = "Show all applications' windows" />
 		</Condition>
 	</Extension>
 	
@@ -50,6 +54,7 @@
 			<SeparatorItem id = "HideSeparator" insertbefore="QuitSeparator" />
 			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideWindow" />
 			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.HideOthers" />
+			<CommandItem id = "MonoDevelop.MacIntegration.MacIntegrationCommands.ShowOthers" />
 		</Condition>
 	</Extension>
 	

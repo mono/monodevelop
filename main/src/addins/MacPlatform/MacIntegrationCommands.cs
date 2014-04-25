@@ -26,8 +26,8 @@
 
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.MacInterop;
 using MonoMac.AppKit;
+using System.Linq;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -36,10 +36,11 @@ namespace MonoDevelop.MacIntegration
 		MinimizeWindow,
 		HideWindow,
 		HideOthers,
+		ShowOthers,
 		Services,
 	}
 	
-	internal class MacMinimizeWindowHandler : CommandHandler
+	class MacMinimizeWindowHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
@@ -47,19 +48,50 @@ namespace MonoDevelop.MacIntegration
 		}
 	}
 	
-	internal class MacHideWindowHandler : CommandHandler
+	class MacHideWindowHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
 			NSApplication.SharedApplication.Hide (NSApplication.SharedApplication);
 		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = NSWorkspace.SharedWorkspace.RunningApplications.Any (a =>
+				!a.Hidden &&
+				a.ActivationPolicy == NSApplicationActivationPolicy.Regular &&
+				a.ProcessIdentifier != NSRunningApplication.CurrentApplication.ProcessIdentifier
+			);
+		}
 	}
 	
-	internal class MacHideOthersHandler : CommandHandler
+	class MacHideOthersHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
 			NSApplication.SharedApplication.HideOtherApplications (NSApplication.SharedApplication);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = NSWorkspace.SharedWorkspace.RunningApplications.Any (a =>
+				!a.Hidden &&
+				a.ActivationPolicy == NSApplicationActivationPolicy.Regular &&
+				a.ProcessIdentifier != NSRunningApplication.CurrentApplication.ProcessIdentifier
+			);
+		}
+	}
+
+	class MacShowOthersHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			NSApplication.SharedApplication.UnhideAllApplications (NSApplication.SharedApplication);
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = NSWorkspace.SharedWorkspace.RunningApplications.Any (a => a.Hidden);
 		}
 	}
 }

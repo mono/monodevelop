@@ -227,7 +227,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		public void GetCommitChangesAddedRemoved ()
 		{
 			var commit = "9ed729ee";
-			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
+			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit + "^"), repo.Resolve (commit)).ToArray ();
 
 			var add = changes.First (c => c.GetNewPath ().EndsWith ("DocumentLine.cs", StringComparison.Ordinal));
 			var remove = changes.First (c => c.GetOldPath ().EndsWith ("LineSegment.cs", StringComparison.Ordinal));
@@ -256,7 +256,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 				"TextViewMargin.cs",
 			};
 			
-			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit), repo.Resolve (commit + "^")).ToArray ();
+			var changes = GitUtil.CompareCommits (repo, repo.Resolve (commit + "^"), repo.Resolve (commit)).ToArray ();
 			Assert.AreEqual (11, changes.Length, "#1");
 			
 			foreach (var file in changedFiles)

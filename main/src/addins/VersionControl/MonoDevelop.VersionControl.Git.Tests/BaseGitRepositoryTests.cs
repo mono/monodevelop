@@ -356,6 +356,35 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		{
 			return new GitRepository (path, url);
 		}
+
+		// This test is for a memory usage improvement on status.
+		[Test]
+		public void TestSameGitRevision ()
+		{
+			// Test that we have the same Revision on subsequent calls when HEAD doesn't change.
+			AddFile ("file1", null, true, true);
+			var info1 = Repo.GetVersionInfo (RootCheckout + "file1", VersionInfoQueryFlags.IgnoreCache);
+			var info2 = Repo.GetVersionInfo (RootCheckout + "file1", VersionInfoQueryFlags.IgnoreCache);
+			Assert.IsTrue (object.ReferenceEquals (info1.Revision, info2.Revision));
+
+			// Test that we have the same Revision between two files on a HEAD bump.
+			AddFile ("file2", null, true, true);
+			var infos = Repo.GetVersionInfo (
+				new FilePath[] { RootCheckout + "file1", RootCheckout + "file2" },
+				VersionInfoQueryFlags.IgnoreCache
+			).ToArray ();
+			Assert.IsTrue (object.ReferenceEquals (infos [0].Revision, infos [1].Revision));
+
+			// Test that the new Revision and the old one are different instances.
+			Assert.IsFalse (object.ReferenceEquals (info1.Revision, infos [0].Revision));
+
+			// Write the first test so it also covers directories.
+			AddDirectory ("meh", true, false);
+			AddFile ("meh/file3", null, true, true);
+			var info3 = Repo.GetVersionInfo (RootCheckout + "meh", VersionInfoQueryFlags.IgnoreCache);
+			var info4 = Repo.GetVersionInfo (RootCheckout + "meh", VersionInfoQueryFlags.IgnoreCache);
+			Assert.IsTrue (object.ReferenceEquals (info3.Revision, info4.Revision));
+		}
 	}
 }
 
