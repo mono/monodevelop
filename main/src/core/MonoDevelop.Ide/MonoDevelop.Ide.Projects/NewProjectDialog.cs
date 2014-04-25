@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide.Projects {
 		IWorkspaceFileObject newItem;
 		Category recentCategory;
 		List<string> recentTemplates = new List<string> ();
+		bool disposeNewItem = true;
 			
 		public NewProjectDialog (SolutionFolder parentFolder, bool openCombine, string basePath)
 		{
@@ -213,6 +214,10 @@ namespace MonoDevelop.Ide.Projects {
 				cat_text_render.Destroy ();
 				cat_text_render = null;
 			}
+
+			if (disposeNewItem && newItem != null)
+				newItem.Dispose ();
+
 			base.OnDestroyed ();
 		}
 		
@@ -380,7 +385,12 @@ namespace MonoDevelop.Ide.Projects {
 				IdeApp.ProjectOperations.Save (newItem);
 			
 			if (openSolution)
-				selectedItem.OpenCreatedSolution();
+				selectedItem.OpenCreatedSolution ();
+			else {
+				// The item is not a solution being opened, so it is going to be added to
+				// an existing item. In this case, it must not be disposed by the dialog.
+				disposeNewItem = false;
+			}
 
 			InstallProjectTemplatePackages ();
 
@@ -454,7 +464,11 @@ namespace MonoDevelop.Ide.Projects {
 				MessageService.ShowError (GettextCatalog.GetString ("You do not have permission to create to {0}", location));
 				return false;
 			}
-			
+
+			if (newItem != null) {
+				newItem.Dispose ();
+				newItem = null;
+			}
 			
 			try {
 				ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
