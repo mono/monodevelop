@@ -185,6 +185,7 @@ namespace MonoDevelop.VersionControl.Git
 
 					cachedSubmodules = submoduleStatus.Call ()
 						.Select(s => SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key))
+						.Where(s => s != null)	// TODO: Make this so we can tell user to clone them.
 						.ToArray ();
 				}
 				return cachedSubmodules;
