@@ -483,6 +483,7 @@ namespace MonoDevelop.Debugger.Tests
 			CheckPosition ("f3b6862d-732b-4f68-81f5-f362d5a092e2");
 			AddBreakpoint ("invalidBreakpointAtEndOfFile");
 			AddBreakpoint ("ffde3c82-4310-43d3-93d1-4c39e9cf615e");
+			Continue ("ffde3c82-4310-43d3-93d1-4c39e9cf615e");
 		}
 
 		/// <summary>
@@ -514,6 +515,48 @@ namespace MonoDevelop.Debugger.Tests
 			StepIn ("1463a77d-f27e-4bcd-8f92-89a682faa1c7", 2, "}");
 			StepIn ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
 			StepIn ("e01a5428-b067-4ca3-ac8c-a19d5d800228", 1, "}");
+		}
+
+		[Test]
+		public void SetBreakpointOnColumn()
+		{
+			InitializeTest ();
+			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "testClass.Iter_1");
+			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "var");
+			AddBreakpoint ("e01a5428-b067-4ca3-ac8c-a19d5d800228", 1);//end of method
+			StartTest ("ForeachEnumerable");
+			CheckPosition ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "testClass.Iter_1");
+			Continue ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			Continue ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "var");
+			Continue ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			Continue ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "var");
+			Continue ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			Continue ("e01a5428-b067-4ca3-ac8c-a19d5d800228", 1);//end of method
+		}
+
+		[Test]
+		public void RunToCursorTest()
+		{
+			InitializeTest ();
+			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74");
+			StartTest ("ForeachEnumerable");
+			CheckPosition ("b73bec88-2c43-4157-8574-ad517730bc74");
+			RunToCursor ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "testClass.Iter_1");
+			RunToCursor ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "var");
+			RunToCursor ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "in");
+			RunToCursor ("69dba3ab-0941-47e9-99fa-10222a2e894d", 1, "}");
+			RunToCursor ("e01a5428-b067-4ca3-ac8c-a19d5d800228", 1);
+		}
+
+		[Test]
+		public void RunToCursorTest2()
+		{
+			InitializeTest ();
+			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
+			StartTest ("SimpleMethod");
+			CheckPosition ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
+			RunToCursor ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 3);
 		}
 
 		/// <summary>
@@ -578,8 +621,6 @@ namespace MonoDevelop.Debugger.Tests
 			StepIn ("1c3e65ca-3201-42ba-9c6e-6f9a45ddac44", 1);
 			StepIn ("c25be44e-ead3-4891-ab42-0e4cf8450f7a", -1);
 		}
-/**/
-
 
 		/// <summary>
 		/// Bug 7901
@@ -668,6 +709,74 @@ namespace MonoDevelop.Debugger.Tests
 			StepIn ("b64e6497-e976-4125-9741-801909e5eeb1", 1, "in");
 			StepIn ("a90ba766-0891-4837-9b1d-e5458f6b8e07", "return");
 			StepIn ("a90ba766-0891-4837-9b1d-e5458f6b8e07", 1, "}");
+		}
+
+		[Test]
+		public void SetNextStatementTest()
+		{
+			InitializeTest ();
+			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			SetNextStatement ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			StepIn ("3e2e4759-f6d9-4839-98e6-4fa96b227458", 1);
+		}
+
+
+		[Test]
+		public void SetNextStatementTest2()
+		{
+			InitializeTest ();
+			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			SetNextStatement ("c35046f7-e87d-4b8f-b260-43e181a0a07c", -1, "{");
+			StepIn ("c35046f7-e87d-4b8f-b260-43e181a0a07c", 1, "int");
+		}
+
+		[Test]
+		public void SetNextStatementTest3()
+		{
+			InitializeTest ();
+			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
+			StartTest ("SimpleMethod");
+			CheckPosition ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
+			StepOver ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 2);
+			StepOver ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 3);
+			StepOver ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 4);
+			SetNextStatement ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
+			StepOver ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 2);
+			StepOver ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 3);
+			SetNextStatement ("f4e3a214-229e-44dd-9da2-db82ddfbec11", -1);
+			StepOver ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
+		}
+
+		[Test]
+		public void CatchPointTest1()
+		{
+			InitializeTest ();
+			AddBreakpoint ("fcdc2412-c00e-4c95-b2ea-e3cf5d5bf856");
+			AddCatchpoint ("System.Exception", true);
+			StartTest ("Catchpoint1");
+			if (!CheckPosition ("526795d3-ee9e-44a7-8423-df0b406e9e8d", 1, null, true))//Workaround for Win32 debugger which stops at +1 line
+				CheckPosition ("526795d3-ee9e-44a7-8423-df0b406e9e8d");
+
+			InitializeTest ();
+			AddBreakpoint ("fcdc2412-c00e-4c95-b2ea-e3cf5d5bf856");
+			AddCatchpoint ("System.Exception", false);
+			StartTest ("Catchpoint1");
+			CheckPosition ("fcdc2412-c00e-4c95-b2ea-e3cf5d5bf856");
+		}
+
+		[Test]
+		public void CatchPointTest2()
+		{
+			InitializeTest ();
+			AddCatchpoint ("System.Exception", true);
+			StartTest ("Catchpoint2");
+			CheckPosition ("d24b1c9d-3944-4f0d-be31-5556251fbdf5");
+			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
+			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
 		}
 	}
 }

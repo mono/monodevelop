@@ -158,6 +158,18 @@ namespace MonoDevelop.Debugger.Tests
 				targetStoppedEvent.Set ();
 			};
 
+			Session.TargetExceptionThrown += (object sender, TargetEventArgs e) => {
+				Frame = e.Backtrace.GetFrame (0);
+				for (int i = 0; i < e.Backtrace.FrameCount; i++) {
+					if (!e.Backtrace.GetFrame (i).IsExternalCode) {
+						Frame = e.Backtrace.GetFrame (i);
+						break;
+					}
+				}
+				lastStoppedPosition = Frame.SourceLocation;
+				targetStoppedEvent.Set ();
+			};
+
 			Session.TargetStopped += (object sender, TargetEventArgs e) => {
 				Frame = e.Backtrace.GetFrame (0);
 				lastStoppedPosition = Frame.SourceLocation;
@@ -169,20 +181,46 @@ namespace MonoDevelop.Debugger.Tests
 				throw new Exception ("Timeout while waiting for initial breakpoint");
 		}
 
-		public void AddBreakpoint (string breakpointMarker, int offset = 0)
+		void GetLineAndColumn (string breakpointMarker, int offset, string statement, out int line, out int col)
 		{
 			int i = SourceFile.Text.IndexOf ("/*" + breakpointMarker + "*/", StringComparison.Ordinal);
 			if (i == -1)
 				Assert.Fail ("Break marker not found: " + breakpointMarker + " in " + SourceFile.Name);
-			int line, col;
 			SourceFile.GetLineColumnFromPosition (i, out line, out col);
-			Breakpoint bp = Session.Breakpoints.Add (SourceFile.Name, line + offset);
-			bp.Enabled = true;
+			line += offset;
+			if (statement != null) {
+				int lineStartPosition = SourceFile.GetPositionFromLineColumn (line, 1);
+				string lineText = SourceFile.GetText (lineStartPosition, lineStartPosition + SourceFile.GetLineLength (line));
+				col = lineText.IndexOf (statement) + 1;
+				if (col == 0)
+					Assert.Fail ("Failed to find statement:" + statement + " at " + SourceFile.Name + "(" + line + ")");
+			} else {
+				col = 1;
+			}
+		}
+
+		public void AddBreakpoint (string breakpointMarker, int offset = 0, string statement = null)
+		{
+			int col, line;
+			GetLineAndColumn (breakpointMarker, offset, statement, out line, out col);
+			Session.Breakpoints.Add (SourceFile.Name, line, col);
+		}
+
+		public void RunToCursor (string breakpointMarker, int offset = 0, string statement = null)
+		{
+			int col, line;
+			GetLineAndColumn (breakpointMarker, offset, statement, out line, out col);
+			targetStoppedEvent.Reset ();
+			Session.Breakpoints.RemoveRunToCursorBreakpoints ();
+			var bp = new RunToCursorBreakpoint (SourceFile.Name, line, col);
+			Session.Breakpoints.Add (bp);
+			Session.Continue ();
+			CheckPosition (breakpointMarker, offset, statement);
 		}
 
 		public void InitializeTest ()
 		{
-			Session.Breakpoints.ClearBreakpoints ();
+			Session.Breakpoints.Clear ();
 			Session.Options.EvaluationOptions = EvaluationOptions.DefaultOptions;
 			Session.Options.ProjectAssembliesOnly = true;
 			Session.Options.StepOverPropertiesAndOperators = false;
@@ -292,6 +330,18 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ('"' + methodName + '"', Eval ("MonoDevelop.Debugger.Tests.TestApp.BreakpointsAndStepping.NextMethodToCall = \"" + methodName + "\";").Value);
 			targetStoppedEvent.Reset ();
 			Session.Continue ();
+		}
+
+		public void SetNextStatement (string guid, int offset = 0, string statement = null)
+		{
+			int line, column;
+			GetLineAndColumn (guid, offset, statement, out line, out column);
+			Session.SetNextStatement (SourceFile.Name, line, column);
+		}
+
+		public void AddCatchpoint(string exceptionName, bool includeSubclasses)
+		{
+			Session.Breakpoints.Add (new Catchpoint (exceptionName, includeSubclasses));
 		}
 	}
 
