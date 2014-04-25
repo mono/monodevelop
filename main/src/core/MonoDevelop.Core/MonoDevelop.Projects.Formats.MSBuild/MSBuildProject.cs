@@ -778,6 +778,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			set { Element.SetAttribute ("Include", value); }
 		}
 		
+		public string UnevaluatedInclude {
+			get { return Element.GetAttribute ("Include"); }
+			set { Element.SetAttribute ("Include", value); }
+		}
+
 		public string Name {
 			get { return Element.Name; }
 		}
