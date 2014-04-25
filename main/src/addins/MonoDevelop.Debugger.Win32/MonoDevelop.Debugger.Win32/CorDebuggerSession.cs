@@ -797,7 +797,27 @@ namespace MonoDevelop.Debugger.Win32
 								binfo.SetStatus (BreakEventStatus.Invalid, null);
 								return binfo;
 							}
-							ISymbolMethod met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
+							ISymbolMethod met = null;
+							if (doc.Reader is ISymbolReader2) {
+								var methods = ((ISymbolReader2)doc.Reader).GetMethodsFromDocumentPosition (doc.Document, line, 0);
+								if (methods != null && methods.Any ()) {
+									if (methods.Count () == 1) {
+										met = methods [0];
+									} else {
+										int deepest = -1;
+										foreach (var method in methods) {
+											var firstSequence = method.GetSequencePoints ().FirstOrDefault ((sp) => sp.StartLine != 0xfeefee);
+											if (firstSequence != null && firstSequence.StartLine >= deepest) {
+												deepest = firstSequence.StartLine;
+												met = method;
+											}
+										}
+									}
+								}
+							}
+							if (met == null) {
+								met = doc.Reader.GetMethodFromDocumentPosition (doc.Document, line, 0);
+							}
 							if (met == null) {
 								binfo.SetStatus (BreakEventStatus.Invalid, null);
 								return binfo;
