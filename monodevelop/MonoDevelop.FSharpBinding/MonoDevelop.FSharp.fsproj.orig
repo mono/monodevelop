@@ -127,7 +127,6 @@
     <Compile Include="Services\CompilerService.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
     <Compile Include="Services\NRefactory.fs" />
-    <Compile Include="Services\GenerateInterface.fs" />
     <Compile Include="Services\NRefactoryCodeActionSource.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
