@@ -506,7 +506,8 @@ namespace MonoDevelop.CSharp.Formatting
 					//inserted rather than just updating the stack due to moving around
 
 					SafeUpdateIndentEngine (textEditorData.Caret.Offset);
-					automaticReindent = (stateTracker.NeedsReindent && lastCharInserted != '\0');
+					// Automatically reindent in text link mode will cause the mode exiting, therefore we need to prevent that.
+					automaticReindent = (stateTracker.NeedsReindent && lastCharInserted != '\0') && !(textEditorData.CurrentMode is TextLinkEditMode);
 					if (key == Gdk.Key.Return && (reIndent || automaticReindent)) {
 						if (textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
 							if (textEditorData.GetLine (textEditorData.Caret.Line).Length == 0)
