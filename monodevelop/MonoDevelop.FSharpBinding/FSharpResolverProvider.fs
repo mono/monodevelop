@@ -194,16 +194,6 @@ type FSharpResolverProvider() =
         match fsSymbolOpt with 
         | None ->  null
         | Some fsSymbolUse ->
-
-            //**hack to test interafe generation viability
-            match fsSymbolUse.Symbol with
-            | :? FSharpEntity as e when e.IsInterface ->
-                let iii = InterfaceStubGenerator.formatInterface 0 4 [||] "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
-                printfn "%s" iii
-            | _ -> ()
-            //**endhack
-
-
             let reg = 
                 match loc with
                 | FindDeclResult.DeclFound(m) -> 
