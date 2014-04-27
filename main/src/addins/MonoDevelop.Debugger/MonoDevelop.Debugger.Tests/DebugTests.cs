@@ -327,7 +327,7 @@ namespace MonoDevelop.Debugger.Tests
 			if (!targetStoppedEvent.WaitOne (3000)) {
 				Assert.Fail ("StartTest failure: Target stop timeout");
 			}
-			Assert.AreEqual ('"' + methodName + '"', Eval ("MonoDevelop.Debugger.Tests.TestApp.BreakpointsAndStepping.NextMethodToCall = \"" + methodName + "\";").Value);
+			Assert.AreEqual ('"' + methodName + '"', Eval ("NextMethodToCall = \"" + methodName + "\";").Value);
 			targetStoppedEvent.Reset ();
 			Session.Continue ();
 		}

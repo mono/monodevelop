@@ -1587,10 +1587,20 @@ namespace MonoDevelop.Debugger.Win32
 				return null;
 		}
 
-		// TODO: implement in metadatatype
 		public override IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)
 		{
-			return base.GetNestedTypes (ctx, type);
+			var cType = (CorType)type;
+			var wctx = (CorEvaluationContext)ctx;
+			var mod = cType.Class.Module;
+			int token = cType.Class.Token;
+			var module = wctx.Session.GetMetadataForModule (mod.Name);
+			foreach (var t in module.DefinedTypes) {
+				if (((MetadataType)t).DeclaringType != null && ((MetadataType)t).DeclaringType.MetadataToken == token) {
+					var cls = mod.GetClassFromToken (((MetadataType)t).MetadataToken);
+					var returnType = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, new CorType[0]);
+					yield return returnType;
+				}
+			}
 		}
 
 		// TODO: implement for session
