@@ -1,4 +1,4 @@
-namespace MonoDevelop.FSharp
+namespace FSharp.CompilerBinding
 open System
 open System.IO
 open System.Diagnostics
@@ -105,96 +105,76 @@ module InterfaceStubGenerator =
     let internal bracket (str: string) = 
         if str.Contains(" ") then "(" + str + ")" else str
 
-    let internal bracketIf cond str = 
-        if cond then "(" + str + ")" else str
-
-    let internal formatTyconRef (tcref: FSharpEntity) = 
-        tcref.DisplayName
-
-    let rec internal formatTypeApplication ctx typeName prec prefix args =
-        if prefix then 
-            match args with
-            | [] -> typeName
-            | [arg] -> typeName + "<" + (formatTypeWithPrec ctx 4 arg) + ">"
-            | args -> bracketIf (prec <= 1) (typeName + "<" + (formatTypesWithPrec ctx 2 "," args) + ">")
-        else
-            match args with
-            | [] -> typeName
-            | [arg] -> (formatTypeWithPrec ctx 2 arg) + " " + typeName 
-            | args -> bracketIf (prec <= 1) ((bracket (formatTypesWithPrec ctx 2 "," args)) + typeName)
-
-    and internal formatTypesWithPrec ctx prec sep typs = 
-        String.concat sep (typs |> Seq.map (formatTypeWithPrec ctx prec))
-
-    and internal formatTypeWithPrec ctx prec (typ: FSharpType) =
-        // Measure types are stored as named types with 'fake' constructors for products, "1" and inverses
-        // of measures in a normalized form (see Andrew Kennedy technical reports). Here we detect this 
-        // embedding and use an approximate set of rules for layout out normalized measures in a nice way. 
-        match typ with 
-        | MeasureProd (ty, MeasureOne) 
-        | MeasureProd (MeasureOne, ty) -> formatTypeWithPrec ctx prec ty
-        | MeasureProd (ty1, MeasureInv ty2) 
-        | MeasureProd (ty1, MeasureProd (MeasureInv ty2, MeasureOne)) -> 
-            (formatTypeWithPrec ctx 2 ty1) + "/" + (formatTypeWithPrec ctx 2 ty2)
-        | MeasureProd (ty1, MeasureProd(ty2,MeasureOne)) 
-        | MeasureProd (ty1, ty2) -> 
-            (formatTypeWithPrec ctx 2 ty1) + "*" + (formatTypeWithPrec ctx 2 ty2)
-        | MeasureInv ty -> "/" + (formatTypeWithPrec ctx 1 ty)
-        | MeasureOne  -> "1" 
-        | _ when typ.HasTypeDefinition -> 
-            let tcref = typ.TypeDefinition 
-            let tyargs = typ.GenericArguments |> Seq.toList
-            // layout postfix array types
-            formatTypeApplication ctx (formatTyconRef tcref) prec tcref.UsesPrefixDisplay tyargs 
-        | _ when typ.IsTupleType ->
-            let tyargs = typ.GenericArguments |> Seq.toList
-            bracketIf (prec <= 2) (formatTypesWithPrec ctx 2 " * " tyargs)
-        | _ when typ.IsFunctionType ->
-            let rec loop soFar (typ:FSharpType) = 
-                if typ.IsFunctionType then 
-                    let _domainType, retType = typ.GenericArguments.[0], typ.GenericArguments.[1]
-                    loop (soFar + (formatTypeWithPrec ctx 4 typ.GenericArguments.[0]) + " -> ") retType
-                else 
-                    soFar + formatTypeWithPrec ctx 5 typ
-            bracketIf (prec <= 4) (loop "" typ)
-        | _ when typ.IsGenericParameter ->
-            formatTypeArgument ctx typ.GenericParameter
-        | _ -> failwith "Can't format type annotation" 
-
-    let internal formatTypeWithSubstitution ctx (typ: FSharpType) =
+    let internal formatType ctx (typ: FSharpType) =
         let genericDefinition = typ.Format(ctx.DisplayContext)
         (genericDefinition, ctx.TypeInstantations)
         ||> Map.fold (fun s k v -> s.Replace(k, v))
 
     let internal keywordSet = set Microsoft.FSharp.Compiler.Lexhelp.Keywords.keywordNames
 
+    type NamesWithIndices = Map<string, Set<int>>
+
+    let normalizeArgName (namesWithIndices: NamesWithIndices) nm =
+        match nm with
+        | "()" -> nm, namesWithIndices
+        | _ ->
+            let nm = String.lowerCaseFirstChar nm
+            let nm, index = String.extractTrailingIndex nm
+                
+            let index, namesWithIndices =
+                match namesWithIndices |> Map.tryFind nm, index with
+                | Some indexes, index ->
+                    let rec getAvailableIndex idx =
+                        if indexes |> Set.contains idx then 
+                            getAvailableIndex (idx + 1)
+                        else idx
+                    let index = index |> Option.getOrElse 1 |> getAvailableIndex
+                    Some index, namesWithIndices |> Map.add nm (indexes |> Set.add index)
+                | None, Some index -> Some index, namesWithIndices |> Map.add nm (Set.ofList [index])
+                | None, None -> None, namesWithIndices |> Map.add nm Set.empty
+
+            let nm = 
+                match index with
+                | Some index -> sprintf "%s%d" nm index
+                | None -> nm
+                
+            let nm = if Set.contains nm keywordSet then sprintf "``%s``" nm else nm
+            nm, namesWithIndices
+
     // Format each argument, including its name and type 
-    let internal formatArgUsage ctx hasTypeAnnotation i (arg: FSharpParameter) = 
+    let internal formatArgUsage ctx hasTypeAnnotation (namesWithIndices: Map<string, Set<int>>) (arg: FSharpParameter) = 
         let nm = 
             match arg.Name with 
-            | None -> 
+            | None ->
                 if arg.Type.HasTypeDefinition && arg.Type.TypeDefinition.XmlDocSig = "T:Microsoft.FSharp.Core.unit" then "()" 
-                else "arg" + string i 
-            | Some nm -> 
-                // Avoid name capturing by object idents
-                if nm = ctx.ObjectIdent then
-                    sprintf "%s%i" nm i
-                elif Set.contains nm keywordSet then
-                    sprintf "``%s``" nm
-                else nm
-        // Detect an optional argument 
+                else sprintf "arg%d" (namesWithIndices |> Map.toList |> List.map snd |> List.sumBy Set.count |> max 1)
+            | Some x -> x
+        
+        let nm, namesWithIndices = normalizeArgName namesWithIndices nm
+        
+        // Detect an optional argument
         let isOptionalArg = hasAttrib<OptionalArgumentAttribute> arg.Attributes
         let argName = if isOptionalArg then "?" + nm else nm
-        if hasTypeAnnotation && argName <> "()" then 
-            argName + ": " + formatTypeWithSubstitution ctx arg.Type
-        else argName
+        (if hasTypeAnnotation && argName <> "()" then 
+            argName + ": " + formatType ctx arg.Type
+        else argName),
+        namesWithIndices
 
     let internal formatArgsUsage ctx hasTypeAnnotation (v: FSharpMemberFunctionOrValue) args =
         let isItemIndexer = (v.IsInstanceMember && v.DisplayName = "Item")
-        let counter = let n = ref 0 in fun () -> incr n; !n
         let unit, argSep, tupSep = "()", " ", ", "
+        let args, namesWithIndices =
+            args
+            |> List.fold (fun (argsSoFar: string list list, namesWithIndices) args ->
+                let argsSoFar', namesWithIndices =
+                    args 
+                    |> List.fold (fun (acc: string list, allNames) arg -> 
+                        let name, allNames = formatArgUsage ctx hasTypeAnnotation allNames arg
+                        name :: acc, allNames) ([], namesWithIndices)
+                List.rev argsSoFar' :: argsSoFar, namesWithIndices) 
+                ([], Map.ofList [ ctx.ObjectIdent, Set.empty ])
         args
-        |> List.map (List.map (fun x -> formatArgUsage ctx hasTypeAnnotation (counter()) x))
+        |> List.rev
         |> List.map (function 
             | [] -> unit 
             | [arg] when arg = unit -> unit
@@ -202,21 +182,24 @@ module InterfaceStubGenerator =
             | args when isItemIndexer -> String.concat tupSep args
             | args -> bracket (String.concat tupSep args))
         |> String.concat argSep
+        , namesWithIndices
   
     let internal formatMember (ctx: Context) (v: FSharpMemberFunctionOrValue) = 
         let getParamArgs (argInfos: FSharpParameter list list) = 
-            let args =
+            let args, namesWithIndices =
                 match argInfos with
                 | [[x]] when v.IsGetterMethod && x.Name.IsNone 
-                            && x.Type.TypeDefinition.XmlDocSig = "T:Microsoft.FSharp.Core.unit" -> ""
+                             && x.Type.TypeDefinition.XmlDocSig = "T:Microsoft.FSharp.Core.unit" -> 
+                    "", Map.ofList [ctx.ObjectIdent, Set.empty]
                 | _  -> formatArgsUsage ctx true v argInfos
              
             if String.IsNullOrWhiteSpace(args) then "" 
             elif args.StartsWith("(") then args
             else sprintf "(%s)" args
+            , namesWithIndices
 
         let buildUsage argInfos = 
-            let parArgs = getParamArgs argInfos
+            let parArgs, _ = getParamArgs argInfos
             match v.IsMember, v.IsInstanceMember, v.LogicalName, v.DisplayName with
             // Constructors
             | _, _, ".ctor", _ -> "new" + parArgs
@@ -247,7 +230,7 @@ module InterfaceStubGenerator =
             | [[]], true, _ -> [], Some retType
             | _, _, _ -> argInfos, Some retType
 
-        let retType = defaultArg (retType |> Option.map (formatTypeWithSubstitution ctx)) "unit"
+        let retType = defaultArg (retType |> Option.map (formatType ctx)) "unit"
         let usage = buildUsage argInfos
 
         ctx.Writer.WriteLine("")
@@ -260,10 +243,11 @@ module InterfaceStubGenerator =
             ctx.Writer.WriteLine(usage)
             ctx.Writer.Indent ctx.Indentation
             match getParamArgs argInfos with
-            | "" | "()" ->
+            | "", _ | "()", _ ->
                 ctx.Writer.WriteLine("with set (v: {0}): unit = ", retType)
-            | args ->
-                ctx.Writer.WriteLine("with set {0} (v: {1}): unit = ", args, retType)
+            | args, namesWithIndices ->
+                let valueArgName, _ = normalizeArgName namesWithIndices "v"
+                ctx.Writer.WriteLine("with set {0} ({1}: {2}): unit = ", args, valueArgName, retType)
             ctx.Writer.Indent ctx.Indentation
             for line in ctx.MethodBody do
                 ctx.Writer.WriteLine(line)
@@ -273,9 +257,9 @@ module InterfaceStubGenerator =
             ctx.Writer.WriteLine(usage)
             ctx.Writer.Indent ctx.Indentation
             match getParamArgs argInfos with
-            | "" ->
+            | "", _ ->
                 ctx.Writer.WriteLine("with get (): {0} = ", retType)
-            | args ->
+            | args, _ ->
                 ctx.Writer.WriteLine("with get {0}: {1} = ", args, retType)
             ctx.Writer.Indent ctx.Indentation
             for line in ctx.MethodBody do
@@ -290,12 +274,22 @@ module InterfaceStubGenerator =
                 ctx.Writer.WriteLine(line)
             ctx.Writer.Unindent ctx.Indentation
 
+    let internal getGenericParameters (e: FSharpEntity) =
+        if e.IsFSharpAbbreviation then
+            e.AbbreviatedType.TypeDefinition.GenericParameters
+        else
+            e.GenericParameters
+
+    let rec internal getNonAbbreviatedType (typ: FSharpType) =
+        if typ.HasTypeDefinition && typ.TypeDefinition.IsFSharpAbbreviation then
+            getNonAbbreviatedType typ.AbbreviatedType
+        else typ
+
     /// Filter out duplicated interfaces in inheritance chain
     let rec internal getInterfaces (e: FSharpEntity) = 
-        seq {
-            yield e
-            for iface in e.DeclaredInterfaces do
-                yield! getInterfaces iface.TypeDefinition
+        seq { for iface in e.AllInterfaces ->
+                let typ = getNonAbbreviatedType iface
+                typ.TypeDefinition 
         }
         |> Seq.distinct
 
@@ -311,17 +305,30 @@ module InterfaceStubGenerator =
     let countInterfaceMembers e =
         getInterfaceMembers e |> Seq.length
 
+    let rec isInterface (e: FSharpEntity) =
+        e.IsInterface || (e.IsFSharpAbbreviation && isInterface e.AbbreviatedType.TypeDefinition)
+
     /// Generate stub implementation of an interface at a start column
     let formatInterface startColumn indentation (typeInstances: string []) objectIdent 
         (methodBody: string) (displayContext: FSharpDisplayContext) (e: FSharpEntity) =
-        assert e.IsInterface
+        Debug.Assert(isInterface e, "The entity should be an interface.")
         use writer = new ColumnIndentedTextWriter()
         let lines = methodBody.Replace("\r\n", "\n").Split('\n')
         let typeParams = Seq.map getTypeParameterName e.GenericParameters
         let instantiations = 
-            Seq.zip typeParams typeInstances
-            |> Seq.filter(fun (t1, t2) -> t1 <> t2) 
-            |> Map.ofSeq
+            let insts =
+                Seq.zip typeParams typeInstances
+                |> Seq.filter(fun (t1, t2) -> t1 <> t2) 
+                |> Map.ofSeq
+            // A simple hack to handle instantiation of type alias 
+            if e.IsFSharpAbbreviation then
+                let typ = getNonAbbreviatedType e.AbbreviatedType
+                (typ.TypeDefinition.GenericParameters |> Seq.map getTypeParameterName, 
+                 typ.GenericArguments |> Seq.map (fun typ -> typ.Format(displayContext)))
+                ||> Seq.zip
+                |> Seq.fold (fun acc (x, y) -> Map.add x y acc) insts
+            else insts
+
         let ctx = { Writer = writer; TypeInstantations = instantiations; Indentation = indentation; 
                     ObjectIdent = objectIdent; MethodBody = lines; DisplayContext = displayContext }
         writer.Indent startColumn
