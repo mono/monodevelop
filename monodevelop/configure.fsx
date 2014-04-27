@@ -1,13 +1,11 @@
-
 // Configuration script to create
 //     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.mac-linux.fsproj (unix)
 //     MonoDevelop.FSharpBinding/MonoDevelop.FSharp.windows.fsproj (windows)
 //     MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 
 open System
-open System.Collections.Generic
 open System.Linq
-open System.Text
+open System.Collections.Generic
 open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
@@ -31,12 +29,10 @@ let WindowsPaths =
 
 let MdCheckFile = "bin/MonoDevelop.Core.dll"
 
-
 let isWindows = (Path.DirectorySeparatorChar = '\\')
 
 let GetPath (str: string list) =
     Path.GetFullPath (String.Join (Path.DirectorySeparatorChar.ToString (), str.Select(fun (s:string) -> s.Replace ('/', Path.DirectorySeparatorChar))))
-
 
 let Grep (file, regex, group:string) =
     let m = Regex.Match (File.ReadAllText (GetPath [file]), regex)
@@ -55,61 +51,79 @@ let Run (file, args) =
     currentProcess.Start () |> ignore
     currentProcess.StandardOutput
 
-
-let paths = if isWindows then WindowsPaths else UnixPaths
+let defaultVersion = "4.1.6"
+let args = fsi.CommandLineArgs.[1..]
+let searchPaths = if isWindows then WindowsPaths else UnixPaths
 
 Console.WriteLine "MonoDevelop F# add-in configuration script"
 Console.WriteLine "------------------------------------------"
 
-let args = fsi.CommandLineArgs.[1..]
 if Array.exists ((=) "--help") args then
   Console.WriteLine "Options:\n"
   Console.WriteLine "--debug\n"
   Console.WriteLine "  Enable debugging of the add-in\n"
   Console.WriteLine "--prefix=PATH\n"
   Console.WriteLine "  MonoDevelop library directory. Currently searched:\n"
-  for p in paths do Console.WriteLine("  {0}", p)
+  for p in searchPaths do Console.WriteLine("  {0}", p)
   exit 0
 
-let searchPaths =
-  let getPrefix (s: string) =
-    let xs = s.Split('=')
-    if xs.Length = 2 && xs.[0] = "--prefix" then Some xs.[1]
-    else None
-  match Array.tryPick getPrefix args with
-  | None -> paths
-  | Some p -> p :: paths
+let getPrefix args = 
+    let tryGet (s: string) =
+        match s.Split('=') with
+        | [|"--prefix"; path|] -> Some path
+        | _ -> None
+    Array.tryPick tryGet args
 
 let installMdbFiles = Array.exists ((=) "--debug") args
-let mutable mdDir = null
-let mutable mdExe = null
-let mutable mdVersion = "4.1.6"
+
+let getExeVersion exe =
+    let outp = Run(exe, "/?").ReadLine()
+    outp.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries).Last()
 
 // Look for the installation directory
+let getMdExe mdDir =
+    ["../../XamarinStudio" 
+     "../../MonoDevelop"
+     "bin/XamarinStudio.exe"
+     "bin/MonoDevelop.exe" ]
+    |> List.map (fun p -> (GetPath[mdDir;p]))
+    |> List.filter (File.Exists)
+    |> function 
+       | exe :: _ -> Some exe
+       | _ -> None
+        
+let getMdExeVersion mdDir =
+    match getMdExe mdDir with
+    | Some exe -> getExeVersion exe
+    | _ -> defaultVersion
 
-if (File.Exists (GetPath ["../../../monodevelop.pc.in"])) then
-    // Local MonoDevelop build directory
-    mdDir <- GetPath [Environment.CurrentDirectory + "/../../../build"]
-    if (File.Exists (GetPath [mdDir;  "../../main/configure.in"])) then 
-        mdVersion <- Grep (GetPath [mdDir; "../../main/configure.in"], @"AC_INIT.*?(?<ver>([0-9]|\.)+)", "ver")
-else
-    // Using installed MonoDevelop
-    mdDir <- searchPaths.FirstOrDefault (fun p -> File.Exists (GetPath [p; MdCheckFile]))
-    if (mdDir <> null) then
-        mdExe <-
-            if (File.Exists (GetPath[mdDir; "bin/XamarinStudio.exe"])) then
-                GetPath[mdDir; "bin/XamarinStudio.exe"]
-            elif (File.Exists (GetPath [mdDir; "bin/MonoDevelop.exe"])) then
-                GetPath [mdDir; "bin/MonoDevelop.exe"]
-            elif (File.Exists (GetPath[mdDir; "../../XamarinStudio"])) then
-                GetPath[mdDir; "../../XamarinStudio"]
-            elif (File.Exists (GetPath [mdDir; "../../MonoDevelop"])) then
-                GetPath [mdDir; "../../MonoDevelop"]
-            else
-                null
-        if (mdExe <> null) then
-            let outp = Run(mdExe, "/?").ReadLine()
-            mdVersion <- outp.Split([| ' ' |], StringSplitOptions.RemoveEmptyEntries).Last()
+let (mdDir, mdVersion) =
+    match getPrefix args with
+    | Some path ->
+        path, getMdExeVersion path
+    | None when (File.Exists (GetPath ["../../../monodevelop.pc.in"])) -> 
+        // Local MonoDevelop build directory
+        let dir = GetPath [Environment.CurrentDirectory + "/../../../build"]
+        let version =
+            if (File.Exists (GetPath [dir;  "../../main/configure.in"])) then 
+                Grep (GetPath [dir; "../../main/configure.in"], @"AC_INIT.*?(?<ver>([0-9]|\.)+)", "ver")
+            else defaultVersion 
+        dir, version
+    | None ->
+        // Using installed MonoDevelop
+        let mdDirs = 
+            searchPaths 
+            |> List.filter (fun p -> File.Exists (GetPath [p; MdCheckFile]))
+            |> List.map (fun p -> p, getMdExeVersion p)
+        match mdDirs with
+        | [] -> 
+            printfn "No MonoDevelop libraries found. Please install MonoDevelop or use --prefix={path-to-md-libraries}" 
+            exit 0
+        | [dir, version] -> 
+            dir, version
+        | _ -> 
+            printfn "Multiple MonoDevelop library directories found. Use --prefix{path-to-md-libraries} to select one.\r\nOptions: \r\n%A" mdDirs 
+            exit 0
 
 if not isWindows then
     // Update the makefile. We don't use that on windows
@@ -117,11 +131,7 @@ if not isWindows then
     FileReplace ("Makefile", "Makefile", "INSERT_MDVERSION4", mdVersion)
     FileReplace ("Makefile", "Makefile", "INSERT_VERSION", FSharpVersion)
     
-if (mdDir = null) then
-    Console.WriteLine ("MonoDevelop binaries not found. Continuing anyway")
-else
-    Console.WriteLine ("MonoDevelop binaries found at: {0}", mdDir)
-
+Console.WriteLine ("MonoDevelop binaries found at: {0}", mdDir)
 Console.WriteLine ("Detected version: {0}", mdVersion)
 
 let tag = if isWindows then "windows" else "mac-linux"
@@ -133,14 +143,20 @@ FileReplace ("MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj.orig", fsprojF
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
-FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDEXE", mdExe)
+
+match getMdExe mdDir with
+| Some mdExe ->
+    FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDEXE", mdExe)
+| None -> ()
+
 FileReplace ("MonoDevelop.FSharpBinding/FSharpBinding.addin.xml.orig", xmlFile, "INSERT_FSPROJ_VERSION", FSharpVersion)
 FileReplace (xmlFile, xmlFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
-if installMdbFiles then
-  FileReplace (xmlFile, xmlFile, "<!--INSTALL_DEBUG", "")
-  FileReplace (xmlFile, xmlFile, "INSTALL_DEBUG-->", "")
 
-if  isWindows then
+if installMdbFiles then
+    FileReplace (xmlFile, xmlFile, "<!--INSTALL_DEBUG", "")
+    FileReplace (xmlFile, xmlFile, "INSTALL_DEBUG-->", "")
+    
+if isWindows then
   FileReplace(xmlFile, xmlFile, ".dll.mdb\"", ".pdb\"")
   for config in ["Debug";"Release"] do
     System.IO.File.WriteAllText(sprintf "build-and-install-%s.bat" (config.ToLower()),

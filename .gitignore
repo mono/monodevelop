@@ -12,6 +12,9 @@ repository/*
 *.dll
 *.pdb
 *.cache
+*.swp
+*.orig
+=======
 *~
 pack/*
 lib/NUnit.*
