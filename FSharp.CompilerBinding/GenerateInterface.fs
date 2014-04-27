@@ -1,4 +1,7 @@
 namespace FSharp.CompilerBinding
+
+// This code borrowed from https://github.com/fsprojects/VisualFSharpPowerTools/
+
 open System
 open System.IO
 open System.Diagnostics

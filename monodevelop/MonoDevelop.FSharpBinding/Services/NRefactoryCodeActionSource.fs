@@ -71,6 +71,7 @@ type ImplementInterfaceCodeActionProvider() as x =
                      //TODO: Check if completely implemented -> no command
                      yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, location.Line) :> _
                  | _ -> ()
+              | _ -> ()
             | _ -> ()
           }
         | _ -> Seq.empty
