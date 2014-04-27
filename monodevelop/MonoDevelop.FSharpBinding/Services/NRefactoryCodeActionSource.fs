@@ -10,6 +10,7 @@ open System.Threading
 open ICSharpCode.NRefactory.Refactoring
 open FSharp.CompilerBinding
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open Microsoft.FSharp.Compiler.Range
 open Mono.TextEditor
 
 type FSharpRefactoringContext() = 
@@ -19,11 +20,10 @@ type FSharpRefactoringContext() =
            member this.Dispose() = ()
         }
 
-
 /// <summary>
 /// A code action represents a menu entry that does edit operation in one document.
 /// </summary>
-type ImplementInterfaceCodeAction(doc:TextDocument, fsSymbolUse:FSharpSymbolUse, line:int) as x =
+type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, line:int) as x =
   inherit  CodeAction()
   do 
     x.Title    <- "Implement Interface"
@@ -33,7 +33,8 @@ type ImplementInterfaceCodeAction(doc:TextDocument, fsSymbolUse:FSharpSymbolUse,
      let indent = 2
      let startindent = (doc.GetLineIndent line).Length + indent
      let e = fsSymbolUse.Symbol :?> FSharpEntity
-     let iii = InterfaceStubGenerator.formatInterface startindent indent [||] "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
+     
+     let iii = InterfaceStubGenerator.formatInterface startindent indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
      let insertpoint = doc.GetLine(line).NextLine.Offset
      doc.Replace(insertpoint, 0, iii)
      ()
@@ -56,15 +57,20 @@ type ImplementInterfaceCodeActionProvider() as x =
     if doc.ParsedDocument <> null then
       match doc.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast -> seq {
-            let lineStr = doc.Editor.GetLineText(location.Line)
-            let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
-            match symbol with 
-            | Some sy -> 
-               match sy.Symbol with
-               | :? FSharpEntity as e when e.IsInterface ->
-                   //TODO: Check if completely implemented -> no command
-                   yield ImplementInterfaceCodeAction(doc.Editor.Document, sy, location.Line) :> _
-               | _ -> ()
+            match ast.ParseTree with 
+            | Some parseTree ->
+              let lineStr = doc.Editor.GetLineText(location.Line)
+              let pos = mkPos location.Line location.Column
+              let interfaceData = InterfaceStubGenerator.tryFindInterfaceDeclaration pos parseTree
+              let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
+            
+              match interfaceData, symbol with 
+              | Some iface, Some sy -> 
+                 match sy.Symbol with
+                 | :? FSharpEntity as e when e.IsInterface ->
+                     //TODO: Check if completely implemented -> no command
+                     yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, location.Line) :> _
+                 | _ -> ()
             | _ -> ()
           }
         | _ -> Seq.empty
