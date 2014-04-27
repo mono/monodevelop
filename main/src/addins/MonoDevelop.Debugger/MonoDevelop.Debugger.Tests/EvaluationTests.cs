@@ -81,7 +81,8 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void TypeReference ()
 		{
-			ObjectValue val = Eval ("System.String");
+			ObjectValue val;
+			val = Eval ("System.String");
 			Assert.AreEqual ("string", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
@@ -90,9 +91,24 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
-			
+
+			val = Eval ("A");
+			Assert.AreEqual ("A", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			val = Eval ("NestedClass");
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedClass", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
 			val = Eval ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation");
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			val = Eval ("NestedClass.DoubleNestedClass");
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedClass.DoubleNestedClass", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
@@ -1011,6 +1027,18 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("base.TestMethodBaseNotOverrided ()");
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
+
+			//When fixed put into TypeReference
+			val = Eval ("NestedClassInParent");
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluationParent.NestedClassInParent", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			//When fixed put into TypeReference
+			val = Eval ("SomeClassInNamespace");
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.SomeClassInNamespace", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
 
 		[Test]

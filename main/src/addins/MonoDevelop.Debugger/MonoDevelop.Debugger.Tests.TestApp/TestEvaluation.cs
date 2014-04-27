@@ -55,6 +55,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			float c = 4;
 			return 1;
 		}
+
+		public class ParentNestedClass
+		{
+
+		}
 	}
 
 	class TestEvaluation : TestEvaluationParent
@@ -69,7 +74,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			obj.Test ();
 		}
 
-		public void Test()
+		public void Test ()
 		{
 			int intZero = 0, intOne = 1;
 			int n = 32;
@@ -179,6 +184,19 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			}
 			return list;
 		}
+
+		class NestedClass
+		{
+			public class DoubleNestedClass
+			{
+
+			}
+		}
+	}
+
+	public class SomeClassInNamespace
+	{
+
 	}
 }
 
