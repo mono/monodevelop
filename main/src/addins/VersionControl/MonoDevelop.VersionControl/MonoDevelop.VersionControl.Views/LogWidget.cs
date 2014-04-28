@@ -597,7 +597,8 @@ namespace MonoDevelop.VersionControl.Views
 			if (d == null)
 				return;
 
-			revertButton.Sensitive = revertToButton.Sensitive = true;
+			revertButton.Sensitive = info.Repository.SupportsRevertRevision;
+			revertToButton.Sensitive = true;
 			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
 			bool select = false;
 			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {

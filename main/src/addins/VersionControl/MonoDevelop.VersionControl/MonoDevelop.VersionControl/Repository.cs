@@ -129,6 +129,10 @@ namespace MonoDevelop.VersionControl
 		public virtual bool SupportsRemoteStatus {
 			get { return false; }
 		}
+
+		public virtual bool SupportsRevertRevision {
+			get { return false; }
+		}
 		
 		internal protected virtual VersionControlOperation GetSupportedOperations (VersionInfo vinfo)
 		{

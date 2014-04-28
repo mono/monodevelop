@@ -52,9 +52,11 @@ namespace MonoDevelop.VersionControl.Subversion
 		}*/
 
 		public override bool SupportsRemoteStatus {
-			get {
-				return true;
-			}
+			get { return true; }
+		}
+
+		public override bool SupportsRevertRevision {
+			get { return true; }
 		}
 
 		new SubversionVersionControl VersionControlSystem {

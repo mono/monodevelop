@@ -1006,22 +1006,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			var git = new NGit.Api.Git (GetRepository (localPath));
-			var gitRev = (GitRevision)revision;
-			var revert = git.Revert ().Include (gitRev.Commit.ToObjectId ());
-			revert.Call ();
-
-			var revertResult = revert.GetFailingResult ();
-			if (revertResult == null) {
-				monitor.ReportSuccess (GettextCatalog.GetString ("Revision {0} successfully reverted", gitRev));
-			} else {
-				var errorMessage = GettextCatalog.GetString ("Could not revert commit {0}", gitRev);
-				var description = GettextCatalog.GetString ("The following files had merge conflicts");
-				description += Environment.NewLine + string.Join (Environment.NewLine, revertResult.GetFailingPaths ().Keys);
-				monitor.ReportError (errorMessage, new UserException (errorMessage, description));
-			} 
+			throw new NotSupportedException ();
 		}
-
 
 		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
@@ -1030,9 +1016,8 @@ namespace MonoDevelop.VersionControl.Git
 			GitRevision gitRev = (GitRevision)revision;
 
 			// Rewrite file data from selected revision.
-			foreach (var path in GetFilesInPaths (new FilePath[] { localPath })) {
-				MonoDevelop.Projects.Text.TextFile.WriteFile (path, GetCommitTextContent (gitRev.Commit, path), null);
-			}
+			foreach (var path in GetFilesInPaths (new [] { localPath }))
+				MonoDevelop.Projects.Text.TextFile.WriteFile (repo.FromGitPath (path), GetCommitTextContent (gitRev.Commit, path), null);
 
 			monitor.ReportSuccess (GettextCatalog.GetString ("Successfully reverted {0} to revision {1}", localPath, gitRev));
 		}
@@ -1197,7 +1182,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var content = GetCommitContent (c, file);
 			if (RawText.IsBinary (content))
-				return null;
+				return String.Empty;
 			return Mono.TextEditor.Utils.TextFileUtility.GetText (content);
 		}
 		
