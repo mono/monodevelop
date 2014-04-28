@@ -765,8 +765,8 @@ namespace MonoDevelop.Debugger
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = DebuggingService.IsDebuggingSupported;
-			info.Enabled = DebuggingService.IsPaused;
+			info.Enabled = DebuggingService.IsPaused && DebuggingService.DebuggerSession.CanSetNextStatement;
+			info.Visible = DebuggingService.IsPaused;
 		}
 
 		protected override void Run ()
