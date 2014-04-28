@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			var toLock = new List<FilePath>();
 
 			foreach (var path in paths) {
-				if (!File.Exists (path) || (File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
+				if (!File.Exists (path) || !Svn.HasNeedLock (path) || (File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
 					continue;
 				toLock.Add (path);
 			}
