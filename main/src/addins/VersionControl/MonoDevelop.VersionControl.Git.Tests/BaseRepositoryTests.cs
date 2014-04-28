@@ -311,6 +311,9 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.RevertRevision.
 		public virtual void RevertsRevision ()
 		{
+			if (!Repo.SupportsRevertRevision)
+				Assert.Ignore ("No support for reverting a specific revision.");
+
 			string added = RootCheckout + "testfile2";
 			AddFile ("testfile", "text", true, true);
 			AddFile ("testfile2", "text2", true, true);
