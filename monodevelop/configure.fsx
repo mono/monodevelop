@@ -82,10 +82,11 @@ let getExeVersion exe =
 
 // Look for the installation directory
 let getMdExe mdDir =
-    ["../../XamarinStudio" 
-     "../../MonoDevelop"
-     "bin/XamarinStudio.exe"
-     "bin/MonoDevelop.exe" ]
+    // Ordering is important for debugging to work on Mac. Exes first.
+    [ "bin/XamarinStudio.exe"
+      "bin/MonoDevelop.exe" 
+      "../../XamarinStudio" 
+      "../../MonoDevelop" ]
     |> List.map (fun p -> (GetPath[mdDir;p]))
     |> List.filter (File.Exists)
     |> function 
