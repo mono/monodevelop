@@ -56,7 +56,6 @@ namespace ICSharpCode.PackageManagement
 			
 			this.HasNoRecentPackages = !RecentPackageRepositoryHasPackages();
 			this.HasNoCachedPackages = !MachinePackageCacheHasPackages();
-			this.IsPackageRestoreEnabled = options.IsPackageRestoreEnabled;
 			this.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
 			
 			CreateCommands();
@@ -64,7 +63,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public bool HasNoRecentPackages { get; private set; }
 		public bool HasNoCachedPackages { get; private set; }
-		public bool IsPackageRestoreEnabled { get; set; }
 		public bool IsAutomaticPackageRestoreOnOpeningSolutionEnabled { get; set; }
 		
 		bool MachinePackageCacheHasPackages()
@@ -112,7 +110,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public void SaveOptions()
 		{
-			options.IsPackageRestoreEnabled = IsPackageRestoreEnabled;
 			options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
 		}
 	}

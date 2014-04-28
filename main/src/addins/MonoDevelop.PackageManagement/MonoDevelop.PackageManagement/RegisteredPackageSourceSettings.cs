@@ -117,6 +117,12 @@ namespace ICSharpCode.PackageManagement
 			}
 			set {
 				activePackageSource = value;
+
+				if (settings is NullSettings) {
+					// NuGet failed to load settings so do not try to update them since this will fail.
+					return;
+				}
+
 				if (activePackageSource == null) {
 					RemoveActivePackageSourceSetting();
 				} else {
