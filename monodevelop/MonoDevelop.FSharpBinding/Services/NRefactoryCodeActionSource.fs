@@ -23,7 +23,7 @@ type FSharpRefactoringContext() =
 /// <summary>
 /// A code action represents a menu entry that does edit operation in one document.
 /// </summary>
-type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, line:int) as x =
+type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, line:int, insertWithAt) as x =
   inherit  CodeAction()
   do 
     x.Title    <- "Implement Interface"
@@ -34,9 +34,12 @@ type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData
      let startindent = (doc.GetLineIndent line).Length + indent
      let e = fsSymbolUse.Symbol :?> FSharpEntity
      
-     let iii = InterfaceStubGenerator.formatInterface startindent indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
+     let formatted = InterfaceStubGenerator.formatInterface startindent indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
+     match insertWithAt with
+     | Some p -> doc.Insert(doc.GetLine(line).Offset + p, " with")
+     | _ -> ()
      let insertpoint = doc.GetLine(line).NextLine.Offset
-     doc.Replace(insertpoint, 0, iii)
+     doc.Replace(insertpoint, 0, formatted)
      ()
 
 /// <summary>
@@ -68,8 +71,19 @@ type ImplementInterfaceCodeActionProvider() as x =
               | Some iface, Some sy -> 
                  match sy.Symbol with
                  | :? FSharpEntity as e when e.IsInterface ->
-                     //TODO: Check if completely implemented -> no command
-                     yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, location.Line) :> _
+                    let sourceTok = SourceTokenizer([], "C:\\test.fsx")
+                    let tokenizer = sourceTok.CreateLineTokenizer(lineStr)
+                    let tokens = Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
+                                                      | Some t, s -> Some(t,s)
+                                                      | _         -> None) 0L
+
+                    let hasWith = 
+                        tokens |> Seq.tryPick (fun (t: TokenInformation) ->
+                                    if t.CharClass = TokenCharKind.Keyword && 
+                                       t.LeftColumn >= location.Column &&
+                                       t.TokenName = "WITH" then Some() else None)
+                    let withCol = if hasWith.IsSome then None else Some sy.RangeAlternate.EndColumn
+                    yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, location.Line, withCol) :> _
                  | _ -> ()
               | _ -> ()
             | _ -> ()
