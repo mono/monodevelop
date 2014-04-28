@@ -115,35 +115,6 @@ namespace MonoDevelop.VersionControl.Subversion
 			return Svn.GetSupportedOperations (this, vinfo, base.GetSupportedOperations (vinfo));
 		}
 
-		public override bool RequestFileWritePermission (params FilePath[] paths)
-		{
-			var toLock = new List<FilePath>();
-
-			foreach (var path in paths) {
-				if (!File.Exists (path) || (File.GetAttributes (path) & FileAttributes.ReadOnly) == 0)
-					continue;
-				toLock.Add (path);
-			}
-
-			if (toLock.Count == 0)
-				return true;
-
-			AlertButton but = new AlertButton ("Lock File");
-			if (!MessageService.Confirm (GettextCatalog.GetString ("The following files must be locked before editing."),
-				String.Join ("\n", toLock.Select (u => u.ToString ())), but))
-				return false;
-
-			try {
-				Svn.Lock (null, "", false, toLock.ToArray ());
-			} catch (SubversionException ex) {
-				MessageService.ShowError (GettextCatalog.GetString ("File could not be unlocked."), ex.Message);
-				return false;
-			}
-
-			VersionControlService.NotifyFileStatusChanged (new FileUpdateEventArgs (this, toLock.ToArray ()));
-			return true;
-		}
-
 		protected override void OnLock (IProgressMonitor monitor, params FilePath[] localPaths)
 		{
 			Svn.Lock (monitor, "", false, localPaths);
