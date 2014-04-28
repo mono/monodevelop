@@ -253,7 +253,9 @@ namespace MonoDevelop.VersionControl.Views
 
 		internal void SetToolbar (DocumentToolbar toolbar)
 		{
-			toolbar.Add (revertButton);
+			if (info.Repository.SupportsRevertRevision)
+				toolbar.Add (revertButton);
+
 			toolbar.Add (revertToButton);
 			toolbar.Add (refreshButton);
 
@@ -597,8 +599,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (d == null)
 				return;
 
-			revertButton.Sensitive = info.Repository.SupportsRevertRevision;
-			revertToButton.Sensitive = true;
+			revertButton.Sensitive = revertToButton.Sensitive = true;
 			Gtk.TreeIter selectIter = Gtk.TreeIter.Zero;
 			bool select = false;
 			foreach (RevisionPath rp in info.Repository.GetRevisionChanges (d)) {
