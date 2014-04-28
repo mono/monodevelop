@@ -508,9 +508,9 @@ namespace MonoDevelop.VersionControl.Git
 				var status = statusCommand.Call ();
 
 				if (status.IsClean ())
-					updateSubmodules.Add (submodule.WorkTree);
+					updateSubmodules.Add (RootRepository.ToGitPath (submodule.WorkTree.GetAbsolutePath ()));
 				else
-					dirtySubmodules.Add (submodule.WorkTree);
+					dirtySubmodules.Add (RootRepository.ToGitPath (submodule.WorkTree.GetAbsolutePath ()));
 			}
 
 			if (dirtySubmodules.Count != 0) {
