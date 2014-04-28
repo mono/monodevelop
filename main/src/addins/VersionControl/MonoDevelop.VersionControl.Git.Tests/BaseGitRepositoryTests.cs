@@ -45,17 +45,17 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		public override void Setup ()
 		{
 			// Generate directories and a svn util.
-			RootUrl = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
-			RootCheckout = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
-			Directory.CreateDirectory (RootUrl.FullPath + "repo.git");
-			RepoLocation = "file:///" + RootUrl.FullPath + "repo.git";
+			RemotePath = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+			LocalPath = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
+			Directory.CreateDirectory (RemotePath.FullPath + "repo.git");
+			RemoteUrl = "file:///" + RemotePath.FullPath + "repo.git";
 
 			// Initialize the bare repo.
 			var ci = new InitCommand ();
-			ci.SetDirectory (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
+			ci.SetDirectory (new Sharpen.FilePath (RemotePath.FullPath + "repo.git"));
 			ci.SetBare (true);
 			ci.Call ();
-			var bare = new FileRepository (new Sharpen.FilePath (RootUrl.FullPath + "repo.git"));
+			var bare = new FileRepository (new Sharpen.FilePath (RemotePath.FullPath + "repo.git"));
 			string branch = Constants.R_HEADS + "master";
 
 			RefUpdate head = bare.UpdateRef (Constants.HEAD);
@@ -63,9 +63,9 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			head.Link (branch);
 
 			// Check out the repository.
-			Checkout (RootCheckout, RepoLocation);
-			Repo = GetRepo (RootCheckout, RepoLocation);
-			DotDir= ".git";
+			Checkout (LocalPath, RemoteUrl);
+			Repo = GetRepo (LocalPath, RemoteUrl);
+			DotDir = ".git";
 		}
 
 		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			string difftext = @"@@ -0,0 +1 @@
 +text
 ";
-			Assert.AreEqual (difftext, Repo.GenerateDiff (RootCheckout + "testfile", Repo.GetVersionInfo (RootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
+			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
 		[Test]
@@ -177,10 +177,10 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			AddFile ("file2", "nothing", true, true);
 			AddFile ("file1", "text", true, false);
 			repo2.GetStashes ().Create (new NullProgressMonitor ());
-			Assert.IsTrue (!File.Exists (RootCheckout + "file1"), "Stash creation failure");
+			Assert.IsTrue (!File.Exists (LocalPath + "file1"), "Stash creation failure");
 			repo2.GetStashes ().Pop (new NullProgressMonitor ());
 
-			VersionInfo vi = repo2.GetVersionInfo (RootCheckout + "file1", VersionInfoQueryFlags.IgnoreCache);
+			VersionInfo vi = repo2.GetVersionInfo (LocalPath + "file1", VersionInfoQueryFlags.IgnoreCache);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, vi.Status & VersionStatus.ScheduledAdd, "Stash pop failure");
 		}
 
@@ -195,15 +195,15 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch1");
 			Assert.AreEqual ("branch1", repo2.GetCurrentBranch ());
-			Assert.IsTrue (File.Exists (RootCheckout + "file1"), "Branch not inheriting from current.");
+			Assert.IsTrue (File.Exists (LocalPath + "file1"), "Branch not inheriting from current.");
 
 			AddFile ("file2", "text", true, false);
 			repo2.CreateBranch ("branch2", null);
 			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch2");
-			Assert.IsTrue (!File.Exists (RootCheckout + "file2"), "Uncommitted changes were not stashed");
+			Assert.IsTrue (!File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed");
 			repo2.GetStashes ().Pop (new NullProgressMonitor ());
 
-			Assert.IsTrue (File.Exists (RootCheckout + "file2"), "Uncommitted changes were not stashed correctly");
+			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed correctly");
 
 			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "master");
 			repo2.RemoveBranch ("branch1");
@@ -232,7 +232,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 
 			repo2.CreateBranch ("branch4", "origin/branch3");
 			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch4");
-			Assert.IsTrue (File.Exists (RootCheckout + "file2"), "Tracking remote is not grabbing correct commits");
+			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Tracking remote is not grabbing correct commits");
 		}
 
 		[Test]
@@ -248,11 +248,11 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			ChangeSet diff = repo2.GetPushChangeSet ("origin", "master");
 			Assert.AreEqual (2, diff.Items.Count ());
 
-			ChangeSetItem item = diff.GetFileItem (RootCheckout + "file1");
+			ChangeSetItem item = diff.GetFileItem (LocalPath + "file1");
 			Assert.IsNotNull (item);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, item.Status & VersionStatus.ScheduledAdd);
 
-			item = diff.GetFileItem (RootCheckout + "file1");
+			item = diff.GetFileItem (LocalPath + "file1");
 			Assert.IsNotNull (item);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, item.Status & VersionStatus.ScheduledAdd);
 		}
@@ -363,14 +363,14 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		{
 			// Test that we have the same Revision on subsequent calls when HEAD doesn't change.
 			AddFile ("file1", null, true, true);
-			var info1 = Repo.GetVersionInfo (RootCheckout + "file1", VersionInfoQueryFlags.IgnoreCache);
-			var info2 = Repo.GetVersionInfo (RootCheckout + "file1", VersionInfoQueryFlags.IgnoreCache);
+			var info1 = Repo.GetVersionInfo (LocalPath + "file1", VersionInfoQueryFlags.IgnoreCache);
+			var info2 = Repo.GetVersionInfo (LocalPath + "file1", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (object.ReferenceEquals (info1.Revision, info2.Revision));
 
 			// Test that we have the same Revision between two files on a HEAD bump.
 			AddFile ("file2", null, true, true);
 			var infos = Repo.GetVersionInfo (
-				new FilePath[] { RootCheckout + "file1", RootCheckout + "file2" },
+				new FilePath[] { LocalPath + "file1", LocalPath + "file2" },
 				VersionInfoQueryFlags.IgnoreCache
 			).ToArray ();
 			Assert.IsTrue (object.ReferenceEquals (infos [0].Revision, infos [1].Revision));
@@ -381,8 +381,8 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			// Write the first test so it also covers directories.
 			AddDirectory ("meh", true, false);
 			AddFile ("meh/file3", null, true, true);
-			var info3 = Repo.GetVersionInfo (RootCheckout + "meh", VersionInfoQueryFlags.IgnoreCache);
-			var info4 = Repo.GetVersionInfo (RootCheckout + "meh", VersionInfoQueryFlags.IgnoreCache);
+			var info3 = Repo.GetVersionInfo (LocalPath + "meh", VersionInfoQueryFlags.IgnoreCache);
+			var info4 = Repo.GetVersionInfo (LocalPath + "meh", VersionInfoQueryFlags.IgnoreCache);
 			Assert.IsTrue (object.ReferenceEquals (info3.Revision, info4.Revision));
 		}
 	}
