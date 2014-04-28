@@ -78,11 +78,11 @@ type ImplementInterfaceCodeActionProvider() as x =
                                                       | _         -> None) 0L
 
                     let hasWith = 
-                        tokens |> Seq.tryPick (fun (t: TokenInformation) ->
+                       tokens |> Seq.tryPick (fun (t: TokenInformation) ->
                                     if t.CharClass = TokenCharKind.Keyword && 
                                        t.LeftColumn >= location.Column &&
                                        t.TokenName = "WITH" then Some() else None)
-                    let withCol = if hasWith.IsSome then None else Some sy.RangeAlternate.EndColumn
+                    let withCol = if hasWith.IsSome then None else Some iface.Range.EndColumn
                     yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, location.Line, withCol) :> _
                  | _ -> ()
               | _ -> ()
