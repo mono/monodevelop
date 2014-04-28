@@ -25,54 +25,38 @@
 // THE SOFTWARE.
 using System;
 using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory6.CSharp.Completion;
+using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
+using System.Linq;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
-	public abstract class ParameterDataProvider : IParameterDataProvider
+	public abstract class ParameterHintingData : IParameterHintingData
 	{
-		public ParameterDataProvider (int startOffset)
-		{
-			this.startOffset = startOffset;
+		public ISymbol Symbol {
+			get;
+			private set;
 		}
 
-		public virtual TooltipInformation CreateTooltipInformation (int overload, int currentParameter, bool smartWrap)
+		protected ParameterHintingData (ISymbol symbol)
 		{
-			return new TooltipInformation ();
+			Symbol = symbol;
 		}
-
-		#region IParameterDataProvider implementation
-
-		string IParameterDataProvider.GetHeading (int overload, string[] parameterDescription, int currentParameter)
-		{
-			throw new NotImplementedException ();
-		}
-
-		string IParameterDataProvider.GetDescription (int overload, int currentParameter)
-		{
-			throw new NotImplementedException ();
-		}
-
-		string IParameterDataProvider.GetParameterDescription (int overload, int paramIndex)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public abstract int GetParameterCount (int overload);
-		public abstract bool AllowParameterList (int overload);
-		public abstract string GetParameterName (int overload, int paramIndex);
-
-		public abstract int Count {
+		
+		public abstract int ParameterCount {
 			get;
 		}
 
-		readonly int startOffset;
-		public int StartOffset {
-			get {
-				return startOffset;
-			}
+		public abstract bool IsParameterListAllowed {
+			get;
 		}
 
-		#endregion
+		public abstract string GetParameterName (int parameter);
+
+		public virtual TooltipInformation CreateTooltipInformation (int currentParameter, bool smartWrap)
+		{
+			return new TooltipInformation ();
+		}
 	}
 }
-

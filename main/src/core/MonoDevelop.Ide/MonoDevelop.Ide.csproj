@@ -2363,7 +2363,6 @@
     <Compile Include="MonoDevelop.Components\ExtendedLabel.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\TooltipInformation.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\TooltipInformationWindow.cs" />
-    <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\TypeSystemParser.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageSection.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\Style.cs" />
@@ -2443,6 +2442,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

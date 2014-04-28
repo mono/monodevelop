@@ -33,7 +33,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeTemplates;
-using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		{
 			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block || CompletionWidget == null)
 				return;
-			ParameterDataProvider cp = null;
+			ParameterHintingResult cp = null;
 			int cpos;
 			if (!GetParameterCompletionCommandOffset (out cpos))
 				cpos = Editor.Caret.Offset;
@@ -314,7 +314,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return null;
 		}
 		
-		public virtual ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
+		public virtual ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			return null;
 		}
@@ -403,7 +403,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			return null;
 		}
 		
-		public virtual ParameterDataProvider ParameterCompletionCommand (CodeCompletionContext completionContext)
+		public virtual ParameterHintingResult ParameterCompletionCommand (CodeCompletionContext completionContext)
 		{
 			// This default implementation of ParameterCompletionCommand calls HandleParameterCompletion providing
 			// the char at the cursor position. If it returns a provider, just return it.
@@ -417,16 +417,17 @@ namespace MonoDevelop.Ide.Gui.Content
 			return null;
 		}
 
-		public virtual int GuessBestMethodOverload (IParameterDataProvider provider, int currentOverload)
+		public virtual int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
 		{
 			int cparam = GetCurrentParameterIndex (provider.StartOffset);
 
-			if (cparam > provider.GetParameterCount (currentOverload) && !provider.AllowParameterList (currentOverload)) {
+			var currentHintingData = provider [currentOverload];
+			if (cparam > currentHintingData.ParameterCount && !currentHintingData.IsParameterListAllowed) {
 				// Look for an overload which has more parameters
 				int bestOverload = -1;
 				int bestParamCount = int.MaxValue;
 				for (int n=0; n<provider.Count; n++) {
-					int pc = provider.GetParameterCount (n);
+					int pc = provider[n].ParameterCount;
 					if (pc < bestParamCount && pc >= cparam) {
 						bestOverload = n;
 						bestParamCount = pc;
@@ -434,7 +435,7 @@ namespace MonoDevelop.Ide.Gui.Content
 				}
 				if (bestOverload == -1) {
 					for (int n=0; n<provider.Count; n++) {
-						if (provider.AllowParameterList (n)) {
+						if (provider[n].IsParameterListAllowed) {
 							bestOverload = n;
 							break;
 						}

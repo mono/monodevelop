@@ -31,8 +31,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui.Content;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -129,7 +129,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			UpdateWindow (ext, widget);
 		}
 		
-		public static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, ParameterDataProvider provider)
+		public static void ShowWindow (CompletionTextEditorExtension ext, ICompletionWidget widget, CodeCompletionContext ctx, ParameterHintingResult provider)
 		{
 			if (provider.Count == 0)
 				return;
@@ -162,7 +162,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return methods [methods.Count - 1].CurrentOverload;
 		}
 		
-		public static IParameterDataProvider GetCurrentProvider ()
+		public static ParameterHintingResult GetCurrentProvider ()
 		{
 			if (methods.Count == 0)
 				return null;
@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 	class MethodData
 	{
-		public ParameterDataProvider MethodProvider;
+		public ParameterHintingResult MethodProvider;
 		public CodeCompletionContext CompletionContext;
 		int currentOverload;
 		public int CurrentOverload {

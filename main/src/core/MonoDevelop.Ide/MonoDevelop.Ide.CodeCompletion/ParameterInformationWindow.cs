@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui.Content;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Fonts;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -109,11 +110,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		int lastParam = -2;
-		public void ShowParameterInfo (ParameterDataProvider provider, int overload, int _currentParam, int maxSize)
+		public void ShowParameterInfo (ICSharpCode.NRefactory6.CSharp.Completion.ParameterHintingResult provider, int overload, int _currentParam, int maxSize)
 		{
 			if (provider == null)
 				throw new ArgumentNullException ("provider");
-			int numParams = System.Math.Max (0, provider.GetParameterCount (overload));
+			int numParams = System.Math.Max (0, provider[overload].ParameterCount);
 			var currentParam = System.Math.Min (_currentParam, numParams - 1);
 			if (numParams > 0 && currentParam < 0)
 				currentParam = 0;
@@ -123,7 +124,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			lastParam = currentParam;
 			ClearDescriptions ();
-			var o = provider.CreateTooltipInformation (overload, currentParam, false);
+			var o = ((ParameterHintingData)provider[overload]).CreateTooltipInformation (currentParam, false);
 
 			Theme.NumPages = provider.Count;
 			Theme.CurrentPage = overload;
