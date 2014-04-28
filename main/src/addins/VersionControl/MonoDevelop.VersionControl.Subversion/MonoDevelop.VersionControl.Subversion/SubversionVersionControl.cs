@@ -252,6 +252,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return new Annotation[0];
 		}
+
+		public abstract bool HasNeedLock (FilePath file);
 	}
 	
 

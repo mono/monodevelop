@@ -791,5 +791,11 @@ namespace SubversionAddinWindows
 			if (notifyChange && File.Exists (file))
 				FileService.NotifyFileChanged (file, true);
 		}
+
+		public override bool HasNeedLock (FilePath file)
+		{
+			string tmp;
+			return client.GetProperty (new SvnPathTarget (file), SvnPropertyNames.SvnNeedsLock, out tmp);
+		}
 	}
 }
