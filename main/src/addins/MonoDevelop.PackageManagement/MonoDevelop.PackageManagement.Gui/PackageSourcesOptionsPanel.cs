@@ -28,6 +28,7 @@
 
 using System;
 using System.Linq;
+using System.IO;
 using System.Security.Cryptography;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
@@ -121,12 +122,37 @@ namespace MonoDevelop.PackageManagement.Gui
 
 		public override void ApplyChanges()
 		{
-			if (packageSourcesWidget.HasPackageSourcesOrderChanged) {
-				viewModels.RegisteredPackageSourcesViewModel.Save (
-					packageSourcesWidget.GetOrderedPackageSources ());
-			} else {
-				viewModels.RegisteredPackageSourcesViewModel.Save ();
+			try {
+				if (packageSourcesWidget.HasPackageSourcesOrderChanged) {
+					viewModels.RegisteredPackageSourcesViewModel.Save (
+						packageSourcesWidget.GetOrderedPackageSources ());
+				} else {
+					viewModels.RegisteredPackageSourcesViewModel.Save ();
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unable to save NuGet.config changes", ex);
+				MessageService.ShowError (
+					GettextCatalog.GetString ("Unable to save package source changes.{0}{0}{1}",
+					Environment.NewLine,
+					GetSaveNuGetConfigFileErrorMessage ()));
 			}
+		}
+
+		/// <summary>
+		/// Returns a non-Windows specific error message instead of the one NuGet returns.
+		/// 
+		/// NuGet returns a Windows specific error:
+		/// 
+		/// "DeleteSection" cannot be called on a NullSettings. This may be caused on account of 
+		/// insufficient permissions to read or write to "%AppData%\NuGet\NuGet.config".
+		/// </summary>
+		string GetSaveNuGetConfigFileErrorMessage ()
+		{
+			string path = Path.Combine (
+				Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData),
+				"NuGet",
+				"NuGet.config");
+			return GettextCatalog.GetString ("Unable to read or write to \"{0}\".", path);
 		}
 
 		public override void Dispose ()
