@@ -67,7 +67,6 @@
 	<StockIcon stockid="md-disclose-arrow-down" resource="disclose-arrow-down-light-16.png" size="Menu" />
 	<StockIcon stockid="md-disclose-arrow-up" resource="disclose-arrow-up-light-16.png" size="Menu" />
 	<StockIcon stockid="md-done" resource="done-light-16.png" size="Menu" />
-	<StockIcon stockid="md-empty-category" resource="command-light-16.png" size="Menu" />
 	<StockIcon stockid="md-empty-file-icon" resource="file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid="md-enum" resource="element-enumeration-light-16.png" size="Menu" />
 	<StockIcon stockid="md-enum-file" resource="file-enumeration-light-32.png" size="Dnd" />
@@ -112,6 +111,7 @@
 	<StockIcon stockid="md-popup-close" resource="popup-close-light-16.png" size="Menu" />
 	<StockIcon stockid="md-popup-close-hover" resource="popup-close-hover-light-16.png" size="Menu" />
 	<StockIcon stockid="md-preferences" resource="preferences-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-generic" resource="prefs-generic-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-overlay" resource="project-reference-overlay-light-16.png" size="Menu" />
