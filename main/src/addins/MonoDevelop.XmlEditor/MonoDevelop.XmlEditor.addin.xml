@@ -95,10 +95,10 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor/Behavior">
-		<Section id = "XmlFormattingOptions" insertbefore="Formatting" _label = "XML" fill="true" class = "MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanel"/>
+		<Section id="XmlFormattingOptions" insertbefore="Formatting" _label="XML" fill="true" class="MonoDevelop.XmlEditor.Gui.XmlEditorOptionsPanel" icon="md-prefs-xml" />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
-		<Section id = "XmlSchemas" _label = "XML Schemas" fill="true" class = "MonoDevelop.XmlEditor.Gui.XmlSchemasPanel"/>
+		<Section id="XmlSchemas" _label="XML Schemas" fill="true" class="MonoDevelop.XmlEditor.Gui.XmlSchemasPanel" icon="md-prefs-xml-schemas" />
 	</Extension>
 
 	<!-- XPath Query pad -->
