@@ -190,13 +190,13 @@
 
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
-		<Section id = "General" insertbefore="Formatting" _label = "General" icon="md-text-editor" fill="true" class = "MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel"/>
-		<Section id = "Markers" _label = "Markers and Rulers" icon="md-markers-rulers" class = "MonoDevelop.SourceEditor.OptionPanels.MarkerPanel"/>
-		<Section id = "Behavior" _label = "Behavior" icon="md-text-editor-behavior" class = "MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel"/>
 		<Section id = "CompletionBehavior" _label = "Completion Behavior" class = "MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel"/>
 <!--		<Section id = "CompletionCharacters" _label = "Completion Characters" class = "MonoDevelop.SourceEditor.OptionPanels.CompletionCharactersPanel"/> -->
 		<Section id = "CompletionAppearance" _label = "Completion Appearance" class = "MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel"/>
-		<Section id = "SyntaxHighlighting" _label = "Syntax Highlighting" fill="true" icon="md-syntax-highlighting" class = "MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel"/>
+		<Section id="General" insertbefore="Formatting" _label="General" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" icon="md-prefs-text-editor-general" />
+		<Section id="Markers" _label="Markers and Rulers" class="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" icon="md-prefs-markers-rulers" />
+		<Section id="Behavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" icon="md-prefs-text-editor-behavior" />
+		<Section id="SyntaxHighlighting" _label="Syntax Highlighting" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/View">
@@ -234,4 +234,12 @@
 		<!-- 2.6+ -->
 		<Migration sourceVersion="2.6+" kind="UserData" path="HighlightingSchemes" isDirectory="true" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-prefs-markers-rulers" resource="prefs-markers-rulers-light-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-syntax-highlighting" resource="prefs-syntax-highlighting-light-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-text-editor-general" resource="prefs-text-editor-general-light-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-text-editor-behavior" resource="prefs-text-editor-behavior-light-16.png" size="Menu" />
+	</Extension>
+	
 </ExtensionModel>
