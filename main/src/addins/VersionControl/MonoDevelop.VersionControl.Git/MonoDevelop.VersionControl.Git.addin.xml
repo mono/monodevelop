@@ -79,7 +79,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
-		<Section id = "Git" _label = "Git" class = "MonoDevelop.VersionControl.Git.GitOptionsPanel" />
+		<Section id = "Git" _label = "Git" class = "MonoDevelop.VersionControl.Git.GitOptionsPanel" icon="md-prefs-git" />
 	</Extension>
 
 <!--	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">
