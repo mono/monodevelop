@@ -221,9 +221,6 @@
     <EmbeddedResource Include="options\KeyBindingSchemeMonoDevelop1.xml">
       <LogicalName>KeyBindingSchemeMonoDevelop1.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\keyboard-shortcuts-16.png">
-      <LogicalName>keyboard-shortcuts-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\text-editor-16.png">
       <LogicalName>text-editor-16.png</LogicalName>
     </EmbeddedResource>
@@ -1625,6 +1622,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\properties-16%402x.png">
       <LogicalName>properties-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-key-bindings-16.png">
+      <LogicalName>prefs-key-bindings-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-key-bindings-16%402x.png">
+      <LogicalName>prefs-key-bindings-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-task-list-16.png">
       <LogicalName>prefs-task-list-light-16.png</LogicalName>
