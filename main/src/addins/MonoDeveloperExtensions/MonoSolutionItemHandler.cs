@@ -191,16 +191,17 @@ namespace MonoDeveloper
 					tw.UnchainWriter (output);
 					tw.UnchainWriter (monitor.Log);
 
-					CompilerResults cr = new CompilerResults (null);			
+					CompilerResults cr = new CompilerResults (null);
 					string[] lines = output.ToString().Split ('\n');
 					foreach (string line in lines) {
 						CompilerError err = CreateErrorFromString (line);
 						if (err != null) cr.Errors.Add (err);
 					}
+
+					return new BuildResult (cr, output.ToString());
 				}
 			}
-			
-			return new BuildResult (cr, output.ToString());
+
 		}
 		
 		private CompilerError CreateErrorFromString (string error_string)
