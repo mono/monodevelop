@@ -260,9 +260,6 @@
     <EmbeddedResource Include="MonoDevelop.Ide.StandardHeader\LGPL3LicencePolicy.xml">
       <LogicalName>LGPL3LicencePolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\tools-external-tools-16.png">
-      <LogicalName>tools-external-tools-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.CodeFormatting\InvariantTextStylePolicy.xml">
       <LogicalName>InvariantTextStylePolicy.xml</LogicalName>
     </EmbeddedResource>
@@ -464,9 +461,6 @@
     <EmbeddedResource Include="icons\folder-new-16.png">
       <LogicalName>folder-new-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\formatting-16.png">
-      <LogicalName>formatting-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-keyword-16.png">
       <LogicalName>element-keyword-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -589,18 +583,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-new-16.png">
       <LogicalName>solution-new-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\letters-16.png">
-      <LogicalName>letters-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\hammer-16.png">
-      <LogicalName>hammer-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\drive-16.png">
-      <LogicalName>drive-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\monkey-16.png">
-      <LogicalName>monkey-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-visibility-internal-overlay-16.png">
       <LogicalName>element-visibility-internal-overlay-light-16.png</LogicalName>
@@ -1266,9 +1248,6 @@
     <EmbeddedResource Include="icons\light\link-overlay-16%402x.png">
       <LogicalName>link-overlay-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\sdk-locations-16.png">
-      <LogicalName>sdk-locations-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\pad-error-list-16.png">
       <LogicalName>pad-error-list-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1608,6 +1587,18 @@
     <EmbeddedResource Include="icons\light\properties-16%402x.png">
       <LogicalName>properties-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-load-save-16.png">
+      <LogicalName>prefs-load-save-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-load-save-16%402x.png">
+      <LogicalName>prefs-load-save-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-formatting-16.png">
+      <LogicalName>prefs-code-formatting-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-formatting-16%402x.png">
+      <LogicalName>prefs-code-formatting-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-language-16.png">
       <LogicalName>prefs-language-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1620,6 +1611,42 @@
     <EmbeddedResource Include="icons\light\prefs-key-bindings-16%402x.png">
       <LogicalName>prefs-key-bindings-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-fonts-16.png">
+      <LogicalName>prefs-fonts-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-fonts-16%402x.png">
+      <LogicalName>prefs-fonts-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-author-information-16.png">
+      <LogicalName>prefs-author-information-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-author-information-16%402x.png">
+      <LogicalName>prefs-author-information-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-sdk-locations-16.png">
+      <LogicalName>prefs-sdk-locations-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-sdk-locations-16%402x.png">
+      <LogicalName>prefs-sdk-locations-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-external-tools-16.png">
+      <LogicalName>prefs-external-tools-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-external-tools-16%402x.png">
+      <LogicalName>prefs-external-tools-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-build-16.png">
+      <LogicalName>prefs-build-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-build-16%402x.png">
+      <LogicalName>prefs-build-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-updates-16.png">
+      <LogicalName>prefs-updates-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-updates-16%402x.png">
+      <LogicalName>prefs-updates-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-task-list-16.png">
       <LogicalName>prefs-task-list-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1631,6 +1658,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-generic-16%402x.png">
       <LogicalName>prefs-generic-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-csharp-16.png">
+      <LogicalName>prefs-csharp-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-csharp-16%402x.png">
+      <LogicalName>prefs-csharp-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-standard-header-16.png">
+      <LogicalName>prefs-standard-header-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-standard-header-16%402x.png">
+      <LogicalName>prefs-standard-header-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-dotnet-naming-policies-16.png">
+      <LogicalName>prefs-dotnet-naming-policies-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-dotnet-naming-policies-16%402x.png">
+      <LogicalName>prefs-dotnet-naming-policies-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-xml-16.png">
       <LogicalName>prefs-xml-light-16.png</LogicalName>
@@ -1655,6 +1700,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-completion-behavior-16%402x.png">
       <LogicalName>prefs-completion-behavior-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-templates-16.png">
+      <LogicalName>prefs-code-templates-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-templates-16%402x.png">
+      <LogicalName>prefs-code-templates-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
