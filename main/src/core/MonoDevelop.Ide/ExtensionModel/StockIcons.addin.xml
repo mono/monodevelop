@@ -117,6 +117,8 @@
 	<StockIcon stockid="md-prefs-key-bindings" resource="prefs-key-bindings-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-language" resource="prefs-language-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-task-list" resource="prefs-task-list-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-xml" resource="prefs-xml-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-xml-schemas" resource="prefs-xml-schemas-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-overlay" resource="project-reference-overlay-light-16.png" size="Menu" />
