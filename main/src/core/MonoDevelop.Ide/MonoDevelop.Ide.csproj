@@ -1260,9 +1260,6 @@
     <EmbeddedResource Include="MonoDevelop.Ide.WelcomePage\icons\open_solution.png">
       <LogicalName>open_solution.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\locale-16.png">
-      <LogicalName>locale-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\link-overlay-16.png">
       <LogicalName>link-overlay-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1610,6 +1607,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\properties-16%402x.png">
       <LogicalName>properties-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-language-16.png">
+      <LogicalName>prefs-language-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-language-16%402x.png">
+      <LogicalName>prefs-language-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-key-bindings-16.png">
       <LogicalName>prefs-key-bindings-light-16.png</LogicalName>
