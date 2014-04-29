@@ -74,7 +74,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			{
 			}
 
-
 			static readonly Regex lineRegex = new Regex ("\\b.*\\s(?<file>(\\w:)?[/\\\\].*):(\\w+\\s)?(?<line>\\d+)\\.?\\s*$", RegexOptions.Compiled);
 
 			internal static bool TryExtractFileAndLine (string lineText, out string file, out int line)
@@ -168,6 +167,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			TextIter start;
 			TextIter end;
+
 			if (buffer.HasSelection && buffer.GetSelectionBounds (out start, out end)) {
 				var text = buffer.GetText (start, end, false);
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
@@ -247,9 +247,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			} else
 				indents.Push (null);
 
-			if (name != null) {
+			if (name != null)
 				UnsafeAddText (Environment.NewLine + name + Environment.NewLine, bold);
-			}
 		}
 		
 		public void BeginTask (string name, int totalWork)
@@ -281,7 +280,8 @@ namespace MonoDevelop.Ide.Gui.Components
 					}
 				}
 			}
-			QueuedTextWrite qtw = new QueuedTextWrite (text, null);
+
+			var qtw = new QueuedTextWrite (text, null);
 			addQueuedUpdate (qtw);
 		}
 		
@@ -293,13 +293,14 @@ namespace MonoDevelop.Ide.Gui.Components
 					return;
 				}
 			}
-			QueuedTextWrite w = new QueuedTextWrite (text, consoleLogTag);
+
+			var w = new QueuedTextWrite (text, consoleLogTag);
 			addQueuedUpdate (w);
 		}
 		
 		public void WriteError (string text)
 		{
-			QueuedTextWrite w = new QueuedTextWrite (text, errorTag);
+			var w = new QueuedTextWrite (text, errorTag);
 			addQueuedUpdate (w);
 		}
 		
@@ -307,18 +308,16 @@ namespace MonoDevelop.Ide.Gui.Components
 		{
 			//don't allow the pad to hold more than MAX_BUFFER_LENGTH chars
 			int overrun = (buffer.CharCount + text.Length) - MAX_BUFFER_LENGTH;
+
 			if (overrun > 0) {
 				TextIter start = buffer.StartIter;
 				TextIter end = buffer.GetIterAtOffset (overrun);
 				buffer.Delete (ref start, ref end);
 			}
-			
+
+			bool scrollToEnd = Vadjustment.Value >= Vadjustment.Upper - 2 * Vadjustment.PageSize;
 			TextIter it = buffer.EndIter;
-			ScrolledWindow window = textEditorControl.Parent as ScrolledWindow;
-			bool scrollToEnd = true;
-			if (window != null) {
-				scrollToEnd = window.Vadjustment.Value >= window.Vadjustment.Upper - 2 * window.Vadjustment.PageSize;
-			}
+
 			if (extraTag != null)
 				buffer.InsertWithTags (ref it, text, tag, extraTag);
 			else
