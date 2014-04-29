@@ -112,6 +112,7 @@
 	<StockIcon stockid="md-popup-close-hover" resource="popup-close-hover-light-16.png" size="Menu" />
 	<StockIcon stockid="md-preferences" resource="preferences-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-generic" resource="prefs-generic-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-task-list" resource="prefs-task-list-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-overlay" resource="project-reference-overlay-light-16.png" size="Menu" />
@@ -129,7 +130,7 @@
 	<StockIcon stockid="md-stop" resource="stop-light-16.png" size="Menu" />
 	<StockIcon stockid="md-struct" resource="element-structure-light-16.png" size="Menu" />
 	<StockIcon stockid="md-struct-file" resource="file-struct-light-32.png" size="Dnd" />
-	<StockIcon stockid="md-task-list-icon" resource="pad-task-list-light-16.png" size="Menu" />
+	<StockIcon stockid="md-task-list" resource="pad-task-list-light-16.png" size="Menu" />
 	<StockIcon stockid="md-template" resource="element-template-light-16.png" size="Menu" />
 	<StockIcon stockid="md-template-surroundwith" resource="element-template-surroundwith-light-16.png" size="Menu" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-light-16.png" size="Menu" />

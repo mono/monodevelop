@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId MonoDevelop = "md-monodevelop";
 		public static readonly IconId Project = "md-project";
 		public static readonly IconId Struct = "md-struct";
-		public static readonly IconId TaskListIcon = "md-task-list-icon";
+		public static readonly IconId TaskListIcon = "md-task-list";
 		public static readonly IconId TextFileIcon = "md-text-file-icon";
 		public static readonly IconId ToggleBookmark = "md-toggle-bookmark";
 		public static readonly IconId UndoIcon = Gtk.Stock.Undo;
