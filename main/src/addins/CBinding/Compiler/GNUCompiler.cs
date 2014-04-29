@@ -491,12 +491,12 @@ namespace CBinding
 			
 					monitor.Log.WriteLine ("{0} {1}", command, args);
 			
-					using (var operationMonitor = new AggregatedProgressMonitor (monitor)) {
+					using (var operationMonitor = new AggregatedOperationMonitor (monitor)) {
 						using (ProcessWrapper p = Runtime.ProcessService.StartProcess (command, args, baseDirectory, monitor.Log, chainedError, null)) {
 							operationMonitor.AddOperation (p); //handles cancellation
 				
 							p.WaitForOutput ();
-							chainedError.UnchainWriter (monitor.log);
+							chainedError.UnchainWriter (monitor.Log);
 							chainedError.UnchainWriter (swError);
 
 							errorOutput = swError.ToString ();
