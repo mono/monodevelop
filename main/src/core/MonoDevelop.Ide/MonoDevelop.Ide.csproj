@@ -332,12 +332,6 @@
     <EmbeddedResource Include="icons\light\comment-16%402x.png">
       <LogicalName>comment-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\compiler-options-16.png">
-      <LogicalName>compiler-options-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\custom-commands-16.png">
-      <LogicalName>custom-commands-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\edit-find-next-16.png">
       <LogicalName>edit-find-next-16.png</LogicalName>
     </EmbeddedResource>
@@ -697,9 +691,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Components.Commands\CommandsExtensionModel.addin.xml">
       <LogicalName>CommandsExtensionModel.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-quickfix-16.png">
-      <LogicalName>text-quickfix-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ClassPadContextMenu.addin.xml">
       <LogicalName>ClassPadContextMenu.addin.xml</LogicalName>
