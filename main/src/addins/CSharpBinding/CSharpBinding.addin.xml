@@ -263,8 +263,4 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete language="C#" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
-    
-	<Extension path="/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid="md-prefs-name-conventions" resource="prefs-name-conventions-light-16.png" size="Menu" />
-	</Extension>
 </ExtensionModel>
