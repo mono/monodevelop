@@ -250,6 +250,30 @@
     <EmbeddedResource Include="icons\light\gutter-warning-15%402x.png">
       <LogicalName>gutter-warning-light-15@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-markers-rulers-16.png">
+      <LogicalName>prefs-markers-rulers-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-markers-rulers-16%402x.png">
+      <LogicalName>prefs-markers-rulers-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-syntax-highlighting-16.png">
+      <LogicalName>prefs-syntax-highlighting-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-syntax-highlighting-16%402x.png">
+      <LogicalName>prefs-syntax-highlighting-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-text-editor-general-16.png">
+      <LogicalName>prefs-text-editor-general-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-text-editor-general-16%402x.png">
+      <LogicalName>prefs-text-editor-general-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-text-editor-behavior-16.png">
+      <LogicalName>prefs-text-editor-behavior-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-text-editor-behavior-16%402x.png">
+      <LogicalName>prefs-text-editor-behavior-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

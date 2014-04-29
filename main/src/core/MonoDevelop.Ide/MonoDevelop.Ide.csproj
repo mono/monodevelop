@@ -221,9 +221,6 @@
     <EmbeddedResource Include="options\KeyBindingSchemeMonoDevelop1.xml">
       <LogicalName>KeyBindingSchemeMonoDevelop1.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-editor-16.png">
-      <LogicalName>text-editor-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\navigate-next-16.png">
       <LogicalName>navigate-next-16.png</LogicalName>
     </EmbeddedResource>
@@ -476,9 +473,6 @@
     <EmbeddedResource Include="icons\light\element-keyword-16%402x.png">
       <LogicalName>element-keyword-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\markers-rulers-16.png">
-      <LogicalName>markers-rulers-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\monodevelop-16.png">
       <LogicalName>monodevelop-16.png</LogicalName>
     </EmbeddedResource>
@@ -595,12 +589,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-new-16.png">
       <LogicalName>solution-new-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\syntax-highlighting-16.png">
-      <LogicalName>syntax-highlighting-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\text-editor-behavior-16.png">
-      <LogicalName>text-editor-behavior-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\letters-16.png">
       <LogicalName>letters-16.png</LogicalName>
