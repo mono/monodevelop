@@ -212,50 +212,6 @@ module internal TipFormatter =
     | _ -> String.Empty
         
 
-  /// Indent the text produced by FSharp.Compiler.Service for an F# type signature nicely.
-  let signatureIndenter (text:string) maximumlength= 
-    let sb = StringBuilder()
-
-    let rec formatter (piece:string) firstLine indentTo =
-        let padding = String.replicate indentTo " "
-        let pad (line:string) = 
-            if firstLine then sb.AppendLine(line) |> ignore
-            else sb.Append(padding) |> ignore
-                 sb.AppendLine(line.Trim()) |> ignore
-
-        let maxwidth = if firstLine then maximumlength 
-                       else maximumlength - indentTo
-        if piece.Length > maxwidth then
-             //get the largest index of either * or ->
-
-             let splitIndex =
-                let lastWithinBounds = max (piece.[0..maxwidth].LastIndexOf("*")) (piece.[0..maxwidth].LastIndexOf("->")-1)
-                if lastWithinBounds < 0 then
-                  match piece.[maxwidth..].IndexOf("*"), piece.[maxwidth..].IndexOf("->")-1 with
-                  | first, second when first < 0 && second < 0 -> -1
-                  | first, second when second < 0 -> first
-                  | first, second when first < 0 -> second
-                  | first, second -> min first second
-                else lastWithinBounds
-
-             if splitIndex < 0 then
-                pad piece
-             else
-                pad piece.[0..splitIndex]
-                formatter piece.[splitIndex+1..] false indentTo
-
-         else  pad piece
-    let lines = text.Split([|'\r';'\n'|], StringSplitOptions.None)
-    for line in lines do
-        let indexOfIndent = 
-            match line.IndexOf(':') with
-            | -1 -> 0
-            //ideally we would use foundIndex+2 here but there seems to be external wrapping causing probelms
-            // for now resort to indenting by 4 characters
-            | foundIndex -> 4
-        formatter line true indexOfIndent
-    sb.ToString().Trim()
-
   /// Format some of the data returned by the F# compiler
   let private buildFormatElement el =
     let signatureB, commentB = StringBuilder(), StringBuilder()
@@ -263,7 +219,7 @@ module internal TipFormatter =
     | ToolTipElementNone -> ()
     | ToolTipElement(it, comment) -> 
         Debug.WriteLine("DataTipElement: " + it)
-        signatureB.Append(GLib.Markup.EscapeText (signatureIndenter it 80)) |> ignore
+        signatureB.Append(GLib.Markup.EscapeText (it)) |> ignore
         let html = buildFormatComment comment 
         if not (String.IsNullOrWhiteSpace html) then 
             commentB.Append(html) |> ignore
@@ -275,7 +231,7 @@ module internal TipFormatter =
         if (items.Length > 1) then
           signatureB.AppendLine("Multiple overloads") |> ignore
         items |> Seq.iteri (fun i (it,comment) -> 
-          signatureB.Append(GLib.Markup.EscapeText (signatureIndenter it 80))  |> ignore
+          signatureB.Append(GLib.Markup.EscapeText (it))  |> ignore
           if i = 0 then 
               let html = buildFormatComment comment 
               if not (String.IsNullOrWhiteSpace html) then 
@@ -285,39 +241,6 @@ module internal TipFormatter =
     | ToolTipElementCompositionError(err) -> 
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
     signatureB.ToString().Trim(), commentB.ToString().Trim()
-      
-  /// Split a line so it fits to a line width
-  let splitLine (sb:StringBuilder) (line:string) lineWidth =
-      let emit (s:string) = sb.Append(s) |> ignore
-      let indent = line |> Seq.takeWhile (fun c -> c = ' ') |> Seq.length
-      let words = line.Split(' ')
-      let mutable i = 0
-      let mutable first = true
-      for word in words do
-          if first || i + word.Length < lineWidth then 
-              emit word 
-              emit " "
-              i <- i + word.Length + 1
-              first <- false
-          else 
-              sb.AppendLine() |> ignore
-              for i in 1 .. indent do emit " "
-              emit word 
-              emit " "
-              i <- indent + word.Length + 1
-              first <- true
-      sb.AppendLine() |> ignore
-
-  /// Wrap text so it fits to a line width
-  let wrapText (text: String) lineWidth =
-      //dont wrap empty lines
-      if text.Length = 0 then text else
-      let sb = StringBuilder()
-      let lines = text.Split [|'\r';'\n'|]
-      for line in lines  do
-          if line.Length <= lineWidth then sb.AppendLine(line) |> ignore
-          else splitLine sb line lineWidth
-      sb.ToString()
 
   /// Format tool-tip that we get from the language service as string        
   //
@@ -327,8 +250,7 @@ module internal TipFormatter =
   let formatTip (ToolTipText(list)) =
       [ for item in list -> 
           let signature, summary = buildFormatElement item
-          let wrappedSummary = wrapText summary 120
-          signature, wrappedSummary ]
+          signature, summary ]
 
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
