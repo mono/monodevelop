@@ -111,6 +111,8 @@
 	<StockIcon stockid="md-popup-close" resource="popup-close-light-16.png" size="Menu" />
 	<StockIcon stockid="md-popup-close-hover" resource="popup-close-hover-light-16.png" size="Menu" />
 	<StockIcon stockid="md-preferences" resource="preferences-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-completion-appearance" resource="prefs-completion-appearance-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-completion-behavior" resource="prefs-completion-behavior-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-generic" resource="prefs-generic-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-key-bindings" resource="prefs-key-bindings-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-language" resource="prefs-language-light-16.png" size="Menu" />
