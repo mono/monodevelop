@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 		{
 			isDestroyed = true;
 			MessageService.PopupDialog -= HandlePopupDialog;
+			base.OnDestroyed ();
 			if (bitmap != null) {
 				bitmap.Dispose ();
 				bitmap = null;
