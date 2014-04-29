@@ -271,19 +271,22 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		static MonoDevelop.Core.ProgressMonitoring.LogTextWriter stderr;
+		static MonoDevelop.Core.ProgressMonitoring.LogTextWriter stdout;
+		static TextWriter writer;
 		static void RedirectOutputToFileWindows ()
 		{
-			var writer = CreateLogFile ("Ide");
+			writer = CreateLogFile ("Ide");
 			if (writer == Console.Out)
 				return;
 
-			var stderr = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
+			stderr = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
 			stderr.ChainWriter (Console.Error);
 			stderr.ChainWriter (writer);
 			defaultError = Console.Error;
 			Console.SetError (stderr);
 
-			var stdout = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
+			stdout = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
 			stdout.ChainWriter (Console.Out);
 			stdout.ChainWriter (writer);
 			defaultOut = Console.Out;

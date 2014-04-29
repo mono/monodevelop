@@ -66,7 +66,15 @@ namespace MonoDevelop.Core.ProgressMonitoring
 		{
 			this.writer = writer;
 			logger = new LogTextWriter ();
-			logger.TextWritten += new LogTextEventHandler (WriteLog);
+			logger.TextWritten += WriteLog;
+		}
+
+		public override void Dispose ()
+		{
+			logger.TextWritten -= WriteLog;
+			logger.Dispose ();
+			writer.Dispose ();
+			base.Dispose ();
 		}
 		
 		public bool EnableTimeStamp {

@@ -179,20 +179,25 @@ namespace MonoDeveloper
 				target = "clean";
 			
 			DotNetProjectConfiguration conf = (DotNetProjectConfiguration) project.GetConfiguration (configuration);
-			
-			StringWriter output = new StringWriter ();
-			LogTextWriter tw = new LogTextWriter ();
-			tw.ChainWriter (output);
-			tw.ChainWriter (monitor.Log);
-			
-			ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Id + " " + target, conf.OutputDirectory, monitor.Log, tw, null);
-			proc.WaitForOutput ();
-			
-			CompilerResults cr = new CompilerResults (null);			
-			string[] lines = output.ToString().Split ('\n');
-			foreach (string line in lines) {
-				CompilerError err = CreateErrorFromString (line);
-				if (err != null) cr.Errors.Add (err);
+
+			using (var output = new StringWriter ()) {
+				using (var tw = new LogTextWriter ()) {
+					tw.ChainWriter (output);
+					tw.ChainWriter (monitor.Log);
+
+					using (ProcessWrapper proc = Runtime.ProcessService.StartProcess ("make", "PROFILE=" + conf.Id + " " + target, conf.OutputDirectory, monitor.Log, tw, null))
+						proc.WaitForOutput ();
+
+					tw.UnchainWriter (output);
+					tw.UnchainWriter (monitor.Log);
+
+					CompilerResults cr = new CompilerResults (null);			
+					string[] lines = output.ToString().Split ('\n');
+					foreach (string line in lines) {
+						CompilerError err = CreateErrorFromString (line);
+						if (err != null) cr.Errors.Add (err);
+					}
+				}
 			}
 			
 			return new BuildResult (cr, output.ToString());

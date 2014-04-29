@@ -533,13 +533,14 @@ namespace MonoDevelop.Ide
 			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
 
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
-			bool reloading = IsReloading;
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+				bool reloading = IsReloading;
 
-			DispatchService.BackgroundDispatch (delegate {
-				BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
-			});
-			return monitor.AsyncOperation;
+				DispatchService.BackgroundDispatch (delegate {
+					BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
+				});
+				return monitor.AsyncOperation;
+			}
 		}
 		
 		void ReattachDocumentProjects (IEnumerable<string> closedDocs)
