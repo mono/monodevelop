@@ -47,7 +47,7 @@ namespace MonoDevelop.Refactoring
 			JumpToDeclaration (doc, CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result);
 		}
 		
-		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, SymbolInfo info)
+		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, RefactoringSymbolInfo info)
 		{
 			if (info.Symbol != null)
 				IdeApp.ProjectOperations.JumpToDeclaration (info.Symbol, doc.Project);

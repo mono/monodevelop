@@ -41,6 +41,8 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.FindSymbols;
+using System.Collections.Immutable;
 
 namespace MonoDevelop.Refactoring
 {
@@ -62,6 +64,35 @@ namespace MonoDevelop.Refactoring
 		ImportSymbol,
 		QuickFix,
 		Resolve
+	}
+	
+	public class RefactoringSymbolInfo
+	{
+		public readonly static RefactoringSymbolInfo Empty = new RefactoringSymbolInfo(new SymbolInfo());
+
+		SymbolInfo symbolInfo;
+		
+		public ISymbol Symbol {
+			get {
+				return symbolInfo.Symbol;
+			}
+		}
+
+		public ImmutableArray<ISymbol> CandidateSymbols {
+			get {
+				return symbolInfo.CandidateSymbols;
+			}
+		}
+		
+		public ISymbol DeclaredSymbol {
+			get;
+			internal set;
+		}
+
+		public RefactoringSymbolInfo (SymbolInfo symbolInfo)
+		{
+			this.symbolInfo = symbolInfo;
+		}
 	}
 	
 	public class CurrentRefactoryOperationsHandler : CommandHandler
@@ -87,52 +118,21 @@ namespace MonoDevelop.Refactoring
 			return null;
 		}
 		
-		public static async Task<SymbolInfo> GetSymbolInfoAsync (Microsoft.CodeAnalysis.Document document, int offset, CancellationToken cancellationToken = default(CancellationToken))
+		public static async Task<RefactoringSymbolInfo> GetSymbolInfoAsync (Microsoft.CodeAnalysis.Document document, int offset, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var unit = await document.GetSemanticModelAsync (cancellationToken);
 			if (unit != null) {
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken);
 				var token = root.FindToken (offset);
-				return unit.GetSymbolInfo (token.Parent); 
+				
+				return new RefactoringSymbolInfo (unit.GetSymbolInfo (token.Parent)) {
+					DeclaredSymbol = unit.GetDeclaredSymbol (token.Parent)
+				};
 			}
-			return new SymbolInfo ();
+			return RefactoringSymbolInfo.Empty;
 		}
 
 /*
-		class GotoBase 
-		{
-			IEntity item;
-			
-			public GotoBase (IEntity item)
-			{
-				this.item = item;
-			}
-			
-			public void Run ()
-			{
-				var cls = item as ITypeDefinition;
-				if (cls != null && cls.DirectBaseTypes != null) {
-					foreach (var bt in cls.DirectBaseTypes) {
-						var def = bt.GetDefinition ();
-						if (def != null && def.Kind != TypeKind.Interface) {
-							IdeApp.ProjectOperations.JumpToDeclaration (def); 
-							return;
-						}
-					}
-				}
-				
-				var method = item as IMember;
-				if (method != null) {
-					var baseMethod = InheritanceHelper.GetBaseMember (method); 
-					if (baseMethod != null) {
-						IdeApp.ProjectOperations.JumpToDeclaration (baseMethod); 
-					}
-					return;
-				}
-			}
-		}
-		
-		
 		class FindDerivedClasses
 		{
 			ITypeDefinition type;
@@ -295,15 +295,13 @@ namespace MonoDevelop.Refactoring
 				}
 				added = true;
 			}
-//
-//			if (item is IMember) {
-//				var member = (IMember)item;
-//				if (member.IsOverride || member.ImplementedInterfaceMembers.Any ()) {
-//					ainfo.Add (GettextCatalog.GetString ("Go to _Base Symbol"), new System.Action (new GotoBase (member).Run));
-//					added = true;
-//				}
-//			}
-//
+
+			
+			if (GotoBaseDeclarationHandler.CanGotoBase (info.DeclaredSymbol)) {
+				ainfo.Add (GotoBaseDeclarationHandler.GetDescription (info.DeclaredSymbol), new Action (() => GotoBaseDeclarationHandler.GotoBase (doc, info.DeclaredSymbol)));
+				added = true;
+			}
+
 			if (canRename) {
 
 				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (info.Symbol)));
