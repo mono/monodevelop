@@ -326,6 +326,18 @@
     <EmbeddedResource Include="icons\light\package-source-32%402x.png">
       <LogicalName>package-source-light-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-16.png">
+      <LogicalName>prefs-package-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-16%402x.png">
+      <LogicalName>prefs-package-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-source-16.png">
+      <LogicalName>prefs-package-source-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-source-16%402x.png">
+      <LogicalName>prefs-package-source-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\dark\reference-48.png">
