@@ -34,6 +34,7 @@ using Mono.Addins;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Ide.Gui.Content
 {
@@ -54,8 +55,8 @@ namespace MonoDevelop.Ide.Gui.Content
 	
 	public interface ITextEditorMemberPositionProvider
 	{
-		IUnresolvedTypeDefinition GetTypeAt (int offset);
-		IUnresolvedMember GetMemberAt (int offset);
+		ITypeSymbol GetTypeAt (int offset);
+		Microsoft.CodeAnalysis.ISymbol GetMemberAt (int offset);
 	}
 	
 	

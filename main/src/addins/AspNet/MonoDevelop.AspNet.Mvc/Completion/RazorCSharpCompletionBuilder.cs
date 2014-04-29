@@ -90,7 +90,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 			return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
 		}
 
-		public ParameterDataProvider HandleParameterCompletion (Document realDocument,	CodeCompletionContext completionContext,
+		public ParameterHintingData HandleParameterCompletion (Document realDocument,	CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;

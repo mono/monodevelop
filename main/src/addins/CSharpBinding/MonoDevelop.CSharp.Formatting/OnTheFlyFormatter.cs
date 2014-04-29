@@ -76,67 +76,69 @@ namespace MonoDevelop.CSharp.Formatting
 
 		static string BuildStub (MonoDevelop.Ide.Gui.Document data, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int endOffset, out int memberStartOffset)
 		{
-			var pf = data.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			if (pf == null) {
-				memberStartOffset = 0;
-				return null;
-			}
-			
-			var sb = new StringBuilder ();
-			
-			int closingBrackets = 0;
-			// use the member start location to determine the using scope, because this information is in sync, the position in
-			// the file may have changed since last parse run (we have up 2 date locations from the type segment tree).
-			var scope = pf.GetUsingScope (seg.Entity.Region.Begin);
-
-			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
-				// Hack: some syntax errors lead to invalid namespace names.
-				if (scope.NamespaceName.EndsWith ("<invalid>", StringComparison.Ordinal)) {
-					scope = scope.Parent;
-					continue;
-				}
-				sb.Append ("namespace Stub {");
-				sb.Append (data.Editor.EolMarker);
-				closingBrackets++;
-				while (scope.Parent != null && scope.Parent.Region == scope.Region)
-					scope = scope.Parent;
-				scope = scope.Parent;
-			}
-
-			var parent = seg.Entity.DeclaringTypeDefinition;
-			while (parent != null) {
-				sb.Append ("class " + parent.Name + " {");
-				sb.Append (data.Editor.EolMarker);
-				closingBrackets++;
-				parent = parent.DeclaringTypeDefinition;
-			}
-
-			var segmentLine = data.Editor.GetLineByOffset (seg.Offset);
-			memberStartOffset = sb.Length + seg.Offset - segmentLine.Offset;
-			var text = data.Editor.GetTextBetween (Math.Max (0, segmentLine.Offset), endOffset);
-			sb.Append (text);
-			var lex = new CSharpCompletionEngineBase.MiniLexer (text);
-			lex.Parse ((ch,i) => {
-				if (lex.IsInString || lex.IsInChar || lex.IsInVerbatimString || lex.IsInSingleComment || lex.IsInMultiLineComment || lex.IsInPreprocessorDirective)
-					return false;
-				if (ch =='{') {
-					closingBrackets++;
-				} else if (ch =='}') {
-					closingBrackets--;
-				}
-				return false;
-			});
-
-
-			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
-			// could interfere with the current indentation.
-			var endLocation = data.Editor.OffsetToLocation (endOffset);
-			for (int i = 0; i <= endLocation.Column; i++) {
-				sb.Append (data.Editor.EolMarker);
-			}
-			sb.Append (data.Editor.EolMarker);
-			sb.Append (new string ('}', closingBrackets));
-			return sb.ToString ();
+			memberStartOffset = 0;
+			return null;
+//			var pf = data.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
+//			if (pf == null) {
+//				memberStartOffset = 0;
+//				return null;
+//			}
+//			
+//			var sb = new StringBuilder ();
+//			
+//			int closingBrackets = 0;
+//			// use the member start location to determine the using scope, because this information is in sync, the position in
+//			// the file may have changed since last parse run (we have up 2 date locations from the type segment tree).
+//			var scope = pf.GetUsingScope (seg.Entity.Region.Begin);
+//
+//			while (scope != null && !string.IsNullOrEmpty (scope.NamespaceName)) {
+//				// Hack: some syntax errors lead to invalid namespace names.
+//				if (scope.NamespaceName.EndsWith ("<invalid>", StringComparison.Ordinal)) {
+//					scope = scope.Parent;
+//					continue;
+//				}
+//				sb.Append ("namespace Stub {");
+//				sb.Append (data.Editor.EolMarker);
+//				closingBrackets++;
+//				while (scope.Parent != null && scope.Parent.Region == scope.Region)
+//					scope = scope.Parent;
+//				scope = scope.Parent;
+//			}
+//
+//			var parent = seg.Entity.DeclaringTypeDefinition;
+//			while (parent != null) {
+//				sb.Append ("class " + parent.Name + " {");
+//				sb.Append (data.Editor.EolMarker);
+//				closingBrackets++;
+//				parent = parent.DeclaringTypeDefinition;
+//			}
+//
+//			var segmentLine = data.Editor.GetLineByOffset (seg.Offset);
+//			memberStartOffset = sb.Length + seg.Offset - segmentLine.Offset;
+//			var text = data.Editor.GetTextBetween (Math.Max (0, segmentLine.Offset), endOffset);
+//			sb.Append (text);
+//			var lex = new CSharpCompletionEngineBase.MiniLexer (text);
+//			lex.Parse ((ch,i) => {
+//				if (lex.IsInString || lex.IsInChar || lex.IsInVerbatimString || lex.IsInSingleComment || lex.IsInMultiLineComment || lex.IsInPreprocessorDirective)
+//					return false;
+//				if (ch =='{') {
+//					closingBrackets++;
+//				} else if (ch =='}') {
+//					closingBrackets--;
+//				}
+//				return false;
+//			});
+//
+//
+//			// Insert at least caret column eol markers otherwise the reindent of the generated closing bracket
+//			// could interfere with the current indentation.
+//			var endLocation = data.Editor.OffsetToLocation (endOffset);
+//			for (int i = 0; i <= endLocation.Column; i++) {
+//				sb.Append (data.Editor.EolMarker);
+//			}
+//			sb.Append (data.Editor.EolMarker);
+//			sb.Append (new string ('}', closingBrackets));
+//			return sb.ToString ();
 		}
 		
 		static FormattingChanges GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, MonoDevelop.Ide.Gui.Document document, string input, DomRegion formattingRegion, ref int formatStartOffset, ref int formatLength, bool formatLastStatementOnly)
@@ -204,7 +206,7 @@ namespace MonoDevelop.CSharp.Formatting
 				var seg2 = ext.GetMemberSegmentAt (endOffset);
 				if (seg != null && seg == seg2) {
 					var member = seg.Entity;
-					if (member == null || member.Region.IsEmpty || member.BodyRegion.End.IsEmpty)
+					if (member == null)
 						return;
 
 					text = BuildStub (data, seg, endOffset, out formatStartOffset);

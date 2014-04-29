@@ -43,7 +43,7 @@ using ICSharpCode.NRefactory.Completion;
 
 namespace CBinding
 {
-	public class ParameterDataProvider : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider
+	public class ParameterDataProvider : MonoDevelop.Ide.CodeCompletion.ParameterHintingData
 	{
 		private Mono.TextEditor.TextEditorData editor;
 		private List<Function> functions = new List<Function> ();

@@ -309,16 +309,8 @@ namespace MonoDevelop.AspNet.Gui
 			return result;
 		}
 		
-		public override bool GetParameterCompletionCommandOffset (out int cpos)
-		{
-			/*if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
-				var result = documentBuilder.GetParameterCompletionCommandOffset (defaultDocument, documentInfo, localDocumentInfo, out cpos);
-				return result;
-			}*/
-			return base.GetParameterCompletionCommandOffset (out cpos);
-		}
 		
-		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
+		public override ParameterHintingData HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 /*			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
 				return documentBuilder.HandleParameterCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar);

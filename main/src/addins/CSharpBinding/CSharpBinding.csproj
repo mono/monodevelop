@@ -279,14 +279,10 @@
     <Compile Include="MonoDevelop.CSharp\PathedDocumentTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\DelegateDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\IndexerParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
     <Compile Include="MonoDevelop.CSharp.Parser\CSharpFoldingParser.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\AbstractGenerateAction.cs" />
@@ -323,10 +319,8 @@
     <Compile Include="MonoDevelop.CSharp.Tooltips\LanguageItemTooltipProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\AstAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp\AstStockIcons.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Highlighting\CSharpSelectionSurroundingProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\SignatureMarkupCreator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ImplementInterfaceMembersGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\TypeParameterDataProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumAction.cs" />
@@ -342,9 +336,14 @@
     <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCodeCompletionFactory.cs" />
+    <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="MonoDevelop.CSharp.Completion\MethodParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

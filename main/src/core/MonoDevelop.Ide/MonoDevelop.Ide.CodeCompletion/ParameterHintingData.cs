@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public abstract string GetParameterName (int parameter);
 
-		public virtual TooltipInformation CreateTooltipInformation (int currentParameter, bool smartWrap)
+		public virtual TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Gui.Document document, int currentParameter, bool smartWrap)
 		{
 			return new TooltipInformation ();
 		}

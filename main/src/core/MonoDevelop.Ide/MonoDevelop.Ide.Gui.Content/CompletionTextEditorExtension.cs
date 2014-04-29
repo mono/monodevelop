@@ -286,9 +286,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			if (Document.Editor.SelectionMode == Mono.TextEditor.SelectionMode.Block || CompletionWidget == null)
 				return;
 			ParameterHintingResult cp = null;
-			int cpos;
-			if (!GetParameterCompletionCommandOffset (out cpos))
-				cpos = Editor.Caret.Offset;
+			int cpos = Editor.Caret.Offset;
 			CodeCompletionContext ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
 			cp = ParameterCompletionCommand (ctx);
 			if (cp != null) {
@@ -347,11 +345,6 @@ namespace MonoDevelop.Ide.Gui.Content
 			return true;
 		}
 
-		public virtual bool GetParameterCompletionCommandOffset (out int cpos)
-		{
-			cpos = 0;
-			return false;
-		}
 		
 		public virtual ICompletionDataList ShowCodeSurroundingsCommand (CodeCompletionContext completionContext)
 		{

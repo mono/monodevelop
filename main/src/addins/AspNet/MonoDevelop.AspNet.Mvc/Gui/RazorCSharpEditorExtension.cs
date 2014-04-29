@@ -523,14 +523,6 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			return base.CodeCompletionCommand (completionContext);
 		}
 
-		public override bool GetParameterCompletionCommandOffset (out int cpos)
-		{
-			if (hiddenInfo != null && isInCSharpContext)
-				return completionBuilder.GetParameterCompletionCommandOffset (defaultDocument, hiddenInfo, out cpos);
-
-			return base.GetParameterCompletionCommandOffset (out cpos);
-		}
-
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
@@ -540,7 +532,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			return base.GetCurrentParameterIndex (startOffset);
 		}
 
-		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext,
+		public override ParameterHintingData HandleParameterCompletion (CodeCompletionContext completionContext,
 			char completionChar)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {

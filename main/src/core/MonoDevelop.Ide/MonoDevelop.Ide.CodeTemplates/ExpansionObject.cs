@@ -100,7 +100,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (provider == null) {
 				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			} else {
-				type = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
+				var rtype = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
+				if (rtype != null)
+					return rtype.Name;
 			}
 			
 			if (type == null)
@@ -117,7 +119,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (provider == null) {
 				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			} else {
-				type = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
+				var rtype = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
+				if (rtype != null)
+					return rtype.IsStatic ? "static " : "public ";
 			}
 			
 			if (type == null)

@@ -142,7 +142,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
+		public ParameterHintingData HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
 			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
