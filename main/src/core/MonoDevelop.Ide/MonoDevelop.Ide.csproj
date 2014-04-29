@@ -485,11 +485,11 @@
     <EmbeddedResource Include="icons\light\package-16%402x.png">
       <LogicalName>package-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\package-22.png">
-      <LogicalName>package-light-22.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-24.png">
+      <LogicalName>package-light-24.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\package-22%402x.png">
-      <LogicalName>package-light-22@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-24%402x.png">
+      <LogicalName>package-light-24@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\package-32.png">
       <LogicalName>package-light-32.png</LogicalName>
