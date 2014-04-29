@@ -1674,6 +1674,12 @@
     <EmbeddedResource Include="icons\light\prefs-code-templates-16%402x.png">
       <LogicalName>prefs-code-templates-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-name-conventions-16.png">
+      <LogicalName>prefs-name-conventions-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-name-conventions-16%402x.png">
+      <LogicalName>prefs-name-conventions-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

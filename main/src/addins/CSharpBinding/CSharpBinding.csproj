@@ -211,12 +211,6 @@
     <EmbeddedResource Include="templates\SharedAssetsProject.xpt.xml">
       <LogicalName>SharedAssetsProject.xpt.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-name-conventions-16.png">
-      <LogicalName>prefs-name-conventions-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-name-conventions-16%402x.png">
-      <LogicalName>prefs-name-conventions-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />
