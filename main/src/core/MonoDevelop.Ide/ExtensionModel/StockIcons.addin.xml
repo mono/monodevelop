@@ -219,8 +219,6 @@
 	<StockIcon stockid="md-clear-all-bookmarks" resource="clear-all-bookmarks-16.png" size="Menu" />
 	<StockIcon stockid="md-close-all-documents" resource="close-all-documents-16.png" size="Menu" />
 	<StockIcon stockid="md-close-combine-icon" resource="close-solution-16.png" size="Menu" />
-	<StockIcon stockid="md-compiler-options" resource="compiler-options-16.png" size="Menu" />
-	<StockIcon stockid="md-custom-commands" resource="custom-commands-16.png" size="Menu" />
 	<StockIcon stockid="md-empty" resource="empty-16.png" size="Menu" />
 	<StockIcon stockid="md-find-in-files" resource="find-in-files-16.png" size="Menu" />
 	<StockIcon stockid="md-find-next-icon" resource="edit-find-next-16.png" size="Menu" />
@@ -240,7 +238,6 @@
 	<StockIcon stockid="md-replace-in-files" resource="replace-in-files-16.png" size="Menu" />
 	<StockIcon stockid="md-save-all-icon" resource="save-all-16.png" size="Menu" />
 	<StockIcon stockid="md-select-all" resource="edit-select-all-16.png" size="Menu" />
-	<StockIcon stockid="md-text-quickfix" resource="text-quickfix-16.png" size="Menu" />
 	<StockIcon stockid="md-toggle-bookmark" resource="toggle-bookmark-16.png" size="Menu" />
 	<StockIcon stockid="md-web-search-icon" resource="web-search-16.png" size="Menu" />
 
