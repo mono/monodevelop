@@ -80,6 +80,11 @@ namespace MonoDevelop.Projects
 			}
 			set { }
 		}
+
+		internal protected override bool OnGetSupportsTarget (string target)
+		{
+			return false;
+		}
 		
 		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
 		{
