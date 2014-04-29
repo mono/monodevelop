@@ -41,8 +41,8 @@ namespace MonoDevelop.Ide.Gui.Components
 {
 	public class LogView : MonoDevelop.Components.CompactScrolledWindow
 	{
-		Gtk.TextBuffer buffer;
-		Gtk.TextView textEditorControl;
+		TextBuffer buffer;
+		TextView textEditorControl;
 		TextMark endMark;
 
 		TextTag tag;
@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		List<TextTag> tags = new List<TextTag> ();
 		Stack<string> indents = new Stack<string> ();
 
-		Queue<QueuedUpdate> updates = new Queue<QueuedUpdate> ();
+		readonly Queue<QueuedUpdate> updates = new Queue<QueuedUpdate> ();
 		QueuedTextWrite lastTextWrite;
 		GLib.TimeoutHandler outputDispatcher;
 		bool outputDispatcherRunning = false;
@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		/// </summary>
 		public class LogTextView : TextView
 		{
-			public LogTextView (Gtk.TextBuffer buf) : base (buf)
+			public LogTextView (TextBuffer buf) : base (buf)
 			{
 			}
 
@@ -83,11 +83,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (match.Success) {
 					file = match.Groups["file"].Value;
 					string lineNumberText = match.Groups["line"].Value;
-					try {
-						line = int.Parse (lineNumberText);
+					if (int.TryParse (lineNumberText, out line))
 						return true;
-					} catch (Exception) {
-					}
 				}
 				file = null;
 				line = 0;
@@ -97,11 +94,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 			{
 				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
-					var cursorPos = base.Buffer.GetIterAtOffset (this.Buffer.CursorPosition);
-
+					var cursorPos = Buffer.GetIterAtOffset (Buffer.CursorPosition);
 					TextIter iterStart;
 					TextIter iterEnd;
 					string lineText;
+
 					try {
 						iterStart = Buffer.GetIterAtLine (cursorPos.Line);
 						iterEnd = Buffer.GetIterAtOffset (iterStart.Offset + iterStart.CharsInLine);
@@ -123,7 +120,7 @@ namespace MonoDevelop.Ide.Gui.Components
 								fileExists = false;
 							}
 							if (fileExists)
-								IdeApp.Workbench.OpenDocument (file, lineNumber, 1);
+								IdeApp.Workbench.OpenDocument (file, null, lineNumber, 1);
 						}
 					}
 				}
@@ -133,7 +130,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public LogView ()
 		{
-			buffer = new Gtk.TextBuffer (new Gtk.TextTagTable ());
+			buffer = new TextBuffer (new TextTagTable ());
 			textEditorControl = new LogTextView (buffer);
 			textEditorControl.Editable = false;
 			
@@ -141,12 +138,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			Add (textEditorControl);
 
 			bold = new TextTag ("bold");
-			bold.Weight = Pango.Weight.Bold;
+			bold.Weight = Weight.Bold;
 			buffer.TagTable.Add (bold);
 			
 			errorTag = new TextTag ("error");
 			errorTag.Foreground = "red";
-			errorTag.Weight = Pango.Weight.Bold;
+			errorTag.Weight = Weight.Bold;
 			buffer.TagTable.Add (errorTag);
 			
 			consoleLogTag = new TextTag ("consoleLog");
@@ -215,14 +212,16 @@ namespace MonoDevelop.Ide.Gui.Components
 				if (updates.Count == 0) {
 					outputDispatcherRunning = false;
 					return false;
-				} else if (!outputDispatcherRunning) {
+				}
+
+				if (!outputDispatcherRunning) {
 					updates.Clear ();
 					return false;
-				} else {
-					while (updates.Count > 0) {
-						QueuedUpdate up = updates.Dequeue ();
-						up.Execute (this);
-					}
+				}
+
+				while (updates.Count > 0) {
+					var up = updates.Dequeue ();
+					up.Execute (this);
 				}
 			}
 			return true;
@@ -255,13 +254,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		
 		public void BeginTask (string name, int totalWork)
 		{
-			QueuedBeginTask bt = new QueuedBeginTask (name, totalWork);
+			var bt = new QueuedBeginTask (name, totalWork);
 			addQueuedUpdate (bt);
 		}
 		
 		public void EndTask ()
 		{
-			QueuedEndTask et = new QueuedEndTask ();
+			var et = new QueuedEndTask ();
 			addQueuedUpdate (et);
 		}
 		
@@ -364,15 +363,16 @@ namespace MonoDevelop.Ide.Gui.Components
 			IdeApp.Preferences.CustomOutputPadFontChanged -= HandleCustomFontChanged;
 		}
 		
-		private abstract class QueuedUpdate
+		abstract class QueuedUpdate
 		{
 			public abstract void Execute (LogView pad);
 		}
 		
-		private class QueuedTextWrite : QueuedUpdate
+		class QueuedTextWrite : QueuedUpdate
 		{
-			private System.Text.StringBuilder Text;
+			readonly System.Text.StringBuilder Text;
 			public TextTag Tag;
+
 			public override void Execute (LogView pad)
 			{
 				pad.UnsafeAddText (Text.ToString (), Tag);
@@ -392,7 +392,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		private class QueuedBeginTask : QueuedUpdate
+		class QueuedBeginTask : QueuedUpdate
 		{
 			public string Name;
 			public int TotalWork;
@@ -408,7 +408,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 		
-		private class QueuedEndTask : QueuedUpdate
+		class QueuedEndTask : QueuedUpdate
 		{
 			public override void Execute (LogView pad)
 			{
@@ -427,7 +427,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		NotSupportedTextReader inputReader = new NotSupportedTextReader ();
 		
 		public LogView LogView {
-			get { return this.outputPad; }
+			get { return outputPad; }
 		}
 		
 		public LogViewProgressMonitor (LogView pad)
