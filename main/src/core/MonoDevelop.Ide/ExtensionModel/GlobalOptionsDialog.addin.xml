@@ -8,8 +8,8 @@
 <Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
 	<Section id = "Preferences" _label = "Environment">
 		<Section id = "GeneralAuthorInfo" _label = "Author Information" icon="md-monkey" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
-		<Section id = "Language" _label = "Language" icon="md-locale" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel">
 <!--			<Panel _label = "Welcome Page" class = "MonoDevelop.Ide.WelcomePage.WelcomePageOptionPanel" />-->
+		<Section id = "Language" _label = "Language" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel" icon="md-prefs-language">
 		</Section>
 		<Section id = "Fonts" _label = "Fonts" fill="true" icon = "md-letters" class = "MonoDevelop.Ide.Fonts.FontChooserPanel"/>
 		<Section id = "Updates" _label = "Updates" icon="md-updates" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
