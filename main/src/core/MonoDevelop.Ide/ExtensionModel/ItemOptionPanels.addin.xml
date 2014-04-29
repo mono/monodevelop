@@ -49,7 +49,7 @@
 			</Condition>
 		</Section>
 		<Condition id="ItemType" value="SolutionEntityItem">
-			<Section id = "CustomCommands" _label = "Custom Commands" icon="md-custom-commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.BuildCustomCommandPanel"/>
+			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.BuildCustomCommandPanel" icon = "md-prefs-generic" />
 		</Condition>
 		<Condition id="ItemType" value="Project">
 			<Section id = "ProjectConfigurations" _label = "Configurations" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.SolutionItemConfigurationsPanel"/>

@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		HashSet<object> modifiedObjects = new HashSet<object> ();
 		bool removeEmptySections;
 		
-		const string emptyCategoryIcon = "md-empty-category";
+		const string emptyCategoryIcon = "md-prefs-generic";
 		const Gtk.IconSize treeIconSize = IconSize.Menu;
 		const Gtk.IconSize headerIconSize = IconSize.Button;
 		
