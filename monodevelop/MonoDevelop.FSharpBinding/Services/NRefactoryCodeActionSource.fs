@@ -23,19 +23,45 @@ type FSharpRefactoringContext() =
 /// <summary>
 /// A code action represents a menu entry that does edit operation in one document.
 /// </summary>
-type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, line:int, insertWithAt) as x =
+type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, lineStr) as x =
   inherit  CodeAction()
   do 
     x.Title    <- "Implement Interface"
     x.IdString <- "ImplementInterfaceCodeAction"
+
+  /// Find the indent level, and the column to insert ' with' at, if any 
+  let getIndentAndWithColumn() =
+    let sourceTok = SourceTokenizer([], "C:\\test.fsx")
+    let tokenizer = sourceTok.CreateLineTokenizer(lineStr)
+    let tokens = Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
+                                      | Some t, s -> Some(t,s)
+                                      | _         -> None) 0L |> Array.ofSeq
+    let startCol = interfaceData.Range.StartColumn
+    let indentCol = 
+       match interfaceData with
+       | InterfaceData.Interface _ -> (doc.GetLineIndent fsSymbolUse.RangeAlternate.StartLine).Length
+       | InterfaceData.ObjExpr _   -> 
+          tokens |> Array.tryPick (fun (t: TokenInformation) ->
+                  if t.CharClass = TokenCharKind.Keyword && 
+                     t.LeftColumn < startCol &&
+                     t.TokenName = "NEW" then Some t.LeftColumn else None) 
+                 |> Option.getOrElse startCol
+    let hasWith = 
+        tokens |> Array.tryPick (fun (t: TokenInformation) ->
+                  if t.CharClass = TokenCharKind.Keyword && 
+                     t.LeftColumn >= startCol &&
+                     t.TokenName = "WITH" then Some() else None)
+    let withCol = if hasWith.IsSome then None else Some interfaceData.Range.EndColumn
+    indentCol, withCol
+    
   override x.Run (context: IRefactoringContext, script:obj) = 
-     // TODO: Default indent? XS has policies, look into that. 
-     let indent = 2
-     let startindent = (doc.GetLineIndent line).Length + indent
+     let line = fsSymbolUse.RangeAlternate.StartLine
+     let indent = 3
+     let startindent, withCol = getIndentAndWithColumn()
      let e = fsSymbolUse.Symbol :?> FSharpEntity
      
-     let formatted = InterfaceStubGenerator.formatInterface startindent indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
-     match insertWithAt with
+     let formatted = InterfaceStubGenerator.formatInterface (startindent + indent) indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
+     match withCol with
      | Some p -> doc.Insert(doc.GetLine(line).Offset + p, " with")
      | _ -> ()
      let insertpoint = doc.GetLine(line).NextLine.Offset
@@ -71,19 +97,7 @@ type ImplementInterfaceCodeActionProvider() as x =
               | Some iface, Some sy -> 
                  match sy.Symbol with
                  | :? FSharpEntity as e when e.IsInterface ->
-                    let sourceTok = SourceTokenizer([], "C:\\test.fsx")
-                    let tokenizer = sourceTok.CreateLineTokenizer(lineStr)
-                    let tokens = Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
-                                                      | Some t, s -> Some(t,s)
-                                                      | _         -> None) 0L
-
-                    let hasWith = 
-                       tokens |> Seq.tryPick (fun (t: TokenInformation) ->
-                                    if t.CharClass = TokenCharKind.Keyword && 
-                                       t.LeftColumn >= location.Column &&
-                                       t.TokenName = "WITH" then Some() else None)
-                    let withCol = if hasWith.IsSome then None else Some iface.Range.EndColumn
-                    yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, location.Line, withCol) :> _
+                    yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr) :> _
                  | _ -> ()
               | _ -> ()
             | _ -> ()
