@@ -75,7 +75,7 @@ namespace ICSharpCode.PackageManagement
 		public IPackageManagementProject GetActiveProject()
 		{
 			if (HasActiveProject()) {
-				return GetActiveProject(ActivePackageRepository);
+				return GetActiveProject(registeredPackageRepositories.CreateAggregateRepository());
 			}
 			return null;
 		}
