@@ -31,7 +31,7 @@
 		
 	<Pad id = "MonoDevelop.Ide.Gui.Pads.TaskListPad"
 		_label = "Tasks"
-		icon="md-task-list-icon"
+		icon="md-task-list"
 		class = "MonoDevelop.Ide.Gui.Pads.TaskListPad"
 		defaultPlacement = "Bottom"
 		defaultStatus="AutoHide"

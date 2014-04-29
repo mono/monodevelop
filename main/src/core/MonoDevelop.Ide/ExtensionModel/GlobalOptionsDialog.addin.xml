@@ -14,8 +14,8 @@
 		<Section id = "KeyBindings" _label = "Key Bindings" fill="true" icon="md-keyboard-shortcuts" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" />
 		<Section id = "Fonts" _label = "Fonts" fill="true" icon = "md-letters" class = "MonoDevelop.Ide.Fonts.FontChooserPanel"/>
 		<Section id = "Updates" _label = "Updates" icon="md-updates" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
-		<Section id = "TaskList" _label = "Tasks" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
 		<Section id = "ExternalTools" _label = "External Tools" icon="md-external-tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
+		<Section id = "TaskList" _label = "Tasks" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" icon="md-prefs-task-list" />
 	</Section>
 
 	<Section id = "Projects" _label = "Projects">
