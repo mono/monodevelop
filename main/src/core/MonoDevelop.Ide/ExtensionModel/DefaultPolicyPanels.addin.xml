@@ -9,16 +9,16 @@
 <Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels">
 	<Section id="Common" _label="General">
 	</Section>
-	<Section id="Build" _label="Build">
+	<Section id="Build" _label="Build" icon="md-prefs-build">
 	</Section>
-	<Section id="Run" _label="Run">
+	<Section id="Run" _label="Run" icon="md-prefs-build">
 	</Section>
 	<Section id="SourceCode" _label="Source Code">
-		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
+		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies" icon="md-prefs-dotnet-naming-policies" >
 			<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
 		</Section>
-		<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
-		<Section id="DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
+		<Section id="CodeFormattingPolicies" _label="Code Formatting" fill="true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" icon="md-prefs-code-formatting" />
+		<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-standard-header" />
 	</Section>
 	<Section id="VersionControl" _label="Version Control" />
 </Extension>
