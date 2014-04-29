@@ -274,6 +274,18 @@
     <EmbeddedResource Include="icons\light\prefs-text-editor-behavior-16%402x.png">
       <LogicalName>prefs-text-editor-behavior-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-completion-appearance-16.png">
+      <LogicalName>prefs-completion-appearance-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-completion-appearance-16%402x.png">
+      <LogicalName>prefs-completion-appearance-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-completion-behavior-16.png">
+      <LogicalName>prefs-completion-behavior-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-completion-behavior-16%402x.png">
+      <LogicalName>prefs-completion-behavior-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

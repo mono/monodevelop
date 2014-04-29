@@ -1680,18 +1680,6 @@
     <EmbeddedResource Include="icons\light\prefs-xml-schemas-16%402x.png">
       <LogicalName>prefs-xml-schemas-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-completion-appearance-16.png">
-      <LogicalName>prefs-completion-appearance-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-completion-appearance-16%402x.png">
-      <LogicalName>prefs-completion-appearance-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-completion-behavior-16.png">
-      <LogicalName>prefs-completion-behavior-light-16.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\prefs-completion-behavior-16%402x.png">
-      <LogicalName>prefs-completion-behavior-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-code-templates-16.png">
       <LogicalName>prefs-code-templates-light-16.png</LogicalName>
     </EmbeddedResource>

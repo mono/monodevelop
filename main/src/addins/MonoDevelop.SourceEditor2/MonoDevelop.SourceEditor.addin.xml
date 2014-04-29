@@ -239,6 +239,8 @@
 		<StockIcon stockid="md-prefs-syntax-highlighting" resource="prefs-syntax-highlighting-light-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-text-editor-general" resource="prefs-text-editor-general-light-16.png" size="Menu" />
 		<StockIcon stockid="md-prefs-text-editor-behavior" resource="prefs-text-editor-behavior-light-16.png" size="Menu" />
+  	<StockIcon stockid="md-prefs-completion-appearance" resource="prefs-completion-appearance-light-16.png" size="Menu" />
+  	<StockIcon stockid="md-prefs-completion-behavior" resource="prefs-completion-behavior-light-16.png" size="Menu" />
 	</Extension>
 	
 </ExtensionModel>
