@@ -47,6 +47,11 @@ namespace MonoDevelop.Refactoring
 			var solution = RoslynTypeSystemService.Workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
+					foreach (var loc in obj.Locations) {
+						var sr = new SearchResult (new FileProvider (loc.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
+						monitor.ReportResult (sr);
+					}
+					
 					foreach (var mref in SymbolFinder.FindReferencesAsync (obj, solution).Result) {
 						foreach (var loc in mref.Locations) {
 							var sr = new SearchResult (new FileProvider (loc.Document.FilePath), loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
@@ -86,6 +91,11 @@ namespace MonoDevelop.Refactoring
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation.Result)) {
+						foreach (var loc in simSym.Locations) {
+							var sr = new SearchResult (new FileProvider (loc.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
+							monitor.ReportResult (sr);
+						}
+
 						foreach (var mref in SymbolFinder.FindReferencesAsync (simSym, solution).Result) {
 							foreach (var loc in mref.Locations) {
 								var sr = new SearchResult (new FileProvider (loc.Document.FilePath), loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
