@@ -11,7 +11,7 @@
 	</Section>
 	<Section id="Build" _label="Build" icon="md-prefs-build">
 	</Section>
-	<Section id="Run" _label="Run" icon="md-prefs-build">
+	<Section id="Run" _label="Run" icon="md-prefs-play">
 	</Section>
 	<Section id="SourceCode" _label="Source Code">
 		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies" icon="md-prefs-dotnet-naming-policies" >

@@ -1632,6 +1632,12 @@
     <EmbeddedResource Include="icons\light\prefs-build-16%402x.png">
       <LogicalName>prefs-build-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-play-16.png">
+      <LogicalName>prefs-play-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-play-16%402x.png">
+      <LogicalName>prefs-play-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\prefs-updates-16.png">
       <LogicalName>prefs-updates-light-16.png</LogicalName>
     </EmbeddedResource>
