@@ -126,7 +126,6 @@
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MachinePackageCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesUserPrompts.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewTitle.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCredentialProvider.cs" />

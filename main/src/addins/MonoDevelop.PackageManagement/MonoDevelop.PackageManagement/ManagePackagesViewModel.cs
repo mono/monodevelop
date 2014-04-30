@@ -37,7 +37,6 @@ namespace ICSharpCode.PackageManagement
 	public class ManagePackagesViewModel : ViewModelBase<ManagePackagesViewModel>, IDisposable
 	{
 		IThreadSafePackageManagementEvents packageManagementEvents;
-		ManagePackagesUserPrompts userPrompts;
 		PackagesViewModels packagesViewModels;
 		ManagePackagesViewTitle viewTitle;
 		string message;
@@ -46,13 +45,11 @@ namespace ICSharpCode.PackageManagement
 		public ManagePackagesViewModel(
 			PackagesViewModels packagesViewModels,
 			ManagePackagesViewTitle viewTitle,
-			IThreadSafePackageManagementEvents packageManagementEvents,
-			ManagePackagesUserPrompts userPrompts)
+			IThreadSafePackageManagementEvents packageManagementEvents)
 		{
 			this.packagesViewModels = packagesViewModels;
 			this.viewTitle = viewTitle;
 			this.packageManagementEvents = packageManagementEvents;
-			this.userPrompts = userPrompts;
 			
 			packageManagementEvents.PackageOperationError += PackageOperationError;
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
@@ -81,7 +78,6 @@ namespace ICSharpCode.PackageManagement
 		public void Dispose()
 		{
 			packagesViewModels.Dispose();
-			userPrompts.Dispose();
 			
 			packageManagementEvents.PackageOperationError -= PackageOperationError;
 			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
