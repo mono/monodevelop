@@ -33,20 +33,47 @@ type InterfaceData =
         match x with
         | InterfaceData.Interface(typ, _)
         | InterfaceData.ObjExpr(typ, _) ->
+            let rec (|TypeIdent|_|) = function
+                | SynType.Var(SynTypar.Typar(s, req , _), _) ->
+                    match req with
+                    | NoStaticReq -> 
+                        Some ("'" + s.idText)
+                    | HeadTypeStaticReq -> 
+                        Some ("^" + s.idText)
+                | SynType.LongIdent(LongIdentWithDots(xs, _)) ->
+                    xs |> Seq.map (fun x -> x.idText) |> String.concat "." |> Some
+                | SynType.App(t, _, ts, _, _, isPostfix, _) ->
+                    match t, ts with
+                    | TypeIdent typeName, [] -> Some typeName
+                    | TypeIdent typeName, [TypeIdent typeArg] -> 
+                        if isPostfix then 
+                            Some (sprintf "%s %s" typeArg typeName)
+                        else
+                            Some (sprintf "%s<%s>" typeName typeArg)
+                    | TypeIdent typeName, _ -> 
+                        let typeArgs = ts |> Seq.choose (|TypeIdent|_|) |> String.concat ", "
+                        if isPostfix then 
+                            Some (sprintf "(%s) %s" typeArgs typeName)
+                        else
+                            Some(sprintf "%s<%s>" typeName typeArgs)
+                    | _ ->
+                        debug "Unsupported case with %A and %A" t ts
+                        None
+                | SynType.Anon _ -> 
+                    Some "_"
+                | SynType.Tuple(ts, _) ->
+                    Some (ts |> Seq.choose (snd >> (|TypeIdent|_|)) |> String.concat " * ")
+                | SynType.Array(dimension, TypeIdent typeName, _) ->
+                    Some (sprintf "%s [%s]" typeName (new String(',', dimension-1)))
+                | SynType.MeasurePower(TypeIdent typeName, power, _) ->
+                    Some (sprintf "%s^%i" typeName power)
+                | SynType.MeasureDivide(TypeIdent numerator, TypeIdent denominator, _) ->
+                    Some (sprintf "%s/%s" numerator denominator)
+                | _ -> 
+                    None
             match typ with
             | SynType.App(_, _, ts, _, _, _, _)
             | SynType.LongIdentApp(_, _, _, ts, _, _, _) ->
-                let (|TypeIdent|_|) = function
-                    | SynType.Var(SynTypar.Typar(s, req , _), _) ->
-                        match req with
-                        | NoStaticReq -> 
-                            Some ("'" + s.idText)
-                        | HeadTypeStaticReq -> 
-                            Some ("^" + s.idText)
-                    | SynType.LongIdent(LongIdentWithDots(xs, _)) ->
-                        xs |> Seq.map (fun x -> x.idText) |> String.concat "." |> Some
-                    | _ -> 
-                        None
                 ts |> Seq.choose (|TypeIdent|_|) |> Seq.toArray
             | _ ->
                 [||]
@@ -85,12 +112,15 @@ module InterfaceStubGenerator =
             Writer: ColumnIndentedTextWriter
             /// Map generic types to specific instances for specialized interface implementation
             TypeInstantations: Map<string, string>
+            /// Data for interface instantiation
+            ArgInstantiations: (FSharpGenericParameter * FSharpType) seq
             /// Indentation inside method bodies
             Indentation: int
             /// Object identifier of the interface e.g. 'x', 'this', '__', etc.
             ObjectIdent: string
             /// A list of lines represents skeleton of each member
             MethodBody: string []
+            /// Context in order to display types in the short form
             DisplayContext: FSharpDisplayContext
         }
 
@@ -110,40 +140,14 @@ module InterfaceStubGenerator =
     let internal hasAttrib<'T> (attribs: IList<FSharpAttribute>) = 
         attribs |> Seq.exists (fun a -> isAttrib<'T>(a))
 
-    let internal (|MeasureProd|_|) (typ: FSharpType) = 
-        if typ.HasTypeDefinition && typ.TypeDefinition.LogicalName = "*" && typ.GenericArguments.Count = 2 then
-            Some (typ.GenericArguments.[0], typ.GenericArguments.[1])
-        else None
-
-    let internal (|MeasureInv|_|) (typ: FSharpType) = 
-        if typ.HasTypeDefinition && typ.TypeDefinition.LogicalName = "/" && typ.GenericArguments.Count = 1 then 
-            Some typ.GenericArguments.[0]
-        else None
-
-    let internal (|MeasureOne|_|) (typ: FSharpType) = 
-        if typ.HasTypeDefinition && typ.TypeDefinition.LogicalName = "1" && typ.GenericArguments.Count = 0 then 
-            Some ()
-        else None
-
     let internal getTypeParameterName (typar: FSharpGenericParameter) =
         (if typar.IsSolveAtCompileTime then "^" else "'") + typar.Name
-
-    let internal formatTypeArgument (ctx: Context) (typar: FSharpGenericParameter) =
-        let genericName = getTypeParameterName typar
-        match ctx.TypeInstantations.TryFind(genericName) with
-        | Some specificName ->
-            specificName
-        | None ->
-            genericName
-
-    let internal formatTypeArguments ctx (typars:seq<FSharpGenericParameter>) =
-        Seq.map (formatTypeArgument ctx) typars |> List.ofSeq
 
     let internal bracket (str: string) = 
         if str.Contains(" ") then "(" + str + ")" else str
 
     let internal formatType ctx (typ: FSharpType) =
-        let genericDefinition = typ.Format(ctx.DisplayContext)
+        let genericDefinition = typ.Instantiate(Seq.toList ctx.ArgInstantiations).Format(ctx.DisplayContext)
         (genericDefinition, ctx.TypeInstantations)
         ||> Map.fold (fun s k v -> s.Replace(k, v))
 
@@ -253,8 +257,7 @@ module InterfaceStubGenerator =
 
         let modifiers =
             [ if v.InlineAnnotation = FSharpInlineAnnotation.AlwaysInline then yield "inline"
-              // Skip dispatch slot because we generate stub implementation
-              if v.IsDispatchSlot then () ]
+              if v.Accessibility.IsInternal then yield "internal" ]
 
         let argInfos = 
             v.CurriedParameterGroups |> Seq.map Seq.toList |> Seq.toList 
@@ -326,17 +329,18 @@ module InterfaceStubGenerator =
     let rec internal getInterfaces (e: FSharpEntity) = 
         seq { for iface in e.AllInterfaces ->
                 let typ = getNonAbbreviatedType iface
-                typ.TypeDefinition 
+                // Argument should be kept lazy so that it is only evaluated when instantiating a new type
+                typ.TypeDefinition, Seq.zip typ.TypeDefinition.GenericParameters typ.GenericArguments
         }
         |> Seq.distinct
 
     /// Get members in the decreasing order of inheritance chain
     let internal getInterfaceMembers (e: FSharpEntity) = 
         seq {
-            for iface in getInterfaces e do
-                yield! iface.MembersFunctionsAndValues |> Seq.filter (fun m -> 
+            for (iface, instantiations) in getInterfaces e do
+                yield! iface.MembersFunctionsAndValues |> Seq.choose (fun m -> 
                            // Use this hack when FCS doesn't return enough information on .NET properties
-                           iface.IsFSharp || not m.IsProperty)
+                           if iface.IsFSharp || not m.IsProperty then Some (m, instantiations) else None)
          }
 
     let countInterfaceMembers e =
@@ -347,7 +351,7 @@ module InterfaceStubGenerator =
 
     /// Generate stub implementation of an interface at a start column
     let formatInterface startColumn indentation (typeInstances: string []) objectIdent 
-        (methodBody: string) (displayContext: FSharpDisplayContext) (e: FSharpEntity) =
+            (methodBody: string) (displayContext: FSharpDisplayContext) (e: FSharpEntity) =
         Debug.Assert(isInterface e, "The entity should be an interface.")
         use writer = new ColumnIndentedTextWriter()
         let lines = methodBody.Replace("\r\n", "\n").Split('\n')
@@ -355,7 +359,8 @@ module InterfaceStubGenerator =
         let instantiations = 
             let insts =
                 Seq.zip typeParams typeInstances
-                |> Seq.filter(fun (t1, t2) -> t1 <> t2) 
+                // Filter out useless instances (replacing with the same name or wildcard)
+                |> Seq.filter(fun (t1, t2) -> t1 <> t2 && t2 <> "_") 
                 |> Map.ofSeq
             // A simple hack to handle instantiation of type alias 
             if e.IsFSharpAbbreviation then
@@ -366,11 +371,11 @@ module InterfaceStubGenerator =
                 |> Seq.fold (fun acc (x, y) -> Map.add x y acc) insts
             else insts
 
-        let ctx = { Writer = writer; TypeInstantations = instantiations; Indentation = indentation; 
-                    ObjectIdent = objectIdent; MethodBody = lines; DisplayContext = displayContext }
+        let ctx = { Writer = writer; TypeInstantations = instantiations; ArgInstantiations = Seq.empty;
+                    Indentation = indentation; ObjectIdent = objectIdent; MethodBody = lines; DisplayContext = displayContext }
         writer.Indent startColumn
-        for v in getInterfaceMembers e do
-            formatMember ctx v
+        for (m, instantiations) in getInterfaceMembers e do
+            formatMember { ctx with ArgInstantiations = instantiations } m
         writer.Dump()
 
     let internal (|IndexerArg|) = function
