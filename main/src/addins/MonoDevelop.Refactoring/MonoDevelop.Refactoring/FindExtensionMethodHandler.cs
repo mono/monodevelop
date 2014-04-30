@@ -26,56 +26,69 @@
 
 using System;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using Mono.TextEditor;
-using ICSharpCode.NRefactory.Analysis;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Core;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.Refactoring
 {
 	class FindExtensionMethodHandler 
 	{
-		//Ide.Gui.Document doc;
-		ITypeDefinition entity;
-
-		public FindExtensionMethodHandler (Ide.Gui.Document doc, ITypeDefinition entity)
+		public static bool CanFindExtensionMethods (ISymbol declaredSymbol, out string description)
 		{
-			//this.doc = doc;
-			this.entity = entity;
+			var tr  = new ICSharpCode.NRefactory.CSharp.CSharpParser ().ParseTypeReference ("global::Thing<int>.Done<string>") as MemberType;
+			Console.WriteLine (tr.Target);
+			
+			description = GettextCatalog.GetString ("Find Extension Methods");
+			return declaredSymbol.Kind == SymbolKind.NamedType;
 		}
 
-		public void Run ()
+		public static void FindExtensionMethods (ISymbol declaredSymbol)
 		{
-			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-				foreach (var project in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
-					var comp = TypeSystemService.GetCompilation (project); 
-					foreach (var type in comp.MainAssembly.GetAllTypeDefinitions ()) {
-						if (!type.IsStatic)
-							continue;
-						foreach (var method in type.GetMethods (m => m.IsStatic)) {
-							if (!method.IsExtensionMethod)
-								continue;
-							IType[] ifTypes;
-							var typeDef = comp.Import (entity);
-							if (typeDef == null)
-								continue;
-							if (!CSharpResolver.IsEligibleExtensionMethod (typeDef, method, true, out ifTypes))
-								continue;
-
-							var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (method.Region.FileName);
-							var start = tf.LocationToOffset (method.Region.Begin); 
-							tf.SearchRequest.SearchPattern = method.Name;
-							var sr = tf.SearchForward (start); 
-							if (sr != null)
-								start = sr.Offset;
-							monitor.ReportResult (new MemberReference (method, method.Region.FileName, start, method.Name.Length));
-						}
-					}
+		/*	using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+				var solution = RoslynTypeSystemService.Workspace.CurrentSolution;
+				foreach (var project in solution.Projects) {
+					var comp = project.GetCompilationAsync ().Result;
+					foreach (var type in comp.)
 				}
 			}
+			declaredSymbo*/
 		}
+
+
+//		public void Run ()
+//		{
+//			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+//				foreach (var project in IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
+//					var comp = TypeSystemService.GetCompilation (project); 
+//					foreach (var type in comp.MainAssembly.GetAllTypeDefinitions ()) {
+//						if (!type.IsStatic)
+//							continue;
+//						foreach (var method in type.GetMethods (m => m.IsStatic)) {
+//							if (!method.IsExtensionMethod)
+//								continue;
+//							IType[] ifTypes;
+//							var typeDef = comp.Import (entity);
+//							if (typeDef == null)
+//								continue;
+//							if (!CSharpResolver.IsEligibleExtensionMethod (typeDef, method, true, out ifTypes))
+//								continue;
+//
+//							var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (method.Region.FileName);
+//							var start = tf.LocationToOffset (method.Region.Begin); 
+//							tf.SearchRequest.SearchPattern = method.Name;
+//							var sr = tf.SearchForward (start); 
+//							if (sr != null)
+//								start = sr.Offset;
+//							monitor.ReportResult (new MemberReference (method, method.Region.FileName, start, method.Name.Length));
+//						}
+//					}
+//				}
+//			}
+//		}
 	}
 }
 

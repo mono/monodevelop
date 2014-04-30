@@ -104,14 +104,6 @@ namespace MonoDevelop.Refactoring
 				del ();
 		}
 		
-//		public static ResolveResult GetResolveResult (MonoDevelop.Ide.Gui.Document doc)
-//		{
-//			ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
-//			if (textEditorResolver != null)
-//				return textEditorResolver.GetLanguageItem (doc.Editor.Caret.Offset);
-//			return null;
-//		}
-//
 		public static object GetItem (MonoDevelop.Ide.Gui.Document doc, out ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult)
 		{
 			resolveResult = null;
@@ -131,51 +123,7 @@ namespace MonoDevelop.Refactoring
 			}
 			return RefactoringSymbolInfo.Empty;
 		}
-
-/*
-		class FindDerivedClasses
-		{
-			ITypeDefinition type;
-			
-			public FindDerivedClasses (ITypeDefinition type)
-			{
-				this.type = type;
-			}
-			
-			public void Run ()
-			{
-				FindDerivedClassesHandler.FindDerivedClasses (type);
-			}
-		}
-
-		class RefactoringDocumentInfo
-		{
-			public IEnumerable<CodeAction> validActions;
-			public MonoDevelop.Ide.TypeSystem.ParsedDocument lastDocument;
-
-			public override string ToString ()
-			{
-				return string.Format ("[RefactoringDocumentInfo: #validActions={0}, lastDocument={1}]", validActions != null ? validActions.Count ().ToString () : "null", lastDocument);
-			}
-		}
-
-
-		DocumentLocation lastLocation;
-
-		static bool HasOverloads (MonoDevelop.Projects.Solution solution, object item)
-		{
-			var member = item as IMember;
-			if (member != null && member.ImplementedInterfaceMembers.Any ())
-				return true;
-			var method = item as IMethod;
-			if (method == null)
-				return false;
-			return method.DeclaringType.GetMethods (m => m.Name == method.Name).Count () > 1;
-		}
-*/
-
 		
-
 		bool CanRename (ISymbol symbol)
 		{
 			if (symbol == null)
@@ -206,11 +154,6 @@ namespace MonoDevelop.Refactoring
 			
 			bool added = false;
 
-//			var options = new RefactoringOptions (doc) {
-//				ResolveResult = resolveResult,
-//				SelectedItem = item
-//			};
-			
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
@@ -320,75 +263,15 @@ namespace MonoDevelop.Refactoring
 			
 			if (FindMemberOverloadsHandler.CanFindMemberOverloads (info.DeclaredSymbol, out description)) {
 				ainfo.Add (description, new Action (() => FindMemberOverloadsHandler.FindOverloads (info.DeclaredSymbol)));
+				added = true;
 			}
 
-//			if (item is ITypeDefinition) {
-//				ITypeDefinition cls = (ITypeDefinition)item;
-//				foreach (var bc in cls.DirectBaseTypes) {
-//					if (bc != null && bc.GetDefinition () != null && bc.GetDefinition ().Kind != TypeKind.Interface/* TODO: && IdeApp.ProjectOperations.CanJumpToDeclaration (bc)*/) {
-//						ainfo.Add (GettextCatalog.GetString ("Go to _Base"), new System.Action (new GotoBase ((ITypeDefinition)item).Run));
-//						break;
-//					}
-//				}
-//				if ((cls.Kind == TypeKind.Class && !cls.IsSealed) || cls.Kind == TypeKind.Interface) {
-//					ainfo.Add (cls.Kind != TypeKind.Interface ? GettextCatalog.GetString ("Find _derived classes") : GettextCatalog.GetString ("Find _implementor classes"), new System.Action (new FindDerivedClasses (cls).Run));
-//				}
-//				ainfo.Add (GettextCatalog.GetString ("Find Extension Methods"), new System.Action (new FindExtensionMethodHandler (doc, cls).Run));
-//				added = true;
-//
-//			}
+			if (FindExtensionMethodHandler.CanFindExtensionMethods (info.DeclaredSymbol, out description)) {
+				ainfo.Add (description, new Action (() => FindExtensionMethodHandler.FindExtensionMethods (info.DeclaredSymbol)));
+				added = true;
+			}
 		}
 
-//		public void Run ()
-//		{
-//			var assemblies = GetAllAssemblies (doc.Project);
-//			assemblies.ContinueWith (delegate(Task<HashSet<IAssembly>> arg) {
-//				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-//					monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
-//					var tg = new TypeGraph (arg.Result);
-//					var node = tg.GetNode (entity.DeclaringTypeDefinition); 
-//					monitor.EndTask ();
-//					if (node == null)
-//						return;
-//					Gtk.Application.Invoke (delegate {
-//							Stack<IList<TypeGraphNode>> derivedTypes = new Stack<IList<TypeGraphNode>> ();
-//							derivedTypes.Push (node.DerivedTypes); 
-//							HashSet<ITypeDefinition> visitedType = new HashSet<ITypeDefinition> ();
-//							while (derivedTypes.Count > 0) {
-//								
-//			if (added)
-//				ainfo.AddSeparator ();
-//		}
-		
-//		
-//
-//		class RefactoringOperationWrapper
-//		{
-//			RefactoringOperation refactoring;
-//			RefactoringOptions options;
-//			
-//			public RefactoringOperationWrapper (RefactoringOperation refactoring, RefactoringOptions options)
-//			{
-//				this.refactoring = refactoring;
-//				this.options = options;
-//			}
-//			
-//			public void Operation ()
-//			{
-//				refactoring.Run (options);
-//			}
-//		}
-//
-//		bool IsModifiable (object member)
-//		{
-//			IType t = member as IType;
-//			if (t != null) 
-//				return t.GetDefinition ().Region.FileName == IdeApp.Workbench.ActiveDocument.FileName;
-//			if (member is IMember)
-//				return ((IMember)member).DeclaringTypeDefinition.Region.FileName == IdeApp.Workbench.ActiveDocument.FileName;
-//			return false;
-//		}
-//
 		static string FormatFileName (string fileName)
 		{
 			if (fileName == null)
@@ -401,12 +284,5 @@ namespace MonoDevelop.Refactoring
 				return "..." + fileName.Substring (idx);
 			return fileName;
 		}
-
-//		public static bool ContainsAbstractMembers (ITypeSymbol cls)
-//		{
-//			if (cls == null)
-//				return false;
-//			return cls.GetMembers ().Any (m => m.IsAbstract);
-//		}
 	}
 }

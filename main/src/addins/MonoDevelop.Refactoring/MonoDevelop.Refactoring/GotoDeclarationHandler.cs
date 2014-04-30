@@ -27,13 +27,8 @@
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
-using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Refactoring
 {

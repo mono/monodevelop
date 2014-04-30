@@ -264,8 +264,6 @@
     <None Include="MonoDevelop.AnalysisCore\README.txt" />
     <None Include="MonoDevelop.AnalysisCore\TODO.txt" />
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
-    <None Include="MonoDevelop.Refactoring\EncapsulateFieldDialog.cs" />
-    <None Include="MonoDevelop.Refactoring\OverridesImplementsDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.EncapsulateFieldDialog.cs" />
   </ItemGroup>
