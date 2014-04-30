@@ -349,7 +349,7 @@ namespace MonoDevelop.Components
 						// Text
 						ctx.SetSourceColor (Styles.BreadcrumbTextColor.ToCairoColor ());
 						ctx.MoveTo (x + textOffset, textTopPadding);
-						Pango.CairoHelper.ShowLayout (ctx, layout);
+						Pango.CairoHelper.ShowLayoutLine (ctx, layout.GetLine (0));
 					}
 
 					ctx.Restore ();
