@@ -1192,15 +1192,15 @@ VisibilityMask Specifies type visibility information.
       +> if ((c.Attributes &&& MemberAttributes.ScopeMask) = MemberAttributes.Static) then
             id
             ++ "[<DefaultValue(false)>]"
-            ++ "static val mutable private " -- c.Name -- ":" +> generateTypeRef c.Type
+            ++ "static val mutable private " -! c.Name -- ":" +> generateTypeRef c.Type
             //++ (match c.InitExpression with
                  
          elif ((c.Attributes &&& MemberAttributes.ScopeMask) = MemberAttributes.Const) then
             id
-            ++ "static member " -- c.Name -- " = " +> generateExpression c.InitExpression // should have initial value!
+            ++ "static member " -! c.Name -- " = " +> generateExpression c.InitExpression // should have initial value!
          else
              id ++ "[<DefaultValue(false)>]"
-                ++ "val mutable " -- c.Name -- ":" +> generateTypeRef c.Type
+                ++ "val mutable " -! c.Name -- ":" +> generateTypeRef c.Type
     
     /// Abstract property in the interface 
     let generateInterfaceMemberProperty (c:CodeMemberProperty) =    
