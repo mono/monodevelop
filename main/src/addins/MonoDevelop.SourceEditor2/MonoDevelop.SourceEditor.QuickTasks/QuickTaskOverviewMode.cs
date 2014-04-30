@@ -635,7 +635,9 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
 				HslColor color;
-				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
+				if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Declariton) != 0) {
+					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
+				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Write) != 0) {
 					color = TextEditor.ColorStyle.ChangingUsagesRectangle.Color;
 				} else if ((usage.UsageType & MonoDevelop.Ide.FindInFiles.ReferenceUsageType.Read) != 0) {
 					color = TextEditor.ColorStyle.UsagesRectangle.Color;

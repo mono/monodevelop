@@ -94,9 +94,17 @@ namespace MonoDevelop.CSharp.Highlighting
 			var doc = resolveResult.Document;
 			var documents = ImmutableHashSet.Create (doc); 
 			var symbol = resolveResult.Symbol;
+			foreach (var loc in symbol.Locations) {
+				if (loc.FilePath == doc.FilePath)
+					yield return new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
+						ReferenceUsageType = ReferenceUsageType.Declariton	
+					};
+			}
 			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution, documents, token).Result) {
 				foreach (var loc in mref.Locations) {
-					yield return new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
+					yield return new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length) {
+						ReferenceUsageType = ReferenceUsageType.Read	
+					};
 				}
 			}
 		}

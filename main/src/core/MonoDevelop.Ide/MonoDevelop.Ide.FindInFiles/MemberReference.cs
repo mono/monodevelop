@@ -31,10 +31,11 @@ namespace MonoDevelop.Ide.FindInFiles
 {
 	[Flags]
 	public enum ReferenceUsageType {
-		Unknown = 0,
-		Read    = 1,
-		Write   = 2,
-		ReadWrite = Read | Write
+		Unknown    = 0,
+		Read       = 1,
+		Write      = 2,
+		Declariton = 4,
+		ReadWrite  = Read | Write
 	}
 
 	public class MemberReference : SearchResult
