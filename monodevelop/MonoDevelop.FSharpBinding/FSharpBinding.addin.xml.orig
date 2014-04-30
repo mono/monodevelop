@@ -3,11 +3,11 @@
        description="F# Language Binding (for Xamarin Studio/MonoDevelop INSERT_FSPROJ_MDVERSION4). Install F# before using, see http://fsharp.org" category="Language bindings" version="INSERT_FSPROJ_VERSION">
 
   <Runtime>
-    <Import assembly="FSharp.Core.dll" />
-    <Import assembly="FSharp.CompilerBinding.dll" />
+    <Import file="FSharp.Core.dll" />
+    <Import file="FSharp.CompilerBinding.dll" />
     <Import assembly="FSharpBinding.dll" />
     <Import assembly="FSharpBinding.Gui.dll" />
-    <Import assembly="FSharp.Compiler.Service.dll" />
+    <Import file="FSharp.Compiler.Service.dll" />
 
   <!--INSTALL_DEBUG
     <Import file = "FSharp.CompilerBinding.dll.mdb" />
