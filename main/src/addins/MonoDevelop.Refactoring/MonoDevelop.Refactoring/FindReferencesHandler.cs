@@ -71,8 +71,9 @@ namespace MonoDevelop.Refactoring
 				return;
 			
 			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
-			if (info.Symbol != null)
-				FindRefs (info.Symbol);
+			var sym = info.Symbol ?? info.DeclaredSymbol;
+			if (sym != null)
+				FindRefs (sym);
 		}
 	}
 
@@ -110,8 +111,9 @@ namespace MonoDevelop.Refactoring
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
 			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
-			if (info.Symbol != null)
-				FindRefs (info.Symbol, doc.GetCompilationAsync ());
+			var sym = info.Symbol ?? info.DeclaredSymbol;
+			if (sym != null)
+				FindRefs (sym, doc.GetCompilationAsync ());
 		}
 	}
 }

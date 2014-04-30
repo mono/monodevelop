@@ -41,11 +41,11 @@ namespace MonoDevelop.CSharp.Highlighting
 {
 	class UsageData
 	{
-		public SymbolInfo SymbolInfo;
+		public RefactoringSymbolInfo SymbolInfo;
 		public Document Document;
 
 		public ISymbol Symbol {
-			get { return SymbolInfo.Symbol; }
+			get { return SymbolInfo.Symbol ?? SymbolInfo.DeclaredSymbol; }
 		}
 	}
 	
@@ -93,9 +93,10 @@ namespace MonoDevelop.CSharp.Highlighting
 				yield break;
 			var doc = resolveResult.Document;
 			var documents = ImmutableHashSet.Create (doc); 
-			foreach (var mref in SymbolFinder.FindReferencesAsync (resolveResult.Symbol, RoslynTypeSystemService.Workspace.CurrentSolution, documents, token).Result) {
+			var symbol = resolveResult.Symbol;
+			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution, documents, token).Result) {
 				foreach (var loc in mref.Locations) {
-					yield return new MemberReference (resolveResult.Symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
+					yield return new MemberReference (symbol, doc.FilePath, loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
 				}
 			}
 		}

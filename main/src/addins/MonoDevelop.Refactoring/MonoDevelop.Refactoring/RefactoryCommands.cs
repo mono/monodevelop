@@ -214,7 +214,7 @@ namespace MonoDevelop.Refactoring
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
-			bool canRename = CanRename (info.Symbol);
+			bool canRename = CanRename (info.Symbol ?? info.DeclaredSymbol);
 			if (canRename) {
 				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (delegate {
 					new MonoDevelop.Refactoring.Rename.RenameHandler ().Start (null);
@@ -303,25 +303,21 @@ namespace MonoDevelop.Refactoring
 			}
 
 			if (canRename) {
-
-				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (info.Symbol)));
+				var sym = info.Symbol ?? info.DeclaredSymbol;
+				ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindReferences), new System.Action (() => FindReferencesHandler.FindRefs (sym)));
 				if (doc.HasProject) {
-					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (info.Symbol, doc.GetCompilationAsync ().Result).Count() > 1)
+					if (Microsoft.CodeAnalysis.FindSymbols.SymbolFinder.FindSimilarSymbols (sym, doc.GetCompilationAsync ().Result).Count () > 1)
 						ainfo.Add (IdeApp.CommandService.GetCommandInfo (RefactoryCommands.FindAllReferences), new System.Action (() => FindAllReferencesHandler.FindRefs (info.Symbol, doc.GetCompilationAsync ())));
 				}
 				added = true;
 			}
 
-//			if (item is IMember) {
-//				var member = (IMember)item;
-//				if (member.IsVirtual || member.IsAbstract || member.DeclaringType.Kind == TypeKind.Interface) {
-//					var handler = new FindDerivedSymbolsHandler (doc, member);
-//					if (handler.IsValid) {
-//						ainfo.Add (GettextCatalog.GetString ("Find Derived Symbols"), new System.Action (handler.Run));
-//						added = true;
-//					}
-//				}
-//			}
+			string description;
+			if (FindDerivedSymbolsHandler.CanFindDerivedSymbols (info.DeclaredSymbol, out description)) {
+				ainfo.Add (description, new Action (() => FindDerivedSymbolsHandler.FindDerivedSymbols (info.DeclaredSymbol)));
+				added = true;
+			}
+			
 //			if (item is IMember) {
 //				var member = (IMember)item;
 //				if (member.SymbolKind == SymbolKind.Method || member.SymbolKind == SymbolKind.Indexer) {
@@ -348,11 +344,29 @@ namespace MonoDevelop.Refactoring
 //				added = true;
 //
 //			}
-
-			if (added)
-				ainfo.AddSeparator ();
 		}
 
+//		public void Run ()
+//		{
+//			var assemblies = GetAllAssemblies (doc.Project);
+//			assemblies.ContinueWith (delegate(Task<HashSet<IAssembly>> arg) {
+//				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
+//					monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
+//					var tg = new TypeGraph (arg.Result);
+//					var node = tg.GetNode (entity.DeclaringTypeDefinition); 
+//					monitor.EndTask ();
+//					if (node == null)
+//						return;
+//					Gtk.Application.Invoke (delegate {
+//							Stack<IList<TypeGraphNode>> derivedTypes = new Stack<IList<TypeGraphNode>> ();
+//							derivedTypes.Push (node.DerivedTypes); 
+//							HashSet<ITypeDefinition> visitedType = new HashSet<ITypeDefinition> ();
+//							while (derivedTypes.Count > 0) {
+//								
+//			if (added)
+//				ainfo.AddSeparator ();
+//		}
+		
 //		
 //
 //		class RefactoringOperationWrapper
