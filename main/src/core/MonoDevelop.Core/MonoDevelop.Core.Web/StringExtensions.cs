@@ -15,11 +15,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace MonoDevelop.Core.Web
 {
-	public enum CredentialType
+	static class StringExtensions
 	{
-		ProxyCredentials,
-		RequestCredentials
+		public static string SafeTrim(this string value)
+		{
+			return value == null ? null : value.Trim();
+		}
 	}
 }

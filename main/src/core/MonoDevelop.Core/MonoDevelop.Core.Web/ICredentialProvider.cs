@@ -1,13 +1,6 @@
 ﻿//
-// ICredentialProvider.cs
+// From NuGet src/Core
 //
-// Author:
-//       Bojan Rajkovic <bojan.rajkovic@xamarin.com>
-//       Michael Hutchinson <mhutch@xamarin.com>
-//
-// based on NuGet src/Core/Http
-//
-// Copyright (c) 2013-2014 Xamarin Inc.
 // Copyright (c) 2010-2014 Outercurve Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +14,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Net;
@@ -35,21 +27,12 @@ namespace MonoDevelop.Core.Web
 	public interface ICredentialProvider
 	{
 		/// <summary>
-		/// Returns CredentialState state that lets the consumer know if ICredentials
+		/// Returns CredentialState state that let's the consumer know if ICredentials
 		/// were discovered by the ICredentialProvider. The credentials argument is then
 		/// populated with the discovered valid credentials that can be used for the given Uri.
 		/// The proxy instance if passed will be used to ensure that the request goes through the proxy
 		/// to ensure successful connection to the destination Uri.
 		/// </summary>
-		ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredentials, bool retrying);
-	}
-
-	class NullCredentialsProvider : ICredentialProvider
-	{
-		public ICredentials GetCredentials (
-			Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredentials, bool retrying)
-		{
-			return null;
-		}
+		ICredentials GetCredentials(Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying);
 	}
 }

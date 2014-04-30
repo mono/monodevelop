@@ -1,13 +1,6 @@
 //
-// IProxyAuthenticationHandler.cs
+// From NuGet src/Core
 //
-// Author:
-//       Bojan Rajkovic <bojan.rajkovic@xamarin.com>
-//       Michael Hutchinson <mhutch@xamarin.com>
-//
-// based on NuGet src/Core/Http
-//
-// Copyright (c) 2013-2014 Xamarin Inc.
 // Copyright (c) 2010-2014 Outercurve Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +14,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Net;
@@ -29,6 +21,7 @@ using System.Net;
 namespace MonoDevelop.Core.Web
 {
 	///<summary>Proxy authentication handler.</summary>
+	[Obsolete]
 	public interface IProxyAuthenticationHandler
 	{
 		/// <summary>
@@ -49,27 +42,22 @@ namespace MonoDevelop.Core.Web
 		/// </summary>
 		/// <param name="uri">URI for which the credentials are valid.</param>
 		/// <param name="credentials">Credentials.</param>
-		/// <param name="credentialType">Type of the credentials.</param>
-		void AddCredentialsToCache (Uri uri, ICredentials credentials, CredentialType credentialType);
+		void AddCredentialsToCache (Uri uri, ICredentials credentials);
 
 		/// <summary>
 		/// Gets cached credentials, if available.
 		/// </summary>
 		/// <returns>The cached credentials.</returns>
 		/// <param name="uri">URI for which the credentials will be used.</param>
-		/// <param name="credentialType">Type of the credentials.</param>
-		ICredentials GetCachedCredentials (Uri uri, CredentialType credentialType);
+		ICredentials GetCachedCredentials (Uri uri);
 
 		/// <summary>
 		/// Gets credentials from user.
 		/// </summary>
 		/// <returns>The credentials from user.</returns>
-		/// <param name="uri">URI for which the credentials will be used.</param>
-		/// <param name="proxy">Proxy.</param>
+		/// <param name="request">Request for which the credentials will be used.</param>
 		/// <param name="credentialType">Type of the credentials.</param>
-		/// <param name="existingCredentials">Existing credentials.</param>
-		/// <param name="retrying">If set to <c>true</c> retrying.</param>
-		ICredentials GetCredentialsFromUser (Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredentials, bool retrying);
+		/// <param name="retrying">Whether retrying.</param>
+		ICredentials GetCredentialsFromUser (HttpWebRequest request, CredentialType credentialType, bool retrying);
 	}
-
 }

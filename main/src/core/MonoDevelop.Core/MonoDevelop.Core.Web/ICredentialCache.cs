@@ -15,11 +15,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Net;
+
 namespace MonoDevelop.Core.Web
 {
-	public enum CredentialType
+	interface ICredentialCache
 	{
-		ProxyCredentials,
-		RequestCredentials
+		void Add(Uri uri, ICredentials credentials);
+		ICredentials GetCredentials(Uri uri);
 	}
 }

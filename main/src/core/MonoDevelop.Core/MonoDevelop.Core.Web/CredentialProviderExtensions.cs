@@ -1,13 +1,6 @@
 ﻿//
-// CredentialsUtility.cs
+// From NuGet src/Core
 //
-// Author:
-//       Bojan Rajkovic <bojan.rajkovic@xamarin.com>
-//       Michael Hutchinson <mhutch@xamarin.com>
-//
-// based on NuGet src/Core/Http
-//
-// Copyright (c) 2013-2014 Xamarin Inc.
 // Copyright (c) 2010-2014 Outercurve Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,53 +14,51 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Net;
 
 namespace MonoDevelop.Core.Web
 {
-	public static class CredentialsUtility
+	internal static class CredentialProviderExtensions
 	{
-		static readonly string[] AuthenticationSchemes = { "Basic", "NTLM", "Negotiate" };
+		private static readonly string[] _authenticationSchemes = new[] { "Basic", "NTLM", "Negotiate" };
 
-		public static NetworkCredential GetCredentialsForUriFromICredentials (Uri uri, ICredentials credentials)
+		internal static ICredentials GetCredentials(this ICredentialProvider provider, WebRequest request, CredentialType credentialType, bool retrying = false)
 		{
-			if (credentials == null)
-				return null;
-
-			NetworkCredential cred = null;
-			foreach (var scheme in AuthenticationSchemes) {
-				cred = credentials.GetCredential (uri, scheme);
-				if (cred != null)
-					break;
-			}
-
-			return cred;
+			return provider.GetCredentials(request.RequestUri, request.Proxy, credentialType, retrying);
 		}
 
-		internal static ICredentials AsCredentialCache (this ICredentials credentials, Uri uri)
+		internal static ICredentials AsCredentialCache(this ICredentials credentials, Uri uri)
 		{
 			// No credentials then bail
 			if (credentials == null)
+			{
 				return null;
+			}
 
 			// Do nothing with default credentials
-			if (credentials == CredentialCache.DefaultCredentials || credentials == CredentialCache.DefaultNetworkCredentials)
+			if (credentials == CredentialCache.DefaultCredentials ||
+				credentials == CredentialCache.DefaultNetworkCredentials)
+			{
 				return credentials;
+			}
 
 			// If this isn't a NetworkCredential then leave it alone
 			var networkCredentials = credentials as NetworkCredential;
 			if (networkCredentials == null)
+			{
 				return credentials;
+			}
 
 			// Set this up for each authentication scheme we support
 			// The reason we're using a credential cache is so that the HttpWebRequest will forward our
 			// credentials if there happened to be any redirects in the chain of requests.
-			var cache = new CredentialCache ();
-			foreach (var scheme in AuthenticationSchemes)
-				cache.Add (uri, scheme, networkCredentials);
+			var cache = new CredentialCache();
+			foreach (var scheme in _authenticationSchemes)
+			{
+				cache.Add(uri, scheme, networkCredentials);
+			}
 			return cache;
 		}
 	}

@@ -15,11 +15,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Net;
+using System.Collections.Specialized;
+
 namespace MonoDevelop.Core.Web
 {
-	public enum CredentialType
+	// For unit testing
+	interface IHttpWebResponse : IDisposable
 	{
-		ProxyCredentials,
-		RequestCredentials
+		HttpStatusCode StatusCode { get; }
+		Uri ResponseUri { get; }
+		string AuthType { get; }
+		NameValueCollection Headers { get; }
 	}
 }

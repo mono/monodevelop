@@ -15,11 +15,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Net;
+
 namespace MonoDevelop.Core.Web
 {
-	public enum CredentialType
+	class NullCredentialProvider : ICredentialProvider
 	{
-		ProxyCredentials,
-		RequestCredentials
+		public ICredentials GetCredentials(Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
+		{
+			return null;
+		}
 	}
 }

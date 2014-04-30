@@ -114,8 +114,8 @@ namespace MonoDevelop.Core
 				
 				PropertyService.Initialize ();
 
-				WebRequestHelper.ProxyAuthenticationHandler = new ProxyAuthenticationHandler ();
-				Mono.Addins.Setup.WebRequestHelper.ProxyAuthenticationHandler = new MonoAddinsProxyHandler ();
+				WebRequestHelper.Initialize ();
+				Mono.Addins.Setup.WebRequestHelper.SetRequestHandler (WebRequestHelper.GetResponse);
 				
 				//have to do this after the addin service and property service have initialized
 				if (UserDataMigrationService.HasSource) {

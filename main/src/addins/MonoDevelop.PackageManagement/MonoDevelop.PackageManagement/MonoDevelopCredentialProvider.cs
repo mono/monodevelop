@@ -32,20 +32,15 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class MonoDevelopCredentialProvider : ICredentialProvider
+	class MonoDevelopCredentialProvider : ICredentialProvider
 	{
 		public ICredentials GetCredentials(Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
-			var pah = MonoDevelop.Core.WebRequestHelper.ProxyAuthenticationHandler;
-			if (pah == null)
+			var cp = MonoDevelop.Core.WebRequestHelper.CredentialProvider;
+			if (cp == null)
 				return null;
 
-			return pah.GetCredentialsFromUser (uri, proxy, GetCredentialType (credentialType), null, retrying);
-		}
-
-		MonoDevelop.Core.Web.CredentialType GetCredentialType (CredentialType credentialType)
-		{
-			return (MonoDevelop.Core.Web.CredentialType)credentialType;
+			return cp.GetCredentials (uri, proxy, (MonoDevelop.Core.Web.CredentialType)credentialType, retrying);
 		}
 	}
 }
