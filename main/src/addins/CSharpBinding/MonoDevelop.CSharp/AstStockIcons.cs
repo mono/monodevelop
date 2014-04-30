@@ -202,7 +202,7 @@ namespace MonoDevelop.CSharp
 			if (element is OperatorDeclaration || element is ConstructorDeclaration || element is DestructorDeclaration || element is Accessor)
 				return methodIconTable [(int) (acc)];
 
-			if (element is PropertyDeclaration)
+			if (element is PropertyDeclaration ||  element is IndexerDeclaration)
 				return propertyIconTable [(int) (acc)];
 			if (element is EventDeclaration || element is CustomEventDeclaration)
 				return eventIconTable [(int) (acc)];
