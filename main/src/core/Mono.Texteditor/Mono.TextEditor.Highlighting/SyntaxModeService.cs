@@ -309,9 +309,9 @@ namespace Mono.TextEditor.Highlighting
 						Console.WriteLine ("Syntax highlighting exception:" + e);
 					}
 					if (doUpdate) {
+						var storedDoc = doc;
 						Gtk.Application.Invoke (delegate {
-							doc.RequestUpdate (new UpdateAll ());
-							doc.CommitDocumentUpdate ();
+							storedDoc.CommitUpdateAll ();
 						});
 					}
 					IsFinished = true;
