@@ -1,6 +1,7 @@
 ﻿namespace MonoDevelop.FSharp
 
 open System
+open System.Text
 open System.Diagnostics
 open System.IO
 open MonoDevelop.Ide
@@ -20,11 +21,44 @@ type FSharpParser() =
   inherit TypeSystemParser()
   do Debug.WriteLine("Parsing: Creating FSharpParser")
 
-      /// Format errors for the given line (if there are multiple, we collapse them into a single one)
+   /// Split a line so it fits to a line width
+  let splitLine (sb:StringBuilder) (line:string) lineWidth =
+      let emit (s:string) = sb.Append(s) |> ignore
+      let indent = line |> Seq.takeWhile (fun c -> c = ' ') |> Seq.length
+      let words = line.Split(' ')
+      let mutable i = 0
+      let mutable first = true
+      for word in words do
+          if first || i + word.Length < lineWidth then 
+              emit word 
+              emit " "
+              i <- i + word.Length + 1
+              first <- false
+          else 
+              sb.AppendLine() |> ignore
+              for i in 1 .. indent do emit " "
+              emit word 
+              emit " "
+              i <- indent + word.Length + 1
+              first <- true
+      sb.AppendLine() |> ignore
+ 
+  /// Wrap text so it fits to a line width
+  let wrapText (text: String) lineWidth =
+      //dont wrap empty lines
+      if text.Length = 0 then text else
+      let sb = StringBuilder()
+      let lines = text.Split [|'\r';'\n'|]
+      for line in lines  do
+          if line.Length <= lineWidth then sb.AppendLine(line) |> ignore
+          else splitLine sb line lineWidth
+      sb.ToString()
+
+  /// Format errors for the given line (if there are multiple, we collapse them into a single one)
   let formatError (error:ErrorInfo) =
       // Single error for this line
       let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
-      new Error(typ, error.Message, DomRegion(error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
+      new Error(typ, wrapText error.Message 80, DomRegion(error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
   
   /// To be called from the language service mailbox processor (on a 
   /// GUI thread!) when new errors are reported for the specified file

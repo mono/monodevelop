@@ -10,7 +10,7 @@ open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
 
-let FSharpVersion = "3.2.29"
+let FSharpVersion = "3.2.30"
 
 let UnixPaths = 
     [ "/usr/lib/monodevelop"
@@ -105,10 +105,7 @@ let (mdDir, mdVersion) =
     | None when (File.Exists (GetPath ["../../../monodevelop.pc.in"])) -> 
         // Local MonoDevelop build directory
         let dir = GetPath [Environment.CurrentDirectory + "/../../../build"]
-        let version =
-            if (File.Exists (GetPath [dir;  "../../main/configure.in"])) then 
-                Grep (GetPath [dir; "../../main/configure.in"], @"AC_INIT.*?(?<ver>([0-9]|\.)+)", "ver")
-            else defaultVersion 
+        let version = Grep (GetPath [dir; "../../version.config"], @"^Version.*?(?<ver>([0-9]|\.)+)", "ver")
         dir, version
     | None ->
         // Using installed MonoDevelop

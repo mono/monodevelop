@@ -2,7 +2,7 @@
 <Template Originator="Dave Thomas" Language="F#" Created="20/02/2014" LastModified="20/02/2014">
   <TemplateConfiguration>
     <_Name>F# Signature File</_Name>
-    <Icon>md-text-file-icon|md-fs-logo32</Icon>
+    <Icon>md-text-file-icon</Icon>
     <_Description>Creates an empty F# signature file.  
     
     A signature file contains information about the public signatures of a set of F# program elements, such as types, namespaces, and modules. 
