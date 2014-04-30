@@ -24,51 +24,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using Mono.TextEditor;
-using ICSharpCode.NRefactory.Analysis;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Refactoring
 {
-	class FindMemberOverloadsHandler
+	static class FindMemberOverloadsHandler
 	{
-		//Ide.Gui.Document doc;
-		IMember entity;
-
-		public FindMemberOverloadsHandler (Ide.Gui.Document doc, IMember entity)
+		public static bool CanFindMemberOverloads (ISymbol symbol, out string description)
 		{
-			//this.doc = doc;
-			this.entity = entity;
-		}
-
-		public bool IsValid {
-			get {
-				foreach (var overloadedMember in entity.DeclaringType.GetMembers (m => m.Name == entity.Name && m.SymbolKind == entity.SymbolKind)) {
-					var fileName = overloadedMember.Region.FileName;
-					if (string.IsNullOrEmpty (fileName))
-						continue;
-					return true;
-				}
+			switch (symbol.Kind) {
+			case SymbolKind.Method:
+				description = GettextCatalog.GetString ("Find Method Overloads");
+				return symbol.ContainingType.GetMembers (symbol.Name).OfType<IMethodSymbol> ().Count () > 1;
+			case SymbolKind.Property:
+				description = GettextCatalog.GetString ("Find Indexer Overloads");
+				return symbol.ContainingType.GetMembers ().OfType<IPropertySymbol> () .Where (p => p.IsIndexer).Count () > 1;
+			default:
+				description = null;
 				return false;
 			}
 		}
 
-		public void Run ()
+		public static void FindOverloads (ISymbol symbol)
 		{
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-				foreach (var overloadedMember in entity.DeclaringType.GetMembers (m => m.Name == entity.Name && m.SymbolKind == entity.SymbolKind)) {
-					var fileName = overloadedMember.Region.FileName;
-					if (string.IsNullOrEmpty (fileName))
-						continue;
-					var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (fileName);
-					var start = tf.LocationToOffset (overloadedMember.Region.Begin); 
-					tf.SearchRequest.SearchPattern = overloadedMember.Name;
-					var sr = tf.SearchForward (start); 
-					if (sr != null)
-						start = sr.Offset;
-					monitor.ReportResult (new MemberReference (overloadedMember, overloadedMember.Region.FileName, start, overloadedMember.Name.Length));
+				switch (symbol.Kind) {
+				case SymbolKind.Method:
+					foreach (var method in symbol.ContainingType.GetMembers (symbol.Name).OfType<IMethodSymbol> ()) {
+						foreach (var loc in method.Locations)
+							monitor.ReportResult (new MemberReference (method, loc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+					}
+					break;
+				case SymbolKind.Property:
+					foreach (var property in symbol.ContainingType.GetMembers ().OfType<IPropertySymbol> () .Where (p => p.IsIndexer)) {
+						foreach (var loc in property.Locations)
+							monitor.ReportResult (new MemberReference (property, loc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+					}
+					break;
 				}
 			}
 		}

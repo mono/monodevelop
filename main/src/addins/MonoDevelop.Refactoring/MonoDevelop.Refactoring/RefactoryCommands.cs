@@ -318,17 +318,10 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 			
-//			if (item is IMember) {
-//				var member = (IMember)item;
-//				if (member.SymbolKind == SymbolKind.Method || member.SymbolKind == SymbolKind.Indexer) {
-//					var findMemberOverloadsHandler = new FindMemberOverloadsHandler (doc, member);
-//					if (findMemberOverloadsHandler.IsValid) {
-//						ainfo.Add (GettextCatalog.GetString ("Find Member Overloads"), new System.Action (findMemberOverloadsHandler.Run));
-//						added = true;
-//					}
-//				}
-//			}
-//
+			if (FindMemberOverloadsHandler.CanFindMemberOverloads (info.DeclaredSymbol, out description)) {
+				ainfo.Add (description, new Action (() => FindMemberOverloadsHandler.FindOverloads (info.DeclaredSymbol)));
+			}
+
 //			if (item is ITypeDefinition) {
 //				ITypeDefinition cls = (ITypeDefinition)item;
 //				foreach (var bc in cls.DirectBaseTypes) {
