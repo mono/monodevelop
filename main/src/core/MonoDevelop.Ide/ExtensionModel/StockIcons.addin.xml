@@ -116,6 +116,7 @@
 	<StockIcon stockid="md-prefs-code-formatting" resource="prefs-code-formatting-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-code-templates" resource="prefs-code-templates-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-csharp" resource="prefs-csharp-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-dotnet-naming-policies" resource="prefs-dotnet-naming-policies-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-external-tools" resource="prefs-external-tools-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-fonts" resource="prefs-fonts-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-generic" resource="prefs-generic-light-16.png" size="Menu" />
@@ -123,7 +124,7 @@
 	<StockIcon stockid="md-prefs-language" resource="prefs-language-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-load-save" resource="prefs-load-save-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-name-conventions" resource="prefs-name-conventions-light-16.png" size="Menu" />
-	<StockIcon stockid="md-prefs-dotnet-naming-policies" resource="prefs-dotnet-naming-policies-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-play" resource="prefs-play-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-sdk-locations" resource="prefs-sdk-locations-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-standard-header" resource="prefs-standard-header-light-16.png" size="Menu" />
 	<StockIcon stockid="md-prefs-task-list" resource="prefs-task-list-light-16.png" size="Menu" />
