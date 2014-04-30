@@ -259,62 +259,67 @@ namespace Mono.TextEditor.Highlighting
 			
 			public void InnerRun ()
 			{
-				bool doUpdate = false;
-				int startLine = doc.OffsetToLineNumber (startOffset);
-				if (startLine < 0 || mode.Document == null)
-					return;
 				try {
-					var lineSegment = doc.GetLine (startLine);
-					if (lineSegment == null)
+					bool doUpdate = false;
+					int startLine = doc.OffsetToLineNumber (startOffset);
+					if (startLine < 0 || mode.Document == null)
 						return;
-					var span = lineSegment.StartSpan;
-					if (span == null)
-						return;
-
-					var spanStack = span.Clone ();
-
-					SyntaxMode.SpanParser parser = mode.CreateSpanParser(null, spanStack);
-
-					foreach (var line in doc.GetLinesStartingAt (startLine)) {
-						if (line == null)
+					try {
+						var lineSegment = doc.GetLine (startLine);
+						if (lineSegment == null)
 							return;
-
-						if (line.Offset > endOffset) {
-							span = line.StartSpan;
-							if (span == null)
+						var span = lineSegment.StartSpan;
+						if (span == null)
+							return;
+	
+						var spanStack = span.Clone ();
+	
+						SyntaxMode.SpanParser parser = mode.CreateSpanParser(null, spanStack);
+	
+						foreach (var line in doc.GetLinesStartingAt (startLine)) {
+							if (line == null)
 								return;
-
-							bool equal = span.Equals(spanStack);
-
-							doUpdate |= !equal;
-
-							if (equal)
-
-								break;
-
+	
+							if (line.Offset > endOffset) {
+								span = line.StartSpan;
+								if (span == null)
+									return;
+	
+								bool equal = span.Equals(spanStack);
+	
+								doUpdate |= !equal;
+	
+								if (equal)
+	
+									break;
+	
+							}
+	
+							line.StartSpan = spanStack.Clone();
+	
+							parser.ParseSpans(line.Offset, line.LengthIncludingDelimiter);
+	
+							while (spanStack.Count > 0 && !EndsWithContinuation(spanStack.Peek(), line))
+	
+								parser.PopSpan();
+	
 						}
-
-						line.StartSpan = spanStack.Clone();
-
-						parser.ParseSpans(line.Offset, line.LengthIncludingDelimiter);
-
-						while (spanStack.Count > 0 && !EndsWithContinuation(spanStack.Peek(), line))
-
-							parser.PopSpan();
-
+	
+					} catch (Exception e) {
+						Console.WriteLine ("Syntax highlighting exception:" + e);
 					}
-
-				} catch (Exception e) {
-					Console.WriteLine ("Syntax highlighting exception:" + e);
+					if (doUpdate) {
+						Gtk.Application.Invoke (delegate {
+							doc.RequestUpdate (new UpdateAll ());
+							doc.CommitDocumentUpdate ();
+						});
+					}
+					IsFinished = true;
+					ManualResetEvent.Set ();
+				} finally {
+					doc = null;
+					mode = null;
 				}
-				if (doUpdate) {
-					Gtk.Application.Invoke (delegate {
-						doc.RequestUpdate (new UpdateAll ());
-						doc.CommitDocumentUpdate ();
-					});
-				}
-				IsFinished = true;
-				ManualResetEvent.Set ();
 			}
 		}
 		
@@ -344,7 +349,11 @@ namespace Mono.TextEditor.Highlighting
 					lock (updateQueue) {
 						worker = updateQueue.Dequeue ();
 					}
-					worker.InnerRun ();
+					try {
+						worker.InnerRun ();
+					} catch (Exception e) {
+						Console.WriteLine ("Exception in syntax mode update thread:" + e);
+					}
 				}
 				queueSignal.WaitOne ();
 			}
