@@ -53,7 +53,7 @@ type FSharpParser() =
           else splitLine sb line lineWidth
       sb.ToString()
 
-      /// Format errors for the given line (if there are multiple, we collapse them into a single one)
+  /// Format errors for the given line (if there are multiple, we collapse them into a single one)
   let formatError (error:ErrorInfo) =
       // Single error for this line
       let typ = if error.Severity = Severity.Error then ErrorType.Error else ErrorType.Warning
