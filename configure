@@ -155,11 +155,16 @@ configure_packages ()
 			enable_tests=" "
 		fi
 
+		prefixarg="--prefix=$prefix"
 		builddir=`pwd`/$path/build
+
 		for p in $ops ; do
 			arg=`echo $p | cut -d '=' -f 1`
 			if [ $arg == "--addins-dir" ] ; then
 				builddir=`pwd`/$path/`echo $p | cut -d '=' -f 2`
+			fi
+			if [ $p == "--no-prefix" ] ; then
+				prefixarg=""
 			fi
 		done
 
@@ -180,7 +185,7 @@ configure_packages ()
 			exit 1
 		fi
 		pushd $path > /dev/null
-		PKG_CONFIG_PATH=$localconf:$PKG_CONFIG_PATH $sct --prefix=$prefix $ops || handle_config_error
+		PKG_CONFIG_PATH=$localconf:$PKG_CONFIG_PATH $sct $prefixarg $ops || handle_config_error
 		popd > /dev/null
 		create_local_config $path $builddir
 		packages="$packages $path"
