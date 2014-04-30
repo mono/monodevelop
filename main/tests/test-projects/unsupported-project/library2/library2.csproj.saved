@@ -42,6 +42,13 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <ProjectReference Include="..\library1\library1.csproj">
+      <Project>{7F63CBE6-2FE7-47A7-8930-EA078DA05062}</Project>
+      <Name>library1</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
