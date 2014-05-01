@@ -43,22 +43,20 @@ module CompilerArguments =
   
   module Project =
       let getReferences (project: DotNetProject) configSelector =
-        //let projDir = Path.GetDirectoryName(project.FileName.ToString())
+        let projDir = Path.GetDirectoryName(project.FileName.ToString())
         //The original hint path can be extracted here rather than the incorrect reference that the monodevelop project system returns
+
+        let prefs= project.References |> Seq.toArray
+        let prefs2 = project.GetReferencedAssemblies(configSelector) |> Seq.toArray
+
         [ for pr in project.References do
-            if pr.IsValid then yield pr.Reference
+            if pr.IsValid then
+                yield pr.GetReferencedFileNames(configSelector).[0]
             else
                 if pr.ExtendedProperties.Contains "_OriginalMSBuildReferenceHintPath" then
                     yield pr.ExtendedProperties.["_OriginalMSBuildReferenceHintPath"] :?> string
         ]
-
-//TODO: Not sure if this is still needed                
-//        [ for ref in project.GetReferencedAssemblies(configSelector) do
-//            if not (Path.IsPathRooted ref) then
-//                yield Path.GetFullPath (Path.Combine(projDir, ref))
-//            else
-//                yield Path.GetFullPath ref ]
-                  
+                                    
       let isPortable (project: DotNetProject) =
         not (String.IsNullOrEmpty project.TargetFramework.Id.Profile)
         
