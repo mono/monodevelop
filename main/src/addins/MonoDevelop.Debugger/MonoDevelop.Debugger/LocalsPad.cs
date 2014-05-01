@@ -32,10 +32,10 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger
 {
-	public class LocalsPad: ObjectValuePad
+	public class LocalsPad : ObjectValuePad
 	{
+		Dictionary<string, ObjectValue> lastLookup = new Dictionary<string, ObjectValue> ();
 		StackFrame lastFrame;
-		Dictionary<string, ObjectValue> lastLookup = new Dictionary<string, ObjectValue>();
 		
 		public LocalsPad ()
 		{
@@ -46,53 +46,53 @@ namespace MonoDevelop.Debugger
 		public override void OnUpdateList ()
 		{
 			base.OnUpdateList ();
-			StackFrame frame = DebuggingService.CurrentFrame;
+
+			var frame = DebuggingService.CurrentFrame;
 			
 			if (frame == null || !FrameEquals (frame, lastFrame)) {
 				tree.ClearExpressions ();
 				lastLookup = null;
 			}
+
 			lastFrame = frame;
 			
 			if (frame == null)
 				return;
 
 			//add expressions not in tree already, remove expressions that are longer valid
-			var frameLocals = frame.GetAllLocals();
-			var frameLocalLookup = new Dictionary<string, ObjectValue>(frameLocals.Length);
+			var frameLocals = frame.GetAllLocals ();
+			var lookup = new Dictionary<string, ObjectValue> (frameLocals.Length);
+
 			foreach (var local in frameLocals) {
 				var variableName = local.Name;
+
 				//not sure if there is a use case for duplicate variable names, or blanks 
-				if (string.IsNullOrWhiteSpace(variableName) ||
-					variableName == "?" ||
-					frameLocalLookup.ContainsKey(variableName)) {
+				if (string.IsNullOrWhiteSpace (variableName) || variableName == "?" || lookup.ContainsKey (variableName))
 					continue;
-				}
-				else
-					frameLocalLookup.Add(variableName, local);
+
+				lookup.Add (variableName, local);
 
 				if (lastLookup != null) {
 					ObjectValue priorValue;
-					if (lastLookup.TryGetValue(variableName, out priorValue))
-						tree.ReplaceValue(priorValue, local);
+					if (lastLookup.TryGetValue (variableName, out priorValue))
+						tree.ReplaceValue (priorValue, local);
 					else
-						tree.AddValue(local);
+						tree.AddValue (local);
 				}
 			}
 
 			if (lastLookup != null) {
 				//get rid of the values that didnt survive from the last refresh
 				foreach (var prior in lastLookup) {
-					if (!frameLocalLookup.ContainsKey(prior.Key))
-						tree.RemoveValue(prior.Value);
+					if (!lookup.ContainsKey (prior.Key))
+						tree.RemoveValue (prior.Value);
 				}
-			}
-			else {
-				tree.ClearValues();
-				tree.AddValues(frameLocalLookup.Values);
+			} else {
+				tree.ClearValues ();
+				tree.AddValues (lookup.Values);
 			}
 
-			lastLookup = frameLocalLookup;
+			lastLookup = lookup;
 		}
 		
 		static bool FrameEquals (StackFrame a, StackFrame z)
