@@ -295,7 +295,7 @@ namespace MonoDevelop.Debugger.Win32
 				MethodInfo met = OverloadResolve (cctx, "ToString", targetType, new CorType[0], BindingFlags.Public | BindingFlags.Instance, false);
 				if (met != null && met.DeclaringType.FullName != "System.Object") {
 					var args = new object[0];
-					object ores = RuntimeInvoke (ctx, targetType, objr, "ToString", args, args);
+					object ores = RuntimeInvoke (ctx, targetType, objr, "ToString", new object[0], args, args);
 					var res = GetRealObject (ctx, ores) as CorStringValue;
                     if (res != null)
                         return res.String;
