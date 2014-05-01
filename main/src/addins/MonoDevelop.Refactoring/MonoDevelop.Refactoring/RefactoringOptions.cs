@@ -39,6 +39,11 @@ using System.Linq;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using System.Threading.Tasks;
+using System.Collections.Immutable;
+using System.Threading;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.Refactoring
 {
@@ -161,28 +166,39 @@ namespace MonoDevelop.Refactoring
 //			return ProjectDomService.Parse (Dom.Project, Document.FileName, Document.Editor.Text);
 //		}
 		
-		public List<string> GetUsedNamespaces ()
+		public Task<ImmutableArray<string>> GetUsedNamespacesAsync (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return GetUsedNamespaces (Document, Location);
+			return GetUsedNamespacesAsync (Document,  Document.Editor.LocationToOffset (Location));
 		}
 		
-		public static List<string> GetUsedNamespaces (Document doc, TextLocation loc)
+		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (Document doc, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var result = new List<string> ();
-			var pf = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			if (pf == null)
-				return result;
-			var scope = pf.GetUsingScope (loc);
-			if (scope == null)
-				return result;
-			var resolver = pf.GetResolver (doc.Compilation, loc);
-			for (var n = scope; n != null; n = n.Parent) {
-				result.Add (n.NamespaceName);
-				result.AddRange (n.Usings.Select (u => u.ResolveNamespace (resolver))
-					.Where (nr => nr != null)
-					.Select (nr => nr.FullName));
+			var result = ImmutableArray<string>.Empty.ToBuilder ();
+			var sm = await doc.AnalysisDocument.GetSyntaxRootAsync (cancellationToken); 
+			var node = sm.FindNode (TextSpan.FromBounds (offset, offset)); 
+			
+			while (node != null) {
+				var cu = node as CompilationUnitSyntax;
+				if (cu != null) {
+					foreach (var u in cu.Usings) {
+						if (u.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingDirective)
+							result.Add (u.Name.ToString ());
+					}
+				}
+				var ns = node as NamespaceDeclarationSyntax;
+				if (ns != null) {
+					var name = ns.Name.ToString ();
+					result.Add (name);
+					foreach (var u in ns.Usings) {
+						if (u.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.UsingDirective) 
+							result.Add (u.Name.ToString ());
+					}
+				}
+
+				node = node.Parent;
 			}
-			return result;
+			
+			return result.ToImmutable ();
 		}
 		
 		public ResolveResult Resolve (AstNode node)

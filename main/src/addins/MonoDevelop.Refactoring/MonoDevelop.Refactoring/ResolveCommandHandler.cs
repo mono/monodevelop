@@ -223,7 +223,7 @@ namespace MonoDevelop.Refactoring
 			var foundNamespaces = GetPossibleNamespaces (doc, node, resolveResult, location);
 			
 			if (!(resolveResult is AmbiguousTypeResolveResult)) {
-				var usedNamespaces = RefactoringOptions.GetUsedNamespaces (doc, location);
+				var usedNamespaces = RefactoringOptions.GetUsedNamespacesAsync (doc, doc.Editor.LocationToOffset (location)).Result;
 				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n.Namespace));
 			}
 			var result = new List<PossibleNamespace> ();
