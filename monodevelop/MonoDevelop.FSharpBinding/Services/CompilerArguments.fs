@@ -78,9 +78,13 @@ module CompilerArguments =
         // TODO: figure out the correct path [1] happens to be right one here
         let portablePath = Path.Combine(fdir.[1], assemblyDirectoryName)
         
-        let portableReferences = System.IO.Directory.EnumerateFiles(portablePath) |> List.ofSeq
+        let portableReferences =
+            System.IO.Directory.EnumerateFiles(portablePath) 
+            |> Array.ofSeq
                 
-        let projectReferences = getReferences project configSelector |> List.map wrapFile
+        let projectReferences =
+            getReferences project configSelector 
+            |> List.map (fun file -> file.Replace("$(MSBuildExtensionsPath32)\\..\\", "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/").Replace("\\", "/")) 
                 
         projectReferences |> Seq.append portableReferences
         |> set 
