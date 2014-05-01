@@ -68,7 +68,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			if (project is DotNetProject) {
 				projectDefaultNamespaceEntry.Text = ((DotNetProject)project).DefaultNamespace;
-			} if (project is SharedAssetsProject) {
+			} else if (project is SharedAssetsProject) {
 				projectDefaultNamespaceEntry.Text = ((SharedAssetsProject)project).DefaultNamespace;
 			} else {
 				defaultNamespaceLabel.Visible = false;
