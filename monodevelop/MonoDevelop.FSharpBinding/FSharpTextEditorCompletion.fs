@@ -283,13 +283,13 @@ type FSharpTextEditorCompletion() =
 
       Debug.WriteLine("allowAnyStale = {0}", allowAnyStale)
 
-      x.CodeCompletionCommandImpl(context, allowAnyStale, dottedInto = true)
+      x.CodeCompletionCommandImpl(context, allowAnyStale, dottedInto = true, ctrlSpace = false)
 
   /// Completion was triggered explicitly using Ctrl+Space or by the function above  
   override x.CodeCompletionCommand(context) =
-      x.CodeCompletionCommandImpl(context, allowAnyStale = true, dottedInto = false)
+      x.CodeCompletionCommandImpl(context, allowAnyStale = true, dottedInto = false, ctrlSpace = true)
 
-  member x.CodeCompletionCommandImpl(context, allowAnyStale, dottedInto) =
+  member x.CodeCompletionCommandImpl(context, allowAnyStale, dottedInto, ctrlSpace) =
     let result = CompletionDataList()
     let doc = x.Document
     try 
@@ -323,7 +323,9 @@ type FSharpTextEditorCompletion() =
                       |> Seq.map (fun t -> CodeTemplateCompletionData(doc, t))
                       |> Seq.cast<ICompletionData>
       result.AddRange(templates)
-
+    //If we are forcing completion ensure that AutoCompleteUniqueMatch is set
+    if ctrlSpace then
+        result.AutoCompleteUniqueMatch <- true
     result :> ICompletionDataList
 
   // T find out what this is used for
