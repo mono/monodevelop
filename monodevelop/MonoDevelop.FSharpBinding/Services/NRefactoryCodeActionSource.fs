@@ -59,24 +59,23 @@ type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData
      let indent = 3
      let startindent, withCol = getIndentAndWithColumn()
      let e = fsSymbolUse.Symbol :?> FSharpEntity
-     
-     let formatted = InterfaceStubGenerator.formatInterface (startindent + indent) indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
-     match withCol with
-     | Some p -> doc.Insert(doc.GetLine(line).Offset + p, " with")
-     | _ -> ()
-     let insertpoint = doc.GetLine(line).NextLine.Offset
-     doc.Replace(insertpoint, 0, formatted)
-     ()
 
-/// <summary>
+     let formatted = InterfaceStubGenerator.formatInterface (startindent + indent) indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
+     let docLine = doc.GetLine(line)
+     match withCol with
+     | Some p -> doc.Insert(docLine.Offset + p, " with")
+     | _ -> ()
+     // Trim initial spaces here to keep InteraceStubGenerator easily diffable to VFPT
+     let trimmed = formatted.Substring(formatted.IndexOfAny ([|'\r';'\n'|]))
+     let insertpoint =  docLine.EndOffset
+     doc.Insert(insertpoint, trimmed)
+
 /// A code action provider is a factory that creates code actions for a document at a given location.
-/// Maybe best to have one of these for each refactoring
-/// </summary>
 type ImplementInterfaceCodeActionProvider() as x =
   inherit CodeActionProvider()
   do 
     x.MimeType    <- "text/x-fsharp"
-    x.Category    <- "Test" // TODO: These are for preferences, but these actions don't show up there yet. Find out why. 
+    x.Category    <- "Refactoring"
     x.Title       <- "Implement Interface category"
     x.Description <- "Implement this interface"
   override x.IdString = "ImplementInterfaceCodeActionProvider" 
@@ -92,12 +91,14 @@ type ImplementInterfaceCodeActionProvider() as x =
               let pos = mkPos location.Line location.Column
               let interfaceData = InterfaceStubGenerator.tryFindInterfaceDeclaration pos parseTree
               let symbol = ast.GetSymbol(location.Line, location.Column, lineStr) |> Async.RunSynchronously
-            
+              
               match interfaceData, symbol with 
               | Some iface, Some sy -> 
                  match sy.Symbol with
                  | :? FSharpEntity as e when e.IsInterface ->
-                    yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr) :> _
+                    let count = InterfaceStubGenerator.countInterfaceMembers(e)
+                    if count > iface.MemberCount then 
+                      yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr) :> _
                  | _ -> ()
               | _ -> ()
             | _ -> ()
