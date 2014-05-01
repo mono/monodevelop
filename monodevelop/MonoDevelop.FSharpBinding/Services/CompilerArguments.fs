@@ -42,20 +42,6 @@ module CompilerArguments =
       else FSharpTargetFramework.NET_4_5
   
   module Project =
-      let getReferences (project: DotNetProject) configSelector =
-        let projDir = Path.GetDirectoryName(project.FileName.ToString())
-        //The original hint path can be extracted here rather than the incorrect reference that the monodevelop project system returns
-
-        let prefs= project.References |> Seq.toArray
-        let prefs2 = project.GetReferencedAssemblies(configSelector) |> Seq.toArray
-
-        [ for pr in project.References do
-            if pr.IsValid then
-                yield pr.GetReferencedFileNames(configSelector).[0]
-            else
-                if pr.ExtendedProperties.Contains "_OriginalMSBuildReferenceHintPath" then
-                    yield pr.ExtendedProperties.["_OriginalMSBuildReferenceHintPath"] :?> string
-        ]
                                     
       let isPortable (project: DotNetProject) =
         not (String.IsNullOrEmpty project.TargetFramework.Id.Profile)
@@ -81,9 +67,9 @@ module CompilerArguments =
             |> Array.ofSeq
                 
         let projectReferences =
-            getReferences project configSelector
+            project.GetReferencedAssemblies(configSelector)
             //TODO How can we evaluate "$(MSBuildExtensionsPath32) for both windows and *nix
-            |> List.map (fun file -> file.Replace("$(MSBuildExtensionsPath32)\\..\\", "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/").Replace("\\", "/")) 
+            |> Seq.map (fun fileName -> fileName.Replace("$(MSBuildExtensionsPath32)\\..\\", "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/").Replace("\\", "/")) 
                 
         projectReferences |> Seq.append portableReferences
         |> set 
@@ -103,7 +89,7 @@ module CompilerArguments =
         // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be 
         // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
         let projectReferences =
-            Project.getReferences project configSelector
+            project.GetReferencedAssemblies(configSelector)
             |> Seq.filter (fun (ref: string) -> not (ref.EndsWith("FSharp.Core")))
             |> set
              
