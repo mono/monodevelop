@@ -96,8 +96,6 @@ type ImplementInterfaceCodeActionProvider() as x =
               | Some iface, Some sy -> 
                  match sy.Symbol with
                  | :? FSharpEntity as e when e.IsInterface ->
-                    let count = InterfaceStubGenerator.countInterfaceMembers(e)
-                    if count > iface.MemberCount then 
                       yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr) :> _
                  | _ -> ()
               | _ -> ()
