@@ -81,7 +81,8 @@ module CompilerArguments =
             |> Array.ofSeq
                 
         let projectReferences =
-            getReferences project configSelector 
+            getReferences project configSelector
+            //TODO How can we evaluate "$(MSBuildExtensionsPath32) for both windows and *nix
             |> List.map (fun file -> file.Replace("$(MSBuildExtensionsPath32)\\..\\", "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/").Replace("\\", "/")) 
                 
         projectReferences |> Seq.append portableReferences
