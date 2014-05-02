@@ -60,18 +60,10 @@ module CompilerArguments =
         let frameworkMoniker = TargetFrameworkMoniker (".NETPortable", project.TargetFramework.Id.Version, project.TargetFramework.Id.Profile)
         let assemblyDirectoryName = frameworkMoniker.GetAssemblyDirectoryName()
         // TODO: figure out the correct path [1] happens to be right one here
-        let portablePath = Path.Combine(fdir.[1], assemblyDirectoryName)
-        
-        let portableReferences =
-            System.IO.Directory.EnumerateFiles(portablePath) 
-            |> Array.ofSeq
+        let portablePath = Path.Combine(fdir.[1], assemblyDirectoryName)            
                 
-        let projectReferences =
-            project.GetReferencedAssemblies(configSelector)
-            //TODO How can we evaluate "$(MSBuildExtensionsPath32) for both windows and *nix
-            |> Seq.map (fun fileName -> fileName.Replace("$(MSBuildExtensionsPath32)\\..\\", "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/").Replace("\\", "/")) 
-                
-        projectReferences |> Seq.append portableReferences
+        project.GetReferencedAssemblies(configSelector) 
+        |> Seq.append (System.IO.Directory.EnumerateFiles(portablePath))
         |> set 
         |> Set.map ((+) "-r:")
         |> Set.toList
