@@ -376,6 +376,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				ProjectExtensionUtil.BeginLoadOperation ();
 				Item = CreateSolutionItem (monitor, p, fileName, language, itemType, itemClass);
 	
+				if (subtypeGuids.Any ()) {
+					string gg = string.Join (";", subtypeGuids) + ";" + TypeGuid;
+					Item.ExtendedProperties ["ProjectTypeGuids"] = gg.ToUpper ();
+				}
+
 				Item.SetItemHandler (this);
 				MSBuildProjectService.SetId (Item, itemGuid);
 				
@@ -1150,8 +1155,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					gg += sg;
 				}
 				gg += ";" + TypeGuid;
+				Item.ExtendedProperties ["ProjectTypeGuids"] = gg.ToUpper ();
 				globalGroup.SetPropertyValue ("ProjectTypeGuids", gg.ToUpper (), true);
 			} else {
+				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
 				globalGroup.RemoveProperty ("ProjectTypeGuids");
 			}
 
