@@ -5,7 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>F# NUnit Library Project</_Name>
 		<_Category>F#/NUnit</_Category>
-		<Icon>md-project|res:nunit-overlay-32.png</Icon>
+		<Icon>md-project|res:project-nunit-overlay-light-32.png</Icon>
 		<_Description>Creates an F# NUnit library</_Description>
 		<LanguageName>F#</LanguageName>
 		<DefaultFilename>NUnitProject</DefaultFilename>

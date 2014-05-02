@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Broadcast Receiver</_Name>
+		<Icon>md-text-file-icon</Icon>
+		<_Category>Android</_Category>
+		<LanguageName>F#</LanguageName>
+		<ProjectType>MonoDroid</ProjectType>
+		<_Description>An empty Android broadcast receiver.  A broadcast receiver receives and reacts to announcements sent by Android processes.</_Description>
+	</TemplateConfiguration>
+	
+	<Conditions>
+	</Conditions>
+	
+	<TemplateFiles>
+		<File name="${Name}.fs" ><![CDATA[
+namespace ${Namespace}
+
+open System
+open System.Collections.Generic
+open System.Linq
+open System.Text
+
+open Android.App
+open Android.Content
+open Android.OS
+open Android.Runtime
+open Android.Views
+open Android.Widget
+
+[<BroadcastReceiver>]
+type ${Name} =
+  inherit BroadcastReceiver ()
+
+  override x.OnCreate (context, intent) =
+    Toast.MakeText (context, "Received intent!", ToastLength.Short).Show ()
+
+]]></File>
+	</TemplateFiles>
+</Template>

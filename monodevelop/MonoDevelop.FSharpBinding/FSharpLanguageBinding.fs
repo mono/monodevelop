@@ -111,4 +111,4 @@ type FSharpLanguageBinding() =
     override x.GetSupportedClrVersions() =
       [| ClrVersion.Net_2_0; ClrVersion.Net_4_0; ClrVersion.Net_4_5;  ClrVersion.Clr_2_1 |]
 
-    override x.ProjectStockIcon = "md-fs-project"
+    override x.ProjectStockIcon = "md-project"

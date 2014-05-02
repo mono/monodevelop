@@ -102,7 +102,9 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
             with _ -> 
                 Debug.Assert(false, "couldn't update navigation items, ignoring")  
                 [| |]
-            
+    member x.ParseTree = match infoOpt with
+                         | Some (check,parse) -> parse.ParseTree
+                         | None -> None    
 
 [<RequireQualifiedAccess>]
 type AllowStaleResults = 

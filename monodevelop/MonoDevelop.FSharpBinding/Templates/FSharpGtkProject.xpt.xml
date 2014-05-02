@@ -6,6 +6,7 @@
 		<_Name>F# Desktop Application (Gtk# 2.0)</_Name>
 		<_Description>Create an F# desktop application (using Gtk# 2.0 and .NET 4.0)</_Description>
 		<_Category>F#</_Category>
+		<Icon>md-project-gui</Icon>
 		<LanguageName>F#</LanguageName>
 	</TemplateConfiguration>
 	

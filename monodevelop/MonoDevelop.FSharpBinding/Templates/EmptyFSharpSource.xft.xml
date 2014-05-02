@@ -2,7 +2,7 @@
 <Template Originator="Community" Language="F#" Created="10/6/2010" LastModified="10/6/2010">
   <TemplateConfiguration>
     <_Name>F# Source File</_Name>
-    <Icon>md-text-file-icon|md-fs-logo32</Icon>
+    <Icon>md-text-file-icon</Icon>
     <_Description>Creates an empty F# source file</_Description>
     <_Category>General</_Category>
     <LanguageName>F#</LanguageName>
