@@ -154,26 +154,24 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 		
-		public static string GetStockIcon (this EntityDeclaration element, bool showAccessibility = true)
+		
+		public static string GetStockIcon (this EntityDeclaration element)
 		{
 			Accessibility acc = Accessibility.Public;
 
 			
 			if (element is Accessor) {
-				if (showAccessibility) {
-					if (!GetAccessibility (element, out acc))
-						GetAccessibility (element.Parent as EntityDeclaration, out acc);
-				}
+				if (!GetAccessibility (element, out acc))
+					GetAccessibility (element.Parent as EntityDeclaration, out acc);
 
 				return methodIconTable [(int) (acc)];
 			}
 
-			if (showAccessibility) {
-				GetAccessibility (element, out acc);
-			}
+			GetAccessibility (element, out acc);
 
 			if (element is TypeDeclaration) {
 				var type = element as TypeDeclaration;
+				
 				switch (type.ClassType) {
 				case ClassType.Class:
 					return typeIconTable [0, (int) (acc)];
