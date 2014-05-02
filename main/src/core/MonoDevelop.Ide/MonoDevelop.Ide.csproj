@@ -1161,6 +1161,30 @@
     <EmbeddedResource Include="icons\light\information-48%402x.png">
       <LogicalName>information-light-48@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\question-16.png">
+      <LogicalName>question-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\question-16%402x.png">
+      <LogicalName>question-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\question-24.png">
+      <LogicalName>question-light-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\question-24%402x.png">
+      <LogicalName>question-light-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\question-32.png">
+      <LogicalName>question-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\question-32%402x.png">
+      <LogicalName>question-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\question-48.png">
+      <LogicalName>question-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\question-48%402x.png">
+      <LogicalName>question-light-48@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\command-16.png">
       <LogicalName>command-light-16.png</LogicalName>
     </EmbeddedResource>
