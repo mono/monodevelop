@@ -301,6 +301,9 @@ namespace MonoDevelop.CSharp
 						if (node is OperatorDeclaration) { 
 							line = Math.Max (1, ((OperatorDeclaration)node).OperatorToken.StartLocation.Line);
 							col = Math.Max (1, ((OperatorDeclaration)node).OperatorToken.StartLocation.Column);
+						} else if (node is IndexerDeclaration) { 
+							line = Math.Max (1, ((IndexerDeclaration)node).ThisToken.StartLocation.Line);
+							col = Math.Max (1, ((IndexerDeclaration)node).ThisToken.StartLocation.Column);
 						} else if (node is EntityDeclaration && !(node is Accessor)) {
 							line = Math.Max (1, ((EntityDeclaration)node).NameToken.StartLocation.Line);
 							col = Math.Max (1, ((EntityDeclaration)node).NameToken.StartLocation.Column);
