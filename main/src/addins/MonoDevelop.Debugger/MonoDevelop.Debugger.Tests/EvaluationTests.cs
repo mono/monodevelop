@@ -418,6 +418,40 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
+			val = Eval ("\"someString\".GetHashCode()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("numbers.GetHashCode()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("\"someString\".EndsWith (\"ing\")");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
 			val = Eval ("alist.Count");
 			if (!AllowTargetInvokes) {
 				var options = Session.Options.EvaluationOptions.Clone ();
@@ -1039,6 +1073,19 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.SomeClassInNamespace", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			//When fixed put into MemberReference
+			val = Eval ("numbers.GetLength(0)");
+			if (!AllowTargetInvokes) {
+					var options = Session.Options.EvaluationOptions.Clone ();
+					options.AllowTargetInvoke = true;
+
+					Assert.IsTrue (val.IsNotSupported);
+					val.Refresh (options);
+					val = val.Sync ();
+				}
+			Assert.AreEqual ("3", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 		}
 
 		[Test]

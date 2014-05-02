@@ -78,11 +78,6 @@ namespace MonoDevelop.Debugger.Win32
 			return GetRealObject (ctx, val) is CorStringValue;
 		}
 
-		public override bool IsClassInstance (EvaluationContext ctx, object val)
-		{
-			return GetRealObject (ctx, val) is CorObjectValue;
-		}
-
 		public override bool IsNull (EvaluationContext ctx, object gval)
 		{
 			CorValRef val = (CorValRef) gval;
@@ -99,6 +94,10 @@ namespace MonoDevelop.Debugger.Win32
 			var t = (CorType) type;
 			var cctx = (CorEvaluationContext)ctx;
 			Type tt;
+			if (t.Type == CorElementType.ELEMENT_TYPE_STRING ||
+			   t.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
+			   t.Type == CorElementType.ELEMENT_TYPE_SZARRAY)
+				return true;
 			// Primitive check
 			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (t.Type, out tt))
 				return false;
@@ -386,7 +385,13 @@ namespace MonoDevelop.Debugger.Win32
 			try {
 				if (method != null) {
 					CorValRef v = new CorValRef (delegate {
-						CorFunction func = targetType.Class.Module.GetFunctionFromToken (method.MetadataToken);
+						CorModule mod = null;
+						if (targetType.Type == CorElementType.ELEMENT_TYPE_ARRAY || targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+							mod = ((CorType)ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
+						} else {
+							mod = targetType.Class.Module;
+						}
+						CorFunction func = mod.GetFunctionFromToken (method.MetadataToken);
 						CorValue[] args = new CorValue[argValues.Length];
 						for (int n = 0; n < args.Length; n++)
 							args[n] = argValues[n].Val;
@@ -423,10 +428,14 @@ namespace MonoDevelop.Debugger.Win32
 
 				if (methodName == ".ctor")
 					break; // Can't create objects using constructor from base classes
-				if (rtype.BaseType == null && rtype.FullName != "System.Object")
+				if ((rtype.BaseType == null && rtype.FullName != "System.Object") ||
+				    currentType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
+				    currentType.Type == CorElementType.ELEMENT_TYPE_SZARRAY ||
+				    currentType.Type == CorElementType.ELEMENT_TYPE_STRING) {
 					currentType = ctx.Adapter.GetType (ctx, "System.Object") as CorType;
-				else
+				} else {
 					currentType = currentType.Base;
+				}
 			}
 
 			return OverloadResolve (ctx, GetTypeName (ctx, type), methodName, argtypes, candidates, throwIfNotFound);

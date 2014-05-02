@@ -176,9 +176,21 @@ namespace MonoDevelop.Debugger.Tests
 				targetStoppedEvent.Set ();
 			};
 
+			ManualResetEvent targetExited = new ManualResetEvent (false);
+			Session.TargetExited += delegate {
+				targetExited.Set ();
+			};
+
 			Session.Run (dsi, ops);
-			if (!done.WaitOne (3000))
+			switch (WaitHandle.WaitAny (new WaitHandle[]{ done, targetExited }, 30000)) {
+			case 0:
+				//Breakpoint is hit good... run tests now
+				break;
+			case 1:
+				throw new Exception ("Test application exited before hitting breakpoint");
+			default:
 				throw new Exception ("Timeout while waiting for initial breakpoint");
+			}
 		}
 
 		void GetLineAndColumn (string breakpointMarker, int offset, string statement, out int line, out int col)
