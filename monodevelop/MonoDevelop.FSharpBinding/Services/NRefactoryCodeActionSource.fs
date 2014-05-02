@@ -23,7 +23,7 @@ type FSharpRefactoringContext() =
 /// <summary>
 /// A code action represents a menu entry that does edit operation in one document.
 /// </summary>
-type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, lineStr, tyRes:ParseAndCheckResults) as x =
+type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, lineStr, tyRes:ParseAndCheckResults, indentSize) as x =
   inherit  CodeAction()
   do 
     x.Title    <- "Implement Interface"
@@ -56,7 +56,7 @@ type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData
     
   override x.Run (context: IRefactoringContext, script:obj) = 
      let line = fsSymbolUse.RangeAlternate.StartLine
-     let indent = 3
+
      let startindent, withCol = getIndentAndWithColumn()
      let e = fsSymbolUse.Symbol :?> FSharpEntity
 
@@ -66,7 +66,7 @@ type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData
        tyRes.GetSymbolAtLocation(range.StartLine, range.EndColumn, lineStr, [name])
      let implementedMemberSignatures = InterfaceStubGenerator.getImplementedMemberSignatures getMemberByLocation fsSymbolUse.DisplayContext interfaceData
                                        |> Async.RunSynchronously
-     let formatted = InterfaceStubGenerator.formatInterface (startindent + indent) indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext implementedMemberSignatures e
+     let formatted = InterfaceStubGenerator.formatInterface (startindent + indentSize) indentSize interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext implementedMemberSignatures e
      let docLine = doc.GetLine(line)
      match withCol with
      | Some p -> doc.Insert(docLine.Offset + p, " with")
@@ -104,7 +104,7 @@ type ImplementInterfaceCodeActionProvider() as x =
               | Some iface, Some sy -> 
                  match sy.Symbol with
                  | :? FSharpEntity as e when e.IsInterface ->
-                      yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr, ast) :> _
+                      yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr, ast, doc.Editor.Options.IndentationSize) :> _
                  | _ -> ()
               | _ -> ()
             | _ -> ()
