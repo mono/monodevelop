@@ -55,10 +55,10 @@ module CompilerArguments =
             let assemblyDirectoryName = frameworkMoniker.GetAssemblyDirectoryName()
 
             project.TargetRuntime.GetReferenceFrameworkDirectories() 
-            |> Seq.map (fun fp -> fp.Combine([|TargetFrameworkMoniker.ID_PORTABLE|]).ToString() )
-            |> Seq.tryFind (fun fp -> Directory.Exists(fp.ToString()))
-            |> function Some fd -> Directory.EnumerateFiles(Path.Combine(fd, assemblyDirectoryName)) | None -> Seq.empty
-       
+            |> Seq.tryFind (fun fd ->  Directory.Exists(fd.Combine([|TargetFrameworkMoniker.ID_PORTABLE|]).ToString()))
+            |> function Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName)) | None -> Seq.empty
+            |> Seq.toArray
+
         project.GetReferencedAssemblies(configSelector) 
         |> Seq.append portableReferences
         |> set 
