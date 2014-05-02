@@ -106,11 +106,22 @@ type FSharpProjectNodeCommandHandler() =
 type FSharpProjectFileNodeExtension() =
   inherit NodeBuilderExtension()
 
+  let (|FSharpProject|_|) (project:Project) =
+    match project with 
+    | :? DotNetProject as dnp when dnp.LanguageName = "F#" -> Some dnp
+    | _ -> None
+
   /// Check if an item in the project model is recognized by this extension.
   let (|SupportedProjectFile|SupportedProjectFolder|NotSupported|) (item:obj) =
     match item with
-    | :? ProjectFile as projfile when projfile.Project <> null-> SupportedProjectFile(projfile)
-    | :? ProjectFolder as projfolder when projfolder.Project <> null-> SupportedProjectFolder(projfolder)
+    | :? ProjectFile as projfile when projfile.Project <> null -> 
+          match projfile.Project with 
+          | FSharpProject _ -> SupportedProjectFile(projfile)
+          | _ -> NotSupported
+    | :? ProjectFolder as projfolder when projfolder.Project <> null ->
+          match projfolder.Project with 
+          | FSharpProject _ -> SupportedProjectFolder(projfolder)
+          | _ -> NotSupported
     | _ -> NotSupported
 
   override x.CanBuildNode(dataType:Type) =
@@ -120,9 +131,7 @@ type FSharpProjectFileNodeExtension() =
   override x.CompareObjects(thisNode:ITreeNavigator, otherNode:ITreeNavigator) : int =
     match (otherNode.DataItem, thisNode.DataItem) with
     | SupportedProjectFile(file2), SupportedProjectFile(file1) when file1.Project = file2.Project-> 
-      if file1.Project :? DotNetProject && (file1.Project :?> DotNetProject).LanguageName = "F#" then
             file1.Project.Files.IndexOf(file1).CompareTo(file2.Project.Files.IndexOf(file2))
-      else NodeBuilder.DefaultSort
     | SupportedProjectFolder(folder1), SupportedProjectFolder(folder2) when folder1.Project = folder2.Project->
         let folders = folder1.Project.Files |> Seq.filter (fun file -> file.Subtype = Subtype.Directory) 
 
