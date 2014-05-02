@@ -10,7 +10,7 @@ open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
 
-let FSharpVersion = "3.2.31"
+let FSharpVersion = "5.0.0"
 
 let UnixPaths = 
     [ "/usr/lib/monodevelop"
@@ -51,7 +51,7 @@ let Run (file, args) =
     currentProcess.Start () |> ignore
     currentProcess.StandardOutput
 
-let defaultVersion = "4.1.6"
+let defaultVersion = "5.0"
 let args = fsi.CommandLineArgs.[1..]
 let searchPaths = if isWindows then WindowsPaths else UnixPaths
 
