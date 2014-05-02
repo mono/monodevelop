@@ -23,7 +23,7 @@ type FSharpRefactoringContext() =
 /// <summary>
 /// A code action represents a menu entry that does edit operation in one document.
 /// </summary>
-type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, lineStr) as x =
+type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData, fsSymbolUse:FSharpSymbolUse, lineStr, tyRes:ParseAndCheckResults) as x =
   inherit  CodeAction()
   do 
     x.Title    <- "Implement Interface"
@@ -60,13 +60,21 @@ type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData
      let startindent, withCol = getIndentAndWithColumn()
      let e = fsSymbolUse.Symbol :?> FSharpEntity
 
-     let formatted = InterfaceStubGenerator.formatInterface (startindent + indent) indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext e
+     let getMemberByLocation(name, range: range) =
+       let lineStr = 
+           doc.GetLineText(range.StartLine)
+       tyRes.GetSymbolAtLocation(range.StartLine, range.EndColumn, lineStr, [name])
+     let implementedMemberSignatures = InterfaceStubGenerator.getImplementedMemberSignatures getMemberByLocation fsSymbolUse.DisplayContext interfaceData
+                                       |> Async.RunSynchronously
+     let formatted = InterfaceStubGenerator.formatInterface (startindent + indent) indent interfaceData.TypeParameters "x" "raise (System.NotImplementedException())" fsSymbolUse.DisplayContext implementedMemberSignatures e
      let docLine = doc.GetLine(line)
      match withCol with
      | Some p -> doc.Insert(docLine.Offset + p, " with")
      | _ -> ()
      // Trim initial spaces here to keep InteraceStubGenerator easily diffable to VFPT
-     let trimmed = formatted.Substring(formatted.IndexOfAny ([|'\r';'\n'|]))
+     let trimmed = match formatted.IndexOfAny ([|'\r';'\n'|]) with
+                   | x when x > 0 -> formatted.Substring(x)
+                   | _            -> formatted
      let insertpoint =  docLine.EndOffset
      doc.Insert(insertpoint, trimmed)
 
@@ -96,7 +104,7 @@ type ImplementInterfaceCodeActionProvider() as x =
               | Some iface, Some sy -> 
                  match sy.Symbol with
                  | :? FSharpEntity as e when e.IsInterface ->
-                      yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr) :> _
+                      yield ImplementInterfaceCodeAction(doc.Editor.Document, iface, sy, lineStr, ast) :> _
                  | _ -> ()
               | _ -> ()
             | _ -> ()

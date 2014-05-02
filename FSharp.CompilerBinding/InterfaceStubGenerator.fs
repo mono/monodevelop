@@ -21,14 +21,6 @@ type InterfaceData =
             typ.Range
         | InterfaceData.ObjExpr(typ, _) -> 
             typ.Range
-    member x.MemberCount =
-        match x with
-        | InterfaceData.Interface(_, None) -> 
-            0
-        | InterfaceData.Interface(_, Some members) -> 
-            List.length members
-        | InterfaceData.ObjExpr(_, bindings) ->
-            List.length bindings
     member x.TypeParameters = 
         match x with
         | InterfaceData.Interface(typ, _)
@@ -343,18 +335,68 @@ module InterfaceStubGenerator =
                            if iface.IsFSharp || not m.IsProperty then Some (m, instantiations) else None)
          }
 
-    let countInterfaceMembers e =
-        getInterfaceMembers e |> Seq.length
+    let hasNoInterfaceMember e =
+        getInterfaceMembers e |> Seq.isEmpty
+
+    /// Ideally this info should be returned in error symbols from FCS
+    /// Because it isn't, we implement a crude way of getting member signatures:
+    ///  (1) Crack ASTs to get member names and their associated ranges
+    ///  (2) Check symbols of those members based on ranges
+    ///  (3) If any symbol found, capture its member signature 
+    let getImplementedMemberSignatures (getMemberByLocation: string * range -> Async<FSharpSymbolUse option>) displayContext interfaceData = 
+        let (|LongIdentPattern|_|) = function
+            | SynPat.LongIdent(LongIdentWithDots(xs, _), _, _, _, _, _) ->
+                let (name, range) = xs |> Seq.map (fun x -> x.idText, x.idRange) |> Seq.last
+                Some(name, range)
+            | _ -> 
+                None
+
+        let (|MemberNameAndRange|_|) = function
+            | Binding(_access, _bindingKind, _isInline, _isMutable, _attrs, _xmldoc, _valData, LongIdentPattern(name, range), _retTy, _expr, _bindingRange, _seqPoint) ->
+                Some(name, range)
+            | _ ->
+                None
+
+        let formatMemberSignature (symbolUse: FSharpSymbolUse) =
+            Debug.Assert(symbolUse.Symbol :? FSharpMemberFunctionOrValue, "Only accept symbol use of members.")
+            let m = symbolUse.Symbol :?> FSharpMemberFunctionOrValue
+            try 
+                let signature = sprintf "%s:%s" m.DisplayName (m.FullType.Format(displayContext))
+                Some (signature.Replace(" ", ""))
+            with _ ->
+                None
+        async {
+            match interfaceData with
+            | InterfaceData.Interface(_, None) -> 
+                return Set.empty
+            | InterfaceData.Interface(_, Some memberDefns) -> 
+                let! symbolUses =
+                    memberDefns
+                    |> Seq.choose (function (SynMemberDefn.Member(binding, _)) -> Some binding | _ -> None)
+                    |> Seq.choose (|MemberNameAndRange|_|)
+                    |> Seq.map getMemberByLocation
+                    |> Async.Parallel
+                return symbolUses |> Seq.choose (Option.bind formatMemberSignature)
+                                  |> Set.ofSeq
+            | InterfaceData.ObjExpr(_, bindings) -> 
+                let! symbolUses =
+                    bindings
+                    |> Seq.choose (|MemberNameAndRange|_|)
+                    |> Seq.map getMemberByLocation
+                    |> Async.Parallel
+                return symbolUses |> Seq.choose (Option.bind formatMemberSignature)
+                                  |> Set.ofSeq
+        }
 
     let rec isInterface (e: FSharpEntity) =
         e.IsInterface || (e.IsFSharpAbbreviation && isInterface e.AbbreviatedType.TypeDefinition)
 
     /// Generate stub implementation of an interface at a start column
     let formatInterface startColumn indentation (typeInstances: string []) objectIdent 
-            (methodBody: string) (displayContext: FSharpDisplayContext) (e: FSharpEntity) =
+            (methodBody: string) (displayContext: FSharpDisplayContext) excludedMemberSignatures (e: FSharpEntity) =
         Debug.Assert(isInterface e, "The entity should be an interface.")
-        use writer = new ColumnIndentedTextWriter()
         let lines = methodBody.Replace("\r\n", "\n").Split('\n')
+        use writer = new ColumnIndentedTextWriter()
         let typeParams = Seq.map getTypeParameterName e.GenericParameters
         let instantiations = 
             let insts =
@@ -366,17 +408,31 @@ module InterfaceStubGenerator =
             if e.IsFSharpAbbreviation then
                 let typ = getNonAbbreviatedType e.AbbreviatedType
                 (typ.TypeDefinition.GenericParameters |> Seq.map getTypeParameterName, 
-                 typ.GenericArguments |> Seq.map (fun typ -> typ.Format(displayContext)))
+                    typ.GenericArguments |> Seq.map (fun typ -> typ.Format(displayContext)))
                 ||> Seq.zip
                 |> Seq.fold (fun acc (x, y) -> Map.add x y acc) insts
             else insts
-
         let ctx = { Writer = writer; TypeInstantations = instantiations; ArgInstantiations = Seq.empty;
                     Indentation = indentation; ObjectIdent = objectIdent; MethodBody = lines; DisplayContext = displayContext }
-        writer.Indent startColumn
-        for (m, instantiations) in getInterfaceMembers e do
-            formatMember { ctx with ArgInstantiations = instantiations } m
-        writer.Dump()
+        let missingMembers =
+            getInterfaceMembers e
+            |> Seq.filter (fun (m, insts) -> 
+                // FullType might throw exceptions due to bugs in FCS
+                try
+                    Debug.Assert(m.FullType.IsFunctionType, "An interface member has to be of function type.")
+                    let fullSignature = sprintf "%s:%s" m.DisplayName (formatType { ctx with ArgInstantiations = insts }  m.FullType)
+                    // Sometimes interface members are stored in the form of `IInterface<'T> -> ...` so we need to get the 2nd generic arguments
+                    let partialSignature = sprintf "%s:%s" m.DisplayName (formatType { ctx with ArgInstantiations = insts }  m.FullType.GenericArguments.[1])
+                    not (Set.contains (fullSignature.Replace(" ", "")) excludedMemberSignatures || Set.contains (partialSignature.Replace(" ", "")) excludedMemberSignatures) 
+                with _ -> true)
+        // All members are already implemented
+        if Seq.isEmpty missingMembers then
+            String.Empty
+        else
+            writer.Indent startColumn
+            for (m, insts) in missingMembers do
+                formatMember { ctx with ArgInstantiations = insts } m
+            writer.Dump()
 
     let internal (|IndexerArg|) = function
         | SynIndexerArg.Two(e1, e2) -> [e1; e2]
