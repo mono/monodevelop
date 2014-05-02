@@ -293,7 +293,7 @@
 
 	<Rule name="XmlDocumentation">
 		<Delimiters>&lt;&gt;</Delimiters>
-		<Span color = "Comment(DocTag)" rule = "XmlDocumentationTag">
+		<Span color = "Comment(DocTag)" rule = "XmlDocumentationTag" stopateol = "true">
 			<Begin>&lt;</Begin>
 			<End>&gt;</End>
 		</Span>
