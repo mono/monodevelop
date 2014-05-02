@@ -477,7 +477,7 @@ namespace MonoDevelop.CSharp
 			}
 
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);
-			if (curType == curMember)
+			if (curType == curMember || curType is DelegateDeclaration)
 				curMember = null;
 			if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject)
 				return;
