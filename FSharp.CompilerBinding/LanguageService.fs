@@ -50,7 +50,7 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
         | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdents(col, lineStr) with 
         | None -> return FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
-        | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, true)
+        | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
       }
     member x.GetMethods(line, col, lineStr) =
       async { 
@@ -102,7 +102,9 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
             with _ -> 
                 Debug.Assert(false, "couldn't update navigation items, ignoring")  
                 [| |]
-            
+    member x.ParseTree = match infoOpt with
+                         | Some (check,parse) -> parse.ParseTree
+                         | None -> None    
 
 [<RequireQualifiedAccess>]
 type AllowStaleResults = 

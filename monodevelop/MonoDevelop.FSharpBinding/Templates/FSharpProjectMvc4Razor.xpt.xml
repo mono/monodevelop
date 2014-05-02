@@ -5,7 +5,7 @@
   <TemplateConfiguration>
     <_Name>F# ASP.NET MVC 4 (Razor)</_Name>
     <Icon>md-project-web</Icon>
-    <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views. *** NOTE NOTE On Max and Linux you may need to manually edit the project file to use v9.0/WebApplications/Microsoft.WebApplication.targets instead of v10.0. NOTE NOTE ***  </_Description>
+    <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views. *** NOTE On Mac and Linux you may need to manually edit the project file to use v9.0/WebApplications/Microsoft.WebApplication.targets instead of v10.0. NOTE ***  </_Description>
     <_Category>F#/ASP.NET</_Category>
     <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
@@ -22,7 +22,7 @@
 		</Options>
 
 		<Project name = "${ProjectName}" directory = "." type = "AspNetMvc3">
-			<Options TargetFrameworkVersion = "4.0" />
+			<Options TargetFrameworkVersion = "4.5" />
 			<References>
 				<Reference type="Package" refto="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
 				<Reference type="Gac" refto="FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -39,20 +39,11 @@
 				<Reference type="Package" refto="System.ComponentModel.DataAnnotations, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" SpecificVersion="false" />
 				<Reference type="Package" refto="System.Xml.Linq" />
 				<Reference type="Package" refto="System.Core" />
-				<Reference type="Assembly" refto="packages/System.Web.Mvc.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="packages/System.Web.Helpers.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="packages/System.Web.Razor.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="packages/System.Web.WebPages.Razor.dll" SpecificVersion = "true" LocalCopy = "true" />
-				<Reference type="Assembly" refto="packages/System.Web.WebPages.dll" SpecificVersion = "true" LocalCopy = "true" /> 
 			</References>
+			<Packages>
+				<Package Id="Microsoft.AspNet.Mvc" Version="4.0.30506"/>
+			</Packages>
 			<Files>
-				<Directory name="packages">
-                <RawFile src="packages/AspNetMvc4/System.Web.Mvc.dll" name="System.Web.Mvc.dll" />				
-                <RawFile src="packages/AspNetMvc4/System.Web.Helpers.dll" name="System.Web.Helpers.dll" />				
-                <RawFile src="packages/AspNetMvc4/System.Web.Razor.dll" name="System.Web.Razor.dll" />				
-                <RawFile src="packages/AspNetMvc4/System.Web.WebPages.Razor.dll" name="System.Web.WebPages.Razor.dll" />				
-                <RawFile src="packages/AspNetMvc4/System.Web.WebPages.dll" name="System.Web.WebPages.dll" />				
-				</Directory>
 				<Directory name="Content" />
                 <FileTemplateReference TemplateID="FSharpAssemblyInfo" name="AssemblyInfo.fs" />				
 				<Directory name="Controllers">

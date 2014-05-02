@@ -64,12 +64,15 @@ type FSharpCompilerParameters() as this =
 #else
 #if MDVERSION_4_2_4
 #else
+#if MDVERSION_4_3_3
+#else
 #if MDVERSION_4_3_4
 #else
 
   override x.GetDefineSymbols () =
     x.DefineConstants.Split (';', ',', ' ', '\t')
     |> Seq.where (fun s -> not (System.String.IsNullOrWhiteSpace(s)))
+#endif
 #endif
 #endif
 #endif

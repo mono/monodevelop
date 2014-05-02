@@ -3,7 +3,7 @@
 	
 	<TemplateConfiguration>
 		<_Name>F# Test Fixture</_Name>
-		<Icon>md-text-file-icon|res:nunit-overlay-32.png</Icon>
+		<Icon>md-file-unit-test</Icon>
 		<_Category>NUnit</_Category>
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates a Test Fixture.</_Description>

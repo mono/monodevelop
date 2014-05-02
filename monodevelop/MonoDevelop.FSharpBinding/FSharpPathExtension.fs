@@ -70,8 +70,8 @@ type FSharpPathExtension() =
                 let name = top.Declaration.Name
                 if name.Contains(".") then
                     let nameparts = name.[.. name.LastIndexOf(".")]
-                    newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = (ast, nameparts)))
-                else newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = ast))
+                    newPath.Add(PathEntry(ImageService.GetIcon(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = (ast, nameparts)))
+                else newPath.Add(PathEntry(ImageService.GetIcon(ServiceUtils.getIcon top.Declaration.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(top.Declaration), Tag = ast))
             
             if topLevelTypesInsideCursor.Length > 0 then
                 let lastToplevel = topLevelTypesInsideCursor.Last()
@@ -81,11 +81,11 @@ type FSharpPathExtension() =
 
                 Debug.Assert( multichild.Length <= 1, String.Format("{0} children found please investigate!", multichild.Length))
                 match child with
-                | Some(c) -> newPath.Add(PathEntry(ImageService.GetPixbuf(ServiceUtils.getIcon c.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(c) , Tag = lastToplevel))
+                | Some(c) -> newPath.Add(PathEntry(ImageService.GetIcon(ServiceUtils.getIcon c.Glyph, Gtk.IconSize.Menu), x.GetEntityMarkup(c) , Tag = lastToplevel))
                 | None -> newPath.Add(PathEntry("No selection", Tag = lastToplevel))
 
             let previousPath = currentPath
-            //ensure the path has changed from the previous one before setting and raising event.
+            //ensure the path has chnaged from the previous one before setting and raising event.
             let samePath = Seq.forall2 (fun (p1:PathEntry) (p2:PathEntry) -> p1.Markup = p2.Markup) previousPath newPath
             if not samePath then
                 if newPath.Count = 0 then currentPath <- [|PathEntry("No selection", Tag = ast)|]
@@ -156,7 +156,4 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
 
         member x.GetIcon(n) =
             let node = memberList.[n]
-            ImageService.GetPixbuf(ServiceUtils.getIcon node.Glyph, Gtk.IconSize.Menu)         
-
-
-
+            ImageService.GetIcon(ServiceUtils.getIcon node.Glyph, Gtk.IconSize.Menu)

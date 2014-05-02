@@ -193,7 +193,7 @@ type FSharpResolverProvider() =
 
         match fsSymbolOpt with 
         | None ->  null
-        | Some fsSymbolUse -> 
+        | Some fsSymbolUse ->
             let reg = 
                 match loc with
                 | FindDeclResult.DeclFound(m) -> 

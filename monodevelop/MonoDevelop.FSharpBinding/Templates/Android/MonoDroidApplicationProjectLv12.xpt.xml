@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Android Honeycomb Application</_Name>
+		<_Category>F#/Android</_Category>
+		<Icon>monodroid-project</Icon>
+		<LanguageName>F#</LanguageName>
+		<_Description>Creates an Android Application that targets Honeycomb (API Level 12) or higher devices.</_Description>
+	</TemplateConfiguration>
+	
+	<Actions>
+		<Open filename = "MainActivity.fs"/>
+	</Actions>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+			<OtherFlags>--noframework</OtherFlags>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = "." type = "MonoDroid">
+			<Options
+				AndroidApplication="true"
+				AndroidResgenFile="Resources/Resource.designer.fs"
+				AndroidResgenClass="Resource"
+				TargetFrameworkVersion="MonoAndroid,Version=v3.1" />
+			<References>
+				<Reference type="Gac" refto="mscorlib, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="FSharp.Core, Version=2.3.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+				<Reference type="Gac" refto="Mono.Android" />
+			</References>
+			<Files>
+				<Directory name="Resources">
+					<File name="Resource.designer.fs" src="MonoDroidApplication/Resource.fs" />
+					<RawFile name="AboutResources.txt" src="MonoDroidApplication/AboutResources.txt" />
+					<Directory name="layout">
+						<File name="Main.axml" src="MonoDroidApplication/Main.axml" />
+					</Directory>
+					<Directory name="values">
+						<File name="Strings.xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, Click Me!</string>
+    <string name="app_name">${ProjectName}</string>
+</resources>]]></File>
+					</Directory>
+					<Directory name ="drawable">
+						<RawFile name="Icon.png" src="MonoDroidApplication/Icon-md.png" />
+					</Directory>
+				</Directory>
+				<Directory name="Properties">
+					<File name="AssemblyInfo.fs" src="MonoDroidApplication/AssemblyInfo.fs" />
+				</Directory>
+				<Directory name="Assets">
+					<RawFile name="AboutAssets.txt" src="MonoDroidApplication/AboutAssets.txt" />
+				</Directory>
+				<File name="MainActivity.fs" src="MonoDroidApplication/MainActivity.fs" />
+			</Files>
+		</Project>
+	</Combine>
+</Template>

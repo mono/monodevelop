@@ -2,16 +2,14 @@
 <Template Originator="Dave Thomas" Language="F#" Created="20/02/2014" LastModified="20/02/2014">
   <TemplateConfiguration>
     <_Name>F# Signature File</_Name>
-    <Icon>md-text-file-icon|md-fs-logo32</Icon>
+    <Icon>md-text-file-icon</Icon>
     <_Description>Creates an empty F# signature file.  
     
     A signature file contains information about the public signatures of a set of F# program elements, such as types, namespaces, and modules. 
     
     It can be used to specify the accessibility of these program elements.</_Description>
-    <!--This would create F#/General, which is a bit annoying if we have just two simple templates
     <_Category>General</_Category>
-    <LanguageName>F#</LanguageName> -->
-    <_Category>F#</_Category>
+    <LanguageName>F#</LanguageName>
   </TemplateConfiguration>
 
   <TemplateFiles>
