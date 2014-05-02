@@ -45,28 +45,29 @@ module CompilerArguments =
                                     
       let isPortable (project: DotNetProject) =
         not (String.IsNullOrEmpty project.TargetFramework.Id.Profile)
-        
+      
+      // create a new target framework  moniker, the default one is incorrect for portable unless the project type is PortableDotnetProject
+      // which has the default moniker profile of ".NETPortable" rather than ".NETFramework".  
+      // We cant use a PortableDotnetProject as this requires adding a guid flavour, which breaks compatiability with VS until 
+      // the MD project system is refined to support project the way VS does.
       let getPortableReferences (project: DotNetProject) configSelector = 
-        let fdir = 
+        let frameworkDirectory = 
             project.TargetRuntime.GetReferenceFrameworkDirectories() 
-            |> Seq.map (fun fp -> fp.ToString() ) 
-            |> Seq.toArray
-   
-        // create a new target framework  moniker, the default one is incorrect for portable unless the project type is PortableDotnetProject
-        // which has the default moniker profile of ".NETPortable" rather than ".NETFramework".  
-        // We cant use a PortableDotnetProject as this requires adding a guid flavour, which breaks compatiability with VS until 
-        // the MD project system is refined to support project the way VS does.
+            |> Seq.map (fun fp -> fp.Combine([|".NETPortable"|]).ToString() )
+            |> Seq.tryFind (fun fp -> Directory.Exists(fp.ToString()))
        
         let frameworkMoniker = TargetFrameworkMoniker (".NETPortable", project.TargetFramework.Id.Version, project.TargetFramework.Id.Profile)
         let assemblyDirectoryName = frameworkMoniker.GetAssemblyDirectoryName()
         // TODO: figure out the correct path [1] happens to be right one here
-        let portablePath = Path.Combine(fdir.[1], assemblyDirectoryName)            
-                
-        project.GetReferencedAssemblies(configSelector) 
-        |> Seq.append (System.IO.Directory.EnumerateFiles(portablePath))
-        |> set 
-        |> Set.map ((+) "-r:")
-        |> Set.toList
+        match frameworkDirectory with
+        | Some fd ->
+            let portablePath = Path.Combine(fd, assemblyDirectoryName)            
+            project.GetReferencedAssemblies(configSelector) 
+            |> Seq.append (System.IO.Directory.EnumerateFiles(portablePath))
+            |> set 
+            |> Set.map ((+) "-r:")
+            |> Set.toList
+        | None -> []
        
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
