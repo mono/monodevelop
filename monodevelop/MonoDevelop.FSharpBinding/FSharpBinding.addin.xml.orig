@@ -116,6 +116,10 @@
             <DotNetProject language="F#" extension="fsproj" guid="{4925A630-B079-445d-BCD4-3A9C94FE9307}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
   </Extension>
 
+  <Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
+    <Source class ="MonoDevelop.FSharp.NRefactoryCodeActionSource"/>
+  </Extension>
+
   <Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/Other">
     <Section id="FSharpSettings" _label="F# Settings" class = "MonoDevelop.FSharp.FSharpSettingsPanel" />
   </Extension>

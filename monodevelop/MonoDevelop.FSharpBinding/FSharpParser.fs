@@ -11,10 +11,11 @@ open MonoDevelop.Ide.TypeSystem
 open ICSharpCode.NRefactory.TypeSystem
 open Microsoft.FSharp.Compiler
 open FSharp.CompilerBinding
+open System.Threading
 
 type FSharpParsedDocument(fileName) = 
      inherit DefaultParsedDocument(fileName)
-  
+     
 // An instance of this type is created by MonoDevelop (as defined in the .xml for the AddIn) 
 type FSharpParser() =
   inherit TypeSystemParser()
@@ -73,8 +74,15 @@ type FSharpParser() =
     Debug.WriteLine("[Thread {0}] Parsing: Update in FSharpParser.Parse to file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
 
     let doc = new FSharpParsedDocument(fileName)
+    
     doc.Flags <- doc.Flags ||| ParsedDocumentFlags.NonSerializable
-
+    
+    // Not sure if these are needed yet. 
+    doc.CreateRefactoringContext <- Func<_,_,_>(fun doc token -> 
+        FSharpRefactoringContext() :> IRefactoringContext)
+    doc.CreateRefactoringContextWithEditor <- Func<_,_,_,_>(fun data resolver token -> 
+        FSharpRefactoringContext() :> IRefactoringContext)
+    
     Debug.WriteLine("[Thread {0}]: TriggerParse file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
     let filePathOpt = 
         // TriggerParse will work only for full paths
