@@ -15,6 +15,10 @@
     <Addin id="::MonoDevelop.SourceEditor2" version="4.0" />
   </Dependencies>
 
+  <Runtime>
+    <Import file="Templates\EmptyJSFile.xft.xml"/>
+  </Runtime>
+
   <Extension path="/MonoDevelop/Ide/FileFilters">
     <FileFilter id="JSFile"
 		            insertafter="Xml"
@@ -24,6 +28,10 @@
 
   <Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
     <Templates file="SyntaxModes\JavaScriptSyntaxMode.xml" />
+  </Extension>
+
+  <Extension path="/MonoDevelop/Ide/FileTemplates">
+    <FileTemplate id="JSFile" file="Templates\EmptyJSFile.xft.xml"/>
   </Extension>
 
 </Addin>
