@@ -22,4 +22,8 @@
 		           extensions="*.js" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/SourceEditor2/SyntaxModes">
+    <Templates file="SyntaxModes\JavaScriptSyntaxMode.xml" />
+  </Extension>
+
 </Addin>

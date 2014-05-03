@@ -203,7 +203,10 @@
   <ItemGroup>
     <Content Include="Jurassic\Compiler\Emit\Optimizations.txt" />
     <Content Include="Jurassic\License.txt" />
-    <Content Include="MonoDevelop.JavaScript.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.JavaScript.addin.xml" />
+    <None Include="SyntaxMode\JavaScriptSyntaxMode.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
