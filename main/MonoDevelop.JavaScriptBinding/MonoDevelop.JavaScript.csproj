@@ -7,8 +7,8 @@
     <ProjectGuid>{6281ED35-6EFB-4D37-9517-C9F37E14BD8F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MonoDevelop.JavaScriptBinding</RootNamespace>
-    <AssemblyName>MonoDevelop.JavaScriptBinding</AssemblyName>
+    <RootNamespace>MonoDevelop.JavaScript</RootNamespace>
+    <AssemblyName>MonoDevelop.JavaScript</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -56,6 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extentions\FunctionExtentions.cs" />
+    <Compile Include="Factories\DomRegionFactory.cs" />
     <Compile Include="Factories\ErrorFactory.cs" />
     <Compile Include="Jurassic\Compiler\Binders\Binder.cs" />
     <Compile Include="Jurassic\Compiler\Binders\BinderMethod.cs" />
@@ -202,11 +204,14 @@
     <Compile Include="Jurassic\Library\RegExp\RegExpInstance.cs" />
     <Compile Include="Jurassic\Library\String\StringConstructor.cs" />
     <Compile Include="Jurassic\Library\String\StringInstance.cs" />
+    <Compile Include="Parser\JavaScriptParsedDocument.cs" />
+    <Compile Include="Parser\JavaScriptParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Jurassic\Compiler\Emit\Optimizations.txt" />
     <Content Include="Jurassic\License.txt" />
+    <Content Include="Notes\JurrasicJSMap.txt" />
     <Content Include="Templates\EmptyJSFile.xft.xml" />
     <EmbeddedResource Include="MonoDevelop.JavaScript.addin.xml" />
     <None Include="SyntaxMode\JavaScriptSyntaxMode.xml">

@@ -34,4 +34,8 @@
     <FileTemplate id="JSFile" file="Templates\EmptyJSFile.xft.xml"/>
   </Extension>
 
+  <Extension path = "/MonoDevelop/TypeSystem/Parser">
+    <Parser class = "MonoDevelop.JavaScript.Parser.JavaScriptParser" mimeType="application/javascript, text/javascript" />
+  </Extension>
+
 </Addin>
