@@ -42,7 +42,8 @@ type FSharpPathExtension() =
     member private x.PathUpdated(documentLocation) =
         let loc = x.Document.Editor.Caret.Location
         
-        if x.Document.ParsedDocument = null then () else
+        if x.Document.ParsedDocument = null ||
+           IdeApp.Workbench.ActiveDocument <> x.Document then () else
         match x.Document.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast ->
 
