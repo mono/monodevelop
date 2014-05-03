@@ -13,13 +13,13 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.JavaScript.Parser
 {
-    public class JavaScriptParser : TypeSystemParser
-    {
-        public override ParsedDocument Parse(bool storeAst, string fileName, TextReader content, Projects.Project project = null)
-        {
-            var parseDocument = new JavaScriptParsedDocument(fileName, content);
-            parseDocument.Flags |= ParsedDocumentFlags.NonSerializable;
-            return parseDocument;
-        }
-    }
+	public class JavaScriptParser : TypeSystemParser
+	{
+		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Projects.Project project = null)
+		{
+			var parseDocument = new JavaScriptParsedDocument (fileName, content);
+			parseDocument.Flags |= ParsedDocumentFlags.NonSerializable;
+			return parseDocument;
+		}
+	}
 }
