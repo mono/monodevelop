@@ -8,7 +8,7 @@ namespace Jurassic.Library
     /// Represents a the value of an accessor property.
     /// </summary>
     [Serializable]
-    internal sealed class PropertyAccessorValue
+    public sealed class PropertyAccessorValue
     {
         private FunctionInstance getter;
         private FunctionInstance setter;

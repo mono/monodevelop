@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a ternary operator expression.
     /// </summary>
-    internal sealed class TernaryExpression : OperatorExpression
+    public sealed class TernaryExpression : OperatorExpression
     {
         /// <summary>
         /// Creates a new instance of TernaryExpression.

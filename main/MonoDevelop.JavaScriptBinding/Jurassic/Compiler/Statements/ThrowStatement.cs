@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a throw statement.
     /// </summary>
-    internal class ThrowStatement : Statement
+    public class ThrowStatement : Statement
     {
         /// <summary>
         /// Creates a new ThrowStatement instance.
@@ -54,7 +54,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get { yield return this.Value; }
         }

@@ -4,12 +4,12 @@ using System.Collections.Generic;
 namespace Jurassic.Compiler
 {
 
-    internal delegate void CodeGenDelegate(ILGenerator generator, OptimizationInfo optimizationInfo);
+    public delegate void CodeGenDelegate(ILGenerator generator, OptimizationInfo optimizationInfo);
 
     /// <summary>
     /// Represents information about one or more code generation optimizations.
     /// </summary>
-    internal class OptimizationInfo
+    public class OptimizationInfo
     {
         /// <summary>
         /// Creates a new OptimizationInfo instance.
@@ -32,7 +32,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets or sets the root of the abstract syntax tree that is being compiled.
         /// </summary>
-        public AstNode AbstractSyntaxTree
+        public JSAstNode AbstractSyntaxTree
         {
             get;
             set;

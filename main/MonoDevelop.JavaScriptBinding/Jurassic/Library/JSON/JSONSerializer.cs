@@ -7,7 +7,7 @@ namespace Jurassic.Library
     /// <summary>
     /// Converts a value into JSON text.
     /// </summary>
-    internal sealed class JSONSerializer
+    public sealed class JSONSerializer
     {
         private ScriptEngine engine;
         private Stack<ObjectInstance> objectStack;

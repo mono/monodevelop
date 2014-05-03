@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a comma-delimited list.
     /// </summary>
-    internal class ListExpression : OperatorExpression
+    public class ListExpression : OperatorExpression
     {
         /// <summary>
         /// Creates a new instance of ListExpression.

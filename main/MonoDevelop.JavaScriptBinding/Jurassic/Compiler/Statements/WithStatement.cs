@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript with statement.
     /// </summary>
-    internal class WithStatement : Statement
+    public class WithStatement : Statement
     {
         /// <summary>
         /// Creates a new WithStatement instance.
@@ -76,7 +76,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {

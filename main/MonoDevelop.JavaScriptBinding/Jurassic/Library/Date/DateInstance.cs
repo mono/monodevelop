@@ -90,10 +90,10 @@ namespace Jurassic.Library
         //_________________________________________________________________________________________
 
         /// <summary>
-        /// Gets the internal class name of the object.  Used by the default toString()
+        /// Gets the public class name of the object.  Used by the default toString()
         /// implementation.
         /// </summary>
-        protected override string InternalClassName
+        protected override string publicClassName
         {
             get { return "Date"; }
         }
@@ -126,7 +126,7 @@ namespace Jurassic.Library
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Jurassic.Library
         /// Returns the year component of this date, according to local time.
         /// </summary>
         /// <returns> The year component of this date, according to local time. </returns>
-        [JSInternalFunction(Name = "getFullYear")]
+        [JSpublicFunction(Name = "getFullYear")]
         public double GetFullYear()
         {
             return GetDateComponent(DateComponent.Year, DateTimeKind.Local);
@@ -162,7 +162,7 @@ namespace Jurassic.Library
         /// Returns the year component of this date as an offset from 1900, according to local time.
         /// </summary>
         /// <returns> The year component of this date as an offset from 1900, according to local time. </returns>
-        [JSInternalFunction(Deprecated = true, Name = "getYear")]
+        [JSpublicFunction(Deprecated = true, Name = "getYear")]
         public double GetYear()
         {
             return GetDateComponent(DateComponent.Year, DateTimeKind.Local) - 1900;
@@ -172,7 +172,7 @@ namespace Jurassic.Library
         /// Returns the month component of this date, according to local time.
         /// </summary>
         /// <returns> The month component (0-11) of this date, according to local time. </returns>
-        [JSInternalFunction(Name = "getMonth")]
+        [JSpublicFunction(Name = "getMonth")]
         public double GetMonth()
         {
             return GetDateComponent(DateComponent.Month, DateTimeKind.Local);
@@ -182,7 +182,7 @@ namespace Jurassic.Library
         /// Returns the day of the month component of this date, according to local time.
         /// </summary>
         /// <returns> The day of the month component (1-31) of this date, according to local time. </returns>
-        [JSInternalFunction(Name = "getDate")]
+        [JSpublicFunction(Name = "getDate")]
         public double GetDate()
         {
             return GetDateComponent(DateComponent.Day, DateTimeKind.Local);
@@ -192,7 +192,7 @@ namespace Jurassic.Library
         /// Returns the day of the week component of this date, according to local time.
         /// </summary>
         /// <returns> The day of the week component (0-6) of this date, according to local time. </returns>
-        [JSInternalFunction(Name = "getDay")]
+        [JSpublicFunction(Name = "getDay")]
         public double GetDay()
         {
             return GetDateComponent(DateComponent.DayOfWeek, DateTimeKind.Local);
@@ -202,7 +202,7 @@ namespace Jurassic.Library
         /// Returns the hour component of this date, according to local time.
         /// </summary>
         /// <returns> The hour component (0-23) of this date, according to local time. </returns>
-        [JSInternalFunction(Name = "getHours")]
+        [JSpublicFunction(Name = "getHours")]
         public double GetHours()
         {
             return GetDateComponent(DateComponent.Hour, DateTimeKind.Local);
@@ -212,7 +212,7 @@ namespace Jurassic.Library
         /// Returns the minute component of this date, according to local time.
         /// </summary>
         /// <returns> The minute component (0-59) of this date, according to local time. </returns>
-        [JSInternalFunction(Name = "getMinutes")]
+        [JSpublicFunction(Name = "getMinutes")]
         public double GetMinutes()
         {
             return GetDateComponent(DateComponent.Minute, DateTimeKind.Local);
@@ -222,7 +222,7 @@ namespace Jurassic.Library
         /// Returns the seconds component of this date, according to local time.
         /// </summary>
         /// <returns> The seconds component (0-59) of this date, according to local time. </returns>
-        [JSInternalFunction(Name = "getSeconds")]
+        [JSpublicFunction(Name = "getSeconds")]
         public double GetSeconds()
         {
             return GetDateComponent(DateComponent.Second, DateTimeKind.Local);
@@ -232,7 +232,7 @@ namespace Jurassic.Library
         /// Returns the millisecond component of this date, according to local time.
         /// </summary>
         /// <returns> The millisecond component (0-999) of this date, according to local time. </returns>
-        [JSInternalFunction(Name = "getMilliseconds")]
+        [JSpublicFunction(Name = "getMilliseconds")]
         public double GetMilliseconds()
         {
             return GetDateComponent(DateComponent.Millisecond, DateTimeKind.Local);
@@ -242,7 +242,7 @@ namespace Jurassic.Library
         /// Returns the number of milliseconds since January 1, 1970, 00:00:00 UTC.
         /// </summary>
         /// <returns> The number of milliseconds since January 1, 1970, 00:00:00 UTC. </returns>
-        [JSInternalFunction(Name = "getTime")]
+        [JSpublicFunction(Name = "getTime")]
         public double GetTime()
         {
             return this.ValueInMilliseconds;
@@ -252,7 +252,7 @@ namespace Jurassic.Library
         /// Returns the time-zone offset in minutes for the current locale.
         /// </summary>
         /// <returns> The time-zone offset in minutes for the current locale. </returns>
-        [JSInternalFunction(Name = "getTimezoneOffset")]
+        [JSpublicFunction(Name = "getTimezoneOffset")]
         public double GetTimezoneOffset()
         {
             if (this.value == InvalidDate)
@@ -264,7 +264,7 @@ namespace Jurassic.Library
         /// Returns the year component of this date, according to universal time.
         /// </summary>
         /// <returns> The year component of this date, according to universal time. </returns>
-        [JSInternalFunction(Name = "getUTCFullYear")]
+        [JSpublicFunction(Name = "getUTCFullYear")]
         public double GetUTCFullYear()
         {
             return GetDateComponent(DateComponent.Year, DateTimeKind.Utc);
@@ -274,7 +274,7 @@ namespace Jurassic.Library
         /// Returns the month component of this date, according to universal time.
         /// </summary>
         /// <returns> The month component (0-11) of this date, according to universal time. </returns>
-        [JSInternalFunction(Name = "getUTCMonth")]
+        [JSpublicFunction(Name = "getUTCMonth")]
         public double GetUTCMonth()
         {
             return GetDateComponent(DateComponent.Month, DateTimeKind.Utc);
@@ -284,7 +284,7 @@ namespace Jurassic.Library
         /// Returns the day of the month component of this date, according to universal time.
         /// </summary>
         /// <returns> The day of the month component (1-31) of this date, according to universal time. </returns>
-        [JSInternalFunction(Name = "getUTCDate")]
+        [JSpublicFunction(Name = "getUTCDate")]
         public double GetUTCDate()
         {
             return GetDateComponent(DateComponent.Day, DateTimeKind.Utc);
@@ -294,7 +294,7 @@ namespace Jurassic.Library
         /// Returns the day of the week component of this date, according to universal time.
         /// </summary>
         /// <returns> The day of the week component (0-6) of this date, according to universal time. </returns>
-        [JSInternalFunction(Name = "getUTCDay")]
+        [JSpublicFunction(Name = "getUTCDay")]
         public double GetUTCDay()
         {
             return GetDateComponent(DateComponent.DayOfWeek, DateTimeKind.Utc);
@@ -304,7 +304,7 @@ namespace Jurassic.Library
         /// Returns the hour component of this date, according to universal time.
         /// </summary>
         /// <returns> The hour component (0-23) of this date, according to universal time. </returns>
-        [JSInternalFunction(Name = "getUTCHours")]
+        [JSpublicFunction(Name = "getUTCHours")]
         public double GetUTCHours()
         {
             return GetDateComponent(DateComponent.Hour, DateTimeKind.Utc);
@@ -314,7 +314,7 @@ namespace Jurassic.Library
         /// Returns the minute component of this date, according to universal time.
         /// </summary>
         /// <returns> The minute component (0-59) of this date, according to universal time. </returns>
-        [JSInternalFunction(Name = "getUTCMinutes")]
+        [JSpublicFunction(Name = "getUTCMinutes")]
         public double GetUTCMinutes()
         {
             return GetDateComponent(DateComponent.Minute, DateTimeKind.Utc);
@@ -324,7 +324,7 @@ namespace Jurassic.Library
         /// Returns the seconds component of this date, according to universal time.
         /// </summary>
         /// <returns> The seconds component (0-59) of this date, according to universal time. </returns>
-        [JSInternalFunction(Name = "getUTCSeconds")]
+        [JSpublicFunction(Name = "getUTCSeconds")]
         public double GetUTCSeconds()
         {
             return GetDateComponent(DateComponent.Second, DateTimeKind.Utc);
@@ -334,7 +334,7 @@ namespace Jurassic.Library
         /// Returns the millisecond component of this date, according to universal time.
         /// </summary>
         /// <returns> The millisecond component (0-999) of this date, according to universal time. </returns>
-        [JSInternalFunction(Name = "getUTCMilliseconds")]
+        [JSpublicFunction(Name = "getUTCMilliseconds")]
         public double GetUTCMilliseconds()
         {
             return GetDateComponent(DateComponent.Millisecond, DateTimeKind.Utc);
@@ -346,7 +346,7 @@ namespace Jurassic.Library
         /// <param name="year"> The 4 digit year. </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetFullYear(double year)
         {
             return SetDateComponents(DateComponent.Year, DateTimeKind.Local, year);
@@ -359,7 +359,7 @@ namespace Jurassic.Library
         /// <param name="month"> The month (0-11). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetFullYear(double year, double month)
         {
             return SetDateComponents(DateComponent.Year, DateTimeKind.Local, year, month);
@@ -373,7 +373,7 @@ namespace Jurassic.Library
         /// <param name="day"> The day of the month (1-31). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetFullYear(double year, double month, double day)
         {
             return SetDateComponents(DateComponent.Year, DateTimeKind.Local, year, month, day);
@@ -385,7 +385,7 @@ namespace Jurassic.Library
         /// <param name="year"> The year.  Numbers less than 100 will be assumed to be  </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Deprecated = true, Name = "setYear", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Deprecated = true, Name = "setYear", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetYear(double year)
         {
             return SetDateComponents(DateComponent.Year, DateTimeKind.Local, year >= 0 && year < 100 ? year + 1900 : year);
@@ -397,7 +397,7 @@ namespace Jurassic.Library
         /// <param name="month"> The month (0-11). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setMonth", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setMonth", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetMonth(double month)
         {
             return SetDateComponents(DateComponent.Month, DateTimeKind.Local, month);
@@ -410,7 +410,7 @@ namespace Jurassic.Library
         /// <param name="day"> The day of the month (1-31). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setMonth", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setMonth", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetMonth(double month, double day)
         {
             return SetDateComponents(DateComponent.Month, DateTimeKind.Local, month, day);
@@ -422,7 +422,7 @@ namespace Jurassic.Library
         /// <param name="day"> The day of the month (1-31). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setDate", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setDate", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetDate(double day)
         {
             return SetDateComponents(DateComponent.Day, DateTimeKind.Local, day);
@@ -434,7 +434,7 @@ namespace Jurassic.Library
         /// <param name="hour"> The number of hours since midnight (0-23). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setHours", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setHours", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetHours(double hour)
         {
             return SetDateComponents(DateComponent.Hour, DateTimeKind.Local, hour);
@@ -447,7 +447,7 @@ namespace Jurassic.Library
         /// <param name="minute"> The number of minutes since the hour (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setHours", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setHours", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetHours(double hour, double minute)
         {
             return SetDateComponents(DateComponent.Hour, DateTimeKind.Local, hour, minute);
@@ -461,7 +461,7 @@ namespace Jurassic.Library
         /// <param name="second"> The number of seconds since the minute (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setHours", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setHours", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetHours(double hour, double minute, double second)
         {
             return SetDateComponents(DateComponent.Hour, DateTimeKind.Local, hour, minute, second);
@@ -476,7 +476,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since the second (0-999). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setHours", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setHours", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetHours(double hour, double minute, double second, double millisecond)
         {
             return SetDateComponents(DateComponent.Hour, DateTimeKind.Local, hour, minute, second, millisecond);
@@ -488,7 +488,7 @@ namespace Jurassic.Library
         /// <param name="minute"> The number of minutes since the hour (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetMinutes(double minute)
         {
             return SetDateComponents(DateComponent.Minute, DateTimeKind.Local, minute);
@@ -501,7 +501,7 @@ namespace Jurassic.Library
         /// <param name="second"> The number of seconds since the minute (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetMinutes(double minute, double second)
         {
             return SetDateComponents(DateComponent.Minute, DateTimeKind.Local, minute, second);
@@ -515,7 +515,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since the second (0-999). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetMinutes(double minute, double second, double millisecond)
         {
             return SetDateComponents(DateComponent.Minute, DateTimeKind.Local, minute, second, millisecond);
@@ -527,7 +527,7 @@ namespace Jurassic.Library
         /// <param name="second"> The number of seconds since the minute (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setSeconds", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setSeconds", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetSeconds(double second)
         {
             return SetDateComponents(DateComponent.Second, DateTimeKind.Local, second);
@@ -540,7 +540,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since the second (0-999). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setSeconds", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setSeconds", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetSeconds(double second, double millisecond)
         {
             return SetDateComponents(DateComponent.Second, DateTimeKind.Local, second, millisecond);
@@ -552,7 +552,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since the second (0-999). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setMilliseconds", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setMilliseconds", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetMilliseconds(double millisecond)
         {
             return SetDateComponents(DateComponent.Millisecond, DateTimeKind.Local, millisecond);
@@ -564,7 +564,7 @@ namespace Jurassic.Library
         /// <param name="year"> The 4 digit year. </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCFullYear(double year)
         {
             return SetDateComponents(DateComponent.Year, DateTimeKind.Utc, year);
@@ -577,7 +577,7 @@ namespace Jurassic.Library
         /// <param name="month"> The month (0-11). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCFullYear(double year, double month)
         {
             return SetDateComponents(DateComponent.Year, DateTimeKind.Utc, year, month);
@@ -591,7 +591,7 @@ namespace Jurassic.Library
         /// <param name="day"> The day of the month (1-31). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCFullYear", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCFullYear(double year, double month, double day)
         {
             return SetDateComponents(DateComponent.Year, DateTimeKind.Utc, year, month, day);
@@ -603,7 +603,7 @@ namespace Jurassic.Library
         /// <param name="month"> The month (0-11). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCMonth", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCMonth", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCMonth(double month)
         {
             return SetDateComponents(DateComponent.Month, DateTimeKind.Utc, month);
@@ -616,7 +616,7 @@ namespace Jurassic.Library
         /// <param name="day"> The day of the month (1-31). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCMonth", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCMonth", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCMonth(double month, double day)
         {
             return SetDateComponents(DateComponent.Month, DateTimeKind.Utc, month, day);
@@ -628,7 +628,7 @@ namespace Jurassic.Library
         /// <param name="day"> The day of the month (1-31). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCDate", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCDate", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCDate(double day)
         {
             return SetDateComponents(DateComponent.Day, DateTimeKind.Utc, day);
@@ -640,7 +640,7 @@ namespace Jurassic.Library
         /// <param name="hour"> The number of hours since midnight (0-23). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCHours", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCHours", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCHours(double hour)
         {
             return SetDateComponents(DateComponent.Hour, DateTimeKind.Utc, hour);
@@ -653,7 +653,7 @@ namespace Jurassic.Library
         /// <param name="minute"> The number of minutes since the hour (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCHours", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCHours", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCHours(double hour, double minute)
         {
             return SetDateComponents(DateComponent.Hour, DateTimeKind.Utc, hour, minute);
@@ -667,7 +667,7 @@ namespace Jurassic.Library
         /// <param name="second"> The number of seconds since the minute (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCHours", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCHours", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCHours(double hour, double minute, double second)
         {
             return SetDateComponents(DateComponent.Hour, DateTimeKind.Utc, hour, minute, second);
@@ -682,7 +682,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since the second (0-999). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCHours", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCHours", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCHours(double hour, double minute, double second, double millisecond)
         {
             return SetDateComponents(DateComponent.Hour, DateTimeKind.Utc, hour, minute, second, millisecond);
@@ -694,7 +694,7 @@ namespace Jurassic.Library
         /// <param name="minute"> The number of minutes since the hour (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCMinutes(double minute)
         {
             return SetDateComponents(DateComponent.Minute, DateTimeKind.Utc, minute);
@@ -707,7 +707,7 @@ namespace Jurassic.Library
         /// <param name="second"> The number of seconds since the minute (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCMinutes(double minute, double second)
         {
             return SetDateComponents(DateComponent.Minute, DateTimeKind.Utc, minute, second);
@@ -721,7 +721,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since the second (0-999). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCMinutes", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCMinutes(double minute, double second, double millisecond)
         {
             return SetDateComponents(DateComponent.Minute, DateTimeKind.Utc, minute, second, millisecond);
@@ -733,7 +733,7 @@ namespace Jurassic.Library
         /// <param name="second"> The number of seconds since the minute (0-59). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCSeconds", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCSeconds", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCSeconds(double second)
         {
             return SetDateComponents(DateComponent.Second, DateTimeKind.Utc, second);
@@ -746,7 +746,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since the second (0-999). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCSeconds", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCSeconds", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCSeconds(double second, double millisecond)
         {
             return SetDateComponents(DateComponent.Second, DateTimeKind.Utc, second, millisecond);
@@ -758,7 +758,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since the second (0-999). </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setUTCMilliseconds", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setUTCMilliseconds", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetUTCMilliseconds(double millisecond)
         {
             return SetDateComponents(DateComponent.Millisecond, DateTimeKind.Utc, millisecond);
@@ -770,7 +770,7 @@ namespace Jurassic.Library
         /// <param name="millisecond"> The number of milliseconds since January 1, 1970, 00:00:00 UTC. </param>
         /// <returns> The number of milliseconds elapsed since January 1, 1970, 00:00:00 UTC for
         /// the new date. </returns>
-        [JSInternalFunction(Name = "setTime", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "setTime", Flags = JSFunctionFlags.MutatesThisObject)]
         public double SetTime(double millisecond)
         {
             this.value = ToDateTime(millisecond);
@@ -781,7 +781,7 @@ namespace Jurassic.Library
         /// Returns the date as a string.
         /// </summary>
         /// <returns> The date as a string. </returns>
-        [JSInternalFunction(Name = "toDateString")]
+        [JSpublicFunction(Name = "toDateString")]
         public string ToDateString()
         {
             if (this.value == InvalidDate)
@@ -793,7 +793,7 @@ namespace Jurassic.Library
         /// Returns the date as a string using GMT (Greenwich Mean Time).
         /// </summary>
         /// <returns> The date as a string. </returns>
-        [JSInternalFunction(Deprecated = true, Name = "toGMTString")]
+        [JSpublicFunction(Deprecated = true, Name = "toGMTString")]
         public string ToGMTString()
         {
             if (this.value == InvalidDate)
@@ -805,7 +805,7 @@ namespace Jurassic.Library
         /// Returns the date as a string using GMT (Greenwich Mean Time).
         /// </summary>
         /// <returns> The date as a string. </returns>
-        [JSInternalFunction(Name = "toISOString")]
+        [JSpublicFunction(Name = "toISOString")]
         public string ToISOString()
         {
             if (this.value == InvalidDate)
@@ -818,7 +818,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="key"> Unused. </param>
         /// <returns> The date as a serializable string. </returns>
-        [JSInternalFunction(Name = "toJSON", Flags = JSFunctionFlags.HasThisObject)]
+        [JSpublicFunction(Name = "toJSON", Flags = JSFunctionFlags.HasThisObject)]
         public static object ToJSON(ObjectInstance thisObject, string key)
         {
             var number = TypeConverter.ToPrimitive(thisObject, PrimitiveTypeHint.Number);
@@ -831,7 +831,7 @@ namespace Jurassic.Library
         /// Returns the date as a string using the current locale settings.
         /// </summary>
         /// <returns></returns>
-        [JSInternalFunction(Name = "toLocaleDateString")]
+        [JSpublicFunction(Name = "toLocaleDateString")]
         public string ToLocaleDateString()
         {
             if (this.value == InvalidDate)
@@ -843,7 +843,7 @@ namespace Jurassic.Library
         /// Returns the date and time as a string using the current locale settings.
         /// </summary>
         /// <returns></returns>
-        [JSInternalFunction(Name = "toLocaleString")]
+        [JSpublicFunction(Name = "toLocaleString")]
         public new string ToLocaleString()
         {
             if (this.value == InvalidDate)
@@ -855,7 +855,7 @@ namespace Jurassic.Library
         /// Returns the time as a string using the current locale settings.
         /// </summary>
         /// <returns></returns>
-        [JSInternalFunction(Name = "toLocaleTimeString")]
+        [JSpublicFunction(Name = "toLocaleTimeString")]
         public string ToLocaleTimeString()
         {
             if (this.value == InvalidDate)
@@ -867,7 +867,7 @@ namespace Jurassic.Library
         /// Returns a string representing the date and time.
         /// </summary>
         /// <returns> A string representing the date and time. </returns>
-        [JSInternalFunction(Name = "toString")]
+        [JSpublicFunction(Name = "toString")]
         public string ToStringJS()
         {
             if (this.value == InvalidDate)
@@ -882,7 +882,7 @@ namespace Jurassic.Library
         /// Returns the time as a string.
         /// </summary>
         /// <returns></returns>
-        [JSInternalFunction(Name = "toTimeString")]
+        [JSpublicFunction(Name = "toTimeString")]
         public string ToTimeString()
         {
             if (this.value == InvalidDate)
@@ -897,7 +897,7 @@ namespace Jurassic.Library
         /// Returns the date as a string using UTC (universal time).
         /// </summary>
         /// <returns></returns>
-        [JSInternalFunction(Name = "toUTCString")]
+        [JSpublicFunction(Name = "toUTCString")]
         public string ToUTCString()
         {
             if (this.value == InvalidDate)
@@ -909,7 +909,7 @@ namespace Jurassic.Library
         /// Returns the primitive value of this object.
         /// </summary>
         /// <returns> The primitive value of this object. </returns>
-        [JSInternalFunction(Name = "valueOf")]
+        [JSpublicFunction(Name = "valueOf")]
         public new double ValueOf()
         {
             return this.ValueInMilliseconds;

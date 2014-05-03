@@ -6,12 +6,12 @@ namespace Jurassic
     /// <summary>
     /// Converts numbers into strings.
     /// </summary>
-    internal static class NumberFormatter
+    public static class NumberFormatter
     {
         /// <summary>
         /// Used to specify the type of number formatting that should be applied.
         /// </summary>
-        internal enum Style
+        public enum Style
         {
             /// <summary>
             /// Specifies that the shortest number that accurately represents the number should be
@@ -57,7 +57,7 @@ namespace Jurassic
         /// Fixed - the number of figures to display after the decimal point.
         /// Exponential - the number of figures to display after the decimal point.
         /// </param>
-        internal static string ToString(double value, int radix, Style style, int precision = 0)
+        public static string ToString(double value, int radix, Style style, int precision = 0)
         {
             return ToString(value, radix, System.Globalization.CultureInfo.InvariantCulture.NumberFormat, style, precision);
         }
@@ -76,7 +76,7 @@ namespace Jurassic
         /// Fixed - the number of figures to display after the decimal point.
         /// Exponential - the number of figures to display after the decimal point.
         /// </param>
-        internal static string ToString(double value, int radix, System.Globalization.NumberFormatInfo numberFormatInfo, Style style, int precision = 0)
+        public static string ToString(double value, int radix, System.Globalization.NumberFormatInfo numberFormatInfo, Style style, int precision = 0)
         {
             // Handle NaN.
             if (double.IsNaN(value))

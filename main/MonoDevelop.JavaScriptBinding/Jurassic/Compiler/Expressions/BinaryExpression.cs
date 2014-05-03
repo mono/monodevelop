@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a binary operator expression.
     /// </summary>
-    internal class BinaryExpression : OperatorExpression
+    public class BinaryExpression : OperatorExpression
     {
         /// <summary>
         /// Creates a new instance of BinaryExpression.

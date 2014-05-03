@@ -16,7 +16,7 @@ namespace Jurassic.Compiler
         /// Represents a variable declared in a scope.
         /// </summary>
         [Serializable]
-        internal class DeclaredVariable
+        public class DeclaredVariable
         {
             // The scope the variable was declared in.
             public Scope Scope;
@@ -87,7 +87,7 @@ namespace Jurassic.Compiler
         /// <c>true</c>; will only be false if GenerateScopeCreation() has been called and the
         /// scope was optimized away.
         /// </summary>
-        internal bool ExistsAtRuntime
+        public bool ExistsAtRuntime
         {
             get;
             set;
@@ -105,7 +105,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets the number of variables declared in this scope.
         /// </summary>
-        internal int DeclaredVariableCount
+        public int DeclaredVariableCount
         {
             get { return this.variables.Count; }
         }
@@ -114,7 +114,7 @@ namespace Jurassic.Compiler
         /// Gets an enumerable list of the names of all the declared variables (including function
         /// declarations), listed in the order they were declared.
         /// </summary>
-        internal IEnumerable<string> DeclaredVariableNames
+        public IEnumerable<string> DeclaredVariableNames
         {
             get
             {
@@ -130,7 +130,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of the declared variables, in no particular order.
         /// </summary>
-        internal IEnumerable<DeclaredVariable> DeclaredVariables
+        public IEnumerable<DeclaredVariable> DeclaredVariables
         {
             get { return this.variables.Values; }
         }
@@ -141,7 +141,7 @@ namespace Jurassic.Compiler
         /// <param name="variableName"> The name of the variable. </param>
         /// <returns> The index of the given variable, or <c>-1</c> if the variable doesn't exist
         /// in the scope. </returns>
-        internal DeclaredVariable GetDeclaredVariable(string variableName)
+        public DeclaredVariable GetDeclaredVariable(string variableName)
         {
             if (variableName == null)
                 throw new ArgumentNullException("variableName");
@@ -157,7 +157,7 @@ namespace Jurassic.Compiler
         /// <param name="name"> The name of the variable. </param>
         /// <returns> <c>true</c> if the given variable has been declared in this scope;
         /// <c>false</c> otherwise. </returns>
-        internal bool HasDeclaredVariable(string name)
+        public bool HasDeclaredVariable(string name)
         {
             return this.variables.ContainsKey(name);
         }
@@ -174,7 +174,7 @@ namespace Jurassic.Compiler
         /// <param name="deletable"> <c>true</c> if the variable can be deleted; <c>false</c>
         /// otherwise.  Defaults to <c>true</c>. </param>
         /// <returns> A reference to the variable that was declared. </returns>
-        internal virtual DeclaredVariable DeclareVariable(string name, Expression valueAtTopOfScope = null, bool writable = true, bool deletable = false)
+        public virtual DeclaredVariable DeclareVariable(string name, Expression valueAtTopOfScope = null, bool writable = true, bool deletable = false)
         {
             if (name == null)
                 throw new ArgumentNullException("name");
@@ -211,7 +211,7 @@ namespace Jurassic.Compiler
         /// Removes a declared variable from the scope.
         /// </summary>
         /// <param name="name"> The name of the variable. </param>
-        internal void RemovedDeclaredVariable(string name)
+        public void RemovedDeclaredVariable(string name)
         {
             this.variables.Remove(name);
         }
@@ -250,14 +250,14 @@ namespace Jurassic.Compiler
         /// </summary>
         /// <param name="generator"> The generator to output the CIL to. </param>
         /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        internal abstract void GenerateScopeCreation(ILGenerator generator, OptimizationInfo optimizationInfo);
+        public abstract void GenerateScopeCreation(ILGenerator generator, OptimizationInfo optimizationInfo);
 
         /// <summary>
         /// Generates code that initializes the variable and function declarations.
         /// </summary>
         /// <param name="generator"> The generator to output the CIL to. </param>
         /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        internal virtual void GenerateDeclarations(ILGenerator generator, OptimizationInfo optimizationInfo)
+        public virtual void GenerateDeclarations(ILGenerator generator, OptimizationInfo optimizationInfo)
         {
             // Initialize the declared variables and functions.
             foreach (var variable in this.variables.Values)
@@ -309,7 +309,7 @@ namespace Jurassic.Compiler
         /// </summary>
         /// <param name="generator"> The generator to output the CIL to. </param>
         /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        internal void GenerateScopeDestruction(ILGenerator generator, OptimizationInfo optimizationInfo)
+        public void GenerateScopeDestruction(ILGenerator generator, OptimizationInfo optimizationInfo)
         {
             if (this.ExistsAtRuntime == false)
                 return;

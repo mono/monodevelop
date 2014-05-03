@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// Represents a mutable operator expression.  Once all the operands are determined, the
     /// expression is converted into a real operator expression.
     /// </summary>
-    internal abstract class OperatorExpression : Expression
+    public abstract class OperatorExpression : Expression
     {
         private Expression[] operands;
 
@@ -202,7 +202,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {

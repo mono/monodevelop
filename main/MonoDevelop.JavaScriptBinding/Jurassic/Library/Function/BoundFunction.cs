@@ -8,7 +8,7 @@ namespace Jurassic.Library
     /// Represents a function that has bound arguments.
     /// </summary>
     [Serializable]
-    internal class BoundFunction : FunctionInstance
+    public class BoundFunction : FunctionInstance
     {
 
         //     INITIALIZATION
@@ -21,7 +21,7 @@ namespace Jurassic.Library
         /// <param name="targetFunction"> The function that was bound. </param>
         /// <param name="boundThis"> The value of the "this" parameter when the target function is called. </param>
         /// <param name="boundArguments"> Zero or more bound argument values. </param>
-        internal BoundFunction(FunctionInstance targetFunction, object boundThis, object[] boundArguments)
+        public BoundFunction(FunctionInstance targetFunction, object boundThis, object[] boundArguments)
             : base(targetFunction.Prototype)
         {
             if (targetFunction == null)

@@ -97,7 +97,7 @@ namespace Jurassic.Library
         /// delegate for the function name. </param>
         /// <param name="length"> The "typical" number of arguments expected by the function.  Pass
         /// <c>-1</c> to use the number of arguments expected by the delegate. </param>
-        internal ClrFunction(ObjectInstance prototype, Delegate delegateToCall, string name = null, int length = -1)
+        public ClrFunction(ObjectInstance prototype, Delegate delegateToCall, string name = null, int length = -1)
             : base(prototype)
         {
             // Initialize the [[Call]] method.
@@ -124,7 +124,7 @@ namespace Jurassic.Library
         /// the same name). </param>
         /// <param name="length"> The "typical" number of arguments expected by the function.  Pass
         /// <c>-1</c> to use the maximum of arguments expected by any of the provided methods. </param>
-        internal ClrFunction(ObjectInstance prototype, IEnumerable<JSBinderMethod> methods, string name = null, int length = -1)
+        public ClrFunction(ObjectInstance prototype, IEnumerable<JSBinderMethod> methods, string name = null, int length = -1)
             : base(prototype)
         {
             this.callBinder = new JSBinder(methods);
@@ -141,7 +141,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
         /// <param name="binder"> An object representing a collection of methods to bind to. </param>
-        internal ClrFunction(ObjectInstance prototype, Binder binder)
+        public ClrFunction(ObjectInstance prototype, Binder binder)
             : base(prototype)
         {
             this.callBinder = binder;
@@ -218,7 +218,7 @@ namespace Jurassic.Library
         ///// <param name="argumentTypes"> The types of the arguments that will be passed to the delegate. </param>
         ///// <returns> A delegate that does type conversion and calls the method represented by this
         ///// object. </returns>
-        //internal BinderDelegate CreateBinder<T>()
+        //public BinderDelegate CreateBinder<T>()
         //{
         //    // Delegate types have an Invoke method containing the relevant parameters.
         //    MethodInfo adapterInvokeMethod = typeof(T).GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);

@@ -9,7 +9,7 @@ namespace Jurassic.Library
     /// Represents an array with non-consecutive elements.
     /// </summary>
     [Serializable]
-    internal sealed class SparseArray
+    public sealed class SparseArray
     {
         private const int NodeShift = 5;
         private const int NodeSize = 1 << NodeShift;

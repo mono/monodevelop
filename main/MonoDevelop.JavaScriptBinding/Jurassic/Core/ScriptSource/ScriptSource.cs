@@ -32,7 +32,7 @@ namespace Jurassic
         /// </summary>
         /// <param name="span"> The start and end positions within the source code. </param>
         /// <returns> The source code within the given span. </returns>
-        internal string ReadSpan(Compiler.SourceCodeSpan span)
+        public string ReadSpan(Compiler.SourceCodeSpan span)
         {
             if (span == null)
                 throw new ArgumentNullException("span");

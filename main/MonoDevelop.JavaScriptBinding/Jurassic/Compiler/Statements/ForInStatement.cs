@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript for-in statement.
     /// </summary>
-    internal class ForInStatement : Statement
+    public class ForInStatement : Statement
     {
         /// <summary>
         /// Creates a new ForInStatement instance.
@@ -133,7 +133,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {

@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a function expression.
     /// </summary>
-    internal sealed class FunctionExpression : Expression
+    public sealed class FunctionExpression : Expression
     {
         private FunctionMethodGenerator context;
 
@@ -14,11 +14,12 @@ namespace Jurassic.Compiler
         /// Creates a new instance of FunctionExpression.
         /// </summary>
         /// <param name="functionContext"> The function context to base this expression on. </param>
-        public FunctionExpression(FunctionMethodGenerator functionContext)
+        public FunctionExpression(FunctionMethodGenerator functionContext, SourceCodeSpan sourceSpan)
         {
             if (functionContext == null)
                 throw new ArgumentNullException("functionContext");
             this.context = functionContext;
+            this.SourceSpan = sourceSpan;
         }
 
         /// <summary>
@@ -44,6 +45,16 @@ namespace Jurassic.Compiler
         {
             get { return this.context.BodyText; }
         }
+
+        public Statement BodyRoot
+        {
+            get
+            {
+                return context.BodyRoot;
+            }
+        }
+
+        public SourceCodeSpan SourceSpan { get; set; }
 
         /// <summary>
         /// Gets the type that results from evaluating this expression.

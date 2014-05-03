@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript while statement.
     /// </summary>
-    internal class WhileStatement : LoopStatement
+    public class WhileStatement : LoopStatement
     {
         /// <summary>
         /// Creates a new WhileStatement instance.

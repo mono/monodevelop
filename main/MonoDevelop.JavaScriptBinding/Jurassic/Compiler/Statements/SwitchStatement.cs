@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript switch statement.
     /// </summary>
-    internal class SwitchStatement : Statement
+    public class SwitchStatement : Statement
     {
         /// <summary>
         /// Creates a new SwitchStatement instance.
@@ -122,7 +122,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {
@@ -178,7 +178,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a single case statement inside a switch statement.
     /// </summary>
-    internal class SwitchCase
+    public class SwitchCase
     {
         public SwitchCase()
         {

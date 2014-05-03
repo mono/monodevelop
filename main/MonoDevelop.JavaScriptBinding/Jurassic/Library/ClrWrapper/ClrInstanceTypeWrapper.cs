@@ -10,7 +10,7 @@ namespace Jurassic.Library
     /// must be wrapped.
     /// </summary>
     [Serializable]
-    internal class ClrInstanceTypeWrapper : ObjectInstance
+    public class ClrInstanceTypeWrapper : ObjectInstance
     {
 
         //     INITIALIZATION

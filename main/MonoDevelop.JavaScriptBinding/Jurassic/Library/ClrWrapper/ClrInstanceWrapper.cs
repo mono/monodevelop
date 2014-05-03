@@ -66,7 +66,7 @@ namespace Jurassic.Library
         ///// </summary>
         ///// <param name="hint"> Indicates the preferred type of the result. </param>
         ///// <returns> A primitive value that represents the current object. </returns>
-        //protected internal override object GetPrimitiveValue(PrimitiveTypeHint typeHint)
+        //protected public override object GetPrimitiveValue(PrimitiveTypeHint typeHint)
         //{
         //    // If this wrapper is for a primitive.
         //    if (TypeUtilities.IsPrimitive(this.WrappedInstance) == true)

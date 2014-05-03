@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a generator of CIL bytes.
     /// </summary>
-    internal class ReflectionEmitILGenerator : ILGenerator
+    public class ReflectionEmitILGenerator : ILGenerator
     {
         private System.Reflection.Emit.ILGenerator generator;
 

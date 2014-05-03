@@ -8,7 +8,7 @@ namespace Jurassic.Library
     /// Represents a container for property names and attributes.
     /// </summary>
     [Serializable]
-    internal class HiddenClassSchema
+    public class HiddenClassSchema
     {
         // Properties
         private Dictionary<string, SchemaProperty> properties;
@@ -271,7 +271,7 @@ namespace Jurassic.Library
                 node = node.parent;
             }
             if (node == null)
-                throw new InvalidOperationException("Internal error: no route to a populated schema was found.");
+                throw new InvalidOperationException("public error: no route to a populated schema was found.");
 
             // Add the properties to the hashtable in order.
             var result = new Dictionary<string, SchemaProperty>(node.properties);

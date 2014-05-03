@@ -17,7 +17,7 @@ namespace Jurassic.Library
         /// Creates a new Date object.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal DateConstructor(ObjectInstance prototype)
+        public DateConstructor(ObjectInstance prototype)
             : base(prototype, "Date", new DateInstance(prototype.Engine.Object.InstancePrototype, double.NaN))
         {
             this.Length = 7;
@@ -25,7 +25,7 @@ namespace Jurassic.Library
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
 
@@ -139,7 +139,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <returns> The current date and time as the number of milliseconds elapsed since January 1,
         /// 1970, 00:00:00 UTC. </returns>
-        [JSInternalFunction(Name = "now")]
+        [JSpublicFunction(Name = "now")]
         public static double Now()
         {
             return DateInstance.Now();
@@ -165,7 +165,7 @@ namespace Jurassic.Library
         /// 
         /// If any of the parameters are out of range, then the other values are modified accordingly.
         /// </remarks>
-        [JSInternalFunction(Name = "UTC")]
+        [JSpublicFunction(Name = "UTC")]
         public static double UTC(int year, int month, [DefaultParameterValue(1)] int day = 1, [DefaultParameterValue(0)] int hour = 0,
             [DefaultParameterValue(0)] int minute = 0, [DefaultParameterValue(0)] int second = 0, [DefaultParameterValue(0)] int millisecond = 0)
         {
@@ -177,7 +177,7 @@ namespace Jurassic.Library
         /// January 1, 1970, 00:00:00 UTC.
         /// </summary>
         /// <param name="dateStr"> A string representing a date, expressed in RFC 1123 format. </param>
-        [JSInternalFunction(Name = "parse")]
+        [JSpublicFunction(Name = "parse")]
         public static double Parse(string dateStr)
         {
             return DateInstance.Parse(dateStr);

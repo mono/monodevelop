@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a generator of CIL bytes.
     /// </summary>
-    internal abstract class ILGenerator
+    public abstract class ILGenerator
     {
         ///// <summary>
         ///// Gets or sets a value which indicates whether diagnostics are enabled.  Better error

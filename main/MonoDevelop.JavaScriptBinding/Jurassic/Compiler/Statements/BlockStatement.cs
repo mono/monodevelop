@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript block statement.
     /// </summary>
-    internal class BlockStatement : Statement
+    public class BlockStatement : Statement
     {
         private List<Statement> statements = new List<Statement>();
 
@@ -52,7 +52,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {

@@ -11,121 +11,121 @@ namespace Jurassic
     /// Contains static methods to ease reflection operations.
     /// Not used at runtime (used as a source by TricksGen).
     /// </summary>
-    internal static class ReflectionHelpers
+    public static class ReflectionHelpers
     {
-        internal static MethodInfo TypeConverter_ToString;
-        internal static MethodInfo TypeConverter_ToConcatenatedString;
-        internal static MethodInfo TypeConverter_ToNumber;
-        internal static MethodInfo TypeConverter_ToBoolean;
-        internal static MethodInfo TypeConverter_ToObject;
-        internal static MethodInfo TypeConverter_ToInteger;
-        internal static MethodInfo TypeConverter_ToInt32;
-        internal static MethodInfo TypeConverter_ToUint32;
-        internal static MethodInfo TypeConverter_ToPrimitive;
+        public static MethodInfo TypeConverter_ToString;
+        public static MethodInfo TypeConverter_ToConcatenatedString;
+        public static MethodInfo TypeConverter_ToNumber;
+        public static MethodInfo TypeConverter_ToBoolean;
+        public static MethodInfo TypeConverter_ToObject;
+        public static MethodInfo TypeConverter_ToInteger;
+        public static MethodInfo TypeConverter_ToInt32;
+        public static MethodInfo TypeConverter_ToUint32;
+        public static MethodInfo TypeConverter_ToPrimitive;
 
-        internal static MethodInfo TypeComparer_Equals;
-        internal static MethodInfo TypeComparer_StrictEquals;
-        internal static MethodInfo TypeComparer_LessThan;
-        internal static MethodInfo TypeComparer_LessThanOrEqual;
-        internal static MethodInfo TypeComparer_GreaterThan;
-        internal static MethodInfo TypeComparer_GreaterThanOrEqual;
+        public static MethodInfo TypeComparer_Equals;
+        public static MethodInfo TypeComparer_StrictEquals;
+        public static MethodInfo TypeComparer_LessThan;
+        public static MethodInfo TypeComparer_LessThanOrEqual;
+        public static MethodInfo TypeComparer_GreaterThan;
+        public static MethodInfo TypeComparer_GreaterThanOrEqual;
 
-        internal static MethodInfo TypeUtilities_TypeOf;
-        internal static MethodInfo TypeUtilities_EnumeratePropertyNames;
-        internal static MethodInfo TypeUtilities_Add;
-        internal static MethodInfo TypeUtilities_IsPrimitiveOrObject;
-        internal static MethodInfo TypeUtilities_VerifyThisObject;
+        public static MethodInfo TypeUtilities_TypeOf;
+        public static MethodInfo TypeUtilities_EnumeratePropertyNames;
+        public static MethodInfo TypeUtilities_Add;
+        public static MethodInfo TypeUtilities_IsPrimitiveOrObject;
+        public static MethodInfo TypeUtilities_VerifyThisObject;
 
-        internal static MethodInfo FunctionInstance_HasInstance;
-        internal static MethodInfo FunctionInstance_ConstructLateBound;
-        internal static MethodInfo FunctionInstance_CallWithStackTrace;
-        internal static MethodInfo FunctionInstance_InstancePrototype;
+        public static MethodInfo FunctionInstance_HasInstance;
+        public static MethodInfo FunctionInstance_ConstructLateBound;
+        public static MethodInfo FunctionInstance_CallWithStackTrace;
+        public static MethodInfo FunctionInstance_InstancePrototype;
 
-        internal static MethodInfo ScriptEngine_Global;
-        internal static MethodInfo ScriptEngine_Boolean;
-        internal static MethodInfo ScriptEngine_Function;
-        internal static MethodInfo ScriptEngine_RegExp;
-        internal static MethodInfo ScriptEngine_Array;
-        internal static MethodInfo ScriptEngine_Object;
-        internal static MethodInfo Global_Eval;
+        public static MethodInfo ScriptEngine_Global;
+        public static MethodInfo ScriptEngine_Boolean;
+        public static MethodInfo ScriptEngine_Function;
+        public static MethodInfo ScriptEngine_RegExp;
+        public static MethodInfo ScriptEngine_Array;
+        public static MethodInfo ScriptEngine_Object;
+        public static MethodInfo Global_Eval;
 
-        internal static ConstructorInfo String_Constructor_Char_Int;
-        internal static MethodInfo String_Concat;
-        internal static MethodInfo String_Length;
-        internal static MethodInfo String_CompareOrdinal;
-        internal static MethodInfo String_Format;
-        internal static MethodInfo String_GetChars;
+        public static ConstructorInfo String_Constructor_Char_Int;
+        public static MethodInfo String_Concat;
+        public static MethodInfo String_Length;
+        public static MethodInfo String_CompareOrdinal;
+        public static MethodInfo String_Format;
+        public static MethodInfo String_GetChars;
 
-        internal static ConstructorInfo ConcatenatedString_Constructor_String;
-        internal static ConstructorInfo ConcatenatedString_Constructor_String_String;
-        internal static MethodInfo ConcatenatedString_Length;
-        internal static MethodInfo ConcatenatedString_Concatenate_Object;
-        internal static MethodInfo ConcatenatedString_Concatenate_String;
-        internal static MethodInfo ConcatenatedString_Concatenate_ConcatenatedString;
-        internal static MethodInfo ConcatenatedString_Append_Object;
-        internal static MethodInfo ConcatenatedString_Append_String;
-        internal static MethodInfo ConcatenatedString_Append_ConcatenatedString;
-        internal static MethodInfo ConcatenatedString_ToString;
+        public static ConstructorInfo ConcatenatedString_Constructor_String;
+        public static ConstructorInfo ConcatenatedString_Constructor_String_String;
+        public static MethodInfo ConcatenatedString_Length;
+        public static MethodInfo ConcatenatedString_Concatenate_Object;
+        public static MethodInfo ConcatenatedString_Concatenate_String;
+        public static MethodInfo ConcatenatedString_Concatenate_ConcatenatedString;
+        public static MethodInfo ConcatenatedString_Append_Object;
+        public static MethodInfo ConcatenatedString_Append_String;
+        public static MethodInfo ConcatenatedString_Append_ConcatenatedString;
+        public static MethodInfo ConcatenatedString_ToString;
 
-        internal static MethodInfo IEnumerable_GetEnumerator;
-        internal static MethodInfo IEnumerator_MoveNext;
-        internal static MethodInfo IEnumerator_Current;
+        public static MethodInfo IEnumerable_GetEnumerator;
+        public static MethodInfo IEnumerator_MoveNext;
+        public static MethodInfo IEnumerator_Current;
 
-        internal static MethodInfo Debugger_Break;
-        internal static MethodInfo JavaScriptException_ErrorObject;
-        internal static MethodInfo Boolean_Construct;
-        internal static MethodInfo Object_Construct;
+        public static MethodInfo Debugger_Break;
+        public static MethodInfo JavaScriptException_ErrorObject;
+        public static MethodInfo Boolean_Construct;
+        public static MethodInfo Object_Construct;
         
-        internal static MethodInfo RegExp_Construct;
-        internal static MethodInfo Array_New;
-        internal static MethodInfo Delegate_CreateDelegate;
-        internal static MethodInfo Type_GetTypeFromHandle;
-        internal static MethodInfo MethodBase_GetMethodFromHandle;
-        internal static MethodInfo GeneratedMethod_Load;
-        internal static MethodInfo ClrInstanceWrapper_GetWrappedInstance;
-        internal static MethodInfo Decimal_ToDouble;
-        internal static MethodInfo BinderUtilities_ResolveOverloads;
-        internal static MethodInfo Convert_ToInt32_Double;
+        public static MethodInfo RegExp_Construct;
+        public static MethodInfo Array_New;
+        public static MethodInfo Delegate_CreateDelegate;
+        public static MethodInfo Type_GetTypeFromHandle;
+        public static MethodInfo MethodBase_GetMethodFromHandle;
+        public static MethodInfo GeneratedMethod_Load;
+        public static MethodInfo ClrInstanceWrapper_GetWrappedInstance;
+        public static MethodInfo Decimal_ToDouble;
+        public static MethodInfo BinderUtilities_ResolveOverloads;
+        public static MethodInfo Convert_ToInt32_Double;
 
-        internal static MethodInfo ObjectInstance_Delete;
-        internal static MethodInfo ObjectInstance_DefineProperty;
-        internal static MethodInfo ObjectInstance_HasProperty;
-        internal static MethodInfo ObjectInstance_GetPropertyValue_String;
-        internal static MethodInfo ObjectInstance_GetPropertyValue_Int;
-        internal static MethodInfo ObjectInstance_SetPropertyValue_String;
-        internal static MethodInfo ObjectInstance_SetPropertyValue_Int;
-        internal static MethodInfo ObjectInstance_SetPropertyValueIfExists;
-        internal static MethodInfo ObjectInstance_InlinePropertyValues;
-        internal static MethodInfo ObjectInstance_InlineCacheKey;
-        internal static MethodInfo ObjectInstance_InlineGetPropertyValue;
-        internal static MethodInfo ObjectInstance_InlineSetPropertyValue;
-        internal static MethodInfo ObjectInstance_InlineSetPropertyValueIfExists;
+        public static MethodInfo ObjectInstance_Delete;
+        public static MethodInfo ObjectInstance_DefineProperty;
+        public static MethodInfo ObjectInstance_HasProperty;
+        public static MethodInfo ObjectInstance_GetPropertyValue_String;
+        public static MethodInfo ObjectInstance_GetPropertyValue_Int;
+        public static MethodInfo ObjectInstance_SetPropertyValue_String;
+        public static MethodInfo ObjectInstance_SetPropertyValue_Int;
+        public static MethodInfo ObjectInstance_SetPropertyValueIfExists;
+        public static MethodInfo ObjectInstance_InlinePropertyValues;
+        public static MethodInfo ObjectInstance_InlineCacheKey;
+        public static MethodInfo ObjectInstance_InlineGetPropertyValue;
+        public static MethodInfo ObjectInstance_InlineSetPropertyValue;
+        public static MethodInfo ObjectInstance_InlineSetPropertyValueIfExists;
 
-        internal static MethodInfo Scope_ParentScope;
-        internal static MethodInfo ObjectScope_CreateRuntimeScope;
-        internal static MethodInfo ObjectScope_ScopeObject;
-        internal static MethodInfo DeclarativeScope_CreateRuntimeScope;
-        internal static MethodInfo DeclarativeScope_Values;
-        internal static MethodInfo Scope_HasValue;
-        internal static MethodInfo Scope_GetValue;
-        internal static MethodInfo Scope_SetValue;
-        internal static MethodInfo Scope_Delete;
+        public static MethodInfo Scope_ParentScope;
+        public static MethodInfo ObjectScope_CreateRuntimeScope;
+        public static MethodInfo ObjectScope_ScopeObject;
+        public static MethodInfo DeclarativeScope_CreateRuntimeScope;
+        public static MethodInfo DeclarativeScope_Values;
+        public static MethodInfo Scope_HasValue;
+        public static MethodInfo Scope_GetValue;
+        public static MethodInfo Scope_SetValue;
+        public static MethodInfo Scope_Delete;
 
-        internal static ConstructorInfo JavaScriptException_Constructor_Error;
-        internal static ConstructorInfo JavaScriptException_Constructor_Object;
-        internal static ConstructorInfo UserDefinedFunction_Constructor;
-        internal static ConstructorInfo FunctionDelegate_Constructor;
-        internal static ConstructorInfo Arguments_Constructor;
-        internal static ConstructorInfo PropertyDescriptor_Constructor2;
-        internal static ConstructorInfo PropertyDescriptor_Constructor3;
-        internal static ConstructorInfo ClrInstanceWrapper_Constructor;
-        internal static ConstructorInfo Decimal_Constructor_Double;
+        public static ConstructorInfo JavaScriptException_Constructor_Error;
+        public static ConstructorInfo JavaScriptException_Constructor_Object;
+        public static ConstructorInfo UserDefinedFunction_Constructor;
+        public static ConstructorInfo FunctionDelegate_Constructor;
+        public static ConstructorInfo Arguments_Constructor;
+        public static ConstructorInfo PropertyDescriptor_Constructor2;
+        public static ConstructorInfo PropertyDescriptor_Constructor3;
+        public static ConstructorInfo ClrInstanceWrapper_Constructor;
+        public static ConstructorInfo Decimal_Constructor_Double;
 
-        internal static FieldInfo Undefined_Value;
-        internal static FieldInfo Null_Value;
+        public static FieldInfo Undefined_Value;
+        public static FieldInfo Null_Value;
 
-        internal static ConstructorInfo LongJumpException_Constructor;
-        internal static MethodInfo LongJumpException_RouteID;
+        public static ConstructorInfo LongJumpException_Constructor;
+        public static MethodInfo LongJumpException_RouteID;
 
         /// <summary>
         /// Initializes static members of this class.
@@ -290,7 +290,7 @@ namespace Jurassic
 #endif
         }
 
-        internal struct ReflectionField
+        public struct ReflectionField
         {
             public string FieldName;
             public MemberInfo MemberInfo;
@@ -300,7 +300,7 @@ namespace Jurassic
         /// Gets an enumerable list of all the MemberInfos that are statically known to be used by this DLL.
         /// </summary>
         /// <returns> An enumerable list of all the MemberInfos that are used by this DLL. </returns>
-        internal static IEnumerable<ReflectionField> GetMembers()
+        public static IEnumerable<ReflectionField> GetMembers()
         {
             foreach (FieldInfo field in typeof(ReflectionHelpers).GetFields(BindingFlags.NonPublic | BindingFlags.Static))
             {

@@ -12,7 +12,7 @@ namespace Jurassic.Compiler
     /// Represents a single method that a binder can call.
     /// </summary>
     [Serializable]
-    internal class BinderMethod
+    public class BinderMethod
 #if !SILVERLIGHT
         : System.Runtime.Serialization.ISerializable
 #endif
@@ -403,7 +403,7 @@ namespace Jurassic.Compiler
         }
     }
     
-    internal enum BinderArgumentSource
+    public enum BinderArgumentSource
     {
         ScriptEngine,
         ThisValue,
@@ -413,11 +413,11 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a single method argument.
     /// </summary>
-    internal class BinderArgument
+    public class BinderArgument
     {
         private ParameterInfo parameterInfo;
 
-        internal BinderArgument(BinderArgumentSource source, Type type, int index = -1)
+        public BinderArgument(BinderArgumentSource source, Type type, int index = -1)
         {
             this.Source = source;
             this.InputParameterIndex = index;
@@ -425,7 +425,7 @@ namespace Jurassic.Compiler
             this.IsParamArrayArgument = index >= 0;
         }
 
-        internal BinderArgument(ParameterInfo parameterInfo, int index)
+        public BinderArgument(ParameterInfo parameterInfo, int index)
         {
             this.Source = BinderArgumentSource.InputParameter;
             this.InputParameterIndex = index;

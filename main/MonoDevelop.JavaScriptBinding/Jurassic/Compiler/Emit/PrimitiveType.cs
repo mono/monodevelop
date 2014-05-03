@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript primitive type.
     /// </summary>
-    internal enum PrimitiveType
+    public enum PrimitiveType
     {
         Undefined,          // Jurassic.Undefined
         Null,               // Jurassic.Null

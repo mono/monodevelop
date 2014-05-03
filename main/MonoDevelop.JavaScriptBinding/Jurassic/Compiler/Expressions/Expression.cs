@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents the base class of all javascript expressions.
     /// </summary>
-    internal abstract class Expression : AstNode
+    public abstract class Expression : JSAstNode
     {
         /// <summary>
         /// Evaluates the expression, if possible.

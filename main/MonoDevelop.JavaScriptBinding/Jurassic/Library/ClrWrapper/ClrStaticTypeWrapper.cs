@@ -10,7 +10,7 @@ namespace Jurassic.Library
     /// must be wrapped.
     /// </summary>
     [Serializable]
-    internal class ClrStaticTypeWrapper : FunctionInstance
+    public class ClrStaticTypeWrapper : FunctionInstance
     {
         private ClrBinder constructBinder;
 
@@ -111,7 +111,7 @@ namespace Jurassic.Library
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace Jurassic.Library
         /// <param name="type"> The .NET type to search for methods. </param>
         /// <param name="flags"> <c>BindingFlags.Static</c> to populate static methods;
         /// <c>BindingFlags.Instance</c> to populate instance methods. </param>
-        internal static void PopulateMembers(ObjectInstance target, Type type, BindingFlags flags)
+        public static void PopulateMembers(ObjectInstance target, Type type, BindingFlags flags)
         {
             // Register static methods as functions.
             var methodGroups = new Dictionary<string, List<MethodBase>>();

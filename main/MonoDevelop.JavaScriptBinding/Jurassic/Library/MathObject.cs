@@ -18,7 +18,7 @@ namespace Jurassic.Library
         /// Creates a new Math object.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal MathObject(ObjectInstance prototype)
+        public MathObject(ObjectInstance prototype)
             : base(prototype)
         {
         }
@@ -29,10 +29,10 @@ namespace Jurassic.Library
         //_________________________________________________________________________________________
 
         /// <summary>
-        /// Gets the internal class name of the object.  Used by the default toString()
+        /// Gets the public class name of the object.  Used by the default toString()
         /// implementation.
         /// </summary>
-        protected override string InternalClassName
+        protected override string publicClassName
         {
             get { return "Math"; }
         }
@@ -100,7 +100,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="number"> The number to operate on. </param>
         /// <returns> The absolute value of the <paramref name="number"/> parameter. </returns>
-        [JSInternalFunction(Name = "abs")]
+        [JSpublicFunction(Name = "abs")]
         public static double Abs(double number)
         {
             return System.Math.Abs(number);
@@ -113,7 +113,7 @@ namespace Jurassic.Library
         /// <returns> The arccosine of the <paramref name="number"/> parameter.  If
         /// <paramref name="number"/> is less than -1 or greater than 1, then <c>NaN</c> is
         /// returned. </returns>
-        [JSInternalFunction(Name = "acos")]
+        [JSpublicFunction(Name = "acos")]
         public static double Acos(double number)
         {
             return System.Math.Acos(number);
@@ -126,7 +126,7 @@ namespace Jurassic.Library
         /// <returns> The arcsine of the <paramref name="number"/> parameter. If
         /// <paramref name="number"/> is less than -1 or greater than 1, then <c>NaN</c> is
         /// returned. </returns>
-        [JSInternalFunction(Name = "asin")]
+        [JSpublicFunction(Name = "asin")]
         public static double Asin(double number)
         {
             return System.Math.Asin(number);
@@ -139,7 +139,7 @@ namespace Jurassic.Library
         /// <returns> The arctangent of the <paramref name="number"/> parameter. If
         /// <paramref name="number"/> is less than -1 or greater than 1, then <c>NaN</c> is
         /// returned. </returns>
-        [JSInternalFunction(Name = "atan")]
+        [JSpublicFunction(Name = "atan")]
         public static double Atan(double number)
         {
             return System.Math.Atan(number);
@@ -151,7 +151,7 @@ namespace Jurassic.Library
         /// <param name="number"> A numeric expression representing the cartesian x-coordinate. </param>
         /// <param name="number"> A numeric expression representing the cartesian y-coordinate. </param>
         /// <returns> The angle (in radians) from the X axis to a point (x,y) (between -pi and pi). </returns>
-        [JSInternalFunction(Name = "atan2")]
+        [JSpublicFunction(Name = "atan2")]
         public static double Atan2(double y, double x)
         {
             if (double.IsInfinity(y) || double.IsInfinity(x))
@@ -174,7 +174,7 @@ namespace Jurassic.Library
         /// <param name="number"> The number to operate on. </param>
         /// <returns> The smallest integer greater than or equal to the <paramref name="number"/>
         /// parameter. </returns>
-        [JSInternalFunction(Name = "ceil")]
+        [JSpublicFunction(Name = "ceil")]
         public static double Ceil(double number)
         {
             return System.Math.Ceiling(number);
@@ -185,7 +185,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="angle"> The angle to operate on. </param>
         /// <returns> The cosine of the <paramref name="angle"/> parameter (between -1 and 1). </returns>
-        [JSInternalFunction(Name = "cos")]
+        [JSpublicFunction(Name = "cos")]
         public static double Cos(double angle)
         {
             return System.Math.Cos(angle);
@@ -196,7 +196,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="number"> The exponent. </param>
         /// <returns> E (the base of natural logarithms) raised to the specified power. </returns>
-        [JSInternalFunction(Name = "exp")]
+        [JSpublicFunction(Name = "exp")]
         public static double Exp(double number)
         {
             return System.Math.Exp(number);
@@ -207,7 +207,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="number"> The number to operate on. </param>
         /// <returns> The greatest integer less than or equal to the <paramref name="number"/> parameter. </returns>
-        [JSInternalFunction(Name = "floor")]
+        [JSpublicFunction(Name = "floor")]
         public static double Floor(double number)
         {
             return System.Math.Floor(number);
@@ -218,7 +218,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="number"> The number to operate on. </param>
         /// <returns> The natural logarithm of the <paramref name="number"/> parameter. </returns>
-        [JSInternalFunction(Name = "log")]
+        [JSpublicFunction(Name = "log")]
         public static double Log(double number)
         {
             return System.Math.Log(number);
@@ -231,7 +231,7 @@ namespace Jurassic.Library
         /// <returns> The largest of zero or more numbers.  If no arguments are provided, the
         /// return value is equal to NEGATIVE_INFINITY.  If any of the arguments cannot be
         /// converted to a number, the return value is NaN. </returns>
-        [JSInternalFunction(Name = "max", Length = 2)]
+        [JSpublicFunction(Name = "max", Length = 2)]
         public static double Max(params double[] numbers)
         {
             double result = double.NegativeInfinity;
@@ -248,7 +248,7 @@ namespace Jurassic.Library
         /// <returns> The smallest of zero or more numbers.  If no arguments are provided, the
         /// return value is equal to NEGATIVE_INFINITY.  If any of the arguments cannot be
         /// converted to a number, the return value is NaN. </returns>
-        [JSInternalFunction(Name = "min", Length = 2)]
+        [JSpublicFunction(Name = "min", Length = 2)]
         public static double Min(params double[] numbers)
         {
             double result = double.PositiveInfinity;
@@ -264,7 +264,7 @@ namespace Jurassic.Library
         /// <param name="base"> The base value of the expression. </param>
         /// <param name="exponent"> The exponent value of the expression. </param>
         /// <returns> The value of the base expression taken to the specified power. </returns>
-        [JSInternalFunction(Name = "pow")]
+        [JSpublicFunction(Name = "pow")]
         public static double Pow(double @base, double exponent)
         {
             if (@base == 1.0 && double.IsInfinity(exponent))
@@ -284,7 +284,7 @@ namespace Jurassic.Library
         /// from 0 (inclusive) to 1 (exclusive), that is, the returned number can be zero, but it
         /// will always be less than one. The random number generator is seeded automatically.
         /// </returns>
-        [JSInternalFunction(Name = "random")]
+        [JSpublicFunction(Name = "random")]
         public static double Random()
         {
             lock (randomNumberGeneratorLock)
@@ -306,7 +306,7 @@ namespace Jurassic.Library
         /// number.  For negative numbers, if the decimal portion is exactly -0.5, the return value
         /// is the smallest integer that is greater than the number.  For example, Math.round(8.5)
         /// returns 9, but Math.round(-8.5) returns -8. </returns>
-        [JSInternalFunction(Name = "round")]
+        [JSpublicFunction(Name = "round")]
         public static double Round(double number)
         {
             if (number > 0.0)
@@ -326,7 +326,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="angle"> The angle, in radians. </param>
         /// <returns> The sine of the <paramref name="angle"/> parameter (between -1 and 1). </returns>
-        [JSInternalFunction(Name = "sin")]
+        [JSpublicFunction(Name = "sin")]
         public static double Sin(double angle)
         {
             return System.Math.Sin(angle);
@@ -337,7 +337,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="number"> The number to operate on. </param>
         /// <returns> The square root of the <paramref name="number"/> parameter. </returns>
-        [JSInternalFunction(Name = "sqrt")]
+        [JSpublicFunction(Name = "sqrt")]
         public static double Sqrt(double number)
         {
             return System.Math.Sqrt(number);
@@ -348,7 +348,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="angle"> The angle, in radians. </param>
         /// <returns> The tangent of the <paramref name="angle"/> parameter (between -1 and 1). </returns>
-        [JSInternalFunction(Name = "tan")]
+        [JSpublicFunction(Name = "tan")]
         public static double Tan(double angle)
         {
             return System.Math.Tan(angle);

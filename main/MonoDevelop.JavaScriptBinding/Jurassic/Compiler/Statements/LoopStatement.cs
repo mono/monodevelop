@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript loop statement (for, for-in, while and do-while).
     /// </summary>
-    internal abstract class LoopStatement : Statement
+    public abstract class LoopStatement : Statement
     {
         /// <summary>
         /// Creates a new LoopStatement instance.
@@ -391,7 +391,7 @@ namespace Jurassic.Compiler
         /// is conditional (i.e. the node is inside an if statement or a conditional expression. </param>
         /// <param name="continueEncountered"> Keeps track of whether a continue statement has been
         /// encountered. </param>
-        private static void FindTypedVariables(AstNode root, Dictionary<Scope.DeclaredVariable, InferredTypeInfo> variableTypes, bool conditional, ref bool continueEncountered)
+        private static void FindTypedVariables(JSAstNode root, Dictionary<Scope.DeclaredVariable, InferredTypeInfo> variableTypes, bool conditional, ref bool continueEncountered)
         {
             if (root is AssignmentExpression)
             {
@@ -449,7 +449,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {

@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a context that code can be run in.
     /// </summary>
-    internal enum CodeContext
+    public enum CodeContext
     {
         /// <summary>
         /// The default context.

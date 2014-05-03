@@ -17,14 +17,14 @@ namespace Jurassic.Library
         /// Creates a new Boolean object.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal BooleanConstructor(ObjectInstance prototype)
+        public BooleanConstructor(ObjectInstance prototype)
             : base(prototype, "Boolean", new BooleanInstance(prototype.Engine.Object.InstancePrototype, false))
         {
         }
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
         /// <summary>

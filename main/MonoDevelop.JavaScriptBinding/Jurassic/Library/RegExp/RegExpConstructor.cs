@@ -20,7 +20,7 @@ namespace Jurassic.Library
         /// Creates a new RegExp object.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal RegExpConstructor(ObjectInstance prototype)
+        public RegExpConstructor(ObjectInstance prototype)
             : base(prototype, "RegExp", new RegExpInstance(prototype.Engine.Object.InstancePrototype, string.Empty))
         {
             this.InitializeDeprecatedProperties();
@@ -83,7 +83,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="input"> The string against which a regular expression is matched. </param>
         /// <param name="match"> The regular expression match to base the properties on. </param>
-        internal void SetDeprecatedProperties(string input, System.Text.RegularExpressions.Match match)
+        public void SetDeprecatedProperties(string input, System.Text.RegularExpressions.Match match)
         {
             this.lastInput = input;
             this.lastMatch = match;
@@ -248,7 +248,7 @@ namespace Jurassic.Library
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
         /// <summary>

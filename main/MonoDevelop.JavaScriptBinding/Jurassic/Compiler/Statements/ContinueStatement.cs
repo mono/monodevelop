@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a continue statement.
     /// </summary>
-    internal class ContinueStatement : Statement
+    public class ContinueStatement : Statement
     {
         /// <summary>
         /// Creates a new ContinueStatement instance.

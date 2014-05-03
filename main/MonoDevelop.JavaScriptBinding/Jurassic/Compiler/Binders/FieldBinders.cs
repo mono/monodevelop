@@ -11,7 +11,7 @@ namespace Jurassic.Compiler
     /// Base class of field getter and setter binders.
     /// </summary>
     [Serializable]
-    internal abstract class FieldBinder : Binder
+    public abstract class FieldBinder : Binder
     {
         protected FieldInfo field;
 
@@ -54,7 +54,7 @@ namespace Jurassic.Compiler
     /// Retrieves the value of a field.
     /// </summary>
     [Serializable]
-    internal class FieldGetterBinder : FieldBinder
+    public class FieldGetterBinder : FieldBinder
     {
         /// <summary>
         /// Creates a new FieldGetterBinder instance.
@@ -99,7 +99,7 @@ namespace Jurassic.Compiler
     /// Sets the value of a field.
     /// </summary>
     [Serializable]
-    internal class FieldSetterBinder : FieldBinder
+    public class FieldSetterBinder : FieldBinder
     {
         /// <summary>
         /// Creates a new FieldSetterBinder instance.

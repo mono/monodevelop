@@ -60,7 +60,7 @@ namespace Jurassic.Library
         ///  %f	 Floating point number
         /// </summary>
         /// <param name="items"> The items to format. </param>
-        [JSInternalFunction(Name = "log")]
+        [JSpublicFunction(Name = "log")]
         public void Log(params object[] items)
         {
             Log(FirebugConsoleMessageStyle.Regular, items);
@@ -75,7 +75,7 @@ namespace Jurassic.Library
         ///  %f	 Floating point number
         /// </summary>
         /// <param name="items"> The items to format. </param>
-        [JSInternalFunction(Name = "debug")]
+        [JSpublicFunction(Name = "debug")]
         public void Debug(params object[] items)
         {
             Log(FirebugConsoleMessageStyle.Regular, items);
@@ -90,7 +90,7 @@ namespace Jurassic.Library
         ///  %f	 Floating point number
         /// </summary>
         /// <param name="items"> The items to format. </param>
-        [JSInternalFunction(Name = "info")]
+        [JSpublicFunction(Name = "info")]
         public void Info(params object[] items)
         {
             Log(FirebugConsoleMessageStyle.Information, items);
@@ -105,7 +105,7 @@ namespace Jurassic.Library
         ///  %f	 Floating point number
         /// </summary>
         /// <param name="items"> The items to format. </param>
-        [JSInternalFunction(Name = "warn")]
+        [JSpublicFunction(Name = "warn")]
         public void Warn(params object[] items)
         {
             Log(FirebugConsoleMessageStyle.Warning, items);
@@ -120,7 +120,7 @@ namespace Jurassic.Library
         ///  %f	 Floating point number
         /// </summary>
         /// <param name="items"> The items to format. </param>
-        [JSInternalFunction(Name = "error")]
+        [JSpublicFunction(Name = "error")]
         public void Error(params object[] items)
         {
             Log(FirebugConsoleMessageStyle.Error, items);
@@ -131,7 +131,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="expression"> The expression to test. </param>
         /// <param name="items"> The items to format. </param>
-        [JSInternalFunction(Name = "assert")]
+        [JSpublicFunction(Name = "assert")]
         public void Assert(bool expression, params object[] items)
         {
             if (expression == false)
@@ -152,7 +152,7 @@ namespace Jurassic.Library
         /// <summary>
         /// Clears the console.
         /// </summary>
-        [JSInternalFunction(Name = "clear")]
+        [JSpublicFunction(Name = "clear")]
         public void Clear(params object[] items)
         {
             this.output.Clear();
@@ -163,7 +163,7 @@ namespace Jurassic.Library
         /// sent to the console.  Call console.groupEnd() to close the block.
         /// </summary>
         /// <param name="items"> The items to format. </param>
-        [JSInternalFunction(Name = "group")]
+        [JSpublicFunction(Name = "group")]
         public void Group(params object[] items)
         {
             this.output.StartGroup(Format(items), false);
@@ -174,7 +174,7 @@ namespace Jurassic.Library
         /// sent to the console.  Call console.groupEnd() to close the block.
         /// </summary>
         /// <param name="items"> The items to format. </param>
-        [JSInternalFunction(Name = "groupCollapsed")]
+        [JSpublicFunction(Name = "groupCollapsed")]
         public void GroupCollapsed(params object[] items)
         {
             this.output.StartGroup(Format(items), true);
@@ -183,7 +183,7 @@ namespace Jurassic.Library
         /// <summary>
         /// Closes the most recently opened block created by a call to console.group().
         /// </summary>
-        [JSInternalFunction(Name = "groupEnd")]
+        [JSpublicFunction(Name = "groupEnd")]
         public void GroupEnd()
         {
             this.output.EndGroup();
@@ -220,7 +220,7 @@ namespace Jurassic.Library
         /// to stop the timer and print the time elapsed.
         /// </summary>
         /// <param name="name"> The name of the time to create. </param>
-        [JSInternalFunction(Name = "time", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "time", Flags = JSFunctionFlags.MutatesThisObject)]
         public void Time([DefaultParameterValue("")] string name = "")
         {
             if (name == null)
@@ -236,7 +236,7 @@ namespace Jurassic.Library
         /// Stops a timer created by a call to console.time(name) and writes the time elapsed.
         /// </summary>
         /// <param name="name"> The name of the timer to stop. </param>
-        [JSInternalFunction(Name = "timeEnd", Flags = JSFunctionFlags.MutatesThisObject)]
+        [JSpublicFunction(Name = "timeEnd", Flags = JSFunctionFlags.MutatesThisObject)]
         public void TimeEnd([DefaultParameterValue("")] string name = "")
         {
             if (name == null)

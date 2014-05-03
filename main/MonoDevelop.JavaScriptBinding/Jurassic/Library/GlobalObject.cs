@@ -18,7 +18,7 @@ namespace Jurassic.Library
         /// Creates a new Global object.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal GlobalObject(ObjectInstance prototype)
+        public GlobalObject(ObjectInstance prototype)
             : base(prototype)
         {
             // Add the global constants.
@@ -34,10 +34,10 @@ namespace Jurassic.Library
         //_________________________________________________________________________________________
 
         /// <summary>
-        /// Gets the internal class name of the object.  Used by the default toString()
+        /// Gets the public class name of the object.  Used by the default toString()
         /// implementation.
         /// </summary>
-        protected override string InternalClassName
+        protected override string publicClassName
         {
             get { return "Global"; }
         }
@@ -59,7 +59,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="input"> The associated script engine. </param>
         /// <returns> The string, as it was before encoding. </returns>
-        [JSInternalFunction(Name = "decodeURI", Flags = JSFunctionFlags.HasEngineParameter)]
+        [JSpublicFunction(Name = "decodeURI", Flags = JSFunctionFlags.HasEngineParameter)]
         public static string DecodeURI(ScriptEngine engine, string input)
         {
             if (decodeURIReservedSet == null)
@@ -77,7 +77,7 @@ namespace Jurassic.Library
         /// <param name="engine"> The associated script engine. </param>
         /// <param name="input"> The string to decode. </param>
         /// <returns> The string, as it was before encoding. </returns>
-        [JSInternalFunction(Name = "decodeURIComponent", Flags = JSFunctionFlags.HasEngineParameter)]
+        [JSpublicFunction(Name = "decodeURIComponent", Flags = JSFunctionFlags.HasEngineParameter)]
         public static string DecodeURIComponent(ScriptEngine engine, string input)
         {
             if (decodeURIComponentReservedSet == null)
@@ -95,7 +95,7 @@ namespace Jurassic.Library
         /// <param name="engine"> The associated script engine. </param>
         /// <param name="input"> The string to encode. </param>
         /// <returns> A copy of the given URI with the special characters encoded. </returns>
-        [JSInternalFunction(Name = "encodeURI", Flags = JSFunctionFlags.HasEngineParameter)]
+        [JSpublicFunction(Name = "encodeURI", Flags = JSFunctionFlags.HasEngineParameter)]
         public static string EncodeURI(ScriptEngine engine, string input)
         {
             if (encodeURIUnescapedSet == null)
@@ -113,7 +113,7 @@ namespace Jurassic.Library
         /// <param name="engine"> The associated script engine. </param>
         /// <param name="input"> The string to encode. </param>
         /// <returns> A copy of the given URI with the special characters encoded. </returns>
-        [JSInternalFunction(Name = "encodeURIComponent", Flags = JSFunctionFlags.HasEngineParameter)]
+        [JSpublicFunction(Name = "encodeURIComponent", Flags = JSFunctionFlags.HasEngineParameter)]
         public static string EncodeURIComponent(ScriptEngine engine, string input)
         {
             if (encodeURIComponentUnescapedSet == null)
@@ -130,7 +130,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="input"> The string to encode. </param>
         /// <returns> A copy of the given string with the special characters encoded. </returns>
-        [JSInternalFunction(Deprecated = true, Name = "escape")]
+        [JSpublicFunction(Deprecated = true, Name = "escape")]
         public static string Escape(string input)
         {
             var result = new StringBuilder(input.Length);
@@ -155,7 +155,7 @@ namespace Jurassic.Library
         /// <param name="code"> The source code to evaluate. </param>
         /// <returns> The value of the last statement that was executed, or <c>undefined</c> if
         /// there were no executed statements. </returns>
-        [JSInternalFunction(Name = "eval", Flags = JSFunctionFlags.HasEngineParameter)]
+        [JSpublicFunction(Name = "eval", Flags = JSFunctionFlags.HasEngineParameter)]
         public static object Eval(ScriptEngine engine, object code)
         {
             if (TypeUtilities.IsString(code) == false)
@@ -189,7 +189,7 @@ namespace Jurassic.Library
         /// <param name="value"> The number to test. </param>
         /// <returns> <c>false</c> if the number is NaN or positive or negative infinity,
         /// <c>true</c> otherwise. </returns>
-        [JSInternalFunction(Name = "isFinite")]
+        [JSpublicFunction(Name = "isFinite")]
         public static bool IsFinite(double value)
         {
             return double.IsNaN(value) == false && double.IsInfinity(value) == false;
@@ -200,7 +200,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="value"> The number to test. </param>
         /// <returns> <c>true</c> if the number is NaN, <c>false</c> otherwise. </returns>
-        [JSInternalFunction(Name = "isNaN")]
+        [JSpublicFunction(Name = "isNaN")]
         public static bool IsNaN(double value)
         {
             return double.IsNaN(value);
@@ -213,7 +213,7 @@ namespace Jurassic.Library
         /// <returns> The equivalent numeric value of the given string. </returns>
         /// <remarks> Leading whitespace is ignored.  Parsing continues until the first invalid
         /// character, at which point parsing stops.  No error is returned in this case. </remarks>
-        [JSInternalFunction(Name = "parseFloat")]
+        [JSpublicFunction(Name = "parseFloat")]
         public static double ParseFloat(string input)
         {
             return NumberParser.ParseFloat(input);
@@ -230,7 +230,7 @@ namespace Jurassic.Library
         /// <returns> The equivalent integer value of the given string. </returns>
         /// <remarks> Leading whitespace is ignored.  Parsing continues until the first invalid
         /// character, at which point parsing stops.  No error is returned in this case. </remarks>
-        [JSInternalFunction(Name = "parseInt", Flags = JSFunctionFlags.HasEngineParameter)]
+        [JSpublicFunction(Name = "parseInt", Flags = JSFunctionFlags.HasEngineParameter)]
         public static double ParseInt(ScriptEngine engine, string input, [DefaultParameterValue(0.0)] double radix = 0)
         {
             // Check for a valid radix.
@@ -249,7 +249,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="input"> The string to decode. </param>
         /// <returns> A copy of the given string with the escape sequences decoded. </returns>
-        [JSInternalFunction(Deprecated = true, Name = "unescape")]
+        [JSpublicFunction(Deprecated = true, Name = "unescape")]
         public static string Unescape(string input)
         {
             var result = new StringBuilder(input.Length);

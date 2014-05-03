@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Jurassic.Library
 {
     /// <summary>
-    /// Represents a delegate that is used for user-defined functions.  For internal use only.
+    /// Represents a delegate that is used for user-defined functions.  For public use only.
     /// </summary>
     /// <param name="engine"> The associated script engine. </param>
     /// <param name="scope"> The scope (global or eval context) or the parent scope (function

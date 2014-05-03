@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a variable or member access.
     /// </summary>
-    internal sealed class MemberAccessExpression : OperatorExpression, IReferenceExpression
+    public sealed class MemberAccessExpression : OperatorExpression, IReferenceExpression
     {
         /// <summary>
         /// Creates a new instance of MemberAccessExpression.

@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Outputs IL for misc tasks.
     /// </summary>
-    internal static class EmitHelpers
+    public static class EmitHelpers
     {
         /// <summary>
         /// Emits undefined.

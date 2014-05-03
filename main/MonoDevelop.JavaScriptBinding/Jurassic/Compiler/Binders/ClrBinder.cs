@@ -13,7 +13,7 @@ namespace Jurassic.Compiler
     /// bind to overloaded methods with the same number of arguments.
     /// </summary>
     [Serializable]
-    internal class ClrBinder : MethodBinder
+    public class ClrBinder : MethodBinder
     {
         private IEnumerable<BinderMethod> targetMethods;
 
@@ -155,7 +155,7 @@ namespace Jurassic.Compiler
         /// <param name="toType"> The type to convert to. </param>
         /// <param name="convertToAddress"> <c>true</c> if the value is intended for use as an
         /// instance pointer; <c>false</c> otherwise. </param>
-        internal static void EmitConversionToType(ILGenerator generator, Type toType, bool convertToAddress)
+        public static void EmitConversionToType(ILGenerator generator, Type toType, bool convertToAddress)
         {
             // Convert Null.Value to null if the target type is a reference type.
             ILLabel endOfNullCheck = null;
@@ -282,7 +282,7 @@ namespace Jurassic.Compiler
         /// </summary>
         /// <param name="generator"> The IL generator. </param>
         /// <param name="fromType"> The type to convert from. </param>
-        internal static void EmitConversionToObject(ILGenerator generator, Type fromType)
+        public static void EmitConversionToObject(ILGenerator generator, Type fromType)
         {
             // If the from type is a reference type, check for null.
             ILLabel endOfNullCheck = null;

@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents information useful for optimizing a method.
     /// </summary>
-    internal class MethodOptimizationHints
+    public class MethodOptimizationHints
     {
         private HashSet<string> names = new HashSet<string>();
         private bool cached, hasArguments, hasEval, hasNestedFunction, hasThis;

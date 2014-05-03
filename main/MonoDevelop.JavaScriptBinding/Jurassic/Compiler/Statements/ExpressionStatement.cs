@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript expression statement.
     /// </summary>
-    internal class ExpressionStatement : Statement
+    public class ExpressionStatement : Statement
     {
         /// <summary>
         /// Creates a new ExpressionStatement instance.  By default, this expression does not
@@ -91,7 +91,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get { yield return this.Expression; }
         }

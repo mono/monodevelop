@@ -17,7 +17,7 @@ namespace Jurassic.Library
         /// Creates a new Array object.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal ArrayConstructor(ObjectInstance prototype)
+        public ArrayConstructor(ObjectInstance prototype)
             : base(prototype, "Array", new ArrayInstance(prototype.Engine.Object.InstancePrototype, 0, 0))
         {
         }
@@ -50,7 +50,7 @@ namespace Jurassic.Library
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="value"> The value to test. </param>
         /// <returns> <c>true</c> if the given value is an Array instance, <c>false</c> otherwise. </returns>
-        [JSInternalFunction(Name = "isArray")]
+        [JSpublicFunction(Name = "isArray")]
         public static bool IsArray(object value)
         {
             return value is ArrayInstance;

@@ -28,7 +28,7 @@ namespace Jurassic.Library
         /// <param name="name"> The name of the function. </param>
         /// <param name="argumentNames"> The names of the arguments. </param>
         /// <param name="bodyText"> The source code for the body of the function. </param>
-        internal UserDefinedFunction(ObjectInstance prototype, string name, IList<string> argumentNames, string bodyText)
+        public UserDefinedFunction(ObjectInstance prototype, string name, IList<string> argumentNames, string bodyText)
             : base(prototype)
         {
             if (name == null)
@@ -59,7 +59,7 @@ namespace Jurassic.Library
         /// <param name="bodyText"> The source code for the function body. </param>
         /// <param name="body"> A delegate which represents the body of the function. </param>
         /// <param name="strictMode"> <c>true</c> if the function body is strict mode; <c>false</c> otherwise. </param>
-        internal UserDefinedFunction(ObjectInstance prototype, string name, IList<string> argumentNames, Scope parentScope, string bodyText, FunctionDelegate body, bool strictMode)
+        public UserDefinedFunction(ObjectInstance prototype, string name, IList<string> argumentNames, Scope parentScope, string bodyText, FunctionDelegate body, bool strictMode)
             : base(prototype)
         {
             Init(name, argumentNames, parentScope, bodyText, new GeneratedMethod(body, null), strictMode, true);
@@ -88,7 +88,7 @@ namespace Jurassic.Library
         /// <param name="prototype"> The prototype of the function. </param>
         /// <returns> An empty function that is used as the prototype for all the built-in
         /// global function objects. </returns>
-        internal static UserDefinedFunction CreateEmptyFunction(ObjectInstance prototype)
+        public static UserDefinedFunction CreateEmptyFunction(ObjectInstance prototype)
         {
             return new UserDefinedFunction(prototype);
         }
@@ -192,7 +192,7 @@ namespace Jurassic.Library
         /// <summary>
         /// Gets the scope at the point the function was declared.
         /// </summary>
-        internal Scope ParentScope
+        public Scope ParentScope
         {
             get;
             private set;

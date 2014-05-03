@@ -8,7 +8,7 @@ namespace Jurassic
     /// <summary>
     /// Contains handy string routines.
     /// </summary>
-    internal static class StringHelpers
+    public static class StringHelpers
     {
         /// <summary>
         /// Concatenates a specified separator string between each element of a specified string
@@ -19,7 +19,7 @@ namespace Jurassic
         /// <param name="values"> A collection that contains the objects to concatenate. </param>
         /// <returns> A string that consists of the members of <paramref name="values"/> delimited
         /// by the <paramref name="separator"/> string. </returns>
-        internal static string Join<T>(string separator, IEnumerable<T> values)
+        public static string Join<T>(string separator, IEnumerable<T> values)
         {
             if (separator == null)
                 throw new ArgumentNullException("separator");

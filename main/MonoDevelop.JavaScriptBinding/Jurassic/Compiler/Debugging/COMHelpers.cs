@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Used to ease interop with the COM debugging extension.
     /// </summary>
-    internal static class COMHelpers
+    public static class COMHelpers
     {
         /// <summary>
         /// Gets the language type GUID for the symbol store.

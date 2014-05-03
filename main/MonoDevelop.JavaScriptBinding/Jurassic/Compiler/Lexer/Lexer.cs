@@ -9,7 +9,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents the current expression state of the parser.
     /// </summary>
-    internal enum ParserExpressionState
+    public enum ParserExpressionState
     {
         /// <summary>
         /// Indicates the context is not known.  The lexer will guess.
@@ -30,7 +30,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Converts a JavaScript source file into a series of tokens.
     /// </summary>
-    internal class Lexer : IDisposable
+    public class Lexer : IDisposable
     {
         private ScriptEngine engine;
         private ScriptSource source;
@@ -396,7 +396,7 @@ namespace Jurassic.Compiler
                         // line numbers correctly.
                         lineTerminatorCount++;
 
-                        // Increment the internal line number so errors can be tracked properly.
+                        // Increment the public line number so errors can be tracked properly.
                         this.lineNumber++;
                         this.columnNumber = 1;
                     }
@@ -565,7 +565,7 @@ namespace Jurassic.Compiler
                     // line numbers correctly.
                     lineTerminatorCount++;
 
-                    // Increment the internal line number so errors can be tracked properly.
+                    // Increment the public line number so errors can be tracked properly.
                     this.lineNumber++;
                     this.columnNumber = 1;
 
@@ -616,7 +616,7 @@ namespace Jurassic.Compiler
             if (firstChar == 0x0D && c == 0x0A)   // CRLF
                 ReadNextChar();
 
-            // Increment the internal line number so errors can be tracked properly.
+            // Increment the public line number so errors can be tracked properly.
             this.lineNumber++;
             this.columnNumber = 1;
 
@@ -895,7 +895,7 @@ namespace Jurassic.Compiler
         /// <param name="str"> The string to resolve into an identifier. </param>
         /// <returns> The identifier name after escape sequences have been processed, or
         /// <c>null</c> if the string is not an identifier. </returns>
-        internal static string ResolveIdentifier(ScriptEngine engine, string str)
+        public static string ResolveIdentifier(ScriptEngine engine, string str)
         {
             var lexer = new Lexer(engine, new StringScriptSource(str));
             var argumentToken = lexer.NextToken();

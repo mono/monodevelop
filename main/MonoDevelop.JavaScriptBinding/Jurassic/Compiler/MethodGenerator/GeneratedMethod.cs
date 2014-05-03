@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Jurassic.Compiler
 {
     /// <summary>
-    /// Represents a generated method and it's dependencies.  For internal use only.
+    /// Represents a generated method and it's dependencies.  For public use only.
     /// </summary>
     public class GeneratedMethod
     {
@@ -56,7 +56,7 @@ namespace Jurassic.Compiler
         private const int compactGeneratedCacheCount = 100;
 
         /// <summary>
-        /// Retrieves the code for a generated method, given the ID.  For internal use only.
+        /// Retrieves the code for a generated method, given the ID.  For public use only.
         /// </summary>
         /// <param name="id"> The ID of the generated method. </param>
         /// <returns> A <c>GeneratedMethodInfo</c> instance. </returns>
@@ -65,19 +65,19 @@ namespace Jurassic.Compiler
             lock (cacheLock)
             {
                 if (generatedMethodCache == null)
-                    throw new InvalidOperationException("Internal error: no generated method cache available.");
+                    throw new InvalidOperationException("public error: no generated method cache available.");
                 WeakReference generatedMethodReference;
                 if (generatedMethodCache.TryGetValue(id, out generatedMethodReference) == false)
-                    throw new InvalidOperationException(string.Format("Internal error: generated method {0} was garbage collected.", id));
+                    throw new InvalidOperationException(string.Format("public error: generated method {0} was garbage collected.", id));
                 var generatedMethod = (GeneratedMethod)generatedMethodReference.Target;
                 if (generatedMethod == null)
-                    throw new InvalidOperationException(string.Format("Internal error: generated method {0} was garbage collected.", id));
+                    throw new InvalidOperationException(string.Format("public error: generated method {0} was garbage collected.", id));
                 return generatedMethod;
             }
         }
 
         /// <summary>
-        /// Saves the given generated method and returns an ID.  For internal use only.
+        /// Saves the given generated method and returns an ID.  For public use only.
         /// </summary>
         /// <param name="generatedMethod"> The generated method to save. </param>
         /// <returns> The ID that was associated with the generated method. </returns>

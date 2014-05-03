@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a string, number, boolean or null literal in the source code.
     /// </summary>
-    internal class LiteralToken : Token
+    public class LiteralToken : Token
     {
         private object value;
 
@@ -61,7 +61,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a string literal.
     /// </summary>
-    internal class StringLiteralToken : LiteralToken
+    public class StringLiteralToken : LiteralToken
     {
         public StringLiteralToken(string value, int escapeSequenceCount, int lineContinuationCount)
             : base(value)

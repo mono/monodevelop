@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a unary operator expression.
     /// </summary>
-    internal sealed class UnaryExpression : OperatorExpression
+    public sealed class UnaryExpression : OperatorExpression
     {
         /// <summary>
         /// Creates a new instance of UnaryExpression.

@@ -8,14 +8,14 @@ namespace Jurassic
     /// <summary>
     /// Parses strings into numbers.
     /// </summary>
-    internal static class NumberParser
+    public static class NumberParser
     {
         /// <summary>
         /// Converts a string to a number (used by parseFloat).
         /// </summary>
         /// <param name="input"> The string to convert. </param>
         /// <returns> The result of parsing the string as a number. </returns>
-        internal static double ParseFloat(string input)
+        public static double ParseFloat(string input)
         {
             var reader = new System.IO.StringReader(input);
 
@@ -60,7 +60,7 @@ namespace Jurassic
         /// Converts a string to a number (used in type coercion).
         /// </summary>
         /// <returns> The result of parsing the string as a number. </returns>
-        internal static double CoerceToNumber(string input)
+        public static double CoerceToNumber(string input)
         {
             var reader = new System.IO.StringReader(input);
 
@@ -129,7 +129,7 @@ namespace Jurassic
             1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000
         };
 
-        internal enum ParseCoreStatus
+        public enum ParseCoreStatus
         {
             Success,
             NoDigits,   // Number consists of a period without any digits.
@@ -151,7 +151,7 @@ namespace Jurassic
         /// <param name="allowHex"> </param>
         /// <param name="allowOctal"> </param>
         /// <returns> The numeric value, or <c>NaN</c> if the number is invalid. </returns>
-        internal static double ParseCore(TextReader reader, char firstChar, out ParseCoreStatus status, bool allowHex = true, bool allowOctal = true)
+        public static double ParseCore(TextReader reader, char firstChar, out ParseCoreStatus status, bool allowHex = true, bool allowOctal = true)
         {
             double result;
 
@@ -364,7 +364,7 @@ namespace Jurassic
         /// <param name="allowOctal"> <c>true</c> if numbers with a leading zero should be parsed
         /// as octal numbers. </param>
         /// <returns> The result of parsing the string as a integer. </returns>
-        internal static double ParseInt(string input, int radix, bool allowOctal)
+        public static double ParseInt(string input, int radix, bool allowOctal)
         {
             var reader = new System.IO.StringReader(input);
             int digitCount = 0;
@@ -460,7 +460,7 @@ namespace Jurassic
         /// </summary>
         /// <param name="reader"> The reader to read characters from. </param>
         /// <returns> The numeric value, or <c>NaN</c> if the number is invalid. </returns>
-        internal static double ParseHex(TextReader reader)
+        public static double ParseHex(TextReader reader)
         {
             double result = 0;
             int digitsRead = 0;
@@ -490,7 +490,7 @@ namespace Jurassic
         /// </summary>
         /// <param name="reader"> The reader to read characters from. </param>
         /// <returns> The numeric value, or <c>NaN</c> if the number is invalid. </returns>
-        internal static double ParseOctal(TextReader reader)
+        public static double ParseOctal(TextReader reader)
         {
             double result = 0;
 

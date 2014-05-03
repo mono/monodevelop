@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents the information needed to compile global code.
     /// </summary>
-    internal class GlobalMethodGenerator : MethodGenerator
+    public class GlobalMethodGenerator : MethodGenerator
     {
         /// <summary>
         /// Creates a new GlobalMethodGenerator instance.

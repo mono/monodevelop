@@ -12,7 +12,7 @@ namespace Jurassic.Compiler
     /// Represents a single method that the JS function binder can call.
     /// </summary>
     [Serializable]
-    internal class JSBinderMethod : BinderMethod
+    public class JSBinderMethod : BinderMethod
     {
 
         //     INITIALIZATION

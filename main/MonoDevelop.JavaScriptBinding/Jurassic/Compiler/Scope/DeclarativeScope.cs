@@ -19,7 +19,7 @@ namespace Jurassic.Compiler
         /// <param name="functionName"> The name of the function.  Can be empty for an anonymous function. </param>
         /// <param name="argumentNames"> The names of each of the function arguments. </param>
         /// <returns> A new DeclarativeScope instance. </returns>
-        internal static DeclarativeScope CreateFunctionScope(Scope parentScope, string functionName, IEnumerable<string> argumentNames)
+        public static DeclarativeScope CreateFunctionScope(Scope parentScope, string functionName, IEnumerable<string> argumentNames)
         {
             if (parentScope == null)
                 throw new ArgumentNullException("parentScope", "Function scopes must have a parent scope.");
@@ -43,7 +43,7 @@ namespace Jurassic.Compiler
         /// <param name="parentScope"> A reference to the parent scope.  Can not be <c>null</c>. </param>
         /// <param name="catchVariableName"> The name of the catch variable. </param>
         /// <returns> A new DeclarativeScope instance. </returns>
-        internal static DeclarativeScope CreateCatchScope(Scope parentScope, string catchVariableName)
+        public static DeclarativeScope CreateCatchScope(Scope parentScope, string catchVariableName)
         {
             if (parentScope == null)
                 throw new ArgumentNullException("parentScope", "Catch scopes must have a parent scope.");
@@ -60,7 +60,7 @@ namespace Jurassic.Compiler
         /// </summary>
         /// <param name="parentScope"> A reference to the parent scope.  Can not be <c>null</c>. </param>
         /// <returns> A new DeclarativeScope instance. </returns>
-        internal static DeclarativeScope CreateEvalScope(Scope parentScope)
+        public static DeclarativeScope CreateEvalScope(Scope parentScope)
         {
             if (parentScope == null)
                 throw new ArgumentNullException("parentScope", "Eval scopes must have a parent scope.");
@@ -117,7 +117,7 @@ namespace Jurassic.Compiler
         /// <param name="deletable"> <c>true</c> if the variable can be deleted; <c>false</c>
         /// otherwise. </param>
         /// <returns> A reference to the variable that was declared. </returns>
-        internal override DeclaredVariable DeclareVariable(string name, Expression valueAtTopOfScope = null, bool writable = true, bool deletable = false)
+        public override DeclaredVariable DeclareVariable(string name, Expression valueAtTopOfScope = null, bool writable = true, bool deletable = false)
         {
             // Variables can be added to a declarative scope using eval().  When this happens the
             // values array needs to be resized.  That check happens here.
@@ -213,7 +213,7 @@ namespace Jurassic.Compiler
         /// </summary>
         /// <param name="generator"> The generator to output the CIL to. </param>
         /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        internal override void GenerateScopeCreation(ILGenerator generator, OptimizationInfo optimizationInfo)
+        public override void GenerateScopeCreation(ILGenerator generator, OptimizationInfo optimizationInfo)
         {
             // Allocate storage for each variable if the declarative scope object has been optimized away.
             if (optimizationInfo.OptimizeDeclarativeScopes == false)

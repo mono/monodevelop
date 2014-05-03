@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a "new" expression.
     /// </summary>
-    internal sealed class NewExpression : OperatorExpression
+    public sealed class NewExpression : OperatorExpression
     {
         /// <summary>
         /// Creates a new instance of NewExpression.

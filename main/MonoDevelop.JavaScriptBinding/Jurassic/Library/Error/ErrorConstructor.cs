@@ -19,7 +19,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
         /// <param name="typeName"> The name of the error object, e.g. "Error", "RangeError", etc. </param>
-        internal ErrorConstructor(ObjectInstance prototype, string typeName)
+        public ErrorConstructor(ObjectInstance prototype, string typeName)
             : base(prototype, typeName, GetInstancePrototype(prototype.Engine, typeName))
         {
         }
@@ -48,7 +48,7 @@ namespace Jurassic.Library
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
         /// <summary>

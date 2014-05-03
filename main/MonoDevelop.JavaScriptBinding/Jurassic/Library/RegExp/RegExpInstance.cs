@@ -27,7 +27,7 @@ namespace Jurassic.Library
         /// g (global search for all occurrences of pattern)
         /// i (ignore case)
         /// m (multiline search)</param>
-        internal RegExpInstance(ObjectInstance prototype, string pattern, string flags = null)
+        public RegExpInstance(ObjectInstance prototype, string pattern, string flags = null)
             : base(prototype)
         {
             if (pattern == null)
@@ -57,7 +57,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
         /// <param name="existingInstance"> The instance to copy the pattern and flags from. </param>
-        internal RegExpInstance(ObjectInstance prototype, RegExpInstance existingInstance)
+        public RegExpInstance(ObjectInstance prototype, RegExpInstance existingInstance)
             : base(prototype)
         {
             if (existingInstance == null)
@@ -79,10 +79,10 @@ namespace Jurassic.Library
         //_________________________________________________________________________________________
 
         /// <summary>
-        /// Gets the internal class name of the object.  Used by the default toString()
+        /// Gets the public class name of the object.  Used by the default toString()
         /// implementation.
         /// </summary>
-        protected override string InternalClassName
+        protected override string publicClassName
         {
             get { return "RegExp"; }
         }
@@ -178,7 +178,7 @@ namespace Jurassic.Library
         /// g (global search for all occurrences of pattern)
         /// i (ignore case)
         /// m (multiline search)</param>
-        [JSInternalFunction(Deprecated = true, Name = "compile")]
+        [JSpublicFunction(Deprecated = true, Name = "compile")]
         public void Compile(string pattern, [DefaultParameterValue(null)] string flags = null)
         {
 #if !SILVERLIGHT
@@ -199,7 +199,7 @@ namespace Jurassic.Library
         /// <param name="input"> The string on which to perform the search. </param>
         /// <returns> <c>true</c> if the regular expression has at least one match in the given
         /// string; <c>false</c> otherwise. </returns>
-        [JSInternalFunction(Name = "test")]
+        [JSpublicFunction(Name = "test")]
         public bool Test(string input)
         {
             // Check if there is a match.
@@ -227,7 +227,7 @@ namespace Jurassic.Library
         /// property contains the position of the matched substring within the complete searched
         /// string. The lastIndex property contains the position following the last character in
         /// the match. </returns>
-        [JSInternalFunction(Name = "exec")]
+        [JSpublicFunction(Name = "exec")]
         public object Exec(string input)
         {
             // Perform the regular expression matching.
@@ -507,7 +507,7 @@ namespace Jurassic.Library
         /// Returns a string representing the current object.
         /// </summary>
         /// <returns> A string representing the current object. </returns>
-        [JSInternalFunction(Name = "toString")]
+        [JSpublicFunction(Name = "toString")]
         public new string ToString()
         {
             return string.Format("/{0}/{1}", this.Source, this.Flags);

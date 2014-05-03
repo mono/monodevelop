@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents the information needed to compile a function.
     /// </summary>
-    internal class FunctionMethodGenerator : MethodGenerator
+    public class FunctionMethodGenerator : MethodGenerator
     {
         /// <summary>
         /// Creates a new FunctionMethodGenerator instance.
@@ -96,7 +96,7 @@ namespace Jurassic.Compiler
         /// this is <c>false</c>, then you cannot reference the function by name from within the
         /// body of the function).
         /// </summary>
-        internal bool IncludeNameInScope
+        public bool IncludeNameInScope
         {
             get;
             private set;

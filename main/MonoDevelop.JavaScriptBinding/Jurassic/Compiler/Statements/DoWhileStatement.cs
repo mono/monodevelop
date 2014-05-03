@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript do-while statement.
     /// </summary>
-    internal class DoWhileStatement : LoopStatement
+    public class DoWhileStatement : LoopStatement
     {
         /// <summary>
         /// Creates a new DoWhileStatement instance.

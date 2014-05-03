@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents an assignment expression (++, --, =, +=, -=, *=, /=, %=, &=, |=, ^=, &lt;&lt;=, &gt;&gt;=, &gt;&gt;&gt;=).
     /// </summary>
-    internal class AssignmentExpression : OperatorExpression
+    public class AssignmentExpression : OperatorExpression
     {
         /// <summary>
         /// Creates a new instance of AssignmentExpression.

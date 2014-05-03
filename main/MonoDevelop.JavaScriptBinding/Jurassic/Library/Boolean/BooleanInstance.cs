@@ -33,10 +33,10 @@ namespace Jurassic.Library
         //_________________________________________________________________________________________
 
         /// <summary>
-        /// Gets the internal class name of the object.  Used by the default toString()
+        /// Gets the public class name of the object.  Used by the default toString()
         /// implementation.
         /// </summary>
-        protected override string InternalClassName
+        protected override string publicClassName
         {
             get { return "Boolean"; }
         }
@@ -59,7 +59,7 @@ namespace Jurassic.Library
         /// Returns the underlying primitive value of the current object.
         /// </summary>
         /// <returns> The underlying primitive value of the current object. </returns>
-        [JSInternalFunction(Name = "valueOf")]
+        [JSpublicFunction(Name = "valueOf")]
         public new bool ValueOf()
         {
             return this.value;
@@ -69,7 +69,7 @@ namespace Jurassic.Library
         /// Returns a string representing this object.
         /// </summary>
         /// <returns> A string representing this object. </returns>
-        [JSInternalFunction(Name = "toString")]
+        [JSpublicFunction(Name = "toString")]
         public string ToStringJS()
         {
             return this.value ? "true" : "false";

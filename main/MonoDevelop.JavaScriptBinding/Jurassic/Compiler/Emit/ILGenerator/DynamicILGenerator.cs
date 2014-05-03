@@ -8,7 +8,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a generator of CIL bytes.
     /// </summary>
-    internal class DynamicILGenerator : ILGenerator
+    public class DynamicILGenerator : ILGenerator
     {
         private System.Reflection.Emit.DynamicMethod dynamicMethod;
         private System.Reflection.Emit.DynamicILInfo dynamicILInfo;
@@ -181,7 +181,7 @@ namespace Jurassic.Compiler
         }
 
         /// <summary>
-        /// Enlarges the internal IL buffer.
+        /// Enlarges the public IL buffer.
         /// </summary>
         /// <param name="instructionSize"> The size of the instruction that triggered the resize. </param>
         private void EnlargeArray(int instructionSize)
@@ -560,7 +560,7 @@ namespace Jurassic.Compiler
         {
             this.operands.Push(type);
             if (this.operands.Count != this.stackSize)
-                throw new InvalidOperationException("Inconsistant internal stack sizes.");
+                throw new InvalidOperationException("Inconsistant public stack sizes.");
         }
 
         /// <summary>

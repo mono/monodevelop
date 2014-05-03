@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents the base class of all tokens.
     /// </summary>
-    internal abstract class Token
+    public abstract class Token
     {
         /// <summary>
         /// Gets a string that represents the token in a parseable form.
@@ -41,7 +41,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents whitespace or a line terminator.
     /// </summary>
-    internal class WhiteSpaceToken : Token
+    public class WhiteSpaceToken : Token
     {
         /// <summary>
         /// Creates a new WhiteSpaceToken instance.

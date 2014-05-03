@@ -18,7 +18,7 @@ namespace Jurassic.Library
         [NonSerialized]
         private ScriptEngine engine;
 
-        // Internal prototype chain.
+        // public prototype chain.
         private ObjectInstance prototype;
 
         // Stores the property names and attributes for this object.
@@ -85,7 +85,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="engine"> The script engine associated with this object. </param>
         /// <returns> An Object with no prototype. </returns>
-        internal static ObjectInstance CreateRootObject(ScriptEngine engine)
+        public static ObjectInstance CreateRootObject(ScriptEngine engine)
         {
             return new ObjectInstance(engine, null);
         }
@@ -95,7 +95,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
         /// <returns> An Object instance. </returns>
-        internal static ObjectInstance CreateRawObject(ObjectInstance prototype)
+        public static ObjectInstance CreateRawObject(ObjectInstance prototype)
         {
             return new ObjectInstance(prototype);
         }
@@ -145,10 +145,10 @@ namespace Jurassic.Library
         }
 
         /// <summary>
-        /// Gets the internal class name of the object.  Used by the default toString()
+        /// Gets the public class name of the object.  Used by the default toString()
         /// implementation.
         /// </summary>
-        protected virtual string InternalClassName
+        protected virtual string publicClassName
         {
             get { return this is ObjectInstance ? "Object" : this.GetType().Name; }
         }
@@ -167,7 +167,7 @@ namespace Jurassic.Library
         /// Gets or sets a value that indicates whether the object can have new properties added
         /// to it.
         /// </summary>
-        internal bool IsExtensible
+        public bool IsExtensible
         {
             get { return (this.flags & ObjectFlags.Extensible) != 0; }
             set
@@ -412,7 +412,7 @@ namespace Jurassic.Library
         ///// <param name="propertyName"> The name of the property. </param>
         ///// <returns> A property descriptor containing the property value and attributes.  The
         ///// result will be <c>PropertyDescriptor.Undefined</c> if the property doesn't exist. </returns>
-        //internal virtual PropertyDescriptor GetOwnProperty(string propertyName)
+        //public virtual PropertyDescriptor GetOwnProperty(string propertyName)
         //{
         //    PropertyAttributes attributes;
         //    int index = this.schema.GetPropertyIndexAndAttributes(propertyName, out attributes);
@@ -428,7 +428,7 @@ namespace Jurassic.Library
         ///// <param name="index"> The array index of the property. </param>
         ///// <returns> A property descriptor containing the property value and attributes.  The
         ///// result will be <c>PropertyDescriptor.Undefined</c> if the property doesn't exist. </returns>
-        //internal virtual PropertyDescriptor GetOwnProperty(uint index)
+        //public virtual PropertyDescriptor GetOwnProperty(uint index)
         //{
         //    return GetOwnProperty(index.ToString());
         //}
@@ -439,7 +439,7 @@ namespace Jurassic.Library
         ///// <param name="propertyName"> The name of the property. </param>
         ///// <returns> A property descriptor containing the property value and attributes.  The
         ///// value will be <c>PropertyDescriptor.Undefined</c> if the property doesn't exist. </returns>
-        //internal PropertyDescriptor GetProperty(string propertyName)
+        //public PropertyDescriptor GetProperty(string propertyName)
         //{
 
         //}
@@ -907,7 +907,7 @@ namespace Jurassic.Library
         /// <param name="attributes"> Attributes that indicate whether the property is writable,
         /// configurable and enumerable. </param>
         /// <param name="overwriteAttributes"> Indicates whether to overwrite any existing attributes. </param>
-        internal void FastSetProperty(string propertyName, object value, PropertyAttributes attributes = PropertyAttributes.Sealed, bool overwriteAttributes = false)
+        public void FastSetProperty(string propertyName, object value, PropertyAttributes attributes = PropertyAttributes.Sealed, bool overwriteAttributes = false)
         {
             int index = this.schema.GetPropertyIndex(propertyName);
             if (index < 0)
@@ -932,7 +932,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="hint"> Indicates the preferred type of the result. </param>
         /// <returns> A primitive value that represents the current object. </returns>
-        protected internal virtual object GetPrimitiveValue(PrimitiveTypeHint typeHint)
+        internal protected virtual object GetPrimitiveValue(PrimitiveTypeHint typeHint)
         {
             if (typeHint == PrimitiveTypeHint.None || typeHint == PrimitiveTypeHint.Number)
             {
@@ -1067,7 +1067,7 @@ namespace Jurassic.Library
         /// <returns> <c>true</c> if a property with the given name exists on this object,
         /// <c>false</c> otherwise. </returns>
         /// <remarks> Objects in the prototype chain are not considered. </remarks>
-        [JSInternalFunction(Name = "hasOwnProperty", Flags = JSFunctionFlags.HasEngineParameter | JSFunctionFlags.HasThisObject)]
+        [JSpublicFunction(Name = "hasOwnProperty", Flags = JSFunctionFlags.HasEngineParameter | JSFunctionFlags.HasThisObject)]
         public static bool HasOwnProperty(ScriptEngine engine, object thisObject, string propertyName)
         {
             TypeUtilities.VerifyThisObject(engine, thisObject, "hasOwnProperty");
@@ -1081,7 +1081,7 @@ namespace Jurassic.Library
         /// <param name="obj"> The object to check. </param>
         /// <returns> <c>true</c> if this object is in the prototype chain of the given object;
         /// <c>false</c> otherwise. </returns>
-        [JSInternalFunction(Name = "isPrototypeOf", Flags = JSFunctionFlags.HasEngineParameter | JSFunctionFlags.HasThisObject)]
+        [JSpublicFunction(Name = "isPrototypeOf", Flags = JSFunctionFlags.HasEngineParameter | JSFunctionFlags.HasThisObject)]
         public static bool IsPrototypeOf(ScriptEngine engine, object thisObject, object obj)
         {
             if ((obj is ObjectInstance) == false)
@@ -1106,7 +1106,7 @@ namespace Jurassic.Library
         /// <returns> <c>true</c> if a property with the given name exists on this object and is
         /// enumerable, <c>false</c> otherwise. </returns>
         /// <remarks> Objects in the prototype chain are not considered. </remarks>
-        [JSInternalFunction(Name = "propertyIsEnumerable", Flags = JSFunctionFlags.HasEngineParameter | JSFunctionFlags.HasThisObject)]
+        [JSpublicFunction(Name = "propertyIsEnumerable", Flags = JSFunctionFlags.HasEngineParameter | JSFunctionFlags.HasThisObject)]
         public static bool PropertyIsEnumerable(ScriptEngine engine, object thisObject, string propertyName)
         {
             TypeUtilities.VerifyThisObject(engine, thisObject, "propertyIsEnumerable");
@@ -1118,7 +1118,7 @@ namespace Jurassic.Library
         /// Returns a locale-dependant string representing the current object.
         /// </summary>
         /// <returns> Returns a locale-dependant string representing the current object. </returns>
-        [JSInternalFunction(Name = "toLocaleString")]
+        [JSpublicFunction(Name = "toLocaleString")]
         public string ToLocaleString()
         {
             return TypeConverter.ToString(CallMemberFunction("toString"));
@@ -1128,7 +1128,7 @@ namespace Jurassic.Library
         /// Returns a primitive value associated with the object.
         /// </summary>
         /// <returns> A primitive value associated with the object. </returns>
-        [JSInternalFunction(Name = "valueOf")]
+        [JSpublicFunction(Name = "valueOf")]
         public ObjectInstance ValueOf()
         {
             return this;
@@ -1139,14 +1139,14 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="thisObject"> The value of the "this" keyword. </param>
         /// <returns> A string representing the current object. </returns>
-        [JSInternalFunction(Name = "toString", Flags = JSFunctionFlags.HasEngineParameter | JSFunctionFlags.HasThisObject)]
+        [JSpublicFunction(Name = "toString", Flags = JSFunctionFlags.HasEngineParameter | JSFunctionFlags.HasThisObject)]
         public static string ToStringJS(ScriptEngine engine, object thisObject)
         {
             if (thisObject == null || thisObject == Undefined.Value)
                 return "[object Undefined]";
             if (thisObject == Null.Value)
                 return "[object Null]";
-            return string.Format("[object {0}]", TypeConverter.ToObject(engine, thisObject).InternalClassName);
+            return string.Format("[object {0}]", TypeConverter.ToObject(engine, thisObject).publicClassName);
         }
 
 
@@ -1199,7 +1199,7 @@ namespace Jurassic.Library
             var methods = type.GetMethods(bindingFlags);
             foreach (var method in methods)
             {
-                // Make sure the method has the [JSInternalFunction] attribute.
+                // Make sure the method has the [JSpublicFunction] attribute.
                 var attribute = (JSFunctionAttribute)Attribute.GetCustomAttribute(method, typeof(JSFunctionAttribute));
                 if (attribute == null)
                     continue;
@@ -1221,8 +1221,8 @@ namespace Jurassic.Library
                 else
                     methodGroup = functions[name];
 
-                // Internal functions return nulls as undefined.
-                if (attribute is JSInternalFunctionAttribute)
+                // public functions return nulls as undefined.
+                if (attribute is JSpublicFunctionAttribute)
                     attribute.Flags |= JSFunctionFlags.ConvertNullReturnValueToUndefined;
 
                 // Add the method to the list.

@@ -126,9 +126,9 @@ namespace Jurassic.Library
 
     /// <summary>
     /// Marks a method as being visible to javascript code.
-    /// Used internally - has different defaults to what you would expect.
+    /// Used publicly - has different defaults to what you would expect.
     /// </summary>
-    internal class JSInternalFunctionAttribute : JSFunctionAttribute
+    public class JSpublicFunctionAttribute : JSFunctionAttribute
     {
     }
 

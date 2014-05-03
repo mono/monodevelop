@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents punctuation or an operator in the source code.
     /// </summary>
-    internal class PunctuatorToken : Token
+    public class PunctuatorToken : Token
     {
         private string text;
 

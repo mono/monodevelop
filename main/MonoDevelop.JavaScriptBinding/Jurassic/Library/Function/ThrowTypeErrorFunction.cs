@@ -8,7 +8,7 @@ namespace Jurassic.Library
     /// Represents a JavaScript function that throws a type error.
     /// </summary>
     [Serializable]
-    internal sealed class ThrowTypeErrorFunction : FunctionInstance
+    public sealed class ThrowTypeErrorFunction : FunctionInstance
     {
         private string message;
 
@@ -21,7 +21,7 @@ namespace Jurassic.Library
         /// Creates a new ThrowTypeErrorFunction instance.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal ThrowTypeErrorFunction(ObjectInstance prototype)
+        public ThrowTypeErrorFunction(ObjectInstance prototype)
             : this(prototype, "It is illegal to access the 'callee' or 'caller' property in strict mode")
         {
         }
@@ -31,7 +31,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
         /// <param name="message"> The TypeError message. </param>
-        internal ThrowTypeErrorFunction(ObjectInstance prototype, string message)
+        public ThrowTypeErrorFunction(ObjectInstance prototype, string message)
             : base(prototype)
         {
             this.FastSetProperty("length", 0);

@@ -17,14 +17,14 @@ namespace Jurassic.Library
         /// Creates a new Number object.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal NumberConstructor(ObjectInstance prototype)
+        public NumberConstructor(ObjectInstance prototype)
             : base(prototype, "Number", new NumberInstance(prototype.Engine.Object.InstancePrototype, 0))
         {
         }
 
 
 
-        //     JAVASCRIPT INTERNAL METHODS
+        //     JAVASCRIPT public METHODS
         //_________________________________________________________________________________________
 
         /// <summary>

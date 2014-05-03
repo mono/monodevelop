@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript for statement (for-in is a separate statement).
     /// </summary>
-    internal class ForStatement : LoopStatement
+    public class ForStatement : LoopStatement
     {
         /// <summary>
         /// Creates a new ForStatement instance.

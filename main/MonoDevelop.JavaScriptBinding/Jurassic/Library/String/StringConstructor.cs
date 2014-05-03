@@ -17,14 +17,14 @@ namespace Jurassic.Library
         /// Creates a new String object.
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
-        internal StringConstructor(ObjectInstance prototype)
+        public StringConstructor(ObjectInstance prototype)
             : base(prototype, "String", new StringInstance(prototype.Engine.Object.InstancePrototype, string.Empty))
         {
         }
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="charCodes"></param>
         /// <returns></returns>
-        [JSInternalFunction(Name = "fromCharCode")]
+        [JSpublicFunction(Name = "fromCharCode")]
         public static string FromCharCode(params double[] charCodes)
         {
             // Note: charCodes must be an array of doubles, because the default marshalling

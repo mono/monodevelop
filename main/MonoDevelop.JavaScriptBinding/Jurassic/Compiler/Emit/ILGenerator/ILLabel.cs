@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a label in IL code.
     /// </summary>
-    internal abstract class ILLabel
+    public abstract class ILLabel
     {
     }
 
@@ -15,7 +15,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a label in IL code.
     /// </summary>
-    internal class DynamicILLabel : ILLabel
+    public class DynamicILLabel : ILLabel
     {
         /// <summary>
         /// Creates a new label instance.
@@ -91,7 +91,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a label in IL code.
     /// </summary>
-    internal class ReflectionEmitILLabel : ILLabel
+    public class ReflectionEmitILLabel : ILLabel
     {
         /// <summary>
         /// Creates a new label instance.

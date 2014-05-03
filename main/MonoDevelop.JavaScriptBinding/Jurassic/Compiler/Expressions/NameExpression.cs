@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a variable or part of a member reference.
     /// </summary>
-    internal sealed class NameExpression : Expression, IReferenceExpression
+    public sealed class NameExpression : Expression, IReferenceExpression
     {
         /// <summary>
         /// Creates a new NameExpression instance.

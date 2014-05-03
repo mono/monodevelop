@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a try-catch-finally statement.
     /// </summary>
-    internal class TryCatchFinallyStatement : Statement
+    public class TryCatchFinallyStatement : Statement
     {
         /// <summary>
         /// Creates a new TryCatchFinallyStatement instance.
@@ -191,7 +191,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {

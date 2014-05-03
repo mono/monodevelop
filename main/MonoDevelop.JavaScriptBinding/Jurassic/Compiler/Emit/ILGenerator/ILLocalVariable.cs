@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a local variable in CIL code.
     /// </summary>
-    internal abstract class ILLocalVariable
+    public abstract class ILLocalVariable
     {
         /// <summary>
         /// Gets the zero-based index of the local variable within the method body.
@@ -39,7 +39,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a local variable in CIL code.
     /// </summary>
-    internal class DynamicILLocalVariable : ILLocalVariable
+    public class DynamicILLocalVariable : ILLocalVariable
     {
         private int index;
         private Type type;
@@ -103,7 +103,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a local variable in CIL code.
     /// </summary>
-    internal class ReflectionEmitILLocalVariable : ILLocalVariable
+    public class ReflectionEmitILLocalVariable : ILLocalVariable
     {
         private string name;
 

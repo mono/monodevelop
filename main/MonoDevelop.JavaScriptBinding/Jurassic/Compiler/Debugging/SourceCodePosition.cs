@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a line and column number in a source file.
     /// </summary>
-    internal struct SourceCodePosition
+    public struct SourceCodePosition
     {
         /// <summary>
         /// Creates a new SourceCodePosition instance.

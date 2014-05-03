@@ -20,7 +20,7 @@ namespace Jurassic.Compiler
         /// Creates a new global object scope.
         /// </summary>
         /// <returns> A new ObjectScope instance. </returns>
-        internal static ObjectScope CreateGlobalScope(Library.GlobalObject globalObject)
+        public static ObjectScope CreateGlobalScope(Library.GlobalObject globalObject)
         {
             if (globalObject == null)
                 throw new ArgumentNullException("globalObject");
@@ -33,7 +33,7 @@ namespace Jurassic.Compiler
         /// <param name="parentScope"> A reference to the parent scope.  Can not be <c>null</c>. </param>
         /// <param name="scopeObject"> An expression that evaluates to the object to use. </param>
         /// <returns> A new ObjectScope instance. </returns>
-        internal static ObjectScope CreateWithScope(Scope parentScope, Expression scopeObject)
+        public static ObjectScope CreateWithScope(Scope parentScope, Expression scopeObject)
         {
             if (parentScope == null)
                 throw new ArgumentException("With scopes must have a parent scope.");
@@ -91,7 +91,7 @@ namespace Jurassic.Compiler
         /// Gets an expression that evaluates to the scope object.  <c>null</c> if the scope object
         /// is the global object.
         /// </summary>
-        internal Expression ScopeObjectExpression
+        public Expression ScopeObjectExpression
         {
             get { return this.scopeObjectExpression; }
             private set { this.scopeObjectExpression = value; }
@@ -161,7 +161,7 @@ namespace Jurassic.Compiler
         /// </summary>
         /// <param name="generator"> The generator to output the CIL to. </param>
         /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        internal override void GenerateScopeCreation(ILGenerator generator, OptimizationInfo optimizationInfo)
+        public override void GenerateScopeCreation(ILGenerator generator, OptimizationInfo optimizationInfo)
         {
             // Create a new runtime object scope.
             EmitHelpers.LoadScope(generator);  // parent scope
@@ -192,7 +192,7 @@ namespace Jurassic.Compiler
         /// type Scope.  Can be <c>null</c>. </param>
         /// <param name="endOfMemberLookup"> A label that points to the end the member lookup code.
         /// Can be <c>null</c>. </param>
-        //internal override void GenerateGetCore(ILGenerator generator, string name, ILLocalVariable scope, ILLabel endOfMemberLookup)
+        //public override void GenerateGetCore(ILGenerator generator, string name, ILLocalVariable scope, ILLabel endOfMemberLookup)
         //{
             // Pseudo-code for getting the value of a variable
             // Note: scope is the first parameter of the generated method.
@@ -309,7 +309,7 @@ namespace Jurassic.Compiler
         /// type Scope.  Can be <c>null</c>. </param>
         /// <param name="endOfMemberLookup"> A label that points to the end the member lookup code.
         /// Can be <c>null</c>. </param>
-        //internal override void GenerateSetCore(ILGenerator generator, string name, PrimitiveType valueType, ILLocalVariable value, ILLocalVariable scope, ILLabel endOfMemberLookup)
+        //public override void GenerateSetCore(ILGenerator generator, string name, PrimitiveType valueType, ILLocalVariable value, ILLocalVariable scope, ILLabel endOfMemberLookup)
         //{
             // Pseudo-code for setting "property"
             // Note: scope is the first parameter of the generated method.

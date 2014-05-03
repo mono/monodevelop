@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a function call expression.
     /// </summary>
-    internal class FunctionCallExpression : OperatorExpression
+    public class FunctionCallExpression : OperatorExpression
     {
         /// <summary>
         /// Creates a new instance of FunctionCallJSExpression.
@@ -152,7 +152,7 @@ namespace Jurassic.Compiler
         /// </summary>
         /// <param name="generator"> The generator to output the CIL to. </param>
         /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        internal void GenerateArgumentsArray(ILGenerator generator, OptimizationInfo optimizationInfo)
+        public void GenerateArgumentsArray(ILGenerator generator, OptimizationInfo optimizationInfo)
         {
             // Emit the arguments.  The arguments operand can be non-existant, a single expression,
             // or a comma-delimited list.

@@ -10,7 +10,7 @@ namespace Jurassic.Compiler
     /// argument type to formal argument type.
     /// </summary>
     [Serializable]
-    internal abstract class MethodBinder : Binder
+    public abstract class MethodBinder : Binder
     {
         private string name;
         private Type declaringType;

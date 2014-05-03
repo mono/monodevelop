@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a set of options that influence the compiler.
     /// </summary>
-    internal sealed class CompilerOptions
+    public sealed class CompilerOptions
     {
         /// <summary>
         /// Creates a new CompilerOptions instance.

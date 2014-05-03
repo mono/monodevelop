@@ -49,7 +49,7 @@ namespace Jurassic.Library
         /// <summary>
         /// Used in several APIs to indicate that a property doesn't exist.
         /// </summary>
-        internal static readonly PropertyDescriptor Undefined = new PropertyDescriptor(null, PropertyAttributes.Sealed);
+        public static readonly PropertyDescriptor Undefined = new PropertyDescriptor(null, PropertyAttributes.Sealed);
 
         /// <summary>
         /// Gets a value that indicates whether the property exists.

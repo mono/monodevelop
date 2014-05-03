@@ -15,7 +15,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="input"> The string to parse as a date. </param>
         /// <returns> A date. </returns>
-        internal static DateTime Parse(string input)
+        public static DateTime Parse(string input)
         {
             /* Regex tested using http://derekslager.com/blog/posts/2007/09/a-better-dotnet-regular-expression-tester.ashx
              * These should succeed:

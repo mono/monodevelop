@@ -271,7 +271,7 @@ namespace Jurassic
         /// <summary>
         /// Gets a value that indicates whether the script engine must run in a low privilege environment.
         /// </summary>
-        internal static bool LowPrivilegeEnvironment
+        public static bool LowPrivilegeEnvironment
         {
             get
             {
@@ -294,7 +294,7 @@ namespace Jurassic
         /// <summary>
         /// Gets a value that indicates whether the script engine must run in a low privilege environment.
         /// </summary>
-        internal static bool LowPrivilegeEnvironment
+        public static bool LowPrivilegeEnvironment
         {
             get { return true; }
         }
@@ -302,7 +302,7 @@ namespace Jurassic
         /// <summary>
         /// Indicates that the current AppDomain is a low privilege environment.
         /// </summary>
-        internal static void SetLowPrivilegeEnvironment()
+        public static void SetLowPrivilegeEnvironment()
         {
         }
 
@@ -497,7 +497,7 @@ namespace Jurassic
         }
 
 #if !WINDOWS_PHONE
-        internal class ReflectionEmitModuleInfo
+        public class ReflectionEmitModuleInfo
         {
             public System.Reflection.Emit.AssemblyBuilder AssemblyBuilder;
             public System.Reflection.Emit.ModuleBuilder ModuleBuilder;
@@ -508,7 +508,7 @@ namespace Jurassic
         /// Gets or sets information needed by Reflection.Emit.
         /// </summary>
         [NonSerialized]
-        internal ReflectionEmitModuleInfo ReflectionEmitInfo;
+        public ReflectionEmitModuleInfo ReflectionEmitInfo;
 #endif //!WINDOWS_PHONE
 
 
@@ -916,7 +916,7 @@ namespace Jurassic
         /// Creates a new global scope.
         /// </summary>
         /// <returns> A new global scope, with no declared variables. </returns>
-        internal Compiler.ObjectScope CreateGlobalScope()
+        public Compiler.ObjectScope CreateGlobalScope()
         {
             return Compiler.ObjectScope.CreateGlobalScope(this.Global);
         }
@@ -929,7 +929,7 @@ namespace Jurassic
         /// <summary>
         /// Gets an empty schema.
         /// </summary>
-        internal HiddenClassSchema EmptySchema
+        public HiddenClassSchema EmptySchema
         {
             get { return this.emptySchema; }
         }
@@ -1000,7 +1000,7 @@ namespace Jurassic
         /// strict mode code. </param>
         /// <returns> The value of the last statement that was executed, or <c>undefined</c> if
         /// there were no executed statements. </returns>
-        internal object Eval(string code, Compiler.Scope scope, object thisObject, bool strictMode)
+        public object Eval(string code, Compiler.Scope scope, object thisObject, bool strictMode)
         {
             // Check if the cache contains the eval already.
             //var key = new EvalCacheKey() { Code = code, Scope = scope, StrictMode = strictMode };
@@ -1060,7 +1060,7 @@ namespace Jurassic
         /// <param name="path"> The path of the javascript source file that is currently executing. </param>
         /// <param name="function"> The name of the currently executing function. </param>
         /// <param name="line"> The line number of the statement that is currently executing. </param>
-        internal string FormatStackTrace(string errorName, string message, string path, string function, int line)
+        public string FormatStackTrace(string errorName, string message, string path, string function, int line)
         {
             var result = new System.Text.StringBuilder(errorName);
             if (string.IsNullOrEmpty(message) == false)
@@ -1108,7 +1108,7 @@ namespace Jurassic
         /// <param name="path"> The path of the javascript source file that contains the function. </param>
         /// <param name="function"> The name of the function that is calling another function. </param>
         /// <param name="line"> The line number of the function call. </param>
-        internal void PushStackFrame(string path, string function, int line)
+        public void PushStackFrame(string path, string function, int line)
         {
             this.stackFrames.Push(new StackFrame() { Path = path, Function = function, Line = line });
         }
@@ -1116,7 +1116,7 @@ namespace Jurassic
         /// <summary>
         /// Pops a frame from the javascript stack.
         /// </summary>
-        internal void PopStackFrame()
+        public void PopStackFrame()
         {
             this.stackFrames.Pop();
         }
@@ -1131,7 +1131,7 @@ namespace Jurassic
         /// <summary>
         /// Gets a dictionary that can be used to cache ClrInstanceTypeWrapper instances.
         /// </summary>
-        internal Dictionary<Type, ClrInstanceTypeWrapper> InstanceTypeWrapperCache
+        public Dictionary<Type, ClrInstanceTypeWrapper> InstanceTypeWrapperCache
         {
             get
             {
@@ -1144,7 +1144,7 @@ namespace Jurassic
         /// <summary>
         /// Gets a dictionary that can be used to cache ClrStaticTypeWrapper instances.
         /// </summary>
-        internal Dictionary<Type, ClrStaticTypeWrapper> StaticTypeWrapperCache
+        public Dictionary<Type, ClrStaticTypeWrapper> StaticTypeWrapperCache
         {
             get
             {

@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a reference to the "this" value.
     /// </summary>
-    internal sealed class ThisExpression : Expression
+    public sealed class ThisExpression : Expression
     {
         /// <summary>
         /// Creates a new ThisExpression instance.

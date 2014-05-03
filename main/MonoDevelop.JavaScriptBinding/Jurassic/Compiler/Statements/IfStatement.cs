@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents an if statement.
     /// </summary>
-    internal class IfStatement : Statement
+    public class IfStatement : Statement
     {
         /// <summary>
         /// Creates a new IfStatement instance.
@@ -99,7 +99,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {

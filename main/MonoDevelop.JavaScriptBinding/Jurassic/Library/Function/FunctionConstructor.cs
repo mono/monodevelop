@@ -18,7 +18,7 @@ namespace Jurassic.Library
         /// </summary>
         /// <param name="prototype"> The next object in the prototype chain. </param>
         /// <param name="instancePrototype"> The prototype for instances created by this function. </param>
-        internal FunctionConstructor(ObjectInstance prototype, FunctionInstance instancePrototype)
+        public FunctionConstructor(ObjectInstance prototype, FunctionInstance instancePrototype)
             : base(prototype, "Function", instancePrototype)
         {
         }

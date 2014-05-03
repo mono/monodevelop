@@ -6,7 +6,7 @@ namespace Jurassic.Compiler
 {
 
     /// <summary>
-    /// This class is public for technical reasons and is intended only for internal use.
+    /// This class is public for technical reasons and is intended only for public use.
     /// </summary>
     public static class BinderUtilities
     {

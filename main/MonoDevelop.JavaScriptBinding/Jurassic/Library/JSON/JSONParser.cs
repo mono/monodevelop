@@ -7,7 +7,7 @@ namespace Jurassic.Library
     /// <summary>
     /// Converts a series of JSON tokens into a JSON object.
     /// </summary>
-    internal sealed class JSONParser
+    public sealed class JSONParser
     {
         private ScriptEngine engine;
         private JSONLexer lexer;

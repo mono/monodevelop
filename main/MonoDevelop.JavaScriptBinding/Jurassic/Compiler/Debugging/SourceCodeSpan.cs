@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a portion of source code.
     /// </summary>
-    internal class SourceCodeSpan
+    public class SourceCodeSpan
     {
         /// <summary>
         /// Creates a new SourceCodeSpan instance.

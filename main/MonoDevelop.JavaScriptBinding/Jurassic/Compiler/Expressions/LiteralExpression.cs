@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a literal expression.
     /// </summary>
-    internal sealed class LiteralExpression : Expression
+    public sealed class LiteralExpression : Expression
     {
         /// <summary>
         /// Creates a new instance of LiteralJSExpression.

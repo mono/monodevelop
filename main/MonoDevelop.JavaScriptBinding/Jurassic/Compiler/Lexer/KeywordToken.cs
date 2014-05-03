@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a reserved word in the source code.
     /// </summary>
-    internal class KeywordToken : Token
+    public class KeywordToken : Token
     {
         /// <summary>
         /// Creates a new KeywordToken instance.

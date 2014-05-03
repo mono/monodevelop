@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a break statement.
     /// </summary>
-    internal class BreakStatement : Statement
+    public class BreakStatement : Statement
     {
         /// <summary>
         /// Creates a new BreakStatement instance.

@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Methods related to the PrimitiveType enum.
     /// </summary>
-    internal static class PrimitiveTypeUtilities
+    public static class PrimitiveTypeUtilities
     {
         /// <summary>
         /// Converts a javascript primitive type to a .NET type.

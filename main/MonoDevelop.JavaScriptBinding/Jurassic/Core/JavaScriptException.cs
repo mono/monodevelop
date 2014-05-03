@@ -241,7 +241,7 @@ namespace Jurassic
         /// <summary>
         /// Populates the error object stack trace, if the error object is an Error.
         /// </summary>
-        internal void PopulateStackTrace()
+        public void PopulateStackTrace()
         {
             // Ensure the error object is an Error or derived instance.
             var errorObject = this.ErrorObject as Library.ErrorInstance;

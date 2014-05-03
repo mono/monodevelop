@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a generator that logs all operations.
     /// </summary>
-    internal class LoggingILGenerator : ILGenerator
+    public class LoggingILGenerator : ILGenerator
     {
         private ILGenerator generator;
         private StringBuilder header;

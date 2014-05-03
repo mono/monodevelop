@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents an empty statement.
     /// </summary>
-    internal class EmptyStatement : Statement
+    public class EmptyStatement : Statement
     {
         /// <summary>
         /// Creates a new EmptyStatement instance.

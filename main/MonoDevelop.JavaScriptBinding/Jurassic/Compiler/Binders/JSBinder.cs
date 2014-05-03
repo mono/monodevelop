@@ -13,11 +13,11 @@ namespace Jurassic.Compiler
     /// ignored, missing parameter values are replaced with "undefined").
     /// </summary>
     [Serializable]
-    internal class JSBinder : MethodBinder
+    public class JSBinder : MethodBinder
     {
         private JSBinderMethod[] buckets;
         
-        internal const int MaximumSupportedParameterCount = 8;
+        public const int MaximumSupportedParameterCount = 8;
 
         /// <summary>
         /// Creates a new JSBinder instance.

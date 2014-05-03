@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a grouping expression.
     /// </summary>
-    internal sealed class GroupingExpression : OperatorExpression
+    public sealed class GroupingExpression : OperatorExpression
     {
         /// <summary>
         /// Creates a new instance of GroupingJSExpression.

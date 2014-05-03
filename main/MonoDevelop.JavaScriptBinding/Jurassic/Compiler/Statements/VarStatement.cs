@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript var statement.
     /// </summary>
-    internal class VarStatement : Statement
+    public class VarStatement : Statement
     {
         private List<VariableDeclaration> declarations;
 
@@ -72,7 +72,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
-        public override IEnumerable<AstNode> ChildNodes
+        public override IEnumerable<JSAstNode> ChildNodes
         {
             get
             {
@@ -113,7 +113,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a variable declaration.
     /// </summary>
-    internal class VariableDeclaration
+    public class VariableDeclaration
     {
         /// <summary>
         /// Gets or sets the name of the variable that is being declared.

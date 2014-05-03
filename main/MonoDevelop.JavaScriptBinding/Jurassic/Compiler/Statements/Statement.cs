@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents a javascript statement.
     /// </summary>
-    internal abstract class Statement : AstNode
+    public abstract class Statement : JSAstNode
     {
         private List<string> labels;
 

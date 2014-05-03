@@ -52,10 +52,10 @@ namespace Jurassic.Library
         //_________________________________________________________________________________________
 
         /// <summary>
-        /// Gets the internal class name of the object.  Used by the default toString()
+        /// Gets the public class name of the object.  Used by the default toString()
         /// implementation.
         /// </summary>
-        protected override string InternalClassName
+        protected override string publicClassName
         {
             get { return "Function"; }
         }
@@ -122,7 +122,7 @@ namespace Jurassic.Library
 
 
 
-        //     JAVASCRIPT INTERNAL FUNCTIONS
+        //     JAVASCRIPT public FUNCTIONS
         //_________________________________________________________________________________________
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Jurassic.Library
         /// <param name="thisObject"> The value of the "this" keyword within the function. </param>
         /// <param name="argumentValues"> An array of argument values. </param>
         /// <returns> The value that was returned from the function. </returns>
-        internal object CallFromNative(string function, object thisObject, params object[] argumentValues)
+        public object CallFromNative(string function, object thisObject, params object[] argumentValues)
         {
             this.Engine.PushStackFrame("native", function, 0);
             try
@@ -232,7 +232,7 @@ namespace Jurassic.Library
         /// <param name="thisObj"> The value of <c>this</c> in the context of the function. </param>
         /// <param name="argumentArray"> The arguments passed to the function, as an array. </param>
         /// <returns> The result from the function call. </returns>
-        [JSInternalFunction(Name = "apply")]
+        [JSpublicFunction(Name = "apply")]
         public object Apply(object thisObj, object arguments)
         {
             // Convert the arguments parameter into an array.
@@ -264,7 +264,7 @@ namespace Jurassic.Library
         /// <param name="thisObj"> The value of <c>this</c> in the context of the function. </param>
         /// <param name="arguments"> Any number of arguments that will be passed to the function. </param>
         /// <returns> The result from the function call. </returns>
-        [JSInternalFunction(Name = "call", Length = 1)]
+        [JSpublicFunction(Name = "call", Length = 1)]
         public object Call(object thisObj, params object[] arguments)
         {
             return this.CallLateBound(thisObj, arguments);
@@ -277,7 +277,7 @@ namespace Jurassic.Library
         /// <param name="boundThis"> The fixed value of "this". </param>
         /// <param name="boundArguments"> Any number of fixed arguments values. </param>
         /// <returns> A new function. </returns>
-        [JSInternalFunction(Name = "bind", Length = 1)]
+        [JSpublicFunction(Name = "bind", Length = 1)]
         public FunctionInstance Bind(object boundThis, params object[] boundArguments)
         {
             return new BoundFunction(this, boundThis, boundArguments);
@@ -287,7 +287,7 @@ namespace Jurassic.Library
         /// Returns a string representing this object.
         /// </summary>
         /// <returns> A string representing this object. </returns>
-        [JSInternalFunction(Name = "toString")]
+        [JSpublicFunction(Name = "toString")]
         public string ToStringJS()
         {
             return this.ToString();

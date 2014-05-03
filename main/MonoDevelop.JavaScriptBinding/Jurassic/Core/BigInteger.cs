@@ -5,7 +5,7 @@ namespace Jurassic
     /// <summary>
     /// Represents an arbitrarily large signed integer.
     /// </summary>
-    internal struct BigInteger
+    public struct BigInteger
     {
         private uint[] bits;
         private int wordCount;

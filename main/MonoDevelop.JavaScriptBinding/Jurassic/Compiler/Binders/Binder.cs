@@ -6,20 +6,20 @@ namespace Jurassic.Compiler
 {
 
     /// <summary>
-    /// Represents a generic delegate that all method calls pass through.  For internal use only.
+    /// Represents a generic delegate that all method calls pass through.  For public use only.
     /// </summary>
     /// <param name="engine"> The associated script engine. </param>
     /// <param name="thisObject"> The value of the <c>this</c> keyword. </param>
     /// <param name="arguments"> The arguments that were passed to the function. </param>
     /// <returns> The result of calling the method. </returns>
-    internal delegate object BinderDelegate(ScriptEngine engine, object thisObject, params object[] arguments);
+    public delegate object BinderDelegate(ScriptEngine engine, object thisObject, params object[] arguments);
 
     /// <summary>
     /// Selects a method from a list of candidates and performs type conversion from actual
     /// argument type to formal argument type.
     /// </summary>
     [Serializable]
-    internal abstract class Binder
+    public abstract class Binder
     {
         [NonSerialized]
         private BinderDelegate[] delegateCache;

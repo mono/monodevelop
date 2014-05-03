@@ -22,7 +22,7 @@ namespace Jurassic.Library
         /// creating this property. </param>
         /// <param name="message"> The initial value of the message property.  Pass <c>null</c> to
         /// avoid creating this property. </param>
-        internal ErrorInstance(ObjectInstance prototype, string name, string message)
+        public ErrorInstance(ObjectInstance prototype, string name, string message)
             : base(prototype)
         {
             if (name != null)
@@ -37,10 +37,10 @@ namespace Jurassic.Library
         //_________________________________________________________________________________________
 
         /// <summary>
-        /// Gets the internal class name of the object.  Used by the default toString()
+        /// Gets the public class name of the object.  Used by the default toString()
         /// implementation.
         /// </summary>
-        protected override string InternalClassName
+        protected override string publicClassName
         {
             get { return "Error"; }
         }
@@ -78,7 +78,7 @@ namespace Jurassic.Library
         /// <param name="path"> The path of the javascript source file that is currently executing. </param>
         /// <param name="function"> The name of the currently executing function. </param>
         /// <param name="line"> The line number of the statement that is currently executing. </param>
-        internal void SetStackTrace(string path, string function, int line)
+        public void SetStackTrace(string path, string function, int line)
         {
             var stackTrace = this.Engine.FormatStackTrace(this.Name, this.Message, path, function, line);
             this.FastSetProperty("stack", stackTrace, PropertyAttributes.FullAccess);
@@ -93,7 +93,7 @@ namespace Jurassic.Library
         /// Returns a string representing the current object.
         /// </summary>
         /// <returns> A string representing the current object. </returns>
-        [JSInternalFunction(Name = "toString")]
+        [JSpublicFunction(Name = "toString")]
         public string ToStringJS()
         {
             if (string.IsNullOrEmpty(this.Message))

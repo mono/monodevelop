@@ -7,7 +7,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents the debugger statement.
     /// </summary>
-    internal class DebuggerStatement : Statement
+    public class DebuggerStatement : Statement
     {
         /// <summary>
         /// Creates a new DebuggerStatement instance.

@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Outputs IL that converts between types.
     /// </summary>
-    internal static class EmitConversion
+    public static class EmitConversion
     {
         /// <summary>
         /// Pops the value on the stack, converts it to the given type, then pushes the result

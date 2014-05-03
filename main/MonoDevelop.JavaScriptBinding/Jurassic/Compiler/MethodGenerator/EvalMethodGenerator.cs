@@ -5,7 +5,7 @@ namespace Jurassic.Compiler
     /// <summary>
     /// Represents the information needed to compile eval script into a method.
     /// </summary>
-    internal class EvalMethodGenerator : MethodGenerator
+    public class EvalMethodGenerator : MethodGenerator
     {
         /// <summary>
         /// Creates a new EvalMethodGenerator instance.
