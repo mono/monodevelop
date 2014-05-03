@@ -395,7 +395,11 @@ namespace MonoDevelop.Debugger.Win32
 						CorValue[] args = new CorValue[argValues.Length];
 						for (int n = 0; n < args.Length; n++)
 							args[n] = argValues[n].Val;
-						return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
+						if (targetType.Type == CorElementType.ELEMENT_TYPE_ARRAY || targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+							return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
+						} else {
+							return ctx.RuntimeInvoke (func, targetType.TypeParameters, target != null ? target.Val : null, args);
+						}
 					});
 					return v.Val == null ? null : v;
 				}
