@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Factories\ErrorFactory.cs" />
     <Compile Include="Jurassic\Compiler\Binders\Binder.cs" />
     <Compile Include="Jurassic\Compiler\Binders\BinderMethod.cs" />
     <Compile Include="Jurassic\Compiler\Binders\BinderUtilities.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Jurassic\Compiler\Expressions\TernaryExpression.cs" />
     <Compile Include="Jurassic\Compiler\Expressions\ThisExpression.cs" />
     <Compile Include="Jurassic\Compiler\Expressions\UnaryExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\CommentLiteral.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\IdentifierToken.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\KeywordToken.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\Lexer.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Jurassic\Compiler\Statements\ExpressionStatement.cs" />
     <Compile Include="Jurassic\Compiler\Statements\ForInStatement.cs" />
     <Compile Include="Jurassic\Compiler\Statements\ForStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\FunctionStatement.cs" />
     <Compile Include="Jurassic\Compiler\Statements\IfStatement.cs" />
     <Compile Include="Jurassic\Compiler\Statements\LoopStatement.cs" />
     <Compile Include="Jurassic\Compiler\Statements\ReturnStatement.cs" />

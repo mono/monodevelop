@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Jurassic.Library;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.JavaScript.Factories;
 
 namespace Jurassic.Compiler
 {
     /// <summary>
     /// Converts a series of tokens into an abstract syntax tree.
     /// </summary>
-    internal sealed class Parser
+    public sealed class Parser
     {
         private ScriptEngine engine;
         private Lexer lexer;
@@ -103,6 +105,8 @@ namespace Jurassic.Compiler
             get { return this.positionAfterWhitespace; }
         }
 
+        public List<Error> Errors { get; set; }
+
         /// <summary>
         /// Gets the path or URL of the source file.  Can be <c>null</c>.
         /// </summary>
@@ -165,7 +169,7 @@ namespace Jurassic.Compiler
 
         //     VARIABLES
         //_________________________________________________________________________________________
-     
+
         /// <summary>
         /// Throws an exception if the variable name is invalid.
         /// </summary>
@@ -298,6 +302,7 @@ namespace Jurassic.Compiler
         public Statement Parse()
         {
             // Read the directive prologue.
+            Errors = new List<Error>();
             var result = new BlockStatement(new string[0]);
             while (true)
             {
@@ -349,8 +354,19 @@ namespace Jurassic.Compiler
                 if (this.nextToken == this.endToken)
                     break;
 
-                // Parse a single statement.
-                result.Statements.Add(ParseStatement());
+                try
+                {
+                    // Parse a single statement.
+                    result.Statements.Add(ParseStatement());
+                }
+                catch (Jurassic.JavaScriptException jsException)
+                {
+                    Errors.Add(ErrorFactory.CreateError(jsException.Message, jsException.LineNumber));
+                }
+                catch (Exception ex)
+                {
+                    Errors.Add(ErrorFactory.CreateError(ex.Message));
+                }
             }
 
             return result;
@@ -440,6 +456,8 @@ namespace Jurassic.Compiler
                 result.Statements.Add(ParseStatement());
             }
 
+            result.SourceSpan = new SourceCodeSpan(this.PositionBeforeWhitespace, this.PositionAfterWhitespace);
+
             // Consume the end brace.
             this.Expect(PunctuatorToken.RightBrace);
             return result;
@@ -481,10 +499,10 @@ namespace Jurassic.Compiler
 
                     // Read the setter expression.
                     declaration.InitExpression = ParseExpression(PunctuatorToken.Semicolon, PunctuatorToken.Comma);
-
-                    // Record the portion of the source document that will be highlighted when debugging.
-                    declaration.SourceSpan = new SourceCodeSpan(start, this.PositionBeforeWhitespace);
                 }
+
+                // Record the portion of the source document that will be highlighted when debugging.
+                declaration.SourceSpan = new SourceCodeSpan(start, this.PositionBeforeWhitespace);
 
                 // Add the declaration to the result.
                 result.Declarations.Add(declaration);
@@ -758,7 +776,7 @@ namespace Jurassic.Compiler
                 var result = new ForInStatement(this.labelsForCurrentStatement);
                 result.Variable = forInReference;
                 result.VariableSourceSpan = initializationStatement.SourceSpan;
-                
+
                 // Consume the "in".
                 this.Expect(KeywordToken.In);
 
@@ -1162,15 +1180,21 @@ namespace Jurassic.Compiler
         /// <returns> A statement representing the function. </returns>
         private Statement ParseFunctionDeclaration()
         {
+            var start = this.PositionAfterWhitespace;
+
             // Parse the function declaration.
             var expression = ParseFunction(FunctionType.Declaration, this.initialScope);
 
             // Add the function to the top-level scope.
             this.initialScope.DeclareVariable(expression.FunctionName, expression, writable: true, deletable: this.context == CodeContext.Eval);
 
+            // HB : Commented this and instead return FunctionStatement
+
             // Function declarations do nothing at the point of declaration - everything happens
             // at the top of the function/global code.
-            return new EmptyStatement(this.labelsForCurrentStatement);
+            // return new EmptyStatement(this.labelsForCurrentStatement);
+            var sourceSpan = new SourceCodeSpan(start, this.PositionBeforeWhitespace);
+            return new FunctionStatement(expression.FunctionName, expression.ArgumentNames, expression.BodyRoot, sourceSpan, this.labelsForCurrentStatement);
         }
 
         private enum FunctionType
@@ -1316,7 +1340,9 @@ namespace Jurassic.Compiler
                 bodyTextBuilder.ToString(0, bodyTextBuilder.Length - 1), body,
                 this.SourcePath, options);
             context.MethodOptimizationHints = functionParser.methodOptimizationHints;
-            return new FunctionExpression(context, new SourceCodeSpan (startPosition, endPosition));
+
+            var sourceSpan = new SourceCodeSpan(startPosition, endPosition);
+            return new FunctionExpression(context, sourceSpan);
         }
 
         /// <summary>
@@ -1721,7 +1747,7 @@ namespace Jurassic.Compiler
             {
                 // Pop the next expression from the stack.
                 var expression = stack.Pop() as OperatorExpression;
-                
+
                 // Only operator expressions are checked for validity.
                 if (expression == null)
                     continue;
@@ -1779,7 +1805,7 @@ namespace Jurassic.Compiler
         /// <summary>
         /// Used to store the getter and setter for an object literal property.
         /// </summary>
-        internal class ObjectLiteralAccessor
+        public class ObjectLiteralAccessor
         {
             public FunctionExpression Getter;
             public FunctionExpression Setter;
