@@ -207,6 +207,8 @@
     <Compile Include="Parser\JavaScriptParsedDocument.cs" />
     <Compile Include="Parser\JavaScriptParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextEditor\IconManager.cs" />
+    <Compile Include="TextEditor\JavaScriptEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Jurassic\Compiler\Emit\Optimizations.txt" />

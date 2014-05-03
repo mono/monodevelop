@@ -38,4 +38,8 @@
     <Parser class = "MonoDevelop.JavaScript.Parser.JavaScriptParser" mimeType="application/javascript, text/javascript" />
   </Extension>
 
+  <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+    <Class fileExtensions = ".js" class = "MonoDevelop.JavaScript.TextEditor.JavaScriptEditorExtension" />
+  </Extension>
+
 </Addin>
