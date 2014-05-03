@@ -183,17 +183,17 @@ type FSharpResolverProvider() =
         | Some tyRes ->
         // Get the declaration location from the language service
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
-        let loc = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.RunSynchronously
-        let lastIdent = 
-            match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
-            | Some(_, identIsland) -> Seq.last identIsland
-            | None -> ""
 
         let fsSymbolOpt = tyRes.GetSymbol(line, col, lineStr) |> Async.RunSynchronously
 
         match fsSymbolOpt with 
         | None ->  null
         | Some fsSymbolUse ->
+            let loc = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.RunSynchronously
+            let lastIdent = 
+                match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with 
+                | Some(_, identIsland) -> Seq.last identIsland
+                | None -> ""
             let reg = 
                 match loc with
                 | FindDeclResult.DeclFound(m) -> 
