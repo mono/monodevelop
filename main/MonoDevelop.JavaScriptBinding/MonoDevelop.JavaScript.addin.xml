@@ -3,7 +3,7 @@
 		id="JavaScriptSupport"
 		name="JavaScript Support"
 		author="Harsimran Bath"
-		copyright="GNU General Public"
+		copyright="Microsoft Public License (Ms-PL)"
 		url="http://www.monodevelop.com"
 		description="Adds JavaScript Support to Xamarin Studio."
 		category="Web Development"
