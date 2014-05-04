@@ -89,7 +89,6 @@ type ImplementInterfaceCodeActionProvider() as x =
   override x.IdString = "ImplementInterfaceCodeActionProvider" 
 
   override x.GetActions(doc: Document, ctx: obj, location: TextLocation, cancellation: CancellationToken) = 
-    let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(doc.Project :?> DotNetProject, IdeApp.Workspace.ActiveConfiguration)
     if doc.ParsedDocument <> null then
       match doc.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast -> seq {
