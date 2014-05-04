@@ -916,6 +916,9 @@ namespace MonoDevelop.Components.MainToolbar
 			base.OnDestroyed ();
 
 			AddinManager.ExtensionChanged -= OnExtensionChanged;
+			if (button != null)
+				button.Clicked -= HandleStartButtonClicked;
+
 			if (Background != null) {
 				((IDisposable)Background).Dispose ();
 				Background = null;
