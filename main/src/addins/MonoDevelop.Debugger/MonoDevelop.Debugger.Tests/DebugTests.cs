@@ -97,7 +97,10 @@ namespace MonoDevelop.Debugger.Tests
 				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("MS.NET");
 				break;
 			case "Mono.Debugger.Soft":
-				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ().OfType<MonoTargetRuntime> ().FirstOrDefault ();
+				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ()
+					.OfType<MonoTargetRuntime> ()
+					.OrderByDescending((o) => o.Version)
+					.FirstOrDefault ();
 				break;
 			default:
 				runtime = Runtime.SystemAssemblyService.DefaultRuntime;
@@ -106,6 +109,8 @@ namespace MonoDevelop.Debugger.Tests
 
 			if (runtime == null)
 				Assert.Ignore ("Runtime not found for: {0}", EngineId);
+
+			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version);
 
 			// main/build/tests
 			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);

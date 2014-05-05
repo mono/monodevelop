@@ -79,6 +79,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			int intZero = 0, intOne = 1;
 			int n = 32;
 			decimal dec = 123.456m;
+			var stringList = new List<string> ();
+			stringList.Add ("aaa");
+			stringList.Add ("bbb");
+			stringList.Add ("ccc");
+
 			var alist = new ArrayList ();
 			alist.Add (1);
 			alist.Add ("two");
@@ -97,6 +102,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var numbersMulti = new int [3, 4, 5];
 
 			var dict = new Dictionary<int, string[]> ();
+			dict.Add (5, new string[]{ "a", "b" });
 			var dictArray = new Dictionary<int, string[]> [2, 3];
 			var thing = new Thing<string> ();
 			var done = new Thing<string>.Done<int> ();

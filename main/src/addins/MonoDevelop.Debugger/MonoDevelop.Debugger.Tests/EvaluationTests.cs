@@ -1306,5 +1306,51 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 		}
 
+		[Test]
+		public void Lists()
+		{
+			if (!AllowTargetInvokes)
+				Assert.Ignore ("Evaluating lists is not working on NoTargetInvokes.");
+			ObjectValue val;
+			ObjectValue[] children;
+			val = Eval ("dict");
+			children = val.GetAllChildren ();
+			Assert.AreEqual (2, children.Length);
+			Assert.AreEqual ("[0]", children [0].Name);
+			Assert.AreEqual ("{[5, System.String[]]}", children [0].Value);
+			Assert.AreEqual ("Raw View", children [1].Name);
+			children = children [0].GetAllChildren ();
+			Assert.AreEqual ("Key", children [0].Name);
+			Assert.AreEqual ("5", children [0].Value);
+			Assert.AreEqual ("int", children [0].TypeName);
+			Assert.AreEqual ("Value", children [1].Name);
+			Assert.AreEqual ("{string[2]}", children [1].Value);
+			children = children [1].GetAllChildren ();
+			Assert.AreEqual ("\"a\"", children [0].Value);
+			Assert.AreEqual ("string", children [0].TypeName);
+			Assert.AreEqual ("\"b\"", children [1].Value);
+
+			val = Eval ("stringList");
+			children = val.GetAllChildren ();
+			Assert.AreEqual (4, children.Length);
+			Assert.AreEqual ("[0]", children [0].Name);
+			Assert.AreEqual ("[1]", children [1].Name);
+			Assert.AreEqual ("[2]", children [2].Name);
+			Assert.AreEqual ("Raw View", children [3].Name);
+			Assert.AreEqual ("\"aaa\"", children [0].Value);
+			Assert.AreEqual ("\"bbb\"", children [1].Value);
+			Assert.AreEqual ("\"ccc\"", children [2].Value);
+
+			val = Eval ("alist");
+			children = val.GetAllChildren ();
+			Assert.AreEqual (4, children.Length);
+			Assert.AreEqual ("[0]", children [0].Name);
+			Assert.AreEqual ("[1]", children [1].Name);
+			Assert.AreEqual ("[2]", children [2].Name);
+			Assert.AreEqual ("Raw View", children [3].Name);
+			Assert.AreEqual ("1", children [0].Value);
+			Assert.AreEqual ("\"two\"", children [1].Value);
+			Assert.AreEqual ("3", children [2].Value);
+		}
 	}
 }
