@@ -483,6 +483,11 @@ namespace MonoDevelop.Projects
 			return SupportsTarget (ProjectService.BuildTarget);
 		}
 
+		public bool SupportsExecute ()
+		{
+			return Services.ProjectService.GetExtensionChain (this).SupportsExecute (this);
+		}
+
 		/// <summary>
 		/// Cleans the files produced by this solution item
 		/// </summary>
@@ -664,6 +669,8 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
+			if (!SupportsExecute ())
+				return false;
 			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
 
@@ -1056,6 +1063,11 @@ namespace MonoDevelop.Projects
 		}
 		
 		internal protected virtual bool OnGetSupportsTarget (string target)
+		{
+			return true;
+		}
+
+		internal protected virtual bool OnGetSupportsExecute ()
 		{
 			return true;
 		}

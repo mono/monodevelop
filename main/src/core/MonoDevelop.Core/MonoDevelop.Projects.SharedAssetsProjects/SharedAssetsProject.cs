@@ -99,6 +99,11 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			return false;
 		}
 
+		internal protected override bool OnGetSupportsExecute ()
+		{
+			return false;
+		}
+
 		protected override void OnBoundToSolution ()
 		{
 			if (currentSolution != null) {
