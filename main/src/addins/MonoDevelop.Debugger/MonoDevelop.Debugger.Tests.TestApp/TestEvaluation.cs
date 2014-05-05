@@ -208,6 +208,23 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 class A
 {
+	public string ConstructedBy { get; private set; }
+
+	public A ()
+	{
+		ConstructedBy = "NoArg";
+	}
+
+	public A (int i)
+	{
+		ConstructedBy = "IntArg";
+	}
+
+	public A (string str)
+	{
+		ConstructedBy = "StringArg";
+	}
+
 	public virtual int Prop { get { return 1; } }
 
 	public int PropNoVirt1 { get { return 1; } }
