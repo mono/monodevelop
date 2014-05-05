@@ -778,6 +778,152 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
 			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
 		}
+
+		[Test]
+		public void ConditionalBreakpoints()
+		{
+			ObjectValue val;
+			Breakpoint bp;
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.ConditionExpression = "i==2";
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			Assert.Ignore ("TODO: Conditional breakpoints with compare against string or enum is not working");
+
+			InitializeTest ();
+			bp = AddBreakpoint ("033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7");
+			bp.ConditionExpression = "str == \"bbb\"";
+			StartTest ("ConditionalBreakpointString");
+			CheckPosition ("033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7");
+			val = Eval ("str");
+			Assert.AreEqual ("\"bbb\"", val.Value);
+
+			InitializeTest ();
+			bp = AddBreakpoint ("ecf764bf-9182-48d6-adb0-0ba36e2653a7");
+			bp.ConditionExpression = "en == BooleanEnum.False";
+			StartTest ("ConitionalBreakpointEnum");
+			CheckPosition ("ecf764bf-9182-48d6-adb0-0ba36e2653a7");
+			val = Eval ("en");
+			Assert.AreEqual ("BooleanEnum.False", val.Value);
+		}
+
+		[Test]
+		public void HitCountBreakpoints()
+		{
+			ObjectValue val;
+			Breakpoint bp;
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.EqualTo;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.GreaterThan;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("3", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("4", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("5", val.Value);
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.GreaterThanOrEqualTo;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("3", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("4", val.Value);
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.LessThan;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("0", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("1", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.LessThanOrEqualTo;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("0", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("1", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.MultipleOf;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("5", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("8", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.None;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("0", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("1", val.Value);
+		}
 	}
 }
 

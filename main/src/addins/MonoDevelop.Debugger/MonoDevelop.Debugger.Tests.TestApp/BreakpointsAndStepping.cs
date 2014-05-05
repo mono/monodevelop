@@ -286,6 +286,29 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			/*3c27f60f-fdfa-44c0-b58f-552ecaaa77f1*/
 		}
 
+		public void ConitionalBreakpointEnum ()
+		{
+			SomeMethod (BooleanEnum.True);
+			SomeMethod (BooleanEnum.False);
+		}
+
+		private void SomeMethod (BooleanEnum en)
+		{
+			int i = 0;/*ecf764bf-9182-48d6-adb0-0ba36e2653a7*/
+		}
+
+		public void ConditionalBreakpointString ()
+		{
+			SomeMethod ("aaa");
+			SomeMethod ("bbb");
+			SomeMethod ("ccc");
+		}
+
+		private void SomeMethod (string str)
+		{
+			int i = 0;/*033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7*/
+		}
+
 		public void Catchpoint1 ()
 		{
 			try {
@@ -519,5 +542,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			}
 		}
 	}
+}
+
+public enum BooleanEnum
+{
+	False,
+	True
 }
 /*invalidBreakpointAtEndOfFile*/
