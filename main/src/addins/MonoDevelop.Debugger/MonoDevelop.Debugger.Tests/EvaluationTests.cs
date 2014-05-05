@@ -706,6 +706,30 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("(long)2 == (int)2");
 			Assert.AreEqual ("true", val.Value);
 			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("SomeEnum.two == SomeEnum.one");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("SomeEnum.one != SomeEnum.one");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
 			
 			// Arithmetic
 			
@@ -1077,15 +1101,63 @@ namespace MonoDevelop.Debugger.Tests
 			//When fixed put into MemberReference
 			val = Eval ("numbers.GetLength(0)");
 			if (!AllowTargetInvokes) {
-					var options = Session.Options.EvaluationOptions.Clone ();
-					options.AllowTargetInvoke = true;
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
 
-					Assert.IsTrue (val.IsNotSupported);
-					val.Refresh (options);
-					val = val.Sync ();
-				}
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
+		}
+
+		[Test]
+		public void ObjectCreation ()
+		{
+			ObjectValue val;
+
+			val = Eval ("new A().ConstructedBy");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"NoArg\"", val.Value);
+
+			val = Eval ("new A(7).ConstructedBy");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"IntArg\"", val.Value);
+
+			val = Eval ("new A(\"someString\").ConstructedBy");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"StringArg\"", val.Value);
+		}
+
+		[Test]
+		[Ignore ("TODO: Sdb and Win32")]
+		public void StructCreation ()
+		{
+			ObjectValue val;
+			val = Eval ("new SimpleStruct()");
+			Assert.AreEqual ("SimpleStruct", val.TypeName);
 		}
 
 		[Test]

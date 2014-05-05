@@ -378,7 +378,7 @@ namespace MonoDevelop.Debugger.Win32
 			ParameterInfo[] parameters = method.GetParameters ();
 			// TODO: Check this.
 			for (int n = 0; n < parameters.Length; n++) {
-				if (parameters[n].ParameterType == typeof(object) && (IsValueType (ctx, argValues[n])))
+				if (parameters[n].ParameterType == typeof(object) && IsValueType (ctx, argValues[n]) && !IsEnum (ctx, argValues[n]))
 					argValues[n] = Box (ctx, argValues[n]);
 			}
 
@@ -706,22 +706,16 @@ namespace MonoDevelop.Debugger.Win32
 
 		public CorValue CreateCorValue (EvaluationContext ctx, CorType type, params CorValRef[] args)
 		{
-			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
+			CorEvaluationContext cctx = (CorEvaluationContext)ctx;
 			CorValue[] vargs = new CorValue [args.Length];
-			for (int n=0; n<args.Length; n++)
+			CorType[] targs = new CorType[args.Length];
+			for (int n = 0; n < args.Length; n++) {
 				vargs [n] = args [n].Val;
-
-			Type t = type.GetTypeInfo (cctx.Session);
-			MethodInfo ctor = null;
-			foreach (MethodInfo met in t.GetMethods ()) {
-				if (met.IsSpecialName && met.Name == ".ctor") {
-					ParameterInfo[] pinfos = met.GetParameters ();
-					if (pinfos.Length == 1) {
-						ctor = met;
-						break;
-					}
-				}
+				targs [n] = vargs [n].ExactType;
 			}
+
+			var ctor = OverloadResolve (cctx, ".ctor", type, targs, BindingFlags.Instance | BindingFlags.Public, false);
+
 			if (ctor == null)
 				return null;
 
