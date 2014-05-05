@@ -362,7 +362,7 @@ namespace MonoDevelop.Components.MainToolbar
 				currentSolution.Saved -= HandleSolutionSaved;
 			}
 
-			currentSolution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			currentSolution = e.Solution;
 
 			if (currentSolution != null) {
 				currentSolution.StartupItemChanged += HandleStartupItemChanged;
