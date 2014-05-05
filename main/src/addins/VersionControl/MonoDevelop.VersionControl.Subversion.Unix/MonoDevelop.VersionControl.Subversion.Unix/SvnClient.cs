@@ -391,6 +391,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, string realm, string user_name, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t ();
+			data.username = user_name;
 			bool ms;
 			if (SimpleAuthenticationPrompt (realm, may_save, ref data.username, out data.password, out ms)) {
 				data.may_save = ms;
