@@ -28,22 +28,28 @@
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using System;
 
 namespace MonoDevelop.VersionControl
 {
 	public class VersionControlCommandHandler : NodeCommandHandler 
 	{
-		VersionControlItemList items;
+		WeakReference items;
+
+		VersionControlItemList Items {
+			get { return items.Target as VersionControlItemList; }
+			set { items = new WeakReference (value); }
+		}
 		
 		public void Init (VersionControlItemList items)
 		{
-			this.items = items;
+			Items = items;
 		}
 		
 		protected override bool MultipleSelectedNodes {
 			get {
-				if (items != null)
-					return items.Count > 1;
+				if (Items != null)
+					return Items.Count > 1;
 				else
 					return base.MultipleSelectedNodes;
 			}
@@ -52,8 +58,8 @@ namespace MonoDevelop.VersionControl
 		public VersionControlItemList GetItems (bool projRecurse = true)
 		{
 			// Cached items are used only in the status view, not in the project pad.
-			if (items != null)
-				return items;
+			if (Items != null)
+				return Items;
 
 			// Don't cache node items because they can change
 			VersionControlItemList nodeItems = new VersionControlItemList ();
