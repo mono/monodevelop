@@ -69,7 +69,7 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusArea statusArea;
 
 		SearchEntry matchEntry;
-		static object lastCommandTarget;
+		static WeakReference lastCommandTarget;
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
@@ -113,7 +113,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		internal static object LastCommandTarget {
-			get { return lastCommandTarget; }
+			get { return lastCommandTarget.Target; }
 		}
 
 		void SetSearchCategory (string category)
@@ -330,7 +330,7 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.CommandService.RegisterCommandBar (this);
 
 			IdeApp.CommandService.ActiveWidgetChanged += (sender, e) => {
-				lastCommandTarget = e.OldActiveWidget;
+				lastCommandTarget = new WeakReference (e.OldActiveWidget);
 			};
 
 			this.ShowAll ();
