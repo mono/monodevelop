@@ -167,6 +167,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		public int SplitCount { get; set; }
+
 		public WorkbenchWindow RootWindow {
 			get { return workbench; }
 		}

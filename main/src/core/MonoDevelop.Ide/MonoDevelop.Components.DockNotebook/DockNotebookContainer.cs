@@ -23,7 +23,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
+using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
@@ -35,6 +37,20 @@ namespace MonoDevelop.Components.DockNotebook
 		bool isMasterTab;
 
 		DockNotebook tabControl;
+
+		List<DockNotebook> notebooks = new List<DockNotebook> ();
+
+		public bool AllowLeftInsert {
+			get {
+				return IdeApp.Workbench.SplitCount == 0;
+			}
+		}
+
+		public bool AllowRightInsert {
+			get {
+				return IdeApp.Workbench.SplitCount == 0;
+			}
+		}
 
 		public DockNotebook TabControl {
 			get {
@@ -99,10 +115,10 @@ namespace MonoDevelop.Components.DockNotebook
 			};
 			newNotebook.PageRemoved += HandlePageRemoved;
 
-			var newTab = newNotebook.InsertTab (-1); 
+			var newTab = newNotebook.InsertTab (-1);
 			newTab.Content = window;
-			window.SetDockNotebook (newNotebook, newTab); 
-			Remove (Child); 
+			window.SetDockNotebook (newNotebook, newTab);
+			Remove (Child);
 			callback (new DockNotebookContainer (newNotebook));
 
 			tabControl.InitSize ();
@@ -113,44 +129,30 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			Insert (window, container => {
 				var box = new HPaned ();
-				box.Add1 (container); 
-				box.Add2 (new DockNotebookContainer (tabControl)); 
+				var new_container = new DockNotebookContainer (tabControl);
+
+				IdeApp.Workbench.SplitCount++;
+
+				box.Add1 (container);
+				box.Add2 (new_container);
 				box.Position = Allocation.Width / 2;
 				Child = box;
-			}); 
+			});
 		}
 
 		public void InsertRight (SdiWorkspaceWindow window)
 		{
 			Insert (window, container => {
 				var box = new HPaned ();
-				box.Add1 (new DockNotebookContainer (tabControl)); 
-				box.Add2 (container); 
+				var new_container = new DockNotebookContainer (tabControl);
+
+				IdeApp.Workbench.SplitCount++;
+
+				box.Add1 (new_container);
+				box.Add2 (container);
 				box.Position = Allocation.Width / 2;
 				Child = box;
-			}); 
-		}
-
-		public void InsertTop (SdiWorkspaceWindow window)
-		{
-			Insert (window, container => {
-				var box = new VPaned ();
-				box.Add1 (container); 
-				box.Add2 (new DockNotebookContainer (tabControl)); 
-				box.Position = Allocation.Height / 2;
-				Child = box;
-			}); 
-		}
-
-		public void InsertBottom (SdiWorkspaceWindow window)
-		{
-			Insert (window, container => {
-				var box = new VPaned ();
-				box.Add1 (new DockNotebookContainer (tabControl)); 
-				box.Add2 (container); 
-				box.Position = Allocation.Height / 2;
-				Child = box;
-			}); 
+			});
 		}
 	}
 }

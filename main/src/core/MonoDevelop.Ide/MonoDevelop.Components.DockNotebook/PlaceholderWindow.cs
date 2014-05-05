@@ -143,7 +143,7 @@ namespace MonoDevelop.Components.DockNotebook
 				if (notebook.GdkWindow == null)
 					continue;
 				int ox2, oy2;
-				notebook.GdkWindow.GetOrigin (out ox2, out oy2); 
+				notebook.GdkWindow.GetOrigin (out ox2, out oy2);
 				var alloc = notebook.Allocation;
 				if (ox2 <= x && x <= ox2 + alloc.Width && oy2 <= y && y <= oy2 + alloc.Height) {
 					hoverNotebook = notebook;
@@ -151,73 +151,45 @@ namespace MonoDevelop.Components.DockNotebook
 					oy = oy2;
 				}
 			}
-			
+
 			if (CanPlaceInHoverNotebook ()) {
+				var container = (DockNotebookContainer)hoverNotebook.Parent;
 				var alloc = hoverNotebook.Allocation;
+
 				if (x <= ox + DockFrame.GroupDockSeparatorSize) {
-					Relocate (
-						ox, 
-						oy, 
-						alloc.Width / 3,  
-						alloc.Height, 
-						false
-					); 
-					placementDelegate = delegate(DockNotebook arg1, IDockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
-						var window = (SdiWorkspaceWindow)tab.Content;
-						var container = (DockNotebookContainer)hoverNotebook.Parent;
-						container.InsertLeft (window);
-					};
-					return;
+					if (container.AllowLeftInsert) {
+						Relocate (
+							ox,
+							oy,
+							alloc.Width / 3,
+							alloc.Height,
+							false
+						);
+						placementDelegate = delegate(DockNotebook arg1, IDockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
+							var window = (SdiWorkspaceWindow)tab.Content;
+							container.InsertLeft (window);
+						};
+						return;
+					}
 				}
 
 				if (x >= ox + alloc.Width - DockFrame.GroupDockSeparatorSize) {
-					Relocate (
-						ox + alloc.Width * 2 / 3, 
-						oy, 
-						alloc.Width / 3,  
-						alloc.Height, 
-						false
-					); 
-					placementDelegate = delegate(DockNotebook arg1, IDockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
-						var window = (SdiWorkspaceWindow)tab.Content;
-						var container = (DockNotebookContainer)hoverNotebook.Parent;
-						container.InsertRight (window);
-					};
-					return;
+					if (container.AllowRightInsert) {
+						Relocate (
+							ox + alloc.Width * 2 / 3,
+							oy,
+							alloc.Width / 3,
+							alloc.Height,
+							false
+						);
+						placementDelegate = delegate(DockNotebook arg1, IDockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
+							var window = (SdiWorkspaceWindow)tab.Content;
+							container.InsertRight (window);
+						};
+						return;
+					}
 				}
 
-				if (y <= oy + DockFrame.GroupDockSeparatorSize) {
-					Relocate (
-						ox, 
-						oy, 
-						alloc.Width,  
-						alloc.Height / 3, 
-						false
-					); 
-					placementDelegate = delegate(DockNotebook arg1, IDockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
-						var window = (SdiWorkspaceWindow)tab.Content;
-						var container = (DockNotebookContainer)hoverNotebook.Parent;
-						container.InsertTop (window);
-					};
-					return;
-				}
-
-				if (y >= oy + alloc.Height - DockFrame.GroupDockSeparatorSize) {
-					Relocate (
-						ox, 
-						oy + alloc.Height * 2 / 3, 
-						alloc.Width,  
-						alloc.Height / 3, 
-						false
-					); 
-					placementDelegate = delegate(DockNotebook arg1, IDockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
-						var window = (SdiWorkspaceWindow)tab.Content;
-						var container = (DockNotebookContainer)hoverNotebook.Parent;
-						container.InsertBottom (window);
-					};
-					return;
-				}
-				
 				if (!hoverNotebook.Tabs.Contains (frame)) {
 					Relocate (
 						ox + alloc.Width / 3, 

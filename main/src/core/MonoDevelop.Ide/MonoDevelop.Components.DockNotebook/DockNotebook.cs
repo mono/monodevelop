@@ -231,6 +231,9 @@ namespace MonoDevelop.Components.DockNotebook
 			tabStrip.Update ();
 			tabStrip.DropDownButton.Sensitive = pages.Count > 0;
 
+			if (pages.Count == 0)
+				IdeApp.Workbench.SplitCount = 0;
+
 			if (PageRemoved != null)
 				PageRemoved (this, EventArgs.Empty);
 		}
