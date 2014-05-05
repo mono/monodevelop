@@ -211,11 +211,13 @@ namespace MonoDevelop.Debugger.Tests
 			}
 		}
 
-		public void AddBreakpoint (string breakpointMarker, int offset = 0, string statement = null)
+		public Breakpoint AddBreakpoint (string breakpointMarker, int offset = 0, string statement = null)
 		{
 			int col, line;
 			GetLineAndColumn (breakpointMarker, offset, statement, out line, out col);
-			Session.Breakpoints.Add (SourceFile.Name, line, col);
+			var bp = new Breakpoint (SourceFile.Name, line, col);
+			Session.Breakpoints.Add (bp);
+			return bp;
 		}
 
 		public void RunToCursor (string breakpointMarker, int offset = 0, string statement = null)
