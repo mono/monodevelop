@@ -709,6 +709,16 @@ namespace MonoDevelop.Projects
 				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 
+		public override bool SupportsExecute (IBuildTarget item)
+		{
+			if (item is WorkspaceItem)
+				return ((WorkspaceItem)item).OnGetSupportsExecute ();
+			else if (item is SolutionItem)
+				return ((SolutionItem)item).OnGetSupportsExecute ();
+			else
+				throw new InvalidOperationException ("Unknown item type: " + item);
+		}
+
 		public override void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem) {

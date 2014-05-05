@@ -156,6 +156,34 @@ namespace MonoDevelop.Projects
 				return GetNext (item).SupportsTarget ((IBuildTarget) item, target);
 		}
 
+		public virtual bool SupportsExecute (IBuildTarget item)
+		{
+			if (item is SolutionEntityItem)
+				return SupportsExecute ((SolutionEntityItem)item);
+			else if (item is WorkspaceItem)
+				return SupportsExecute ((WorkspaceItem) item);
+			else 
+				return GetNext (item).SupportsExecute (item);
+		}
+
+		protected virtual bool SupportsExecute (SolutionEntityItem item)
+		{
+			return GetNext (item).SupportsExecute ((IBuildTarget) item);
+		}
+
+		protected virtual bool SupportsExecute (Solution solution)
+		{
+			return GetNext (solution).SupportsExecute ((IBuildTarget) solution);
+		}
+
+		protected virtual bool SupportsExecute (WorkspaceItem item)
+		{
+			if (item is Solution)
+				return SupportsExecute ((Solution) item);
+			else
+				return GetNext (item).SupportsExecute ((IBuildTarget) item);
+		}
+
 		protected virtual void Clean (IProgressMonitor monitor, IBuildTarget item, ConfigurationSelector configuration)
 		{
 			if (item is SolutionEntityItem)

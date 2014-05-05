@@ -263,6 +263,26 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refSharedProjectXml, sharedProjectXml);
 			Assert.AreEqual (refSharedProjectItemsXml, sharedProjectItemsXml);
 		}
+
+		[Test]
+		public void SharedProjectCantBeStartup ()
+		{
+			var sol = new Solution ();
+			var shared = new SharedAssetsProject ();
+
+			// Shared projects are not executable
+			Assert.IsFalse (shared.SupportsExecute ());
+
+			sol.RootFolder.AddItem (shared);
+
+			// The shared project is not executable, so it shouldn't be set as startup by default
+			Assert.IsNull (sol.StartupItem);
+
+			// An executable project is set as startup by default when there is no startup project
+			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			sol.RootFolder.AddItem (project);
+			Assert.IsTrue (sol.StartupItem == project);
+		}
 	}
 }
 

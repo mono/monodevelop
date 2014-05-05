@@ -267,6 +267,11 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.GetExtensionChain (this).SupportsTarget (this, target);
 		}
 
+		public bool SupportsExecute ()
+		{
+			return Services.ProjectService.GetExtensionChain (this).SupportsExecute (this);
+		}
+
 		public BuildResult Build (IProgressMonitor monitor, string configuration)
 		{
 			return InternalBuild (monitor, (SolutionConfigurationSelector) configuration);
@@ -417,6 +422,11 @@ namespace MonoDevelop.Projects
 		}
 		
 		internal protected virtual bool OnGetSupportsTarget (string target)
+		{
+			return true;
+		}
+
+		internal protected virtual bool OnGetSupportsExecute ()
 		{
 			return true;
 		}
