@@ -401,14 +401,12 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (!Directory.Exists (dir))
 				return;
-			foreach (string file in Directory.GetFiles (dir))
-				files.Add (new FilePath (file).CanonicalPath);
 
-			foreach (string sub in Directory.GetDirectories (dir)) {
-				directories.Add (new FilePath (sub));
-				if (recursive)
-					CollectFiles (files, directories, sub, true);
-			}
+			directories.AddRange (Directory.GetDirectories (dir, "*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+				.Select (f => new FilePath (f)));
+
+			files.UnionWith (Directory.GetFiles (dir, "*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+				.Select (f => new FilePath (f).CanonicalPath));
 		}
 
 		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
