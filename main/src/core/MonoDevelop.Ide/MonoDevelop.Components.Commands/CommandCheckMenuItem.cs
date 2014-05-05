@@ -39,7 +39,7 @@ namespace MonoDevelop.Components.Commands
 		object arrayDataItem;
 		object initialTarget;
 		string overrideLabel;
-		CommandInfo lastCmdInfo;
+		WeakReference lastCmdInfo;
 		bool disabledVisible = true;
 		
 		public CommandCheckMenuItem (object commandId, CommandManager commandManager, string overrideLabel, bool disabledVisible): base ("")
@@ -105,7 +105,7 @@ namespace MonoDevelop.Components.Commands
 		protected override void OnSelected ()
 		{
 			if (commandManager != null)
-				commandManager.NotifySelected (lastCmdInfo);
+				commandManager.NotifySelected (lastCmdInfo.Target as CommandInfo);
 			base.OnSelected ();
 		}
 		
@@ -118,7 +118,7 @@ namespace MonoDevelop.Components.Commands
 		
 		void Update (CommandInfo cmdInfo)
 		{
-			lastCmdInfo = cmdInfo;
+			lastCmdInfo = new WeakReference (cmdInfo);
 			
 			Gtk.Widget child = Child;
 			if (child == null)
