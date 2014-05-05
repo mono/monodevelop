@@ -74,6 +74,7 @@
 	<StockIcon stockid="md-errors-list-has-errors" resource="pad-error-list-errors-light-16.png" size="Menu" />
 	<StockIcon stockid="md-errors-list-has-warnings" resource="pad-error-list-warnings-light-16.png" size="Menu" />
 	<StockIcon stockid="md-event" resource="element-event-light-16.png" size="Menu" />
+	<StockIcon stockid="md-exception" resource="element-exception-light-16.png" size="Menu" />
 	<StockIcon stockid="md-extensionmethod" resource="element-extensionmethod-light-16.png" size="Menu" />
 	<StockIcon stockid="md-feedback" resource="feedback-light-16.png" size="Menu" />
 	<StockIcon stockid="md-field" resource="element-field-light-16.png" size="Menu" />
@@ -83,6 +84,7 @@
 	<StockIcon stockid="md-file-source" resource="file-source-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-file-unit-test" resource="file-unit-test-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-folder-overlay" resource="assembly-reference-overlay-light-16.png" size="Menu" />
+	<StockIcon stockid="md-fs-field" resource="element-fs-field-light-16.png" size="Menu" />
 	<StockIcon stockid="md-generic-pad" resource="pad-generic-pad-light-16.png" size="Menu" />
 	<StockIcon stockid="md-group-by-category" resource="group-by-category-light-16.png" size="Menu" />
 	<StockIcon stockid="md-gui-file" resource="file-gtk-light-32.png" size="Dnd" />
@@ -101,8 +103,10 @@
 	<StockIcon stockid="md-message-log" resource="pad-application-output-light-16.png" size="Menu" />
 	<StockIcon stockid="md-method" resource="element-method-light-16.png" size="Menu" />
 	<StockIcon stockid="md-misc-files" resource="file-generic-light-16.png" size="Menu" />
+	<StockIcon stockid="md-module" resource="element-module-light-16.png" size="Menu" />
 	<StockIcon stockid="md-name-space" resource="element-namespace-light-16.png" size="Menu" />
 	<StockIcon stockid="md-newmethod" resource="element-method-new-light-16.png" size="Menu" />
+	<StockIcon stockid="md-other-declaration" resource="element-other-declaration-light-16.png" size="Menu" />
 	<StockIcon stockid="md-output-icon" resource="pad-application-output-light-16.png" size="Menu" />
 	<StockIcon stockid="md-package-source" resource="package-source-light-16.png" size="Menu" />
 	<StockIcon stockid="md-parser" resource="parser-light-16.png" size="Menu" />
@@ -138,6 +142,8 @@
 	<StockIcon stockid="md-regular-file" resource="file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid="md-resource-file-icon" resource="file-resource-light-16.png" size="Menu" />
 	<StockIcon stockid="md-resource-file-icon" resource="file-resource-light-32.png" size="Dnd" />
+	<StockIcon stockid="md-script-file-icon" resource="file-script-light-16.png" size="Menu" />
+	<StockIcon stockid="md-script-file-icon" resource="file-script-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-searchbox-clear" resource="searchbox-clear-light-16.png" size="Menu" />
 	<StockIcon stockid="md-searchbox-search" resource="searchbox-search-light-16.png" size="Menu" />
 	<StockIcon stockid="md-solution" resource="solution-light-16.png" size="Menu" />
@@ -151,6 +157,7 @@
 	<StockIcon stockid="md-template-surroundwith" resource="element-template-surroundwith-light-16.png" size="Menu" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-light-16.png" size="Menu" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-light-32.png" size="Dnd" />
+	<StockIcon stockid="md-type" resource="element-type-light-16.png" size="Menu" />
 	<StockIcon stockid="md-updates" resource="updates-light-16.png" size="Menu" />
 	<StockIcon stockid="md-variable" resource="element-variable-light-16.png" size="Menu" />
 	<StockIcon stockid="md-warning-overlay" resource="invalid-reference-overlay-light-16.png" size="Menu" />

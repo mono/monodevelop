@@ -452,6 +452,18 @@
     <EmbeddedResource Include="icons\light\file-xml-32%402x.png">
       <LogicalName>file-xml-light-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-script-16.png">
+      <LogicalName>file-script-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-script-16%402x.png">
+      <LogicalName>file-script-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-script-32.png">
+      <LogicalName>file-script-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\file-script-32%402x.png">
+      <LogicalName>file-script-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\folder-new-16.png">
       <LogicalName>folder-new-16.png</LogicalName>
     </EmbeddedResource>
@@ -1325,6 +1337,36 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-variable-16%402x.png">
       <LogicalName>element-variable-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-exception-16.png">
+      <LogicalName>element-exception-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-exception-16%402x.png">
+      <LogicalName>element-exception-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-fs-field-16.png">
+      <LogicalName>element-fs-field-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-fs-field-16%402x.png">
+      <LogicalName>element-fs-field-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-module-16.png">
+      <LogicalName>element-module-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-module-16%402x.png">
+      <LogicalName>element-module-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-other-declaration-16.png">
+      <LogicalName>element-other-declaration-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-other-declaration-16%402x.png">
+      <LogicalName>element-other-declaration-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-type-16.png">
+      <LogicalName>element-type-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\element-type-16%402x.png">
+      <LogicalName>element-type-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-source-16.png">
       <LogicalName>file-source-light-16.png</LogicalName>
