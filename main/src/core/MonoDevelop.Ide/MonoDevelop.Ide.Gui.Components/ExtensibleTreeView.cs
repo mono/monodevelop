@@ -85,9 +85,6 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreePadOption[] options;
 		TreeOptions globalOptions;
 
-		TreeNodeNavigator workNode;
-		TreeNodeNavigator compareNode1;
-		TreeNodeNavigator compareNode2;
 		internal bool sorting;
 
 		object[] copyObjects;
@@ -203,9 +200,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.TestExpandRow += OnTestExpandRow;
 			tree.RowActivated += OnNodeActivated;
 			tree.DoPopupMenu += ShowPopup;
-			workNode = new TreeNodeNavigator (this);
-			compareNode1 = new TreeNodeNavigator (this);
-			compareNode2 = new TreeNodeNavigator (this);
 
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
@@ -1440,8 +1434,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				NodeBuilder[] chain1 = (NodeBuilder[]) store.GetValue (a, BuilderChainColumn);
 				if (chain1 == null) return -1;
 
-				compareNode1.MoveToIter (a);
-				compareNode2.MoveToIter (b);
+				var compareNode1 = new TreeNodeNavigator (this, a);
+				var compareNode2 = new TreeNodeNavigator (this, b);
 
 				int sort = CompareObjects (chain1, compareNode1, compareNode2);
 				if (sort != TypeNodeBuilder.DefaultSort) return sort;
@@ -1645,7 +1639,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		internal string GetNamePathFromIter (Gtk.TreeIter iter)
 		{
-			workNode.MoveToIter (iter);
+			var workNode = new TreeNodeNavigator (this, iter);
 			StringBuilder sb = new StringBuilder ();
 			do {
 				string name = workNode.NodeName;
