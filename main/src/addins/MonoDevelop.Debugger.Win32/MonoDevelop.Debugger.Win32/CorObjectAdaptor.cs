@@ -184,24 +184,44 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
-		Dictionary<string, CorType> typeCache = new Dictionary<string, CorType> ();
+		Dictionary<string, CorType> nameToTypeCache = new Dictionary<string, CorType> ();
+		Dictionary<CorType, string> typeToNameCache = new Dictionary<CorType, string> ();
+
+		string GetCacheName(string name, CorType[] typeArgs)
+		{
+			if (typeArgs == null || typeArgs.Length == 0)
+				return name;
+			string result = name + "<";
+			for (int i = 0; i < typeArgs.Length; i++) {
+				string currentTypeName;
+				if (!typeToNameCache.TryGetValue (typeArgs [i], out currentTypeName))
+					return null;//Unable to resolve? Don't cache. This should never happen.
+				result += currentTypeName;
+				if (i < typeArgs.Length - 1)
+					result += ",";
+			}
+			return result + ">";
+		}
+
 		public override object GetType (EvaluationContext gctx, string name, object[] gtypeArgs)
 		{
-			CorType fastRet;
-			if (typeCache.TryGetValue (name, out fastRet))
-				return fastRet;
-
 			CorType[] typeArgs = CastArray<CorType> (gtypeArgs);
-
-			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
+			string cacheName = GetCacheName (name, typeArgs);
+			CorType fastRet;
+			if (!string.IsNullOrEmpty (cacheName) && nameToTypeCache.TryGetValue (cacheName, out fastRet))
+				return fastRet;
+			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
 			foreach (CorModule mod in ctx.Session.GetModules ()) {
 				CorMetadataImport mi = ctx.Session.GetMetadataForModule (mod.Name);
 				if (mi != null) {
 					foreach (Type t in mi.DefinedTypes) {
-						if (t.FullName == name) {
+						if (t.FullName.Replace ('+', '.') == name.Replace ('+', '.')) {
 							CorClass cls = mod.GetClassFromToken (t.MetadataToken);
 							fastRet = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, typeArgs);
-							typeCache [name] = fastRet;
+							if (!string.IsNullOrEmpty (cacheName)) {
+								nameToTypeCache [cacheName] = fastRet;
+								typeToNameCache [fastRet] = cacheName;
+							}
 							return fastRet;
 						}
 					}

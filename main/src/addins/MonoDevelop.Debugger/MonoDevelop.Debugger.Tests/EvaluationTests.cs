@@ -44,6 +44,38 @@ namespace MonoDevelop.Debugger.Tests
 			base.SetUp ();
 
 			Start ("TestEvaluation");
+			Session.TypeResolverHandler = ResolveType;
+		}
+
+		static string ResolveType (string identifier, SourceLocation location)
+		{
+			switch (identifier) {
+			case "SomeClassInNamespace":
+				return "MonoDevelop.Debugger.Tests.TestApp.SomeClassInNamespace";
+			case "ParentNestedClass":
+				return "MonoDevelop.Debugger.Tests.TestApp.TestEvaluationParent.ParentNestedClass";
+			case "NestedClass":
+				return "MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedClass";
+			case "TestEvaluation":
+				return "MonoDevelop.Debugger.Tests.TestApp.TestEvaluation";
+			case "NestedGenericClass`2":
+				return "MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedGenericClass";
+			case "Dictionary`2":
+				return "System.Collections.Generic.Dictionary";
+			case "A":
+				return "A";
+			case "B":
+				return "B";
+			case "C":
+				return "C";
+			case "System":
+				return "System";
+			case "MonoDevelop":
+				return "MonoDevelop";
+			case "SomeEnum":
+				return "SomeEnum";
+			}
+			return null;
 		}
 
 		[Test]
@@ -111,12 +143,23 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedClass.DoubleNestedClass", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			val = Eval ("ParentNestedClass");
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluationParent.ParentNestedClass", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			val = Eval ("SomeClassInNamespace");
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.SomeClassInNamespace", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
 
 		[Test]
 		public virtual void TypeReferenceGeneric ()
 		{
-			ObjectValue val = Eval ("System.Collections.Generic.Dictionary<string,int>");
+			ObjectValue val;
+			val = Eval ("System.Collections.Generic.Dictionary<string,int>");
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<string,int>", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
@@ -1086,18 +1129,6 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
-			//When fixed put into TypeReference
-			val = Eval ("NestedClassInParent");
-			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluationParent.NestedClassInParent", val.Value);
-			Assert.AreEqual ("<type>", val.TypeName);
-			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
-
-			//When fixed put into TypeReference
-			val = Eval ("SomeClassInNamespace");
-			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.SomeClassInNamespace", val.Value);
-			Assert.AreEqual ("<type>", val.TypeName);
-			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
-
 			//When fixed put into MemberReference
 			val = Eval ("numbers.GetLength(0)");
 			if (!AllowTargetInvokes) {
@@ -1110,6 +1141,18 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("3", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
+
+			//When fixed put into TypeReferenceGeneric
+			val = Eval ("Dictionary<string,NestedClass>");
+			Assert.AreEqual ("System.Collections.Generic.Dictionary<string,MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedClass>", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			//When fixed put into TypeReferenceGeneric
+			val = Eval ("NestedGenericClass<int,string>");
+			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedGenericClass<int,string>", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
 
 		[Test]
@@ -1379,7 +1422,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void Lists()
+		public void Lists ()
 		{
 			if (!AllowTargetInvokes)
 				Assert.Ignore ("Evaluating lists is not working on NoTargetInvokes.");

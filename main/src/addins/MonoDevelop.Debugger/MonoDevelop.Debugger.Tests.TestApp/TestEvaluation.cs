@@ -198,6 +198,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 			}
 		}
+
+		class NestedGenericClass<T1,T2>
+		{
+
+		}
 	}
 
 	public class SomeClassInNamespace
