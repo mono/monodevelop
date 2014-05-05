@@ -1752,6 +1752,102 @@
     <EmbeddedResource Include="icons\light\prefs-name-conventions-16%402x.png">
       <LogicalName>prefs-name-conventions-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\copy-16.png">
+      <LogicalName>copy-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\copy-16%402x.png">
+      <LogicalName>copy-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\find-16.png">
+      <LogicalName>find-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\find-16%402x.png">
+      <LogicalName>find-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\find-and-replace-16.png">
+      <LogicalName>find-and-replace-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\find-and-replace-16%402x.png">
+      <LogicalName>find-and-replace-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\go-back-16.png">
+      <LogicalName>go-back-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\go-back-16%402x.png">
+      <LogicalName>go-back-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\go-down-16.png">
+      <LogicalName>go-down-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\go-down-16%402x.png">
+      <LogicalName>go-down-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\go-forward-16.png">
+      <LogicalName>go-forward-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\go-forward-16%402x.png">
+      <LogicalName>go-forward-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\go-up-16.png">
+      <LogicalName>go-up-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\go-up-16%402x.png">
+      <LogicalName>go-up-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\home-16.png">
+      <LogicalName>home-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\home-16%402x.png">
+      <LogicalName>home-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\jump-to-16.png">
+      <LogicalName>jump-to-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\jump-to-16%402x.png">
+      <LogicalName>jump-to-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\media-play-16.png">
+      <LogicalName>media-play-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\media-play-16%402x.png">
+      <LogicalName>media-play-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\missing-image-16.png">
+      <LogicalName>missing-image-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\missing-image-16%402x.png">
+      <LogicalName>missing-image-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\open-16.png">
+      <LogicalName>open-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\open-16%402x.png">
+      <LogicalName>open-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\refresh-16.png">
+      <LogicalName>refresh-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\refresh-16%402x.png">
+      <LogicalName>refresh-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\save-16.png">
+      <LogicalName>save-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\save-16%402x.png">
+      <LogicalName>save-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\zoom-in-16.png">
+      <LogicalName>zoom-in-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\zoom-in-16%402x.png">
+      <LogicalName>zoom-in-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\zoom-out-16.png">
+      <LogicalName>zoom-out-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\zoom-out-16%402x.png">
+      <LogicalName>zoom-out-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

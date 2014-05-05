@@ -34,18 +34,37 @@
 		<StockIcon stockid="md-component-folder-open" resource="special-folder-win-light-16.png" size="Menu" />
 	</Condition>
 
+  <!-- GTK icons redefined -->
 	<StockIcon stockid="gtk-add" resource="add-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-apply" resource="done-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-cancel" resource="remove-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-clear" resource="clear-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-close" resource="remove-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-copy" resource="copy-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-delete" resource="remove-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-edit" resource="edit-light-16.png" size="Menu" />
-	<StockIcon stockid="gtk-find" resource="pad-search-results-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-find" resource="find-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-find-and-replace" resource="find-and-replace-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-go-back" resource="go-back-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-go-down" resource="go-down-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-go-forward" resource="go-forward-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-go-up" resource="go-up-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-home" resource="home-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-jump-to" resource="jump-to-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-media-play" resource="media-play-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-missing-image" resource="missing-image-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-new" resource="add-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-ok" resource="done-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-open" resource="open-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-properties" resource="properties-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-refresh" resource="refresh-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-remove" resource="remove-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-save" resource="save-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-stop" resource="stop-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-zoom-in" resource="zoom-in-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-zoom-out" resource="zoom-out-light-16.png" size="Menu" />
+  
+  <!-- MD icons -->
 	<StockIcon stockid="md-add" resource="add-light-16.png" size="Menu" />
 	<StockIcon stockid="md-assembly-project" resource="assembly-project-light-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-next" resource="breadcrumb-next-normal-light-16.png" size="Menu" />
@@ -188,7 +207,7 @@
 	<StockIcon stockid="gtk-dialog-info" resource="information-light-24.png" size="LargeToolbar" />
 	<StockIcon stockid="gtk-dialog-info" resource="information-light-32.png" size="Dnd" />
 	<StockIcon stockid="gtk-dialog-info" resource="information-light-48.png" size="Dialog" />
-
+  
 	<StockIcon stockid="gtk-dialog-question" resource="question-light-16.png" />
 	<StockIcon stockid="gtk-dialog-question" resource="question-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-dialog-question" resource="question-light-24.png" size="Button" />
