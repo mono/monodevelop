@@ -518,7 +518,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void SetBreakpointOnColumn()
+		public void SetBreakpointOnColumn ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "testClass.Iter_1");
@@ -536,7 +536,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void RunToCursorTest()
+		public void RunToCursorTest ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74");
@@ -550,7 +550,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void RunToCursorTest2()
+		public void RunToCursorTest2 ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
@@ -661,7 +661,7 @@ namespace MonoDevelop.Debugger.Tests
 		/// Bug 11868
 		/// </summary>
 		[Test]
-		[Ignore("Todo")]
+		[Ignore ("Todo")]
 		public void AwaitCall ()
 		{
 			InitializeTest ();
@@ -712,7 +712,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void SetNextStatementTest()
+		public void SetNextStatementTest ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
@@ -724,7 +724,7 @@ namespace MonoDevelop.Debugger.Tests
 
 
 		[Test]
-		public void SetNextStatementTest2()
+		public void SetNextStatementTest2 ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
@@ -735,7 +735,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void SetNextStatementTest3()
+		public void SetNextStatementTest3 ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
@@ -752,7 +752,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void CatchPointTest1()
+		public void CatchPointTest1 ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("fcdc2412-c00e-4c95-b2ea-e3cf5d5bf856");
@@ -769,7 +769,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void CatchPointTest2()
+		public void CatchPointTest2 ()
 		{
 			InitializeTest ();
 			AddCatchpoint ("System.Exception", true);
@@ -923,6 +923,18 @@ namespace MonoDevelop.Debugger.Tests
 			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
 			val = Eval ("i");
 			Assert.AreEqual ("1", val.Value);
+		}
+
+		[Test]
+		public void Bug13401 ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("977ee8ce-ee61-4de0-9fc1-138fa164870b");
+			StartTest ("Bug13401");
+			CheckPosition ("977ee8ce-ee61-4de0-9fc1-138fa164870b");
+			var val = Eval ("s");
+			Assert.AreEqual ("string", val.TypeName);
+			Assert.AreEqual ("\"Hello from Bar\"", val.Value);
 		}
 	}
 }

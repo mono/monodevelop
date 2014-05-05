@@ -719,6 +719,19 @@ namespace MonoDevelop.Debugger.Win32
 			}
 
 			var ctor = OverloadResolve (cctx, ".ctor", type, targs, BindingFlags.Instance | BindingFlags.Public, false);
+			if (ctor == null) {
+				//TODO: Remove this if and content when Generic method inovcation is fully implemented
+				Type t = type.GetTypeInfo (cctx.Session);
+				foreach (MethodInfo met in t.GetMethods ()) {
+					if (met.IsSpecialName && met.Name == ".ctor") {
+						ParameterInfo[] pinfos = met.GetParameters ();
+						if (pinfos.Length == 1) {
+							ctor = met;
+							break;
+						}
+					}
+				}
+			}
 
 			if (ctor == null)
 				return null;
@@ -1332,7 +1345,10 @@ namespace MonoDevelop.Debugger.Win32
 
 			try {
 				CorValRef vref = new CorValRef (delegate {
-					return ctx.Frame.GetArgument (0);
+					var result = ctx.Frame.GetArgument (0);
+					if (result.Type == CorElementType.ELEMENT_TYPE_BYREF)
+						return result.CastToReferenceValue ().Dereference ();
+					return result;
 				});
 
 				return new VariableReference (ctx, vref, "this", ObjectValueFlags.Variable | ObjectValueFlags.ReadOnly);

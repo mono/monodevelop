@@ -157,6 +157,17 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var obj = new EmptyClassWithoutConstructor ();/*84fc04b2-ede2-4d8b-acc4-28441e1c5f55*/
 		}
 
+		static async Task<string> AsyncBug13401 ()
+		{
+			return "Hello from Bar";
+		}
+
+		public static async Task Bug13401 ()
+		{
+			string s = await AsyncBug13401 ();
+			Console.Write ("");/*977ee8ce-ee61-4de0-9fc1-138fa164870b*/
+		}
+
 		public PListScheme PListSchemeTest ()
 		{
 			string value = "<xml></xml>";
