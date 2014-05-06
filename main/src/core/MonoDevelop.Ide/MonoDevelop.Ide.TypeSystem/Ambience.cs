@@ -153,7 +153,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			var result = GetTypeString (type, settings);
 			return settings.PostProcess (type, result);
 		}
-	
+		
+		public string GetString (Microsoft.CodeAnalysis.INamedTypeSymbol type, OutputSettings settings)
+		{
+			return type.Name;
+			//var result = GetTypeString (type, settings);
+			//return settings.PostProcess (type, result);
+		}
 /*		public string GetString (ITypeReference reference, OutputSettings settings)
 		{
 			var result = GetTypeReferenceString (reference, settings);
@@ -166,6 +172,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		
 		public string GetString (IType type, OutputFlags flags)
+		{
+			return GetString (type, new OutputSettings (flags));
+		}
+		
+		public string GetString (Microsoft.CodeAnalysis.INamedTypeSymbol type, OutputFlags flags)
 		{
 			return GetString (type, new OutputSettings (flags));
 		}

@@ -57,7 +57,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		public MonoDevelopWorkspace (string activeConfiguration) : base (services, "MonoDevelopWorkspace")
 		{
 			this.activeConfiguration = activeConfiguration;
-			SetCurrentSolution (CreateSolution (SolutionId.CreateNewId ())); 
 		}
 
 		public Solution LoadSolution (MonoDevelop.Projects.Solution solution)
@@ -70,6 +69,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			);
 			OnSolutionAdded (solutionInfo); 
 			return CurrentSolution;
+		}
+		
+		public void UnloadSolution ()
+		{
+			OnSolutionRemoved (); 
 		}
 
 		Dictionary<MonoDevelop.Projects.Solution, SolutionId> solutionIdMap = new Dictionary<MonoDevelop.Projects.Solution, SolutionId> ();
@@ -160,7 +164,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var projectId = GetProjectId (p);
 			var projectData = GetProjectData (projectId); 
-
 			var config = p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration;
 			MonoDevelop.Projects.DotNetConfigurationParameters cp = null;
 			if (config != null)
@@ -180,9 +183,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				GetMetadataReferences (p)
 			);
 			projectData.Info = info;
-			OnProjectAdded (info); 
 			return info;
 		}
+
+		internal static Func<string, TextLoader> CreateTextLoader = fileName => new MonoDevelopTextLoader (fileName);
 
 		IEnumerable<DocumentInfo> GetDocuments (ProjectData id, MonoDevelop.Projects.Project p)
 		{
@@ -190,10 +194,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				.Where (f => f.BuildAction == MonoDevelop.Projects.BuildAction.Compile)
 				.Select (f => DocumentInfo.Create (
 				id.GetOrCreateDocumentId (f.Name),
-					f.FilePath,
+				f.FilePath,
 				null,
 				SourceCodeKind.Regular,
-				new MonoDevelopTextLoader (f.Name),
+				CreateTextLoader (f.Name),
 				f.Name,
 				false
 			));
@@ -361,11 +365,20 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class RoslynTypeSystemService
 	{
-		static MonoDevelopWorkspace workspace = new MonoDevelopWorkspace ("");
+		static MonoDevelopWorkspace workspace;
 
 		public static MonoDevelopWorkspace Workspace {
 			get {
 				return workspace;
+			}
+		}
+		
+		static RoslynTypeSystemService ()
+		{
+			try {
+				workspace = new MonoDevelopWorkspace ("");
+			} catch (Exception e) {
+				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
 			}
 		}
 
@@ -385,7 +398,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
-					workspace = new MonoDevelopWorkspace (IdeApp.Workspace.ActiveConfigurationId);
+					workspace = new MonoDevelopWorkspace (IdeApp.Workspace != null ? IdeApp.Workspace.ActiveConfigurationId : "");
 					workspace.LoadSolution (solution);
 				}
 			}

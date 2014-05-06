@@ -830,6 +830,7 @@ namespace MonoDevelop.Ide.Gui
 		public ParsedDocument UpdateParseDocument ()
 		{
 			try {
+				EnsureAnalysisDocumentIsOpen ();
 				string currentParseFile = FileName;
 				var editor = Editor;
 				if (editor == null || string.IsNullOrEmpty (currentParseFile))
@@ -879,6 +880,16 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		uint parseTimeout = 0;
+
+		void EnsureAnalysisDocumentIsOpen ()
+		{
+			if (analysisDocument == null) {
+				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
+				if (analysisDocument != null)
+					RoslynTypeSystemService.Workspace.InformDocumentOpen (analysisDocument, Editor);
+			}
+		}
+
 		internal void StartReparseThread ()
 		{
 			// Don't directly parse the document because doing it at every key press is
@@ -887,11 +898,7 @@ namespace MonoDevelop.Ide.Gui
 			string currentParseFile = FileName;
 			if (string.IsNullOrEmpty (currentParseFile))
 				return;
-			if (analysisDocument == null) {
-				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
-				if (analysisDocument != null)
-					RoslynTypeSystemService.Workspace.InformDocumentOpen (analysisDocument, Editor);
-			}
+			EnsureAnalysisDocumentIsOpen ();
 			CancelParseTimeout ();
 			if (IsProjectContextInUpdate)
 				return;

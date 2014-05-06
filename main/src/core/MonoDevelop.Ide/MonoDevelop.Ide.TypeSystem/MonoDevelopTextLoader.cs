@@ -41,7 +41,6 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		#region implemented abstract members of TextLoader
-
 		TextAndVersion GetTextAndVersion (Workspace workspace, DocumentId documentId)
 		{
 			var text = SourceText.From (TextFileProvider.Instance.GetTextEditorData (fileName).Text);
@@ -59,5 +58,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Task.FromResult (GetTextAndVersion (workspace, documentId));
 		}
 		#endregion
+
+		public static TextLoader CreateFromText (string text)
+		{
+			if (text == null)
+				throw new System.ArgumentNullException ("text");
+			return TextLoader.From (TextAndVersion.Create (SourceText.From (text), VersionStamp.Create ()));
+		}
 	}
 }
