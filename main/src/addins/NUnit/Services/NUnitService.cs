@@ -264,7 +264,7 @@ namespace MonoDevelop.NUnit
 			if (rootTests != null) {
 				foreach (IDisposable t in rootTests)
 					t.Dispose ();
-				rootTests = null;
+				rootTests = new UnitTest[0];
 			}
 		}
 

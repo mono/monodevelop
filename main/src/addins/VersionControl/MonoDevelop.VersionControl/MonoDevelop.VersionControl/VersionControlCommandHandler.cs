@@ -48,8 +48,9 @@ namespace MonoDevelop.VersionControl
 		
 		protected override bool MultipleSelectedNodes {
 			get {
-				if (Items != null)
-					return Items.Count > 1;
+				var items = Items;
+				if (items != null)
+					return items.Count > 1;
 				else
 					return base.MultipleSelectedNodes;
 			}
@@ -58,8 +59,9 @@ namespace MonoDevelop.VersionControl
 		public VersionControlItemList GetItems (bool projRecurse = true)
 		{
 			// Cached items are used only in the status view, not in the project pad.
-			if (Items != null)
-				return Items;
+			var items = Items;
+			if (items != null)
+				return items;
 
 			// Don't cache node items because they can change
 			VersionControlItemList nodeItems = new VersionControlItemList ();
