@@ -104,7 +104,7 @@ type FSharpParser() =
         let files = CompilerArguments.getSourceFiles(proj.Items) |> Array.ofList
         let args = CompilerArguments.getArgumentsFromProject(proj, config)
         let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
-        let results = MDLanguageService.Instance.ParseAndCheckFileInProject(proj.FileName.ToString(), filePath, fileContent, files, args, framework)
+        let results = MDLanguageService.Instance.ParseAndCheckFileInProject(proj.FileName.ToString(), filePath, fileContent, files, args, framework, storeAst)
                        |> Async.RunSynchronously
 
         match results.GetErrors() with

@@ -265,10 +265,14 @@ type LanguageService(dirtyNotify) =
   
   /// Parses and checks the given file in the given project under the given configuration. Asynchronously
   /// returns the results of checking the file.
-  member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src, files, args, targetFramework) = 
+  member x.ParseAndCheckFileInProject(projectFilename, fileName:string, src, files, args, targetFramework, storeAst) = 
    async {
     let opts = x.GetCheckerOptions(fileName, projectFilename,  src, files , args, targetFramework)
     Debug.WriteLine(sprintf "Parsing: Trigger parse (fileName=%s)" fileName)
+
+    // storeAst is passed from monodevelop when it finds files with the same name in other projects. 
+    // It will then ask for a reparse of all files in the second project. If storeAst = false, do nothing. 
+    if not storeAst then return ParseAndCheckResults.Empty else
     let! results = mbox.PostAndAsyncReply(fun r -> fileName, src, opts, r)
     Debug.WriteLine(sprintf "Worker: Starting background compilations")
     checker.StartBackgroundCompile(opts)

@@ -357,7 +357,7 @@ module internal Main =
 
         let task =
           async {
-            let! results = agent.ParseAndCheckFileInProject(projFile, file, text, files, args, framework)
+            let! results = agent.ParseAndCheckFileInProject(projFile, file, text, files, args, framework, true)
             match results.GetErrors() with
             | None -> ()
             | Some errs ->
