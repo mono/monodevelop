@@ -503,7 +503,7 @@ namespace MonoDevelop.CSharp
 
 			if (ownerProjects.Count > 1) {
 				// Current project if there is more than one
-				result.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
+				result.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
 			}
 
 			if (curType == null) {
