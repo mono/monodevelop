@@ -6,7 +6,7 @@ open System.Collections.Generic
 open System.Linq
 open System.Xml
 open System.Xml.Linq
-open System.Diagnostics
+open MonoDevelop.Core
 
 type Style = 
     | Type of string 
@@ -85,18 +85,17 @@ module Tooltips =
                                                |> Code
                                                |> addStyle
                                 acc.Append(fragment)
-
-                       | unknown ->
-#if DEBUG
-                                    acc.Append("Unknown element in summary: " + element.Name.LocalName) |> ignore
-#endif
+                       | "attribution" -> acc //skip attribution elements
+                       | unknown -> LoggingService.LogError("Error in Tooltip parsing, unknown element in summary: " + element.Name.LocalName)
                                     processNodes acc (element.Nodes())
                 | :? XText as xt -> acc.AppendFormat("{0} ", xt.Value |> GLib.Markup.EscapeText |> trim)
                 | _ -> acc )
         processNodes sb (element.Nodes())
 
     let getTooltip (addStyle: Style -> string) (str:string) = 
-        try let xdoc = XElement.Parse("<Root>" + str + "</Root>")
+        try let xdoc =
+            //XElement.Parse("<Root>" + str + "</Root>")
+                XElement.Parse(str)
             //if no nodes were found then return the string verbatim
             let anyNodes = xdoc.Descendants() |> Enumerable.Any
             if not anyNodes then str else
@@ -118,7 +117,9 @@ module Tooltips =
             //or something went wrong, simply return the str escaped rather than nothing.
             else GLib.Markup.EscapeText str
         //if the tooltip contains invalid xml return the str escaped
-        with _ -> GLib.Markup.EscapeText str
+        with exn ->
+            LoggingService.LogError("Error in Tooltip parsing:\n" + exn.ToString())
+            GLib.Markup.EscapeText str
        
     let getParameterTip (addStyle: Style -> string) (str:String) (param:String) =
         let xdoc = XElement.Parse("<Root>" + str + "</Root>")
