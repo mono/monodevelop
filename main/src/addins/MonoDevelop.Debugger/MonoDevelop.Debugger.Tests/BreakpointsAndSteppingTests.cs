@@ -760,6 +760,13 @@ namespace MonoDevelop.Debugger.Tests
 			StartTest ("Catchpoint1");
 			if (!CheckPosition ("526795d3-ee9e-44a7-8423-df0b406e9e8d", 1, null, true))//Workaround for Win32 debugger which stops at +1 line
 				CheckPosition ("526795d3-ee9e-44a7-8423-df0b406e9e8d");
+			var ops = Session.EvaluationOptions.Clone ();
+			ops.MemberEvaluationTimeout = 0;
+			ops.EvaluationTimeout = 0;
+			ops.EllipsizeStrings = false;
+
+			var val = Frame.GetException (ops);
+			Assert.AreEqual ("System.NotImplementedException", val.Type);
 
 			InitializeTest ();
 			AddBreakpoint ("fcdc2412-c00e-4c95-b2ea-e3cf5d5bf856");
