@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			if (project != null) {
 				var projectFile = project.Files.GetFile (fileName);
-				if (projectFile != null && projectFile.BuildAction != BuildAction.Compile)
+				if (projectFile != null && !TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
 					result.Flags |= ParsedDocumentFlags.NonSerializable;
 			}
 

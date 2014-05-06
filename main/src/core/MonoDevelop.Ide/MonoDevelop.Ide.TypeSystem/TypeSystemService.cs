@@ -2608,7 +2608,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (token.IsCancellationRequested)
 							return;
 						var fileName = file.FilePath;
-						if (file.BuildAction != BuildAction.Compile || filesSkippedInParseThread.Any (f => f == fileName)) {
+						if (!TypeSystemParserNode.IsCompileBuildAction (file.BuildAction) || filesSkippedInParseThread.Any (f => f == fileName)) {
 							continue;
 						}
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
