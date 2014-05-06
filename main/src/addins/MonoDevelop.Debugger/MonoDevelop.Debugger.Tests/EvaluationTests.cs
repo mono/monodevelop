@@ -301,6 +301,9 @@ namespace MonoDevelop.Debugger.Tests
 			if (Session.GetType ().Name == "CorDebuggerSession")
 				Assert.Ignore ("TODO: Win32 support generic invokes");
 
+			if (!AllowTargetInvokes)
+				return;
+
 			ObjectValue val;
 			val = Eval ("done.ReturnInt5()");
 			Assert.AreEqual ("5", val.Value);
@@ -1200,6 +1203,9 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void StructCreation ()
 		{
+			if (!AllowTargetInvokes)
+				return;
+
 			if (Session.GetType ().Name == "CorDebuggerSession")
 				Assert.Ignore ("TODO: Win32 support generic invokes");
 
