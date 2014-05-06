@@ -380,7 +380,7 @@
 			_label = "_Save" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll"
 			defaultHandler = "MonoDevelop.Ide.Commands.SaveAllHandler"
-			icon = "md-save-all-icon"
+			icon = "md-save-all"
 			shortcut = "Control|Shift|S"
 			macShortcut = "Meta|Shift|S"
 			_description = "Save all open files"

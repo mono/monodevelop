@@ -930,9 +930,6 @@
     <EmbeddedResource Include="icons\light\file-resource-32%402x.png">
       <LogicalName>file-resource-light-32@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\save-all-16.png">
-      <LogicalName>save-all-16.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-text-32.png">
       <LogicalName>file-text-light-32.png</LogicalName>
     </EmbeddedResource>
@@ -1821,9 +1818,6 @@
     <EmbeddedResource Include="icons\light\open-16.png">
       <LogicalName>open-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\open-16%402x.png">
-      <LogicalName>open-light-16@2x.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\refresh-16.png">
       <LogicalName>refresh-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1833,8 +1827,8 @@
     <EmbeddedResource Include="icons\light\save-16.png">
       <LogicalName>save-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\save-16%402x.png">
-      <LogicalName>save-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\save-all-16.png">
+      <LogicalName>save-all-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\zoom-in-16.png">
       <LogicalName>zoom-in-light-16.png</LogicalName>

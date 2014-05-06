@@ -161,6 +161,7 @@
 	<StockIcon stockid="md-regular-file" resource="file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid="md-resource-file-icon" resource="file-resource-light-16.png" size="Menu" />
 	<StockIcon stockid="md-resource-file-icon" resource="file-resource-light-32.png" size="Dnd" />
+	<StockIcon stockid="md-save-all" resource="save-all-light-16.png" size="Menu" />
 	<StockIcon stockid="md-script-file-icon" resource="file-script-light-16.png" size="Menu" />
 	<StockIcon stockid="md-script-file-icon" resource="file-script-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-searchbox-clear" resource="searchbox-clear-light-16.png" size="Menu" />
@@ -267,7 +268,6 @@
 	<StockIcon stockid="md-new-solution" resource="solution-new-16.png" size="Menu" />
 	<StockIcon stockid="md-new-solution-folder" resource="solution-folder-new-16.png" size="Menu" />
 	<StockIcon stockid="md-replace-in-files" resource="replace-in-files-16.png" size="Menu" />
-	<StockIcon stockid="md-save-all-icon" resource="save-all-16.png" size="Menu" />
 	<StockIcon stockid="md-select-all" resource="edit-select-all-16.png" size="Menu" />
 	<StockIcon stockid="md-toggle-bookmark" resource="toggle-bookmark-16.png" size="Menu" />
 	<StockIcon stockid="md-web-search-icon" resource="web-search-16.png" size="Menu" />

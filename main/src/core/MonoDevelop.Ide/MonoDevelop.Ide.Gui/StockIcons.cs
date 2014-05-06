@@ -121,7 +121,7 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly IconId ResourceFileIcon = "md-resource-file-icon";
 		public static readonly IconId Console = "md-console";
 		public static readonly IconId RunProgramIcon = Gtk.Stock.Execute;
-		public static readonly IconId SaveAllIcon = "md-save-all-icon";
+		public static readonly IconId SaveAllIcon = "md-save-all";
 		public static readonly IconId SaveAsIcon = Gtk.Stock.SaveAs;
 		public static readonly IconId SaveIcon = Gtk.Stock.Save;
 		public static readonly IconId MonoDevelop = "md-monodevelop";
