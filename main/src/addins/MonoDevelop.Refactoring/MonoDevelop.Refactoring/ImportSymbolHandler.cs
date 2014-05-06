@@ -36,6 +36,8 @@ using MonoDevelop.Ide.CodeCompletion;
 using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
+using System.Linq;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.Refactoring
 {
@@ -66,7 +68,7 @@ namespace MonoDevelop.Refactoring
 			return c + "." + ns.Name;
 		}
 		
-		public GenerateNamespaceImport GetResult (ITypeSymbol type, MonoDevelop.Ide.Gui.Document doc)
+		public GenerateNamespaceImport GetResult (INamedTypeSymbol type, MonoDevelop.Ide.Gui.Document doc)
 		{
 			GenerateNamespaceImport result;
 			if (cache.TryGetValue (type.ContainingNamespace, out result))
@@ -74,7 +76,6 @@ namespace MonoDevelop.Refactoring
 			result = new GenerateNamespaceImport ();
 			cache[type.ContainingNamespace] = result;
 			TextEditorData data = doc.Editor;
-			
 			result.InsertNamespace  = false;
 			var nameSpaces = RefactoringOptions.GetUsedNamespacesAsync (doc, data.Caret.Offset).Result;
 			foreach (var ns in nameSpaces) {
@@ -83,17 +84,10 @@ namespace MonoDevelop.Refactoring
 					return result;
 				}
 			}
-			
 			result.GenerateUsing = true;
-//			string name = type.Name;
-//			
-//			foreach (string ns in nameSpaces) {
-//				if (doc.Compilation.MainAssembly.GetTypeDefinition (ns, name, type.par) != null) {
-//					result.GenerateUsing = false;
-//					result.InsertNamespace = true;
-//					return result;
-//				}
-//			}
+			
+			var model = doc.AnalysisDocument.GetSemanticModelAsync ().Result;
+			
 			return result;
 		}
 	}
@@ -149,7 +143,7 @@ namespace MonoDevelop.Refactoring
 				if (!window.WasShiftPressed && generateUsing) {
 					var generator = CodeGenerator.CreateGenerator (doc);
 					if (generator != null) {
-						generator.AddGlobalNamespaceImport (doc, type.ContainingNamespace.Name);
+						generator.AddGlobalNamespaceImport (doc, ImportSymbolCache.GetNamespaceString (type.ContainingNamespace));
 						// reparse
 						doc.UpdateParseDocument ();
 					}
@@ -236,9 +230,10 @@ namespace MonoDevelop.Refactoring
 			
 			while (stack.Count > 0) {
 				var curNs = stack.Pop ();
-				foreach (var type in semanticModel.Compilation.GlobalNamespace.GetTypeMembers ()) {
-					if (type.Kind == SymbolKind.NamedType)
-						typeList.Add (new ImportSymbolCompletionData (doc, cache, type));
+				foreach (var type in curNs.GetTypeMembers ()) {
+					if (!type.CanBeReferencedByName)
+						continue;
+					typeList.Add (new ImportSymbolCompletionData (doc, cache, type));
 				}
 
 				foreach (var childNs in curNs.GetNamespaceMembers ())

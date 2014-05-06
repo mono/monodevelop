@@ -219,34 +219,29 @@ namespace MonoDevelop.CodeActions
 			var menu = new Gtk.Menu ();
 			menu.Events |= Gdk.EventMask.AllEventsMask;
 			Gtk.Menu fixMenu = menu;
-			ResolveResult resolveResult;
-			ICSharpCode.NRefactory.CSharp.AstNode node;
 			int items = 0;
-			if (ResolveCommandHandler.ResolveAt (document, out resolveResult, out node)) {
-				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
-					document,
-					node,
-					ref resolveResult
-				);
+			
+			var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document);
+
+			if (possibleNamespaces.Count > 0) {
 
 				foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
 					var menuItem = new Gtk.MenuItem (t.GetImportText ());
 					menuItem.Activated += delegate {
-						new ResolveCommandHandler.AddImport (document, resolveResult, null, t.Reference, true, node).Run ();
+						new ResolveCommandHandler.AddImport (document, possibleNamespaces.ResolveResult, null, t.Reference, true, possibleNamespaces.Node).Run ();
 						menu.Destroy ();
 					};
 					menu.Add (menuItem);
 					items++;
 				}
 
-				bool addUsing = !(resolveResult is AmbiguousTypeResolveResult);
-				if (addUsing) {
+				if (possibleNamespaces.AddUsings) {
 					foreach (var t in possibleNamespaces.Where (tp => tp.IsAccessibleWithGlobalUsing)) {
 						string ns = t.Namespace;
 						var reference = t.Reference;
 						var menuItem = new Gtk.MenuItem (t.GetImportText ());
 						menuItem.Activated += delegate {
-							new ResolveCommandHandler.AddImport (document, resolveResult, ns, reference, true, node).Run ();
+							new ResolveCommandHandler.AddImport (document, possibleNamespaces.ResolveResult, ns, reference, true, possibleNamespaces.Node).Run ();
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);
@@ -254,14 +249,14 @@ namespace MonoDevelop.CodeActions
 					}
 				}
 
-				bool resolveDirect = !(resolveResult is UnknownMemberResolveResult);
-				if (resolveDirect) {
+				if (possibleNamespaces.AddFullyQualifiedName) {
 					foreach (var t in possibleNamespaces) {
 						string ns = t.Namespace;
 						var reference = t.Reference;
-						var menuItem = new Gtk.MenuItem (t.GetInsertNamespaceText (document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
+						var node = possibleNamespaces.Node;
+						var menuItem = new Gtk.MenuItem (t.GetInsertNamespaceText (document.Editor.GetTextBetween (node.Span.Start, node.Span.End)));
 						menuItem.Activated += delegate {
-							new ResolveCommandHandler.AddImport (document, resolveResult, ns, reference, false, node).Run ();
+							new ResolveCommandHandler.AddImport (document, possibleNamespaces.ResolveResult, ns, reference, false, node).Run ();
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);

@@ -38,6 +38,8 @@ using MonoDevelop.Refactoring;
 using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.CSharpBinding.Refactoring
 {
@@ -48,27 +50,33 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		{
 			var tww = new TestWorkbenchWindow ();
 			var content = new TestViewContent ();
-
-			var project = new DotNetAssemblyProject ("C#");
+			var text = input;
+			int endPos = text.IndexOf ('$');
+			if (endPos >= 0)
+				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
+			
+			MonoDevelopWorkspace.CreateTextLoader = delegate (string fn) {
+				return MonoDevelopTextLoader.CreateFromText (text);
+			};
+			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
 			project.Name = "test";
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
 			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
 
 			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
 
-			TypeSystemService.LoadProject (project);
-			TypeSystemService.GetProjectContentWrapper (project).ReconnectAssemblyReferences (); 
+			var solution = new MonoDevelop.Projects.Solution ();
+			var config = solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			RoslynTypeSystemService.Load (solution);
 			content.Project = project;
 
 			tww.ViewContent = content;
-			content.ContentName = "a.cs";
+			content.ContentName = "/a.cs";
 			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
 			var doc = new Document (tww);
-
-			var text = input;
-			int endPos = text.IndexOf ('$');
-			if (endPos >= 0)
-				text = text.Substring (0, endPos) + text.Substring (endPos + 1);
+			doc.SetProject (project);
 
 			content.Text = text;
 			content.CursorPosition = Math.Max (0, endPos);
@@ -79,15 +87,25 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			doc.UpdateParseDocument ();
 			return doc;
 		}
+		
+		protected override void InternalSetup (string rootDir)
+		{
+			base.InternalSetup (rootDir);
+			IdeApp.Initialize (new NullProgressMonitor ()); 
+		}
 
-		List<MonoDevelop.Refactoring.ResolveCommandHandler.PossibleNamespace> GetResult (string input)
+		MonoDevelop.Refactoring.ResolveCommandHandler.PossibleNamespaceResult GetResult (string input)
 		{
 			var doc = Setup (input);
 			var location = doc.Editor.Caret.Location;
 			ResolveResult resolveResult;
 			AstNode node;
 			doc.TryResolveAt (location, out resolveResult, out node);
-			return ResolveCommandHandler.GetPossibleNamespaces (doc, node, ref resolveResult);
+			var result = ResolveCommandHandler.GetPossibleNamespaces (doc);
+			
+			RoslynTypeSystemService.Workspace.UnloadSolution ();
+
+			return result;
 		}
 
 		[Test]

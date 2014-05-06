@@ -35,6 +35,7 @@ using System.IO;
 using MonoDevelop.AspNet.Mvc.Gui;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.AspNet.Mvc.Completion
 {
@@ -66,7 +67,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 				return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1], ref triggerWordLength) as CompletionDataList;
 		}
 
-		public static IParameterDataProvider CreateProvider (string text)
+		public static ParameterHintingResult CreateProvider (string text)
 		{
 			string editorText;
 			TestViewContent sev;

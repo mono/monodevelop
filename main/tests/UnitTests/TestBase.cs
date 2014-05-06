@@ -41,7 +41,7 @@ namespace UnitTests
 		
 		
 		[TestFixtureSetUp]
-		public virtual void Setup ()
+		public void Setup ()
 		{
 			if (firstRun) {
 				string rootDir = Path.Combine (Util.TestsRootDir, "config");
@@ -61,7 +61,7 @@ namespace UnitTests
 			}
 		}
 
-		static void InternalSetup (string rootDir)
+		protected virtual void InternalSetup (string rootDir)
 		{
 			Util.ClearTmpDir ();
 			Environment.SetEnvironmentVariable ("MONO_ADDINS_REGISTRY", rootDir);
