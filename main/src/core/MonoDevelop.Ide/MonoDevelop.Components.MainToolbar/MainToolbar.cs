@@ -113,7 +113,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		internal static object LastCommandTarget {
-			get { return lastCommandTarget.Target; }
+			get { return lastCommandTarget != null ? lastCommandTarget.Target : null; }
 		}
 
 		void SetSearchCategory (string category)
