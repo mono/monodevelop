@@ -383,16 +383,24 @@ namespace MonoDevelop.Ide.Projects {
 				IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
 			else
 				IdeApp.ProjectOperations.Save (newItem);
-			
-			if (openSolution)
-				selectedItem.OpenCreatedSolution ();
+
+			if (openSolution) {
+				var op = selectedItem.OpenCreatedSolution ();
+				op.Completed += delegate {
+					if (op.Success) {
+						var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
+						if (sol != null)
+							InstallProjectTemplatePackages (sol);
+					}
+				};
+			}
 			else {
 				// The item is not a solution being opened, so it is going to be added to
 				// an existing item. In this case, it must not be disposed by the dialog.
 				disposeNewItem = false;
+				if (parentFolder != null)
+					InstallProjectTemplatePackages (parentFolder.ParentSolution);
 			}
-
-			InstallProjectTemplatePackages ();
 
 			Respond (ResponseType.Ok);
 		}
@@ -499,13 +507,13 @@ namespace MonoDevelop.Ide.Projects {
 			return cinfo;
 		}
 
-		void InstallProjectTemplatePackages ()
+		void InstallProjectTemplatePackages (Solution sol)
 		{
 			if (!selectedItem.HasPackages ())
 				return;
 
 			foreach (ProjectTemplatePackageInstaller installer in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectTemplatePackageInstallers")) {
-				installer.Run (selectedItem.PackageReferencesForCreatedProjects);
+				installer.Run (sol, selectedItem.PackageReferencesForCreatedProjects);
 			}
 		}
 
