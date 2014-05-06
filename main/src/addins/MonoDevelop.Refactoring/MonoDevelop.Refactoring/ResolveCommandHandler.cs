@@ -41,6 +41,8 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.ProgressMonitoring;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Mono.CSharp;
 
 namespace MonoDevelop.Refactoring
 {
@@ -125,7 +127,6 @@ namespace MonoDevelop.Refactoring
 			
 			}
 
-
 			if (possibleNamespaces.AddUsings) {
 				foreach (var t in possibleNamespaces.Where (tp => tp.IsAccessibleWithGlobalUsing)) {
 					string ns = t.Namespace;
@@ -205,22 +206,24 @@ namespace MonoDevelop.Refactoring
 		{
 			var semanticModel = doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken).Result; 
 			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
- 			return GetPossibleNamespaces (semanticModel, doc.Editor.LocationToOffset (location), cancellationToken);
-		}
-		
-		public static PossibleNamespaceResult GetPossibleNamespaces (SemanticModel semanticModel, int location, CancellationToken cancellationToken = default(CancellationToken))
-		{
+			var offset = doc.Editor.LocationToOffset (location);
 			bool addUsings = true;
-			bool fullyQualify  = true;
+			bool fullyQualify = true;
 
-			var token = semanticModel.SyntaxTree.GetRoot (cancellationToken).FindToken (location);
+			var token = semanticModel.SyntaxTree.GetRoot (cancellationToken).FindToken (offset);
 			var node = token.Parent;
 			var resolveResult = semanticModel.GetSymbolInfo (node, cancellationToken); 
 			
 
 			// if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
 			//	resolveResult = GetHeuristicResult (doc, location, ref node) ?? resolveResult;
-			var foundNamespaces = GetPossibleNamespaces (semanticModel, node, resolveResult, location).ToList ();
+			List<PossibleNamespace> foundNamespaces;
+			if (node.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.SimpleMemberAccessExpression &&
+			    node.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InvocationExpression) {
+				foundNamespaces = GetPossibleNamespacesForExtensionMethods (doc, semanticModel, node, resolveResult, offset).ToList ();
+			} else {
+				foundNamespaces = GetPossibleNamespacesForTypes (doc, semanticModel, node, resolveResult, offset).ToList ();
+			}
 			
 //			if (!(resolveResult is AmbiguousTypeResolveResult)) {
 //				var usedNamespaces = RefactoringOptions.GetUsedNamespacesAsync (doc, doc.Editor.LocationToOffset (location)).Result;
@@ -235,16 +238,14 @@ namespace MonoDevelop.Refactoring
 			return new PossibleNamespaceResult (result, node, resolveResult, addUsings, fullyQualify);
 		}
 
-		static int GetTypeParameterCount (SymbolInfo node)
+		static int GetTypeParameterCount (SyntaxNode node, out SyntaxToken identifier)
 		{
-		/*	if (node is ObjectCreateExpression)
-				node = ((ObjectCreateExpression)node).Type;
-			if (node is SimpleType)
-				return ((SimpleType)node).TypeArguments.Count;
-			if (node is MemberType)
-				return ((MemberType)node).TypeArguments.Count;
-			if (node is IdentifierExpression)
-				return ((IdentifierExpression)node).TypeArguments.Count;*/
+			var generic = node as GenericNameSyntax;
+			if (generic != null) {
+				identifier = generic.Identifier;
+				return generic.Arity;
+			}
+			identifier = node.ChildTokens ().First ();
 			return 0;
 		}
 		
@@ -359,9 +360,26 @@ namespace MonoDevelop.Refactoring
 			return !string.IsNullOrEmpty (result);
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
+		static string GetNestedTypeString (INamedTypeSymbol type)
+		{
+			var sb = new StringBuilder ();
+			while (type != null) {
+				if (sb.Length > 0) {
+					sb.Insert (0, type.Name + ".");
+				} else {
+					sb.Append (type.Name);
+				}
+				type = type.ContainingType;
+			}
+			return sb.ToString ();
+		}
+		
+		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForTypes (MonoDevelop.Ide.Gui.Document doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
 		{
 			if (resolveResult.Symbol != null)
+				yield break;
+			var netProject = doc.Project as DotNetProject;
+			if (netProject == null)
 				yield break;
 
 			if (resolveResult.CandidateReason == CandidateReason.Ambiguous) {
@@ -371,33 +389,32 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 			
-//			int tc = GetTypeParameterCount (node);
-//			var attribute = unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (location);
-//			bool isInsideAttributeType = attribute != null && attribute.Type.Contains (location);
-//
-//			var compilations = new List<Tuple<ICompilation, MonoDevelop.Projects.ProjectReference>> ();
-//			compilations.Add (Tuple.Create (doc.Compilation, (MonoDevelop.Projects.ProjectReference)null));
-//			var referencedItems = IdeApp.Workspace != null ? project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
-//			var solution = project != null ? project.ParentSolution : null;
-//			if (solution != null) {
-//				foreach (var curProject in solution.GetAllProjects ()) {
-//					if (curProject == project || referencedItems.Contains (curProject))
-//						continue;
-//
-//					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
-//					if (otherRefes.Contains (project))
-//						continue;
-//
-//					var comp = TypeSystemService.GetCompilation (curProject);
-//					if (comp == null)
-//						continue;
-//					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
-//				}
-//			}
-//
-//			var netProject = project as DotNetProject;
-//			if (netProject == null) 
-//				yield break;
+			SyntaxToken identifier;
+			int tc = GetTypeParameterCount (node, out identifier);
+			bool isInsideAttributeType = identifier.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken &&
+			                             identifier.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName &&
+			                             identifier.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.Attribute;
+
+			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
+			compilations.Add (Tuple.Create (doc.GetCompilationAsync ().Result, (MonoDevelop.Projects.ProjectReference)null));
+			var referencedItems = IdeApp.Workspace != null ? netProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
+			var solution = netProject != null ? netProject.ParentSolution : null;
+			if (solution != null) {
+				foreach (var curProject in solution.GetAllProjects ()) {
+					if (curProject == netProject || referencedItems.Contains (curProject))
+						continue;
+
+					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
+					if (otherRefes.Contains (netProject))
+						continue;
+
+					var comp = RoslynTypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
+					if (comp == null)
+						continue;
+					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
+				}
+			}
+
 //			FrameworkLookup frameworkLookup;
 //			if (!TypeSystemService.TryGetFrameworkLookup (netProject, out frameworkLookup))
 //				frameworkLookup = null;
@@ -411,134 +428,118 @@ namespace MonoDevelop.Refactoring
 //						if (CanBeReferenced (doc.Project, systemAssembly))
 //							compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
 //					}
-//				} ca	var attribute = unit.GetNodeAt<ICSharpCode.NRefactory.CSharp.Attribute> (location);
-//			bool isInsideAttributeType = attribute != null && attribute.Type.Contains (location);
-//
-//			var compilations = new List<Tuple<ICompilation, MonoDevelop.Projects.ProjectReference>> ();
-//			compilations.Add (Tuple.Create (doc.Compilation, (MonoDevelop.Projects.ProjectReference)null));
-//			var referencedItems = IdeApp.Workspace != null ? project.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
-//			var solution = project != null ? project.ParentSolution : null;
-//			if (solution != null) {
-//				foreach (var curProject in solution.GetAllProjects ()) {
-//					if (curProject == project || referencedItems.Contains (curProject))
-//						continue;
-//
-//					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>) new SolutionItem[0];
-//					if (otherRefes.Contains (project))
-//						continue;
-//
-//					var comp = TypeSystemService.GetCompilation (curProject);
-//					if (comp == null)
-//						continue;
-//					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
 //				}
-//			}
-//
-//			var netProject = project as DotNetProject;
-//			if (netProject == null) 
-//				yield break;
-//			FrameworkLookup frameworkLookup;
-//			if (!TypeSystemService.TryGetFrameworkLookup (netProject, out frameworkLookup))
-//				frameworkLookup = null;
-//			if (frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
-//				var umResult = (UnknownMemberResolveResult)resolveResult;
-//				try {
-//					foreach (var r in frameworkLookup.GetExtensionMethodLookups (umResult)) {
-//						var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
-//						if (systemAssembly == null)
-//							continue;
-//						if (CanBeReferenced (doc.Project, systemAssembly))
-//							compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
-//					}
-//				} catch (Exception e) {
-//					if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-//						LoggingService.LogError (string.Format ("Error while looking up extension method {0}", umResult.MemberName), e);
-//				}
-//			}
-//			bool foundIdentifier = false;
-//			var lookup = new MemberLookup (null, doc.Compilation.MainAssembly);
-//			foreach (var comp in compilations) {
-//				var compilation = comp.Item1;
-//				var requiredReference = comp.Item2;
-//				if (resolveResult is AmbiguousTypeResolveResult) {
-//					if (compilation != doc.Compilation)
-//						continue;
-//					var aResult = resolveResult as AmbiguousTypeResolveResult;
-//					var file = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-//					var scope = file.GetUsingScope (location).Resolve (compilation);
-//					while (scope != null) {
-//						foreach (var u in scope.Usings) {
-//							foreach (var typeDefinition in u.Types) {
-//								if (typeDefinition.Name == aResult.Type.Name && 
-//								    typeDefinition.TypeParameterCount == tc &&
-//								    lookup.IsAccessible (typeDefinition, false)) {
-//									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
-//								}
-//							}
-//						}
-//						scope = scope.Parent;
-//					}
-//				}
-//				var allTypes =  compilation == doc.Compilation ? compilation.GetAllTypeDefinitions () : compilation.MainAssembly.GetAllTypeDefinitions ();
-//				if (resolveResult is UnknownIdentifierResolveResult) {
-//					var uiResult = resolveResult as UnknownIdentifierResolveResult;
-//					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
-//					foreach (var typeDefinition in allTypes) {
-//						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc &&
-//						    lookup.IsAccessible (typeDefinition, false)) {
-//							if (typeDefinition.DeclaringTypeDefinition != null) {
-//								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
-//								foundIdentifier = true;
-//								yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
-//							} else {
-//								foundIdentifier = true;
-//								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
-//							}
-//						}
-//					}
-//				}
-//
-//				if (resolveResult is UnknownMemberResolveResult) {
-//					var umResult = (UnknownMemberResolveResult)resolveResult;
-//					string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : umResult.MemberName;
-//					foreach (var typeDefinition in allTypes.Where (t => t.HasExtensionMethods)) {
-//						if (!lookup.IsAccessible (typeDefinition, false))
-//							continue;
-//						foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == possibleAttributeName || m.Name == umResult.MemberName))) {
-//							if (!lookup.IsAccessible (method, false))
-//								continue;
-//							IType[] inferredTypes;
-//							if (CSharpResolver.IsEligibleExtensionMethod (
-//								compilation.Import (umResult.TargetType),
-//								method,
-//								true,
-//								out inferredTypes
-//							)) {
-//								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
-//								goto skipType;
-//							}
-//						}
-//						skipType:
-//						;
-//					}
-//				}
-//				
-//				if (resolveResult is ErrorResolveResult) {
-//					var identifier = unit != null ? unit.GetNodeAt<Identifier> (location) : null;
-//					if (identifier != null) {
-//						var uiResult = resolveResult as UnknownIdentifierResolveResult;
-//						if (uiResult != null) {
-//							string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
-//							foreach (var typeDefinition in allTypes) {
-//								if ((identifier.Name == possibleAttributeName || identifier.Name == uiResult.Identifier) && 
-//									typeDefinition.TypeParameterCount == tc && 
-//									lookup.IsAccessible (typeDefinition, false))
-//									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
-//							}
-//						}
-//					}
-//				}
-//			}
+			
+			bool foundIdentifier = false;
+			var name = identifier.ToString ();
+			string possibleAttributeName = isInsideAttributeType ? name + "Attribute" : null;
+			var typeStack = new Stack<INamedTypeSymbol> ();
+			
+			foreach (var comp in compilations) {
+				var compilation = comp.Item1;
+				var requiredReference = comp.Item2;
+				var ns = new Stack<INamespaceSymbol> ();
+				ns.Push (semanticModel.Compilation.GlobalNamespace);
+				while (ns.Count > 0) {
+					var curNs = ns.Pop ();
+
+					foreach (var type in curNs.GetTypeMembers (name, tc)) {
+						if (!semanticModel.IsAccessible (location, type))
+							continue;
+						yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs), true, requiredReference);
+					} 
+					if (possibleAttributeName != null) {
+						foreach (var type in curNs.GetTypeMembers (possibleAttributeName, tc)) {
+						if (!semanticModel.IsAccessible (location, type))
+							continue;
+							yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs), true, requiredReference);
+						} 
+					}
+					
+					// Search nested types.
+					foreach (var type in curNs.GetTypeMembers ()) {
+						if (!semanticModel.IsAccessible (location, type))
+							continue;
+						typeStack.Push (type);
+						while (typeStack.Count > 0) {
+							var nested = typeStack.Pop ();
+							foreach (var childType in nested.GetTypeMembers ()) {
+								if (!semanticModel.IsAccessible (location, childType))
+									continue;
+								if (childType.Arity == tc && (childType.Name == name || childType.Name == possibleAttributeName)) {
+									yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs) + "." + GetNestedTypeString(nested), false, requiredReference);
+								}
+								typeStack.Push (childType);
+							}
+						}
+					}
+					foreach (var childNs in curNs.GetNamespaceMembers ()) {
+						ns.Push (childNs);
+					}
+				}
+				/*
+				
+				var allTypes =  compilation == doc.Compilation ? compilation.GetAllTypeDefinitions () : compilation.MainAssembly.GetAllTypeDefinitions ();
+				if (resolveResult is UnknownIdentifierResolveResult) {
+					var uiResult = resolveResult as UnknownIdentifierResolveResult;
+					string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
+					foreach (var typeDefinition in allTypes) {
+						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc &&
+						    lookup.IsAccessible (typeDefinition, false)) {
+							if (typeDefinition.DeclaringTypeDefinition != null) {
+								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
+								foundIdentifier = true;
+								yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
+							} else {
+								foundIdentifier = true;
+								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+							}
+						}
+					}
+				}
+
+				if (resolveResult is UnknownMemberResolveResult) {
+					var umResult = (UnknownMemberResolveResult)resolveResult;
+					string possibleAttributeName = isInsideAttributeType ? umResult.MemberName + "Attribute" : umResult.MemberName;
+					foreach (var typeDefinition in allTypes.Where (t => t.HasExtensionMethods)) {
+						if (!lookup.IsAccessible (typeDefinition, false))
+							continue;
+						foreach (var method in typeDefinition.Methods.Where (m => m.IsExtensionMethod && (m.Name == possibleAttributeName || m.Name == umResult.MemberName))) {
+							if (!lookup.IsAccessible (method, false))
+								continue;
+							IType[] inferredTypes;
+							if (CSharpResolver.IsEligibleExtensionMethod (
+								compilation.Import (umResult.TargetType),
+								method,
+								true,
+								out inferredTypes
+							)) {
+								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+								goto skipType;
+							}
+						}
+						skipType:
+						;
+					}
+				}
+				
+				if (resolveResult is ErrorResolveResult) {
+					var identifier = unit != null ? unit.GetNodeAt<Identifier> (location) : null;
+					if (identifier != null) {
+						var uiResult = resolveResult as UnknownIdentifierResolveResult;
+						if (uiResult != null) {
+							string possibleAttributeName = isInsideAttributeType ? uiResult.Identifier + "Attribute" : uiResult.Identifier;
+							foreach (var typeDefinition in allTypes) {
+								if ((identifier.Name == possibleAttributeName || identifier.Name == uiResult.Identifier) && 
+									typeDefinition.TypeParameterCount == tc && 
+									lookup.IsAccessible (typeDefinition, false))
+									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+							}
+						}
+					}
+				}
+*/
+			}
 //
 //			// Try to search framework types
 //			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult && node is AstType) {
@@ -584,6 +585,90 @@ namespace MonoDevelop.Refactoring
 //			}
 
 		}
+		
+		static ITypeSymbol GetReturnType (ISymbol symbol)
+		{
+			switch (symbol.Kind) {
+			case SymbolKind.Local:
+				return ((ILocalSymbol)symbol).Type;
+			case SymbolKind.Parameter:
+				return ((IParameterSymbol)symbol).Type;
+			case SymbolKind.Field:
+				return ((IFieldSymbol)symbol).Type;
+			case SymbolKind.Property:
+				return ((IPropertySymbol)symbol).Type;
+			case SymbolKind.Method:
+				return ((IMethodSymbol)symbol).ReturnType;
+			}
+			return null;
+		}
+		
+		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForExtensionMethods (MonoDevelop.Ide.Gui.Document doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
+		{
+			if (resolveResult.Symbol != null)
+				yield break;
+			var netProject = doc.Project as DotNetProject;
+			if (netProject == null)
+				yield break;
+			var ma = node.Parent as MemberAccessExpressionSyntax;
+			if (ma == null)
+				yield break;
+			var targetExpression = semanticModel.GetSymbolInfo (ma.Expression);
+			
+			SyntaxToken identifier;
+			int tc = GetTypeParameterCount (node, out identifier);
+			
+			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
+			compilations.Add (Tuple.Create (doc.GetCompilationAsync ().Result, (MonoDevelop.Projects.ProjectReference)null));
+			var referencedItems = IdeApp.Workspace != null ? netProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
+			var solution = netProject != null ? netProject.ParentSolution : null;
+			if (solution != null) {
+				foreach (var curProject in solution.GetAllProjects ()) {
+					if (curProject == netProject || referencedItems.Contains (curProject))
+						continue;
+
+					var otherRefes = IdeApp.Workspace != null ? curProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
+					if (otherRefes.Contains (netProject))
+						continue;
+
+					var comp = RoslynTypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
+					if (comp == null)
+						continue;
+					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
+				}
+			}
+			
+			var name = identifier.ToString ();
+			ITypeSymbol tsym = GetReturnType(targetExpression.Symbol);
+			foreach (var comp in compilations) {
+				var compilation = comp.Item1;
+				var requiredReference = comp.Item2;
+				var ns = new Stack<INamespaceSymbol> ();
+				ns.Push (semanticModel.Compilation.GlobalNamespace);
+				while (ns.Count > 0) {
+					var curNs = ns.Pop ();
+					
+
+					foreach (var type in curNs.GetTypeMembers ()) {
+						if (!type.MightContainExtensionMethods || !semanticModel.IsAccessible (location, type))
+							continue;
+						foreach (IMethodSymbol member in type.GetMembers (name).OfType<IMethodSymbol> ()) {
+							if (!member.IsExtensionMethod)
+								continue;
+							if (!semanticModel.IsAccessible (location, member))
+								continue;
+							if (member.ReduceExtensionMethod (tsym)  != null) {
+								yield return PossibleNamespace.Create (type.ContainingNamespace, false, requiredReference);
+							}
+						}
+					} 
+					foreach (var childNs in curNs.GetNamespaceMembers ()) {
+						ns.Push (childNs);
+					}
+				}
+			}
+		}
+		
 
 		internal class AddImport
 		{

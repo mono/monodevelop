@@ -243,22 +243,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public bool TryGetSyntaxTree (out Microsoft.CodeAnalysis.SyntaxTree syntaxTree)
-		{
-			var doc = RoslynTypeSystemService.Workspace.GetDocument (analysisDocument); 
-			return doc.TryGetSyntaxTree (out syntaxTree);
-		}
-
 		public Task<Microsoft.CodeAnalysis.SyntaxTree> GetSyntaxTreeAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var doc = RoslynTypeSystemService.Workspace.GetDocument (analysisDocument); 
 			return doc.GetSyntaxTreeAsync (cancellationToken);
-		}
-
-		public bool TryGetCompilation (out Microsoft.CodeAnalysis.Compilation compilation)
-		{
-			var project = RoslynTypeSystemService.GetProject (Project); 
-			return project.TryGetCompilation (out compilation);
 		}
 
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
