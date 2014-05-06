@@ -37,7 +37,7 @@ namespace MonoDevelop.VersionControl
 		WeakReference items;
 
 		VersionControlItemList Items {
-			get { return items.Target as VersionControlItemList; }
+			get { return items.Target == null ? null : items.Target as VersionControlItemList; }
 			set { items = new WeakReference (value); }
 		}
 		
