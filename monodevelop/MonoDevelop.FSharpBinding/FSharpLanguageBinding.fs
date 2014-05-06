@@ -45,9 +45,7 @@ type FSharpLanguageBinding() =
         if doc <> null && doc.Editor <> null &&
            not doc.Editor.TabsToSpaces &&
            (CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))) then
-             doc.Editor.TabsToSpaces <- true
-             doc.ReparseDocument())
-
+             doc.Editor.TabsToSpaces <- true )
 
       //Add events to invalidate FCS if anything imprtant to do with configuration changes
       //e.g. Files added/removed/renamed, or references added/removed      
