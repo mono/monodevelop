@@ -156,6 +156,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.OnFilePropertyChangedInProject (e);
 			foreach (var p in GetReferencingProjects ()) {
 				foreach (var f in e) {
+					if (f.ProjectFile.Subtype == Subtype.Directory)
+						continue;
 					var pf = (ProjectFile) f.ProjectFile.Clone ();
 					pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
 					p.Files.Remove (pf.FilePath);
@@ -169,6 +171,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.OnFileAddedToProject (e);
 			foreach (var p in GetReferencingProjects ()) {
 				foreach (var f in e) {
+					if (f.ProjectFile.Subtype == Subtype.Directory)
+						continue;
 					var pf = (ProjectFile) f.ProjectFile.Clone ();
 					pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
 					p.Files.Add (pf);
@@ -181,7 +185,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.OnFileRemovedFromProject (e);
 			foreach (var p in GetReferencingProjects ()) {
 				foreach (var f in e) {
-					p.Files.Remove (f.ProjectFile.FilePath);
+					if (f.ProjectFile.Subtype != Subtype.Directory)
+						p.Files.Remove (f.ProjectFile.FilePath);
 				}
 			}
 		}
@@ -191,6 +196,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.OnFileRenamedInProject (e);
 			foreach (var p in GetReferencingProjects ()) {
 				foreach (var f in e) {
+					if (f.ProjectFile.Subtype == Subtype.Directory)
+						continue;
 					var pf = (ProjectFile) f.ProjectFile.Clone ();
 					p.Files.Remove (f.OldName);
 					pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
