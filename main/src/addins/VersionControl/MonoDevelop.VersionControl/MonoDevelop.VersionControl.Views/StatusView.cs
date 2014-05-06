@@ -398,7 +398,6 @@ namespace MonoDevelop.VersionControl.Views
 				colRemote = null;
 			}
 			if (colFile != null) {
-				colFile.SetCellDataFunc (null, (TreeCellDataFunc)null);
 				colFile.Destroy ();
 				colFile = null;
 			}
