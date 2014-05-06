@@ -85,6 +85,10 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreePadOption[] options;
 		TreeOptions globalOptions;
 
+		TreeNodeNavigator workNode;
+		TreeNodeNavigator compareNode1;
+		TreeNodeNavigator compareNode2;
+
 		internal bool sorting;
 
 		object[] copyObjects;
@@ -200,6 +204,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.TestExpandRow += OnTestExpandRow;
 			tree.RowActivated += OnNodeActivated;
 			tree.DoPopupMenu += ShowPopup;
+			workNode = new TreeNodeNavigator (this);
+			compareNode1 = new TreeNodeNavigator (this);
+			compareNode2 = new TreeNodeNavigator (this);
 
 			tree.CursorChanged += OnSelectionChanged;
 			tree.KeyPressEvent += OnKeyPress;
@@ -1434,8 +1441,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				NodeBuilder[] chain1 = (NodeBuilder[]) store.GetValue (a, BuilderChainColumn);
 				if (chain1 == null) return -1;
 
-				var compareNode1 = new TreeNodeNavigator (this, a);
-				var compareNode2 = new TreeNodeNavigator (this, b);
+				compareNode1.MoveToIter (a);
+				compareNode2.MoveToIter (b);
 
 				int sort = CompareObjects (chain1, compareNode1, compareNode2);
 				if (sort != TypeNodeBuilder.DefaultSort) return sort;
@@ -1455,6 +1462,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				return string.Compare (tb1.GetNodeName (compareNode1, o1), tb2.GetNodeName (compareNode2, o2), true);
 			} finally {
 				sorting = false;
+				compareNode1.MoveToIter (Gtk.TreeIter.Zero);
+				compareNode2.MoveToIter (Gtk.TreeIter.Zero);
 			}
 		}
 
@@ -1639,7 +1648,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		internal string GetNamePathFromIter (Gtk.TreeIter iter)
 		{
-			var workNode = new TreeNodeNavigator (this, iter);
+			workNode.MoveToIter (iter);
 			StringBuilder sb = new StringBuilder ();
 			do {
 				string name = workNode.NodeName;
@@ -1648,6 +1657,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				name = name.Replace ("/","_%_");
 				sb.Insert (0, name);
 			} while (workNode.MoveToParent ());
+
+			workNode.MoveToIter (Gtk.TreeIter.Zero);
 
 			return sb.ToString ();
 		}
