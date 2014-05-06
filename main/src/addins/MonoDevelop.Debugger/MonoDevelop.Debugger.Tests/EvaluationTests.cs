@@ -296,9 +296,11 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		[Ignore ("Missing implementation")]
 		public void GenericMethodInvoke ()
 		{
+			if (Session.GetType ().Name == "CorDebuggerSession")
+				Assert.Ignore ("TODO: Win32 support generic invokes");
+
 			ObjectValue val;
 			val = Eval ("done.ReturnInt5()");
 			Assert.AreEqual ("5", val.Value);
@@ -313,7 +315,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("ReturnSame(\"someString\")");
-			Assert.AreEqual ("someString", val.Value);
+			Assert.AreEqual ("\"someString\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 
 			val = Eval ("ReturnNew<WithToString>()");
@@ -328,20 +330,21 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("1", val.Value);
 			Assert.AreEqual ("int", val.TypeName);
 
-			val = Eval ("Swap (ref intZero, ref intOne)");
-			Assert.AreEqual ("", val.Value);
+			// TODO: in, out, and ref params are not currently supported
+			//val = Eval ("Swap (ref intZero, ref intOne)");
+			//Assert.AreEqual ("", val.Value);
 
-			val = Eval ("intZero");
-			Assert.AreEqual ("1", val.Value);
-			Assert.AreEqual ("int", val.TypeName);
+			//val = Eval ("intZero");
+			//Assert.AreEqual ("1", val.Value);
+			//Assert.AreEqual ("int", val.TypeName);
 
-			val = Eval ("intOne");
-			Assert.AreEqual ("0", val.Value);
-			Assert.AreEqual ("int", val.TypeName);
+			//val = Eval ("intOne");
+			//Assert.AreEqual ("0", val.Value);
+			//Assert.AreEqual ("int", val.TypeName);
 
 			//Lets return in same state as before in case some other test will use
-			val = Eval ("Swap (ref intZero, ref intOne)");
-			Assert.AreEqual ("", val.Value);
+			//val = Eval ("Swap (ref intZero, ref intOne)");
+			//Assert.AreEqual ("", val.Value);
 
 			val = Eval ("GenerateList(\"someString\", 5)");
 			Assert.AreEqual ("Count=5", val.Value);
@@ -357,7 +360,7 @@ namespace MonoDevelop.Debugger.Tests
 
 			val = Eval ("done.GetParentDefault()");
 			Assert.AreEqual ("(null)", val.Value);
-			Assert.AreEqual ("System.String", val.TypeName);//Should this be "string"?
+			Assert.AreEqual ("object", val.TypeName);
 
 			val = Eval ("new Dictionary<int,string>()");
 			Assert.AreEqual ("Count=0", val.Value);
@@ -1195,10 +1198,13 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		[Ignore ("TODO: Sdb and Win32")]
 		public void StructCreation ()
 		{
+			if (Session.GetType ().Name == "CorDebuggerSession")
+				Assert.Ignore ("TODO: Win32 support generic invokes");
+
 			ObjectValue val;
+
 			val = Eval ("new SimpleStruct()");
 			Assert.AreEqual ("SimpleStruct", val.TypeName);
 		}
