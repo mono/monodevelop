@@ -57,7 +57,6 @@ namespace MonoDevelop.NUnit
 			IdeApp.Workspace.ItemAddedToSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
-			IdeApp.Workspace.LastWorkspaceItemClosed += OnLastWorkspaceItemClosed;
 
 			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
 		}
@@ -258,29 +257,19 @@ namespace MonoDevelop.NUnit
 			}
 			return null;
 		}
-
-		void CleanupCache ()
-		{
-			if (rootTests != null) {
-				foreach (IDisposable t in rootTests)
-					t.Dispose ();
-				rootTests = new UnitTest[0];
-			}
-		}
-
-		void OnLastWorkspaceItemClosed (object sender, EventArgs e)
-		{
-			CleanupCache ();
-		}
-
+		
 		void OnWorkspaceChanged (object sender, EventArgs e)
 		{
-			CleanupCache ();
 			RebuildTests ();
 		}
 		
 		void RebuildTests ()
 		{
+			if (rootTests != null) {
+				foreach (IDisposable t in rootTests)
+					t.Dispose ();
+			}
+
 			List<UnitTest> list = new List<UnitTest> ();
 			foreach (WorkspaceItem it in IdeApp.Workspace.Items) {
 				UnitTest t = BuildTest (it);
