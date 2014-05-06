@@ -34,21 +34,15 @@ namespace MonoDevelop.VersionControl
 {
 	public class VersionControlCommandHandler : NodeCommandHandler 
 	{
-		WeakReference items;
-
-		VersionControlItemList Items {
-			get { return items.Target == null ? null : items.Target as VersionControlItemList; }
-			set { items = new WeakReference (value); }
-		}
+		VersionControlItemList items;
 		
 		public void Init (VersionControlItemList items)
 		{
-			Items = items;
+			this.items = items;
 		}
 		
 		protected override bool MultipleSelectedNodes {
 			get {
-				var items = Items;
 				if (items != null)
 					return items.Count > 1;
 				else
@@ -59,7 +53,6 @@ namespace MonoDevelop.VersionControl
 		public VersionControlItemList GetItems (bool projRecurse = true)
 		{
 			// Cached items are used only in the status view, not in the project pad.
-			var items = Items;
 			if (items != null)
 				return items;
 
