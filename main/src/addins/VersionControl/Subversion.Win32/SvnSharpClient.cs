@@ -16,17 +16,24 @@ namespace SubversionAddinWindows
 	sealed class SvnSharpClient: SubversionVersionControl
 	{
 		static bool errorShown;
-		static readonly bool installError;
-		static readonly SvnClient client;
+		static bool installError {
+			get { return client.Value != null; }
+		}
+		static readonly Lazy<SvnClient> client;
 		
 		static SvnSharpClient ()
 		{
+			client = new Lazy<SvnClient> (CheckInstalled);
+		}
+
+		static SvnClient CheckInstalled ()
+		{
 			try {
-				client = new SvnClient ();
+				return new SvnClient ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("SVN client could not be initialized", ex);
-				installError = true;
 			}
+			return null;
 		}
 
 		public override SubversionBackend CreateBackend ()
@@ -37,7 +44,7 @@ namespace SubversionAddinWindows
 		public override string GetPathUrl (FilePath path)
 		{
 			lock (client) {
-				Uri u = client.GetUriFromWorkingCopy (path);
+				Uri u = client.Value.GetUriFromWorkingCopy (path);
 				return u != null ? u.ToString () : null;
 			}
 		}
@@ -62,7 +69,7 @@ namespace SubversionAddinWindows
 		{
 			string wc_path;
 			try {
-				wc_path = client.GetWorkingCopyRoot (path.FullPath);
+				wc_path = client.Value.GetWorkingCopyRoot (path.FullPath);
 				return wc_path;
 			} catch (SvnException e) {
 				switch (e.SvnErrorCode) {
