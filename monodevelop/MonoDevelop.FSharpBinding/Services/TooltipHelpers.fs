@@ -94,8 +94,9 @@ module Tooltips =
 
     let getTooltip (addStyle: Style -> string) (str:string) = 
         try let xdoc =
-            //XElement.Parse("<Root>" + str + "</Root>")
-                XElement.Parse(str)
+                if str.StartsWith("<?xml") then XElement.Parse(str)
+                else XElement.Parse("<Root>" + str + "</Root>")
+                
             //if no nodes were found then return the string verbatim
             let anyNodes = xdoc.Descendants() |> Enumerable.Any
             if not anyNodes then str else
@@ -122,7 +123,9 @@ module Tooltips =
             GLib.Markup.EscapeText str
        
     let getParameterTip (addStyle: Style -> string) (str:String) (param:String) =
-        let xdoc = XElement.Parse("<Root>" + str + "</Root>")
+        let xdoc = 
+            if str.StartsWith("<?xml") then XElement.Parse(str)
+            else XElement.Parse("<Root>" + str + "</Root>")
         let par = xdoc.Descendants(xn "param") 
                   |> where (fun element -> (element |> attribute "name").Value = param) 
                   |> singleOrDefault
