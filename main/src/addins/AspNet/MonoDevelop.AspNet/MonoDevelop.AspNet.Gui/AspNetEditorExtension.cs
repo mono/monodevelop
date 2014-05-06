@@ -45,6 +45,7 @@ using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -309,8 +310,7 @@ namespace MonoDevelop.AspNet.Gui
 			return result;
 		}
 		
-		
-		public override ParameterHintingData HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
+		public override ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 /*			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
 				return documentBuilder.HandleParameterCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar);

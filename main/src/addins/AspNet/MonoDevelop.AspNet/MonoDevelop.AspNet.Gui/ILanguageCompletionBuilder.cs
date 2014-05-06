@@ -33,6 +33,7 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -174,7 +175,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo);
 		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
-		ParameterHintingData HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
+		ParameterHintingResult HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
 		bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
 	}
 	

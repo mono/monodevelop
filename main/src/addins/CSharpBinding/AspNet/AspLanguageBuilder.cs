@@ -39,6 +39,7 @@ using System.IO;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.AspNet.StateEngine;
 using MonoDevelop.Xml.StateEngine;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 
 
@@ -142,7 +143,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public ParameterHintingData HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
+		public ParameterHintingResult HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
 			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
@@ -154,7 +155,8 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeCompletionContext codeCompletionContext;
 			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
-				return completion.GetParameterCompletionCommandOffset (out cpos);
+				int wlen;
+				return completion.GetCompletionCommandOffset (out cpos, out wlen);
 			}
 		}
 

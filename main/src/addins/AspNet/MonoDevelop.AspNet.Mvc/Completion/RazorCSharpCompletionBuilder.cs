@@ -34,6 +34,7 @@ using MonoDevelop.AspNet.Gui;
 using ICSharpCode.NRefactory.Completion;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.AspNet.Mvc.Completion
 {
@@ -90,7 +91,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 			return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
 		}
 
-		public ParameterHintingData HandleParameterCompletion (Document realDocument,	CodeCompletionContext completionContext,
+		public ParameterHintingResult HandleParameterCompletion (Document realDocument,	CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
@@ -102,7 +103,8 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		{
 			CodeCompletionContext ccc;
 			var completion = CreateCompletionAndUpdate (realDocument, docInfo, out ccc);
-			return completion.GetParameterCompletionCommandOffset (out cpos);
+			int wlen;
+			return completion.GetCompletionCommandOffset (out cpos, out wlen);
 		}
 
 		public int GetCurrentParameterIndex (Document realDocument, UnderlyingDocumentInfo docInfo, int startOffset)

@@ -33,6 +33,7 @@ using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.AspNet.Mvc.Completion
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		ICompletionDataList HandlePopupCompletion (Document realDocument, UnderlyingDocumentInfo docInfo);
 		ICompletionDataList HandleCompletion (Document realDocument, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength);
-		ParameterHintingData HandleParameterCompletion (Document realDocument, CodeCompletionContext completionContext,
+		ParameterHintingResult HandleParameterCompletion (Document realDocument, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar);
 		bool GetParameterCompletionCommandOffset (Document realDocument, UnderlyingDocumentInfo docInfo, out int cpos);
 		int GetCurrentParameterIndex (Document realDocument, UnderlyingDocumentInfo docInfo, int startOffset);

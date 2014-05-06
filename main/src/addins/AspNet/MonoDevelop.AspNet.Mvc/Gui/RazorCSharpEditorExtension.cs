@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui;
 using System.Web.Razor.Generator;
 using System.Text.RegularExpressions;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -532,7 +533,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			return base.GetCurrentParameterIndex (startOffset);
 		}
 
-		public override ParameterHintingData HandleParameterCompletion (CodeCompletionContext completionContext,
+		public override ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext,
 			char completionChar)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
