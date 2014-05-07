@@ -17,9 +17,9 @@ namespace SubversionAddinWindows
 	{
 		static bool errorShown;
 		static bool installError {
-			get { return client.Value != null; }
+			get { return client.Value == null; }
 		}
-		static readonly Lazy<SvnClient> client;
+		static readonly internal Lazy<SvnClient> client;
 		
 		static SvnSharpClient ()
 		{
@@ -84,7 +84,10 @@ namespace SubversionAddinWindows
 
 	sealed class SvnSharpBackend: SubversionBackend
 	{
-		SvnClient client;
+		static SvnClient client {
+			get { return SvnSharpClient.client.Value; }
+		}
+
 		IProgressMonitor updateMonitor;
 		NotifData notifyData;
 		ProgressData progressData;
@@ -114,7 +117,6 @@ namespace SubversionAddinWindows
 
 		void Init ()
 		{
-			client = new SvnClient ();
 			client.Authentication.SslClientCertificateHandlers += AuthenticationSslClientCertificateHandlers;
 			client.Authentication.SslClientCertificatePasswordHandlers += AuthenticationSslClientCertificatePasswordHandlers;
 			client.Authentication.SslServerTrustHandlers += AuthenticationSslServerTrustHandlers;
