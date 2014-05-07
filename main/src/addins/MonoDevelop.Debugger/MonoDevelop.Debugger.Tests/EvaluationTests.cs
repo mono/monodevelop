@@ -24,7 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading;
+using System;
+
 using Mono.Debugging.Client;
 using NUnit.Framework;
 
@@ -1204,8 +1205,13 @@ namespace MonoDevelop.Debugger.Tests
 			if (!AllowTargetInvokes)
 				return;
 
-			if (Session.GetType ().Name == "CorDebuggerSession")
+			var soft = Session as Mono.Debugging.Soft.SoftDebuggerSession;
+
+			if (soft == null)
 				Assert.Ignore ("TODO: Win32 support generic invokes");
+
+			if (soft.ProtocolVersion < new Version (2, 31))
+				Assert.Inconclusive ("Mono SDB protocol version >= 2.31 required for this test.");
 
 			ObjectValue val;
 
