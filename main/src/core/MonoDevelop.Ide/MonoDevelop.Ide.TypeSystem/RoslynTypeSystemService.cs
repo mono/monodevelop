@@ -34,6 +34,8 @@ using System.Reflection;
 using Microsoft.CodeAnalysis.Text;
 using Mono.TextEditor;
 using Microsoft.CodeAnalysis.Host.Mef;
+using MonoDevelop.Ide.Tasks;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -410,7 +412,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return workspace.GetDocumentId (projectId, fileName);
 		}
 
-		public static Project GetProject (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
+		public static Project GetProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
@@ -420,6 +422,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static void UpdateDocument (Project project, FilePath fileName, string currentParseText)
 		{
+		}
+
+		public static async Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			var projectId = workspace.GetProjectId (project); 
+			Project roslynProject = workspace.CurrentSolution.GetProject (projectId);
+			return await roslynProject.GetCompilationAsync (cancellationToken);
 		}
 	}
 }

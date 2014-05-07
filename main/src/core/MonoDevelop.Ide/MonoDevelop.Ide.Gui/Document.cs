@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var project = RoslynTypeSystemService.GetProject (Project, cancellationToken); 
+			var project = RoslynTypeSystemService.GetProject (Project); 
 			return project.GetCompilationAsync (cancellationToken);
 		}
 
