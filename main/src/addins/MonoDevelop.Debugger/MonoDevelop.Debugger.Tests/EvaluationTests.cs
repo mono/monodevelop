@@ -761,7 +761,6 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -773,7 +772,6 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
