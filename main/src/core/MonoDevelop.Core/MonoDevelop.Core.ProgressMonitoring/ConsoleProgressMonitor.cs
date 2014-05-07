@@ -48,7 +48,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			get { return EnableTimeStamp ? string.Format ("[{0}] ", DateTime.Now.ToString ("yyyy-MM-dd HH:mm:ss.f")) : string.Empty; }
 		}
 		
-		public ConsoleProgressMonitor () : this (Console.Out)
+		public ConsoleProgressMonitor () : this (Console.Out, true)
 		{
 			//TODO: can we efficiently update Console.WindowWidth when it changes?
 			// TODO: Use Console.IsOutputRedirected in .NET 4.5.
@@ -168,7 +168,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			else
 				WriteText (text, 0);
 		}
-		
+
 		void WriteText (string text, int leftMargin)
 		{
 			if (text == null)
@@ -188,7 +188,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 				int lastWhite = -1;
 				int sn = n;
 				bool eol = false;
-				
+
 				while (col < maxCols && n < text.Length) {
 					char c = text [n];
 					if (c == '\r') {
@@ -204,12 +204,12 @@ namespace MonoDevelop.Core.ProgressMonitoring
 					col++;
 					n++;
 				}
-				
+
 				if (lastWhite == -1 || col < maxCols)
 					lastWhite = n;
 				else if (col >= maxCols)
 					n = lastWhite + 1;
-				
+
 				writer.Write (text.Substring (sn, lastWhite - sn));
 				
 				if (eol || col >= maxCols) {
