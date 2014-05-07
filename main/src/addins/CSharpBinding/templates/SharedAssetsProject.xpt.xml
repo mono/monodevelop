@@ -8,7 +8,7 @@
 		<_Name>Shared Project</_Name>
 		<_Category>C#</_Category>
 		<Icon>md-project-shared-assets</Icon>
-		<_Description>Creates a project that allows sharing files between project</_Description>
+		<_Description>Creates a project that allows sharing files between projects</_Description>
 		<DefaultFilename>Shared</DefaultFilename>
 		<LanguageName>C#</LanguageName>
 	</TemplateConfiguration>
