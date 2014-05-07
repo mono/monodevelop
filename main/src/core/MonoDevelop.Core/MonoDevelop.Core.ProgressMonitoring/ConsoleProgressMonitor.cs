@@ -34,6 +34,7 @@ namespace MonoDevelop.Core.ProgressMonitoring
 	public class ConsoleProgressMonitor: NullProgressMonitor
 	{
 		int columns = 0;
+		bool leaveOpen;
 		bool indent = true;
 		bool wrap = false;
 		int ilevel = 0;
@@ -61,19 +62,27 @@ namespace MonoDevelop.Core.ProgressMonitoring
 			
 			wrap = columns > 0;
 		}
-		
-		public ConsoleProgressMonitor (TextWriter writer)
+
+		public ConsoleProgressMonitor (TextWriter writer, bool leaveOpen)
 		{
 			this.writer = writer;
+			this.leaveOpen = leaveOpen;
 			logger = new LogTextWriter ();
 			logger.TextWritten += WriteLog;
+		}
+
+		public ConsoleProgressMonitor (TextWriter writer) : this (writer, false)
+		{
 		}
 
 		public override void Dispose ()
 		{
 			logger.TextWritten -= WriteLog;
 			logger.Dispose ();
-			writer.Dispose ();
+
+			if (!leaveOpen)
+				writer.Dispose ();
+
 			base.Dispose ();
 		}
 		
