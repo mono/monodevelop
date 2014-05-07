@@ -41,18 +41,18 @@ namespace MonoDevelop.Refactoring
 {
 	public class FindReferencesHandler : CommandHandler
 	{
-		public static void FindRefs (ISymbol obj)
+		public static void FindRefs (ISymbol symbol)
 		{
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 			var solution = RoslynTypeSystemService.Workspace.CurrentSolution;
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					foreach (var loc in obj.Locations) {
+					foreach (var loc in symbol.Locations) {
 						var sr = new SearchResult (new FileProvider (loc.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
 						monitor.ReportResult (sr);
 					}
 					
-					foreach (var mref in SymbolFinder.FindReferencesAsync (obj, solution).Result) {
+					foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, solution).Result) {
 						foreach (var loc in mref.Locations) {
 							var sr = new SearchResult (new FileProvider (loc.Document.FilePath), loc.Location.SourceSpan.Start, loc.Location.SourceSpan.Length);
 							monitor.ReportResult (sr);

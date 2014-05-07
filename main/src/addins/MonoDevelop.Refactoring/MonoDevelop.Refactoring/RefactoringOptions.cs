@@ -151,21 +151,6 @@ namespace MonoDevelop.Refactoring
 			return GetWhitespaces (Document, insertionOffset);
 		}
 		
-		public string GetIndent (IEntity member)
-		{
-			return GetIndent (Document, member);
-		}
-//		
-//		public IReturnType ShortenTypeName (IReturnType fullyQualifiedTypeName)
-//		{
-//			return Document.ParsedDocument.CompilationUnit.ShortenTypeName (fullyQualifiedTypeName, Document.Editor.Caret.Line, Document.Editor.Caret.Column);
-//		}
-//		
-//		public ParsedDocument ParseDocument ()
-//		{
-//			return ProjectDomService.Parse (Dom.Project, Document.FileName, Document.Editor.Text);
-//		}
-		
 		public Task<ImmutableArray<string>> GetUsedNamespacesAsync (CancellationToken cancellationToken = default (CancellationToken))
 		{
 			return GetUsedNamespacesAsync (Document,  Document.Editor.LocationToOffset (Location));
@@ -200,22 +185,6 @@ namespace MonoDevelop.Refactoring
 			
 			return result.ToImmutable ();
 		}
-		
-		public ResolveResult Resolve (AstNode node)
-		{
-			return resolver.Resolve (node);
-		}
-		
-		public AstType CreateShortType (IType fullType)
-		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			
-			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
-			
-			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);
-		}
-	
 		
 //		public List<string> GetResolveableNamespaces (RefactoringOptions options, out bool resolveDirect)
 //		{

@@ -32,100 +32,85 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Refactoring.Rename
 {
 	public partial class RenameItemDialog : Gtk.Dialog
 	{
-		RenameRefactoring rename;
-		RefactoringOptions options;
+		readonly ISymbol symbol;
+		readonly RenameRefactoring rename;
+		readonly List<Tuple<string, TextSpan>> locations;
 		
-		public RenameItemDialog (RefactoringOptions options, RenameRefactoring rename)
+		public RenameItemDialog (ISymbol symbol, List<Tuple<string, TextSpan>> locations, RenameRefactoring rename)
 		{
-			this.options = options;
+			this.symbol = symbol;
 			this.rename = rename;
-			if (options.SelectedItem is IMethod && ((IMethod)options.SelectedItem).IsConstructor) {
-				options.SelectedItem = ((IMethod)options.SelectedItem).DeclaringType;
-			}
+			this.locations = locations;
+			
 			this.Build ();
 			includeOverloadsCheckbox.Active = true;
 			includeOverloadsCheckbox.Visible = false;
-			if (options.SelectedItem is IType) {
+			if (symbol is ITypeSymbol) {
 
-				var t = (IType)options.SelectedItem;
-				if (t.Kind == TypeKind.TypeParameter) {
+				var t = (ITypeSymbol)symbol;
+				if (t.TypeKind == TypeKind.TypeParameter) {
 					this.Title = GettextCatalog.GetString ("Rename Type Parameter");
 					entry.Text = t.Name;
 
 				} else {
-					var typeDefinition = (t).GetDefinition ();
-					if (typeDefinition.DeclaringType == null) {
+					var typeDefinition = t;
+					if (typeDefinition.ContainingType == null) {
 						// not supported for inner types
 						this.renameFileFlag.Visible = true;
-						this.renameFileFlag.Active = options.Document != null ? options.Document.FileName.FileNameWithoutExtension.Contains (typeDefinition.Name) : false;
+						this.renameFileFlag.Active = t.Locations.First ().FilePath.Contains (typeDefinition.Name);
 					} else {
 						this.renameFileFlag.Active = false;
 					}
-					if (typeDefinition.Kind == TypeKind.Interface)
+					if (typeDefinition.TypeKind == TypeKind.Interface)
 						this.Title = GettextCatalog.GetString ("Rename Interface");
+					else if (typeDefinition.TypeKind == TypeKind.Delegate)
+						this.Title = GettextCatalog.GetString ("Rename Delegate");
+					else if (typeDefinition.TypeKind == TypeKind.Enum)
+						this.Title = GettextCatalog.GetString ("Rename Enum");
+					else if (typeDefinition.TypeKind == TypeKind.Struct)
+						this.Title = GettextCatalog.GetString ("Rename Struct");
 					else
 						this.Title = GettextCatalog.GetString ("Rename Class");
 				}
 				//				this.fileName = type.GetDefinition ().Region.FileName;
-			} else if (options.SelectedItem is IField) {
+			} else if (symbol.Kind == SymbolKind.Field) {
 				this.Title = GettextCatalog.GetString ("Rename Field");
-			} else if (options.SelectedItem is IProperty) {
-				if (((IProperty)options.SelectedItem).IsIndexer) {
-					this.Title = GettextCatalog.GetString ("Rename Indexer");
-				} else {
-					this.Title = GettextCatalog.GetString ("Rename Property");
-				}
-			} else if (options.SelectedItem is IEvent) {
+			} else if (symbol.Kind == SymbolKind.Property) {
+				this.Title = GettextCatalog.GetString ("Rename Property");
+			} else if (symbol.Kind == SymbolKind.Event) {
 				this.Title = GettextCatalog.GetString ("Rename Event");
-			} else if (options.SelectedItem is IMethod) { 
-				var m = (IMethod)options.SelectedItem;
-				if (m.IsConstructor || m.IsDestructor) {
+			} else if (symbol.Kind == SymbolKind.Method) { 
+				var m = (IMethodSymbol)symbol;
+				if (m.MethodKind == MethodKind.Constructor ||
+					m.MethodKind == MethodKind.StaticConstructor ||
+					m.MethodKind == MethodKind.Destructor) {
 					this.Title = GettextCatalog.GetString ("Rename Class");
 				} else {
 					this.Title = GettextCatalog.GetString ("Rename Method");
-					includeOverloadsCheckbox.Visible = m.DeclaringType.GetMethods (x => x.Name == m.Name).Count () > 1;
+					includeOverloadsCheckbox.Visible = m.ContainingType.GetMembers (m.Name).Count () > 1;
 				}
-			} else if (options.SelectedItem is IParameter) {
+			} else if (symbol.Kind == SymbolKind.Parameter) {
 				this.Title = GettextCatalog.GetString ("Rename Parameter");
-			} else if (options.SelectedItem is IVariable) {
+			} else if (symbol.Kind == SymbolKind.Local) {
 				this.Title = GettextCatalog.GetString ("Rename Variable");
-			} else if (options.SelectedItem is ITypeParameter) {
+			} else if (symbol.Kind == SymbolKind.TypeParameter) {
 				this.Title = GettextCatalog.GetString ("Rename Type Parameter");
-			}  else if (options.SelectedItem is INamespace) {
-				this.Title = GettextCatalog.GetString ("Rename namespace");
+			} else if (symbol.Kind == SymbolKind.Namespace) {
+				this.Title = GettextCatalog.GetString ("Rename Namespace");
+			} if (symbol.Kind == SymbolKind.Label) {
+				this.Title = GettextCatalog.GetString ("Rename Label");
 			} else {
 				this.Title = GettextCatalog.GetString ("Rename Item");
 			}
-			
-			if (options.SelectedItem is IEntity) {
-				var member = (IEntity)options.SelectedItem;
-				if (member.SymbolKind == SymbolKind.Constructor || member.SymbolKind == SymbolKind.Destructor) {
-					entry.Text = member.DeclaringType.Name;
-				} else {
-					entry.Text = member.Name;
-				}
-				//				fileName = member.Region.FileName;
-			} else if (options.SelectedItem is ITypeParameter) {
-				var lvar = (ITypeParameter)options.SelectedItem;
-				entry.Text = lvar.Name;
-				//				this.fileName = lvar.Region.FileName;
-			} else if (options.SelectedItem is IVariable) {
-				var lvar = (IVariable)options.SelectedItem;
-				entry.Text = lvar.Name;
-				//				this.fileName = lvar.Region.FileName;
-			} else if (options.SelectedItem is INamespace) {
-				var lvar = (INamespace)options.SelectedItem;
-				entry.Text = lvar.FullName;
-				//				this.fileName = lvar.Region.FileName;
-			}
+			entry.Text = symbol.Name;
 			entry.SelectRegion (0, -1);
 			
 			buttonPreview.Sensitive = buttonOk.Sensitive = false;
@@ -182,7 +167,7 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			var properties = Properties;
 			((Widget)this).Destroy ();
-			List<Change> changes = rename.PerformChanges (options, properties);
+			List<Change> changes = rename.PerformChanges (symbol, locations, properties);
 			IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor (this.Title, null);
 			RefactoringService.AcceptChanges (monitor, changes);
 		}
@@ -191,7 +176,7 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			var properties = Properties;
 			((Widget)this).Destroy ();
-			List<Change> changes = rename.PerformChanges (options, properties);
+			List<Change> changes = rename.PerformChanges (symbol, locations, properties);
 			MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
 		}
 	}

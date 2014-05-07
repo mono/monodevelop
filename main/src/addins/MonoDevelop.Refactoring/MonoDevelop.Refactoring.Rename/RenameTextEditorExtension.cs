@@ -42,7 +42,7 @@ namespace MonoDevelop.Refactoring.Rename
 		[CommandHandler (EditCommands.Rename)]
 		public void RenameCommand ()
 		{
-			new RenameHandler ().Start (base.Editor);
+			new RenameHandler ().Run (document);
 		}
 	}
 }

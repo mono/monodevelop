@@ -47,7 +47,7 @@ namespace MonoDevelop.Refactoring
 {
 	public static class RefactoringService
 	{
-		static readonly List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
+		//static readonly List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
 		static readonly List<CodeActionProvider> contextActions = new List<CodeActionProvider> ();
 		static readonly List<CodeIssueProvider> inspectors = new List<CodeIssueProvider> ();
 		
@@ -75,16 +75,16 @@ namespace MonoDevelop.Refactoring
 
 		static RefactoringService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					refactorings.Add ((RefactoringOperation)args.ExtensionObject);
-					break;
-				case ExtensionChange.Remove:
-					refactorings.Remove ((RefactoringOperation)args.ExtensionObject);
-					break;
-				}
-			});
+//			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
+//				switch (args.Change) {
+//				case ExtensionChange.Add:
+//					refactorings.Add ((RefactoringOperation)args.ExtensionObject);
+//					break;
+//				case ExtensionChange.Remove:
+//					refactorings.Remove ((RefactoringOperation)args.ExtensionObject);
+//					break;
+//				}
+//			});
 
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeActions", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -127,12 +127,6 @@ namespace MonoDevelop.Refactoring
 				}
 			});
 			
-		}
-		
-		public static IEnumerable<RefactoringOperation> Refactorings {
-			get {
-				return refactorings;
-			}
 		}
 		
 		class RenameHandler 

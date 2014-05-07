@@ -29,23 +29,59 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Refactoring.Rename
 {
-	public class RenameHandler : AbstractRefactoringCommandHandler
+	class RenameHandler : CommandHandler
 	{
-		protected override void Update (RefactoringOptions options, CommandInfo info)
+		public void UpdateCommandInfo (CommandInfo ci)
 		{
-			var renameRefactoring = new RenameRefactoring ();
-			if (!renameRefactoring.IsValid (options))
-				info.Bypass = true;
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return;
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
+			if (!CanRename (info.Symbol))
+				ci.Bypass = true;
 		}
 
-		protected override void Run (RefactoringOptions options)
+		internal static bool CanRename (ISymbol symbol)
 		{
-			var renameRefactoring = new RenameRefactoring ();
-			if (renameRefactoring.IsValid (options))
-				renameRefactoring.Run (options);
+			if (symbol == null)
+				return false;
+			switch (symbol.Kind) {
+			case SymbolKind.Local:
+			case SymbolKind.Parameter:
+			case SymbolKind.NamedType:
+			case SymbolKind.Namespace:
+			case SymbolKind.Method:
+			case SymbolKind.Field:
+			case SymbolKind.Property:
+			case SymbolKind.Event:
+			case SymbolKind.Label:
+			case SymbolKind.TypeParameter:
+			case SymbolKind.RangeVariable:
+				return true;
+			}
+			return false;
+		}
+		
+		protected override void Run (object data)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return;
+			Run (doc);
+		}
+
+		internal void Run (MonoDevelop.Ide.Gui.Document doc)
+		{
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
+			if (!CanRename (info.Symbol))
+				return;
+			new RenameRefactoring ().Rename (info.Symbol);
 		}
 	}
 }

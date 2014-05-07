@@ -124,26 +124,6 @@ namespace MonoDevelop.Refactoring
 			return RefactoringSymbolInfo.Empty;
 		}
 		
-		bool CanRename (ISymbol symbol)
-		{
-			if (symbol == null)
-				return false;
-			switch (symbol.Kind) {
-			case SymbolKind.Local:
-			case SymbolKind.Parameter:
-			case SymbolKind.NamedType:
-			case SymbolKind.Namespace:
-			case SymbolKind.Method:
-			case SymbolKind.Field:
-			case SymbolKind.Property:
-			case SymbolKind.Event:
-			case SymbolKind.Label:
-			case SymbolKind.TypeParameter:
-			case SymbolKind.RangeVariable:
-				return true;
-			}
-			return false;
-		}
 		
 		protected override void Update (CommandArrayInfo ainfo)
 		{
@@ -157,10 +137,10 @@ namespace MonoDevelop.Refactoring
 			var ciset = new CommandInfoSet ();
 			ciset.Text = GettextCatalog.GetString ("Refactor");
 
-			bool canRename = CanRename (info.Symbol ?? info.DeclaredSymbol);
+			bool canRename = MonoDevelop.Refactoring.Rename.RenameHandler.CanRename (info.Symbol ?? info.DeclaredSymbol);
 			if (canRename) {
 				ciset.CommandInfos.Add (IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename), new Action (delegate {
-					new MonoDevelop.Refactoring.Rename.RenameHandler ().Start (null);
+					new MonoDevelop.Refactoring.Rename.RenameRefactoring ().Rename (info.Symbol ?? info.DeclaredSymbol);
 				}));
 				added = true;
 			}

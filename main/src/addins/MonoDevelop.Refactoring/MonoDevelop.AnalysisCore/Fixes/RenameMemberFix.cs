@@ -72,10 +72,10 @@ namespace MonoDevelop.AnalysisCore.Fixes
 				
 				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Document, out resolveResult);
 			}
-			
-			if (!refactoring.IsValid (options))
-				yield break;
-			
+//			
+//			if (!refactoring.IsValid (options))
+//				yield break;
+//			
 			var prop = new RenameRefactoring.RenameProperties () {
 				NewName = renameFix.NewName,
 			};
@@ -120,18 +120,18 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			public void Fix ()
 			{
 				if (string.IsNullOrEmpty (Properties.NewName)) {
-					Refactoring.Run (Options);
+					//Refactoring.RunInplace (Options);
 					return;
 				}
 				
-				//FIXME: performchanges should probably use a monitor too, as it can be slow
-				var changes = Refactoring.PerformChanges (Options, Properties);
-				if (Preview) {
-					MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
-				} else {
-					var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
-					RefactoringService.AcceptChanges (monitor, changes);
-				}
+//				//FIXME: performchanges should probably use a monitor too, as it can be slow
+//				var changes = Refactoring.PerformChanges (Options, Properties);
+//				if (Preview) {
+//					MessageService.ShowCustomDialog (new RefactoringPreviewDialog (changes));
+//				} else {
+//					var monitor = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Rename", null);
+//					RefactoringService.AcceptChanges (monitor, changes);
+//				}
 			}
 			
 			public bool SupportsBatchFix {

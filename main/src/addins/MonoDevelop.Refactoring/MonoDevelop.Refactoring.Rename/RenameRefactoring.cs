@@ -34,59 +34,24 @@ using System.Linq;
 using Mono.TextEditor.PopupWindow;
 using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.ProgressMonitoring;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Ide.Gui;
-
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.FindSymbols;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Refactoring.Rename
 {
-	public class RenameRefactoring : RefactoringOperation
-	{
-		public override string AccelKey {
-			get {
-				var key = IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename).AccelKey;
-				return key == null ? null : key.Replace ("dead_circumflex", "^");
-			}
-		}
-		
-		public RenameRefactoring ()
-		{
-			Name = "Rename";
-		}
-		
-		public override bool IsValid (RefactoringOptions options)
-		{
-			if (options.SelectedItem is IVariable || options.SelectedItem is IParameter)
-				return true;
-			if (options.SelectedItem is INamespace) {
-				var ns = (INamespace)options.SelectedItem;
-				return ns.Types.Any (type => !string.IsNullOrEmpty (type.Region.FileName));
-			}
-			if (options.SelectedItem is ITypeDefinition)
-				return !string.IsNullOrEmpty (((ITypeDefinition)options.SelectedItem).Region.FileName);
-			if (options.SelectedItem is IType && ((IType)options.SelectedItem).Kind == TypeKind.TypeParameter)
-				return !string.IsNullOrEmpty (((ITypeParameter)options.SelectedItem).Region.FileName);
-
-			var member = options.SelectedItem as IMember;
-			if (member != null) {
-				if (member.SymbolKind == SymbolKind.Operator)
-					return false;
-				var cls = member.DeclaringTypeDefinition;
-				return cls != null;
-			}
-			return false;
-		}
-
-		public static void Rename (IEntity entity, string newName)
+	public class RenameRefactoring
+	{/*
+		public static void Rename (ISymbol entity, string newName)
 		{
 			if (newName == null) {
 				var options = new RefactoringOptions () {
 					SelectedItem = entity
 				};
-				new RenameRefactoring ().Run (options);
+				new RenameRefactoring ().RunInplace (options);
 				return;
 			}
 			using (var monitor = new NullProgressMonitor ()) {
@@ -108,7 +73,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
-		public static void RenameVariable (IVariable variable, string newName)
+		public static void RenameVariable (ILocalSymbol variable, string newName)
 		{
 			using (var monitor = new NullProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (variable, true, monitor);
@@ -129,13 +94,13 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
-		public static void RenameTypeParameter (ITypeParameter typeParameter, string newName)
+		public static void RenameTypeParameter (ITypeParameterSymbol typeParameter, string newName)
 		{
 			if (newName == null) {
 				var options = new RefactoringOptions () {
 					SelectedItem = typeParameter
 				};
-				new RenameRefactoring ().Run (options);
+				new RenameRefactoring ().RunInplace (options);
 				return;
 			}
 
@@ -158,7 +123,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
-		public static void RenameNamespace (INamespace ns, string newName)
+		public static void RenameNamespace (INamespaceSymbol ns, string newName)
 		{
 			using (var monitor = new NullProgressMonitor ()) {
 				var col = ReferenceFinder.FindReferences (ns, true, monitor);
@@ -178,46 +143,37 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 			}
 		}
-
-
-		public override string GetMenuDescription (RefactoringOptions options)
+*/
+		public void Rename (ISymbol symbol)
 		{
-			return IdeApp.CommandService.GetCommandInfo (MonoDevelop.Ide.Commands.EditCommands.Rename).Text;
-		}
-		
-		public override void Run (RefactoringOptions options)
-		{
-			if (options.SelectedItem is IVariable) {
-				var field = options.SelectedItem as IField;
-				if (field != null && (field.Accessibility != Accessibility.Private || field.DeclaringTypeDefinition != null && field.DeclaringTypeDefinition.Parts.Count > 1)) {
-					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
-					return;
+			var locations = new List<Tuple<string, TextSpan>> ();
+			var fileNames = new HashSet<string> ();
+			foreach (var loc in symbol.Locations) {
+				locations.Add (Tuple.Create (loc.FilePath, loc.SourceSpan));
+				fileNames.Add (loc.FilePath);
+			}
+					
+			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result) {
+				foreach (var loc in mref.Locations) {
+					locations.Add (Tuple.Create (loc.Document.FilePath, loc.Location.SourceSpan));
+					fileNames.Add (loc.Document.FilePath);
 				}
-
-				var par = options.SelectedItem as IParameter;
-				if (par != null && par.Owner != null && (par.Owner.Accessibility != Accessibility.Private || par.Owner.DeclaringTypeDefinition != null && par.Owner.DeclaringTypeDefinition.Parts.Count > 1)) {
-					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
-					return;
-				}
-
-				var col = ReferenceFinder.FindReferences (options.SelectedItem, true);
-				if (col == null)
-					return;
-				var data = options.Document != null ? options.GetTextEditorData () : IdeApp.Workbench.ActiveDocument.Editor;
+			}
+			
+			if (fileNames.Count == 1) {
+				var data = IdeApp.Workbench.ActiveDocument.Editor;
 				var editor = data.Parent;
-				if (editor == null) {
-					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+				if (editor == null)
 					return;
-				}
 				
 				var links = new List<TextLink> ();
 				var link = new TextLink ("name");
 				int baseOffset = Int32.MaxValue;
-				foreach (var r in col) {
-					baseOffset = Math.Min (baseOffset, r.Offset);
+				foreach (var r in locations) {
+					baseOffset = Math.Min (baseOffset, r.Item2.Start);
 				}
-				foreach (MemberReference r in col) {
-					var segment = new TextSegment (r.Offset - baseOffset, r.Length);
+				foreach (var r in locations) {
+					var segment = new TextSegment (r.Item2.Start - baseOffset, r.Item2.Length);
 					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment); 
 					} else {
@@ -233,7 +189,7 @@ namespace MonoDevelop.Refactoring.Rename
 				tle.SelectPrimaryLink = true;
 				if (tle.ShouldStartTextLinkMode) {
 					var helpWindow = new TableLayoutModeHelpWindow ();
-					helpWindow.TitleText = options.SelectedItem is IVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
+					helpWindow.TitleText = GettextCatalog.GetString ("<b>Renaming</b>"); //options.SelectedItem is IVariable ? GettextCatalog.GetString ("<b>Local Variable -- Renaming</b>") : GettextCatalog.GetString ("<b>Parameter -- Renaming</b>");
 					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Key</b>"), GettextCatalog.GetString ("<b>Behavior</b>")));
 					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Return</b>"), GettextCatalog.GetString ("<b>Accept</b> this refactoring.")));
 					helpWindow.Items.Add (new KeyValuePair<string, string> (GettextCatalog.GetString ("<b>Esc</b>"), GettextCatalog.GetString ("<b>Cancel</b> this refactoring.")));
@@ -247,7 +203,7 @@ namespace MonoDevelop.Refactoring.Rename
 					data.CurrentMode = tle;
 				}
 			} else {
-				MessageService.ShowCustomDialog (new RenameItemDialog (options, this));
+				MessageService.ShowCustomDialog (new RenameItemDialog (symbol, locations, this));
 			}
 		}
 		
@@ -269,52 +225,46 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 		
-		public override List<Change> PerformChanges (RefactoringOptions options, object prop)
+		public List<Change> PerformChanges (ISymbol symbol, List<Tuple<string, TextSpan>> locations, RenameProperties properties)
 		{
-			RenameProperties properties = (RenameProperties)prop;
-			List<Change> result = new List<Change> ();
+			var result = new List<Change> ();
 			IEnumerable<MemberReference> col = null;
 			using (var monitor = new MessageDialogProgressMonitor (true, false, false, true)) {
-				col = ReferenceFinder.FindReferences (options.SelectedItem, properties.IncludeOverloads, monitor);
-				if (col == null)
-					return result;
-					
-				if (properties.RenameFile && options.SelectedItem is IType) {
-					var cls = ((IType)options.SelectedItem).GetDefinition ();
+				if (properties.RenameFile && symbol.Kind == SymbolKind.NamedType) {
 					int currentPart = 1;
-					HashSet<string> alreadyRenamed = new HashSet<string> ();
-					foreach (var part in cls.Parts) {
-						if (alreadyRenamed.Contains (part.Region.FileName))
+					var alreadyRenamed = new HashSet<string> ();
+					foreach (var part in symbol.Locations) {
+						if (alreadyRenamed.Contains (part.FilePath))
 							continue;
-						alreadyRenamed.Add (part.Region.FileName);
+						alreadyRenamed.Add (part.FilePath);
 							
-						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.Region.FileName);
+						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.FilePath);
 						string newFileName;
-						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper ()))
+						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper (), StringComparison.Ordinal))
 							continue;
-						int idx = oldFileName.IndexOf (cls.Name);
+						int idx = oldFileName.IndexOf (symbol.Name, StringComparison.Ordinal);
 						if (idx >= 0) {
-							newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + cls.Name.Length);
+							newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + part.FilePath.Length);
 						} else {
 							newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
 							currentPart++;
 						}
 							
 						int t = 0;
-						while (System.IO.File.Exists (GetFullFileName (newFileName, part.Region.FileName, t))) {
+						while (System.IO.File.Exists (GetFullFileName (newFileName, part.FilePath, t))) {
 							t++;
 						}
-						result.Add (new RenameFileChange (part.Region.FileName, GetFullFileName (newFileName, part.Region.FileName, t)));
+						result.Add (new RenameFileChange (part.FilePath, GetFullFileName (newFileName, part.FilePath, t)));
 					}
 				}
 				
-				foreach (var memberRef in col) {
-					TextReplaceChange change = new TextReplaceChange ();
-					change.FileName = memberRef.FileName;
-					change.Offset = memberRef.Offset;
-					change.RemovedChars = memberRef.Length;
+				foreach (var memberRef in locations) {
+					var change = new TextReplaceChange ();
+					change.FileName = memberRef.Item1;
+					change.Offset = memberRef.Item2.Start;
+					change.RemovedChars = memberRef.Item2.Length;
 					change.InsertedText = properties.NewName;
-					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.GetName (), properties.NewName);
+					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), symbol.Name, properties.NewName);
 					result.Add (change);
 				}
 			}
