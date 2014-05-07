@@ -62,7 +62,11 @@ namespace MonoDevelop.Components
 			}
 		}
 
-		public DropDownBoxListWindow (IListDataProvider provider) : base (WindowType.Toplevel)
+		public DropDownBoxListWindow (IListDataProvider provider) : this (provider, WindowType.Toplevel)
+		{
+		}
+
+		public DropDownBoxListWindow (IListDataProvider provider, WindowType windowType) : base (windowType)
 		{
 			this.DataProvider = provider;
 			this.TransientFor = IdeApp.Workbench.RootWindow;
