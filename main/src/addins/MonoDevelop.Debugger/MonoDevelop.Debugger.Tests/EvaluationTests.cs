@@ -789,6 +789,87 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("bool", val.TypeName);
 		}
 
+		[Test]
+		public void BinaryOperatorOverrides ()
+		{
+			ObjectValue val;
+
+			if (!AllowTargetInvokes)
+				return;
+
+			val = Eval ("ops1 == ops3");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 != ops3");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops2 == ops3");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops2 != ops3");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 <= ops2");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 < ops2");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 >= ops2");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 > ops2");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 + ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 3]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 - ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides -1]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 * ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 2]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops2 / ops1");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 2]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 % ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 1]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 & ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 0]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 | ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 3]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 ^ ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 3]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 << 1");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 2]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops2 >> 1");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 1]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+		}
+
 		void AssertAssignment (string assignment, string variable, string value, string type)
 		{
 			ObjectValue val;
@@ -1442,6 +1523,7 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			if (!AllowTargetInvokes)
 				Assert.Ignore ("Evaluating lists is not working on NoTargetInvokes.");
+
 			ObjectValue val;
 			ObjectValue[] children;
 			val = Eval ("dict");

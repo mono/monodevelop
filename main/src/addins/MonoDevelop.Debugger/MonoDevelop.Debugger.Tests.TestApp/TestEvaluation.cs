@@ -101,6 +101,10 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var numbersArrays = new int [2][];
 			var numbersMulti = new int [3, 4, 5];
 
+			var ops1 = new BinaryOperatorOverrides (1);
+			var ops2 = new BinaryOperatorOverrides (2);
+			var ops3 = new BinaryOperatorOverrides (2);
+
 			var dict = new Dictionary<int, string[]> ();
 			dict.Add (5, new string[]{ "a", "b" });
 			var dictArray = new Dictionary<int, string[]> [2, 3];
@@ -388,5 +392,100 @@ struct SimpleStruct
 	public override string ToString ()
 	{
 		return StringField + " " + IntField + " " + NulledIntField;
+	}
+}
+
+class BinaryOperatorOverrides
+{
+	int value;
+
+	public BinaryOperatorOverrides (int num)
+	{
+		value = num;
+	}
+
+	public override string ToString ()
+	{
+		return string.Format ("[BinaryOperatorOverrides {0}]", value);
+	}
+
+	public static bool operator== (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value == ops2.value;
+	}
+
+	public static bool operator!= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value != ops2.value;
+	}
+
+	public static bool operator>= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value >= ops2.value;
+	}
+
+	public static bool operator> (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value > ops2.value;
+	}
+
+	public static bool operator<= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value <= ops2.value;
+	}
+
+	public static bool operator< (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value < ops2.value;
+	}
+
+	public static BinaryOperatorOverrides operator+ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value + ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator- (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value - ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator* (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value * ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator/ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value / ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator% (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value % ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator& (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value & ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator| (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value | ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator^ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value ^ ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator<< (BinaryOperatorOverrides ops1, int shift)
+	{
+		return new BinaryOperatorOverrides (ops1.value << shift);
+	}
+
+	public static BinaryOperatorOverrides operator>> (BinaryOperatorOverrides ops1, int shift)
+	{
+		return new BinaryOperatorOverrides (ops1.value >> shift);
 	}
 }
