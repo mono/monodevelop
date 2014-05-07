@@ -629,7 +629,7 @@ namespace MonoDevelop.Projects
 		
 		void GetBuildableReferencedItems (Set<SolutionItem> visited, List<SolutionItem> referenced, SolutionItem item, ConfigurationSelector configuration)
 		{
-			if (!visited.Add(item) || !item.SupportsBuild ())
+			if (!visited.Add(item))
 				return;
 			
 			referenced.Add (item);
