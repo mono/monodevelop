@@ -209,8 +209,7 @@ namespace MonoDevelop.Components.DockNotebook
 				w, 
 				h, 
 				false
-			); 
-			placementDelegate = PlaceInFloatingFrame;
+			);
 		}
 
 		protected override void OnRealized ()
@@ -376,29 +375,6 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		static void PlaceInFloatingFrame (DockNotebook notebook, IDockNotebookTab tab, Rectangle allocation, int ox, int oy)
-		{
-			var newWindow = new DockWindow ();
-			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
-			newNotebook.NavigationButtonsVisible = false;
-			newNotebooks.Add (newNotebook);
-			
-			var box = new VBox ();
-			box.PackStart (new DockNotebookContainer (newNotebook), true, true, 0);
-			newWindow.Child = box;
-			newNotebook.InitSize ();
-
-			var window2 = (SdiWorkspaceWindow)tab.Content;
-			var newTab2 = newNotebook.InsertTab (-1); 
-			newTab2.Content = window2;
-			newWindow.Title = DefaultWorkbench.GetTitle (window2);
-			newWindow.ShowAll (); 
-
-			window2.SetDockNotebook (newNotebook, newTab2); 
-			newWindow.Move (ox + allocation.Width / 2 - w / 2, oy + allocation.Height / 2 - h / 2);
-			newWindow.Resize (w, h);
-		}
-
 		const int w = 640;
 		const int h = 480;
 
@@ -421,10 +397,12 @@ namespace MonoDevelop.Components.DockNotebook
 			var allocation = Allocation;
 			Destroy ();
 
-			var tab = notebook.CurrentTab;
-			notebook.RemoveTab (tab.Index, false); 
+			if (placementDelegate != null) {
+				var tab = notebook.CurrentTab;
+				notebook.RemoveTab (tab.Index, false);
 
-			(placementDelegate ?? PlaceInFloatingFrame) (notebook, tab, allocation, ox, oy);
+				placementDelegate (notebook, tab, allocation, ox, oy);
+			}
 		}
 	}
 }
