@@ -304,8 +304,17 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("string", val.TypeName);
 
 			// FIXME: failing on CorDebugger
-			if (Session is Mono.Debugging.Soft.SoftDebuggerSession) {
+			if (Session is SoftDebuggerSession) {
 				val = Eval ("true.ToString()");
+				if (!AllowTargetInvokes) {
+					var options = Session.Options.EvaluationOptions.Clone ();
+					options.AllowTargetInvoke = true;
+
+					Assert.IsTrue (val.IsNotSupported);
+					val.Refresh (options);
+					val = val.Sync ();
+				}
+
 				Assert.AreEqual ("\"True\"", val.Value);
 				Assert.AreEqual ("string", val.TypeName);
 			}
