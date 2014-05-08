@@ -109,9 +109,11 @@ namespace MonoDevelop.Components.DockNotebook
 			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
 			newNotebook.NavigationButtonsVisible = false;
 			PlaceholderWindow.newNotebooks.Add (newNotebook);
+			IdeApp.Workbench.Splits.Add (newNotebook);
 			newNotebook.InitSize ();
 			newNotebook.Destroyed += delegate {
 				PlaceholderWindow.newNotebooks.Remove (newNotebook);
+				IdeApp.Workbench.Splits.Remove (newNotebook);
 			};
 			newNotebook.PageRemoved += HandlePageRemoved;
 

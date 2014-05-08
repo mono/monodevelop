@@ -280,6 +280,44 @@ namespace MonoDevelop.Ide.Commands
 			zoom.ZoomReset ();
 		}
 	}
+
+	public class SideBySideModeHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.Splits.Count == 0) {
+				var notebook = ((DefaultWorkbench)IdeApp.Workbench.RootWindow).TabControl;
+				info.Enabled = (notebook.Tabs.Count > 1);
+			} else {
+				info.Enabled = false;
+			}
+		}
+
+		protected override void Run ()
+		{
+			var notebook = ((DefaultWorkbench)IdeApp.Workbench.RootWindow).TabControl;
+			var container = (MonoDevelop.Components.DockNotebook.DockNotebookContainer)notebook.Parent;
+
+			if (container.AllowRightInsert) {
+				var tab = (MonoDevelop.Components.DockNotebook.IDockNotebookTab)notebook.CurrentTab;
+				var window = (SdiWorkspaceWindow)tab.Content;
+				notebook.RemoveTab (tab.Index, false);
+				container.InsertRight (window);
+			}
+		}
+	}
+
+	public class SingleModeHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = (IdeApp.Workbench.Splits.Count == 0);
+		}
+
+		protected override void Run ()
+		{
+		}
+	}
 	
 	public class FocusCurrentDocumentHandler : CommandHandler
 	{

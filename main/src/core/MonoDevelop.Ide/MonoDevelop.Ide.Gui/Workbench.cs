@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		readonly List<Document> documents = new List<Document> ();
+		List<object> splits = new List<object> ();
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
@@ -168,6 +169,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public int SplitCount { get; set; }
+		public List<object> Splits { get { return splits; } }
 
 		public WorkbenchWindow RootWindow {
 			get { return workbench; }

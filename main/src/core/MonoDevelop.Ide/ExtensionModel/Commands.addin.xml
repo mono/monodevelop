@@ -619,6 +619,14 @@
 			icon = "gtk-zoom-100" 
 			shortcut = "Control|0"
 			_description = "Resets zoom to default" />
+	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode"
+			defaultHandler = "MonoDevelop.Ide.Commands.SideBySideModeHandler"
+			_label = "Side by Side Mode"
+			macShortcut = "Meta|Shift|2"/>
+	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode"
+			defaultHandler = "MonoDevelop.Ide.Commands.SingleModeHandler"
+			_label = "Single Mode"
+			macShortcut = "Meta|Shift|1"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
 			_label = "_Focus Document"
