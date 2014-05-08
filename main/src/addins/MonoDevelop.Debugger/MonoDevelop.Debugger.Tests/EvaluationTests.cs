@@ -1540,49 +1540,88 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void Lists ()
 		{
-			if (!AllowTargetInvokes)
-				Assert.Ignore ("Evaluating lists is not working on NoTargetInvokes.");
-
-			ObjectValue val;
 			ObjectValue[] children;
+			ObjectValue val;
+
 			val = Eval ("dict");
 			children = val.GetAllChildren ();
-			Assert.AreEqual (2, children.Length);
-			Assert.AreEqual ("[0]", children [0].Name);
-			Assert.AreEqual ("{[5, System.String[]]}", children [0].Value);
-			Assert.AreEqual ("Raw View", children [1].Name);
-			children = children [0].GetAllChildren ();
-			Assert.AreEqual ("Key", children [0].Name);
-			Assert.AreEqual ("5", children [0].Value);
-			Assert.AreEqual ("int", children [0].TypeName);
-			Assert.AreEqual ("Value", children [1].Name);
-			Assert.AreEqual ("{string[2]}", children [1].Value);
-			children = children [1].GetAllChildren ();
-			Assert.AreEqual ("\"a\"", children [0].Value);
-			Assert.AreEqual ("string", children [0].TypeName);
-			Assert.AreEqual ("\"b\"", children [1].Value);
+
+			if (AllowTargetInvokes) {
+				// AllowTargetInvokes also allows debugger proxies
+				Assert.AreEqual (2, children.Length);
+				Assert.AreEqual ("[0]", children [0].Name);
+				Assert.AreEqual ("{[5, System.String[]]}", children [0].Value);
+				Assert.AreEqual ("Raw View", children [1].Name);
+
+				children = children [0].GetAllChildren ();
+				Assert.AreEqual ("Key", children [0].Name);
+				Assert.AreEqual ("5", children [0].Value);
+				Assert.AreEqual ("int", children [0].TypeName);
+				Assert.AreEqual ("Value", children [1].Name);
+				Assert.AreEqual ("{string[2]}", children [1].Value);
+
+				children = children [1].GetAllChildren ();
+				Assert.AreEqual ("\"a\"", children [0].Value);
+				Assert.AreEqual ("string", children [0].TypeName);
+				Assert.AreEqual ("\"b\"", children [1].Value);
+			} else {
+				// when AllowTargetInvokes is disabled, it also disables debugger proxies
+				Assert.AreEqual (6, children.Length);
+				Assert.AreEqual ("Comparer", children [0].Name);
+				Assert.AreEqual ("Count", children [1].Name);
+				Assert.AreEqual ("Keys", children [2].Name);
+				Assert.AreEqual ("Values", children [3].Name);
+				Assert.AreEqual ("Static members", children [4].Name);
+				Assert.AreEqual ("Non-public members", children [5].Name);
+			}
 
 			val = Eval ("stringList");
 			children = val.GetAllChildren ();
-			Assert.AreEqual (4, children.Length);
-			Assert.AreEqual ("[0]", children [0].Name);
-			Assert.AreEqual ("[1]", children [1].Name);
-			Assert.AreEqual ("[2]", children [2].Name);
-			Assert.AreEqual ("Raw View", children [3].Name);
-			Assert.AreEqual ("\"aaa\"", children [0].Value);
-			Assert.AreEqual ("\"bbb\"", children [1].Value);
-			Assert.AreEqual ("\"ccc\"", children [2].Value);
+
+			if (AllowTargetInvokes) {
+				// AllowTargetInvokes also allows debugger proxies
+				Assert.AreEqual (4, children.Length);
+				Assert.AreEqual ("[0]", children [0].Name);
+				Assert.AreEqual ("[1]", children [1].Name);
+				Assert.AreEqual ("[2]", children [2].Name);
+				Assert.AreEqual ("Raw View", children [3].Name);
+				Assert.AreEqual ("\"aaa\"", children [0].Value);
+				Assert.AreEqual ("\"bbb\"", children [1].Value);
+				Assert.AreEqual ("\"ccc\"", children [2].Value);
+			} else {
+				// when AllowTargetInvokes is disabled, it also disables debugger proxies
+				Assert.AreEqual (4, children.Length);
+				Assert.AreEqual ("Capacity", children [0].Name);
+				Assert.AreEqual ("Count", children [1].Name);
+				Assert.AreEqual ("Static members", children [2].Name);
+				Assert.AreEqual ("Non-public members", children [3].Name);
+			}
 
 			val = Eval ("alist");
 			children = val.GetAllChildren ();
-			Assert.AreEqual (4, children.Length);
-			Assert.AreEqual ("[0]", children [0].Name);
-			Assert.AreEqual ("[1]", children [1].Name);
-			Assert.AreEqual ("[2]", children [2].Name);
-			Assert.AreEqual ("Raw View", children [3].Name);
-			Assert.AreEqual ("1", children [0].Value);
-			Assert.AreEqual ("\"two\"", children [1].Value);
-			Assert.AreEqual ("3", children [2].Value);
+
+			if (AllowTargetInvokes) {
+				// AllowTargetInvokes also allows debugger proxies
+				Assert.AreEqual (4, children.Length);
+				Assert.AreEqual ("[0]", children [0].Name);
+				Assert.AreEqual ("[1]", children [1].Name);
+				Assert.AreEqual ("[2]", children [2].Name);
+				Assert.AreEqual ("Raw View", children [3].Name);
+				Assert.AreEqual ("1", children [0].Value);
+				Assert.AreEqual ("\"two\"", children [1].Value);
+				Assert.AreEqual ("3", children [2].Value);
+			} else {
+				// when AllowTargetInvokes is disabled, it also disables debugger proxies
+				Assert.AreEqual (8, children.Length);
+				Assert.AreEqual ("Capacity", children [0].Name);
+				Assert.AreEqual ("Count", children [1].Name);
+				Assert.AreEqual ("IsFixedSize", children [2].Name);
+				Assert.AreEqual ("IsReadOnly", children [3].Name);
+				Assert.AreEqual ("IsSynchronized", children [4].Name);
+				Assert.AreEqual ("SyncRoot", children [5].Name);
+				Assert.AreEqual ("Static members", children [6].Name);
+				Assert.AreEqual ("Non-public members", children [7].Name);
+			}
 		}
 
 		[Test]
