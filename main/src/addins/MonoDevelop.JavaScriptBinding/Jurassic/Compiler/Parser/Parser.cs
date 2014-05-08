@@ -361,11 +361,11 @@ namespace Jurassic.Compiler
                 }
                 catch (Jurassic.JavaScriptException jsException)
                 {
-                    Errors.Add(ErrorFactory.CreateError(jsException.Message, jsException.LineNumber));
+			Errors.Add(new Error (ErrorType.Error, jsException.Message, jsException.LineNumber, 0));
                 }
                 catch (Exception ex)
                 {
-                    Errors.Add(ErrorFactory.CreateError(ex.Message));
+			Errors.Add(new Error(ErrorType.Unknown, ex.Message));
                 }
             }
 

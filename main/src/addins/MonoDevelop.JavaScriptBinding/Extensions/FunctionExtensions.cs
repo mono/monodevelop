@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MonoDevelop.JavaScript.Extentions
+namespace MonoDevelop.JavaScript.Extensions
 {
-	public static class FunctionExtentions
+	static class FunctionExtensions
 	{
 		public static string BuildFunctionSignature (this Jurassic.Compiler.FunctionExpression function)
 		{
@@ -17,9 +17,7 @@ namespace MonoDevelop.JavaScript.Extentions
 			return buildFunctionSignature (function.FunctionName, function.ArgumentNames);
 		}
 
-		#region Private Methods
-
-		private static string buildFunctionSignature (string functionName, IList<string> argumentNames)
+		static string buildFunctionSignature (string functionName, IList<string> argumentNames)
 		{
 			if (string.IsNullOrWhiteSpace (functionName))
 				functionName = "function"; // for inline functions, callbacks, delegates, etc.
@@ -29,7 +27,7 @@ namespace MonoDevelop.JavaScript.Extentions
 			builder.Append (" (");
 			if (argumentNames.Count > 0) {
 				for (int i = 0; i < argumentNames.Count; i++) {
-					var currentArgument = argumentNames[i];
+					var currentArgument = argumentNames [i];
 					if (i + 1 != argumentNames.Count) {
 						builder.Append (string.Concat (currentArgument, ", "));
 					} else {
@@ -41,7 +39,5 @@ namespace MonoDevelop.JavaScript.Extentions
 
 			return builder.ToString ();
 		}
-
-		#endregion
 	}
 }

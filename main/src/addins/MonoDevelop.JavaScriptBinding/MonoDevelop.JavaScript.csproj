@@ -28,7 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>b..\..\..\build\AddIns\</OutputPath>
+    <OutputPath>..\build\AddIns\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -64,9 +64,7 @@
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extentions\FunctionExtentions.cs" />
     <Compile Include="Factories\DomRegionFactory.cs" />
-    <Compile Include="Factories\ErrorFactory.cs" />
     <Compile Include="Jurassic\Compiler\Binders\Binder.cs" />
     <Compile Include="Jurassic\Compiler\Binders\BinderMethod.cs" />
     <Compile Include="Jurassic\Compiler\Binders\BinderUtilities.cs" />
@@ -214,38 +212,37 @@
     <Compile Include="Parser\JavaScriptParsedDocument.cs" />
     <Compile Include="Parser\JavaScriptParser.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="TextEditor\IconManager.cs" />
     <Compile Include="TextEditor\JavaScriptEditorExtension.cs" />
+    <Compile Include="Extensions\FunctionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Jurassic\Compiler\Emit\Optimizations.txt" />
     <Content Include="Jurassic\License.txt" />
     <Content Include="Notes\JurrasicJSMap.txt" />
-    <Content Include="Templates\EmptyJSFile.xft.xml" />
     <EmbeddedResource Include="MonoDevelop.JavaScript.addin.xml" />
-    <None Include="SyntaxMode\JavaScriptSyntaxMode.xml">
+    <None Include="Templates\EmptyJSFile.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3b2a5653-ec97-4001-bb9b-d90f1af2c371}</Project>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
-      <Project>{2c24d515-4a2c-445c-8419-c09231913cfa}</Project>
-      <Name>MonoDevelop.DesignerSupport</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\src\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{a2329308-3751-4dbd-9a75-5f7b8b024625}</Project>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
       <Name>Mono.TextEditor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
-      <Project>{7525bb88-6142-4a26-93b9-a30c6983390a}</Project>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096e7f-c91c-4ac6-b289-6897a701df21}</Project>
+    <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
     </ProjectReference>
   </ItemGroup>

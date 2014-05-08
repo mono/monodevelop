@@ -10,41 +10,36 @@ using MonoDevelop.JavaScript.Extentions;
 
 namespace MonoDevelop.JavaScript.Parser
 {
-	public class JavaScriptParsedDocument : ParsedDocument
+	class JavaScriptParsedDocument : ParsedDocument
 	{
+
 		#region Variables
 
 		string fileName;
-		private System.IO.TextReader content;
-		private IList<Error> errors;
-		private IList<FoldingRegion> foldings;
+		System.IO.TextReader content;
+		IList<Error> errors;
+		IList<FoldingRegion> foldings;
 
 		#endregion
 
 		#region Properties
 
-		public override string FileName
-		{
-			get
-			{
+		public override string FileName {
+			get {
 				return fileName;
 			}
 		}
 
 		public IEnumerable<Jurassic.Compiler.JSAstNode> AstNodes { get; set; }
 
-		public override IList<Error> Errors
-		{
-			get
-			{
+		public override IList<Error> Errors {
+			get {
 				return errors;
 			}
 		}
 
-		public override IEnumerable<FoldingRegion> Foldings
-		{
-			get
-			{
+		public override IEnumerable<FoldingRegion> Foldings {
+			get {
 				return foldings;
 			}
 		}
@@ -84,9 +79,9 @@ namespace MonoDevelop.JavaScript.Parser
 			try {
 				parserResult = parser.Parse ();
 			} catch (Jurassic.JavaScriptException jsException) {
-				errors.Add (ErrorFactory.CreateError (jsException.Message, jsException.LineNumber));
+				errors.Add (new Error (ErrorType.Error, jsException.Message, jsException.LineNumber, 0));
 			} catch (Exception ex) {
-				errors.Add (ErrorFactory.CreateError (ex.Message));
+				errors.Add (new Error (ErrorType.Unknown, ex.Message));
 			}
 
 			if (parserResult != null) {
@@ -96,7 +91,7 @@ namespace MonoDevelop.JavaScript.Parser
 			}
 		}
 
-		private void setFoldings (IEnumerable<Jurassic.Compiler.JSAstNode> astNodes)
+		void setFoldings (IEnumerable<Jurassic.Compiler.JSAstNode> astNodes)
 		{
 			if (astNodes == null)
 				return;
@@ -179,5 +174,6 @@ namespace MonoDevelop.JavaScript.Parser
 		}
 
 		#endregion
+
 	}
 }

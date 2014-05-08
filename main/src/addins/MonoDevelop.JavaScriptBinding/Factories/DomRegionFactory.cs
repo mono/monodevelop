@@ -7,7 +7,7 @@ using System.Text;
 
 namespace MonoDevelop.JavaScript.Factories
 {
-	public static class DomRegionFactory
+	static class DomRegionFactory
 	{
 		public static DomRegion CreateDomRegion (string filename, Jurassic.Compiler.SourceCodeSpan position)
 		{
@@ -17,10 +17,10 @@ namespace MonoDevelop.JavaScript.Factories
 		public static DomRegion CreateDomRegion (string filename, int startLine, int startColumn, int endLine, int endColumn)
 		{
 			var region = new DomRegion (filename,
-				startLine,
-				startColumn,
-				endLine,
-				endColumn);
+				             startLine,
+				             startColumn,
+				             endLine,
+				             endColumn);
 
 			return region;
 		}

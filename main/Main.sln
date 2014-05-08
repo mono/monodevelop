@@ -266,7 +266,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TextEditor.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ide.Tests", "tests\Ide.Tests\Ide.Tests.csproj", "{73D4CC8B-BAB9-4A29-841B-F25C6311F067}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.JavaScript", "MonoDevelop.JavaScriptBinding\MonoDevelop.JavaScript.csproj", "{6281ED35-6EFB-4D37-9517-C9F37E14BD8F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.JavaScript", "src\addins\MonoDevelop.JavaScriptBinding\MonoDevelop.JavaScript.csproj", "{6281ED35-6EFB-4D37-9517-C9F37E14BD8F}"
 EndProject
 
 Global

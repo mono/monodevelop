@@ -11,17 +11,16 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.JavaScript.TextEditor
 {
-	public class JavaScriptEditorExtension : CompletionTextEditorExtension, IOutlinedDocument
+	class JavaScriptEditorExtension : CompletionTextEditorExtension, IOutlinedDocument
 	{
+
 		#region Variables
 
-		private bool disposed;
-		private bool refreshingOutline = false;
-		private MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
-		private Gtk.TreeStore outlineTreeStore;
-
-		private readonly IconManager iconManager = new IconManager ();
-		private readonly Gdk.Color normal = new Gdk.Color (0x00, 0x00, 0x00);
+		bool disposed;
+		bool refreshingOutline = false;
+		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
+		Gtk.TreeStore outlineTreeStore;
+		readonly Gdk.Color normal = new Gdk.Color (0x00, 0x00, 0x00);
 
 		#endregion
 
@@ -68,9 +67,11 @@ namespace MonoDevelop.JavaScript.TextEditor
 			if (outlineTreeView != null)
 				return outlineTreeView;
 
-			outlineTreeStore = new Gtk.TreeStore (typeof (Gdk.Pixbuf), typeof (string), typeof (Jurassic.Compiler.JSAstNode));
+			outlineTreeStore = new Gtk.TreeStore (typeof(Gdk.Pixbuf), typeof(string), typeof(Jurassic.Compiler.JSAstNode));
 			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
-			outlineTreeView.Realized += delegate { refillOutlineStore (); };
+			outlineTreeView.Realized += delegate {
+				refillOutlineStore ();
+			};
 
 			outlineTreeView.TextRenderer.Xpad = 0;
 			outlineTreeView.TextRenderer.Ypad = 0;
@@ -160,7 +161,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 			if (doc == null)
 				return;
 
-			var fileIcon = iconManager.GetIcon (Stock.TextFileIcon);
+			var fileIcon = ImageService.GetPixbuf (Stock.TextFileIcon, Gtk.IconSize.Menu);
 			var parentIter = store.AppendValues (fileIcon, doc.FileName, doc);
 
 			buildTreeChildren (store, parentIter, doc.AstNodes);
@@ -175,7 +176,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 				Gtk.TreeIter childIter = default (Gtk.TreeIter);
 				var variableStatement = node as Jurassic.Compiler.VarStatement;
 				if (variableStatement != null) {
-					var icon = iconManager.GetIcon (Stock.Field);
+					var icon = ImageService.GetPixbuf (Stock.Field, Gtk.IconSize.Menu);
 
 					foreach (Jurassic.Compiler.VariableDeclaration variableDeclaration in variableStatement.Declarations) {
 						childIter = store.AppendValues (parent, icon, string.Concat (variableDeclaration.VariableName), variableDeclaration);
@@ -188,7 +189,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 				var functionStatement = node as Jurassic.Compiler.FunctionStatement;
 				if (functionStatement != null) {
-					var icon = iconManager.GetIcon (Stock.Method);
+					var icon = ImageService.GetPixbuf (Stock.Method, Gtk.IconSize.Menu);
 
 					childIter = store.AppendValues (parent, icon, functionStatement.BuildFunctionSignature (), functionStatement);
 
@@ -199,7 +200,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 				var functionExpression = node as Jurassic.Compiler.FunctionExpression;
 				if (functionExpression != null) {
-					var icon = iconManager.GetIcon (Stock.Method);
+					var icon = ImageService.GetPixbuf (Stock.Method, Gtk.IconSize.Menu);
 
 					childIter = store.AppendValues (parent, icon, functionExpression.BuildFunctionSignature (), functionExpression);
 
@@ -241,5 +242,6 @@ namespace MonoDevelop.JavaScript.TextEditor
 		}
 
 		#endregion
+
 	}
 }
