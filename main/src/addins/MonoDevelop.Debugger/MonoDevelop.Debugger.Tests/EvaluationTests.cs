@@ -168,11 +168,8 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 
-			if (Session is SoftDebuggerSession)
-				Assert.Ignore ("TODO: Not working on SoftDebugger");
-
-			val = Eval ("Thing<int>.Done<int>");
-			Assert.AreEqual ("Thing<int>.Done<int>", val.Value);
+			val = Eval ("Thing<string>.Done<int>");
+			Assert.AreEqual ("Thing<string>.Done<int>", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
@@ -305,6 +302,13 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("\"43\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
+
+			// FIXME: failing on CorDebugger
+			if (Session is Mono.Debugging.Soft.SoftDebuggerSession) {
+				val = Eval ("true.ToString()");
+				Assert.AreEqual ("\"True\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			}
 		}
 
 		[Test]
@@ -1188,11 +1192,6 @@ namespace MonoDevelop.Debugger.Tests
 		public void SdbFailingTests ()
 		{
 			ObjectValue val;
-
-			//When fixed put into MemberRefernce test?
-			val = Eval ("true.ToString()");
-			Assert.AreEqual ("\"true\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
 
 			//When fixed put into Inheriting test
 			val = Eval ("b.TestMethod ()");
