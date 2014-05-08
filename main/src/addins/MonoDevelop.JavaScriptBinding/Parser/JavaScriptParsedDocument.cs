@@ -6,7 +6,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.JavaScript.Factories;
-using MonoDevelop.JavaScript.Extentions;
+using MonoDevelop.JavaScript.Extensions;
 
 namespace MonoDevelop.JavaScript.Parser
 {

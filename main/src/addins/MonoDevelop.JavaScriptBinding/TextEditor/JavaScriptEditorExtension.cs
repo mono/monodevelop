@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using MonoDevelop.JavaScript.Extentions;
+using MonoDevelop.JavaScript.Extensions;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.JavaScript.TextEditor
