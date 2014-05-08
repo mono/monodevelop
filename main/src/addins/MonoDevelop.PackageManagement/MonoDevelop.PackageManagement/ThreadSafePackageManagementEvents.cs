@@ -36,15 +36,26 @@ namespace ICSharpCode.PackageManagement
 {
 	public class ThreadSafePackageManagementEvents : IThreadSafePackageManagementEvents
 	{
+		static Action<MessageHandler> defaultGuiSyncDispatch = DispatchService.GuiSyncDispatch;
+
+		Action<MessageHandler> guiSyncDispatch;
 		IPackageManagementEvents unsafeEvents;
-		
-		public ThreadSafePackageManagementEvents(IPackageManagementEvents unsafeEvents)
+
+		public ThreadSafePackageManagementEvents (IPackageManagementEvents unsafeEvents)
+			: this (unsafeEvents, defaultGuiSyncDispatch)
+		{
+		}
+
+		public ThreadSafePackageManagementEvents (
+			IPackageManagementEvents unsafeEvents,
+			Action<MessageHandler> guiSyncDispatch)
 		{
 			this.unsafeEvents = unsafeEvents;
+			this.guiSyncDispatch = guiSyncDispatch;
 			
 			RegisterEventHandlers();
 		}
-		
+
 		void RegisterEventHandlers()
 		{
 			unsafeEvents.PackageOperationsStarting += RaisePackageOperationStartingEventIfHasSubscribers;
@@ -75,7 +86,7 @@ namespace ICSharpCode.PackageManagement
 		void RaisePackageOperationStartingEventIfHasSubscribers(object sender, EventArgs e)
 		{
 			if (PackageOperationsStarting != null) {
-				DispatchService.GuiSyncDispatch (() => RaisePackageOperationStartingEvent (sender, e));
+				guiSyncDispatch (() => RaisePackageOperationStartingEvent (sender, e));
 			}
 		}
 		
@@ -89,7 +100,7 @@ namespace ICSharpCode.PackageManagement
 		void RaisePackageOperationFinishedEventIfHasSubscribers(object sender, EventArgs e)
 		{
 			if (PackageOperationsFinished != null) {
-				DispatchService.GuiSyncDispatch (() => RaisePackageOperationFinishedEvent (sender, e));
+				guiSyncDispatch (() => RaisePackageOperationFinishedEvent (sender, e));
 			}
 		}
 
@@ -103,14 +114,14 @@ namespace ICSharpCode.PackageManagement
 		void RaisePackageOperationErrorEventIfHasSubscribers(object sender, PackageOperationExceptionEventArgs e)
 		{
 			if (PackageOperationError != null) {
-				DispatchService.GuiSyncDispatch (() => RaisePackageOperationErrorEvent(sender, e));
+				guiSyncDispatch (() => RaisePackageOperationErrorEvent(sender, e));
 			}
 		}
 		
 		void RaisePackageOperationErrorEvent(object sender, PackageOperationExceptionEventArgs e)
 		{
 			if (PackageOperationError != null) {
-				DispatchService.GuiSyncDispatch (() => PackageOperationError(sender, e));
+				guiSyncDispatch (() => PackageOperationError(sender, e));
 			}
 		}
 		
@@ -119,7 +130,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackageInstalledEventIfHasSubscribers(object sender, ParentPackageOperationEventArgs e)
 		{
 			if (ParentPackageInstalled != null) {
-				DispatchService.GuiSyncDispatch (() => RaiseParentPackageInstalledEvent(sender, e));
+				guiSyncDispatch (() => RaiseParentPackageInstalledEvent(sender, e));
 			}
 		}
 		
@@ -133,7 +144,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackageUninstalledEventIfHasSubscribers(object sender, ParentPackageOperationEventArgs e)
 		{
 			if (ParentPackageUninstalled != null) {
-				DispatchService.GuiSyncDispatch (() => RaiseParentPackageUninstalledEvent(sender, e));
+				guiSyncDispatch (() => RaiseParentPackageUninstalledEvent(sender, e));
 			}
 		}
 		
@@ -209,7 +220,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseResolveFileConflictEventIfHasSubscribers (object sender, ResolveFileConflictEventArgs e)
 		{
 			if (ResolveFileConflict != null) {
-				DispatchService.GuiSyncDispatch (() => ResolveFileConflict (sender, e));
+				guiSyncDispatch (() => ResolveFileConflict (sender, e));
 			}
 		}
 		
@@ -223,7 +234,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackagesUpdatedEventIfHasSubscribers(object sender, ParentPackagesOperationEventArgs e)
 		{
 			if (ParentPackagesUpdated != null) {
-				DispatchService.GuiSyncDispatch (() => RaiseParentPackagesUpdatedEvent(sender, e));
+				guiSyncDispatch (() => RaiseParentPackagesUpdatedEvent(sender, e));
 			}
 		}
 		
