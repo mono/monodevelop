@@ -28,6 +28,7 @@ using System;
 
 using Mono.Debugging.Client;
 using NUnit.Framework;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Tests
 {
@@ -63,6 +64,8 @@ namespace MonoDevelop.Debugger.Tests
 				return "MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedGenericClass";
 			case "Dictionary`2":
 				return "System.Collections.Generic.Dictionary";
+			case "Thing`1":
+				return "Thing";
 			case "A":
 				return "A";
 			case "B":
@@ -162,6 +165,14 @@ namespace MonoDevelop.Debugger.Tests
 			ObjectValue val;
 			val = Eval ("System.Collections.Generic.Dictionary<string,int>");
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<string,int>", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			if (Session is SoftDebuggerSession)
+				Assert.Ignore ("TODO: Not working on SoftDebugger");
+
+			val = Eval ("Thing<int>.Done<int>");
+			Assert.AreEqual ("Thing<int>.Done<int>", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
