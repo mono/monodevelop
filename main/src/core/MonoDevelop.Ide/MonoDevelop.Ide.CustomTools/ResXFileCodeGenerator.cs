@@ -41,6 +41,9 @@ using System.CodeDom.Compiler;
 using System.CodeDom;
 using System.Linq;
 using MonoDevelop.Core.Assemblies;
+using System.Resources;
+using System.Collections.Generic;
+using System.Collections;
 
 namespace MonoDevelop.Ide.CustomTools
 {
@@ -71,10 +74,20 @@ namespace MonoDevelop.Ide.CustomTools
 				var outputfile = file.FilePath.ChangeExtension (".Designer." + provider.FileExtension);
 				var ns = CustomToolService.GetFileNamespace (file, outputfile);
 				var cn = provider.CreateValidIdentifier (file.FilePath.FileNameWithoutExtension);
+				var rd = new Dictionary<object, object> ();
+
+				using (var r = new ResXResourceReader (file.FilePath)) {
+					r.UseResXDataNodes = true;
+					r.BasePath = Path.GetDirectoryName (file.FilePath.ParentDirectory);
+
+					foreach(DictionaryEntry e in r) {
+						rd.Add (e.Key, e.Value);
+					}
+				}
 
 				string[] unmatchable;
-				var ccu = StronglyTypedResourceBuilder.Create (file.FilePath, cn, ns, provider, internalClass, out unmatchable);
-
+				var ccu = StronglyTypedResourceBuilder.Create (rd, cn, ns, provider, internalClass, out unmatchable);
+				
 				if (TargetsPcl2Framework (dnp)) {
 					FixupPclTypeInfo (ccu);
 				}
