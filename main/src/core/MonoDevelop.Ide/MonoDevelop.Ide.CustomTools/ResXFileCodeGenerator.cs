@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.CustomTools
 					r.UseResXDataNodes = true;
 					r.BasePath = Path.GetDirectoryName (file.FilePath.ParentDirectory);
 
-					foreach(DictionaryEntry e in r) {
+					foreach (DictionaryEntry e in r) {
 						rd.Add (e.Key, e.Value);
 					}
 				}
