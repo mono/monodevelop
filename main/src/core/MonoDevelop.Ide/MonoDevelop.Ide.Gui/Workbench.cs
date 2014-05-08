@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public int SplitCount { get; set; }
-		public List<object> Splits { get { return splits; } }
+		internal List<object> Splits { get { return splits; } }
 
 		public WorkbenchWindow RootWindow {
 			get { return workbench; }
