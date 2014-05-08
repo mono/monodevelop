@@ -1576,5 +1576,19 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"two\"", children [1].Value);
 			Assert.AreEqual ("3", children [2].Value);
 		}
+
+		[Test]
+		[Ignore ("TODO: Evaluating dynamic objects")]
+		public void DynamicObjects ()
+		{
+			ObjectValue val;
+			val = Eval ("dynObj.someInt");
+			Assert.AreEqual ("dynamic {int}", val.TypeName);
+			Assert.AreEqual ("53", val.Value);
+
+			val = Eval ("dynObj.someString");
+			Assert.AreEqual ("dynamic {string}", val.TypeName);
+			Assert.AreEqual ("\"Hello dynamic objects!\"", val.Value);
+		}
 	}
 }

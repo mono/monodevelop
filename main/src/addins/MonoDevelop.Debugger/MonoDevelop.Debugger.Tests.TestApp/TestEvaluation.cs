@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -120,6 +121,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				modifyInLamda = "modified";
 			});
 			action ();
+
+			dynamic dynObj = new ExpandoObject ();
+			dynObj.someInt = 53;
+			dynObj.someString = "Hello dynamic objects!";
+
 			Console.WriteLine (n); /*break*/
 		}
 
