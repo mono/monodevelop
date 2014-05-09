@@ -30,12 +30,9 @@ using MonoDevelop.Core;
 using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Ide;
-using System.Linq;
 using Mono.TextEditor.PopupWindow;
-using MonoDevelop.Ide.FindInFiles;
 using MonoDevelop.Ide.ProgressMonitoring;
 using MonoDevelop.Core.ProgressMonitoring;
-using MonoDevelop.Ide.Gui;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.FindSymbols;
@@ -44,27 +41,29 @@ using MonoDevelop.Ide.TypeSystem;
 namespace MonoDevelop.Refactoring.Rename
 {
 	public class RenameRefactoring
-	{/*
-		public static void Rename (ISymbol entity, string newName)
+	{
+		public static void Rename (ISymbol symbol, string newName)
 		{
-			if (newName == null) {
-				var options = new RefactoringOptions () {
-					SelectedItem = entity
-				};
-				new RenameRefactoring ().RunInplace (options);
-				return;
+			var locations = new List<Tuple<string, TextSpan>> ();
+			foreach (var loc in symbol.Locations) {
+				locations.Add (Tuple.Create (loc.FilePath, loc.SourceSpan));
 			}
+					
+			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result) {
+				foreach (var loc in mref.Locations) {
+					locations.Add (Tuple.Create (loc.Document.FilePath, loc.Location.SourceSpan));
+				}
+			}
+			
 			using (var monitor = new NullProgressMonitor ()) {
-				var col = ReferenceFinder.FindReferences (entity, true, monitor);
-				
-				List<Change> result = new List<Change> ();
-				foreach (var memberRef in col) {
+				var result = new List<Change> ();
+				foreach (var memberRef in locations) {
 					var change = new TextReplaceChange ();
-					change.FileName = memberRef.FileName;
-					change.Offset = memberRef.Offset;
-					change.RemovedChars = memberRef.Length;
+					change.FileName = memberRef.Item1;
+					change.Offset = memberRef.Item2.Start;
+					change.RemovedChars = memberRef.Item2.Length;
 					change.InsertedText = newName;
-					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.GetName (), newName);
+					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), symbol.Name, newName);
 					result.Add (change);
 				}
 				if (result.Count > 0) {
@@ -73,77 +72,6 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 		}
 
-		public static void RenameVariable (ILocalSymbol variable, string newName)
-		{
-			using (var monitor = new NullProgressMonitor ()) {
-				var col = ReferenceFinder.FindReferences (variable, true, monitor);
-				
-				List<Change> result = new List<Change> ();
-				foreach (var memberRef in col) {
-					var change = new TextReplaceChange ();
-					change.FileName = memberRef.FileName;
-					change.Offset = memberRef.Offset;
-					change.RemovedChars = memberRef.Length;
-					change.InsertedText = newName;
-					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.GetName (), newName);
-					result.Add (change);
-				}
-				if (result.Count > 0) {
-					RefactoringService.AcceptChanges (monitor, result);
-				}
-			}
-		}
-
-		public static void RenameTypeParameter (ITypeParameterSymbol typeParameter, string newName)
-		{
-			if (newName == null) {
-				var options = new RefactoringOptions () {
-					SelectedItem = typeParameter
-				};
-				new RenameRefactoring ().RunInplace (options);
-				return;
-			}
-
-			using (var monitor = new NullProgressMonitor ()) {
-				var col = ReferenceFinder.FindReferences (typeParameter, true, monitor);
-				
-				List<Change> result = new List<Change> ();
-				foreach (var memberRef in col) {
-					var change = new TextReplaceChange ();
-					change.FileName = memberRef.FileName;
-					change.Offset = memberRef.Offset;
-					change.RemovedChars = memberRef.Length;
-					change.InsertedText = newName;
-					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.GetName (), newName);
-					result.Add (change);
-				}
-				if (result.Count > 0) {
-					RefactoringService.AcceptChanges (monitor, result);
-				}
-			}
-		}
-
-		public static void RenameNamespace (INamespaceSymbol ns, string newName)
-		{
-			using (var monitor = new NullProgressMonitor ()) {
-				var col = ReferenceFinder.FindReferences (ns, true, monitor);
-
-				List<Change> result = new List<Change> ();
-				foreach (var memberRef in col) {
-					var change = new TextReplaceChange ();
-					change.FileName = memberRef.FileName;
-					change.Offset = memberRef.Offset;
-					change.RemovedChars = memberRef.Length;
-					change.InsertedText = newName;
-					change.Description = string.Format (GettextCatalog.GetString ("Replace '{0}' with '{1}'"), memberRef.GetName (), newName);
-					result.Add (change);
-				}
-				if (result.Count > 0) {
-					RefactoringService.AcceptChanges (monitor, result);
-				}
-			}
-		}
-*/
 		public void Rename (ISymbol symbol)
 		{
 			var locations = new List<Tuple<string, TextSpan>> ();
@@ -182,9 +110,10 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 				
 				links.Add (link);
-				if (editor.CurrentMode is TextLinkEditMode)
-					((TextLinkEditMode)editor.CurrentMode).ExitTextLinkMode ();
-				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
+				var textLinkEditMode = editor.CurrentMode as TextLinkEditMode;
+				if (textLinkEditMode != null)
+					textLinkEditMode.ExitTextLinkMode ();
+				var tle = new TextLinkEditMode (editor, baseOffset, links);
 				tle.SetCaretPosition = false;
 				tle.SelectPrimaryLink = true;
 				if (tle.ShouldStartTextLinkMode) {
@@ -228,7 +157,6 @@ namespace MonoDevelop.Refactoring.Rename
 		public List<Change> PerformChanges (ISymbol symbol, List<Tuple<string, TextSpan>> locations, RenameProperties properties)
 		{
 			var result = new List<Change> ();
-			IEnumerable<MemberReference> col = null;
 			using (var monitor = new MessageDialogProgressMonitor (true, false, false, true)) {
 				if (properties.RenameFile && symbol.Kind == SymbolKind.NamedType) {
 					int currentPart = 1;
@@ -273,7 +201,7 @@ namespace MonoDevelop.Refactoring.Rename
 		
 		static string GetFullFileName (string fileName, string oldFullFileName, int tryCount)
 		{
-			StringBuilder name = new StringBuilder (fileName);
+			var name = new StringBuilder (fileName);
 			if (tryCount > 0) {
 				name.Append ("_");
 				name.Append (tryCount.ToString ());
