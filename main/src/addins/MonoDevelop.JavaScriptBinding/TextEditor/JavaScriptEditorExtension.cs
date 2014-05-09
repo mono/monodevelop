@@ -89,7 +89,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 			refillOutlineStore ();
 			var sw = new MonoDevelop.Components.CompactScrolledWindow ();
-			;
+
 			sw.Add (outlineTreeView);
 			sw.ShowAll ();
 			return sw;
@@ -210,7 +210,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 				}
 
 
-				buildTreeChildren (store, childIter, node.ChildNodes);
+				buildTreeChildren (store, parent, node.ChildNodes);
 			}
 		}
 
