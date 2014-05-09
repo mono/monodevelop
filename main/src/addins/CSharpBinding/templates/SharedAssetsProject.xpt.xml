@@ -20,10 +20,6 @@
 	
 	<!-- Template Content -->
 	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-		
 		<Project name = "${ProjectName}" directory = "." type = "SharedAssetsProject">
 			<Files>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
