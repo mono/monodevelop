@@ -775,7 +775,6 @@ namespace MonoDevelop.VersionControl.Git
 			ConflictResult res = ConflictResult.Abort;
 			DispatchService.GuiSyncDispatch (delegate {
 				ConflictResolutionDialog dlg = new ConflictResolutionDialog ();
-				dlg.Load (file);
 				try {
 					dlg.Load (file);
 					var dres = (Gtk.ResponseType) MessageService.RunCustomDialog (dlg);
