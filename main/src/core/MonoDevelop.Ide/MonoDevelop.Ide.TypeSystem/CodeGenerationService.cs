@@ -39,12 +39,16 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class CodeGenerationService
 	{
-		public static IUnresolvedMember AddCodeDomMember (Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
+		public static IUnresolvedMember AddCodeDomMember (MonoDevelop.Projects.Project project, IUnresolvedTypeDefinition type, CodeTypeMember newMember)
 		{
 			bool isOpen;
 			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
@@ -83,27 +87,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			return newDocument.ParsedFile.GetMember (suitableInsertionPoint.Location.Line, int.MaxValue);
 		}
 		
-		public static void AddNewMember (ITypeDefinition type, IUnresolvedTypeDefinition part, IUnresolvedMember newMember, bool implementExplicit = false)
+		public static void AddNewMember (ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false)
 		{
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (part.Region.FileName, out isOpen);
+			var data = TextFileProvider.Instance.GetTextEditorData (part.FilePath, out isOpen);
 			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
 			
-			var insertionPoints = GetInsertionPoints (data, parsedDocument, part);
+			var insertionPoints = GetInsertionPoints (data, parsedDocument, type, part);
 			
-			var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, newMember);
+			var suitableInsertionPoint = GetSuitableInsertionPoint (data, insertionPoints, type, part, newMember);
 			
+			/*
 			var generator = CreateCodeGenerator (data, type.Compilation);
 
 			generator.IndentLevel = CalculateBodyIndentLevel (parsedDocument.GetInnermostTypeDefinition (type.Region.Begin));
 			var generatedCode = generator.CreateMemberImplementation (type, part, newMember, implementExplicit);
-			suitableInsertionPoint.Insert (data, generatedCode.Code);
+			*/
+			suitableInsertionPoint.Insert (data, newMember.ToString ());
 			if (!isOpen) {
 				try {
-					File.WriteAllText (type.Region.FileName, data.Text);
+					File.WriteAllText (part.FilePath, data.Text);
 				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName), e);
-					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", type.Region.FileName));
+					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", part.FilePath), e);
+					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", part.FilePath));
 				}
 			}
 		}
@@ -219,7 +225,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return indentLevel;
 		}
 		
-		public static void AddNewMembers (Project project, ITypeDefinition type, IUnresolvedTypeDefinition part, IEnumerable<IUnresolvedMember> newMembers, string regionName = null, Func<IUnresolvedMember, bool> implementExplicit = null)
+		public static void AddNewMembers (MonoDevelop.Projects.Project project, ITypeDefinition type, IUnresolvedTypeDefinition part, IEnumerable<IUnresolvedMember> newMembers, string regionName = null, Func<IUnresolvedMember, bool> implementExplicit = null)
 		{
 			IUnresolvedMember firstNewMember = newMembers.FirstOrDefault ();
 			if (firstNewMember == null)
@@ -358,6 +364,105 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
+		
+		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, ParsedDocument parsedDocument, ITypeSymbol type, Location part)
+		{
+			if (data == null)
+				throw new ArgumentNullException ("data");
+			if (parsedDocument == null)
+				throw new ArgumentNullException ("parsedDocument");
+			if (type == null)
+				throw new ArgumentNullException ("type");
+			
+			// update type from parsed document, since this is always newer.
+			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
+			List<InsertionPoint> result = new List<InsertionPoint> ();
+			int offset = part.SourceSpan.Start;
+			if (offset < 0)
+				return result;
+			while (offset < data.Length && data.GetCharAt (offset) != '{') {
+				offset++;
+			}
+			var realStartLocation = data.OffsetToLocation (offset);
+			result.Add (GetInsertionPosition (data.Document, realStartLocation.Line, realStartLocation.Column));
+			result [0].LineBefore = NewLineInsertion.None;
+			
+			foreach (var member in type.GetMembers ()) {
+				Location loc = member.Locations.FirstOrDefault (l => l.FilePath == part.FilePath);
+				if (loc == null)
+					continue;
+				
+				TextLocation domLocation = data.OffsetToLocation (loc.SourceSpan.End);
+				if (domLocation.Line <= 0) {
+					DocumentLine lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
+					if (lineSegment == null)
+						continue;
+					domLocation = new TextLocation (lineSegment.LineNumber, lineSegment.Length + 1);
+				}
+				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+			}
+
+			foreach (var member in type.GetMembers ()) {
+				Location loc = member.Locations.FirstOrDefault (l => l.FilePath == part.FilePath);
+				if (loc == null)
+					continue;
+
+				DocumentLine lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
+				if (lineSegment == null)
+					continue;
+				var domLocation = new TextLocation (lineSegment.LineNumber, lineSegment.Length + 1);
+				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+			}
+
+			foreach (var nestedType in type.GetTypeMembers ()) {
+				Location loc = nestedType.Locations.FirstOrDefault (l => l.FilePath == part.FilePath);
+				if (loc == null)
+					continue;
+				
+				DocumentLine lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
+				if (lineSegment == null)
+					continue;
+				var domLocation = new TextLocation (lineSegment.LineNumber, lineSegment.Length + 1);
+				
+				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+			}
+
+			result [result.Count - 1].LineAfter = NewLineInsertion.None;
+			CheckStartPoint (data.Document, result [0], result.Count == 1);
+			if (result.Count > 1) {
+				result.RemoveAt (result.Count - 1); 
+				NewLineInsertion insertLine;
+				var endLine = data.GetLineByOffset (part.SourceSpan.End);
+				var lineBefore = endLine.PreviousLine;
+				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data.Document).Length) {
+					insertLine = NewLineInsertion.None;
+				} else {
+					insertLine = NewLineInsertion.Eol;
+				}
+				// search for line start
+				int col = part.SourceSpan.End - endLine.Offset;
+				var line = endLine;
+				if (line != null) {
+					var lineOffset = line.Offset;
+					col = Math.Min (line.Length, col);
+					while (lineOffset + col - 2 >= 0 && col > 1 && char.IsWhiteSpace (data.GetCharAt (lineOffset + col - 2)))
+						col--;
+				}
+				result.Add (new InsertionPoint (new DocumentLocation (endLine.LineNumber, col), insertLine, NewLineInsertion.Eol));
+				CheckEndPoint (data.Document, result [result.Count - 1], result.Count == 1);
+			}
+			var bodyRegion = new DomRegion (data.OffsetToLocation (part.SourceSpan.Start), data.OffsetToLocation (part.SourceSpan.End));
+			foreach (var region in parsedDocument.UserRegions.Where (r => bodyRegion.IsInside (r.Region.Begin))) {
+				result.Add (new InsertionPoint (new DocumentLocation (region.Region.BeginLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+				result.Add (new InsertionPoint (new DocumentLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+			}
+			result.Sort ((left, right) => left.Location.CompareTo (right.Location));
+//			foreach (var res in result)
+//				Console.WriteLine (res);
+			return result;
+		}
+
 		static void CheckEndPoint (TextDocument doc, InsertionPoint point, bool isStartPoint)
 		{
 			DocumentLine line = doc.GetLine (point.Location.Line);
@@ -432,21 +537,39 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var mainPart = cls;
 			switch (member.SymbolKind) {
-			case SymbolKind.Field:
+			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.Field:
 				return GetNewFieldPosition (points, mainPart);
-			case SymbolKind.Method:
-			case SymbolKind.Constructor:
-			case SymbolKind.Destructor:
-			case SymbolKind.Operator:
+			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.Method:
+			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.Constructor:
+			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.Destructor:
+			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.Operator:
 				return GetNewMethodPosition (points, mainPart);
-			case SymbolKind.Event:
+			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.Event:
 				return GetNewEventPosition (points, mainPart);
-			case SymbolKind.Property:
+			case ICSharpCode.NRefactory.TypeSystem.SymbolKind.Property:
 				return GetNewPropertyPosition (points, mainPart);
 			}
 			throw new InvalidOperationException ("Invalid member type: " + member.SymbolKind);
 		}
 		
+		static InsertionPoint GetSuitableInsertionPoint (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part, SyntaxNode member)
+		{
+			switch (member.CSharpKind ()) {
+			case SyntaxKind.FieldDeclaration:
+				return GetNewFieldPosition (data, points, cls, part);
+			case SyntaxKind.MethodDeclaration:
+			case SyntaxKind.ConstructorDeclaration:
+			case SyntaxKind.DestructorDeclaration:
+			case SyntaxKind.OperatorDeclaration:
+				return GetNewMethodPosition (data, points, cls, part);
+			case SyntaxKind.EventDeclaration:
+				return GetNewEventPosition (data, points, cls, part);
+			case SyntaxKind.PropertyDeclaration:
+				return GetNewPropertyPosition (data, points, cls, part);
+			}
+			throw new InvalidOperationException ("Invalid member type: " + member.CSharpKind ());
+		}
+
 		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls, CodeTypeMember mem)
 		{
 			var mainPart = cls;
@@ -492,12 +615,51 @@ namespace MonoDevelop.Ide.TypeSystem
 			var lastEvent = cls.Events.Last ();
 			return points.FirstOrDefault (p => p.Location.Convert () > lastEvent.Region.Begin);
 		}
+		
+		
+		
+		static InsertionPoint GetNewFieldPosition (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
+		{
+			if (!cls.GetMembers ().OfType<IFieldSymbol> ().Any ()) 
+				return points.FirstOrDefault ();
+			var lastField = cls.GetMembers ().OfType<IFieldSymbol> ().Last ();
+			TextLocation begin = data.OffsetToLocation (lastField.Locations.First ().SourceSpan.Start);
+			return points.FirstOrDefault (p => p.Location.Convert () > begin);
+		}
+		
+		static InsertionPoint GetNewMethodPosition (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
+		{
+			if (!cls.GetMembers ().OfType<IMethodSymbol> ().Any ()) 
+				return GetNewPropertyPosition (data, points, cls, part);
+			var lastMethod = cls.GetMembers ().OfType<IMethodSymbol> ().Last ();
+			TextLocation begin = data.OffsetToLocation (lastMethod.Locations.First ().SourceSpan.Start);
+			return points.FirstOrDefault (p => p.Location.Convert () > begin);
+		}
+		
+		static InsertionPoint GetNewPropertyPosition (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
+		{
+			if (!cls.GetMembers ().OfType<IPropertySymbol> ().Any ()) 
+				return GetNewFieldPosition (data, points, cls, part);
+			var lastProperty = cls.GetMembers ().OfType<IPropertySymbol> ().Last ();
+			TextLocation begin = data.OffsetToLocation (lastProperty.Locations.First ().SourceSpan.Start);
+			return points.FirstOrDefault (p => p.Location.Convert () > begin);
+		}
+		
+		static InsertionPoint GetNewEventPosition (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
+		{
+			if (!cls.GetMembers ().OfType<IEventSymbol> ().Any ()) 
+				return GetNewMethodPosition (data, points, cls, part);
+			var lastEvent = cls.GetMembers ().OfType<IEventSymbol> ().Last ();
+			TextLocation begin = data.OffsetToLocation (lastEvent.Locations.First ().SourceSpan.Start);
+			return points.FirstOrDefault (p => p.Location.Convert () > begin);
+		}
+		
 		#endregion
 		
-		public static void AddAttribute (ITypeDefinition cls, string name, params object[] parameters)
+		public static void AddAttribute (INamedTypeSymbol cls, string name, params object[] parameters)
 		{
 			bool isOpen;
-			string fileName = cls.Region.FileName;
+			string fileName = cls.Locations.First ().FilePath;
 			var buffer = TextFileProvider.Instance.GetTextEditorData (fileName, out isOpen);
 			
 			var attr = new CodeAttributeDeclaration (name);
@@ -505,52 +667,49 @@ namespace MonoDevelop.Ide.TypeSystem
 				attr.Arguments.Add (new CodeAttributeArgument (new CodePrimitiveExpression (parameter)));
 			}
 			
-			var type = new CodeTypeDeclaration ("temp");
-			type.CustomAttributes.Add (attr);
-			Project project;
-			if (!cls.TryGetSourceProject (out project)) {
-				LoggingService.LogError ("Error can't get source project for:" + cls.FullName); 
+
+			var code = new StringBuilder ();
+			int pos = cls.Locations.First ().SourceSpan.Start;
+			var line = buffer.GetLineByOffset (pos);
+			code.Append (buffer.GetLineIndent (line));
+			code.Append ("[");
+			code.Append (name);
+			if (parameters != null && parameters.Length > 0) {
+				code.Append ("(");
+				for (int i = 0; i < parameters.Length; i++) {
+					if (i > 0)
+						code.Append (", ");
+					code.Append (parameters [i]);
+				}
+				code.Append (")");
 			}
-
-			var provider = ((DotNetProject)project).LanguageBinding.GetCodeDomProvider ();
-			var sw = new StringWriter ();
-			provider.GenerateCodeFromType (type, sw, new CodeGeneratorOptions ());
-			string code = sw.ToString ();
-			int start = code.IndexOf ('[');
-			int end = code.LastIndexOf (']');
-			code = code.Substring (start, end - start + 1) + Environment.NewLine;
-
-			int pos = buffer.LocationToOffset (cls.Region.BeginLine, cls.Region.BeginColumn);
-
-			code = buffer.GetLineIndent (cls.Region.BeginLine) + code;
-			buffer.Insert (pos, code);
+ 			code.Append ("]");
+			code.AppendLine ();
+			
+			buffer.Insert (line.Offset, code.ToString ());
 			if (!isOpen) {
 				File.WriteAllText (fileName, buffer.Text);
 				buffer.Dispose ();
 			}
-			
 		}
 		
-		public static IUnresolvedTypeDefinition AddType (DotNetProject project, string folder, string namspace, CodeTypeDeclaration type)
+		public static ITypeSymbol AddType (DotNetProject project, string folder, string namspace, ClassDeclarationSyntax type)
 		{
+			var ns = SyntaxFactory.NamespaceDeclaration (SyntaxFactory.ParseName (namspace)).WithMembers (new SyntaxList<MemberDeclarationSyntax> () { type });
 			
-			var unit = new CodeCompileUnit ();
-			var ns = new CodeNamespace (namspace);
-			ns.Types.Add (type);
-			unit.Namespaces.Add (ns);
-			
-			string fileName = project.LanguageBinding.GetFileName (Path.Combine (folder, type.Name));
+			string fileName = project.LanguageBinding.GetFileName (Path.Combine (folder, type.Identifier.ToString ()));
 			using (var sw = new StreamWriter (fileName)) {
-				var provider = project.LanguageBinding.GetCodeDomProvider ();
-				var options = new CodeGeneratorOptions ();
-				options.IndentString = "\t";
-				options.BracingStyle = "C";
-		
-				provider.GenerateCodeFromCompileUnit (unit, sw, options);
+				sw.WriteLine (ns.ToString ());
 			}
-			return TypeSystemService.ParseFile (project, fileName).TopLevelTypeDefinitions.FirstOrDefault ();
+			FileService.NotifyFileChanged (fileName); 
+			var roslynProject = RoslynTypeSystemService.GetProject (project); 
+			var id = RoslynTypeSystemService.Workspace.GetDocumentId (roslynProject.Id, fileName); 
+			if (id == null)
+				return null;
+			var model = roslynProject.GetDocument (id).GetSemanticModelAsync ().Result;
+			var typeSyntax = model.SyntaxTree.GetCompilationUnitRoot ().ChildNodes ().First ().ChildNodes ().First () as ClassDeclarationSyntax;
+			return model.GetDeclaredSymbol (typeSyntax);
 		}
-		
 	}
 	
 	public static class HelperMethods
