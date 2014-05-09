@@ -77,7 +77,7 @@ namespace MonoDevelop.VersionControl
 			protected override void Finished ()
 			{
 				dlg.EndCommit (success);
-				dlg.Dispose ();
+				dlg.Destroy ();
 				VersionControlService.NotifyAfterCommit (vc, changeSet, success);
 				ArrayList dirs = new ArrayList ();
 				ArrayList files = new ArrayList ();
