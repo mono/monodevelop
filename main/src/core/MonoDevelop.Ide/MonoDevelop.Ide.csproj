@@ -1791,6 +1791,12 @@
     <EmbeddedResource Include="icons\light\go-up-16%402x.png">
       <LogicalName>go-up-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\undo-16.png">
+      <LogicalName>undo-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\undo-16%402x.png">
+      <LogicalName>undo-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\home-16.png">
       <LogicalName>home-light-16.png</LogicalName>
     </EmbeddedResource>
