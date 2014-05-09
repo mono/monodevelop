@@ -48,6 +48,7 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace CBinding
 {
@@ -567,7 +568,7 @@ namespace CBinding
 			return list;
 		}
 		
-		public override  MonoDevelop.Ide.CodeCompletion.ParameterHintingData HandleParameterCompletion (
+		public override  ParameterHintingResult HandleParameterCompletion (
 		    CodeCompletionContext completionContext, char completionChar)
 		{
 			if (completionChar != '(')
@@ -591,7 +592,6 @@ namespace CBinding
 			
 			if (string.IsNullOrEmpty (functionName))
 				return null;
-			
 			return new ParameterDataProvider (nameStart, Document, info, functionName);
 		}
 		
