@@ -27,7 +27,7 @@
 //
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -42,11 +42,11 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 		}
 		
-		public IPackageManagementProject CreateProject(
+		public IPackageManagementProject CreateProject (
 			IPackageRepository sourceRepository,
-			DotNetProject project)
+			IDotNetProject project)
 		{
-			return new PackageManagementProject(sourceRepository, project, packageManagementEvents, factory);
+			return new PackageManagementProject (sourceRepository, project, packageManagementEvents, factory);
 		}
 	}
 }

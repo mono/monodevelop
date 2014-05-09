@@ -103,8 +103,9 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		IPackageManagementProject CreatePackageManagementProject (DotNetProject dotNetProject)
+		IPackageManagementProject CreatePackageManagementProject (DotNetProject project)
 		{
+			var dotNetProject = new DotNetProjectProxy (project);
 			return packageManagementSolution.GetProject (packageRepositoryCache.CreateAggregateRepository (), dotNetProject);
 		}
 	}

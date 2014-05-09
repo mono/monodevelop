@@ -49,6 +49,7 @@
       <HintPath>..\..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,6 +117,49 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\UpdatePackageHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateAllPackagesInProjectTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateAllPackagesInSolutionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\UserAgentGeneratorForRepositoryRequestsTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithHttpClientEvents.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetPackageRestoreCommandLineTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ReducedPackageOperationsTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestPackageHelper.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageOperationResolver.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\SolutionPackageRepositoryPathTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\SolutionPackageRepositoryTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementProjectTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagerFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectService.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProjectManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeDotNetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PackageReferenceRepositoryHelper.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectManager.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageOperationResolverFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopPackageManagerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionPackageRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeWebRequest.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryFactoryEvents.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopProjectSystemTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableMonoDevelopProjectSystem.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeFileService.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FileNameAndDirectory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FileNameAndProjectName.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ReferenceAndProjectName.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectHelper.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\OpenDotNetProjectTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProjectSystemFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopPackageManagerFactoryTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopProjectManagerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementSelectedProjectsTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\SelectedProjectCollectionAssert.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageViewModelTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeOperationAwareRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementSolutionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionPackageRepositoryFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

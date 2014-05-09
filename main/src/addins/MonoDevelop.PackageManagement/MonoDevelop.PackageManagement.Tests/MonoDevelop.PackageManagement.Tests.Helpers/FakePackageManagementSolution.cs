@@ -89,12 +89,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return FakeProjectToReturnFromGetProject;
 		}
 
-		public Project ProjectPassedToGetProject;
-		public List<Project> ProjectsPassedToGetProject = new List<Project> ();
+		public IDotNetProject ProjectPassedToGetProject;
+		public List<IDotNetProject> ProjectsPassedToGetProject = new List<IDotNetProject> ();
 		public Dictionary<string, FakePackageManagementProject> FakeProjectsToReturnFromGetProject
-		= new Dictionary<string, FakePackageManagementProject> ();
+			= new Dictionary<string, FakePackageManagementProject> ();
 
-		public virtual IPackageManagementProject GetProject (IPackageRepository sourceRepository, Project project)
+		public virtual IPackageManagementProject GetProject (IPackageRepository sourceRepository, IDotNetProject project)
 		{
 			RepositoryPassedToGetProject = sourceRepository;
 			ProjectPassedToGetProject = project;
@@ -106,16 +106,16 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return FakeProjectToReturnFromGetProject;
 		}
 
-		public Project FakeActiveDotNetProject;
+		public FakeDotNetProject FakeActiveDotNetProject;
 
-		public Project GetActiveDotNetProject ()
+		public IDotNetProject GetActiveDotNetProject ()
 		{
 			return FakeActiveDotNetProject;
 		}
 
-		public List<Project> FakeDotNetProjects = new List<Project> ();
+		public List<FakeDotNetProject> FakeDotNetProjects = new List<FakeDotNetProject> ();
 
-		public IEnumerable<Project> GetDotNetProjects ()
+		public IEnumerable<IDotNetProject> GetDotNetProjects ()
 		{
 			return FakeDotNetProjects;
 		}
