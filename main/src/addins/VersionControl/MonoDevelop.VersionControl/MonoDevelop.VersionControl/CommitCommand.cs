@@ -79,19 +79,10 @@ namespace MonoDevelop.VersionControl
 				dlg.EndCommit (success);
 				dlg.Destroy ();
 				VersionControlService.NotifyAfterCommit (vc, changeSet, success);
-				ArrayList dirs = new ArrayList ();
-				ArrayList files = new ArrayList ();
-				foreach (ChangeSetItem it in changeSet.Items)
-					if (it.IsDirectory) dirs.Add (it.LocalPath);
-					else files.Add (it.LocalPath);
-				
 				FileUpdateEventArgs args = new FileUpdateEventArgs ();
-				
-				foreach (FilePath path in dirs)
-					args.Add (new FileUpdateEventInfo (vc, path, true));
-				foreach (FilePath path in files)
-					args.Add (new FileUpdateEventInfo (vc, path, false));
-				
+				foreach (ChangeSetItem it in changeSet.Items)
+					args.Add (new FileUpdateEventInfo (vc, it.LocalPath, it.IsDirectory));
+
 				if (args.Count > 0)
 					VersionControlService.NotifyFileStatusChanged (args);
 			}
