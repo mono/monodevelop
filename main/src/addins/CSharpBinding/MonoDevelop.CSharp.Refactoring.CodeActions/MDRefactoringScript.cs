@@ -282,15 +282,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override void Rename (ISymbol symbol, string name = null)
 		{
-			if (symbol is IEntity) {
-				RenameRefactoring.Rename ((IEntity)symbol, name);
-			} else if (symbol is IVariable) {
-				RenameRefactoring.RenameVariable ((IVariable)symbol, name);
-			} else if (symbol is INamespace) {
-				RenameRefactoring.RenameNamespace ((INamespace)symbol, name);
-			} else if (symbol is ITypeParameter) {
-				RenameRefactoring.RenameTypeParameter ((ITypeParameter)symbol, name);
-			}
+			// Broken due roslyn infrastructure change
 		}
 
 		public override void DoGlobalOperationOn (IEnumerable<IEntity> entities, Action<RefactoringContext, Script, IEnumerable<AstNode>> callback, string operationName = null)
