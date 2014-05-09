@@ -37,10 +37,11 @@ using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.FindSymbols;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Refactoring
 {
-	class FindDerivedSymbolsHandler 
+	class FindDerivedSymbolsHandler : CommandHandler
 	{
 		Ide.Gui.Document doc;
 
@@ -96,7 +97,17 @@ namespace MonoDevelop.Refactoring
 				
 			});
 		}
+		
+		protected async override void Run (object data)
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.FileName == FilePath.Null)
+				return;
+			var info = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset);
+			if (info.DeclaredSymbol != null)
+				FindDerivedSymbols (info.DeclaredSymbol);
 
+		}
 	}
 }
 

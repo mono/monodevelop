@@ -111,7 +111,6 @@
     <Compile Include="MonoDevelop.Refactoring\RefactoringOptions.cs" />
     <Compile Include="MonoDevelop.Refactoring\RefactoringPreviewDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Refactoring.RefactoringPreviewDialog.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FindDerivedClassesHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\ImportSymbolHandler.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssue.cs" />
