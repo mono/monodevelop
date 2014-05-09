@@ -254,6 +254,8 @@ namespace MonoDevelop.VersionControl.Views
 			status.Visible = false;
 
 			filelist.Selection.Changed += new EventHandler(OnCursorChanged);
+			VersionControlService.BeginCommit += OnBeginCommit;
+			VersionControlService.EndCommit += OnEndCommit;
 			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 
 			filelist.HeadersClickable = true;
@@ -405,6 +407,8 @@ namespace MonoDevelop.VersionControl.Views
 				this.diffRenderer.Destroy ();
 				this.diffRenderer = null;
 			}
+			VersionControlService.BeginCommit -= OnBeginCommit;
+			VersionControlService.EndCommit -= OnEndCommit;
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 			if (widget != null) {
 				widget.Destroy ();
@@ -737,9 +741,7 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 			}
 
-			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 			CommitCommand.Commit (vc, changeSet.Clone ());
-			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 		}
 
 
@@ -904,15 +906,30 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
+		void OnBeginCommit (object sender, CommitEventArgs args)
+		{
+			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
+		}
+
+		void OnEndCommit (object sender, CommitEventArgs args)
+		{
+			VersionControlService.FileStatusChanged += OnFileStatusChanged;
+		}
+
 		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
 		{
-			if (args.Any (f => f.FilePath == filepath || (f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
-				StartUpdate ();
-				return;
-			}
-			foreach (FileUpdateEventInfo f in args) {
-				if (!OnFileStatusChanged (f))
-					break;
+			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
+			try {
+				if (args.Any (f => f.FilePath == filepath || (f.FilePath.IsChildPathOf (filepath) && f.IsDirectory))) {
+					StartUpdate ();
+					return;
+				}
+				foreach (FileUpdateEventInfo f in args) {
+					if (!OnFileStatusChanged (f))
+						break;
+				}
+			} finally {
+				VersionControlService.FileStatusChanged += OnFileStatusChanged;
 			}
 			UpdateControlStatus ();
 		}
