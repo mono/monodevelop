@@ -218,15 +218,18 @@ namespace MonoDevelop.Debugger
 		{
 			var dlg = new AddTracePointDialog ();
 
-			if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
-				var bp = new Breakpoint (file, line);
-				bp.HitAction = HitAction.PrintExpression;
-				bp.TraceExpression = dlg.Text;
-				bp.ConditionExpression = dlg.Condition;
-				lock (breakpoints)
-					breakpoints.Add (bp);
+			try {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
+					var bp = new Breakpoint (file, line);
+					bp.HitAction = HitAction.PrintExpression;
+					bp.TraceExpression = dlg.Text;
+					bp.ConditionExpression = dlg.Condition;
+					lock (breakpoints)
+						breakpoints.Add (bp);
+				}
+			} finally {
+				dlg.Destroy ();
 			}
-			dlg.Destroy ();
 		}
 		
 		public static void AddWatch (string expression)
