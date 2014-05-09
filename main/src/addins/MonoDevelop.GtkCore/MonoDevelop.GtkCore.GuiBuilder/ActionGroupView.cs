@@ -27,7 +27,7 @@
 //
 
 using System;
-using System.Collections;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -35,7 +35,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.DesignerSupport;
-using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -179,12 +180,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		public override void JumpToSignalHandler (Stetic.Signal signal)
 		{
 			var cls = codeBinder.GetClass ();
-			foreach (var met in cls.Methods) {
-				if (met.Name == signal.Handler) {
-					ShowPage (1);
-					JumpTo (met.Region.BeginLine, met.Region.BeginColumn);
-					break;
-				}
+			var met = cls.GetMembers (signal.Handler).OfType<IMethodSymbol> ().FirstOrDefault ();
+			if (met != null) { 
+				ShowPage (1);
+				IdeApp.ProjectOperations.JumpToDeclaration (met);
 			}
 		}
 		

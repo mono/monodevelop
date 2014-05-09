@@ -37,7 +37,9 @@ using MonoDevelop.Projects;
 using MonoDevelop.Projects.Text;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -107,9 +109,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			// Find the classes that could be bound to this design
 			var ctx = fproject.GetParserContext ();
 			ArrayList list = new ArrayList ();
-			foreach (var cls in ctx.MainAssembly.GetAllTypeDefinitions ()) {
+			foreach (var cls in ctx.GetAllTypes ()) {
 				if (IsValidClass (cls))
-					list.Add (cls.FullName);
+					list.Add (cls.GetFullName ());
 			}
 		
 			// Ask what to do
@@ -224,17 +226,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 		}
 		
-		internal bool IsValidClass (IType cls)
+		internal bool IsValidClass (ITypeSymbol cls)
 		{
-			foreach (var bt in cls.DirectBaseTypes) {
-				if (bt.ReflectionName == rootWidget.Component.Type.ClassName)
-					return true;
-				
-				var baseCls = bt;
-				if (baseCls != null && IsValidClass (baseCls))
-					return true;
-			}
-			return false;
+			if (cls.SpecialType == SpecialType.System_Object)
+				return false;
+			if (cls.BaseType.GetFullName () == rootWidget.Component.Type.ClassName)
+				return true;
+			return IsValidClass (cls.BaseType);
 		}
 	}
 	

@@ -28,6 +28,7 @@
 
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -43,6 +44,7 @@ using MonoDevelop.DesignerSupport;
 using Gtk;
 using Gdk;
 using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -369,12 +371,13 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var cls = codeBinder.GetClass ();
 			if (cls == null)
 				return;
-			foreach (var met in cls.Methods) {
-				if (met.Name == signal.Handler) {
-					ShowPage (0);
-					JumpTo (met.Region.BeginLine, met.Region.BeginColumn);
-					break;
-				}
+			var met = cls
+				.GetMembers (signal.Handler)
+				.OfType<IMethodSymbol> ()
+				.FirstOrDefault ();
+			if (met != null) {
+				ShowPage (0);
+				IdeApp.ProjectOperations.JumpToDeclaration (met);
 			}
 		}
 		

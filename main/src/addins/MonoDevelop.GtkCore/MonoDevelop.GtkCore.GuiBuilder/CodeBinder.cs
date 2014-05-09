@@ -37,10 +37,12 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -77,8 +79,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				if (targetObject != null) {
 					var cls = gproject.FindClass (GetClassName (targetObject));
 					if (cls != null) {
-						className = cls.FullName;
-						classFile = cls.Region.FileName;
+						className = cls.GetFullName ();
+						classFile = cls.Locations.First ().FilePath;
 					}
 				}
 			}
@@ -98,11 +100,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				UpdateBindings (targetObject, cls);
 			
 				if (cls != null)
-					targetObject.GeneratePublic = cls.IsPublic;
+					targetObject.GeneratePublic = cls.DeclaredAccessibility == Accessibility.Public;
 			}
 		}
 		
-		void UpdateBindings (Stetic.Component obj, IUnresolvedTypeDefinition cls)
+		void UpdateBindings (Stetic.Component obj, ITypeSymbol cls)
 		{
 			if (targetObject == null || cls == null)
 				return;
@@ -113,9 +115,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (objectSignals != null) {
 				Stetic.Signal[] signals = new Stetic.Signal [objectSignals.Count];
 				objectSignals.CopyTo (signals, 0);
-				var resolved = cls.Resolve (project);
 				foreach (Stetic.Signal signal in signals) {
-					if (FindSignalHandler (resolved, signal) == null) {
+					if (FindSignalHandler (cls, signal) == null) {
 						obj.RemoveSignal (signal);
 					}
 				}
@@ -127,14 +128,9 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				UpdateBindings (ob, cls);
 		}
 		
-		IMethod FindSignalHandler (IType cls, Stetic.Signal signal)
+		static IMethodSymbol FindSignalHandler (ITypeSymbol cls, Stetic.Signal signal)
 		{
-			foreach (var met in cls.GetMethods ()) {
-				if (met.Name == signal.Handler) {
-					return met;
-				}
-			}
-			return null;
+			return cls.GetMembers (signal.Handler).OfType<IMethodSymbol> ().FirstOrDefault ();
 		}
 
 		public void UpdateField (Stetic.Component obj, string oldName)
@@ -152,7 +148,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return;
 			
 			if (cls != null) {
-				var f = ClassUtils.FindWidgetField (cls.Resolve (project).GetDefinition (), oldName);
+				var f = ClassUtils.FindWidgetField (cls, oldName);
 				if (f != null) {
 					MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (f, newName);
 				}
@@ -169,17 +165,20 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (cls == null)
 				return;
 			
-			if (FindSignalHandler (cls.Resolve (project), signal) != null)
+			if (FindSignalHandler (cls, signal) != null)
 				return;
 			
-			var met = new DefaultUnresolvedMethod (cls, signal.Handler) {
-				Accessibility = Accessibility.Protected,
-				ReturnType = ReflectionHelper.ParseReflectionName (signal.SignalDescriptor.HandlerReturnTypeName)
-			};
+			var met = SyntaxFactory.MethodDeclaration (
+				SyntaxFactory.ParseTypeName (signal.SignalDescriptor.HandlerReturnTypeName),
+				signal.Handler
+			).AddModifiers (SyntaxFactory.Token (SyntaxKind.ProtectedKeyword));
+			
+			var parameters = new List<ParameterSyntax> ();
 			foreach (Stetic.ParameterDescriptor pinfo in signal.SignalDescriptor.HandlerParameters)
-				met.Parameters.Add (new DefaultUnresolvedParameter (ReflectionHelper.ParseReflectionName (pinfo.TypeName), pinfo.Name));
-			var resolvedCls = cls.Resolve (project).GetDefinition ();
-			CodeGenerationService.AddNewMember (resolvedCls, cls, met);
+				parameters.Add (SyntaxFactory.Parameter (new SyntaxList<AttributeListSyntax>(), new SyntaxTokenList (), SyntaxFactory.ParseTypeName (pinfo.TypeName), SyntaxFactory.Identifier (pinfo.Name), null));
+			met = met.AddParameterListParameters (parameters.ToArray ());
+			
+			CodeGenerationService.AddNewMember (cls, cls.Locations.First (), met);
 		}
 		
 		public void UpdateSignal (Stetic.Signal oldSignal, Stetic.Signal newSignal)
@@ -193,7 +192,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			var cls = GetClass ();
 			if (cls == null)
 				return;
-			IMethod met = FindSignalHandler (cls.Resolve (project), oldSignal);
+			var met = FindSignalHandler (cls, oldSignal);
 			if (met == null)
 				return;
 			MonoDevelop.Refactoring.Rename.RenameRefactoring.Rename (met, newSignal.Handler);
@@ -208,40 +207,44 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string name = GetMemberName (obj);
 			var cls = GetClass ();
 			
-			if (FindField (cls.Resolve (project), name) != null)
+			if (FindField (cls, name) != null)
 				return;
 
-			Document doc = IdeApp.Workbench.OpenDocument (cls.Region.FileName, true);
+			Document doc = IdeApp.Workbench.OpenDocument (cls.Locations.First ().FilePath, true);
 			
 			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
 			if (editor != null) {
-				var resolvedCls = cls.Resolve (project).GetDefinition ();
-				CodeGenerationService.AddNewMember (resolvedCls, cls, GetFieldCode (cls, obj, name));
+				CodeGenerationService.AddNewMember (cls, cls.Locations.First (), GetFieldCode (cls, obj, name));
 			}
 		}
 		
-		IUnresolvedField GetFieldCode (IUnresolvedTypeDefinition cls, Stetic.Component obj, string name)
+		FieldDeclarationSyntax GetFieldCode (ITypeSymbol cls, Stetic.Component obj, string name)
 		{
-			return new DefaultUnresolvedField (cls, name) {
-				ReturnType = ReflectionHelper.ParseReflectionName (obj.Type.ClassName),
-				Accessibility = Accessibility.Protected
-		};
-	}
+			return SyntaxFactory.FieldDeclaration (
+				SyntaxFactory.VariableDeclaration (
+					SyntaxFactory.ParseTypeName (obj.Type.ClassName),
+					new SeparatedSyntaxList<VariableDeclaratorSyntax> {
+						SyntaxFactory.VariableDeclarator (name)
+					}
+				)
+			).AddModifiers (SyntaxFactory.Token (SyntaxKind.ProtectedKeyword));
+		}
+	
 		
-		IField FindField (IType cls, string name)
+		static IFieldSymbol FindField (ITypeSymbol cls, string name)
 		{
-			foreach (IField field in cls.GetFields ())
-				if (field.Name == name)
-					return field;
-			return null;
+			return cls
+				.GetMembers (name)
+				.OfType<IFieldSymbol> ()
+				.FirstOrDefault ();
 		}
 		
-		public IUnresolvedTypeDefinition GetClass ()
+		public INamedTypeSymbol GetClass ()
 		{
 			return GetClass (true);
 		}
 		
-		public IUnresolvedTypeDefinition GetClass (bool getUserClass)
+		public INamedTypeSymbol GetClass (bool getUserClass)
 		{
 			if (targetObject == null)
 				return null;
@@ -251,62 +254,59 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				return cls;
 				
 			// The class name may have changed. Try to guess the new name.
-			
-			var matches = new List<IUnresolvedTypeDefinition> ();
-			ParsedDocument unit = null;
-			var ctx = gproject.GetParserContext ();
-			var doc = TypeSystemService.ParseFile (project, classFile);
-			if (doc != null) {
-				unit = doc;
-				foreach (var fcls in unit.TopLevelTypeDefinitions) {
-					if (IsValidClass (fcls.Resolve (project), targetObject))
-						matches.Add (fcls);
-				}
-			}
-			
-			// If found the class, just return it
-			if (matches.Count == 1) {
-				cls = matches [0];
-				className = cls.FullName;
-				targetObject.Name = className;
-				gproject.SaveWindow (true, targetObject.Name);
-				return cls;
-			}
-			
-			// If not found, warn the user.
-			
-			if (unit != null && unit.TopLevelTypeDefinitions.Count > 0) {
-				using (SelectRenamedClassDialog dialog = new SelectRenamedClassDialog (unit.TopLevelTypeDefinitions.Select (c => c.Resolve (project)))) {
-					if (dialog.Run ()) {
-						className = dialog.SelectedClass;
-						if (className == null)
-							return null;
-						else {
-							targetObject.Name = className;
-							gproject.SaveWindow (true, targetObject.Name);
-							return gproject.FindClass (className);
-						}
-					}
-				}
-			} else {
-				MessageService.ShowError (GettextCatalog.GetString ("The class bound to the component '{0}' could not be found. This may be due to syntax errors in the source code file.", GetObjectName(targetObject)));
-			}
+//			TODO (roslyn port) - is that really required ? 
+//			var matches = new List<INamedTypeSymbol> ();
+//			ParsedDocument unit = null;
+//			var ctx = gproject.GetParserContext ();
+//			var doc = TypeSystemService.ParseFile (project, classFile);
+//			if (doc != null) {
+//				unit = doc;
+//				foreach (var fcls in unit.TopLevelTypeDefinitions) {
+//					if (IsValidClass (fcls, targetObject))
+//						matches.Add (fcls);
+//				}
+//			}
+//			
+//			// If found the class, just return it
+//			if (matches.Count == 1) {
+//				cls = matches [0];
+//				className = cls.GetFullName ();
+//				targetObject.Name = className;
+//				gproject.SaveWindow (true, targetObject.Name);
+//				return cls;
+//			}
+//			
+//			// If not found, warn the user.
+//			
+//			if (unit != null && unit.TopLevelTypeDefinitions.Count > 0) {
+//				using (var dialog = new SelectRenamedClassDialog (unit.TopLevelTypeDefinitions.Select (c => c.Resolve (project)))) {
+//					if (dialog.Run ()) {
+//						className = dialog.SelectedClass;
+//						if (className == null)
+//							return null;
+//						else {
+//							targetObject.Name = className;
+//							gproject.SaveWindow (true, targetObject.Name);
+//							return gproject.FindClass (className);
+//						}
+//					}
+//				}
+//			} else {
+//				MessageService.ShowError (GettextCatalog.GetString ("The class bound to the component '{0}' could not be found. This may be due to syntax errors in the source code file.", GetObjectName(targetObject)));
+//			}
 			
 			return null;
 		}
 		
-		static bool IsValidClass (IType cls, Stetic.Component obj)
+		static bool IsValidClass (ITypeSymbol cls, Stetic.Component obj)
 		{
+			if (cls.BaseType.SpecialType == SpecialType.System_Object)
+				return false;
 			string typeName = obj.Type.ClassName;
 			
-			foreach (var bt in cls.DirectBaseTypes) {
-				if (bt.FullName == typeName)
-					return true;
-				
-				if (IsValidClass (bt, obj))
-					return true;
-			}
-			return false;
+			if (cls.BaseType.GetFullName () == typeName)
+				return true;
+			return IsValidClass (cls.BaseType, obj);
 		}
 		
 		internal static string GetClassName (Stetic.Component obj)

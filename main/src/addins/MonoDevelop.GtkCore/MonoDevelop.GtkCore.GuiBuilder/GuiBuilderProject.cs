@@ -37,9 +37,11 @@ using System.CodeDom.Compiler;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp.Completion;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -491,53 +493,50 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			var cls = GetClass (obj, getUserClass);
 			if (cls != null)
-				return cls.Region.FileName;
+				return cls.Locations.First ().FilePath;
 			return null;
 		}
 		
-		IUnresolvedTypeDefinition GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
+		INamedTypeSymbol GetClass (Stetic.ProjectItemInfo obj, bool getUserClass)
 		{
 			string name = CodeBinder.GetClassName (obj);
 			return FindClass (name, getUserClass);
 		}
 		
-		public IUnresolvedTypeDefinition FindClass (string className)
+		public INamedTypeSymbol FindClass (string className)
 		{
 			return FindClass (className, true);
 		}
 		
-		public IUnresolvedTypeDefinition FindClass (string className, bool getUserClass)
+		public INamedTypeSymbol FindClass (string className, bool getUserClass)
 		{
 			FilePath gui_folder = GtkDesignInfo.FromProject (project).GtkGuiFolder;
 			var ctx = GetParserContext ();
 			if (ctx == null)
 				return null;
-			var classes = ctx.MainAssembly.GetAllTypeDefinitions ();
-			if (classes == null)
-				return null;
-			foreach (var cls in classes) {
-				if (cls.FullName == className) {
+			foreach (var cls in ctx.GetAllTypes ()) {
+				if (cls.GetFullName() == className) {
 					if (getUserClass) {
 						// Return this class only if it is declared outside the gtk-gui
 						// folder. Generated partial classes will be ignored.
-						foreach (var part in cls.Parts) {
-							if (!string.IsNullOrEmpty (part.Region.FileName) && !((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder)) {
-								return part;
+						foreach (var part in cls.Locations) {
+							if (!string.IsNullOrEmpty (part.FilePath) && !((FilePath)part.FilePath).IsChildPathOf (gui_folder)) {
+								return cls;
 							}
 						}
 						continue;
 					}
-					if (getUserClass && !string.IsNullOrEmpty (cls.Region.FileName) && ((FilePath)cls.Region.FileName).IsChildPathOf (gui_folder))
+					if (getUserClass && !string.IsNullOrEmpty (cls.Locations.First ().FilePath) && ((FilePath)cls.Locations.First ().FilePath).IsChildPathOf (gui_folder))
 						continue;
-					return cls.Parts.First ();
+					return cls;
 				}
 			}
 			return null;
 		}
 		
-		public ICompilation GetParserContext ()
+		public Compilation GetParserContext ()
 		{
-			var dom = TypeSystemService.GetCompilation (Project);
+			var dom = RoslynTypeSystemService.GetCompilationAsync (Project).Result;
 			if (dom != null && needsUpdate) {
 				needsUpdate = false;
 //				dom.ForceUpdate ();

@@ -33,193 +33,99 @@ using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp.Completion;
+using System.Linq;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.GtkCore
 {
 
 	public class WidgetParser
 	{
-		ICompilation ctx;
+		Compilation ctx;
 
-		public ICompilation Ctx {
+		public Compilation Ctx {
 			get {
 				return ctx;
 			}
 		}
 		
-		public WidgetParser (ICompilation ctx)
+		public WidgetParser (Compilation ctx)
 		{
 			this.ctx = ctx;
 		}
 		
-		public Dictionary<string, ITypeDefinition> GetToolboxItems ()
+		static bool IsWidget(INamedTypeSymbol type)
 		{
-			Dictionary<string, ITypeDefinition> tb_items = new Dictionary<string, ITypeDefinition> ();
+			if (type.SpecialType == SpecialType.System_Object)
+				return false;
+			if (type.GetFullName () == "Gtk.Widget")
+				return true;
+			
+			return IsWidget (type.BaseType);
+		}
+		
+		public Dictionary<string, INamedTypeSymbol> GetToolboxItems ()
+		{
+			var tb_items = new Dictionary<string, INamedTypeSymbol> ();
 
-			var wt = ctx.FindType (new FullTypeName ("Gtk.Widget"));
-			if (wt != null && !(wt is UnknownType)) {
-				foreach (var t in wt.GetSubTypeDefinitions ()) {
-					if (IsToolboxWidget (t))
-						tb_items [t.FullName] = t;
-				}
+			foreach (var t in ctx.GetAllTypes ()) {
+				if (t.IsToolboxItem() && IsWidget(t))
+					tb_items [t.GetFullName ()] = t;
 			}
 			
 			return tb_items;
 		}
 
-		public void CollectMembers (ITypeDefinition cls, bool inherited, string topType, ListDictionary properties, ListDictionary events)
+		public void CollectMembers (ITypeSymbol cls, bool inherited, string topType, ListDictionary properties, ListDictionary events)
 		{
-			if (cls.FullName == topType)
+			if (cls.GetFullName () == topType)
 				return;
 
-			foreach (IProperty prop in cls.Properties)
+			foreach (var prop in cls.GetMembers ().OfType<IPropertySymbol> ())
 				if (IsBrowsable (prop))
 					properties [prop.Name] = prop;
 
-			foreach (IEvent ev in cls.Events)
+			foreach (var ev in cls.GetMembers ().OfType<IEventSymbol> ())
 				if (IsBrowsable (ev))
 					events [ev.Name] = ev;
 					
 			if (inherited) {
-				foreach (var bcls in cls.DirectBaseTypes) {
-					if (bcls.GetDefinition () != null && bcls.Kind != TypeKind.Class)
-						CollectMembers (bcls.GetDefinition (), true, topType, properties, events);
-				}
+				CollectMembers (cls.BaseType, true, topType, properties, events);
 			}
 		}
 		
-		public string GetBaseType (ITypeDefinition cls, Hashtable knownTypes)
+		public string GetBaseType (ITypeSymbol cls, Hashtable knownTypes)
 		{
-			foreach (var bt in cls.DirectBaseTypes) {
-				string name = bt.ReflectionName;
-				if (knownTypes.Contains (name))
-					return name;
-			}
-
-			foreach (var bcls in cls.DirectBaseTypes) {
-				if (bcls.GetDefinition () != null) {
-					string ret = GetBaseType (bcls.GetDefinition (), knownTypes);
-					if (ret != null)
-						return ret;
-				}
-			}
-			return null;
+			if (cls.SpecialType == SpecialType.System_Object)
+				return null;
+			if (knownTypes.Contains (cls.BaseType.GetFullName ()))
+				return cls.BaseType.GetFullName ();
+			return GetBaseType (cls.BaseType, knownTypes);
 		}
 		
-		public string GetCategory (IEntity decoration)
-		{
-//			foreach (IAttributeSection section in decoration.Attributes) {
-				foreach (IAttribute at in decoration.Attributes) {
-					var type = at.AttributeType;
-					switch (type.ReflectionName) {
-					case "Category":
-					case "CategoryAttribute":
-					case "System.ComponentModel.Category":
-					case "System.ComponentModel.CategoryAttribute":
-						break;
-					default:
-						continue;
-					}
-					var pargs = at.PositionalArguments;
-					if (pargs != null && pargs.Count > 0) {
-						var val = pargs[0] as ConstantResolveResult;
-						if (val != null && val.ConstantValue is string)
-							return val.ConstantValue.ToString ();
-					}
-				}
-	//	}
-			return "";
-		}
 		
-		public ITypeDefinition GetClass (string classname)
+		public INamedTypeSymbol GetClass (string classname)
 		{
-			string name, ns;
-			int idx =classname.LastIndexOf ('.');
-			if (idx >= 0){
-				ns = classname.Substring (0, idx);
-				name = classname.Substring (idx + 1);
-			} else {
-				ns = "";
-				name = classname;
-			}
-			return ctx.MainAssembly.GetTypeDefinition (ns, name, 0);
+			return ctx.GetTypeByMetadataName (classname);
 		}
 
-		public bool IsBrowsable (IMember member)
+		public bool IsBrowsable (ISymbol member)
 		{
-			if (!member.IsPublic)
+			if (member.DeclaredAccessibility != Accessibility.Public)
 				return false;
 
-			IProperty prop = member as IProperty;
+			var prop = member as IPropertySymbol;
 			if (prop != null) {
-				if (!prop.CanGet || !prop.CanSet)
+				if (prop.GetMethod == null || prop.SetMethod == null)
 					return false;
-				if (Array.IndexOf (supported_types, prop.ReturnType.ReflectionName) == -1)
+				if (Array.IndexOf (supported_types, prop.Type.GetFullName ()) == -1)
 					return false;
 			}
 
-	//		foreach (IAttributeSection section in member.Attributes) {
-				foreach (IAttribute at in member.Attributes) {
-					var type = at.AttributeType;
-					switch (type.ReflectionName) {
-					case "Browsable":
-					case "BrowsableAttribute":
-					case "System.ComponentModel.Browsable":
-					case "System.ComponentModel.BrowsableAttribute":
-						break;
-					default:
-						continue;
-					}
-					var pargs = at.PositionalArguments;
-					if (pargs != null && pargs.Count > 0) {
-						var val = pargs[0] as ConstantResolveResult;
-						if (val.ConstantValue is bool) {
-							return (bool) val.ConstantValue;
-						}
-					}
-				}
-		//	}
-			return true;
-		}
-		
-		public bool IsToolboxWidget (ITypeDefinition cls)
-		{
-			if (!cls.IsPublic)
-				return false;
-
-			foreach (IAttribute at in cls.Attributes) {
-				var type = at.AttributeType;
-				switch (type.ReflectionName) {
-				case "ToolboxItem":
-				case "ToolboxItemAttribute":
-				case "System.ComponentModel.ToolboxItem":
-				case "System.ComponentModel.ToolboxItemAttribute":
-					break;
-				default:
-					continue;
-				}
-				var pargs = at.PositionalArguments;
-				if (pargs != null && pargs.Count > 0) {
-					var val = pargs[0] as ConstantResolveResult;
-					if (val.ConstantValue == null)
-						return false;
-					else if (val.ConstantValue is bool)
-						return (bool) val.ConstantValue;
-					else 
-						return val.ConstantValue != null;
-				}
-			}
-
-			foreach (var bcls in cls.DirectBaseTypes) {
-				if (bcls.GetDefinition () != null && bcls.Kind != TypeKind.Interface)
-					return IsToolboxWidget (bcls.GetDefinition ());
-			}
-
-			return false;
+			return member.IsDesignerBrowsable ();
 		}
 		
 		static string[] supported_types = new string[] {

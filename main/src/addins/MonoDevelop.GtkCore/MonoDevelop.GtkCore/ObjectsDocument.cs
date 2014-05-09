@@ -33,9 +33,9 @@ using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.GtkCore
 {
@@ -143,7 +143,7 @@ namespace MonoDevelop.GtkCore
 			StringCollection tb_names = new StringCollection ();
 			foreach (var cls in parser.GetToolboxItems().Values) {
 				UpdateClass (parser, stetic, cls, null);
-				tb_names.Add (cls.FullName);
+				tb_names.Add (cls.GetFullName ());
 			}
 
 			List<XmlElement> toDelete = new List<XmlElement> ();
@@ -160,9 +160,9 @@ namespace MonoDevelop.GtkCore
 			Save ();
 		}
 
-		void UpdateClass (WidgetParser parser, Stetic.Project stetic, ITypeDefinition widgetClass, ITypeDefinition wrapperClass)
+		void UpdateClass (WidgetParser parser, Stetic.Project stetic, ITypeSymbol widgetClass, ITypeSymbol wrapperClass)
 		{
-			string typeName = widgetClass.FullName;
+			string typeName = widgetClass.GetFullName();
 			string basetypeName = GetBaseType (parser, widgetClass, stetic);
 			XmlElement objectElem = (XmlElement) SelectSingleNode ("objects/object[@type='" + typeName + "']");
 			
@@ -171,14 +171,14 @@ namespace MonoDevelop.GtkCore
 				// The widget class is not yet in the XML file. Create an element for it.
 				objectElem = CreateElement ("object");
 				objectElem.SetAttribute ("type", typeName);
-				string category = parser.GetCategory (widgetClass);
+				string category = widgetClass.GetComponentCategory();
 				if (category == String.Empty)
 					objectElem.SetAttribute ("palette-category", "General");
 				else
 					objectElem.SetAttribute ("palette-category", category);
 				objectElem.SetAttribute ("allow-children", "false");
 				if (wrapperClass != null)
-					objectElem.SetAttribute ("wrapper", wrapperClass.FullName);
+					objectElem.SetAttribute ("wrapper", wrapperClass.GetFullName());
 				
 				// By default add a reference to Gtk.Widget properties and events
 				XmlElement itemGroups = objectElem.OwnerDocument.CreateElement ("itemgroups");
@@ -194,7 +194,7 @@ namespace MonoDevelop.GtkCore
 			UpdateObject (parser, basetypeName, objectElem, widgetClass, wrapperClass);
 		}
 		
-		string GetBaseType (WidgetParser parser, ITypeDefinition widgetClass, Stetic.Project stetic)
+		string GetBaseType (WidgetParser parser, ITypeSymbol widgetClass, Stetic.Project stetic)
 		{
 			string[] types = stetic.GetWidgetTypes ();
 			Hashtable typesHash = new Hashtable ();
@@ -205,9 +205,9 @@ namespace MonoDevelop.GtkCore
 			return ret ?? "Gtk.Widget";
 		}
 		
-		void UpdateObject (WidgetParser parser, string topType, XmlElement objectElem, ITypeDefinition widgetClass, ITypeDefinition wrapperClass)
+		void UpdateObject (WidgetParser parser, string topType, XmlElement objectElem, ITypeSymbol widgetClass, ITypeSymbol wrapperClass)
 		{
-			if (widgetClass.IsPublic)
+			if (widgetClass.DeclaredAccessibility == Accessibility.Public)
 				objectElem.RemoveAttribute ("internal");
 			else
 				objectElem.SetAttribute ("internal", "true");
@@ -219,10 +219,10 @@ namespace MonoDevelop.GtkCore
 			if (wrapperClass != null)
 				parser.CollectMembers (wrapperClass, false, null, properties, events);
 			
-			foreach (IProperty prop in properties.Values)
+			foreach (IPropertySymbol prop in properties.Values)
 				MergeProperty (parser, objectElem, prop);
 			
-			foreach (IEvent ev in events.Values)
+			foreach (IEventSymbol ev in events.Values)
 				MergeEvent (parser, objectElem, ev);
 			
 			// Remove old properties
@@ -246,7 +246,7 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
-		void MergeProperty (WidgetParser parser, XmlElement objectElem, IProperty prop)
+		void MergeProperty (WidgetParser parser, XmlElement objectElem, IPropertySymbol prop)
 		{
 			XmlElement itemGroups = objectElem ["itemgroups"];
 			if (itemGroups == null) {
@@ -254,8 +254,8 @@ namespace MonoDevelop.GtkCore
 				objectElem.AppendChild (itemGroups);
 			}
 			
-			string cat = parser.GetCategory (prop);
-			XmlElement itemGroup = GetItemGroup (prop.DeclaringType, itemGroups, cat, "Properties");
+			string cat = prop.GetComponentCategory ();
+			XmlElement itemGroup = GetItemGroup (prop.ContainingType, itemGroups, cat, "Properties");
 			
 			XmlElement propElem = (XmlElement) itemGroup.SelectSingleNode ("property[@name='" + prop.Name + "']");
 			if (propElem == null) {
@@ -265,7 +265,7 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
-		void MergeEvent (WidgetParser parser, XmlElement objectElem, IEvent evnt)
+		void MergeEvent (WidgetParser parser, XmlElement objectElem, IEventSymbol evnt)
 		{
 			XmlElement itemGroups = objectElem ["signals"];
 			if (itemGroups == null) {
@@ -273,8 +273,8 @@ namespace MonoDevelop.GtkCore
 				objectElem.AppendChild (itemGroups);
 			}
 			
-			string cat = parser.GetCategory (evnt);
-			XmlElement itemGroup = GetItemGroup (evnt.DeclaringType, itemGroups, cat, "Signals");
+			string cat = evnt.GetComponentCategory ();
+			XmlElement itemGroup = GetItemGroup (evnt.ContainingType, itemGroups, cat, "Signals");
 			
 			XmlElement signalElem = (XmlElement) itemGroup.SelectSingleNode ("signal[@name='" + evnt.Name + "']");
 			if (signalElem == null) {
@@ -284,7 +284,7 @@ namespace MonoDevelop.GtkCore
 			}
 		}
 		
-		XmlElement GetItemGroup (IType cls, XmlElement itemGroups, string cat, string groupName)
+		XmlElement GetItemGroup (ITypeSymbol cls, XmlElement itemGroups, string cat, string groupName)
 		{
 			XmlElement itemGroup;
 			
