@@ -130,7 +130,7 @@ namespace MonoDevelop.VersionControl.Git
 		static string ParseDate (DateTime date)
 		{
 			var sb = new StringBuilder (date.ToShortDateString ());
-			sb.AppendFormat (" {0}", date.ToString ("HH:MM"));
+			sb.AppendFormat (" {0}", date.ToShortTimeString ());
 
 			return sb.ToString ();
 		}
