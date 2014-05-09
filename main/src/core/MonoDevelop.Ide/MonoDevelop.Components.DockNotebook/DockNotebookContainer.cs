@@ -68,6 +68,15 @@ namespace MonoDevelop.Components.DockNotebook
 				tabControl.PageRemoved += HandlePageRemoved;
 		}
 
+		public DockNotebookContainer MotherContainer ()
+		{
+			if (Parent == null)
+				return null;
+
+			var paned = Parent as Paned;
+			return paned != null ? (DockNotebookContainer)paned.Parent : null;
+		}
+
 		static void HandlePageRemoved (object sender, EventArgs e)
 		{
 			var control = (DockNotebook)sender;
