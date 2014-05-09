@@ -168,7 +168,8 @@ namespace MonoDevelop.Projects
 			// Add shared project
 
 			var sp = new SharedAssetsProject () {
-				LanguageName = "C#"
+				LanguageName = "C#",
+				DefaultNamespace = "TestNamespace"
 			};
 
 			sp.AddFile (sol.ItemDirectory.Combine ("Test.cs"));
@@ -212,8 +213,9 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refSharedProjectXml, sharedProjectXml);
 			Assert.AreEqual (refSharedProjectItemsXml, sharedProjectItemsXml);
 
-			// Add a file
+			// Add a file and change the default namespace
 
+			sp.DefaultNamespace = "TestNamespace2";
 			var file = sp.AddFile (sol.ItemDirectory.Combine ("Test2.cs"));
 			sol.Save (Util.GetMonitor ());
 
@@ -229,8 +231,9 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refSharedProjectXml, sharedProjectXml);
 			Assert.AreEqual (refSharedProjectItemsXml, sharedProjectItemsXml);
 
-			// Remove a file
+			// Remove a file and restore the namespace
 
+			sp.DefaultNamespace = "TestNamespace";
 			sp.Files.Remove (file);
 			sol.Save (Util.GetMonitor ());
 
