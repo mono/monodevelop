@@ -155,8 +155,6 @@ namespace MonoDevelop.Debugger.Tests
 			AddBreakpoint ("break");
 			
 			var done = new ManualResetEvent (false);
-			
-			Session.OutputWriter = (isStderr, text) => Console.WriteLine ("PROC:" + text);
 
 			Session.TargetHitBreakpoint += (sender, e) => {
 				done.Set ();
