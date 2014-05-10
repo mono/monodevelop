@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Factories\DomRegionFactory.cs" />
+    <Compile Include="JavaScriptLanguageBinding.cs" />
     <Compile Include="Jurassic\Compiler\Binders\Binder.cs" />
     <Compile Include="Jurassic\Compiler\Binders\BinderMethod.cs" />
     <Compile Include="Jurassic\Compiler\Binders\BinderUtilities.cs" />
