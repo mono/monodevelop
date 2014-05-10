@@ -928,10 +928,10 @@ namespace MonoDevelop.VersionControl.Views
 					if (!OnFileStatusChanged (f))
 						break;
 				}
+				UpdateControlStatus ();
 			} finally {
 				VersionControlService.FileStatusChanged += OnFileStatusChanged;
 			}
-			UpdateControlStatus ();
 		}
 
 		bool OnFileStatusChanged (FileUpdateEventInfo args)
