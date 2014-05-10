@@ -137,9 +137,11 @@ namespace MonoDevelop.JavaScript.Parser
 
 				var ifStatement = node as Jurassic.Compiler.IfStatement;
 				if (ifStatement != null) {
-					if (ifStatement.SourceSpan != null) {
-						var region = DomRegionFactory.CreateDomRegion (fileName, ifStatement.SourceSpan);
-						foldings.Add (new FoldingRegion (region));
+					if (ifStatement.IfClause != null) {
+						if (ifStatement.IfClause.SourceSpan != null) {
+							var region = DomRegionFactory.CreateDomRegion (fileName, ifStatement.IfClause.SourceSpan);
+							foldings.Add (new FoldingRegion (region));
+						}
 					}
 					if (ifStatement.ElseClause != null) {
 						if (ifStatement.ElseClause.SourceSpan != null) {

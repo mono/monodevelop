@@ -361,11 +361,13 @@ namespace Jurassic.Compiler
                 }
                 catch (Jurassic.JavaScriptException jsException)
                 {
-			Errors.Add(new Error (ErrorType.Error, jsException.Message, jsException.LineNumber, 0));
+					Errors.Add(new Error (ErrorType.Error, jsException.Message, jsException.LineNumber, 0));
+					Consume ();
                 }
                 catch (Exception ex)
                 {
-			Errors.Add(new Error(ErrorType.Unknown, ex.Message));
+					Errors.Add(new Error(ErrorType.Unknown, ex.Message));
+					Consume ();
                 }
             }
 
@@ -440,9 +442,11 @@ namespace Jurassic.Compiler
         /// <remarks> The value of a block statement is the value of the last statement in the block,
         /// or undefined if there are no statements in the block. </remarks>
         private BlockStatement ParseBlock()
-        {
+		{
+			SourceCodePosition start = this.PositionBeforeWhitespace;
+
             // Consume the start brace ({).
-            this.Expect(PunctuatorToken.LeftBrace);
+			this.Expect (PunctuatorToken.LeftBrace);
 
             // Read zero or more statements.
             var result = new BlockStatement(this.labelsForCurrentStatement);
@@ -456,10 +460,11 @@ namespace Jurassic.Compiler
                 result.Statements.Add(ParseStatement());
             }
 
-            result.SourceSpan = new SourceCodeSpan(this.PositionBeforeWhitespace, this.PositionAfterWhitespace);
+			// Consume the end brace.
+			this.Expect (PunctuatorToken.RightBrace);
 
-            // Consume the end brace.
-            this.Expect(PunctuatorToken.RightBrace);
+			result.SourceSpan = new SourceCodeSpan (start, this.PositionBeforeWhitespace);
+
             return result;
         }
 
@@ -1314,24 +1319,12 @@ namespace Jurassic.Compiler
                 originalBodyTextBuilder.Append(bodyTextBuilder);
 
             SourceCodePosition endPosition;
-            if (functionType == FunctionType.Expression)
-            {
-                // The end token '}' will be consumed by the parent function.
-                if (this.nextToken != PunctuatorToken.RightBrace)
-                    throw new JavaScriptException(this.engine, "SyntaxError", "Expected '}'", this.LineNumber, this.SourcePath);
+			// Consume the '}'.
+			this.Expect(PunctuatorToken.RightBrace);
 
-                // Record the end of the function body.
-                endPosition = new SourceCodePosition(this.PositionAfterWhitespace.Line, this.PositionAfterWhitespace.Column + 1);
-            }
-            else
-            {
-                // Consume the '}'.
-                this.Expect(PunctuatorToken.RightBrace);
-
-                // Record the end of the function body.
-                endPosition = new SourceCodePosition(this.PositionAfterWhitespace.Line, this.PositionAfterWhitespace.Column + 1);
-            }
-
+            // Record the end of the function body.
+            endPosition = new SourceCodePosition(this.PositionAfterWhitespace.Line, this.PositionAfterWhitespace.Column + 1);
+            
             // Create a new function expression.
             var options = this.options.Clone();
             options.ForceStrictMode = functionParser.StrictMode;
