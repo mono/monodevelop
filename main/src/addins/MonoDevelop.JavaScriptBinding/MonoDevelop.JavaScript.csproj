@@ -65,6 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Factories\DomRegionFactory.cs" />
+    <Compile Include="Formatting\JavaScriptFormatter.cs" />
+    <Compile Include="Formatting\JavaScriptFormattingPolicy.cs" />
+    <Compile Include="Formatting\JavaScriptFormattingSettings.cs" />
     <Compile Include="JavaScriptLanguageBinding.cs" />
     <Compile Include="Jurassic\Compiler\Binders\Binder.cs" />
     <Compile Include="Jurassic\Compiler\Binders\BinderMethod.cs" />
@@ -218,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\javascript_icon_32.png" />
+    <EmbeddedResource Include="Formatting\MonoJSPolicy.xml" />
     <Content Include="Icons\Credits.txt" />
     <Content Include="Jurassic\Compiler\Emit\Optimizations.txt" />
     <Content Include="Jurassic\License.txt" />
@@ -228,6 +232,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91dd5a2d-9fe3-4c3c-9253-876141874dad}</Project>
+      <Name>Mono.Addins</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>

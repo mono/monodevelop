@@ -1,34 +1,41 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Addin namespace="MonoDevelop.JavaScript" id="JavaScriptSupport" name="JavaScript Support" author="Harsimran Bath" copyright="Microsoft Public License (Ms-PL)" url="http://www.monodevelop.com" description="Adds JavaScript Support to Xamarin Studio." category="Web Development" version="0.1">
-  <Dependencies>
-    <Addin id="::MonoDevelop.Ide" version="4.0" />
-    <Addin id="::MonoDevelop.Core" version="4.0" />
-    <Addin id="::MonoDevelop.SourceEditor2" version="4.0" />
-  </Dependencies>
-  <Runtime>
-    <Import file="Templates\EmptyJSFile.xft.xml" />
-  </Runtime>
-  <Extension path="/MonoDevelop/Ide/FileFilters">
-    <FileFilter id="JSFile" insertafter="Xml" _label="JavaScript Files" extensions="*.js" />
-  </Extension>
-  <Extension path="/MonoDevelop/Ide/FileTemplates">
-    <FileTemplate id="JSFile" file="Templates\EmptyJSFile.xft.xml" />
-  </Extension>
-  <Extension path="/MonoDevelop/TypeSystem/Parser">
-    <Parser class="MonoDevelop.JavaScript.Parser.JavaScriptParser" mimeType="application/javascript, text/javascript" />
-  </Extension>
-  <Extension path="/MonoDevelop/Ide/TextEditorExtensions">
-    <Class fileExtensions=".js" class="MonoDevelop.JavaScript.TextEditor.JavaScriptEditorExtension" />
-  </Extension>
-  <Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
-    <LanguageBinding id="JavaScript" supportedextensions=".js" class="MonoDevelop.JavaScript.JavaScriptLanguageBinding" />
-  </Extension>
-  <Extension path="/MonoDevelop/Core/StockIcons">
-    <StockIcon stockid="md-js-file" resource="javascript_icon_32.png" size="Menu" />
-  </Extension>
-  <Extension path="/MonoDevelop/Core/MimeTypes">
-    <MimeType id="application/javascript" icon="md-js-file" _description="JavaScript Source Code" isText="true">
-      <File pattern="*.js" />
-    </MimeType>
-  </Extension>
+	<Dependencies>
+		<Addin id="::MonoDevelop.Ide" version="4.0" />
+		<Addin id="::MonoDevelop.Core" version="4.0" />
+		<Addin id="::MonoDevelop.DesignerSupport" version="4.0" />
+		<Addin id="::MonoDevelop.SourceEditor2" version="4.0" />
+	</Dependencies>
+	<Runtime>
+		<Import file="Templates\EmptyJSFile.xft.xml" />
+	</Runtime>
+	<Extension path="/MonoDevelop/Ide/FileFilters">
+		<FileFilter id="JSFile" insertafter="Xml" _label="JavaScript Files" extensions="*.js" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id="JSFile" file="Templates\EmptyJSFile.xft.xml" />
+	</Extension>
+	<Extension path="/MonoDevelop/TypeSystem/Parser">
+		<Parser class="MonoDevelop.JavaScript.Parser.JavaScriptParser" mimeType="application/javascript, text/javascript" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions=".js" class="MonoDevelop.JavaScript.TextEditor.JavaScriptEditorExtension" />
+	</Extension>
+	<Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding id="JavaScript" supportedextensions=".js" class="MonoDevelop.JavaScript.JavaScriptLanguageBinding" />
+	</Extension>
+	<Extension path="/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-js-file" resource="javascript_icon_32.png" size="Menu" />
+	</Extension>
+	<Extension path="/MonoDevelop/Core/MimeTypes">
+		<MimeType id="application/javascript" icon="md-js-file" _description="JavaScript Source Code" isText="true">
+			<File pattern="*.js" />
+		</MimeType>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/CodeFormatters">
+		<Formatter mimeType="application/javascript" class="MonoDevelop.JavaScript.Formatting.JavaScriptFormatter" />
+	</Extension>
+	<Extension path="/MonoDevelop/ProjectModel/PolicySets/Mono">
+		<Policies resource="MonoJSPolicy.xml" />
+	</Extension>
 </Addin>
