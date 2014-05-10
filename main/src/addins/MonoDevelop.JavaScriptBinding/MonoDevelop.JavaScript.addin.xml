@@ -38,4 +38,7 @@
 <!--	<Extension path="/MonoDevelop/ProjectModel/PolicySets/Mono">
 		<Policies resource="MonoJSPolicy.xml" />
 	</Extension>-->
+  <Extension path="/MonoDevelop/Ide/CodeTemplates">
+    <CodeTemplate file="Templates\JS-CodeTemplates.xml" />
+  </Extension>
 </Addin>

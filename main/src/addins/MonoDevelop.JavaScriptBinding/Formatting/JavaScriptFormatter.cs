@@ -28,12 +28,31 @@ using MonoDevelop.Ide.CodeFormatting;
 
 namespace MonoDevelop.JavaScript.Formatting
 {
-	public class JavaScriptFormatter : ICodeFormatter
+	public class JavaScriptFormatter : IAdvancedCodeFormatter
 	{
-		#region ICodeFormatter implementation
+		public bool SupportsOnTheFlyFormatting
+		{
+			get { return true; }
+		}
+
+		public bool SupportsCorrectingIndent
+		{
+			get { return false; }
+		}
+
+		public void CorrectIndenting (Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, Mono.TextEditor.TextEditorData textEditorData, int line)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void OnTheFlyFormat (Ide.Gui.Document doc, int startOffset, int endOffset)
+		{
+			// TODO: Do I even need to do something here ??
+		}
+
 		public string FormatText (MonoDevelop.Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, string input)
 		{
-			var jsBeautifier = new JSBeautify (input, new JSBeautifyOptions{
+			var jsBeautifier = new JSBeautify (input, new JSBeautifyOptions {
 				IndentSize = 4,
 				IndentChar = ' ',
 				IndentLevel = 0,
@@ -42,11 +61,11 @@ namespace MonoDevelop.JavaScript.Formatting
 			});
 			return jsBeautifier.GetResult ();
 		}
+
 		public string FormatText (MonoDevelop.Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
 		{
 			return null;
 		}
-		#endregion
 	}
 }
 
