@@ -217,6 +217,8 @@
     <Compile Include="Extensions\FunctionExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Icons\javascript_icon_32.png" />
+    <Content Include="Icons\Credits.txt" />
     <Content Include="Jurassic\Compiler\Emit\Optimizations.txt" />
     <Content Include="Jurassic\License.txt" />
     <Content Include="Notes\JurrasicJSMap.txt" />

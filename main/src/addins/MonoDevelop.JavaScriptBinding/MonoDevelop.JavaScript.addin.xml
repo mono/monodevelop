@@ -20,7 +20,15 @@
   <Extension path="/MonoDevelop/Ide/TextEditorExtensions">
     <Class fileExtensions=".js" class="MonoDevelop.JavaScript.TextEditor.JavaScriptEditorExtension" />
   </Extension>
-  <Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
+  <Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
     <LanguageBinding id="JavaScript" supportedextensions=".js" class="MonoDevelop.JavaScript.JavaScriptLanguageBinding" />
+  </Extension>
+  <Extension path="/MonoDevelop/Core/StockIcons">
+    <StockIcon stockid="md-js-file" resource="javascript_icon_32.png" size="Menu" />
+  </Extension>
+  <Extension path="/MonoDevelop/Core/MimeTypes">
+    <MimeType id="application/javascript" icon="md-js-file" _description="JavaScript Source Code" isText="true">
+      <File pattern="*.js" />
+    </MimeType>
   </Extension>
 </Addin>
