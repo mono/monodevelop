@@ -1,5 +1,5 @@
 ﻿//
-// JavaScriptFormatter.cs
+// ArrayExtensions.cs
 //
 // Author:
 //       Harsimran Bath <harsimranbath@gmail.com>
@@ -24,29 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.CodeFormatting;
 
-namespace MonoDevelop.JavaScript.Formatting
+namespace MonoDevelop.JavaScript
 {
-	public class JavaScriptFormatter : ICodeFormatter
+	public static class ArrayExtensions
 	{
-		#region ICodeFormatter implementation
-		public string FormatText (MonoDevelop.Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, string input)
+		public static bool Contains<T>(this T[] array, T value)
 		{
-			var jsBeautifier = new JSBeautify (input, new JSBeautifyOptions{
-				IndentSize = 4,
-				IndentChar = ' ',
-				IndentLevel = 0,
-				PreserveNewlines = true,
+			foreach (var item in array) {
+				if (item.Equals (value))
+					return true;
+			}
 
-			});
-			return jsBeautifier.GetResult ();
+			return false;
 		}
-		public string FormatText (MonoDevelop.Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
-		{
-			return null;
-		}
-		#endregion
 	}
 }
 
