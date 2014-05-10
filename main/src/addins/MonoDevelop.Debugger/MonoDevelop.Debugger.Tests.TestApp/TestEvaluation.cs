@@ -126,6 +126,8 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			dynObj.someInt = 53;
 			dynObj.someString = "Hello dynamic objects!";
 
+			var objWithMethodA = new ClassWithMethodA ();
+
 			Console.WriteLine (n); /*break*/
 		}
 
@@ -218,6 +220,29 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 	public class SomeClassInNamespace
 	{
 
+	}
+}
+
+interface IInterfaceWithMethodA
+{
+	string MethodA ();
+}
+
+abstract class AbstractClassWithMethodA
+{
+	public abstract string MethodA ();
+}
+
+class ClassWithMethodA : AbstractClassWithMethodA, IInterfaceWithMethodA
+{
+	public override string MethodA ()
+	{
+		return "AbstractImplementation";
+	}
+
+	string IInterfaceWithMethodA.MethodA ()
+	{
+		return "InterfaceImplementation";
 	}
 }
 
