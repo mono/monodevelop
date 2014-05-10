@@ -114,6 +114,9 @@ namespace MonoDevelop.VersionControl
 		
 		public static Xwt.Drawing.Image LoadOverlayIconForStatus(VersionStatus status)
 		{
+			if ((status & VersionStatus.Ignored) != 0)
+				return overlay_ignored;
+
 			if ((status & VersionStatus.Versioned) == 0)
 				return overlay_unversioned;
 			
@@ -129,8 +132,6 @@ namespace MonoDevelop.VersionControl
 				case VersionStatus.Missing:
 				case VersionStatus.ScheduledDelete:
 					return overlay_removed;
-				case VersionStatus.Ignored:
-					return overlay_ignored;
 			}
 			
 			if ((status & VersionStatus.LockOwned) != 0)
