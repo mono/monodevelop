@@ -1419,7 +1419,11 @@ namespace MonoDevelop.AssemblyBrowser
 				// Select the result.
 				if (selectReference) {
 					ITreeNavigator navigator = TreeView.GetNodeAtObject (result);
-					navigator.Selected = true;
+					if (navigator != null) {
+						navigator.Selected = true;
+					} else {
+						LoggingService.LogWarning (result + " could not be found.");
+					}
 				}
 
 				return result;
