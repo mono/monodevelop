@@ -303,6 +303,18 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"43\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
 
+			val = Eval ("objWithMethodA.MethodA()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"AbstractImplementation\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
 			// FIXME: failing on CorDebugger
 			if (Session is SoftDebuggerSession) {
 				val = Eval ("true.ToString()");
@@ -1258,6 +1270,19 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedGenericClass<int,string>", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			//When fixed put into MethodInvoke(failing also on CorDebugger)
+			val = Eval ("((IInterfaceWithMethodA)objWithMethodA).MethodA()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"InterfaceImplementation\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
 		}
 
 		[Test]
