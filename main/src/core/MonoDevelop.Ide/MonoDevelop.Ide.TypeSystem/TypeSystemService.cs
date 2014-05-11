@@ -2901,6 +2901,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			int pending = 0;
 			IProgressMonitor monitor = null;
 			var token = loadCancellationSource.Token;
+			StartParseOperation ();
 			try {
 				do {
 					if (pending > 5 && monitor == null) {
@@ -2928,6 +2929,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			} finally {
 				if (monitor != null)
 					monitor.Dispose ();
+				EndParseOperation ();
 			}
 		}
 
