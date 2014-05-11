@@ -62,6 +62,7 @@
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Completion\JavaScriptCompletionTextEditorExtension.cs" />
     <Compile Include="Factories\DomRegionFactory.cs" />
     <Compile Include="Formatting\JavaScriptFormatter.cs" />
     <Compile Include="Formatting\JavaScriptFormattingPolicy.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Jurassic\Compiler\Lexer\KeywordToken.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\Lexer.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\LiteralToken.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\MultilineCommentToken.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\PunctuatorToken.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\RegularExpressionLiteral.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\Token.cs" />

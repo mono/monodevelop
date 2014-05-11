@@ -548,6 +548,8 @@ namespace Jurassic.Compiler
             // differently from multi-line comments that only span a single line, with respect
             // to implicit semi-colon insertion.
             int lineTerminatorCount = 0;
+	        int startLineNumber = this.lineNumber;
+	        int startColumn = this.columnNumber;
 
             // Read the first character.
             int c1 = ReadNextChar();
@@ -582,7 +584,10 @@ namespace Jurassic.Compiler
                 c1 = c2;
             }
 
-            return new WhiteSpaceToken(lineTerminatorCount);
+			int endLineNumber = this.lineNumber;
+			int endColumn = this.columnNumber;
+
+			return new MultilineCommentToken (string.Empty, startLineNumber, startColumn - 2, endLineNumber, endColumn);
         }
 
         /// <summary>

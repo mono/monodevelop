@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Jurassic.Library;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Core;
 using MonoDevelop.JavaScript.Factories;
 
 namespace Jurassic.Compiler
@@ -428,6 +429,8 @@ namespace Jurassic.Compiler
                 return ParseDebugger();
             if (this.nextToken == KeywordToken.Function)
                 return ParseFunctionDeclaration();
+			if (this.nextToken is MultilineCommentToken)
+		        return ParseMultilineComment ();
             if (this.nextToken == null)
                 throw new JavaScriptException(this.engine, "SyntaxError", "Unexpected end of input", this.LineNumber, this.SourcePath);
 
@@ -1381,6 +1384,25 @@ namespace Jurassic.Compiler
             }
         }
 
+		/// <summary>
+		/// Parse a multiline Comment, and returns an Empty Statement with the comments actual source code position.
+		/// </summary>
+		/// <returns>EmptyStatement with Comment Position.</returns>
+		private Statement ParseMultilineComment ()
+		{
+			var commentToken = this.nextToken as MultilineCommentToken;
+			if (commentToken == null) {
+				var exception = new InvalidCastException ("NextToken cannot be parsed to MultilineCommentToken in ParseMultilineComment();");
+				LoggingService.LogFatalError (exception.Message, exception);
+				throw exception;
+			}
+
+			Consume ();
+
+			return new EmptyStatement (new[] {"Comment"}) {
+				SourceSpan = new SourceCodeSpan (commentToken.StartLine, commentToken.StartColumn, commentToken.EndLine, commentToken.EndColumn)
+			};
+		}
 
 
         //     EXPRESSION PARSER

@@ -170,6 +170,13 @@ namespace MonoDevelop.JavaScript.Parser
 					continue;
 				}
 
+				var emptyStatement = node as Jurassic.Compiler.EmptyStatement;
+				if (emptyStatement != null && emptyStatement.HasLabels && 
+					emptyStatement.Labels.Contains ("Comment") && emptyStatement.SourceSpan != null) {
+					var region = DomRegionFactory.CreateDomRegion (fileName, emptyStatement.SourceSpan);
+					foldings.Add (new FoldingRegion ("/**/", region));
+				}
+
 				setFoldings (node.ChildNodes);
 			}
 		}
