@@ -550,7 +550,7 @@ namespace MonoDevelop.CSharp.Formatting
 			//and calls HandleCodeCompletion etc to handles completion
 			var result = base.KeyPress (key, keyChar, modifier);
 
-			if (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) {
+			if (!indentationDisabled && (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter)) {
 				DoReSmartIndent ();
 			}
 
