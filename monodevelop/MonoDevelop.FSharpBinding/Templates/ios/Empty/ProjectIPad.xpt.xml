@@ -22,6 +22,7 @@
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="mscorlib" />
 				<Reference type="Gac" refto="FSharp.Core" />
 				<Reference type="Gac" refto="monotouch" />
 			</References>
