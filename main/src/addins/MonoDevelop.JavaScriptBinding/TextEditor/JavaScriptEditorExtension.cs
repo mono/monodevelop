@@ -111,10 +111,15 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 		public void ReleaseOutlineWidget ()
 		{
-			if (refreshingOutline || outlineTreeView == null)
+			if (outlineTreeView == null)
 				return;
-			refreshingOutline = true;
-			GLib.Timeout.Add (3000, refillOutlineStoreIdleHandler);
+
+			Gtk.ScrolledWindow w = (Gtk.ScrolledWindow)outlineTreeView.Parent;
+			w.Destroy ();
+			outlineTreeView.Destroy ();
+			outlineTreeStore.Dispose ();
+			outlineTreeStore = null;
+			outlineTreeView = null;
 		}
 
 		#endregion
@@ -138,7 +143,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 			if (ParsedDoc == null)
 				return null;
 
-			return buildCodeCompletionList(ParsedDoc.AstNodes);
+			return buildCodeCompletionList (ParsedDoc.AstNodes);
 		}
 
 		public override MonoDevelop.Ide.CodeCompletion.ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar)
