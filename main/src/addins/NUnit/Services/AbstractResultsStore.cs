@@ -27,11 +27,11 @@
 //
 
 using System;
-using System.IO;
-using System.Linq;
 using System.Collections;
-using System.Xml.Serialization;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Xml.Serialization;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.NUnit
@@ -314,14 +314,15 @@ namespace MonoDevelop.NUnit
 			if (res != null)
 				return res;
 			
-			ArrayList dates = new ArrayList ();
-			foreach (string file in Directory.GetFiles (basePath, storeId + "-" + configuration + "-*")) {
+			var dates = new List<DateTime> ();
+			var escapedConfiguration = EscapeFilename (configuration);
+			foreach (string file in Directory.GetFiles (basePath, storeId + "-" + escapedConfiguration + "-*")) {
 				try {
-					DateTime t = ParseFileNameDate (configuration, Path.GetFileName (file));
+					DateTime t = ParseFileNameDate (escapedConfiguration, Path.GetFileName (file));
 					dates.Add (t);
 				} catch { }
 			}
-			res = (DateTime[]) dates.ToArray (typeof(DateTime));
+			res = dates.ToArray ();
 			cachedRootList [configuration] = res;
 			return res;
 		}
