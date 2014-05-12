@@ -34,6 +34,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Gtk;
 using MonoDevelop.Components;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.NUnit
 {
@@ -65,7 +66,7 @@ namespace MonoDevelop.NUnit
 
 		CancellationTokenSource src = new CancellationTokenSource ();
 
-		public abstract IList<UnitTestLocation> GatherUnitTests ();
+		public abstract Task<IList<UnitTestLocation>> GatherUnitTests (CancellationToken token);
 
 		readonly static PropertyWrapper<bool> EnableUnitTestEditorIntegration = new PropertyWrapper<bool> ("Testing.EnableUnitTestEditorIntegration", false);
 
@@ -79,7 +80,7 @@ namespace MonoDevelop.NUnit
 			ThreadPool.QueueUserWorkItem (delegate {
 				if (token.IsCancellationRequested)
 					return;
-				var foundTests = GatherUnitTests ();
+				var foundTests = GatherUnitTests (token).Result;
 				if (foundTests == null)
 					return;
 				Application.Invoke (delegate {
@@ -103,7 +104,7 @@ namespace MonoDevelop.NUnit
 							return;
 						var unitTestMarker = new UnitTestMarker (foundTest, document);
 						currentMarker.Add (unitTestMarker);
-						editor.Document.AddMarker (foundTest.LineNumber, unitTestMarker);
+						editor.Document.AddMarker (editor.OffsetToLineNumber (foundTest.Offset), unitTestMarker);
 					}
 				});
 			});
@@ -419,16 +420,16 @@ namespace MonoDevelop.NUnit
 		}
 		public class UnitTestLocation
 		{
-			public int LineNumber { get; set; }
+			public int Offset { get; set; }
 			public bool IsFixture { get; set; }
 			public string UnitTestIdentifier { get; set; }
 			public bool IsIgnored { get; set; }
 
 			public List<string> TestCases = new List<string> ();
 
-			public UnitTestLocation (int lineNumber)
+			public UnitTestLocation (int offset)
 			{
-				LineNumber = lineNumber;
+				Offset = offset;
 			}
 		}
 	}

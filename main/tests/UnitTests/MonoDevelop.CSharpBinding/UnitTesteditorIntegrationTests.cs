@@ -32,6 +32,10 @@ using System.Collections.Generic;
 using Mono.Addins;
 using NUnit.Framework;
 using MonoDevelop.CSharp;
+using System.Threading;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
@@ -40,13 +44,13 @@ namespace MonoDevelop.CSharpBinding.Tests
 	{
 		static UnitTestTextEditorExtension Setup (string input, out TestViewContent content)
 		{
-			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
+			var tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
 			tww.ViewContent = content;
-			content.ContentName = "a.cs";
+			content.ContentName = "/a.cs";
 			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
 
-			Document doc = new Document (tww);
+			var doc = new Document (tww);
 
 			var text = @"namespace NUnit.Framework {
 	using System;
@@ -60,13 +64,32 @@ namespace MonoDevelop.CSharpBinding.Tests
 			content.Text = text;
 			content.CursorPosition = System.Math.Max (0, endPos);
 
+			var project = new DotNetAssemblyProject (Microsoft.CodeAnalysis.LanguageNames.CSharp);
+			project.Name = "test";
+			project.References.Add (new ProjectReference (ReferenceType.Package, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"));
+			project.References.Add (new ProjectReference (ReferenceType.Package, "System.Core"));
+
+			project.FileName = "test.csproj";
+			project.Files.Add (new ProjectFile ("/a.cs", BuildAction.Compile)); 
+
+			var solution = new MonoDevelop.Projects.Solution ();
+			var config = solution.AddConfiguration ("", true); 
+			solution.DefaultSolutionFolder.AddItem (project);
+			RoslynTypeSystemService.Load (solution);
+			content.Project = project;
+			doc.SetProject (project);
 
 			var compExt = new UnitTestTextEditorExtension ();
 			compExt.Initialize (doc);
 			content.Contents.Add (compExt);
-
 			doc.UpdateParseDocument ();
 			return compExt;
+		}
+
+		protected override void InternalSetup (string rootDir)
+		{
+			base.InternalSetup (rootDir);
+			IdeApp.Initialize (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ()); 
 		}
 
 		[Test]
@@ -81,7 +104,7 @@ class Test
 	public void MyTest () {}
 }
 ", out content);
-			var tests = ext.GatherUnitTests ();
+			var tests = ext.GatherUnitTests (default(CancellationToken)).Result;
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 		}
@@ -96,7 +119,7 @@ class Test
 	public void MyTest () {}
 }
 ", out content);
-			var tests = ext.GatherUnitTests ();
+			var tests = ext.GatherUnitTests (default(CancellationToken)).Result;
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (0, tests.Count);
 		}
@@ -122,13 +145,34 @@ public class Derived : MyBase
 	public void MyTest () {}
 }
 ", out content);
-			var tests = ext.GatherUnitTests ();
+			var tests = ext.GatherUnitTests (default(CancellationToken)).Result;
 			Assert.IsNotNull (tests);
 			Assert.AreEqual (2, tests.Count);
 
 			Assert.AreEqual ("Test.Derived", tests [0].UnitTestIdentifier);
 			Assert.AreEqual ("Test.Derived.MyTest", tests [1].UnitTestIdentifier);
 		}
+
+
+		/// <summary>
+		/// Bug 19651 - Should not require [TestFixture] for Unit Test Integration
+		/// </summary>
+		[Test]
+		public void TestBug19651 ()
+		{
+			TestViewContent content;
+			var ext = Setup (@"using NUnit.Framework;
+class Test
+{
+	[Test]
+	public void MyTest () {}
+}
+", out content);
+			var tests = ext.GatherUnitTests (default(CancellationToken)).Result;
+			Assert.IsNotNull (tests);
+			Assert.AreEqual (2, tests.Count);
+		}
+
 	}
 }
 
