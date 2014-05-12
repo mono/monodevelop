@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.JavaScript.TextEditor
 {
@@ -114,6 +115,35 @@ namespace MonoDevelop.JavaScript.TextEditor
 				return;
 			refreshingOutline = true;
 			GLib.Timeout.Add (3000, refillOutlineStoreIdleHandler);
+		}
+
+		#endregion
+
+		#region Completion TextEditor Implementation
+
+		public override string CompletionLanguage { get { return "JavaScript"; } }
+
+		public override bool CanRunCompletionCommand ()
+		{
+			return true;
+		}
+
+		public override bool CanRunParameterCompletionCommand ()
+		{
+			return false;
+		}
+
+		public override MonoDevelop.Ide.CodeCompletion.ICompletionDataList HandleCodeCompletion (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		{
+			if (ParsedDoc == null)
+				return null;
+
+			return buildCodeCompletionList(ParsedDoc.AstNodes);
+		}
+
+		public override MonoDevelop.Ide.CodeCompletion.ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar)
+		{
+			return null;
 		}
 
 		#endregion
@@ -238,6 +268,42 @@ namespace MonoDevelop.JavaScript.TextEditor
 				Editor.Caret.Offset = s;
 				Editor.CenterTo (s);
 			}
+		}
+
+		CompletionDataList buildCodeCompletionList (IEnumerable<Jurassic.Compiler.JSAstNode> nodes)
+		{
+			if (nodes == null)
+				return new CompletionDataList ();
+
+			var completionList = new CompletionDataList ();
+
+			foreach (Jurassic.Compiler.JSAstNode node in nodes) {
+				var variableStatement = node as Jurassic.Compiler.VarStatement;
+				if (variableStatement != null) {
+					foreach (Jurassic.Compiler.VariableDeclaration variableDeclaration in variableStatement.Declarations) {
+						completionList.Add (new CompletionData (variableDeclaration));
+					}
+					continue;
+				}
+
+				var functionStatement = node as Jurassic.Compiler.FunctionStatement;
+				if (functionStatement != null) {
+					completionList.Add (new CompletionData (functionStatement));
+					completionList.AddRange (buildCodeCompletionList (functionStatement.BodyRoot.ChildNodes));
+					continue;
+				}
+
+				var functionExpression = node as Jurassic.Compiler.FunctionExpression;
+				if (functionExpression != null) {
+					// TODO : We are not yet parsing the name in a function expression.
+					completionList.AddRange (buildCodeCompletionList (functionExpression.BodyRoot.ChildNodes));
+					continue;
+				}
+
+				completionList.AddRange (buildCodeCompletionList (node.ChildNodes));
+			}
+
+			return completionList;
 		}
 
 		#endregion

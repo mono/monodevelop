@@ -62,7 +62,6 @@
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Completion\JavaScriptCompletionTextEditorExtension.cs" />
     <Compile Include="Factories\DomRegionFactory.cs" />
     <Compile Include="Formatting\JavaScriptFormatter.cs" />
     <Compile Include="Formatting\JavaScriptFormattingPolicy.cs" />
@@ -220,6 +219,7 @@
     <Compile Include="Extensions\FunctionExtensions.cs" />
     <Compile Include="Formatting\JSBeautifier.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Completion\CompletionData.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\javascript_icon_32.png" />

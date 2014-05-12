@@ -35,10 +35,10 @@
 	<Extension path="/MonoDevelop/Ide/CodeFormatters">
 		<Formatter mimeType="application/javascript" class="MonoDevelop.JavaScript.Formatting.JavaScriptFormatter" />
 	</Extension>
-<!--	<Extension path="/MonoDevelop/ProjectModel/PolicySets/Mono">
+	<!--	<Extension path="/MonoDevelop/ProjectModel/PolicySets/Mono">
 		<Policies resource="MonoJSPolicy.xml" />
 	</Extension>-->
-  <Extension path="/MonoDevelop/Ide/CodeTemplates">
-    <CodeTemplate file="Templates\JS-CodeTemplates.xml" />
-  </Extension>
+	<Extension path="/MonoDevelop/Ide/CodeTemplates">
+		<CodeTemplate file="Templates\JS-CodeTemplates.xml" />
+	</Extension>
 </Addin>
