@@ -43,13 +43,6 @@ namespace MonoDevelop.Refactoring
 {
 	class FindDerivedSymbolsHandler : CommandHandler
 	{
-		Ide.Gui.Document doc;
-
-		public FindDerivedSymbolsHandler (Ide.Gui.Document doc)
-		{
-			this.doc = doc;
-		}
-		
 		public bool IsValid {
 			get {
 				return true;
