@@ -130,7 +130,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = widget.ActiveMember as ITypeDefinition;
 			if (type == null)
 				return;
-			FindDerivedClassesHandler.FindDerivedClasses (type);
+			//FindDerivedClassesHandler.FindDerivedClasses (type);
 		}
 
 		public void FillWidget ()
