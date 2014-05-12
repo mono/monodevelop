@@ -274,11 +274,27 @@ namespace MonoDevelop.NUnit
 			}
 			return null;
 		}
+
+		// Filter out all invalid path characters in the file name
+		// Bug 3023 - Running NUnit tests throws ArgumentException: Illegal Characters in path
+		static string EscapeFilename (string str)
+		{
+			var pc = Path.GetInvalidPathChars ();
+			char[] specialCharacters = new char[pc.Length + 1];
+			pc.CopyTo (specialCharacters, 0);
+			specialCharacters [specialCharacters.Length - 1] = '%';
+
+			int i = str.IndexOfAny (specialCharacters);
+			while (i != -1) {
+				str = str.Substring (0, i) + '%' + ((int) str [i]).ToString ("X") + str.Substring (i + 1);
+				i = str.IndexOfAny (specialCharacters, i + 3);
+			}
+			return str;
+		}
 		
 		string GetRootFileName (string configuration, DateTime date)
 		{
-			// Filter out all invalid path characters in the file name (see: Bug 3023 - Running NUnit tests throws ArgumentException: Illegal Characters in path)
-			var filteredConfiguration = new string (configuration.Where (c => !Path.GetInvalidPathChars ().Any (i => c == i)).ToArray ());
+			var filteredConfiguration = EscapeFilename (configuration);
 			return storeId + "-" + filteredConfiguration + "-" + date.ToString ("yyyy-MM-dd", CultureInfo.InvariantCulture) + ".xml";
 		}
 		
