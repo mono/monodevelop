@@ -286,6 +286,40 @@ namespace MonoDevelop.Projects
 			sol.RootFolder.AddItem (project);
 			Assert.IsTrue (sol.StartupItem == project);
 		}
+
+		[Test]
+		public void IncludingProjectAddedAfterShared ()
+		{
+			var sol = new Solution ();
+			var shared = new SharedAssetsProject ("C#");
+			shared.AddFile ("Foo.cs");
+
+			sol.RootFolder.AddItem (shared);
+
+			// Reference to shared is added before adding project to solution
+			var main = new DotNetAssemblyProject ("C#");
+			main.References.Add (new ProjectReference (shared));
+			sol.RootFolder.AddItem (main);
+
+			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
+		}
+
+		[Test]
+		public void SharedProjectAddedAfterIncluder ()
+		{
+			var sol = new Solution ();
+			var shared = new SharedAssetsProject ("C#");
+			shared.AddFile ("Foo.cs");
+
+			// Reference to shared is added before adding project to solution
+			var main = new DotNetAssemblyProject ("C#");
+			main.References.Add (new ProjectReference (shared));
+			sol.RootFolder.AddItem (main);
+
+			sol.RootFolder.AddItem (shared);
+
+			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
+		}
 	}
 }
 
