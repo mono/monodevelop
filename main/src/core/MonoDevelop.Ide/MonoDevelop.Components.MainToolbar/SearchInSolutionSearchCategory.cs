@@ -31,6 +31,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.FindInFiles;
 using System.Linq;
 using MonoDevelop.Ide.Gui;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -88,9 +89,14 @@ namespace MonoDevelop.Components.MainToolbar
 				return 0;
 			}
 
-			DomRegion ISearchDataSource.GetRegion (int item)
+			TextSegment ISearchDataSource.GetRegion (int item)
 			{
-				return DomRegion.Empty;
+				return TextSegment.Invalid;
+			}
+
+			string ISearchDataSource.GetFileName (int item)
+			{
+				return null;
 			}
 
 			bool ISearchDataSource.CanActivate (int item)

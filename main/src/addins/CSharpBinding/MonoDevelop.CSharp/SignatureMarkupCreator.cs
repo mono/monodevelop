@@ -75,7 +75,11 @@ namespace MonoDevelop.CSharp
 			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
 
 			this.document = document;
-			this.options = document.GetOptionSet ();
+			if (document != null) {
+				this.options = document.GetOptionSet ();
+			} else {
+				this.options = RoslynTypeSystemService.Workspace.GetOptions ();
+			}
 		}
 
 		public string GetTypeReferenceString (ITypeSymbol type, bool highlight = true)

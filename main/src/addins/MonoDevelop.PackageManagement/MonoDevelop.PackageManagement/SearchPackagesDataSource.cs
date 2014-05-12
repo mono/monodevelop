@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using Xwt.Drawing;
 using ICSharpCode.PackageManagement;
+using ICSharpCode.NRefactory.Utils;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -68,9 +69,14 @@ namespace MonoDevelop.PackageManagement
 			return 0;
 		}
 
-		DomRegion ISearchDataSource.GetRegion (int item)
+		Mono.TextEditor.TextSegment ISearchDataSource.GetRegion (int item)
 		{
-			return DomRegion.Empty;
+			return Mono.TextEditor.TextSegment.Invalid;
+		}
+
+		string ISearchDataSource.GetFileName (int item)
+		{
+			return null;
 		}
 
 		bool ISearchDataSource.CanActivate (int item)

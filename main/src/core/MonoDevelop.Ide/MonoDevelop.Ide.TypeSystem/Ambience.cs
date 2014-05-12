@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 		
-		public virtual TooltipInformation GetTooltip (IEntity entity)
+		public virtual TooltipInformation GetTooltip (Microsoft.CodeAnalysis.ISymbol entity)
 		{
 			return null;
 		}

@@ -199,19 +199,11 @@ namespace MonoDevelop.CSharp
 		
 		static Dictionary<TypeKind, string> classTypes = new Dictionary<TypeKind, string> ();
 
-		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation GetTooltip (IEntity entity)
+		public override MonoDevelop.Ide.CodeCompletion.TooltipInformation GetTooltip (Microsoft.CodeAnalysis.ISymbol entity)
 		{
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
-			return null;
-//			return MonoDevelop.CSharp.Completion.MemberCompletionData.CreateTooltipInformation (
-//				entity.Compilation,
-//				null,
-//				null,
-//				new CSharpFormattingPolicy (),
-//				entity,
-//				false,
-//				true);
+			return MonoDevelop.CSharp.Completion.RoslynSymbolCompletionData.CreateTooltipInformation (null, entity, false, true);
 		}
 
 		static string GetString (TypeKind classType)

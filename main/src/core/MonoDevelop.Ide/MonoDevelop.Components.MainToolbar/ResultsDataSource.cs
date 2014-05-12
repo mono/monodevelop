@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.MainToolbar;
 using ICSharpCode.NRefactory.TypeSystem;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -134,10 +135,16 @@ namespace MonoDevelop.Components.MainToolbar
 			return this [item].GetDescriptionMarkupText (widget);
 		}
 
-		ICSharpCode.NRefactory.TypeSystem.DomRegion ISearchDataSource.GetRegion (int item)
+		TextSegment ISearchDataSource.GetRegion (int item)
 		{
 			var result = this [item];
-			return new DomRegion (result.File, result.Row, result.Column, result.Row, result.Column);
+			return new TextSegment (result.Offset, result.Length);
+		}
+
+		string ISearchDataSource.GetFileName (int item)
+		{
+			var result = this [item];
+			return result.File;
 		}
 
 		bool ISearchDataSource.CanActivate (int item)

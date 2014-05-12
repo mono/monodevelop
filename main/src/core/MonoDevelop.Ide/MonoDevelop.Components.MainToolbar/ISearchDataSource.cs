@@ -26,8 +26,8 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
+using Mono.TextEditor;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -42,7 +42,9 @@ namespace MonoDevelop.Components.MainToolbar
 		TooltipInformation GetTooltip (int item);
 		double GetWeight (int item);
 
-		DomRegion GetRegion (int item);
+		TextSegment GetRegion (int item);
+		string GetFileName (int item);
+
 		bool CanActivate (int item);
 		void Activate (int item);
 	}

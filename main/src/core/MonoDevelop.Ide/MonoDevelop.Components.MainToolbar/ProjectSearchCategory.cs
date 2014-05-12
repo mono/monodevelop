@@ -32,11 +32,12 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core.Text;
 using Gtk;
 using System.Linq;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -55,19 +56,19 @@ namespace MonoDevelop.Components.MainToolbar
 
 		static TimerCounter getTypesTimer = InstrumentationService.CreateTimerCounter ("Time to get all types", "NavigateToDialog");
 
-		IEnumerable<ITypeDefinition> types {
+		IEnumerable<INamedTypeSymbol> types {
 			get {
 				getTypesTimer.BeginTiming ();
 				try {
-					foreach (Document doc in IdeApp.Workbench.Documents) {
+					foreach (var doc in IdeApp.Workbench.Documents) {
 						// We only want to check it here if it's not part
 						// of the open combine. Otherwise, it will get
 						// checked down below.
 						if (doc.Project == null && doc.IsFile) {
 							var info = doc.ParsedDocument;
 							if (info != null) {
-								var ctx = doc.Compilation;
-								foreach (var type in ctx.MainAssembly.GetAllTypeDefinitions ()) {
+								var ctx = doc.GetCompilationAsync ().Result;
+								foreach (var type in ctx.GetAllTypes ()) {
 									yield return type;
 								}
 							}
@@ -76,10 +77,13 @@ namespace MonoDevelop.Components.MainToolbar
 					
 					var projects = IdeApp.Workspace.GetAllProjects ();
 					
-					foreach (Project p in projects) {
-						var pctx = TypeSystemService.GetCompilation (p);
-						foreach (var type in pctx.MainAssembly.GetAllTypeDefinitions ())
-							yield return type;
+					foreach (var p in projects) {
+						var pctx = RoslynTypeSystemService.GetCompilationAsync (p).Result;
+						if (pctx == null)
+							continue;
+						foreach (var type in pctx.GetAllTypes ())
+							if (type.Locations.First ().IsInSource)
+								yield return type;
 					}
 				} finally {
 					getTypesTimer.EndTiming ();
@@ -109,7 +113,7 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag) ;
 					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
 					var firstType = types.FirstOrDefault ();
-					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Region.FileName) : AmbienceService.DefaultAmbience;
+					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Locations.First ().FilePath) : AmbienceService.DefaultAmbience;
 					
 					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);
@@ -138,7 +142,7 @@ namespace MonoDevelop.Components.MainToolbar
 			uint x = 0;
 			// Search Types
 			if (newResult.IncludeTypes && (newResult.Tag == null || typeTags.Any (t => t == newResult.Tag))) {
-				newResult.filteredTypes = new List<ITypeDefinition> ();
+				newResult.filteredTypes = new List<INamedTypeSymbol> ();
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredTypes != null;
 				var allTypes = startsWithLastFilter ? lastResult.filteredTypes : types;
 				foreach (var type in allTypes) {
@@ -146,15 +150,15 @@ namespace MonoDevelop.Components.MainToolbar
 						return;
 
 					if (newResult.Tag != null) {
-						if (newResult.Tag == "c" && type.Kind != TypeKind.Class)
+						if (newResult.Tag == "c" && type.TypeKind != TypeKind.Class)
 							continue;
-						if (newResult.Tag == "s" && type.Kind != TypeKind.Struct)
+						if (newResult.Tag == "s" && type.TypeKind != TypeKind.Struct)
 							continue;
-						if (newResult.Tag == "i" && type.Kind != TypeKind.Interface)
+						if (newResult.Tag == "i" && type.TypeKind != TypeKind.Interface)
 							continue;
-						if (newResult.Tag == "e" && type.Kind != TypeKind.Enum)
+						if (newResult.Tag == "e" && type.TypeKind != TypeKind.Enum)
 							continue;
-						if (newResult.Tag == "d" && type.Kind != TypeKind.Delegate)
+						if (newResult.Tag == "d" && type.TypeKind != TypeKind.Delegate)
 							continue;
 					}
 					SearchResult curResult = newResult.CheckType (type);
@@ -167,7 +171,7 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			// Search members
 			if (newResult.IncludeMembers && (newResult.Tag == null || memberTags.Any (t => t == newResult.Tag))) {
-				newResult.filteredMembers = new List<Tuple<ITypeDefinition, IUnresolvedMember>> ();
+				newResult.filteredMembers = new List<Tuple<INamedTypeSymbol, ISymbol>> ();
 				bool startsWithLastFilter = lastResult.pattern != null && newResult.pattern.StartsWith (lastResult.pattern, StringComparison.Ordinal) && lastResult.filteredMembers != null;
 				if (startsWithLastFilter) {
 					foreach (var t in lastResult.filteredMembers) {
@@ -175,13 +179,13 @@ namespace MonoDevelop.Components.MainToolbar
 							return;
 						var member = t.Item2;
 						if (newResult.Tag != null) {
-							if (newResult.Tag == "m" && member.SymbolKind != SymbolKind.Method)
+							if (newResult.Tag == "m" && member.Kind != SymbolKind.Method)
 								continue;
-							if (newResult.Tag == "p" && member.SymbolKind != SymbolKind.Property)
+							if (newResult.Tag == "p" && member.Kind != SymbolKind.Property)
 								continue;
-							if (newResult.Tag == "f" && member.SymbolKind != SymbolKind.Field)
+							if (newResult.Tag == "f" && member.Kind != SymbolKind.Field)
 								continue;
-							if (newResult.Tag == "evt" && member.SymbolKind != SymbolKind.Event)
+							if (newResult.Tag == "evt" && member.Kind != SymbolKind.Event)
 								continue;
 						}
 						SearchResult curResult = newResult.CheckMember (t.Item1, member);
@@ -191,15 +195,15 @@ namespace MonoDevelop.Components.MainToolbar
 						}
 					}
 				} else {
-					Func<IUnresolvedMember, bool> mPred = member => {
+					Func<ISymbol, bool> mPred = member => {
 						if (newResult.Tag != null) {
-							if (newResult.Tag == "m" && member.SymbolKind != SymbolKind.Method)
+							if (newResult.Tag == "m" && member.Kind != SymbolKind.Method)
 								return false;
-							if (newResult.Tag == "p" && member.SymbolKind != SymbolKind.Property)
+							if (newResult.Tag == "p" && member.Kind != SymbolKind.Property)
 								return false;
-							if (newResult.Tag == "f" && member.SymbolKind != SymbolKind.Field)
+							if (newResult.Tag == "f" && member.Kind != SymbolKind.Field)
 								return false;
-							if (newResult.Tag == "evt" && member.SymbolKind != SymbolKind.Event)
+							if (newResult.Tag == "evt" && member.Kind != SymbolKind.Event)
 								return false;
 						}
 						return newResult.IsMatchingMember (member);
@@ -208,19 +212,21 @@ namespace MonoDevelop.Components.MainToolbar
 					getMembersTimer.BeginTiming ();
 					try {
 						foreach (var type in types) {
-							if (type.Kind == TypeKind.Delegate)
+							if (type.IsDelegateType ())
 								continue;
-							foreach (var p in type.Parts) {
-								foreach (var member in p.Members.Where (mPred)) {
-									if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
-										return;
-									SearchResult curResult = newResult.CheckMember (type, member);
-									if (curResult != null) {
-										newResult.filteredMembers.Add (Tuple.Create (type, member));
-										newResult.results.AddResult (curResult);
-									}
+							//							foreach (var p in type.Parts) {
+							foreach (ISymbol member in type.GetMembers ().Where (mPred)) {
+								if (member is INamedTypeSymbol || member.IsImplicitlyDeclared || !(member.Locations.First ().IsInSource))
+									continue;
+								if (unchecked(x++) % 100 == 0 && token.IsCancellationRequested)
+									return;
+								SearchResult curResult = newResult.CheckMember (type, member);
+								if (curResult != null) {
+									newResult.filteredMembers.Add (Tuple.Create (type, member));
+									newResult.results.AddResult (curResult);
 								}
-							}
+								}
+							//	}
 						}
 					} finally {
 						getMembersTimer.EndTiming ();
@@ -237,8 +243,8 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 
 			public List<ProjectFile> filteredFiles;
-			public List<ITypeDefinition> filteredTypes;
-			public List<Tuple<ITypeDefinition, IUnresolvedMember>> filteredMembers;
+			public List<INamedTypeSymbol> filteredTypes;
+			public List<Tuple<INamedTypeSymbol, ISymbol>> filteredMembers;
 			string pattern2;
 			char firstChar;
 			char[] firstChars;
@@ -284,39 +290,39 @@ namespace MonoDevelop.Components.MainToolbar
 				return null;
 			}
 			
-			internal SearchResult CheckType (ITypeDefinition type)
+			internal SearchResult CheckType (INamedTypeSymbol type)
 			{
 				int rank;
 				if (MatchName (TypeSearchResult.GetPlainText (type, false), out rank)) {
-					if (type.DeclaringType != null)
+					if (type.ContainingType != null)
 						rank--;
 					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, false), rank, type, false) { Ambience = ambience };
 				}
 				if (!FullSearch)
 					return null;
 				if (MatchName (TypeSearchResult.GetPlainText (type, true), out rank)) {
-					if (type.DeclaringType != null)
+					if (type.ContainingType != null)
 						rank--;
 					return new TypeSearchResult (pattern, TypeSearchResult.GetPlainText (type, true), rank, type, true) { Ambience = ambience };
 				}
 				return null;
 			}
 			
-			internal SearchResult CheckMember (ITypeDefinition declaringType, IUnresolvedMember member)
+			internal SearchResult CheckMember (INamedTypeSymbol declaringType, ISymbol member)
 			{
 				int rank;
-				bool useDeclaringTypeName = member is IUnresolvedMethod && (((IUnresolvedMethod)member).IsConstructor || ((IUnresolvedMethod)member).IsDestructor);
-				string memberName = useDeclaringTypeName ? member.DeclaringTypeDefinition.Name : member.Name;
+				bool useDeclaringTypeName = member.Kind == SymbolKind.Method && (((IMethodSymbol)member).MethodKind == MethodKind.Constructor || ((IMethodSymbol)member).MethodKind == MethodKind.Destructor);
+				string memberName = useDeclaringTypeName ? member.ContainingType.Name : member.Name;
 				if (MatchName (memberName, out rank))
 					return new MemberSearchResult (pattern, memberName, rank, declaringType, member, false) { Ambience = ambience };
 				return null;
 			}
 
-			internal bool IsMatchingMember (IUnresolvedMember member)
+			internal bool IsMatchingMember (ISymbol member)
 			{
 				int rank;
-				bool useDeclaringTypeName = member is IUnresolvedMethod && (((IUnresolvedMethod)member).IsConstructor || ((IUnresolvedMethod)member).IsDestructor);
-				string memberName = useDeclaringTypeName ? member.DeclaringTypeDefinition.Name : member.Name;
+				bool useDeclaringTypeName = member.Kind == SymbolKind.Method && (((IMethodSymbol)member).MethodKind == MethodKind.Constructor || ((IMethodSymbol)member).MethodKind == MethodKind.Destructor);
+				string memberName = useDeclaringTypeName ? member.ContainingType.Name : member.Name;
 				return MatchName (memberName, out rank);
 			}
 

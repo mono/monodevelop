@@ -37,6 +37,8 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core.Text;
 using Gtk;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -51,7 +53,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		IEnumerable<ProjectFile> files {
 			get {
-				foreach (Document doc in IdeApp.Workbench.Documents) {
+				foreach (var doc in IdeApp.Workbench.Documents) {
 					// We only want to check it here if it's not part
 					// of the open combine.  Otherwise, it will get
 					// checked down below.
@@ -61,7 +63,7 @@ namespace MonoDevelop.Components.MainToolbar
 				
 				var projects = IdeApp.Workspace.GetAllProjects ();
 
-				foreach (Project p in projects) {
+				foreach (var p in projects) {
 					foreach (ProjectFile file in p.Files) {
 						if (file.Subtype != Subtype.Directory)
 							yield return file;
@@ -159,18 +161,6 @@ namespace MonoDevelop.Components.MainToolbar
 				if (MatchName (matchString, out rank)) 
 					return new FileSearchResult (pattern, matchString, rank, file, false);
 				
-				return null;
-			}
-			
-			internal SearchResult CheckType (ITypeDefinition type)
-			{
-				int rank;
-				if (MatchName (type.Name, out rank))
-					return new TypeSearchResult (pattern, type.Name, rank, type, false) { Ambience = ambience };
-				if (!FullSearch)
-					return null;
-				if (MatchName (type.FullName, out rank))
-					return new TypeSearchResult (pattern, type.FullName, rank, type, true) { Ambience = ambience };
 				return null;
 			}
 			
