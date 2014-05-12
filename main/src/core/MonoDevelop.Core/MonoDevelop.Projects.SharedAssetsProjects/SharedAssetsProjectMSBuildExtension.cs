@@ -42,6 +42,8 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			if (dnp == null)
 				return;
 
+			// Convert .projitems imports into project references
+
 			foreach (var sp in msproject.Imports.Where (im => im.Label == "Shared" && im.Project.EndsWith (".projitems"))) {
 				var projitemsFile = sp.Project;
 				if (!string.IsNullOrEmpty (projitemsFile)) {
