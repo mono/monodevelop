@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
+using Gtk;
 
 namespace MonoDevelop.JavaScript.TextEditor
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 			if (outlineTreeView != null)
 				return outlineTreeView;
 
-			outlineTreeStore = new Gtk.TreeStore (typeof(Gdk.Pixbuf), typeof(string), typeof(Jurassic.Compiler.JSAstNode));
+			outlineTreeStore = new Gtk.TreeStore (typeof(object));
 			outlineTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView (outlineTreeStore);
 			outlineTreeView.Realized += delegate {
 				refillOutlineStore ();
@@ -75,8 +76,19 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 			outlineTreeView.TextRenderer.Xpad = 0;
 			outlineTreeView.TextRenderer.Ypad = 0;
-			outlineTreeView.AppendColumn ("Icon", new Gtk.CellRendererPixbuf (), "pixbuf", 0);
-			outlineTreeView.AppendColumn ("Node", outlineTreeView.TextRenderer, "text", 1);
+
+			var pixRenderer = new CellRendererPixbuf ();
+			pixRenderer.Xpad = 0;
+			pixRenderer.Ypad = 0;
+
+			var treeCol = new TreeViewColumn ();
+			treeCol.PackStart (pixRenderer, false);
+
+			treeCol.SetCellDataFunc (pixRenderer, new TreeCellDataFunc (outlineTreeIconFunc));
+			treeCol.PackStart (outlineTreeView.TextRenderer, true);
+
+			treeCol.SetCellDataFunc (outlineTreeView.TextRenderer, new TreeCellDataFunc (outlineTreeTextFunc));
+			outlineTreeView.AppendColumn (treeCol);
 
 			outlineTreeView.HeadersVisible = false;
 
@@ -84,7 +96,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 				Gtk.TreeIter iter;
 				if (!outlineTreeView.Selection.GetSelected (out iter))
 					return;
-				selectSegment (outlineTreeStore.GetValue (iter, 2));
+				selectSegment (outlineTreeStore.GetValue (iter, 0));
 			};
 
 			refillOutlineStore ();
@@ -155,6 +167,54 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 		#region Private Methods
 
+		void outlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var pixRenderer = (CellRendererPixbuf)cell;
+			object o = model.GetValue (iter, 0);
+
+			if (o is Jurassic.Compiler.FunctionStatement || o is Jurassic.Compiler.FunctionExpression) {
+				pixRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Method, IconSize.Menu);
+			} else if (o is Jurassic.Compiler.VariableDeclaration) {
+				pixRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Field, IconSize.Menu);
+			} else if (o is JavaScript.Parser.JavaScriptParsedDocument) {
+				pixRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.FileXmlIcon, IconSize.Menu);
+			} else {
+				throw new ArgumentException (string.Format ("Type {0} is not supported in JavaScript Outline.", o.GetType ().Name));
+			}
+		}
+
+		void outlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			var txtRenderer = (CellRendererText)cell;
+			object o = model.GetValue (iter, 0);
+
+			var functionExpression = o as Jurassic.Compiler.FunctionExpression;
+			if (functionExpression != null) {
+				txtRenderer.Text = functionExpression.BuildFunctionSignature ();
+				return;
+			} 
+
+			var functionStatement = o as Jurassic.Compiler.FunctionStatement;
+			if (functionStatement != null) {
+				txtRenderer.Text = functionStatement.BuildFunctionSignature ();
+				return;
+			} 
+
+			var varDeclaration = o as Jurassic.Compiler.VariableDeclaration;
+			if (varDeclaration != null) {
+				txtRenderer.Text = varDeclaration.VariableName;
+				return;
+			}
+
+			var document = o as JavaScript.Parser.JavaScriptParsedDocument;
+			if (document != null) {
+				txtRenderer.Text = System.IO.Path.GetFileName (document.FileName);
+				return;
+			}
+
+			throw new ArgumentException (string.Format ("Type {0} is not supported in JavaScript Outline.", o.GetType ().Name));
+		}
+
 		bool refillOutlineStoreIdleHandler ()
 		{
 			refreshingOutline = false;
@@ -195,9 +255,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 			if (doc == null)
 				return;
 
-			var fileIcon = ImageService.GetPixbuf (Stock.TextFileIcon, Gtk.IconSize.Menu);
-			var parentIter = store.AppendValues (fileIcon, doc.FileName, doc);
-
+			var parentIter = store.AppendValues (doc);
 			buildTreeChildren (store, parentIter, doc.AstNodes);
 		}
 
@@ -210,10 +268,8 @@ namespace MonoDevelop.JavaScript.TextEditor
 				Gtk.TreeIter childIter = default (Gtk.TreeIter);
 				var variableStatement = node as Jurassic.Compiler.VarStatement;
 				if (variableStatement != null) {
-					var icon = ImageService.GetPixbuf (Stock.Field, Gtk.IconSize.Menu);
-
 					foreach (Jurassic.Compiler.VariableDeclaration variableDeclaration in variableStatement.Declarations) {
-						childIter = store.AppendValues (parent, icon, string.Concat (variableDeclaration.VariableName), variableDeclaration);
+						childIter = store.AppendValues (parent, variableDeclaration);
 					}
 
 					buildTreeChildren (store, childIter, node.ChildNodes);
@@ -223,23 +279,15 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 				var functionStatement = node as Jurassic.Compiler.FunctionStatement;
 				if (functionStatement != null) {
-					var icon = ImageService.GetPixbuf (Stock.Method, Gtk.IconSize.Menu);
-
-					childIter = store.AppendValues (parent, icon, functionStatement.BuildFunctionSignature (), functionStatement);
-
+					childIter = store.AppendValues (parent, functionStatement);
 					buildTreeChildren (store, childIter, functionStatement.BodyRoot.ChildNodes);
-
 					continue;
 				}
 
 				var functionExpression = node as Jurassic.Compiler.FunctionExpression;
 				if (functionExpression != null) {
-					var icon = ImageService.GetPixbuf (Stock.Method, Gtk.IconSize.Menu);
-
-					childIter = store.AppendValues (parent, icon, functionExpression.BuildFunctionSignature (), functionExpression);
-
+					childIter = store.AppendValues (parent, functionExpression);
 					buildTreeChildren (store, childIter, functionExpression.BodyRoot.ChildNodes);
-
 					continue;
 				}
 
