@@ -2,9 +2,9 @@
 // JSBeautifier.cs
 //
 // Author:
-//       Harsimran Bath <harsimranbath@gmail.com>
+//       rekna <https://jsbeautifylib.codeplex.com/>
 //
-// Copyright (c) 2014 Harsimran
+// Copyright (c) 2014 Rekna
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-// License MIT : https://jsbeautifylib.codeplex.com/
-
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
