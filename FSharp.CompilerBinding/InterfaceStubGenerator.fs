@@ -331,12 +331,72 @@ module InterfaceStubGenerator =
         seq {
             for (iface, instantiations) in getInterfaces e do
                 yield! iface.MembersFunctionsAndValues |> Seq.choose (fun m -> 
-                           // Use this hack when FCS doesn't return enough information on .NET properties
-                           if iface.IsFSharp || not m.IsProperty then Some (m, instantiations) else None)
+                           // Use this hack when FCS doesn't return enough information on .NET properties and events
+                           if not iface.IsFSharp && m.IsEvent && not (m.DisplayName.StartsWith "add_") && not (m.DisplayName.StartsWith "remove_") then 
+                               None
+                           elif not iface.IsFSharp && m.IsProperty then 
+                               None 
+                           else Some (m, instantiations))
          }
 
     let hasNoInterfaceMember e =
         getInterfaceMembers e |> Seq.isEmpty
+
+    let internal (|LongIdentPattern|_|) = function
+        | SynPat.LongIdent(LongIdentWithDots(xs, _), _, _, _, _, _) ->
+            let (name, range) = xs |> Seq.map (fun x -> x.idText, x.idRange) |> Seq.last
+            Some(name, range)
+        | _ -> 
+            None
+
+    let internal (|MemberNameAndRange|_|) = function
+        | Binding(_access, _bindingKind, _isInline, _isMutable, _attrs, _xmldoc, _valData, LongIdentPattern(name, range), _retTy, _expr, _bindingRange, _seqPoint) ->
+            Some(name, range)
+        | _ ->
+            None
+
+    /// Get associated member names and ranges
+    /// In case of properties, intrinsic ranges might not be correct for the purpose of getting
+    /// positions of 'member', which indicate the indentation for generating new members
+    let getMemberNameAndRanges = function
+        | InterfaceData.Interface(_, None) -> 
+            []
+        | InterfaceData.Interface(_, Some memberDefns) -> 
+            memberDefns
+            |> Seq.choose (function (SynMemberDefn.Member(binding, _)) -> Some binding | _ -> None)
+            |> Seq.choose (|MemberNameAndRange|_|)
+            |> Seq.toList
+        | InterfaceData.ObjExpr(_, bindings) -> 
+            List.choose (|MemberNameAndRange|_|) bindings
+
+    // Sometimes interface members are stored in the form of `IInterface<'T> -> ...` so we need to get the 2nd generic arguments
+    let internal (|MemberFunctionType|_|) (typ: FSharpType) =
+        if typ.IsFunctionType && typ.GenericArguments.Count = 2 then
+            Some typ.GenericArguments.[1]
+        else None
+
+    let internal (|TypeOfMember|) (m: FSharpMemberFunctionOrValue) =
+        let typ = m.FullType
+        match typ with
+        | MemberFunctionType typ when m.IsProperty && m.EnclosingEntity.IsFSharp ->
+            typ
+        | _ -> typ
+
+    let internal (|EventFunctionType|_|) (typ: FSharpType) =
+        match typ with
+        | MemberFunctionType typ ->
+            if typ.IsFunctionType && typ.GenericArguments.Count = 2 then
+                let retType = typ.GenericArguments.[0]
+                let argType = typ.GenericArguments.[1]
+                if argType.GenericArguments.Count = 2 then
+                    Some (argType.GenericArguments.[0], retType)
+                else None
+            else None
+        | _ ->
+            None
+
+    let internal removeWhitespace (str: string) = 
+        str.Replace(" ", "")
 
     /// Ideally this info should be returned in error symbols from FCS
     /// Because it isn't, we implement a crude way of getting member signatures:
@@ -344,50 +404,32 @@ module InterfaceStubGenerator =
     ///  (2) Check symbols of those members based on ranges
     ///  (3) If any symbol found, capture its member signature 
     let getImplementedMemberSignatures (getMemberByLocation: string * range -> Async<FSharpSymbolUse option>) displayContext interfaceData = 
-        let (|LongIdentPattern|_|) = function
-            | SynPat.LongIdent(LongIdentWithDots(xs, _), _, _, _, _, _) ->
-                let (name, range) = xs |> Seq.map (fun x -> x.idText, x.idRange) |> Seq.last
-                Some(name, range)
-            | _ -> 
-                None
-
-        let (|MemberNameAndRange|_|) = function
-            | Binding(_access, _bindingKind, _isInline, _isMutable, _attrs, _xmldoc, _valData, LongIdentPattern(name, range), _retTy, _expr, _bindingRange, _seqPoint) ->
-                Some(name, range)
-            | _ ->
-                None
-
         let formatMemberSignature (symbolUse: FSharpSymbolUse) =
             Debug.Assert(symbolUse.Symbol :? FSharpMemberFunctionOrValue, "Only accept symbol use of members.")
-            let m = symbolUse.Symbol :?> FSharpMemberFunctionOrValue
-            try 
-                let signature = sprintf "%s:%s" m.DisplayName (m.FullType.Format(displayContext))
-                Some (signature.Replace(" ", ""))
+            try
+                let m = symbolUse.Symbol :?> FSharpMemberFunctionOrValue
+                match m.FullType with
+                | EventFunctionType(argType, retType) when m.IsEvent ->
+                    let signature = removeWhitespace (sprintf "%s:%s->%s" m.DisplayName (argType.Format(displayContext)) 
+                                        (retType.Format(displayContext)))
+                    // CLI events correspond to two members add_* and remove_*
+                    Some [ sprintf "add_%s" signature; sprintf "remove_%s" signature]
+                | typ ->
+                    let signature = removeWhitespace (sprintf "%s:%s" m.DisplayName (typ.Format(displayContext)))
+                    Some [signature]
             with _ ->
                 None
         async {
-            match interfaceData with
-            | InterfaceData.Interface(_, None) -> 
-                return Set.empty
-            | InterfaceData.Interface(_, Some memberDefns) -> 
-                let! symbolUses =
-                    memberDefns
-                    |> Seq.choose (function (SynMemberDefn.Member(binding, _)) -> Some binding | _ -> None)
-                    |> Seq.choose (|MemberNameAndRange|_|)
-                    |> Seq.map getMemberByLocation
-                    |> Async.Parallel
-                return symbolUses |> Seq.choose (Option.bind formatMemberSignature)
-                                  |> Set.ofSeq
-            | InterfaceData.ObjExpr(_, bindings) -> 
-                let! symbolUses =
-                    bindings
-                    |> Seq.choose (|MemberNameAndRange|_|)
-                    |> Seq.map getMemberByLocation
-                    |> Async.Parallel
-                return symbolUses |> Seq.choose (Option.bind formatMemberSignature)
-                                  |> Set.ofSeq
+            let! symbolUses = 
+                getMemberNameAndRanges interfaceData
+                |> Seq.map getMemberByLocation
+                |> Async.Parallel
+            return symbolUses |> Seq.choose (Option.bind formatMemberSignature)
+                              |> Seq.concat
+                              |> Set.ofSeq
         }
 
+    /// Check whether an entity is an interface or type abbreviation of an interface
     let rec isInterface (e: FSharpEntity) =
         e.IsInterface || (e.IsFSharpAbbreviation && isInterface e.AbbreviatedType.TypeDefinition)
 
@@ -419,11 +461,9 @@ module InterfaceStubGenerator =
             |> Seq.filter (fun (m, insts) -> 
                 // FullType might throw exceptions due to bugs in FCS
                 try
-                    Debug.Assert(m.FullType.IsFunctionType, "An interface member has to be of function type.")
-                    let fullSignature = sprintf "%s:%s" m.DisplayName (formatType { ctx with ArgInstantiations = insts }  m.FullType)
-                    // Sometimes interface members are stored in the form of `IInterface<'T> -> ...` so we need to get the 2nd generic arguments
-                    let partialSignature = sprintf "%s:%s" m.DisplayName (formatType { ctx with ArgInstantiations = insts }  m.FullType.GenericArguments.[1])
-                    not (Set.contains (fullSignature.Replace(" ", "")) excludedMemberSignatures || Set.contains (partialSignature.Replace(" ", "")) excludedMemberSignatures) 
+                    let (TypeOfMember typ) = m 
+                    let signature = removeWhitespace (sprintf "%s:%s" m.DisplayName (formatType { ctx with ArgInstantiations = insts }  typ))
+                    not (Set.contains signature excludedMemberSignatures) 
                 with _ -> true)
         // All members are already implemented
         if Seq.isEmpty missingMembers then
@@ -441,21 +481,18 @@ module InterfaceStubGenerator =
     let internal (|IndexerArgList|) xs =
         List.collect (|IndexerArg|) xs
 
-    let internal inRange range pos = 
-        AstTraversal.rangeContainsPosLeftEdgeInclusive range pos
-
     let tryFindInterfaceDeclaration (pos: pos) (parsedInput: ParsedInput) =
         let rec walkImplFileInput (ParsedImplFileInput(_name, _isScript, _fileName, _scopedPragmas, _hashDirectives, moduleOrNamespaceList, _)) = 
             List.tryPick walkSynModuleOrNamespace moduleOrNamespaceList
 
         and walkSynModuleOrNamespace(SynModuleOrNamespace(_lid, _isModule, decls, _xmldoc, _attributes, _access, range)) =
-            if not <| inRange range pos then
+            if not <| rangeContainsPos range pos then
                 None
             else
                 List.tryPick walkSynModuleDecl decls
 
         and walkSynModuleDecl(decl: SynModuleDecl) =
-            if not <| inRange decl.Range pos then
+            if not <| rangeContainsPos decl.Range pos then
                 None
             else
                 match decl with
@@ -479,14 +516,14 @@ module InterfaceStubGenerator =
                     None
 
         and walkSynTypeDefn(TypeDefn(_componentInfo, representation, members, range)) = 
-            if not <| inRange range pos then
+            if not <| rangeContainsPos range pos then
                 None
             else
                 walkSynTypeDefnRepr representation
                 |> Option.orElse (List.tryPick walkSynMemberDefn members)        
 
         and walkSynTypeDefnRepr(typeDefnRepr: SynTypeDefnRepr) = 
-            if not <| inRange typeDefnRepr.Range pos then
+            if not <| rangeContainsPos typeDefnRepr.Range pos then
                 None
             else
                 match typeDefnRepr with
@@ -496,7 +533,7 @@ module InterfaceStubGenerator =
                     None
 
         and walkSynMemberDefn (memberDefn: SynMemberDefn) =
-            if not <| inRange memberDefn.Range pos then
+            if not <| rangeContainsPos memberDefn.Range pos then
                 None
             else
                 match memberDefn with
@@ -505,7 +542,7 @@ module InterfaceStubGenerator =
                 | SynMemberDefn.AutoProperty(_attributes, _isStatic, _id, _type, _memberKind, _memberFlags, _xmlDoc, _access, expr, _r1, _r2) ->
                     walkExpr expr
                 | SynMemberDefn.Interface(interfaceType, members, _range) ->
-                    if inRange interfaceType.Range pos then
+                    if rangeContainsPos interfaceType.Range pos then
                         Some(InterfaceData.Interface(interfaceType, members))
                     else
                         Option.bind (List.tryPick walkSynMemberDefn) members
@@ -527,7 +564,7 @@ module InterfaceStubGenerator =
             walkExpr expr
 
         and walkExpr expr =
-            if not <| inRange expr.Range pos then 
+            if not <| rangeContainsPos expr.Range pos then 
                 None
             else
                 match expr with
@@ -555,11 +592,11 @@ module InterfaceStubGenerator =
                 | SynExpr.ObjExpr(ty, baseCallOpt, binds, ifaces, _range1, _range2) -> 
                     match baseCallOpt with
                     | None -> 
-                        if inRange ty.Range pos then
+                        if rangeContainsPos ty.Range pos then
                             Some (InterfaceData.ObjExpr(ty, binds))
                         else
                             ifaces |> List.tryPick (fun (InterfaceImpl(ty, binds, range)) ->
-                                if inRange range pos then 
+                                if rangeContainsPos range pos then 
                                     Some (InterfaceData.ObjExpr(ty, binds))
                                 else None)
                     | Some _ -> 
