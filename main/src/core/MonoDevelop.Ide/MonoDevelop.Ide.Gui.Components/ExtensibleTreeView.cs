@@ -410,7 +410,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				text_render.Pushed = true;
 				args.RetVal = true;
 				var entryset = BuildEntrySet ();
-				var menu = CreateContextMenu (entryset);
+				var menu = IdeApp.CommandService.CreateMenu (entryset, this);
 				if (menu != null) {
 					menu.Hidden += HandleMenuHidden;
 					GtkWorkarounds.ShowContextMenu (menu, tree, text_render.PopupAllocation);
@@ -1811,11 +1811,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				eset.AddItem (ViewCommands.RefreshTree);
 				return eset;
 			}
-		}
-
-		protected Gtk.Menu CreateContextMenu (CommandEntrySet entryset)
-		{
-			return IdeApp.CommandService.CreateMenu (entryset, this);
 		}
 
 		[CommandUpdateHandler (ViewCommands.TreeDisplayOptionList)]
