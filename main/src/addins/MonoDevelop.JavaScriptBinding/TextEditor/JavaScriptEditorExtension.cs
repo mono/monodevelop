@@ -361,6 +361,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 					foreach (Jurassic.Compiler.VariableDeclaration variableDeclaration in variableStatement.Declarations) {
 						completionList.Add (new CompletionData (variableDeclaration));
 					}
+					completionList.AddRange (buildCodeCompletionList (variableStatement.ChildNodes));
 					continue;
 				}
 
@@ -373,7 +374,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 				var functionExpression = node as Jurassic.Compiler.FunctionExpression;
 				if (functionExpression != null) {
-					// TODO : We are not yet parsing the name in a function expression.
+					completionList.Add (new CompletionData (functionExpression));
 					completionList.AddRange (buildCodeCompletionList (functionExpression.BodyRoot.ChildNodes));
 					continue;
 				}

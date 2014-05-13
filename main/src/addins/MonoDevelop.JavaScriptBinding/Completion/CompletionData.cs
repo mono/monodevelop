@@ -44,6 +44,14 @@ namespace MonoDevelop.JavaScript
 			description = string.Empty; // TODO
 		}
 
+		public CompletionData (Jurassic.Compiler.FunctionExpression statement)
+		{
+			image = Stock.Method;
+			text = statement.BuildFunctionSignature ();
+			completionString = text;
+			description = string.Empty; // TODO
+		}
+
 		public CompletionData (Jurassic.Compiler.VariableDeclaration varDeclaration)
 		{
 			image = Stock.Field;

@@ -41,4 +41,7 @@
 	<Extension path="/MonoDevelop/Ide/CodeTemplates">
 		<CodeTemplate file="Templates\JS-CodeTemplates.xml" />
 	</Extension>
+  <Extension path="/MonoDevelop/Ide/CompletionCharacters">
+    <Complete language="JavaScript" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+  </Extension>
 </Addin>

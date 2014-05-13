@@ -1219,7 +1219,7 @@ namespace Jurassic.Compiler
         /// <param name="functionType"> The type of function to parse. </param>
         /// <param name="parentScope"> The parent scope for the function. </param>
         /// <returns> A function expression. </returns>
-        private FunctionExpression ParseFunction(FunctionType functionType, Scope parentScope)
+        private FunctionExpression ParseFunction(FunctionType functionType, Scope parentScope, NameExpression nameExpression = null)
         {
             if (functionType != FunctionType.Getter && functionType != FunctionType.Setter)
             {
@@ -1236,8 +1236,12 @@ namespace Jurassic.Compiler
             else if (functionType == FunctionType.Expression)
             {
                 // The function name is optional for function expressions.
-                if (this.nextToken is IdentifierToken)
-                    functionName = this.ExpectIdentifier();
+	            if (this.nextToken is IdentifierToken)
+		            functionName = this.ExpectIdentifier ();
+	            else {
+		            if (nameExpression != null)
+			            functionName = nameExpression.Name;
+	            }
             }
             else if (functionType == FunctionType.Getter || functionType == FunctionType.Setter)
             {
@@ -1485,6 +1489,9 @@ namespace Jurassic.Compiler
             // The active operator, i.e. the one last encountered.
             OperatorExpression unboundOperator = null;
 
+			// Will be used by functionexpression, which has variable defined before
+	        NameExpression nameExpression = null;
+
             while (this.nextToken != null)
             {
                 if (this.nextToken is LiteralToken ||
@@ -1524,6 +1531,7 @@ namespace Jurassic.Compiler
                         // If the token is an identifier, convert it to a NameExpression.
                         var identifierName = ((IdentifierToken)this.nextToken).Name;
                         terminal = new NameExpression(this.currentScope, identifierName);
+	                    nameExpression = terminal as NameExpression;
 
                         // Record each occurance of a variable name.
                         if (unboundOperator == null || unboundOperator.OperatorType != OperatorType.MemberAccess)
@@ -1544,7 +1552,7 @@ namespace Jurassic.Compiler
                         // Object literal.
                         terminal = ParseObjectLiteral();
                     else if (this.nextToken == KeywordToken.Function)
-                        terminal = ParseFunctionExpression();
+						terminal = ParseFunctionExpression (nameExpression);
                     else
                         throw new InvalidOperationException("Unsupported literal type.");
 
@@ -1983,9 +1991,9 @@ namespace Jurassic.Compiler
         /// Parses a function expression.
         /// </summary>
         /// <returns> A function expression. </returns>
-        private FunctionExpression ParseFunctionExpression()
+        private FunctionExpression ParseFunctionExpression(NameExpression nameExpression = null)
         {
-            return ParseFunction(FunctionType.Expression, this.currentScope);
+			return ParseFunction (FunctionType.Expression, this.currentScope, nameExpression);
         }
     }
 
