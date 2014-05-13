@@ -142,12 +142,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			buffer.TagTable.Add (bold);
 			
 			errorTag = new TextTag ("error");
-			errorTag.Foreground = "red";
+			errorTag.Foreground = "#dc3122";
 			errorTag.Weight = Weight.Bold;
 			buffer.TagTable.Add (errorTag);
 
 			debugTag = new TextTag ("debug");
-			debugTag.Foreground = "blue";
+			debugTag.Foreground = "#256ada";
 			buffer.TagTable.Add (debugTag);
 
 			consoleLogTag = new TextTag ("consoleLog");
