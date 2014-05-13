@@ -183,29 +183,23 @@ namespace MonoDevelop.CSharp.Completion
 			base.Dispose ();
 		}
 
-		void HandleDocumentParsed (object sender, EventArgs e)
+		async void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			var newDocument = Document.ParsedDocument;
+			var newDocument = Document.AnalysisDocument;
 			if (newDocument == null) 
 				return;
-			var newTree = TypeSystemSegmentTree.Create (Document);
+			var semanticModel = await newDocument.GetSemanticModelAsync ();
+			var newTree = TypeSystemSegmentTree.Create (Document, semanticModel);
 
-			if (unstableTypeSystemSegmentTree != null)
-				unstableTypeSystemSegmentTree.RemoveListener ();
-
-			if (!newDocument.HasErrors) {
-				if (validTypeSystemSegmentTree != null)
-					validTypeSystemSegmentTree.RemoveListener ();
-				validTypeSystemSegmentTree = newTree;
-				unstableTypeSystemSegmentTree = null;
-			} else {
-				unstableTypeSystemSegmentTree = newTree;
-			}
+			if (validTypeSystemSegmentTree != null)
+				validTypeSystemSegmentTree.RemoveListener ();
+			validTypeSystemSegmentTree = newTree;
 			newTree.InstallListener (document.Editor.Document);
 
 			if (TypeSegmentTreeUpdated != null)
 				TypeSegmentTreeUpdated (this, EventArgs.Empty);
 		}
+
 		public event EventHandler TypeSegmentTreeUpdated;
 
 		public void UpdateParsedDocument ()
@@ -1363,13 +1357,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			
-			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Gui.Document document)
+			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Gui.Document document, SemanticModel semanticModel)
 			{
 				TypeSystemSegmentTree result = new TypeSystemSegmentTree ();
 				
-//				foreach (var type in document.AnalysisDocument.GetSyntaxTreeAsync ().Result.)
+//				foreach (var type in semanticModel.SyntaxTree)
 //					AddType (document, result, type, type.lo);
-				
+//				
 				return result;
 			}
 			

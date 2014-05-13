@@ -24,82 +24,90 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Formatting;
 
 namespace MonoDevelop.CSharp
 {
 	class AstAmbience
 	{
-		CSharpFormattingOptions options;
+		OptionSet options;
 		
-		public AstAmbience (ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions options)
+		public AstAmbience (OptionSet options)
 		{
 			this.options = options;
 		}
 		
-		static bool IsObsolete (EntityDeclaration entity)
+		static bool IsObsolete (MemberDeclarationSyntax entity)
 		{
 			if (entity == null)
 				return false;
-			foreach (var section in entity.Attributes) {
-				foreach (var attr in section.Attributes) {
-					var attrText = attr.Type.ToString ();
-					if (attrText == "Obsolete" || attrText == "ObsoleteAttribute" || attrText == "System.Obsolete" || attrText == "System.ObsoleteAttribute" )
-						return true;
-				}
-			}
+			// TODO!
+//			foreach (var section in entity.Attributes) {
+//				foreach (var attr in section.Attributes) {
+//					var attrText = attr.Type.ToString ();
+//					if (attrText == "Obsolete" || attrText == "ObsoleteAttribute" || attrText == "System.Obsolete" || attrText == "System.ObsoleteAttribute" )
+//						return true;
+//				}
+//			}
 			return false;
 		}
 		
-		void AppendTypeParameter (StringBuilder sb, IEnumerable<TypeParameterDeclaration> parameters)
+		void AppendTypeParameter (StringBuilder sb, TypeParameterListSyntax parameters)
 		{
-			if (!parameters.Any ()) 
+			if (parameters == null || parameters.Parameters.Count == 0) 
 				return;
 			sb.Append ("&lt;");
 			bool first = true;
-			foreach (var param in parameters) {
+			foreach (var param in parameters.Parameters) {
 				if (!first) {
 					sb.Append (", ");
 				} else {
 					first = false;
 				}
-				AppendEscaped (sb, param.ToString (options));
+				AppendEscaped (sb, param.ToString ());
 			}
 			sb.Append ("&gt;");
 		}
 		
-		void AppendParameter (StringBuilder sb, IEnumerable<ParameterDeclaration> parameters)
+		void AppendParameter (StringBuilder sb, ParameterListSyntax parameters)
 		{
-			if (options.SpaceBeforeMethodDeclarationParentheses)
-				sb.Append (" ");
+			// Missing roslyn formatting option ?
+			//			if (options.GetOption (CSharpFormattingOptions.Spacing ???))
+			//	sb.Append (" ");
 			sb.Append ("(");
-			var hasParameters = parameters.Any ();
-			if (!hasParameters && options.SpaceBetweenEmptyMethodDeclarationParentheses) {
-				sb.Append (" )");
-				return;
-			}
-			if (hasParameters && options.SpaceWithinMethodDeclarationParentheses)
-				sb.Append (" ");
-			
+			var hasParameters = parameters != null && parameters.Parameters.Count > 0;
+
+			// Missing roslyn formatting option ?
+			//if (hasParameters && options.GetOption (SpaceWithinMethodDeclarationParentheses))
+			//	sb.Append (" ");
+
 			bool first = true;
-			foreach (var param in parameters) {
-				if (!first) {
-					if (options.SpaceBeforeMethodDeclarationParameterComma)
+			if (hasParameters) {
+				foreach (var param in parameters.Parameters) {
+					if (!first) {
+						//if (options.SpaceBeforeMethodDeclarationParameterComma)
+						//	sb.Append (" ");
+						sb.Append (",");
+						//if (options.SpaceAfterMethodDeclarationParameterComma)
 						sb.Append (" ");
-					sb.Append (",");
-					if (options.SpaceAfterMethodDeclarationParameterComma)
-						sb.Append (" ");
-				} else {
-					first = false;
+					} else {
+						first = false;
+					}
+					AppendEscaped (sb, param.ToString ());
 				}
-				AppendEscaped (sb, param.ToString (options));
 			}
-			if (hasParameters && options.SpaceWithinMethodDeclarationParentheses)
-				sb.Append (" ");
+
+			// Missing roslyn formatting option ?
+			//if (hasParameters && options.SpaceWithinMethodDeclarationParentheses)
+			//	sb.Append (" ");
 			sb.Append (")");
 		}
 		
@@ -131,128 +139,118 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		public string GetEntityMarkup (AstNode e)
+		public string GetEntityMarkup (SyntaxNode e)
 		{
 			var sb = new StringBuilder ();
-			if (e is TypeDeclaration) {
-				var type = e as TypeDeclaration;
-				sb.Append (type.Name);
-				AppendTypeParameter (sb, type.TypeParameters);
-			} else if (e is DelegateDeclaration) {
-				var del = e as DelegateDeclaration;
-				sb.Append (del.Name);
-				AppendTypeParameter (sb, del.TypeParameters);
-				AppendParameter (sb, del.Parameters);
-			} else if (e is Accessor) {
-				if (e.Role == PropertyDeclaration.GetterRole) {
+			if (e is TypeDeclarationSyntax) {
+				var type = e as TypeDeclarationSyntax;
+				sb.Append (type.Identifier);
+				AppendTypeParameter (sb, type.TypeParameterList);
+			} else if (e is DelegateDeclarationSyntax) {
+				var del = e as DelegateDeclarationSyntax;
+				sb.Append (del.Identifier);
+				AppendTypeParameter (sb, del.TypeParameterList);
+				AppendParameter (sb, del.ParameterList);
+			} else if (e is AccessorDeclarationSyntax) {
+				if (e.CSharpKind () == SyntaxKind.GetAccessorDeclaration) {
 					sb.Append ("get");
-				} else if (e.Role == PropertyDeclaration.SetterRole) {
+				} else if (e.CSharpKind () == SyntaxKind.SetAccessorDeclaration) {
 					sb.Append ("set");
-				} else if (e.Role == CustomEventDeclaration.AddAccessorRole) {
+				} else if (e.CSharpKind () == SyntaxKind.AddAccessorDeclaration) {
 					sb.Append ("add");
-				} else if (e.Role == CustomEventDeclaration.RemoveAccessorRole) {
+				} else if (e.CSharpKind () == SyntaxKind.RemoveAccessorDeclaration) {
 					sb.Append ("remove");
 				}
-			} else if (e is OperatorDeclaration) {
-				var op = e as OperatorDeclaration;
+			} else if (e is OperatorDeclarationSyntax) {
+				var op = (OperatorDeclarationSyntax)e;
 				sb.Append ("operator ");
-				if (!op.OperatorTypeToken.IsNull)
-					AppendEscaped (sb, op.OperatorTypeToken.ToString ());
-				AppendParameter (sb, op.Parameters);
-			} else if (e is MethodDeclaration) {
-				var method = e as MethodDeclaration;
-				if (!method.PrivateImplementationType.IsNull)
-					AppendEscaped (sb, method.PrivateImplementationType.ToString () + ".");
-				sb.Append (method.Name);
-				AppendTypeParameter (sb, method.TypeParameters);
-				AppendParameter (sb, method.Parameters);
-				if (method.Body.IsNull) {
+				AppendEscaped (sb, op.OperatorToken.ToString ());
+				AppendParameter (sb, op.ParameterList);
+			} else if (e is MethodDeclarationSyntax) {
+				var method = (MethodDeclarationSyntax)e;
+				if (method.ExplicitInterfaceSpecifier != null)
+					AppendEscaped (sb, method.ExplicitInterfaceSpecifier + ".");
+				sb.Append (method.Identifier);
+				AppendTypeParameter (sb, method.TypeParameterList);
+				AppendParameter (sb, method.ParameterList);
+				if (!method.Body.IsMissing) {
 					string tag = null;
-					if (method.HasModifier (Modifiers.Abstract))
+					if (method.Modifiers.Any (m => m.CSharpKind () == SyntaxKind.AbstractKeyword))
 						tag = GettextCatalog.GetString ("(abstract)");
-					if (method.HasModifier (Modifiers.Partial))
+					if (method.Modifiers.Any (m => m.CSharpKind () == SyntaxKind.PartialKeyword))
 						tag = GettextCatalog.GetString ("(partial)");
 					if (tag != null)
 						sb.Append (" <small>" + tag + "</small>");
 				}
-			} else if (e is ConstructorDeclaration) {
-				var constructor = e as ConstructorDeclaration;
-				sb.Append (constructor.Name);
-				AppendParameter (sb, constructor.Parameters);
-			} else if (e is DestructorDeclaration) {
-				var destructror = e as DestructorDeclaration;
+			} else if (e is ConstructorDeclarationSyntax) {
+				var constructor = e as ConstructorDeclarationSyntax;
+				sb.Append (constructor.Identifier);
+				AppendParameter (sb, constructor.ParameterList);
+			} else if (e is DestructorDeclarationSyntax) {
+				var destructror = e as DestructorDeclarationSyntax;
 				sb.Append ("~");
-				sb.Append (destructror.Name);
-				if (options.SpaceBeforeMethodDeclarationParentheses)
-					sb.Append (" ");
+				sb.Append (destructror.Identifier);
+				//				if (options.SpaceBeforeMethodDeclarationParentheses)
+				//	sb.Append (" ");
 				sb.Append ("()");
-			} else if (e is IndexerDeclaration) {
-				var indexer = e as IndexerDeclaration;
+			} else if (e is IndexerDeclarationSyntax) {
+				var indexer = e as IndexerDeclarationSyntax;
 				sb.Append ("this");
-				if (options.SpaceBeforeIndexerDeclarationBracket)
-					sb.Append (" ");
+				//if (options.SpaceBeforeIndexerDeclarationBracket)
+				//	sb.Append (" ");
 				sb.Append ("[");
-				if (options.SpaceWithinIndexerDeclarationBracket)
-					sb.Append (" ");
+				//if (options.SpaceWithinIndexerDeclarationBracket)
+				//	sb.Append (" ");
 				
 				bool first = true;
-				foreach (var param in indexer.Parameters) {
+				foreach (var param in indexer.ParameterList.Parameters) {
 					if (!first) {
-						if (options.SpaceBeforeIndexerDeclarationParameterComma)
-							sb.Append (" ");
+						//if (options.SpaceBeforeIndexerDeclarationParameterComma)
+						//	sb.Append (" ");
 						sb.Append (",");
-						if (options.SpaceAfterIndexerDeclarationParameterComma)
-							sb.Append (" ");
+						//if (options.SpaceAfterIndexerDeclarationParameterComma)
+						//	sb.Append (" ");
 					} else {
 						first = false;
 					}
-					sb.Append (param.ToString (options));
+					sb.Append (param.ToString ());
 				}
-				if (options.SpaceWithinIndexerDeclarationBracket)
-					sb.Append (" ");
+				//if (options.SpaceWithinIndexerDeclarationBracket)
+				//	sb.Append (" ");
 				sb.Append ("]");
-			} else if (e is VariableInitializer) {
-				var initializer = (VariableInitializer)e;
-				sb.Append (initializer.Name);
-				if (IsObsolete (initializer.Parent as EntityDeclaration))
+			} else if (e is VariableDeclaratorSyntax) {
+				var initializer = (VariableDeclaratorSyntax)e;
+				sb.Append (initializer.Identifier);
+				if (IsObsolete (initializer.Parent as MemberDeclarationSyntax))
 					return "<s>" + sb.ToString () + "</s>";
-			} else if (e is FixedVariableInitializer) {
-				var initializer = (FixedVariableInitializer)e;
-				sb.Append (initializer.Name);
-				if (IsObsolete (initializer.Parent as EntityDeclaration))
-					return "<s>" + sb.ToString () + "</s>";
-			} else if (e is FieldDeclaration) {
-				var field = (FieldDeclaration)e;
-				if (!field.Variables.Any ())
+			} else if (e is FieldDeclarationSyntax) {
+				var field = (FieldDeclarationSyntax)e;
+				if (!field.Declaration.Variables.Any ())
 					return "";
-				sb.Append (field.Variables.First ().Name);
-			} else if (e is FixedFieldDeclaration) {
-				var field = (FixedFieldDeclaration)e;
-				if (!field.Variables.Any ())
+				sb.Append (field.Declaration.Variables.First ().Identifier);
+			} else if (e is EventFieldDeclarationSyntax) {
+				var evt = (EventFieldDeclarationSyntax)e;
+				if (!evt.Declaration.Variables.Any ())
 					return "";
-				sb.Append (field.Variables.First ().Name);
-			} else if (e is EventDeclaration) {
-				var evt = (EventDeclaration)e;
-				if (!evt.Variables.Any ())
-					return "";
-				sb.Append (evt.Variables.First ().Name);
-			} else if (e is PropertyDeclaration) {
-				var property = (PropertyDeclaration)e;
-				if (!property.PrivateImplementationType.IsNull)
-					AppendEscaped (sb, property.PrivateImplementationType.ToString () + ".");
-				sb.Append (property.Name);
-			} else if (e is CustomEventDeclaration) {
-				var customEvent = (CustomEventDeclaration)e;
-				if (!customEvent.PrivateImplementationType.IsNull)
-					AppendEscaped (sb, customEvent.PrivateImplementationType.ToString () + ".");
-				sb.Append (customEvent.Name);
-			} else if (e is EntityDeclaration) {
-				var entity = (EntityDeclaration)e;
-				sb.Append (entity.Name);
-			}
+				sb.Append (evt.Declaration.Variables.First ().Identifier);
+			} else if (e is PropertyDeclarationSyntax) {
+				var property = (PropertyDeclarationSyntax)e;
+				if (property.ExplicitInterfaceSpecifier != null)
+					AppendEscaped (sb, property.ExplicitInterfaceSpecifier + ".");
+				sb.Append (property.Identifier);
+			} else if (e is EventDeclarationSyntax) {
+				var customEvent = (EventDeclarationSyntax)e;
+				if (customEvent.ExplicitInterfaceSpecifier != null)
+					AppendEscaped (sb, customEvent.ExplicitInterfaceSpecifier + ".");
+				sb.Append (customEvent.Identifier);
+			} /*else if (e is MemberDeclarationSyntax) {
+				LoggingService.LogWarning ("can't display : " + e);
+				//				var entity = (MemberDeclarationSyntax)e;
+				// sb.Append (entity.Name);
+			}*/
 
 			string markup = sb.ToString ();
-			if (IsObsolete (e as EntityDeclaration))
+			if (IsObsolete (e as MemberDeclarationSyntax))
 				return "<s>" + markup + "</s>";
 			return markup;
 		}

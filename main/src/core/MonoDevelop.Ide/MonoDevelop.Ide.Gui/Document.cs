@@ -598,6 +598,7 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified -= HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
+			RoslynTypeSystemService.Workspace.WorkspaceChanged -= HandleWorkspaceChanged;
 			window = null;
 
 			parsedDocument = null;
@@ -776,8 +777,15 @@ namespace MonoDevelop.Ide.Gui
 			if (project != null)
 				project.Modified += HandleProjectModified;
 			InitializeExtensionChain ();
-
+			RoslynTypeSystemService.Workspace.WorkspaceChanged += HandleWorkspaceChanged;
 			ListenToProjectLoad (project);
+		}
+
+		void HandleWorkspaceChanged (object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e)
+		{
+			if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.DocumentChanged && e.DocumentId == analysisDocument) {
+				OnDocumentParsed (EventArgs.Empty);
+			}
 		}
 
 		void ListenToProjectLoad (Project project)

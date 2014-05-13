@@ -25,10 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp
 {
@@ -125,44 +127,70 @@ namespace MonoDevelop.CSharp
 			AstStockIcons.Event, AstStockIcons.PrivateEvent, AstStockIcons.Event, AstStockIcons.ProtectedEvent, AstStockIcons.InternalEvent, AstStockIcons.ProtectedOrInternalEvent, AstStockIcons.InternalAndProtectedEvent
 		};
 
-		static bool GetAccessibility (EntityDeclaration element, out Accessibility acc)
+		static void AdjustAccessibility (SyntaxTokenList modifiers, ref Accessibility acc, ref bool result)
 		{
-			if (element.Parent is TypeDeclaration && ((TypeDeclaration)element.Parent).ClassType == ClassType.Interface) {
+			if (modifiers.Any (mod => mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword) &&
+				modifiers.Any (mod => mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword)) {
+				acc = Accessibility.ProtectedOrInternal;
+				result = true;
+				return;
+			}
+
+			foreach (var mod in modifiers) {
+				if (mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword) {
+					acc = Accessibility.Public;
+					result = true;
+					return;
+				}
+				if (mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword) {
+					acc = Accessibility.Private;
+					result = true;
+					return;
+				}
+					if (mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword) {
+					acc = Accessibility.Protected;
+					result = true;
+					return;
+				}
+				if (mod.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword) {
+					acc = Accessibility.Internal;
+					result = true;
+					return;
+				}
+			}
+		}
+
+		static bool GetAccessibility (SyntaxNode element, out Accessibility acc)
+		{
+			if (element.Parent is TypeDeclarationSyntax && element.Parent is InterfaceDeclarationSyntax) {
 				acc = Accessibility.Public;
 				return true;
 			}
 			bool result = false;
 			acc = Accessibility.Private;
-			if (element is TypeDeclaration && !(element.Parent is TypeDeclaration))
+			if (element is TypeDeclarationSyntax && !(element.Parent is TypeDeclarationSyntax))
 				acc = Accessibility.Internal;
-			if (element.HasModifier (Modifiers.Public)) {
-				acc = Accessibility.Public;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Private)) {
-				acc = Accessibility.Private;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Protected | Modifiers.Internal)) {
-				acc = Accessibility.ProtectedOrInternal;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Protected)) {
-				acc = Accessibility.Protected;
-				result = true;
-			} else if (element.HasModifier (Modifiers.Internal)) {
-				acc = Accessibility.Internal;
-				result = true;
-			} 
+
+			if (element is TypeDeclarationSyntax)
+				AdjustAccessibility (((TypeDeclarationSyntax)element).Modifiers, ref acc, ref result);
+			if (element is BaseFieldDeclarationSyntax)
+				AdjustAccessibility (((BaseFieldDeclarationSyntax)element).Modifiers, ref acc, ref result);
+			if (element is BasePropertyDeclarationSyntax)
+				AdjustAccessibility (((BasePropertyDeclarationSyntax)element).Modifiers, ref acc, ref result);
+			if (element is BaseMethodDeclarationSyntax)
+				AdjustAccessibility (((BaseMethodDeclarationSyntax)element).Modifiers, ref acc, ref result);
 			return result;
 		}
 		
-		public static string GetStockIcon (this EntityDeclaration element, bool showAccessibility = true)
+		public static string GetStockIcon (this SyntaxNode element, bool showAccessibility = true)
 		{
 			Accessibility acc = Accessibility.Public;
 
 			
-			if (element is Accessor) {
+			if (element is AccessorDeclarationSyntax) {
 				if (showAccessibility) {
-					if (!GetAccessibility (element, out acc))
-						GetAccessibility (element.Parent as EntityDeclaration, out acc);
+					if (!GetAccessibility ((MemberDeclarationSyntax)element, out acc))
+						GetAccessibility (element.Parent as MemberDeclarationSyntax, out acc);
 				}
 
 				return methodIconTable [(int) (acc)];
@@ -172,41 +200,40 @@ namespace MonoDevelop.CSharp
 				GetAccessibility (element, out acc);
 			}
 
-			if (element is TypeDeclaration) {
-				var type = element as TypeDeclaration;
-				switch (type.ClassType) {
-				case ClassType.Class:
+			if (element is TypeDeclarationSyntax) {
+				var type = element as TypeDeclarationSyntax;
+				switch (type.Keyword.CSharpKind ()) {
+				case SyntaxKind.ClassKeyword:
 					return typeIconTable [0, (int) (acc)];
-				case ClassType.Struct:
+				case SyntaxKind.StructKeyword:
 					return typeIconTable [3, (int) (acc)];
-				case ClassType.Interface:
+				case SyntaxKind.InterfaceKeyword:
 					return typeIconTable [2, (int) (acc)];
-				case ClassType.Enum:
+				case SyntaxKind.EnumKeyword:
 					return typeIconTable [1, (int) (acc)];
 				default:
 					throw new ArgumentOutOfRangeException ();
 				}
 			}
-			if (element is DelegateDeclaration)
+			if (element is DelegateDeclarationSyntax)
 				return typeIconTable [4, (int) (acc)];
 
 			// member accessibility
 			GetAccessibility (element, out acc);
 
-			if (element is MethodDeclaration) {
-				var method = element as MethodDeclaration;
-				if (method.IsExtensionMethod)
-					return extensionMethodIconTable [(int) (acc)];
+			if (element is BaseMethodDeclarationSyntax) {
+				var method = element as MethodDeclarationSyntax;
+				// TODO!
+				//				if (method.ParameterList.Parameters.First ())
+				//	return extensionMethodIconTable [(int) (acc)];
 				return methodIconTable [(int) (acc)];
 			}
-			if (element is OperatorDeclaration || element is ConstructorDeclaration || element is DestructorDeclaration || element is Accessor)
-				return methodIconTable [(int) (acc)];
 
-			if (element is PropertyDeclaration)
+			if (element is PropertyDeclarationSyntax || element is IndexerDeclarationSyntax)
 				return propertyIconTable [(int) (acc)];
-			if (element is EventDeclaration || element is CustomEventDeclaration)
+			if (element is EventDeclarationSyntax || element is EventFieldDeclarationSyntax)
 				return eventIconTable [(int) (acc)];
-			 if (element.Parent is TypeDeclaration && ((TypeDeclaration)element.Parent).ClassType == ClassType.Enum)
+			if (element.Parent is EnumDeclarationSyntax)
 				acc = Accessibility.Public;
 			return fieldIconTable [(int) (acc)];
 		}
