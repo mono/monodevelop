@@ -204,6 +204,22 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
+		[Ignore ("TODO: SDB and CorDebugger")]
+		public void GetTypeTest ()
+		{
+			ObjectValue val;
+			val = Eval ("a.GetType()");
+			EnsureLoaded (val, true);
+			Assert.AreEqual ("System.Type", val.TypeName);
+			Assert.AreEqual ("A", val.Value);
+
+			val = Eval ("this.GetType()");
+			EnsureLoaded (val, true);
+			Assert.AreEqual ("System.Type", val.TypeName);
+			Assert.AreEqual ("TestEvaluation", val.Value);
+		}
+
+		[Test]
 		public void MethodInvoke ()
 		{
 			ObjectValue val;
