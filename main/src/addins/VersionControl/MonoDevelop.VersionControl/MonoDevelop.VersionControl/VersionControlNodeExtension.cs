@@ -45,13 +45,13 @@ namespace MonoDevelop.VersionControl
 				return;
 		
 			// Add status overlays
-			
+
 			if (dataObject is IWorkspaceObject) {
 				IWorkspaceObject ce = (IWorkspaceObject) dataObject;
 				Repository rep = VersionControlService.GetRepository (ce);
 				if (rep != null) {
 					rep.GetDirectoryVersionInfo (ce.BaseDirectory, false, false);
-					AddFolderOverlay (rep, ce.BaseDirectory, nodeInfo, false);
+					AddFolderOverlay (rep, ce.BaseDirectory, nodeInfo, !(dataObject is Solution));
 				}
 				return;
 			} else if (dataObject is ProjectFolder) {
