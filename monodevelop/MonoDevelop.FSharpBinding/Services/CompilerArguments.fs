@@ -63,42 +63,74 @@ module CompilerArguments =
         |> set 
         |> Set.map ((+) "-r:")
         |> Set.toList
+
+  module ReferenceResolution =
+
+    let tryGetDefaultReference langVersion targetFramework filename (extrapath: string option) =
+          let dirs = 
+            match extrapath with
+            | Some path -> path :: FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework)
+            | None -> FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework)
+          FSharpEnvironment.resolveAssembly dirs filename
+
+    let tryGetReferenceFromAssembly (assemblyRef:string) (refToFind:string) =
+        let assembly = Mono.Cecil.AssemblyDefinition.ReadAssembly(assemblyRef)
+        assembly.MainModule.AssemblyReferences
+        |> Seq.tryFind (fun name -> name.Name = refToFind)
+        |> Option.bind (fun assemblyNameRef -> let resolved = Mono.Cecil.DefaultAssemblyResolver().Resolve(assemblyNameRef)
+                                               Some (resolved.MainModule.FullyQualifiedName))
+
+  let resolutionFailedMessage = sprintf "Resolution: Assembly resolution failed when trying to find default reference for: %s"
        
   /// Generates references for the current project & configuration as a 
   /// list of strings of the form [ "-r:<full-path>"; ... ]
-  let private generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) = 
+  let generateReferences (project: DotNetProject, langVersion, targetFramework, configSelector, shouldWrap) = 
    if Project.isPortable project then
         Project.getPortableReferences project configSelector 
    else
        let wrapf = if shouldWrap then wrapFile else id
        
-       [ // Should we wrap references in "..."
-        
-        // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be 
-        // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
+       [
+        let refs =  project.GetReferencedAssemblies(configSelector) |> Seq.toArray
         let projectReferences =
             project.GetReferencedAssemblies(configSelector)
+            // The unversioned reference text "FSharp.Core" is used in Visual Studio .fsproj files.  This can sometimes be 
+            // incorrectly resolved so we just skip this simple reference form and rely on the default directory search below.
             |> Seq.filter (fun (ref: string) -> not (ref.EndsWith("FSharp.Core")))
             |> set
              
-        // If 'mscorlib.dll' and 'FSharp.Core.dll' is not in the set of references, we need to resolve it and add it. 
-        // We look in the directories returned by getDefaultDirectories(langVersion, targetFramework).
-        for assumedFile in ["mscorlib"; "FSharp.Core"] do 
-          let coreRef =
-            projectReferences |> Seq.tryFind (fun fn -> fn.EndsWith(assumedFile + ".dll", true, CultureInfo.InvariantCulture) 
-                                                        || fn.EndsWith(assumedFile, true, CultureInfo.InvariantCulture))
-        
-          match coreRef with
-          | None ->
-              //fall back to using default directories for F# Core
-              let dirs = FSharpEnvironment.getDefaultDirectories(langVersion, targetFramework) 
-              match FSharpEnvironment.resolveAssembly dirs assumedFile with
-              | Some fn -> yield "-r:" + wrapf(fn)
-              | None -> Debug.WriteLine(sprintf "Resolution: Assembly resolution failed when trying to find default reference for '%s'!" assumedFile)
-    
-          | Some r -> 
-            Debug.WriteLine(sprintf "Resolution: Found '%s' reference '%s'" assumedFile r)
-          
+        let find assemblyName=
+            projectReferences
+            |> Seq.tryFind (fun fn -> fn.EndsWith(assemblyName + ".dll", true, CultureInfo.InvariantCulture) 
+                                      || fn.EndsWith(assemblyName, true, CultureInfo.InvariantCulture))
+             
+        // If 'mscorlib.dll' or 'FSharp.Core.dll' is not in the set of references, we try to resolve and add them. 
+        match find "FSharp.Core", find "mscorlib" with
+        | None, Some mscorlib ->
+            // if mscorlib is founbd without FSharp.Core yield fsharp.core in the same base dir as mscorlib
+            // falling back to one of the default directories
+            let extraPath = Some (Path.GetDirectoryName (mscorlib))
+            match ReferenceResolution.tryGetDefaultReference langVersion targetFramework "FSharp.Core" extraPath with
+            | Some ref -> yield "-r:" + wrapf(ref)
+            | None -> LoggingService.LogWarning(resolutionFailedMessage "FSharp.Core")
+
+        | Some fsharpCore, None ->
+            // If FSharp.Core is found without mscorlib yield an mscorlib thats referenced from FSharp.core
+            match ReferenceResolution.tryGetReferenceFromAssembly fsharpCore "mscorlib" with
+            | Some resolved -> yield "-r:" + wrapf(resolved)
+            | None -> LoggingService.LogWarning(resolutionFailedMessage "mscorlib")
+
+        | None, None ->
+            // If neither are found yield the default fsharp.core and mscorlib
+            match ReferenceResolution.tryGetDefaultReference langVersion targetFramework "FSharp.Core" None with
+            | Some ref -> yield "-r:" + wrapf(ref)
+            | None -> LoggingService.LogWarning(resolutionFailedMessage "FSharp.Core")
+
+            match ReferenceResolution.tryGetDefaultReference langVersion targetFramework "mscorlib" None with
+            | Some ref -> yield "-r:" + wrapf(ref)
+            | None -> LoggingService.LogWarning(resolutionFailedMessage "mscorlib")
+        | _ -> () // found them both, no action needed
+                  
         for file in projectReferences do 
           yield "-r:" + wrapf(file) ]
 
