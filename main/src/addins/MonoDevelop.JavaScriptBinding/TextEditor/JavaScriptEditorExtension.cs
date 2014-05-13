@@ -179,7 +179,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 		{
 			if (ParsedDoc == null)
 				return null;
-
+			// TODO: Find the current scope.
 			return buildCodeCompletionList (ParsedDoc.AstNodes);
 		}
 
@@ -350,6 +350,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 		CompletionDataList buildCodeCompletionList (IEnumerable<Jurassic.Compiler.JSAstNode> nodes)
 		{
+			// TODO: Store all functions, variables in project, similar C Binding
 			if (nodes == null)
 				return new CompletionDataList ();
 

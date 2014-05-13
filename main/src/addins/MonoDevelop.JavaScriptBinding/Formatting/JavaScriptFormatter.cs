@@ -24,33 +24,67 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using Mono.TextEditor;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.JavaScript.Formatting
 {
-	public class JavaScriptFormatter : IAdvancedCodeFormatter
+	public class JavaScriptFormatter : AbstractAdvancedFormatter
 	{
-		public bool SupportsOnTheFlyFormatting
+		public override bool SupportsOnTheFlyFormatting
 		{
 			get { return true; }
 		}
 
-		public bool SupportsCorrectingIndent
+		public override bool SupportsCorrectingIndent
 		{
 			get { return false; }
 		}
 
-		public void CorrectIndenting (Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, Mono.TextEditor.TextEditorData textEditorData, int line)
+		public override void CorrectIndenting (Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, Mono.TextEditor.TextEditorData textEditorData, int line)
 		{
-			throw new NotImplementedException ();
 		}
 
-		public void OnTheFlyFormat (Ide.Gui.Document doc, int startOffset, int endOffset)
+		public override void OnTheFlyFormat (Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
-			// TODO: Do I even need to do something here ??
+			string allText = doc.Editor.Text;
+
+			var jsBeautifier = new JSBeautify (allText, new JSBeautifyOptions {
+				IndentSize = 4,
+				IndentChar = ' ',
+				IndentLevel = 0,
+				PreserveNewlines = true,
+
+			});
+
+			string formattedText = jsBeautifier.GetResult ();
+			string offsetText = formattedText.Substring (startOffset, endOffset - startOffset);
+
+			using (var undo = doc.Editor.OpenUndoGroup (OperationType.Format)) {
+				try {
+					//changes.ApplyChanges (formatStartOffset + startDelta, Math.Max (0, formatLength - startDelta - 1), delegate (int replaceOffset, int replaceLength, string insertText) {
+					//	int translatedOffset = realTextDelta + replaceOffset;
+					//	data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
+					//	data.Editor.Replace (translatedOffset, replaceLength, insertText);
+					//}, (replaceOffset, replaceLength, insertText) => {
+					//	int translatedOffset = realTextDelta + replaceOffset;
+					//	if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length || replaceLength < 0)
+					//		return true;
+					//	return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
+					//});
+					// doc.Editor.Text = doc.Editor.Text.Replace (oldText, formattedText);
+					doc.Editor.Replace (startOffset, endOffset - startOffset, offsetText);
+					doc.Editor.Document.CommitDocumentUpdate ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Error in on the JS fly formatter", e);
+				}
+			}
 		}
 
-		public string FormatText (MonoDevelop.Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, string input)
+		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
 		{
 			var jsBeautifier = new JSBeautify (input, new JSBeautifyOptions {
 				IndentSize = 4,
@@ -60,11 +94,6 @@ namespace MonoDevelop.JavaScript.Formatting
 
 			});
 			return jsBeautifier.GetResult ();
-		}
-
-		public string FormatText (MonoDevelop.Projects.Policies.PolicyContainer policyParent, System.Collections.Generic.IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
-		{
-			return null;
 		}
 	}
 }
