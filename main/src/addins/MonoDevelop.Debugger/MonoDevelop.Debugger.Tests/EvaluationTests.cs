@@ -937,6 +937,23 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
+		public void MethodParameters ()
+		{
+			ObjectValue val;
+			val = Eval ("stringParam");
+			Assert.AreEqual ("\"testString\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("intParam");
+			Assert.AreEqual ("55", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("intParam2");
+			Assert.AreEqual ("66", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+		}
+
+		[Test]
 		public virtual void Assignment ()
 		{
 			AssertAssignment ("n = 6", "n", "6", "int");
