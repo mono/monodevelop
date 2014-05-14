@@ -58,7 +58,7 @@ namespace MonoDevelop.Core
 		static int logFileSuffix;
 		static TextWriter defaultError;
 		static TextWriter defaultOut;
-		static bool reporting;
+		static object spinlock = new object ();
 
 		// Return value is the new value for 'ReportCrashes'
 		// First parameter is the current value of 'ReportCrashes
@@ -200,11 +200,7 @@ namespace MonoDevelop.Core
 		{
 			var tags = new List<string> { tag };
 
-			if (reporting)
-				return;
-
-			reporting = true;
-			try {
+			lock (spinlock) {
 				var oldReportCrashes = ReportCrashes;
 
 				if (UnhandledErrorOccured != null && !silently)
@@ -231,8 +227,6 @@ namespace MonoDevelop.Core
 					PropertyService.SaveProperties ();
 				}
 
-			} finally {
-				reporting = false;
 			}
 		}
 
