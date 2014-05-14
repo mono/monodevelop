@@ -49,6 +49,18 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\..\..\external\roslyn\rcsc\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -114,16 +126,6 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
       <Name>MonoDevelop.SourceEditor</Name>
@@ -153,6 +155,10 @@
       <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
       <Name>ICSharpCode.NRefactory6.CSharp</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

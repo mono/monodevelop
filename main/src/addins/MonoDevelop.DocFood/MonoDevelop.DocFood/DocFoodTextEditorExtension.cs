@@ -27,11 +27,9 @@ using System;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor;
 using System.Text;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.DocFood
 {
@@ -43,14 +41,14 @@ namespace MonoDevelop.DocFood
 			}
 		}
 		
-		string GenerateDocumentation (IEntity member, string indent)
+		string GenerateDocumentation (ISymbol member, string indent)
 		{
 			string doc = DocumentBufferHandler.GenerateDocumentation (textEditorData, member, indent);
 			int trimStart = (Math.Min (doc.Length - 1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 		
-		string GenerateEmptyDocumentation (IEntity member, string indent)
+		string GenerateEmptyDocumentation (ISymbol member, string indent)
 		{
 			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (textEditorData, member, indent);
 			int trimStart = (Math.Min (doc.Length - 1, indent.Length + "//".Length));
@@ -65,7 +63,7 @@ namespace MonoDevelop.DocFood
 			var line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 			string text = textEditorData.Document.GetTextAt (line.Offset, line.Length);
 			
-			if (!text.EndsWith ("//"))
+			if (!text.EndsWith ("//", StringComparison.Ordinal))
 				return base.KeyPress (key, keyChar, modifier);
 
 			// check if there is doc comment above or below.
@@ -162,29 +160,26 @@ namespace MonoDevelop.DocFood
 			return true;
 		}	
 		
-		IEntity GetMemberToDocument ()
+		ISymbol GetMemberToDocument ()
 		{
-			var parsedDocument = Document.UpdateParseDocument ();
-			
-			var type = parsedDocument.GetInnermostTypeDefinition (textEditorData.Caret.Location);
-			if (type == null) {
-				foreach (var t in parsedDocument.TopLevelTypeDefinitions) {
-					if (t.Region.BeginLine > textEditorData.Caret.Line) {
-						var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, t.Region.Begin);
-						return t.Resolve (ctx).GetDefinition ();
-					}
+			var parsedDocument = Document.AnalysisDocument.GetSemanticModelAsync ().Result;
+			var caretOffset = textEditorData.Caret.Offset;
+			var offset = caretOffset;
+			var root = parsedDocument.SyntaxTree.GetRoot ();
+
+			while (offset < textEditorData.Length) {
+				var node = root.FindNode (TextSpan.FromBounds (offset, offset));
+				if (node == null || node.SpanStart < caretOffset) {
+					offset++;
+					continue;
 				}
-				return null;
+
+				var declaredSymbol = parsedDocument.GetDeclaredSymbol (node); 
+				if (declaredSymbol != null)
+					return declaredSymbol;
+				offset = node.FullSpan.End + 1;
 			}
-			
-			IMember result = null;
-			foreach (var member in type.Members) {
-				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
-					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
-					result = member.CreateResolved (ctx);
-				}
-			}
-			return result;
+			return null;
 		}
 	}
 }

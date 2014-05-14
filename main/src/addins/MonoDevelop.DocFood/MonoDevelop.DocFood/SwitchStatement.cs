@@ -27,6 +27,9 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using MonoDevelop.Core;
+using Microsoft.CodeAnalysis;
+
+
 namespace MonoDevelop.DocFood
 {
 	class SwitchStatement : Node
@@ -43,7 +46,7 @@ namespace MonoDevelop.DocFood
 			CaseSections = new List<Node> ();
 		}
 		
-		public override void Run (DocGenerator generator, object member)
+		public override void Run (DocGenerator generator, ISymbol member)
 		{
 			if (!generator.EvaluateCondition (Attributes, member))
 				return;
@@ -73,7 +76,7 @@ namespace MonoDevelop.DocFood
 		
 		public static SwitchStatement Read (XmlReader reader)
 		{
-			SwitchStatement result = new SwitchStatement ();
+			var result = new SwitchStatement ();
 			if (reader.MoveToFirstAttribute ()) {
 				do {
 					result.SetAttribute (reader.LocalName, reader.Value);
@@ -98,7 +101,7 @@ namespace MonoDevelop.DocFood
 		{
 			public const string XmlTag = "Case";
 			
-			public override void Run (DocGenerator generator, object member)
+			public override void Run (DocGenerator generator, ISymbol member)
 			{
 				if (generator.EvaluateCondition (Attributes, member))
 					Children.ForEach (child => child.Run (generator, member));

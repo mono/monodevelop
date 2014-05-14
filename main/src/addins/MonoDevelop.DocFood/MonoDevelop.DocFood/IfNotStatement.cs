@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Xml;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.DocFood
 {
@@ -32,7 +33,7 @@ namespace MonoDevelop.DocFood
 	{
 		public const string XmlTag = "IfNot";
 		
-		public override void Run (DocGenerator generator, object member)
+		public override void Run (DocGenerator generator, ISymbol member)
 		{
 			if (!generator.EvaluateCondition (Attributes, member))
 				Children.ForEach (child => child.Run (generator, member));
