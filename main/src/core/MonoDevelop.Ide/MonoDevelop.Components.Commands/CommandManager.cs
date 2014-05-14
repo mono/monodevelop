@@ -707,15 +707,13 @@ namespace MonoDevelop.Components.Commands
 		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
-			if (Platform.IsMac) {
-				return DesktopService.ShowContextMenu (this, parent, evt.X, evt.Y, entrySet);
-			} else {
+			if (!DesktopService.ShowContextMenu (this, parent, evt.X, evt.Y, entrySet)) {
 				var menu = CreateMenu (entrySet);
 				if (menu != null)
 					ShowContextMenu (parent, evt, menu, initialCommandTarget);
-
-				return true;
 			}
+
+			return true;
 		}
 		
 		/// <summary>
