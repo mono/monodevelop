@@ -385,7 +385,7 @@ module FSharpEnvironment =
 
     let dir =
       match langVersion with
-      | Some v -> FolderOfDefaultFSharpCore(v, fsTargetFramework)
+      | Some _ -> FolderOfDefaultFSharpCore(langVersion, fsTargetFramework)
       | None -> List.tryPick (fun v -> FolderOfDefaultFSharpCore(Some v, fsTargetFramework)) fsharpVers
 
     // Return all known directories, get the location of the System DLLs

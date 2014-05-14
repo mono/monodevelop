@@ -40,3 +40,5 @@ monodevelop/Makefile
 /monodevelop/MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 /monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.*.fsproj
 /monodevelop/MonoDevelop.FSharpBinding/packages
+
+monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj

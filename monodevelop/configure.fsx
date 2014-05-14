@@ -135,12 +135,18 @@ Console.WriteLine ("Detected version: {0}", mdVersion)
 let tag = if isWindows then "windows" else "mac-linux"
 
 let fsprojFile = "MonoDevelop.FSharpBinding/MonoDevelop.FSharp." + tag + ".fsproj"
+let testProject = "MonoDevelop.FSharpBinding/MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj"
 let xmlFile = "MonoDevelop.FSharpBinding/FSharpBinding.addin.xml"
 
+//process main project file
 FileReplace ("MonoDevelop.FSharpBinding/MonoDevelop.FSharp.fsproj.orig", fsprojFile, "INSERT_FSPROJ_MDROOT", mdDir)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSION4", mdVersion)
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDVERSIONDEFINE", "MDVERSION_" + mdVersion.Replace(".","_"))
 FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
+
+//process test project
+FileReplace (testProject + ".orig", testProject, "INSERT_FSPROJ_MDROOT", mdDir)
+FileReplace (testProject          , testProject, "INSERT_PROJ_TAG", tag)
 
 match getMdExe mdDir with
 | Some mdExe ->
