@@ -954,7 +954,6 @@ namespace MonoDevelop.Debugger
 					list.Add (new DebuggerEngine (node));
 				
 				var priorities = EnginePriority;
-				var count = list.Count;
 
 				list.Sort (delegate (DebuggerEngine engine1, DebuggerEngine engine2) {
 					int index1 = Array.IndexOf (priorities, engine1.Id);
