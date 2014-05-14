@@ -159,25 +159,27 @@ namespace MonoDevelop.Debugger
 		
 		public static string[] EnginePriority {
 			get {
-				string s = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EnginePriority", "");
-				if (s.Length == 0) {
+				string priority = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EnginePriority", "");
+				if (priority.Length == 0) {
 					// Set the initial priorities
-					var prios = new List<string> ();
+					var engines = new List<string> ();
 					int i = 0;
 
-					foreach (DebuggerEngineExtensionNode de in AddinManager.GetExtensionNodes (FactoriesPath)) {
-						if (de.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal)) // Give priority to soft debugger by default
-							prios.Insert (i++, de.Id);
+					foreach (DebuggerEngineExtensionNode engine in AddinManager.GetExtensionNodes (FactoriesPath)) {
+						if (engine.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal)) // Give priority to soft debugger by default
+							engines.Insert (i++, engine.Id);
 						else
-							prios.Add (de.Id);
+							engines.Add (engine.Id);
 					}
-					string[] parray = prios.ToArray ();
+
+					var parray = engines.ToArray ();
 					EnginePriority = parray;
+
 					return parray;
 				}
-				return s.Split (new [] {','}, StringSplitOptions.RemoveEmptyEntries);
-			}
-			set {
+
+				return priority.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+			} set {
 				string s = string.Join (",", value);
 				PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EnginePriority", s);
 				engines = null;
@@ -923,34 +925,54 @@ namespace MonoDevelop.Debugger
 		{
 			return GetFactoryForCommand (command) != null;
 		}
+
+		static int GetClosestEngineMatch (string[] priorities, DebuggerEngine engine)
+		{
+			int matchLength = 0;
+			int best = -1;
+
+			for (int i = 0; i < priorities.Length; i++) {
+				if (priorities[i].Length > engine.Id.Length || priorities[i].Length < matchLength)
+					continue;
+
+				if (engine.Id.StartsWith (priorities[i], StringComparison.Ordinal)) {
+					// Note: the idea is that since Mono.Debugger.Soft.IPhoneBackgroundFetch starts with Mono.Debugger.Soft.IPhone, we want it to sort just after IPhone
+					matchLength = priorities[i].Length;
+					best = i + 1;
+				}
+			}
+
+			return best != -1 ? best : priorities.Length + 1;
+		}
 		
 		public static DebuggerEngine[] GetDebuggerEngines ()
 		{
 			if (engines == null) {
-				var engs = new List<DebuggerEngine> ();
+				var list = new List<DebuggerEngine> ();
+
 				foreach (DebuggerEngineExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath))
-					engs.Add (new DebuggerEngine (node));
+					list.Add (new DebuggerEngine (node));
 				
-				string[] priorities = EnginePriority;
-				var count = engs.Count;
+				var priorities = EnginePriority;
+				var count = list.Count;
 
-				engs.Sort (delegate (DebuggerEngine d1, DebuggerEngine d2) {
-					int i1 = Array.IndexOf (priorities, d1.Id);
-					int i2 = Array.IndexOf (priorities, d2.Id);
+				list.Sort (delegate (DebuggerEngine engine1, DebuggerEngine engine2) {
+					int index1 = Array.IndexOf (priorities, engine1.Id);
+					int index2 = Array.IndexOf (priorities, engine2.Id);
 					
-					//ensure that soft debugger is prioritised over newly installed debuggers
-					if (i1 < 0)
-						i1 = d1.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal) ? 0 : count;
-					if (i2 < 0)
-						i2 = d2.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal) ? 0 : count;
+					// ensure that soft debugger is prioritised over newly installed debuggers
+					index1 = index1 < 0 ? GetClosestEngineMatch (priorities, engine1) : index1;
+					index2 = index2 < 0 ? GetClosestEngineMatch (priorities, engine2) : index2;
 					
-					if (i1 == i2)
-						return string.Compare (d1.Name, d2.Name, StringComparison.InvariantCulture);
+					if (index1 == index2)
+						return string.Compare (engine1.Id, engine2.Id, StringComparison.Ordinal);
 
-					return i1.CompareTo (i2);
+					return index1.CompareTo (index2);
 				});
-				engines = engs.ToArray ();
+
+				engines = list.ToArray ();
 			}
+
 			return engines;
 		}
 
