@@ -92,7 +92,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			unsafeEvents.AcceptLicenses += (sender, e) => packages = e.Packages;
 			var expectedPackages = new List<IPackage> ();
 
-			bool result = threadSafeEvents.OnAcceptLicenses (expectedPackages);
+			threadSafeEvents.OnAcceptLicenses (expectedPackages);
 
 			Assert.AreEqual (expectedPackages, packages);
 		}
@@ -444,7 +444,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			unsafeEvents.SelectProjects += (sender, e) => selectedProjects = e.SelectedProjects;
 			var expectedSelectedProjects = new List<IPackageManagementSelectedProject> ();
 
-			bool result = threadSafeEvents.OnSelectProjects (expectedSelectedProjects);
+			threadSafeEvents.OnSelectProjects (expectedSelectedProjects);
 
 			Assert.AreEqual (expectedSelectedProjects, selectedProjects);
 		}

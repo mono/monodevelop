@@ -56,7 +56,6 @@ namespace MonoDevelop.PackageManagement.Tests
 	public class AvailablePackagesViewModelTests
 	{
 		AvailablePackagesViewModel viewModel;
-		PackageManagementEvents packageManagementEvents;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		ExceptionThrowingRegisteredPackageRepositories exceptionThrowingRegisteredPackageRepositories;
 		FakeTaskFactory taskFactory;
@@ -77,7 +76,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			taskFactory = new FakeTaskFactory ();
 			var packageViewModelFactory = new FakePackageViewModelFactory ();
-			packageManagementEvents = new PackageManagementEvents ();
 			recentPackageRepository = new FakeRecentPackageRepository ();
 
 			viewModel = new AvailablePackagesViewModel (

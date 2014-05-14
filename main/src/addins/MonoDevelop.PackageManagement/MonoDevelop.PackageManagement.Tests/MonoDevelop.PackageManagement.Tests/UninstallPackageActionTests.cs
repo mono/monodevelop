@@ -178,8 +178,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateAction ();
 
-			FakePackage recentPackage = AddOnePackageToProjectSourceRepository ("PackageId", "1.2.0.0");
-			FakePackage oldPackage = AddOnePackageToProjectSourceRepository ("PackageId", "1.0.0.0");
+			AddOnePackageToProjectSourceRepository ("PackageId", "1.2.0.0");
+			AddOnePackageToProjectSourceRepository ("PackageId", "1.0.0.0");
 			FakePackage package = AddOnePackageToProjectSourceRepository ("PackageId", "1.1.0");
 
 			uninstallPackageHelper.Version = package.Version;

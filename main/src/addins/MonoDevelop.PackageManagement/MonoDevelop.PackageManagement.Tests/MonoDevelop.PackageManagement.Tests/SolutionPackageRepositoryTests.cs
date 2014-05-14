@@ -128,7 +128,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateRepository (solution);
 			FakePackage package = AddPackageToSharedRepository ("Test", "1.0");
 
-			List<IPackage> actualPackages = repository.GetPackagesByDependencyOrder ().ToList ();
+			repository.GetPackagesByDependencyOrder ().ToList ();
 
 			IPackagePathResolver pathResolver = fakeRepositoryFactory.PathResolverPassedToCreateSharedRepository;
 			string installPath = pathResolver.GetInstallPath (package);

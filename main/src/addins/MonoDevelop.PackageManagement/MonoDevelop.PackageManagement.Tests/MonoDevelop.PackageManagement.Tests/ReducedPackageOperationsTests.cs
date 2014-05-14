@@ -141,7 +141,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			reducedPackageOperations.Reduce ();
 
-			PackageOperation operation = reducedPackageOperations
+			reducedPackageOperations
 				.Operations
 				.SingleOrDefault (o => o.Package.Id == "Test2");
 			Assert.AreEqual (2, reducedPackageOperations.Operations.Count ());
@@ -178,7 +178,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			reducedPackageOperations.Reduce ();
 
-			PackageOperation operation = reducedPackageOperations
+			reducedPackageOperations
 				.Operations
 				.SingleOrDefault (o => o.Package.Id == "Test");
 			Assert.AreEqual (1, reducedPackageOperations.Operations.Count ());

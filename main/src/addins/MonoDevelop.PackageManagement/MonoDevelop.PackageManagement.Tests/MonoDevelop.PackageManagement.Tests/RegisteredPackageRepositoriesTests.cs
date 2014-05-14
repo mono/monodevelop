@@ -81,7 +81,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRegisteredPackageRepositories ();
 			var source = new PackageSource ("Test");
-			IPackageRepository repository = registeredRepositories.CreateRepository (source);
+			registeredRepositories.CreateRepository (source);
 			string actualSource = fakeRepositoryCache.FirstPackageSourcePassedToCreateRepository;
 
 			Assert.AreEqual ("Test", actualSource);

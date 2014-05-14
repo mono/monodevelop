@@ -39,7 +39,6 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		RecentPackageRepository repository;
 		FakePackageRepository aggregateRepository;
-		PackageManagementEvents packageManagementEvents;
 		List<RecentPackageInfo> recentPackages;
 
 		void CreateRepository ()
@@ -56,8 +55,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreateRepository (IList<RecentPackageInfo> recentPackages)
 		{
-			packageManagementEvents = new PackageManagementEvents ();
-			repository = new RecentPackageRepository (recentPackages, aggregateRepository, packageManagementEvents);
+			repository = new RecentPackageRepository (recentPackages, aggregateRepository);
 		}
 
 		FakePackage AddOnePackageToRepository (string id)

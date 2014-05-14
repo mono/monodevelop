@@ -858,7 +858,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.AddFile (path, stream);
 
-			ProjectFile fileItem = ProjectHelper.GetFile (project, path);
+			//ProjectFile fileItem = ProjectHelper.GetFile (project, path);
 			//string customTool = fileItem.CustomTool;
 			//Assert.AreEqual ("TextTemplatingFileGenerator", customTool);
 		}
@@ -875,7 +875,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.AddFile (path, stream);
 
-			ProjectFile fileItem = ProjectHelper.GetFile (project, path);
+			//ProjectFile fileItem = ProjectHelper.GetFile (project, path);
 			//string customTool = fileItem.CustomTool;
 			//Assert.AreEqual (String.Empty, customTool);
 		}

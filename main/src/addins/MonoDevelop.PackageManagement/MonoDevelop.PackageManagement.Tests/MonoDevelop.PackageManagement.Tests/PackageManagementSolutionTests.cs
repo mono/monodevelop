@@ -97,9 +97,9 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 
-			IPackageManagementProject activeProject = solution.GetActiveProject ();
-			IProject actualProject = fakeProjectFactory.FirstProjectPassedToCreateProject;
+			solution.GetActiveProject ();
 
+			IProject actualProject = fakeProjectFactory.FirstProjectPassedToCreateProject;
 			Assert.AreEqual (testProject, actualProject);
 		}
 
@@ -109,7 +109,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution ();
 			fakeProjectService.CurrentProject = new FakeDotNetProject ();
 
-			IPackageManagementProject activeProject = solution.GetActiveProject ();
+			solution.GetActiveProject ();
 
 			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 			IPackageRepository expectedRepository = fakeRegisteredPackageRepositories.FakeAggregateRepository;
@@ -215,7 +215,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution ();
 			AddProjectToOpenProjects ("Test");
 			var expectedSource = new PackageSource ("http://sharpdevelop.net");
-			IPackageManagementProject project = solution.GetProject (expectedSource, "Test");
+			solution.GetProject (expectedSource, "Test");
 
 			PackageSource actualSource = fakeRegisteredPackageRepositories.PackageSourcePassedToCreateRepository;
 
@@ -473,7 +473,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			fakeProjectService.CurrentProject = null;
 			FakePackage package = FakePackage.CreatePackageWithVersion ("Test", "1.3.4.5");
 			fakeSolutionPackageRepository.FakeSharedRepository.FakePackages.Add (package);
-			FakeDotNetProject testProject = AddProjectToOpenProjects ("Test");
+			AddProjectToOpenProjects ("Test");
 			var project = new FakePackageManagementProject ();
 			fakeProjectFactory.CreatePackageManagementProject = (repository, msbuildProject) => {
 				return project;
@@ -524,7 +524,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution ();
 			AddProjectToOpenProjects ("MyProject");
 			var expectedRepository = new FakePackageRepository ();
-			List<IPackageManagementProject> projects = solution.GetProjects (expectedRepository).ToList ();
+			solution.GetProjects (expectedRepository).ToList ();
 
 			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 
@@ -537,7 +537,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolution ();
 			FakeDotNetProject expectedProject = AddProjectToOpenProjects ("MyProject");
 			var repository = new FakePackageRepository ();
-			List<IPackageManagementProject> projects = solution.GetProjects (repository).ToList ();
+			solution.GetProjects (repository).ToList ();
 
 			IDotNetProject project = fakeProjectFactory.FirstProjectPassedToCreateProject;
 
@@ -585,7 +585,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			fakeProjectService.CurrentProject = null;
-			FakeDotNetProject testProject = AddProjectToOpenProjects ("Test");
+			AddProjectToOpenProjects ("Test");
 			var project = new FakePackageManagementProject ();
 			fakeProjectFactory.CreatePackageManagementProject = (repository, msbuildProject) => {
 				return project;
@@ -610,7 +610,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			fakeProjectService.CurrentProject = null;
-			FakeDotNetProject testProject = AddProjectToOpenProjects ("Test");
+			AddProjectToOpenProjects ("Test");
 			var project = new FakePackageManagementProject ();
 			fakeProjectFactory.CreatePackageManagementProject = (repository, msbuildProject) => {
 				return project;
@@ -638,7 +638,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			FakeDotNetProject testProject1 = AddProjectToOpenProjects ("Test1");
 			FakeDotNetProject testProject2 = AddProjectToOpenProjects ("Test2");
 
-			IQueryable<IPackage> packages = solution.GetPackages ();
+			solution.GetPackages ();
 
 			Assert.AreEqual (testProject1, fakeProjectFactory.ProjectsPassedToCreateProject [0]);
 			Assert.AreEqual (testProject2, fakeProjectFactory.ProjectsPassedToCreateProject [1]);

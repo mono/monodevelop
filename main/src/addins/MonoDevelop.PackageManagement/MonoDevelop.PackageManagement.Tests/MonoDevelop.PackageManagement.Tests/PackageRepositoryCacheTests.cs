@@ -187,7 +187,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageSourcesHelper.AddTwoPackageSources ("Source1", "Source2");
 			packageSourcesHelper.RegisteredPackageSources [0].IsEnabled = false;
 			CreateCacheUsingPackageSources ();
-			FakePackageRepository repository1 = AddFakePackageRepositoryForPackageSource ("Source1");
+			AddFakePackageRepositoryForPackageSource ("Source1");
 			FakePackageRepository repository2 = AddFakePackageRepositoryForPackageSource ("Source2");
 			var expectedRepositories = new FakePackageRepository[] {
 				repository2
@@ -361,7 +361,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageRepositoryFactoryEventArgs eventArgs = null;
 			cache.RepositoryCreated += (sender, e) => eventArgs = e;
 
-			IPackageRepository repository = cache.CreateRepository (nuGetPackageSource.Source);
+			cache.CreateRepository (nuGetPackageSource.Source);
 
 			Assert.AreEqual (fakePackageRepositoryFactory.FakePackageRepository, eventArgs.Repository);
 		}

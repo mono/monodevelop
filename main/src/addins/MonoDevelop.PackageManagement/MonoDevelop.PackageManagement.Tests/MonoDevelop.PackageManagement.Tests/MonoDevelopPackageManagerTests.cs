@@ -783,7 +783,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreatePackageManager ();
 			CreateTestableProjectManager ();
-			FakePackage package = UpdatePackageWithNoPackageOperations ();
+			UpdatePackageWithNoPackageOperations ();
 
 			Assert.IsTrue (testableProjectManager.UpdateDependenciesPassedToUpdatePackageReference);
 		}
@@ -793,7 +793,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreatePackageManager ();
 			CreateTestableProjectManager ();
-			FakePackage package = UpdatePackageWithNoPackageOperationsAndAllowPrereleaseVersions ();
+			UpdatePackageWithNoPackageOperationsAndAllowPrereleaseVersions ();
 
 			Assert.IsTrue (testableProjectManager.AllowPrereleaseVersionsPassedToUpdatePackageReference);
 		}
@@ -803,7 +803,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreatePackageManager ();
 			CreateTestableProjectManager ();
-			FakePackage package = UpdatePackageWithNoPackageOperations ();
+			UpdatePackageWithNoPackageOperations ();
 
 			Assert.IsFalse (testableProjectManager.AllowPrereleaseVersionsPassedToUpdatePackageReference);
 		}

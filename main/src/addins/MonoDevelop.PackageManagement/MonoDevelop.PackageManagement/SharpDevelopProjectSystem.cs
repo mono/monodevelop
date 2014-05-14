@@ -44,7 +44,6 @@ namespace ICSharpCode.PackageManagement
 		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
 		IPackageManagementFileService fileService;
-		IPackageManagementProjectService projectService;
 		Action<MessageHandler> guiSyncDispatcher;
 
 		public SharpDevelopProjectSystem(DotNetProject project)
@@ -65,7 +64,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			this.project = project;
 			this.fileService = fileService;
-			this.projectService = projectService;
 			this.guiSyncDispatcher = guiSyncDispatcher;
 		}
 		

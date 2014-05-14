@@ -85,7 +85,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.Name = "MyProject";
 			fakeSolution.FakeActiveDotNetProject = project;
 
-			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject ("MyProject");
+			fakeSolution.AddFakeProjectToReturnFromGetProject ("MyProject");
 			CreateSelectedProjects ();
 
 			var fakePackage = new FakePackage ();
@@ -108,7 +108,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			project.Name = "MyProject";
 			fakeSolution.FakeActiveDotNetProject = project;
 
-			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject ("MyProject");
+			fakeSolution.AddFakeProjectToReturnFromGetProject ("MyProject");
 			CreateSelectedProjects ();
 
 			var fakePackage = new FakePackage ();
@@ -169,7 +169,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void HasMultipleProjects_SolutionHasTwoProjectsAndNoProjectSelectedInProjectsBrowser_ReturnsTrue ()
 		{
 			CreateFakeSolution ();
-			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService ();
+			AddSolutionWithTwoProjectsToProjectService ();
 			fakeSolution.FakeActiveProject = null;
 			CreateSelectedProjects ();
 
@@ -182,7 +182,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void HasMultipleProjects_SolutionHasOneProjectAndNoProjectSelectedInProjectsBrowser_ReturnsFalse ()
 		{
 			CreateFakeSolution ();
-			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithOneProjectToProjectService ();
+			AddSolutionWithOneProjectToProjectService ();
 			fakeSolution.FakeActiveProject = null;
 			CreateSelectedProjects ();
 
@@ -209,7 +209,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void SelectionName_SolutionHasTwoProjectsAndNoProjectSelected_ReturnsSolutionFileNameWithoutFullPath ()
 		{
 			CreateFakeSolution ();
-			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService ();
+			AddSolutionWithTwoProjectsToProjectService ();
 			NoProjectsSelected ();
 			fakeSolution.FileName = @"d:\projects\MyProject\MySolution.sln".ToNativePath ();
 			CreateSelectedProjects ();
@@ -223,7 +223,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void IsPackageInstalled_PackageInstalledInSolutionWithTwoProjectsAndNoProjectSelected_ReturnsTrue ()
 		{
 			CreateFakeSolution ();
-			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService ();
+			AddSolutionWithTwoProjectsToProjectService ();
 			NoProjectsSelected ();
 
 			var package = new FakePackage ("Test");
@@ -288,7 +288,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSelectedProjects ();
 
 			var package = new FakePackage ("Test");
-			bool installed = selectedProjects.IsPackageInstalled (package);
+			selectedProjects.IsPackageInstalled (package);
 
 			IPackageRepository repository = fakeSolution.RepositoryPassedToGetProject;
 			IPackageRepository expectedRepository = package.FakePackageRepository;
@@ -331,7 +331,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void GetPackagesInstalledInSolution_PackageInstalledInSolutionAndProjectNotSelected_ReturnsPackageInstalledInSolution ()
 		{
 			CreateFakeSolution ();
-			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService ();
+			AddSolutionWithTwoProjectsToProjectService ();
 			NoProjectsSelected ();
 
 			var package = new FakePackage ("Test");
@@ -372,7 +372,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSelectedProjects ();
 
 			var repository = new FakePackageRepository ();
-			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected (repository);
+			selectedProjects.GetSingleProjectSelected (repository);
 
 			Assert.AreEqual (repository, fakeSolution.RepositoryPassedToGetProject);
 		}
@@ -386,7 +386,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSelectedProjects ();
 
 			var repository = new FakePackageRepository ();
-			IPackageManagementProject project = selectedProjects.GetSingleProjectSelected (repository);
+			selectedProjects.GetSingleProjectSelected (repository);
 
 			Assert.AreEqual (repository, fakeSolution.RepositoryPassedToGetProject);
 		}
@@ -409,7 +409,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void HasSingleProjectSelected_SolutionHasTwoProjectsAndNoProjectsSelectedInProjectsBrowser_ReturnsFalse ()
 		{
 			CreateFakeSolution ();
-			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService ();
+			AddSolutionWithTwoProjectsToProjectService ();
 			NoProjectsSelected ();
 			CreateSelectedProjects ();
 
@@ -422,7 +422,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void HasSingleProjectSelected_NoProjectsInitiallySelectedAndProjectSelectedAfterInitialCall_IsUnchangedAndReturnsFalse ()
 		{
 			CreateFakeSolution ();
-			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService ();
+			AddSolutionWithTwoProjectsToProjectService ();
 			NoProjectsSelected ();
 			CreateSelectedProjects ();
 
@@ -437,7 +437,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void GetInstalledPackages_PackageInstalledInSolutionAndProjectNotSelected_ReturnsPackageInstalledInSolution ()
 		{
 			CreateFakeSolution ();
-			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService ();
+			AddSolutionWithTwoProjectsToProjectService ();
 			NoProjectsSelected ();
 
 			var package = new FakePackage ("Test");
@@ -487,7 +487,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSelectedProjects ();
 
 			var expectedRepository = new FakePackageRepository ();
-			IQueryable<IPackage> packages = selectedProjects.GetInstalledPackages (expectedRepository);
+			selectedProjects.GetInstalledPackages (expectedRepository);
 
 			IPackageRepository repository = fakeSolution.RepositoryPassedToGetProject;
 
@@ -516,7 +516,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			FakeDotNetProject project = projectsAddedToSolution [1];
 			project.Name = "MyProject";
 			fakeSolution.FakeActiveDotNetProject = project;
-			var fakeProject = fakeSolution.AddFakeProjectToReturnFromGetProject ("MyProject");
+			fakeSolution.AddFakeProjectToReturnFromGetProject ("MyProject");
 			CreateSelectedProjects ();
 
 			NoProjectsSelected ();

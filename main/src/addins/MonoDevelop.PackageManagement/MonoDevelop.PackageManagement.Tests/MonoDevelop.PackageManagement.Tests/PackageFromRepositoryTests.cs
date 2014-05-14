@@ -456,7 +456,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void DevelopmentDependency_PackageHasDevelopmentDependencySetToTrue_ReturnsWrappedPackageDevelopmentDependency ()
 		{
 			CreatePackage ();
-			var expectedVersion = new Version ("1.1");
 			fakePackage.DevelopmentDependency = true;
 
 			bool dependency = package.DevelopmentDependency;

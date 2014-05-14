@@ -38,12 +38,14 @@ namespace MonoDevelop.PackageManagement.Tests
 	public class UserAgentGeneratorForRepositoryRequestsTests
 	{
 		UserAgentGeneratorForRepositoryRequests generator;
+
 		FakePackageRepositoryFactoryEvents repositoryFactoryEvents;
 
 		void CreateGenerator ()
 		{
 			repositoryFactoryEvents = new FakePackageRepositoryFactoryEvents ();
-			generator = new UserAgentGeneratorForRepositoryRequests (repositoryFactoryEvents);
+			generator = new UserAgentGeneratorForRepositoryRequests ();
+			generator.Register (repositoryFactoryEvents);
 		}
 
 		IPackageRepository CreatePackageRepository ()

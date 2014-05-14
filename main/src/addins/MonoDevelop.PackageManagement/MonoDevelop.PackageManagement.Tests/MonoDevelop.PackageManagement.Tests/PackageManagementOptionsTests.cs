@@ -135,10 +135,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateOptions (fakeSettings);
 			RegisteredPackageSources packageSources = options.PackageSources;
 
-			PackageSource defaultSource = RegisteredPackageSources.DefaultPackageSource;
+			PackageSource packageSource = RegisteredPackageSources.DefaultPackageSource;
 
 			bool result = fakeSettings.SavedSectionValueLists.ContainsKey (FakeSettings.PackageSourcesSectionName);
 			Assert.IsFalse (result);
+			Assert.IsNotNull (packageSource);
 		}
 
 		[Test]
@@ -312,7 +313,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void RecentPackages_SaveRecentPackages_DoesNotThrowInvalidOperationException ()
 		{
 			CreateOptions ();
-			RecentPackageInfo recentPackage = AddRecentPackageToOptions ("id", "1.0");
+			AddRecentPackageToOptions ("id", "1.0");
 
 			Assert.DoesNotThrow (() => SaveOptions ());
 		}

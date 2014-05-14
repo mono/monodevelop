@@ -43,13 +43,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakePackageManagementProject (string name)
 		{
-			FakeInstallPackageAction = new FakeInstallPackageAction (this);
 			FakeUninstallPackageAction = new FakeUninstallPackageAction (this);
 
 			this.Name = name;
 		}
 
-		private FakeInstallPackageAction FakeInstallPackageAction;
 		public FakeUninstallPackageAction FakeUninstallPackageAction;
 
 		public FakeUpdatePackageAction FirstFakeUpdatePackageActionCreated {

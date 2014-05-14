@@ -74,7 +74,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			var taskFactory = new FakeTaskFactory ();
 			var registeredPackageRepositories = new FakeRegisteredPackageRepositories ();
 			var packageViewModelFactory = new FakePackageViewModelFactory ();
-			var packageManagementEvents = new PackageManagementEvents ();
 			var recentPackageRepository = new FakeRecentPackageRepository ();
 
 			return new AvailablePackagesViewModel (

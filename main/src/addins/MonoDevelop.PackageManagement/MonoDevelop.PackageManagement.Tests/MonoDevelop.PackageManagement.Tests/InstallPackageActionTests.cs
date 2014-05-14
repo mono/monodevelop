@@ -338,8 +338,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.PackageVersion = package.Version;
 			fakeProject.FakeInstallOperations.Add (operation);
 
-			bool hasPackageScripts = false;
-			Assert.DoesNotThrow (() => hasPackageScripts = action.HasPackageScriptsToRun ());
+			Assert.DoesNotThrow (() => action.HasPackageScriptsToRun ());
 		}
 
 		[Test]
@@ -352,7 +351,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.PackageVersion = expectedPackage.Version;
 			fakeProject.FakeInstallOperations.Add (operation);
 
-			bool hasPackageScripts = action.HasPackageScriptsToRun ();
+			action.HasPackageScriptsToRun ();
 
 			IPackage actualPackage = action.Package;
 
@@ -363,7 +362,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Execute_InstallPrereleasePackageAndAllowPreleasePackagesIsFalse_DoesNotFindPreleasePackage ()
 		{
 			CreateAction ();
-			FakePackage package = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Prerelease", "1.0-beta");
+			fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Prerelease", "1.0-beta");
 			action.PackageId = "Prerelease";
 			action.AllowPrereleaseVersions = false;
 
