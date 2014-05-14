@@ -105,7 +105,7 @@
     </Reference>
     <Reference Include="MonoDevelop.Debugger">
       <Private>False</Private>
-      <HintPath>..\..\..\..\..\..\..\Applications\Xamarin Studio.app\Contents\MacOS\lib\monodevelop\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
+      <HintPath>INSERT_FSPROJ_MDROOT\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
@@ -133,7 +133,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
   <ItemGroup>
-    <ProjectReference Include="..\MonoDevelop.FSharp.mac-linux.fsproj">
+    <ProjectReference Include="..\MonoDevelop.FSharp.INSERT_PROJ_TAG.fsproj">
       <Project>{4C10F8F9-3816-4647-BA6E-85F5DE39883A}</Project>
       <Name>MonoDevelop.FSharp.mac-linux</Name>
     </ProjectReference>

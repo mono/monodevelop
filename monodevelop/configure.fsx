@@ -146,6 +146,7 @@ FileReplace (fsprojFile, fsprojFile, "INSERT_FSPROJ_MDTAG", tag)
 
 //process test project
 FileReplace (testProject + ".orig", testProject, "INSERT_FSPROJ_MDROOT", mdDir)
+FileReplace (testProject          , testProject, "INSERT_PROJ_TAG", tag)
 
 match getMdExe mdDir with
 | Some mdExe ->
