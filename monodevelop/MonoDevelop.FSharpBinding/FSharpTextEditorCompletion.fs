@@ -208,8 +208,7 @@ type FSharpTextEditorCompletion() =
               else loop depth (i-1) 
           loop 0 (offset-1)
 
-      let config = IdeApp.Workspace.ActiveConfiguration
-      if docText = null || config = null || offset >= docText.Length || startOffset < 0 || offset <= 0 then 
+      if docText = null || offset >= docText.Length || startOffset < 0 || offset <= 0 then 
         null 
       else
       Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
@@ -217,7 +216,7 @@ type FSharpTextEditorCompletion() =
       // Try to get typed result - with the specified timeout
       let proj = doc.Project :?> MonoDevelop.Projects.DotNetProject
       let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
-      let args = CompilerArguments.getArgumentsFromProject(proj, config)
+      let args = CompilerArguments.getArgumentsFromProject(proj)
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
 
       let typedParseResults = MDLanguageService.Instance.GetTypedParseResultWithTimeout(doc.Project.FileName.ToString(), doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) 
@@ -299,10 +298,9 @@ type FSharpTextEditorCompletion() =
     let result = CompletionDataList()
     let doc = x.Document
     try 
-      let config = IdeApp.Workspace.ActiveConfiguration
       let proj = doc.Project :?> MonoDevelop.Projects.DotNetProject
       let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
-      let args = CompilerArguments.getArgumentsFromProject(proj, config)
+      let args = CompilerArguments.getArgumentsFromProject(proj)
       let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource

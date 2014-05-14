@@ -47,11 +47,9 @@ type FSharpLanguageItemTooltipProvider() =
         let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
-        let config = IdeApp.Workspace.ActiveConfiguration
-        if config = null then null else
         let proj = extEditor.Project :?> MonoDevelop.Projects.DotNetProject
         let files = CompilerArguments.getSourceFiles(extEditor.Project.Items) |> Array.ofList
-        let args = CompilerArguments.getArgumentsFromProject(proj, config)
+        let args = CompilerArguments.getArgumentsFromProject(proj)
         let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
         let tyResOpt =
             MDLanguageService.Instance.GetTypedParseResultWithTimeout
@@ -157,14 +155,12 @@ type FSharpResolverProvider() =
         if doc.Editor = null || doc.Editor.Document = null then null else
         let docText = doc.Editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
-        let config = IdeApp.Workspace.ActiveConfiguration
-        if config = null then null else
 
         Debug.WriteLine("Resolver: Getting results of type checking")
         // Try to get typed result - with the specified timeout
         let proj = doc.Project :?> MonoDevelop.Projects.DotNetProject
         let files = CompilerArguments.getSourceFiles(doc.Project.Items) |> Array.ofList
-        let args = CompilerArguments.getArgumentsFromProject(proj, config)
+        let args = CompilerArguments.getArgumentsFromProject(proj)
         let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
         let tyResOpt = 
             MDLanguageService.Instance.GetTypedParseResultWithTimeout
