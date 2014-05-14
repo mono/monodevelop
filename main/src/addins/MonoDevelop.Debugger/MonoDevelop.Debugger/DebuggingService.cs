@@ -154,7 +154,7 @@ namespace MonoDevelop.Debugger
 				if (pinnedWatches.UpdateLiveWatch ((Breakpoint) be, trace))
 					return; // No need to log the value. It is shown in the watch.
 			}
-			console.Log.Write (trace + "\n");
+			DebugWriter (0, "", trace + Environment.NewLine);
 		}
 		
 		public static string[] EnginePriority {
@@ -335,6 +335,7 @@ namespace MonoDevelop.Debugger
 			session.TargetStarted += OnStarted;
 			session.OutputWriter = OutputWriter;
 			session.LogWriter = LogWriter;
+			session.DebugWriter = DebugWriter;
 			session.BusyStateChanged += OnBusyStateChanged;
 			session.TypeResolverHandler = ResolveType;
 			session.BreakpointTraceHandler = BreakpointTraceHandler;
@@ -623,7 +624,25 @@ namespace MonoDevelop.Debugger
 			if (logger != null)
 				logger.Log.Write (text);
 		}
-		
+
+		static void DebugWriter (int level, string category, string message)
+		{
+			var logger = console;
+			var debugLogger = logger as IDebugConsole;
+
+			if (logger != null) {
+				if (debugLogger != null) {
+					debugLogger.Debug (level, category, message);
+				} else {
+					if (level == 0 && string.IsNullOrEmpty (category)) {
+						logger.Log.Write (message);
+					} else {
+						logger.Log.Write (string.Format ("[{0}:{1}] {2}", level, category, message));
+					}
+				}
+			}
+		}
+
 		static void OutputWriter (bool iserr, string text)
 		{
 			var logger = console;

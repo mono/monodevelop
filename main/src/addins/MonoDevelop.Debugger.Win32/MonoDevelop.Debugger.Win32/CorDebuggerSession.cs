@@ -201,7 +201,7 @@ namespace MonoDevelop.Debugger.Win32
 
 		void OnLogMessage (object sender, CorLogMessageEventArgs e)
 		{
-			OnTargetOutput (false, e.Message);
+			OnTargetDebug (e.Level, e.LogSwitchName, e.Message);
 			e.Continue = true;
 		}
 

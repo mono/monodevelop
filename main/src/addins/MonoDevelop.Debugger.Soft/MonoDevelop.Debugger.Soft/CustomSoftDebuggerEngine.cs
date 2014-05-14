@@ -148,12 +148,12 @@ namespace MonoDevelop.Debugger.Soft
 			
 			void ProcessOutput (object sender, string message)
 			{
-				OnTargetOutput (true, message);
+				OnTargetOutput (false, message);
 			}
 			
 			void ProcessError (object sender, string message)
 			{
-				OnTargetOutput (false, message);
+				OnTargetOutput (true, message);
 			}
 			
 			protected override void EndSession ()
