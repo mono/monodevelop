@@ -31,16 +31,18 @@ using System.Collections.Generic;
 using Gtk;
 
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Projects;
+using MonoDevelop.DesignerSupport;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp;
 
-namespace MonoDevelop.DesignerSupport
+namespace MonoDevelop.CSharp.ClassOutline
 {
 	/// <summary>
 	/// Displays a types and members outline of the current document.
@@ -53,28 +55,30 @@ namespace MonoDevelop.DesignerSupport
 	/// Nodes with equal sortKey will be sorted by string comparison of the name of the nodes.
 	/// The string comparison ignores symbols (e.g. sort 'Foo()' next to '~Foo()').
 	/// </remarks>
-	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineNodeComparer"/>
-	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSettings"/>
-	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
+	/// <seealso cref="MonoDevelop.CSharp.ClassOutline.OutlineNodeComparer"/>
+	/// <seealso cref="MonoDevelop.CSharp.ClassOutline.OutlineSettings"/>
+	class CSharpOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
 	{
-		ParsedDocument lastCU = null;
+		SemanticModel lastCU = null;
 
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		TreeStore outlineTreeStore;
 		TreeModelSort outlineTreeModelSort;
 		Widget[] toolbarWidgets;
+		AstAmbience astAmbience;
 
-		ClassOutlineNodeComparer comparer;
-		ClassOutlineSettings settings;
+		OutlineNodeComparer comparer;
+		OutlineSettings settings;
 
 		bool refreshingOutline;
 		bool disposed;
 		bool outlineReady;
 
-		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
+		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
 		{
-			var binding = LanguageBindingService.GetBindingPerFileName (doc.Name);
-			return binding != null && binding is IDotNetLanguageBinding;
+			return doc.FileName.Extension == ".cs";
+			//var binding = LanguageBindingService.GetBindingPerFileName (doc.Name);
+			//return binding != null && binding is IDotNetLanguageBinding;
 		}
 
 		public override void Initialize ()
@@ -82,6 +86,7 @@ namespace MonoDevelop.DesignerSupport
 			base.Initialize ();
 			if (Document != null)
 				Document.DocumentParsed += UpdateDocumentOutline;
+			astAmbience = new AstAmbience (RoslynTypeSystemService.Workspace.GetOptions ());
 		}
 
 		public override void Dispose ()
@@ -98,7 +103,7 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose ();
 		}
 
-		Widget MonoDevelop.DesignerSupport.IOutlinedDocument.GetOutlineWidget ()
+		Widget IOutlinedDocument.GetOutlineWidget ()
 		{
 			if (outlineTreeView != null)
 				return outlineTreeView;
@@ -106,8 +111,8 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeStore = new TreeStore (typeof(object));
 			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
 			
-			settings = ClassOutlineSettings.Load ();
-			comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
+			settings = OutlineSettings.Load ();
+			comparer = new OutlineNodeComparer (new AstAmbience (RoslynTypeSystemService.Workspace.GetOptions ()), settings, outlineTreeModelSort);
 
 			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
 			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
@@ -140,7 +145,7 @@ namespace MonoDevelop.DesignerSupport
 				JumpToDeclaration (true);
 			};
 
-			this.lastCU = Document.ParsedDocument;
+			lastCU = Document.AnalysisDocument.GetSemanticModelAsync ().Result;
 
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 			UpdateSorting ();
@@ -151,12 +156,12 @@ namespace MonoDevelop.DesignerSupport
 			return sw;
 		}
 		
-		IEnumerable<Widget> MonoDevelop.DesignerSupport.IOutlinedDocument.GetToolbarWidgets ()
+		IEnumerable<Widget> IOutlinedDocument.GetToolbarWidgets ()
 		{
 			if (toolbarWidgets != null)
 				return toolbarWidgets;
 			
-			var groupToggleButton = new ToggleButton () {
+			var groupToggleButton = new ToggleButton {
 				Image = new Image (Ide.Gui.Stock.GroupByCategory, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Group entries by type"),
 				Active = settings.IsGrouped,
@@ -168,7 +173,7 @@ namespace MonoDevelop.DesignerSupport
 				UpdateSorting ();
 			};
 
-			var sortAlphabeticallyToggleButton = new ToggleButton () {
+			var sortAlphabeticallyToggleButton = new ToggleButton {
 				Image = new Image (Ide.Gui.Stock.SortAlphabetically, IconSize.Menu),
 				TooltipText = GettextCatalog.GetString ("Sort entries alphabetically"),
 				Active = settings.IsSorted,
@@ -184,11 +189,11 @@ namespace MonoDevelop.DesignerSupport
 				TooltipText = GettextCatalog.GetString ("Open preferences dialog"),
 			};
 			preferencesButton.Clicked += delegate {
-				var dialog = new ClassOutlineSortingPreferencesDialog (settings);
+				var dialog = new OutlineSortingPreferencesDialog (settings);
 				try {
-					if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog) == (int)Gtk.ResponseType.Ok) {
+					if (MessageService.ShowCustomDialog (dialog) == (int)ResponseType.Ok) {
 						dialog.SaveSettings ();
-						comparer = new ClassOutlineNodeComparer (GetAmbience (), settings, outlineTreeModelSort);
+						comparer = new OutlineNodeComparer (new AstAmbience (RoslynTypeSystemService.Workspace.GetOptions ()), settings, outlineTreeModelSort);
 						UpdateSorting ();
 					}
 				} finally {
@@ -212,47 +217,43 @@ namespace MonoDevelop.DesignerSupport
 			if (!outlineTreeView.Selection.GetSelected (out iter))
 				return;
 
-			object o;
+			var o = outlineTreeStore.GetValue (IsSorting () ? outlineTreeModelSort.ConvertIterToChildIter (iter) : iter, 0);
 
-			if (IsSorting ()) {
-				o = outlineTreeStore.GetValue (outlineTreeModelSort.ConvertIterToChildIter (iter), 0);
+			var syntaxNode = o as SyntaxNode;
+			if (syntaxNode != null) {
+				Document.Editor.Caret.Offset = syntaxNode.SpanStart;
+			} else {
+				Document.Editor.Caret.Offset = ((SyntaxTrivia)o).SpanStart;
 			}
-			else {
-				o = outlineTreeStore.GetValue (iter, 0);
-			}
-				
-//			IdeApp.ProjectOperations.JumpToDeclaration (o as IEntity);
+
 			if (focusEditor)
-				IdeApp.Workbench.ActiveDocument.Select ();
+				Document.Select ();
 		}
 
-		void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		static void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var pixRenderer = (CellRendererImage)cell;
 			object o = model.GetValue (iter, 0);
-			if (o is IEntity) {
-				pixRenderer.Image = ImageService.GetIcon (((IEntity)o).GetStockIcon (), IconSize.Menu);
-			} else if (o is FoldingRegion) {
+			if (o is SyntaxNode) {
+				pixRenderer.Image = ImageService.GetIcon (((SyntaxNode)o).GetStockIcon (), IconSize.Menu);
+			} else if (o is SyntaxTrivia) {
 				pixRenderer.Image = ImageService.GetIcon (Ide.Gui.Stock.Add, IconSize.Menu);
 			}
 		}
 
 		void OutlineTreeTextFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			CellRendererText txtRenderer = (CellRendererText)cell;
+			var txtRenderer = (CellRendererText)cell;
 			object o = model.GetValue (iter, 0);
-			Ambience am = GetAmbience ();
-			if (o is IEntity) {
-				txtRenderer.Text = am.GetString ((IEntity)o, OutputFlags.ClassBrowserEntries);
-			} else if (o is FoldingRegion) {
-				string name = ((FoldingRegion)o).Name.Trim ();
-				if (string.IsNullOrEmpty (name))
-					name = "#region";
-				txtRenderer.Text = name;
+			var syntaxNode = o as SyntaxNode;
+			if (syntaxNode != null) {
+				txtRenderer.Text = astAmbience.GetEntityMarkup (syntaxNode);
+			} else if (o is SyntaxTrivia) {
+				txtRenderer.Text = ((SyntaxTrivia)o).ToString ();
 			}
 		}
 
-		void MonoDevelop.DesignerSupport.IOutlinedDocument.ReleaseOutlineWidget ()
+		void IOutlinedDocument.ReleaseOutlineWidget ()
 		{
 			if (outlineTreeView == null)
 				return;
@@ -285,7 +286,7 @@ namespace MonoDevelop.DesignerSupport
 		uint refillOutlineStoreId;
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			lastCU = Document.ParsedDocument;
+			lastCU = Document.AnalysisDocument.GetSemanticModelAsync ().Result;
 			//limit update rate to 3s
 			if (!refreshingOutline) {
 				refreshingOutline = true;
@@ -321,99 +322,167 @@ namespace MonoDevelop.DesignerSupport
 			return false;
 		}
 
-		void BuildTreeChildren (TreeStore store, TreeIter parent, ParsedDocument parsedDocument)
+		class TreeVisitor : CSharpSyntaxWalker
+		{
+			TreeStore store;
+			TreeIter curIter;
+
+			public TreeVisitor (TreeStore store, TreeIter curIter) : base (SyntaxWalkerDepth.Trivia)
+			{
+				this.store = store;
+				this.curIter = curIter;
+			}
+
+			TreeIter Append (object node) 
+			{
+				if (!curIter.Equals (TreeIter.Zero))
+					return store.AppendValues (curIter, node);
+				return store.AppendValues (node);
+			}
+
+			public override void VisitTrivia (SyntaxTrivia trivia)
+			{
+				switch (trivia.CSharpKind ()) {
+				case SyntaxKind.RegionDirectiveTrivia:
+					curIter = Append (trivia);
+					break;
+				case SyntaxKind.EndRegionDirectiveTrivia:
+					TreeIter parent;
+					if (store.IterParent (out parent, curIter))
+						curIter = parent;
+					break;
+				}
+				base.VisitTrivia (trivia);
+			}
+
+			void VisitBody (SyntaxNode node)
+			{
+				var oldIter = curIter;
+
+				foreach (var syntaxNodeOrToken in node.ChildNodesAndTokens ()) {
+					var syntaxNode = syntaxNodeOrToken.AsNode ();
+					if (syntaxNode != null) {
+						Visit (syntaxNode);
+					} else {
+						var syntaxToken = syntaxNodeOrToken.AsToken ();
+						if (syntaxToken.CSharpKind () == SyntaxKind.OpenBraceToken)
+							curIter = Append (node);
+						VisitToken (syntaxToken);
+					}
+				}
+				curIter = oldIter;
+
+			}
+
+			public override void VisitNamespaceDeclaration (NamespaceDeclarationSyntax node)
+			{
+				VisitBody (node);
+			}
+
+			public override void VisitClassDeclaration (ClassDeclarationSyntax node)
+			{
+				VisitBody (node);
+			}
+
+			public override void VisitStructDeclaration (StructDeclarationSyntax node)
+			{
+				VisitBody (node);
+			}
+
+			public override void VisitEnumDeclaration (EnumDeclarationSyntax node)
+			{
+				VisitBody (node);
+			}
+
+			public override void VisitInterfaceDeclaration (InterfaceDeclarationSyntax node)
+			{
+				VisitBody (node);
+			}
+
+			public override void VisitDelegateDeclaration (DelegateDeclarationSyntax node)
+			{
+				base.VisitDelegateDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitFieldDeclaration (FieldDeclarationSyntax node)
+			{
+				base.VisitFieldDeclaration (node);
+				foreach (var v in node.Declaration.Variables)
+					Append (v);
+			}
+
+			public override void VisitPropertyDeclaration (PropertyDeclarationSyntax node)
+			{
+				base.VisitPropertyDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitIndexerDeclaration (IndexerDeclarationSyntax node)
+			{
+				base.VisitIndexerDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitMethodDeclaration (MethodDeclarationSyntax node)
+			{
+				base.VisitMethodDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitOperatorDeclaration (OperatorDeclarationSyntax node)
+			{
+				base.VisitOperatorDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitConstructorDeclaration (ConstructorDeclarationSyntax node)
+			{
+				base.VisitConstructorDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitDestructorDeclaration (DestructorDeclarationSyntax node)
+			{
+				base.VisitDestructorDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitEventDeclaration (EventDeclarationSyntax node)
+			{
+				base.VisitEventDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitEventFieldDeclaration (EventFieldDeclarationSyntax node)
+			{
+				base.VisitEventFieldDeclaration (node);
+				foreach (var v in node.Declaration.Variables)
+					Append (v);
+			}
+
+			public override void VisitEnumMemberDeclaration (EnumMemberDeclarationSyntax node)
+			{
+				base.VisitEnumMemberDeclaration (node);
+				Append (node);
+			}
+
+			public override void VisitBlock (BlockSyntax node)
+			{
+				// skip
+			}
+		}
+
+
+		static void BuildTreeChildren (TreeStore store, TreeIter parent, SemanticModel parsedDocument)
 		{
 			if (parsedDocument == null)
 				return;
-			
-			foreach (var unresolvedCls in parsedDocument.TopLevelTypeDefinitions) {
-				var cls = document.Compilation.MainAssembly.GetTypeDefinition (unresolvedCls.FullTypeName);
-				if (cls == null)
-					continue;
-				TreeIter childIter;
-				if (!parent.Equals (TreeIter.Zero))
-					childIter = store.AppendValues (parent, cls);
-				else
-					childIter = store.AppendValues (cls);
 
-				AddTreeClassContents (store, childIter, parsedDocument, cls, unresolvedCls);
-			}
-		}
+			var root = parsedDocument.SyntaxTree.GetRoot ();
 
-		static void AddTreeClassContents (TreeStore store, TreeIter parent, ParsedDocument parsedDocument, ITypeDefinition cls, IUnresolvedTypeDefinition part)
-		{
-			List<object> items = new List<object> ();
-			if (cls.Kind != TypeKind.Delegate) {
-				foreach (var o in cls.GetMembers (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
-					items.Add (o);
-				}
-				foreach (var o in cls.GetNestedTypes (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
-					if (o.DeclaringType == cls)
-						items.Add (o);
-				}
-				foreach (var o in cls.GetConstructors (m => part.Region.FileName == m.Region.FileName && part.Region.IsInside (m.Region.Begin))) {
-					if (o.IsSynthetic)
-						continue;
-					items.Add (o);
-				}
-			}
-			items.Sort (ClassOutlineNodeComparer.CompareRegion);
-			List<FoldingRegion> regions = new List<FoldingRegion> ();
-			foreach (FoldingRegion fr in parsedDocument.UserRegions)
-				//check regions inside class
-				if (cls.BodyRegion.IsInside (fr.Region.Begin) && cls.BodyRegion.IsInside (fr.Region.End))
-					regions.Add (fr);
-			regions.Sort (delegate(FoldingRegion x, FoldingRegion y) { return x.Region.Begin.CompareTo (y.Region.Begin); });
-			 
-			IEnumerator<FoldingRegion> regionEnumerator = regions.GetEnumerator ();
-			if (!regionEnumerator.MoveNext ())
-				regionEnumerator = null;
-			
-			FoldingRegion currentRegion = null;
-			TreeIter currentParent = parent;
-			foreach (object item in items) {
-
-				//no regions left; quick exit
-				if (regionEnumerator != null) {
-					DomRegion itemRegion = ClassOutlineNodeComparer.GetRegion (item);
-
-					//advance to a region that could potentially contain this member
-					while (regionEnumerator != null && !OuterEndsAfterInner (regionEnumerator.Current.Region, itemRegion))
-						if (!regionEnumerator.MoveNext ())
-							regionEnumerator = null;
-
-					//if member is within region, make sure it's the current parent.
-					//If not, move target iter back to class parent
-					if (regionEnumerator != null && regionEnumerator.Current.Region.IsInside (itemRegion.Begin)) {
-						if (currentRegion != regionEnumerator.Current) {
-							currentParent = store.AppendValues (parent, regionEnumerator.Current);
-							currentRegion = regionEnumerator.Current;
-						}
-					} else {
-						currentParent = parent;
-					}
-				}
-				
-				TreeIter childIter = store.AppendValues (currentParent, item);
-				if (item is ITypeDefinition)
-					AddTreeClassContents (store, childIter, parsedDocument, (ITypeDefinition)item, part);
-					
-			} 
-		}
-
-		static DomRegion GetRegion (object o)
-		{
-			if (o is IEntity) {
-				var m = (IEntity)o;
-				return m.Region; //m.BodyRegion.IsEmpty ? new DomRegion (m.Location, m.Location) : m.BodyRegion;
-			}
-			throw new InvalidOperationException (o.GetType ().ToString ());
-		}
-
-		static bool OuterEndsAfterInner (DomRegion outer, DomRegion inner)
-		{
-			return ((outer.End.Line > 1 && outer.End.Line > inner.End.Line)
-				|| (outer.End.Line == inner.End.Line && outer.End.Column > inner.End.Column));
+			var visitor = new TreeVisitor (store, parent);
+			visitor.Visit (root); 
 		}
 
 		void UpdateSorting ()

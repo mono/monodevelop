@@ -186,6 +186,8 @@ namespace MonoDevelop.CSharp
 		{
 			Accessibility acc = Accessibility.Public;
 
+			if (element is NamespaceDeclarationSyntax)
+				return Namespace;
 			
 			if (element is AccessorDeclarationSyntax) {
 				if (showAccessibility) {

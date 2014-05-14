@@ -33,7 +33,7 @@ using Gtk;
 using MonoDevelop.Core;
 
 
-namespace MonoDevelop.DesignerSupport
+namespace MonoDevelop.CSharp.ClassOutline
 {
 	/// <summary>
 	/// Provides a priority list of the groups that items in the class outline can be grouped in.
@@ -42,11 +42,11 @@ namespace MonoDevelop.DesignerSupport
 	/// The user can sort the list with button presses and thereby change the order of groups
 	/// in the outline, while grouping is active.
 	/// </remarks>
-	partial class ClassOutlineSortingPreferencesDialog : Dialog
+	partial class OutlineSortingPreferencesDialog : Dialog
 	{
-		ClassOutlineSettings settings;
+		OutlineSettings settings;
 		
-		public ClassOutlineSortingPreferencesDialog (ClassOutlineSettings settings)
+		public OutlineSortingPreferencesDialog (OutlineSettings settings)
 		{
 			this.Build ();
 
@@ -55,7 +55,7 @@ namespace MonoDevelop.DesignerSupport
 			
 			priorityList.Model.Clear ();
 			foreach (string g in settings.GroupOrder) {
-				priorityList.Model.AppendValues (g, ClassOutlineSettings.GetGroupName (g));
+				priorityList.Model.AppendValues (g, OutlineSettings.GetGroupName (g));
 			}
 			
 			this.settings = settings;

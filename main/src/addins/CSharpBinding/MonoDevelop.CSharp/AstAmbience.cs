@@ -142,6 +142,9 @@ namespace MonoDevelop.CSharp
 		public string GetEntityMarkup (SyntaxNode e)
 		{
 			var sb = new StringBuilder ();
+			if (e is NamespaceDeclarationSyntax) {
+				return ((NamespaceDeclarationSyntax)e).Name.ToString ();
+			}
 			if (e is TypeDeclarationSyntax) {
 				var type = e as TypeDeclarationSyntax;
 				sb.Append (type.Identifier);

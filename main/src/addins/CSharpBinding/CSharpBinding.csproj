@@ -337,6 +337,11 @@
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCodeCompletionFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingFactory.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\CSharpOutlineTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSortingPreferencesDialog.cs" />
+    <Compile Include="gtk-gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSettings.cs" />
+    <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineNodeComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -365,5 +370,6 @@
     <Folder Include="MonoDevelop.CSharp.UnitTests\" />
     <Folder Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\" />
     <Folder Include="icons\" />
+    <Folder Include="MonoDevelop.CSharp.ClassOutline\" />
   </ItemGroup>
 </Project>

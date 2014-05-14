@@ -33,7 +33,7 @@ using System.Linq;
 
 using MonoDevelop.Core;
 
-namespace MonoDevelop.DesignerSupport
+namespace MonoDevelop.CSharp.ClassOutline
 {
 	/// <summary>
 	/// Stores sorting status and is serialized to configuration properties.
@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport
 	/// serialized to the configuration file MonoDevelopProperties.xml.
 	/// </remarks>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineTextEditorExtension"/>
-	class ClassOutlineSettings
+	class OutlineSettings
 	{
 		const string KEY_GROUP_ORDER = "MonoDevelop.DesignerSupport.ClassOutline.GroupOrder";
 		const string KEY_IS_GROUPED = "MonoDevelop.DesignerSupport.ClassOutline.IsGrouped";
@@ -68,13 +68,13 @@ namespace MonoDevelop.DesignerSupport
 			{ GroupMethods,    GettextCatalog.GetString ("Methods") },
 		};
 		
-		ClassOutlineSettings ()
+		OutlineSettings ()
 		{
 		}
 		
-		public static ClassOutlineSettings Load ()
+		public static OutlineSettings Load ()
 		{
-			var cs = new ClassOutlineSettings ();
+			var cs = new OutlineSettings ();
 			cs.IsGrouped = PropertyService.Get (KEY_IS_GROUPED, false);
 			cs.IsSorted = PropertyService.Get (KEY_IS_SORTED, false);
 			
