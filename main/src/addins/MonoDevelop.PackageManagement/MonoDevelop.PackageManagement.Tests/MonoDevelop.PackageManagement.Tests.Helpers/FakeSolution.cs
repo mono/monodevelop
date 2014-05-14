@@ -40,7 +40,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakeSolution (string fileName)
 		{
-			FileName = new FilePath (fileName);
+			FileName = new FilePath (fileName.ToNativePath ());
 			BaseDirectory = FileName.ParentDirectory;
 		}
 	}

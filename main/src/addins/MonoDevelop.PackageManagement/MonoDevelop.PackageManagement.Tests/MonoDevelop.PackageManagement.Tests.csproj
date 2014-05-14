@@ -160,6 +160,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageManagementSolutionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\WindowsPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

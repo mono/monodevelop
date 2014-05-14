@@ -169,7 +169,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void AddFile (string fileName)
 		{
 			var file = new PhysicalPackageFile ();
-			file.TargetPath = fileName;
+			file.TargetPath = fileName.ToNativePath ();
 			FilesList.Add (file);
 		}
 

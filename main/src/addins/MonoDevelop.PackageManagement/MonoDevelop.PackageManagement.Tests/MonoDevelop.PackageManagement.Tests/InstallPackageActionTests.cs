@@ -269,7 +269,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateAction ();
 			fakeProject.AddFakePackageToSourceRepository ("Test");
 			action.PackageId = "Test";
-			AddInstallOperationWithFile (@"tools\init.ps1");
+			AddInstallOperationWithFile (@"tools\init.ps1".ToNativePath ());
 
 			bool hasPackageScripts = action.HasPackageScriptsToRun ();
 
@@ -295,7 +295,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateAction ();
 			fakeProject.AddFakePackageToSourceRepository ("Test");
 			action.PackageId = "Test";
-			AddInstallOperationWithFile (@"tools\INIT.PS1");
+			AddInstallOperationWithFile (@"tools\INIT.PS1".ToNativePath ());
 
 			bool hasPackageScripts = action.HasPackageScriptsToRun ();
 
@@ -308,7 +308,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateAction ();
 			fakeProject.AddFakePackageToSourceRepository ("Test");
 			action.PackageId = "Test";
-			AddInstallOperationWithFile (@"tools\INSTALL.PS1");
+			AddInstallOperationWithFile (@"tools\INSTALL.PS1".ToNativePath ());
 
 			bool hasPackageScripts = action.HasPackageScriptsToRun ();
 
@@ -321,7 +321,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateAction ();
 			fakeProject.AddFakePackageToSourceRepository ("Test");
 			action.PackageId = "Test";
-			AddInstallOperationWithFile (@"tools\UNINSTALL.PS1");
+			AddInstallOperationWithFile (@"tools\UNINSTALL.PS1".ToNativePath ());
 
 			bool hasPackageScripts = action.HasPackageScriptsToRun ();
 

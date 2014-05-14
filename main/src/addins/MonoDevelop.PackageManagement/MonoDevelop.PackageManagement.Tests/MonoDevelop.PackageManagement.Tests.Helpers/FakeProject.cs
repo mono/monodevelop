@@ -46,7 +46,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FakeProject (string fileName)
 			: this ()
 		{
-			FileName = new FilePath (fileName);
+			FileName = new FilePath (fileName.ToNativePath ());
 			BaseDirectory = FileName.ParentDirectory;
 		}
 

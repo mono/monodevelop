@@ -102,7 +102,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public static void AddFile (FakeDotNetProject project, string fileName)
 		{
-			project.Files.Add (new ProjectFile (fileName));
+			project.Files.Add (new ProjectFile (fileName.ToNativePath ()));
 		}
 
 		public static ProjectReference GetReference (FakeDotNetProject project, string referenceName)

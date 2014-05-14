@@ -71,13 +71,13 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateOptions ();
 			CreateTestProject ();
 			CreateSolution (@"d:\projects\MyProject\MySolution.sln");
-			solution.BaseDirectory = @"d:\projects\MyProject\";
+			solution.BaseDirectory = @"d:\projects\MyProject\".ToNativePath ();
 			project.ParentSolution = solution;
 			options.PackagesDirectory = "MyPackages";
 			CreateSolutionPackageRepositoryPath ();
 
 			string path = repositoryPath.PackageRepositoryPath;
-			string expectedPath = @"d:\projects\MyProject\MyPackages";
+			string expectedPath = @"d:\projects\MyProject\MyPackages".ToNativePath ();
 
 			Assert.AreEqual (expectedPath, path);
 		}
@@ -91,7 +91,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateSolutionPackageRepositoryPath (solution);
 
 			string path = repositoryPath.PackageRepositoryPath;
-			string expectedPath = @"d:\projects\MySolution\Packages";
+			string expectedPath = @"d:\projects\MySolution\Packages".ToNativePath ();
 
 			Assert.AreEqual (expectedPath, path);
 		}
@@ -109,7 +109,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string installPath = repositoryPath.GetInstallPath (package);
 
 			string expectedInstallPath = 
-				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.2.1.40";
+				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.2.1.40".ToNativePath ();
 
 			Assert.AreEqual (expectedInstallPath, installPath);
 		}

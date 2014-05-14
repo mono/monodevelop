@@ -396,7 +396,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void FileName_SolutionHasFileName_ReturnsSolutionFileName ()
 		{
 			CreateSolution ();
-			string expectedFileName = @"d:\projects\myproject\Project.sln";
+			string expectedFileName = @"d:\projects\myproject\Project.sln".ToNativePath ();
 			var solution = new FakeSolution (expectedFileName);
 			fakeProjectService.OpenSolution = solution;
 
@@ -571,7 +571,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			FakePackage package = FakePackage.CreatePackageWithVersion ("Test", "1.3.4.5");
-			string expectedInstallPath = @"d:\projects\MyProject\packages\TestPackage";
+			string expectedInstallPath = @"d:\projects\MyProject\packages\TestPackage".ToNativePath ();
 			fakeSolutionPackageRepository.InstallPathToReturn = expectedInstallPath;
 
 			string installPath = solution.GetInstallPath (package);

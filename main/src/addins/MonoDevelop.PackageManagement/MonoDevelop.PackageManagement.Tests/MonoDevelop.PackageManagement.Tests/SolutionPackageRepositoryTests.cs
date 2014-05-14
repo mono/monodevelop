@@ -103,7 +103,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string installPath = repository.GetInstallPath (package);
 
 			string expectedInstallPath = 
-				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.0.1.40";
+				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.0.1.40".ToNativePath ();
 
 			Assert.AreEqual (expectedInstallPath, installPath);
 		}
@@ -133,7 +133,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			IPackagePathResolver pathResolver = fakeRepositoryFactory.PathResolverPassedToCreateSharedRepository;
 			string installPath = pathResolver.GetInstallPath (package);
 
-			string expectedInstallPath = @"d:\projects\myproject\packages\Test.1.0";
+			string expectedInstallPath = @"d:\projects\myproject\packages\Test.1.0".ToNativePath ();
 
 			Assert.AreEqual (expectedInstallPath, installPath);
 		}
@@ -147,7 +147,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			IFileSystem fileSystem = fakeRepositoryFactory.FileSystemPassedToCreateSharedRepository;
 			string rootPath = fileSystem.Root;
 
-			string expectedRootPath = @"d:\projects\myproject\packages";
+			string expectedRootPath = @"d:\projects\myproject\packages".ToNativePath ();
 
 			Assert.AreEqual (expectedRootPath, rootPath);
 		}
@@ -161,7 +161,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			IFileSystem fileSystem = fakeRepositoryFactory.ConfigSettingsFileSystemPassedToCreateSharedRepository;
 			string rootPath = fileSystem.Root;
 
-			string expectedRootPath = @"d:\projects\myproject\.nuget";
+			string expectedRootPath = @"d:\projects\myproject\.nuget".ToNativePath ();
 
 			Assert.AreEqual (expectedRootPath, rootPath);
 		}

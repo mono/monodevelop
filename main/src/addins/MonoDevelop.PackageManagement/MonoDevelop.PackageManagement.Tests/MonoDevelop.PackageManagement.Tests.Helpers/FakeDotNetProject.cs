@@ -87,7 +87,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void AddDefaultBuildAction (string buildAction, string fileName)
 		{
-			DefaultBuildActions.Add (fileName, buildAction);
+			DefaultBuildActions.Add (fileName.ToNativePath (), buildAction);
 		}
 
 		public Dictionary<string, string> DefaultBuildActions = new Dictionary<string, string> ();

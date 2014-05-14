@@ -55,7 +55,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			testProject = ProjectHelper.CreateTestProject ();
 			var solution = new FakeSolution {
-				BaseDirectory = @"c:\projects\MyProject\"
+				BaseDirectory = @"c:\projects\MyProject\".ToNativePath ()
 			};
 			testProject.ParentSolution = solution;
 		}
@@ -85,7 +85,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			options.PackagesDirectory = "MyPackages";
 			CreatePackageManager ();
 
-			string expectedRoot = @"c:\projects\MyProject\MyPackages";
+			string expectedRoot = @"c:\projects\MyProject\MyPackages".ToNativePath ();
 			string actualRoot = fakePackageRepositoryFactory.FileSystemPassedToCreateSharedRepository.Root;
 			Assert.AreEqual (expectedRoot, actualRoot);
 		}
@@ -100,7 +100,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			FakePackage package = new FakePackage ("Test.Package");
 			package.Version = new SemanticVersion (1, 0, 0, 0);
-			string expectedDirectory = @"c:\projects\MyProject\MyPackages\Test.Package.1.0.0.0";
+			string expectedDirectory = @"c:\projects\MyProject\MyPackages\Test.Package.1.0.0.0".ToNativePath ();
 			string actualDirectory = 
 				fakePackageRepositoryFactory
 					.PathResolverPassedToCreateSharedRepository
@@ -129,7 +129,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			var package = new FakePackage ("TestPackage", "1.0.0.0");
 
-			string expectedDirectory = @"c:\projects\MyProject\packages\TestPackage.1.0.0.0";
+			string expectedDirectory = @"c:\projects\MyProject\packages\TestPackage.1.0.0.0".ToNativePath ();
 
 			SharpDevelopPackageManager sharpDevelopPackageManager = packageManager as SharpDevelopPackageManager;
 			string actualDirectory = sharpDevelopPackageManager.PathResolver.GetInstallPath (package);

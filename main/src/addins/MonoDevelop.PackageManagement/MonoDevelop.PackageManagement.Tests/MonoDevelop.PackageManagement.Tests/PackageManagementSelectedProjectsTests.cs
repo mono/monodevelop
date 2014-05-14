@@ -211,7 +211,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateFakeSolution ();
 			List<FakeDotNetProject> projectsAddedToSolution = AddSolutionWithTwoProjectsToProjectService ();
 			NoProjectsSelected ();
-			fakeSolution.FileName = @"d:\projects\MyProject\MySolution.sln";
+			fakeSolution.FileName = @"d:\projects\MyProject\MySolution.sln".ToNativePath ();
 			CreateSelectedProjects ();
 
 			string name = selectedProjects.SelectionName;

@@ -81,7 +81,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AddFile (string fileName)
 		{
-			projectSystem.AddFile (fileName, (Stream)null);
+			projectSystem.AddFile (fileName.ToNativePath (), (Stream)null);
 		}
 
 		void AssertLastMSBuildChildElementHasProjectAttributeValue (string expectedAttributeValue)
@@ -118,7 +118,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
 
-			string expectedRoot = @"d:\projects\MyProject\";
+			string expectedRoot = @"d:\projects\MyProject\".ToNativePath ();
 			Assert.AreEqual (expectedRoot, projectSystem.Root);
 		}
 
@@ -201,7 +201,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\temp\abc.cs";
+			string fileName = @"d:\temp\abc.cs".ToNativePath ();
 			bool result = projectSystem.IsSupportedFile (fileName);
 
 			Assert.IsTrue (result);
@@ -213,7 +213,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestWebApplicationProject ();
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\temp\app.config";
+			string fileName = @"d:\temp\app.config".ToNativePath ();
 			bool result = projectSystem.IsSupportedFile (fileName);
 
 			Assert.IsFalse (result);
@@ -225,7 +225,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestWebApplicationProject ();
 			CreateProjectSystem (project);
 
-			string fileName = @"c:\projects\APP.CONFIG";
+			string fileName = @"c:\projects\APP.CONFIG".ToNativePath ();
 			bool result = projectSystem.IsSupportedFile (fileName);
 
 			Assert.IsFalse (result);
@@ -237,7 +237,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestWebApplicationProject ();
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\temp\web.config";
+			string fileName = @"d:\temp\web.config".ToNativePath ();
 			bool result = projectSystem.IsSupportedFile (fileName);
 
 			Assert.IsTrue (result);
@@ -249,7 +249,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestWebSiteProject ();
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\temp\web.config";
+			string fileName = @"d:\temp\web.config".ToNativePath ();
 			bool result = projectSystem.IsSupportedFile (fileName);
 
 			Assert.IsTrue (result);
@@ -261,7 +261,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\temp\web.config";
+			string fileName = @"d:\temp\web.config".ToNativePath ();
 			bool result = projectSystem.IsSupportedFile (fileName);
 
 			Assert.IsFalse (result);
@@ -273,7 +273,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\temp\WEB.CONFIG";
+			string fileName = @"d:\temp\WEB.CONFIG".ToNativePath ();
 			bool result = projectSystem.IsSupportedFile (fileName);
 
 			Assert.IsFalse (result);
@@ -285,7 +285,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\temp\app.config";
+			string fileName = @"d:\temp\app.config".ToNativePath ();
 			bool result = projectSystem.IsSupportedFile (fileName);
 
 			Assert.IsTrue (result);
@@ -297,7 +297,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			ProjectHelper.AddReference (project, "MyAssembly");
 			CreateProjectSystem (project);
-			string fileName = @"D:\Projects\Test\MyAssembly.dll";
+			string fileName = @"D:\Projects\Test\MyAssembly.dll".ToNativePath ();
 
 			bool result = projectSystem.ReferenceExists (fileName);
 
@@ -309,7 +309,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
-			string fileName = @"D:\Projects\Test\MyAssembly.dll";
+			string fileName = @"D:\Projects\Test\MyAssembly.dll".ToNativePath ();
 
 			bool result = projectSystem.ReferenceExists (fileName);
 
@@ -322,7 +322,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			ProjectHelper.AddReference (project, "myassembly");
 			CreateProjectSystem (project);
-			string fileName = @"D:\Projects\Test\MYASSEMBLY.dll";
+			string fileName = @"D:\Projects\Test\MYASSEMBLY.dll".ToNativePath ();
 
 			bool result = projectSystem.ReferenceExists (fileName);
 
@@ -348,7 +348,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			ProjectHelper.AddReference (project, "myassembly");
 			CreateProjectSystem (project);
-			string fileName = @"D:\Projects\Test\myassembly.exe";
+			string fileName = @"D:\Projects\Test\myassembly.exe".ToNativePath ();
 
 			bool result = projectSystem.ReferenceExists (fileName);
 
@@ -361,7 +361,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			ProjectHelper.AddReference (project, "myassembly");
 			CreateProjectSystem (project);
-			string fileName = @"D:\Projects\Test\MYASSEMBLY.EXE";
+			string fileName = @"D:\Projects\Test\MYASSEMBLY.EXE".ToNativePath ();
 
 			bool result = projectSystem.ReferenceExists (fileName);
 
@@ -375,7 +375,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProjectSystem (project);
 			project.IsSaved = false;
 
-			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.AddReference (fileName, null);
 
 			Assert.AreEqual (1, project.ReferencesWhenSavedCount);
@@ -388,10 +388,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProjectSystem (project);
 			project.IsSaved = false;
 
-			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.AddReference (fileName, null);
-
-			ProjectReference referenceItem = ProjectHelper.GetReference (project, "nunit.framework");
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual (fileName, actualReference.Reference);
@@ -404,11 +402,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
 			project.IsSaved = false;
-			string relativeFileName = @"packages\nunit\nunit.framework.dll";
-			string fullFileName = @"d:\projects\MyProject\packages\nunit\nunit.framework.dll";
+			string relativeFileName = @"packages\nunit\nunit.framework.dll".ToNativePath ();
+			string fullFileName = @"d:\projects\MyProject\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.AddReference (relativeFileName, null);
-
-			ProjectReference referenceItem = ProjectHelper.GetReference (project, "nunit.framework");
 
 			ProjectReference actualReference = project.References [0];
 			Assert.AreEqual (fullFileName, actualReference.Reference);
@@ -422,7 +418,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateProjectSystem (project);
 			project.Name = "MyTestProject";
 
-			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.AddReference (fileName, null);
 
 			var expectedReferenceAndProjectName = new ReferenceAndProjectName () {
@@ -440,7 +436,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			ProjectHelper.AddReference (project, "nunit.framework");
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.RemoveReference (fileName);
 
 			ProjectReference referenceItem = ProjectHelper.GetReference (project, "nunit.framework");
@@ -480,7 +476,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			ProjectHelper.AddReference (project, "nunit.framework");
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.RemoveReference (fileName);
 
 			Assert.AreEqual (0, project.ReferencesWhenSavedCount);
@@ -494,7 +490,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			ProjectHelper.AddReference (project, "nunit.framework");
 			CreateProjectSystem (project);
 
-			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 			projectSystem.RemoveReference (fileName);
 
 			var expectedReferenceAndProjectName = new ReferenceAndProjectName {
@@ -511,7 +507,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			string expectedPath = @"d:\temp\abc.cs";
+			string expectedPath = @"d:\temp\abc.cs".ToNativePath ();
 			Stream expectedStream = new MemoryStream ();
 			projectSystem.AddFile (expectedPath, expectedStream);
 
@@ -523,7 +519,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void AddFile_NewFile_AddsFileToProject ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
-			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
 			project.AddDefaultBuildAction (BuildAction.Compile, fileName);
 			CreateProjectSystem (project);
 			AddFile (fileName);
@@ -538,8 +534,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void AddFile_NewResxFile_AddsFileToProjectWithCorrectItemType ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
-			string fileName = @"d:\projects\MyProject\src\NewFile.resx";
-						project.AddDefaultBuildAction (BuildAction.EmbeddedResource, fileName);
+			string fileName = @"d:\projects\MyProject\src\NewFile.resx".ToNativePath ();
+			project.AddDefaultBuildAction (BuildAction.EmbeddedResource, fileName);
 			CreateProjectSystem (project);
 
 			AddFile (fileName);
@@ -555,11 +551,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void AddFile_RelativeFileNameUsed_AddsFileToProject ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
-			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
 			project.AddDefaultBuildAction (BuildAction.Compile, fileName);
 			CreateProjectSystem (project);
 
-			string relativeFileName = @"src\NewFile.cs";
+			string relativeFileName = @"src\NewFile.cs".ToNativePath ();
 			AddFile (relativeFileName);
 			ProjectFile fileItem = ProjectHelper.GetFile (project, fileName);
 
@@ -573,7 +569,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void AddFile_RelativeFileNameWithNoPathUsed_AddsFileToProject ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
-			string fileName = @"d:\projects\MyProject\NewFile.cs";
+			string fileName = @"d:\projects\MyProject\NewFile.cs".ToNativePath ();
 			project.AddDefaultBuildAction (BuildAction.Compile, fileName);
 			CreateProjectSystem (project);
 
@@ -648,7 +644,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			AddFile (@"src\files\abc.cs");
 
 			var expectedFileNameAndProjectName = new FileNameAndProjectName {
-				FileName = @"src\files\abc.cs",
+				FileName = @"src\files\abc.cs".ToNativePath (),
 				ProjectName = "MyTestProject"
 			};
 
@@ -666,7 +662,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			AddFile (@"src\files\abc.cs");
 
 			var expectedFileNameAndProjectName = new FileNameAndProjectName {
-				FileName = @"src\files\abc.cs",
+				FileName = @"src\files\abc.cs".ToNativePath (),
 				ProjectName = "MyTestProject"
 			};
 
@@ -682,7 +678,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.DeleteFile ("test.cs");
 
-			Assert.AreEqual (@"d:\temp\test.cs", projectSystem.FakeFileService.PathPassedToRemoveFile);
+			Assert.AreEqual (@"d:\temp\test.cs".ToNativePath (), projectSystem.FakeFileService.PathPassedToRemoveFile);
 		}
 
 		[Test]
@@ -729,11 +725,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			AddFileToProject (@"d:\temp\src\Files\test.cs");
 			CreateProjectSystem (project);
 
-			projectSystem.DeleteFile (@"src\Files\test.cs");
+			projectSystem.DeleteFile (@"src\Files\test.cs".ToNativePath ());
 
 			var expectedFileNameAndFolder = new FileNameAndDirectory () {
 				FileName = "test.cs",
-				Folder = @"src\Files"
+				Folder = @"src\Files".ToNativePath ()
 			};
 
 			var actualFileNameAndFolder = projectSystem.FileNameAndDirectoryPassedToLogDeletedFileFromDirectory;
@@ -748,7 +744,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			AddFileToProject (@"d:\temp\src\Files\test.cs");
 			CreateProjectSystem (project);
 
-			projectSystem.DeleteFile (@"src\Files\test.cs");
+			projectSystem.DeleteFile (@"src\Files\test.cs".ToNativePath ());
 
 			Assert.IsNull (projectSystem.FileNamePassedToLogDeletedFile);
 		}
@@ -762,7 +758,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.DeleteDirectory ("test");
 
-			string path = @"d:\temp\test";
+			string path = @"d:\temp\test".ToNativePath ();
 			Assert.AreEqual (path, projectSystem.FakeFileService.PathPassedToRemoveDirectory);
 		}
 
@@ -843,7 +839,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			string expectedPath = @"d:\temp";
+			string expectedPath = @"d:\temp".ToNativePath ();
 
 			string path = projectSystem.ResolvePath (expectedPath);
 
@@ -873,7 +869,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject ();
 			CreateProjectSystem (project);
-			string path = @"d:\temp\abc.tt";
+			string path = @"d:\temp\abc.tt".ToNativePath ();
 			AddDefaultCustomToolForFileName (path, null);
 			Stream stream = new MemoryStream ();
 
@@ -1033,7 +1029,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateTestProject ();
 			CreateProjectSystem (project);
 
-			string expectedPath = @"d:\temp\abc.cs";
+			string expectedPath = @"d:\temp\abc.cs".ToNativePath ();
 			Action<Stream> expectedAction = stream => {
 			};
 			projectSystem.AddFile (expectedPath, expectedAction);
@@ -1046,7 +1042,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void AddFile_NewFileAddedWithAction_AddsFileToProject ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
-			string fileName = @"d:\projects\MyProject\src\NewFile.cs";
+			string fileName = @"d:\projects\MyProject\src\NewFile.cs".ToNativePath ();
 			project.AddDefaultBuildAction (BuildAction.Compile, fileName);
 			CreateProjectSystem (project);
 
@@ -1068,7 +1064,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string include = "MyAssembly, Version=0.1.0.0, Culture=neutral, PublicKeyToken=8cc8392e8503e009";
 			ProjectHelper.AddReference (project, include);
 			CreateProjectSystem (project);
-			string fileName = @"D:\Projects\Test\myassembly.dll";
+			string fileName = @"D:\Projects\Test\myassembly.dll".ToNativePath ();
 
 			bool result = projectSystem.ReferenceExists (fileName);
 
@@ -1082,7 +1078,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			string include = "nunit.framework, Version=2.6.2.0, Culture=neutral, PublicKeyToken=8cc8392e8503e009";
 			ProjectHelper.AddReference (project, include);
 			CreateProjectSystem (project);
-			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll";
+			string fileName = @"d:\projects\packages\nunit\nunit.framework.dll".ToNativePath ();
 
 			projectSystem.RemoveReference (fileName);
 
