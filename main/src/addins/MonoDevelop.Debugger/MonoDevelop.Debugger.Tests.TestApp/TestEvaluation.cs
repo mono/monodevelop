@@ -72,10 +72,10 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		public static void RunTest ()
 		{
 			var obj = new TestEvaluation ();
-			obj.Test ();
+			obj.Test ("testString", 55);
 		}
 
-		public void Test ()
+		public void Test (string stringParam, int intParam = 22, int intParam2 = 66)
 		{
 			int intZero = 0, intOne = 1;
 			int n = 32;
