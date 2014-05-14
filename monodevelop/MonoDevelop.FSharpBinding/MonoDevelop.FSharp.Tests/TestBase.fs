@@ -36,8 +36,10 @@ type Util =
 type TestBase() =
     static let firstRun = ref true
         
+    abstract member Setup: unit -> unit
+
     [<TestFixtureSetUp>]
-    member x.Setup () =
+    default x.Setup () =
         if !firstRun then
             let rootDir = Util.TestsRootDir
             try
