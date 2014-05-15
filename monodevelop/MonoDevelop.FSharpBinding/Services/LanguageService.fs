@@ -10,48 +10,17 @@ open System
 open System.IO
 open System.Xml
 open System.Text
-open System.Threading
 open System.Diagnostics
-
-open MonoDevelop.Core
-open MonoDevelop.Core.Assemblies
 open MonoDevelop.Ide
-open MonoDevelop.Ide.Tasks
-open MonoDevelop.Ide.Gui
 open MonoDevelop.Projects
-
-open ICSharpCode.NRefactory.TypeSystem
-open ICSharpCode.NRefactory.Completion
-open ICSharpCode.NRefactory.Documentation
-open ICSharpCode.NRefactory.Editor
-
-open FSharp.CompilerBinding
-open MonoDevelop.FSharp
-open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
-
-open Microsoft.FSharp.Compiler.Ast  
-open Microsoft.FSharp.Compiler.Range
-// --------------------------------------------------------------------------------------
 
 /// Contains settings of the F# language service
 module ServiceSettings = 
 
   /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
   let blockingTimeout = 500
-  
-  /// How often should we trigger the 'OnIdle' event and run background compilation of the current project?
-  let idleTimeout = 3000
 
-  /// When errors are reported, we don't show them immediately (because appearing bubbles while typing are annoying). 
-  /// We show them when the user doesn't type anything new into the editor for the time specified here
-  let errorTimeout = 1000
-
-  // What version of the FSharp language are we supporting?  This will evenually be made a project/script parameter.
-  let fsVersion = FSharpCompilerVersion.FSharp_3_0
-
-
-// --------------------------------------------------------------------------------------
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter = 
 
@@ -70,11 +39,11 @@ module internal TipFormatter =
   /// Return the XmlDocumentationProvider for an assembly
   let findXmlDocProviderForAssembly file  = 
       let tryExists s = try if File.Exists s then Some s else None with _ -> None
-      let e = 
+      let xmlDocFilename = 
           match tryExists (Path.ChangeExtension(file,"xml")) with 
           | Some x -> Some x 
           | None -> tryExists (Path.ChangeExtension(file,"XML"))
-      match e with 
+      match xmlDocFilename with 
       | None -> None
       | Some xmlFile ->
       let docReader = xmlDocProvider xmlFile
@@ -119,7 +88,6 @@ module internal TipFormatter =
   let (|SimpleKey|_|) (key:string) = 
      if key.StartsWith "P:" || key.StartsWith "F:" || key.StartsWith "E:" then 
          let name = key.[2..]
-        // printfn "AAA name = %A" name
          match name with 
          | MemberName(typeName,elemName) -> Some (typeName, elemName)
          | _ -> None
@@ -132,21 +100,12 @@ module internal TipFormatter =
 
   let trySelectOverload (nodes: XmlNodeList, argsFromKey:string[]) =
 
-      //printfn "AAA argsFromKey = %A" argsFromKey
       if (nodes.Count = 1) then Some nodes.[0] else
       
       let result = 
         [ for x in nodes -> x ] |> Seq.tryFind (fun curNode -> 
           let paramList = curNode.SelectNodes ("Parameters/*")
-          
-          Debug.WriteLine(sprintf "AAA paramList = %A" [ for x in paramList -> x.OuterXml ])
-          
-          (paramList <> null) &&
-          (argsFromKey.Length = paramList.Count) 
-          (* &&
-          (p, paramList) ||> Seq.forall2 (fun pi pmi -> 
-            let idString = GetTypeString pi.Type
-            (idString = pmi.Attributes ["Type"].Value)) *) )
+          (paramList <> null) && (argsFromKey.Length = paramList.Count) )
 
       match result with 
       | None -> None
@@ -242,9 +201,9 @@ module internal TipFormatter =
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
     signatureB.ToString().Trim(), commentB.ToString().Trim()
 
-  /// Format tool-tip that we get from the language service as string        
-  //
-  //TODO: Use the current projects policy to get line length
+  /// Format tool-tip that we get from the language service as string 
+  //       
+  // TODO: Use the current projects policy to get line length
   // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to: 
   // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
   let formatTip (ToolTipText(list)) =
@@ -322,7 +281,6 @@ module MDLanguageService =
                 with exn  -> () )))
                 
     
-// --------------------------------------------------------------------------------------
 /// Various utilities for working with F# language service
 module internal ServiceUtils =
   let map =           
