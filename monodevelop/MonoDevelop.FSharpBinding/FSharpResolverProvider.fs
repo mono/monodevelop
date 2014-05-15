@@ -165,7 +165,7 @@ type FSharpResolverProvider() =
         let tyResOpt = 
             MDLanguageService.Instance.GetTypedParseResultWithTimeout
                  (doc.Project.FileName.ToString(),
-                  doc.Editor.FileName, 
+                  doc.FileName.ToString(), 
                   docText, 
                   files, 
                   args, 
