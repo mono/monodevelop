@@ -100,7 +100,7 @@ type FSharpLanguageItemTooltipProvider() =
                 | [signature,comment] -> signature,comment
                 //With multiple tips just take the head.  
                 //This shouldnt happen anyway as we split them in the resolver provider
-                | multiple -> multiple |> List.head |> (fun (signature,comment) -> signature,comment)
+                | multiple -> multiple |> List.head
             //dont show a tooltip if there is no content
             if String.IsNullOrEmpty(signature) then null 
             else            
