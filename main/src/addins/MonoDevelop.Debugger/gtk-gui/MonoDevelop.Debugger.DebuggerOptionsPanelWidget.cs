@@ -4,25 +4,31 @@ namespace MonoDevelop.Debugger
 {
 	public partial class DebuggerOptionsPanelWidget
 	{
-		private global::Gtk.Notebook notebook1;
 		private global::Gtk.VBox vbox3;
+		
 		private global::Gtk.CheckButton checkProjectCodeOnly;
+		
 		private global::Gtk.CheckButton checkStepOverPropertiesAndOperators;
+		
 		private global::Gtk.CheckButton checkAllowEval;
+		
 		private global::Gtk.Alignment alignmentAllowToString;
+		
 		private global::Gtk.CheckButton checkAllowToString;
+		
 		private global::Gtk.CheckButton checkShowBaseGroup;
+		
 		private global::Gtk.CheckButton checkGroupPrivate;
+		
 		private global::Gtk.CheckButton checkGroupStatic;
+		
 		private global::Gtk.Table tableEval;
+		
 		private global::Gtk.Label label3;
+		
 		private global::Gtk.Label labelEvalTimeout;
+		
 		private global::Gtk.SpinButton spinTimeout;
-		private global::Gtk.Label label4;
-		private global::Gtk.VBox vbox2;
-		private global::Gtk.Label labelPriorityList;
-		private global::MonoDevelop.Ide.Gui.Components.PriorityList prioritylist;
-		private global::Gtk.Label labelPreferredDebuggers;
 
 		protected virtual void Build ()
 		{
@@ -31,11 +37,6 @@ namespace MonoDevelop.Debugger
 			global::Stetic.BinContainer.Attach (this);
 			this.Name = "MonoDevelop.Debugger.DebuggerOptionsPanelWidget";
 			// Container child MonoDevelop.Debugger.DebuggerOptionsPanelWidget.Gtk.Container+ContainerChild
-			this.notebook1 = new global::Gtk.Notebook ();
-			this.notebook1.CanFocus = true;
-			this.notebook1.Name = "notebook1";
-			this.notebook1.CurrentPage = 0;
-			// Container child notebook1.Gtk.Notebook+NotebookChild
 			this.vbox3 = new global::Gtk.VBox ();
 			this.vbox3.Name = "vbox3";
 			this.vbox3.Spacing = 6;
@@ -175,46 +176,7 @@ namespace MonoDevelop.Debugger
 			w12.Position = 7;
 			w12.Expand = false;
 			w12.Fill = false;
-			this.notebook1.Add (this.vbox3);
-			// Notebook tab
-			this.label4 = new global::Gtk.Label ();
-			this.label4.Name = "label4";
-			this.label4.LabelProp = global::Mono.Unix.Catalog.GetString ("General");
-			this.notebook1.SetTabLabel (this.vbox3, this.label4);
-			this.label4.ShowAll ();
-			// Container child notebook1.Gtk.Notebook+NotebookChild
-			this.vbox2 = new global::Gtk.VBox ();
-			this.vbox2.Name = "vbox2";
-			this.vbox2.Spacing = 6;
-			this.vbox2.BorderWidth = ((uint)(6));
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.labelPriorityList = new global::Gtk.Label ();
-			this.labelPriorityList.WidthRequest = 417;
-			this.labelPriorityList.Name = "labelPriorityList";
-			this.labelPriorityList.Xalign = 0F;
-			this.labelPriorityList.LabelProp = global::Mono.Unix.Catalog.GetString ("This priority list will be used when selecting the engine to be used for debugging an application.");
-			this.labelPriorityList.Wrap = true;
-			this.vbox2.Add (this.labelPriorityList);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.labelPriorityList]));
-			w14.Position = 0;
-			w14.Expand = false;
-			w14.Fill = false;
-			// Container child vbox2.Gtk.Box+BoxChild
-			this.prioritylist = new global::MonoDevelop.Ide.Gui.Components.PriorityList ();
-			this.prioritylist.Name = "prioritylist";
-			this.vbox2.Add (this.prioritylist);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.prioritylist]));
-			w15.Position = 1;
-			this.notebook1.Add (this.vbox2);
-			global::Gtk.Notebook.NotebookChild w16 = ((global::Gtk.Notebook.NotebookChild)(this.notebook1 [this.vbox2]));
-			w16.Position = 1;
-			// Notebook tab
-			this.labelPreferredDebuggers = new global::Gtk.Label ();
-			this.labelPreferredDebuggers.Name = "labelPreferredDebuggers";
-			this.labelPreferredDebuggers.LabelProp = global::Mono.Unix.Catalog.GetString ("Preferred Debuggers");
-			this.notebook1.SetTabLabel (this.vbox2, this.labelPreferredDebuggers);
-			this.labelPreferredDebuggers.ShowAll ();
-			this.Add (this.notebook1);
+			this.Add (this.vbox3);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
