@@ -103,31 +103,31 @@ namespace MonoDevelop.CodeIssues
 		static IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
 		{
 			var issues = new List<CodeIssue> ();
-			
-			var document = TypeSystemService.ParseFile (file.Project, data);
-			if (document == null) {
+//			
+//			var document = TypeSystemService.ParseFile (file.Project, data);
+//			if (document == null) {
 				refactoringContext = null;
-				return issues;
-			}
-
-			var content = TypeSystemService.GetProjectContext (file.Project);
-			var compilation  = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
-			var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
-			
-			refactoringContext = document.CreateRefactoringContextWithEditor (data, resolver, CancellationToken.None);
-			var context = refactoringContext;
-			foreach (var provider in GetInspectors (data, inspectorIds)) {
-				var severity = provider.GetSeverity ();
-				if (severity == Severity.None || !provider.GetIsEnabled ())
-					continue;
-				try {
-					lock (issues) {
-						issues.AddRange (provider.GetIssues (context, CancellationToken.None));
-					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error while running code issue on: " + data.FileName, ex);
-				}
-			}
+//				return issues;
+//			}
+//
+//			var content = TypeSystemService.GetProjectContext (file.Project);
+//			var compilation  = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
+//			var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
+//			
+//			refactoringContext = document.CreateRefactoringContextWithEditor (data, resolver, CancellationToken.None);
+//			var context = refactoringContext;
+//			foreach (var provider in GetInspectors (data, inspectorIds)) {
+//				var severity = provider.GetSeverity ();
+//				if (severity == Severity.None || !provider.GetIsEnabled ())
+//					continue;
+//				try {
+//					lock (issues) {
+//						issues.AddRange (provider.GetIssues (context, CancellationToken.None));
+//					}
+//				} catch (Exception ex) {
+//					LoggingService.LogError ("Error while running code issue on: " + data.FileName, ex);
+//				}
+//			}
 			return issues;
 		}
 

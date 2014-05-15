@@ -29,6 +29,7 @@ using Gtk;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -76,8 +77,8 @@ namespace MonoDevelop.CodeGeneration
 				if (type == null || Options.EnclosingMember != null)
 					yield break;
 
-				foreach (var method in Options.EnclosingType.Methods) {
-					if (method.IsPartial && method.BodyRegion.IsEmpty) {
+				foreach (IMethodSymbol method in Options.EnclosingType.GetMembers ().OfType<IMethodSymbol> ()) {
+					if (method.PartialDefinitionPart != null && method.PartialImplementationPart == null) {
 						yield return method;
 					}
 				}	
@@ -87,8 +88,9 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
-				foreach (IMethod member in includedMembers) 
-					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member, false).Code;
+				foreach (IMethod member in includedMembers)
+					yield return "";
+					//					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member, false).Code;
 			}
 		}
 	}

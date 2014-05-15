@@ -31,9 +31,9 @@ using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -78,21 +78,17 @@ namespace MonoDevelop.CodeGeneration
 			treeView.AppendColumn (column);
 			Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
 			foreach (object obj in GetValidMembers ()) {
-				var member = obj as IEntity;
+				var member = obj as ISymbol;
 				if (member != null) {
 					Store.AppendValues (false, ImageService.GetIcon (member.GetStockIcon (), IconSize.Menu), ambience.GetString (member, OutputFlags.ClassBrowserEntries), member);
 					continue;
 				}
 
-				var tuple = obj as Tuple<IMember, bool>;
+				var tuple = obj as Tuple<ISymbol, bool>;
 				if (tuple != null) {
 					Store.AppendValues (false, ImageService.GetIcon (tuple.Item1.GetStockIcon (), IconSize.Menu), ambience.GetString (tuple.Item1, OutputFlags.ClassBrowserEntries), tuple);
 					continue;
 				}
-
-				var variable = obj as IVariable;
-				if (variable != null)
-					Store.AppendValues (false, ImageService.GetIcon (variable.GetStockIcon (), IconSize.Menu), variable.Name, variable);
 			}
 			
 			treeView.Model = store;
@@ -141,7 +137,7 @@ namespace MonoDevelop.CodeGeneration
 			} while (store.IterNext (ref iter));
 
 			var output = new StringBuilder ();
-			string indent = RefactoringOptions.GetIndent (options.Document, (IEntity)options.EnclosingMember ?? options.EnclosingType) + "\t";
+			string indent = RefactoringOptions.GetIndent (options.Document, (SyntaxNode)options.EnclosingMember ?? options.EnclosingPart) + "\t";
 			foreach (string nodeText in GenerateCode (includedMembers)) {
 				if (output.Length > 0) {
 					output.AppendLine ();

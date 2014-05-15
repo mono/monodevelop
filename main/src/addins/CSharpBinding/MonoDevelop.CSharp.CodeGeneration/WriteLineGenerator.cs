@@ -34,6 +34,8 @@ using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -87,7 +89,7 @@ namespace MonoDevelop.CodeGeneration
 				// add local variables
 				var state = Options.CurrentState;
 				if (state != null) {
-					foreach (var v in state.LocalVariables) 
+					foreach (var v in state.LookupSymbols (editor.Caret.Offset).OfType<ILocalSymbol> ()) 
 						yield return v;
 				}
 				
@@ -98,16 +100,16 @@ namespace MonoDevelop.CodeGeneration
 				}
 				
 				// add type members
-				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSynthetic)
+				foreach (IFieldSymbol field in Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ()) {
+					if (field.IsImplicitlyDeclared)
 						continue;
 					yield return field;
 				}
 
-				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSynthetic)
+				foreach (IPropertySymbol property in Options.EnclosingType.GetMembers ().OfType<IPropertySymbol> ()) {
+					if (property.IsImplicitlyDeclared)
 						continue;
-					if (property.CanGet)
+					if (property.GetMethod != null)
 						yield return property;
 				}
 			}
@@ -132,9 +134,9 @@ namespace MonoDevelop.CodeGeneration
 					format.Append (i++);
 					format.Append ("}");
 				}
-				
-				var consoleType = typeof (Console).ToTypeReference ().Resolve (Options.Document.Compilation.TypeResolveContext);
-				var invocationExpression = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (Options.CreateShortType (consoleType)), "WriteLine"));
+
+				var consoleType = Options.CurrentState.Compilation.GetTypeByMetadataName (typeof (Console).FullName);
+				var invocationExpression = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (new SimpleType(Options.CreateShortType (consoleType))), "WriteLine"));
 				invocationExpression.Arguments.Add (new PrimitiveExpression (format.ToString ()));
 				foreach (var member in includedMembers) {
 					invocationExpression.Arguments.Add (new IdentifierExpression (GetName (member)));

@@ -145,57 +145,57 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.AppendLine ();
 		}
 		
-		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
-		                                                                      IUnresolvedTypeDefinition part,
-		                                                                      IUnresolvedMember member,
-		                                                                      bool explicitDeclaration)
-		{
-			SetIndentTo (part);
-			var options = new CodeGenerationOptions () {
-				ExplicitDeclaration = explicitDeclaration,
-				ImplementingType = implementingType,
-				Part = part
-			};
-			ITypeResolveContext ctx;
-
-			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
-			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
-			options.Document = doc;
-
-			if (member is IUnresolvedMethod)
-				return GenerateCode ((IMethod) ((IUnresolvedMethod)member).CreateResolved (ctx), options);
-			if (member is IUnresolvedProperty)
-				return GenerateCode ((IProperty) ((IUnresolvedProperty)member).CreateResolved (ctx), options);
-			if (member is IUnresolvedField)
-				return GenerateCode ((IField) ((IUnresolvedField)member).CreateResolved (ctx), options);
-			if (member is IUnresolvedEvent)
-				return GenerateCode ((IEvent) ((IUnresolvedEvent)member).CreateResolved (ctx), options);
-			throw new NotSupportedException ("member " +  member + " is not supported.");
-		}
-		
-		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
-		                                                                      IUnresolvedTypeDefinition part,
-		                                                                      IMember member,
-		                                                                      bool explicitDeclaration)
-		{
-			SetIndentTo (part);
-			var options = new CodeGenerationOptions () {
-				ExplicitDeclaration = explicitDeclaration,
-				ImplementingType = implementingType,
-				Part = part,
-				Document = IdeApp.Workbench.GetDocument (part.Region.FileName)
-			};
-			if (member is IMethod)
-				return GenerateCode ((IMethod)member, options);
-			if (member is IProperty)
-				return GenerateCode ((IProperty)member, options);
-			if (member is IField)
-				return GenerateCode ((IField)member, options);
-			if (member is IEvent)
-				return GenerateCode ((IEvent)member, options);
-			throw new NotSupportedException ("member " +  member + " is not supported.");
-		}
-		
+//		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
+//		                                                                      IUnresolvedTypeDefinition part,
+//		                                                                      IUnresolvedMember member,
+//		                                                                      bool explicitDeclaration)
+//		{
+//			SetIndentTo (part);
+//			var options = new CodeGenerationOptions () {
+//				ExplicitDeclaration = explicitDeclaration,
+//				ImplementingType = implementingType,
+//				Part = part
+//			};
+//			ITypeResolveContext ctx;
+//
+//			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
+//			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
+//			options.Document = doc;
+//
+//			if (member is IUnresolvedMethod)
+//				return GenerateCode ((IMethod) ((IUnresolvedMethod)member).CreateResolved (ctx), options);
+//			if (member is IUnresolvedProperty)
+//				return GenerateCode ((IProperty) ((IUnresolvedProperty)member).CreateResolved (ctx), options);
+//			if (member is IUnresolvedField)
+//				return GenerateCode ((IField) ((IUnresolvedField)member).CreateResolved (ctx), options);
+//			if (member is IUnresolvedEvent)
+//				return GenerateCode ((IEvent) ((IUnresolvedEvent)member).CreateResolved (ctx), options);
+//			throw new NotSupportedException ("member " +  member + " is not supported.");
+//		}
+//		
+//		public override CodeGeneratorMemberResult CreateMemberImplementation (ITypeDefinition implementingType,
+//		                                                                      IUnresolvedTypeDefinition part,
+//		                                                                      IMember member,
+//		                                                                      bool explicitDeclaration)
+//		{
+//			SetIndentTo (part);
+//			var options = new CodeGenerationOptions () {
+//				ExplicitDeclaration = explicitDeclaration,
+//				ImplementingType = implementingType,
+//				Part = part,
+//				Document = IdeApp.Workbench.GetDocument (part.Region.FileName)
+//			};
+//			if (member is IMethod)
+//				return GenerateCode ((IMethod)member, options);
+//			if (member is IProperty)
+//				return GenerateCode ((IProperty)member, options);
+//			if (member is IField)
+//				return GenerateCode ((IField)member, options);
+//			if (member is IEvent)
+//				return GenerateCode ((IEvent)member, options);
+//			throw new NotSupportedException ("member " +  member + " is not supported.");
+//		}
+//		
 		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
 		{
 			switch (braceStyle) {
@@ -829,54 +829,54 @@ namespace MonoDevelop.CSharp.Refactoring
 			return member.DeclaringTypeDefinition.Attributes.Any (attr => attr.AttributeType != null && attr.AttributeType.ReflectionName == "MonoTouch.Foundation.ModelAttribute");
 		}
 		
-		public override string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly)
-		{
-			SetIndentTo (implementingType);
-			StringBuilder result = new StringBuilder ();
-			AppendIndent (result);
-			
-//			if (modifiers != MonoDevelop.Projects.Dom.Modifiers.None) {
-//				switch (modifiers) {
-//				}
-//				result.Append (ambience.GetString (modifiers));
-//				result.Append (" ");
+//		public override string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly)
+//		{
+//			SetIndentTo (implementingType);
+//			StringBuilder result = new StringBuilder ();
+//			AppendIndent (result);
+//			
+////			if (modifiers != MonoDevelop.Projects.Dom.Modifiers.None) {
+////				switch (modifiers) {
+////				}
+////				result.Append (ambience.GetString (modifiers));
+////				result.Append (" ");
+////			}
+//			var options = new CodeGenerationOptions () {
+//				ImplementingType = field.DeclaringTypeDefinition,
+//				Part = implementingType
+//			};
+//			result.Append ("public ");
+//			AppendReturnType (result, options, field.ReturnType);
+//			result.Append (" ");
+//			result.Append (propertyName);
+//			AppendBraceStart (result, Policy.PropertyBraceStyle);
+//			AppendIndent (result);
+//			
+//			result.Append ("get");
+//			AppendBraceStart (result, Policy.PropertyGetBraceStyle);
+//			AppendIndent (result);
+//			result.Append ("return this.");
+//			result.Append (CSharpAmbience.FilterName (field.Name));
+//			result.Append (";");
+//			AppendLine (result);
+//			AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
+//			AppendLine (result);
+//
+//			if (!readOnly) {
+//				AppendIndent (result);
+//				result.Append ("set");
+//				AppendBraceStart (result, Policy.PropertyGetBraceStyle);
+//				AppendIndent (result);
+//				result.Append (CSharpAmbience.FilterName (field.Name));
+//				result.Append (" = value;");
+//				AppendLine (result);
+//				AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
+//				AppendLine (result);
 //			}
-			var options = new CodeGenerationOptions () {
-				ImplementingType = field.DeclaringTypeDefinition,
-				Part = implementingType
-			};
-			result.Append ("public ");
-			AppendReturnType (result, options, field.ReturnType);
-			result.Append (" ");
-			result.Append (propertyName);
-			AppendBraceStart (result, Policy.PropertyBraceStyle);
-			AppendIndent (result);
-			
-			result.Append ("get");
-			AppendBraceStart (result, Policy.PropertyGetBraceStyle);
-			AppendIndent (result);
-			result.Append ("return this.");
-			result.Append (CSharpAmbience.FilterName (field.Name));
-			result.Append (";");
-			AppendLine (result);
-			AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
-			AppendLine (result);
-
-			if (!readOnly) {
-				AppendIndent (result);
-				result.Append ("set");
-				AppendBraceStart (result, Policy.PropertyGetBraceStyle);
-				AppendIndent (result);
-				result.Append (CSharpAmbience.FilterName (field.Name));
-				result.Append (" = value;");
-				AppendLine (result);
-				AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
-				AppendLine (result);
-			}
-			
-			AppendBraceEnd (result, Policy.PropertyBraceStyle);
-			return result.ToString ();
-		}
+//			
+//			AppendBraceEnd (result, Policy.PropertyBraceStyle);
+//			return result.ToString ();
+//		}
 		
 		int CountBlankLines (MonoDevelop.Ide.Gui.Document doc, int startLine)
 		{

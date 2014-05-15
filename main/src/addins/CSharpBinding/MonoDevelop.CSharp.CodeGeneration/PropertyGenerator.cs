@@ -33,8 +33,8 @@ using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using System.Text;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -86,16 +86,16 @@ namespace MonoDevelop.CodeGeneration
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
-				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSynthetic)
+				foreach (IFieldSymbol field in Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ()) {
+					if (field.IsImplicitlyDeclared)
 						continue;
-					var list = Options.EnclosingType.Fields.Where (f => f.Name == CreatePropertyName (field));;
+					var list = Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ().Where (f => f.Name == CreatePropertyName (field));
 					if (!list.Any ())
 						yield return field;
 				}
 			}
 			
-			static string CreatePropertyName (IMember member)
+			static string CreatePropertyName (ISymbol member)
 			{
 				int i = 0;
 				while (i + 1 < member.Name.Length && member.Name[i] == '_')
@@ -109,8 +109,9 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
-				foreach (IField field in includedMembers)
-					yield return generator.CreateFieldEncapsulation (Options.EnclosingPart, field, CreatePropertyName (field), Accessibility.Public, ReadOnly);
+				foreach (IFieldSymbol field in includedMembers)
+					yield return "";
+				//					yield return generator.CreateFieldEncapsulation (Options.EnclosingPart, field, CreatePropertyName (field), Accessibility.Public, ReadOnly);
 			}
 		}
 	}

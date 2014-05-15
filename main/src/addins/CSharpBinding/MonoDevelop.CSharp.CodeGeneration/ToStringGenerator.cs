@@ -24,17 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Components;
-using Gtk;
-using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Core;
-using MonoDevelop.Refactoring;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -80,16 +75,16 @@ namespace MonoDevelop.CodeGeneration
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
-				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSynthetic)
+				foreach (IFieldSymbol field in Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ()) {
+					if (field.IsImplicitlyDeclared)
 						continue;
 					yield return field;
 				}
 
-				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSynthetic)
+				foreach (IPropertySymbol property in Options.EnclosingType.GetMembers ().OfType<IPropertySymbol> ()) {
+					if (property.IsImplicitlyDeclared)
 						continue;
-					if (property.CanGet)
+					if (property.GetMethod != null)
 						yield return property;
 				}
 			}
@@ -101,7 +96,7 @@ namespace MonoDevelop.CodeGeneration
 				format.Append (Options.EnclosingType.Name);
 				format.Append (": ");
 				int i = 0;
-				foreach (IEntity member in includedMembers) {
+				foreach (ISymbol member in includedMembers) {
 					if (i > 0)
 						format.Append (", ");
 					format.Append (member.Name);
@@ -115,7 +110,7 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				yield return new MethodDeclaration () {
+				yield return new MethodDeclaration {
 					Name = "ToString",
 					ReturnType = new PrimitiveType ("string"),
 					Modifiers = Modifiers.Public | Modifiers.Override,
@@ -123,7 +118,7 @@ namespace MonoDevelop.CodeGeneration
 						new ReturnStatement (
 							new InvocationExpression (
 								new MemberReferenceExpression (new TypeReferenceExpression (new PrimitiveType ("string")), "Format"), 
-								new Expression [] { new PrimitiveExpression (GetFormatString (includedMembers)) }.Concat (includedMembers.Select (member => new IdentifierExpression (((IEntity)member).Name)))
+								new Expression [] { new PrimitiveExpression (GetFormatString (includedMembers)) }.Concat (includedMembers.Select (member => new IdentifierExpression (((ISymbol)member).Name)))
 							)
 						)
 					} 

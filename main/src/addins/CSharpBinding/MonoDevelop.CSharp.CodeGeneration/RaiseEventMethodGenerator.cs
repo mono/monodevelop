@@ -25,15 +25,16 @@
 // THE SOFTWARE.
 using System;
 
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Refactoring;
 using System.Text;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -77,7 +78,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 			}
 
-			static string GetEventMethodName (IMember member)
+			static string GetEventMethodName (ISymbol member)
 			{
 				return "On" + member.Name;
 			}
@@ -86,13 +87,13 @@ namespace MonoDevelop.CodeGeneration
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
-				foreach (var e in Options.EnclosingType.Events) {
-					if (e.IsSynthetic)
+				foreach (IEventSymbol e in Options.EnclosingType.GetMembers ().OfType<IEventSymbol> ()) {
+					if (e.IsImplicitlyDeclared)
 						continue;
-					var invokeMethod = e.ReturnType.GetDelegateInvokeMethod ();
+					var invokeMethod = e.GetReturnType ().GetDelegateInvokeMethod ();
 					if (invokeMethod == null)
 						continue;
-					if (Options.EnclosingType.GetMethods (m => m.Name == GetEventMethodName (e)).Any ())
+					if (Options.EnclosingType.GetMembers ().OfType<IMethodSymbol> ().Any (m => m.Name == GetEventMethodName (e)))
 						continue;
 					yield return e;
 				}
@@ -100,17 +101,17 @@ namespace MonoDevelop.CodeGeneration
 
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
-				foreach (IMember member in includedMembers) {
-					var invokeMethod = member.ReturnType.GetDelegateInvokeMethod ();
+				foreach (ISymbol member in includedMembers) {
+					var invokeMethod = member.GetReturnType ().GetDelegateInvokeMethod ();
 					if (invokeMethod == null)
 						continue;
 
-					var methodDeclaration = new MethodDeclaration () {
+					var methodDeclaration = new MethodDeclaration {
 						Name = GetEventMethodName (member),
 						ReturnType = new PrimitiveType ("void"),
 						Modifiers = Modifiers.Protected | Modifiers.Virtual,
 						Parameters = {
-							new ParameterDeclaration (Options.CreateShortType (invokeMethod.Parameters [1].Type), invokeMethod.Parameters [1].Name)
+							new ParameterDeclaration (new SimpleType (Options.CreateShortType (invokeMethod.Parameters [1].Type)), invokeMethod.Parameters [1].Name)
 						},
 						Body = new BlockStatement () {
 							new VariableDeclarationStatement (

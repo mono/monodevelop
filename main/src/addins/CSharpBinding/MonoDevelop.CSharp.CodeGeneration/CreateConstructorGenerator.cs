@@ -28,8 +28,9 @@ using Gtk;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -77,33 +78,33 @@ namespace MonoDevelop.CodeGeneration
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
 
-				var bt = Options.EnclosingType.DirectBaseTypes.FirstOrDefault (t => t.Kind != TypeKind.Interface);
+				var bt = Options.EnclosingType.BaseType;
 
 				if (bt != null) {
-					var ctors = bt.GetConstructors (m => !m.IsSynthetic).ToList ();
-					foreach (var ctor in ctors) {
-						if (ctor.Parameters.Count > 0 || ctors.Count > 1) {
+					var ctors = bt.GetMembers ().OfType<IMethodSymbol> ().Where(m => m.MethodKind == MethodKind.Constructor && !m.IsImplicitlyDeclared).ToList ();
+					foreach (IMethodSymbol ctor in ctors) {
+						if (ctor.Parameters.Length > 0 || ctors.Count > 1) {
 							yield return ctor;
 						}
 					} 
 				}
 
-				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSynthetic)
+				foreach (IFieldSymbol field in Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ()) {
+					if (field.IsImplicitlyDeclared)
 						continue;
 					yield return field;
 				}
 
-				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSynthetic)
+				foreach (IPropertySymbol property in Options.EnclosingType.GetMembers ().OfType<IPropertySymbol> ()) {
+					if (property.IsImplicitlyDeclared)
 						continue;
-					if (!property.CanSet)
+					if (property.SetMethod == null)
 						continue;
 					yield return property;
 				}
 			}
 			
-			static string CreateParameterName (IMember member)
+			static string CreateParameterName (ISymbol member)
 			{
 				if (char.IsUpper (member.Name[0]))
 					return char.ToLower (member.Name[0]) + member.Name.Substring (1);
@@ -113,7 +114,7 @@ namespace MonoDevelop.CodeGeneration
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)
 			{
 				bool gotConstructorOverrides = false;
-				foreach (IMethod m in includedMembers.OfType<IMethod> ().Where (m => m.SymbolKind == SymbolKind.Constructor)) {
+				foreach (IMethodSymbol m in includedMembers.OfType<IMethodSymbol> ().Where (m => m.MethodKind == MethodKind.Constructor)) {
 					gotConstructorOverrides = true;
 					var init = new ConstructorInitializer {
 						ConstructorInitializerType = ConstructorInitializerType.Base
@@ -125,17 +126,18 @@ namespace MonoDevelop.CodeGeneration
 						Body = new BlockStatement (),
 					};
 
-					if (m.Parameters.Count > 0)
+					if (m.Parameters.Length > 0)
 						overridenConstructor.Initializer = init;
 
 					foreach (var par in m.Parameters) {
-						overridenConstructor.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (par.Type), par.Name));
+						overridenConstructor.Parameters.Add (new ParameterDeclaration (new SimpleType (Options.CreateShortType (par.Type)), par.Name));
 						init.Arguments.Add (new IdentifierExpression(par.Name)); 
 					}
-					foreach (var member in includedMembers.OfType<IMember> ()) {
-						if (member.SymbolKind == SymbolKind.Constructor)
+
+					foreach (ISymbol member in includedMembers) {
+						if (member.Kind == SymbolKind.Method)
 							continue;
-						overridenConstructor.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (member.ReturnType), CreateParameterName (member)));
+						overridenConstructor.Parameters.Add (new ParameterDeclaration (new SimpleType (Options.CreateShortType (member.GetReturnType ())), CreateParameterName (member)));
 
 						var memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
 						var assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));
@@ -152,8 +154,8 @@ namespace MonoDevelop.CodeGeneration
 					Body = new BlockStatement ()
 				};
 
-				foreach (IMember member in includedMembers) {
-					constructorDeclaration.Parameters.Add (new ParameterDeclaration (Options.CreateShortType (member.ReturnType), CreateParameterName (member)));
+				foreach (ISymbol member in includedMembers) {
+					constructorDeclaration.Parameters.Add (new ParameterDeclaration (new SimpleType (Options.CreateShortType (member.GetReturnType ())), CreateParameterName (member)));
 
 					var memberReference = new MemberReferenceExpression (new ThisReferenceExpression (), member.Name);
 					var assign = new AssignmentExpression (memberReference, AssignmentOperatorType.Assign, new IdentifierExpression (CreateParameterName (member)));

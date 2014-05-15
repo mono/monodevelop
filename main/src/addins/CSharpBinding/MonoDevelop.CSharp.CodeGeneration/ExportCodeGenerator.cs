@@ -166,35 +166,35 @@ namespace MonoDevelop.CodeGeneration
 				var type = Options.EnclosingType;
 				if (type == null || Options.EnclosingMember != null)
 					yield break;
-				foreach (var t in type.DirectBaseTypes) {
-					string name;
-					if (!HasProtocolAttribute (t, out name))
-						continue;
-					var protocolType = Options.Document.Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
-					if (protocolType == null)
-						break;
-					foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
-						if (member.ImplementedInterfaceMembers.Any ())
-							continue;
-						if (!cg.IsValidMember (member))
-							continue;
-						if (IsImplemented (type, member))
-							continue;
-						if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
-							yield return member;
-					}
-					foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
-						if (member.ImplementedInterfaceMembers.Any ())
-							continue;
-						if (!cg.IsValidMember (member))
-							continue;
-						if (IsImplemented (type, member))
-							continue;
-						if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation") ||
-							member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
-							yield return member;
-					}
-				}
+//				foreach (var t in type.Interfaces) {
+//					string name;
+//					if (!HasProtocolAttribute (t, out name))
+//						continue;
+//					var protocolType = Options.Document.Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
+//					if (protocolType == null)
+//						break;
+//					foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
+//						if (member.ImplementedInterfaceMembers.Any ())
+//							continue;
+//						if (!cg.IsValidMember (member))
+//							continue;
+//						if (IsImplemented (type, member))
+//							continue;
+//						if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
+//							yield return member;
+//					}
+//					foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
+//						if (member.ImplementedInterfaceMembers.Any ())
+//							continue;
+//						if (!cg.IsValidMember (member))
+//							continue;
+//						if (IsImplemented (type, member))
+//							continue;
+//						if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation") ||
+//							member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
+//							yield return member;
+//					}
+//				}
 			}
 
 			protected override IEnumerable<string> GenerateCode (List<object> includedMembers)

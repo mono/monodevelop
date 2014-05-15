@@ -132,6 +132,11 @@ namespace MonoDevelop.Refactoring
 		{
 			return GetWhitespaces (document, document.Editor.Document.LocationToOffset (member.Region.BeginLine, 1));
 		}
+
+		public static string GetIndent (Document document, Microsoft.CodeAnalysis.SyntaxNode member)
+		{
+			return GetWhitespaces (document, member.SpanStart);
+		}
 		
 		public string GetWhitespaces (int insertionOffset)
 		{

@@ -26,35 +26,38 @@
 using System.Linq;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using System;
 using System.Threading;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace MonoDevelop.CodeGeneration
 {
 	public class CodeGenerationOptions
 	{
-		public Document Document {
+		readonly int offset;
+
+		public MonoDevelop.Ide.Gui.Document Document {
+			get;
+			private set;
+		}
+
+		public ITypeSymbol EnclosingType {
 			get;
 			private set;
 		}
 		
-		public ITypeDefinition EnclosingType {
+		public TypeDeclarationSyntax EnclosingPart {
 			get;
 			private set;
 		}
 		
-		public IUnresolvedTypeDefinition EnclosingPart {
-			get;
-			private set;
-		}
-		
-		public IMember EnclosingMember {
+		public MemberDeclarationSyntax EnclosingMember {
 			get;
 			private set;
 		}
@@ -65,7 +68,7 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		public CSharpFormattingOptions FormattingOptions {
+		public ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions FormattingOptions {
 			get {
 				var doc = Document;
 				var policyParent = doc.Project != null ? doc.Project.Policies : null;
@@ -74,73 +77,26 @@ namespace MonoDevelop.CodeGeneration
 				return codePolicy.CreateOptions ();
 			}
 		}
-		
-		static AstNode FirstExpressionChild (AstNode parent)
+
+		public SemanticModel CurrentState {
+			get;
+			private set;
+		}
+
+		internal CodeGenerationOptions (MonoDevelop.Ide.Gui.Document document)
 		{
-			AstNode node = parent.FirstChild;
-			if (node == null)
-				return null;
-			while (node != null && !(node is Expression || node is Statement)) {
-				node = node.NextSibling;
-			}
-			return node;
+			CurrentState = document.AnalysisDocument.GetSemanticModelAsync ().Result;
+			offset = document.Editor.Caret.Offset;
+			var node = CurrentState.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset));
+			EnclosingMember = node.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault ();
+			EnclosingPart = node.AncestorsAndSelf ().OfType<TypeDeclarationSyntax> ().FirstOrDefault ();
+			if (EnclosingPart != null)
+				EnclosingType = CurrentState.GetDeclaredSymbol (EnclosingPart) as ITypeSymbol;
 		}
 		
-		static AstNode NextExpression (AstNode parent)
+		public string CreateShortType (ITypeSymbol fullType)
 		{
-			AstNode node = parent.GetNextNode ();
-			if (node == null)
-				return null;
-			while (node != null && !(node is Expression || node is Statement)) {
-				node = node.GetNextNode ();
-			}
-			return node;
-		}
-		
-		readonly Lazy<CSharpResolver> currentState;
-		public CSharpResolver CurrentState {
-			get {
-				return currentState.Value;
-			}
-		}
-		
-		public CodeGenerationOptions ()
-		{
-			currentState = new Lazy<CSharpResolver> (() => {
-				var parsedDocument = Document.ParsedDocument;
-				if (parsedDocument == null)
-					return null;
-				var unit = parsedDocument.GetAst<SyntaxTree> ().Clone ();
-				var file = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-				
-				var resolvedNode = unit.GetNodeAt<BlockStatement> (Document.Editor.Caret.Location);
-				if (resolvedNode == null)
-					return null;
-				
-				var expr = new IdentifierExpression ("foo");
-				resolvedNode.Add (expr);
-				
-				var ctx = file.GetTypeResolveContext (Document.Compilation, Document.Editor.Caret.Location);
-				
-				var resolver = new CSharpResolver (ctx);
-				
-				var astResolver = new CSharpAstResolver (resolver, unit, file);
-				astResolver.ApplyNavigator (new NodeListResolveVisitorNavigator (expr), CancellationToken.None);
-				astResolver.Resolve (expr);
-				return astResolver.GetResolverStateBefore (expr);
-			});
-		}
-		
-		public AstType CreateShortType (IType fullType)
-		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			
-			var compilation = Document.Compilation;
-			fullType = compilation.Import (fullType);
-			var csResolver = parsedFile.GetResolver (compilation, Document.Editor.Caret.Location);
-			
-			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-			return builder.ConvertType (fullType);
+			return fullType.ToMinimalDisplayString (CurrentState, offset);
 		}
 		
 		public CodeGenerator CreateCodeGenerator ()
@@ -151,22 +107,9 @@ namespace MonoDevelop.CodeGeneration
 			return result;
 		}
 		
-		public static CodeGenerationOptions CreateCodeGenerationOptions (Document document)
+		public static CodeGenerationOptions CreateCodeGenerationOptions (MonoDevelop.Ide.Gui.Document document)
 		{
-			document.UpdateParseDocument ();
-			var options = new CodeGenerationOptions {
-				Document = document
-			};
-			if (document.ParsedDocument != null && document.ParsedDocument.ParsedFile != null) {
-				options.EnclosingPart = document.ParsedDocument.ParsedFile.GetInnermostTypeDefinition (document.Editor.Caret.Location);
-				var project = document.Project;
-				if (options.EnclosingPart != null && project != null)
-					options.EnclosingType = options.EnclosingPart.Resolve (project).GetDefinition ();
-				if (options.EnclosingType != null) {
-					options.EnclosingMember = options.EnclosingType.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (document.Editor.Caret.Location));
-				}
-			}
-			return options;
+			return new CodeGenerationOptions (document);
 		}
 		
 	}

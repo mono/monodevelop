@@ -79,9 +79,9 @@ namespace MonoDevelop.CodeGeneration
 					yield break;
 				HashSet<string> memberName = new HashSet<string> ();
 				foreach (var member in Options.EnclosingType.GetMembers ()) {
-					if (member.IsSynthetic)
+					if (member.IsImplicitlyDeclared)
 						continue;
-					if (member.IsOverridable) {
+					if (member.IsVirtual || member.IsOverride || member.IsAbstract) {
 						string id = AmbienceService.DefaultAmbience.GetString (member, OutputFlags.ClassBrowserEntries);
 						if (memberName.Contains (id))
 							continue;
@@ -95,8 +95,10 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
-				foreach (IMember member in includedMembers) 
-					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member, false).Code;
+				foreach (IMember member in includedMembers)
+					yield return member.Name;
+				// TODO: Roslyn port !
+					//					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member, false).Code;
 			}
 		}
 	}

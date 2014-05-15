@@ -78,13 +78,11 @@ namespace MonoDevelop.CodeGeneration
 				if (type == null || Options.EnclosingMember != null)
 					yield break;
 
-				foreach (var baseType in Options.EnclosingType.DirectBaseTypes) {
-					if (baseType.Kind != TypeKind.Interface)
-						continue;
+				foreach (var baseType in Options.EnclosingType.Interfaces) {
 					bool ifm;
-					foreach (var t in ICSharpCode.NRefactory.CSharp.Refactoring.ImplementInterfaceAction.CollectMembersToImplement (type, baseType, false, out ifm)) {
-						yield return t;
-					}
+//					foreach (var t in ICSharpCode.NRefactory.CSharp.Refactoring.ImplementInterfaceAction.CollectMembersToImplement (type, baseType, false, out ifm)) {
+//						yield return t;
+//					}
 				}
 			}
 			
@@ -92,8 +90,9 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
-				foreach (Tuple<IMember, bool> member in includedMembers) 
-					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member.Item1, member.Item2).Code;
+				foreach (Tuple<IMember, bool> member in includedMembers)
+					yield return "";
+					//					yield return generator.CreateMemberImplementation (Options.EnclosingType, Options.EnclosingPart, member.Item1, member.Item2).Code;
 			}
 		}
 	}

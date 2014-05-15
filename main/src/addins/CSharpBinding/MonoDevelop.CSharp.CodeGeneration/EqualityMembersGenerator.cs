@@ -25,9 +25,10 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.TypeSystem;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -73,16 +74,16 @@ namespace MonoDevelop.CodeGeneration
 			{
 				if (Options.EnclosingType == null || Options.EnclosingMember != null)
 					yield break;
-				foreach (IField field in Options.EnclosingType.Fields) {
-					if (field.IsSynthetic)
+				foreach (IFieldSymbol field in Options.EnclosingType.GetMembers ().OfType<IFieldSymbol> ()) {
+					if (field.IsImplicitlyDeclared)
 						continue;
 					yield return field;
 				}
 
-				foreach (IProperty property in Options.EnclosingType.Properties) {
-					if (property.IsSynthetic)
+				foreach (IPropertySymbol property in Options.EnclosingType.GetMembers ().OfType<IPropertySymbol> ()) {
+					if (property.IsImplicitlyDeclared)
 						continue;
-					if (property.CanGet)
+					if (property.GetMethod != null)
 						yield return property;
 				}
 			}
@@ -122,7 +123,7 @@ namespace MonoDevelop.CodeGeneration
 				
 				var otherId = new IdentifierExpression ("other");
 				Expression binOp = null;
-				foreach (IMember member in includedMembers) {
+				foreach (ISymbol member in includedMembers) {
 					Expression right = new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.Equality, new MemberReferenceExpression (otherId.Clone (), member.Name));
 					binOp = binOp == null ? right : new BinaryOperatorExpression (binOp, BinaryOperatorType.ConditionalAnd, right);
 				}
@@ -138,12 +139,12 @@ namespace MonoDevelop.CodeGeneration
 				methodDeclaration.Body = new BlockStatement ();
 
 				binOp = null;
-				foreach (IMember member in includedMembers) {
+				foreach (ISymbol member in includedMembers) {
 					Expression right;
 					right = new InvocationExpression (new MemberReferenceExpression (new IdentifierExpression (member.Name), "GetHashCode"));
 
-					IType type = member.ReturnType;
-					if (type != null && type.Kind != TypeKind.Struct && type.Kind != TypeKind.Enum)
+					var type = member.GetReturnType ();
+					if (type != null && type.TypeKind != TypeKind.Struct && type.TypeKind != TypeKind.Enum)
 						right = new ParenthesizedExpression (new ConditionalExpression (new BinaryOperatorExpression (new IdentifierExpression (member.Name), BinaryOperatorType.InEquality, new PrimitiveExpression (null)), right, new PrimitiveExpression (0)));
 
 					binOp = binOp == null ? right : new BinaryOperatorExpression (binOp, BinaryOperatorType.ExclusiveOr, right);
