@@ -33,10 +33,11 @@ namespace MonoDevelop.VersionControl.Views
 		Gtk.Button buttonRevert;
 
 		FileTreeView filelist;
-		TreeViewColumn colCommit, colRemote;
+		TreeViewColumn colCommit, colRemote, colFile;
 		TreeStore filestore;
 		ScrolledWindow scroller;
 		CellRendererDiff diffRenderer;
+		CellRendererToggle cellToggle;
 
 		Box commitBox;
 		TextView commitText;
@@ -162,7 +163,7 @@ namespace MonoDevelop.VersionControl.Views
 			filelist.RowActivated += OnRowActivated;
 			filelist.DiffLineActivated += OnDiffLineActivated;
 
-			CellRendererToggle cellToggle = new CellRendererToggle();
+			cellToggle = new CellRendererToggle();
 			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
 			var crc = new CellRendererImage ();
 			crc.StockId = "vc-comment";
@@ -187,7 +188,7 @@ namespace MonoDevelop.VersionControl.Views
 			colStatus.AddAttribute (crt, "text", ColStatus);
 			colStatus.AddAttribute (crt, "foreground", ColStatusColor);
 
-			TreeViewColumn colFile = new TreeViewColumn ();
+			colFile = new TreeViewColumn ();
 			colFile.Title = GettextCatalog.GetString ("File");
 			colFile.Spacing = 2;
 			crp = new CellRendererImage ();
@@ -392,14 +393,31 @@ namespace MonoDevelop.VersionControl.Views
 				colCommit.Destroy ();
 				colCommit = null;
 			}
-
 			if (colRemote != null) {
 				colRemote.Destroy ();
 				colRemote = null;
 			}
+			if (colFile != null) {
+				colFile.Destroy ();
+				colFile = null;
+			}
 			if (filestore != null) {
 				filestore.Dispose ();
 				filestore = null;
+			}
+			if (filelist != null) {
+				filelist.DoPopupMenu = null;
+				filelist.RowActivated -= OnRowActivated;
+				filelist.DiffLineActivated -= OnDiffLineActivated;
+				filelist.TestExpandRow -= OnTestExpandRow;
+				filelist.Selection.Changed -= OnCursorChanged;
+				filelist.Destroy ();
+				filelist = null;
+			}
+			if (cellToggle != null) {
+				cellToggle.Toggled -= OnCommitToggledHandler;
+				cellToggle.Destroy ();
+				cellToggle = null;
 			}
 			if (this.diffRenderer != null) {
 				this.diffRenderer.Destroy ();
@@ -410,6 +428,8 @@ namespace MonoDevelop.VersionControl.Views
 				widget.Destroy ();
 				widget = null;
 			}
+			localDiff.Clear ();
+			remoteDiff.Clear ();
 			base.Dispose ();
 		}
 
