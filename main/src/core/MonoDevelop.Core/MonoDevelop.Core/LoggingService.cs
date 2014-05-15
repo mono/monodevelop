@@ -198,13 +198,14 @@ namespace MonoDevelop.Core
 
 		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently, string tag)
 		{
-			var tags = new List<string> { tag };
-
-			if (reporting)
-				return;
-
-			reporting = true;
 			try {
+				var tags = new List<string> { tag };
+
+				if (reporting)
+					return;
+
+				reporting = true;
+
 				var oldReportCrashes = ReportCrashes;
 
 				if (UnhandledErrorOccured != null && !silently)
