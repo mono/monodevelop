@@ -34,6 +34,8 @@ using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using Gtk;
+using MonoDevelop.JavaScript.Parser;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.JavaScript.TextEditor
 {
@@ -162,7 +164,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 		#endregion
 
 		#region Completion TextEditor Implementation
-
+		
 		public override string CompletionLanguage { get { return "JavaScript"; } }
 
 		public override bool CanRunCompletionCommand ()
@@ -175,15 +177,42 @@ namespace MonoDevelop.JavaScript.TextEditor
 			return false;
 		}
 
-		public override MonoDevelop.Ide.CodeCompletion.ICompletionDataList HandleCodeCompletion (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
-			if (ParsedDoc == null)
+			if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
+				if (completionContext.TriggerOffset > 1 &&
+				    char.IsLetterOrDigit (document.Editor.GetCharAt (completionContext.TriggerOffset - 2)))
+					return null;
+				triggerWordLength = 1;
+			} else
 				return null;
+
+			if (Ide.IdeApp.ProjectOperations.CurrentSelectedProject == null)
+				return null;
+
+			var documents = new List<JavaScriptParsedDocument> ();
+			foreach (var file in Ide.IdeApp.ProjectOperations.CurrentSelectedProject.Files) {
+				if (!file.Name.ToUpper ().EndsWith (".JS"))
+					continue;
+
+				var parsedDoc = file.ExtendedProperties[JavaScriptParser.ParsedDocumentProperty] as JavaScriptParsedDocument;
+				if (parsedDoc == null ||
+				    !parsedDoc.IsInvalid) {
+					// TODO: Trigger parsing
+				}
+
+				documents.Add (parsedDoc);
+			}
+
 			// TODO: Find the current scope.
-			return buildCodeCompletionList (ParsedDoc.AstNodes);
+			var dataList = new CompletionDataList ();
+			foreach (JavaScriptParsedDocument parsedDocument in documents) {
+				dataList.AddRange (buildCodeCompletionList (parsedDocument.AstNodes));
+			}
+			return dataList;
 		}
 
-		public override MonoDevelop.Ide.CodeCompletion.ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext, char completionChar)
+		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			return null;
 		}

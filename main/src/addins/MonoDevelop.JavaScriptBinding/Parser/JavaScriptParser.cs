@@ -40,10 +40,21 @@ namespace MonoDevelop.JavaScript.Parser
 {
 	class JavaScriptParser : TypeSystemParser
 	{
+		public const string ParsedDocumentProperty = "JS.ParsedDocument";
+
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Projects.Project project = null)
 		{
 			var parseDocument = new JavaScriptParsedDocument (fileName, content);
 			parseDocument.Flags |= ParsedDocumentFlags.NonSerializable;
+
+			if (project != null) {
+				ProjectFile file = project.Files.GetFile (fileName);
+				if (!file.ExtendedProperties.Contains (ParsedDocumentProperty))
+					file.ExtendedProperties.Add (ParsedDocumentProperty, parseDocument);
+				else
+					file.ExtendedProperties[ParsedDocumentProperty] = parseDocument;
+			}
+
 			return parseDocument;
 		}
 	}
