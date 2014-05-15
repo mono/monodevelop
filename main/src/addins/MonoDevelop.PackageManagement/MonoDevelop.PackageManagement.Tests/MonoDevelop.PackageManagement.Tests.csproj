@@ -50,6 +50,9 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.XmlTransform">
+      <HintPath>..\..\..\..\external\nuget-binary\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -161,6 +164,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeSolutionPackageRepositoryFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\WindowsPath.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\XmlDocumentTransformTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
