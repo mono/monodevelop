@@ -44,7 +44,9 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreateViewModel ()
 		{
-			var options = new PackageManagementOptions ();
+			var properties = new Properties ();
+			var settings = new FakeSettings ();
+			var options = new PackageManagementOptions (properties, settings);
 			packageSources = options.PackageSources;
 			packageSources.Clear ();
 
