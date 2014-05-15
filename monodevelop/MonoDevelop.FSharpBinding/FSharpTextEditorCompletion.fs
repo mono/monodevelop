@@ -63,7 +63,10 @@ type internal FSharpMemberCompletionData(name, getTip, glyph) =
                       |> Seq.map (fun args -> FSharpMemberCompletionData(name, ToolTipText[ToolTipElement(args)], glyph)) 
                       |> Seq.cast
                   yield! overloads
-                | _ -> () }
+                | ToolTipElementCompositionError error ->
+                    //show the composition error in the tip, hiding it makes it more difficult to diagnose
+                    yield FSharpMemberCompletionData(name, ToolTipText[ToolTipElement(error,XmlCommentNone)], 0) :> _
+                | ToolTipElementNone -> () }
 
 
     override x.AddOverload (data: ICompletionData) = ()//not currently called
