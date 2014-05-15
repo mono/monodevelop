@@ -61,11 +61,6 @@ namespace MonoDevelop.Refactoring
 			set;
 		}
 		
-		public ResolveResult ResolveResult {
-			get;
-			set;
-		}
-		
 		// file provider for unit test purposes.
 		public ITextFileProvider TestFileProvider {
 			get;
@@ -83,7 +78,6 @@ namespace MonoDevelop.Refactoring
 				return new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
 			}
 		}
-		public readonly SyntaxTree Unit;
 
 		public RefactoringOptions ()
 		{
@@ -92,13 +86,6 @@ namespace MonoDevelop.Refactoring
 		public RefactoringOptions (Document doc)
 		{
 			this.Document = doc;
-			if (doc != null && doc.ParsedDocument != null) {
-				var sharedResolver = doc.GetSharedResolver ();
-				if (sharedResolver == null)
-					return;
-				resolver = sharedResolver.Result;
-				Unit = resolver != null ? resolver.RootNode as SyntaxTree : null;
-			}
 		}
 
 		public Mono.TextEditor.TextEditorData GetTextEditorData ()

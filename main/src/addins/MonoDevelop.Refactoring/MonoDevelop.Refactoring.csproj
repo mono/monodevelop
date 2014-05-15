@@ -93,7 +93,6 @@
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisOptions.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\AnalysisService.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\FixableResult.cs" />
-    <Compile Include="MonoDevelop.AnalysisCore\Rules\Adaptors.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\Result.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTree.cs" />
     <Compile Include="MonoDevelop.AnalysisCore\RuleTreeType.cs" />
@@ -129,7 +128,6 @@
     <Compile Include="MonoDevelop.CodeIssues\DefaultCodeIssueCategories.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueAddinNode.cs" />
     <Compile Include="MonoDevelop.Refactoring\ResolveCommandHandler.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ExtensionMethods.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePad.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IssueSummary.cs" />
@@ -180,6 +178,7 @@
     <Folder Include="MonoDevelop.CodeIssues\" />
     <Folder Include="MonoDevelop.CodeActions\" />
     <Folder Include="MonoDevelop.CodeIssues\Runner\" />
+    <Folder Include="MonoDevelop.AnalysisCore\Rules\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml">

@@ -102,62 +102,62 @@ namespace MonoDevelop.CodeIssues
 
 		void AnalyzeFile (JobSlice item, IEnumerable<BaseCodeIssueProvider> codeIssueProviders)
 		{
-			var file = item.File;
-
-			if (file.BuildAction != BuildAction.Compile)
-				return;
-
-			if (!(file.Project is DotNetProject))
-				return;
-
-			TextEditorData editor;
-			try {
-				editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
-			} catch (FileNotFoundException) {
-				// Swallow exception and ignore this file
-				return;
-			}
-			var document = TypeSystemService.ParseFile (file.Project, editor);
-			if (document == null)
-				return;
-
-			var content = TypeSystemService.GetProjectContext (file.Project);
-			var compilation = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
-
-			CSharpAstResolver resolver;
-			using (var timer = ExtensionMethods.ResolveCounter.BeginTiming ()) {
-				resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
-				try {
-					resolver.ApplyNavigator (new ExtensionMethods.ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while applying navigator", e);
-				}
-			}
-			var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
-
-			foreach (var provider in codeIssueProviders) {
-				if (item.CancellationToken.IsCancellationRequested)
-					break;
-				IList<IAnalysisJob> jobs;
-				lock (_lock)
-					jobs = item.GetJobs ().ToList ();
-				var jobsForProvider = jobs.Where (j => j.GetIssueProviders (file).Contains (provider)).ToList();
-				try {
-					var issues = provider.GetIssues (context, CancellationToken.None).ToList ();
-					foreach (var job in jobsForProvider) {
-						// Call AddResult even if issues.Count == 0, to enable a job implementation to keep
-						// track of progress information.
-						job.AddResult (file, provider, issues);
-					}
-				} catch (OperationCanceledException) {
-					// The operation was cancelled, no-op as the user-visible parts are
-					// handled elsewhere
-				} catch (Exception e) {
-					foreach (var job in jobsForProvider) {
-						job.AddError (file, provider);
-					}
-				}
-			}
+//			var file = item.File;
+//
+//			if (file.BuildAction != BuildAction.Compile)
+//				return;
+//
+//			if (!(file.Project is DotNetProject))
+//				return;
+//
+//			TextEditorData editor;
+//			try {
+//				editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
+//			} catch (FileNotFoundException) {
+//				// Swallow exception and ignore this file
+//				return;
+//			}
+//			var document = TypeSystemService.ParseFile (file.Project, editor);
+//			if (document == null)
+//				return;
+//
+//			var content = TypeSystemService.GetProjectContext (file.Project);
+//			var compilation = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
+//
+//			CSharpAstResolver resolver;
+//			using (var timer = ExtensionMethods.ResolveCounter.BeginTiming ()) {
+//				resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
+//				try {
+//					resolver.ApplyNavigator (new ExtensionMethods.ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null));
+//				} catch (Exception e) {
+//					LoggingService.LogError ("Error while applying navigator", e);
+//				}
+//			}
+//			var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
+//
+//			foreach (var provider in codeIssueProviders) {
+//				if (item.CancellationToken.IsCancellationRequested)
+//					break;
+//				IList<IAnalysisJob> jobs;
+//				lock (_lock)
+//					jobs = item.GetJobs ().ToList ();
+//				var jobsForProvider = jobs.Where (j => j.GetIssueProviders (file).Contains (provider)).ToList();
+//				try {
+//					var issues = provider.GetIssues (context, CancellationToken.None).ToList ();
+//					foreach (var job in jobsForProvider) {
+//						// Call AddResult even if issues.Count == 0, to enable a job implementation to keep
+//						// track of progress information.
+//						job.AddResult (file, provider, issues);
+//					}
+//				} catch (OperationCanceledException) {
+//					// The operation was cancelled, no-op as the user-visible parts are
+//					// handled elsewhere
+//				} catch (Exception e) {
+//					foreach (var job in jobsForProvider) {
+//						job.AddError (file, provider);
+//					}
+//				}
+//			}
 		}
 	}
 }

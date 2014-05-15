@@ -212,7 +212,7 @@ namespace MonoDevelop.Refactoring
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
+			if (doc == null || doc.FileName == FilePath.Null || doc.AnalysisDocument == null)
 				return;
 			ITextEditorExtension ext = doc.EditorExtension;
 			while (ext != null && !(ext is CompletionTextEditorExtension))

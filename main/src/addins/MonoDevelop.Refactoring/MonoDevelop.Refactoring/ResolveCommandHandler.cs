@@ -109,7 +109,7 @@ namespace MonoDevelop.Refactoring
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
+			if (doc == null || doc.FileName == FilePath.Null || doc.AnalysisDocument == null)
 				return;
 
 			var resolveMenu = new CommandInfoSet ();
