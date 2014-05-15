@@ -43,10 +43,16 @@ namespace MonoDevelop.MacIntegration
 
 		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
+			if (credentialType == CredentialType.ProxyCredentials) {
+				var proxyUri = proxy.GetProxy (uri);
+				if (proxyUri != null)
+					uri = proxyUri;
+			}
+
 			lock (guiLock) {
 				// If this is the first attempt, return any stored credentials. If they fail, we'll be called again.
 				if (!retrying) {
-					var creds = GetExistingCredentials (uri);
+					var creds = GetExistingCredentials (uri, credentialType);
 					if (creds != null)
 						return creds;
 				}
@@ -55,8 +61,31 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		static ICredentials GetExistingCredentials (Uri uri)
+		static ICredentials GetSystemProxyCredentials (Uri uri)
 		{
+			SecProtocolType kind;
+			if (uri.Scheme == "http")
+				kind = SecProtocolType.HTTPProxy;
+			else if (uri.Scheme == "https")
+				kind = SecProtocolType.HTTPSProxy;
+			else
+				return null;
+
+			var existing = Keychain.FindInternetUserNameAndPassword (uri, kind);
+			if (existing != null && existing.Item1 != null && existing.Item2 != null)
+				return new NetworkCredential (existing.Item1, existing.Item2);
+
+			return null;
+		}
+
+		static ICredentials GetExistingCredentials (Uri uri, CredentialType credentialType)
+		{
+			if (credentialType == CredentialType.ProxyCredentials) {
+				var proxyCreds = GetSystemProxyCredentials (uri);
+				if (proxyCreds != null)
+					return proxyCreds;
+			}
+
 			var rootUri = new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
 			var existing =
 				Keychain.FindInternetUserNameAndPassword (uri) ??
