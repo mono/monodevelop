@@ -363,17 +363,13 @@ type FSharpTextEditorCompletion() =
 
   interface IDebuggerExpressionResolver with
     member x.ResolveExpression(editor, doc, offset, startOffset) =
-        if doc.ParsedDocument = null then
-            startOffset <- -1
-            null 
-        else
-            let resolveResult, dom = doc.GetLanguageItem(offset)
-            match resolveResult.GetSymbol() with
-            //we are only going to process FSharpResolvedVariable types all other types will not be resolved.
-            //This will cause the tooltip to be displayed as usual for member lookups etc.  
-            | :? FSharpResolvedVariable as resolvedVariable ->
-                startOffset <- dom.BeginColumn
-                (resolvedVariable :> IVariable).Name
-            | _ ->
-                startOffset <- -1
-                null
+
+        let resolveResult, dom = doc.GetLanguageItem(offset)
+        match resolveResult.GetSymbol() with
+        //we are only going to process FSharpResolvedVariable types all other types will not be resolved.
+        //This will cause the tooltip to be displayed as usual for member lookups etc.  
+        | :? FSharpResolvedVariable as resolvedVariable ->
+            startOffset <- dom.BeginColumn
+            (resolvedVariable :> IVariable).Name
+        | _ -> startOffset <- -1
+               null
