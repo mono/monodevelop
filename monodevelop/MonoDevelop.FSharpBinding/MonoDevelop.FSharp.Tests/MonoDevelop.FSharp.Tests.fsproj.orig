@@ -125,9 +125,14 @@
     <Reference Include="Mono.Cecil.Rocks">
       <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Compiler.Service">
+      <HintPath>..\packages\FSharp.Compiler.Service.0.0.45\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestBase.fs" />
+    <Compile Include="TestWorkbenchWindow.fs" />
+    <Compile Include="TestViewContent.fs" />
     <Compile Include="DebuggerExpressionResolver.fs" />
     <Compile Include="Checker.fs" />
   </ItemGroup>
