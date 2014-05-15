@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using NuGet;
 using NUnit.Framework;
@@ -407,6 +408,92 @@ namespace MonoDevelop.PackageManagement.Tests
 			Exception ex = Assert.Throws (typeof(ApplicationException), () => action.Execute ());
 
 			Assert.AreEqual ("Unable to find package 'UnknownId'.", ex.Message);
+		}
+
+		[Test]
+		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAccepted_AcceptLicensesEventRaised ()
+		{
+			CreateAction ();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
+			expectedPackage.RequireLicenseAcceptance = true;
+			var expectedPackages = new IPackage [] { expectedPackage };
+			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
+			action.PackageId = expectedPackage.Id;
+			action.PackageVersion = expectedPackage.Version;
+			fakeProject.FakeInstallOperations.Add (operation);
+			List<IPackage> actualPackages = null;
+			packageManagementEvents.AcceptLicenses += (sender, e) => {
+				e.IsAccepted = true;
+				actualPackages = e.Packages.ToList ();
+			};
+
+			action.Execute ();
+
+			PackageCollectionAssert.AreEqual (expectedPackages, actualPackages);
+		}
+
+		[Test]
+		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAcceptedButPackageInstalledAlready_NoAcceptLicensesEventIsRaised ()
+		{
+			CreateAction ();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
+			expectedPackage.RequireLicenseAcceptance = true;
+			var expectedPackages = new IPackage [] { expectedPackage };
+			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
+			action.PackageId = expectedPackage.Id;
+			action.PackageVersion = expectedPackage.Version;
+			fakeProject.FakeInstallOperations.Add (operation);
+			fakeProject.FakePackages.Add (expectedPackage);
+			bool acceptLicensesEventRaised = false;
+			packageManagementEvents.AcceptLicenses += (sender, e) => {
+				acceptLicensesEventRaised = true;
+			};
+
+			action.Execute ();
+
+			Assert.IsFalse (acceptLicensesEventRaised);
+		}
+
+		[Test]
+		public void Execute_ProjectHasOnePackageInstallOperationThatHasALicenseToBeAcceptedAndLicensesNotAccepted_ExceptionThrown ()
+		{
+			CreateAction ();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
+			expectedPackage.RequireLicenseAcceptance = true;
+			var expectedPackages = new IPackage [] { expectedPackage };
+			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
+			action.PackageId = expectedPackage.Id;
+			action.PackageVersion = expectedPackage.Version;
+			fakeProject.FakeInstallOperations.Add (operation);
+			packageManagementEvents.AcceptLicenses += (sender, e) => {
+				e.IsAccepted = false;
+			};
+
+			Exception ex = Assert.Throws (typeof(ApplicationException), () => action.Execute ());
+
+			Assert.AreEqual ("Licenses not accepted.", ex.Message);
+		}
+
+		[Test]
+		public void Execute_PackageBeingInstalledHasPowerShellScripts_WarningAboutPowerShellScriptsIsLogged ()
+		{
+			CreateAction ();
+			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
+			expectedPackage.AddFile (@"tools\init.ps1");
+			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
+			action.PackageId = expectedPackage.Id;
+			action.PackageVersion = expectedPackage.Version;
+			fakeProject.FakeInstallOperations.Add (operation);
+			string messageLogged = null;
+			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
+				if (e.Message.Level == MessageLevel.Warning) {
+					messageLogged = e.Message.ToString ();
+				}
+			};
+
+			action.Execute ();
+
+			Assert.AreEqual ("Test Package contains PowerShell scripts which will not be run.", messageLogged);
 		}
 	}
 }

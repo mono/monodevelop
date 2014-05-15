@@ -244,6 +244,44 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (action.AllowPrereleaseVersions);
 		}
+
+		[Test]
+		public void Execute_PackageHasPowerShellUninstallScript_PowerShellWarningLogged ()
+		{
+			CreateAction ();
+			FakePackage package = FakePackage.CreatePackageWithVersion ("Test", "1.0");
+			action.Package = package;
+			package.AddFile (@"tools\uninstall.ps1");
+			string messageLogged = null;
+			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
+				if (e.Message.Level == MessageLevel.Warning) {
+					messageLogged = e.Message.ToString ();
+				}
+			};
+
+			action.Execute ();
+
+			Assert.AreEqual ("Test Package contains PowerShell scripts which will not be run.", messageLogged);
+		}
+
+		[Test]
+		public void Execute_PackageHasPowerShellInstallScript_NoPowerShellWarningLogged ()
+		{
+			CreateAction ();
+			FakePackage package = FakePackage.CreatePackageWithVersion ("Test", "1.0");
+			action.Package = package;
+			package.AddFile (@"tools\install.ps1");
+			bool messageLogged = false;
+			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
+				if (e.Message.Level == MessageLevel.Warning) {
+					messageLogged = true;
+				}
+			};
+
+			action.Execute ();
+
+			Assert.IsFalse (messageLogged);
+		}
 	}
 }
 
