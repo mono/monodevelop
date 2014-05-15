@@ -50,7 +50,8 @@ namespace MonoDevelop.VersionControl.Views
 			get;
 			set;
 		}
-		
+
+		[Obsolete ("Use Item.VersionInfo instead of this.")]
 		public VersionInfo VersionInfo {
 			get;
 			set;
