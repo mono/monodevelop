@@ -24,7 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
+using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
+
 using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
