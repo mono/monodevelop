@@ -521,8 +521,7 @@ namespace MonoDevelop.VersionControl.Views
 				colRemote.Visible = remoteStatus;
 
 				try {
-					if (vc.GetVersionInfo (filepath).CanCommit)
-						buttonCommit.Sensitive = true;
+					buttonCommit.Sensitive = statuses.Any (v => v.CanCommit);
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
 					buttonCommit.Sensitive = true;
@@ -757,9 +756,7 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 			}
 
-			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 			CommitCommand.Commit (vc, changeSet.Clone ());
-			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 		}
 
 
