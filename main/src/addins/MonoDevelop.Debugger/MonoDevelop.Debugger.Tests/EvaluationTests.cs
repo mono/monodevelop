@@ -85,6 +85,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void This ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			ObjectValue val = Eval ("this");
 			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluation}", val.Value);
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation", val.TypeName);
@@ -177,6 +181,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public virtual void Typeof ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			var val = Eval ("typeof(System.Console)");
 			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			if (!AllowTargetInvokes) {
@@ -194,6 +202,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void MethodInvoke ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("TestMethod ()");
 			if (!AllowTargetInvokes) {
@@ -335,6 +347,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void GenericMethodInvoke ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			if (Session.GetType ().Name == "CorDebuggerSession")
 				Assert.Ignore ("TODO: Win32 support generic invokes");
 
@@ -479,6 +495,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void MemberReference ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("\"someString\".Length");
 			if (!AllowTargetInvokes) {
@@ -833,6 +853,10 @@ namespace MonoDevelop.Debugger.Tests
 			if (!AllowTargetInvokes)
 				return;
 
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("Requires a newer version of the Mono runtime.");
+
 			val = Eval ("ops1 == ops3");
 			Assert.AreEqual ("false", val.Value);
 			Assert.AreEqual ("bool", val.TypeName);
@@ -1094,6 +1118,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatObject ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 			
 			val = Eval ("c");
 			Assert.AreEqual ("{C}", val.Value);
@@ -1160,11 +1188,16 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>[2,3]}", val.Value);
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>[,]", val.TypeName);
-			
+
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				return;
+
 			val = Eval ("thing.done");
 			Assert.AreEqual ("{Thing<string>.Done<int>[1]}", val.Value);
 			Assert.AreEqual ("Thing<string>.Done<int>[]", val.TypeName);
-			
+
 			val = Eval ("done");
 			Assert.AreEqual ("{Thing<string>.Done<int>}", val.Value);
 			Assert.AreEqual ("Thing<string>.Done<int>", val.TypeName);
@@ -1174,6 +1207,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatEnum ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 			
 			val = Eval ("SomeEnum.one");
 			Assert.AreEqual ("SomeEnum.one", val.Value);
@@ -1193,6 +1230,10 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			ObjectValue val;
 
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("action");
 			Assert.AreEqual ("{System.Action}", val.Value);
 			Assert.AreEqual ("System.Action", val.TypeName);
@@ -1207,6 +1248,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void Structures ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("simpleStruct");
 			if (!AllowTargetInvokes) {
@@ -1307,6 +1352,10 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			ObjectValue val;
 
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("new A().ConstructedBy");
 			if (!AllowTargetInvokes) {
 				var options = Session.Options.EvaluationOptions.Clone ();
@@ -1347,13 +1396,13 @@ namespace MonoDevelop.Debugger.Tests
 			if (!AllowTargetInvokes)
 				return;
 
-			var soft = Session as Mono.Debugging.Soft.SoftDebuggerSession;
+			var soft = Session as SoftDebuggerSession;
 
 			if (soft == null)
 				Assert.Ignore ("TODO: Win32 support generic invokes");
 
-			if (soft.ProtocolVersion < new Version (2, 31))
-				Assert.Inconclusive ("Mono SDB protocol version >= 2.31 required for this test.");
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Inconclusive ("A newer version of the Mono runtime is required.");
 
 			ObjectValue val;
 
@@ -1365,6 +1414,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void Inheriting ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("a.Prop");
 			if (!AllowTargetInvokes) {
@@ -1584,6 +1637,10 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			ObjectValue[] children;
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("dict");
 			children = val.GetAllChildren ();
