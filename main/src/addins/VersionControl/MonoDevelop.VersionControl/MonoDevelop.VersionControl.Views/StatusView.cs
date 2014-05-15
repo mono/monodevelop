@@ -254,8 +254,6 @@ namespace MonoDevelop.VersionControl.Views
 			status.Visible = false;
 
 			filelist.Selection.Changed += new EventHandler(OnCursorChanged);
-			VersionControlService.BeginCommit += OnBeginCommit;
-			VersionControlService.EndCommit += OnEndCommit;
 			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 
 			filelist.HeadersClickable = true;
@@ -407,8 +405,6 @@ namespace MonoDevelop.VersionControl.Views
 				this.diffRenderer.Destroy ();
 				this.diffRenderer = null;
 			}
-			VersionControlService.BeginCommit -= OnBeginCommit;
-			VersionControlService.EndCommit -= OnEndCommit;
 			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 			if (widget != null) {
 				widget.Destroy ();
@@ -903,21 +899,6 @@ namespace MonoDevelop.VersionControl.Views
 						IdeApp.Workbench.OpenDocument (files[n], n==0);
 				}
 			}
-		}
-
-		void OnBeginCommit (object sender, CommitEventArgs args)
-		{
-			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
-		}
-
-		void OnEndCommit (object sender, CommitEventArgs args)
-		{
-			if (disposed)
-				return;
-
-			VersionControlService.FileStatusChanged += OnFileStatusChanged;
-			if (args.Success)
-				StartUpdate ();
 		}
 
 		void OnFileStatusChanged (object s, FileUpdateEventArgs args)
