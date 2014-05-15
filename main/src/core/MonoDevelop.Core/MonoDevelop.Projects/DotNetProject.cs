@@ -714,7 +714,7 @@ namespace MonoDevelop.Projects
 			foreach (ProjectReference pref in References) {
 				if (pref.ReferenceType == ReferenceType.Project) {
 					Project rp = ParentSolution.FindProjectByName (pref.Reference);
-					if (rp != null)
+					if (rp != null && ParentSolution.GetConfiguration (configuration).BuildEnabledForItem (rp))
 						items.Add (rp);
 				}
 			}
