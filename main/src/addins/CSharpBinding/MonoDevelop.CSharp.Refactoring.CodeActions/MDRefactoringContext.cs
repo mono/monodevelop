@@ -191,13 +191,14 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		internal static MDRefactoringContext Create (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) 
 		{
-			var shared = document.GetSharedResolver ();
-			if (shared == null)
-				return null;
-			var sharedResolver = shared.Result;
-			if (sharedResolver == null)
-				return null;
-			return new MDRefactoringContext (document, sharedResolver, loc, cancellationToken);
+			return null;
+//			var shared = document.GetSharedResolver ();
+//			if (shared == null)
+//				return null;
+//			var sharedResolver = shared.Result;
+//			if (sharedResolver == null)
+//				return null;
+//			return new MDRefactoringContext (document, sharedResolver, loc, cancellationToken);
 		}
 
 		internal MDRefactoringContext (Document document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)

@@ -1251,35 +1251,6 @@ namespace MonoDevelop.CSharp.Completion
 			return editor.GetTextBetween (node.StartLocation, node.EndLocation);
 		}
 
-		static bool TryResolveAt (MonoDevelop.Ide.Gui.Document doc, DocumentLocation loc, out ResolveResult result, out ICSharpCode.NRefactory.CSharp.AstNode node)
-		{
-			if (doc == null)
-				throw new ArgumentNullException ("doc");
-
-			result = null;
-			node = null;
-
-			var parsedDocument = doc.ParsedDocument;
-			if (parsedDocument == null)
-				return false;
-
-			var unit = parsedDocument.GetAst<ICSharpCode.NRefactory.CSharp.SyntaxTree> ();
-			var parsedFile = parsedDocument.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile;
-
-			if (unit == null || parsedFile == null)
-				return false;
-
-			try {
-				result = ICSharpCode.NRefactory.CSharp.Resolver.ResolveAtLocation.Resolve (new Lazy<ICSharpCode.NRefactory.TypeSystem.ICompilation> (() => doc.Compilation), parsedFile, unit, loc, out node);
-				if (result == null || node is ICSharpCode.NRefactory.CSharp.BracesBodyState.Statement)
-					return false;
-			} catch {
-				return false;
-			}
-
-			return true;
-		}
-
 		string IDebuggerExpressionResolver.ResolveExpression (TextEditorData editor, MonoDevelop.Ide.Gui.Document doc, int offset, out int startOffset)
 		{
 			startOffset = -1;

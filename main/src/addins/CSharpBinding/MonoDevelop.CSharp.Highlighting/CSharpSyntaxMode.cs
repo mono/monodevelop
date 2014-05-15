@@ -143,55 +143,50 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			}
 			if (guiDocument != null && SemanticHighlightingEnabled) {
-				var parsedDocument = guiDocument.ParsedDocument;
-				if (parsedDocument != null) {
-					if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
-						src = new CancellationTokenSource ();
-						var newResolverTask = guiDocument.AnalysisDocument.GetSemanticModelAsync ();
-						var cancellationToken = src.Token;
-						System.Threading.Tasks.Task.Factory.StartNew (delegate {
-							if (newResolverTask == null)
-								return;
-							var newResolver = newResolverTask.Result;
-							if (newResolver == null)
-								return;
-							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
-							try {
-								visitor.Visit (newResolver.SyntaxTree.GetRoot ());
-							} catch (Exception ex) {
-								LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
-								return;
-							}
-							if (!cancellationToken.IsCancellationRequested) {
-								Gtk.Application.Invoke (delegate {
-									if (cancellationToken.IsCancellationRequested)
-										return;
-									var editorData = guiDocument.Editor;
-									if (editorData == null)
-										return;
+				if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
+					src = new CancellationTokenSource ();
+					var newResolverTask = guiDocument.AnalysisDocument.GetSemanticModelAsync ();
+					var cancellationToken = src.Token;
+					System.Threading.Tasks.Task.Factory.StartNew (delegate {
+						if (newResolverTask == null)
+							return;
+						var newResolver = newResolverTask.Result;
+						if (newResolver == null)
+							return;
+						var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
+						try {
+							visitor.Visit (newResolver.SyntaxTree.GetRoot ());
+						} catch (Exception ex) {
+							LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
+							return;
+						}
+						if (!cancellationToken.IsCancellationRequested) {
+							Gtk.Application.Invoke (delegate {
+								if (cancellationToken.IsCancellationRequested)
+									return;
+								var editorData = guiDocument.Editor;
+								if (editorData == null)
+									return;
 //									compilation = newResolver.Compilation;
-									resolver = newResolver;
-									quickTasks = visitor.QuickTasks;
-									OnTasksUpdated (EventArgs.Empty);
-									foreach (var kv in lineSegments) {
-										try {
-											kv.Value.tree.RemoveListener ();
-										} catch (Exception) {
-										}
+								resolver = newResolver;
+								quickTasks = visitor.QuickTasks;
+								OnTasksUpdated (EventArgs.Empty);
+								foreach (var kv in lineSegments) {
+									try {
+										kv.Value.tree.RemoveListener ();
+									} catch (Exception) {
 									}
-									lineSegments.Clear ();
-									var textEditor = editorData.Parent;
-									if (textEditor != null) {
-										if (!parsedDocument.HasErrors) {
-											var margin = textEditor.TextViewMargin;
-											margin.PurgeLayoutCache ();
-											textEditor.QueueDraw ();
-										}
-									}
-								});
-							}
-						}, cancellationToken);
-					}
+								}
+								lineSegments.Clear ();
+								var textEditor = editorData.Parent;
+								if (textEditor != null) {
+									var margin = textEditor.TextViewMargin;
+									margin.PurgeLayoutCache ();
+									textEditor.QueueDraw ();
+								}
+							});
+						}
+					}, cancellationToken);
 				}
 			}
 		}
