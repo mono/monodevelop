@@ -41,12 +41,10 @@ namespace MonoDevelop.Core
 		const string WebCredentialProvidersPath = "/MonoDevelop/Core/WebCredentialProviders";
 
 		static ProxyCache proxyCache;
-		static CredentialStore credentialStore;
 		static ICredentialProvider credentialProvider;
 
 		internal static void Initialize ()
 		{
-			credentialStore = new CredentialStore ();
 			proxyCache = new ProxyCache ();
 			credentialProvider = AddinManager.GetExtensionObjects<ICredentialProvider> (WebCredentialProvidersPath).FirstOrDefault ();
 
@@ -111,7 +109,7 @@ namespace MonoDevelop.Core
 			}
 
 			var handler = new RequestHelper (
-				createRequest, prepareRequest, proxyCache, credentialStore, credentialProvider
+				createRequest, prepareRequest, proxyCache, CredentialStore.Instance, credentialProvider
 			);
 
 			return handler.GetResponse (token);
