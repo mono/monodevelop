@@ -67,11 +67,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			set;
 		}
 
-		public ICompilation Compilation {
-			get;
-			set;
-		}
-
 		public static CodeGenerator CreateGenerator (Ide.Gui.Document doc)
 		{
 			MimeTypeExtensionNode node;
@@ -82,7 +77,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			result.UseSpaceIndent = doc.Editor.TabsToSpaces;
 			result.EolMarker = doc.Editor.EolMarker;
 			result.TabSize = doc.Editor.Options.TabSize;
-			result.Compilation = doc.Compilation;
 			return result;
 		}
 		
@@ -96,7 +90,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			result.UseSpaceIndent = editor.TabsToSpaces;
 			result.EolMarker = editor.EolMarker;
 			result.TabSize = editor.Options.TabSize;
-			result.Compilation = compilation;
 			return result;
 		}
 
@@ -171,8 +164,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public abstract void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName);
 		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation);
-
-		public abstract string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type);
 
 		public abstract void CompleteStatement (MonoDevelop.Ide.Gui.Document doc);
 	}

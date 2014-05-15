@@ -449,6 +449,7 @@ namespace MonoDevelop.CSharp
 			var analysisDocument = Document.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
+			var caretOffset = Document.Editor.Caret.Offset;
 			var unit = await analysisDocument.GetSyntaxTreeAsync ();
 			if (unit == null)
 				return;
@@ -456,7 +457,6 @@ namespace MonoDevelop.CSharp
 			
 			var loc = Document.Editor.Caret.Location;
 			var compExt = Document.GetContent<CSharpCompletionTextEditorExtension> ();
-			var caretOffset = Document.Editor.Caret.Offset;
 			var segType = compExt.GetTypeAt (caretOffset);
 
 			var root = unit.GetRoot ();

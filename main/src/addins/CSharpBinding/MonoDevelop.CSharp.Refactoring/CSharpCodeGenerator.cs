@@ -1014,12 +1014,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			doc.Editor.Insert (offset, text.ToString ());
 		}
 		
-		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)
-		{
-			var shortType = CreateShortType (doc.Compilation, doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile, doc.Editor.Caret.Location, type);
-			return OutputNode (doc, shortType);
-		}
-		
 		static string OutputNode (MonoDevelop.Ide.Gui.Document doc, AstNode node)
 		{
 			using (var stringWriter = new System.IO.StringWriter ()) {

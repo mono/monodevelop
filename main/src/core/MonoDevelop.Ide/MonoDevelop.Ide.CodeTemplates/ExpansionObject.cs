@@ -32,11 +32,14 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Ide.Gui.Content;
 using Mono.TextEditor.PopupWindow;
 using Mono.TextEditor;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Ide.Tasks;
+using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
+using System.Linq;
+using ICSharpCode.NRefactory6.CSharp;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -47,17 +50,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public ICompilation Compilation {
+		public SemanticModel Compilation {
 			get {
-				return Document.Compilation;
+				return Document.AnalysisDocument.GetSemanticModelAsync ().Result;
 			}
 		}
-		
-		public IUnresolvedFile ParsedDocument {
-			get;
-			set;
-		}
-		
+
 		public DocumentLocation InsertPosition {
 			get;
 			set;
@@ -93,40 +91,28 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetCurrentClassName ()
 		{
-			if (CurrentContext.ParsedDocument == null)
+			var compilation = CurrentContext.Compilation;
+			if (compilation == null)
 				return null;
-			IUnresolvedTypeDefinition type = null;
-			var provider = CurrentContext.Document.GetContent<ITextEditorMemberPositionProvider>();
-			if (provider == null) {
-				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
-			} else {
-				var rtype = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
-				if (rtype != null)
-					return rtype.Name;
-			}
-			
-			if (type == null)
-				return null;
-			return type.Name;
+			var enclosingSymbol = compilation.GetEnclosingSymbol (CurrentContext.Document.Editor.Caret.Offset);
+
+			if (!(enclosingSymbol is ITypeSymbol))
+				enclosingSymbol = enclosingSymbol.ContainingType;
+
+			return enclosingSymbol != null ? enclosingSymbol.Name : null;
 		}
 		
 		public string GetConstructorModifier ()
 		{
-			if (CurrentContext.ParsedDocument == null)
+			var compilation = CurrentContext.Compilation;
+			if (compilation == null)
 				return null;
-			IUnresolvedTypeDefinition type = null;
-			var provider = CurrentContext.Document.GetContent<ITextEditorMemberPositionProvider>();
-			if (provider == null) {
-				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
-			} else {
-				var rtype = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
-				if (rtype != null)
-					return rtype.IsStatic ? "static " : "public ";
-			}
-			
-			if (type == null)
-				return "";
-			return type.IsStatic ? "static " : "public ";
+			var enclosingSymbol = compilation.GetEnclosingSymbol (CurrentContext.Document.Editor.Caret.Offset);
+
+			if (!(enclosingSymbol is ITypeSymbol))
+				enclosingSymbol = enclosingSymbol.ContainingType;
+
+			return enclosingSymbol != null && enclosingSymbol.IsStatic ? "static " : "public ";
 		}
 		
 		public string GetLengthProperty (Func<string, string> callback, string varName)
@@ -145,20 +131,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return "Count";
 		}
 		
-		IType GetElementType (IType result)
+		ITypeSymbol GetElementType (ITypeSymbol type)
 		{
-			foreach (var baseType in result.GetAllBaseTypes ()) {
-				var baseTypeDef = baseType.GetDefinition();
-				if (baseTypeDef != null && baseTypeDef.Name == "IEnumerable") {
-					if (baseTypeDef.Namespace == "System.Collections.Generic" && baseTypeDef.TypeParameterCount == 1) {
-						if (baseType.TypeArguments.Count > 0)
-							return baseType.TypeArguments[0];
-					} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
-						return CurrentContext.Compilation.FindType (KnownTypeCode.Object);
-					}
+			foreach (var baseType in type.AllInterfaces) {
+				if (baseType != null && baseType.Name == "IEnumerable") {
+					if (baseType.TypeArguments.Length > 0)
+						return baseType.TypeArguments[0];
 				}
 			}
-			return new UnknownType ("", "", 0);
+			return type;
 		}
 		
 		
@@ -166,24 +147,23 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			if (callback == null)
 				return "var";
-			
+			var compilation = CurrentContext.Compilation;
+			if (compilation == null)
+				return null;
+		
 			string var = callback (varName);
-			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
-			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Caret.Offset, var);
-				if (result != null) {
-					var componentType = GetElementType (result.Type);
-					if (componentType.Kind != TypeKind.Unknown) {
-						var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
-						if (generator != null)
-							return generator.GetShortTypeString (CurrentContext.Document, componentType);
-					}
-				}
-			}
-			
+
+			var offset = CurrentContext.Document.Editor.Caret.Offset;
+			var sym = compilation.LookupSymbols (offset).First (s => s.Name == var);
+			if (sym == null)
+				return "var";
+			var rt = sym.GetReturnType ();
+			if (rt != null)
+				return rt.ToMinimalDisplayString (compilation, offset);
 			return "var";
 		}
-		MonoDevelop.Ide.CodeCompletion.ICompletionDataList list;
+
+		ICompletionDataList list;
 		public IListDataProvider<string> GetCollections ()
 		{
 			var result = new List<CodeTemplateVariableValue> ();
@@ -193,43 +173,33 @@ namespace MonoDevelop.Ide.CodeTemplates
 					list = ext.CodeCompletionCommand (
 						CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
 				
-				foreach (object o in list) {
-					var data = o as IEntityCompletionData;
-					if (data == null)
-						continue;
-					
-					if (data.Entity is IMember) {
-						var m = data.Entity as IMember;
-						if (GetElementType (m.ReturnType).Kind != TypeKind.Unknown) {
-							if (m is IMethod) {
-								if (((IMethod)m).Parameters.Count == 0)
-									result.Add (new CodeTemplateVariableValue (m.Name + " ()", ((CompletionData)data).Icon));
-								continue;
-							}
-
-							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
+				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
+					if (GetElementType (data.Symbol.GetReturnType ()).TypeKind != TypeKind.Error) {
+						var method = data as IMethodSymbol;
+						if (method != null) {
+							if (method.Parameters.Length == 0)
+								result.Add (new CodeTemplateVariableValue (data.Symbol.Name + " ()", ((CompletionData)data).Icon));
+							continue;
 						}
+
+						result.Add (new CodeTemplateVariableValue (data.Symbol.Name, ((CompletionData)data).Icon));
 					}
 				}
 				
-				foreach (object o in list) {
-					var data = o as IEntityCompletionData;
-					if (data == null)
-						continue;
-					if (data.Entity is IParameter) {
-						var m = data.Entity as IParameter;
-						if (GetElementType (m.Type).Kind != TypeKind.Unknown)
+				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
+					var m = data.Symbol as IParameterSymbol;
+					if (m != null) {
+						if (GetElementType (m.Type).TypeKind != TypeKind.Error)
 							result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
 					}
 				}
 				
-				foreach (object o in list) {
-					var data = o as IVariableCompletionData;
-					if (data == null)
+				foreach (var sym in list.OfType<ISymbolCompletionData> ()) {
+					var m = sym.Symbol as ILocalSymbol;
+					if (m == null)
 						continue;
-					var m = data.Variable;
-					if (GetElementType (m.Type).Kind != TypeKind.Unknown)
-						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)data).Icon));
+					if (GetElementType (m.Type).TypeKind != TypeKind.Error)
+						result.Add (new CodeTemplateVariableValue (m.Name, ((CompletionData)m).Icon));
 				}
 			}
 			return new CodeTemplateListDataProvider (result);
@@ -237,7 +207,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetSimpleTypeName (string fullTypeName)
 		{
-			if (CurrentContext.ParsedDocument == null)
+			if (CurrentContext.Compilation == null)
 				return fullTypeName.Replace ("#", ".");
 			string ns = "";
 			string name = "";
@@ -253,26 +223,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			idx = name.IndexOf ('.');
 			if (idx >= 0) {
-				member = name.Substring (idx);
+				member = name.Substring (idx + 1);
 				name = name.Substring (0, idx);
 			}
 
-			var type = new GetClassTypeReference (ns, name, 0).Resolve (new SimpleTypeResolveContext (CurrentContext.Document.Compilation.MainAssembly));
-			bool stripAttribute = false;
-			if (type == null || type.Kind == TypeKind.Unknown) {
-				type = new GetClassTypeReference (ns, name + "Attribute", 0).Resolve (
-					new SimpleTypeResolveContext (CurrentContext.Document.Compilation.MainAssembly)
-				);	
-				stripAttribute = true;
-			}
-			if (type == null || type.Kind == TypeKind.Unknown)
-				return fullTypeName.Replace ("#", ".");
-			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
-			if (generator != null) {
-				var result = generator.GetShortTypeString (CurrentContext.Document, type) + member;
-				if (stripAttribute && result.EndsWith ("Attribute", StringComparison.Ordinal))
-				    result = result.Substring (0, result.Length - "Attribute".Length);
-				return result;
+			var metadataName = string.IsNullOrEmpty (ns) ? name : ns + "." + name;
+			var type = CurrentContext.Compilation.Compilation.GetTypeByMetadataName (metadataName);
+			if (type != null) {
+				var minimalName = type.ToMinimalDisplayString (CurrentContext.Compilation, CurrentContext.Document.Editor.Caret.Offset);
+				return string.IsNullOrEmpty (member) ? minimalName :  minimalName + "." + member;
 			}
 			return fullTypeName.Replace ("#", ".");
 		}
