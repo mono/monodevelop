@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Drawing;
+using System.Net;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Web;
@@ -32,28 +33,41 @@ using MonoDevelop.Ide;
 
 using MonoMac.AppKit;
 using MonoMac.Foundation;
-using System.Net;
 using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacIntegration
 {
 	class MacProxyCredentialProvider : ICredentialProvider
 	{
+		object guiLock = new object();
+
 		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
-			var rootUri = new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
+			lock (guiLock) {
+				// If this is the first attempt, return any stored credentials. If they fail, we'll be called again.
+				if (!retrying) {
+					var creds = GetExistingCredentials (uri);
+					if (creds != null)
+						return creds;
+				}
 
-			if (!retrying) {
-				// try to find stored credentials in the keychain and return those
-				// if they fail, we'll be called again with retrying = true
-				var existing =
-					Keychain.FindInternetUserNameAndPassword (uri) ??
-					Keychain.FindInternetUserNameAndPassword (rootUri);
-				if (existing != null)
-					return new NetworkCredential (existing.Item1, existing.Item2);
+				return GetCredentialsFromUser (uri, proxy, credentialType);
 			}
+		}
 
-			ICredentials result = null;
+		static ICredentials GetExistingCredentials (Uri uri)
+		{
+			var rootUri = new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
+			var existing =
+				Keychain.FindInternetUserNameAndPassword (uri) ??
+				Keychain.FindInternetUserNameAndPassword (rootUri);
+
+			return existing != null ? new NetworkCredential (existing.Item1, existing.Item2) : null;
+		}
+
+		static ICredentials GetCredentialsFromUser (Uri uri, IWebProxy proxy, CredentialType credentialType)
+		{
+			NetworkCredential result = null;
 
 			DispatchService.GuiSyncDispatch (() => {
 
@@ -119,12 +133,13 @@ namespace MonoDevelop.MacIntegration
 					var username = usernameInput.StringValue;
 					var password = passwordInput.StringValue;
 					result = new NetworkCredential (username, password);
-
-					// store the obtained credentials in the keychain
-					// but don't store for the root url since it may have other credentials
-					Keychain.AddInternetPassword (uri, username, password);
 				}
 			});
+
+			// store the obtained credentials in the keychain
+			// but don't store for the root url since it may have other credentials
+			if (result != null)
+				Keychain.AddInternetPassword (uri, result.UserName, result.Password);
 
 			return result;
 		}
