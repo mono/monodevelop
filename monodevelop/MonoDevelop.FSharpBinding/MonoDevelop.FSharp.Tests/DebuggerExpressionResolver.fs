@@ -1,22 +1,13 @@
 ﻿namespace MonoDevelop.FSharp.Tests
 open System
-open System.Linq
 open NUnit.Framework
 open MonoDevelop.FSharp
-open System.Collections;
 open MonoDevelop.Core
-open MonoDevelop.Ide.Gui
-open System.Collections.Generic
-open Mono.Addins
-open Mono.TextEditor
-open MonoDevelop.Projects.Text
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
 open FSharp.CompilerBinding
-open Microsoft.FSharp.Compiler
 open MonoDevelop.Projects
 open MonoDevelop.Ide.TypeSystem
-open ICSharpCode.NRefactory.TypeSystem
 open FsUnit
 open MonoDevelop.Debugger
 
