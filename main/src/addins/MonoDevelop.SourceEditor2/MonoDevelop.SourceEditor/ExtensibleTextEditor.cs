@@ -475,15 +475,6 @@ namespace MonoDevelop.SourceEditor
 			return null;
 		}
 		
-		internal ParsedDocument ParsedDocument {
-			get {
-				var doc = IdeApp.Workbench.ActiveDocument;
-				if (doc != null) 
-					return doc.ParsedDocument;
-				return null;
-			}
-		}
-		
 		public MonoDevelop.Projects.Project Project {
 			get {
 				var doc = IdeApp.Workbench.ActiveDocument;
