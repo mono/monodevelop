@@ -38,16 +38,12 @@ namespace MonoDevelop.Platform.Windows
 {
 	public class WindowsProxyCredentialProvider : ICredentialProvider
 	{
-		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredential, bool retrying)
+		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
 			if (uri == null)
 				throw new ArgumentNullException ("uri");
 
-			NetworkCredential currentCredentials = null;
-			if (existingCredential != null)
-				currentCredentials = CredentialsUtility.GetCredentialsForUriFromICredentials (uri, existingCredential);
-
-			var form = new PlaceholderForm (credentialType, uri, currentCredentials);
+			var form = new PlaceholderForm (credentialType, uri, null);
 			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
 			return result ? new NetworkCredential (form.Username, form.Password, form.Domain) : null;
 		}

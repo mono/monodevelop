@@ -376,6 +376,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				ProjectExtensionUtil.BeginLoadOperation ();
 				Item = CreateSolutionItem (monitor, p, fileName, language, itemType, itemClass);
 	
+				if (subtypeGuids.Any ()) {
+					string gg = string.Join (";", subtypeGuids) + ";" + TypeGuid;
+					Item.ExtendedProperties ["ProjectTypeGuids"] = gg.ToUpper ();
+				}
+
 				Item.SetItemHandler (this);
 				MSBuildProjectService.SetId (Item, itemGuid);
 				
@@ -982,6 +987,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						return ReadProjectFile (ser, project, buildItem, typeof(ProjectFile));
 				}
 			}
+
+			// ProjectReference objects only make sense on a DotNetProject, so don't load them
+			// if that's not the type of the project.
+			if (dt != null && dt.ValueType == typeof(ProjectReference) && dotNetProject == null)
+				dt = null;
 			
 			if (dt != null && typeof(ProjectItem).IsAssignableFrom (dt.ValueType)) {
 				ProjectItem obj = (ProjectItem) Activator.CreateInstance (dt.ValueType);
@@ -1146,9 +1156,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 				gg += ";" + TypeGuid;
 				Item.ExtendedProperties ["ProjectTypeGuids"] = gg.ToUpper ();
-			}
-			else
+				globalGroup.SetPropertyValue ("ProjectTypeGuids", gg.ToUpper (), true);
+			} else {
 				Item.ExtendedProperties.Remove ("ProjectTypeGuids");
+				globalGroup.RemoveProperty ("ProjectTypeGuids");
+			}
 
 			Item.ExtendedProperties ["ProductVersion"] = productVersion;
 			Item.ExtendedProperties ["SchemaVersion"] = schemaVersion;
@@ -1332,7 +1344,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			// Remove old items
 			Dictionary<string, ItemInfo> oldItems = new Dictionary<string, ItemInfo> ();
 			foreach (MSBuildItem item in msproject.GetAllItems ())
-				oldItems [item.Name + "<" + item.Include + "<" + item.Condition] = new ItemInfo () {
+				oldItems [item.Name + "<" + item.UnevaluatedInclude + "<" + item.Condition] = new ItemInfo () {
 					Item = item
 				};
 			// Add the new items
@@ -1430,14 +1442,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 			else {
 				string itemName;
-				if (ob is UnknownProjectItem)
-					itemName = ((UnknownProjectItem)ob).ItemName;
+				if (ob is UnknownProjectItem) {
+					var ui = (UnknownProjectItem)ob;
+					itemName = ui.ItemName;
+					var buildItem = AddOrGetBuildItem (msproject, oldItems, itemName, ui.Include, ui.Condition);
+					WriteBuildItemMetadata (ser, buildItem, ob, oldItems);
+				}
 				else {
 					DataType dt = ser.DataContext.GetConfigurationDataType (ob.GetType ());
-					itemName = dt.Name;
+					var buildItem = msproject.AddNewItem (dt.Name, "");
+					WriteBuildItemMetadata (ser, buildItem, ob, oldItems);
 				}
-				MSBuildItem buildItem = msproject.AddNewItem (itemName, "");
-				WriteBuildItemMetadata (ser, buildItem, ob, oldItems);
 			}
 		}
 		
@@ -1951,7 +1966,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 		
 		static readonly MSBuildElementOrder globalConfigOrder = new MSBuildElementOrder (
-			"Configuration","Platform","ProductVersion","SchemaVersion","ProjectGuid","ProjectTypeGuids", "OutputType",
+			"Configuration","Platform","ProductVersion","SchemaVersion","ProjectGuid", "OutputType",
 		    "AppDesignerFolder","RootNamespace","AssemblyName","StartupObject"
 		);
 		static readonly MSBuildElementOrder configOrder = new MSBuildElementOrder (
@@ -1965,7 +1980,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			new ItemMember (typeof(SolutionEntityItem), "ProductVersion"),
 			new ItemMember (typeof(SolutionEntityItem), "SchemaVersion"),
 			new ItemMember (typeof(SolutionEntityItem), "ProjectGuid"),
-			new ItemMember (typeof(SolutionEntityItem), "ProjectTypeGuids"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "ErrorReport"),
 			new ItemMember (typeof(DotNetProjectConfiguration), "TargetFrameworkVersion", new object[] { new MergeToProjectAttribute () }),
 			new ItemMember (typeof(ProjectReference), "RequiredTargetFramework"),

@@ -1,13 +1,6 @@
 //
-// CredentialStore.cs
+// From NuGet src/Core
 //
-// Author:
-//       Bojan Rajkovic <bojan.rajkovic@xamarin.com>
-//       Michael Hutchinson <mhutch@xamarin.com>
-//
-// based on NuGet src/Core/Http
-//
-// Copyright (c) 2013-2014 Xamarin Inc.
 // Copyright (c) 2010-2014 Outercurve Foundation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +14,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 using System;
 using System.Net;
@@ -29,42 +21,45 @@ using System.Collections.Concurrent;
 
 namespace MonoDevelop.Core.Web
 {
-	class CredentialStore
+	class CredentialStore : ICredentialCache
 	{
-		readonly ConcurrentDictionary<Uri, ICredentials> credentialCache = new ConcurrentDictionary<Uri, ICredentials> ();
+		private readonly ConcurrentDictionary<Uri, ICredentials> _credentialCache = new ConcurrentDictionary<Uri, ICredentials>();
 
-		public ICredentials GetCredentials (Uri uri, CredentialType credentialType)
+		private static readonly CredentialStore _instance = new CredentialStore();
+
+		public static CredentialStore Instance
 		{
+			get
+			{
+				return _instance;
+			}
+		}
+
+		public ICredentials GetCredentials(Uri uri)
+		{
+			Uri rootUri = GetRootUri(uri);
+
 			ICredentials credentials;
-			if (!credentialCache.TryGetValue (uri, out credentials)) {
-				if (credentialType == CredentialType.RequestCredentials &&
-					credentialCache.TryGetValue (GetRootUri (uri), out credentials))
-					return credentials;
-			} else {
+			if (_credentialCache.TryGetValue(uri, out credentials) ||
+				_credentialCache.TryGetValue(rootUri, out credentials))
+			{
 				return credentials;
 			}
 
-			// Then go to the keychain
-			var creds = PasswordService.GetWebUserNameAndPassword (uri);
-			return creds != null ? new NetworkCredential (creds.Item1, creds.Item2).AsCredentialCache (uri) : null;
+			return null;
 		}
 
-		public void Add (Uri requestUri, ICredentials credentials, CredentialType credentialType)
+		public void Add(Uri uri, ICredentials credentials)
 		{
-			credentialCache.TryAdd (requestUri, credentials);
-			if (credentialType == CredentialType.RequestCredentials) {
-				var rootUri = GetRootUri (requestUri);
-				credentialCache.AddOrUpdate (rootUri, credentials, (u, c) => credentials);
-			}
-
-			var cred = CredentialsUtility.GetCredentialsForUriFromICredentials (requestUri, credentials);
-			if (cred != null && !string.IsNullOrWhiteSpace (cred.UserName) && !string.IsNullOrWhiteSpace (cred.Password))
-				PasswordService.AddWebUserNameAndPassword (requestUri, cred.UserName, cred.Password);
+			Uri rootUri = GetRootUri(uri);
+			_credentialCache.TryAdd(uri, credentials);
+			_credentialCache.AddOrUpdate(rootUri, credentials, (u, c) => credentials);
 		}
 
-		static Uri GetRootUri (Uri uri)
+		internal static Uri GetRootUri(Uri uri)
 		{
-			return new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
+			return new Uri(uri.GetComponents(UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
 		}
 	}
+
 }

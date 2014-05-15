@@ -41,7 +41,7 @@ namespace MonoDevelop.MacIntegration
 	{
 		string username, password;
 
-		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredentials, bool retrying)
+		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
 			bool result = false;
 			DispatchService.GuiSyncDispatch (() => {
@@ -53,8 +53,6 @@ namespace MonoDevelop.MacIntegration
 					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 
 					NSView view = new NSView (new RectangleF (0, 0, 313, 91));
-
-					var creds = CredentialsUtility.GetCredentialsForUriFromICredentials (uri, existingCredentials);
 
 					var usernameLabel = new NSTextField (new RectangleF (17, 55, 71, 17)) {
 						Identifier = "usernameLabel",
@@ -69,7 +67,6 @@ namespace MonoDevelop.MacIntegration
 					view.AddSubview (usernameLabel);
 
 					var usernameInput = new NSTextField (new RectangleF (93, 52, 200, 22));
-					usernameInput.StringValue = creds != null ? creds.UserName : string.Empty;
 					view.AddSubview (usernameInput);
 
 					var passwordLabel = new NSTextField (new RectangleF (22, 23, 66, 17)) {
@@ -84,7 +81,6 @@ namespace MonoDevelop.MacIntegration
 					view.AddSubview (passwordLabel);
 
 					var passwordInput = new NSSecureTextField (new RectangleF (93, 20, 200, 22));
-					passwordInput.StringValue = creds != null ? creds.Password : string.Empty;
 					view.AddSubview (passwordInput);
 
 					alert.AccessoryView = view;

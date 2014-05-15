@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
+using MonoDevelop.Core;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -51,7 +52,7 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSourceSettings(ISettings settings)
 			: this(
 				settings,
-				new PackageSourceProvider(settings, new [] { RegisteredPackageSources.DefaultPackageSource }),
+				CreatePackageSourceProvider (settings),
 				RegisteredPackageSources.DefaultPackageSource)
 		{
 		}
@@ -67,6 +68,11 @@ namespace ICSharpCode.PackageManagement
 			ReadActivePackageSource();
 		}
 
+		static IPackageSourceProvider CreatePackageSourceProvider (ISettings settings)
+		{
+			return new PackageSourceProvider (settings, new [] { RegisteredPackageSources.DefaultPackageSource });
+		}
+
 		void ReadActivePackageSource()
 		{
 			IList<KeyValuePair<string, string>> packageSources = settings.GetValues(ActivePackageSourceSectionName);
@@ -76,9 +82,23 @@ namespace ICSharpCode.PackageManagement
 		public RegisteredPackageSources PackageSources {
 			get {
 				if (packageSources == null) {
-					ReadPackageSources();
+					TryReadPackageSources();
 				}
 				return packageSources;
+			}
+		}
+
+		void TryReadPackageSources()
+		{
+			try {
+				ReadPackageSources ();
+			} catch (Exception ex) {
+				LoggingService.LogError ("Unable to read NuGet.config file.", ex);
+
+				// Fallback to using the default package source only (nuget.org)
+				// and treat NuGet.config as read-only.
+				packageSourceProvider = CreatePackageSourceProvider (NullSettings.Instance);
+				ReadPackageSources ();
 			}
 		}
 		
@@ -117,6 +137,12 @@ namespace ICSharpCode.PackageManagement
 			}
 			set {
 				activePackageSource = value;
+
+				if (settings is NullSettings) {
+					// NuGet failed to load settings so do not try to update them since this will fail.
+					return;
+				}
+
 				if (activePackageSource == null) {
 					RemoveActivePackageSourceSetting();
 				} else {

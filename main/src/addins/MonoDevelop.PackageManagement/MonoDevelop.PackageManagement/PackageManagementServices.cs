@@ -81,11 +81,6 @@ namespace ICSharpCode.PackageManagement
 			return new SettingsCredentialProvider(credentialProvider, packageSourceProvider);
 		}
 
-		public static void DisablePromptForCredentials ()
-		{
-			HttpClient.DefaultCredentialProvider = CreateSettingsCredentialProvider (NullCredentialProvider.Instance);
-		}
-
 		public static PackageManagementOptions Options {
 			get { return options; }
 		}

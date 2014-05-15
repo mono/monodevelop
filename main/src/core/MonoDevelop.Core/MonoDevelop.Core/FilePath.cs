@@ -70,7 +70,7 @@ namespace MonoDevelop.Core
 
 		public bool IsDirectory {
 			get {
-				return File.GetAttributes (FullPath).HasFlag(FileAttributes.Directory);
+				return Directory.Exists (FullPath);
 			}
 		}
 		

@@ -45,6 +45,7 @@ using Mono.Addins;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -216,16 +217,17 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		//methods
-		public void OpenCreatedSolution ()
+		public IAsyncOperation OpenCreatedSolution ()
 		{
 			IAsyncOperation asyncOperation = IdeApp.Workspace.OpenWorkspaceItem (createdSolutionName);
-			asyncOperation.WaitForCompleted ();
-
-			if (asyncOperation.Success) {
-				foreach (string action in actions) {
-					IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action));
+			asyncOperation.Completed += delegate {
+				if (asyncOperation.Success) {
+					foreach (string action in actions) {
+						IdeApp.Workbench.OpenDocument (Path.Combine (createdProjectInformation.ProjectBasePath, action));
+					}
 				}
-			}
+			};
+			return asyncOperation;
 		}
 
 		public WorkspaceItem CreateWorkspaceItem (ProjectCreateInformation cInfo)

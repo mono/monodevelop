@@ -206,7 +206,10 @@ namespace MonoDevelop.Refactoring
 					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
 						var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
 						if (ctx != null) {
-							foreach (var provider in contextActions.Where (fix => disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0)) {
+							foreach (var provider in contextActions.Where (fix =>
+								fix.MimeType == editor.MimeType &&
+								disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
+							{
 								try {
 									result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
 								} catch (Exception ex) {

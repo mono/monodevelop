@@ -877,10 +877,15 @@ namespace MonoDevelop.DocFood
 		void SplitWords (object obj, string name)
 		{
 			StringBuilder result = new StringBuilder ();
+			bool wasUnderscore = false;
 			for (int i = 0; i < name.Length; i++) {
-				char ch = name[i];
-				
-				if (char.IsUpper (ch)) {
+				char ch = name [i];
+				if (ch == '_') {
+					wasUnderscore = true;
+					continue;
+				}
+				if (char.IsUpper (ch) || wasUnderscore) {
+					wasUnderscore = false;
 					if (result.Length > 0)
 						result.Append (" ");
 					if (i + 1 < name.Length && char.IsUpper (name[i + 1])) {
@@ -895,6 +900,7 @@ namespace MonoDevelop.DocFood
 						continue;
 					}
 				}
+				wasUnderscore = false;
 				result.Append (char.ToLower (ch));
 			}
 			

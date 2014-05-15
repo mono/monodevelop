@@ -533,13 +533,14 @@ namespace MonoDevelop.Ide
 			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
 
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
-			bool reloading = IsReloading;
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+				bool reloading = IsReloading;
 
-			DispatchService.BackgroundDispatch (delegate {
-				BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
-			});
-			return monitor.AsyncOperation;
+				DispatchService.BackgroundDispatch (delegate {
+					BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
+				});
+				return monitor.AsyncOperation;
+			}
 		}
 		
 		void ReattachDocumentProjects (IEnumerable<string> closedDocs)
@@ -1000,14 +1001,14 @@ namespace MonoDevelop.Ide
 			WorkspaceItemEventArgs args = new WorkspaceItemEventArgs (item);
 			NotifyDescendantItemAdded (this, args);
 			NotifyConfigurationsChanged (null, args);
-			
-			if (WorkspaceItemOpened != null)
-				WorkspaceItemOpened (this, args);
+
 			if (Items.Count == 1 && !reloading) {
 				IdeApp.Workbench.CurrentLayout = "Solution";
 				if (FirstWorkspaceItemOpened != null)
 					FirstWorkspaceItemOpened (this, args);
 			}
+			if (WorkspaceItemOpened != null)
+				WorkspaceItemOpened (this, args);
 		}
 		
 		internal void NotifyItemRemoved (WorkspaceItem item)
@@ -1031,16 +1032,16 @@ namespace MonoDevelop.Ide
 			}
 			item.ConfigurationsChanged -= configurationsChanged;
 			
-			if (Items.Count == 0 && !reloading) {
-				if (LastWorkspaceItemClosed != null)
-					LastWorkspaceItemClosed (this, EventArgs.Empty);
-			}
-			
 			WorkspaceItemEventArgs args = new WorkspaceItemEventArgs (item);
 			NotifyConfigurationsChanged (null, args);
 			
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
+
+			if (Items.Count == 0 && !reloading) {
+				if (LastWorkspaceItemClosed != null)
+					LastWorkspaceItemClosed (this, EventArgs.Empty);
+			}
 			
 			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
 //			ParserDatabase.Unload (item);

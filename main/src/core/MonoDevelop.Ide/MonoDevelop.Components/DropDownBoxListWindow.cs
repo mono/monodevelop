@@ -388,7 +388,7 @@ namespace MonoDevelop.Components
 
 					layout.Ellipsize = Pango.EllipsizeMode.End;
 					layout.Width = (Allocation.Width - xpos - iconWidth - 2) * (int)Pango.Scale.PangoScale;
-					layout.SetMarkup (text);
+					layout.SetMarkup (PathBar.GetFirstLineFromMarkup (text));
 
 					int wi, he, typos, iypos;
 					layout.GetPixelSize (out wi, out he);

@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
 using System.Linq;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AssemblyBrowser
 {

@@ -72,6 +72,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AllowGrow = false;
 			this.CanFocus = false;
 			this.CanDefault = false;
+			Mono.TextEditor.PopupWindow.WindowTransparencyDecorator.Attach (this);
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;

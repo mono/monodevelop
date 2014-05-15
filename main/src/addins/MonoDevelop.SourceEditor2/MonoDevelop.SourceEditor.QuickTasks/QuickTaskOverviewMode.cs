@@ -48,6 +48,30 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		static Xwt.Drawing.Image errorImage = Xwt.Drawing.Image.FromResource ("issues-error-light-16.png");
 		static Xwt.Drawing.Image suggestionImage = Xwt.Drawing.Image.FromResource ("issues-suggestion-light-16.png");
 
+		public static Xwt.Drawing.Image SuggestionImage {
+			get {
+				return suggestionImage;
+			}
+		}
+
+		public static Xwt.Drawing.Image ErrorImage {
+			get {
+				return errorImage;
+			}
+		}
+
+		public static Xwt.Drawing.Image WarningImage {
+			get {
+				return warningImage;
+			}
+		}
+
+		public static Xwt.Drawing.Image OkImage {
+			get {
+				return okImage;
+			}
+		}
+
 		//TODO: find a way to look these up from the theme
 		static readonly Cairo.Color win81Background = new Cairo.Color (240/255d, 240/255d, 240/255d);
 		static readonly Cairo.Color win81Slider = new Cairo.Color (205/255d, 205/255d, 205/255d);

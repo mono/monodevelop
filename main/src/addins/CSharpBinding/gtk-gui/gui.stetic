@@ -2702,7 +2702,7 @@ None</property>
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="MonoDevelop.DesignerSupport.ClassOutlineSortingPreferencesDialog" design-size="424 367">
+  <widget class="Gtk.Dialog" id="MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog" design-size="424 367">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="GeneratePublic">False</property>

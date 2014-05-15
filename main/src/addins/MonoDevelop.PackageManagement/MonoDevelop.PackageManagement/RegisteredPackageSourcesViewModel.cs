@@ -37,7 +37,7 @@ using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
-	public class RegisteredPackageSourcesViewModel : ViewModelBase<RegisteredPackageSourcesViewModel>, IDisposable
+	public class RegisteredPackageSourcesViewModel : ViewModelBase<RegisteredPackageSourcesViewModel>, IDisposable, IPackageSourceProvider
 	{
 		ObservableCollection<PackageSourceViewModel> packageSourceViewModels = 
 			new ObservableCollection<PackageSourceViewModel>();
@@ -134,11 +134,20 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Load()
 		{
-			PackageManagementServices.DisablePromptForCredentials ();
+			ReplaceExistingPackageSourceCredentialProvider ();
 
 			foreach (PackageSource packageSource in packageSources) {
 				AddPackageSourceToViewModel(packageSource);
 			}
+		}
+
+		/// <summary>
+		/// Use this class as the source of package source credentials and disable any
+		/// prompt for credentials.
+		/// </summary>
+		void ReplaceExistingPackageSourceCredentialProvider ()
+		{
+			HttpClient.DefaultCredentialProvider = new SettingsCredentialProvider (NullCredentialProvider.Instance, this);
 		}
 		
 		void AddPackageSourceToViewModel(PackageSource packageSource)
@@ -379,6 +388,29 @@ namespace ICSharpCode.PackageManagement
 			} finally {
 				PackageManagementServices.InitializeCredentialProvider ();
 			}
+		}
+
+		/// <summary>
+		/// This is called by NuGet's credential provider when a request needs 
+		/// a username and password. We return the current package sources
+		/// stored in Preferences with the latest usernames and passwords.
+		/// </summary>
+		IEnumerable<PackageSource> IPackageSourceProvider.LoadPackageSources ()
+		{
+			return packageSourceViewModels.Select (viewModel => viewModel.GetPackageSource ());
+		}
+
+		void IPackageSourceProvider.SavePackageSources (IEnumerable<PackageSource> sources)
+		{
+		}
+
+		void IPackageSourceProvider.DisablePackageSource (PackageSource source)
+		{
+		}
+
+		bool IPackageSourceProvider.IsPackageSourceEnabled (PackageSource source)
+		{
+			return true;
 		}
 	}
 }

@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Projects {
 	/// This class displays a new project dialog and sets up and creates a a new project,
 	/// the project types are described in an XML options file
 	/// </summary>
-	public partial class NewProjectDialog: Gtk.Dialog
+	internal partial class NewProjectDialog: Gtk.Dialog
 	{
 		ArrayList alltemplates = new ArrayList();
 		List<Category> categories = new List<Category> ();
@@ -69,6 +69,7 @@ namespace MonoDevelop.Ide.Projects {
 		IWorkspaceFileObject newItem;
 		Category recentCategory;
 		List<string> recentTemplates = new List<string> ();
+		bool disposeNewItem = true;
 			
 		public NewProjectDialog (SolutionFolder parentFolder, bool openCombine, string basePath)
 		{
@@ -213,6 +214,10 @@ namespace MonoDevelop.Ide.Projects {
 				cat_text_render.Destroy ();
 				cat_text_render = null;
 			}
+
+			if (disposeNewItem && newItem != null)
+				newItem.Dispose ();
+
 			base.OnDestroyed ();
 		}
 		
@@ -378,11 +383,24 @@ namespace MonoDevelop.Ide.Projects {
 				IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
 			else
 				IdeApp.ProjectOperations.Save (newItem);
-			
-			if (openSolution)
-				selectedItem.OpenCreatedSolution();
 
-			InstallProjectTemplatePackages ();
+			if (openSolution) {
+				var op = selectedItem.OpenCreatedSolution ();
+				op.Completed += delegate {
+					if (op.Success) {
+						var sol = IdeApp.Workspace.GetAllSolutions ().FirstOrDefault ();
+						if (sol != null)
+							InstallProjectTemplatePackages (sol);
+					}
+				};
+			}
+			else {
+				// The item is not a solution being opened, so it is going to be added to
+				// an existing item. In this case, it must not be disposed by the dialog.
+				disposeNewItem = false;
+				if (parentFolder != null)
+					InstallProjectTemplatePackages (parentFolder.ParentSolution);
+			}
 
 			Respond (ResponseType.Ok);
 		}
@@ -454,7 +472,11 @@ namespace MonoDevelop.Ide.Projects {
 				MessageService.ShowError (GettextCatalog.GetString ("You do not have permission to create to {0}", location));
 				return false;
 			}
-			
+
+			if (newItem != null) {
+				newItem.Dispose ();
+				newItem = null;
+			}
 			
 			try {
 				ProjectCreateInformation cinfo = CreateProjectCreateInformation ();
@@ -485,13 +507,13 @@ namespace MonoDevelop.Ide.Projects {
 			return cinfo;
 		}
 
-		void InstallProjectTemplatePackages ()
+		void InstallProjectTemplatePackages (Solution sol)
 		{
 			if (!selectedItem.HasPackages ())
 				return;
 
 			foreach (ProjectTemplatePackageInstaller installer in AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/ProjectTemplatePackageInstallers")) {
-				installer.Run (selectedItem.PackageReferencesForCreatedProjects);
+				installer.Run (sol, selectedItem.PackageReferencesForCreatedProjects);
 			}
 		}
 

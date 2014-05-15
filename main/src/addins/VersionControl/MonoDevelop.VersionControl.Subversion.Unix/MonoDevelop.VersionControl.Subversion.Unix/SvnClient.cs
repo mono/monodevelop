@@ -391,6 +391,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, string realm, string user_name, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t ();
+			data.username = user_name;
 			bool ms;
 			if (SimpleAuthenticationPrompt (realm, may_save, ref data.username, out data.password, out ms)) {
 				data.may_save = ms;
@@ -1100,6 +1101,36 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					props_ptr = apr.pcalloc (localpool, new_props);
 					CheckError (svn.client_propset ("svn:ignore", props_ptr, Path.GetDirectoryName (new_path), false, localpool));
 				}
+			} finally {
+				apr.pool_destroy (localpool);
+				TryEndOperation ();
+			}
+		}
+
+		public override bool HasNeedLock (FilePath file)
+		{
+			IntPtr hash_item, hash_name, hash_val;
+			int length;
+			IntPtr result;
+			IntPtr props_ptr = IntPtr.Zero;
+			StringBuilder props = new StringBuilder ();
+			string new_path;
+			LibSvnClient.svn_string_t new_props;
+			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
+
+			var localpool = TryStartOperation (null);
+			try {
+				new_path = NormalizePath (file, localpool);
+				CheckError (svn.client_propget (out result, "svn:needs-lock", new_path,
+					ref rev, false, ctx, localpool));
+				hash_item = apr.hash_first (localpool, result);
+				while (hash_item != IntPtr.Zero) {
+					apr.hash_this (hash_item, out hash_name, out length, out hash_val);
+					new_props = (LibSvnClient.svn_string_t) Marshal.PtrToStructure (hash_val, typeof (LibSvnClient.svn_string_t));
+					props.Append (Marshal.PtrToStringAnsi (new_props.data));
+					hash_item = apr.hash_next (hash_item);
+				}
+				return props.Length != 0;
 			} finally {
 				apr.pool_destroy (localpool);
 				TryEndOperation ();

@@ -594,10 +594,12 @@ namespace MonoDevelop.Projects
 				else if (projectReference.ReferenceType == ReferenceType.Assembly) {
 					// VS COMPAT: Copy the assembly, but also all other assemblies referenced by it
 					// that are located in the same folder
-					foreach (string file in GetAssemblyRefsRec (projectReference.Reference, new HashSet<string> ())) {
+					var visitedAssemblies = new HashSet<string> ();
+					var referencedFiles = projectReference.GetReferencedFileNames (configuration);
+					foreach (string file in referencedFiles.SelectMany (ar => GetAssemblyRefsRec (ar, visitedAssemblies))) {
 						// Indirectly referenced assemblies are only copied if a newer copy doesn't exist. This avoids overwritting directly referenced assemblies
 						// by indirectly referenced stale copies of the same assembly. See bug #655566.
-						bool copyIfNewer = file != projectReference.Reference;
+						bool copyIfNewer = !referencedFiles.Contains (file);
 						list.Add (file, copyIfNewer);
 						if (File.Exists (file + ".config"))
 							list.Add (file + ".config", copyIfNewer);

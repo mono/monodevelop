@@ -181,7 +181,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			HasError = true;
 			ErrorMessage = GetErrorMessage(ex);
-			LoggingService.LogDebug("PackagesViewModel error", ex);
+			LoggingService.LogInfo("PackagesViewModel error", ex);
 		}
 		
 		string GetErrorMessage(AggregateException ex)

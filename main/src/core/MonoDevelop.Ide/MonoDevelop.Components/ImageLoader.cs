@@ -97,14 +97,21 @@ namespace MonoDevelop.Components
 						LoadFromDisk (cachePath, true);
 					}
 				} catch (Exception ex) {
-					LoggingService.LogError ("Error in image loader", ex);
+					var aex = ex as AggregateException;
+					if (aex != null)
+						ex = aex.Flatten ().InnerException;
+					var wex = ex as WebException;
+					if (wex != null && wex.Status.IsCannotReachInternetError ())
+						LoggingService.LogWarning ("Gravatar service could not be reached.");
+					else
+						LoggingService.LogError ("Error in Gravatar downloader.", ex);
 					Cleanup ();
 				} finally {
 					try {
 						if (File.Exists (tempPath))
 							File.Delete (tempPath);
 					} catch (Exception ex) {
-						LoggingService.LogError ("Error deleting temp file", ex);
+						LoggingService.LogError ("Error deleting Gravatar temp fil.e", ex);
 					}
 				}
 			});
@@ -112,9 +119,7 @@ namespace MonoDevelop.Components
 
 		void Cleanup ()
 		{
-			Xwt.Application.Invoke (delegate {
-				UpdateImage (image, true);
-			});
+			Xwt.Application.Invoke (() => UpdateImage (image, true));
 		}
 
 		void LoadFromDisk (string path, bool downloaded)

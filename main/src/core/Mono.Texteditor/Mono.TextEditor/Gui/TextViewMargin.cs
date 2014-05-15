@@ -699,10 +699,10 @@ namespace Mono.TextEditor
 				var curRect = new Gdk.Rectangle ((int)caretX, (int)caretY, (int)this.charWidth, (int)LineHeight - 1);
 				if (curRect != caretRectangle) {
 					caretRectangle = curRect;
-					textEditor.TextArea.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
-					               (int)(caretRectangle.Y + (-textEditor.VAdjustment.Value + caretVAdjustmentValue)),
-				                    caretRectangle.Width + (int)textEditor.Options.Zoom,
-					               caretRectangle.Height + 1);
+//					textEditor.TextArea.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
+//					               (int)(caretRectangle.Y + (-textEditor.VAdjustment.Value + caretVAdjustmentValue)),
+//				                    caretRectangle.Width + (int)textEditor.Options.Zoom,
+//					               caretRectangle.Height + 1);
 					caretVAdjustmentValue = textEditor.VAdjustment.Value;
 				}
 

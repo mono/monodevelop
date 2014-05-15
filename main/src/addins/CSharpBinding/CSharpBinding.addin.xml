@@ -248,13 +248,13 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">

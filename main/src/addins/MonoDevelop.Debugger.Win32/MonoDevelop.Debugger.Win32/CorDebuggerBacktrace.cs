@@ -129,8 +129,10 @@ namespace MonoDevelop.Debugger.Win32
 							return new SequencePoint () {
 								IsSpecial = true,
 								Offset = offsets [j],
-								Line = lines [j],
-								Column = columns [j],
+								StartLine = lines [j],
+								EndLine = endLines [j],
+								StartColumn = columns [j],
+								EndColumn = endColumns [j],
 								Document = docs [j]
 							};
 						}
@@ -143,8 +145,10 @@ namespace MonoDevelop.Debugger.Win32
 							return new SequencePoint () {
 								IsSpecial = true,
 								Offset = offsets [j],
-								Line = lines [j],
-								Column = columns [j],
+								StartLine = lines [j],
+								EndLine = endLines [j],
+								StartColumn = columns [j],
+								EndColumn = endColumns [j],
 								Document = docs [j]
 							};
 						}
@@ -158,8 +162,10 @@ namespace MonoDevelop.Debugger.Win32
 					return new SequencePoint () {
 						IsSpecial = false,
 						Offset = offsets [i],
-						Line = lines [i],
-						Column = columns [i],
+						StartLine = lines [i],
+						EndLine = endLines [i],
+						StartColumn = columns [i],
+						EndColumn = endColumns [i],
 						Document = docs [i]
 					};
 				}
@@ -196,8 +202,8 @@ namespace MonoDevelop.Debugger.Win32
 					
 					var sp = GetSequencePoint (session, frame);
 					if (sp != null) {
-						line = sp.Line;
-						column = sp.Column;
+						line = sp.StartLine;
+						column = sp.StartColumn;
 						file = sp.Document.URL;
 						address = (uint)sp.Offset;
 					}

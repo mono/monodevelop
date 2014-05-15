@@ -59,6 +59,7 @@
       <HintPath>..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -126,7 +127,6 @@
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MachinePackageCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesUserPrompts.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewTitle.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCredentialProvider.cs" />
@@ -325,6 +325,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\package-source-32%402x.png">
       <LogicalName>package-source-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-16.png">
+      <LogicalName>prefs-package-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-16%402x.png">
+      <LogicalName>prefs-package-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-source-16.png">
+      <LogicalName>prefs-package-source-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-source-16%402x.png">
+      <LogicalName>prefs-package-source-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

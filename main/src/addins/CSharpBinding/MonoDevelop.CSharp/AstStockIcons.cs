@@ -182,7 +182,7 @@ namespace MonoDevelop.CSharp
 			return result;
 		}
 		
-		public static string GetStockIcon (this SyntaxNode element, bool showAccessibility = true)
+		public static string GetStockIcon (this SyntaxNode element)
 		{
 			Accessibility acc = Accessibility.Public;
 
@@ -190,17 +190,13 @@ namespace MonoDevelop.CSharp
 				return Namespace;
 			
 			if (element is AccessorDeclarationSyntax) {
-				if (showAccessibility) {
-					if (!GetAccessibility ((MemberDeclarationSyntax)element, out acc))
-						GetAccessibility (element.Parent as MemberDeclarationSyntax, out acc);
-				}
+				if (!GetAccessibility ((MemberDeclarationSyntax)element, out acc))
+					GetAccessibility (element.Parent as MemberDeclarationSyntax, out acc);
 
 				return methodIconTable [(int) (acc)];
 			}
 
-			if (showAccessibility) {
-				GetAccessibility (element, out acc);
-			}
+			GetAccessibility (element, out acc);
 
 			if (element is TypeDeclarationSyntax) {
 				var type = element as TypeDeclarationSyntax;

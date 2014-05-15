@@ -62,18 +62,17 @@ namespace MonoDevelop.PackageManagement
 			this.backgroundPackageActionRunner = backgroundPackageActionRunner;
 		}
 
-		public override void Run (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		public override void Run (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
-			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (packageReferencesForCreatedProjects);
+			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (solution, packageReferencesForCreatedProjects);
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateInstallingProjectTemplatePackagesMessage ();
 			backgroundPackageActionRunner.Run (progressMessage, installPackageActions);
 		}
 
-		List<InstallPackageAction> CreateInstallPackageActions (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		List<InstallPackageAction> CreateInstallPackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
 			var installPackageActions = new List<InstallPackageAction> ();
 
-			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			foreach (PackageReferencesForCreatedProject packageReferences in packageReferencesForCreatedProjects) {
 				var project = solution.GetAllProjects ().First (p => p.Name == packageReferences.ProjectName) as DotNetProject;
 				if (project != null) {

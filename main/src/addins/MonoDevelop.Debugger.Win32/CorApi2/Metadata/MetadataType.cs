@@ -212,7 +212,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             get 
             {
-                throw new NotImplementedException();
+                return Type.GetType (FullName);
             }
         }
 

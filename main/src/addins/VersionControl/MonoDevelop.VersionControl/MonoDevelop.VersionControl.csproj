@@ -290,6 +290,24 @@
     <EmbeddedResource Include="icons\light\tag-16%402x.png">
       <LogicalName>tag-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-git-16.png">
+      <LogicalName>prefs-git-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-git-16%402x.png">
+      <LogicalName>prefs-git-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-commit-message-style-16.png">
+      <LogicalName>prefs-commit-message-style-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-commit-message-style-16%402x.png">
+      <LogicalName>prefs-commit-message-style-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-version-control-general-16.png">
+      <LogicalName>prefs-version-control-general-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-version-control-general-16%402x.png">
+      <LogicalName>prefs-version-control-general-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="gtk-gui\generated.cs" />

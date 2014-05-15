@@ -484,34 +484,33 @@ namespace CBinding
 			errorOutput = string.Empty;
 			int exitCode = -1;
 			
-			StringWriter swError = new StringWriter ();
-			LogTextWriter chainedError = new LogTextWriter ();
-			chainedError.ChainWriter (monitor.Log);
-			chainedError.ChainWriter (swError);
+			using (var swError = new StringWriter ()) {
+				using (var chainedError = new LogTextWriter ()) {
+					chainedError.ChainWriter (monitor.Log);
+					chainedError.ChainWriter (swError);
 			
-			monitor.Log.WriteLine ("{0} {1}", command, args);
+					monitor.Log.WriteLine ("{0} {1}", command, args);
 			
-			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
-			
-			try {
-				ProcessWrapper p = Runtime.ProcessService.StartProcess (command, args, baseDirectory, monitor.Log, chainedError, null);
-				operationMonitor.AddOperation (p); //handles cancellation
+					using (var operationMonitor = new AggregatedOperationMonitor (monitor)) {
+						using (ProcessWrapper p = Runtime.ProcessService.StartProcess (command, args, baseDirectory, monitor.Log, chainedError, null)) {
+							operationMonitor.AddOperation (p); //handles cancellation
 				
-				p.WaitForOutput ();
-				errorOutput = swError.ToString ();
-				exitCode = p.ExitCode;
-				p.Dispose ();
+							p.WaitForOutput ();
+							chainedError.UnchainWriter (monitor.Log);
+							chainedError.UnchainWriter (swError);
+
+							errorOutput = swError.ToString ();
+							exitCode = p.ExitCode;
 				
-				if (monitor.IsCancelRequested) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Build cancelled"));
-					monitor.ReportError (GettextCatalog.GetString ("Build cancelled"), null);
-					if (exitCode == 0)
-						exitCode = -1;
+							if (monitor.IsCancelRequested) {
+								monitor.Log.WriteLine (GettextCatalog.GetString ("Build cancelled"));
+								monitor.ReportError (GettextCatalog.GetString ("Build cancelled"), null);
+								if (exitCode == 0)
+									exitCode = -1;
+							}
+						}
+					}
 				}
-			} finally {
-				chainedError.Close ();
-				swError.Close ();
-				operationMonitor.Dispose ();
 			}
 			
 			return exitCode;

@@ -165,13 +165,38 @@ namespace MonoDevelop.SourceEditor
 				if (typeOfExpression != null && data.Symbol is ITypeSymbol)
 					return sig.GetTypeOfTooltip (typeOfExpression, (ITypeSymbol)data.Symbol);
 				
-				var parentKind = data.Token.Parent != null ? data.Token.Parent.CSharpKind () : SyntaxKind.None;
-				switch (parentKind) {
-					case SyntaxKind.ConstructorConstraint:
-					case SyntaxKind.ClassConstraint:
-					case SyntaxKind.StructConstraint:
-						return sig.GetConstraintTooltip (data.Token);
-				}
+//				var parentKind = data.Token.Parent != null ? data.Token.Parent.CSharpKind () : SyntaxKind.None;
+//				switch (parentKind) {
+//					case SyntaxKind.ConstructorConstraint:
+//					case SyntaxKind.ClassConstraint:
+//					case SyntaxKind.StructConstraint:
+//						return sig.GetConstraintTooltip (data.Token);
+//				}
+//
+//				if (data.Node is ThisReferenceExpression && result is ThisResolveResult) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					
+//					return sig.GetKeywordTooltip ("this", data.Node);
+//				}
+//				
+//				if (data.Node is TypeOfExpression) {
+//					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//					sig.BreakLineAfterReturnType = false;
+//					return sig.GetTypeOfTooltip ((TypeOfExpression)data.Node, result as TypeOfResolveResult);
+//				}
+//				if (data.Node is PrimitiveType && data.Node.Parent is Constraint) {
+//					var t = (PrimitiveType)data.Node;
+//					if (t.Keyword == "class" || t.Keyword == "new" || t.Keyword == "struct") {
+//						var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+//						var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+//						sig.BreakLineAfterReturnType = false;
+//						return sig.GetConstraintTooltip (t.Keyword);
+//					}
+//					return null;
+//				}
 				result = sig.GetKeywordTooltip (data.Token); 
 				if (result != null)
 					return result;
@@ -180,20 +205,20 @@ namespace MonoDevelop.SourceEditor
 					result = RoslynSymbolCompletionData.CreateTooltipInformation (doc, data.Symbol, false, createFooter);
 				}
 				
-				if (result == null && parentKind == SyntaxKind.IdentifierName) {
-					if (data.SymbolInfo.CandidateReason == CandidateReason.None) {
-						if (data.Token.Parent.Parent.CSharpKind () == SyntaxKind.SimpleMemberAccessExpression ||
-							data.Token.Parent.Parent.CSharpKind () == SyntaxKind.PointerMemberAccessExpression) {
-							var ma = (MemberAccessExpressionSyntax)data.Token.Parent.Parent;
-							return new TooltipInformation {
-								SignatureMarkup = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ma.Expression, ma.Name)
-							};
-						}
-						return new TooltipInformation {
-							SignatureMarkup = string.Format ("error CS0103: The name `{0}' does not exist in the current context", data.Token)
-						};
-					}
-				}
+//				if (result == null && parentKind == SyntaxKind.IdentifierName) {
+//					if (data.SymbolInfo.CandidateReason == CandidateReason.None) {
+//						if (data.Token.Parent.Parent.CSharpKind () == SyntaxKind.SimpleMemberAccessExpression ||
+//							data.Token.Parent.Parent.CSharpKind () == SyntaxKind.PointerMemberAccessExpression) {
+//							var ma = (MemberAccessExpressionSyntax)data.Token.Parent.Parent;
+//							return new TooltipInformation {
+//								SignatureMarkup = string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", ma.Expression, ma.Name)
+//							};
+//						}
+//						return new TooltipInformation {
+//							SignatureMarkup = string.Format ("error CS0103: The name `{0}' does not exist in the current context", data.Token)
+//						};
+//					}
+//				}
 				
 				return result;
 

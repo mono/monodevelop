@@ -107,12 +107,17 @@ namespace MonoDevelop.Projects
 
 		public ProjectReference (ReferenceType referenceType, string reference, string hintPath)
 		{
-			if (referenceType == ReferenceType.Assembly)
+			if (referenceType == ReferenceType.Assembly) {
 				specificVersion = false;
+				if (hintPath == null) {
+					hintPath = reference;
+					reference = Path.GetFileNameWithoutExtension (reference);
+				}
+			}
 
 			this.referenceType = referenceType;
-			this.reference     = reference;
-			this.hintPath = hintPath ?? (referenceType == ReferenceType.Assembly ? reference : null);
+			this.reference = reference;
+			this.hintPath = hintPath;
 			UpdatePackageReference ();
 		}
 		

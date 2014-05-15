@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			this.Category = IssueCategories.Notifications;
 			this.SetMimeType ("text/x-csharp");
 			this.IsEnabledByDefault = true;
-			this.SetSeverity (ICSharpCode.NRefactory.Refactoring.Severity.Error); 
+			this.SetSeverity (ICSharpCode.NRefactory.Refactoring.Severity.Warning); 
 			this.SetIsEnabled (true);
 		}
 

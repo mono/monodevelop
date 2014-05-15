@@ -8070,7 +8070,7 @@ msgstr "Izberi imenik"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:4
 msgid "Solution {0}"
-msgstr "Režitev {0}"
+msgstr "Rešitev {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ClassPad/SolutionNodeBuilder.cs:4
 msgid "Solution {0} (1 entry)"
