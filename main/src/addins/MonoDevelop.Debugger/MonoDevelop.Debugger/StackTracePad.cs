@@ -138,9 +138,17 @@ namespace MonoDevelop.Debugger
 			ShowAll ();
 			UpdateDisplay ();
 			
-			DebuggingService.CallStackChanged += DispatchService.GuiDispatch (new EventHandler (OnClassStackChanged));
-			DebuggingService.CurrentFrameChanged += DispatchService.GuiDispatch (new EventHandler (OnFrameChanged));
+			DebuggingService.CallStackChanged += OnClassStackChanged;
+			DebuggingService.CurrentFrameChanged += OnFrameChanged;
+			DebuggingService.StoppedEvent += OnDebuggingServiceStopped;
+
 			tree.RowActivated += OnRowActivated;
+		}
+
+		void OnDebuggingServiceStopped(object sender, EventArgs e)
+		{
+			if (store != null)
+				store.Clear();
 		}
 
 		static bool Search (TreeModel model, int column, string key, TreeIter iter)
@@ -391,6 +399,14 @@ namespace MonoDevelop.Debugger
 			clipboard.Text = txt.ToString ();
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
 			clipboard.Text = txt.ToString ();
-		}		
+		}
+
+		protected override void OnDestroyed ()
+		{
+			DebuggingService.CallStackChanged -= OnClassStackChanged;
+			DebuggingService.CurrentFrameChanged -= OnFrameChanged;
+			DebuggingService.StoppedEvent -= OnDebuggingServiceStopped;
+			base.OnDestroyed ();
+		}
 	}
 }

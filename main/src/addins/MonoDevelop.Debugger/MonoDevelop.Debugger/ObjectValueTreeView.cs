@@ -243,6 +243,10 @@ namespace MonoDevelop.Debugger
 			valueCol.RemoveNotification ("width", OnColumnWidthChanged);
 			expCol.RemoveNotification ("width", OnColumnWidthChanged);
 
+			values.Clear ();
+			valueNames.Clear ();
+			Frame = null;
+
 			disposed = true;
 			cancellationTokenSource.Cancel ();
 
