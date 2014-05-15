@@ -932,11 +932,20 @@ namespace MonoDevelop.Debugger
 		
 		static DebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
 		{
+			DebuggerEngine supportedEngine = null;
+
+			// Get the default engine for the command if available,
+			// or the first engine that supports the command otherwise
+
 			foreach (DebuggerEngine factory in GetDebuggerEngines ()) {
-				if (factory.CanDebugCommand (cmd))
-					return factory;
+				if (factory.CanDebugCommand (cmd)) {
+					if (factory.IsDefaultDebugger (cmd))
+						return factory;
+					if (supportedEngine == null)
+						supportedEngine = factory;
+				}
 			}
-			return null;
+			return supportedEngine;
 		}
 		
 		static void OnLineCountChanged (object ob, LineCountEventArgs a)
