@@ -38,25 +38,6 @@ namespace Jurassic.Compiler
         }
 
         /// <summary>
-        /// Evaluates the expression, if possible.
-        /// </summary>
-        /// <returns> The result of evaluating the expression, or <c>null</c> if the expression can
-        /// not be evaluated. </returns>
-        public override object Evaluate()
-        {
-            // Evaluate the operands.
-            var left = this.GetRawOperand(0).Evaluate();
-            if (left == null)
-                return null;
-            var right = this.GetRawOperand(1).Evaluate();
-            if (right == null)
-                return null;
-
-            // Return the last value.
-            return right;
-        }
-
-        /// <summary>
         /// Gets the type that results from evaluating this expression.
         /// </summary>
         public override PrimitiveType ResultType
@@ -65,27 +46,6 @@ namespace Jurassic.Compiler
             {
                 return this.GetOperand(1).ResultType;
             }
-        }
-
-        /// <summary>
-        /// Generates CIL for the expression.
-        /// </summary>
-        /// <param name="generator"> The generator to output the CIL to. </param>
-        /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        public override void GenerateCode(ILGenerator generator, OptimizationInfo optimizationInfo)
-        {
-            // Get an array of comma-delimited expressions.
-            var items = this.Items;
-
-            for (int i = 0; i < items.Count - 1; i++)
-            {
-                // Generate code for the item, evaluating the side-effects but not producing any values.
-                items[i].GenerateCode(generator, optimizationInfo); //.AddFlags(OptimizationFlags.SuppressReturnValue));
-                generator.Pop();
-            }
-
-            // Generate code for the last item and return the value.
-            items[items.Count - 1].GenerateCode(generator, optimizationInfo);
         }
 
         /// <summary>

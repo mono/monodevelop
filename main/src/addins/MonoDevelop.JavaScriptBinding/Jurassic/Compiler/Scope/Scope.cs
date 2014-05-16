@@ -40,10 +40,6 @@ namespace Jurassic.Compiler
             // true if the variable can be deleted.
             public bool Deletable;
 
-            // The storage container for the variable.
-            [NonSerialized]
-            public ILLocalVariable Store;
-
             // The statically-determined storage type for the variable.
             [NonSerialized]
             public PrimitiveType Type = PrimitiveType.Any;
@@ -214,110 +210,6 @@ namespace Jurassic.Compiler
         public void RemovedDeclaredVariable(string name)
         {
             this.variables.Remove(name);
-        }
-
-        /// <summary>
-        /// Returns <c>true</c> if the given variable exists in this scope.
-        /// </summary>
-        /// <param name="variableName"> The name of the variable to check. </param>
-        /// <returns> <c>true</c> if the given variable exists in this scope; <c>false</c>
-        /// otherwise. </returns>
-        public abstract bool HasValue(string variableName);
-
-        /// <summary>
-        /// Returns the value of the given variable.
-        /// </summary>
-        /// <param name="variableName"> The name of the variable. </param>
-        /// <returns> The value of the given variable, or <c>null</c> if the variable doesn't exist
-        /// in the scope. </returns>
-        public abstract object GetValue(string variableName);
-
-        /// <summary>
-        /// Sets the value of the given variable.
-        /// </summary>
-        /// <param name="variableName"> The name of the variable. </param>
-        /// <param name="value"> The new value of the variable. </param>
-        public abstract void SetValue(string variableName, object value);
-
-        /// <summary>
-        /// Deletes the variable from the scope.
-        /// </summary>
-        /// <param name="variableName"> The name of the variable. </param>
-        public abstract bool Delete(string variableName);
-
-        /// <summary>
-        /// Generates code that creates a new scope.
-        /// </summary>
-        /// <param name="generator"> The generator to output the CIL to. </param>
-        /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        public abstract void GenerateScopeCreation(ILGenerator generator, OptimizationInfo optimizationInfo);
-
-        /// <summary>
-        /// Generates code that initializes the variable and function declarations.
-        /// </summary>
-        /// <param name="generator"> The generator to output the CIL to. </param>
-        /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        public virtual void GenerateDeclarations(ILGenerator generator, OptimizationInfo optimizationInfo)
-        {
-            // Initialize the declared variables and functions.
-            foreach (var variable in this.variables.Values)
-            {
-                // When a scope is reused, i.e. with an eval(), do not reinitialize the variables.
-                if (variable.Initialized == true)
-                    continue;
-
-                if (variable.ValueAtTopOfScope != null)
-                {
-                    // Emit the initialization code.
-                    if (this is ObjectScope)
-                    {
-                        // Determine the property attributes.
-                        var attributes = Library.PropertyAttributes.Enumerable;
-                        if (variable.Writable == true)
-                            attributes |= Library.PropertyAttributes.Writable;
-                        if (variable.Deletable == true)
-                            attributes |= Library.PropertyAttributes.Configurable;
-
-                        // bool DefineProperty(string propertyName, PropertyDescriptor descriptor, bool throwOnError)
-                        EmitHelpers.LoadScope(generator);
-                        generator.CastClass(typeof(ObjectScope));
-                        generator.Call(ReflectionHelpers.ObjectScope_ScopeObject);
-                        generator.LoadString(variable.Name);
-                        variable.ValueAtTopOfScope.GenerateCode(generator, optimizationInfo);
-                        EmitConversion.Convert(generator, variable.ValueAtTopOfScope.ResultType, PrimitiveType.Any, optimizationInfo);
-                        generator.LoadInt32((int)attributes);
-                        generator.NewObject(ReflectionHelpers.PropertyDescriptor_Constructor2);
-                        generator.LoadBoolean(false);
-                        generator.Call(ReflectionHelpers.ObjectInstance_DefineProperty);
-                        generator.Pop();
-                    }
-                    else
-                    {
-                        variable.ValueAtTopOfScope.GenerateCode(generator, optimizationInfo);
-                        var name = new NameExpression(this, variable.Name);
-                        name.GenerateSet(generator, optimizationInfo, variable.ValueAtTopOfScope.ResultType, false);
-                    }
-
-                    // Mark the variable as having been initialized.
-                    variable.Initialized = true;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Generates code that restores the parent scope as the active scope.
-        /// </summary>
-        /// <param name="generator"> The generator to output the CIL to. </param>
-        /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        public void GenerateScopeDestruction(ILGenerator generator, OptimizationInfo optimizationInfo)
-        {
-            if (this.ExistsAtRuntime == false)
-                return;
-
-            // Modify the scope variable so it points at the parent scope.
-            EmitHelpers.LoadScope(generator);
-            generator.Call(ReflectionHelpers.Scope_ParentScope);
-            EmitHelpers.StoreScope(generator);
         }
     }
 

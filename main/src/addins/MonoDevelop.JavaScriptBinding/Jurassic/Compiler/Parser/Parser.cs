@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Jurassic.Library;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.JavaScript.Factories;
@@ -1335,7 +1334,7 @@ namespace Jurassic.Compiler
             // Create a new function expression.
             var options = this.options.Clone();
             options.ForceStrictMode = functionParser.StrictMode;
-            var context = new FunctionMethodGenerator(this.engine, scope, functionName,
+            var context = new FunctionMethodGenerator(this.engine, functionName,
                 includeNameInScope, argumentNames,
                 bodyTextBuilder.ToString(0, bodyTextBuilder.Length - 1), body,
                 this.SourcePath, options);

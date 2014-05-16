@@ -26,10 +26,5 @@ namespace Jurassic.Compiler
         {
             throw new NotImplementedException();
         }
-
-        public override void GenerateCode(ILGenerator generator, OptimizationInfo optimizationInfo)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

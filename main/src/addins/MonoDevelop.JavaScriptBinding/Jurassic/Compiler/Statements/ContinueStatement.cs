@@ -29,26 +29,6 @@ namespace Jurassic.Compiler
         }
 
         /// <summary>
-        /// Generates CIL for the statement.
-        /// </summary>
-        /// <param name="generator"> The generator to output the CIL to. </param>
-        /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        public override void GenerateCode(ILGenerator generator, OptimizationInfo optimizationInfo)
-        {
-            // Generate code for the start of the statement.
-            var statementLocals = new StatementLocals();
-            GenerateStartOfStatement(generator, optimizationInfo, statementLocals);
-
-            // Emit an unconditional branch.
-            // Note: the continue statement might be branching from inside a try { } or finally { }
-            // block to outside.  EmitLongJump() handles this.
-            optimizationInfo.EmitLongJump(generator, optimizationInfo.GetContinueTarget(this.Label));
-
-            // Generate code for the end of the statement.
-            GenerateEndOfStatement(generator, optimizationInfo, statementLocals);
-        }
-
-        /// <summary>
         /// Converts the statement to a string.
         /// </summary>
         /// <param name="indentLevel"> The number of tabs to include before the statement. </param>

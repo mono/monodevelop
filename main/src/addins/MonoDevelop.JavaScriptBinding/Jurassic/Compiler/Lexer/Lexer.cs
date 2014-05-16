@@ -340,30 +340,6 @@ namespace Jurassic.Compiler
         }
 
         /// <summary>
-        /// Reads an integer value.
-        /// </summary>
-        /// <param name="initialValue"> The initial value, derived from the first character. </param>
-        /// <param name="digitsRead"> The number of digits that were read from the stream. </param>
-        /// <returns> The numeric value, or <c>double.NaN</c> if no number was present. </returns>
-        private double ReadInteger(double initialValue, out int digitsRead)
-        {
-            double result = initialValue;
-            digitsRead = 0;
-
-            while (true)
-            {
-                int c = this.reader.Peek();
-                if (c < '0' || c > '9')
-                    break;
-                ReadNextChar();
-                digitsRead++;
-                result = result * 10 + (c - '0');
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Reads a string literal.
         /// </summary>
         /// <param name="firstChar"> The first character of the string literal. </param>

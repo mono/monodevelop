@@ -29,27 +29,6 @@ namespace Jurassic.Compiler
         }
 
         /// <summary>
-        /// Generates CIL for the statement.
-        /// </summary>
-        /// <param name="generator"> The generator to output the CIL to. </param>
-        /// <param name="optimizationInfo"> Information about any optimizations that should be performed. </param>
-        public override void GenerateCode(ILGenerator generator, OptimizationInfo optimizationInfo)
-        {
-            // Generate code for the start of the statement.
-            var statementLocals = new StatementLocals() { NonDefaultSourceSpanBehavior = true };
-            GenerateStartOfStatement(generator, optimizationInfo, statementLocals);
-
-            foreach (var statement in this.Statements)
-            {
-                // Generate code for the statement.
-                statement.GenerateCode(generator, optimizationInfo);
-            }
-
-            // Generate code for the end of the statement.
-            GenerateEndOfStatement(generator, optimizationInfo, statementLocals);
-        }
-
-        /// <summary>
         /// Gets an enumerable list of child nodes in the abstract syntax tree.
         /// </summary>
         public override IEnumerable<JSAstNode> ChildNodes
