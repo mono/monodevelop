@@ -43,9 +43,16 @@ namespace MonoDevelop.Platform.Windows
 			if (uri == null)
 				throw new ArgumentNullException ("uri");
 
-			var form = new PlaceholderForm (credentialType, uri, null);
-			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
-			return result ? new NetworkCredential (form.Username, form.Password, form.Domain) : null;
+			NetworkCredential credential = null;
+
+			DispatchService.GuiSyncDispatch (() => {
+				var form = new PlaceholderForm (credentialType, uri, null);
+				var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
+				if (result)
+					credential = new NetworkCredential (form.Username, form.Password, form.Domain);
+			});
+
+			return credential;
 		}
 	}
 
