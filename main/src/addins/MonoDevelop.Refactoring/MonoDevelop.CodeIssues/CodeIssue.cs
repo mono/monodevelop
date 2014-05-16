@@ -66,7 +66,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Gets or sets the code actions to solve the issue.
 		/// </summary>
-		public IEnumerable<MonoDevelop.CodeActions.CodeAction> Actions {
+		public IEnumerable<object> Actions {
 			get;
 			private set;
 		}
@@ -87,14 +87,14 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
-		public CodeIssue (IssueMarker issueMarker, string description, string fileName, DocumentLocation start, DocumentLocation end, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null) : this (issueMarker, description, new DomRegion (fileName, start, end), inspectorIdString, actions)
+		public CodeIssue (IssueMarker issueMarker, string description, string fileName, DocumentLocation start, DocumentLocation end, string inspectorIdString, IEnumerable<object>  actions = null) : this (issueMarker, description, new DomRegion (fileName, start, end), inspectorIdString, actions)
 		{
 		}
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MonoDevelop.CodeIssues.CodeIssue"/> class.
 		/// </summary>
-		public CodeIssue (IssueMarker issueMarker, string description, DomRegion region, string inspectorIdString, IEnumerable<MonoDevelop.CodeActions.CodeAction>  actions = null)
+		public CodeIssue (IssueMarker issueMarker, string description, DomRegion region, string inspectorIdString, IEnumerable<object>  actions = null)
 		{
 			IssueMarker = issueMarker;
 			Description = description;

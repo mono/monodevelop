@@ -48,6 +48,7 @@ using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CodeActions
 {
@@ -75,6 +76,7 @@ namespace MonoDevelop.CodeActions
 
 		void CancelSmartTagPopupTimeout ()
 		{
+
 			if (smartTagPopupTimeoutId != 0) {
 				GLib.Source.Remove (smartTagPopupTimeoutId);
 				smartTagPopupTimeoutId = 0;
@@ -435,10 +437,10 @@ namespace MonoDevelop.CodeActions
 
 			public void Run (object sender, EventArgs e)
 			{
-				var context = document.ParsedDocument.CreateRefactoringContext (document, CancellationToken.None);
-				foreach (var op in act.GetOperationsAsync (default(CancellationToken)).Result) {
-					op.Apply (RoslynTypeSystemService.Workspace, default(CancellationToken)); 
-				}
+//				var context = document.ParsedDocument.CreateRefactoringContext (document, CancellationToken.None);
+//				foreach (var op in act.GetOperationsAsync (default(CancellationToken)).Result) {
+//					op.Apply (RoslynTypeSystemService.Workspace, default(CancellationToken)); 
+//				}
 			}
 
 			public void BatchRun (object sender, EventArgs e)

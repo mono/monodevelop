@@ -117,16 +117,16 @@ namespace MonoDevelop.AnalysisCore
 				action.Fix (); 
 				return;
 			}
-			var ca = dataItem as CodeAction;
-			if (ca != null) {
-				var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
-
-				var context = doc.ParsedDocument.CreateRefactoringContext != null ? doc.ParsedDocument.CreateRefactoringContext (doc, default(CancellationToken)) : null;
-				using (var script = context.CreateScript ()) {
-					ca.Run (context, script);
-				}
-				return;
-			}
+//			var ca = dataItem as CodeAction;
+//			if (ca != null) {
+//				var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+//
+//				var context = doc.ParsedDocument.CreateRefactoringContext != null ? doc.ParsedDocument.CreateRefactoringContext (doc, default(CancellationToken)) : null;
+//				using (var script = context.CreateScript ()) {
+//					ca.Run (context, script);
+//				}
+//				return;
+//			}
 
 
 		}
@@ -322,18 +322,17 @@ namespace MonoDevelop.AnalysisCore
 					sw.WriteLine ("</table>");
 				}
 
-				Dictionary<CodeActionProvider, bool> providerStates = new Dictionary<CodeActionProvider, bool> ();
+				var providerStates = new Dictionary<CodeActionDescriptor, bool> ();
 				string disabledNodes = PropertyService.Get ("ContextActions." + lang, "");
-				foreach (var node in RefactoringService.ContextAddinNodes.Where (n => n.MimeType == lang)) {
+				foreach (var node in CodeActionService.GetCodeActions ()) {
 					providerStates [node] = disabledNodes.IndexOf (node.IdString, StringComparison.Ordinal) < 0;
 				}
 
 				sw.WriteLine ("<h1>Code Actions</h1>");
 				sw.WriteLine ("<table border='1'>");
-				var sortedAndFiltered = providerStates.Keys.OrderBy (n => n.Title, StringComparer.Ordinal);
+				var sortedAndFiltered = providerStates.Keys.OrderBy (n => n.Name, StringComparer.Ordinal);
 				foreach (var node in sortedAndFiltered) {
-					var desc = node.Title != node.Description ? node.Description : "";
-					sw.WriteLine ("<tr><td>" + node.Title + "</td><td>" + desc + "</td></tr>");
+					sw.WriteLine ("<tr><td>" + node.IdString + "</td><td>" + node.Name + "</td></tr>");
 				}
 				sw.WriteLine ("</table>");
 			}

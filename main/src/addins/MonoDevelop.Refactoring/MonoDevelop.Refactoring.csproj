@@ -114,21 +114,15 @@
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssue.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeAction.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeActionProvider.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeActionAddinNode.cs" />
     <Compile Include="MonoDevelop.CodeActions\CodeActionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CodeActions\AnalysisCodeAction.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
-    <Compile Include="MonoDevelop.CodeActions\ICodeActionProviderSource.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ICodeIssueProviderSource.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisRunner.cs" />
     <Compile Include="MonoDevelop.CodeIssues\DefaultCodeIssueCategories.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueAddinNode.cs" />
     <Compile Include="MonoDevelop.Refactoring\ResolveCommandHandler.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssuePad.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IssueSummary.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IssueGroup.cs" />
@@ -143,33 +137,20 @@
     <Compile Include="MonoDevelop.CodeIssues\SeverityGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AnalysisState.cs" />
     <Compile Include="MonoDevelop.CodeIssues\AnalysisStateChangeEventArgs.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisBatchRunner.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IIssueTreeNode.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IIssueSummarySink.cs" />
     <Compile Include="MonoDevelop.CodeIssues\IssueTreeNodeEventArgs.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ActionSummary.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\BatchFixer.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IssueMatch.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\ExactIssueMatcher.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\IActionMatcher.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedSymbolsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindExtensionMethodHandler.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\IAnalysisJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\AnalysisJobQueue.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\CodeIssueEventArgs.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\SolutionAnalysisJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\SimpleAnalysisJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\ProgressMonitorWrapperJob.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\JobContext.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\IJobContext.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\JobSlice.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\Runner\JobStatus.cs" />
     <Compile Include="MonoDevelop.CodeIssues\ProjectGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\FileGroupingProvider.cs" />
     <Compile Include="MonoDevelop.CodeIssues\DiagnosticResult.cs" />
     <Compile Include="MonoDevelop.Refactoring\GotoBaseDeclarationHandler.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionService.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionDescriptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
@@ -239,11 +220,6 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
       <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
       <Name>MonoDevelop.Debugger</Name>
@@ -282,5 +258,21 @@
     <None Include="MonoDevelop.Refactoring\QuickFixHandler.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.OverridesImplementsDialog.cs" />
     <None Include="gtk-gui\MonoDevelop.Refactoring.EncapsulateFieldDialog.cs" />
+    <None Include="MonoDevelop.CodeIssues\CodeAnalysisBatchRunner.cs" />
+    <None Include="MonoDevelop.CodeIssues\BatchFixer.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\IAnalysisJob.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\AnalysisJobQueue.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\CodeIssueEventArgs.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\SimpleAnalysisJob.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\ProgressMonitorWrapperJob.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\JobContext.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\IJobContext.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\JobSlice.cs" />
+    <None Include="MonoDevelop.CodeIssues\Runner\JobStatus.cs" />
+    <None Include="MonoDevelop.CodeIssues\SolutionAnalysisJob.cs" />
+    <None Include="MonoDevelop.CodeIssues\IssueMatch.cs" />
+    <None Include="MonoDevelop.CodeIssues\ExactIssueMatcher.cs" />
+    <None Include="MonoDevelop.CodeIssues\IActionMatcher.cs" />
+    <None Include="MonoDevelop.CodeIssues\CodeIssuePad.cs" />
   </ItemGroup>
 </Project>

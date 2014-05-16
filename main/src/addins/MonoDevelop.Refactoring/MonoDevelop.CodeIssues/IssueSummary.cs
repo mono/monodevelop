@@ -53,10 +53,10 @@ namespace MonoDevelop.CodeIssues
 				InspectorIdString = codeIssue.InspectorIdString
 			};
 			issueSummary.Actions = codeIssue.Actions.Select (a => new ActionSummary {
-				Batchable = a.SupportsBatchRunning,
-				SiblingKey = a.SiblingKey,
-				Title = a.Title,
-				Region = a.DocumentRegion,
+//				Batchable = a.SupportsBatchRunning,
+//				SiblingKey = a.SiblingKey,
+//				Title = a.,
+//				Region = a.DocumentRegion,
 				IssueSummary = issueSummary
 			}).ToList ();
 			return issueSummary;

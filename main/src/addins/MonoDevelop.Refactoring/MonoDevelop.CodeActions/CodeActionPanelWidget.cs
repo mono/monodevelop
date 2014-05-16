@@ -54,13 +54,13 @@ namespace MonoDevelop.CodeActions
 	{
 		readonly string mimeType;
 		
-		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeActionProvider), typeof(string));
-		readonly Dictionary<CodeActionProvider, bool> providerStates = new Dictionary<CodeActionProvider, bool> ();
+		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeActionDescriptor));
+		readonly Dictionary<CodeActionDescriptor, bool> providerStates = new Dictionary<CodeActionDescriptor, bool> ();
 
 		void GetAllProviderStates ()
 		{
 			string disabledNodes = PropertyService.Get ("ContextActions." + mimeType, "");
-			foreach (var node in RefactoringService.ContextAddinNodes.Where (n => n.MimeType == mimeType)) {
+			foreach (var node in CodeActionService.GetCodeActions (mimeType)) {
 				providerStates [node] = disabledNodes.IndexOf (node.IdString, StringComparison.Ordinal) < 0;
 			}
 		}
@@ -94,7 +94,7 @@ namespace MonoDevelop.CodeActions
 				TreeIter iter;
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
-				var provider = (CodeActionProvider)treeStore.GetValue (iter, 2);
+				var provider = (CodeActionDescriptor)treeStore.GetValue (iter, 2);
 				providerStates [provider] = !providerStates [provider];
 				treeStore.SetValue (iter, 1, providerStates [provider]);
 			};
@@ -125,12 +125,12 @@ namespace MonoDevelop.CodeActions
 		{
 			treeStore.Clear ();
 			var sortedAndFiltered = providerStates.Keys
-				.Where (node => string.IsNullOrEmpty (filter) || node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0)
-				.OrderBy (n => n.Title, StringComparer.Ordinal);
+				.Where (node => string.IsNullOrEmpty (filter) || node.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0)
+				.OrderBy (n => n.Name, StringComparer.Ordinal);
 			foreach (var node in sortedAndFiltered) {
-				var title = node.Title;
+				var title = node.Name;
 				MonoDevelop.CodeIssues.CodeIssuePanelWidget.MarkupSearchResult (filter, ref title);
-				treeStore.AppendValues (title, providerStates [node], node, node.Description);
+				treeStore.AppendValues (title, providerStates [node], node);
 			}
 		}
 

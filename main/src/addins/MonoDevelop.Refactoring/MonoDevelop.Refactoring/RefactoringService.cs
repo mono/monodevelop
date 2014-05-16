@@ -48,19 +48,7 @@ namespace MonoDevelop.Refactoring
 	public static class RefactoringService
 	{
 		//static readonly List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static readonly List<CodeActionProvider> contextActions = new List<CodeActionProvider> ();
 		static readonly List<CodeIssueProvider> inspectors = new List<CodeIssueProvider> ();
-		
-		public static IEnumerable<CodeActionProvider> ContextAddinNodes {
-			get {
-				return contextActions;
-			}
-		} 
-
-		public static void AddProvider (CodeActionProvider provider)
-		{
-			contextActions.Add (provider);
-		}
 		
 		public static void AddProvider (CodeIssueProvider provider)
 		{
@@ -86,25 +74,6 @@ namespace MonoDevelop.Refactoring
 //				}
 //			});
 
-			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeActions", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					contextActions.Add (((CodeActionAddinNode)args.ExtensionNode).Action);
-					break;
-				case ExtensionChange.Remove:
-					contextActions.Remove (((CodeActionAddinNode)args.ExtensionNode).Action);
-					break;
-				}
-			});
-			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeActionSource", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					contextActions.AddRange (((ICodeActionProviderSource)args.ExtensionObject).GetProviders ());
-					break;
-				}
-			});
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssues", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
@@ -193,103 +162,33 @@ namespace MonoDevelop.Refactoring
 			return inspectors.Where (i => i.MimeType == mimeType);
 		}
 
-		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
-		{
-			var editor = doc.Editor;
-			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
-			return Task.Factory.StartNew (delegate {
-				var result = new List<CodeAction> ();
-				var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
-				timer.BeginTiming ();
-				try {
-					var parsedDocument = doc.ParsedDocument;
-					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
-						var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
-						if (ctx != null) {
-							foreach (var provider in contextActions.Where (fix =>
-								fix.MimeType == editor.MimeType &&
-								disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
-							{
-								try {
-									result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
-								} catch (Exception ex) {
-									LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
-								}
-							}
-						}
-					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error in analysis service", ex);
-				} finally {
-					timer.EndTiming ();
-				}
-				return (IEnumerable<CodeAction>)result;
-			}, cancellationToken);
-		}
-
-		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
-		{
-			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
-			var issues = ext != null ? ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
-
-			ThreadPool.QueueUserWorkItem (delegate {
-				try {
-					var result = new List<CodeAction> ();
-					foreach (var r in issues) {
-						if (token.IsCancellationRequested)
-							return;
-						var fresult = r as FixableResult;
-						if (fresult == null)
-							continue;
-//						foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
-//							result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r) {
-//								DocumentRegion = action.DocumentRegion
-//							});
-//						}
-					}
-					result.AddRange (GetValidActions (doc, loc).Result);
-					callback (result);
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error in analysis service", ex);
-				}
-			});
-		}	
-
-		public static IList<CodeAction> ApplyFixes (IEnumerable<CodeAction> fixes, IRefactoringContext refactoringContext)
-		{
-			if (fixes == null)
-				throw new ArgumentNullException ("fixes");
-			if (refactoringContext == null)
-				throw new ArgumentNullException ("refactoringContext");
-			var allFixes = fixes as IList<CodeAction> ?? fixes.ToArray ();
-			if (allFixes.Count == 0)
-				return new List<CodeAction> ();
-				
-			var scriptProvider = refactoringContext as IRefactoringContext;
-			if (scriptProvider == null) {
-				return RunAll (allFixes, refactoringContext, null);
-			}
-			using (var script = scriptProvider.CreateScript ()) {
-				return RunAll (allFixes, refactoringContext, script);
-			}
-		}
-		
-		public static void ApplyFix (CodeAction action, IRefactoringContext context)
-		{
-			using(var script = context.CreateScript ()) {
-				action.Run (context, script);
-			}
-		}
-
-		static List<CodeAction> RunAll (IEnumerable<CodeAction> allFixes, IRefactoringContext refactoringContext, object script)
-		{
-			var appliedFixes = new List<CodeAction> ();
-			foreach (var fix in allFixes) {
-				fix.Run (refactoringContext, script);
-				appliedFixes.Add (fix);
-			}
-			return appliedFixes;
-		}
+//		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
+//		{
+//			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
+//			var issues = ext != null ? ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
+//
+//			ThreadPool.QueueUserWorkItem (delegate {
+//				try {
+//					var result = new List<CodeAction> ();
+//					foreach (var r in issues) {
+//						if (token.IsCancellationRequested)
+//							return;
+//						var fresult = r as FixableResult;
+//						if (fresult == null)
+//							continue;
+////						foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
+////							result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r) {
+////								DocumentRegion = action.DocumentRegion
+////							});
+////						}
+//					}
+//					result.AddRange (GetValidActions (doc, loc).Result);
+//					callback (result);
+//				} catch (Exception ex) {
+//					LoggingService.LogError ("Error in analysis service", ex);
+//				}
+//			});
+//		}	
 
 		public static DocumentLocation GetCorrectResolveLocation (Document doc, DocumentLocation location)
 		{
@@ -311,7 +210,7 @@ namespace MonoDevelop.Refactoring
 			return location;
 		}
 
-		static readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
+		//static readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();
 
 		/// <summary>
 		/// Queues a code analysis job.
@@ -320,11 +219,12 @@ namespace MonoDevelop.Refactoring
 		/// <param name="progressMessage">
 		/// The message used for a progress monitor, or null if no progress monitor should be used.
 		/// </param>
-		public static IJobContext QueueCodeIssueAnalysis(IAnalysisJob job, string progressMessage = null)
-		{
-			if (progressMessage != null)
-				job = new ProgressMonitorWrapperJob (job, progressMessage);
-			return runner.QueueJob (job);
-		}
+//		public static IJobContext QueueCodeIssueAnalysis(IAnalysisJob job, string progressMessage = null)
+//		{
+//			if (progressMessage != null)
+//				job = new ProgressMonitorWrapperJob (job, progressMessage);
+//			return runner.QueueJob (job);
+//			return null;
+//		}
 	}
 }

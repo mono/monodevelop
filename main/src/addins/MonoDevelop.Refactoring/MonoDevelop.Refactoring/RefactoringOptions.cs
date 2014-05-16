@@ -28,17 +28,10 @@ using MonoDevelop.Ide.Gui;
  
 using System.Text;
 using MonoDevelop.Projects.Text;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
-using System.Collections.Generic;
-using System.Linq;
-using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using System.Threading;
@@ -49,8 +42,6 @@ namespace MonoDevelop.Refactoring
 {
 	public class RefactoringOptions
 	{
-		readonly CSharpAstResolver resolver;
-
 		public Document Document {
 			get;
 			private set;
@@ -106,20 +97,7 @@ namespace MonoDevelop.Refactoring
 			}
 			return result.ToString ();
 		}
-		
-		public string OutputNode (AstNode node)
-		{
-			using (var stringWriter = new System.IO.StringWriter ()) {
-				var formatter = new TextWriterTokenWriter (stringWriter);
-//				formatter.Indentation = indentLevel;
-				stringWriter.NewLine = Document.Editor.EolMarker;
-				
-				var visitor = new CSharpOutputVisitor (formatter, FormattingOptionsFactory.CreateMono ());
-				node.AcceptVisitor (visitor);
-				return stringWriter.ToString ();
-			}
-		}
-		
+
 		public CodeGenerator CreateCodeGenerator ()
 		{
 			var result = CodeGenerator.CreateGenerator (Document);
@@ -128,11 +106,6 @@ namespace MonoDevelop.Refactoring
 			return result;
 		}
 		
-		public static string GetIndent (Document document, IEntity member)
-		{
-			return GetWhitespaces (document, document.Editor.Document.LocationToOffset (member.Region.BeginLine, 1));
-		}
-
 		public static string GetIndent (Document document, Microsoft.CodeAnalysis.SyntaxNode member)
 		{
 			return GetWhitespaces (document, member.SpanStart);

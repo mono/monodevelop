@@ -27,13 +27,10 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
-using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Refactoring.Rename;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.Semantics;
-using Mono.TextEditor;
 using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.AnalysisCore.Fixes

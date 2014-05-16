@@ -39,11 +39,12 @@ namespace MonoDevelop.Refactoring
 	{
 		public static bool CanFindExtensionMethods (ISymbol declaredSymbol, out string description)
 		{
-			var tr  = new ICSharpCode.NRefactory.CSharp.CSharpParser ().ParseTypeReference ("global::Thing<int>.Done<string>") as MemberType;
-			Console.WriteLine (tr.Target);
-			
+//			var tr  = new ICSharpCode.NRefactory.CSharp.CSharpParser ().ParseTypeReference ("global::Thing<int>.Done<string>") as MemberType;
+//			Console.WriteLine (tr.Target);
+//			
 			description = GettextCatalog.GetString ("Find Extension Methods");
-			return declaredSymbol.Kind == SymbolKind.NamedType;
+//			return declaredSymbol.Kind == SymbolKind.NamedType;
+			return false;
 		}
 
 		public static void FindExtensionMethods (ISymbol declaredSymbol)
