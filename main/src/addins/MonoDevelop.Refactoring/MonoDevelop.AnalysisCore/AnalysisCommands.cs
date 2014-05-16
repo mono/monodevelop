@@ -323,9 +323,8 @@ namespace MonoDevelop.AnalysisCore
 				}
 
 				var providerStates = new Dictionary<CodeActionDescriptor, bool> ();
-				string disabledNodes = PropertyService.Get ("ContextActions." + lang, "");
-				foreach (var node in CodeActionService.GetCodeActions ()) {
-					providerStates [node] = disabledNodes.IndexOf (node.IdString, StringComparison.Ordinal) < 0;
+				foreach (var node in CodeActionService.GetCodeActions (CodeActionService.MimeTypeToLanguage(lang), true)) {
+					providerStates [node] = node.IsEnabled;
 				}
 
 				sw.WriteLine ("<h1>Code Actions</h1>");

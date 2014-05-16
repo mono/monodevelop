@@ -59,9 +59,9 @@ namespace MonoDevelop.CodeActions
 
 		void GetAllProviderStates ()
 		{
-			string disabledNodes = PropertyService.Get ("ContextActions." + mimeType, "");
-			foreach (var node in CodeActionService.GetCodeActions (mimeType)) {
-				providerStates [node] = disabledNodes.IndexOf (node.IdString, StringComparison.Ordinal) < 0;
+			var language = CodeActionService.MimeTypeToLanguage (mimeType);
+			foreach (var node in CodeActionService.GetCodeActions (language, true)) {
+				providerStates [node] = node.IsEnabled;
 			}
 		}
 
@@ -136,15 +136,9 @@ namespace MonoDevelop.CodeActions
 
 		public void ApplyChanges ()
 		{
-			var sb = new StringBuilder ();
 			foreach (var kv in providerStates) {
-				if (kv.Value)
-					continue;
-				if (sb.Length > 0)
-					sb.Append (",");
-				sb.Append (kv.Key.IdString);
+				kv.Key.IsEnabled = kv.Value;
 			}
-			PropertyService.Set ("ContextActions." + mimeType, sb.ToString ());
 		}
 	}
 }

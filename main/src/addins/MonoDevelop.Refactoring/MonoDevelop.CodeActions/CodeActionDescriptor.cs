@@ -26,31 +26,66 @@
 
 using System;
 using Microsoft.CodeAnalysis.CodeRefactorings;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeActions
 {
+	/// <summary>
+	/// This class wraps a roslyn <see cref="ICodeRefactoringProvider"/> and adds required meta data to it.
+	/// </summary>
 	class CodeActionDescriptor
 	{
 		readonly Type codeActionType;
 		ICodeRefactoringProvider instance;
 
-		public string IdString {
+		/// <summary>
+		/// Gets the identifier string.
+		/// </summary>
+		internal string IdString {
 			get {
 				return codeActionType.FullName;
 			}
 		}
 
+		/// <summary>
+		/// Gets the display name for this action.
+		/// </summary>
 		public string Name { get; private set; }
 
+		/// <summary>
+		/// Gets the language for this action.
+		/// </summary>
 		public string Language { get; private set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this code action is enabled by the user.
+		/// </summary>
+		/// <value><c>true</c> if this code action is enabled; otherwise, <c>false</c>.</value>
+		public bool IsEnabled {
+			get {
+				return PropertyService.Get ("ContextActions." + Language + "." + IdString, true);
+			}
+			set {
+				PropertyService.Set ("ContextActions." + Language + "." + IdString, value);
+			}
+		}
 
 		internal CodeActionDescriptor (string name, string language, Type codeActionType)
 		{
+			if (string.IsNullOrEmpty (name))
+				throw new ArgumentNullException ("name");
+			if (string.IsNullOrEmpty (language))
+				throw new ArgumentNullException ("language");
+			if (codeActionType == null)
+				throw new ArgumentNullException ("codeActionType");
 			Name = name;
 			Language = language;
 			this.codeActionType = codeActionType;
 		}
 
+		/// <summary>
+		/// Gets the roslyn code action provider.
+		/// </summary>
 		public ICodeRefactoringProvider GetProvider ()
 		{
 			if (instance == null)

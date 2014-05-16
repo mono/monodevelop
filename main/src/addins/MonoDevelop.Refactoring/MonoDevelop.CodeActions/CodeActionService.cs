@@ -50,11 +50,11 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		public static IEnumerable<CodeActionDescriptor> GetCodeActions (string language = null)
+		public static IEnumerable<CodeActionDescriptor> GetCodeActions (string language, bool includeDisabledNodes = false)
 		{
 			if (string.IsNullOrEmpty (language))
-				return codeActions;
-			return codeActions.Where (ca => ca.Language == language);
+				return includeDisabledNodes ? codeActions : codeActions.Where (act => act.IsEnabled);
+			return includeDisabledNodes ? codeActions.Where (ca => ca.Language == language) : codeActions.Where (ca => ca.Language == language && ca.IsEnabled);
 		}
 
 		public static async Task<IEnumerable<CodeAction>> GetValidActions (MonoDevelop.Ide.Gui.Document doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
@@ -62,7 +62,7 @@ namespace MonoDevelop.CodeActions
 			var analysisDocument = doc.AnalysisDocument;
 			var actions = new List<CodeAction> ();
 
-			foreach (var provider in GetCodeActions (LanguageNames.CSharp).Select (desc => desc.GetProvider ())) {
+			foreach (var provider in GetCodeActions (CodeActionService.MimeTypeToLanguage(doc.Editor.MimeType)).Select (desc => desc.GetProvider ())) {
 				var refactorings = await provider.GetRefactoringsAsync (analysisDocument, span, cancellationToken);
 				if (refactorings != null)
 					actions.AddRange (refactorings);
@@ -74,5 +74,14 @@ namespace MonoDevelop.CodeActions
 //
 //
 //		Task<IEnumerable<CodeAction>> GetRefactoringsAsync (Document document, TextSpan span, CancellationToken cancellationToken);
+
+		public static string MimeTypeToLanguage (string mimeType)
+		{
+			switch (mimeType) {
+			case "text/x-csharp":
+				return LanguageNames.CSharp;
+			}
+			return null;
+		}
 	}
 }
