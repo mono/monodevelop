@@ -49,6 +49,8 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
+using Microsoft.CodeAnalysis.CodeActions;
+using ICSharpCode.NRefactory6.CSharp.Refactoring;
 
 namespace MonoDevelop.CodeActions
 {
@@ -61,7 +63,7 @@ namespace MonoDevelop.CodeActions
 		uint menuCloseTimeoutId;
 		Menu codeActionMenu;
 
-		public IEnumerable<Microsoft.CodeAnalysis.CodeActions.CodeAction> Fixes {
+		public IEnumerable<CodeAction> Fixes {
 			get;
 			private set;
 		}
@@ -156,6 +158,11 @@ namespace MonoDevelop.CodeActions
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Document.Editor.Caret.Offset;
 					var ad = Document.AnalysisDocument;
+					TextSpan span;
+					if (Document.Editor.IsSomethingSelected)
+						span = TextSpan.FromBounds (document.Editor.SelectionRange.Offset, document.Editor.SelectionRange.EndOffset) ;
+					else 
+						span = TextSpan.FromBounds (loc, loc + 1);
 
 					var diagnosticsAtCaret =
 						Document.Editor.Document.GetTextSegmentMarkersAt (document.Editor.Caret.Offset)
@@ -169,7 +176,10 @@ namespace MonoDevelop.CodeActions
 						var fixes = new List<Microsoft.CodeAnalysis.CodeActions.CodeAction> ();
 
 						foreach (var cfp in CodeAnalysisRunner.CodeFixProvider) {
-							fixes.AddRange (cfp.GetFixesAsync (ad, TextSpan.FromBounds (loc, loc + 1), diagnosticsAtCaret, default(CancellationToken)).Result);
+							fixes.AddRange (cfp.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result);
+						}
+						foreach (var action in CodeActionService.GetValidActions (document, span, token).Result) {
+							fixes.Add (action); 
 						}
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)
@@ -424,11 +434,11 @@ namespace MonoDevelop.CodeActions
 
 		class ContextActionRunner
 		{
-			Microsoft.CodeAnalysis.CodeActions.CodeAction act;
+			readonly CodeAction act;
 			Document document;
 			int loc;
 
-			public ContextActionRunner (Microsoft.CodeAnalysis.CodeActions.CodeAction act, MonoDevelop.Ide.Gui.Document document, int loc)
+			public ContextActionRunner (CodeAction act, Document document, int loc)
 			{
 				this.act = act;
 				this.document = document;
@@ -437,15 +447,9 @@ namespace MonoDevelop.CodeActions
 
 			public void Run (object sender, EventArgs e)
 			{
-//				var context = document.ParsedDocument.CreateRefactoringContext (document, CancellationToken.None);
-//				foreach (var op in act.GetOperationsAsync (default(CancellationToken)).Result) {
-//					op.Apply (RoslynTypeSystemService.Workspace, default(CancellationToken)); 
-//				}
-			}
-
-			public void BatchRun (object sender, EventArgs e)
-			{
-				//act.BatchRun (document, loc);
+				foreach (var op in act.GetOperationsAsync (default(CancellationToken)).Result) {
+					op.Apply (RoslynTypeSystemService.Workspace, default(CancellationToken)); 
+				}
 			}
 		}
 
@@ -535,6 +539,15 @@ namespace MonoDevelop.CodeActions
 
 		SmartTagMarker currentSmartTag;
 		int currentSmartTagBegin;
+
+		static TextSpan GetTextSpan (CodeAction fix)
+		{
+			var nfix = fix as NRefactoryCodeAction;
+			if (nfix != null)
+				return nfix.TextSpan;
+			return TextSpan.FromBounds (-1, -1);
+		}
+
 		void CreateSmartTag (List<Microsoft.CodeAnalysis.CodeActions.CodeAction> fixes, int loc)
 		{
 			Fixes = fixes;
@@ -559,14 +572,15 @@ namespace MonoDevelop.CodeActions
 			}
 			bool first = true;
 			var smartTagLocBegin = loc;
-//			foreach (var fix in fixes) {
-//				if (fix.DocumentRegion.IsEmpty)
-//					continue;
-//				if (first || loc < fix.DocumentRegion.Begin) {
-//					smartTagLocBegin = fix.DocumentRegion.Begin;
-//				}
-//				first = false;
-//			}
+			foreach (var fix in fixes) {
+				var textSpan = GetTextSpan (fix);
+				if (textSpan.IsEmpty)
+					continue;
+				if (first || loc < textSpan.Start) {
+					smartTagLocBegin = textSpan.Start;
+				}
+				first = false;
+			}
 //			if (smartTagLocBegin.Line != loc.Line)
 //				smartTagLocBegin = new DocumentLocation (loc.Line, 1);
 			// got no fix location -> try to search word start

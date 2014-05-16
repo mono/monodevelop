@@ -75,27 +75,6 @@ namespace MonoDevelop.Refactoring
 //			});
 
 			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssues", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					inspectors.Add (((CodeIssueAddinNode)args.ExtensionNode).Inspector);
-					break;
-				case ExtensionChange.Remove:
-					inspectors.Remove (((CodeIssueAddinNode)args.ExtensionNode).Inspector);
-					break;
-				}
-			});
-			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/CodeIssueSource", delegate(object sender, ExtensionNodeEventArgs args) {
-				switch (args.Change) {
-				case ExtensionChange.Add:
-					var source = (ICodeIssueProviderSource)args.ExtensionObject;
-					var providers = source.GetProviders ();
-					inspectors.AddRange (providers);
-					break;
-				}
-			});
-			
 		}
 		
 		class RenameHandler 

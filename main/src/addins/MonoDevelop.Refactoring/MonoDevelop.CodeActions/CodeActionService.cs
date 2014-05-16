@@ -64,7 +64,8 @@ namespace MonoDevelop.CodeActions
 
 			foreach (var provider in GetCodeActions (LanguageNames.CSharp).Select (desc => desc.GetProvider ())) {
 				var refactorings = await provider.GetRefactoringsAsync (analysisDocument, span, cancellationToken);
-				actions.AddRange (refactorings);
+				if (refactorings != null)
+					actions.AddRange (refactorings);
 			}
 			return actions;
 		}
