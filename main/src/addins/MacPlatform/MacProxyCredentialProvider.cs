@@ -43,6 +43,7 @@ namespace MonoDevelop.MacIntegration
 
 		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
+			// if looking for proxy credentials, we care about the proxy's URL, not the request URL
 			if (credentialType == CredentialType.ProxyCredentials) {
 				var proxyUri = proxy.GetProxy (uri);
 				if (proxyUri != null)
@@ -63,13 +64,11 @@ namespace MonoDevelop.MacIntegration
 
 		static ICredentials GetSystemProxyCredentials (Uri uri)
 		{
-			SecProtocolType kind;
+			var kind = SecProtocolType.Any;
 			if (uri.Scheme == "http")
 				kind = SecProtocolType.HTTPProxy;
 			else if (uri.Scheme == "https")
 				kind = SecProtocolType.HTTPSProxy;
-			else
-				return null;
 
 			var existing = Keychain.FindInternetUserNameAndPassword (uri, kind);
 			if (existing != null && existing.Item1 != null && existing.Item2 != null)
