@@ -34,7 +34,6 @@ using MonoDevelop.Ide.Tasks;
 using Mono.CSharp;
 using System.Linq;
 using ICSharpCode.NRefactory;
-using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 
@@ -83,9 +82,6 @@ namespace MonoDevelop.CSharp.Parser
 			result.LastWriteTimeUtc = pf.LastWriteTime.Value;
 			result.ParsedFile = pf;
 			result.Add (GetSemanticTags (unit));
-
-			result.CreateRefactoringContext = (doc, token) => MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, token);
-			result.CreateRefactoringContextWithEditor = (data, resolver, token) => new MDRefactoringContext ((DotNetProject)project, data, result, (CSharpAstResolver)resolver, TextLocation.Empty, token);
 
 			if (storeAst) {
 				result.Ast = unit;

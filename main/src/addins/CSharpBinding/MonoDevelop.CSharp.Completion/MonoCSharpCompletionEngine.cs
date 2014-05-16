@@ -29,71 +29,70 @@ using System.Collections.Generic;
 using MonoDevelop.CodeGeneration;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
-using MonoDevelop.CSharp.Refactoring.CodeActions;
 using ICSharpCode.NRefactory.Editor;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	class MonoCSharpCompletionEngine : CSharpCompletionEngine
-	{
-		readonly CSharpCompletionTextEditorExtension ext;
-
-		public CSharpCompletionTextEditorExtension Ext {
-			get {
-				return ext;
-			}
-		}
-
-		public MDRefactoringContext MDRefactoringCtx {
-			get {
-				return ext.MDRefactoringCtx;
-			}
-		}
-
-		public MonoCSharpCompletionEngine (CSharpCompletionTextEditorExtension ext, ICSharpCode.NRefactory.Editor.IDocument document, ICompletionContextProvider completionContextProvider, ICompletionDataFactory factory, ICSharpCode.NRefactory.TypeSystem.IProjectContent content, ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpTypeResolveContext ctx) : base (document, completionContextProvider, factory, content, ctx)
-		{
-			this.ext = ext;
-		}
-
-//		protected override void AddVirtuals (List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
-//		{
-//			base.AddVirtuals (alreadyInserted, col, modifiers, curType, declarationBegin);
-//			foreach (var member in GetProtocolMembers (curType)) {
-//				if (alreadyInserted.Contains (member))
-//					continue;
-//				if (BaseExportCodeGenerator.IsImplemented (curType, member))
-//					continue;
-//				alreadyInserted.Add (member);
-//				var data = new ProtocolCompletionData (this, declarationBegin, member);
-//				col.Add (data);
+//	class MonoCSharpCompletionEngine : CSharpCompletionEngine
+//	{
+//		readonly CSharpCompletionTextEditorExtension ext;
+//
+//		public CSharpCompletionTextEditorExtension Ext {
+//			get {
+//				return ext;
 //			}
 //		}
-
-		IEnumerable<IMember> GetProtocolMembers (IType curType)
-		{
-			foreach (var t in curType.DirectBaseTypes) {
-				string name;
-				if (!BaseExportCodeGenerator.HasProtocolAttribute (t, out name))
-					continue;
-				var protocolType = Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
-				if (protocolType == null)
-					break;
-				foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
-					if (member.ImplementedInterfaceMembers.Any () || member.IsAbstract || !member.IsVirtual)
-						continue;
-					if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation")) {
-						yield return member;
-					}
-				}
-				foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
-					if (member.ImplementedInterfaceMembers.Any () || member.IsAbstract || !member.IsVirtual)
-						continue;
-					if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation") ||
-						member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
-						yield return member;
-				}
-			}
-		}
-	}
+//
+//		public MDRefactoringContext MDRefactoringCtx {
+//			get {
+//				return ext.MDRefactoringCtx;
+//			}
+//		}
+//
+//		public MonoCSharpCompletionEngine (CSharpCompletionTextEditorExtension ext, ICSharpCode.NRefactory.Editor.IDocument document, ICompletionContextProvider completionContextProvider, ICompletionDataFactory factory, ICSharpCode.NRefactory.TypeSystem.IProjectContent content, ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpTypeResolveContext ctx) : base (document, completionContextProvider, factory, content, ctx)
+//		{
+//			this.ext = ext;
+//		}
+//
+////		protected override void AddVirtuals (List<IMember> alreadyInserted, CompletionDataWrapper col, string modifiers, IType curType, int declarationBegin)
+////		{
+////			base.AddVirtuals (alreadyInserted, col, modifiers, curType, declarationBegin);
+////			foreach (var member in GetProtocolMembers (curType)) {
+////				if (alreadyInserted.Contains (member))
+////					continue;
+////				if (BaseExportCodeGenerator.IsImplemented (curType, member))
+////					continue;
+////				alreadyInserted.Add (member);
+////				var data = new ProtocolCompletionData (this, declarationBegin, member);
+////				col.Add (data);
+////			}
+////		}
+//
+//		IEnumerable<IMember> GetProtocolMembers (IType curType)
+//		{
+//			foreach (var t in curType.DirectBaseTypes) {
+//				string name;
+//				if (!BaseExportCodeGenerator.HasProtocolAttribute (t, out name))
+//					continue;
+//				var protocolType = Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
+//				if (protocolType == null)
+//					break;
+//				foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
+//					if (member.ImplementedInterfaceMembers.Any () || member.IsAbstract || !member.IsVirtual)
+//						continue;
+//					if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation")) {
+//						yield return member;
+//					}
+//				}
+//				foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
+//					if (member.ImplementedInterfaceMembers.Any () || member.IsAbstract || !member.IsVirtual)
+//						continue;
+//					if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation") ||
+//						member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
+//						yield return member;
+//				}
+//			}
+//		}
+//	}
 }
 

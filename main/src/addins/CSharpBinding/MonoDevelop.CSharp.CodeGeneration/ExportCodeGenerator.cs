@@ -30,7 +30,6 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
-using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.CodeGeneration;
 
 namespace MonoDevelop.CodeGeneration
@@ -201,61 +200,57 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
-				var ctx = MDRefactoringContext.Create (Options.Document, Options.Document.Editor.Caret.Location);
-				if (ctx == null)
-					yield break;
-				var builder = ctx.CreateTypeSystemAstBuilder ();
-
 				foreach (IMember member in includedMembers) {
-					yield return GenerateMemberCode (ctx, builder, member);
+					yield return "";
+					//yield return GenerateMemberCode (ctx, builder, member);
 				}
 			}
 		}
 	
-		internal static string GenerateMemberCode (MDRefactoringContext ctx, TypeSystemAstBuilder builder, IMember member)
-		{
-			var method = builder.ConvertEntity (member) as MethodDeclaration;
-			if (method != null) {
-				method.Body = new BlockStatement {
-					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
-				};
-				method.Modifiers &= ~Modifiers.Virtual;
-				method.Modifiers &= ~Modifiers.Abstract;
-				method.Attributes.Add (new AttributeSection {
-					Attributes =  {
-						GenerateExportAttribute (ctx, member)
-					}
-				});
-				return method.ToString (ctx.FormattingOptions);
-			}
-			var property = builder.ConvertEntity (member) as PropertyDeclaration;
-			if (property == null)
-				return null;
-			var p = (IProperty)member;
-			property.Modifiers &= ~Modifiers.Virtual;
-			property.Modifiers &= ~Modifiers.Abstract;
-			if (p.CanGet) {
-				property.Getter.Body = new BlockStatement {
-					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
-				};
-				property.Getter.Attributes.Add (new AttributeSection {
-					Attributes =  {
-						GenerateExportAttribute (ctx, p.Getter)
-					}
-				});
-			}
-			if (p.CanSet) {
-				property.Setter.Body = new BlockStatement {
-					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
-				};
-				property.Setter.Attributes.Add (new AttributeSection {
-					Attributes =  {
-						GenerateExportAttribute (ctx, p.Setter)
-					}
-				});
-			}
-			return property.ToString (ctx.FormattingOptions);
-		}
+//		internal static string GenerateMemberCode (MDRefactoringContext ctx, TypeSystemAstBuilder builder, IMember member)
+//		{
+//			var method = builder.ConvertEntity (member) as MethodDeclaration;
+//			if (method != null) {
+//				method.Body = new BlockStatement {
+//					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+//				};
+//				method.Modifiers &= ~Modifiers.Virtual;
+//				method.Modifiers &= ~Modifiers.Abstract;
+//				method.Attributes.Add (new AttributeSection {
+//					Attributes =  {
+//						GenerateExportAttribute (ctx, member)
+//					}
+//				});
+//				return method.ToString (ctx.FormattingOptions);
+//			}
+//			var property = builder.ConvertEntity (member) as PropertyDeclaration;
+//			if (property == null)
+//				return null;
+//			var p = (IProperty)member;
+//			property.Modifiers &= ~Modifiers.Virtual;
+//			property.Modifiers &= ~Modifiers.Abstract;
+//			if (p.CanGet) {
+//				property.Getter.Body = new BlockStatement {
+//					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+//				};
+//				property.Getter.Attributes.Add (new AttributeSection {
+//					Attributes =  {
+//						GenerateExportAttribute (ctx, p.Getter)
+//					}
+//				});
+//			}
+//			if (p.CanSet) {
+//				property.Setter.Body = new BlockStatement {
+//					new ThrowStatement (new ObjectCreateExpression (ctx.CreateShortType ("System", "NotImplementedException")))
+//				};
+//				property.Setter.Attributes.Add (new AttributeSection {
+//					Attributes =  {
+//						GenerateExportAttribute (ctx, p.Setter)
+//					}
+//				});
+//			}
+//			return property.ToString (ctx.FormattingOptions);
+//		}
 	}
 
 	class OptionalProtocolMemberGenerator : BaseExportCodeGenerator

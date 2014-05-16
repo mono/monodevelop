@@ -233,9 +233,6 @@
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUTextStylePolicy.xml">
       <LogicalName>GNUTextStylePolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\MonoNameConventionPolicy.xml">
-      <LogicalName>MonoNameConventionPolicy.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\PortableLibrary.xpt.xml">
       <LogicalName>PortableLibrary.xpt.xml</LogicalName>
     </EmbeddedResource>
@@ -280,7 +277,6 @@
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MemberCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\EventCreationCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\VariableCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\HelperMethods.cs" />
@@ -300,22 +296,8 @@
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpIndentVirtualSpaceManager.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ReadonlyPropertyGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\RaiseEventMethodGenerator.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\ContextActionExtensions.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringContext.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\MDRefactoringScript.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryCodeIssueSource.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionSource.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionRule.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionEditRuleDialog.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanel.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionEditRuleDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanelWidget.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeActionProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NRefactoryIssueProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\NRefactoryCodeAction.cs" />
     <Compile Include="MonoDevelop.CSharp.Tooltips\LanguageItemTooltipProvider.cs" />
     <Compile Include="MonoDevelop.CSharp\AstAmbience.cs" />
     <Compile Include="MonoDevelop.CSharp\AstStockIcons.cs" />
@@ -323,17 +305,12 @@
     <Compile Include="MonoDevelop.CSharp\SignatureMarkupCreator.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ImplementInterfaceMembersGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\TypeParameterDataProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumAction.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.UnitTests\UnitTestTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\BaseNRefactoryIssueProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\PartialGenerator.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpCodeGenerationService.cs" />
     <Compile Include="MonoDevelop.CSharp.CodeGeneration\ExportCodeGenerator.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\MonoCSharpCompletionEngine.cs" />
-    <Compile Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynSymbolCompletionData.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynCodeCompletionFactory.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\RoslynParameterHintingFactory.cs" />
@@ -342,6 +319,11 @@
     <Compile Include="gtk-gui\MonoDevelop.CSharp.ClassOutline.OutlineSortingPreferencesDialog.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineSettings.cs" />
     <Compile Include="MonoDevelop.CSharp.ClassOutline\OutlineNodeComparer.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionRule.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionEditRuleDialog.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanel.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPanelWidget.cs" />
+    <Compile Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\NameConventionPolicy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -349,6 +331,13 @@
     <None Include="MonoDevelop.CSharp.Completion\ConstructorParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\ArrayTypeParameterDataProvider.cs" />
     <None Include="MonoDevelop.CSharp.Completion\AbstractParameterDataProvider.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\MoveTypeToFile.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumAction.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeActions\Actions\ConvertToEnumDialog.cs" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\NamingInspection\MonoNameConventionPolicy.xml" />
+    <None Include="MonoDevelop.CSharp.Refactoring.CodeIssues\Issues\MonoTODOIssue.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\NewOverrideCompletionData.cs" />
+    <None Include="MonoDevelop.CSharp.Completion\ProtocolCompletionData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

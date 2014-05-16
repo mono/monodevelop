@@ -33,7 +33,6 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class ProtocolCompletionData : CompletionData
 	{
-		readonly MonoCSharpCompletionEngine engine;
 		readonly IMember member;
 		readonly static Ambience ambience = new CSharpAmbience ();
 		readonly int    declarationBegin;

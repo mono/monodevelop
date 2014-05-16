@@ -45,7 +45,6 @@ using MonoDevelop.Components.Commands;
 
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.CSharp.Formatting;
-using MonoDevelop.CSharp.Refactoring.CodeActions;
 
 using System.Threading;
 using System.Threading.Tasks;
@@ -103,12 +102,6 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		internal MDRefactoringContext MDRefactoringCtx {
-			get;
-			private set;
-		}
-
-		
 		public CSharpCompletionTextEditorExtension ()
 		{
 		}
@@ -125,31 +118,9 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			document.Editor.Caret.PositionChanged += HandlePositionChanged;
 			document.DocumentParsed += HandleDocumentParsed; 
 		}
-
-		CancellationTokenSource src = new CancellationTokenSource ();
-
-		void StopPositionChangedTask ()
-		{
-			src.Cancel ();
-			src = new CancellationTokenSource ();
-		}
-
-		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
-		{
-			StopPositionChangedTask ();
-			Task.Factory.StartNew (delegate {
-				var doc = Document;
-				if (doc == null || doc.Editor == null)
-					return;
-				var ctx = MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, src.Token);
-				if (ctx != null)
-					MDRefactoringCtx = ctx;
-			});
-		}
-		
+			
 		[CommandUpdateHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
 		public void CheckShowCodeGenerationWindow (CommandInfo info)
 		{
@@ -168,7 +139,6 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void Dispose ()
 		{
-			StopPositionChangedTask ();
 			document.DocumentParsed -= HandleDocumentParsed;
 			if (unstableTypeSystemSegmentTree != null) {
 				unstableTypeSystemSegmentTree.RemoveListener ();
