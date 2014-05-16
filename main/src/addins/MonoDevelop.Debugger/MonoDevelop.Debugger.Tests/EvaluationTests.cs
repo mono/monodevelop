@@ -608,6 +608,11 @@ namespace MonoDevelop.Debugger.Tests
 		public void Cast ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("(byte)n");
 			Assert.AreEqual ("32", val.Value);
 			Assert.AreEqual ("byte", val.TypeName);
@@ -734,6 +739,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void BinaryOperators ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 			
 			// Boolean
 			
@@ -1034,6 +1043,10 @@ namespace MonoDevelop.Debugger.Tests
 			
 			val = Eval ("(ulong)123");
 			Assert.AreEqual ("123", val.Value);
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				return;
 			
 			val = Eval ("dec");
 			Assert.AreEqual ("123.456", val.Value);
