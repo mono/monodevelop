@@ -103,12 +103,12 @@ namespace MonoDevelop.MacIntegration
 				using (var ns = new NSAutoreleasePool ()) {
 					var message = credentialType == CredentialType.ProxyCredentials
 						? GettextCatalog.GetString (
-							"{0} needs proxy credentials to access {1}.",
+							"{0} needs credentials to access the proxy server {1}.",
 							BrandingService.ApplicationName,
 							uri.Host
 						)
 						: GettextCatalog.GetString (
-							"{0} needs web credentials to access {1}.",
+							"{0} needs credentials to access {1}.",
 							BrandingService.ApplicationName,
 							uri.Host
 						);
