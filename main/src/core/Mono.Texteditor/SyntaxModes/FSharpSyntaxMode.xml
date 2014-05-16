@@ -29,6 +29,8 @@
 	<Property name="BlockCommentEnd">*)</Property>
 	<Property name="StringQuote">"</Property>
 
+	<Delimiters>&amp;&lt;&gt;~@%^*()-+=|\#/{}[]:;"' ,	?</Delimiters>
+
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#if</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#else</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#elif</EolSpan>
@@ -95,6 +97,11 @@
 
 
 	<Match color="Number">CSharpNumber</Match>
+	<Match color="Keyword(Iteration)">let(!)?</Match>
+	<Match color="Keyword(Iteration)">use(!)?</Match>
+	<Match color="Keyword(Iteration)">yield(!)?</Match>
+	<Match color="Keyword(Iteration)">return(!)?</Match>
+	<Match color="Keyword(Iteration)">do(!)?</Match>
 
 	<!-- It is really impossible to do some intelligent grouping here, because
 	     it looks weird no matter what we do... some things are context-sensitive,
@@ -114,17 +121,9 @@
 		<Word>with</Word>
 
 		<Word>val</Word>
-		<Word>use</Word>
-		<Word>yield</Word>
-		<Word>let!</Word>
-		<Word>use!</Word>
-		<Word>do!</Word>
-		<Word>yield!</Word>
-		<Word>return!</Word>
 		<Word>while</Word>
 		<Word>for</Word>
 
-		<Word>do</Word>
 		<Word>begin</Word>
 		<Word>done</Word>
 		<Word>elif</Word>
@@ -132,7 +131,6 @@
 		<Word>end</Word>
 		<Word>if</Word>
 		<Word>match</Word>
-		<Word>return</Word>
 		<Word>then</Word>
 		<Word>when</Word>
 
@@ -175,7 +173,9 @@
 		<Word>upcast</Word>
 		<Word>lazy</Word>
 		<Word>and</Word>
+		<Word>not</Word>
 		<Word>downcast</Word>
+		<Word>select</Word>
 	</Keywords>
 
 	<Keywords color="Keyword(Constants)">
