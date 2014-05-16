@@ -1,5 +1,5 @@
 ﻿//
-// FakeInstallPackageAction.cs
+// TestablePackageManagementEventsMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,40 +25,44 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeInstallPackageAction : InstallPackageAction
+	public class TestablePackageManagementEventsMonitor : PackageManagementEventsMonitor
 	{
-		public FakeInstallPackageAction ()
-			: this (null)
+		public TestablePackageManagementEventsMonitor (
+			IProgressMonitor progressMonitor,
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider)
+			: base (progressMonitor, packageManagementEvents, progressProvider)
 		{
 		}
 
-		public FakeInstallPackageAction (IPackageManagementProject project)
-			: base (project, null)
+		public List<FilePath> FilesChanged = new List<FilePath> ();
+
+		protected override void NotifyFilesChanged (FilePath[] files)
 		{
+			FilesChanged.AddRange (files);
 		}
 
-		public FakeInstallPackageAction (IPackageManagementProject project, IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+		protected override void GuiSyncDispatch (MessageHandler handler)
 		{
+			handler.Invoke ();
 		}
 
-		public bool IsExecuteCalled;
-
-		protected override void ExecuteCore ()
+		protected override void ShowPackageConsole (IProgressMonitor progressMonitor)
 		{
-			IsExecuteCalled = true;
-			ExecuteAction ();
+			IsPackageConsoleShown = true;
+			ProgressMonitorPassedToShowPackageConsole = progressMonitor;
 		}
 
-		protected override void BeforeExecute ()
-		{
-		}
-
-		public Action ExecuteAction = () => { };
+		public bool IsPackageConsoleShown;
+		public IProgressMonitor ProgressMonitorPassedToShowPackageConsole;
 	}
 }
 

@@ -165,6 +165,11 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageManagementProjectFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\WindowsPath.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\XmlDocumentTransformTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\BackgroundPackageActionRunnerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProgressMonitorFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableBackgroundPackageActionRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageManagementEventsMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

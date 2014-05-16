@@ -1,5 +1,5 @@
 ﻿//
-// FakeInstallPackageAction.cs
+// TestableBackgroundPackageActionRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,39 +26,49 @@
 
 using System;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeInstallPackageAction : InstallPackageAction
+	public class TestableBackgroundPackageActionRunner : BackgroundPackageActionRunner
 	{
-		public FakeInstallPackageAction ()
-			: this (null)
+		MessageHandler backgroundDispatcher;
+
+		public TestableBackgroundPackageActionRunner (
+			IPackageManagementProgressMonitorFactory progressMonitorFactory,
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider)
+			: base (progressMonitorFactory, packageManagementEvents, progressProvider)
 		{
 		}
 
-		public FakeInstallPackageAction (IPackageManagementProject project)
-			: base (project, null)
+		public void ExecuteBackgroundDispatch ()
 		{
+			backgroundDispatcher.Invoke ();
 		}
 
-		public FakeInstallPackageAction (IPackageManagementProject project, IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+		protected override void BackgroundDispatch (MessageHandler handler)
 		{
+			backgroundDispatcher = handler;
 		}
 
-		public bool IsExecuteCalled;
-
-		protected override void ExecuteCore ()
+		protected override void GuiDispatch (MessageHandler handler)
 		{
-			IsExecuteCalled = true;
-			ExecuteAction ();
+			handler.Invoke ();
 		}
 
-		protected override void BeforeExecute ()
+		protected override PackageManagementEventsMonitor CreateEventMonitor (
+			IProgressMonitor monitor,
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider)
 		{
+			EventsMonitor = new TestablePackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+			return EventsMonitor;
 		}
 
-		public Action ExecuteAction = () => { };
+		public TestablePackageManagementEventsMonitor EventsMonitor;
 	}
 }
 

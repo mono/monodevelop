@@ -1,5 +1,5 @@
 ﻿//
-// FakeInstallPackageAction.cs
+// FakeProgressMonitorFactory.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,40 +25,20 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeInstallPackageAction : InstallPackageAction
+	public class FakeProgressMonitorFactory : IPackageManagementProgressMonitorFactory
 	{
-		public FakeInstallPackageAction ()
-			: this (null)
+		public FakeProgressMonitor ProgressMonitor = new FakeProgressMonitor ();
+		public string StatusText;
+
+		public IProgressMonitor CreateProgressMonitor (string statusText)
 		{
+			StatusText = statusText;
+			return ProgressMonitor;
 		}
-
-		public FakeInstallPackageAction (IPackageManagementProject project)
-			: base (project, null)
-		{
-		}
-
-		public FakeInstallPackageAction (IPackageManagementProject project, IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
-		{
-		}
-
-		public bool IsExecuteCalled;
-
-		protected override void ExecuteCore ()
-		{
-			IsExecuteCalled = true;
-			ExecuteAction ();
-		}
-
-		protected override void BeforeExecute ()
-		{
-		}
-
-		public Action ExecuteAction = () => { };
 	}
 }
 

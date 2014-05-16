@@ -65,7 +65,7 @@ namespace ICSharpCode.PackageManagement
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
-			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents);
+			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);
 
 			InitializeCredentialProvider();
 		}
@@ -132,10 +132,6 @@ namespace ICSharpCode.PackageManagement
 
 		public static IRecentPackageRepository RecentPackageRepository {
 			get { return packageRepositoryCache.RecentPackageRepository; }
-		}
-
-		public static IProgressProvider ProgressProvider {
-			get { return progressProvider; }
 		}
 	}
 }

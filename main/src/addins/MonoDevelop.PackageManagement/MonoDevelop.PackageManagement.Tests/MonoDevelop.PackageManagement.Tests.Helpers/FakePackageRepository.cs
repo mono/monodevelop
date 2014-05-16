@@ -32,7 +32,7 @@ using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageRepository : IRecentPackageRepository
+	public class FakePackageRepository : IRecentPackageRepository, IProgressProvider
 	{
 		public List<FakePackage> FakePackages = new List<FakePackage> ();
 		public bool IsRemovePackageCalled;
@@ -82,6 +82,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public bool HasRecentPackages { get; set; }
 		public bool SupportsPrereleasePackages { get; set; }
 		public PackageSaveModes PackageSaveMode { get; set; }
+
+		public event EventHandler<ProgressEventArgs> ProgressAvailable;
+
+		public void RaiseProgressAvailableEvent (ProgressEventArgs e)
+		{
+			if (ProgressAvailable != null) {
+				ProgressAvailable (this, e);
+			}
+		}
 	}
 }
 
