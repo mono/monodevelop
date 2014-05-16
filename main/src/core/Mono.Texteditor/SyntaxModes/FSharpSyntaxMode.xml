@@ -214,6 +214,43 @@
 	</Keywords>
 
 	<Keywords color="Keyword(Other)">
+		<!-- reserved OCaml keywords -->
+		<Word>asr</Word>
+		<Word>land</Word>
+		<Word>lor</Word>
+		<Word>lsl</Word>
+		<Word>lsr</Word>
+		<Word>lxor</Word>
+		<Word>mod</Word>
+		<Word>sig</Word>
+
+		<!-- Future expansions -->
+		<Word>atomic</Word>
+		<Word>break</Word>
+		<Word>checked</Word>
+		<Word>component</Word>
+		<Word>const</Word>
+		<Word>constraint</Word>
+		<Word>constructor</Word>
+		<Word>continue</Word>
+		<Word>eager</Word>
+		<Word>event</Word>
+		<Word>external</Word>
+		<Word>fixed</Word>
+		<Word>functor</Word>
+		<Word>include</Word>
+		<Word>method</Word>
+		<Word>mixin</Word>
+		<Word>object</Word>
+		<Word>parallel</Word>
+		<Word>process</Word>
+		<Word>protected</Word>
+		<Word>pure</Word>
+		<Word>sealed</Word>
+		<Word>tailcall</Word>
+		<Word>trait</Word>
+		<Word>virtual</Word>
+		<Word>volatile</Word>
 	</Keywords>
 
 	<Rule name="text.preprocessor" ignorecase="True">
