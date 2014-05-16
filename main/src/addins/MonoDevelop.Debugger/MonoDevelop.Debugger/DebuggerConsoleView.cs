@@ -384,7 +384,7 @@ namespace MonoDevelop.Debugger
 
 			var rect = GetIterLocation (Cursor);
 
-			c.TriggerYCoord = y + lineY + height;
+			c.TriggerYCoord = y + lineY + height - (int)Vadjustment.Value;
 			c.TriggerXCoord = x + rect.X;
 			c.TriggerTextHeight = height;
 
