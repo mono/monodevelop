@@ -34,7 +34,8 @@ type InteractiveSession() =
       new ProcessStartInfo
         (FileName = path, UseShellExecute = false, Arguments = args, 
          RedirectStandardError = true, CreateNoWindow = true, RedirectStandardOutput = true,
-         RedirectStandardInput = true) 
+         RedirectStandardInput = true, StandardErrorEncoding = Text.Encoding.UTF8, StandardOutputEncoding = Text.Encoding.UTF8)
+    
     try
       Debug.WriteLine (sprintf "Interactive: Starting file=%s, Args=%A" path args)
       Process.Start(startInfo)
@@ -88,7 +89,11 @@ type InteractiveSession() =
   member x.SendCommand(str:string) = 
     waitingForResponse <- true
     Debug.WriteLine (sprintf "Interactive: sending %s" str)
-    fsiProcess.StandardInput.Write(str + if str.EndsWith(";;") then "\n" else ";;\n")
+    let message = str + if str.EndsWith(";;") then "\n" else ";;\n"
+    let stream = fsiProcess.StandardInput.BaseStream
+    let bytes = Text.Encoding.UTF8.GetBytes(message)
+    fsiProcess.StandardInput.BaseStream.Write(bytes,0,bytes.Length)
+    fsiProcess.StandardInput.BaseStream.Flush()
 
   member x.Exited = fsiProcess.Exited
     
