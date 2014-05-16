@@ -2379,6 +2379,7 @@
     <Compile Include="MonoDevelop.Components.DockNotebook\IDockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Gui
 	{
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		readonly List<Document> documents = new List<Document> ();
-		List<object> splits = new List<object> ();
+		readonly List<Split> splits = new List<Split> ();
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
@@ -168,8 +168,8 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public int SplitCount { get; set; }
-		internal List<object> Splits { get { return splits; } }
+		//public int SplitCount { get; set; }
+		internal List<Split> Splits { get { return splits; } }
 
 		public WorkbenchWindow RootWindow {
 			get { return workbench; }
@@ -909,22 +909,77 @@ namespace MonoDevelop.Ide.Gui
 				monitor.ReportError ("", ex);
 			}
 		}
-		
+
 		void OnStoringWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
 			WorkbenchUserPrefs prefs = new WorkbenchUserPrefs ();
-			
-			foreach (Document document in Documents) {
-				if (!String.IsNullOrEmpty (document.FileName)) {
-					DocumentUserPrefs dp = new DocumentUserPrefs ();
-					dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
-					if (document.Editor != null) {
-						dp.Line = document.Editor.Caret.Line;
-						dp.Column = document.Editor.Caret.Column;
+			var nbId = 0;
+
+			if (Splits.Count > 0) {
+				foreach (var obj in Splits) {
+					var notebook1 = obj.Notebook1;
+					var notebook2 = obj.Notebook2;
+
+					foreach (var tab in notebook1.TabControl.Tabs) {
+						var window = (SdiWorkspaceWindow)tab.Content;
+						var document = window.Document;
+
+						if (!String.IsNullOrEmpty (document.FileName)) {
+							var dp = new DocumentUserPrefs ();
+							dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
+							dp.NotebookId = 0;
+							if (document.Editor != null) {
+								dp.Line = document.Editor.Caret.Line;
+								dp.Column = document.Editor.Caret.Column;
+							}
+
+							prefs.Files.Add (dp);
+						}
 					}
-					prefs.Files.Add (dp);
+
+					foreach (var tab in notebook2.TabControl.Tabs) {
+						var window = (SdiWorkspaceWindow)tab.Content;
+						var document = window.Document;
+
+						if (!String.IsNullOrEmpty (document.FileName)) {
+							var dp = new DocumentUserPrefs ();
+							dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
+							dp.NotebookId = 1;
+							if (document.Editor != null) {
+								dp.Line = document.Editor.Caret.Column;
+								dp.Column = document.Editor.Caret.Column;
+							}
+
+							prefs.Files.Add (dp);
+						}
+					}
+
+					var sp = new SplitUserPrefs {
+						Mode = "Vertical"
+					};
+
+					sp.Notebook1 = new NotebookUserPrefs { NotebookId = nbId++ };
+					sp.Notebook2 = new NotebookUserPrefs { NotebookId = nbId++ };
+
+					prefs.Splits.Add (sp);
+				}
+			} else {
+				foreach (Document document in Documents) {
+					if (!String.IsNullOrEmpty (document.FileName)) {
+						DocumentUserPrefs dp = new DocumentUserPrefs ();
+						dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
+						if (document.Editor != null) {
+							dp.Line = document.Editor.Caret.Line;
+							dp.Column = document.Editor.Caret.Column;
+						}
+						prefs.Files.Add (dp);
+					}
 				}
 			}
+
+//			foreach (var nb in notebooksList) {
+//				prefs.Notebooks.Add (nb);
+//			}
 			
 			foreach (Pad pad in Pads) {
 				IMementoCapable mc = pad.GetMementoCapable ();
@@ -959,23 +1014,40 @@ namespace MonoDevelop.Ide.Gui
 			NavigationHistoryService.LogActiveDocument ();
 			
 			List<IViewContent> docViews = new List<IViewContent> ();
+			var viewsDict = new Dictionary<IViewContent, int> ();
+			var windowsDict = new Dictionary<int, SdiWorkspaceWindow> ();
 			FilePath baseDir = args.Item.BaseDirectory;
 			IViewContent currentView = null;
 			
 			using (IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
 				string currentFileName = prefs.ActiveDocument != null ? baseDir.Combine (prefs.ActiveDocument).FullPath : null;
-				
-				foreach (DocumentUserPrefs doc in prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ())) {
+
+				foreach (var sb in prefs.Splits) {
+					switch (sb.Mode) {
+					case "Vertical":
+						break;
+
+					case "Horizontal":
+						// We don't support these yet.
+						break;
+					}
+				}
+
+				foreach (DocumentUserPrefs doc in prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId)) {
 					string fileName = baseDir.Combine (doc.FileName).FullPath;
+
 					if (File.Exists (fileName)) {
 						// TODO: Get the correct project.
 						var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column);
+
 						if (fileName == currentFileName)
 							currentView = view;
-						
-						if (view != null)
+
+						if (view != null) {
+							viewsDict.Add (view, doc.NotebookId);
 							docViews.Add (view);
-					}
+						}
+					} 
 				}
 				
 				// Note: At this point, the progress monitor will be disposed which causes the gtk main-loop to be pumped.
@@ -985,13 +1057,54 @@ namespace MonoDevelop.Ide.Gui
 			
 			foreach (var view in docViews) {
 				Document doc = WrapDocument (view.WorkbenchWindow);
-				if (view == currentView) {
-					Present ();
-					doc.RunWhenLoaded (() => {
-						var window = doc.Window;
-						if (window != null)
-							window.SelectWindow ();
-					});
+				var tmp_window = (SdiWorkspaceWindow)doc.Window;
+
+				int notebookId = viewsDict [view];
+
+				if (notebookId == 0) {
+					if (view == currentView) {
+						Present ();
+						doc.RunWhenLoaded (() => {
+							var window = doc.Window;
+							if (window != null)
+								window.SelectWindow ();
+						});
+					}
+				} else {
+					if (windowsDict.ContainsKey (notebookId)) {
+						var window = windowsDict [notebookId];
+						var tabControl = window.TabControl;
+
+						var oldTabControl = ((DefaultWorkbench)RootWindow).TabControl;
+						var notebookContainer = (MonoDevelop.Components.DockNotebook.DockNotebookContainer)oldTabControl.Parent;
+
+						for (var i = 0; i < oldTabControl.TabCount; i++) {
+							var tab = oldTabControl.GetTab (i);
+
+							if (tab.Content == tmp_window) {
+								oldTabControl.RemoveTab (tab.Index, false);
+							}
+						}
+
+						var newTab = tabControl.InsertTab (-1);
+						newTab.Content = tmp_window;
+						tmp_window.SetDockNotebook (tabControl, newTab);
+					} else {
+						var tabControl = ((DefaultWorkbench)RootWindow).TabControl;
+						var notebookContainer = (MonoDevelop.Components.DockNotebook.DockNotebookContainer)tabControl.Parent;
+
+						if (notebookContainer.AllowRightInsert) {
+							for (int i = 0; i < tabControl.TabCount; i++) {
+								var tab = tabControl.GetTab (i);
+
+								if (tab.Content == tmp_window) {
+									tabControl.RemoveTab (tab.Index, false);
+									notebookContainer.InsertRight (tmp_window);
+									windowsDict.Add (notebookId, tmp_window);
+								}
+							}
+						}
+					}
 				}
 			}
 			

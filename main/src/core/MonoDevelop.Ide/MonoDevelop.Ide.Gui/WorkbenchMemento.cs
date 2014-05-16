@@ -134,6 +134,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		[ItemProperty (DefaultValue = 0)]
 		public int Column;
+
+		[ItemProperty (DefaultValue = 0)]
+		public int NotebookId;
 	}
 	
 	[DataItem ("Pad")]
@@ -144,6 +147,32 @@ namespace MonoDevelop.Ide.Gui
 		
 		[ItemProperty]
 		public XmlElement State;
+	}
+
+	[DataItem ("Split")]
+	class SplitUserPrefs
+	{
+		[ItemProperty (DefaultValue = 0)]
+		public int SplitId;
+
+		[ItemProperty]
+		public string Mode;
+
+		[ItemProperty]
+		public NotebookUserPrefs Notebook1;
+
+		[ItemProperty]
+		public NotebookUserPrefs Notebook2;
+	}
+
+	[DataItem ("Notebook")]
+	class NotebookUserPrefs
+	{
+		[ItemProperty (DefaultValue = 0)]
+		public int NotebookId;
+
+		[ItemProperty]
+		public string ActiveDocument;
 	}
 	
 	[DataItem ("Workbench")]
@@ -157,7 +186,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		[ItemProperty]
 		public List<DocumentUserPrefs> Files = new List<DocumentUserPrefs> ();
-		
+
+		[ItemProperty]
+		public List<SplitUserPrefs> Splits = new List<SplitUserPrefs> ();
+
 		[ItemProperty]
 		public List<PadUserPrefs> Pads = new List<PadUserPrefs> ();
 	}

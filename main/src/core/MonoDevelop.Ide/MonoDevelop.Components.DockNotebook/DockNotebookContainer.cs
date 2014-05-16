@@ -42,13 +42,13 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public bool AllowLeftInsert {
 			get {
-				return IdeApp.Workbench.SplitCount == 0;
+				return IdeApp.Workbench.Splits.Count == 0;
 			}
 		}
 
 		public bool AllowRightInsert {
 			get {
-				return IdeApp.Workbench.SplitCount == 0;
+				return IdeApp.Workbench.Splits.Count == 0;
 			}
 		}
 
@@ -113,16 +113,18 @@ namespace MonoDevelop.Components.DockNotebook
 			controlContainer.Parent.Parent.Destroy ();
 		}
 
-		void Insert(SdiWorkspaceWindow window, Action<DockNotebookContainer> callback)
+		void Insert(SdiWorkspaceWindow window, Func<DockNotebookContainer, Split> callback)
 		{
 			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+
 			newNotebook.NavigationButtonsVisible = false;
 			PlaceholderWindow.newNotebooks.Add (newNotebook);
-			IdeApp.Workbench.Splits.Add (newNotebook);
+			//IdeApp.Workbench.Splits.Add (newNotebook);
 			newNotebook.InitSize ();
+			var newContainer = new DockNotebookContainer (newNotebook);
 			newNotebook.Destroyed += delegate {
 				PlaceholderWindow.newNotebooks.Remove (newNotebook);
-				IdeApp.Workbench.Splits.Remove (newNotebook);
+				//IdeApp.Workbench.Splits.Remove (newContainer);
 			};
 			newNotebook.PageRemoved += HandlePageRemoved;
 
@@ -130,7 +132,12 @@ namespace MonoDevelop.Components.DockNotebook
 			newTab.Content = window;
 			window.SetDockNotebook (newNotebook, newTab);
 			Remove (Child);
-			callback (new DockNotebookContainer (newNotebook));
+
+			var split = callback (newContainer);
+
+			newNotebook.Destroyed += delegate(object sender, EventArgs e) {
+				IdeApp.Workbench.Splits.Remove (split);
+			};
 
 			tabControl.InitSize ();
 			ShowAll ();
@@ -142,12 +149,12 @@ namespace MonoDevelop.Components.DockNotebook
 				var box = new HPaned ();
 				var new_container = new DockNotebookContainer (tabControl);
 
-				IdeApp.Workbench.SplitCount++;
-
 				box.Add1 (container);
 				box.Add2 (new_container);
 				box.Position = Allocation.Width / 2;
 				Child = box;
+
+				return AddSplit (container, new_container);
 			});
 		}
 
@@ -157,13 +164,27 @@ namespace MonoDevelop.Components.DockNotebook
 				var box = new HPaned ();
 				var new_container = new DockNotebookContainer (tabControl);
 
-				IdeApp.Workbench.SplitCount++;
-
 				box.Add1 (new_container);
 				box.Add2 (container);
 				box.Position = Allocation.Width / 2;
 				Child = box;
+
+				return AddSplit (new_container, container);
 			});
+		}
+
+		private Split AddSplit (DockNotebookContainer container1, DockNotebookContainer container2)
+		{
+			var split = new Split ();
+//			split.Notebooks.Add (container1);
+//			split.Notebooks.Add (container2);
+
+			split.Notebook1 = container1;
+			split.Notebook2 = container2;
+
+			IdeApp.Workbench.Splits.Add (split);
+
+			return split;
 		}
 	}
 }
