@@ -19,40 +19,37 @@ namespace Jurassic.Compiler
 		/// <summary>
 		/// Gets the expression on the left or right side of the unary operator.
 		/// </summary>
-		public Expression Operand
-		{
-			get { return this.GetOperand (0); }
+		public Expression Operand {
+			get { return GetOperand (0); }
 		}
 
 		/// <summary>
 		/// Gets the type that results from evaluating this expression.
 		/// </summary>
-		public override PrimitiveType ResultType
-		{
-			get
-			{
-				switch (this.OperatorType) {
-					case OperatorType.Plus:
-					case OperatorType.Minus:
-						return PrimitiveType.Number;
+		public override PrimitiveType ResultType {
+			get {
+				switch (OperatorType) {
+				case OperatorType.Plus:
+				case OperatorType.Minus:
+					return PrimitiveType.Number;
 
-					case OperatorType.BitwiseNot:
-						return PrimitiveType.Int32;
+				case OperatorType.BitwiseNot:
+					return PrimitiveType.Int32;
 
-					case OperatorType.LogicalNot:
-						return PrimitiveType.Bool;
+				case OperatorType.LogicalNot:
+					return PrimitiveType.Bool;
 
-					case OperatorType.Void:
-						return PrimitiveType.Undefined;
+				case OperatorType.Void:
+					return PrimitiveType.Undefined;
 
-					case OperatorType.Typeof:
-						return PrimitiveType.String;
+				case OperatorType.Typeof:
+					return PrimitiveType.String;
 
-					case OperatorType.Delete:
-						return PrimitiveType.Bool;
+				case OperatorType.Delete:
+					return PrimitiveType.Bool;
 
-					default:
-						throw new NotImplementedException (string.Format ("Unsupported operator {0}", this.OperatorType));
+				default:
+					throw new NotImplementedException (string.Format ("Unsupported operator {0}", OperatorType));
 				}
 			}
 		}

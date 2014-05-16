@@ -15,7 +15,7 @@ namespace Jurassic.Compiler
 		/// <param name="value"> The literal value. </param>
 		public LiteralExpression (object value)
 		{
-			this.Value = value;
+			Value = value;
 		}
 
 		/// <summary>

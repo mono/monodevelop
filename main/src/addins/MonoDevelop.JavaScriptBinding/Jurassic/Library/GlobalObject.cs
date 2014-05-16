@@ -4,40 +4,29 @@ using System.Text;
 
 namespace Jurassic.Library
 {
-    /// <summary>
-    /// Represents functions and properties within the global scope.
-    /// </summary>
-    [Serializable]
-    public class GlobalObject : ObjectInstance
-    {
-
-        //     INITIALIZATION
-        //_________________________________________________________________________________________
-
-        /// <summary>
-        /// Creates a new Global object.
-        /// </summary>
-        /// <param name="prototype"> The next object in the prototype chain. </param>
-        public GlobalObject(ScriptEngine engine)
+	/// <summary>
+	/// Represents functions and properties within the global scope.
+	/// </summary>
+	[Serializable]
+	public class GlobalObject : ObjectInstance
+	{
+		/// <summary>
+		/// Creates a new Global object.
+		/// </summary>
+		/// <param name="prototype"> The next object in the prototype chain. </param>
+		public GlobalObject (ScriptEngine engine)
 			: base (engine)
-        {
-            // Add the global constants.
-            // Infinity, NaN and undefined are read-only in ECMAScript 5.
-        }
+		{
+			// Add the global constants.
+			// Infinity, NaN and undefined are read-only in ECMAScript 5.
+		}
 
-
-
-        //     .NET ACCESSOR PROPERTIES
-        //_________________________________________________________________________________________
-
-        /// <summary>
-        /// Gets the public class name of the object.  Used by the default toString()
-        /// implementation.
-        /// </summary>
-        protected override string publicClassName
-        {
-            get { return "Global"; }
-        }
-
-    }
+		/// <summary>
+		/// Gets the public class name of the object.  Used by the default toString()
+		/// implementation.
+		/// </summary>
+		protected override string publicClassName {
+			get { return "Global"; }
+		}
+	}
 }
