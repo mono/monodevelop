@@ -70,6 +70,7 @@ namespace MonoDevelop.MacIntegration
 			else if (uri.Scheme == "https")
 				kind = SecProtocolType.HTTPSProxy;
 
+			//TODO: get username from SystemConfiguration APIs so we don't trigger a double auth prompt
 			var existing = Keychain.FindInternetUserNameAndPassword (uri, kind);
 			if (existing != null && existing.Item1 != null && existing.Item2 != null)
 				return new NetworkCredential (existing.Item1, existing.Item2);
