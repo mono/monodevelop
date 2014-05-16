@@ -63,10 +63,10 @@ namespace MonoDevelop.CodeActions
 		/// <value><c>true</c> if this code action is enabled; otherwise, <c>false</c>.</value>
 		public bool IsEnabled {
 			get {
-				return PropertyService.Get ("ContextActions." + Language + "." + IdString, true);
+				return PropertyService.Get ("CodeActions." + Language + "." + IdString, true);
 			}
 			set {
-				PropertyService.Set ("ContextActions." + Language + "." + IdString, value);
+				PropertyService.Set ("CodeActions." + Language + "." + IdString, value);
 			}
 		}
 

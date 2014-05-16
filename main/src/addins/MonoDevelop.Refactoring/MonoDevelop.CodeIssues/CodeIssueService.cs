@@ -37,32 +37,26 @@ using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace MonoDevelop.CodeIssues
 {
-	static class CodeAnalysisRunner
+	static class CodeIssueService
 	{
-		static readonly IDiagnosticAnalyzer[] analyzer;
+		static readonly CodeIssueDescriptor[] codeIssues;
 		static readonly ICodeFixProvider[] codeFixProvider;
 
-		public static ICodeFixProvider[] CodeFixProvider {
+		public static IReadOnlyList<ICodeFixProvider> CodeFixProvider {
 			get {
 				return codeFixProvider;
 			}
 		}
 
-		public static IDiagnosticAnalyzer[] Analyzer {
-			get {
-				return analyzer;
-			}
-		}
-		
-		static CodeAnalysisRunner ()
+		static CodeIssueService ()
 		{
-			var analyzers = new List<IDiagnosticAnalyzer> ();
+			var analyzers = new List<CodeIssueDescriptor> ();
 			var codeFixes = new List<ICodeFixProvider> ();
 			
 			foreach (var type in typeof (ICSharpCode.NRefactory6.CSharp.IssueCategories).Assembly.GetTypes ()) {
 				var analyzerAttr = (ExportDiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(ExportDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 				if (analyzerAttr != null) {
-					analyzers.Add ((IDiagnosticAnalyzer)Activator.CreateInstance(type)); 
+					analyzers.Add (new CodeIssueDescriptor (analyzerAttr.Name, analyzerAttr.Language, type));
 				}
 				
 				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes(typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
@@ -71,24 +65,15 @@ namespace MonoDevelop.CodeIssues
 				}
 			}
 			
-			analyzer = analyzers.ToArray ();
+			codeIssues = analyzers.ToArray ();
 			codeFixProvider = codeFixes.ToArray ();
 		}
-		
-		static IEnumerable<BaseCodeIssueProvider> EnumerateProvider (CodeIssueProvider p)
-		{
-			if (p.HasSubIssues)
-				return p.SubIssues;
-			return new BaseCodeIssueProvider[] { p };
-		}
 
-		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
+		public static IEnumerable<CodeIssueDescriptor> GetCodeIssues (string language, bool includeDisabledNodes = false)
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
-				return Enumerable.Empty<Result> ();
-
-			var model = input.GetCompilationAsync (cancellationToken).Result;
-			return AnalyzerDriver.GetDiagnostics (model, analyzer, cancellationToken).Select (diagnostic => new DiagnosticResult(diagnostic));
+			if (string.IsNullOrEmpty (language))
+				return includeDisabledNodes ? codeIssues : codeIssues.Where (act => act.IsEnabled);
+			return includeDisabledNodes ? codeIssues.Where (ca => ca.Language == language) : codeIssues.Where (ca => ca.Language == language && ca.IsEnabled);
 		}
 	}
 }

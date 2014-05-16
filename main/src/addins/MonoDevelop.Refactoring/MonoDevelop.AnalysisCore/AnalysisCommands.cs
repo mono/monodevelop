@@ -44,6 +44,7 @@ using System.Threading;
 using System.IO;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -131,7 +132,7 @@ namespace MonoDevelop.AnalysisCore
 
 		}
 		
-		public static bool GetFixes (out Document document, out IList<FixableResult> results)
+		public static bool GetFixes (out MonoDevelop.Ide.Gui.Document document, out IList<FixableResult> results)
 		{
 			results = null;
 			document = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
@@ -166,7 +167,7 @@ namespace MonoDevelop.AnalysisCore
 			return string.Compare (r1.Message, r2.Message, StringComparison.Ordinal);
 		}
 		
-		public static void PopulateInfos (CommandArrayInfo infos, Document doc, IEnumerable<FixableResult> results)
+		public static void PopulateInfos (CommandArrayInfo infos, MonoDevelop.Ide.Gui.Document doc, IEnumerable<FixableResult> results)
 		{
 //			//FIXME: ellipsize long messages
 //			int mnemonic = 1;
@@ -251,7 +252,7 @@ namespace MonoDevelop.AnalysisCore
 //			}
 		}
 		
-		public static IEnumerable<IAnalysisFixAction> GetActions (Document doc, FixableResult result)
+		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Gui.Document doc, FixableResult result)
 		{
 			foreach (var fix in result.Fixes)
 				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))
@@ -286,19 +287,19 @@ namespace MonoDevelop.AnalysisCore
 			if (!dlg.Run ())
 				return;
 
-			Dictionary<BaseCodeIssueProvider, Severity> severities = new Dictionary<BaseCodeIssueProvider, Severity> ();
+			Dictionary<CodeIssueDescriptor, DiagnosticSeverity?> severities = new Dictionary<CodeIssueDescriptor, DiagnosticSeverity?> ();
 
-			foreach (var node in RefactoringService.GetInspectors (lang)) {
-				severities [node] = node.GetSeverity ();
-				if (node.HasSubIssues) {
-					foreach (var subIssue in node.SubIssues) {
-						severities [subIssue] = subIssue.GetSeverity ();
-					}
-				}
+			foreach (var node in CodeIssueService.GetCodeIssues (CodeActionService.MimeTypeToLanguage(lang))) {
+				severities [node] = node.DiagnosticSeverity;
+//				if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
+//					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
+//						severities [subIssue] = node.GetSeverity (subIssue);
+//					}
+//				}
 			}
 
-			var grouped = severities.Keys.OfType<CodeIssueProvider> ()
-				.GroupBy (node => node.Category)
+			var grouped = severities.Keys.OfType<CodeIssueDescriptor> ()
+				.GroupBy (node => node.GetProvider ().SupportedDiagnostics.First ().Category)
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
 			using (var sw = new StreamWriter (dlg.SelectedFile)) {
@@ -307,15 +308,15 @@ namespace MonoDevelop.AnalysisCore
 					sw.WriteLine ("<h2>" + g.Key + "</h2>");
 					sw.WriteLine ("<table border='1'>");
 
-					foreach (var node in g.OrderBy (n => n.Title, StringComparer.Ordinal)) {
-						var title = node.Title;
-						var desc = node.Description != title ? node.Description : "";
-						sw.WriteLine ("<tr><td>" + title + "</td><td>" + desc + "</td><td>" + node.GetSeverity () + "</td></tr>");
-						if (node.HasSubIssues) {
-							foreach (var subIssue in node.SubIssues) {
-								title = subIssue.Title;
+					foreach (var node in g.OrderBy (n => n.Name, StringComparer.Ordinal)) {
+						var title = node.Name;
+						var desc = node.GetProvider ().SupportedDiagnostics.First ().Description != title ? node.GetProvider ().SupportedDiagnostics.First ().Description : "";
+						sw.WriteLine ("<tr><td>" + title + "</td><td>" + desc + "</td><td>" + node.DiagnosticSeverity + "</td></tr>");
+						if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
+							foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
+								title = subIssue.Description;
 								desc = subIssue.Description != title ? subIssue.Description : "";
-								sw.WriteLine ("<tr><td> - " + title + "</td><td>" + desc + "</td><td>" + subIssue.GetSeverity () + "</td></tr>");
+								sw.WriteLine ("<tr><td> - " + title + "</td><td>" + desc + "</td><td>" + node.GetSeverity (subIssue) + "</td></tr>");
 							}
 						}
 					}

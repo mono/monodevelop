@@ -37,6 +37,8 @@ using GLib;
 using MonoDevelop.Components;
 using Gdk;
 using MonoDevelop.SourceEditor.QuickTasks;
+using MonoDevelop.CodeActions;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -73,19 +75,22 @@ namespace MonoDevelop.CodeIssues
 	partial class CodeIssuePanelWidget : Bin
 	{
 		readonly string mimeType;
-		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(BaseCodeIssueProvider), typeof (string));
-		readonly Dictionary<BaseCodeIssueProvider, Severity> severities = new Dictionary<BaseCodeIssueProvider, Severity> ();
-		readonly Dictionary<BaseCodeIssueProvider, bool> enableState = new Dictionary<BaseCodeIssueProvider, bool> ();
+		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(Tuple<CodeIssueDescriptor, DiagnosticDescriptor>), typeof (string));
+		readonly Dictionary<Tuple<CodeIssueDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> severities = new Dictionary<Tuple<CodeIssueDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> ();
+		readonly Dictionary<Tuple<CodeIssueDescriptor, DiagnosticDescriptor>, bool> enableState = new Dictionary<Tuple<CodeIssueDescriptor, DiagnosticDescriptor>, bool> ();
 
 		void GetAllSeverities ()
 		{
-			foreach (var node in RefactoringService.GetInspectors (mimeType)) {
-				severities [node] = node.GetSeverity ();
-				enableState [node] = node.GetIsEnabled ();
-				if (node.HasSubIssues) {
-					foreach (var subIssue in node.SubIssues) {
-						severities [subIssue] = subIssue.GetSeverity ();
-						enableState [subIssue] = subIssue.GetIsEnabled ();
+
+			foreach (var node in CodeIssueService.GetCodeIssues (CodeActionService.MimeTypeToLanguage (mimeType))) {
+				var root = new Tuple<CodeIssueDescriptor, DiagnosticDescriptor> (node, null);
+				severities [root] = node.DiagnosticSeverity;
+				enableState [root] = node.IsEnabled;
+				if (node.GetProvider ().SupportedDiagnostics.Length > 0) {
+					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
+						var sub = new Tuple<CodeIssueDescriptor, DiagnosticDescriptor> (node, subIssue);
+						severities [sub] = node.GetSeverity (subIssue);
+						enableState [sub] = node.GetIsEnabled (subIssue);
 					}
 				}
 			}
@@ -102,7 +107,7 @@ namespace MonoDevelop.CodeIssues
 		bool SelectCodeIssue (string idString, TreeIter iter)
 		{
 			do {
-				var provider = treeStore.GetValue (iter, 1) as BaseCodeIssueProvider; 
+				var provider = treeStore.GetValue (iter, 1) as CodeIssueDescriptor; 
 				if (provider != null && provider.IdString == idString) {
 					treeviewInspections.ExpandToPath (treeStore.GetPath (iter));
 					treeviewInspections.Selection.SelectIter (iter);
@@ -120,33 +125,30 @@ namespace MonoDevelop.CodeIssues
 			return false;
 		}
 
-		static string GetDescription (Severity severity)
+		static string GetDescription (DiagnosticSeverity severity)
 		{
 			switch (severity) {
-			case Severity.None:
+			case DiagnosticSeverity.None:
 				return GettextCatalog.GetString ("Do not show");
-			case Severity.Error:
+			case DiagnosticSeverity.Error:
 				return GettextCatalog.GetString ("Error");
-			case Severity.Warning:
+			case DiagnosticSeverity.Warning:
 				return GettextCatalog.GetString ("Warning");
-			case Severity.Hint:
-				return GettextCatalog.GetString ("Hint");
-			case Severity.Suggestion:
-				return GettextCatalog.GetString ("Suggestion");
+			case DiagnosticSeverity.Info:
+				return GettextCatalog.GetString ("Info");
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
 		}
 
-		Xwt.Drawing.Image GetIcon (Severity severity)
+		Xwt.Drawing.Image GetIcon (DiagnosticSeverity severity)
 		{
 			switch (severity) {
-			case Severity.Error:
+			case DiagnosticSeverity.Error:
 				return QuickTaskOverviewMode.ErrorImage;
-			case Severity.Warning:
+			case DiagnosticSeverity.Warning:
 				return QuickTaskOverviewMode.WarningImage;
-			case Severity.Hint:
-			case Severity.Suggestion:
+			case DiagnosticSeverity.Info:
 				return QuickTaskOverviewMode.SuggestionImage;
 			default:
 				return QuickTaskOverviewMode.OkImage;
@@ -158,24 +160,24 @@ namespace MonoDevelop.CodeIssues
 			categories.Clear ();
 			treeStore.Clear ();
 
-			var grouped = severities.Keys.OfType<CodeIssueProvider> ()
-				.Where (node => string.IsNullOrEmpty (filter) || node.Title.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0)
-				.GroupBy (node => node.Category)
+			var grouped = severities.Keys
+				.Where (node => string.IsNullOrEmpty (filter) || node.Item1.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0)
+				.GroupBy (node => node.Item1.GetProvider ().SupportedDiagnostics.First ().Category)
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
 			foreach (var g in grouped) {
 				TreeIter categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>", null, "");
 				categories [g.Key] = categoryIter;
 
-				foreach (var node in g.OrderBy (n => n.Title, StringComparer.Ordinal)) {
-					var title = node.Title;
+				foreach (var node in g.OrderBy (n => n.Item1.Name, StringComparer.Ordinal)) {
+					var title = node.Item1.Name;
 					MarkupSearchResult (filter, ref title);
-					var nodeIter = treeStore.AppendValues (categoryIter, title, node, node.Description);
-					if (node.HasSubIssues) {
-						foreach (var subIssue in node.SubIssues) {
-							title = subIssue.Title;
+					var nodeIter = treeStore.AppendValues (categoryIter, title, node, node.Item1.Name);
+					if (node.Item1.GetProvider ().SupportedDiagnostics.Length > 0) {
+						foreach (var subIssue in node.Item1.GetProvider ().SupportedDiagnostics) {
+							title = subIssue.Description;
 							MarkupSearchResult (filter, ref title);
-							treeStore.AppendValues (nodeIter, title, subIssue, subIssue.Description);
+							treeStore.AppendValues (nodeIter, title, new Tuple<CodeIssueDescriptor, DiagnosticDescriptor> (node.Item1, subIssue), subIssue.Description);
 						}
 					}
 				}
@@ -241,8 +243,12 @@ namespace MonoDevelop.CodeIssues
 			toggleRenderer.Toggled += delegate(object o, ToggledArgs args) {
 				TreeIter iter;
 				if (treeStore.GetIterFromString (out iter, args.Path)) {
-					var provider = (BaseCodeIssueProvider)treeStore.GetValue (iter, 1);
-					enableState[provider] = !enableState[provider];
+					var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
+					if (provider.Item2 == null) {
+						provider.Item1.IsEnabled = !provider.Item1.IsEnabled;
+					} else {
+						provider.Item1.SetIsEnabled (provider.Item2, !provider.Item1.GetIsEnabled (provider.Item2));
+					}
 				}
 			};
 
@@ -251,7 +257,7 @@ namespace MonoDevelop.CodeIssues
 			titleCol.PackStart (toggleRenderer, false);
 			titleCol.Sizing = TreeViewColumnSizing.Autosize;
 			titleCol.SetCellDataFunc (toggleRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var provider = (BaseCodeIssueProvider)model.GetValue (iter, 1);
+				var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
 				if (provider == null) {
 					toggleRenderer.Visible = false;
 					return;
@@ -286,10 +292,9 @@ namespace MonoDevelop.CodeIssues
 
 			var comboBoxStore = new ListStore (typeof(string), typeof(Severity));
 //			comboBoxStore.AppendValues (GetDescription (Severity.None), Severity.None);
-			comboBoxStore.AppendValues (GetDescription (Severity.Error), Severity.Error);
-			comboBoxStore.AppendValues (GetDescription (Severity.Warning), Severity.Warning);
-			comboBoxStore.AppendValues (GetDescription (Severity.Hint), Severity.Hint);
-			comboBoxStore.AppendValues (GetDescription (Severity.Suggestion), Severity.Suggestion);
+			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Error), DiagnosticSeverity.Error);
+			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Warning), DiagnosticSeverity.Warning);
+			comboBoxStore.AppendValues (GetDescription (DiagnosticSeverity.Info), DiagnosticSeverity.Info);
 			comboRenderer.Model = comboBoxStore;
 			comboRenderer.Mode = CellRendererMode.Activatable;
 			comboRenderer.TextColumn = 0;
@@ -307,8 +312,8 @@ namespace MonoDevelop.CodeIssues
 					return;
 				do {
 					if ((string)comboBoxStore.GetValue (storeIter, 0) == args.NewText) {
-						var provider = (BaseCodeIssueProvider)treeStore.GetValue (iter, 1);
-						var severity = (Severity)comboBoxStore.GetValue (storeIter, 1);
+						var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
+						var severity = (DiagnosticSeverity)comboBoxStore.GetValue (storeIter, 1);
 						severities[provider] = severity;
 						return;
 					}
@@ -316,15 +321,19 @@ namespace MonoDevelop.CodeIssues
 			};
 			
 			col.SetCellDataFunc (comboRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var provider = (BaseCodeIssueProvider)model.GetValue (iter, 1);
+				var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
 				if (provider == null) {
 					comboRenderer.Visible = false;
 					return;
 				}
 				var severity = severities[provider];
+				if (!severity.HasValue) {
+					comboRenderer.Visible = false;
+					return;
+				}
 				comboRenderer.Visible = true;
-				comboRenderer.Text = GetDescription (severity);
-				comboRenderer.Icon = GetIcon (severity);
+				comboRenderer.Text = GetDescription (severity.Value);
+				comboRenderer.Icon = GetIcon (severity.Value);
 			});
 			treeviewInspections.HeadersVisible = false;
 			treeviewInspections.Model = treeStore;
@@ -342,10 +351,25 @@ namespace MonoDevelop.CodeIssues
 
 		public void ApplyChanges ()
 		{
-			foreach (var kv in severities)
-				kv.Key.SetSeverity (kv.Value);
-			foreach (var kv in enableState)
-				kv.Key.SetIsEnabled (kv.Value);
+			foreach (var kv in severities) {
+				var userSeverity = kv.Value;
+				if (!userSeverity.HasValue)
+					continue;
+				if (kv.Key.Item2 == null) {
+					kv.Key.Item1.DiagnosticSeverity = userSeverity;
+					continue;
+				}
+				kv.Key.Item1.SetSeverity (kv.Key.Item2, userSeverity.Value);
+			}
+
+			foreach (var kv in enableState) {
+				var userIsEnabled = kv.Value;
+				if (kv.Key.Item2 == null) {
+					kv.Key.Item1.IsEnabled = userIsEnabled;
+					continue;
+				}
+				kv.Key.Item1.SetIsEnabled (kv.Key.Item2, userIsEnabled);
+			}
 		}
 	}
 }

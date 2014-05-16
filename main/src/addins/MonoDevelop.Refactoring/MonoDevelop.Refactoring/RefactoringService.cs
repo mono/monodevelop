@@ -47,34 +47,9 @@ namespace MonoDevelop.Refactoring
 {
 	public static class RefactoringService
 	{
-		//static readonly List<RefactoringOperation> refactorings = new List<RefactoringOperation>();
-		static readonly List<CodeIssueProvider> inspectors = new List<CodeIssueProvider> ();
-		
-		public static void AddProvider (CodeIssueProvider provider)
-		{
-			inspectors.Add (provider);
-		}
-
-		public static List<CodeIssueProvider> Inspectors {
-			get {
-				return inspectors;
-			}
-		}
-
 		static RefactoringService ()
 		{
-//			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Refactoring/Refactorings", delegate(object sender, ExtensionNodeEventArgs args) {
-//				switch (args.Change) {
-//				case ExtensionChange.Add:
-//					refactorings.Add ((RefactoringOperation)args.ExtensionObject);
-//					break;
-//				case ExtensionChange.Remove:
-//					refactorings.Remove ((RefactoringOperation)args.ExtensionObject);
-//					break;
-//				}
-//			});
 
-			
 		}
 		
 		class RenameHandler 
@@ -134,11 +109,6 @@ namespace MonoDevelop.Refactoring
 			FileService.NotifyFilesChanged (fileNames);
 			FileService.FileRenamed -= handler.FileRename;
 			TextReplaceChange.FinishRefactoringOperation ();
-		}
-		
-		public static IEnumerable<CodeIssueProvider> GetInspectors (string mimeType)
-		{
-			return inspectors.Where (i => i.MimeType == mimeType);
 		}
 
 //		public static void QueueQuickFixAnalysis (Document doc, TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
