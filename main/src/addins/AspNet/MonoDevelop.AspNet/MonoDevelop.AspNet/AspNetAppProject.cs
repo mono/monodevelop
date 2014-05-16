@@ -330,6 +330,9 @@ namespace MonoDevelop.AspNet
 				return WebSubtype.JavaScript;
 			case "LESS":
 				return WebSubtype.Less;
+			case "SASS":
+			case "SCSS":
+				return WebSubtype.Sass;
 			case "EOT":
 			case "TTF":
 			case "OTF":
@@ -337,6 +340,8 @@ namespace MonoDevelop.AspNet
 				return WebSubtype.Font;
 			case "SVG":
 				return WebSubtype.Svg;
+			case "STYL":
+				return WebSubtype.Stylus;
 			default:
 				return WebSubtype.None;
 			}
@@ -766,6 +771,8 @@ namespace MonoDevelop.AspNet
 		Less,
 		Font,
 		Svg,
+		Sass,
+		Stylus
 	}
 	
 	
