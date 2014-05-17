@@ -57,7 +57,7 @@ namespace MonoDevelop.CodeActions
 			return includeDisabledNodes ? codeActions.Where (ca => ca.Language == language) : codeActions.Where (ca => ca.Language == language && ca.IsEnabled);
 		}
 
-		public static async Task<IEnumerable<CodeAction>> GetValidActions (MonoDevelop.Ide.Gui.Document doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
+		public static async Task<IEnumerable<CodeAction>> GetValidActionsAsync (MonoDevelop.Ide.Gui.Document doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var analysisDocument = doc.AnalysisDocument;
 			var actions = new List<CodeAction> ();
@@ -69,11 +69,6 @@ namespace MonoDevelop.CodeActions
 			}
 			return actions;
 		}
-//
-//		Task<IEnumerable<CodeAction>> GetRefactoringsAsync (Document document, TextSpan span, CancellationToken cancellationToken);
-//
-//
-//		Task<IEnumerable<CodeAction>> GetRefactoringsAsync (Document document, TextSpan span, CancellationToken cancellationToken);
 
 		public static string MimeTypeToLanguage (string mimeType)
 		{

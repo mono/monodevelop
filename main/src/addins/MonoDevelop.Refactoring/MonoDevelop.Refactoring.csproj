@@ -127,6 +127,8 @@
     <Compile Include="MonoDevelop.CodeActions\CodeActionDescriptor.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueService.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssueDescriptor.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\DiagnosticResult.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

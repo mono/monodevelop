@@ -164,31 +164,31 @@ namespace MonoDevelop.CodeActions
 					else 
 						span = TextSpan.FromBounds (loc, loc + 1);
 
-//					var diagnosticsAtCaret =
-//						Document.Editor.Document.GetTextSegmentMarkersAt (document.Editor.Caret.Offset)
-//						.OfType<ResultMarker> ()
-//						.Select (rm => rm.Result)
-//						.OfType<DiagnosticResult> ()
-//						.Select (dr => dr.Diagnostic)
-//						.ToList ();
+					var diagnosticsAtCaret =
+						Document.Editor.Document.GetTextSegmentMarkersAt (document.Editor.Caret.Offset)
+						.OfType<ResultMarker> ()
+						.Select (rm => rm.Result)
+						.OfType<DiagnosticResult> ()
+						.Select (dr => dr.Diagnostic)
+						.ToList ();
 					
-//					System.Threading.Tasks.Task.Factory.StartNew (delegate {
-//						var fixes = new List<CodeAction> ();
-//
-//						foreach (var cfp in CodeIssueService.CodeFixProvider) {
-//							fixes.AddRange (cfp.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result);
-//						}
-//
-//						foreach (var action in CodeActionService.GetValidActions (document, span, token).Result) {
-//							fixes.Add (action); 
-//						}
-//
-//						Application.Invoke (delegate {
-//							if (token.IsCancellationRequested)
-//								return;
-//							CreateSmartTag (fixes, loc);
-//						});
-//					});
+					System.Threading.Tasks.Task.Factory.StartNew (delegate {
+						var fixes = new List<CodeAction> ();
+
+						foreach (var cfp in CodeIssueService.CodeFixProvider) {
+							fixes.AddRange (cfp.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result);
+						}
+
+						foreach (var action in CodeActionService.GetValidActionsAsync (document, span, token).Result) {
+							fixes.Add (action); 
+						}
+
+						Application.Invoke (delegate {
+							if (token.IsCancellationRequested)
+								return;
+							CreateSmartTag (fixes, loc);
+						});
+					});
 
 					
 //					RefactoringService.QueueQuickFixAnalysis (Document, loc, token, delegate(List<CodeAction> fixes) {
@@ -558,7 +558,7 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 			var editor = document.Editor;
-			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized) {
+			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized || fixes.Count == 0) {
 				RemoveWidget ();
 				return;
 			}

@@ -34,46 +34,20 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.CodeIssues;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CodeFixes;
+using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CodeIssues
 {
-	static class CodeIssueService
+	static class CodeAnalysisRunner
 	{
-		static readonly CodeIssueDescriptor[] codeIssues;
-		static readonly ICodeFixProvider[] codeFixProvider;
-
-		public static IReadOnlyList<ICodeFixProvider> CodeFixProvider {
-			get {
-				return codeFixProvider;
-			}
-		}
-
-		static CodeIssueService ()
+		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
-			var analyzers = new List<CodeIssueDescriptor> ();
-			var codeFixes = new List<ICodeFixProvider> ();
-			
-			foreach (var type in typeof (ICSharpCode.NRefactory6.CSharp.IssueCategories).Assembly.GetTypes ()) {
-				var analyzerAttr = (ExportDiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(ExportDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
-				if (analyzerAttr != null) {
-					analyzers.Add (new CodeIssueDescriptor (analyzerAttr.Name, analyzerAttr.Language, type));
-				}
-				
-				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes(typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
-				if (codeFixAttr != null) {
-					codeFixes.Add ((ICodeFixProvider)Activator.CreateInstance(type)); 
-				}
-			}
-			
-			codeIssues = analyzers.ToArray ();
-			codeFixProvider = codeFixes.ToArray ();
-		}
+			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
+				return Enumerable.Empty<Result> ();
 
-		public static IEnumerable<CodeIssueDescriptor> GetCodeIssues (string language, bool includeDisabledNodes = false)
-		{
-			if (string.IsNullOrEmpty (language))
-				return includeDisabledNodes ? codeIssues : codeIssues.Where (act => act.IsEnabled);
-			return includeDisabledNodes ? codeIssues.Where (ca => ca.Language == language) : codeIssues.Where (ca => ca.Language == language && ca.IsEnabled);
+			var model = input.GetCompilationAsync (cancellationToken).Result;
+			var language = CodeActionService.MimeTypeToLanguage (input.Editor.MimeType);
+			return AnalyzerDriver.GetDiagnostics (model, CodeIssueService.GetCodeIssues (language).Select (issue => issue.GetProvider ()), cancellationToken).Select (diagnostic => new DiagnosticResult(diagnostic));
 		}
 	}
 }
