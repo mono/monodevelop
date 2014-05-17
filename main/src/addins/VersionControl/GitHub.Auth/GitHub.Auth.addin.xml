@@ -1,0 +1,10 @@
+<ExtensionModel>
+	<Runtime>
+		<Import      file="Octokit.dll" />
+		<ScanExclude path="Octokit.dll" />
+	</Runtime>
+
+  <Extension path = "/MonoDevelop/Ide/StartupHandlers">
+		<Class class="GitHub.Auth.Initializer" />
+	</Extension>
+</ExtensionModel>

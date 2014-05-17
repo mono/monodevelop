@@ -133,6 +133,7 @@ main/external/Makefile
 /main/src/addins/TextTemplating/TextTransform/Makefile
 /main/src/addins/VBNetBinding/Makefile
 /main/src/addins/VersionControl/Makefile
+/main/src/addins/VersionControl/GitHub.Auth/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile
@@ -221,3 +222,6 @@ main/external/Makefile
 
 #dotCover
 *.dotCover
+
+#NuGet
+/main/packages/
