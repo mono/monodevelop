@@ -4,4 +4,4 @@ using System.Reflection;
 [assembly: AssemblyTitle ("GitHub.Auth")]
 [assembly: AssemblyDescription ("A MonoDevelop addin for authenticating with GitHub")]
 [assembly: AssemblyVersion ("2.6")]
-[assembly: AssemblyCopyright ("LGPL")]
+[assembly: AssemblyCopyright ("MIT X11")]
