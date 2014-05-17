@@ -129,7 +129,7 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
-    <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpLanguageItemTooltipProvider" />
+    <Class id="LanguageItem" class="MonoDevelop.FSharp.FSharpTooltipProvider" />
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/TextEditorResolver">
