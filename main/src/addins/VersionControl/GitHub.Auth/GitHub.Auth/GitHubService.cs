@@ -1,5 +1,5 @@
 ﻿//
-// MyClass.cs
+// GitHubService.cs
 //
 // Author:
 //       Marius Ungureanu <marius.ungureanu@xamarin.com>

@@ -1,7 +1,6 @@
 <ExtensionModel>
 	<Runtime>
-		<Import      file="Octokit.dll" />
-		<ScanExclude path="Octokit.dll" />
+		<Import assembly="Octokit.dll" />
 	</Runtime>
 
   <Extension path = "/MonoDevelop/Ide/StartupHandlers">
