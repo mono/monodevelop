@@ -95,6 +95,7 @@ main/external/Makefile
 /main/src/addins/Deployment/Makefile
 /main/src/addins/Deployment/MonoDevelop.Deployment.Linux/Makefile
 /main/src/addins/Deployment/MonoDevelop.Deployment/Makefile
+/main/src/addins/GitHubIntegration/GitHub.Auth/Makefile
 /main/src/addins/GnomePlatform/Makefile
 /main/src/addins/ILAsmBinding/Makefile
 /main/src/addins/MacPlatform/Makefile
@@ -133,7 +134,6 @@ main/external/Makefile
 /main/src/addins/TextTemplating/TextTransform/Makefile
 /main/src/addins/VBNetBinding/Makefile
 /main/src/addins/VersionControl/Makefile
-/main/src/addins/VersionControl/GitHub.Auth/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Git/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile

@@ -40,8 +40,7 @@ namespace GitHub.Auth
 
 		static GitHubService ()
 		{
-			var phv = new ProductHeaderValue (BrandingService.ApplicationName.Replace (" ", String.Empty));
-			var conn = new Connection (phv);
+			var conn = new Connection (new ProductHeaderValue (BrandingService.ApplicationName.Replace (" ", String.Empty)));
 			if (!string.IsNullOrEmpty (user) && !string.IsNullOrEmpty (password))
 				conn.Credentials = new Credentials (user, password);
 

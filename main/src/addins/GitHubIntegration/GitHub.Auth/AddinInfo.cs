@@ -4,7 +4,7 @@ using Mono.Addins.Description;
 [assembly:Addin ("GitHub.Auth", 
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
-	Category = "Version Control")]
+	Category = "GitHub Integration")]
 
 [assembly:AddinName ("GitHub Authentication support")]
 [assembly:AddinDescription ("A MonoDevelop addin for authenticating with GitHub")]
