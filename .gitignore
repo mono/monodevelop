@@ -95,6 +95,7 @@ main/external/Makefile
 /main/src/addins/Deployment/Makefile
 /main/src/addins/Deployment/MonoDevelop.Deployment.Linux/Makefile
 /main/src/addins/Deployment/MonoDevelop.Deployment/Makefile
+/main/src/addins/GitHubIntegration/Makefile
 /main/src/addins/GitHubIntegration/GitHub.Auth/Makefile
 /main/src/addins/GnomePlatform/Makefile
 /main/src/addins/ILAsmBinding/Makefile

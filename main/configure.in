@@ -289,7 +289,8 @@ src/addins/MonoDeveloperExtensions/Makefile
 src/addins/MonoDeveloperExtensions/NUnit/Makefile
 src/addins/NUnit/Makefile
 src/addins/NUnit/NUnitRunner/Makefile
-src/addins/VersionControl/GitHub.Auth/Makefile
+src/addins/GitHubIntegration/Makefile
+src/addins/GitHubIntegration/GitHub.Auth/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion/Makefile
 src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/Makefile
