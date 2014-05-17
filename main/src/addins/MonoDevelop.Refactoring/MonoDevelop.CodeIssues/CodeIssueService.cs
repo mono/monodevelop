@@ -69,7 +69,7 @@ namespace MonoDevelop.CodeIssues
 			codeFixProvider = codeFixes.ToArray ();
 		}
 
-		public static IEnumerable<CodeIssueDescriptor> GetCodeIssues (string language, bool includeDisabledNodes = false)
+		public static IEnumerable<CodeIssueDescriptor> GetCodeIssues (string language, bool includeDisabledNodes)
 		{
 			if (string.IsNullOrEmpty (language))
 				return includeDisabledNodes ? codeIssues : codeIssues.Where (act => act.IsEnabled);

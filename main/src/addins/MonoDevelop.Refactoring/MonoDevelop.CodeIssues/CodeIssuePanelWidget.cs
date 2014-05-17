@@ -81,12 +81,11 @@ namespace MonoDevelop.CodeIssues
 
 		void GetAllSeverities ()
 		{
-
-			foreach (var node in CodeIssueService.GetCodeIssues (CodeActionService.MimeTypeToLanguage (mimeType))) {
+			foreach (var node in CodeIssueService.GetCodeIssues (CodeActionService.MimeTypeToLanguage (mimeType), true)) {
 				var root = new Tuple<CodeIssueDescriptor, DiagnosticDescriptor> (node, null);
 				severities [root] = node.DiagnosticSeverity;
 				enableState [root] = node.IsEnabled;
-				if (node.GetProvider ().SupportedDiagnostics.Length > 0) {
+				if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
 					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
 						var sub = new Tuple<CodeIssueDescriptor, DiagnosticDescriptor> (node, subIssue);
 						severities [sub] = node.GetSeverity (subIssue);
@@ -173,7 +172,7 @@ namespace MonoDevelop.CodeIssues
 					var title = node.Item1.Name;
 					MarkupSearchResult (filter, ref title);
 					var nodeIter = treeStore.AppendValues (categoryIter, title, node, node.Item1.Name);
-					if (node.Item1.GetProvider ().SupportedDiagnostics.Length > 0) {
+					if (node.Item1.GetProvider ().SupportedDiagnostics.Length > 1) {
 						foreach (var subIssue in node.Item1.GetProvider ().SupportedDiagnostics) {
 							title = subIssue.Description;
 							MarkupSearchResult (filter, ref title);
@@ -244,11 +243,7 @@ namespace MonoDevelop.CodeIssues
 				TreeIter iter;
 				if (treeStore.GetIterFromString (out iter, args.Path)) {
 					var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
-					if (provider.Item2 == null) {
-						provider.Item1.IsEnabled = !provider.Item1.IsEnabled;
-					} else {
-						provider.Item1.SetIsEnabled (provider.Item2, !provider.Item1.GetIsEnabled (provider.Item2));
-					}
+					enableState[provider] = !enableState[provider];
 				}
 			};
 

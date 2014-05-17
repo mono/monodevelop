@@ -138,6 +138,11 @@ namespace MonoDevelop.CodeIssues
 
 			return instance;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[CodeIssueDescriptor: IdString={0}, Name={1}, Language={2}]", IdString, Name, Language);
+		}
 	}
 }
 

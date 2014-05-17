@@ -92,5 +92,10 @@ namespace MonoDevelop.CodeActions
 				instance = (ICodeRefactoringProvider)Activator.CreateInstance (codeActionType);
 			return instance;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[CodeActionDescriptor: IdString={0}, Name={1}, Language={2}]", IdString, Name, Language);
+		}
 	}
 }
