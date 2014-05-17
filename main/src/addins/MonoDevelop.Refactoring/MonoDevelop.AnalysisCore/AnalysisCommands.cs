@@ -289,7 +289,7 @@ namespace MonoDevelop.AnalysisCore
 
 			Dictionary<CodeIssueDescriptor, DiagnosticSeverity?> severities = new Dictionary<CodeIssueDescriptor, DiagnosticSeverity?> ();
 
-			foreach (var node in CodeIssueService.GetCodeIssues (CodeActionService.MimeTypeToLanguage(lang))) {
+			foreach (var node in CodeIssueService.GetCodeIssues (CodeActionService.MimeTypeToLanguage(lang), true)) {
 				severities [node] = node.DiagnosticSeverity;
 //				if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
 //					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {

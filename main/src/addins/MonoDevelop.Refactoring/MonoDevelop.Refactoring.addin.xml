@@ -51,10 +51,6 @@
 		<Class id="AnalysisResults" class="MonoDevelop.AnalysisCore.Gui.ResultTooltipProvider" insertafter="Debug" />
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Rule _name="Code Issue Analysis" input="Document" func="MonoDevelop.CodeIssues.CodeAnalysisRunner.Check" />
-	</Extension>
-	
 	<!-- RefactoryCommands -->
 	<Extension path = "/MonoDevelop/Ide/Commands">
 	
