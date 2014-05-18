@@ -40,7 +40,7 @@ namespace GitHub.Auth
 
 		static GitHubService ()
 		{
-			var conn = new Connection (new ProductHeaderValue (BrandingService.ApplicationName.Replace (" ", String.Empty)));
+			var conn = new Connection (new ProductHeaderValue (BrandingService.ApplicationName.Replace (" ", String.Empty), MonoDevelop.BuildInfo.VersionLabel));
 			if (!string.IsNullOrEmpty (user) && !string.IsNullOrEmpty (password))
 				conn.Credentials = new Credentials (user, password);
 
