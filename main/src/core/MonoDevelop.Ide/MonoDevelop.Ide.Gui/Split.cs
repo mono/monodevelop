@@ -34,9 +34,5 @@ namespace MonoDevelop.Ide.Gui
 	{
 		public DockNotebookContainer Notebook1 { get; set; }
 		public DockNotebookContainer Notebook2 { get; set; }
-
-		public Split ()
-		{
-		}
 	}
 }

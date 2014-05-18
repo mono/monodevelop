@@ -168,7 +168,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		//public int SplitCount { get; set; }
 		internal List<Split> Splits { get { return splits; } }
 
 		public WorkbenchWindow RootWindow {
@@ -977,10 +976,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 			}
 
-//			foreach (var nb in notebooksList) {
-//				prefs.Notebooks.Add (nb);
-//			}
-			
 			foreach (Pad pad in Pads) {
 				IMementoCapable mc = pad.GetMementoCapable ();
 				if (mc != null) {
@@ -1021,17 +1016,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			using (IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
 				string currentFileName = prefs.ActiveDocument != null ? baseDir.Combine (prefs.ActiveDocument).FullPath : null;
-
-				foreach (var sb in prefs.Splits) {
-					switch (sb.Mode) {
-					case "Vertical":
-						break;
-
-					case "Horizontal":
-						// We don't support these yet.
-						break;
-					}
-				}
 
 				foreach (DocumentUserPrefs doc in prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId)) {
 					string fileName = baseDir.Combine (doc.FileName).FullPath;

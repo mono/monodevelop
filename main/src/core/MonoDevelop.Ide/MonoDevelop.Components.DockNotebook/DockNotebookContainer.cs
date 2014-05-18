@@ -119,12 +119,10 @@ namespace MonoDevelop.Components.DockNotebook
 
 			newNotebook.NavigationButtonsVisible = false;
 			PlaceholderWindow.newNotebooks.Add (newNotebook);
-			//IdeApp.Workbench.Splits.Add (newNotebook);
 			newNotebook.InitSize ();
 			var newContainer = new DockNotebookContainer (newNotebook);
 			newNotebook.Destroyed += delegate {
 				PlaceholderWindow.newNotebooks.Remove (newNotebook);
-				//IdeApp.Workbench.Splits.Remove (newContainer);
 			};
 			newNotebook.PageRemoved += HandlePageRemoved;
 
@@ -176,8 +174,6 @@ namespace MonoDevelop.Components.DockNotebook
 		private Split AddSplit (DockNotebookContainer container1, DockNotebookContainer container2)
 		{
 			var split = new Split ();
-//			split.Notebooks.Add (container1);
-//			split.Notebooks.Add (container2);
 
 			split.Notebook1 = container1;
 			split.Notebook2 = container2;
