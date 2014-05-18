@@ -2,9 +2,9 @@
 // Initializer.cs
 //
 // Author:
-//       Marius <>
+//       Marius Ungureanu <marius.ungureanu@xamarin.com>
 //
-// Copyright (c) 2014 Marius
+// Copyright (c) 2014 Xamarin Inc. (http://www.xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
