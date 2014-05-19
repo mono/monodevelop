@@ -45,48 +45,59 @@ namespace MonoDevelop.VersionControl
 				return;
 		
 			// Add status overlays
+			Repository rep;
+			VersionInfo vi;
 
 			if (dataObject is IWorkspaceObject) {
 				IWorkspaceObject ce = (IWorkspaceObject) dataObject;
-				Repository rep = VersionControlService.GetRepository (ce);
-				if (rep != null) {
-					rep.GetDirectoryVersionInfo (ce.BaseDirectory, false, false);
-					AddFolderOverlay (rep, ce.BaseDirectory, nodeInfo, !(dataObject is Solution));
+				rep = VersionControlService.GetRepository (ce);
+				if (rep == null)
+					return;
+
+				rep.GetDirectoryVersionInfo (ce.BaseDirectory, false, false);
+				if (ce is Solution) {
+					vi = rep.GetVersionInfo (((Solution)ce).FileName);
+					if (vi.IsVersioned)
+						nodeInfo.OverlayTopLeft = VersionControlService.overlay_controled;
+				} else if (ce is SolutionEntityItem)
+					vi = rep.GetVersionInfo (((SolutionEntityItem)ce).FileName);
+				else {
+					AddFolderOverlay (rep, ce.BaseDirectory, nodeInfo);
+					return;
 				}
-				return;
 			} else if (dataObject is ProjectFolder) {
 				ProjectFolder ce = (ProjectFolder) dataObject;
 				if (ce.ParentWorkspaceObject != null) {
-					Repository rep = VersionControlService.GetRepository (ce.ParentWorkspaceObject);
+					rep = VersionControlService.GetRepository (ce.ParentWorkspaceObject);
 					if (rep != null) {
 						rep.GetDirectoryVersionInfo (ce.Path, false, false);
-						AddFolderOverlay (rep, ce.Path, nodeInfo, true);
+						AddFolderOverlay (rep, ce.Path, nodeInfo);
 					}
 				}
 				return;
-			}
-			
-			IWorkspaceObject prj;
-			FilePath file;
-			
-			if (dataObject is ProjectFile) {
-				ProjectFile pfile = (ProjectFile) dataObject;
-				prj = pfile.Project;
-				file = pfile.FilePath;
 			} else {
-				SystemFile pfile = (SystemFile) dataObject;
-				prj = pfile.ParentWorkspaceObject;
-				file = pfile.Path;
+				IWorkspaceObject prj;
+				FilePath file;
+
+				if (dataObject is ProjectFile) {
+					ProjectFile pfile = (ProjectFile)dataObject;
+					prj = pfile.Project;
+					file = pfile.FilePath;
+				} else {
+					SystemFile pfile = (SystemFile)dataObject;
+					prj = pfile.ParentWorkspaceObject;
+					file = pfile.Path;
+				}
+			
+				if (prj == null)
+					return;
+			
+				rep = VersionControlService.GetRepository (prj);
+				if (rep == null)
+					return;
+
+				vi = rep.GetVersionInfo (file);
 			}
-			
-			if (prj == null)
-				return;
-			
-			Repository repo = VersionControlService.GetRepository (prj);
-			if (repo == null)
-				return;
-			
-			VersionInfo vi = repo.GetVersionInfo (file);
 
 			nodeInfo.OverlayBottomRight = VersionControlService.LoadOverlayIconForStatus (vi.Status);
 		}
@@ -109,18 +120,15 @@ namespace MonoDevelop.VersionControl
 			base.PrepareChildNodes (dataObject);
 		}
 */		
-		static void AddFolderOverlay (Repository rep, string folder, NodeInfo nodeInfo, bool skipVersionedOverlay)
+		static void AddFolderOverlay (Repository rep, string folder, NodeInfo nodeInfo)
 		{
 			Xwt.Drawing.Image overlay = null;
 			VersionInfo vinfo = rep.GetVersionInfo (folder);
 			if (vinfo == null || !vinfo.IsVersioned) {
 				overlay = VersionControlService.LoadOverlayIconForStatus (VersionStatus.Unversioned);
-			} else if (vinfo.IsVersioned && !vinfo.HasLocalChanges) {
-				if (!skipVersionedOverlay)
-					overlay = VersionControlService.overlay_controled;
-			} else {
+			} else if (vinfo.HasLocalChanges)
 				overlay = VersionControlService.LoadOverlayIconForStatus (vinfo.Status);
-			}
+
 			nodeInfo.OverlayBottomRight = overlay;
 		}
 		
