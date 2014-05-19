@@ -168,7 +168,7 @@ type AsyncMaybeBuilder () =
                 this.Delay (fun () ->
                     body enum.Current)))
 
-[<RequireQualifiedAccess; CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module AsyncMaybe =
     let liftMaybe (maybe: Option<'T>) : Async<_ option> =
         async { return maybe }
@@ -218,7 +218,7 @@ module Pervasive =
 
     /// Load times used to reset type checking properly on script/project load/unload. It just has to be unique for each project load/reload.
     /// Not yet sure if this works for scripts.
-    let fakeDateTimeRepresentingTimeLoaded proj = DateTime(abs (int64 (match proj with null -> 0 | _ -> proj.GetHashCode())) % 103231L)
+    let fakeDateTimeRepresentingTimeLoaded x = DateTime(abs (int64 (match x with null -> 0 | _ -> x.GetHashCode())) % 103231L)
 
     open System.Threading
     
