@@ -36,15 +36,31 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FakeSettings FakeSettings;
 
 		public TestablePackageManagementOptions ()
-			: this (new Properties (), new FakeSettings ())
+			: this (new Properties (), new FakeSettings (), new FakePackageManagementProjectService ())
 		{
 		}
 
-		public TestablePackageManagementOptions (Properties properties, FakeSettings fakeSettings)
-			: base (properties, fakeSettings)
+		public TestablePackageManagementOptions (
+			Properties properties,
+			FakeSettings fakeSettings,
+			FakePackageManagementProjectService projectService)
+			: base (properties, CreateSettingsProvider (fakeSettings, projectService))
 		{
 			this.Properties = properties;
 			this.FakeSettings = fakeSettings;
+		}
+
+		public static void ChangeSettingsReturnedBySettingsProvider (FakeSettings settings)
+		{
+			SettingsProvider.LoadDefaultSettings = (fileSystem, configFile, machineSettings) => {
+				return settings;
+			};
+		}
+
+		public static SettingsProvider CreateSettingsProvider (FakeSettings fakeSettings, FakePackageManagementProjectService projectService)
+		{
+			ChangeSettingsReturnedBySettingsProvider (fakeSettings);
+			return new SettingsProvider (projectService);
 		}
 	}
 }

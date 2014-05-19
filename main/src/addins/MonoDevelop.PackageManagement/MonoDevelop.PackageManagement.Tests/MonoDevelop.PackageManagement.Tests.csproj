@@ -170,6 +170,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableBackgroundPackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageManagementEventsMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\SettingProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
