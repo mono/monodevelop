@@ -201,7 +201,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
-				var ctx = MDRefactoringContext.Create (Options.Document, Options.Document.Editor.Caret.Location);
+				var ctx = MDRefactoringContext.Create (Options.Document, Options.Document.Editor.Caret.Location).Result;
 				if (ctx == null)
 					yield break;
 				var builder = ctx.CreateTypeSystemAstBuilder ();
