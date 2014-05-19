@@ -103,7 +103,7 @@
 	<Match color="Keyword(Iteration)">return(!)?</Match>
 	<Match color="Keyword(Iteration)">do(!)?</Match>
 
-	<!-- reserved-ident-keyword c# spec v3.0 section 3.4 -->
+	<!-- reserved-ident-keyword F# spec v3.0 section 3.4 -->
 	<Match color="Keyword(Other)">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?</Match>
 
 	<!-- It is really impossible to do some intelligent grouping here, because
