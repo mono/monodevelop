@@ -54,7 +54,6 @@ namespace MonoDevelop.Xml.StateEngine
 			if (ct == null) {
 				Debug.Assert (context.CurrentStateLength == 1,
 					"IncompleteNode must not be an XClosingTag when CurrentStateLength is 1");
-				Debug.Assert (context.Nodes.Peek () is XElement);
 				
 				ct = new XClosingTag (context.LocationMinus (3)); //3 = </ and the current char
 				context.Nodes.Push (ct);
