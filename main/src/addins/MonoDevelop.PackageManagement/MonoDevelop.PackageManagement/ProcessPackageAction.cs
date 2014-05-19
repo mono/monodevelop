@@ -159,7 +159,7 @@ namespace ICSharpCode.PackageManagement
 
 		bool AcceptLicenses ()
 		{
-			var packagesWithLicenses = new PackagesRequiringLicenseAcceptance ();
+			var packagesWithLicenses = new PackagesRequiringLicenseAcceptance (Project);
 			var actions = new IPackageAction [] { this };
 			List<IPackage> packages = packagesWithLicenses.GetPackagesRequiringLicenseAcceptance (actions).ToList ();
 			if (packages.Any ()) {

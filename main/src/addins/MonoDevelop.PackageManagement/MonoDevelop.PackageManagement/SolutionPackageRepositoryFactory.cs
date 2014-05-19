@@ -27,6 +27,7 @@
 //
 
 using System;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -50,9 +51,9 @@ namespace ICSharpCode.PackageManagement
 			this.options = options;
 		}
 		
-		public ISolutionPackageRepository CreateSolutionPackageRepository(Solution solution)
+		public ISolutionPackageRepository CreateSolutionPackageRepository (ISolution solution)
 		{
-			return new SolutionPackageRepository(solution, repositoryFactory, options);
+			return new SolutionPackageRepository (solution, repositoryFactory, options);
 		}
 	}
 }

@@ -313,6 +313,12 @@
     <Compile Include="MonoDevelop.PackageManagement\PackagesForSelectedPageQuery.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ISolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectProxy.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SolutionProxy.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IDotNetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

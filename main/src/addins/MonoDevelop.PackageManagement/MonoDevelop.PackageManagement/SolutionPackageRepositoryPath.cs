@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -36,20 +37,20 @@ namespace ICSharpCode.PackageManagement
 	public class SolutionPackageRepositoryPath
 	{
 		string packagesRelativeDirectory;
-		Solution solution;
+		ISolution solution;
 		DefaultPackagePathResolver pathResolver;
 		
 		public SolutionPackageRepositoryPath(Project project)
-			: this(project, new PackageManagementOptions())
+			: this (new ProjectProxy (project), new PackageManagementOptions ())
 		{
 		}
 		
-		public SolutionPackageRepositoryPath(Project project, PackageManagementOptions options)
-			: this(project.ParentSolution, options)
+		public SolutionPackageRepositoryPath (IProject project, PackageManagementOptions options)
+			: this (project.ParentSolution, options)
 		{
 		}
 		
-		public SolutionPackageRepositoryPath(Solution solution, PackageManagementOptions options)
+		public SolutionPackageRepositoryPath (ISolution solution, PackageManagementOptions options)
 		{
 			packagesRelativeDirectory = options.PackagesDirectory;
 			this.solution = solution;
