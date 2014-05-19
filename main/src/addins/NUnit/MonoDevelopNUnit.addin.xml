@@ -12,7 +12,7 @@
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/TestProviders" name = "Test providers">
 		<Description>Test providers. Specified classes must implement ITestProvider.</Description>
-		<ExtensionNode name ="Class" />
+		<ExtensionNode name ="TestProvider" />
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
@@ -181,7 +181,8 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
-		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
+		<TestProvider id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
+		<TestProvider id="NUnitTestProvider" class="MonoDevelop.NUnit.NUnitTestProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">

@@ -45,7 +45,7 @@ namespace MonoDevelop.NUnit
 	{
 		static NUnitService instance;
 		
-		ArrayList providers = new ArrayList ();
+		Dictionary<string, ITestProvider> providers = new Dictionary<string, ITestProvider>();
 		UnitTest[] rootTests;
 		
 		private NUnitService ()
@@ -58,7 +58,7 @@ namespace MonoDevelop.NUnit
 			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
-			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
+			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnProviderExtensionChange);
 		}
 		
 		public static NUnitService Instance {
@@ -70,14 +70,17 @@ namespace MonoDevelop.NUnit
 				return instance;
 			}
 		}
-		
-		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
+
+		void OnProviderExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
+			var testProviderNode = (TypeExtensionNode) args.ExtensionNode;
+			var providerId = testProviderNode.Id;
+
 			if (args.Change == ExtensionChange.Add) {
 				ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-				ITestProvider provider = args.ExtensionObject as ITestProvider;
-				providers.Add (provider);
-				
+				var provider = (ITestProvider) args.ExtensionObject;
+				providers.Add (providerId, provider);
+
 				Type[] types = provider.GetOptionTypes ();
 				if (types != null) {
 					foreach (Type t in types) {
@@ -88,11 +91,9 @@ namespace MonoDevelop.NUnit
 						ps.DataContext.IncludeType (t);
 					}
 				}
-			}
-			else {
-				ITestProvider provider = args.ExtensionObject as ITestProvider;
-				providers.Remove (provider);
-				
+			} else {
+				providers.Remove (providerId);
+
 				// The types returned by provider.GetOptionTypes should probably be unregistered
 				// from the DataContext, but DataContext does not allow unregisterig.
 				// This is not a big issue anyway.
@@ -272,26 +273,29 @@ namespace MonoDevelop.NUnit
 
 			List<UnitTest> list = new List<UnitTest> ();
 			foreach (WorkspaceItem it in IdeApp.Workspace.Items) {
-				UnitTest t = BuildTest (it);
-				if (t != null)
-					list.Add (t);
+				list.AddRange (BuildTests (it));
 			}
 
 			rootTests = list.ToArray ();
 			NotifyTestSuiteChanged ();
 		}
 		
-		public UnitTest BuildTest (IWorkspaceObject entry)
+		public List<UnitTest> BuildTests (IWorkspaceObject entry)
 		{
-			foreach (ITestProvider p in providers) {
-				try {
-					UnitTest t = p.CreateUnitTest (entry);
-					if (t != null)
-						return t;
-				} catch {
+			var tests = new List<UnitTest>();
+			foreach (var pair in providers) {
+				var provider = pair.Value;
+				var test = provider.CreateUnitTest (entry);
+
+				// add to list only if it's not null or if it's a test group that has at least one child
+				if (test != null) {
+					var testGroup = test as UnitTestGroup;
+					if (testGroup == null || testGroup.HasTests) {
+						tests.Add(test);
+					}
 				}
 			}
-			return null;
+			return tests;
 		}
 		
 		public UnitTest[] RootTests {
