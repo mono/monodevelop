@@ -94,9 +94,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			project.AddProjectType (guid);
 		}
 
-		public static void AddReference (FakeDotNetProject project, string referenceName)
+		public static void AddReference (FakeDotNetProject project, string referenceName, string hintPath = null)
 		{
-			var reference = new ProjectReference (ReferenceType.Assembly, referenceName);
+			var reference = new ProjectReference (ReferenceType.Assembly, referenceName, hintPath);
+			project.References.Add (reference);
+		}
+
+		public static void AddGacReference (FakeDotNetProject project, string referenceName)
+		{
+			var reference = new ProjectReference (ReferenceType.Package, referenceName);
 			project.References.Add (reference);
 		}
 
