@@ -51,7 +51,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				ObjRef oref = RemotingServices.Marshal (builderEngine);
 				var ms = new MemoryStream ();
 				bf.Serialize (ms, oref);
-				Console.Error.WriteLine (Convert.ToBase64String (ms.ToArray ()));
+				Console.Error.WriteLine ("[MonoDevelop]" + Convert.ToBase64String (ms.ToArray ()));
 				
 				if (WaitHandle.WaitAny (new WaitHandle[] { builderEngine.WaitHandle, exitEvent }) == 0) {
 					// Wait before exiting, so that the remote call that disposed the builder can be completed

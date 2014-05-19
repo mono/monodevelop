@@ -258,6 +258,7 @@ namespace MonoDevelop.Components.Commands
 			itemArray = null;
 			initialTarget = null;
 			arrayDataItem = null;
+			lastCmdInfo = null;
 		}
 	}
 }

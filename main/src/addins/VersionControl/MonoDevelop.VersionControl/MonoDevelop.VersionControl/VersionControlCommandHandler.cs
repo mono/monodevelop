@@ -28,6 +28,7 @@
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide.Gui.Pads.ProjectPad;
+using System;
 
 namespace MonoDevelop.VersionControl
 {

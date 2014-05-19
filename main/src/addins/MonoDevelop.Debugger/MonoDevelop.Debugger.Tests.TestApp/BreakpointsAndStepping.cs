@@ -29,6 +29,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -51,6 +52,17 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				} catch {
 				}
 			}
+		}
+
+		public void OutputAndDebugWriter ()
+		{
+			Console.Write ("NormalText");
+			Debug.Write ("DebugText");
+			Debug.Write ("");
+			System.Diagnostics.Debugger.Log (3, "SomeCategory", "DebugText2");
+			Console.Error.Write ("ErrorText");
+			Console.Write ("");
+			Console.Write ("");/*5070ed1c-593d-4cbe-b4fa-b2b0c7b25289*/
 		}
 
 		public void OneLineProperty ()

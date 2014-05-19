@@ -30,6 +30,7 @@ namespace MonoDevelop.Core
 {
 	public class MacSystemInformation : UnixSystemInformation
 	{
+		public static readonly Version Mavericks = new Version (10, 9);
 		public static readonly Version MountainLion = new Version (10, 8);
 		public static readonly Version Lion = new Version (10, 7);
 		public static readonly Version SnowLeopard = new Version (10, 6);

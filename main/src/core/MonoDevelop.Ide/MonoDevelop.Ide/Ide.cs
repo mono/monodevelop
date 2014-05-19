@@ -282,8 +282,10 @@ namespace MonoDevelop.Ide
 				}
 			}
 			
-			if (initializedEvent != null)
+			if (initializedEvent != null) {
 				initializedEvent (null, EventArgs.Empty);
+				initializedEvent = null;
+			}
 			
 			// load previous combine
 			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {

@@ -43,6 +43,11 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		{
 		}
 
+		public SharedAssetsProject (string language)
+		{
+			languageName = language;
+		}
+
 		public SharedAssetsProject (ProjectCreateInformation projectCreateInfo, XmlElement projectOptions)
 		{
 			languageName = projectOptions.GetAttribute ("language");
@@ -106,24 +111,43 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		protected override void OnBoundToSolution ()
 		{
-			if (currentSolution != null) {
-				currentSolution.ReferenceAddedToProject -= HandleReferenceAddedToProject;
-				currentSolution.ReferenceRemovedFromProject -= HandleReferenceRemovedFromProject;
-			}
+			if (currentSolution != null)
+				DisconnectFromSolution ();
 
 			base.OnBoundToSolution ();
 
 			ParentSolution.ReferenceAddedToProject += HandleReferenceAddedToProject;
 			ParentSolution.ReferenceRemovedFromProject += HandleReferenceRemovedFromProject;
+			ParentSolution.SolutionItemAdded += HandleSolutionItemAdded;
 			currentSolution = ParentSolution;
+
+			// Maybe there is a project that is already referencing this one. It may happen when creating a solution
+			// from a template
+			foreach (var p in ParentSolution.GetAllSolutionItems<DotNetProject> ())
+				ProcessProject (p);
+		}
+
+		void HandleSolutionItemAdded (object sender, SolutionItemChangeEventArgs e)
+		{
+			var p = e.SolutionItem as DotNetProject;
+			if (p != null)
+				// Maybe the new project already contains a reference to this shared project
+				ProcessProject (p);
 		}
 
 		public override void Dispose ()
 		{
 			base.Dispose ();
+			DisconnectFromSolution ();
+		}
+
+		void DisconnectFromSolution ()
+		{
 			if (currentSolution != null) {
 				currentSolution.ReferenceAddedToProject -= HandleReferenceAddedToProject;
 				currentSolution.ReferenceRemovedFromProject -= HandleReferenceRemovedFromProject;
+				currentSolution.SolutionItemAdded -= HandleSolutionItemAdded;
+				currentSolution = null;
 			}
 		}
 
@@ -141,13 +165,24 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		void HandleReferenceAddedToProject (object sender, ProjectReferenceEventArgs e)
 		{
 			if (e.ProjectReference.ReferenceType == ReferenceType.Project && e.ProjectReference.Reference == Name) {
-				e.ProjectReference.Flags = ProjectItemFlags.DontPersist;
-				foreach (var f in Files) {
-					var cf = (ProjectFile) f.Clone ();
-					cf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
-					e.Project.Files.Add (cf);
-					e.ProjectReference.SetItemsProjectPath (Path.ChangeExtension (FileName, ".projitems"));
-				}
+				ProcessNewReference (e.ProjectReference);
+			}
+		}
+
+		void ProcessProject (DotNetProject p)
+		{
+			foreach (var pref in p.References.Where (r => r.ReferenceType == ReferenceType.Project && r.Reference == Name))
+				ProcessNewReference (pref);
+		}
+
+		void ProcessNewReference (ProjectReference pref)
+		{
+			pref.Flags = ProjectItemFlags.DontPersist;
+			pref.SetItemsProjectPath (Path.ChangeExtension (FileName, ".projitems"));
+			foreach (var f in Files) {
+				var cf = (ProjectFile) f.Clone ();
+				cf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
+				pref.OwnerProject.Files.Add (cf);
 			}
 		}
 

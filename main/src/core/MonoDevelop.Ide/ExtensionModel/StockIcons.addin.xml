@@ -61,6 +61,7 @@
 	<StockIcon stockid="gtk-remove" resource="remove-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-save" resource="save-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-stop" resource="stop-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-undo" resource="undo-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-in" resource="zoom-in-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-zoom-out" resource="zoom-out-light-16.png" size="Menu" />
   

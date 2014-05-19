@@ -54,11 +54,11 @@ namespace MonoDevelop.Debugger.Tests
 
 		SourceLocation lastStoppedPosition;
 
-		public bool AllowTargetInvokes{ get; set; }
+		public bool AllowTargetInvokes { get; protected set; }
 
-		public DebuggerSession Session{ get; private set; }
+		public DebuggerSession Session { get; private set; }
 
-		public StackFrame Frame{ get; private set; }
+		public StackFrame Frame { get; private set; }
 
 		protected DebugTests (string engineId)
 		{
@@ -99,7 +99,7 @@ namespace MonoDevelop.Debugger.Tests
 			case "Mono.Debugger.Soft":
 				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ()
 					.OfType<MonoTargetRuntime> ()
-					.OrderByDescending((o) => o.Version)
+					.OrderByDescending(o => o.Version)
 					.FirstOrDefault ();
 				break;
 			default:
@@ -107,8 +107,10 @@ namespace MonoDevelop.Debugger.Tests
 				break;
 			}
 
-			if (runtime == null)
+			if (runtime == null) {
 				Assert.Ignore ("Runtime not found for: {0}", EngineId);
+				return;
+			}
 
 			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version);
 
@@ -117,9 +119,9 @@ namespace MonoDevelop.Debugger.Tests
 			var exe = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
 
 			var cmd = new DotNetExecutionCommand ();
+			cmd.TargetRuntime = runtime;
 			cmd.Command = exe;
 			cmd.Arguments = test;
-			cmd.TargetRuntime = runtime;
 
 			if (Platform.IsWindows) {
 				var monoRuntime = runtime as MonoTargetRuntime;
@@ -131,7 +133,7 @@ namespace MonoDevelop.Debugger.Tests
 				}
 			}
 
-			DebuggerStartInfo dsi = engine.CreateDebuggerStartInfo (cmd);
+			var dsi = engine.CreateDebuggerStartInfo (cmd);
 			var soft = dsi as SoftDebuggerStartInfo;
 
 			if (soft != null) {
@@ -153,17 +155,15 @@ namespace MonoDevelop.Debugger.Tests
 			AddBreakpoint ("break");
 			
 			var done = new ManualResetEvent (false);
-			
-			Session.OutputWriter = (isStderr, text) => Console.WriteLine ("PROC:" + text);
 
-			Session.TargetHitBreakpoint += (object sender, TargetEventArgs e) => {
+			Session.TargetHitBreakpoint += (sender, e) => {
 				done.Set ();
 				Frame = e.Backtrace.GetFrame (0);
 				lastStoppedPosition = Frame.SourceLocation;
 				targetStoppedEvent.Set ();
 			};
 
-			Session.TargetExceptionThrown += (object sender, TargetEventArgs e) => {
+			Session.TargetExceptionThrown += (sender, e) => {
 				Frame = e.Backtrace.GetFrame (0);
 				for (int i = 0; i < e.Backtrace.FrameCount; i++) {
 					if (!e.Backtrace.GetFrame (i).IsExternalCode) {
@@ -175,13 +175,13 @@ namespace MonoDevelop.Debugger.Tests
 				targetStoppedEvent.Set ();
 			};
 
-			Session.TargetStopped += (object sender, TargetEventArgs e) => {
+			Session.TargetStopped += (sender, e) => {
 				Frame = e.Backtrace.GetFrame (0);
 				lastStoppedPosition = Frame.SourceLocation;
 				targetStoppedEvent.Set ();
 			};
 
-			ManualResetEvent targetExited = new ManualResetEvent (false);
+			var targetExited = new ManualResetEvent (false);
 			Session.TargetExited += delegate {
 				targetExited.Set ();
 			};
@@ -208,7 +208,7 @@ namespace MonoDevelop.Debugger.Tests
 			if (statement != null) {
 				int lineStartPosition = SourceFile.GetPositionFromLineColumn (line, 1);
 				string lineText = SourceFile.GetText (lineStartPosition, lineStartPosition + SourceFile.GetLineLength (line));
-				col = lineText.IndexOf (statement) + 1;
+				col = lineText.IndexOf (statement, StringComparison.Ordinal) + 1;
 				if (col == 0)
 					Assert.Fail ("Failed to find statement:" + statement + " at " + SourceFile.Name + "(" + line + ")");
 			} else {

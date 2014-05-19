@@ -24,9 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading;
+using System;
+
 using Mono.Debugging.Client;
 using NUnit.Framework;
+using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Tests
 {
@@ -62,6 +64,8 @@ namespace MonoDevelop.Debugger.Tests
 				return "MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedGenericClass";
 			case "Dictionary`2":
 				return "System.Collections.Generic.Dictionary";
+			case "Thing`1":
+				return "Thing";
 			case "A":
 				return "A";
 			case "B":
@@ -81,6 +85,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void This ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			ObjectValue val = Eval ("this");
 			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluation}", val.Value);
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation", val.TypeName);
@@ -163,11 +171,20 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<string,int>", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			val = Eval ("Thing<string>.Done<int>");
+			Assert.AreEqual ("Thing<string>.Done<int>", val.Value);
+			Assert.AreEqual ("<type>", val.TypeName);
+			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
 		}
 
 		[Test]
 		public virtual void Typeof ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			var val = Eval ("typeof(System.Console)");
 			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			if (!AllowTargetInvokes) {
@@ -185,6 +202,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void MethodInvoke ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("TestMethod ()");
 			if (!AllowTargetInvokes) {
@@ -293,11 +314,43 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("\"43\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("objWithMethodA.MethodA()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"AbstractImplementation\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			// FIXME: failing on CorDebugger
+			if (Session is SoftDebuggerSession) {
+				val = Eval ("true.ToString()");
+				if (!AllowTargetInvokes) {
+					var options = Session.Options.EvaluationOptions.Clone ();
+					options.AllowTargetInvoke = true;
+
+					Assert.IsTrue (val.IsNotSupported);
+					val.Refresh (options);
+					val = val.Sync ();
+				}
+
+				Assert.AreEqual ("\"True\"", val.Value);
+				Assert.AreEqual ("string", val.TypeName);
+			}
 		}
 
 		[Test]
 		public void GenericMethodInvoke ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			if (Session.GetType ().Name == "CorDebuggerSession")
 				Assert.Ignore ("TODO: Win32 support generic invokes");
 
@@ -442,6 +495,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void MemberReference ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("\"someString\".Length");
 			if (!AllowTargetInvokes) {
@@ -761,7 +818,6 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -773,7 +829,6 @@ namespace MonoDevelop.Debugger.Tests
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
-				Assert.IsTrue (val.IsNotSupported);
 				val.Refresh (options);
 				val = val.Sync ();
 			}
@@ -788,6 +843,91 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("2 + 2 == 4");
 			Assert.AreEqual ("true", val.Value);
 			Assert.AreEqual ("bool", val.TypeName);
+		}
+
+		[Test]
+		public void BinaryOperatorOverrides ()
+		{
+			ObjectValue val;
+
+			if (!AllowTargetInvokes)
+				return;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("Requires a newer version of the Mono runtime.");
+
+			val = Eval ("ops1 == ops3");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 != ops3");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops2 == ops3");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops2 != ops3");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 <= ops2");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 < ops2");
+			Assert.AreEqual ("true", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 >= ops2");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 > ops2");
+			Assert.AreEqual ("false", val.Value);
+			Assert.AreEqual ("bool", val.TypeName);
+
+			val = Eval ("ops1 + ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 3]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 - ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides -1]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 * ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 2]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops2 / ops1");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 2]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 % ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 1]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 & ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 0]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 | ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 3]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 ^ ops2");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 3]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops1 << 1");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 2]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
+
+			val = Eval ("ops2 >> 1");
+			Assert.AreEqual ("{[BinaryOperatorOverrides 1]}", val.Value);
+			Assert.AreEqual ("BinaryOperatorOverrides", val.TypeName);
 		}
 
 		void AssertAssignment (string assignment, string variable, string value, string type)
@@ -818,6 +958,23 @@ namespace MonoDevelop.Debugger.Tests
 
 			Assert.AreEqual (value, val.Value);
 			Assert.AreEqual (type, val.TypeName);
+		}
+
+		[Test]
+		public void MethodParameters ()
+		{
+			ObjectValue val;
+			val = Eval ("stringParam");
+			Assert.AreEqual ("\"testString\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("intParam");
+			Assert.AreEqual ("55", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
+
+			val = Eval ("intParam2");
+			Assert.AreEqual ("66", val.Value);
+			Assert.AreEqual ("int", val.TypeName);
 		}
 
 		[Test]
@@ -961,6 +1118,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatObject ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 			
 			val = Eval ("c");
 			Assert.AreEqual ("{C}", val.Value);
@@ -1027,11 +1188,16 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>[2,3]}", val.Value);
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>[,]", val.TypeName);
-			
+
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				return;
+
 			val = Eval ("thing.done");
 			Assert.AreEqual ("{Thing<string>.Done<int>[1]}", val.Value);
 			Assert.AreEqual ("Thing<string>.Done<int>[]", val.TypeName);
-			
+
 			val = Eval ("done");
 			Assert.AreEqual ("{Thing<string>.Done<int>}", val.Value);
 			Assert.AreEqual ("Thing<string>.Done<int>", val.TypeName);
@@ -1041,6 +1207,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatEnum ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 			
 			val = Eval ("SomeEnum.one");
 			Assert.AreEqual ("SomeEnum.one", val.Value);
@@ -1060,6 +1230,10 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			ObjectValue val;
 
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("action");
 			Assert.AreEqual ("{System.Action}", val.Value);
 			Assert.AreEqual ("System.Action", val.TypeName);
@@ -1074,6 +1248,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void Structures ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("simpleStruct");
 			if (!AllowTargetInvokes) {
@@ -1097,11 +1275,6 @@ namespace MonoDevelop.Debugger.Tests
 		public void SdbFailingTests ()
 		{
 			ObjectValue val;
-
-			//When fixed put into MemberRefernce test?
-			val = Eval ("true.ToString()");
-			Assert.AreEqual ("\"true\"", val.Value);
-			Assert.AreEqual ("string", val.TypeName);
 
 			//When fixed put into Inheriting test
 			val = Eval ("b.TestMethod ()");
@@ -1159,12 +1332,29 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.NestedGenericClass<int,string>", val.Value);
 			Assert.AreEqual ("<type>", val.TypeName);
 			Assert.AreEqual (ObjectValueFlags.Type, val.Flags & ObjectValueFlags.OriginMask);
+
+			//When fixed put into MethodInvoke(failing also on CorDebugger)
+			val = Eval ("((IInterfaceWithMethodA)objWithMethodA).MethodA()");
+			if (!AllowTargetInvokes) {
+				var options = Session.Options.EvaluationOptions.Clone ();
+				options.AllowTargetInvoke = true;
+
+				Assert.IsTrue (val.IsNotSupported);
+				val.Refresh (options);
+				val = val.Sync ();
+			}
+			Assert.AreEqual ("\"InterfaceImplementation\"", val.Value);
+			Assert.AreEqual ("string", val.TypeName);
 		}
 
 		[Test]
 		public void ObjectCreation ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("new A().ConstructedBy");
 			if (!AllowTargetInvokes) {
@@ -1206,8 +1396,13 @@ namespace MonoDevelop.Debugger.Tests
 			if (!AllowTargetInvokes)
 				return;
 
-			if (Session.GetType ().Name == "CorDebuggerSession")
+			var soft = Session as SoftDebuggerSession;
+
+			if (soft == null)
 				Assert.Ignore ("TODO: Win32 support generic invokes");
+
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Inconclusive ("A newer version of the Mono runtime is required.");
 
 			ObjectValue val;
 
@@ -1219,6 +1414,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void Inheriting ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("a.Prop");
 			if (!AllowTargetInvokes) {
@@ -1436,48 +1635,106 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void Lists ()
 		{
-			if (!AllowTargetInvokes)
-				Assert.Ignore ("Evaluating lists is not working on NoTargetInvokes.");
-			ObjectValue val;
 			ObjectValue[] children;
+			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("dict");
 			children = val.GetAllChildren ();
-			Assert.AreEqual (2, children.Length);
-			Assert.AreEqual ("[0]", children [0].Name);
-			Assert.AreEqual ("{[5, System.String[]]}", children [0].Value);
-			Assert.AreEqual ("Raw View", children [1].Name);
-			children = children [0].GetAllChildren ();
-			Assert.AreEqual ("Key", children [0].Name);
-			Assert.AreEqual ("5", children [0].Value);
-			Assert.AreEqual ("int", children [0].TypeName);
-			Assert.AreEqual ("Value", children [1].Name);
-			Assert.AreEqual ("{string[2]}", children [1].Value);
-			children = children [1].GetAllChildren ();
-			Assert.AreEqual ("\"a\"", children [0].Value);
-			Assert.AreEqual ("string", children [0].TypeName);
-			Assert.AreEqual ("\"b\"", children [1].Value);
+
+			if (AllowTargetInvokes) {
+				// AllowTargetInvokes also allows debugger proxies
+				Assert.AreEqual (2, children.Length);
+				Assert.AreEqual ("[0]", children [0].Name);
+				Assert.AreEqual ("{[5, System.String[]]}", children [0].Value);
+				Assert.AreEqual ("Raw View", children [1].Name);
+
+				children = children [0].GetAllChildren ();
+				Assert.AreEqual ("Key", children [0].Name);
+				Assert.AreEqual ("5", children [0].Value);
+				Assert.AreEqual ("int", children [0].TypeName);
+				Assert.AreEqual ("Value", children [1].Name);
+				Assert.AreEqual ("{string[2]}", children [1].Value);
+
+				children = children [1].GetAllChildren ();
+				Assert.AreEqual ("\"a\"", children [0].Value);
+				Assert.AreEqual ("string", children [0].TypeName);
+				Assert.AreEqual ("\"b\"", children [1].Value);
+			} else {
+				// when AllowTargetInvokes is disabled, it also disables debugger proxies
+				Assert.AreEqual (6, children.Length);
+				Assert.AreEqual ("Comparer", children [0].Name);
+				Assert.AreEqual ("Count", children [1].Name);
+				Assert.AreEqual ("Keys", children [2].Name);
+				Assert.AreEqual ("Values", children [3].Name);
+				Assert.AreEqual ("Static members", children [4].Name);
+				Assert.AreEqual ("Non-public members", children [5].Name);
+			}
 
 			val = Eval ("stringList");
 			children = val.GetAllChildren ();
-			Assert.AreEqual (4, children.Length);
-			Assert.AreEqual ("[0]", children [0].Name);
-			Assert.AreEqual ("[1]", children [1].Name);
-			Assert.AreEqual ("[2]", children [2].Name);
-			Assert.AreEqual ("Raw View", children [3].Name);
-			Assert.AreEqual ("\"aaa\"", children [0].Value);
-			Assert.AreEqual ("\"bbb\"", children [1].Value);
-			Assert.AreEqual ("\"ccc\"", children [2].Value);
+
+			if (AllowTargetInvokes) {
+				// AllowTargetInvokes also allows debugger proxies
+				Assert.AreEqual (4, children.Length);
+				Assert.AreEqual ("[0]", children [0].Name);
+				Assert.AreEqual ("[1]", children [1].Name);
+				Assert.AreEqual ("[2]", children [2].Name);
+				Assert.AreEqual ("Raw View", children [3].Name);
+				Assert.AreEqual ("\"aaa\"", children [0].Value);
+				Assert.AreEqual ("\"bbb\"", children [1].Value);
+				Assert.AreEqual ("\"ccc\"", children [2].Value);
+			} else {
+				// when AllowTargetInvokes is disabled, it also disables debugger proxies
+				Assert.AreEqual (4, children.Length);
+				Assert.AreEqual ("Capacity", children [0].Name);
+				Assert.AreEqual ("Count", children [1].Name);
+				Assert.AreEqual ("Static members", children [2].Name);
+				Assert.AreEqual ("Non-public members", children [3].Name);
+			}
 
 			val = Eval ("alist");
 			children = val.GetAllChildren ();
-			Assert.AreEqual (4, children.Length);
-			Assert.AreEqual ("[0]", children [0].Name);
-			Assert.AreEqual ("[1]", children [1].Name);
-			Assert.AreEqual ("[2]", children [2].Name);
-			Assert.AreEqual ("Raw View", children [3].Name);
-			Assert.AreEqual ("1", children [0].Value);
-			Assert.AreEqual ("\"two\"", children [1].Value);
-			Assert.AreEqual ("3", children [2].Value);
+
+			if (AllowTargetInvokes) {
+				// AllowTargetInvokes also allows debugger proxies
+				Assert.AreEqual (4, children.Length);
+				Assert.AreEqual ("[0]", children [0].Name);
+				Assert.AreEqual ("[1]", children [1].Name);
+				Assert.AreEqual ("[2]", children [2].Name);
+				Assert.AreEqual ("Raw View", children [3].Name);
+				Assert.AreEqual ("1", children [0].Value);
+				Assert.AreEqual ("\"two\"", children [1].Value);
+				Assert.AreEqual ("3", children [2].Value);
+			} else {
+				// when AllowTargetInvokes is disabled, it also disables debugger proxies
+				Assert.AreEqual (8, children.Length);
+				Assert.AreEqual ("Capacity", children [0].Name);
+				Assert.AreEqual ("Count", children [1].Name);
+				Assert.AreEqual ("IsFixedSize", children [2].Name);
+				Assert.AreEqual ("IsReadOnly", children [3].Name);
+				Assert.AreEqual ("IsSynchronized", children [4].Name);
+				Assert.AreEqual ("SyncRoot", children [5].Name);
+				Assert.AreEqual ("Static members", children [6].Name);
+				Assert.AreEqual ("Non-public members", children [7].Name);
+			}
+		}
+
+		[Test]
+		[Ignore ("TODO: Evaluating dynamic objects")]
+		public void DynamicObjects ()
+		{
+			ObjectValue val;
+			val = Eval ("dynObj.someInt");
+			Assert.AreEqual ("dynamic {int}", val.TypeName);
+			Assert.AreEqual ("53", val.Value);
+
+			val = Eval ("dynObj.someString");
+			Assert.AreEqual ("dynamic {string}", val.TypeName);
+			Assert.AreEqual ("\"Hello dynamic objects!\"", val.Value);
 		}
 	}
 }

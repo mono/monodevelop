@@ -75,6 +75,8 @@ namespace MonoDevelop.Ide
 					if (!iconStock.ContainsKey (iconCodon.StockId))
 						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
 					iconStock[iconCodon.StockId].Add (iconCodon);
+					if (iconCodon.Addin == AddinManager.CurrentAddin)
+						EnsureStockIconIsLoaded (iconCodon.StockId);
 					break;
 				}
 			});

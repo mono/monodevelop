@@ -24,8 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using Mono.Debugging.Client;
 using MonoDevelop.Ide.Gui.Dialogs;
 
@@ -53,7 +51,8 @@ namespace MonoDevelop.Debugger
 
 		public DebuggerOptionsPanelWidget ()
 		{
-			this.Build ();
+			Build ();
+
 			options = DebuggingService.GetUserOptions ();
 			checkProjectCodeOnly.Active = options.ProjectAssembliesOnly;
 			checkStepOverPropertiesAndOperators.Active = options.StepOverPropertiesAndOperators;
@@ -64,19 +63,11 @@ namespace MonoDevelop.Debugger
 			checkGroupStatic.Active = options.EvaluationOptions.GroupStaticMembers;
 			checkAllowToString.Sensitive = checkAllowEval.Active;
 			spinTimeout.Value = options.EvaluationOptions.EvaluationTimeout;
-
-			// Debugger priorities
-			prioritylist.Model = new Gtk.ListStore (typeof(string), typeof(string));
-			prioritylist.AppendColumn ("", new Gtk.CellRendererText (), "text", 1);
-
-			foreach (DebuggerEngine engine in DebuggingService.GetDebuggerEngines ()) {
-				prioritylist.Model.AppendValues (engine.Id, engine.Name);
-			}
 		}
 
 		public void Store ()
 		{
-			EvaluationOptions ops = options.EvaluationOptions;
+			var ops = options.EvaluationOptions;
 
 			ops.AllowTargetInvoke = checkAllowEval.Active;
 			ops.AllowToStringCalls = checkAllowToString.Active;
@@ -90,16 +81,6 @@ namespace MonoDevelop.Debugger
 			options.EvaluationOptions = ops;
 
 			DebuggingService.SetUserOptions (options);
-
-			Gtk.TreeIter it;
-			List<string> prios = new List<string> ();
-			if (prioritylist.Model.GetIterFirst (out it)) {
-				do {
-					string id = (string) prioritylist.Model.GetValue (it, 0);
-					prios.Add (id);
-				} while (prioritylist.Model.IterNext (ref it));
-			}
-			DebuggingService.EnginePriority = prios.ToArray ();
 		}
 
 		protected virtual void OnCheckAllowEvalToggled (object sender, System.EventArgs e)

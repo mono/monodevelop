@@ -431,5 +431,21 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (r.GetReferencedFileNames(project.DefaultConfiguration.Selector).Single (), project.BaseDirectory.Combine ("gtk-sharp.dll").FullPath.ToString ());
 			Assert.IsTrue (r.IsValid);
 		}
+
+		[Test]
+		public void AssemblyReferenceHintPath ()
+		{
+			var file = GetType ().Assembly.Location;
+			var asmName = Path.GetFileNameWithoutExtension (file);
+
+			var r = new ProjectReference (ReferenceType.Assembly, file);
+			Assert.AreEqual (asmName, r.Reference);
+			Assert.AreEqual (file, r.HintPath);
+
+			r = new ProjectReference (ReferenceType.Assembly, "Foo", file);
+			Assert.AreEqual ("Foo", r.Reference);
+			Assert.AreEqual (file, r.HintPath);
+
+		}
 	}
 }

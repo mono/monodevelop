@@ -87,6 +87,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			Initialize (view);
 		}
+
+		void HandleParseOperationFinished (object sender, EventArgs e)
+		{
+			resolveResult = null;
+			resolveRegion = DomRegion.Empty;
+		}
 		
 		public ExtensibleTextEditor (SourceEditorView view)
 		{
@@ -112,7 +118,8 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			Document.TextReplaced += HandleSkipCharsOnReplace;
-			
+			TypeSystemService.ParseOperationFinished += HandleParseOperationFinished;
+
 			UpdateEditMode ();
 			this.DoPopupMenu = ShowPopup;
 		}
@@ -189,6 +196,7 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
+			TypeSystemService.ParseOperationFinished -= HandleParseOperationFinished;
 			UnregisterAdjustments ();
 			resolveResult = null;
 			Extension = null;
