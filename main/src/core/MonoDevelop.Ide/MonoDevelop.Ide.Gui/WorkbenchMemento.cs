@@ -137,6 +137,9 @@ namespace MonoDevelop.Ide.Gui
 
 		[ItemProperty (DefaultValue = 0)]
 		public int NotebookId;
+
+		[ItemProperty (DefaultValue = 0)]
+		public int FloatingWindowId;
 	}
 	
 	[DataItem ("Pad")]
@@ -147,6 +150,19 @@ namespace MonoDevelop.Ide.Gui
 		
 		[ItemProperty]
 		public XmlElement State;
+	}
+
+	[DataItem ("FloatingWindow")]
+	class FloatingWindowUserPrefs
+	{
+		[ItemProperty (DefaultValue = 0)]
+		public int WindowId;
+
+		[ItemProperty]
+		public int Width;
+
+		[ItemProperty]
+		public int Height;
 	}
 
 	[DataItem ("Split")]
@@ -189,6 +205,9 @@ namespace MonoDevelop.Ide.Gui
 
 		[ItemProperty]
 		public List<SplitUserPrefs> Splits = new List<SplitUserPrefs> ();
+
+		[ItemProperty]
+		public List<FloatingWindowUserPrefs> FloatingWindows = new List<FloatingWindowUserPrefs> ();
 
 		[ItemProperty]
 		public List<PadUserPrefs> Pads = new List<PadUserPrefs> ();

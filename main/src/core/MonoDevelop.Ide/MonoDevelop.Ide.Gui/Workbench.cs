@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Gui
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		readonly List<Document> documents = new List<Document> ();
 		readonly List<Split> splits = new List<Split> ();
+		readonly List<Gtk.Window> dockWindows = new List<Gtk.Window> ();
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
@@ -169,6 +170,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		internal List<Split> Splits { get { return splits; } }
+		internal List<Gtk.Window> FloatingEditors { get { return dockWindows; } }
 
 		public WorkbenchWindow RootWindow {
 			get { return workbench; }
@@ -911,8 +913,48 @@ namespace MonoDevelop.Ide.Gui
 
 		void OnStoringWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
+			var addedFiles = new List<string> ();
 			WorkbenchUserPrefs prefs = new WorkbenchUserPrefs ();
 			var nbId = 0;
+			var fwId = 1;
+
+			if (FloatingEditors.Count > 0) {
+				foreach (var window in FloatingEditors) {
+					Console.WriteLine ("{0}, {1}", window.Allocation.Width, window.Allocation.Height);
+
+					var fwp = new FloatingWindowUserPrefs {
+						WindowId = fwId,
+						Width = window.Allocation.Width,
+						Height = window.Allocation.Height
+					};
+
+					fwId++;
+
+					prefs.FloatingWindows.Add (fwp);
+
+					// TODO - iterate through notebooks in window
+					//var container = window.Parent.Parent as MonoDevelop.Components.DockNotebook.DockNotebookContainer;
+					var container = window.Child as MonoDevelop.Components.DockNotebook.DockNotebookContainer;
+
+					foreach (var tab in container.TabControl.Tabs) {
+						var sdiwindow = (SdiWorkspaceWindow)tab.Content;
+						var document = sdiwindow.Document;
+
+						if (!String.IsNullOrEmpty (document.FileName)) {
+							var dp = new DocumentUserPrefs ();
+							dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
+							dp.FloatingWindowId = fwp.WindowId;
+							if (document.Editor != null) {
+								dp.Line = document.Editor.Caret.Line;
+								dp.Column = document.Editor.Caret.Column;
+							}
+
+							prefs.Files.Add (dp);
+							addedFiles.Add (dp.FileName);
+						}
+					}
+				}
+			}
 
 			if (Splits.Count > 0) {
 				foreach (var obj in Splits) {
@@ -920,8 +962,8 @@ namespace MonoDevelop.Ide.Gui
 					var notebook2 = obj.Notebook2;
 
 					foreach (var tab in notebook1.TabControl.Tabs) {
-						var window = (SdiWorkspaceWindow)tab.Content;
-						var document = window.Document;
+						var sdiwindow = (SdiWorkspaceWindow)tab.Content;
+						var document = sdiwindow.Document;
 
 						if (!String.IsNullOrEmpty (document.FileName)) {
 							var dp = new DocumentUserPrefs ();
@@ -964,7 +1006,7 @@ namespace MonoDevelop.Ide.Gui
 				}
 			} else {
 				foreach (Document document in Documents) {
-					if (!String.IsNullOrEmpty (document.FileName)) {
+					if (!String.IsNullOrEmpty (document.FileName) && !addedFiles.Contains (document.FileName)) {
 						DocumentUserPrefs dp = new DocumentUserPrefs ();
 						dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
 						if (document.Editor != null) {

@@ -110,7 +110,7 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 			
 			// window case.
-			controlContainer.Parent.Parent.Destroy ();
+			controlContainer.Parent.Destroy ();
 		}
 
 		void Insert(SdiWorkspaceWindow window, Func<DockNotebookContainer, Split> callback)

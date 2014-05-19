@@ -313,8 +313,21 @@ namespace MonoDevelop.Components.DockNotebook
 			DockRect = rect;
 		}
 		
-		class DockWindow : Gtk.Window
+		public class DockWindow : Gtk.Window
 		{
+			DockNotebookContainer container;
+
+			public DockNotebookContainer Container {
+				get {
+					return container;
+				}
+
+				set {
+					container = value;
+					Child = value;
+				}
+			}
+
 			bool IsChildOfMe (Document d)
 			{
 				Widget control = ((SdiWorkspaceWindow)d.Window).TabControl;
@@ -325,9 +338,11 @@ namespace MonoDevelop.Components.DockNotebook
 
 			public DockWindow () : base (Gtk.WindowType.Toplevel)
 			{
+				IdeApp.Workbench.FloatingEditors.Add (this);
 				IdeApp.CommandService.RegisterTopWindow (this);
 				AddAccelGroup (IdeApp.CommandService.AccelGroup);
 				this.DeleteEvent += delegate(object o, DeleteEventArgs args) {
+					IdeApp.Workbench.FloatingEditors.Remove (this);
 					var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
 //					bool showDirtyDialog = false;
 //					foreach (var content in documents) {
@@ -383,9 +398,7 @@ namespace MonoDevelop.Components.DockNotebook
 			newNotebook.NavigationButtonsVisible = false;
 			newNotebooks.Add (newNotebook);
 			
-			var box = new VBox ();
-			box.PackStart (new DockNotebookContainer (newNotebook), true, true, 0);
-			newWindow.Child = box;
+			newWindow.Container = new DockNotebookContainer (newNotebook);
 			newNotebook.InitSize ();
 
 			var window2 = (SdiWorkspaceWindow)tab.Content;
