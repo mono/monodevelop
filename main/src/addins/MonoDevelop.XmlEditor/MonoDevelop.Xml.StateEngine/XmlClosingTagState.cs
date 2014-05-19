@@ -98,7 +98,9 @@ namespace MonoDevelop.Xml.StateEngine
 							context.Nodes.Pop ();
 					} else {
 						context.LogError (
-							"Closing tag '" + ct.Name.FullName + "' does not match any currently open tag.");
+							"Closing tag '" + ct.Name.FullName + "' does not match any currently open tag.",
+							ct.Region
+						);
 					}
 				} else {
 					context.LogError ("Closing tag ended prematurely.");

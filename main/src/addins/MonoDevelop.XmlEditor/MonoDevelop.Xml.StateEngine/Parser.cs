@@ -303,13 +303,13 @@ namespace MonoDevelop.Xml.StateEngine
 		void IParseContext.LogWarning (string message)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, message, Location));
+				InternalLogError (new Error (ErrorType.Warning, message, ((IParseContext)this).LocationMinus (1)));
 		}
 		
 		void IParseContext.LogError (string message, TextLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, message, location));
+				InternalLogError (new Error (ErrorType.Error, message, ((IParseContext)this).LocationMinus (1)));
 		}
 		
 		void IParseContext.LogWarning (string message, TextLocation location)
