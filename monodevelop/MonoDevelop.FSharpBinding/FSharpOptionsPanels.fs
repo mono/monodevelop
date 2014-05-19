@@ -85,7 +85,7 @@ type FSharpSettingsPanel() =
     x.setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
     x.setCompilerDisplay( (prop_compiler_path = "") )
 
-    let fontName = MonoDevelop.Ide.Fonts.FontService.DefaultMonospaceFontDescription.Family
+    let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
     widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
     
         

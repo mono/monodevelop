@@ -221,7 +221,7 @@ module InterfaceStubGenerator =
         let getParamArgs (argInfos: FSharpParameter list list) = 
             let args, namesWithIndices =
                 match argInfos with
-                | [[x]] when v.IsGetterMethod && x.Name.IsNone 
+                | [[x]] when v.IsPropertyGetterMethod && x.Name.IsNone 
                              && x.Type.TypeDefinition.XmlDocSig = "T:Microsoft.FSharp.Core.unit" -> 
                     "", Map.ofList [ctx.ObjectIdent, Set.empty]
                 | _  -> formatArgsUsage ctx true v argInfos
@@ -237,7 +237,8 @@ module InterfaceStubGenerator =
             // Constructors
             | _, _, ".ctor", _ -> "new" + parArgs
             // Properties (skipping arguments)
-            | _, true, _, name when v.IsProperty -> name
+            | _, true, _, name when v.IsPropertyGetterMethod || v.IsPropertySetterMethod -> 
+                if name.StartsWith("get_") || name.StartsWith("set_") then name.[4..] else name
             // Ordinary instance members
             | _, true, _, name -> name + parArgs
             // Ordinary functions or values
@@ -257,7 +258,7 @@ module InterfaceStubGenerator =
         let retType = v.ReturnParameter.Type
 
         let argInfos, retType = 
-            match argInfos, v.IsGetterMethod, v.IsSetterMethod with
+            match argInfos, v.IsPropertyGetterMethod, v.IsPropertySetterMethod with
             | [ AllAndLast(args, last) ], _, true -> [ args ], Some last.Type
             | [[]], true, _ -> [], Some retType
             | _, _, _ -> argInfos, Some retType
@@ -271,7 +272,7 @@ module InterfaceStubGenerator =
             ctx.Writer.Write("{0} ", modifier)
         ctx.Writer.Write("{0}.", ctx.ObjectIdent)
         
-        if v.IsSetterMethod then
+        if v.IsPropertySetterMethod then
             ctx.Writer.WriteLine(usage)
             ctx.Writer.Indent ctx.Indentation
             match getParamArgs argInfos with
@@ -285,7 +286,7 @@ module InterfaceStubGenerator =
                 ctx.Writer.WriteLine(line)
             ctx.Writer.Unindent ctx.Indentation
             ctx.Writer.Unindent ctx.Indentation
-        elif v.IsGetterMethod then
+        elif v.IsPropertyGetterMethod then
             ctx.Writer.WriteLine(usage)
             ctx.Writer.Indent ctx.Indentation
             match getParamArgs argInfos with
@@ -334,7 +335,7 @@ module InterfaceStubGenerator =
                            // Use this hack when FCS doesn't return enough information on .NET properties and events
                            if not iface.IsFSharp && m.IsEvent && not (m.DisplayName.StartsWith "add_") && not (m.DisplayName.StartsWith "remove_") then 
                                None
-                           elif not iface.IsFSharp && m.IsProperty then 
+                           elif m.IsProperty then 
                                None 
                            else Some (m, instantiations))
          }
@@ -727,7 +728,6 @@ module InterfaceStubGenerator =
             None
         | ParsedInput.ImplFile input -> 
             walkImplFileInput input
-
 
 
 

@@ -209,7 +209,7 @@ type FSharpInteractivePad() =
     | _ -> ()
     
   member x.UpdateFont() = 
-    let fontName = MonoDevelop.Ide.Fonts.FontService.DefaultMonospaceFontDescription.Family;
+    let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
     let fontName = PropertyService.Get<string>("FSharpBinding.FsiFontName", fontName)
     Debug.WriteLine (sprintf "Interactive: Loading font '%s'" fontName)
     let font = Pango.FontDescription.FromString(fontName)
