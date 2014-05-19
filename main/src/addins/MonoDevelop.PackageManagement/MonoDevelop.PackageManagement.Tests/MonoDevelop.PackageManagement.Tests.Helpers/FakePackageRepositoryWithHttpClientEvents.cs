@@ -32,19 +32,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	public class FakePackageRepositoryWithHttpClientEvents : FakePackageRepository, IHttpClientEvents
 	{
 		public event EventHandler<WebRequestEventArgs> SendingRequest;
-		public event EventHandler<ProgressEventArgs> ProgressAvailable;
 
 		public void RaiseSendingRequestEvent (WebRequestEventArgs e)
 		{
 			if (SendingRequest != null) {
 				SendingRequest (this, e);
-			}
-		}
-
-		public void RaiseProgressAvailableEvent (ProgressEventArgs e)
-		{
-			if (ProgressAvailable != null) {
-				ProgressAvailable (this, e);
 			}
 		}
 	}
