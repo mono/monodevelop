@@ -920,8 +920,6 @@ namespace MonoDevelop.Ide.Gui
 
 			if (FloatingEditors.Count > 0) {
 				foreach (var window in FloatingEditors) {
-					Console.WriteLine ("{0}, {1}", window.Allocation.Width, window.Allocation.Height);
-
 					var fwp = new FloatingWindowUserPrefs {
 						WindowId = fwId,
 						Width = window.Allocation.Width,
