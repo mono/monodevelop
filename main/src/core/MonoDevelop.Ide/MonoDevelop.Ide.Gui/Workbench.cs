@@ -1091,21 +1091,23 @@ namespace MonoDevelop.Ide.Gui
 
 				int notebookId = viewsDict [view];
 
-				if (notebookId == 0) {
-					if (floatsDict.ContainsKey (view)) {
-						var tabControl = ((DefaultWorkbench)RootWindow).TabControl;
-						var oldTabControl = ((DefaultWorkbench)RootWindow).TabControl;
+				if (floatsDict.ContainsKey (view)) {
+					var tabControl = ((DefaultWorkbench)RootWindow).TabControl;
+					var oldTabControl = ((DefaultWorkbench)RootWindow).TabControl;
 
-						for (var i = 0; i < oldTabControl.TabCount; i++) {
-							var tab = oldTabControl.GetTab (i);
+					for (var i = 0; i < oldTabControl.TabCount; i++) {
+						var tab = oldTabControl.GetTab (i);
 
-							if (tab.Content == tmp_window) {
-								oldTabControl.RemoveTab (tab.Index, false);
-							}
+						if (tab.Content == tmp_window) {
+							oldTabControl.RemoveTab (tab.Index, false);
 						}
+					}
 
-						MonoDevelop.Components.DockNotebook.DockNotebookContainer.MoveToFloatingWindow (tmp_window);
-					} else if (view == currentView) {
+					MonoDevelop.Components.DockNotebook.DockNotebookContainer.MoveToFloatingWindow (tmp_window);
+				}
+
+				if (notebookId == 0) {
+					if (view == currentView) {
 						Present ();
 						doc.RunWhenLoaded (() => {
 							var window = doc.Window;
