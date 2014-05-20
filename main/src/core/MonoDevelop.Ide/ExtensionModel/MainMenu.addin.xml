@@ -115,8 +115,10 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset" />
 		<SeparatorItem id = "ViewItemsSeparator4" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode" />
+		<ItemSet id = "Editor Layout">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode" />
+			<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode" />
+		</ItemSet>
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />

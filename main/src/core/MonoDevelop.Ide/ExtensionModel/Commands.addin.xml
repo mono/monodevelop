@@ -621,11 +621,11 @@
 			_description = "Resets zoom to default" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.SideBySideModeHandler"
-			_label = "Side by Side Mode"
+			_label = "2 Columns"
 			macShortcut = "Meta|Shift|2"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.SingleModeHandler"
-			_label = "Single Mode"
+			_label = "1 Column"
 			macShortcut = "Meta|Shift|1"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
