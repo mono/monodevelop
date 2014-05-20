@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 using MonoDevelop.Core;
@@ -46,6 +47,9 @@ namespace MonoDevelop.NUnit
 		static NUnitService instance;
 		
 		Dictionary<string, ITestProvider> providers = new Dictionary<string, ITestProvider>();
+
+		List<TestDiscovererNode> pendingDiscovererNodes = new List<TestDiscovererNode>();
+
 		UnitTest[] rootTests;
 		
 		private NUnitService ()
@@ -58,7 +62,8 @@ namespace MonoDevelop.NUnit
 			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
-			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnProviderExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnProviderExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestDiscoverers", OnDiscovererExtensionChange);
 		}
 		
 		public static NUnitService Instance {
@@ -73,13 +78,31 @@ namespace MonoDevelop.NUnit
 
 		void OnProviderExtensionChange (object s, ExtensionNodeEventArgs args)
 		{
-			var testProviderNode = (TypeExtensionNode) args.ExtensionNode;
-			var providerId = testProviderNode.Id;
+			var providerNode = (TypeExtensionNode) args.ExtensionNode;
 
 			if (args.Change == ExtensionChange.Add) {
 				ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
 				var provider = (ITestProvider) args.ExtensionObject;
-				providers.Add (providerId, provider);
+				providers.Add (providerNode.Id, provider);
+
+				// if there are discoverers pending for this provider
+				// then register them now and remove from the queue
+				pendingDiscovererNodes = pendingDiscovererNodes.Where (node => {
+					if (node.ProviderId == providerNode.Id) {
+						var executorNode = (TypeExtensionNode) node.ChildNodes[0];
+						var extensibleProvider = provider as ExtensibleTestProvider;
+
+						if (extensibleProvider != null) {
+							var discoverer = (ITestDiscoverer) node.GetInstance ();
+							var executor = (ITestExecutor) executorNode.GetInstance ();
+							extensibleProvider.RegisterTestDiscoverer (node.Id, discoverer);
+							extensibleProvider.RegisterTestExecutor (node.Id, executor);
+						}
+						return false;
+					} else {
+						return true;
+					}
+				}).ToList ();
 
 				Type[] types = provider.GetOptionTypes ();
 				if (types != null) {
@@ -92,11 +115,51 @@ namespace MonoDevelop.NUnit
 					}
 				}
 			} else {
-				providers.Remove (providerId);
+				providers.Remove (providerNode.Id);
 
 				// The types returned by provider.GetOptionTypes should probably be unregistered
 				// from the DataContext, but DataContext does not allow unregisterig.
 				// This is not a big issue anyway.
+			}
+		}
+
+		void OnDiscovererExtensionChange(object s, ExtensionNodeEventArgs args)
+		{
+			var discovererNode = (TestDiscovererNode) args.ExtensionNode;
+
+			if (args.Change == ExtensionChange.Add) {
+				// if there is a provider with the same id then register
+				// the discoverer and executor directly into the provider
+				if (providers.ContainsKey (discovererNode.ProviderId)) {
+					var executorNode = (TypeExtensionNode) discovererNode.ChildNodes[0];
+					var provider = providers [discovererNode.ProviderId] as ExtensibleTestProvider;
+
+					// register discoverer only if the provider supports this functionality
+					if (provider != null) {
+						var discoverer = (ITestDiscoverer) discovererNode.GetInstance ();
+						var executor = (ITestExecutor) executorNode.GetInstance ();
+						provider.RegisterTestDiscoverer (discovererNode.Id, discoverer);
+						provider.RegisterTestExecutor (discovererNode.Id, executor);
+					}
+				} else { // otherwise put it into the pending queue
+					pendingDiscovererNodes.Add (discovererNode);
+				}
+			} else {
+				if (providers.ContainsKey (discovererNode.ProviderId)) {
+					var provider = providers [discovererNode.ProviderId] as ExtensibleTestProvider;
+
+					// unregister from the provider
+					if (provider != null) {
+						provider.UnregisterTestDiscoverer (discovererNode.Id);
+						provider.UnregisterTestExecutor (discovererNode.Id);
+					}
+				} else {
+					// remove from the pending queue
+					pendingDiscovererNodes = pendingDiscovererNodes.Where (node => {
+						return node.ProviderId != discovererNode.ProviderId
+							&& node.Id != discovererNode.Id;
+					}).ToList ();
+				}
 			}
 		}
 		

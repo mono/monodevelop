@@ -12,7 +12,14 @@
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/TestProviders" name = "Test providers">
 		<Description>Test providers. Specified classes must implement ITestProvider.</Description>
-		<ExtensionNode name ="TestProvider" />
+		<ExtensionNode name = "TestProvider" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/NUnit/TestDiscoverers" name = "Test discoverers">
+		<Description>Test discoverers. Specified classes must implement ITestDiscoverer.</Description>
+		<ExtensionNode name = "TestDiscoverer" type = "MonoDevelop.NUnit.TestDiscovererNode">
+			<ExtensionNode name = "TestExecutor" />
+		</ExtensionNode>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
@@ -181,8 +188,15 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
-		<TestProvider id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
-		<TestProvider id="NUnitTestProvider" class="MonoDevelop.NUnit.NUnitTestProvider" />
+		<TestProvider id="System" class="MonoDevelop.NUnit.SystemTestProvider" />
+		<TestProvider id="DotNet" class="MonoDevelop.NUnit.DotNetTestProvider" />
+		<TestProvider id="NUnit" class="MonoDevelop.NUnit.NUnitTestProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/NUnit/TestDiscoverers">
+		<TestDiscoverer id = "Dumb" provider = "DotNet" class="Dumb.DumbDiscoverer">
+			<TestExecutor class = "Dumb.DumbExecutor" />
+		</TestDiscoverer>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">

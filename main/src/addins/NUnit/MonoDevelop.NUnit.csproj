@@ -250,9 +250,22 @@
     <Compile Include="Services\AbstractResultsStore.cs" />
     <Compile Include="Services\BinaryResultsStore.cs" />
     <Compile Include="Services\NUnitTestProvider.cs" />
+    <Compile Include="Services\TestCase.cs" />
+    <Compile Include="Services\ITestDiscoverer.cs" />
+    <Compile Include="Services\ITestExecutor.cs" />
+    <Compile Include="Services\ExtensibleTestProvider.cs" />
+    <Compile Include="Services\UnitTestTree.cs" />
+    <Compile Include="TestDiscovererNode.cs" />
+    <Compile Include="Services\DotNetTestProvider.cs" />
+    <Compile Include="Services\ProjectTestDiscoverer.cs" />
+    <Compile Include="Dumb\DumbDiscoverer.cs" />
+    <Compile Include="Services\DotNetProjectTestSuite.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Dumb\" />
+  </ItemGroup>
 </Project>
