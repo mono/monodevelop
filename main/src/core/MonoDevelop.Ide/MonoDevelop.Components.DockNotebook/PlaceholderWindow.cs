@@ -36,6 +36,84 @@ using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
+	class DockWindow : Gtk.Window
+	{
+		DockNotebookContainer container;
+
+		public DockNotebookContainer Container {
+			get {
+				return container;
+			}
+
+			set {
+				container = value;
+				Child = value;
+			}
+		}
+
+		bool IsChildOfMe (Document d)
+		{
+			Widget control = ((SdiWorkspaceWindow)d.Window).TabControl;
+			while (control.Parent != null)
+				control = control.Parent;
+			return control == this;
+		}
+
+		public DockWindow () : base (Gtk.WindowType.Toplevel)
+		{
+			IdeApp.Workbench.FloatingEditors.Add (this);
+			IdeApp.CommandService.RegisterTopWindow (this);
+			AddAccelGroup (IdeApp.CommandService.AccelGroup);
+			this.DeleteEvent += delegate(object o, DeleteEventArgs args) {
+				IdeApp.Workbench.FloatingEditors.Remove (this);
+				var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
+				//					bool showDirtyDialog = false;
+				//					foreach (var content in documents) {
+				//						if (content.IsDirty) {
+				//							showDirtyDialog = true;
+				//							break;
+				//						}
+				//					}
+				//
+				//					if (showDirtyDialog) {
+				//						var dlg = new MonoDevelop.Ide.Gui.Dialogs.DirtyFilesDialog ();
+				//						dlg.Modal = true;
+				//						if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok) {
+				//							args.RetVal = true;
+				//							return;
+				//						}
+				//					}
+				foreach (var d in documents) {
+					if (!d.Close ())
+						args.RetVal = true;
+				}
+			};
+		}
+
+		protected override bool OnConfigureEvent (EventConfigure evnt)
+		{
+			((DefaultWorkbench)IdeApp.Workbench.RootWindow).SetActiveWidget (Focus);
+			return base.OnConfigureEvent (evnt);
+		}
+
+		protected override bool OnFocusInEvent (EventFocus evnt)
+		{
+			((DefaultWorkbench)IdeApp.Workbench.RootWindow).SetActiveWidget (Focus);
+			return base.OnFocusInEvent (evnt);
+		}
+
+		protected override bool OnKeyPressEvent (EventKey evnt)
+		{
+			return ((DefaultWorkbench)IdeApp.Workbench.RootWindow).FilterWindowKeypress (evnt) || base.OnKeyPressEvent (evnt);
+		}
+
+		protected override void OnDestroyed ()
+		{
+			RemoveAccelGroup (IdeApp.CommandService.AccelGroup);
+			base.OnDestroyed ();
+		}
+	}
+
 	class PlaceholderWindow: Gtk.Window
 	{
 		Gdk.GC redgc;
@@ -311,84 +389,6 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			DockDelegate = dockDelegate;
 			DockRect = rect;
-		}
-		
-		public class DockWindow : Gtk.Window
-		{
-			DockNotebookContainer container;
-
-			public DockNotebookContainer Container {
-				get {
-					return container;
-				}
-
-				set {
-					container = value;
-					Child = value;
-				}
-			}
-
-			bool IsChildOfMe (Document d)
-			{
-				Widget control = ((SdiWorkspaceWindow)d.Window).TabControl;
-				while (control.Parent != null)
-					control = control.Parent;
-				return control == this;
-			}
-
-			public DockWindow () : base (Gtk.WindowType.Toplevel)
-			{
-				IdeApp.Workbench.FloatingEditors.Add (this);
-				IdeApp.CommandService.RegisterTopWindow (this);
-				AddAccelGroup (IdeApp.CommandService.AccelGroup);
-				this.DeleteEvent += delegate(object o, DeleteEventArgs args) {
-					IdeApp.Workbench.FloatingEditors.Remove (this);
-					var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
-//					bool showDirtyDialog = false;
-//					foreach (var content in documents) {
-//						if (content.IsDirty) {
-//							showDirtyDialog = true;
-//							break;
-//						}
-//					}
-//
-//					if (showDirtyDialog) {
-//						var dlg = new MonoDevelop.Ide.Gui.Dialogs.DirtyFilesDialog ();
-//						dlg.Modal = true;
-//						if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok) {
-//							args.RetVal = true;
-//							return;
-//						}
-//					}
-					foreach (var d in documents) {
-						if (!d.Close ())
-							args.RetVal = true;
-					}
-				};
-			}
-
-			protected override bool OnConfigureEvent (EventConfigure evnt)
-			{
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).SetActiveWidget (Focus);
-				return base.OnConfigureEvent (evnt);
-			}
-
-			protected override bool OnFocusInEvent (EventFocus evnt)
-			{
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).SetActiveWidget (Focus);
-				return base.OnFocusInEvent (evnt);
-			}
-
-			protected override bool OnKeyPressEvent (EventKey evnt)
-			{
-				return ((DefaultWorkbench)IdeApp.Workbench.RootWindow).FilterWindowKeypress (evnt) || base.OnKeyPressEvent (evnt);
-			}
-
-			protected override void OnDestroyed ()
-			{
-				RemoveAccelGroup (IdeApp.CommandService.AccelGroup);
-				base.OnDestroyed ();
-			}
 		}
 
 		static void PlaceInFloatingFrame (DockNotebook notebook, IDockNotebookTab tab, Rectangle allocation, int ox, int oy)

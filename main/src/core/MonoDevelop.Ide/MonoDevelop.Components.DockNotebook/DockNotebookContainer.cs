@@ -77,6 +77,27 @@ namespace MonoDevelop.Components.DockNotebook
 			return paned != null ? (DockNotebookContainer)paned.Parent : null;
 		}
 
+		public static void MoveToFloatingWindow (SdiWorkspaceWindow workspaceWindow)
+		{
+			var window = new DockWindow ();
+			var notebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+
+			notebook.NavigationButtonsVisible = false;
+
+			window.Container = new DockNotebookContainer (notebook);
+			notebook.InitSize ();
+
+			var tab = notebook.InsertTab (-1);
+			tab.Content = workspaceWindow;
+
+			window.Title = DefaultWorkbench.GetTitle (workspaceWindow);
+
+			workspaceWindow.SetDockNotebook (notebook, tab);
+
+			window.ShowAll ();
+			window.Resize (640, 480);
+		}
+
 		static void HandlePageRemoved (object sender, EventArgs e)
 		{
 			var control = (DockNotebook)sender;
