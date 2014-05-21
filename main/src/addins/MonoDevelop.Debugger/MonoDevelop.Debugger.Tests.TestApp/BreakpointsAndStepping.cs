@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -50,6 +52,17 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				} catch {
 				}
 			}
+		}
+
+		public void OutputAndDebugWriter ()
+		{
+			Console.Write ("NormalText");
+			Debug.Write ("DebugText");
+			Debug.Write ("");
+			System.Diagnostics.Debugger.Log (3, "SomeCategory", "DebugText2");
+			Console.Error.Write ("ErrorText");
+			Console.Write ("");
+			Console.Write ("");/*5070ed1c-593d-4cbe-b4fa-b2b0c7b25289*/
 		}
 
 		public void OneLineProperty ()
@@ -156,6 +169,17 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var obj = new EmptyClassWithoutConstructor ();/*84fc04b2-ede2-4d8b-acc4-28441e1c5f55*/
 		}
 
+		static async Task<string> AsyncBug13401 ()
+		{
+			return "Hello from Bar";
+		}
+
+		public static async Task Bug13401 ()
+		{
+			string s = await AsyncBug13401 ();
+			Console.Write ("");/*977ee8ce-ee61-4de0-9fc1-138fa164870b*/
+		}
+
 		public PListScheme PListSchemeTest ()
 		{
 			string value = "<xml></xml>";
@@ -232,6 +256,18 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			}
 		}
 
+		public void ForLoop10 ()
+		{
+			/*c35046f7-e87d-4b8f-b260-43e181a0a07c*/
+			for (int i = 0; i < 10; i++) {
+				Console.Write ("");/*eef5bea2-aaa6-4718-b26f-b35be6a6a13e*/
+			}
+			var a = 0;/*3e2e4759-f6d9-4839-98e6-4fa96b227458*/
+			var b = 1;
+			var c = a + b;
+			Console.Write (c);
+		}
+
 		public void CallMethodWithPropertyAsArgument ()
 		{
 			var obj = new TestClass ();
@@ -271,6 +307,58 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		private void EmptyMethod ()
 		{
 			/*3c27f60f-fdfa-44c0-b58f-552ecaaa77f1*/
+		}
+
+		public void ConitionalBreakpointEnum ()
+		{
+			SomeMethod (BooleanEnum.True);
+			SomeMethod (BooleanEnum.False);
+		}
+
+		private void SomeMethod (BooleanEnum en)
+		{
+			int i = 0;/*ecf764bf-9182-48d6-adb0-0ba36e2653a7*/
+		}
+
+		public void ConditionalBreakpointString ()
+		{
+			SomeMethod ("aaa");
+			SomeMethod ("bbb");
+			SomeMethod ("ccc");
+		}
+
+		private void SomeMethod (string str)
+		{
+			int i = 0;/*033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7*/
+		}
+
+		public void Catchpoint1 ()
+		{
+			try {
+				throw new NotImplementedException ();/*526795d3-ee9e-44a7-8423-df0b406e9e8d*/
+			} catch {
+			}
+			var a = 0;/*fcdc2412-c00e-4c95-b2ea-e3cf5d5bf856*/
+		}
+
+		public void Catchpoint2 ()
+		{
+			try {
+				//If you wonder why I didn't use just simple File.Open("unexistingFile.txt") is
+				//that FrameStack inside Mono and .Net are different and same goes for 10+ other calls I tried...
+				new Socket (AddressFamily.InterNetwork, SocketType.Unknown, ProtocolType.Ggp);/*d24b1c9d-3944-4f0d-be31-5556251fbdf5*/
+			} catch {
+
+			}
+		}
+
+		public void SimpleMethod ()
+		{
+			/*f4e3a214-229e-44dd-9da2-db82ddfbec11*/
+			int a = 1;
+			int b = 2;
+			int c = a + b;
+			Console.Write (c);
 		}
 
 		public void Bug13640 ()
@@ -477,5 +565,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			}
 		}
 	}
+}
+
+public enum BooleanEnum
+{
+	False,
+	True
 }
 /*invalidBreakpointAtEndOfFile*/

@@ -1753,7 +1753,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			var oldCache = cachedAssemblyContents.Values.ToList ();
 			cachedAssemblyContents.Clear ();
 			lock (parseQueueLock) {
 				parseQueueIndex.Clear ();
@@ -2602,7 +2601,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
-				string mimeType = null, oldExtension = null, buildAction = null;
 				try {
 					Context.BeginLoadOperation ();
 					var parsedFiles = new List<Tuple<ParsedDocument, IUnresolvedFile>> ();
@@ -2610,7 +2608,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (token.IsCancellationRequested)
 							return;
 						var fileName = file.FilePath;
-						if (file.BuildAction != BuildAction.Compile || filesSkippedInParseThread.Any (f => f == fileName)) {
+						if (!TypeSystemParserNode.IsCompileBuildAction (file.BuildAction) || filesSkippedInParseThread.Any (f => f == fileName)) {
 							continue;
 						}
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
@@ -2903,6 +2901,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			int pending = 0;
 			IProgressMonitor monitor = null;
 			var token = loadCancellationSource.Token;
+			StartParseOperation ();
 			try {
 				do {
 					if (pending > 5 && monitor == null) {
@@ -2930,6 +2929,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			} finally {
 				if (monitor != null)
 					monitor.Dispose ();
+				EndParseOperation ();
 			}
 		}
 

@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				MDRefactoringScript script;
 
 				if (loadedDocument.Editor != context.TextEditor) {
-					script = new MDRefactoringScript (MDRefactoringContext.Create (loadedDocument, loc, context.CancellationToken), FormattingOptions);
+					script = new MDRefactoringScript (MDRefactoringContext.Create (loadedDocument, loc, context.CancellationToken).Result, FormattingOptions);
 					startedScripts.Add (script);
 				} else {
 					script = this;

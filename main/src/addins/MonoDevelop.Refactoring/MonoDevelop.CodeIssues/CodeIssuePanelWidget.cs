@@ -213,7 +213,7 @@ namespace MonoDevelop.CodeIssues
 				int w = 10;
 				var newCellArea = new Gdk.Rectangle (cell_area.X + w, cell_area.Y, cell_area.Width - w, cell_area.Height);
 				using (var ctx = CairoHelper.Create (window)) {
-					ctx.DrawImage (widget, Icon, cell_area.X - 4, cell_area.Y + (cell_area.Height - Icon.Height) / 2);
+					ctx.DrawImage (widget, Icon, cell_area.X - 4, cell_area.Y + Math.Round ((cell_area.Height - Icon.Height) / 2));
 				}
 
 				base.Render (window, widget, background_area, newCellArea, expose_area, flags);

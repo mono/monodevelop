@@ -124,7 +124,7 @@ namespace MonoDevelop.Projects
 				if (startupItem == null && singleStartup) {
 					ReadOnlyCollection<SolutionEntityItem> its = GetAllSolutionItems<SolutionEntityItem> ();
 					if (its.Count > 0)
-						startupItem = its [0];
+						startupItem = its.FirstOrDefault (it => it.SupportsExecute ());
 				}
 				return startupItem;
 			}
@@ -666,6 +666,9 @@ namespace MonoDevelop.Projects
 						// Register the new entry in every solution configuration
 						foreach (SolutionConfiguration conf in Configurations)
 							conf.AddItem (eitem);
+						// If there is no startup project or it is an invalid one, use the new project as startup if possible
+						if ((StartupItem == null || !StartupItem.SupportsExecute ()) && eitem.SupportsExecute ())
+							StartupItem = eitem;
 					} else {
 						// Reuse the configuration information of the replaced item
 						foreach (SolutionConfiguration conf in Configurations)

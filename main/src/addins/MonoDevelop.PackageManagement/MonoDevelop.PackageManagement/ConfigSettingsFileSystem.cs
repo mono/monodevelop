@@ -28,6 +28,7 @@
 
 using System;
 using System.IO;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -40,7 +41,7 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public static ConfigSettingsFileSystem CreateConfigSettingsFileSystem(Solution solution)
+		public static ConfigSettingsFileSystem CreateConfigSettingsFileSystem (ISolution solution)
 		{
 			string configSettingsFolder = Path.Combine(solution.BaseDirectory, ".nuget");
 			return new ConfigSettingsFileSystem(configSettingsFolder);

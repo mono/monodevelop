@@ -163,6 +163,16 @@ namespace MonoDevelop.VersionControl.Dialogs
 			base.OnResponse (type);
 		}
 
+		protected override void OnDestroyed ()
+		{
+			foreach (var ob in extensions) {
+				var ext = ob as CommitDialogExtension;
+				if (ext != null)
+					ext.Destroy ();
+			}
+			base.OnDestroyed ();
+		}
+
 		bool ButtonCommitClicked ()
 		{
 			// In case we have local unsaved files with changes, throw a dialog for the user.

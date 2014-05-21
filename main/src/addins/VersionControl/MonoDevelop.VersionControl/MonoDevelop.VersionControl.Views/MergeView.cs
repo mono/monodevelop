@@ -70,22 +70,6 @@ namespace MonoDevelop.VersionControl.Views
 		public void BaseContentChanged ()
 		{
 		}
-
-	/*	MergeWidget mergeWidget;
-		
-		public override Gtk.Widget Control {
-			get {
-				return mergeWidget;
-			}
-		}
-		
-		
-		public override void Load (string fileName)
-		{
-			
-			
-		}*/
-		
 	}
 }
 

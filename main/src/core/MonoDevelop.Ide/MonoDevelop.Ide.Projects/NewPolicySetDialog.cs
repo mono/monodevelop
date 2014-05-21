@@ -29,7 +29,7 @@ using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public partial class NewPolicySetDialog : Gtk.Dialog
+	partial class NewPolicySetDialog : Gtk.Dialog
 	{
 		List<PolicySet> sets;
 		

@@ -534,7 +534,15 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				try {
 					p = runtime.ExecuteAssembly (pinfo);
 					p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-					string sref = p.StandardError.ReadLine ();
+					string responseKey = "[MonoDevelop]";
+					string sref;
+					while (true) {
+						sref = p.StandardError.ReadLine ();
+						if (sref.StartsWith (responseKey)) {
+							sref = sref.Substring (responseKey.Length);
+							break;
+						}
+					}
 					byte[] data = Convert.FromBase64String (sref);
 					MemoryStream ms = new MemoryStream (data);
 					BinaryFormatter bf = new BinaryFormatter ();

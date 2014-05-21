@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Projects;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -68,14 +68,14 @@ namespace ICSharpCode.PackageManagement
 			get { return OpenSolution.FileName; }
 		}
 		
-		Solution OpenSolution {
+		ISolution OpenSolution {
 			get { return projectService.OpenSolution; }
 		}
-		
+
 		public IPackageManagementProject GetActiveProject()
 		{
 			if (HasActiveProject()) {
-				return GetActiveProject(ActivePackageRepository);
+				return GetActiveProject(registeredPackageRepositories.CreateAggregateRepository());
 			}
 			return null;
 		}
@@ -85,9 +85,12 @@ namespace ICSharpCode.PackageManagement
 			return GetActiveDotNetProject() != null;
 		}
 		
-		public Project GetActiveDotNetProject()
+		public IDotNetProject GetActiveDotNetProject ()
 		{
-			return projectService.CurrentProject;
+			if (projectService.CurrentProject != null) {
+				return projectService.CurrentProject as IDotNetProject;
+			}
+			return null;
 		}
 		
 		IPackageRepository ActivePackageRepository {
@@ -96,18 +99,18 @@ namespace ICSharpCode.PackageManagement
 		
 		public IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository)
 		{
-			var activeProject = GetActiveDotNetProject() as DotNetProject;
+			IDotNetProject activeProject = GetActiveDotNetProject ();
 			if (activeProject != null) {
-				return CreateProject(sourceRepository, activeProject);
+				return CreateProject (sourceRepository, activeProject);
 			}
 			return null;
 		}
-		
-		IPackageManagementProject CreateProject(IPackageRepository sourceRepository, DotNetProject project)
+
+		IPackageManagementProject CreateProject (IPackageRepository sourceRepository, IDotNetProject project)
 		{
-			return projectFactory.CreateProject(sourceRepository, project);
+			return projectFactory.CreateProject (sourceRepository, project);
 		}
-		
+
 		IPackageRepository CreatePackageRepository(PackageSource source)
 		{
 			return registeredPackageRepositories.CreateRepository(source);
@@ -115,17 +118,17 @@ namespace ICSharpCode.PackageManagement
 		
 		public IPackageManagementProject GetProject(PackageSource source, string projectName)
 		{
-			DotNetProject project = GetDotNetProject(projectName);
+			IDotNetProject project = GetDotNetProject (projectName);
 			return CreateProject(source, project);
 		}
 		
-		DotNetProject GetDotNetProject(string name)
+		IDotNetProject GetDotNetProject (string name)
 		{
 			var openProjects = new OpenDotNetProjects(projectService);
 			return openProjects.FindProject(name);
 		}
 		
-		IPackageManagementProject CreateProject(PackageSource source, DotNetProject project)
+		IPackageManagementProject CreateProject (PackageSource source, IDotNetProject project)
 		{
 			IPackageRepository sourceRepository = CreatePackageRepository(source);
 			return CreateProject(sourceRepository, project);
@@ -133,19 +136,18 @@ namespace ICSharpCode.PackageManagement
 		
 		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName)
 		{
-			DotNetProject project = GetDotNetProject(projectName);
+			IDotNetProject project = GetDotNetProject (projectName);
 			return CreateProject(sourceRepository, project);
 		}
 		
-		public IPackageManagementProject GetProject(IPackageRepository sourceRepository, Project project)
+		public IPackageManagementProject GetProject (IPackageRepository sourceRepository, IDotNetProject project)
 		{
-			var dotNetProject = project as DotNetProject;
-			return CreateProject(sourceRepository, dotNetProject);
+			return CreateProject (sourceRepository, project);
 		}
 		
-		public IEnumerable<Project> GetDotNetProjects()
+		public IEnumerable<IDotNetProject> GetDotNetProjects ()
 		{
-			return projectService.GetOpenProjects();
+			return projectService.GetOpenProjects ();
 		}
 		
 		public bool IsOpen {
@@ -165,7 +167,7 @@ namespace ICSharpCode.PackageManagement
 		
 		ISolutionPackageRepository CreateSolutionPackageRepository()
 		{
-			return solutionPackageRepositoryFactory.CreateSolutionPackageRepository(OpenSolution);
+			return solutionPackageRepositoryFactory.CreateSolutionPackageRepository (OpenSolution);
 		}
 		
 		public IQueryable<IPackage> GetPackages()
@@ -199,7 +201,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository)
 		{
-			foreach (DotNetProject dotNetProject in GetDotNetProjects()) {
+			foreach (IDotNetProject dotNetProject in GetDotNetProjects ()) {
 				yield return projectFactory.CreateProject(sourceRepository, dotNetProject);
 			}
 		}

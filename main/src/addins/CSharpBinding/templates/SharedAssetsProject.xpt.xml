@@ -5,10 +5,10 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<_Name>Shared Assets Project</_Name>
+		<_Name>Shared Project</_Name>
 		<_Category>C#</_Category>
 		<Icon>md-project-shared-assets</Icon>
-		<_Description>Creates an empty shared assets project</_Description>
+		<_Description>Creates a project that allows sharing files between projects</_Description>
 		<DefaultFilename>Shared</DefaultFilename>
 		<LanguageName>C#</LanguageName>
 	</TemplateConfiguration>
@@ -20,10 +20,6 @@
 	
 	<!-- Template Content -->
 	<Combine name = "${ProjectName}" directory = ".">
-		<Options>
-			<StartupProject>${ProjectName}</StartupProject>
-		</Options>
-		
 		<Project name = "${ProjectName}" directory = "." type = "SharedAssetsProject">
 			<Files>
 				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />

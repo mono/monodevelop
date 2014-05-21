@@ -169,6 +169,26 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="icons\light\prefs-code-actions-16.png">
+      <LogicalName>prefs-code-actions-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-actions-16%402x.png">
+      <LogicalName>prefs-code-actions-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-rules-16.png">
+      <LogicalName>prefs-code-rules-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-rules-16%402x.png">
+      <LogicalName>prefs-code-rules-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-analysis-16.png">
+      <LogicalName>prefs-code-analysis-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-code-analysis-16%402x.png">
+      <LogicalName>prefs-code-analysis-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>

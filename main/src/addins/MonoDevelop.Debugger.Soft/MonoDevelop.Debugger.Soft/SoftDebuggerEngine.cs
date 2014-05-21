@@ -38,20 +38,25 @@ using MonoDevelop.Core.Assemblies;
 
 namespace MonoDevelop.Debugger.Soft
 {
-	public class SoftDebuggerEngine: IDebuggerEngine
+	public class SoftDebuggerEngine: DebuggerEngineBackend
 	{
 		static SoftDebuggerEngine ()
 		{
 			DebuggerLoggingService.CustomLogger = new MDLogger ();
 		}
 		
-		public bool CanDebugCommand (ExecutionCommand cmd)
+		public override bool CanDebugCommand (ExecutionCommand cmd)
 		{
 			var netCmd = cmd as DotNetExecutionCommand;
 			if (netCmd == null)
 				return false;
 
 			return CanDebugRuntime (netCmd.TargetRuntime);
+		}
+
+		public override bool IsDefaultDebugger (ExecutionCommand cmd)
+		{
+			return true;
 		}
 
 		public static bool CanDebugRuntime (TargetRuntime runtime)
@@ -63,7 +68,7 @@ namespace MonoDevelop.Debugger.Soft
 			return mrun.AssemblyContext.GetAssemblyLocation ("Mono.Debugger.Soft", null) != null;
 		}
 		
-		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
+		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
 		{
 			var cmd = (DotNetExecutionCommand) c;
 			var runtime = (MonoTargetRuntime)cmd.TargetRuntime;
@@ -90,12 +95,7 @@ namespace MonoDevelop.Debugger.Soft
 			return dsi;
 		}
 		
-		public ProcessInfo[] GetAttachableProcesses ()
-		{
-			return new ProcessInfo [0];
-		}
-		
-		public DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession ()
 		{
 			return new SoftDebuggerSession ();
 		}

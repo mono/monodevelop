@@ -127,15 +127,15 @@ namespace MonoDevelop.Xml.StateEngine
 		public void Push (char c)
 		{
 			try {
-				//track line, column
+				//FIXME: position/location should be at current char, not after it
+				position++;
 				if (c == '\n') {
 					previousLineEnd = new TextLocation (location.Line, location.Column + 1);
 					location = new TextLocation (location.Line + 1, 1);
 				} else {
 					location = new TextLocation (location.Line, location.Column + 1);
 				}
-				
-				position++;
+
 				for (int loopLimit = 0; loopLimit < 10; loopLimit++) {
 					currentStateLength++;
 					string rollback = null;
@@ -161,15 +161,26 @@ namespace MonoDevelop.Xml.StateEngine
 					// only loop if the same char should be run through the new state
 					if (rollback == null)
 						return;
-					
+
+					//simple rollback, just run same char through again
+					if (rollback.Length == 0)
+						continue;
+
 					//"complex" rollbacks require actually skipping backwards.
 					//Note the previous state is invalid for this operation.
-					else if (rollback.Length > 0) {
-						position -= (rollback.Length + 1);
-						foreach (char rollChar in rollback)
-							Push (rollChar);
-						position++;
-					}
+
+					//rollback position and location so they're valid
+					position -= (rollback.Length + 1);
+					location = new TextLocation (location.Line, location.Column - (rollback.Length + 1));
+					if (location.Column < 0)
+						throw new InvalidOperationException ("Can't roll back across line boundary");
+
+					foreach (char rollChar in rollback)
+						Push (rollChar);
+
+					//restore position and location
+					position++;
+					location = new TextLocation (location.Line, location.Column + 1);
 				}
 				throw new InvalidOperationException ("Too many state changes for char '" + c + "'. Current state is " + currentState.ToString () + ".");
 			} catch (Exception ex)  {
@@ -292,13 +303,13 @@ namespace MonoDevelop.Xml.StateEngine
 		void IParseContext.LogWarning (string message)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Warning, message, Location));
+				InternalLogError (new Error (ErrorType.Warning, message, ((IParseContext)this).LocationMinus (1)));
 		}
 		
 		void IParseContext.LogError (string message, TextLocation location)
 		{
 			if (errors != null || ErrorLogged != null)
-				InternalLogError (new Error (ErrorType.Error, message, location));
+				InternalLogError (new Error (ErrorType.Error, message, ((IParseContext)this).LocationMinus (1)));
 		}
 		
 		void IParseContext.LogWarning (string message, TextLocation location)

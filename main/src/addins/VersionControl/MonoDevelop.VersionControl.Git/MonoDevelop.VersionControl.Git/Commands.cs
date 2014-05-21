@@ -132,24 +132,27 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var stashes = Repository.GetStashes ();
 			NewStashDialog dlg = new NewStashDialog ();
-			if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
-				string comment = dlg.Comment;
-				MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
-				var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
-				ThreadPool.QueueUserWorkItem (delegate {
-					try {
-						using (var gm = new GitMonitor (monitor))
-							stashes.Create (gm, comment);
-					} catch (Exception ex) {
-						MessageService.ShowException (ex);
-					}
-					finally {
-						monitor.Dispose ();
-						statusTracker.NotifyChanges ();
-					}
-				});
+			try {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+					string comment = dlg.Comment;
+					MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+					var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
+					ThreadPool.QueueUserWorkItem (delegate {
+						try {
+							using (var gm = new GitMonitor (monitor))
+								stashes.Create (gm, comment);
+						} catch (Exception ex) {
+							MessageService.ShowException (ex);
+						}
+						finally {
+							monitor.Dispose ();
+							statusTracker.NotifyChanges ();
+						}
+					});
+				}
+			} finally {
+				dlg.Destroy ();
 			}
-			dlg.Destroy ();
 		}
 	}
 	

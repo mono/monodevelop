@@ -376,7 +376,7 @@ namespace MonoDevelop.Ide.Templates
                 if (directory != null) {
                     string fileName = singleFile.SaveFile (policyParent, project, language, directory, name);
                     if (fileName != null) {
-                        IdeApp.Workbench.OpenDocument (fileName);
+						IdeApp.Workbench.OpenDocument (fileName, project);
                         return true;
                     }
 				} else {

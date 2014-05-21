@@ -604,13 +604,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		internal List<int> filteredItems = new List<int> ();
 		
-		Category GetCategory (CompletionCategory completionCategory)
+		static Category GetCategory (List<Category> categories, CompletionCategory completionCategory)
 		{
-			foreach (Category cat in categories) {
+			foreach (var cat in categories) {
 				if (cat.CompletionCategory == completionCategory)
 					return cat;
 			}
-			Category result = new Category ();
+			var result = new Category ();
 			result.CompletionCategory = completionCategory;
 			if (completionCategory == null) {
 				categories.Add (result);
@@ -623,14 +623,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		string oldCompletionString = null;
 		public void FilterWords ()
 		{
-			categories.Clear ();
+			var newCategories = new List<Category> ();
 			var matcher = CompletionMatcher.CreateCompletionMatcher (CompletionString);
 			if (oldCompletionString == null || !CompletionString.StartsWith (oldCompletionString)) {
 				filteredItems.Clear ();
 				for (int newSelection = 0; newSelection < win.DataProvider.ItemCount; newSelection++) {
 					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
 						var completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
-						GetCategory (completionCategory).Items.Add (newSelection);
+						GetCategory (newCategories, completionCategory).Items.Add (newSelection);
 						filteredItems.Add (newSelection);
 					}
 				}
@@ -640,7 +640,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				foreach (int newSelection in oldItems) {
 					if (string.IsNullOrEmpty (CompletionString) || matcher.IsMatch (win.DataProvider.GetText (newSelection))) {
 						var completionCategory = win.DataProvider.GetCompletionCategory (newSelection);
-						GetCategory (completionCategory).Items.Add (newSelection);
+						GetCategory (newCategories, completionCategory).Items.Add (newSelection);
 						filteredItems.Add (newSelection);
 					}
 				}
@@ -649,10 +649,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			filteredItems.Sort (delegate (int left, int right) {
 				return win.DataProvider.CompareTo (left, right);
 			});
-			categories.Sort (delegate (Category left, Category right) {
+			newCategories.Sort (delegate (Category left, Category right) {
 				return left.CompletionCategory != null ? left.CompletionCategory.CompareTo (right.CompletionCategory) : -1;
 			});
-			
+			categories = newCategories;
+
 			SelectFirstItemInCategory ();
 			CalcVisibleRows ();
 			SetAdjustments ();

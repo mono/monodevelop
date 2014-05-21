@@ -405,6 +405,11 @@ namespace MonoDevelop.Ide.Gui
 				content = null;
 			}
 
+			if (subViewToolbar != null) {
+				subViewToolbar.Dispose ();
+				subViewToolbar = null;
+			}
+
 			DetachFromPathedDocument ();
 			commandHandler = null;
 			document = null;

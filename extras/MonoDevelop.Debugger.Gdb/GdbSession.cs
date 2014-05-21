@@ -360,7 +360,7 @@ namespace MonoDevelop.Debugger.Gdb
 			
 			WaitCallback nc = delegate {
 				if (hitCount != -1)
-					binfo.UpdateHitCount (hitCount);
+					binfo.IncrementHitCount ();
 				if (lastTrace != null)
 					binfo.UpdateLastTraceValue (lastTrace);
 			};

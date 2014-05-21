@@ -29,29 +29,67 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
-	public class TestEvaluation
+	class TestEvaluationParent
+	{
+		public int TestMethodBase ()
+		{
+			float c = 4;
+			return 1;
+		}
+
+		public virtual int TestMethodBase (string a)
+		{
+			return int.Parse (a) + 1;
+		}
+
+		protected int TestMethodBase (int a)
+		{
+			return a + 1;
+		}
+
+		public int TestMethodBaseNotOverrided ()
+		{
+			float c = 4;
+			return 1;
+		}
+
+		public class ParentNestedClass
+		{
+
+		}
+	}
+
+	class TestEvaluation : TestEvaluationParent
 	{
 		static string staticString = "some static";
 		string someString = "hi";
-		string[] numbers = { "one","two","three" };
+		string[] numbers = { "one", "two", "three" };
 
 		public static void RunTest ()
 		{
 			var obj = new TestEvaluation ();
-			obj.Test ();
+			obj.Test ("testString", 55);
 		}
 
-		public void Test()
+		public void Test (string stringParam, int intParam = 22, int intParam2 = 66)
 		{
+			int intZero = 0, intOne = 1;
 			int n = 32;
 			decimal dec = 123.456m;
+			var stringList = new List<string> ();
+			stringList.Add ("aaa");
+			stringList.Add ("bbb");
+			stringList.Add ("ccc");
+
 			var alist = new ArrayList ();
 			alist.Add (1);
 			alist.Add ("two");
 			alist.Add (3);
+			string modifyInLamda = "";
 
 			A c = new C ();
 			A b = new B ();
@@ -62,12 +100,33 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var withToString = new WithToString ();
 
 			var numbersArrays = new int [2][];
-			var numbersMulti = new int [3,4,5];
+			var numbersMulti = new int [3, 4, 5];
+
+			var ops1 = new BinaryOperatorOverrides (1);
+			var ops2 = new BinaryOperatorOverrides (2);
+			var ops3 = new BinaryOperatorOverrides (2);
 
 			var dict = new Dictionary<int, string[]> ();
-			var dictArray = new Dictionary<int, string[]> [2,3];
+			dict.Add (5, new string[]{ "a", "b" });
+			var dictArray = new Dictionary<int, string[]> [2, 3];
 			var thing = new Thing<string> ();
 			var done = new Thing<string>.Done<int> ();
+			done.Property = 54;
+
+			SimpleStruct simpleStruct = new SimpleStruct ();
+			simpleStruct.IntField = 45;
+			simpleStruct.StringField = "str";
+			SimpleStruct? nulledSimpleStruct;
+			var action = new Action (() => {
+				modifyInLamda = "modified";
+			});
+			action ();
+
+			dynamic dynObj = new ExpandoObject ();
+			dynObj.someInt = 53;
+			dynObj.someString = "Hello dynamic objects!";
+
+			var objWithMethodA = new ClassWithMethodA ();
 
 			Console.WriteLine (n); /*break*/
 		}
@@ -88,9 +147,35 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			return a + 1;
 		}
 
+		public int TestMethodBase ()
+		{
+			float c = 4;
+			return 1;
+		}
+
+		public override int TestMethodBase (string a)
+		{
+			return int.Parse (a) + 1;
+		}
+
+		protected new int TestMethodBase (int a)
+		{
+			return a + 1;
+		}
+
 		public static int TestMethod (bool b)
 		{
 			return b ? 1 : 2;
+		}
+
+		public T ReturnSame<T> (T t)
+		{
+			return t;
+		}
+
+		public T ReturnNew<T> () where T:new()
+		{
+			return new T ();
 		}
 
 		public string BoxingTestMethod (object a)
@@ -101,32 +186,147 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		public string EscapedStrings {
 			get { return " \" \\ \a \b \f \v \n \r \t"; }
 		}
+
+		public static void Swap<T> (ref T a, ref T b)
+		{
+			T temp = a;
+			a = b;
+			b = temp;
+		}
+
+		public static List<T> GenerateList<T> (T value, int count)
+		{
+			var list = new List<T> ();
+			for (int i = 0; i < count; i++) {
+				list.Add (value);
+			}
+			return list;
+		}
+
+		class NestedClass
+		{
+			public class DoubleNestedClass
+			{
+
+			}
+		}
+
+		class NestedGenericClass<T1,T2>
+		{
+
+		}
+	}
+
+	public class SomeClassInNamespace
+	{
+
 	}
 }
 
+interface IInterfaceWithMethodA
+{
+	string MethodA ();
+}
+
+abstract class AbstractClassWithMethodA
+{
+	public abstract string MethodA ();
+}
+
+class ClassWithMethodA : AbstractClassWithMethodA, IInterfaceWithMethodA
+{
+	public override string MethodA ()
+	{
+		return "AbstractImplementation";
+	}
+
+	string IInterfaceWithMethodA.MethodA ()
+	{
+		return "InterfaceImplementation";
+	}
+}
 
 class A
 {
+	public string ConstructedBy { get; private set; }
+
+	public A ()
+	{
+		ConstructedBy = "NoArg";
+	}
+
+	public A (int i)
+	{
+		ConstructedBy = "IntArg";
+	}
+
+	public A (string str)
+	{
+		ConstructedBy = "StringArg";
+	}
+
 	public virtual int Prop { get { return 1; } }
+
 	public int PropNoVirt1 { get { return 1; } }
+
 	public virtual int PropNoVirt2 { get { return 1; } }
+
+	public int IntField = 1;
+
+	public int TestMethod ()
+	{
+		float c = 4;
+		return 1;
+	}
+
+	public virtual int TestMethod (string a)
+	{
+		return int.Parse (a) + 1;
+	}
+
+	public int TestMethod (int a)
+	{
+		return a + 1;
+	}
 }
 
 class B: A
 {
 	public override int Prop { get { return 2; } }
+
 	public new int PropNoVirt1 { get { return 2; } }
+
 	public new int PropNoVirt2 { get { return 2; } }
+
+	public new int IntField = 2;
+
+	public int TestMethod ()
+	{
+		float c = 4;
+		return 2;
+	}
+
+	public override int TestMethod (string a)
+	{
+		return int.Parse (a) + 2;
+	}
+
+	public new int TestMethod (int a)
+	{
+		return a + 2;
+	}
 }
 
 class C: B
 {
+
 }
 
 [DebuggerDisplay ("Some {Val1} Value {Val2} End")]
 class WithDisplayString
 {
 	internal string Val1 = "one";
+
 	public int Val2 { get { return 2; } }
 }
 
@@ -164,6 +364,42 @@ class Thing<T>
 {
 	public class Done<U>
 	{
+		private U property;
+
+		public U Property {
+			get {
+				return property;
+			}
+			set {
+				property = value;
+			}
+		}
+
+
+		public int ReturnInt5 ()
+		{
+			return 5;
+		}
+
+		public U ReturnSame (U obj)
+		{
+			return obj;
+		}
+
+		public T ReturnSame (T obj)
+		{
+			return obj;
+		}
+
+		public U GetDefault ()
+		{
+			return default(U);
+		}
+
+		public T GetParentDefault ()
+		{
+			return default(T);
+		}
 	}
 
 	public Done<int>[] done = new Done<int> [1];
@@ -172,10 +408,115 @@ class Thing<T>
 [Flags]
 enum SomeEnum
 {
-	none=0,
-	one=1,
-	two=2,
-	four=4
+	none = 0,
+	one = 1,
+	two = 2,
+	four = 4
 }
 
+struct SimpleStruct
+{
+	public int IntField;
+	public string StringField;
+	public int? NulledIntField;
 
+	public override string ToString ()
+	{
+		return StringField + " " + IntField + " " + NulledIntField;
+	}
+}
+
+class BinaryOperatorOverrides
+{
+	int value;
+
+	public BinaryOperatorOverrides (int num)
+	{
+		value = num;
+	}
+
+	public override string ToString ()
+	{
+		return string.Format ("[BinaryOperatorOverrides {0}]", value);
+	}
+
+	public static bool operator== (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value == ops2.value;
+	}
+
+	public static bool operator!= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value != ops2.value;
+	}
+
+	public static bool operator>= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value >= ops2.value;
+	}
+
+	public static bool operator> (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value > ops2.value;
+	}
+
+	public static bool operator<= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value <= ops2.value;
+	}
+
+	public static bool operator< (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value < ops2.value;
+	}
+
+	public static BinaryOperatorOverrides operator+ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value + ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator- (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value - ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator* (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value * ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator/ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value / ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator% (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value % ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator& (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value & ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator| (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value | ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator^ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value ^ ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator<< (BinaryOperatorOverrides ops1, int shift)
+	{
+		return new BinaryOperatorOverrides (ops1.value << shift);
+	}
+
+	public static BinaryOperatorOverrides operator>> (BinaryOperatorOverrides ops1, int shift)
+	{
+		return new BinaryOperatorOverrides (ops1.value >> shift);
+	}
+}

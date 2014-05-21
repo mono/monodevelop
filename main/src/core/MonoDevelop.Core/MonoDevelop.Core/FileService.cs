@@ -463,7 +463,7 @@ namespace MonoDevelop.Core
 		
 		public static bool IsDirectory (string filename)
 		{
-			return Directory.Exists (filename) && (File.GetAttributes (filename) & FileAttributes.Directory) != 0;
+			return Directory.Exists (filename);
 		}
 		
 		public static string GetFullPath (string path)

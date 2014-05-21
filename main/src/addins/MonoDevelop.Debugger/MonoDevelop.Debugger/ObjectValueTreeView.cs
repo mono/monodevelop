@@ -243,6 +243,10 @@ namespace MonoDevelop.Debugger
 			valueCol.RemoveNotification ("width", OnColumnWidthChanged);
 			expCol.RemoveNotification ("width", OnColumnWidthChanged);
 
+			values.Clear ();
+			valueNames.Clear ();
+			Frame = null;
+
 			disposed = true;
 			cancellationTokenSource.Cancel ();
 
@@ -793,13 +797,13 @@ namespace MonoDevelop.Debugger
 		{
 			if ((flags & ObjectValueFlags.Field) != 0 && (flags & ObjectValueFlags.ReadOnly) != 0)
 				return "md-literal";
-			
+
+			string global = (flags & ObjectValueFlags.Global) != 0 ? "static-" : string.Empty;
 			string source;
-			string stic = (flags & ObjectValueFlags.Global) != 0 ? "static-" : string.Empty;
-			
+
 			switch (flags & ObjectValueFlags.OriginMask) {
 			case ObjectValueFlags.Property: source = "property"; break;
-			case ObjectValueFlags.Type: source = "class"; stic = string.Empty; break;
+			case ObjectValueFlags.Type: source = "class"; global = string.Empty; break;
 			case ObjectValueFlags.Method: source = "method"; break;
 			case ObjectValueFlags.Literal: return "md-literal";
 			case ObjectValueFlags.Namespace: return "md-name-space";
@@ -818,7 +822,7 @@ namespace MonoDevelop.Debugger
 			default: access = string.Empty; break;
 			}
 			
-			return "md-" + access + stic + source;
+			return "md-" + access + global + source;
 		}
 		
 		protected override bool OnTestExpandRow (TreeIter iter, TreePath path)

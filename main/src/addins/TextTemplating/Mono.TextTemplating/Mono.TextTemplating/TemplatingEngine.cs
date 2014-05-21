@@ -416,10 +416,6 @@ namespace Mono.TextTemplating
 			
 			foreach (var dt in settings.CustomDirectives) {
 				var processor = settings.DirectiveProcessors[dt.ProcessorName];
-				
-				if (processor is RequiresProvidesDirectiveProcessor)
-					throw new NotImplementedException ("RequiresProvidesDirectiveProcessor");
-				
 				processor.ProcessDirective (dt.Directive.Name, dt.Directive.Attributes);
 			}
 			

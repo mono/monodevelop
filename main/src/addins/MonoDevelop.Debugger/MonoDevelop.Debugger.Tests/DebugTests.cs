@@ -54,11 +54,11 @@ namespace MonoDevelop.Debugger.Tests
 
 		SourceLocation lastStoppedPosition;
 
-		public bool AllowTargetInvokes{ get; set; }
+		public bool AllowTargetInvokes { get; protected set; }
 
-		public DebuggerSession Session{ get; private set; }
+		public DebuggerSession Session { get; private set; }
 
-		public StackFrame Frame{ get; private set; }
+		public StackFrame Frame { get; private set; }
 
 		protected DebugTests (string engineId)
 		{
@@ -97,24 +97,31 @@ namespace MonoDevelop.Debugger.Tests
 				runtime = Runtime.SystemAssemblyService.GetTargetRuntime ("MS.NET");
 				break;
 			case "Mono.Debugger.Soft":
-				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ().OfType<MonoTargetRuntime> ().FirstOrDefault ();
+				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ()
+					.OfType<MonoTargetRuntime> ()
+					.OrderByDescending(o => o.Version)
+					.FirstOrDefault ();
 				break;
 			default:
 				runtime = Runtime.SystemAssemblyService.DefaultRuntime;
 				break;
 			}
 
-			if (runtime == null)
+			if (runtime == null) {
 				Assert.Ignore ("Runtime not found for: {0}", EngineId);
+				return;
+			}
+
+			Console.WriteLine ("Target Runtime: " + runtime.DisplayRuntimeName + " " + runtime.Version);
 
 			// main/build/tests
 			FilePath path = Path.GetDirectoryName (GetType ().Assembly.Location);
 			var exe = Path.Combine (path, "MonoDevelop.Debugger.Tests.TestApp.exe");
 
 			var cmd = new DotNetExecutionCommand ();
+			cmd.TargetRuntime = runtime;
 			cmd.Command = exe;
 			cmd.Arguments = test;
-			cmd.TargetRuntime = runtime;
 
 			if (Platform.IsWindows) {
 				var monoRuntime = runtime as MonoTargetRuntime;
@@ -126,7 +133,7 @@ namespace MonoDevelop.Debugger.Tests
 				}
 			}
 
-			DebuggerStartInfo dsi = engine.CreateDebuggerStartInfo (cmd);
+			var dsi = engine.CreateDebuggerStartInfo (cmd);
 			var soft = dsi as SoftDebuggerStartInfo;
 
 			if (soft != null) {
@@ -148,41 +155,91 @@ namespace MonoDevelop.Debugger.Tests
 			AddBreakpoint ("break");
 			
 			var done = new ManualResetEvent (false);
-			
-			Session.OutputWriter = (isStderr, text) => Console.WriteLine ("PROC:" + text);
 
-			Session.TargetHitBreakpoint += (object sender, TargetEventArgs e) => {
+			Session.TargetHitBreakpoint += (sender, e) => {
 				done.Set ();
 				Frame = e.Backtrace.GetFrame (0);
 				lastStoppedPosition = Frame.SourceLocation;
 				targetStoppedEvent.Set ();
 			};
 
-			Session.TargetStopped += (object sender, TargetEventArgs e) => {
+			Session.TargetExceptionThrown += (sender, e) => {
+				Frame = e.Backtrace.GetFrame (0);
+				for (int i = 0; i < e.Backtrace.FrameCount; i++) {
+					if (!e.Backtrace.GetFrame (i).IsExternalCode) {
+						Frame = e.Backtrace.GetFrame (i);
+						break;
+					}
+				}
+				lastStoppedPosition = Frame.SourceLocation;
+				targetStoppedEvent.Set ();
+			};
+
+			Session.TargetStopped += (sender, e) => {
 				Frame = e.Backtrace.GetFrame (0);
 				lastStoppedPosition = Frame.SourceLocation;
 				targetStoppedEvent.Set ();
 			};
 
+			var targetExited = new ManualResetEvent (false);
+			Session.TargetExited += delegate {
+				targetExited.Set ();
+			};
+
 			Session.Run (dsi, ops);
-			if (!done.WaitOne (3000))
+			switch (WaitHandle.WaitAny (new WaitHandle[]{ done, targetExited }, 30000)) {
+			case 0:
+				//Breakpoint is hit good... run tests now
+				break;
+			case 1:
+				throw new Exception ("Test application exited before hitting breakpoint");
+			default:
 				throw new Exception ("Timeout while waiting for initial breakpoint");
+			}
 		}
 
-		public void AddBreakpoint (string breakpointMarker, int offset = 0)
+		void GetLineAndColumn (string breakpointMarker, int offset, string statement, out int line, out int col)
 		{
 			int i = SourceFile.Text.IndexOf ("/*" + breakpointMarker + "*/", StringComparison.Ordinal);
 			if (i == -1)
 				Assert.Fail ("Break marker not found: " + breakpointMarker + " in " + SourceFile.Name);
-			int line, col;
 			SourceFile.GetLineColumnFromPosition (i, out line, out col);
-			Breakpoint bp = Session.Breakpoints.Add (SourceFile.Name, line + offset);
-			bp.Enabled = true;
+			line += offset;
+			if (statement != null) {
+				int lineStartPosition = SourceFile.GetPositionFromLineColumn (line, 1);
+				string lineText = SourceFile.GetText (lineStartPosition, lineStartPosition + SourceFile.GetLineLength (line));
+				col = lineText.IndexOf (statement, StringComparison.Ordinal) + 1;
+				if (col == 0)
+					Assert.Fail ("Failed to find statement:" + statement + " at " + SourceFile.Name + "(" + line + ")");
+			} else {
+				col = 1;
+			}
+		}
+
+		public Breakpoint AddBreakpoint (string breakpointMarker, int offset = 0, string statement = null)
+		{
+			int col, line;
+			GetLineAndColumn (breakpointMarker, offset, statement, out line, out col);
+			var bp = new Breakpoint (SourceFile.Name, line, col);
+			Session.Breakpoints.Add (bp);
+			return bp;
+		}
+
+		public void RunToCursor (string breakpointMarker, int offset = 0, string statement = null)
+		{
+			int col, line;
+			GetLineAndColumn (breakpointMarker, offset, statement, out line, out col);
+			targetStoppedEvent.Reset ();
+			Session.Breakpoints.RemoveRunToCursorBreakpoints ();
+			var bp = new RunToCursorBreakpoint (SourceFile.Name, line, col);
+			Session.Breakpoints.Add (bp);
+			Session.Continue ();
+			CheckPosition (breakpointMarker, offset, statement);
 		}
 
 		public void InitializeTest ()
 		{
-			Session.Breakpoints.ClearBreakpoints ();
+			Session.Breakpoints.Clear ();
 			Session.Options.EvaluationOptions = EvaluationOptions.DefaultOptions;
 			Session.Options.ProjectAssembliesOnly = true;
 			Session.Options.StepOverPropertiesAndOperators = false;
@@ -289,9 +346,21 @@ namespace MonoDevelop.Debugger.Tests
 			if (!targetStoppedEvent.WaitOne (3000)) {
 				Assert.Fail ("StartTest failure: Target stop timeout");
 			}
-			Assert.AreEqual ('"' + methodName + '"', Eval ("MonoDevelop.Debugger.Tests.TestApp.BreakpointsAndStepping.NextMethodToCall = \"" + methodName + "\";").Value);
+			Assert.AreEqual ('"' + methodName + '"', Eval ("NextMethodToCall = \"" + methodName + "\";").Value);
 			targetStoppedEvent.Reset ();
 			Session.Continue ();
+		}
+
+		public void SetNextStatement (string guid, int offset = 0, string statement = null)
+		{
+			int line, column;
+			GetLineAndColumn (guid, offset, statement, out line, out column);
+			Session.SetNextStatement (SourceFile.Name, line, column);
+		}
+
+		public void AddCatchpoint(string exceptionName, bool includeSubclasses)
+		{
+			Session.Breakpoints.Add (new Catchpoint (exceptionName, includeSubclasses));
 		}
 	}
 
@@ -320,6 +389,13 @@ namespace MonoDevelop.Debugger.Tests
 
 			val.ValueChanged -= h;
 			return val;
+		}
+
+		public static ObjectValue GetChildSync (this ObjectValue val, string name, EvaluationOptions ops)
+		{
+			var result = val.GetChild (name, ops);
+
+			return result != null ? result.Sync () : null;
 		}
 	}
 }

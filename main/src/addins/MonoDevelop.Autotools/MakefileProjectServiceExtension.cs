@@ -163,24 +163,28 @@ namespace MonoDevelop.Autotools
 				string baseDir = project.BaseDirectory;
 				string args = string.Format ("-j {0} {1}", data.ParallelProcesses, data.BuildTargetName);
 	
-				StringWriter swOutput = new StringWriter ();
-				LogTextWriter chainedOutput = new LogTextWriter ();
-				chainedOutput.ChainWriter (monitor.Log);
-				chainedOutput.ChainWriter (swOutput);
+				using (var swOutput = new StringWriter ()) {
+					using (var chainedOutput = new LogTextWriter ()) {
+						chainedOutput.ChainWriter (monitor.Log);
+						chainedOutput.ChainWriter (swOutput);
 
-				ProcessWrapper process = Runtime.ProcessService.StartProcess ("make",
-						args,
-						baseDir, 
-						chainedOutput, 
-						chainedOutput,
-						null);
-				process.WaitForOutput ();
+						using (ProcessWrapper process = Runtime.ProcessService.StartProcess ("make",
+								args,
+								baseDir, 
+								chainedOutput, 
+								chainedOutput,
+							null)) {
+							process.WaitForOutput ();
 
-				exitCode = process.ExitCode;
-				output = swOutput.ToString ();
-				chainedOutput.Close ();
-				swOutput.Close ();
-				monitor.Step ( 1 );
+							chainedOutput.UnchainWriter (monitor.Log);
+							chainedOutput.UnchainWriter (swOutput);
+
+							exitCode = process.ExitCode;
+							output = swOutput.ToString ();
+							monitor.Step ( 1 );
+						}
+					}
+				}
 			}
 			catch ( Exception e )
 			{

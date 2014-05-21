@@ -33,9 +33,19 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackageManagementProgressProvider : IProgressProvider
 	{
+		Action<MessageHandler> guiDispatcher;
+
 		public PackageManagementProgressProvider (IPackageRepositoryFactoryEvents repositoryFactoryEvents)
+			: this (repositoryFactoryEvents, DispatchService.GuiDispatch)
+		{
+		}
+
+		public PackageManagementProgressProvider (
+			IPackageRepositoryFactoryEvents repositoryFactoryEvents,
+			Action<MessageHandler> guiDispatcher)
 		{
 			repositoryFactoryEvents.RepositoryCreated += RepositoryCreated;
+			this.guiDispatcher = guiDispatcher;
 		}
 
 		void RepositoryCreated (object sender, PackageRepositoryFactoryEventArgs e)
@@ -50,7 +60,7 @@ namespace MonoDevelop.PackageManagement
 
 		void OnProgressAvailable (object sender, ProgressEventArgs e)
 		{
-			DispatchService.GuiDispatch (() => {
+			guiDispatcher (() => {
 				if (ProgressAvailable != null) {
 					ProgressAvailable (sender, e);
 				}

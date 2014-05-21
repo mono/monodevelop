@@ -235,7 +235,7 @@ fi
 AM_CONDITIONAL(ENABLE_WINDOWSPLATFORM, [test x$enable_windowsplatform = xyes])
 
 dnl Intl
-ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu nb"
+ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu nb ko"
 AC_SUBST(ALL_LINGUAS)
 GETTEXT_PACKAGE=monodevelop
 AC_SUBST(GETTEXT_PACKAGE)

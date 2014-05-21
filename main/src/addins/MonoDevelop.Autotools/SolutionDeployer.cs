@@ -178,33 +178,39 @@ namespace MonoDevelop.Autotools
 				
 				monitor.Step ( 1 );
 
-				StringWriter sw = new StringWriter ();
-				LogTextWriter chainedOutput = new LogTextWriter ();
-				chainedOutput.ChainWriter (monitor.Log);
-				chainedOutput.ChainWriter (sw);
+				using (var sw = new StringWriter ()) {
+					using (var chainedOutput = new LogTextWriter ()) {
+						chainedOutput.ChainWriter (monitor.Log);
+						chainedOutput.ChainWriter (sw);
 
-				ProcessWrapper process = Runtime.ProcessService.StartProcess ( "make", 
-						"dist", 
-						baseDir, 
-						chainedOutput, 
-						monitor.Log, 
-						null );
-				process.WaitForOutput ();
+						using (ProcessWrapper process = Runtime.ProcessService.StartProcess ("make", 
+								"dist", 
+								baseDir, 
+								chainedOutput, 
+								monitor.Log, 
+							null)) {
+							process.WaitForOutput ();
 
-				if ( process.ExitCode > 0 )
-					throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running '{0}'", "make dist") );
+							chainedOutput.UnchainWriter (monitor.Log);
+							chainedOutput.UnchainWriter (sw);
 
-				monitor.Step ( 1 );
+							if ( process.ExitCode > 0 )
+								throw new Exception ( GettextCatalog.GetString ("An unspecified error occurred while running '{0}'", "make dist") );
+						}
 
-				// FIXME: hackish way to get the created tarball's filename
-				string output = sw.ToString();
-				int targz = output.LastIndexOf  ( "tar.gz" );
-				int begin = output.LastIndexOf ( '>', targz );
+						monitor.Step ( 1 );
 
-				string filename = output.Substring ( begin + 1, (targz - begin) + 5 ).Trim ();
-				
-				FileService.CopyFile (Path.Combine (baseDir, filename), Path.Combine (targetDir, filename));
-				monitor.Step ( 1 );
+						// FIXME: hackish way to get the created tarball's filename
+						string output = sw.ToString();
+						int targz = output.LastIndexOf  ( "tar.gz" );
+						int begin = output.LastIndexOf ( '>', targz );
+
+						string filename = output.Substring ( begin + 1, (targz - begin) + 5 ).Trim ();
+						
+						FileService.CopyFile (Path.Combine (baseDir, filename), Path.Combine (targetDir, filename));
+						monitor.Step ( 1 );
+					}
+				}
 			}
 			catch ( Exception e )
 			{

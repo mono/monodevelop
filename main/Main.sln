@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9D360D43-0C05-49D6-84DB-4E7AB2F38F82}"
+	ProjectSection(MonoDevelopProperties) = preProject
+		BaseDirectory = src\core
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Core", "src\core\MonoDevelop.Core\MonoDevelop.Core.csproj", "{7525BB88-6142-4A26-93B9-A30C6983390A}"
 EndProject
@@ -72,6 +75,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.WebReferences", "src\addins\MonoDevelop.WebReferences\MonoDevelop.WebReferences.csproj", "{2A00A871-C641-4116-ADFD-29B7799952B4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CSharpBinding", "CSharpBinding", "{B480BF1B-1DCD-4288-9212-F5BEDF763797}"
+	ProjectSection(MonoDevelopProperties) = preProject
+		BaseDirectory = src\addins\CSharpBinding
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpBinding", "src\addins\CSharpBinding\CSharpBinding.csproj", "{07CC7654-27D6-421D-A64C-0FFA40456FA2}"
 EndProject
@@ -136,6 +142,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.TextTemplating.Tests", "src\addins\TextTemplating\Mono.TextTemplating.Tests\Mono.TextTemplating.Tests.csproj", "{CB590106-8331-4CBE-8131-B154E7BF79E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.Debugger.Soft", "MonoDevelop.Debugger.Soft", "{33248236-FF84-4336-A73B-65E6B1090D15}"
+	ProjectSection(MonoDevelopProperties) = preProject
+		BaseDirectory = src\addins\MonoDevelop.Debugger.Soft
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Debugger.Soft", "src\addins\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.csproj", "{3D363F0C-5731-42AA-9022-B7F4657F298A}"
 EndProject
@@ -182,6 +191,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shell", "src\addins\WindowsPlatform\WindowsAPICodePack\Shell\Shell.csproj", "{AA0C00CB-8699-4F37-BFAE-40CA87ACC06D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contrib", "contrib", "{F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}"
+	ProjectSection(MonoDevelopProperties) = preProject
+		BaseDirectory = external
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Debugger.Soft", "external\debugger-libs\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj", "{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}"
 EndProject

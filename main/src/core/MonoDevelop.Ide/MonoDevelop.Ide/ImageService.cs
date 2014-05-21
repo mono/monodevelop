@@ -55,7 +55,6 @@ namespace MonoDevelop.Ide
 
 		static List<RuntimeAddin> addins = new List<RuntimeAddin> ();
 		static Dictionary<string, string> composedIcons = new Dictionary<string, string> ();
-		static Dictionary<Gdk.Pixbuf, string> namedIcons = new Dictionary<Gdk.Pixbuf, string> ();
 
 		// Dictionary of extension nodes by stock icon id. It holds nodes that have not yet been loaded
 		static Dictionary<string, List<StockIconCodon>> iconStock = new Dictionary<string, List<StockIconCodon>> ();
@@ -76,6 +75,8 @@ namespace MonoDevelop.Ide
 					if (!iconStock.ContainsKey (iconCodon.StockId))
 						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
 					iconStock[iconCodon.StockId].Add (iconCodon);
+					if (iconCodon.Addin == AddinManager.CurrentAddin)
+						EnsureStockIconIsLoaded (iconCodon.StockId);
 					break;
 				}
 			});
@@ -718,7 +719,8 @@ namespace MonoDevelop.Ide
 			animatedImages.RemoveAll (a => (AnimatedImageInfo)a.Target == ainfo);
 		}
 
-		//TODO: size-limit this cache
+		//TODO: size-limit the in-memory cache
+		//TODO: size-limit the on-disk cache
 		static Dictionary<string,ImageLoader> gravatars = new Dictionary<string,ImageLoader> ();
 
 		public static ImageLoader GetUserIcon (string email, int size, Xwt.Screen screen = null)
@@ -740,7 +742,7 @@ namespace MonoDevelop.Ide
 			}
 
 			ImageLoader loader;
-			if (!gravatars.TryGetValue (key, out loader)) {
+			if (!gravatars.TryGetValue (key, out loader) || (!loader.Downloading && loader.Image == null)) {
 				var cacheFile = UserProfile.Current.TempDir.Combine ("Gravatars", key);
 				string url = "https://www.gravatar.com/avatar/" + hash + "?d=404&s=" + size;
 				gravatars[key] = loader = new ImageLoader (cacheFile, url, scaleFactor);
