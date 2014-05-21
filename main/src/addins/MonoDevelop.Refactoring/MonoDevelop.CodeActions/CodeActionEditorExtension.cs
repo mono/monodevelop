@@ -172,15 +172,17 @@ namespace MonoDevelop.CodeActions
 						.OfType<DiagnosticResult> ()
 						.Select (dr => dr.Diagnostic)
 						.ToList ();
-					
 					System.Threading.Tasks.Task.Factory.StartNew (delegate {
 						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
+						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToList ();
 						foreach (var cfp in CodeDiagnosticService.GetCodeFixDescriptor (CodeRefactoringService.MimeTypeToLanguage(document.Editor.MimeType))) {
-							var fixes = cfp.GetCodeFixProvider ().GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result;
+							var provider = cfp.GetCodeFixProvider ();
+							if (!provider.GetFixableDiagnosticIds ().Any (diagnosticIds.Contains))
+								continue;
+							var fixes = provider.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result.ToList ();
 							foreach (var fix in fixes)
 								codeIssueFixes.Add (Tuple.Create (cfp, fix));
 						}
-
 						var codeActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
 						foreach (var action in CodeRefactoringService.GetValidActionsAsync (document, span, token).Result) {
 							codeActions.Add (action); 
@@ -329,9 +331,7 @@ namespace MonoDevelop.CodeActions
 		public void PopulateFixes (Menu menu, ref int items)
 		{
 			int mnemonic = 1;
-			bool gotImportantFix = false;
-			var fixesAdded = new List<string> ();
-			
+
 			foreach (var fix in Fixes.CodeRefactoringActions) {
 				AddFix (menu, ref mnemonic, fix.Item2);
 				items++;
