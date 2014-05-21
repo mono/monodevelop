@@ -1,10 +1,10 @@
 // 
-// DefaultInspectionCategories.cs
+// CodeAnalysisRunner.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
 // 
-// Copyright (c) 2012 Xamarin <http://xamarin.com>
+// Copyright (c) 2012 Xamarin Inc. (http://xamarin.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,31 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//#define PROFILE
 using System;
-using MonoDevelop.Core;
+using System.Linq;
+using MonoDevelop.AnalysisCore;
+using System.Collections.Generic;
+using MonoDevelop.Ide.Gui;
+using System.Threading;
+using MonoDevelop.SourceEditor.QuickTasks;
+using MonoDevelop.CodeIssues;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.CodeFixes;
+using MonoDevelop.CodeActions;
 
 namespace MonoDevelop.CodeIssues
 {
-	/// <summary>
-	/// Default code issue categories provide strings to common categories used in the code issue options panel.
-	/// </summary>
-	public static class DefaultCodeIssueCategories
+	static class CodeDiagnosticRunner
 	{
-		public readonly static string Improvements      = GettextCatalog.GetString ("Code Improvements");
-		public readonly static string CodeQualityIssues = GettextCatalog.GetString ("Code Quality Issues");
-		public readonly static string ConstraintViolations = GettextCatalog.GetString ("Constraint Violations");
-		public readonly static string Redundancies = GettextCatalog.GetString ("Redundancies");
-		public readonly static string Opportunities = GettextCatalog.GetString ("Language Usage Opportunities");
-		public readonly static string Notifications = GettextCatalog.GetString ("Code Notifications");
+		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
+		{
+			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
+				return Enumerable.Empty<Result> ();
+
+			var model = input.GetCompilationAsync (cancellationToken).Result;
+			var language = CodeRefactoringService.MimeTypeToLanguage (input.Editor.MimeType);
+			return AnalyzerDriver.GetDiagnostics (model, CodeDiagnosticService.GetCodeIssues (language).Select (issue => issue.GetProvider ()), cancellationToken).Select (diagnostic => new DiagnosticResult(diagnostic));
+		}
 	}
 }
-

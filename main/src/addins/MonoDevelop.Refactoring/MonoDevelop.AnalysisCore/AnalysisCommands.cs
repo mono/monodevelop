@@ -154,7 +154,7 @@ namespace MonoDevelop.AnalysisCore
 			if (codeActionExtension != null) {
 				var fixes = codeActionExtension.GetCurrentFixes ();
 				if (fixes != null)
-					return fixes.Any (CodeActionEditorExtension.IsAnalysisOrErrorFix);
+					return !fixes.IsEmpty;
 			} 
 			return false;
 		}
@@ -287,9 +287,9 @@ namespace MonoDevelop.AnalysisCore
 			if (!dlg.Run ())
 				return;
 
-			Dictionary<CodeIssueDescriptor, DiagnosticSeverity?> severities = new Dictionary<CodeIssueDescriptor, DiagnosticSeverity?> ();
+			Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> severities = new Dictionary<CodeDiagnosticDescriptor, DiagnosticSeverity?> ();
 
-			foreach (var node in CodeIssueService.GetCodeIssues (CodeActionService.MimeTypeToLanguage(lang), true)) {
+			foreach (var node in CodeDiagnosticService.GetCodeIssues (CodeRefactoringService.MimeTypeToLanguage(lang), true)) {
 				severities [node] = node.DiagnosticSeverity;
 //				if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
 //					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
@@ -298,7 +298,7 @@ namespace MonoDevelop.AnalysisCore
 //				}
 			}
 
-			var grouped = severities.Keys.OfType<CodeIssueDescriptor> ()
+			var grouped = severities.Keys.OfType<CodeDiagnosticDescriptor> ()
 				.GroupBy (node => node.GetProvider ().SupportedDiagnostics.First ().Category)
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
@@ -323,8 +323,8 @@ namespace MonoDevelop.AnalysisCore
 					sw.WriteLine ("</table>");
 				}
 
-				var providerStates = new Dictionary<CodeActionDescriptor, bool> ();
-				foreach (var node in CodeActionService.GetCodeActions (CodeActionService.MimeTypeToLanguage(lang), true)) {
+				var providerStates = new Dictionary<CodeRefactoringDescriptor, bool> ();
+				foreach (var node in CodeRefactoringService.GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(lang), true)) {
 					providerStates [node] = node.IsEnabled;
 				}
 

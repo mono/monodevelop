@@ -36,36 +36,38 @@ using Microsoft.CodeAnalysis.CodeActions;
 
 namespace MonoDevelop.CodeActions
 {
-	static class CodeActionService
+	static class CodeRefactoringService
 	{
-		static readonly List<CodeActionDescriptor> codeActions = new List<CodeActionDescriptor> ();
+		static readonly List<CodeRefactoringDescriptor> codeActions = new List<CodeRefactoringDescriptor> ();
 
-		static CodeActionService ()
+		static CodeRefactoringService ()
 		{
 			foreach (var type in typeof(ICSharpCode.NRefactory6.CSharp.Refactoring.IssueMarker).Assembly.GetTypes ()) {
 				var exportAttr = type.GetCustomAttributes (typeof(ExportCodeRefactoringProviderAttribute), false).FirstOrDefault () as ExportCodeRefactoringProviderAttribute;
 				if (exportAttr == null)
 					continue;
-				codeActions.Add (new CodeActionDescriptor (exportAttr.Name, exportAttr.Language, type)); 
+				codeActions.Add (new CodeRefactoringDescriptor (exportAttr.Name, exportAttr.Language, type)); 
 			}
 		}
 
-		public static IEnumerable<CodeActionDescriptor> GetCodeActions (string language, bool includeDisabledNodes = false)
+		public static IEnumerable<CodeRefactoringDescriptor> GetCodeActions (string language, bool includeDisabledNodes = false)
 		{
 			if (string.IsNullOrEmpty (language))
 				return includeDisabledNodes ? codeActions : codeActions.Where (act => act.IsEnabled);
 			return includeDisabledNodes ? codeActions.Where (ca => ca.Language == language) : codeActions.Where (ca => ca.Language == language && ca.IsEnabled);
 		}
 
-		public static async Task<IEnumerable<CodeAction>> GetValidActionsAsync (MonoDevelop.Ide.Gui.Document doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
+		public static async Task<IEnumerable<Tuple<CodeRefactoringDescriptor, CodeAction>>> GetValidActionsAsync (MonoDevelop.Ide.Gui.Document doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var analysisDocument = doc.AnalysisDocument;
-			var actions = new List<CodeAction> ();
+			var actions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
 
-			foreach (var provider in GetCodeActions (CodeActionService.MimeTypeToLanguage(doc.Editor.MimeType)).Select (desc => desc.GetProvider ())) {
-				var refactorings = await provider.GetRefactoringsAsync (analysisDocument, span, cancellationToken);
-				if (refactorings != null)
-					actions.AddRange (refactorings);
+			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(doc.Editor.MimeType))) {
+				var refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (analysisDocument, span, cancellationToken);
+				if (refactorings != null) {
+					foreach (var action in refactorings)
+						actions.Add (Tuple.Create (descriptor, action));
+				}
 			}
 			return actions;
 		}

@@ -116,19 +116,20 @@
     <Compile Include="gtk-gui\MonoDevelop.CodeActions.ContextActionPanelWidget.cs" />
     <Compile Include="MonoDevelop.CodeIssues\CodeIssuePanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.CodeIssues.CodeIssuePanelWidget.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\DefaultCodeIssueCategories.cs" />
     <Compile Include="MonoDevelop.Refactoring\ResolveCommandHandler.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindDerivedSymbolsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindMemberOverloadsHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\FindExtensionMethodHandler.cs" />
     <Compile Include="MonoDevelop.Refactoring\GotoBaseDeclarationHandler.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeActionService.cs" />
-    <Compile Include="MonoDevelop.CodeActions\CodeActionDescriptor.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssueService.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeIssueDescriptor.cs" />
     <Compile Include="MonoDevelop.CodeIssues\DiagnosticResult.cs" />
-    <Compile Include="MonoDevelop.CodeIssues\CodeAnalysisRunner.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeRefactoringDescriptor.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeRefactoringService.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticDescriptor.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticRunner.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeDiagnosticService.cs" />
+    <Compile Include="MonoDevelop.CodeActions\CodeActionContainer.cs" />
+    <Compile Include="MonoDevelop.CodeIssues\CodeFixDescriptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />

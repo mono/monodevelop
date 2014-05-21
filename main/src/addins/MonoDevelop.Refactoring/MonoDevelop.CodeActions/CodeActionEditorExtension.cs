@@ -54,6 +54,7 @@ using ICSharpCode.NRefactory6.CSharp.Refactoring;
 
 namespace MonoDevelop.CodeActions
 {
+
 	class CodeActionEditorExtension : TextEditorExtension 
 	{
 		uint quickFixTimeout;
@@ -63,7 +64,7 @@ namespace MonoDevelop.CodeActions
 		uint menuCloseTimeoutId;
 		Menu codeActionMenu;
 
-		public IEnumerable<CodeAction> Fixes {
+		public CodeActionContainer Fixes {
 			get;
 			private set;
 		}
@@ -173,20 +174,22 @@ namespace MonoDevelop.CodeActions
 						.ToList ();
 					
 					System.Threading.Tasks.Task.Factory.StartNew (delegate {
-						var fixes = new List<CodeAction> ();
-
-						foreach (var cfp in CodeIssueService.CodeFixProvider) {
-							fixes.AddRange (cfp.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result);
+						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
+						foreach (var cfp in CodeDiagnosticService.GetCodeFixDescriptor (CodeRefactoringService.MimeTypeToLanguage(document.Editor.MimeType))) {
+							var fixes = cfp.GetCodeFixProvider ().GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result;
+							foreach (var fix in fixes)
+								codeIssueFixes.Add (Tuple.Create (cfp, fix));
 						}
 
-						foreach (var action in CodeActionService.GetValidActionsAsync (document, span, token).Result) {
-							fixes.Add (action); 
+						var codeActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
+						foreach (var action in CodeRefactoringService.GetValidActionsAsync (document, span, token).Result) {
+							codeActions.Add (action); 
 						}
 
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)
 								return;
-							CreateSmartTag (fixes, loc);
+							CreateSmartTag (new CodeActionContainer (codeIssueFixes, codeActions), loc);
 						});
 					});
 
@@ -278,7 +281,7 @@ namespace MonoDevelop.CodeActions
 					}
 				}
 
-				if (menu.Children.Any () && Fixes.Any ()) {
+				if (menu.Children.Any () && Fixes != null && !Fixes.IsEmpty) {
 					fixMenu = new Gtk.Menu ();
 					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Quick Fixes"));
 					menuItem.Submenu = fixMenu;
@@ -310,127 +313,99 @@ namespace MonoDevelop.CodeActions
 			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
 		}
 
-		public void PopulateFixes (Gtk.Menu menu, ref int items)
+		void AddFix (Menu menu, ref int mnemonic, CodeAction action)
+		{
+			var escapedLabel = action.Description.Replace ("_", "__");
+			var label = (mnemonic <= 10) ? "_" + (mnemonic++ % 10) + " " + escapedLabel : "  " + escapedLabel;
+			var thisInstanceMenuItem = new MenuItem (label);
+			thisInstanceMenuItem.Activated += new ContextActionRunner (action, document, currentSmartTagBegin).Run;
+			thisInstanceMenuItem.Activated += delegate {
+				ConfirmUsage (action.Description);
+				menu.Destroy ();
+			};
+			menu.Add (thisInstanceMenuItem);
+		}
+
+		public void PopulateFixes (Menu menu, ref int items)
 		{
 			int mnemonic = 1;
-			bool gotImportantFix = false, addedSeparator = false;
+			bool gotImportantFix = false;
 			var fixesAdded = new List<string> ();
 			
-			foreach (var fix in Fixes) {
-				var thisInstanceMenuItem = new MenuItem (fix.Description);
-				thisInstanceMenuItem.Activated += new ContextActionRunner (fix, document, currentSmartTagBegin).Run;
-				thisInstanceMenuItem.Activated += delegate {
-					ConfirmUsage (fix.Description);
-					menu.Destroy ();
-				};
-				menu.Add (thisInstanceMenuItem);
+			foreach (var fix in Fixes.CodeRefactoringActions) {
+				AddFix (menu, ref mnemonic, fix.Item2);
 				items++;
 			}
-			
-//			foreach (var fix_ in Fixes.OrderByDescending (i => Tuple.Create (IsAnalysisOrErrorFix(i), (int)i.Severity, GetUsage (i.IdString)))) {
-//				// filter out code actions that are already resolutions of a code issue
-//				if (fixesAdded.Any (f => fix_.IdString.IndexOf (f, StringComparison.Ordinal) >= 0))
-//					continue;
-//				fixesAdded.Add (fix_.IdString);
-//				if (IsAnalysisOrErrorFix (fix_))
-//					gotImportantFix = true;
-//				if (!addedSeparator && gotImportantFix && !IsAnalysisOrErrorFix (fix_)) {
-//					menu.Add (new Gtk.SeparatorMenuItem ());
-//					addedSeparator = true;
-//				}
-//
-//				var fix = fix_;
-//				var escapedLabel = fix.Title.Replace ("_", "__");
-//				var label = (mnemonic <= 10)
-//					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
-//					: "  " + escapedLabel;
-//				var thisInstanceMenuItem = new MenuItem (label);
-//				thisInstanceMenuItem.Activated += new ContextActionRunner (fix, document, currentSmartTagBegin).Run;
-//				thisInstanceMenuItem.Activated += delegate {
-//					ConfirmUsage (fix.IdString);
-//					menu.Destroy ();
-//				};
-//				menu.Add (thisInstanceMenuItem);
-//				items++;
-//			}
-//
-//			bool first = true;
-//			var settingsMenuFixes = Fixes
-//				.OfType<AnalysisContextActionProvider.AnalysisCodeAction> ()
-//				.Where (f => f.Result is InspectorResults)
-//				.GroupBy (f => ((InspectorResults)f.Result).Inspector);
-//			foreach (var analysisFixGroup_ in settingsMenuFixes) {
-//				var analysisFixGroup = analysisFixGroup_;
-//				var arbitraryFixInGroup = analysisFixGroup.First ();
-//				var ir = (InspectorResults)arbitraryFixInGroup.Result;
-//
-//				if (first) {
-//					menu.Add (new Gtk.SeparatorMenuItem ());
-//					first = false;
-//				}
-//
-//				var subMenu = new Gtk.Menu ();
-//				foreach (var analysisFix_ in analysisFixGroup) {
-//					var analysisFix = analysisFix_;
-//					if (analysisFix.SupportsBatchRunning) {
-//						var batchRunMenuItem = new Gtk.MenuItem (string.Format (GettextCatalog.GetString ("Apply in file: {0}"), analysisFix.Title));
-//						batchRunMenuItem.Activated += delegate {
-//							ConfirmUsage (analysisFix.IdString);
-//							menu.Destroy ();
-//						};
-//						batchRunMenuItem.Activated += new ContextActionRunner (analysisFix, document, this.currentSmartTagBegin).BatchRun;
-//						subMenu.Add (batchRunMenuItem);
-//						subMenu.Add (new Gtk.SeparatorMenuItem ());
-//					}
-//				}
-//
-//				var inspector = ir.Inspector;
-//				if (inspector.CanSuppressWithAttribute) {
-//					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
-//					menuItem.Activated += delegate {
-//						inspector.SuppressWithAttribute (document, arbitraryFixInGroup.DocumentRegion); 
-//					};
-//					subMenu.Add (menuItem);
-//				}
-//
-//				if (inspector.CanDisableWithPragma) {
-//					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
-//					menuItem.Activated += delegate {
-//						inspector.DisableWithPragma (document, arbitraryFixInGroup.DocumentRegion); 
-//					};
-//					subMenu.Add (menuItem);
-//				}
-//
-//				if (inspector.CanDisableOnce) {
-//					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable Once"));
-//					menuItem.Activated += delegate {
-//						inspector.DisableOnce (document, arbitraryFixInGroup.DocumentRegion); 
-//					};
-//					subMenu.Add (menuItem);
-//				}
-//
-//				if (inspector.CanDisableAndRestore) {
-//					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and Restore"));
-//					menuItem.Activated += delegate {
-//						inspector.DisableAndRestore (document, arbitraryFixInGroup.DocumentRegion); 
-//					};
-//					subMenu.Add (menuItem);
-//				}
-//				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
-//				var subMenuItem = new Gtk.MenuItem (label);
-//
-//				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure Rule"));
-//				optionsMenuItem.Activated += arbitraryFixInGroup.ShowOptions;
-//
-//				optionsMenuItem.Activated += delegate {
-//					menu.Destroy ();
-//				};
-//				subMenu.Add (optionsMenuItem);
-//				subMenuItem.Submenu = subMenu;
-//				menu.Add (subMenuItem);
-//				items++;
-//			}
-			
+
+			if (Fixes.CodeRefactoringActions.Count > 0 && Fixes.CodeDiagnosticActions.Count > 0) {
+				menu.Add (new SeparatorMenuItem ());
+			}
+
+			foreach (var fix in Fixes.CodeDiagnosticActions) {
+				AddFix (menu, ref mnemonic, fix.Item2);
+				items++;
+			}
+			if (Fixes.CodeRefactoringActions.Count > 0 && Fixes.CodeDiagnosticActions.Count > 0) {
+				menu.Add (new SeparatorMenuItem ());
+			}
+
+			foreach (var fix in Fixes.CodeDiagnosticActions) {
+				var subMenu = new Gtk.Menu ();
+
+				var inspector = fix.Item1.GetCodeDiagnosticDescriptor (null);
+				if (inspector.CanSuppressWithAttribute) {
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
+					menuItem.Activated += delegate {
+						inspector.SuppressWithAttribute (document, GetTextSpan (fix.Item2)); 
+					};
+					subMenu.Add (menuItem);
+				}
+
+				if (inspector.CanDisableWithPragma) {
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
+					menuItem.Activated += delegate {
+						inspector.DisableWithPragma (document, GetTextSpan (fix.Item2)); 
+					};
+					subMenu.Add (menuItem);
+				}
+
+				if (inspector.CanDisableOnce) {
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable Once"));
+					menuItem.Activated += delegate {
+						inspector.DisableOnce (document, GetTextSpan (fix.Item2)); 
+					};
+					subMenu.Add (menuItem);
+				}
+
+				if (inspector.CanDisableAndRestore) {
+					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and Restore"));
+					menuItem.Activated += delegate {
+						inspector.DisableAndRestore (document, GetTextSpan (fix.Item2)); 
+					};
+					subMenu.Add (menuItem);
+				}
+				var label = GettextCatalog.GetString ("_Options for \"{0}\"", inspector.Name);
+				var subMenuItem = new Gtk.MenuItem (label);
+
+				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure Rule"));
+				optionsMenuItem.Activated += delegate {
+					IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "CodeIssuePanel", dialog => {
+						var panel = dialog.GetPanel<CodeIssuePanel> ("CodeIssuePanel");
+						if (panel == null)
+							return;
+						panel.Widget.SelectCodeIssue (inspector.IdString);
+					});
+				};
+
+				optionsMenuItem.Activated += delegate {
+					menu.Destroy ();
+				};
+				subMenu.Add (optionsMenuItem);
+				subMenuItem.Submenu = subMenu;
+				menu.Add (subMenuItem);
+				items++;
+			}
+
 		}
 
 
@@ -457,11 +432,11 @@ namespace MonoDevelop.CodeActions
 
 		class SmartTagMarker : TextSegmentMarker, IActionTextLineMarker
 		{
-			CodeActionEditorExtension codeActionEditorExtension;
-			internal List<Microsoft.CodeAnalysis.CodeActions.CodeAction> fixes;
+			readonly CodeActionEditorExtension codeActionEditorExtension;
+			internal CodeActionContainer fixes;
 			int offset;
 
-			public SmartTagMarker (int offset, CodeActionEditorExtension codeActionEditorExtension, List<Microsoft.CodeAnalysis.CodeActions.CodeAction> fixes) : base (offset, 0)
+			public SmartTagMarker (int offset, CodeActionEditorExtension codeActionEditorExtension, CodeActionContainer fixes) : base (offset, 0)
 			{
 				this.codeActionEditorExtension = codeActionEditorExtension;
 				this.fixes = fixes;
@@ -550,7 +525,7 @@ namespace MonoDevelop.CodeActions
 			return TextSpan.FromBounds (-1, -1);
 		}
 
-		void CreateSmartTag (List<Microsoft.CodeAnalysis.CodeActions.CodeAction> fixes, int loc)
+		void CreateSmartTag (CodeActionContainer fixes, int loc)
 		{
 			Fixes = fixes;
 			if (!QuickTaskStrip.EnableFancyFeatures) {
@@ -558,7 +533,7 @@ namespace MonoDevelop.CodeActions
 				return;
 			}
 			var editor = document.Editor;
-			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized || fixes.Count == 0) {
+			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized || fixes.IsEmpty) {
 				RemoveWidget ();
 				return;
 			}
@@ -574,7 +549,7 @@ namespace MonoDevelop.CodeActions
 			}
 			bool first = true;
 			var smartTagLocBegin = loc;
-			foreach (var fix in fixes) {
+			foreach (var fix in fixes.CodeDiagnosticActions.Select (i => i.Item2).Concat (fixes.CodeRefactoringActions.Select (i => i.Item2))) {
 				var textSpan = GetTextSpan (fix);
 				if (textSpan.IsEmpty)
 					continue;
@@ -672,10 +647,10 @@ namespace MonoDevelop.CodeActions
 			currentSmartTag.Popup ();
 		}
 
-		internal List<Microsoft.CodeAnalysis.CodeActions.CodeAction> GetCurrentFixes ()
+		internal CodeActionContainer GetCurrentFixes ()
 		{
 			if (currentSmartTag == null)
-				return new List<Microsoft.CodeAnalysis.CodeActions.CodeAction> ();
+				return CodeActionContainer.Empty;
 //				return RefactoringService.GetValidActions (document, document.Editor.Caret.Location).Result.ToList ();
 			return currentSmartTag.fixes;
 		}

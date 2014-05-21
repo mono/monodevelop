@@ -54,13 +54,13 @@ namespace MonoDevelop.CodeActions
 	{
 		readonly string mimeType;
 		
-		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeActionDescriptor));
-		readonly Dictionary<CodeActionDescriptor, bool> providerStates = new Dictionary<CodeActionDescriptor, bool> ();
+		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(bool), typeof(CodeRefactoringDescriptor));
+		readonly Dictionary<CodeRefactoringDescriptor, bool> providerStates = new Dictionary<CodeRefactoringDescriptor, bool> ();
 
 		void GetAllProviderStates ()
 		{
-			var language = CodeActionService.MimeTypeToLanguage (mimeType);
-			foreach (var node in CodeActionService.GetCodeActions (language, true)) {
+			var language = CodeRefactoringService.MimeTypeToLanguage (mimeType);
+			foreach (var node in CodeRefactoringService.GetCodeActions (language, true)) {
 				providerStates [node] = node.IsEnabled;
 			}
 		}
@@ -94,7 +94,7 @@ namespace MonoDevelop.CodeActions
 				TreeIter iter;
 				if (!treeStore.GetIterFromString (out iter, args.Path)) 
 					return;
-				var provider = (CodeActionDescriptor)treeStore.GetValue (iter, 2);
+				var provider = (CodeRefactoringDescriptor)treeStore.GetValue (iter, 2);
 				providerStates [provider] = !providerStates [provider];
 				treeStore.SetValue (iter, 1, providerStates [provider]);
 			};

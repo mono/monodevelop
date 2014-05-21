@@ -75,19 +75,19 @@ namespace MonoDevelop.CodeIssues
 	partial class CodeIssuePanelWidget : Bin
 	{
 		readonly string mimeType;
-		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(Tuple<CodeIssueDescriptor, DiagnosticDescriptor>), typeof (string));
-		readonly Dictionary<Tuple<CodeIssueDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> severities = new Dictionary<Tuple<CodeIssueDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> ();
-		readonly Dictionary<Tuple<CodeIssueDescriptor, DiagnosticDescriptor>, bool> enableState = new Dictionary<Tuple<CodeIssueDescriptor, DiagnosticDescriptor>, bool> ();
+		readonly TreeStore treeStore = new TreeStore (typeof(string), typeof(Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>), typeof (string));
+		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> severities = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, DiagnosticSeverity?> ();
+		readonly Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> enableState = new Dictionary<Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>, bool> ();
 
 		void GetAllSeverities ()
 		{
-			foreach (var node in CodeIssueService.GetCodeIssues (CodeActionService.MimeTypeToLanguage (mimeType), true)) {
-				var root = new Tuple<CodeIssueDescriptor, DiagnosticDescriptor> (node, null);
+			foreach (var node in CodeDiagnosticService.GetCodeIssues (CodeRefactoringService.MimeTypeToLanguage (mimeType), true)) {
+				var root = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, null);
 				severities [root] = node.DiagnosticSeverity;
 				enableState [root] = node.IsEnabled;
 				if (node.GetProvider ().SupportedDiagnostics.Length > 1) {
 					foreach (var subIssue in node.GetProvider ().SupportedDiagnostics) {
-						var sub = new Tuple<CodeIssueDescriptor, DiagnosticDescriptor> (node, subIssue);
+						var sub = new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node, subIssue);
 						severities [sub] = node.GetSeverity (subIssue);
 						enableState [sub] = node.GetIsEnabled (subIssue);
 					}
@@ -106,8 +106,8 @@ namespace MonoDevelop.CodeIssues
 		bool SelectCodeIssue (string idString, TreeIter iter)
 		{
 			do {
-				var provider = treeStore.GetValue (iter, 1) as CodeIssueDescriptor; 
-				if (provider != null && provider.IdString == idString) {
+				var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
+				if (provider != null && idString  == provider.Item1.IdString) {
 					treeviewInspections.ExpandToPath (treeStore.GetPath (iter));
 					treeviewInspections.Selection.SelectIter (iter);
 					return true;
@@ -176,7 +176,7 @@ namespace MonoDevelop.CodeIssues
 						foreach (var subIssue in node.Item1.GetProvider ().SupportedDiagnostics) {
 							title = subIssue.Description;
 							MarkupSearchResult (filter, ref title);
-							treeStore.AppendValues (nodeIter, title, new Tuple<CodeIssueDescriptor, DiagnosticDescriptor> (node.Item1, subIssue), subIssue.Description);
+							treeStore.AppendValues (nodeIter, title, new Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor> (node.Item1, subIssue), subIssue.Description);
 						}
 					}
 				}
@@ -242,7 +242,7 @@ namespace MonoDevelop.CodeIssues
 			toggleRenderer.Toggled += delegate(object o, ToggledArgs args) {
 				TreeIter iter;
 				if (treeStore.GetIterFromString (out iter, args.Path)) {
-					var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
+					var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
 					enableState[provider] = !enableState[provider];
 				}
 			};
@@ -252,7 +252,7 @@ namespace MonoDevelop.CodeIssues
 			titleCol.PackStart (toggleRenderer, false);
 			titleCol.Sizing = TreeViewColumnSizing.Autosize;
 			titleCol.SetCellDataFunc (toggleRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
+				var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
 				if (provider == null) {
 					toggleRenderer.Visible = false;
 					return;
@@ -307,7 +307,7 @@ namespace MonoDevelop.CodeIssues
 					return;
 				do {
 					if ((string)comboBoxStore.GetValue (storeIter, 0) == args.NewText) {
-						var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
+						var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
 						var severity = (DiagnosticSeverity)comboBoxStore.GetValue (storeIter, 1);
 						severities[provider] = severity;
 						return;
@@ -316,7 +316,7 @@ namespace MonoDevelop.CodeIssues
 			};
 			
 			col.SetCellDataFunc (comboRenderer, delegate (TreeViewColumn treeColumn, CellRenderer cell, TreeModel model, TreeIter iter) {
-				var provider = (Tuple<CodeIssueDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
+				var provider = (Tuple<CodeDiagnosticDescriptor, DiagnosticDescriptor>)treeStore.GetValue (iter, 1);
 				if (provider == null) {
 					comboRenderer.Visible = false;
 					return;

@@ -33,7 +33,7 @@ namespace MonoDevelop.CodeActions
 	/// <summary>
 	/// This class wraps a roslyn <see cref="ICodeRefactoringProvider"/> and adds required meta data to it.
 	/// </summary>
-	class CodeActionDescriptor
+	class CodeRefactoringDescriptor
 	{
 		readonly Type codeActionType;
 		ICodeRefactoringProvider instance;
@@ -70,7 +70,7 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		internal CodeActionDescriptor (string name, string language, Type codeActionType)
+		internal CodeRefactoringDescriptor (string name, string language, Type codeActionType)
 		{
 			if (string.IsNullOrEmpty (name))
 				throw new ArgumentNullException ("name");

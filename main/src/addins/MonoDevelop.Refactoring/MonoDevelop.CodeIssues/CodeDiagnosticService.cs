@@ -34,34 +34,30 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.CodeIssues;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CodeFixes;
+using ICSharpCode.NRefactory6.CSharp.Refactoring;
 
 namespace MonoDevelop.CodeIssues
 {
-	static class CodeIssueService
+	static class CodeDiagnosticService
 	{
-		static readonly CodeIssueDescriptor[] codeIssues;
-		static readonly ICodeFixProvider[] codeFixProvider;
+		static readonly CodeDiagnosticDescriptor[] codeIssues;
+		static readonly CodeFixDescriptor[] codeFixProvider;
 
-		public static IReadOnlyList<ICodeFixProvider> CodeFixProvider {
-			get {
-				return codeFixProvider;
-			}
-		}
-
-		static CodeIssueService ()
+		static CodeDiagnosticService ()
 		{
-			var analyzers = new List<CodeIssueDescriptor> ();
-			var codeFixes = new List<ICodeFixProvider> ();
+			var analyzers = new List<CodeDiagnosticDescriptor> ();
+			var codeFixes = new List<CodeFixDescriptor> ();
 			
 			foreach (var type in typeof (ICSharpCode.NRefactory6.CSharp.IssueCategories).Assembly.GetTypes ()) {
 				var analyzerAttr = (ExportDiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(ExportDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
+				var nrefactoryAnalyzerAttribute = (NRefactoryCodeDiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(NRefactoryCodeDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 				if (analyzerAttr != null) {
-					analyzers.Add (new CodeIssueDescriptor (analyzerAttr.Name, analyzerAttr.Language, type));
+					analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Name, analyzerAttr.Language, type, nrefactoryAnalyzerAttribute));
 				}
 				
 				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes(typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
 				if (codeFixAttr != null) {
-					codeFixes.Add ((ICodeFixProvider)Activator.CreateInstance(type)); 
+					codeFixes.Add (new CodeFixDescriptor (type, codeFixAttr)); 
 				}
 			}
 			
@@ -69,11 +65,18 @@ namespace MonoDevelop.CodeIssues
 			codeFixProvider = codeFixes.ToArray ();
 		}
 
-		public static IEnumerable<CodeIssueDescriptor> GetCodeIssues (string language, bool includeDisabledNodes = false)
+		public static IEnumerable<CodeDiagnosticDescriptor> GetCodeIssues (string language, bool includeDisabledNodes = false)
 		{
 			if (string.IsNullOrEmpty (language))
 				return includeDisabledNodes ? codeIssues : codeIssues.Where (act => act.IsEnabled);
 			return includeDisabledNodes ? codeIssues.Where (ca => ca.Language == language) : codeIssues.Where (ca => ca.Language == language && ca.IsEnabled);
+		}
+
+		public static IEnumerable<CodeFixDescriptor> GetCodeFixDescriptor (string language)
+		{
+			if (string.IsNullOrEmpty (language))
+				return codeFixProvider;
+			return codeFixProvider.Where (cfp => cfp.Language == language);
 		}
 	}
 }
