@@ -158,9 +158,8 @@ namespace MonoDevelop.CodeIssues
 		{
 			categories.Clear ();
 			treeStore.Clear ();
-
 			var grouped = severities.Keys
-				.Where (node => string.IsNullOrEmpty (filter) || node.Item1.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0)
+				.Where (node => node.Item2 == null && (string.IsNullOrEmpty (filter) || node.Item1.Name.IndexOf (filter, StringComparison.OrdinalIgnoreCase) > 0))
 				.GroupBy (node => node.Item1.GetProvider ().SupportedDiagnostics.First ().Category)
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
