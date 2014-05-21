@@ -549,7 +549,16 @@ namespace ICSharpCode.PackageManagement
 			return String.Empty;
 		}
 		
-		public string GetDownloadCountDisplayText()
+		public string GetDownloadCountOrVersionDisplayText ()
+		{
+			if (ShowVersionInsteadOfDownloadCount) {
+				return Version.ToString ();
+			}
+
+			return GetDownloadCountDisplayText ();
+		}
+
+		public string GetDownloadCountDisplayText ()
 		{
 			if (HasDownloadCount) {
 				return DownloadCount.ToString ("N0");
@@ -582,5 +591,6 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		public bool IsChecked { get; set; }
+		public bool ShowVersionInsteadOfDownloadCount { get; set; }
 	}
 }

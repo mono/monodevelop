@@ -45,6 +45,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void AddPackage (IPackage package)
 		{
+			FakePackages.Add (package as FakePackage);
 		}
 
 		public void RemovePackage (IPackage package)

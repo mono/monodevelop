@@ -63,12 +63,26 @@ namespace ICSharpCode.PackageManagement
 				errorMessage = ex.Message;
 			}
 		}
-		
+
+		bool showVersions = false;
+
 		protected override IQueryable<IPackage> GetPackages(string search)
 		{
 			if (repository == null) {
 				throw new ApplicationException(errorMessage);
 			}
+
+			showVersions = IsVersionSearch (search);
+			if (showVersions) {
+				int index = search.IndexOf ("-v");
+				string packageId = search.Substring (0, index).TrimEnd ();
+				return repository
+					.FindPackagesById (packageId)
+					.Where (package => IncludePrerelease || package.IsReleaseVersion ())
+					.AsQueryable ()
+					.OrderByDescending (package => package.Version);
+			}
+
 			if (IncludePrerelease) {
 				return repository
 					.Search (search, new string[0], IncludePrerelease)
@@ -77,6 +91,11 @@ namespace ICSharpCode.PackageManagement
 			return repository
 				.Search (search, new string[0], IncludePrerelease)
 				.Where (package => package.IsLatestVersion);
+		}
+
+		bool IsVersionSearch (string search)
+		{
+			return (search != null) && search.Contains ("-v");
 		}
 		
 		/// <summary>
@@ -93,6 +112,10 @@ namespace ICSharpCode.PackageManagement
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
+			if (showVersions) {
+				return base.GetFilteredPackagesBeforePagingResults (allPackages);
+			}
+
 			if (IncludePrerelease) {
 				return base.GetFilteredPackagesBeforePagingResults(allPackages)
 					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
@@ -121,7 +144,17 @@ namespace ICSharpCode.PackageManagement
 
 		IEnumerable<IPackage> GetRecentPackages (string searchCriteria)
 		{
+			if (showVersions) {
+				return Enumerable.Empty<IPackage> ();
+			}
 			return recentPackageRepository.Search (searchCriteria, IncludePrerelease);
+		}
+
+		protected override PackageViewModel CreatePackageViewModel (IPackage package)
+		{
+			PackageViewModel viewModel = base.CreatePackageViewModel (package);
+			viewModel.ShowVersionInsteadOfDownloadCount = showVersions;
+			return viewModel;
 		}
 	}
 }

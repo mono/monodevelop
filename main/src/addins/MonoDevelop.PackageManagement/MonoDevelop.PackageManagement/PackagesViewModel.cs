@@ -318,7 +318,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 		
-		PackageViewModel CreatePackageViewModel(IPackage package)
+		protected virtual PackageViewModel CreatePackageViewModel (IPackage package)
 		{
 			PackageFromRepository packageFromRepository = CreatePackageFromRepository (package);
 			return packageViewModelFactory.CreatePackageViewModel(this, packageFromRepository);
