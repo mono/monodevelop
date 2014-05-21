@@ -1,5 +1,5 @@
 ﻿//
-// PackagesForSelectedPageQuery.cs
+// PackageSearchCriteria.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,32 +25,41 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
-using MonoDevelop.PackageManagement;
-using NuGet;
-
-namespace ICSharpCode.PackageManagement
+namespace MonoDevelop.PackageManagement
 {
-	public class PackagesForSelectedPageQuery
+	public class PackageSearchCriteria
 	{
-		public PackagesForSelectedPageQuery (
-			PackagesViewModel viewModel,
-			IEnumerable<IPackage> allPackages,
-			string searchCriteria)
+		public PackageSearchCriteria (string searchText)
 		{
-			Skip = viewModel.ItemsBeforeFirstPage;
-			Take = viewModel.PageSize;
-			AllPackages = allPackages;
-			SearchCriteria = new PackageSearchCriteria (searchCriteria);
-			TotalPackages = viewModel.TotalItems;
+			searchText = RemoveWhitespace (searchText);
+
+			IsPackageVersionSearch = IsVersionSearch (searchText);
+			if (IsPackageVersionSearch) {
+				int index = searchText.IndexOf ("-v");
+				PackageId = searchText.Substring (0, index).TrimEnd ();
+				SearchText = PackageId;
+			} else {
+				SearchText = searchText;
+			}
 		}
 
-		public int Skip { get; private set; }
-		public int Take { get; private set; }
-		public PackageSearchCriteria SearchCriteria { get; private set; }
+		string RemoveWhitespace (string searchText)
+		{
+			if (String.IsNullOrWhiteSpace(searchText)) {
+				return null;
+			}
+			return searchText;
+		}
 
-		public int TotalPackages { get; set; }
-		public IEnumerable<IPackage> AllPackages { get; set; }
+		public string PackageId { get; private set; }
+		public bool IsPackageVersionSearch { get; private set; }
+		public string SearchText { get; private set; }
+
+		bool IsVersionSearch (string search)
+		{
+			return (search != null) && search.Contains ("-v");
+		}
 	}
 }
+

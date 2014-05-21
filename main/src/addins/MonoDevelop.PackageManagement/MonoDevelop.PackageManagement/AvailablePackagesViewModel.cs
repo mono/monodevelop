@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -64,70 +65,63 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		bool showVersions = false;
-
-		protected override IQueryable<IPackage> GetPackages(string search)
+		protected override IQueryable<IPackage> GetPackages (PackageSearchCriteria search)
 		{
 			if (repository == null) {
-				throw new ApplicationException(errorMessage);
+				throw new ApplicationException (errorMessage);
 			}
 
-			showVersions = IsVersionSearch (search);
-			if (showVersions) {
-				int index = search.IndexOf ("-v");
-				string packageId = search.Substring (0, index).TrimEnd ();
+			if (search.IsPackageVersionSearch) {
 				return repository
-					.FindPackagesById (packageId)
+					.FindPackagesById (search.PackageId)
 					.Where (package => IncludePrerelease || package.IsReleaseVersion ())
-					.AsQueryable ()
-					.OrderByDescending (package => package.Version);
+					.AsQueryable ();
 			}
 
 			if (IncludePrerelease) {
 				return repository
-					.Search (search, new string[0], IncludePrerelease)
+					.Search (search.SearchText, new string[0], IncludePrerelease)
 					.Where (package => package.IsAbsoluteLatestVersion);
 			}
 			return repository
-				.Search (search, new string[0], IncludePrerelease)
+				.Search (search.SearchText, new string[0], IncludePrerelease)
 				.Where (package => package.IsLatestVersion);
-		}
-
-		bool IsVersionSearch (string search)
-		{
-			return (search != null) && search.Contains ("-v");
 		}
 		
 		/// <summary>
 		/// Order packages by most downloaded first.
 		/// </summary>
-		protected override IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
+		protected override IQueryable<IPackage> OrderPackages (IQueryable<IPackage> packages, PackageSearchCriteria search)
 		{
-			if (GetSearchCriteria () != null) {
+			if (search.IsPackageVersionSearch) {
+				return packages.OrderByDescending (package => package.Version);
+			}
+
+			if (search.SearchText != null) {
 				// Order by relevance for searches.
 				return packages;
 			}
 			return packages.OrderByDescending(package => package.DownloadCount);
 		}
 		
-		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
+		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults (IQueryable<IPackage> allPackages, PackageSearchCriteria search)
 		{
-			if (showVersions) {
-				return base.GetFilteredPackagesBeforePagingResults (allPackages);
+			if (search.IsPackageVersionSearch) {
+				return base.GetFilteredPackagesBeforePagingResults (allPackages, search);
 			}
 
 			if (IncludePrerelease) {
-				return base.GetFilteredPackagesBeforePagingResults(allPackages)
+				return base.GetFilteredPackagesBeforePagingResults(allPackages, search)
 					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 			}
-			return base.GetFilteredPackagesBeforePagingResults(allPackages)
+			return base.GetFilteredPackagesBeforePagingResults(allPackages, search)
 				.Where(package => package.IsReleaseVersion())
 				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 		}
 
-		protected override IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, string searchCriteria)
+		protected override IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
-			List<IPackage> recentPackages = GetRecentPackages (searchCriteria).ToList ();
+			List<IPackage> recentPackages = GetRecentPackages (search).ToList ();
 
 			if (PackageViewModels.Count == 0) {
 				foreach (IPackage package in recentPackages) {
@@ -142,18 +136,18 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		IEnumerable<IPackage> GetRecentPackages (string searchCriteria)
+		IEnumerable<IPackage> GetRecentPackages (PackageSearchCriteria search)
 		{
-			if (showVersions) {
+			if (search.IsPackageVersionSearch) {
 				return Enumerable.Empty<IPackage> ();
 			}
-			return recentPackageRepository.Search (searchCriteria, IncludePrerelease);
+			return recentPackageRepository.Search (search.SearchText, IncludePrerelease);
 		}
 
-		protected override PackageViewModel CreatePackageViewModel (IPackage package)
+		protected override PackageViewModel CreatePackageViewModel (IPackage package, PackageSearchCriteria search)
 		{
-			PackageViewModel viewModel = base.CreatePackageViewModel (package);
-			viewModel.ShowVersionInsteadOfDownloadCount = showVersions;
+			PackageViewModel viewModel = base.CreatePackageViewModel (package, search);
+			viewModel.ShowVersionInsteadOfDownloadCount = search.IsPackageVersionSearch;
 			return viewModel;
 		}
 	}

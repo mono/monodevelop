@@ -321,6 +321,7 @@
     <Compile Include="MonoDevelop.PackageManagement\DotNetProjectProxy.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\SettingsProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSearchCriteria.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
