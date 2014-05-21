@@ -837,5 +837,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (viewModel.PackageViewModels [0].ShowVersionInsteadOfDownloadCount);
 			Assert.IsFalse (viewModel.PackageViewModels [1].ShowVersionInsteadOfDownloadCount);
 		}
+
+		[Test]
+		public void ReadPackages_SearchForSinglePackageVersionWhenThreePackageVersionsAvailable_ShowsSinglePackagesWithSameIdAndSameVersion ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "0.3.0.0");
+			var package3 = new FakePackage ("A", "0.2.0.0") { IsLatestVersion = false };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("a", "0.2");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package3
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
 	}
 }

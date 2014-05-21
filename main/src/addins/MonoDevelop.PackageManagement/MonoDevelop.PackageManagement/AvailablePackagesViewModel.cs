@@ -107,7 +107,8 @@ namespace ICSharpCode.PackageManagement
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults (IQueryable<IPackage> allPackages, PackageSearchCriteria search)
 		{
 			if (search.IsPackageVersionSearch) {
-				return base.GetFilteredPackagesBeforePagingResults (allPackages, search);
+				return base.GetFilteredPackagesBeforePagingResults (allPackages, search)
+					.Where (package => search.IsVersionMatch (package.Version));
 			}
 
 			if (IncludePrerelease) {

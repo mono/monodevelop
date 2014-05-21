@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -39,6 +40,12 @@ namespace MonoDevelop.PackageManagement
 				int index = searchText.IndexOf ("-v");
 				PackageId = searchText.Substring (0, index).TrimEnd ();
 				SearchText = PackageId;
+
+				int versionIndex = searchText.IndexOf (' ', index);
+				if (versionIndex > 0) {
+					string versionText = searchText.Substring (versionIndex).Trim ();
+					SemanticVersion.TryParse (versionText, out packageVersion);
+				}
 			} else {
 				SearchText = searchText;
 			}
@@ -52,13 +59,24 @@ namespace MonoDevelop.PackageManagement
 			return searchText;
 		}
 
+		SemanticVersion packageVersion;
+
 		public string PackageId { get; private set; }
+		public VersionSpec PackageVersionSpec { get; private set; }
 		public bool IsPackageVersionSearch { get; private set; }
 		public string SearchText { get; private set; }
 
 		bool IsVersionSearch (string search)
 		{
 			return (search != null) && search.Contains ("-v");
+		}
+
+		public bool IsVersionMatch (SemanticVersion version)
+		{
+			if (packageVersion == null)
+				return true;
+
+			return packageVersion == version;
 		}
 	}
 }
