@@ -27,38 +27,63 @@
 using System;
 using MonoDevelop.AnalysisCore;
 using ICSharpCode.NRefactory.Refactoring;
+using ICSharpCode.NRefactory6.CSharp;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CodeIssues
 {
 	class DiagnosticResult : Result
 	{
-		readonly Microsoft.CodeAnalysis.Diagnostic diagnostic;
+		readonly Diagnostic diagnostic;
 
-		public Microsoft.CodeAnalysis.Diagnostic Diagnostic {
+		public Diagnostic Diagnostic {
 			get {
 				return diagnostic;
 			}
 		}
 
-		public DiagnosticResult (Microsoft.CodeAnalysis.Diagnostic diagnostic) : base (diagnostic.Location.SourceSpan, diagnostic.GetMessage ())
+		public DiagnosticResult (Diagnostic diagnostic) : base (GetSpan (diagnostic), diagnostic.GetMessage ())
 		{
 			if (diagnostic == null)
 				throw new ArgumentNullException ("diagnostic");
 			this.diagnostic = diagnostic;
 
-			SetSeverity (ConvertSeverity (diagnostic.Severity), IssueMarker.WavedLine); 
+			SetSeverity (ConvertSeverity (diagnostic.Severity), GetIssueMarker ()); 
 		}
 
-		static Severity ConvertSeverity (Microsoft.CodeAnalysis.DiagnosticSeverity severity)
+		static TextSpan GetSpan (Diagnostic diagnostic)
+		{
+			int start = diagnostic.Location.SourceSpan.Start;
+			int end = diagnostic.Location.SourceSpan.End;
+
+			foreach (var loc in diagnostic.AdditionalLocations) {
+				start = Math.Min (start, loc.SourceSpan.Start);
+				end = Math.Max (start, loc.SourceSpan.End);
+			}
+
+			return TextSpan.FromBounds (start, end);
+		}
+
+		IssueMarker GetIssueMarker ()
+		{
+			if (diagnostic.Category == IssueCategories.RedundanciesInCode || diagnostic.Category == IssueCategories.RedundanciesInDeclarations)
+				return IssueMarker.GrayOut;
+			if (diagnostic.Severity == DiagnosticSeverity.Info)
+				return IssueMarker.DottedLine;
+			return IssueMarker.WavedLine;
+		}
+
+		static Severity ConvertSeverity (DiagnosticSeverity severity)
 		{
 			switch (severity) {
-			case Microsoft.CodeAnalysis.DiagnosticSeverity.None:
+			case DiagnosticSeverity.None:
 				return Severity.None;
-			case Microsoft.CodeAnalysis.DiagnosticSeverity.Info:
+			case DiagnosticSeverity.Info:
 				return Severity.Hint;
-			case Microsoft.CodeAnalysis.DiagnosticSeverity.Warning:
+			case DiagnosticSeverity.Warning:
 				return Severity.Warning;
-			case Microsoft.CodeAnalysis.DiagnosticSeverity.Error:
+			case DiagnosticSeverity.Error:
 				return Severity.Error;
 			default:
 				throw new ArgumentOutOfRangeException ("severity", severity, "not supported");

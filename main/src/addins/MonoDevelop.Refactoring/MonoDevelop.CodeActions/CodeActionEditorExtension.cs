@@ -345,16 +345,18 @@ namespace MonoDevelop.CodeActions
 				AddFix (menu, ref mnemonic, fix.Item2);
 				items++;
 			}
-			if (Fixes.CodeRefactoringActions.Count > 0 && Fixes.CodeDiagnosticActions.Count > 0) {
+
+			if (Fixes.CodeDiagnosticActions.Count > 0) {
 				menu.Add (new SeparatorMenuItem ());
 			}
 
-			foreach (var fix in Fixes.CodeDiagnosticActions) {
-				var subMenu = new Gtk.Menu ();
+			foreach (var fix_ in Fixes.CodeDiagnosticActions) {
+				var fix = fix_;
+				var subMenu = new Menu ();
 
 				var inspector = fix.Item1.GetCodeDiagnosticDescriptor (null);
 				if (inspector.CanSuppressWithAttribute) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
+					var menuItem = new MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
 					menuItem.Activated += delegate {
 						inspector.SuppressWithAttribute (document, GetTextSpan (fix.Item2)); 
 					};
@@ -362,7 +364,7 @@ namespace MonoDevelop.CodeActions
 				}
 
 				if (inspector.CanDisableWithPragma) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
+					var menuItem = new MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
 					menuItem.Activated += delegate {
 						inspector.DisableWithPragma (document, GetTextSpan (fix.Item2)); 
 					};
@@ -370,7 +372,7 @@ namespace MonoDevelop.CodeActions
 				}
 
 				if (inspector.CanDisableOnce) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable Once"));
+					var menuItem = new MenuItem (GettextCatalog.GetString ("_Disable Once"));
 					menuItem.Activated += delegate {
 						inspector.DisableOnce (document, GetTextSpan (fix.Item2)); 
 					};
@@ -378,16 +380,16 @@ namespace MonoDevelop.CodeActions
 				}
 
 				if (inspector.CanDisableAndRestore) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and Restore"));
+					var menuItem = new MenuItem (GettextCatalog.GetString ("Disable _and Restore"));
 					menuItem.Activated += delegate {
 						inspector.DisableAndRestore (document, GetTextSpan (fix.Item2)); 
 					};
 					subMenu.Add (menuItem);
 				}
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", inspector.Name);
-				var subMenuItem = new Gtk.MenuItem (label);
+				var subMenuItem = new MenuItem (label);
 
-				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure Rule"));
+				var optionsMenuItem = new MenuItem (GettextCatalog.GetString ("_Configure Rule"));
 				optionsMenuItem.Activated += delegate {
 					IdeApp.Workbench.ShowGlobalPreferencesDialog (null, "CodeIssuePanel", dialog => {
 						var panel = dialog.GetPanel<CodeIssuePanel> ("CodeIssuePanel");
