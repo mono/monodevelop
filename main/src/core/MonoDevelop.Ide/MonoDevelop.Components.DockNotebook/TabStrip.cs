@@ -441,6 +441,15 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
 			if (t != null) {
+				var content = t.Content;
+				if (content is SdiWorkspaceWindow) {
+					var window = content as SdiWorkspaceWindow;
+					if (window != null) {
+						window.SelectWindow ();
+						((DefaultWorkbench)IdeApp.Workbench.RootWindow).FocusMayHaveChanged ((SdiDragNotebook)window.Parent.Parent);
+					}
+				}
+
 				if (evnt.IsContextMenuButton ()) {
 					notebook.DoPopupMenu (notebook, t.Index, evnt);
 					return true;

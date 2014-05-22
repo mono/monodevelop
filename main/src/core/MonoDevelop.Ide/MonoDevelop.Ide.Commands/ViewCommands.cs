@@ -338,6 +338,44 @@ namespace MonoDevelop.Ide.Commands
 			}
 		}
 	}
+
+	public class NextNotebookHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.Splits.Count == 0) {
+				info.Enabled = false;
+			} else {
+				var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+				info.Enabled = window.CanMoveToNextNotebook ();
+			}
+		}
+
+		protected override void Run ()
+		{
+			var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+			window.MoveToNextNotebook ();
+		}
+	}
+
+	public class PreviousNotebookHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.Splits.Count == 0) {
+				info.Enabled = false;
+			} else {
+				var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+				info.Enabled = window.CanMoveToPreviousNotebook ();
+			}
+		}
+
+		protected override void Run ()
+		{
+			var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+			window.MoveToPreviousNotebook ();
+		}
+	}
 	
 	public class FocusCurrentDocumentHandler : CommandHandler
 	{

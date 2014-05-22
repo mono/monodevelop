@@ -425,6 +425,11 @@ namespace MonoDevelop.Ide.Gui
 			OnActiveWindowChanged (null, null);
 		}
 
+		public void FocusMayHaveChanged (SdiDragNotebook notebook)
+		{
+			OnActiveWindowChanged (notebook, null);
+		}
+
 		void HandleProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
 		{
 			SetWorkbenchTitle ();
