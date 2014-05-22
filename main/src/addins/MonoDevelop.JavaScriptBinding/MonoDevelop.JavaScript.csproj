@@ -92,7 +92,6 @@
     <Compile Include="Jurassic\Compiler\Lexer\KeywordToken.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\Lexer.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\LiteralToken.cs" />
-    <Compile Include="Jurassic\Compiler\Lexer\MultilineCommentToken.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\PunctuatorToken.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\RegularExpressionLiteral.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\Token.cs" />
@@ -146,6 +145,9 @@
     <Compile Include="Formatting\JSBeautifier.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Completion\CompletionData.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\MultilineComment.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\Comment.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\SingleLineComment.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\javascript_icon_32.png" />

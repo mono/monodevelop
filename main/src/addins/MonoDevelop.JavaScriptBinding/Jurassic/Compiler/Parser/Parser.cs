@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
+using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.JavaScript.Factories;
@@ -51,12 +53,12 @@ namespace Jurassic.Compiler
 			this.engine = engine;
 			this.lexer = lexer;
 			this.lexer.ParserExpressionState = ParserExpressionState.Literal;
-			this.currentScope = this.initialScope = initialScope;
-			this.methodOptimizationHints = new MethodOptimizationHints ();
+			currentScope = this.initialScope = initialScope;
+			methodOptimizationHints = new MethodOptimizationHints ();
 			this.options = options;
 			this.context = context;
-			this.StrictMode = options.ForceStrictMode;
-			this.Consume ();
+			StrictMode = options.ForceStrictMode;
+			Consume ();
 		}
 
 		/// <summary>
@@ -93,6 +95,10 @@ namespace Jurassic.Compiler
 		/// </summary>
 		public SourceCodePosition PositionBeforeWhitespace {
 			get { return positionBeforeWhitespace; }
+		}
+
+		internal List<Comment> Comments {
+			get { return lexer.Comments; }
 		}
 
 		/// <summary>
@@ -340,8 +346,8 @@ namespace Jurassic.Compiler
 				try {
 					// Parse a single statement.
 					result.Statements.Add (ParseStatement ());
-				} catch (Jurassic.JavaScriptException jsException) {
-					Errors.Add (new Error (ErrorType.Error, jsException.Message, jsException.LineNumber, 0));
+				} catch (JavaScriptException jsException) {
+					Errors.Add (new Error (ErrorType.Error, jsException.Message, jsException.LineNumber, this.lexer.ColumnNumber));
 					Consume ();
 				} catch (Exception ex) {
 					Errors.Add (new Error (ErrorType.Unknown, ex.Message));
@@ -406,8 +412,6 @@ namespace Jurassic.Compiler
 				return ParseDebugger ();
 			if (nextToken == KeywordToken.Function)
 				return ParseFunctionDeclaration ();
-			if (nextToken is MultilineCommentToken)
-				return ParseMultilineComment ();
 			if (nextToken == null)
 				throw new JavaScriptException (engine, "SyntaxError", "Unexpected end of input", LineNumber, SourcePath);
 
@@ -1233,7 +1237,7 @@ namespace Jurassic.Compiler
 			var startPosition = PositionBeforeWhitespace;
 
 			// Since the parser reads one token in advance, start capturing the function body here.
-			var bodyTextBuilder = new System.Text.StringBuilder ();
+			var bodyTextBuilder = new StringBuilder ();
 			var originalBodyTextBuilder = lexer.InputCaptureStringBuilder;
 			lexer.InputCaptureStringBuilder = bodyTextBuilder;
 
@@ -1248,7 +1252,7 @@ namespace Jurassic.Compiler
 			var scope = DeclarativeScope.CreateFunctionScope (parentScope, includeNameInScope ? functionName : string.Empty, argumentNames);
 
 			// Read the function body.
-			var functionParser = Parser.CreateFunctionBodyParser (this, scope);
+			var functionParser = CreateFunctionBodyParser (this, scope);
 			var body = functionParser.Parse ();
 
 			// Transfer state back from the function parser.
@@ -1259,19 +1263,28 @@ namespace Jurassic.Compiler
 				originalBodyTextBuilder.Append (bodyTextBuilder);
 
 			SourceCodePosition endPosition;
-			// Consume the '}'.
-			Expect (PunctuatorToken.RightBrace);
+			if (functionType == FunctionType.Expression) {
+				// The end token '}' will be consumed by the parent function.
+				if (nextToken != PunctuatorToken.RightBrace)
+					throw new JavaScriptException (engine, "SyntaxError", "Expected '}'", LineNumber, SourcePath);
 
-			// Record the end of the function body.
-			endPosition = new SourceCodePosition (PositionAfterWhitespace.Line, PositionAfterWhitespace.Column + 1);
-            
+				// Record the end of the function body.
+				endPosition = new SourceCodePosition (PositionAfterWhitespace.Line, PositionAfterWhitespace.Column + 1);
+			} else {
+				// Consume the '}'.
+				Expect (PunctuatorToken.RightBrace);
+
+				// Record the end of the function body.
+				endPosition = new SourceCodePosition (PositionAfterWhitespace.Line, PositionAfterWhitespace.Column + 1);
+			}
+
 			// Create a new function expression.
 			var options = this.options.Clone ();
 			options.ForceStrictMode = functionParser.StrictMode;
 			var context = new FunctionMethodGenerator (engine, functionName,
-				                       includeNameInScope, argumentNames,
-				                       bodyTextBuilder.ToString (0, bodyTextBuilder.Length - 1), body,
-				                       SourcePath, options);
+				              includeNameInScope, argumentNames,
+				              bodyTextBuilder.ToString (0, bodyTextBuilder.Length - 1), body,
+				              SourcePath, options);
 			context.MethodOptimizationHints = functionParser.methodOptimizationHints;
 
 			var sourceSpan = new SourceCodeSpan (startPosition, endPosition);
@@ -1317,27 +1330,6 @@ namespace Jurassic.Compiler
 				return result;
 			}
 		}
-
-		/// <summary>
-		/// Parse a multiline Comment, and returns an Empty Statement with the comments actual source code position.
-		/// </summary>
-		/// <returns>EmptyStatement with Comment Position.</returns>
-		Statement ParseMultilineComment ()
-		{
-			var commentToken = nextToken as MultilineCommentToken;
-			if (commentToken == null) {
-				var exception = new InvalidCastException ("NextToken cannot be parsed to MultilineCommentToken in ParseMultilineComment();");
-				LoggingService.LogFatalError (exception.Message, exception);
-				throw exception;
-			}
-
-			Consume ();
-
-			return new EmptyStatement (new[] { "Comment" }) {
-				SourceSpan = new SourceCodeSpan (commentToken.StartLine, commentToken.StartColumn, commentToken.EndLine, commentToken.EndColumn)
-			};
-		}
-
 
 		//     EXPRESSION PARSER
 		//_________________________________________________________________________________________
@@ -1404,13 +1396,13 @@ namespace Jurassic.Compiler
 			if (operatorLookup == null) {
 				// Initialize the operator lookup table.
 				var temp = InitializeOperatorLookup ();
-				System.Threading.Thread.MemoryBarrier ();
+				Thread.MemoryBarrier ();
 				operatorLookup = temp;
 			}
 			if (!operatorLookup.TryGetValue (new OperatorKey () {
-	Token = token,
-	PostfixOrInfix = postfixOrInfix
-}, out result))
+				Token = token,
+				PostfixOrInfix = postfixOrInfix
+			}, out result))
 				return null;
 			return result;
 		}
@@ -1433,12 +1425,12 @@ namespace Jurassic.Compiler
 
 			while (nextToken != null) {
 				if (nextToken is LiteralToken ||
-				                nextToken is IdentifierToken ||
-				                nextToken == KeywordToken.Function ||
-				                nextToken == KeywordToken.This ||
-				                nextToken == PunctuatorToken.LeftBrace ||
-				                (nextToken == PunctuatorToken.LeftBracket && expressionState == ParserExpressionState.Literal) ||
-				                (nextToken is KeywordToken && unboundOperator != null && unboundOperator.OperatorType == OperatorType.MemberAccess && expressionState == ParserExpressionState.Literal)) {
+				    nextToken is IdentifierToken ||
+				    nextToken == KeywordToken.Function ||
+				    nextToken == KeywordToken.This ||
+				    nextToken == PunctuatorToken.LeftBrace ||
+				    (nextToken == PunctuatorToken.LeftBracket && expressionState == ParserExpressionState.Literal) ||
+				    (nextToken is KeywordToken && unboundOperator != null && unboundOperator.OperatorType == OperatorType.MemberAccess && expressionState == ParserExpressionState.Literal)) {
 					// If a literal was found where an operator was expected, insert a semi-colon
 					// automatically (if this would fix the error and a line terminator was
 					// encountered) or throw an error.
@@ -1451,16 +1443,16 @@ namespace Jurassic.Compiler
 
 					// New in ECMAScript 5 is the ability to use keywords as property names.
 					if ((nextToken is KeywordToken || (nextToken is LiteralToken && ((LiteralToken)nextToken).IsKeyword)) &&
-					                   unboundOperator != null &&
-					                   unboundOperator.OperatorType == OperatorType.MemberAccess &&
-					                   expressionState == ParserExpressionState.Literal) {
+					    unboundOperator != null &&
+					    unboundOperator.OperatorType == OperatorType.MemberAccess &&
+					    expressionState == ParserExpressionState.Literal) {
 						nextToken = new IdentifierToken (nextToken.Text);
 					}
 
 					Expression terminal;
 					if (nextToken is LiteralToken)
-                        // If the token is a literal, convert it to a literal expression.
-                        terminal = new LiteralExpression (((LiteralToken)nextToken).Value);
+						// If the token is a literal, convert it to a literal expression.
+						terminal = new LiteralExpression (((LiteralToken)nextToken).Value);
 					else if (nextToken is IdentifierToken) {
 						// If the token is an identifier, convert it to a NameExpression.
 						var identifierName = ((IdentifierToken)nextToken).Name;
@@ -1477,11 +1469,11 @@ namespace Jurassic.Compiler
 						// Add method optimization info.
 						methodOptimizationHints.HasThis = true;
 					} else if (nextToken == PunctuatorToken.LeftBracket)
-                        // Array literal.
-                        terminal = ParseArrayLiteral ();
+						// Array literal.
+						terminal = ParseArrayLiteral ();
 					else if (nextToken == PunctuatorToken.LeftBrace)
-                        // Object literal.
-                        terminal = ParseObjectLiteral ();
+						// Object literal.
+						terminal = ParseObjectLiteral ();
 					else if (nextToken == KeywordToken.Function)
 						terminal = ParseFunctionExpression (nameExpression);
 					else
@@ -1577,8 +1569,8 @@ namespace Jurassic.Compiler
 						//    of the previous operator.
 						if (!newOperator.HasLHSOperand) {
 							if (root == null)
-                                // "!"
-                                root = newExpression;
+								// "!"
+								root = newExpression;
 							else if (unboundOperator != null && unboundOperator.AcceptingOperands) {
 								// "5 + !"
 								unboundOperator.Push (newExpression);
@@ -1595,8 +1587,8 @@ namespace Jurassic.Compiler
 							// tree and take the last one we find instead.
 							OperatorExpression lowPrecedenceOperator = null;
 							if (unboundOperator == null ||
-							                         (newOperator.Associativity == OperatorAssociativity.LeftToRight && unboundOperator.Precedence < newOperator.Precedence) ||
-							                         (newOperator.Associativity == OperatorAssociativity.RightToLeft && unboundOperator.Precedence <= newOperator.Precedence)) {
+							    (newOperator.Associativity == OperatorAssociativity.LeftToRight && unboundOperator.Precedence < newOperator.Precedence) ||
+							    (newOperator.Associativity == OperatorAssociativity.RightToLeft && unboundOperator.Precedence <= newOperator.Precedence)) {
 								// Performance optimization: look at the previous operator first.
 								lowPrecedenceOperator = unboundOperator;
 							} else {
@@ -1604,7 +1596,7 @@ namespace Jurassic.Compiler
 								var node = root as OperatorExpression;
 								while (node != null && node != unboundOperator) {
 									if ((newOperator.Associativity == OperatorAssociativity.LeftToRight && node.Precedence < newOperator.Precedence) ||
-									                               (newOperator.Associativity == OperatorAssociativity.RightToLeft && node.Precedence <= newOperator.Precedence))
+									    (newOperator.Associativity == OperatorAssociativity.RightToLeft && node.Precedence <= newOperator.Precedence))
 										lowPrecedenceOperator = node;
 									node = node.RightBranch;
 								}
@@ -1710,8 +1702,8 @@ namespace Jurassic.Compiler
 				if (nextToken == PunctuatorToken.Comma)
 					items.Add (null);
 				else
-                    // Otherwise, read the next item in the array.
-                    items.Add (ParseExpression (PunctuatorToken.Comma, PunctuatorToken.RightBracket));
+					// Otherwise, read the next item in the array.
+					items.Add (ParseExpression (PunctuatorToken.Comma, PunctuatorToken.RightBracket));
 
 				// Read past the comma.
 				Debug.Assert (nextToken == PunctuatorToken.Comma || nextToken == PunctuatorToken.RightBracket);
@@ -1768,8 +1760,8 @@ namespace Jurassic.Compiler
 						// This is a getter property.
 						object existingValue;
 						if (!properties.TryGetValue (propertyName, out existingValue))
-                            // The property has not been seen before.
-                            properties.Add (propertyName, new ObjectLiteralAccessor () { Getter = function });
+							// The property has not been seen before.
+							properties.Add (propertyName, new ObjectLiteralAccessor () { Getter = function });
 						else {
 							// Add to the existing property.
 							var existingAccessor = existingValue as ObjectLiteralAccessor;
@@ -1783,8 +1775,8 @@ namespace Jurassic.Compiler
 						// This is a setter property.
 						object existingValue;
 						if (!properties.TryGetValue (propertyName, out existingValue))
-                            // The property has not been seen before.
-                            properties.Add (propertyName, new ObjectLiteralAccessor () { Setter = function });
+							// The property has not been seen before.
+							properties.Add (propertyName, new ObjectLiteralAccessor () { Setter = function });
 						else {
 							// Add to the existing property.
 							var existingAccessor = existingValue as ObjectLiteralAccessor;

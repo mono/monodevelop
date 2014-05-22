@@ -51,6 +51,7 @@ namespace Jurassic.Compiler
 			this.engine = engine;
 			this.source = source;
 			reader = source.GetReader ();
+			Comments = new List<Comment> ();
 			lineNumber = 1;
 			columnNumber = 1;
 		}
@@ -110,6 +111,8 @@ namespace Jurassic.Compiler
 			get;
 			set;
 		}
+
+		internal List<Comment> Comments { get; set; }
 
 		/// <summary>
 		/// Reads the next character from the input stream.
@@ -462,14 +465,20 @@ namespace Jurassic.Compiler
 		/// <returns> Always returns <c>null</c>. </returns>
 		Token ReadSingleLineComment ()
 		{
+			var commentBuilder = new StringBuilder ();
+			int column = columnNumber;
+			int line = lineNumber;
+
 			// Read all the characters up to the newline.
 			// The newline is a seperate token.
 			while (true) {
 				int c = reader.Peek ();
 				if (IsLineTerminator (c) || c == -1)
 					break;
-				ReadNextChar ();
+				commentBuilder.Append (ReadNextChar ());
 			}
+
+			Comments.Add (new SingleLineComment(commentBuilder.ToString (), line, column));
 
 			return new WhiteSpaceToken (0);
 		}
@@ -487,6 +496,7 @@ namespace Jurassic.Compiler
 			int lineTerminatorCount = 0;
 			int startLineNumber = lineNumber;
 			int startColumn = columnNumber;
+			var commentBuilder = new StringBuilder ();
 
 			// Read the first character.
 			int c1 = ReadNextChar ();
@@ -508,20 +518,24 @@ namespace Jurassic.Compiler
 
 					// If the sequence is CRLF then only count that as one new line rather than two.
 					if (c1 == 0x0D && c2 == 0x0A)   // CRLF
-                        c1 = c2 = ReadNextChar ();
+						c1 = c2 = ReadNextChar ();
 				} else if (c2 == -1)
 					throw new JavaScriptException (engine, "SyntaxError", "Unexpected end of input in multi-line comment.", lineNumber, Source.Path);
 
 				// Look for */ combination.
 				if (c1 == '*' && c2 == '/')
 					break;
+
+				commentBuilder.Append (c2);
 				c1 = c2;
 			}
 
 			int endLineNumber = lineNumber;
 			int endColumn = columnNumber;
 
-			return new MultilineCommentToken (string.Empty, startLineNumber, startColumn - 2, endLineNumber, endColumn);
+			Comments.Add (new MultiLineComment (commentBuilder.ToString (), startLineNumber, startColumn - 2, endLineNumber, endColumn));
+
+			return new WhiteSpaceToken (lineTerminatorCount);
 		}
 
 		/// <summary>
@@ -603,7 +617,7 @@ namespace Jurassic.Compiler
                         // what determines whether the token is a divide operator or a
                         // regular expression literal.
 					isDivisionOperator =
-                            lastSignificantToken is IdentifierToken ||
+                                lastSignificantToken is IdentifierToken ||
 					lastSignificantToken is LiteralToken ||
 					lastSignificantToken == PunctuatorToken.RightParenthesis ||
 					lastSignificantToken == PunctuatorToken.Increment ||
@@ -653,7 +667,7 @@ namespace Jurassic.Compiler
 					insideCharacterClass = true;
 				else if (c == ']')
 					insideCharacterClass = false;
-                
+
 				// Note: a line terminator or EOF is not allowed in a regular expression, even if
 				// it is escaped with a backslash.  Therefore, these checks have to come after the
 				// checks above.

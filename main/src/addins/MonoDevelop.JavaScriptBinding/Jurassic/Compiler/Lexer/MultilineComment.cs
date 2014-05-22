@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Jurassic.Compiler
 {
-	class MultilineCommentToken : LiteralToken
+	internal class MultiLineComment : Comment
 	{
 		public int StartLine { get; set; }
 
@@ -15,7 +15,7 @@ namespace Jurassic.Compiler
 
 		public int EndColumn { get; set; }
 
-		public MultilineCommentToken (object value, int startLine, int startColumn, int endLine, int endColumn) : base (value)
+		public MultiLineComment (string commentData, int startLine, int startColumn, int endLine, int endColumn) : base (commentData)
 		{
 			StartLine = startLine;
 			StartColumn = startColumn;

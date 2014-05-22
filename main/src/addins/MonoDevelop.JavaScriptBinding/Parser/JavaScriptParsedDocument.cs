@@ -112,6 +112,7 @@ namespace MonoDevelop.JavaScript.Parser
 				errors = parser.Errors;
 				AstNodes = parserResult.ChildNodes;
 				setFoldings (AstNodes);
+				setComments (parser.Comments);
 			}
 		}
 
@@ -195,14 +196,22 @@ namespace MonoDevelop.JavaScript.Parser
 					continue;
 				}
 
-				var emptyStatement = node as Jurassic.Compiler.EmptyStatement;
-				if (emptyStatement != null && emptyStatement.HasLabels && 
-					emptyStatement.Labels.Contains ("Comment") && emptyStatement.SourceSpan != null) {
-					var region = DomRegionFactory.CreateDomRegion (fileName, emptyStatement.SourceSpan);
-					foldings.Add (new FoldingRegion ("/**/", region));
-				}
-
 				setFoldings (node.ChildNodes);
+			}
+		}
+
+		void setComments (List<Jurassic.Compiler.Comment> comments)
+		{
+			foreach (var comment in comments) {
+				this.Comments.Add (new Comment (comment.CommentData));
+
+				var multilineComment = comment as Jurassic.Compiler.MultiLineComment;
+				if (multilineComment != null) {
+					if (multilineComment.EndLine > multilineComment.StartLine) {
+						var region = DomRegionFactory.CreateDomRegion (fileName, multilineComment.StartLine, multilineComment.StartColumn, multilineComment.EndLine, multilineComment.EndColumn);
+						foldings.Add (new FoldingRegion (region));
+					}
+				}
 			}
 		}
 
