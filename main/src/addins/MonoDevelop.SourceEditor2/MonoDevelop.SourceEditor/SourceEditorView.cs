@@ -132,7 +132,23 @@ namespace MonoDevelop.SourceEditor
 				base.Project = value;
 			}
 		}
-			
+
+		public override object GetContent (Type type)
+		{
+			var result = base.GetContent (type);
+			if (result != null)
+				return result;
+
+			var nextExtension = this.Extension;
+			while (nextExtension != null) {
+				if (type.IsAssignableFrom (nextExtension.GetType ()))
+					return nextExtension;
+				nextExtension = nextExtension.Next;
+			}
+
+			return null;
+		}
+
 		public override string TabPageLabel {
 			get { return GettextCatalog.GetString ("Source"); }
 		}

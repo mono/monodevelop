@@ -60,7 +60,6 @@ namespace MonoDevelop.Ide.Gui
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
 		IWorkbenchWindow window;
-		TextEditorExtension editorExtension;
 		ParsedDocument parsedDocument;
 		IProjectContent singleFileContext;
 		Mono.TextEditor.ITextEditorDataProvider provider = null;
@@ -75,9 +74,29 @@ namespace MonoDevelop.Ide.Gui
 			get;
 			set;
 		}
-		
-		public TextEditorExtension EditorExtension {
-			get { return this.editorExtension; }
+
+		/// <summary>
+		/// Gets the editor extension for the text editor of window.ViewContent.
+		/// Returns null otherwise.
+		/// </summary>
+		public ITextEditorExtension EditorExtension {
+			get { 
+				return GetExtensionChain ();
+			}
+		}
+
+		/// <summary>
+		/// Gets the extension chain for ViewContent - the "primary" view 
+		/// </summary>
+		ITextEditorExtension GetExtensionChain ()
+		{
+			if (window == null)
+				return null;
+			var editor = Window.ViewContent.GetContent (typeof(IExtensibleTextEditor)) as IExtensibleTextEditor;
+			if (editor != null)
+				return editor.Extension;
+
+			return null;
 		}
  		
 		public T GetContent<T> () where T : class
@@ -91,6 +110,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			//check the primary viewcontent
 			//not sure if this is the right thing to do, but things depend on this behaviour
+			// TODO: check exactly what depends on this and see if we can remove this check
 			if (Window.ViewContent != Window.ActiveViewContent) {
 				ret = Window.ViewContent.GetContent (typeof(T)) as T;
 				if (ret != null)
@@ -98,12 +118,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			//no, so look through the TexteditorExtensions as well
-			TextEditorExtension nextExtension = editorExtension;
+			var nextExtension = GetExtensionChain ();
 			while (nextExtension != null) {
 				if (typeof(T).IsAssignableFrom (nextExtension.GetType ()))
 					return nextExtension as T;
-				nextExtension = nextExtension.Next as TextEditorExtension;
+				nextExtension = nextExtension.Next;
 			}
+
 			return null;
 		}
 		
@@ -123,11 +144,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			//no, so look through the TexteditorExtensions as well
-			TextEditorExtension nextExtension = editorExtension;
+			var nextExtension = GetExtensionChain ();
 			while (nextExtension != null) {
 				if (typeof(T).IsAssignableFrom (nextExtension.GetType ()))
 					yield return nextExtension as T;
-				nextExtension = nextExtension.Next as TextEditorExtension;
+				nextExtension = nextExtension.Next;
 			}
 		}
 		static Document ()
@@ -558,7 +579,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
-			DetachExtensionChain ();
+			DetachExtensionChains ();
 			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
@@ -625,13 +646,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool wasEdited;
 
+		/// <summary>
+		/// Holds a collection of editors that have been initialised so that they can be detached later
+		/// </summary>
+		readonly HashSet<IExtensibleTextEditor> intialisedEditors = new HashSet<IExtensibleTextEditor> ();
+
 		void InitializeExtensionChain ()
 		{
-			DetachExtensionChain ();
 			var editor = GetContent<IExtensibleTextEditor> ();
+			DetachExtensionChain (editor);
+			intialisedEditors.Add (editor);
 
 			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			editorExtension = null;
 			TextEditorExtension last = null;
 			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			foreach (TextEditorExtensionNode extNode in extensions) {
@@ -650,27 +676,41 @@ namespace MonoDevelop.Ide.Gui
 						last.Next = ext;
 						last = ext;
 					} else {
-						editorExtension = last = ext;
-						last.Next = editor.AttachExtension (editorExtension);
+						last = ext;
+
+						last.Next = editor.AttachExtension (ext);
 					}
 					ext.Initialize (this);
 				}
 			}
+
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
 		}
 
-		void DetachExtensionChain ()
+		void DetachExtensionChains ()
 		{
+			foreach (var editor in intialisedEditors.ToList ()) {
+				DetachExtensionChain (editor);
+			}
+		}
+
+		void DetachExtensionChain (IExtensibleTextEditor editor)
+		{
+			if (intialisedEditors.Contains (editor))
+				intialisedEditors.Remove (editor);
+
+			var editorExtension = editor.Extension;
+			editor.AttachExtension (null);
+
 			while (editorExtension != null) {
 				try {
 					editorExtension.Dispose ();
 				} catch (Exception ex) {
 					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
 				}
-				editorExtension = editorExtension.Next as TextEditorExtension;
+				editorExtension = editorExtension.Next;
 			}
-			editorExtension = null;
 		}
 
 		void InitializeEditor (IExtensibleTextEditor editor)
@@ -699,18 +739,27 @@ namespace MonoDevelop.Ide.Gui
 
 			InitializeExtensionChain ();
 		}
-		
+
 		internal void OnDocumentAttached ()
 		{
+			EnsureEditorIntialised ();
+
+			window.Document = this;
+		}
+
+		/// <summary>
+		/// Ensures that the editor for the current active view, or primary ViewContent, is intialised.
+		/// </summary>
+		internal void EnsureEditorIntialised ()
+		{
 			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
-			if (editor != null) {
+
+			if (editor != null && editor.Extension == null) {
 				InitializeEditor (editor);
 				RunWhenLoaded (delegate { ListenToProjectLoad (Project); });
 			}
-			
-			window.Document = this;
 		}
-		
+
 		/// <summary>
 		/// Performs an action when the content is loaded.
 		/// </summary>
@@ -737,7 +786,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Window.ViewContent.Project == project)
 				return;
-			DetachExtensionChain ();
+			DetachExtensionChains ();
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
 			if (pr != null) {
 				// Unsubscribe project events
@@ -887,11 +936,17 @@ namespace MonoDevelop.Ide.Gui
 			StartReparseThread ();
 		}
 		
+		/// <summary>
+		/// Gets the editor extension for the text editor if and only if the window.ViewContent is active and implements IExtensibleTextEditor.
+		/// Returns null otherwise.
+		/// </summary>
 		internal object ExtendedCommandTargetChain {
 			get {
 				// Only go through the text editor chain, if the text editor is selected as subview
-				if (Window != null && Window.ActiveViewContent == Window.ViewContent)
-					return editorExtension;
+				if (Window != null && Window.ActiveViewContent == Window.ViewContent) {
+					return GetExtensionChain ();
+				}
+
 				return null;
 			}
 		}
