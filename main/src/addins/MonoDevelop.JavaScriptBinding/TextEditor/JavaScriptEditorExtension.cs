@@ -164,7 +164,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 		#endregion
 
 		#region Completion TextEditor Implementation
-		
+
 		public override string CompletionLanguage { get { return "JavaScript"; } }
 
 		public override bool CanRunCompletionCommand ()
@@ -195,10 +195,10 @@ namespace MonoDevelop.JavaScript.TextEditor
 				if (!file.Name.ToUpper ().EndsWith (".JS"))
 					continue;
 
-				var parsedDoc = file.ExtendedProperties[JavaScriptParser.ParsedDocumentProperty] as JavaScriptParsedDocument;
+				var parsedDoc = file.ExtendedProperties [JavaScriptParser.ParsedDocumentProperty] as JavaScriptParsedDocument;
 				if (parsedDoc == null ||
 				    !parsedDoc.IsInvalid) {
-					// TODO: Trigger parsing
+					continue;
 				}
 
 				documents.Add (parsedDoc);
@@ -326,8 +326,6 @@ namespace MonoDevelop.JavaScript.TextEditor
 						childIter = store.AppendValues (parent, variableDeclaration);
 					}
 
-					buildTreeChildren (store, childIter, node.ChildNodes);
-
 					continue;
 				}
 
@@ -342,6 +340,40 @@ namespace MonoDevelop.JavaScript.TextEditor
 				if (functionExpression != null) {
 					childIter = store.AppendValues (parent, functionExpression);
 					buildTreeChildren (store, childIter, functionExpression.BodyRoot.ChildNodes);
+					continue;
+				}
+
+				var literal = node as Jurassic.Compiler.LiteralExpression;
+				if (literal != null) {
+					if (literal.Value != null) {
+						var properties = literal.Value as Dictionary<string, object>;
+						if (properties != null) {
+							for (int i = 0; i < properties.Count; i++) {
+								string key = properties.Keys.ElementAt (i); // Key holds the value for then 
+								object value = properties.Values.ElementAt (i);
+
+								var objFuncExpression = value as Jurassic.Compiler.FunctionExpression;
+								if (objFuncExpression != null) {
+									childIter = store.AppendValues (parent, objFuncExpression);
+									buildTreeChildren (store, childIter, objFuncExpression.BodyRoot.ChildNodes);
+									continue;
+								}
+
+								var objGetSetFunc = value as Jurassic.Compiler.Parser.ObjectLiteralAccessor;
+								if (objGetSetFunc != null) {
+									if (objGetSetFunc.Getter != null) {
+										childIter = store.AppendValues (parent, objGetSetFunc.Getter);
+										buildTreeChildren (store, childIter, objGetSetFunc.Getter.BodyRoot.ChildNodes);
+									}
+									if (objGetSetFunc.Setter != null) {
+										childIter = store.AppendValues (parent, objGetSetFunc.Setter);
+										buildTreeChildren (store, childIter, objGetSetFunc.Setter.BodyRoot.ChildNodes);
+									}
+								}
+							}
+						}
+					}
+
 					continue;
 				}
 

@@ -27,6 +27,7 @@ namespace Jurassic.Compiler
 		/// </summary>
 		public string FunctionName {
 			get { return context.Name; }
+			set { context.Name = value; }
 		}
 
 		/// <summary>

@@ -1800,6 +1800,10 @@ namespace Jurassic.Compiler
 							throw new JavaScriptException (engine, "SyntaxError", string.Format ("The property '{0}' already has a value", propertyName), LineNumber, SourcePath);
 					}
 
+					var functionExpression = propertyValue as FunctionExpression;
+					if (functionExpression != null)
+						functionExpression.FunctionName = propertyName;
+
 					// Add the property setter to the list.
 					properties [propertyName] = propertyValue;
 				}

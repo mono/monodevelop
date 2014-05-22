@@ -75,7 +75,7 @@ namespace Jurassic.Compiler
 		/// </summary>
 		public string Name {
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
