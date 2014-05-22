@@ -118,14 +118,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			resultsScroll.Add (treeviewSearchResults);
 			
 			this.ShowAll ();
-			
+
 			var fileNameColumn = new TreeViewColumn {
 				Resizable = true,
 				SortColumnId = 0,
-				Title = GettextCatalog.GetString("File")
+				Title = GettextCatalog.GetString ("File"),
+				FixedWidth = 200
 			};
-
-			fileNameColumn.FixedWidth = 200;
 
 			var fileNamePixbufRenderer = new CellRendererImage ();
 			fileNameColumn.PackStart (fileNamePixbufRenderer, false);
@@ -134,12 +133,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNameColumn.PackStart (treeviewSearchResults.TextRenderer, true);
 			fileNameColumn.SetCellDataFunc (treeviewSearchResults.TextRenderer, FileNameDataFunc);
 			treeviewSearchResults.AppendColumn (fileNameColumn);
-			
-//			TreeViewColumn lineColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Line"), new CellRendererText (), ResultLineDataFunc);
-//			lineColumn.SortColumnId = 1;
-//			lineColumn.FixedWidth = 50;
-//			
-			
+
+
 			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"),
 				treeviewSearchResults.TextRenderer, ResultTextDataFunc);
 			textColumn.SortColumnId = 2;
@@ -153,9 +148,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			pathColumn.Resizable = true;
 			pathColumn.FixedWidth = 500;
 
-			
+
 			store.SetSortFunc (0, CompareFileNames);
-//			store.SetSortFunc (1, CompareLineNumbers);
 			store.SetSortFunc (3, CompareFilePaths);
 
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
@@ -163,7 +157,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonStop = new ToolButton (Ide.Gui.Stock.Stop) { Sensitive = false };
 
 			buttonStop.Clicked += ButtonStopClicked;
-			
+
 			buttonStop.TooltipText = GettextCatalog.GetString ("Stop");
 			toolbar.Insert (buttonStop, -1);
 
@@ -192,11 +186,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			base.OnRealized ();
 			highlightStyle = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-		}
-		
-		protected override void OnStyleSet (Gtk.Style previousStyle)
-		{
-			base.OnStyleSet (previousStyle);
 		}
 
 		void ButtonPinClicked (object sender, EventArgs e)
@@ -303,7 +292,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			var result = new StringBuilder ();
 			int idx = markup.IndexOf ("foreground=\"");
 			int offset = 0;
-
 
 
 			// This is a workaround for Bug 559804 - Strings in search result pad are near-invisible
@@ -429,22 +417,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
 			pathRenderer.Markup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead);
 		}
-		
-//		void ResultLineDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
-//		{
-//			if (TreeIter.Zero.Equals (iter))
-//				return;
-//			var lineRenderer = (CellRendererText)cell;
-//			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
-//			if (searchResult == null)
-//				return;
-//			
-//			Document doc = GetDocument (searchResult);
-//			int lineNr = doc.OffsetToLineNumber (searchResult.Offset) + 1;
-//			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-//			lineRenderer.Markup = MarkupText (lineNr.ToString (), didRead);
-//		}
-//		
+
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
