@@ -38,18 +38,58 @@ namespace MonoDevelop.Platform.Windows
 {
 	public class WindowsProxyCredentialProvider : ICredentialProvider
 	{
-		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredential, bool retrying)
+		object guiLock = new object();
+
+		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
 			if (uri == null)
 				throw new ArgumentNullException ("uri");
 
-			NetworkCredential currentCredentials = null;
-			if (existingCredential != null)
-				currentCredentials = Utility.GetCredentialsForUriFromICredentials (uri, existingCredential);
+			// if looking for proxy credentials, we care about the proxy's URL, not the request URL
+			if (credentialType == CredentialType.ProxyCredentials) {
+				var proxyUri = proxy.GetProxy (uri);
+				if (proxyUri != null)
+					uri = proxyUri;
+			}
 
-			var form = new PlaceholderForm (credentialType, uri, currentCredentials);
-			var result = GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow);
-			return result ? new NetworkCredential (form.Username, form.Password, form.Domain) : null;
+			lock (guiLock) {
+				// If this is the first attempt, return any stored credentials. If they fail, we'll be called again.
+				if (!retrying) {
+					var creds = GetExistingCredentials (uri, credentialType);
+					if (creds != null)
+						return creds;
+				}
+
+				return GetCredentialsFromUser (uri, proxy, credentialType);
+			}
+		}
+
+		static ICredentials GetExistingCredentials (Uri uri, CredentialType credentialType)
+		{
+			var rootUri = new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
+			var existing =
+				PasswordService.GetWebUserNameAndPassword (uri) ??
+				PasswordService.GetWebUserNameAndPassword (rootUri);
+
+			return existing != null ? new NetworkCredential (existing.Item1, existing.Item2) : null;
+		}
+
+		static ICredentials GetCredentialsFromUser (Uri uri, IWebProxy proxy, CredentialType credentialType)
+		{
+			NetworkCredential result = null;
+
+			DispatchService.GuiSyncDispatch (() => {
+				var form = new PlaceholderForm (credentialType, uri, null);
+				if (GdkWin32.RunModalWin32Form (form, IdeApp.Workbench.RootWindow))
+					result = new NetworkCredential (form.Username, form.Password, form.Domain);
+			});
+
+			// store the obtained credentials in the auth store
+			// but don't store for the root url since it may have other credentials
+			if (result != null)
+				PasswordService.AddWebUserNameAndPassword (uri, result.UserName, result.Password);
+
+			return result;
 		}
 	}
 
@@ -74,9 +114,21 @@ namespace MonoDevelop.Platform.Windows
 
 		public override DialogResult ShowMagicDialog ()
 		{
+			var message = type == CredentialType.ProxyCredentials
+				? GettextCatalog.GetString (
+					"{0} needs credentials to access the proxy server {1}.",
+					BrandingService.ApplicationName,
+					uri.Host
+				)
+				: GettextCatalog.GetString (
+					"{0} needs credentials to access {1}.",
+					BrandingService.ApplicationName,
+					uri.Host
+				);
+
 			var credUiInfo = new Native.CredentialUiInfo {
-				MessageText = GettextCatalog.GetString ("{1} needs {2} credentials to access {0}.", uri.Host, BrandingService.ApplicationName, type == CredentialType.ProxyCredentials ? "proxy" : "request"),
-				CaptionText = GettextCatalog.GetString ("{0} needs {1} credentials", BrandingService.ApplicationName, type == CredentialType.ProxyCredentials ? "proxy" : "request"),
+				MessageText = message,
+				CaptionText = GettextCatalog.GetString ("Credentials Required"),
 				StructureSize = Marshal.SizeOf (typeof (Native.CredentialUiInfo)),
 				ParentWindow = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow)
 			};

@@ -80,7 +80,7 @@ namespace MonoDevelop.PackageManagement
 
 		PackageSourceViewModelCheckedEventArgs CheckHttpPackageSource (PackageSourceViewModel packageSource)
 		{
-			var httpClient = new HttpClient (new Uri (packageSource.SourceUrl));
+			HttpClient httpClient = CreateHttpClient (packageSource);
 			try {
 				using (var response = (HttpWebResponse)httpClient.GetResponse ()) {
 					if (response.StatusCode == HttpStatusCode.OK) {
@@ -95,6 +95,34 @@ namespace MonoDevelop.PackageManagement
 			} catch (Exception ex) {
 				return new PackageSourceViewModelCheckedEventArgs (packageSource, ex.Message);
 			}
+		}
+
+		/// <summary>
+		/// Do not use cached credentials for the first request sent to a package source.
+		/// 
+		/// Once NuGet has a valid credential for a package source it is used from that point
+		/// onwards. So if the user changes a valid username/password in Preferences
+		/// to a non-valid username/password they will not see the 'Invalid credentials'
+		/// warning. To workaround this caching we remove the credentials for the request
+		/// the first time it is sent. Also the UseDefaultCredentials is set to true.
+		/// This forces NuGet to get the credentials from the IPackageSourceProvider,
+		/// which is implemented by the RegisteredPackageSourcesViewModel, and will 
+		/// contain the latest usernames and passwords for all package sources.
+		/// </summary>
+		HttpClient CreateHttpClient(PackageSourceViewModel packageSource)
+		{
+			var httpClient = new HttpClient (new Uri (packageSource.SourceUrl));
+
+			bool resetCredentials = true;
+			httpClient.SendingRequest += (sender, e) => {
+				if (resetCredentials && packageSource.HasPassword ()) {
+					resetCredentials = false;
+					e.Request.Credentials = null;
+					e.Request.UseDefaultCredentials = true;
+				}
+			};
+
+			return httpClient;
 		}
 
 		PackageSourceViewModelCheckedEventArgs CheckFileSystemPackageSource (PackageSourceViewModel packageSource)

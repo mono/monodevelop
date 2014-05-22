@@ -69,7 +69,7 @@ namespace MonoDevelop.Components.MainToolbar
 		StatusArea statusArea;
 
 		SearchEntry matchEntry;
-		static object lastCommandTarget;
+		static WeakReference lastCommandTarget;
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
@@ -113,7 +113,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		internal static object LastCommandTarget {
-			get { return lastCommandTarget; }
+			get { return lastCommandTarget != null ? lastCommandTarget.Target : null; }
 		}
 
 		void SetSearchCategory (string category)
@@ -219,10 +219,12 @@ namespace MonoDevelop.Components.MainToolbar
 				if (toplevel == null)
 					return;
 
+				var pixel_scale = GtkWorkarounds.GetPixelScale ();
+
 				int windowWidth = toplevel.Allocation.Width;
 				int center = windowWidth / 2;
-				int left = Math.Max (center - 300, args.Allocation.Left);
-				int right = Math.Min (left + 600, args.Allocation.Right);
+				int left = Math.Max (center - (int)(300 * pixel_scale), args.Allocation.Left);
+				int right = Math.Min (left + (int)(600 * pixel_scale), args.Allocation.Right);
 				uint left_padding = (uint) (left - args.Allocation.Left);
 				uint right_padding = (uint) (args.Allocation.Right - right);
 
@@ -261,7 +263,7 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Entry.ModifyBase (StateType.Normal, Style.White);
 			matchEntry.WidthRequest = 240;
 			if (!Platform.IsMac && !Platform.IsWindows)
-				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9"));
+				matchEntry.Entry.ModifyFont (Pango.FontDescription.FromString ("Sans 9")); // TODO: VV: "Segoe UI 9"
 			matchEntry.RoundedShape = true;
 			matchEntry.Entry.Changed += HandleSearchEntryChanged;
 			matchEntry.Activated += (sender, e) => {
@@ -328,7 +330,7 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.CommandService.RegisterCommandBar (this);
 
 			IdeApp.CommandService.ActiveWidgetChanged += (sender, e) => {
-				lastCommandTarget = e.OldActiveWidget;
+				lastCommandTarget = new WeakReference (e.OldActiveWidget);
 			};
 
 			this.ShowAll ();
@@ -343,9 +345,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1 && evnt.Window == this.GdkWindow) {
-				(Toplevel as Gtk.Window).BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
-				return true;
+			if (evnt.Button == 1 && evnt.Window == GdkWindow) {
+				var window = (Window)Toplevel;
+				if (!DesktopService.GetIsFullscreen (window)) {
+					window.BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
+					return true;
+				}
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
@@ -357,7 +362,7 @@ namespace MonoDevelop.Components.MainToolbar
 				currentSolution.Saved -= HandleSolutionSaved;
 			}
 
-			currentSolution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			currentSolution = e.Solution;
 
 			if (currentSolution != null) {
 				currentSolution.StartupItemChanged += HandleStartupItemChanged;
@@ -911,6 +916,9 @@ namespace MonoDevelop.Components.MainToolbar
 			base.OnDestroyed ();
 
 			AddinManager.ExtensionChanged -= OnExtensionChanged;
+			if (button != null)
+				button.Clicked -= HandleStartButtonClicked;
+
 			if (Background != null) {
 				((IDisposable)Background).Dispose ();
 				Background = null;

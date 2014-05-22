@@ -180,6 +180,7 @@ namespace MonoDevelop.Components.Commands
 			base.OnDestroyed ();
 			initialTarget = null;
 			arrayDataItem = null;
+			lastCmdInfo = null;
 		}
 	}
 }

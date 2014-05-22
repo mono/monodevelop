@@ -124,7 +124,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (Selected) {
 				FillCellBackground (ctx, GetSelectedColor ());
-			} else if (GetValue (HasBackgroundColorField, false)) {
+			} else if (IsBackgroundColorFieldSet ()) {
 				FillCellBackground (ctx, BackgroundColor);
 			}
 		}
@@ -137,6 +137,11 @@ namespace MonoDevelop.PackageManagement
 			return SelectionColor;
 		}
 
+		bool IsBackgroundColorFieldSet ()
+		{
+			return GetValue (HasBackgroundColorField, false);
+		}
+
 		void FillCellBackground (Context ctx, Color color)
 		{
 			ctx.Rectangle (BackgroundBounds);
@@ -146,6 +151,8 @@ namespace MonoDevelop.PackageManagement
 
 		void DrawCheckBox (Context ctx, PackageViewModel packageViewModel, Rectangle cellArea)
 		{
+			CreateCheckboxImages ();
+
 			Image image = GetCheckBoxImage (packageViewModel.IsChecked);
 			double alpha = GetCheckBoxImageAlpha ();
 			ctx.DrawImage (
@@ -155,6 +162,40 @@ namespace MonoDevelop.PackageManagement
 				alpha);
 		}
 
+		void CreateCheckboxImages ()
+		{
+			if (whiteCheckedCheckBoxImage != null)
+				return;
+
+			var widget = Toolkit.CurrentEngine.GetNativeWidget (ParentWidget);
+			var checkbox = new PackageCellViewCheckBox (ParentWidget.ParentWindow.Screen.ScaleFactor);
+			checkbox.Container = (Gtk.Widget)widget;
+			checkbox.Size = (int)checkBoxImageSize.Width + 1;
+
+			// White checkbox.
+			whiteUncheckedCheckBoxImage = checkbox.CreateImage ();
+			checkbox.Active = true;
+			whiteCheckedCheckBoxImage = checkbox.CreateImage ();
+
+			// Odd numbered checkbox.
+			checkbox.BackgroundColor = BackgroundColor;
+			checkedCheckBoxWithBackgroundColorImage = checkbox.CreateImage ();
+			checkbox.Active = false;
+			uncheckedCheckBoxWithBackgroundColorImage = checkbox.CreateImage ();
+
+			// Grey check box.
+			checkbox.BackgroundColor = SelectionColor;
+			greyUncheckedCheckBoxImage = checkbox.CreateImage ();
+			checkbox.Active = true;
+			greyCheckedCheckBoxImage = checkbox.CreateImage ();
+
+			// Blue check box.
+			checkbox.BackgroundColor = StrongSelectionColor;
+			blueCheckedCheckBoxImage = checkbox.CreateImage ();
+			checkbox.Active = false;
+			blueUncheckedCheckBoxImage = checkbox.CreateImage ();
+		}
+
 		double GetCheckBoxImageAlpha ()
 		{
 			return GetValue (CheckBoxAlphaField, 1);
@@ -162,24 +203,31 @@ namespace MonoDevelop.PackageManagement
 
 		Image GetCheckBoxImage (bool checkBoxActive)
 		{
-			if (Selected && checkBoxActive) {
-				return selectedCheckedCheckBoxImage;
+			if (Selected && UseStrongSelectionColor && checkBoxActive) {
+				return blueCheckedCheckBoxImage;
+			} else if (Selected && checkBoxActive) {
+				return greyCheckedCheckBoxImage;
+			} else if (Selected && UseStrongSelectionColor) {
+				return blueUncheckedCheckBoxImage;
 			} else if (Selected) {
-				return selectedUncheckedCheckBoxImage;
+				return greyUncheckedCheckBoxImage;
+			} else if (checkBoxActive && IsBackgroundColorFieldSet ()) {
+				return checkedCheckBoxWithBackgroundColorImage;
 			} else if (checkBoxActive) {
-				return checkedCheckBoxImage;
+				return whiteCheckedCheckBoxImage;
+			} else if (IsBackgroundColorFieldSet ()) {
+				return uncheckedCheckBoxWithBackgroundColorImage;
 			} else {
-				return uncheckedCheckBoxImage;
+				return whiteUncheckedCheckBoxImage;
 			}
 		}
 
 		void DrawPackageImage (Context ctx, Rectangle cellArea)
 		{
-			double imageAlpha = 1;
 			Image image = GetValue (ImageField);
+
 			if (image == null) {
-				image = defaultPackageImage;
-				imageAlpha = GetImageAlphaForDefaultPackageImage ();
+				image = Selected ? defaultPackageImageDark : defaultPackageImageLight;
 			}
 
 			if (PackageImageNeedsResizing (image)) {
@@ -187,26 +235,16 @@ namespace MonoDevelop.PackageManagement
 				ctx.DrawImage (
 					image,
 					cellArea.Left + packageImagePadding.Left + checkBoxAreaWidth + imageLocation.X,
-					cellArea.Top + packageImagePadding.Top + imageLocation.Y,
+					Math.Round( cellArea.Top + packageImagePadding.Top + imageLocation.Y),
 					maxPackageImageSize.Width,
-					maxPackageImageSize.Height,
-					imageAlpha);
+					maxPackageImageSize.Height);
 			} else {
 				Point imageLocation = GetPackageImageLocation (image.Size, cellArea);
 				ctx.DrawImage (
 					image,
 					cellArea.Left + packageImagePadding.Left + checkBoxAreaWidth + imageLocation.X,
-					cellArea.Top + packageImagePadding.Top + imageLocation.Y,
-					imageAlpha);
+					Math.Round (cellArea.Top + packageImagePadding.Top + imageLocation.Y));
 			}
-		}
-
-		double GetImageAlphaForDefaultPackageImage ()
-		{
-			if (Selected) {
-				return 0.5;
-			}
-			return 0.2;
 		}
 
 		bool PackageImageNeedsResizing (Image image)
@@ -270,11 +308,17 @@ namespace MonoDevelop.PackageManagement
 		Size checkBoxImageSize = new Size (16, 16);
 		Rectangle checkBoxImageClickableRectangle = new Rectangle (0, 10, 40, 50);
 
-		static readonly Image checkedCheckBoxImage = Image.FromResource (typeof(PackageCellView), "CheckedCheckBox.png");
-		static readonly Image uncheckedCheckBoxImage = Image.FromResource (typeof(PackageCellView), "UncheckedCheckBox.png");
-		static readonly Image selectedCheckedCheckBoxImage = Image.FromResource (typeof(PackageCellView), "SelectedCheckedCheckBox.png");
-		static readonly Image selectedUncheckedCheckBoxImage = Image.FromResource (typeof(PackageCellView), "SelectedUncheckedCheckBox.png");
-		static readonly Image defaultPackageImage = Image.FromResource (typeof(PackageCellView), "packageicon.png");
+		Image whiteCheckedCheckBoxImage;
+		Image whiteUncheckedCheckBoxImage;
+		Image greyCheckedCheckBoxImage;
+		Image greyUncheckedCheckBoxImage;
+		Image blueCheckedCheckBoxImage;
+		Image blueUncheckedCheckBoxImage;
+		Image checkedCheckBoxWithBackgroundColorImage;
+		Image uncheckedCheckBoxWithBackgroundColorImage;
+
+		static readonly Image defaultPackageImageLight = Image.FromResource (typeof(PackageCellView), "reference-light-48.png");
+		static readonly Image defaultPackageImageDark = Image.FromResource (typeof(PackageCellView), "reference-dark-48.png");
 	}
 }
 

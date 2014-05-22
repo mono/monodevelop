@@ -68,28 +68,28 @@ namespace Mono.TextEditor.Tests
 		public void TestSpans ()
 		{
 			TestOutput ("/* TestMe */",
-			            "<span foreground=\"#999988\" style=\"Italic\">/*</span><span foreground=\"#999988\" style=\"Italic\"> </span><span foreground=\"#999988\" style=\"Italic\">TestMe</span><span foreground=\"#999988\" style=\"Italic\"> </span><span foreground=\"#999988\" style=\"Italic\">*/</span>");
+			            "<span foreground=\"#888888\" style=\"Italic\">/*</span><span foreground=\"#888888\" style=\"Italic\"> </span><span foreground=\"#888888\" style=\"Italic\">TestMe</span><span foreground=\"#888888\" style=\"Italic\"> </span><span foreground=\"#888888\" style=\"Italic\">*/</span>");
 		}
 		
 		[Test]
 		public void TestStringEscapes ()
 		{
 			TestOutput ("\"Escape:\\\" \"outtext",
-			            "<span foreground=\"#F57D00\">\"Escape:</span><span foreground=\"#A53E00\">\\\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#444444\">outtext</span>");
+			            "<span foreground=\"#F57D00\">\"Escape:</span><span foreground=\"#A53E00\">\\\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#333333\">outtext</span>");
 		}
 		
 		[Test]
 		public void TestVerbatimStringEscapes ()
 		{
 			TestOutput ("@\"Escape:\"\" \"outtext",
-			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#444444\">outtext</span>");
+				        "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#333333\">outtext</span>");
 		}
 
 		[Test]
 		public void TestDoubleVerbatimStringEscapes ()
 		{
 			TestOutput ("@\"Escape:\"\"\"\" \"outtext",
-			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#444444\">outtext</span>");
+			            "<span foreground=\"#F57D00\">@\"Escape:</span><span foreground=\"#A53E00\">\"\"\"\"</span><span foreground=\"#F57D00\"> \"</span><span foreground=\"#333333\">outtext</span>");
 		}
 
 		[Test]
@@ -118,7 +118,7 @@ namespace Mono.TextEditor.Tests
 		public void TestCDATASection ()
 		{
 			TestOutput ("<![CDATA[ test]]>",
-			            "<span foreground=\"#444444\">&lt;![CDATA[ test]]&gt;</span>",
+			            "<span foreground=\"#333333\">&lt;![CDATA[ test]]&gt;</span>",
 			            "application/xml");
 		}
 		
@@ -130,7 +130,16 @@ namespace Mono.TextEditor.Tests
 		public void TestBug603 ()
 		{
 			TestOutput ("///<summary>foo bar</summary>",
-			            "<span foreground=\"#999988\" style=\"Italic\">///</span><span foreground=\"#999988\" style=\"Italic\">&lt;</span><span foreground=\"#999988\" style=\"Italic\">summary</span><span foreground=\"#999988\" style=\"Italic\">&gt;</span><span foreground=\"#999988\" style=\"Italic\">foo bar</span><span foreground=\"#999988\" style=\"Italic\">&lt;</span><span foreground=\"#999988\" style=\"Italic\">/</span><span foreground=\"#999988\" style=\"Italic\">summary</span><span foreground=\"#999988\" style=\"Italic\">&gt;</span>");
+			            "<span foreground=\"#888888\" style=\"Italic\">///</span><span foreground=\"#888888\" style=\"Italic\">&lt;</span><span foreground=\"#888888\" style=\"Italic\">summary</span><span foreground=\"#888888\" style=\"Italic\">&gt;</span><span foreground=\"#888888\" style=\"Italic\">foo bar</span><span foreground=\"#888888\" style=\"Italic\">&lt;</span><span foreground=\"#888888\" style=\"Italic\">/</span><span foreground=\"#888888\" style=\"Italic\">summary</span><span foreground=\"#888888\" style=\"Italic\">&gt;</span>");
+		}
+
+		[Test]
+		public void TestFSharpLineBug ()
+		{
+			TestOutput (
+				"\n\n\nlet x = 2",
+				"<span foreground=\"#009695\">let </span><span foreground=\"#333333\">x = </span><span foreground=\"#F57D00\">2</span>",
+				"text/x-fsharp");
 		}
 	}
 }

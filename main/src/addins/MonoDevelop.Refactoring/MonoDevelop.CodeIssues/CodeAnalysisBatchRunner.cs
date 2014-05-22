@@ -107,6 +107,9 @@ namespace MonoDevelop.CodeIssues
 			if (file.BuildAction != BuildAction.Compile)
 				return;
 
+			if (!(file.Project is DotNetProject))
+				return;
+
 			TextEditorData editor;
 			try {
 				editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);

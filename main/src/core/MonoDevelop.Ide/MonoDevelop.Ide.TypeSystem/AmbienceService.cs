@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (entity != null) {
 					var ambience = new ICSharpCode.NRefactory.CSharp.CSharpAmbience ();
 					ambience.ConversionFlags = ConversionFlags.ShowParameterList | ConversionFlags.ShowParameterNames | ConversionFlags.ShowTypeParameterList;
-					return ambience.ConvertEntity (entity);
+					return ambience.ConvertSymbol (entity);
 				}
 			} catch (Exception e) {
 				LoggingService.LogWarning ("Invalid cref:" + cref, e);

@@ -39,6 +39,7 @@ using MonoDevelop.CSharp.Refactoring.CodeIssues;
 using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp.Formatting;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -189,15 +190,21 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return StartScript ();
 		}
 
-		internal static MDRefactoringContext Create (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) 
+		internal static Task<MDRefactoringContext> Create (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var shared = document.GetSharedResolver ();
-			if (shared == null)
-				return null;
-			var sharedResolver = shared.Result;
-			if (sharedResolver == null)
-				return null;
-			return new MDRefactoringContext (document, sharedResolver, loc, cancellationToken);
+			if (shared == null) {
+				var tcs = new TaskCompletionSource<MDRefactoringContext> ();
+				tcs.SetResult (null);
+				return tcs.Task;
+			}
+
+			return shared.ContinueWith (t => {
+				var sharedResolver = t.Result;
+				if (sharedResolver == null)
+					return null;
+				return new MDRefactoringContext (document, sharedResolver, loc, cancellationToken);
+			}, TaskContinuationOptions.ExecuteSynchronously);
 		}
 
 		internal MDRefactoringContext (Document document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)

@@ -172,15 +172,25 @@ namespace MonoDevelop.AnalysisCore.Gui
 			int markerEnd = Segment.EndOffset;
 			for (int i = 0; i < chunks.Count; i++) {
 				var chunk = chunks [i];
-				if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset) 
+				if (chunk.EndOffset < markerStart || markerEnd <= chunk.Offset)
 					continue;
 				if (chunk.Offset == markerStart && chunk.EndOffset == markerEnd)
 					return;
-				if (chunk.Offset < markerStart && chunk.EndOffset > markerEnd) {
-					var newChunk = new Chunk (chunk.Offset, markerStart - chunk.Offset, chunk.Style);
-					chunks.Insert (i, newChunk);
-					chunk.Offset += newChunk.Length;
-					chunk.Length -= newChunk.Length;
+				
+				if (chunk.Offset <= markerStart && chunk.EndOffset >= markerEnd) {
+					if (markerStart - chunk.Offset > 0) {
+						var newChunk = new Chunk (chunk.Offset, markerStart - chunk.Offset, chunk.Style);
+						chunks.Insert (i, newChunk);
+						chunk.Offset += newChunk.Length;
+						chunk.Length -= newChunk.Length;
+						chunk = newChunk;
+					}
+					if (markerEnd < chunk.EndOffset) {
+						var newChunk = new Chunk (chunk.Offset, markerEnd - chunk.Offset, chunk.Style);
+						chunks.Insert (i, newChunk);
+						chunk.Offset += newChunk.Length;
+						chunk.Length -= newChunk.Length;
+					}
 					continue;
 				}
 			}

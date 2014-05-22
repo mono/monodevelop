@@ -1,21 +1,21 @@
-// 
+//
 // UpdateService.cs
-//  
+//
 // Author:
 //       Lluis Sanchez <lluis@xamarin.com>
-// 
+//
 // Copyright (c) 2011 Xamarin Inc.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Updater
 {
 	public static class UpdateService
 	{
-		static readonly TimeSpan AutoUpdateSpan = TimeSpan.FromDays (3);
+		static readonly TimeSpan AutoUpdateSpan = TimeSpan.FromDays (1);
 
 		static UpdateService ()
 		{
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Updater
 		{
 			new Timer (_ => CheckForUpdates (true), null, AutoUpdateSpan, AutoUpdateSpan);
 		}
-		
+
 		public static bool AutoCheckForUpdates {
 			get {
 				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", true);
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Updater
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.CheckForUpdates", value);
 			}
 		}
-		
+
 		public static UpdateSpanUnit UpdateSpanUnit {
 			get {
 				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", UpdateSpanUnit.Day);
@@ -65,7 +65,7 @@ namespace MonoDevelop.Ide.Updater
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateSpanUnit", value);
 			}
 		}
-		
+
 		public static int UpdateSpanValue {
 			get {
 				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", 1);
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Updater
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateSpanValue", value);
 			}
 		}
-		
+
 		public static UpdateLevel UpdateLevel {
 			get {
 				return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", UpdateLevel.Stable);
@@ -83,7 +83,7 @@ namespace MonoDevelop.Ide.Updater
 				PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.UpdateLevel", value);
 			}
 		}
-		
+
 		public static string TestMode {
 			get {
 				string testMode = Environment.GetEnvironmentVariable ("MONODEVELOP_UPDATER_TEST");
@@ -93,20 +93,20 @@ namespace MonoDevelop.Ide.Updater
 					return PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.TestMode", "");
 			}
 		}
-		
+
 		public static bool TestModeEnabled {
 			get { return TestMode.Length > 0 && TestMode.ToLower () != "false"; }
 		}
-		
+
 		public static bool NotifyAddinUpdates { get; set; }
-		
+
 		internal static void ScheduledCheckForUpdates ()
 		{
 			if (!AutoCheckForUpdates)
 				return;
-			
+
 			DateTime lastUpdate = PropertyService.Get ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.MinValue);
-			
+
 			bool check = false;
 			if (UpdateSpanUnit == UpdateSpanUnit.Hour) {
 				lastUpdate = lastUpdate.Date;
@@ -118,23 +118,23 @@ namespace MonoDevelop.Ide.Updater
 				lastUpdate = new DateTime (lastUpdate.Year, lastUpdate.Month, 1, 0, 0, 0);
 				check = DateTime.Now >= lastUpdate.AddMonths (UpdateSpanValue);
 			}
-				
+
 			if (check)
 				CheckForUpdates (true);
 		}
-		
+
 		public static void CheckForUpdates ()
 		{
 			CheckForUpdates (false);
 		}
-		
+
 		static void CheckForUpdates (bool automatic)
 		{
 			PropertyService.Set ("MonoDevelop.Ide.AddinUpdater.LastCheck", DateTime.Now);
 			PropertyService.SaveProperties ();
 			var handlers = AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/Updater/UpdateHandlers");
-			
-			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Looking for updates", "md-software-update"); 
+
+			IProgressMonitor mon = IdeApp.Workbench.ProgressMonitors.GetBackgroundProgressMonitor ("Looking for updates", "md-updates");
 
 			Thread t = new Thread (delegate () {
 				CheckUpdates (mon, handlers, automatic);
@@ -142,7 +142,7 @@ namespace MonoDevelop.Ide.Updater
 			t.Name = "Addin updater";
 			t.Start ();
 		}
-		
+
 		static void CheckUpdates (IProgressMonitor monitor, object[] handlers, bool automatic)
 		{
 			using (monitor) {
@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.Updater
 			}
 		}
 	}
-	
+
 	public enum UpdateSpanUnit
 	{
 		Hour,

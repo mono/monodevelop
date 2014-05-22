@@ -47,12 +47,15 @@ namespace ICSharpCode.PackageManagement
 		static readonly UserAgentGeneratorForRepositoryRequests userAgentGenerator;
 		static readonly BackgroundPackageActionRunner backgroundPackageActionRunner;
 		static readonly IPackageManagementProgressMonitorFactory progressMonitorFactory;
+		static readonly PackageManagementProgressProvider progressProvider;
 		
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
 			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
-			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests(packageRepositoryCache);
+			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests ();
+			userAgentGenerator.Register (packageRepositoryCache);
+			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
 			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
 			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(projectTemplatePackageSources);
@@ -62,7 +65,7 @@ namespace ICSharpCode.PackageManagement
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
-			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents);
+			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);
 
 			InitializeCredentialProvider();
 		}
@@ -77,11 +80,6 @@ namespace ICSharpCode.PackageManagement
 			ISettings settings = Settings.LoadDefaultSettings (null, null, null);
 			var packageSourceProvider = new PackageSourceProvider (settings);
 			return new SettingsCredentialProvider(credentialProvider, packageSourceProvider);
-		}
-
-		public static void DisablePromptForCredentials ()
-		{
-			HttpClient.DefaultCredentialProvider = CreateSettingsCredentialProvider (NullCredentialProvider.Instance);
 		}
 
 		public static PackageManagementOptions Options {
@@ -130,6 +128,10 @@ namespace ICSharpCode.PackageManagement
 
 		public static IPackageManagementProgressMonitorFactory ProgressMonitorFactory {
 			get { return progressMonitorFactory; }
+		}
+
+		public static IRecentPackageRepository RecentPackageRepository {
+			get { return packageRepositoryCache.RecentPackageRepository; }
 		}
 	}
 }

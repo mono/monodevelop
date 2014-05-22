@@ -32,33 +32,33 @@
 				defaultHandler = "MonoDevelop.Ide.Commands.DefaultDeleteKeyHandler"
 				shortcut = "Delete" macShortcut = "BackSpace" />
 	</Category>
-	
+
 	<!-- EditCommands -->
 	<Category _name = "Edit" id="Edit">
-			
+
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Copy"
 			_label = "_Copy"
-			icon = "gtk-copy" 
-			_description = "Copy the selection" 
+			icon = "gtk-copy"
+			_description = "Copy the selection"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultCopyHandler"
 			shortcut = "Control|C"
 			macShortcut = "Meta|C" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Cut"
 			_label = "Cu_t"
-			icon = "gtk-cut" 
-			_description = "Cut the selection" 
+			icon = "gtk-cut"
+			_description = "Cut the selection"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultCutHandler"
 			shortcut = "Control|X"
 			macShortcut = "Meta|X" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Paste"
-			_label = "_Paste" 
+			_label = "_Paste"
 			icon = "gtk-paste"
-			_description = "Paste the clipboard" 
+			_description = "Paste the clipboard"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultPasteHandler"
 			shortcut = "Control|V"
 			macShortcut = "Meta|V" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Delete"
-			_label = "_Delete" 
+			_label = "_Delete"
 			_description = "Delete the selection"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultDeleteHandler"
 			icon  = "gtk-delete" />
@@ -68,21 +68,21 @@
 			shortcut = "F2"
 			macShortcut = "Meta|R"/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Undo"
-			_label = "_Undo" 
-			icon = "gtk-undo" 
-			_description = "Undo last action" 
+			_label = "_Undo"
+			icon = "gtk-undo"
+			_description = "Undo last action"
 			shortcut = "Control|Z"
 			macShortcut = "Meta|Z" />
-	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Redo" 
-			_label = "_Redo" 
-			icon = "gtk-redo" 
-			_description = "Redo last undone action" 
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.Redo"
+			_label = "_Redo"
+			icon = "gtk-redo"
+			_description = "Redo last undone action"
 			shortcut = "Control|Shift|Z"
 			winShortcut = "Control|Y"
 			macShortcut = "Meta|Shift|Z" />
-	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll" 
-			_label = "Select _All" 
-			_description = "Select all text" 
+	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll"
+			_label = "Select _All"
+			_description = "Select all text"
 			shortcut = "Control|A"
 			macShortcut = "Meta|A"
 			defaultHandler = "MonoDevelop.Ide.Commands.DefaultSelectAllHandler"
@@ -90,47 +90,47 @@
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleCodeComment"
 			shortcut = "Control|Alt|C"
 			macShortcut = "Meta|/"
-			_description = "Comment/Uncomment selected lines of code" 
+			_description = "Comment/Uncomment selected lines of code"
 			_label = "_Toggle Line Comment(s)"
 			icon = "md-comment" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.AddCodeComment"
-			_description = "Comment selected lines of code" 
+			_description = "Comment selected lines of code"
 			_label = "_Add Line Comment(s)"
 			icon = "md-comment" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.RemoveCodeComment"
-			_description = "Uncomment selected lines of code" 
+			_description = "Uncomment selected lines of code"
 			_label = "_Remove Line Comment(s)"
 			icon = "md-comment" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.IndentSelection"
 			shortcut = "Control|Alt|End"
-			_description = "Indent selected lines of code" 
+			_description = "Indent selected lines of code"
 			_label = "_Indent Selection"
 			macShortcut = "Meta|]"
 			icon = "gtk-indent" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.UnIndentSelection"
 			shortcut = "Control|Alt|Home"
-			_description = "Unindent selected lines of code" 
+			_description = "Unindent selected lines of code"
 			macShortcut = "Meta|["
 			_label = "_Unindent Selection"
 			icon = "gtk-unindent" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.UppercaseSelection"
-			_description = "Convert the selected text to uppercase" 
+			_description = "Convert the selected text to uppercase"
 			_label = "_Uppercase Selection" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.LowercaseSelection"
-			_description = "Convert the selected text to lowercase" 
+			_description = "Convert the selected text to lowercase"
 			_label = "_Lowercase Selection" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.RemoveTrailingWhiteSpaces"
 			description = "Remove trailing whitespace"
 			_label = "_Remove trailing whitespace" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.JoinWithNextLine"
 			shortcut = "Control|Shift|J"
-			_description = "Join the current line with the next line" 
+			_description = "Join the current line with the next line"
 			_label = "_Join Lines" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.WordCount"
-			_label = "_Word Count..." 
+			_label = "_Word Count..."
 			description = "Count words in a text file"/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertGuid"
-			_label = "_Insert Guid" 
+			_label = "_Insert Guid"
 			description = "Inserts a Guid at caret position"/>
 	<Condition id="Platform" value="windows">
 		<Command id = "MonoDevelop.Ide.Commands.EditCommands.MonodevelopPreferences"
@@ -153,25 +153,25 @@
 			_label = "Custom Po_licies..."
 			_description = "Edit custom sets of policies which can be applied to solutions" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.InsertStandardHeader"
-			_label = "_Insert Standard Header" 
+			_label = "_Insert Standard Header"
 			defaultHandler = "MonoDevelop.Ide.Commands.InsertStandardHeaderHandler"
 			_description = "Add the user defined header to the top of the file"/>
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleFolding"
-			_label = "_Toggle Fold" 
+			_label = "_Toggle Fold"
 			shortcut = "Control|Shift|M"
 			macShortcut = "Alt|Meta|Left"
 			_description = "Toggles the folding at caret position."/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.ToggleAllFoldings"
-			_label = "Toggle _All Folds" 
+			_label = "Toggle _All Folds"
 			shortcut = "Control|Shift|A"
 			macShortcut = "Alt|Shift|Meta|Right"
 			_description = "Toggles all the foldings in the document."/>
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.FoldDefinitions"
-			_label = "Toggle _Definitions" 
+			_label = "Toggle _Definitions"
 			macShortcut = "Alt|Shift|Meta|Left"
 			_description = "Toggles foldings of all method and property bodies."/>
-			
+
 	<Command id = "MonoDevelop.Ide.CodeFormatting.CodeFormattingCommands.FormatBuffer"
 			defaultHandler = "MonoDevelop.Ide.CodeFormatting.FormatBufferHandler"
 			_label = "_Format Document"
@@ -183,7 +183,7 @@
 
 	<!-- ProjectCommands -->
 	<Category _name = "Project" id = "Project">
-			
+
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddNewProject"
 			_label = "_Add New Project..."
 			_description = "Add a new project to the selected solution"
@@ -196,7 +196,7 @@
 			_description = "Add a new child solution to the selected workspace"
 			icon  = "md-new-solution" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddSolutionFolder"
-			_label = "Add Solution _Folder" 
+			_label = "Add Solution _Folder"
 			_description = "Add a new solution folder to the selected solution"
 			icon  = "md-new-solution-folder" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddProject"
@@ -211,17 +211,17 @@
 			icon  = "gtk-delete" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Options"
 			defaultHandler = "MonoDevelop.Ide.Commands.SolutionItemOptionsHandler"
-			_label = "_Options" 
+			_label = "_Options"
 			_description = "Show options window" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.SolutionOptions"
 			defaultHandler = "MonoDevelop.Ide.Commands.SolutionOptionsHandler"
-			_label = "_Solution Options" 
+			_label = "_Solution Options"
 			_description = "Show solution options window" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ProjectOptions"
 			defaultHandler = "MonoDevelop.Ide.Commands.ProjectOptionsHandler"
-			_label = "Project _Options" 
+			_label = "Project _Options"
 			_description = "Show project options window" />
-			
+
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 			_description = "Add and remove project references"
 			_label = "_Edit References..."
@@ -241,7 +241,7 @@
 			_description = "Adds and existing folder and its contents"
 			_label = "_Add Existing Folder..." />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder"
-			_label = "New _Folder" 
+			_label = "New _Folder"
 			_description = "Create a new folder"
 			icon  = "md-new-folder-icon" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.IncludeToProject"
@@ -256,7 +256,7 @@
 			icon  = "md-build-combine" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.Build"
 			defaultHandler = "MonoDevelop.Ide.Commands.BuildHandler"
-			_label = "Buil_d" 
+			_label = "Buil_d"
 			shortcut = "F7"
 			macShortcut = "Meta|K"
 			_description = "Build the current project"
@@ -333,7 +333,7 @@
 			_label = "Unload" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem"
 			_description = "Edit selected item"
-			_label = "Edit File" />			
+			_label = "Edit File" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.ExportSolution"
 			defaultHandler = "MonoDevelop.Ide.Commands.ExportSolutionHandler"
 			_description = "Convert selected solution to another format"
@@ -357,48 +357,48 @@
 
 	<!-- FileCommands -->
 	<Category _name = "File" id = "File">
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFile"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenFileHandler"
-			_label = "_Open..." 
+			_label = "_Open..."
 			shortcut = "Control|O"
 			macShortcut = "Meta|O"
 			_description = "Open file or solution"
 			icon  = "gtk-open" />
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewFile" 
+	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewFile"
 			defaultHandler = "MonoDevelop.Ide.Commands.NewFileHandler"
 			_label = "_File..."
 			shortcut = "Control|N"
 			macShortcut = "Meta|N"
 			_description = "Create a new file"
 			icon = "gtk-new" />
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Save" 
-			icon = "gtk-save" 
+	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Save"
+			icon = "gtk-save"
 			shortcut = "Control|S"
 			macShortcut = "Meta|S"
 			_description = "Save the active document"
 			_label = "_Save" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll"
 			defaultHandler = "MonoDevelop.Ide.Commands.SaveAllHandler"
-			icon = "md-save-all-icon" 
-			shortcut = "Control|Shift|S" 
+			icon = "md-save-all"
+			shortcut = "Control|Shift|S"
 			macShortcut = "Meta|Shift|S"
 			_description = "Save all open files"
 			_label = "Save A_ll" />
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject" 
+	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewProject"
 			defaultHandler = "MonoDevelop.Ide.Commands.NewProjectHandler"
-			_label = "_Solution..." 
-			icon = "md-new-solution" 
-			_description = "Create a new solution" 
+			_label = "_Solution..."
+			icon = "md-new-solution"
+			_description = "Create a new solution"
 			macShortcut = "Meta|Shift|N"
 			shortcut = "Control|Shift|N"  />
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace" 
+	<Command id = "MonoDevelop.Ide.Commands.FileCommands.NewWorkspace"
 			defaultHandler = "MonoDevelop.Ide.Commands.NewWorkspaceHandler"
 			_label = "_Workspace..."
 			_description = "Create a new workspace"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile"
 			defaultHandler = "MonoDevelop.Ide.Commands.CloseFileHandler"
-			_label = "_Close File" 
+			_label = "_Close File"
 			_description = "Close active file"
 			icon = "gtk-close"
 			shortcut = "Control|W"
@@ -412,16 +412,16 @@
 			macShortcut = "Meta|Shift|W" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspace"
 			defaultHandler = "MonoDevelop.Ide.Commands.CloseWorkspaceHandler"
-			_label = "C_lose Workspace" 
+			_label = "C_lose Workspace"
 			_description = "Close all solutions open in the current workspace"
 			icon = "md-close-combine-icon" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.CloseWorkspaceItem"
 			defaultHandler = "MonoDevelop.Ide.Commands.CloseWorkspaceHandler"
-			_label = "C_lose" 
+			_label = "C_lose"
 			_description = "Close the active solution or workspace item"
 			icon = "md-close-combine-icon" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ReloadFile"
-			_label = "_Revert" 
+			_label = "_Revert"
 			_description = "Revert to a saved version of the file"
 			macShortcut = "Meta|U"
 			icon = "gtk-revert-to-saved" />
@@ -431,29 +431,29 @@
 			_description = "Save the current file with a different name" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.PrintHandler"
-			_label = "_Print..." 
-			_description = "Print current document" 
+			_label = "_Print..."
+			_description = "Print current document"
 			icon  = "gtk-print"
 			shortcut = "Control|P"
 			macShortcut = "Meta|P" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPreviewDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.PrintPreviewHandler"
-			_label = "Print Previe_w" 
-			_description = "Show print preview" 
+			_label = "Print Previe_w"
+			_description = "Show print preview"
 			icon  = "gtk-print-preview"
 			shortcut = "Shift|Control|P" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.PrintPageSetup"
 			defaultHandler = "MonoDevelop.Ide.Commands.PrintPageSetupHandler"
-			_label = "Page Set_up" 
-			_description = "Show page setup" 
+			_label = "Page Set_up"
+			_description = "Show page setup"
 			icon  = "gtk-page-setup" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentFileList"
 			defaultHandler = "MonoDevelop.Ide.Commands.RecentFileListHandler"
 			type="array"
 			_label = "Recent _Files" />
-	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles" 
+	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentFiles"
 			defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentFilesHandler"
-			_label = "_Clear" 
+			_label = "_Clear"
 			icon  = "gtk-clear"
 			_description = "Clear recent files" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.RecentProjectList"
@@ -462,24 +462,24 @@
 			_label = "Recent Pro_jects" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.ClearRecentProjects"
 			defaultHandler = "MonoDevelop.Ide.Commands.ClearRecentProjectsHandler"
-			_label = "_Clear" 
+			_label = "_Clear"
 			icon  = "gtk-clear"
 			_description = "Clear recent solutions" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Exit"
 			defaultHandler = "MonoDevelop.Ide.Commands.ExitHandler"
-			_label = "_Quit" 
-			icon = "gtk-quit" 
+			_label = "_Quit"
+			icon = "gtk-quit"
 			_description = "Quit MonoDevelop"
 			macShortcut = "Meta|Q"
 			shortcut = "Control|Q" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal"
-			_label = "_Open in Terminal" 
+			_label = "_Open in Terminal"
 			_description = "Opens a terminal in this folder"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenFolder"
-			_label = "_Open Folder" 
+			_label = "_Open Folder"
 			_description = "Opens the folder in a file manager."/>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder"
-			_label = "O_pen Containing Folder" 
+			_label = "O_pen Containing Folder"
 			_description = "Opens the folder that contains this file."/>
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SetBuildAction"
 			type="radio|array"
@@ -499,7 +499,7 @@
 			_description = "Closes all opened files in a tab"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
-			_label = "C_lose all but this"
+			_label = "C_lose Others"
 			_description = "Closes all opened files except for the active file"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"
@@ -513,10 +513,10 @@
 			_label = "Reopen Closed Tab"
 			_description = "Opens the last tab that has been closed"/>
 	</Category>
-			
+
 	<!-- ViewCommands -->
 	<Category _name = "View" id = "View">
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList"
 			defaultHandler = "MonoDevelop.Ide.Commands.ViewListHandler"
 			type="array"
@@ -543,8 +543,8 @@
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen"
 			type="check"
 			defaultHandler = "MonoDevelop.Ide.Commands.FullScreenHandler"
-			_label = "_Full Screen" 
-			icon = "gtk-fullscreen" 
+			_label = "_Full Screen"
+			icon = "gtk-fullscreen"
 			_description = "Set full screen mode" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.Open"
 			_description = "Open selected document"
@@ -564,17 +564,17 @@
 			_label = "List of programs to open with" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowNext"
 			defaultHandler = "MonoDevelop.Ide.Commands.ShowNextHandler"
-			_label = "Show Next" 
+			_label = "Show Next"
 			_description = "Move cursor to next error or search match"
 			macShortcut = "Alt|Meta|Down"
 			shortcut = "F4" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ShowPrevious"
 			defaultHandler = "MonoDevelop.Ide.Commands.ShowPreviousHandler"
-			_label = "Show Previous" 
+			_label = "Show Previous"
 			_description = "Move cursor to previous error or search match"
 			macShortcut = "Alt|Meta|Up"
 			shortcut = "Shift|F4" />
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateBack"
 			_label = "Navigate _Back"
 			icon = "md-navigate-back"
@@ -590,7 +590,7 @@
 			macShortcut= "Control|Meta|Right"
 			_description = "Move to next point in code navigation history"/>
 	<Command id = "MonoDevelop.Ide.Commands.NavigationCommands.NavigateHistory"
-			type="radio|array" 
+			type="radio|array"
 			_label = "Navigate _History"
 			defaultHandler = "MonoDevelop.Ide.Commands.NavigateHistory"
 			_description = "Select a point from the navigation history"/>
@@ -602,21 +602,21 @@
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomIn"
 			_label = "_Zoom In"
-			icon = "gtk-zoom-in" 
+			icon = "gtk-zoom-in"
 			shortcut = "Control|+"
 			macShortcut = "Meta|+"
 			_description = "Zooms view in" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomOut"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomOut"
 			_label = "Zoom _Out"
-			icon = "gtk-zoom-out" 
+			icon = "gtk-zoom-out"
 			shortcut = "Control|-"
 			macShortcut = "Meta|-"
 			_description = "Zooms view out" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomReset"
 			defaultHandler = "MonoDevelop.Ide.Commands.ZoomReset"
 			_label = "_Normal Size"
-			icon = "gtk-zoom-100" 
+			icon = "gtk-zoom-100"
 			shortcut = "Control|0"
 			_description = "Resets zoom to default" />
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SideBySideMode"
@@ -645,35 +645,35 @@
 			_label = "Welcome Page"
 			icon = "gtk-home"/>
 	</Category>
-	
+
 	<!-- ToolCommands -->
 	<Category _name = "Tools" id = "Tools">
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.AddinManager"
 			defaultHandler = "MonoDevelop.Ide.Commands.AddinManagerHandler"
-			icon = "md-software-update"
+			icon = "md-updates"
 			_description = "Manage add-ins"
 			_label = "_Add-in Manager" />
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.ToolList"
 			defaultHandler = "MonoDevelop.Ide.Commands.ToolListHandler"
 			type="array"
 			_label = "Tool List" />
-			
+
 	<Command id = "MonoDevelop.Ide.Commands.ToolCommands.InstrumentationViewer"
 			defaultHandler = "MonoDevelop.Ide.Commands.InstrumentationViewerHandler"
 			_label = "Instrumentation Monitor" />
-			
+
 	</Category>
-	
-	
+
+
 	<!-- WindowCommands -->
 	<Category _name = "Window" id = "Window">
-	
+
 	<Command id  = "MonoDevelop.Ide.Commands.WindowCommands.NextWindow"
 			defaultHandler = "MonoDevelop.Ide.Commands.NextWindowHandler"
 			_label = "_Next Window"
 			icon = "gtk-go-forward"
-			_description = "Show next window" 
+			_description = "Show next window"
 			shortcut = "Control|Page_Down"
 			macShortcut = "Meta|}" />
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.PrevWindow"
@@ -701,7 +701,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.SwitchSplitWindow"
 			shortcut = "Control|M"
 			_label = "_Switch Between Splits" />
-			
+
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchNextDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.SwitchNextDocument"
 			shortcut = "Control|Tab"
@@ -715,10 +715,10 @@
 			_label = "Switch to previous document"
 			_description = "Switch to previous document" />
 	</Category>
-			
+
 	<!-- HelpCommands -->
 	<Category _name = "Help" id = "Help">
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.Help"
 			_label = "API Documentation"
 			icon = "gtk-help"
@@ -728,18 +728,18 @@
 			macShortcut = "Meta|Alt|?" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.TipOfTheDay"
 			defaultHandler = "MonoDevelop.Ide.Commands.TipOfTheDayHandler"
-			_label = "_Tip of the Day" 
-			icon = "gtk-dialog-info" 
+			_label = "_Tip of the Day"
+			icon = "gtk-dialog-info"
 			_description = "Show tip of the day" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.OpenLogDirectory"
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenLogDirectoryHandler"
-			_label = "Open Log Directory" 
-			icon = "gtk-dialog-info" 
+			_label = "Open Log Directory"
+			icon = "gtk-dialog-info"
 			_description = "Opens the directory where the diagnostic logs are stored" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.About"
 			defaultHandler = "MonoDevelop.Ide.Commands.AboutHandler"
-			_label = "_About" 
-			icon = "gtk-about" 
+			_label = "_About"
+			icon = "gtk-about"
 			_description = "Show about dialog" />
 	<Command id  = "MonoDevelop.Ide.Updater.UpdateCommands.CheckForUpdates"
 			defaultHandler = "MonoDevelop.Ide.Updater.CheckForUpdatesHandler"
@@ -747,90 +747,90 @@
 			_description = "Check for updates to MonoDevelop and packages it requires" />
 	<Command id = "MonoDevelop.Ide.Commands.HelpCommands.SendFeedback"
 			defaultHandler = "MonoDevelop.Ide.Commands.SendFeedbackHandler"
-			_label = "Send Feedback" 
-			icon = "md-feedback" 
+			_label = "Send Feedback"
+			icon = "md-feedback"
 			_description = "Send feedback to the MonoDevelop development team" />
 	</Category>
-	
+
 	<!-- SearchCommands -->
 	<Category _name = "Search" id = "Search">
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.Find"
-			_label = "_Find..." 
-			icon = "gtk-find" 
-			_description = "Search for text" 
+			_label = "_Find..."
+			icon = "gtk-find"
+			_description = "Search for text"
 			shortcut = "Control|F"
 			macShortcut = "Meta|F" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.Replace"
-			_label = "_Replace..." 
-			icon = "gtk-find-and-replace" 
-			_description = "Search for and replace text" 
+			_label = "_Replace..."
+			icon = "gtk-find-and-replace"
+			_description = "Search for and replace text"
 			shortcut = "Control|H"
 			macShortcut = "Alt|Meta|F" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNext"
-			_label = "Find _Next" 
-			icon = "md-find-next-icon" 
-			_description = "Search forwards for the same text" 
+			_label = "Find _Next"
+			icon = "md-find-next-icon"
+			_description = "Search forwards for the same text"
 			shortcut = "Control|G"
 			macShortcut = "Meta|G" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPrevious"
-			_label = "Find _Previous" 
-			_description = "Search backwards for the same text" 
+			_label = "Find _Previous"
+			_description = "Search backwards for the same text"
 			shortcut = "Control|Shift|G"
 			macShortcut = "Meta|Shift|G" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindNext"
-			_label = "Find _Next (Emacs behavior)" 
-			icon = "md-find-next-icon" 
+			_label = "Find _Next (Emacs behavior)"
+			icon = "md-find-next-icon"
 			_description = "Search forwards for the same text with emacs behavior"/>
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.EmacsFindPrevious"
-			_label = "Find _Previous (Emacs behavior)" 
+			_label = "Find _Previous (Emacs behavior)"
 			_description = "Search backwards for the same text with emacs behavior"/>
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindNextSelection"
-			_label = "Find Next Selection" 
-			_description = "Search forwards for the selected text" 
+			_label = "Find Next Selection"
+			_description = "Search forwards for the selected text"
 			shortcut = "Control|F3"
 			macShortcut = "Meta|E" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindPreviousSelection"
-			_label = "Find _Previous Selection" 
-			_description = "Search backwards for the selected text" 
+			_label = "Find _Previous Selection"
+			_description = "Search backwards for the selected text"
 			shortcut = "Shift|Control|F3" />
 
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles"
 			defaultHandler = "MonoDevelop.Ide.FindInFiles.FindInFilesHandler"
-			_label = "F_ind in Files..." 
-			icon = "md-find-in-files" 
+			_label = "F_ind in Files..."
+			icon = "md-find-in-files"
 			shortcut = "Control|Shift|F"
 			macShortcut = "Meta|Shift|F"
 			_description = "Search for text in all files of a directory" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ReplaceInFiles"
 			defaultHandler = "MonoDevelop.Ide.FindInFiles.ReplaceInFilesHandler"
-			_label = "R_eplace in Files..." 
-			icon = "md-replace-in-files" 
+			_label = "R_eplace in Files..."
+			icon = "md-replace-in-files"
 			shortcut = "Control|Shift|H"
 			macShortcut = "Alt|Meta|Shift|F"
 			_description = "Search for and replace text in all files of a directory" />
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoType"
 	         _label = "Go to Type..."
 			_description = "Jump to the declaration of type in the current workspace"
 	         shortcut = "Control|Shift|T"
 	         macShortcut = "Meta|Shift|T" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoFile"
-			_label = "Go to File..." 
+			_label = "Go to File..."
 			shortcut = "Alt|Shift|O"
 			macShortcut = "Meta|Shift|D"
 			_description = "Jump to a file in the current workspace"
 			icon  = "gtk-open" />
 	<Command id = "MonoDevelop.Components.MainToolbar.Commands.NavigateTo"
-			_label = "Navigate To..." 
+			_label = "Navigate To..."
 			_description = "Jump to a item in the current workspace"
 			shortcut = "Control|,"
 			macShortcut = "Meta|."
 			icon  = "gtk-open" />
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.ToggleBookmark"
 			icon = "md-toggle-bookmark"
 			shortcut = "Control|F2"
@@ -851,26 +851,26 @@
 			_description = "Clear bookmarks"
 			_label = "_Clear Bookmarks" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.GotoLineNumber"
-			_label = "_Go to Line..." 
+			_label = "_Go to Line..."
 			_description = "Go to a specific line"
 			shortcut = "Control|I"
 			macShortcut = "Meta|L"
 			icon = "gtk-jump-to" />
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.UseSelectionForFind"
-			_label = "Use Selection for Find" 
+			_label = "Use Selection for Find"
 			_description = "Uses the current selection as find string"/>
 	<Command id = "MonoDevelop.Ide.Commands.SearchCommands.UseSelectionForReplace"
-			_label = "Use Selection for Replace" 
+			_label = "Use Selection for Replace"
 			_description = "Uses the current selection as replace string"/>
 	</Category>
-			
 
-			
+
+
 	<!-- TextEditorCommands -->
 	<Category _name = "Text Editor" id = "TextEditor">
-	
+
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow"
-			_label = "Show Completion Window" 
+			_label = "Show Completion Window"
 			macShortcut="Control|space"
 			shortcut = "Control|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.ToggleCompletionSuggestionMode"
@@ -933,8 +933,8 @@
 			macShortcut = "Control|Shift|space"
 			shortcut = "Control|Shift|space" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.GotoMatchingBrace"
-			_label = "Go to Matching _Brace" 
-			description = "Go to Matching Brace" 
+			_label = "Go to Matching _Brace"
+			description = "Go to Matching Brace"
 			shortcut = "Control|B" />
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.SelectionMoveLeft"
 			_label = "Expand selection to the left" />
@@ -1012,7 +1012,7 @@
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
 			_label = "Duplicate line"/>
 	</Category>
-	
+
 </Extension>
 
 </ExtensionModel>

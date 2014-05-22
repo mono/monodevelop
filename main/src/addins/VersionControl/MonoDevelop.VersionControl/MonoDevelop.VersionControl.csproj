@@ -194,8 +194,11 @@
     <EmbeddedResource Include="icons\light\version-control-16%402x.png">
       <LogicalName>version-control-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_log.png">
-      <LogicalName>menu_log.png</LogicalName>
+    <EmbeddedResource Include="icons\light\log-16.png">
+      <LogicalName>log-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\log-16%402x.png">
+      <LogicalName>log-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\diff-16.png">
       <LogicalName>diff-light-16.png</LogicalName>
@@ -221,8 +224,11 @@
     <EmbeddedResource Include="icons\light\refresh-16%402x.png">
       <LogicalName>refresh-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\menu_status.png">
-      <LogicalName>menu_status.png</LogicalName>
+    <EmbeddedResource Include="icons\light\local-status-16.png">
+      <LogicalName>local-status-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\local-status-16%402x.png">
+      <LogicalName>local-status-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\commit-16.png">
       <LogicalName>commit-light-16.png</LogicalName>
@@ -283,6 +289,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\tag-16%402x.png">
       <LogicalName>tag-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-git-16.png">
+      <LogicalName>prefs-git-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-git-16%402x.png">
+      <LogicalName>prefs-git-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-commit-message-style-16.png">
+      <LogicalName>prefs-commit-message-style-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-commit-message-style-16%402x.png">
+      <LogicalName>prefs-commit-message-style-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-version-control-general-16.png">
+      <LogicalName>prefs-version-control-general-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-version-control-general-16%402x.png">
+      <LogicalName>prefs-version-control-general-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

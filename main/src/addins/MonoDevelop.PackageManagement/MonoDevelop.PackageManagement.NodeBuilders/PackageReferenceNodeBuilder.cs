@@ -57,10 +57,13 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			var packageReferenceNode = (PackageReferenceNode)dataObject;
 			nodeInfo.Label = packageReferenceNode.Name;
-			nodeInfo.Icon = Context.GetIcon (Stock.Package);
+			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
 
 			if (!packageReferenceNode.Installed) {
-				nodeInfo.Label = "<span color='red'>" + packageReferenceNode.Name + "</span>";
+				nodeInfo.Label = "<span color='#c99c00'>" + packageReferenceNode.Name + "</span>";
+				if (!packageReferenceNode.IsInstallPending) {
+					nodeInfo.Icon = Context.GetIcon (Stock.ReferenceWarning);
+				}
 			}
 		}
 	}

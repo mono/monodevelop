@@ -76,6 +76,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.AllowGrow = false;
 			this.CanFocus = false;
 			this.CanDefault = false;
+			Mono.TextEditor.PopupWindow.WindowTransparencyDecorator.Attach (this);
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
@@ -123,7 +124,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			lastParam = currentParam;
 			ClearDescriptions ();
-			var o = provider.CreateTooltipInformation (overload, _currentParam, false);
+			var o = provider.CreateTooltipInformation (overload, currentParam, false);
 
 			Theme.NumPages = provider.Count;
 			Theme.CurrentPage = overload;

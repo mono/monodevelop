@@ -32,7 +32,7 @@ using System.Text;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public class NewProjectOptionsWidget : Bin
+	class NewProjectOptionsWidget : Bin
 	{
 		Entry nameEntry;
 		FileEntry locationEntry;

@@ -1686,22 +1686,6 @@ namespace MonoDevelop.Autotools
 			lastWriteTime = finfo.LastWriteTime;
 			ReadPackagesList ();
 		}
-
-		//Gets the pkg-config name from the makefile (or autoconf?) var name
-		// TODO: Remove me, if unused.
-		[Obsolete("Use 'GetPackageContentFromVarName' instead.")]
-		public List<string> GetNamesFromVarName (string varname)
-		{
-			if (!pkgVarNameToPkgName.ContainsKey (varname)) {
-				LoggingService.LogDebug ("pkg-config variable {0} not found in pkgVarNameToPkgName.", varname);
-				return null;
-			}
-			List<string> result = new List<string> ();
-			foreach (PackageContent content in pkgVarNameToPkgName [varname]) {
-				result.Add (content.Name);
-			}
-			return result;
-		}
 		
 		//Gets the pkg-config PackageContent from the makefile (or autoconf?) var name
 		public List<PackageContent> GetPackageContentFromVarName (string varname)

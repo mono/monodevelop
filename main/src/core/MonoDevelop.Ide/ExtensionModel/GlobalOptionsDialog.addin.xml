@@ -4,43 +4,43 @@
 	<Description>Dialog panels for global MonoDevelop options.</Description>
 	<ExtensionNodeSet id="MonoDevelop.Ide.OptionsDialogSection"/>
 </ExtensionPoint>
-	
+
 <Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
 	<Section id = "Preferences" _label = "Environment">
-		<Section id = "GeneralAuthorInfo" _label = "Author Information" icon="md-monkey" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" />
-		<Section id = "Language" _label = "Language" icon="md-locale" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel">
-<!--			<Panel _label = "Welcome Page" class = "MonoDevelop.Ide.WelcomePage.WelcomePageOptionPanel" />-->
+		<Section id = "GeneralAuthorInfo" _label = "Author Information" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.GlobalAuthorInformationPanel" icon="md-prefs-author-information" />
+		<Section id = "Language" _label = "Language" class = "MonoDevelop.Ide.Gui.OptionPanels.IDEStyleOptionsPanel" icon="md-prefs-language">
+			<!-- <Panel _label = "Welcome Page" class = "MonoDevelop.Ide.WelcomePage.WelcomePageOptionPanel" />-->
 		</Section>
-		<Section id = "KeyBindings" _label = "Key Bindings" fill="true" icon="md-keyboard-shortcuts" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" />
-		<Section id = "Fonts" _label = "Fonts" fill="true" icon = "md-letters" class = "MonoDevelop.Ide.Fonts.FontChooserPanel"/>
-		<Section id = "Updates" _label = "Updates" icon="md-software-update" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" />
-		<Section id = "TaskList" _label = "Tasks" icon="md-task-list-icon" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" />
-		<Section id = "ExternalTools" _label = "External Tools" icon="md-external-tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" />
+		<Section id = "KeyBindings" _label = "Key Bindings" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel" icon="md-prefs-key-bindings" />
+		<Section id = "Fonts" _label = "Fonts" fill="true" class = "MonoDevelop.Ide.Fonts.FontChooserPanel" icon = "md-prefs-fonts" />
+		<Section id = "Updates" _label = "Updates" class = "MonoDevelop.Ide.Gui.OptionPanels.AddInsOptionsPanel" icon="md-prefs-updates" />
+		<Section id = "TaskList" _label = "Tasks" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.TasksOptionsPanel" icon="md-prefs-task-list" />
+		<Section id = "ExternalTools" _label = "External Tools" fill="true" class = "MonoDevelop.Ide.ExternalTools.ExternalToolPane" icon="md-prefs-external-tools" />
 	</Section>
 
 	<Section id = "Projects" _label = "Projects">
-		<Section id = "LoadSave" _label = "Load/Save" icon="md-drive" class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel" />
-		<Section id = "Build" _label = "Build" icon="md-hammer" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel">
+		<Section id = "LoadSave" _label = "Load/Save" class = "MonoDevelop.Ide.Gui.OptionPanels.LoadSavePanel" icon="md-prefs-load-save" />
+		<Section id = "Build" _label = "Build" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildPanel" icon="md-prefs-build">
 			<Panel id = "BuildMessages" _label = "Errors and Warnings" class = "MonoDevelop.Ide.Gui.OptionPanels.BuildMessagePanel" />
 			<Panel id = "Directories" _label = "Assembly Folders" class = "MonoDevelop.Ide.Gui.OptionPanels.AssemblyFoldersPanel" />
 		</Section>
 		<Section id = "MonoRuntime" _label = ".NET Runtimes" fill="true" class = "MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanel" />
-		<Section id = "SdkLocations" _label = "SDK Locations" icon = "sdk-locations" />
+		<Section id = "SdkLocations" _label = "SDK Locations" icon = "md-prefs-sdk-locations" />
 	</Section>
-	
+
 	<Section id = "TextEditor" _label = "Text Editor">
-		<Section id = "Formatting" icon="md-formatting" _label = "Formatting" />
-		<Section id = "CodeTemplates" icon="md-template" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane"/>
+		<Section id = "Formatting" _label = "Formatting" icon="md-prefs-code-formatting" />
+		<Section id = "CodeTemplates" _label = "Code Templates" fill="true" class = "MonoDevelop.Ide.CodeTemplates.CodeTemplatePane" icon="md-prefs-code-templates" />
 	</Section>
 
 	<Section id="SourceCode" _label="Source Code">
-		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies">
+		<Section id="DefaultDotNetNamingPolicies" _label=".NET Naming Policies" icon="md-prefs-dotnet-naming-policies">
 			<Panel id = "NamespaceSynchronisationPanel" class = "MonoDevelop.Ide.Projects.OptionPanels.NamespaceSynchronisationPanel" />
 		</Section>
-		<Section id="CodeFormattingPolicies" _label="Code Formatting" icon="md-formatting" fill = "true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" />
-		<Section id="DefaultStandardHeader" _label = "Standard Header" fill="true" class = "MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" />
+		<Section id="CodeFormattingPolicies" _label="Code Formatting" fill="true" class="MonoDevelop.Ide.Projects.OptionPanels.CodeFormattingPanel" icon="md-prefs-code-formatting" />
+		<Section id="DefaultStandardHeader" _label="Standard Header" fill="true" class="MonoDevelop.Ide.StandardHeader.StandardHeaderPolicyPanel" icon="md-prefs-standard-header" />
 	</Section>
-	
+
 	<Section id = "VersionControl" _label = "Version Control" />
 
 	<Section id = "Other" _label = "Other">

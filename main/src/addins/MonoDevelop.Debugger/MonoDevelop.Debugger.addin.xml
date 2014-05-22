@@ -11,7 +11,7 @@
 	</ExtensionPoint>
 
 	<ExtensionPoint path="/MonoDevelop/Debugging/ValueVisualizers">
-		<Description>Value visualizers. Specified classes must implement MonoDevelop.Debugger.IValueVisualizer</Description>
+		<Description>Value visualizers. Specified classes must extend MonoDevelop.Debugger.ValueVisualizer</Description>
 		<ExtensionNode name="Type"/>
 	</ExtensionPoint>
 
@@ -159,6 +159,19 @@
 				_description = "Stops the execution of the expression being evaluated by the debugger"
 				defaultHandler = "MonoDevelop.Debugger.StopEvaluationHandler"
 				_label = "Stop Evaluation" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.RunToCursor"
+				defaultHandler = "MonoDevelop.Debugger.RunToCursorHandler"
+				_label = "Run To Cursor"
+				_description = "Run To Cursor"
+				shortcut = "Control|F10" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.SetNextStatement"
+				defaultHandler = "MonoDevelop.Debugger.SetNextStatementHandler"
+				_label = "Set Next Statement"
+				_description = "Set Next Statement"
+				shortcut = "Control|Shift|F10" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowNextStatement"
+				_label = "Show Next Statement"
+				defaultHandler = "MonoDevelop.Debugger.ShowNextStatementHandler" />
 		</Category>
 	</Extension>
 
@@ -217,7 +230,8 @@
 		<StockIcon stockid = "md-view-debug-threads" resource = "pad-threads-light-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-watch" resource = "pad-watch-light-16.png" size="Menu" />
 		<StockIcon stockid = "md-view-debug-immediate" resource = "pad-immediate-light-16.png" size="Menu" />
-		<StockIcon stockid = "md-bug" resource = "bug-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-prefs-debugger" resource = "prefs-debugger-light-16.png" size="Menu" />
+		<StockIcon stockid = "md-stack-pointer" resource = "stack-pointer-light-16.png" size="Menu" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/CommandBar">
@@ -231,7 +245,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/Projects">
-		<Section id = "Debugger" _label = "Debugger" icon="md-bug" fill="true" class = "MonoDevelop.Debugger.DebuggerOptionsPanel" />
+		<Section id="Debugger" _label="Debugger" fill="true" class="MonoDevelop.Debugger.DebuggerOptionsPanel" icon="md-prefs-debugger" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

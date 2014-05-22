@@ -38,13 +38,14 @@
   <ItemGroup>
     <Compile Include="DebugTests.cs" />
     <Compile Include="SdbEvaluationTests.cs" />
-    <Compile Include="MdbEvaluationTests.cs" />
     <Compile Include="EvaluationTests.cs" />
     <Compile Include="StackFrameTests.cs" />
-    <Compile Include="MdbStackFrameTests.cs" />
     <Compile Include="SdbStackFrameTests.cs" />
     <Compile Include="CorEvaluationTests.cs" />
     <Compile Include="CorStackFrameTests.cs" />
+    <Compile Include="BreakpointsAndSteppingTests.cs" />
+    <Compile Include="CorBreakpointsAndSteppingTests.cs" />
+    <Compile Include="SdbBreakpointsAndSteppingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger.csproj">
@@ -90,6 +91,10 @@
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
       <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
       <Name>GuiUnit_NET_4_0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
+      <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
+      <Name>Mono.Debugging.Soft</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

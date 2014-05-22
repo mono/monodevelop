@@ -802,30 +802,32 @@ namespace MonoDevelop.Ide
 				if (!IdeApp.Workspace.RequestItemUnload (prj))
 					return;
 				ConfirmProjectDeleteDialog dlg = new ConfirmProjectDeleteDialog (prj);
-				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
-					
-					// Remove the project before removing the files to avoid unnecessary events
-					RemoveItemFromSolution (prj);
-					
-					List<FilePath> files = dlg.GetFilesToDelete ();
-					dlg.Destroy ();
-					using (IProgressMonitor monitor = new MessageDialogProgressMonitor (true)) {
-						monitor.BeginTask (GettextCatalog.GetString ("Deleting Files..."), files.Count);
-						foreach (FilePath file in files) {
-							try {
-								if (Directory.Exists (file))
-									FileService.DeleteDirectory (file);
-								else
-									FileService.DeleteFile (file);
-							} catch (Exception ex) {
-								monitor.ReportError (GettextCatalog.GetString ("The file or directory '{0}' could not be deleted.", file), ex);
+				try {
+					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+
+						// Remove the project before removing the files to avoid unnecessary events
+						RemoveItemFromSolution (prj);
+
+						List<FilePath> files = dlg.GetFilesToDelete ();
+						using (IProgressMonitor monitor = new MessageDialogProgressMonitor (true)) {
+							monitor.BeginTask (GettextCatalog.GetString ("Deleting Files..."), files.Count);
+							foreach (FilePath file in files) {
+								try {
+									if (Directory.Exists (file))
+										FileService.DeleteDirectory (file);
+									else
+										FileService.DeleteFile (file);
+								} catch (Exception ex) {
+									monitor.ReportError (GettextCatalog.GetString ("The file or directory '{0}' could not be deleted.", file), ex);
+								}
+								monitor.Step (1);
 							}
-							monitor.Step (1);
+							monitor.EndTask ();
 						}
-						monitor.EndTask ();
 					}
-				} else
+				} finally {
 					dlg.Destroy ();
+				}
 			}
 			else if (result == AlertButton.Remove && IdeApp.Workspace.RequestItemUnload (prj)) {
 				RemoveItemFromSolution (prj);
@@ -1026,7 +1028,7 @@ namespace MonoDevelop.Ide
 		
 		public bool CanExecuteFile (string file, IExecutionHandler handler)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
 			return CanExecuteFile (file, context);
 		}
 		
@@ -1048,7 +1050,7 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation ExecuteFile (string file, IExecutionHandler handler)
 		{
-			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors);
+			ExecutionContext context = new ExecutionContext (handler, IdeApp.Workbench.ProgressMonitors, IdeApp.Workspace.ActiveExecutionTarget);
 			return ExecuteFile (file, context);
 		}
 		
@@ -1775,7 +1777,7 @@ namespace MonoDevelop.Ide
 			// a reference to the folder, so it is not deleted from the tree.
 			if (removeFromSource && sourceProject != null && pfolder.CanonicalPath != sourceProject.BaseDirectory.CanonicalPath && pfolder.IsChildPathOf (sourceProject.BaseDirectory)) {
 				pfolder = pfolder.ToRelative (sourceProject.BaseDirectory);
-				if (!sourceProject.Files.GetFilesInVirtualPath (pfolder).Any ()) {
+				if (!sourceProject.Files.GetFilesInVirtualPath (pfolder).Any () && sourceProject.Files.GetFileWithVirtualPath (pfolder) == null) {
 					var folderFile = new ProjectFile (sourceProject.BaseDirectory.Combine (pfolder));
 					folderFile.Subtype = Subtype.Directory;
 					sourceProject.Files.Add (folderFile);

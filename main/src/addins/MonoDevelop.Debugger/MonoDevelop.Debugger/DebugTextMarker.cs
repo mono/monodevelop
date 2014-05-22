@@ -32,6 +32,10 @@ using System.Linq;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 
+using MonoDevelop.Components;
+
+using Xwt.Drawing;
+
 namespace MonoDevelop.Debugger
 {
 	public abstract class DebugTextMarker : MarginMarker
@@ -44,6 +48,17 @@ namespace MonoDevelop.Debugger
 		protected abstract Cairo.Color BackgroundColor {
 			get;
 		}
+		
+		protected abstract Cairo.Color BorderColor {
+			get;
+		}
+		
+		protected Cairo.Color GetBorderColor (AmbientColor color) 
+		{
+			if (color.HasBorderColor)
+				return color.BorderColor;
+			return color.Color;
+		}
 
 		protected TextEditor Editor {
 			get; private set;
@@ -51,7 +66,7 @@ namespace MonoDevelop.Debugger
 
 		public override bool CanDrawBackground (Margin margin)
 		{
-			return false;
+			return margin is TextViewMargin;
 		}
 
 		public override bool CanDrawForeground (Margin margin)
@@ -64,6 +79,19 @@ namespace MonoDevelop.Debugger
 			// check, if a message bubble is active in that line.
 			if (LineSegment != null && LineSegment.Markers.Any (m => m != this && (m is IExtendingTextLineMarker)))
 				return false;
+
+			var sidePadding = 4;
+			var rounding = editor.LineHeight / 2 - 1;
+
+			var d = metrics.TextRenderEndPosition - metrics.TextRenderStartPosition;
+			if (d > 0) {
+				cr.LineWidth = 1;
+				cr.RoundedRectangle (metrics.TextRenderStartPosition, Math.Floor (y) + 0.5, d + sidePadding, metrics.LineHeight - 1, rounding);
+				cr.SetSourceColor (BackgroundColor); 
+				cr.FillPreserve ();
+				cr.SetSourceColor (BorderColor); 
+				cr.Stroke ();
+			}
 
 			return base.DrawBackground (editor, cr, y, metrics);
 		}
@@ -89,79 +117,30 @@ namespace MonoDevelop.Debugger
 				return null;
 
 			var style = new ChunkStyle (baseStyle);
-			style.Background = BackgroundColor;
+			//			style.Background = BackgroundColor;
 			SetForegroundColor (style);
 
 			return style;
 		}
 
+		protected void DrawImage (Cairo.Context cr, Image image, double x, double y, double size)
+		{
+			var deltaX = size / 2 - image.Width / 2 + 0.5f;
+			var deltaY = size / 2 - image.Height / 2 + 0.5f;
+
+			cr.DrawImage (Editor, image, Math.Round (x + deltaX), Math.Round (y + deltaY));
+		}
+
 		protected virtual void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-		}
-
-		protected static void DrawCircle (Cairo.Context cr, double x, double y, double size)
-		{
-			x += 0.5; y += 0.5;
-			cr.NewPath ();
-			cr.Arc (x + size/2, y + size / 2, (size-4)/2, 0, 2 * Math.PI);
-			cr.ClosePath ();
-		}
-
-		protected static void DrawDiamond (Cairo.Context cr, double x, double y, double size)
-		{
-			x += 0.5; y += 0.5;
-			size -= 2;
-			cr.NewPath ();
-			cr.MoveTo (x + size/2, y);
-			cr.LineTo (x + size, y + size/2);
-			cr.LineTo (x + size/2, y + size);
-			cr.LineTo (x, y + size/2);
-			cr.LineTo (x + size/2, y);
-			cr.ClosePath ();
-		}
-
-		protected static void DrawArrow (Cairo.Context cr, double x, double y, double size)
-		{
-			y += 2.5;
-			x += 2.5;
-			size -= 4;
-			double awidth = 0.5;
-			double aheight = 0.4;
-			double pich = (size - (size * aheight)) / 2;
-			cr.NewPath ();
-			cr.MoveTo (x + size * awidth, y);
-			cr.LineTo (x + size, y + size / 2);
-			cr.LineTo (x + size * awidth, y + size);
-			cr.RelLineTo (0, -pich);
-			cr.RelLineTo (-size * awidth, 0);
-			cr.RelLineTo (0, -size * aheight);
-			cr.RelLineTo (size * awidth, 0);
-			cr.RelLineTo (0, -pich);
-			cr.ClosePath ();
-		}
-
-		protected static void FillGradient (Cairo.Context cr, Cairo.Color color1, Cairo.Color color2, double x, double y, double size)
-		{
-			using (var pat = new Cairo.LinearGradient (x + size / 4, y, x + size / 2, y + size - 4)) {
-				pat.AddColorStop (0, color1);
-				pat.AddColorStop (1, color2);
-				cr.SetSource (pat);
-				cr.FillPreserve ();
-			}
-		}
-
-		protected static void DrawBorder (Cairo.Context cr, Cairo.Color color, double x, double y, double size)
-		{
-			using (var pat = new Cairo.LinearGradient (x, y + size, x + size, y)) {
-				pat.AddColorStop (0, color);
-				cr.SetSource (pat);
-				cr.Stroke ();
-			}
 		}
 	}
 
 	public class BreakpointTextMarker : DebugTextMarker
 	{
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-light-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-light-15.png");
+
 		public BreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
@@ -172,7 +151,11 @@ namespace MonoDevelop.Debugger
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.BreakpointText.Background; }
+			get { return Editor.ColorStyle.BreakpointMarker.Color; }
+		}
+		
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarker); }
 		}
 
 		protected override void SetForegroundColor (ChunkStyle style)
@@ -182,19 +165,15 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = Editor.ColorStyle.BreakpointMarker.Color;
-			Cairo.Color color2 = Editor.ColorStyle.BreakpointMarker.SecondColor;
-			if (IsTracepoint)
-				DrawDiamond (cr, x, y, size);
-			else
-				DrawCircle (cr, x, y, size);
-			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, color2, x, y, size);
+			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
 		}
 	}
 
 	public class DisabledBreakpointTextMarker : DebugTextMarker
 	{
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-disabled-light-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-disabled-light-15.png");
+
 		public DisabledBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
@@ -207,21 +186,22 @@ namespace MonoDevelop.Debugger
 		protected override Cairo.Color BackgroundColor {
 			get { return Editor.ColorStyle.BreakpointMarkerDisabled.Color; }
 		}
+		
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarkerDisabled); }
+		}
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color border = Editor.ColorStyle.BreakpointText.Background;
-			if (IsTracepoint)
-				DrawDiamond (cr, x, y, size);
-			else
-				DrawCircle (cr, x, y, size);
-			//FillGradient (cr, new Cairo.Color (1,1,1), new Cairo.Color (1,0.8,0.8), x, y, size);
-			DrawBorder (cr, border, x, y, size);
+			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
 		}
 	}
 
 	public class InvalidBreakpointTextMarker : DebugTextMarker
 	{
+		static readonly Image breakpoint = Image.FromResource ("gutter-breakpoint-invalid-light-15.png");
+		static readonly Image tracepoint = Image.FromResource ("gutter-tracepoint-invalid-light-15.png");
+
 		public InvalidBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
 			IsTracepoint = tracepoint;
@@ -232,33 +212,33 @@ namespace MonoDevelop.Debugger
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.BreakpointTextInvalid.Background; }
+			get { return Editor.ColorStyle.BreakpointMarkerInvalid.Color; }
+		}
+		
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.BreakpointMarkerInvalid); }
 		}
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = Editor.ColorStyle.InvalidBreakpointMarker.Color;
-			Cairo.Color color2 = color1;
-			Cairo.Color border = Editor.ColorStyle.InvalidBreakpointMarker.SecondColor;
-
-			if (IsTracepoint)
-				DrawDiamond (cr, x, y, size);
-			else
-				DrawCircle (cr, x, y, size);
-
-			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, border, x, y, size);
+			DrawImage (cr, IsTracepoint ? tracepoint : breakpoint, x, y, size);
 		}
 	}
 
 	public class CurrentDebugLineTextMarker : DebugTextMarker
 	{
+		static readonly Image currentLine = Image.FromResource ("gutter-execution-light-15.png");
+
 		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
 		{
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.DebuggerCurrentLine.Background; }
+			get { return Editor.ColorStyle.DebuggerCurrentLineMarker.Color; }
+		}
+
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.DebuggerCurrentLineMarker); }
 		}
 
 		protected override void SetForegroundColor (ChunkStyle style)
@@ -268,24 +248,24 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = Editor.ColorStyle.DebuggerCurrentLineMarker.Color;
-			Cairo.Color color2 = Editor.ColorStyle.DebuggerCurrentLineMarker.SecondColor;
-			Cairo.Color border = Editor.ColorStyle.DebuggerCurrentLineMarker.BorderColor;
-
-			DrawArrow (cr, x, y, size);
-			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, border, x, y, size);
+			DrawImage (cr, currentLine, x, y, size);
 		}
 	}
 
 	public class DebugStackLineTextMarker : DebugTextMarker
 	{
+		static readonly Image stackLine = Image.FromResource ("gutter-stack-light-15.png");
+
 		public DebugStackLineTextMarker (TextEditor editor) : base (editor)
 		{
 		}
 
 		protected override Cairo.Color BackgroundColor {
-			get { return Editor.ColorStyle.DebuggerStackLine.Background; }
+			get { return Editor.ColorStyle.DebuggerStackLineMarker.Color; }
+		}
+		
+		protected override Cairo.Color BorderColor {
+			get { return GetBorderColor (Editor.ColorStyle.DebuggerStackLineMarker); }
 		}
 
 		protected override void SetForegroundColor (ChunkStyle style)
@@ -295,13 +275,7 @@ namespace MonoDevelop.Debugger
 
 		protected override void DrawMarginIcon (Cairo.Context cr, double x, double y, double size)
 		{
-			Cairo.Color color1 = Editor.ColorStyle.DebuggerStackLineMarker.Color;
-			Cairo.Color color2 = Editor.ColorStyle.DebuggerStackLineMarker.SecondColor;
-			Cairo.Color border = Editor.ColorStyle.DebuggerStackLineMarker.BorderColor;
-
-			DrawArrow (cr, x, y, size);
-			FillGradient (cr, color1, color2, x, y, size);
-			DrawBorder (cr, border, x, y, size);
+			DrawImage (cr, stackLine, x, y, size);
 		}
 	}
 }

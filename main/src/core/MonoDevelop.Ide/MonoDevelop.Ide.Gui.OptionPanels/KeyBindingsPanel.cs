@@ -116,14 +116,16 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 			SelectCurrentScheme ();
 			schemeCombo.Changed += OnKeyBindingSchemeChanged;
-			
+
+			searchEntry.Ready = true;
+			searchEntry.Visible = true;
 			searchEntry.Changed += delegate {
-				processedFilterTerms = searchEntry.Text.Split (new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+				processedFilterTerms = searchEntry.Entry.Text.Split (new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
 					.Select (s => s.ToLower ()).ToArray ();;
 				filterChanged = true;
 				if (!filterTimeoutRunning) {
 					filterTimeoutRunning = true;
-					GLib.Timeout.Add (300, delegate {
+					GLib.Timeout.Add (50, delegate {
 						if (!filterChanged) {
 							if (filterTimeoutRunning)
 								Refilter ();
@@ -136,21 +138,11 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 				};
 			};
 			
-			clearFilterButton.Clicked += ClearFilter;
-			
 			//HACK: workaround for MD Bug 608021: Stetic loses values assigned to "new" properties of custom widget
 			conflicButton.Label = GettextCatalog.GetString ("_View Conflicts");
 			conflicButton.UseUnderline = true;
 		}
 
-		void ClearFilter (object sender, EventArgs e)
-		{
-			searchEntry.Text = "";
-			Refilter ();
-			//stop the timeout from refiltering, if it's already running
-			filterTimeoutRunning = false;
-		}
-		
 		void Refilter ()
 		{
 			keyTreeView.Model = null;
@@ -465,7 +457,7 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 		void SelectCommand (Command cmd)
 		{
 			//item may not be visible if the list is filtered
-			ClearFilter (null, EventArgs.Empty);
+			searchEntry.Entry.Text = "";
 			
 			TreeIter iter;
 			if (!keyStore.GetIterFirst (out iter))

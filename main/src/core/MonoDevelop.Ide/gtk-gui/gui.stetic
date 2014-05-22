@@ -14,6 +14,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Export Solution</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -240,6 +241,7 @@
     <property name="MemberName" />
     <property name="WidthRequest">930</property>
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title">New Solution</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">Center</property>
@@ -860,50 +862,33 @@
         <child>
           <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
+            <property name="WidthRequest">300</property>
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Label" id="label1">
+              <widget class="MonoDevelop.Components.SearchEntry" id="searchEntry">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">_Search:</property>
-                <property name="UseUnderline">True</property>
-                <property name="MnemonicWidget">searchEntry</property>
+                <property name="WidthRequest">250</property>
+                <property name="ForceFilterButtonVisible">True</property>
+                <property name="HasFrame">True</property>
+                <property name="RoundedShape">True</property>
+                <property name="IsCheckMenu">False</property>
+                <property name="ActiveFilterID">0</property>
+                <property name="Ready">False</property>
+                <property name="HasFocus">False</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
-                <property name="AutoSize">True</property>
+                <property name="AutoSize">False</property>
                 <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Entry" id="searchEntry">
+              <widget class="Gtk.Label" id="label1">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="IsEditable">True</property>
-                <property name="InvisibleChar">●</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="Gtk.Button" id="clearFilterButton">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Type">Custom</property>
-                <child>
-                  <widget class="Gtk.Image" id="image25">
-                    <property name="MemberName" />
-                    <property name="Pixbuf">stock:gtk-clear Menu</property>
-                  </widget>
-                </child>
-              </widget>
-              <packing>
-                <property name="Position">2</property>
                 <property name="AutoSize">False</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
           </widget>
@@ -5403,7 +5388,6 @@ Diagnostic</property>
                     <property name="Tooltip" translatable="yes">Switch to Find in Files</property>
                     <property name="CanFocus">True</property>
                     <property name="Label" translatable="yes">Find in Files</property>
-                    <property name="Active">True</property>
                     <property name="DrawIndicator">False</property>
                     <property name="HasLabel">True</property>
                     <property name="UseUnderline">True</property>
@@ -6279,6 +6263,7 @@ All solutions</property>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog" design-size="512 387">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Delete Project</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -10717,6 +10702,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.NewPolicySetDialog" design-size="429 200">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">New Policy</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>

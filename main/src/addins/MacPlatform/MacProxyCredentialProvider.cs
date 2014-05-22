@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Drawing;
+using System.Net;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Web;
@@ -32,29 +33,97 @@ using MonoDevelop.Ide;
 
 using MonoMac.AppKit;
 using MonoMac.Foundation;
-using MonoDevelop.Components.MainToolbar;
-using System.Net;
+using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacIntegration
 {
-	public class MacProxyCredentialProvider : ICredentialProvider
+	class MacProxyCredentialProvider : ICredentialProvider
 	{
-		string username, password;
+		object guiLock = new object();
 
-		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, ICredentials existingCredentials, bool retrying)
+		public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
 		{
-			bool result = false;
-			DispatchService.GuiSyncDispatch (() => {
-				using (var ns = new NSAutoreleasePool ()) {
-					var message = string.Format ("{0} needs {1} credentials to access {2}.", BrandingService.ApplicationName, 
-					                             credentialType == CredentialType.ProxyCredentials ? "proxy" : "request", uri.Host);
+			// if looking for proxy credentials, we care about the proxy's URL, not the request URL
+			if (credentialType == CredentialType.ProxyCredentials) {
+				var proxyUri = proxy.GetProxy (uri);
+				if (proxyUri != null)
+					uri = proxyUri;
+			}
 
-					NSAlert alert = NSAlert.WithMessage ("Credentials Required", "OK", "Cancel", null, message);
+			lock (guiLock) {
+				// If this is the first attempt, return any stored credentials. If they fail, we'll be called again.
+				if (!retrying) {
+					var creds = GetExistingCredentials (uri, credentialType);
+					if (creds != null)
+						return creds;
+				}
+
+				return GetCredentialsFromUser (uri, proxy, credentialType);
+			}
+		}
+
+		static ICredentials GetSystemProxyCredentials (Uri uri)
+		{
+			var kind = SecProtocolType.Any;
+			if (uri.Scheme == "http")
+				kind = SecProtocolType.HTTPProxy;
+			else if (uri.Scheme == "https")
+				kind = SecProtocolType.HTTPSProxy;
+
+			//TODO: get username from SystemConfiguration APIs so we don't trigger a double auth prompt
+			var existing = Keychain.FindInternetUserNameAndPassword (uri, kind);
+			if (existing != null && existing.Item1 != null && existing.Item2 != null)
+				return new NetworkCredential (existing.Item1, existing.Item2);
+
+			return null;
+		}
+
+		static ICredentials GetExistingCredentials (Uri uri, CredentialType credentialType)
+		{
+			if (credentialType == CredentialType.ProxyCredentials) {
+				var proxyCreds = GetSystemProxyCredentials (uri);
+				if (proxyCreds != null)
+					return proxyCreds;
+			}
+
+			var rootUri = new Uri (uri.GetComponents (UriComponents.SchemeAndServer, UriFormat.SafeUnescaped));
+			var existing =
+				Keychain.FindInternetUserNameAndPassword (uri) ??
+				Keychain.FindInternetUserNameAndPassword (rootUri);
+
+			return existing != null ? new NetworkCredential (existing.Item1, existing.Item2) : null;
+		}
+
+		static ICredentials GetCredentialsFromUser (Uri uri, IWebProxy proxy, CredentialType credentialType)
+		{
+			NetworkCredential result = null;
+
+			DispatchService.GuiSyncDispatch (() => {
+
+				using (var ns = new NSAutoreleasePool ()) {
+					var message = credentialType == CredentialType.ProxyCredentials
+						? GettextCatalog.GetString (
+							"{0} needs credentials to access the proxy server {1}.",
+							BrandingService.ApplicationName,
+							uri.Host
+						)
+						: GettextCatalog.GetString (
+							"{0} needs credentials to access {1}.",
+							BrandingService.ApplicationName,
+							uri.Host
+						);
+
+					var alert = NSAlert.WithMessage (
+						GettextCatalog.GetString ("Credentials Required"),
+						GettextCatalog.GetString ("OK"),
+						GettextCatalog.GetString ("Cancel"),
+						null,
+						message
+					);
+
 					alert.Icon = NSApplication.SharedApplication.ApplicationIconImage;
 
-					NSView view = new NSView (new RectangleF (0, 0, 313, 91));
-
-					var creds = Utility.GetCredentialsForUriFromICredentials (uri, existingCredentials);
+					var view = new NSView (new RectangleF (0, 0, 313, 91));
 
 					var usernameLabel = new NSTextField (new RectangleF (17, 55, 71, 17)) {
 						Identifier = "usernameLabel",
@@ -69,7 +138,6 @@ namespace MonoDevelop.MacIntegration
 					view.AddSubview (usernameLabel);
 
 					var usernameInput = new NSTextField (new RectangleF (93, 52, 200, 22));
-					usernameInput.StringValue = creds != null ? creds.UserName : string.Empty;
 					view.AddSubview (usernameInput);
 
 					var passwordLabel = new NSTextField (new RectangleF (22, 23, 66, 17)) {
@@ -84,18 +152,25 @@ namespace MonoDevelop.MacIntegration
 					view.AddSubview (passwordLabel);
 
 					var passwordInput = new NSSecureTextField (new RectangleF (93, 20, 200, 22));
-					passwordInput.StringValue = creds != null ? creds.Password : string.Empty;
 					view.AddSubview (passwordInput);
 
 					alert.AccessoryView = view;
-					result = alert.RunModal () == 1;
 
-					username = usernameInput.StringValue;
-					password = passwordInput.StringValue;
+					if (alert.RunModal () != 1)
+						return;
+
+					var username = usernameInput.StringValue;
+					var password = passwordInput.StringValue;
+					result = new NetworkCredential (username, password);
 				}
 			});
 
-			return result ? new NetworkCredential (username, password) : null;
+			// store the obtained credentials in the keychain
+			// but don't store for the root url since it may have other credentials
+			if (result != null)
+				Keychain.AddInternetPassword (uri, result.UserName, result.Password);
+
+			return result;
 		}
 	}
 }

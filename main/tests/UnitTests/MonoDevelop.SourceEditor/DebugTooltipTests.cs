@@ -188,7 +188,7 @@ namespace DebuggerTooltipTests
 			if (!doc.TryResolveAt (loc, out result, out node))
 				return null;
 
-			return DebugValueTooltipProvider.ResolveExpression (doc.Editor, result, node, out startOffset);
+			return CSharpCompletionTextEditorExtension.ResolveExpression (doc.Editor, result, node, out startOffset);
 		}
 
 		int GetBasicOffset (string expr)

@@ -34,7 +34,6 @@ using MonoDevelop.Ide;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
-	
 	class FolderNodeBuilderExtension : NodeBuilderExtension
 	{
 		public override bool CanBuildNode (Type dataType)
@@ -52,7 +51,13 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		[CommandUpdateHandler (AspMvcCommands.AddController)]
 		public void AddControllerUpdate (CommandInfo info)
 		{
-			ProjectFolder pf = (ProjectFolder)CurrentNode.DataItem;
+			var project = CurrentNode.GetParentDataItem (typeof (AspMvcProject), true) as AspMvcProject;
+			if (project == null) {
+				info.Enabled = info.Visible = false;
+				return;
+			}
+
+			var pf = (ProjectFolder)CurrentNode.DataItem;
 			FilePath rootName = pf.Project.BaseDirectory.Combine ("Controllers");
 			info.Enabled = info.Visible = (pf.Path == rootName || pf.Path.IsChildPathOf (rootName));
 		}
@@ -60,13 +65,11 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		[CommandHandler (AspMvcCommands.AddController)]
 		public void AddController ()
 		{
-			AspMvcProject project = CurrentNode.GetParentDataItem (typeof (AspMvcProject), true) as AspMvcProject;
-			if (project == null)
-				return;
+			var project = (AspMvcProject) CurrentNode.GetParentDataItem (typeof (AspMvcProject), true);
 
 			object currentItem = CurrentNode.DataItem;
 
-			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof (ProjectFolder), true) as ProjectFolder;
+			var folder = CurrentNode.GetParentDataItem (typeof (ProjectFolder), true) as ProjectFolder;
 			string path = folder != null ? folder.Path : project.BaseDirectory;
 
 			AddController (project, path, null);
@@ -76,7 +79,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				nav.Expanded = true;
 		}
 
-		public static void AddController(AspMvcProject project, string path, string name)
+		public static void AddController (AspMvcProject project, string path, string name)
 		{
 			var provider = project.LanguageBinding.GetCodeDomProvider ();
 			if (provider == null)
@@ -93,7 +96,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 				bool fileGood = false;
 				while (!fileGood) {
-					Gtk.ResponseType resp = (Gtk.ResponseType)MessageService.RunCustomDialog (dialog);
+					var resp = (Gtk.ResponseType) MessageService.RunCustomDialog (dialog);
 					dialog.Hide ();
 					if (resp != Gtk.ResponseType.Ok || !dialog.IsValid ())
 						return;
@@ -134,7 +137,13 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		[CommandUpdateHandler (AspMvcCommands.AddView)]
 		public void AddViewUpdate (CommandInfo info)
 		{
-			ProjectFolder pf = (ProjectFolder)CurrentNode.DataItem;
+			var project = CurrentNode.GetParentDataItem (typeof (AspMvcProject), true) as AspMvcProject;
+			if (project == null) {
+				info.Enabled = info.Visible = false;
+				return;
+			}
+
+			var pf = (ProjectFolder)CurrentNode.DataItem;
 			FilePath rootName = pf.Project.BaseDirectory.Combine ("Views");
 			info.Enabled = info.Visible =  (pf.Path == rootName || pf.Path.IsChildPathOf (rootName));
 		}
@@ -142,13 +151,11 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		[CommandHandler (AspMvcCommands.AddView)]
 		public void AddView ()
 		{
-			AspMvcProject project = CurrentNode.GetParentDataItem (typeof(AspMvcProject), true) as AspMvcProject;
-			if (project == null)
-				return;
-			
+			var project = (AspMvcProject) CurrentNode.GetParentDataItem (typeof (AspMvcProject), true);
+
 			object currentItem = CurrentNode.DataItem;
 				
-			ProjectFolder folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
+			var folder = CurrentNode.GetParentDataItem (typeof(ProjectFolder), true) as ProjectFolder;
 			string path = folder != null? folder.Path : project.BaseDirectory;
 			
 			AddView (project, path, null);
@@ -174,7 +181,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				
 				bool fileGood = false;
 				while (!fileGood) {
-					Gtk.ResponseType resp = (Gtk.ResponseType) MessageService.RunCustomDialog (dialog);
+					var resp = (Gtk.ResponseType) MessageService.RunCustomDialog (dialog);
 					dialog.Hide ();
 					if (resp != Gtk.ResponseType.Ok || ! dialog.IsValid ())
 						return;

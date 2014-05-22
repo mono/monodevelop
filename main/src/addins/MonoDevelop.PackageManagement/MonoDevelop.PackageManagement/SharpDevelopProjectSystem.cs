@@ -41,25 +41,30 @@ namespace ICSharpCode.PackageManagement
 {
 	public class SharpDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
 	{
-		DotNetProject project;
+		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
 		IPackageManagementFileService fileService;
-		IPackageManagementProjectService projectService;
-		
+		Action<MessageHandler> guiSyncDispatcher;
+
 		public SharpDevelopProjectSystem(DotNetProject project)
-			: this(project, new PackageManagementFileService(), new PackageManagementProjectService())
+			: this (
+				new DotNetProjectProxy (project),
+				new PackageManagementFileService (),
+				new PackageManagementProjectService (),
+				DispatchService.GuiSyncDispatch)
 		{
 		}
 		
-		public SharpDevelopProjectSystem(
-			DotNetProject project,
+		public SharpDevelopProjectSystem (
+			IDotNetProject project,
 			IPackageManagementFileService fileService,
-			IPackageManagementProjectService projectService)
-			: base(AppendTrailingSlashToDirectory(project.BaseDirectory))
+			IPackageManagementProjectService projectService,
+			Action<MessageHandler> guiSyncDispatcher)
+			: base (AppendTrailingSlashToDirectory (project.BaseDirectory))
 		{
 			this.project = project;
 			this.fileService = fileService;
-			this.projectService = projectService;
+			this.guiSyncDispatcher = guiSyncDispatcher;
 		}
 		
 		static string AppendTrailingSlashToDirectory(string directory)
@@ -88,14 +93,17 @@ namespace ICSharpCode.PackageManagement
 				return GuiSyncDispatch (() => project.Name);
 			}
 		}
-		
-		public dynamic GetPropertyValue(string propertyName)
+
+		public dynamic GetPropertyValue (string propertyName)
 		{
 			return GuiSyncDispatch (() => {
-				return project.GetEvaluatedProperty (propertyName);
+				if ("RootNamespace".Equals(propertyName, StringComparison.OrdinalIgnoreCase)) {
+					return project.DefaultNamespace;
+				}
+				return String.Empty;
 			});
 		}
-		
+
 		public void AddReference(string referencePath, Stream stream)
 		{
 			GuiSyncDispatch (() => {
@@ -249,21 +257,32 @@ namespace ICSharpCode.PackageManagement
 		
 		public override void AddFile(string path, Action<Stream> writeToStream)
 		{
-			base.AddFile(path, writeToStream);
+			PhysicalFileSystemAddFile (path, writeToStream);
 			GuiSyncDispatch (() => AddFileToProject (path));
 		}
-		
+
+		protected virtual void PhysicalFileSystemAddFile (string path, Action<Stream> writeToStream)
+		{
+			base.AddFile(path, writeToStream);
+		}
+
 		void AddFileToProject(string path)
 		{
 			if (ShouldAddFileToProject(path)) {
 				AddFileProjectItemToProject(path);
 			}
+			OnFileChanged (path);
 			LogAddedFileToProject(path);
 		}
 		
 		bool ShouldAddFileToProject(string path)
 		{
 			return !IsBinDirectory(path) && !FileExistsInProject(path);
+		}
+
+		void OnFileChanged (string path)
+		{
+			GuiSyncDispatch (() => fileService.OnFileChanged (GetFullPath (path)));
 		}
 		
 		bool IsBinDirectory(string path)
@@ -395,16 +414,28 @@ namespace ICSharpCode.PackageManagement
 			});
 		}
 
+		/// <summary>
+		/// NuGet sometimes uses CreateFile to replace an existing file.
+		/// This happens when the XML transformation (web.config.transform) is reverted on 
+		/// uninstalling a NuGet package. It also happens when an XML document transform 
+		/// (.install.xdt, .uninstall.xdt) is run.
+		/// </summary>
+		public override Stream CreateFile (string path)
+		{
+			OnFileChanged (path);
+			return base.CreateFile (path);
+		}
+
 		T GuiSyncDispatch<T> (Func<T> action)
 		{
 			T result = default(T);
-			DispatchService.GuiSyncDispatch (() => result = action ());
+			guiSyncDispatcher (() => result = action ());
 			return result;
 		}
 
 		void GuiSyncDispatch (Action action)
 		{
-			DispatchService.GuiSyncDispatch (() => action ());
+			guiSyncDispatcher (() => action ());
 		}
 	}
 }

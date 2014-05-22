@@ -145,6 +145,10 @@
 		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildImportProvider"/>
 	</ExtensionPoint>
 	
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildExtensions" name = "MSBuild Extensions">
+		<ExtensionNode name="Class" objectType="MonoDevelop.Projects.Formats.MSBuild.MSBuildExtension"/>
+	</ExtensionPoint>
+	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MonoDocSources" name = "MonoDoc Sources">
 		<ExtensionNode name="Source" type="MonoDevelop.Projects.Extensions.MonoDocSourceNode" />
 	</ExtensionPoint>
@@ -215,6 +219,7 @@
 		<ProjectBinding id = "DotNet" class = "MonoDevelop.Projects.DotNetProjectBinding" />
 		<ProjectBinding id = "GenericProject" class = "MonoDevelop.Projects.GenericProjectBinding" />
 		<ProjectBinding id = "PortableDotNet" class = "MonoDevelop.Projects.PortableDotNetProjectBinding" />
+		<ProjectBinding id = "SharedAssetsProject" class = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectBinding" />
 	</Extension>
 	  
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
@@ -269,8 +274,17 @@
 		<SolutionItem guid = "{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}"
 			type = "MonoDevelop.Projects.CompiledAssemblyProject"
 			handlerType = "MonoDevelop.Projects.Formats.MSBuild.CompiledAssemblyProjectMSBuildHandler" />
+		<SolutionItem guid = "{D954291E-2A0B-460D-934E-DC6B0785DB48}"
+			type = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject"
+			extension = "shproj"
+			handlerType = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildHandler" />
 	</Extension>
-	
+
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildExtensions">
+		<Class class="MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildExtension"/>
+	</Extension>
+
+
 	<!--
 	Some info from:
 	http://www.mztools.com/articles/2008/mz2008017.aspx
@@ -333,5 +347,6 @@
 		<ProjectType guid = "{BC8A1FFA-BEE3-4634-8014-F334798102B3}" name = "Windows Store App" />
 		<ProjectType guid = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}" name = "Visual C++" extension="vcxproj"/>
 		<ProjectType guid = "{E6FDF86B-F3D1-11D4-8576-0002A516ECE8}" name = "Visual J#" extension="vjsproj"/>
+		<ProjectType guid = "{82B43B9B-A64C-4715-B499-D71E9CA2BD60}" name = "Visual Studio Extension" />
 	</Extension>
 </ExtensionModel>

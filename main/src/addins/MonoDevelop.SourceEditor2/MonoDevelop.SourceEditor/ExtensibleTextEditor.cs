@@ -45,6 +45,7 @@ using MonoDevelop.SourceEditor.Extension;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -64,10 +65,33 @@ namespace MonoDevelop.SourceEditor
 		public new ISourceEditorOptions Options {
 			get { return (ISourceEditorOptions)base.Options; }
 		}
+
+		static ExtensibleTextEditor ()
+		{
+			var icon = Xwt.Drawing.Image.FromResource ("gutter-bookmark-light-15.png");
+
+			BookmarkMarker.DrawBookmarkFunc = delegate(TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
+				if (!lineSegment.IsBookmarked)
+					return;
+				cr.DrawImage (
+					editor, 
+					icon, 
+					Math.Floor (x + (width - icon.Width) / 2), 
+					Math.Floor (y + (height - icon.Height) / 2)
+				);
+			};
+
+		}
 		
 		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.TextDocument doc) : base(doc, options)
 		{
 			Initialize (view);
+		}
+
+		void HandleParseOperationFinished (object sender, EventArgs e)
+		{
+			resolveResult = null;
+			resolveRegion = DomRegion.Empty;
 		}
 		
 		public ExtensibleTextEditor (SourceEditorView view)
@@ -94,7 +118,8 @@ namespace MonoDevelop.SourceEditor
 			};
 			
 			Document.TextReplaced += HandleSkipCharsOnReplace;
-			
+			TypeSystemService.ParseOperationFinished += HandleParseOperationFinished;
+
 			UpdateEditMode ();
 			this.DoPopupMenu = ShowPopup;
 		}
@@ -152,8 +177,8 @@ namespace MonoDevelop.SourceEditor
 			} else {
 		//		if (!(CurrentMode is SimpleEditMode)){
 					SimpleEditMode simpleMode = new SimpleEditMode ();
-					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
-					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
+					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
+					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
 					CurrentMode = simpleMode;
 		//		}
 			}
@@ -171,6 +196,7 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
+			TypeSystemService.ParseOperationFinished -= HandleParseOperationFinished;
 			UnregisterAdjustments ();
 			resolveResult = null;
 			Extension = null;

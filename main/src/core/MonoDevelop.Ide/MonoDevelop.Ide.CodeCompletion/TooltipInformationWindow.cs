@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 		
-		readonly FixedWidthWrapLabel headlabel;
+		readonly FixedWidthWrapLabel headLabel;
 		public bool Multiple{
 			get {
 				return overloads.Count > 1;
@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-			var w = Math.Max (headlabel.WidthRequest, headlabel.RealWidth);
+			var w = Math.Max (headLabel.WidthRequest, headLabel.RealWidth);
 			requisition.Width = (int)Math.Max (w + ContentBox.LeftPadding + ContentBox.RightPadding, requisition.Width);
 		}
 
@@ -109,17 +109,17 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			if (current_overload >= 0 && current_overload < overloads.Count) {
 				var o = overloads[current_overload];
-				headlabel.Markup = o.SignatureMarkup;
-				headlabel.Visible = true;
+				headLabel.Markup = o.SignatureMarkup;
+				headLabel.Visible = true;
 				int x, y;
 				GetPosition (out x, out y);
 				var geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-				headlabel.MaxWidth = Math.Max (geometry.Width / 5, 480);
+				headLabel.MaxWidth = Math.Max (geometry.Width / 5, 480);
 
 				if (Theme.DrawPager && overloads.Count > 1) {
-					headlabel.WidthRequest = headlabel.RealWidth + 70;
+					headLabel.WidthRequest = headLabel.RealWidth + 70;
 				} else {
-					headlabel.WidthRequest = -1;
+					headLabel.WidthRequest = -1;
 				}
 				foreach (var cat in o.Categories) {
 					descriptionBox.PackStart (CreateCategory (cat.Item1, cat.Item2), true, true, 4);
@@ -187,19 +187,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			ClearDescriptions ();
 			overloads.Clear ();
 			Theme.DrawPager = false;
-			headlabel.Markup = "";
+			headLabel.Markup = "";
 			current_overload = 0;
-		}
-
-		[Obsolete("Will get removed in later versions.")]
-		public void SetFixedWidth (int w)
-		{
-			/*		if (w != -1) {
-				headlabel.MaxWidth = w;
-			} else {
-				headlabel.MaxWidth = -1;
-			}*/
-			QueueResize ();
 		}
 
 		VBox CreateCategory (string categoryName, string categoryContentMarkup)
@@ -229,7 +218,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		readonly VBox descriptionBox = new VBox (false, 0);
 		readonly VBox vb2 = new VBox (false, 0);
-		readonly Cairo.Color foreColor;
+		Cairo.Color foreColor;
+
+		internal void SetDefaultScheme ()
+		{
+			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			Theme.SetSchemeColors (scheme);
+			foreColor = scheme.PlainText.Foreground;
+			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+		}
+
 		public TooltipInformationWindow () : base ()
 		{
 			TypeHint = Gdk.WindowTypeHint.Tooltip;
@@ -243,31 +241,30 @@ namespace MonoDevelop.Ide.CodeCompletion
 			this.CanDefault = false;
 			this.Events |= Gdk.EventMask.EnterNotifyMask; 
 			
-			headlabel = new FixedWidthWrapLabel ();
-			headlabel.Indent = -20;
-			var des = FontService.GetFontDescription ("Editor").Copy ();
-			des.Size = des.Size * 9 / 10;
-			headlabel.FontDescription = des;
-//			headlabel.MaxWidth = 400;
-			headlabel.Wrap = Pango.WrapMode.WordChar;
-			headlabel.BreakOnCamelCasing = false;
-			headlabel.BreakOnPunctuation = false;
-			descriptionBox.Spacing = 4;
-			VBox vb = new VBox (false, 8);
-			vb.PackStart (headlabel, true, true, 0);
-			vb.PackStart (descriptionBox, true, true, 0);
+			headLabel = new FixedWidthWrapLabel ();
+			headLabel.Indent = -20;
+			headLabel.FontDescription = FontService.GetFontDescription ("Editor(TooltipSource)");;
+			headLabel.Wrap = Pango.WrapMode.WordChar;
+			headLabel.BreakOnCamelCasing = false;
+			headLabel.BreakOnPunctuation = false;
 
-			HBox hb = new HBox (false, 0);
-			hb.PackStart (vb, true, true, 0);
+			descriptionBox.Spacing = 4;
+
+			VBox vb = new VBox (false, 8);
+			vb.PackStart (headLabel, true, true, 4);
+			vb.PackStart (descriptionBox, true, true, 4);
+
+			HBox hb = new HBox (false, 4);
+			hb.PackStart (vb, true, true, 6);
+
 			WindowTransparencyDecorator.Attach (this);
 
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
-			Theme.SetSchemeColors (scheme);
-			foreColor = scheme.PlainText.Foreground;
-			headlabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+
+			SetDefaultScheme ();
+
 			ShowAll ();
 			DesktopService.RemoveWindowShadow (this);
 		}

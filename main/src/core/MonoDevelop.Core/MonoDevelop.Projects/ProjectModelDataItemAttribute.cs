@@ -38,6 +38,7 @@ namespace MonoDevelop.Projects
 
 		public ProjectModelDataItemAttribute ([NodeAttribute ("name")] string name)
 		{
+			Name = name;
 		}
 		
 		[NodeAttribute ("name")]

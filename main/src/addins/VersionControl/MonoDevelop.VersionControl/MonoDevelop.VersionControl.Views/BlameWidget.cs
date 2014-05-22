@@ -67,7 +67,7 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public override ContainerChild this [Widget w] {
 			get {
-				foreach (ContainerChild info in children.ToArray ()) {
+				foreach (ContainerChild info in children) {
 					if (info.Child == w)
 						return info;
 				}
@@ -495,7 +495,6 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				if (highlightAnnotation == null)
 					return;
-				int i = 1;
 				foreach (var view in widget.info.Document.ParentDocument.Views) {
 					DiffView diffView = view.GetContent<DiffView> ();
 					if (diffView != null) {
@@ -507,7 +506,6 @@ namespace MonoDevelop.VersionControl.Views
 						diffView.ComparisonWidget.SetRevision (diffView.ComparisonWidget.OriginalEditor, rev);
 						break;
 					}
-					i++;
 				}
 			}
 		
@@ -516,7 +514,6 @@ namespace MonoDevelop.VersionControl.Views
 			{
 				if (highlightAnnotation == null)
 					return;
-				int i = 1;
 				foreach (var view in widget.info.Document.ParentDocument.Views) {
 					LogView logView = view.GetContent<LogView> ();
 					if (logView != null) {
@@ -527,7 +524,6 @@ namespace MonoDevelop.VersionControl.Views
 						logView.LogWidget.SelectedRevision = rev;
 						break;
 					}
-					i++;
 				}
 			}
 		

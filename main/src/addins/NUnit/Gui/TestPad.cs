@@ -79,7 +79,7 @@ namespace MonoDevelop.NUnit
 		
 		ArrayList testNavigationHistory = new ArrayList ();
 
-		Button buttonRunAll, buttonRun, buttonStop;
+		Button buttonRunAll, buttonStop;
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string menuPath)
 		{
@@ -91,18 +91,15 @@ namespace MonoDevelop.NUnit
 			
 			VBox vbox = new VBox ();
 			DockItemToolbar topToolbar = Window.GetToolbar (PositionType.Top);
-			
-			buttonRunAll = new Button (new Gtk.Image (Gtk.Stock.GoUp, IconSize.Menu));
+
+			var hbox = new HBox { Spacing = 6 };
+			hbox.PackStart (new ImageView (ImageService.GetIcon ("nunit-run", IconSize.Menu)), false, false, 0);
+			hbox.PackStart (new Label (GettextCatalog.GetString ("Run All")), false, false, 0);
+			buttonRunAll = new Button (hbox);
 			buttonRunAll.Clicked += new EventHandler (OnRunAllClicked);
 			buttonRunAll.Sensitive = true;
 			buttonRunAll.TooltipText = GettextCatalog.GetString ("Run all tests");
 			topToolbar.Add (buttonRunAll);
-			
-			buttonRun = new Button (new Gtk.Image (Ide.Gui.Stock.Execute, IconSize.Menu));
-			buttonRun.Clicked += new EventHandler (OnRunClicked);
-			buttonRun.Sensitive = true;
-			buttonRun.TooltipText = GettextCatalog.GetString ("Run test");
-			topToolbar.Add (buttonRun);
 			
 			buttonStop = new Button (new Gtk.Image (Ide.Gui.Stock.Stop, IconSize.Menu));
 			buttonStop.Clicked += new EventHandler (OnStopClicked);
@@ -462,11 +459,6 @@ namespace MonoDevelop.NUnit
 				runningTestOperation.Cancel ();
 		}
 		
-		void OnRunClicked (object sender, EventArgs args)
-		{
-			RunSelectedTest (null);
-		}
-			
 		UnitTest GetSelectedTest ()
 		{
 			ITreeNavigator nav = TreeView.GetSelectedNode ();
@@ -489,7 +481,6 @@ namespace MonoDevelop.NUnit
 				return null;
 			NUnitService.ResetResult (test.RootTest);
 			
-			this.buttonRun.Sensitive = false;
 			this.buttonRunAll.Sensitive = false;
 			this.buttonStop.Sensitive = true;
 
@@ -515,7 +506,6 @@ namespace MonoDevelop.NUnit
 			if (op.Success)
 				RefreshDetails ();
 			runningTestOperation = null;
-			this.buttonRun.Sensitive = true;
 			this.buttonRunAll.Sensitive = true;
 			this.buttonStop.Sensitive = false;
 

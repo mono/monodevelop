@@ -40,8 +40,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class CompletionListWindow : ListWindow, IListDataProvider
 	{
 		const int declarationWindowMargin = 3;
-		
-		TooltipInformationWindow declarationviewwindow = new TooltipInformationWindow ();
+
+		TooltipInformationWindow declarationviewwindow;
 		ICompletionData currentData;
 		Widget parsingMessage;
 		int initialWordLength;
@@ -254,7 +254,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						return false;
 					}
 					
-					if (declarationviewwindow.Multiple) {
+					if (declarationviewwindow != null && declarationviewwindow.Multiple) {
 						if (key == Gdk.Key.Left)
 							declarationviewwindow.OverloadLeft ();
 						else
@@ -539,10 +539,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
+		void EnsureDeclarationViewWindow ()
+		{
+			if (declarationviewwindow == null) {
+				declarationviewwindow = new TooltipInformationWindow ();
+			} else {
+				declarationviewwindow.SetDefaultScheme ();
+			}
+		}
+
 		void RepositionDeclarationViewWindow ()
 		{
-			if (declarationviewwindow == null || base.GdkWindow == null)
+			if (base.GdkWindow == null)
 				return;
+			EnsureDeclarationViewWindow ();
 			var selectedItem = List.SelectedItem;
 			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
 			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)
@@ -572,7 +582,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				filteredOverloads = new ICompletionData[] { data };
 			}
 
-			
+			EnsureDeclarationViewWindow ();
 			if (data != currentData) {
 				declarationviewwindow.Clear ();
 				var overloads = new List<ICompletionData> (filteredOverloads);

@@ -38,6 +38,7 @@
 		<ProjectTemplate id = "CSharpEmptyProject" resource = "EmptyProject.xpt.xml"/>
 		<ProjectTemplate id = "CSharpGtkSharp2Project" resource = "GtkSharp2Project.xpt.xml"/>
 		<ProjectTemplate id = "CSharpLibrary" resource = "Library.xpt.xml"/>
+		<ProjectTemplate id = "CSharpSharedAssetsProject" resource = "SharedAssetsProject.xpt.xml"/>
 		<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath)\Microsoft\Portable\v4.0\Microsoft.Portable.CSharp.targets">
 			<ProjectTemplate id = "CSharpPortableLibrary" resource = "PortableLibrary.xpt.xml" />
 		</Condition>
@@ -246,13 +247,13 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/DefaultPolicyPanels/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
-		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" />
+		<Section id="NameConventions" _label="Name Conventions" fill = "true" class="MonoDevelop.CSharp.Refactoring.CodeIssues.NameConventionPanel" icon="md-prefs-name-conventions" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">

@@ -438,6 +438,7 @@ namespace MonoDevelop.Projects.Text
 			fs.Close ();
 
 			FileService.SystemRename (tempName, fileName);
+			FileService.NotifyFileChanged (fileName);
 		}
 		
 		public static void WriteFile (FilePath fileName, string content, string encoding, ByteOrderMark bom, bool onlyIfChanged)

@@ -181,6 +181,23 @@ namespace MonoDevelop.AssemblyBrowser
 			return DomMethodNodeBuilder.Disassemble (data, rd => rd.DisassembleType (type));
 		}
 
+		internal static DecompilerSettings CreateDecompilerSettings (bool publicOnly, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy codePolicy)
+		{
+			return new DecompilerSettings {
+				AnonymousMethods = true,
+				AutomaticEvents = true,
+				AutomaticProperties = true,
+				ExpressionTrees = true,
+				YieldReturn = true,
+				ForEachStatement = true,
+				LockStatement = true,
+				AsyncAwait = true,
+				ShowXmlDocumentation = true,
+				CSharpFormattingOptions = codePolicy.CreateOptions (),
+				HideNonPublicMembers = publicOnly
+			};
+		}
+
 		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
@@ -190,15 +207,7 @@ namespace MonoDevelop.AssemblyBrowser
 				return null;
 			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-			var settings = new DecompilerSettings () {
-				AnonymousMethods = true,
-				AutomaticEvents  = true,
-				AutomaticProperties = true,
-				ForEachStatement = true,
-				LockStatement = true,
-				CSharpFormattingOptions = codePolicy.CreateOptions (),
-				HideNonPublicMembers = publicOnly
-			};
+			var settings = CreateDecompilerSettings (publicOnly, codePolicy);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {
 				builder.AddType (type);
 			}, settings);

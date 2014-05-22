@@ -107,7 +107,7 @@ namespace MonoDevelop.VersionControl.Git
 				store.AppendValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu), t, "tag");
 			
 			foreach (RemoteSource r in repo.GetRemotes ()) {
-				TreeIter it = store.AppendValues (null, ImageService.GetIcon ("md-web-search-icon", IconSize.Menu), r.Name, null);
+				TreeIter it = store.AppendValues (null, ImageService.GetIcon ("vc-repository", IconSize.Menu), r.Name, null);
 				foreach (string b in repo.GetRemoteBranches (r.Name))
 					store.AppendValues (it, r.Name + "/" + b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "remote");
 			}

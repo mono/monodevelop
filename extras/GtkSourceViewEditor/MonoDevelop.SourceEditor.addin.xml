@@ -63,10 +63,10 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog">
-		<Section id = "GtkSourceViewTextEditor" _label = "GtkSourceView Text Editor">
-			<Section id = "General" insertbefore="Formatting" _label = "General" icon="md-text-editor" fill="true" class = "MonoDevelop.SourceEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
-			<Section id = "Markers" _label = "Markers and Rulers" class = "MonoDevelop.SourceEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
-			<Section id = "Behavior" _label = "Behavior" class = "MonoDevelop.SourceEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
+		<Section id="GtkSourceViewTextEditor" _label="GtkSourceView Text Editor">
+			<Section id="General" insertbefore="Formatting" _label="General" fill="true" class="MonoDevelop.SourceEditor.Gui.OptionPanels.GeneralTextEditorPanel" icon="md-prefs-text-editor-general" />
+			<Section id="Markers" _label="Markers and Rulers" class="MonoDevelop.SourceEditor.Gui.OptionPanels.MarkersTextEditorPanel" icon="md-prefs-markers-rulers" />
+			<Section id="Behavior" _label="Behavior" class="MonoDevelop.SourceEditor.Gui.OptionPanels.BehaviorTextEditorPanel" icon="prefs-text-editor-behavior" />
 		</Section>
 	</Extension>
 	

@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Extensions;
 using System.Reflection;
 using System.Linq;
 using Mono.Addins;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide
 {
@@ -174,24 +175,24 @@ namespace MonoDevelop.Ide
 		{
 			string email = feedbackElem.GetAttribute ("email");
 			string body = feedbackElem.InnerText;
-			var request = (HttpWebRequest) HttpWebRequest.Create (feedbackUrl.Value + "?m=" + email);
-			request.Method = "POST";
-			request.BeginGetRequestStream (delegate (IAsyncResult res) {
-				HandleGetRequestStream (res, request, body);
-			}, null);
+
+			WebRequestHelper.GetResponseAsync (
+				() => (HttpWebRequest)WebRequest.Create (feedbackUrl.Value + "?m=" + email),
+				r => {
+					r.Method = "POST";
+					using (var sw = new StreamWriter (r.GetRequestStream ())) {
+						sw.Write (body);
+					}
+				}
+			).ContinueWith (HandleResponse);
 		}
 		
-		static void HandleGetRequestStream (IAsyncResult res, HttpWebRequest request, string body)
+		static void HandleResponse (Task<HttpWebResponse> t)
 		{
 			try {
-				Stream s = request.EndGetRequestStream (res);
-				using (var sw = new StreamWriter (s)) {
-					sw.Write (body);
-				}
-				WebResponse resp = request.GetResponse ();
-				s = resp.GetResponseStream ();
+				WebResponse resp = t.Result;
 				string result;
-				using (var sr = new StreamReader (s))
+				using (var sr = new StreamReader (resp.GetResponseStream ()))
 					result = sr.ReadToEnd ();
 				if (result != "OK")
 					throw new Exception (result);

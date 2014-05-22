@@ -41,9 +41,9 @@ namespace MonoDevelop.VersionControl.Tests
 		protected const string Author = "author";
 		protected const string Email = "email@service.domain";
 
-		protected string RepoLocation = "";
-		protected FilePath RootUrl = "";
-		protected FilePath RootCheckout;
+		protected string RemoteUrl = "";
+		protected FilePath RemotePath = "";
+		protected FilePath LocalPath;
 		protected Repository Repo;
 		protected Repository Repo2;
 		protected string DotDir;
@@ -56,8 +56,8 @@ namespace MonoDevelop.VersionControl.Tests
 		[TearDown]
 		public virtual void TearDown ()
 		{
-			DeleteDirectory (RootUrl);
-			DeleteDirectory (RootCheckout);
+			DeleteDirectory (RemotePath);
+			DeleteDirectory (LocalPath);
 			AddedItems.Clear ();
 			CommitNumber = 0;
 		}
@@ -84,7 +84,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests VersionControlService.GetRepositoryReference.
 		public void RightRepositoryDetection ()
 		{
-			var path = ((string)RootCheckout).TrimEnd (Path.DirectorySeparatorChar);
+			var path = ((string)LocalPath).TrimEnd (Path.DirectorySeparatorChar);
 			var repo = VersionControlService.GetRepositoryReference (path, null);
 			Assert.That (repo, IsCorrectType (), "#1");
 
@@ -97,12 +97,12 @@ namespace MonoDevelop.VersionControl.Tests
 
 			// Versioned file
 			AddFile ("foo", "contents", true, true);
-			path = Path.Combine (RootCheckout, "foo");
+			path = Path.Combine (LocalPath, "foo");
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#2");
 
 			// Versioned directory
 			AddDirectory ("bar", true, true);
-			path = Path.Combine (RootCheckout, "bar");
+			path = Path.Combine (LocalPath, "bar");
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#3");
 
 			// Unversioned file
@@ -114,11 +114,11 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#5");
 
 			// Nonexistent file
-			path = Path.Combine (RootCheckout, "do_i_exist");
+			path = Path.Combine (LocalPath, "do_i_exist");
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
 
 			// Nonexistent directory
-			path = Path.Combine (RootCheckout, "do", "i", "exist");
+			path = Path.Combine (LocalPath, "do", "i", "exist");
 			Assert.AreSame (VersionControlService.GetRepositoryReference (path, null), repo, "#6");
 		}
 
@@ -136,7 +136,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Checkout.
 		public void CheckoutExists ()
 		{
-			Assert.IsTrue (Directory.Exists (RootCheckout + DotDir));
+			Assert.IsTrue (Directory.Exists (LocalPath + DotDir));
 		}
 
 		// In main directory, ".git".
@@ -166,8 +166,8 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", null, true, false);
 
 			// Query two queries.
-			VersionInfo vi = Repo.GetVersionInfo (RootCheckout + "testfile");
-			VersionInfo[] vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+			VersionInfo vi = Repo.GetVersionInfo (LocalPath + "testfile");
+			VersionInfo[] vis = Repo.GetDirectoryVersionInfo (LocalPath, false, false);
 
 			// No cache, query.
 			Assert.AreEqual (InitialValue, vi.Status);
@@ -175,28 +175,28 @@ namespace MonoDevelop.VersionControl.Tests
 			System.Threading.Thread.Sleep (QueryTimer);
 
 			// Cached.
-			vi = Repo.GetVersionInfo (RootCheckout + "testfile");
+			vi = Repo.GetVersionInfo (LocalPath + "testfile");
 			Assert.AreEqual (VersionStatus.ScheduledAdd, vi.Status & VersionStatus.ScheduledAdd);
 
 			AddDirectory ("testdir", true, false);
 			AddFile (Path.Combine ("testdir", "testfile2"), null, true, false);
 
 			// Old cache.
-			vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+			vis = Repo.GetDirectoryVersionInfo (LocalPath, false, false);
 			Assert.AreEqual (1 + RepoItemsCount, vis.Length);
 
 			// Query.
-			Repo.ClearCachedVersionInfo (RootCheckout);
-			Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+			Repo.ClearCachedVersionInfo (LocalPath);
+			Repo.GetDirectoryVersionInfo (LocalPath, false, false);
 			System.Threading.Thread.Sleep (QueryTimer);
 
 			// Cached.
-			vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, false);
+			vis = Repo.GetDirectoryVersionInfo (LocalPath, false, false);
 			Assert.AreEqual (2 + RepoItemsCount, vis.Length);
 
 			// Wait for result.
 			AddFile ("testfile3", null, true, false);
-			vis = Repo.GetDirectoryVersionInfo (RootCheckout, false, true);
+			vis = Repo.GetDirectoryVersionInfo (LocalPath, false, true);
 			Assert.AreEqual (4 + RepoItemsCountRecursive, vis.Length);
 		}
 
@@ -206,7 +206,7 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			AddFile ("testfile", null, true, false);
 
-			VersionInfo vi = Repo.GetVersionInfo (RootCheckout + "testfile", VersionInfoQueryFlags.IgnoreCache);
+			VersionInfo vi = Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache);
 
 			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
 			Assert.AreEqual (VersionStatus.ScheduledAdd, (VersionStatus.ScheduledAdd & vi.Status));
@@ -220,7 +220,7 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", null, true, true);
 			PostCommit (Repo);
 
-			VersionInfo vi = Repo.GetVersionInfo (RootCheckout + "testfile", VersionInfoQueryFlags.IncludeRemoteStatus | VersionInfoQueryFlags.IgnoreCache);
+			VersionInfo vi = Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IncludeRemoteStatus | VersionInfoQueryFlags.IgnoreCache);
 			// TODO: Fix Win32 Svn Remote status check.
 			Assert.AreEqual (VersionStatus.Versioned, (VersionStatus.Versioned & vi.Status));
 		}
@@ -238,8 +238,8 @@ namespace MonoDevelop.VersionControl.Tests
 
 			// Checkout a second repository.
 			FilePath second = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
-			Checkout (second, RepoLocation);
-			Repo2 = GetRepo (second, RepoLocation);
+			Checkout (second, RemoteUrl);
+			Repo2 = GetRepo (second, RemoteUrl);
 			string added = second + "testfile2";
 			File.Create (added).Close ();
 			Repo2.Add (added, false, new NullProgressMonitor ());
@@ -251,7 +251,7 @@ namespace MonoDevelop.VersionControl.Tests
 			PostCommit (Repo2);
 
 			Repo.Update (Repo.RootPath, true, new NullProgressMonitor ());
-			Assert.True (File.Exists (RootCheckout + "testfile2"));
+			Assert.True (File.Exists (LocalPath + "testfile2"));
 
 			DeleteDirectory (second);
 		}
@@ -263,7 +263,7 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", null, true, true);
 			AddFile ("testfile2", null, true, true);
 			int index = 0;
-			foreach (Revision rev in Repo.GetHistory (RootCheckout + "testfile", null)) {
+			foreach (Revision rev in Repo.GetHistory (LocalPath + "testfile", null)) {
 				Assert.AreEqual (String.Format ("Commit #{0}", index++), rev.Message);
 			}
 		}
@@ -273,7 +273,7 @@ namespace MonoDevelop.VersionControl.Tests
 		public void DiffIsProper ()
 		{
 			AddFile ("testfile", null, true, true);
-			File.AppendAllText (RootCheckout + "testfile", "text" + Environment.NewLine);
+			File.AppendAllText (LocalPath + "testfile", "text" + Environment.NewLine);
 
 			TestDiff ();
 		}
@@ -286,7 +286,7 @@ namespace MonoDevelop.VersionControl.Tests
 		{
 			string content = "text";
 			AddFile ("testfile", null, true, true);
-			string added = RootCheckout + "testfile";
+			string added = LocalPath + "testfile";
 
 			// Revert to head.
 			File.WriteAllText (added, content);
@@ -311,7 +311,10 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.RevertRevision.
 		public virtual void RevertsRevision ()
 		{
-			string added = RootCheckout + "testfile2";
+			if (!Repo.SupportsRevertRevision)
+				Assert.Ignore ("No support for reverting a specific revision.");
+
+			string added = LocalPath + "testfile2";
 			AddFile ("testfile", "text", true, true);
 			AddFile ("testfile2", "text2", true, true);
 			Repo.RevertRevision (added, GetHeadRevision (), new NullProgressMonitor ());
@@ -322,7 +325,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.MoveFile.
 		public virtual void MovesFile ()
 		{
-			string src = RootCheckout + "testfile";
+			string src = LocalPath + "testfile";
 			string dst = src + "2";
 
 			AddFile ("testfile", null, true, true);
@@ -338,8 +341,8 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.MoveDirectory.
 		public virtual void MovesDirectory ()
 		{
-			string srcDir = RootCheckout + "test";
-			string dstDir = RootCheckout + "test2";
+			string srcDir = LocalPath + "test";
+			string dstDir = LocalPath + "test2";
 			string src = srcDir + Path.DirectorySeparatorChar + "testfile";
 			string dst = dstDir + Path.DirectorySeparatorChar + "testfile";
 
@@ -358,7 +361,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.DeleteFile.
 		public virtual void DeletesFile ()
 		{
-			string added = RootCheckout + "testfile";
+			string added = LocalPath + "testfile";
 			AddFile ("testfile", null, true, true);
 			Repo.DeleteFile (added, true, new NullProgressMonitor ());
 			VersionInfo vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
@@ -369,7 +372,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.DeleteDirectory.
 		public virtual void DeletesDirectory ()
 		{
-			string addedDir = RootCheckout + "test";
+			string addedDir = LocalPath + "test";
 			string added = addedDir + Path.DirectorySeparatorChar + "testfile";
 			AddDirectory ("test", true, false);
 			AddFile ("testfile", null, true, true);
@@ -383,7 +386,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Lock.
 		public virtual void LocksEntities ()
 		{
-			string added = RootCheckout + "testfile";
+			string added = LocalPath + "testfile";
 			AddFile ("testfile", null, true, true);
 			Repo.Lock (new NullProgressMonitor (), added);
 
@@ -398,7 +401,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Unlock.
 		public virtual void UnlocksEntities ()
 		{
-			string added = RootCheckout + "testfile";
+			string added = LocalPath + "testfile";
 			AddFile ("testfile", null, true, true);
 			Repo.Lock (new NullProgressMonitor (), "testfile");
 			Repo.Unlock (new NullProgressMonitor (), added);
@@ -414,7 +417,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Ignore
 		public virtual void IgnoresEntities ()
 		{
-			string added = RootCheckout + "testfile";
+			string added = LocalPath + "testfile";
 			AddFile ("testfile", null, false, false);
 			Repo.Ignore (new FilePath[] { added });
 			VersionInfo vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
@@ -425,7 +428,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.Unignore
 		public virtual void UnignoresEntities ()
 		{
-			string added = RootCheckout + "testfile";
+			string added = LocalPath + "testfile";
 			AddFile ("testfile", null, false, false);
 			Repo.Ignore (new FilePath[] { added });
 			Repo.Unignore (new FilePath[] { added });
@@ -441,11 +444,11 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.GetTextAtRevision.
 		public void CorrectTextAtRevision ()
 		{
-			string added = RootCheckout + "testfile";
+			string added = LocalPath + "testfile";
 			AddFile ("testfile", "text1", true, true);
 			File.AppendAllText (added, "text2");
 			CommitFile (added);
-			string text = Repo.GetTextAtRevision (RootCheckout, GetHeadRevision ());
+			string text = Repo.GetTextAtRevision (LocalPath, GetHeadRevision ());
 			Assert.AreEqual ("text1text2", text);
 		}
 
@@ -453,7 +456,7 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.GetAnnotations.
 		public void BlameIsCorrect ()
 		{
-			string added = RootCheckout + "testfile";
+			string added = LocalPath + "testfile";
 			// Initial commit.
 			AddFile ("testfile", "blah" + Environment.NewLine, true, true);
 			// Second commit.
@@ -529,7 +532,7 @@ namespace MonoDevelop.VersionControl.Tests
 
 		void AddToRepository (string relativePath, string contents, bool toVcs, bool commit)
 		{
-			string added = Path.Combine (RootCheckout, relativePath);
+			string added = Path.Combine (LocalPath, relativePath);
 			if (contents == null)
 				Directory.CreateDirectory (added);
 			else

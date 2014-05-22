@@ -44,11 +44,11 @@ namespace MonoDevelop.VersionControl
 		{
 			rootPath = rootPath.CanonicalPath;
 			lock (fileStatus) {
-				foreach (var p in fileStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == rootPath).ToArray ())
+				foreach (var p in fileStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == rootPath))
 					p.Value.RequiresRefresh = true;
 			}
 			lock (directoryStatus) {
-				foreach (var p in directoryStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == rootPath).ToArray ())
+				foreach (var p in directoryStatus.Where (e => e.Key.IsChildPathOf (rootPath) || e.Key == rootPath))
 					p.Value.RequiresRefresh = true;
 			}
 		}

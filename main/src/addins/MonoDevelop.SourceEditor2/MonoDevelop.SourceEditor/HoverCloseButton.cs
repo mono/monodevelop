@@ -144,7 +144,7 @@ namespace MonoDevelop.SourceEditor
 						context.Arc (center.X, center.Y + 1, radius, 0, Math.PI * 2);
 						lg.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.2 * opacity));
 						lg.AddColorStop (1, new Cairo.Color (0, 0, 0, 0));
-						context.Pattern = lg;
+						context.SetSource (lg);
 						context.Stroke ();
 					}
 

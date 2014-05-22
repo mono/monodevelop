@@ -47,32 +47,12 @@ using MonoDevelop.Core.Assemblies;
 using System.Text;
 using ICSharpCode.NRefactory.Completion;
 using System.Diagnostics;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	public static class TypeSystemServiceExt
 	{
-		[Obsolete ("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
-		public static Project GetProject (this IProjectContent content)
-		{
-			return TypeSystemService.GetProject (content.Location);
-		}
-
-		[Obsolete ("Use TryGetSourceProject.")]
-		public static Project GetSourceProject (this ITypeDefinition type)
-		{
-			var location = type.Compilation.MainAssembly.UnresolvedAssembly.Location;
-			if (string.IsNullOrEmpty (location))
-				return null;
-			return TypeSystemService.GetProject (location);
-		}
-
-		[Obsolete ("Use TryGetSourceProject.")]
-		public static Project GetSourceProject (this IType type)
-		{
-			return type.GetDefinition ().GetSourceProject ();
-		}
-
 		/// <summary>
 		/// Tries to the get source project for a given type definition. This operation may fall if it was called on an outdated
 		/// compilation unit or the correspondening project was unloaded.
@@ -119,13 +99,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		internal static Project GetProjectWhereTypeIsDefined (this IType type)
 		{
-			return type.GetDefinition ().GetSourceProject ();
-		}
-
-		[Obsolete ("Don't use this method the caller should always have the project and get the type system from that instead the other way around.")]
-		public static IProjectContent GetProjectContent (this IType type)
-		{
-			return TypeSystemService.GetProjectContext (type.GetSourceProject ());
+			Project project;
+			TryGetSourceProject (type, out project);
+			return project;
 		}
 
 		public static TextLocation GetLocation (this IType type)
@@ -160,45 +136,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static IType Resolve (this IUnresolvedTypeDefinition def, Project project)
 		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
 			var compilation = TypeSystemService.GetCompilation (project);
 			var ctx = new SimpleTypeResolveContext (compilation.MainAssembly);
 			var resolvedType = def.Resolve (ctx);
 			return resolvedType;
-		}
-
-		[Obsolete ("Do not use this method. Use type references to resolve types. Type references from full reflection names can be got from ReflectionHelper.ParseReflectionName.")]
-		public static ITypeDefinition LookupType (this ICompilation compilation, string ns, string name, int typeParameterCount = -1)
-		{
-			var tc = Math.Max (typeParameterCount, 0);
-			ITypeDefinition result;
-			foreach (var refAsm in compilation.Assemblies) {
-				result = refAsm.GetTypeDefinition (ns, name, tc);
-				if (result != null)
-					return result;
-			}
-			if (typeParameterCount < 0) {
-				for (int i = 1; i < 50; i++) {
-					result = LookupType (compilation, ns, name, i);
-					if (result != null)
-						return result;
-				}
-			}
-			return null;
-		}
-
-		[Obsolete ("Do not use this method. Use type references to resolve types. Type references from full reflection names can be got from ReflectionHelper.ParseReflectionName.")]
-		public static ITypeDefinition LookupType (this ICompilation compilation, string fullName, int typeParameterCount = -1)
-		{
-			int idx = fullName.LastIndexOf ('.');
-			string ns, name;
-			if (idx > 0) {
-				ns = fullName.Substring (0, idx);
-				name = fullName.Substring (idx + 1);
-			} else {
-				ns = "";
-				name = fullName;
-			}
-			return compilation.LookupType (ns, name, typeParameterCount);
 		}
 	}
 
@@ -320,7 +263,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			if (outputTrackedProjects.Contains (project.ProjectType, StringComparer.OrdinalIgnoreCase)) {
+			if (project.GetProjectTypes ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase))) {
 				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 
 				var wrapper = GetProjectContentWrapper (project);
@@ -407,8 +350,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 		static readonly object projectWrapperUpdateLock = new object ();
-
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
+		
+		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, string content)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException ("fileName");
@@ -418,7 +361,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var t = Counters.ParserService.FileParsed.BeginTiming (fileName);
 			try {
-				var result = parser.Parse (true, fileName, content, project);
+				var result = parser.Parse (true, fileName, new StringReader (content), project);
 				lock (projectWrapperUpdateLock) {
 					ProjectContentWrapper wrapper;
 					if (project != null) {
@@ -441,11 +384,13 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (cnt.Key == project)
 							continue;
 						// Use the project context because file lookup is faster there than in the project class.
-						var file = cnt.Value.Content.GetFile (fileName);
+						var pcnt = cnt.Value;
+						var file = pcnt.Content.GetFile (fileName);
 						if (file != null) {
-							cnt.Value.UpdateContent (c => c.AddOrUpdateFiles (result.ParsedFile));
-							cnt.Value.InformFileRemoved (new ParsedFileEventArgs (file));
-							cnt.Value.InformFileAdded (new ParsedFileEventArgs (result.ParsedFile));
+							var newResult = parser.Parse (false, fileName, new StringReader (content), pcnt.Project);
+							pcnt.UpdateContent (c => c.AddOrUpdateFiles (newResult.ParsedFile));
+							pcnt.InformFileRemoved (new ParsedFileEventArgs (file));
+							pcnt.InformFileAdded (new ParsedFileEventArgs (newResult.ParsedFile));
 						}
 					}
 				}
@@ -458,10 +403,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, string content)
+		public static ParsedDocument ParseFile (Project project, string fileName, string mimeType, TextReader content)
 		{
-			using (var reader = new StringReader (content))
-				return ParseFile (project, fileName, mimeType, reader);
+			return ParseFile (project, fileName, mimeType, content.ReadToEnd ());
 		}
 
 		public static ParsedDocument ParseFile (Project project, TextEditorData data)
@@ -1303,11 +1247,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public IEnumerable<Project> ReferencedProjects {
 				get {
-					foreach (var pr in Project.GetReferencedItems (ConfigurationSelector.Default)) {
-						var referencedProject = pr as Project;
-						if (referencedProject != null)
-							yield return referencedProject;
-					}
+					return Project.GetReferencedItems (ConfigurationSelector.Default).OfType<DotNetProject> ();
 				}
 			}
 
@@ -1813,7 +1753,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			var oldCache = cachedAssemblyContents.Values.ToList ();
 			cachedAssemblyContents.Clear ();
 			lock (parseQueueLock) {
 				parseQueueIndex.Clear ();
@@ -2662,7 +2601,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				TypeSystemParserNode node = null;
 				TypeSystemParser parser = null;
 				var tags = Context.GetExtensionObject <ProjectCommentTags> ();
-				string mimeType = null, oldExtension = null, buildAction = null;
 				try {
 					Context.BeginLoadOperation ();
 					var parsedFiles = new List<Tuple<ParsedDocument, IUnresolvedFile>> ();
@@ -2670,7 +2608,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (token.IsCancellationRequested)
 							return;
 						var fileName = file.FilePath;
-						if (file.BuildAction != BuildAction.Compile || filesSkippedInParseThread.Any (f => f == fileName)) {
+						if (!TypeSystemParserNode.IsCompileBuildAction (file.BuildAction) || filesSkippedInParseThread.Any (f => f == fileName)) {
 							continue;
 						}
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
@@ -2963,6 +2901,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			int pending = 0;
 			IProgressMonitor monitor = null;
 			var token = loadCancellationSource.Token;
+			StartParseOperation ();
 			try {
 				do {
 					if (pending > 5 && monitor == null) {
@@ -2990,6 +2929,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			} finally {
 				if (monitor != null)
 					monitor.Dispose ();
+				EndParseOperation ();
 			}
 		}
 

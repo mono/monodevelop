@@ -34,16 +34,11 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackagesRequiringLicenseAcceptance
 	{
-		IPackageManagementSolution solution;
+		IPackageManagementProject project;
 
-		public PackagesRequiringLicenseAcceptance (IPackageManagementSolution solution)
+		public PackagesRequiringLicenseAcceptance (IPackageManagementProject project)
 		{
-			this.solution = solution;
-		}
-
-		public PackagesRequiringLicenseAcceptance ()
-			: this (PackageManagementServices.Solution)
-		{
+			this.project = project;
 		}
 
 		public IEnumerable<IPackage> GetPackagesRequiringLicenseAcceptance (IEnumerable<IPackageAction> actions)
@@ -70,12 +65,12 @@ namespace MonoDevelop.PackageManagement
 
 		bool PackageRequiresLicenseAcceptance (IPackage package)
 		{
-			return package.RequireLicenseAcceptance && !IsPackageInstalledInSolution (package);
+			return package.RequireLicenseAcceptance && !IsPackageInstalled (package);
 		}
 
-		bool IsPackageInstalledInSolution(IPackage package)
+		bool IsPackageInstalled(IPackage package)
 		{
-			return solution.IsPackageInstalled (package);
+			return project.IsPackageInstalled (package);
 		}
 	}
 }

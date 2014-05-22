@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide
 		{
 			BuildResult result = null;
 			List<WorkspaceItem> items = new List<WorkspaceItem> (Items);
-			foreach (WorkspaceItem it in items) {
+			foreach (WorkspaceItem it in items.Where (i => i.SupportsTarget (target))) {
 				BuildResult res = it.RunTarget (monitor, target, configuration);
 				if (res != null) {
 					if (result == null)
@@ -356,6 +356,15 @@ namespace MonoDevelop.Ide
 				}
 			}
 			return result;
+		}
+
+		bool IBuildTarget.SupportsTarget (string target)
+		{
+			foreach (WorkspaceItem it in Items.ToArray ()) {
+				if (it.SupportsTarget (target))
+					return true;
+			}
+			return false;
 		}
 
 		public void Execute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
@@ -526,13 +535,14 @@ namespace MonoDevelop.Ide
 			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
 
-			var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true);
-			bool reloading = IsReloading;
+			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
+				bool reloading = IsReloading;
 
-			DispatchService.BackgroundDispatch (delegate {
-				BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
-			});
-			return monitor.AsyncOperation;
+				DispatchService.BackgroundDispatch (delegate {
+					BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
+				});
+				return monitor.AsyncOperation;
+			}
 		}
 		
 		void ReattachDocumentProjects (IEnumerable<string> closedDocs)
@@ -761,11 +771,11 @@ namespace MonoDevelop.Ide
 
 		void CheckWorkspaceItems (object sender, FileEventArgs args)
 		{
-			List<FilePath> files = args.Select (e => e.FileName.CanonicalPath).ToList ();
-			foreach (Solution s in GetAllSolutions ().Where (sol => files.Contains (sol.FileName.CanonicalPath)))
+			HashSet<FilePath> files = new HashSet<FilePath> (args.Select (e => e.FileName.CanonicalPath));
+			foreach (Solution s in GetAllSolutions ().Where (sol => sol.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
 				OnCheckWorkspaceItem (s);
 			
-			foreach (Project p in GetAllProjects ().Where (proj => files.Contains (proj.FileName.CanonicalPath)))
+			foreach (Project p in GetAllProjects ().Where (proj => proj.GetItemFiles (false).Any (f => files.Contains (f.CanonicalPath))))
 				OnCheckProject (p);
 		}
 		
@@ -992,14 +1002,14 @@ namespace MonoDevelop.Ide
 			WorkspaceItemEventArgs args = new WorkspaceItemEventArgs (item);
 			NotifyDescendantItemAdded (this, args);
 			NotifyConfigurationsChanged (null, args);
-			
-			if (WorkspaceItemOpened != null)
-				WorkspaceItemOpened (this, args);
+
 			if (Items.Count == 1 && !reloading) {
 				IdeApp.Workbench.CurrentLayout = "Solution";
 				if (FirstWorkspaceItemOpened != null)
 					FirstWorkspaceItemOpened (this, args);
 			}
+			if (WorkspaceItemOpened != null)
+				WorkspaceItemOpened (this, args);
 		}
 		
 		internal void NotifyItemRemoved (WorkspaceItem item)
@@ -1023,16 +1033,16 @@ namespace MonoDevelop.Ide
 			}
 			item.ConfigurationsChanged -= configurationsChanged;
 			
-			if (Items.Count == 0 && !reloading) {
-				if (LastWorkspaceItemClosed != null)
-					LastWorkspaceItemClosed (this, EventArgs.Empty);
-			}
-			
 			WorkspaceItemEventArgs args = new WorkspaceItemEventArgs (item);
 			NotifyConfigurationsChanged (null, args);
 			
 			if (WorkspaceItemClosed != null)
 				WorkspaceItemClosed (this, args);
+
+			if (Items.Count == 0 && !reloading) {
+				if (LastWorkspaceItemClosed != null)
+					LastWorkspaceItemClosed (this, EventArgs.Empty);
+			}
 			
 			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
 //			ParserDatabase.Unload (item);

@@ -1,4 +1,4 @@
-// BookmarkMargin.cs
+// IconMargin.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -35,13 +35,11 @@ namespace Mono.TextEditor
 	{
 		TextEditor editor;
 		Cairo.Color backgroundColor, separatorColor;
-		Pango.Layout layout;
-		int marginWidth = 18;
+		const int marginWidth = 22;
 		
 		public IconMargin (TextEditor editor)
 		{
 			this.editor = editor;
-			layout = PangoUtil.CreateLayout (editor);
 		}
 		
 		public override double Width {
@@ -50,22 +48,10 @@ namespace Mono.TextEditor
 			}
 		}
 		
-		public override void Dispose ()
-		{
-			layout = layout.Kill ();
-		}
-		
 		internal protected override void OptionsChanged ()
 		{
 			backgroundColor = editor.ColorStyle.IndicatorMargin.Color;
 			separatorColor = editor.ColorStyle.IndicatorMarginSeparator.Color;
-			
-			layout.FontDescription = editor.Options.Font;
-			layout.SetText ("!");
-			int tmp;
-			layout.GetPixelSize (out tmp, out this.marginWidth);
-			marginWidth *= 12;
-			marginWidth /= 10;
 		}
 		
 		internal protected override void MousePressed (MarginMouseEventArgs args)
@@ -78,11 +64,6 @@ namespace Mono.TextEditor
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null) 
 						marginMarker.InformMousePress (editor, this, args);
-
-#pragma warning disable 618
-					if (marker is IIconBarMarker) 
-						((IIconBarMarker)marker).MousePress (args);
-#pragma warning restore 618
 				}
 			}
 		}
@@ -97,11 +78,6 @@ namespace Mono.TextEditor
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null) 
 						marginMarker.InformMouseRelease (editor, this, args);
-
-#pragma warning disable 618
-					if (marker is IIconBarMarker) 
-						((IIconBarMarker)marker).MouseRelease (args);
-#pragma warning restore 618
 				}
 			}
 		}
@@ -116,11 +92,6 @@ namespace Mono.TextEditor
 					var marginMarker = marker as MarginMarker;
 					if (marginMarker != null) 
 						marginMarker.InformMouseHover (editor, this, args);
-
-#pragma warning disable 618
-					if (marker is IIconBarMarker) 
-						((IIconBarMarker)marker).MouseHover (args);
-#pragma warning restore 618
 				}
 			}
 		}
@@ -134,15 +105,6 @@ namespace Mono.TextEditor
 					if (marginMarker != null && marginMarker.CanDrawBackground (this)) {
 						backgroundIsDrawn = marginMarker.DrawBackground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
 					}
-
-#pragma warning disable 618
-					var iconMarker = marker as IIconBarMarker;
-					if (iconMarker == null || !iconMarker.CanDrawBackground)
-						continue;
-					iconMarker.DrawBackground (editor, ctx, lineSegment, line, x, y, (int)Width, editor.LineHeight);
-					backgroundIsDrawn = true;
-					break;
-#pragma warning restore 618
 				}
 			}
 
@@ -163,11 +125,6 @@ namespace Mono.TextEditor
 					if (marginMarker != null && marginMarker.CanDrawForeground (this)) {
 						marginMarker.DrawForeground (editor, ctx, new MarginDrawMetrics (this, area, lineSegment, line, x, y, lineHeight));
 					}
-
-#pragma warning disable 618
-					if (marker is IIconBarMarker) 
-						((IIconBarMarker)marker).DrawIcon (editor, ctx, lineSegment, line, x, y, (int)Width, editor.LineHeight);
-#pragma warning restore 618
 				}
 				if (DrawEvent != null) 
 					DrawEvent (this, new BookmarkMarginDrawEventArgs (editor, ctx, lineSegment, line, x, y));

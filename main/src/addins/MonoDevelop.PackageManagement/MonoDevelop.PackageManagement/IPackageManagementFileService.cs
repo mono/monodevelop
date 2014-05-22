@@ -34,5 +34,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		void RemoveFile(string path);
 		void RemoveDirectory(string path);
+		void OnFileChanged(string path);
 	}
 }

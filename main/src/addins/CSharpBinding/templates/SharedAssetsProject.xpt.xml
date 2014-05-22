@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Template originator   = "Mike Krueger"
+          created      = "02/01/2003"
+          lastModified = "02/01/2003">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Shared Project</_Name>
+		<_Category>C#</_Category>
+		<Icon>md-project-shared-assets</Icon>
+		<_Description>Creates a project that allows sharing files between projects</_Description>
+		<DefaultFilename>Shared</DefaultFilename>
+		<LanguageName>C#</LanguageName>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MyClass.cs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "." type = "SharedAssetsProject">
+			<Files>
+				<FileTemplateReference TemplateID="EmptyClass" name="MyClass.cs" />
+			</Files>
+		</Project>
+	</Combine>
+</Template>

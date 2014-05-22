@@ -62,5 +62,9 @@ namespace ICSharpCode.PackageManagement
 			var files = new PackageFiles(Package);
 			return files.HasUninstallPackageScript();
 		}
+
+		protected override string StartingMessageFormat {
+			get { return "Removing {0}..."; }
+		}
 	}
 }

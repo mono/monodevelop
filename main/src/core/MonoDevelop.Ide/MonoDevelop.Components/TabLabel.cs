@@ -17,37 +17,37 @@ namespace MonoDevelop.Components
 		private Gtk.Image icon;
 		private EventBox titleBox;
 		private static Xwt.Drawing.Image closeImage;
-		
+
 		static TabLabel ()
 		{
 			try {
-				closeImage = Xwt.Drawing.Image.FromResource ("MonoDevelop.Close.png");
+				closeImage = Xwt.Drawing.Image.FromResource ("popup-close-light-16.png");
 			} catch (Exception e) {
-				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: MonoDevelop.Close.png", e);
+				MonoDevelop.Core.LoggingService.LogError ("Can't create pixbuf from resource: popup-close-light-16.png", e);
 			}
 		}
-		
+
 		protected TabLabel (IntPtr p): base (p)
 		{
 		}
 
 		public TabLabel (Label label, Gtk.Image icon) : base (false, 0)
-		{	
+		{
 			this.title = label;
 			this.icon = icon;
 			icon.Xpad = 2;
-			
+
 			EventBox eventBox = new EventBox ();
 			eventBox.BorderWidth = 0;
-			eventBox.VisibleWindow = false;			
+			eventBox.VisibleWindow = false;
 			eventBox.Add (icon);
 			this.PackStart (eventBox, false, true, 0);
 
 			titleBox = new EventBox ();
-			titleBox.VisibleWindow = false;			
+			titleBox.VisibleWindow = false;
 			titleBox.Add (title);
 			this.PackStart (titleBox, true, true, 0);
-			
+
 			Gtk.Rc.ParseString ("style \"MonoDevelop.TabLabel.CloseButton\" {\n GtkButton::inner-border = {0,0,0,0}\n }\n");
 			Gtk.Rc.ParseString ("widget \"*.MonoDevelop.TabLabel.CloseButton\" style  \"MonoDevelop.TabLabel.CloseButton\"\n");
 			Button button = new Button ();
@@ -64,26 +64,26 @@ namespace MonoDevelop.Components
 
 			this.ShowAll ();
 		}
-		
+
 		public Label Label
 		{
 			get { return title; }
 			set { title = value; }
 		}
-		
+
 		public Gtk.Image Icon
 		{
 			get { return icon; }
 			set { icon = value; }
 		}
-		
+
 		public event EventHandler CloseClicked;
-				
+
 		public void SetTooltip (string tip, string desc)
 		{
 			titleBox.TooltipText = tip;
 		}
-		
+
 		protected override bool OnButtonReleaseEvent (EventButton evnt)
 		{
 			if (evnt.Button == 2 && CloseClicked != null)
@@ -91,15 +91,15 @@ namespace MonoDevelop.Components
 				CloseClicked(this, null);
 				return true;
 			}
-							
+
 			return false;
 		}
-							
+
 		private void ButtonClicked(object o, EventArgs eventArgs)
 		{
 			if (CloseClicked != null)
 			{
-				CloseClicked(this, null);				
+				CloseClicked(this, null);
 			}
 		}
 	}

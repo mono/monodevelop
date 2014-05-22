@@ -6,6 +6,7 @@ using Mono.Addins.Description;
 [assembly:Addin ("TestRunner", 
     Namespace = "MonoDevelop",
     Version = MonoDevelop.BuildInfo.Version,
+	Flags = AddinFlags.Hidden,
 	Category = "MonoDevelop Core")]
 
 [assembly:AddinName ("Test Runner")]

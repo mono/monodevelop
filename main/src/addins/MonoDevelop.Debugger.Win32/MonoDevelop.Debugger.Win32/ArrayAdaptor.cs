@@ -83,6 +83,7 @@ namespace MonoDevelop.Debugger.Win32
 		public void SetElement (int[] indices, object val)
 		{
 			CorValRef it = (CorValRef) GetElement (indices);
+			obj.IsValid = false;
 			it.SetValue (ctx, (CorValRef) val);
 		}
 		

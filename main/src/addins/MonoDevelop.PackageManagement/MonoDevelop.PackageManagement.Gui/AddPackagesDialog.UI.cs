@@ -73,7 +73,7 @@ namespace MonoDevelop.PackageManagement
 			// Top part of dialog:
 			// Package sources and search.
 			var topHBox = new HBox ();
-			topHBox.Margin = new WidgetSpacing (5, 5, 5, 5);
+			topHBox.Margin = new WidgetSpacing (8, 5, 6, 5);
 
 			packageSourceComboBox = new ComboBox ();
 			packageSourceComboBox.MinWidth = 200;
@@ -162,8 +162,7 @@ namespace MonoDevelop.PackageManagement
 			packageInfoVBox = new VBox ();
 			var packageInfoFrame = new FrameBox ();
 			packageInfoFrame.BackgroundColor = packageInfoBackgroundColor;
-			packageInfoFrame.BorderWidth = new WidgetSpacing (1, 0, 0, 0);
-			packageInfoFrame.BorderColor = lineBorderColor;
+			packageInfoFrame.BorderWidth = new WidgetSpacing ();
 			packageInfoFrame.Content = packageInfoVBox;
 			packageInfoVBox.Margin = new WidgetSpacing (15, 12, 15, 12);
 			var packageInfoContainerVBox = new VBox ();
@@ -174,7 +173,13 @@ namespace MonoDevelop.PackageManagement
 			packageInfoScrollView.BorderVisible = false;
 			packageInfoScrollView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			packageInfoScrollView.Content = packageInfoContainerVBox;
-			middleHBox.PackEnd (packageInfoScrollView);
+			packageInfoScrollView.BackgroundColor = packageInfoBackgroundColor;
+			var packageInfoScrollViewFrame = new FrameBox ();
+			packageInfoScrollViewFrame.BackgroundColor = packageInfoBackgroundColor;
+			packageInfoScrollViewFrame.BorderWidth = new WidgetSpacing (1, 0, 0, 0);
+			packageInfoScrollViewFrame.BorderColor = lineBorderColor;
+			packageInfoScrollViewFrame.Content = packageInfoScrollView;
+			middleHBox.PackEnd (packageInfoScrollViewFrame);
 
 			// Package name and version.
 			var packageNameHBox = new HBox ();
@@ -314,7 +319,7 @@ namespace MonoDevelop.PackageManagement
 			// Bottom part of dialog:
 			// Show pre-release packages and Close/Add to Project buttons.
 			var bottomHBox = new HBox ();
-			bottomHBox.Margin = new WidgetSpacing (10, 5, 10, 10);
+			bottomHBox.Margin = new WidgetSpacing (8, 5, 14, 10);
 			bottomHBox.Spacing = 5;
 			mainVBox.PackStart (bottomHBox);
 

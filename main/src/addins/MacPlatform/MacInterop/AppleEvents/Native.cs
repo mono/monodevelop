@@ -497,29 +497,6 @@ namespace MonoDevelop.MacInterop.AppleEvents
 		{
 			Boolean = 0, //'bool',
 			
-			[Obsolete("Use Utf8Text")]
-			Char = 0, //'TEXT'
-			
-			[Obsolete ("Use explicit encoding and byte order, e.g. Utf16ExternalRepresentation or Utf8Text")]
-			///<summary>Not implemented</summary>
-			StyledUnicodeText = 0,//'sutx',
-			
-			[Obsolete ("Use explicit encoding and byte order, e.g. Utf16ExternalRepresentation or Utf8Text")]
-			///<summary>Not implemented</summary>
-			EncodedString = 0,//'encs',
-			
-			[Obsolete ("Use explicit encoding and byte order, e.g. Utf16ExternalRepresentation or Utf8Text")]
-			///<summary>Not implemented. Native byte ordering, optional BOM.</summary>
-			UnicodeText = 0,//'utxt',
-			
-			[Obsolete ("Use explicit encoding and byte order, e.g. Utf16ExternalRepresentation or Utf8Text")]
-			///<summary>Null terminated MacRoman char</summary>
-			CString = 0,//'cstr',
-			
-			[Obsolete ("Use explicit encoding and byte order, e.g. Utf16ExternalRepresentation or Utf8Text")]
-			///<summary>Unsigned length byte followed by MacRoman characters</summary>
-			PString = 0,//'pstr'
-			
 			///<summary>Big-endian UTF-16 with optional BOM, or little-endian UTF16 with required BOM</summary>
 			///<remarks>No length byte or null termination</remarks>
 			Utf16ExternalRepresentation = 0,//'ut16',
@@ -569,9 +546,6 @@ namespace MonoDevelop.MacInterop.AppleEvents
 			ApplicationUrl            = 0,//'aprl',
 			/// <summary>Null or nonexistent data</summary>
 			Null                      = 0,//'null'
-			
-			[Obsolete ("Not fully supported on 64-bit, use FSRef")]
-			typeFSS                   = 0,//'fss ' /* FSSpec */
 			
 			CFAttributedStringRef     = 0,//'cfas',
 			CFMutableAttributedStringRef = 0,//'cfaa',

@@ -168,7 +168,7 @@ namespace MonoDevelop.NUnit
 		{
 			this.project = project;
 			resultsPath = GetTestResultsDirectory (project.BaseDirectory);
-			ResultsStore = new XmlResultsStore (resultsPath, Path.GetFileName (project.FileName));
+			ResultsStore = new BinaryResultsStore (resultsPath, Path.GetFileName (project.FileName));
 			
 			lastConfig = (NUnitAssemblyGroupProjectConfiguration) project.DefaultConfiguration;
 			if (lastConfig != null)

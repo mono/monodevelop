@@ -81,7 +81,7 @@ namespace MonoDevelop.Refactoring
 		{
 			ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
 			if (textEditorResolver != null)
-				return textEditorResolver.GetLanguageItem (doc.Editor.Caret.Offset);
+				return textEditorResolver.GetLanguageItem (doc.Editor.IsSomethingSelected ? doc.Editor.SelectionRange.Offset : doc.Editor.Caret.Offset);
 			return null;
 		}
 		

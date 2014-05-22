@@ -160,14 +160,9 @@ namespace MonoDevelop.Projects
 		/// </param>
 		/// <remarks>
 		/// This method looks for an imlpementation of a service of the given type.
-		/// The default implementation this instance if the type is an interface
-		/// implemented by this instance. Otherwise, it looks for a service in
-		/// the project extension chain.
 		/// </remarks>
 		public virtual object GetService (Type t)
 		{
-			if (t.IsInstanceOfType (this))
-				return this;
 			return Services.ProjectService.GetExtensionChain (this).GetService (this, t);
 		}
 		
@@ -478,6 +473,21 @@ namespace MonoDevelop.Projects
 			return Services.ProjectService.GetExtensionChain (this).RunTarget (monitor, this, target, configuration);
 		}
 		
+		public bool SupportsTarget (string target)
+		{
+			return Services.ProjectService.GetExtensionChain (this).SupportsTarget (this, target);
+		}
+
+		public bool SupportsBuild ()
+		{
+			return SupportsTarget (ProjectService.BuildTarget);
+		}
+
+		public bool SupportsExecute ()
+		{
+			return Services.ProjectService.GetExtensionChain (this).SupportsExecute (this);
+		}
+
 		/// <summary>
 		/// Cleans the files produced by this solution item
 		/// </summary>
@@ -602,7 +612,7 @@ namespace MonoDevelop.Projects
 					return true;
 			return false;
 		}
-		
+
 		/// <summary>
 		/// Gets the time of the last build
 		/// </summary>
@@ -659,6 +669,8 @@ namespace MonoDevelop.Projects
 		/// </param>
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
 		{
+			if (!SupportsExecute ())
+				return false;
 			return Services.ProjectService.GetExtensionChain (this).CanExecute (this, context, configuration);
 		}
 
@@ -1050,6 +1062,16 @@ namespace MonoDevelop.Projects
 			return DateTime.MinValue;
 		}
 		
+		internal protected virtual bool OnGetSupportsTarget (string target)
+		{
+			return true;
+		}
+
+		internal protected virtual bool OnGetSupportsExecute ()
+		{
+			return true;
+		}
+
 		/// <summary>
 		/// Determines whether this solution item can be executed using the specified context and configuration.
 		/// </summary>
@@ -1075,7 +1097,12 @@ namespace MonoDevelop.Projects
 		protected virtual void OnBoundToSolution ()
 		{
 		}
-		
+
+		internal protected virtual object OnGetService (Type t)
+		{
+			return ItemHandler.GetService (t);
+		}
+
 		/// <summary>
 		/// Occurs when the name of the item changes
 		/// </summary>

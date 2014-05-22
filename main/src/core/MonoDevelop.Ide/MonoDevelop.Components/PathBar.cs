@@ -33,6 +33,7 @@ using Gdk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using Mono.TextEditor;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.Components
 {
@@ -165,6 +166,14 @@ namespace MonoDevelop.Components
 			this.createMenuForItem = createMenuForItem;
 			EnsureLayout ();
 		}
+
+		internal static string GetFirstLineFromMarkup (string markup)
+		{
+			var idx = markup.IndexOfAny (new [] { NewLine.CR, NewLine.LF }); 
+			if (idx >= 0)
+				return markup.Substring (0, idx);
+			return markup;
+		}
 		
 		public new PathEntry[] Path { get; private set; }
 		public int ActiveIndex { get { return activeIndex; } }
@@ -271,7 +280,7 @@ namespace MonoDevelop.Components
 					}
 					
 					layout.Attributes = (i == activeIndex) ? boldAtts : null;
-					layout.SetMarkup (leftPath [i].Markup);
+					layout.SetMarkup (GetFirstLineFromMarkup (leftPath [i].Markup));
 
 					ctx.Save ();
 
@@ -329,7 +338,7 @@ namespace MonoDevelop.Components
 					}
 					
 					layout.Attributes = (i == activeIndex) ? boldAtts : null;
-					layout.SetMarkup (rightPath [i].Markup);
+					layout.SetMarkup (GetFirstLineFromMarkup (rightPath [i].Markup));
 
 					ctx.Save ();
 
@@ -619,7 +628,7 @@ namespace MonoDevelop.Components
 
 			for (int i = 0; i < path.Length; i++) {
 				layout.Attributes = (i == activeIndex)? boldAtts : null;
-				layout.SetMarkup (path[i].Markup);
+				layout.SetMarkup (GetFirstLineFromMarkup (path[i].Markup));
 				layout.Width = -1;
 				int w, h;
 				layout.GetPixelSize (out w, out h);

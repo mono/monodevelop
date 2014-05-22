@@ -119,6 +119,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="icons\light\prefs-xml-16.png">
+      <LogicalName>prefs-xml-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-xml-16%402x.png">
+      <LogicalName>prefs-xml-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-xml-schemas-16.png">
+      <LogicalName>prefs-xml-schemas-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-xml-schemas-16%402x.png">
+      <LogicalName>prefs-xml-schemas-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.XmlEditor\Commands.cs" />
     <Compile Include="MonoDevelop.XmlEditor\EncodedStringWriter.cs" />

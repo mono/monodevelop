@@ -477,7 +477,7 @@ namespace MonoDevelop.Projects
 			foreach (SolutionItem item in Items) {
 				if (item is SolutionFolder)
 					((SolutionFolder)item).GetAllBuildableEntries (list, configuration, includeExternalReferences);
-				else if ((item is SolutionEntityItem) && conf.BuildEnabledForItem ((SolutionEntityItem) item))
+				else if ((item is SolutionEntityItem) && conf.BuildEnabledForItem ((SolutionEntityItem) item) && item.SupportsBuild ())
 					GetAllBuildableReferences (list, item, configuration, includeExternalReferences);
 			}
 		}
@@ -1006,6 +1006,11 @@ namespace MonoDevelop.Projects
 
 		public void Dispose ()
 		{
+		}
+
+		public object GetService (Type t)
+		{
+			return null;
 		}
 	}
 	

@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				info.Enabled = ((buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+				info.Enabled = ((buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted)) && buildTarget.SupportsTarget (ProjectService.BuildTarget);
 				if (buildTarget != null) {
 					info.Text = GettextCatalog.GetString ("B_uild {0}", buildTarget.Name.Replace ("_","__"));
 					if (buildTarget is SolutionFolder)
@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				IBuildTarget buildTarget = IdeApp.ProjectOperations.CurrentSelectedBuildTarget;
-				info.Enabled = ((buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted));
+				info.Enabled = ((buildTarget != null) && (IdeApp.ProjectOperations.CurrentBuildOperation.IsCompleted)) && buildTarget.SupportsTarget (ProjectService.BuildTarget);
 				if (buildTarget != null) {
 					info.Text = GettextCatalog.GetString ("R_ebuild {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name.Replace ("_","__"));
 					info.Description = GettextCatalog.GetString ("Rebuild {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
@@ -409,6 +409,7 @@ namespace MonoDevelop.Ide.Commands
 			if (IdeApp.ProjectOperations.CurrentSelectedBuildTarget == null)
 				info.Enabled = false;
 			else {
+				info.Enabled = IdeApp.ProjectOperations.CurrentSelectedBuildTarget.SupportsTarget (ProjectService.BuildTarget);
 				info.Text = GettextCatalog.GetString ("C_lean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name.Replace ("_","__"));
 				info.Description = GettextCatalog.GetString ("Clean {0}", IdeApp.ProjectOperations.CurrentSelectedBuildTarget.Name);
 			}
@@ -562,8 +563,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
-			MessageService.RunCustomDialog (dlg);
-			dlg.Destroy ();
+			MessageService.ShowCustomDialog (dlg);
 		}
 	}
 	
@@ -577,8 +577,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			ExportProjectPolicyDialog dlg = new ExportProjectPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
-			MessageService.RunCustomDialog (dlg);
-			dlg.Destroy ();
+			MessageService.ShowCustomDialog (dlg);
 		}
 	}
 }

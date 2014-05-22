@@ -155,11 +155,6 @@ namespace Mono.TextEditor.Highlighting
 		public Rule ()
 		{
 		}
-
-		[Obsolete("This constructor is obsolete use parameterless constructor instead.")]
-		public Rule (SyntaxMode obsolteMode)
-		{
-		}
 		
 		public virtual Rule GetRule (TextDocument doc, string name)
 		{

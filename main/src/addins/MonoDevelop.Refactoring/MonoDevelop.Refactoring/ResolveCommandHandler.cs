@@ -167,10 +167,13 @@ namespace MonoDevelop.Refactoring
 
 		static ResolveResult GetHeuristicResult (Document doc, DocumentLocation location, ref AstNode node)
 		{
-			int offset = doc.Editor.Caret.Offset;
+			var editor = doc.Editor;
+			if (editor == null || editor.Caret == null)
+				return null;
+			int offset = editor.Caret.Offset;
 			bool wasLetter = false, wasWhitespaceAfterLetter = false;
-			while (offset < doc.Editor.Length) {
-				char ch = doc.Editor.GetCharAt (offset);
+			while (offset < editor.Length) {
+				char ch = editor.GetCharAt (offset);
 				bool isLetter = char.IsLetterOrDigit (ch) || ch == '_';
 				bool isWhiteSpace = char.IsWhiteSpace (ch);
 				bool isValidPunc = ch == '.' || ch == '<' || ch == '>';
@@ -184,7 +187,7 @@ namespace MonoDevelop.Refactoring
 				} else {
 					offset--;
 					while (offset > 1) {
-						ch = doc.Editor.GetCharAt (offset - 1);
+						ch = editor.GetCharAt (offset - 1);
 						if (!(ch == '.' || char.IsWhiteSpace (ch)))
 							break;
 						offset--;

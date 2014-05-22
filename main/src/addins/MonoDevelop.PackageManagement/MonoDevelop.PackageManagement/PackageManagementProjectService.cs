@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace ICSharpCode.PackageManagement
@@ -39,29 +40,42 @@ namespace ICSharpCode.PackageManagement
 		public PackageManagementProjectService()
 		{
 		}
-		
-		public Project CurrentProject {
-			get { return IdeApp.ProjectOperations.CurrentSelectedProject; }
-		}
-		
-		public Solution OpenSolution {
-			get { return IdeApp.ProjectOperations.CurrentSelectedSolution; }
-		}
-		
-		public IEnumerable<Project> GetOpenProjects()
-		{
-			Solution solution = OpenSolution;
-			if (solution != null) {
-				return solution.GetAllProjects();
+
+		public IProject CurrentProject {
+			get {
+				Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+				if (project != null) {
+					if (project is DotNetProject) {
+						return new DotNetProjectProxy ((DotNetProject)project);
+					}
+					return new ProjectProxy (project);
+				}
+				return null;
 			}
-			return new Project[0];
 		}
-		
-		public void Save(Solution solution)
+
+		public ISolution OpenSolution {
+			get {
+				Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+				if (solution != null) {
+					return new SolutionProxy (solution);
+				}
+				return null;
+			}
+		}
+
+		public IEnumerable<IDotNetProject> GetOpenProjects ()
 		{
-			solution.Save();
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution != null) {
+				return solution
+					.GetAllProjects ()
+					.OfType<DotNetProject> ()
+					.Select (project => new DotNetProjectProxy (project));
+			}
+			return new IDotNetProject [0];
 		}
-		
+
 		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
 		{
 			return new ThreadSafeProjectBrowserUpdater();

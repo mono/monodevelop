@@ -38,7 +38,27 @@ namespace MonoDevelop.Ide.Fonts
 		static List<FontDescriptionCodon> fontDescriptions = new List<FontDescriptionCodon> ();
 		static Dictionary<string, FontDescription> loadedFonts = new Dictionary<string, FontDescription> ();
 		static Properties fontProperties;
-		static FontDescription defaultMonospaceFontDescription;
+
+		static string defaultMonospaceFontName, defaultSansFontName;
+		static FontDescription defaultMonospaceFont, defaultSansFont;
+
+		static void LoadDefaults ()
+		{
+			if (defaultMonospaceFont != null) {
+				defaultMonospaceFont.Dispose ();
+				defaultSansFont.Dispose ();
+			}
+
+			#pragma warning disable 618
+			defaultMonospaceFontName = DesktopService.DefaultMonospaceFont;
+			defaultMonospaceFont = FontDescription.FromString (defaultMonospaceFontName);
+			#pragma warning restore 618
+
+			var label = new Gtk.Label ("");
+			defaultSansFont = label.Style.FontDescription.Copy ();
+			label.Destroy ();
+			defaultSansFontName = defaultSansFont.ToString ();
+		}
 		
 		internal static IEnumerable<FontDescriptionCodon> FontDescriptions {
 			get {
@@ -46,8 +66,11 @@ namespace MonoDevelop.Ide.Fonts
 			}
 		}
 		
-		static FontService ()
+		internal static void Initialize ()
 		{
+			if (fontProperties != null)
+				throw new InvalidOperationException ("Already initialized");
+
 			fontProperties = PropertyService.Get ("FontProperties", new Properties ());
 			
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/Fonts", delegate(object sender, ExtensionNodeEventArgs args) {
@@ -62,34 +85,42 @@ namespace MonoDevelop.Ide.Fonts
 						loadedFonts.Remove (codon.Name);
 					break;
 				}
-			}); 
+			});
+
+			LoadDefaults ();
 		}
 
+		public static FontDescription MonospaceFont { get { return defaultMonospaceFont; } }
+		public static FontDescription SansFont { get { return defaultSansFont; } }
+
+		public static string MonospaceFontName { get { return defaultMonospaceFontName; } }
+		public static string SansFontName { get { return defaultSansFontName; } }
+
+		[Obsolete ("Use MonospaceFont")]
 		public static FontDescription DefaultMonospaceFontDescription {
 			get {
-				if (defaultMonospaceFontDescription == null)
-					defaultMonospaceFontDescription = LoadFont (DesktopService.DefaultMonospaceFont);
-				return defaultMonospaceFontDescription;
+				if (defaultMonospaceFont == null)
+					defaultMonospaceFont = LoadFont (DesktopService.DefaultMonospaceFont);
+				return defaultMonospaceFont;
 			}
 		}
 
 		static FontDescription LoadFont (string name)
 		{
 			var fontName = FilterFontName (name);
-			return Pango.FontDescription.FromString (fontName);
+			return FontDescription.FromString (fontName);
 		}
 		
 		public static string FilterFontName (string name)
 		{
-			if (name == "_DEFAULT_MONOSPACE")
-				return DesktopService.DefaultMonospaceFont;
-			if (name == "_DEFAULT_SANS") {
-				var label = new Gtk.Label ("");
-				string result = label.Style.FontDescription.Family + " " + ((int)label.Style.FontDesc.Size / Pango.Scale.PangoScale);
-				label.Destroy ();
-				return result;
+			switch (name) {
+			case "_DEFAULT_MONOSPACE":
+				return defaultMonospaceFontName;
+			case "_DEFAULT_SANS":
+				return defaultSansFontName;
+			default:
+				return name;
 			}
-			return name;
 		}
 		
 		public static string GetUnderlyingFontName (string name)
@@ -163,6 +194,34 @@ namespace MonoDevelop.Ide.Fonts
 		{
 			foreach (var list in fontChangeCallbacks.Values.ToList ())
 				list.Remove (callback);
+		}
+	}
+
+	public static class FontExtensions
+	{
+		public static FontDescription CopyModified (this FontDescription font, double? scale = null, Pango.Weight? weight = null)
+		{
+			font = font.Copy ();
+
+			if (scale.HasValue)
+				Scale (font, scale.Value);
+
+			if (weight.HasValue)
+				font.Weight = weight.Value;
+
+			return font;
+		}
+
+		static void Scale (FontDescription font, double scale)
+		{
+			if (font.SizeIsAbsolute) {
+				font.AbsoluteSize = scale * font.Size;
+			} else {
+				var size = font.Size;
+				if (size == 0)
+					size = 10;
+				font.Size = (int)(Pango.Scale.PangoScale * (int)(scale * size / Pango.Scale.PangoScale));
+			}
 		}
 	}
 }

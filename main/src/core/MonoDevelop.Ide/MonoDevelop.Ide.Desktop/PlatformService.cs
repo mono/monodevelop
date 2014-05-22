@@ -51,6 +51,8 @@ namespace MonoDevelop.Ide.Desktop
 		const bool UsePlatformFileIcons = false;
 		
 		public abstract string DefaultMonospaceFont { get; }
+		public virtual string DefaultSansFont { get { return null; } }
+
 		public abstract string Name { get; }
 
 		/// <summary>
@@ -360,18 +362,9 @@ namespace MonoDevelop.Ide.Desktop
 			get { return false; }
 		}
 
-		[Obsolete ("Implement/call OpenTerminal instead")]
-		public virtual void OpenInTerminal (FilePath directory)
-		{
-			throw new InvalidOperationException ();
-		}
-
 		public virtual void OpenTerminal (FilePath directory, IDictionary<string, string> environmentVariables, string title)
 		{
-			// use old version as old fallback, it'll throw if it's not implemted either
-			#pragma warning disable 618
-			OpenInTerminal (directory);
-			#pragma warning restore 618
+			throw new InvalidOperationException ();
 		}
 		
 		protected virtual RecentFiles CreateRecentFilesProvider ()

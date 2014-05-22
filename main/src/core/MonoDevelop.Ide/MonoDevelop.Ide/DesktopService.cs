@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using System.IO;
 using MonoDevelop.Components;
 using MonoDevelop.Components.MainToolbar;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Ide
 {
@@ -42,9 +43,8 @@ namespace MonoDevelop.Ide
 
 		static PlatformService PlatformService {
 			get {
-				if (platformService == null) {
-					Initialize ();
-				}
+				if (platformService == null)
+					throw new InvalidOperationException ("Not initialized");
 				return platformService;
 			}
 		}
@@ -71,6 +71,8 @@ namespace MonoDevelop.Ide
 			// Ensure we initialize the native toolkit on the UI thread immediately
 			// so that we can safely access this property later in other threads
 			GC.KeepAlive (NativeToolkit);
+
+			FontService.Initialize ();
 		}
 		
 		/// <summary>
@@ -89,7 +91,8 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.GetApplications (filename);
 		}
-		
+
+		[Obsolete ("Use FontService")]
 		public static string DefaultMonospaceFont {
 			get { return PlatformService.DefaultMonospaceFont; }
 		}
@@ -223,12 +226,6 @@ namespace MonoDevelop.Ide
 			get {
 				return PlatformService.CanOpenTerminal;
 			}
-		}
-
-		[Obsolete ("Use OpenTerminal")]
-		public static void OpenInTerminal (FilePath directory)
-		{
-			OpenTerminal (directory, null, null);
 		}
 
 		/// <summary>

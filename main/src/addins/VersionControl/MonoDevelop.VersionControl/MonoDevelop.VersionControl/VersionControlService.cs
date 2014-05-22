@@ -114,6 +114,9 @@ namespace MonoDevelop.VersionControl
 		
 		public static Xwt.Drawing.Image LoadOverlayIconForStatus(VersionStatus status)
 		{
+			if ((status & VersionStatus.Ignored) != 0)
+				return overlay_ignored;
+
 			if ((status & VersionStatus.Versioned) == 0)
 				return overlay_unversioned;
 			
@@ -129,8 +132,6 @@ namespace MonoDevelop.VersionControl
 				case VersionStatus.Missing:
 				case VersionStatus.ScheduledDelete:
 					return overlay_removed;
-				case VersionStatus.Ignored:
-					return overlay_ignored;
 			}
 			
 			if ((status & VersionStatus.LockOwned) != 0)
@@ -344,7 +345,7 @@ namespace MonoDevelop.VersionControl
 						return;
 					}
 				
-					FileService.EnsureDirectoryExists (file.ParentDirectory);
+					Directory.CreateDirectory (file.ParentDirectory);
 					stream = new FileStream (file, FileMode.Create, FileAccess.Write);
 					BinaryFormatter formatter = new BinaryFormatter ();
 					formatter.Serialize (stream, comments);
@@ -358,40 +359,57 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		internal static bool NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
+		internal static void NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
 		{
+			if (!DispatchService.IsGuiThread) {
+				Gtk.Application.Invoke (delegate {
+					NotifyPrepareCommit (repo, changeSet);
+				});
+				return;
+			}
+
 			if (PrepareCommit != null) {
 				try {
 					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
-					return false;
 				}
 			}
-			return true;
 		}
 		
-		internal static bool NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
+		internal static void NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
 		{
+			if (!DispatchService.IsGuiThread) {
+				Gtk.Application.Invoke (delegate {
+					NotifyBeforeCommit (repo, changeSet);
+				});
+				return;
+			}
+
 			if (BeginCommit != null) {
 				try {
 					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
-					return false;
 				}
 			}
-			return true;
 		}
 		
-		internal static bool NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
+		internal static void NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
 		{
+			if (!DispatchService.IsGuiThread) {
+				Gtk.Application.Invoke (delegate {
+					NotifyAfterCommit (repo, changeSet, success);
+				});
+				return;
+			}
+
 			if (EndCommit != null) {
 				try {
 					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
-					return false;
+					return;
 				}
 			}
 			if (success) {
@@ -399,7 +417,6 @@ namespace MonoDevelop.VersionControl
 					SetCommitComment (it.LocalPath, null, false);
 				SaveComments ();
 			}
-			return true;
 		}
 
 		public static void NotifyFileStatusChanged (IEnumerable<VersionControlItem> items) 
@@ -480,8 +497,8 @@ namespace MonoDevelop.VersionControl
 		static void SolutionItemAddFiles (string rootPath, SolutionItem entry, HashSet<string> files)
 		{
 			if (entry is SolutionEntityItem) {
-				string file = ((SolutionEntityItem)entry).FileName;
-				SolutionItemAddFile (rootPath, files, file);
+				foreach (var file in ((SolutionEntityItem)entry).GetItemFiles (false))
+					SolutionItemAddFile (rootPath, files, file);
 			}
 			
 			if (entry is Project) {

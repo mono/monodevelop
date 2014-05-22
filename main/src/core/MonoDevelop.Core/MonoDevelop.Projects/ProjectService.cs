@@ -104,7 +104,7 @@ namespace MonoDevelop.Projects
 			get { return formatManager; }
 		}
 		
-		public ProjectServiceExtension GetExtensionChain (IBuildTarget target)
+		internal ProjectServiceExtension GetExtensionChain (IBuildTarget target)
 		{
 			ProjectServiceExtension chain;
 			if (target != null) {
@@ -176,12 +176,6 @@ namespace MonoDevelop.Projects
 			set {
 				defaultTargetFramework = value;
 			}
-		}
-
-		[Obsolete ("Use DefaultFileFormat.Id")]
-		public string DefaultFileFormatId {
-			get { return defaultFormat.Id; }
-			set { /* nop */ }
 		}
 
 		public FileFormat DefaultFileFormat {
@@ -643,11 +637,16 @@ namespace MonoDevelop.Projects
 	{
 		Dictionary <SolutionItem,bool> needsBuildingCache;
 		
-		public override object GetService (IBuildTarget item, Type type)
+		public override object GetService (SolutionItem item, Type type)
 		{
-			return null;
+			return item.OnGetService (type);
 		}
 		
+		public override object GetService (WorkspaceItem item, Type type)
+		{
+			return item.OnGetService (type);
+		}
+
 		public override void Save (IProgressMonitor monitor, SolutionEntityItem entry)
 		{
 			FileService.RequestFileEdit (entry.GetItemFiles (false));
@@ -698,6 +697,26 @@ namespace MonoDevelop.Projects
 			if (res != null)
 				res.SourceTarget = item;
 			return res;
+		}
+
+		public override bool SupportsTarget (IBuildTarget item, string target)
+		{
+			if (item is WorkspaceItem)
+				return ((WorkspaceItem)item).OnGetSupportsTarget (target);
+			else if (item is SolutionItem)
+				return ((SolutionItem)item).OnGetSupportsTarget (target);
+			else
+				throw new InvalidOperationException ("Unknown item type: " + item);
+		}
+
+		public override bool SupportsExecute (IBuildTarget item)
+		{
+			if (item is WorkspaceItem)
+				return ((WorkspaceItem)item).OnGetSupportsExecute ();
+			else if (item is SolutionItem)
+				return ((SolutionItem)item).OnGetSupportsExecute ();
+			else
+				throw new InvalidOperationException ("Unknown item type: " + item);
 		}
 
 		public override void Execute (IProgressMonitor monitor, IBuildTarget item, ExecutionContext context, ConfigurationSelector configuration)

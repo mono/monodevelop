@@ -34,7 +34,7 @@ namespace MonoDevelop.Gettext.Translator
 			this.Events = ((global::Gdk.EventMask)(256));
 			this.Name = "MonoDevelop.Gettext.Translator.LanguageChooserDialog";
 			this.Title = global::Mono.Unix.Catalog.GetString ("Create New Localization");
-			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("locale-16.png");
+			this.Icon = global::Gdk.Pixbuf.LoadFromResource ("prefs-language-light-16.png");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			this.Modal = true;

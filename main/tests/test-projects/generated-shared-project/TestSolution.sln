@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject.csproj", "{7DE4B613-BAB6-49DE-83FA-707D4E120306}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared.shproj", "{8DD793BE-42C3-4D66-8359-460CEE75980D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DE4B613-BAB6-49DE-83FA-707D4E120306}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DE4B613-BAB6-49DE-83FA-707D4E120306}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DE4B613-BAB6-49DE-83FA-707D4E120306}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DE4B613-BAB6-49DE-83FA-707D4E120306}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = TestProject.csproj
+	EndGlobalSection
+EndGlobal
