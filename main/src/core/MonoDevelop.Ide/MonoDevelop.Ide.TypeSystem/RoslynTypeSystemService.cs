@@ -39,294 +39,6 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class MonoDevelopWorkspace : Workspace
-	{
-		readonly static MefHostServices services = MefHostServices.Create(new [] { 
-				typeof(MefHostServices).Assembly,
-				typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly
-			});
-			
-		readonly MetadataFileReferenceProvider referenceProvider = new MetadataFileReferenceProvider ();
-
-		readonly string activeConfiguration;
-
-		public string ActiveConfiguration {
-			get {
-				return activeConfiguration;
-			}
-		}
-
-		public MonoDevelopWorkspace (string activeConfiguration) : base (services, "MonoDevelopWorkspace")
-		{
-			this.activeConfiguration = activeConfiguration;
-		}
-
-		public Solution LoadSolution (MonoDevelop.Projects.Solution solution)
-		{
-			var solutionInfo = SolutionInfo.Create (
-				GetSolutionId (solution),
-				VersionStamp.Create (),
-				solution.FileName,
-				solution.GetAllProjects ().AsParallel ().Select (p => LoadProject (p))
-			);
-			OnSolutionAdded (solutionInfo); 
-			return CurrentSolution;
-		}
-		
-		public void UnloadSolution ()
-		{
-			OnSolutionRemoved (); 
-		}
-
-		Dictionary<MonoDevelop.Projects.Solution, SolutionId> solutionIdMap = new Dictionary<MonoDevelop.Projects.Solution, SolutionId> ();
-
-		internal SolutionId GetSolutionId (MonoDevelop.Projects.Solution p)
-		{
-			lock (solutionIdMap) {
-				SolutionId result;
-				if (!solutionIdMap.TryGetValue (p, out result)) {
-					result = SolutionId.CreateNewId (p.Name);
-					solutionIdMap [p] = result;
-				}
-				return result;
-			}
-		}
-
-		Dictionary<MonoDevelop.Projects.Project, ProjectId> projectIdMap = new Dictionary<MonoDevelop.Projects.Project, ProjectId> ();
-		Dictionary<ProjectId, ProjectData> projectDataMap = new Dictionary<ProjectId, ProjectData> ();
-
-		internal ProjectId GetProjectId (MonoDevelop.Projects.Project p)
-		{
-			lock (projectIdMap) {
-				ProjectId result;
-				if (!projectIdMap.TryGetValue (p, out result)) {
-					result = ProjectId.CreateNewId (p.Name);
-					projectIdMap [p] = result;
-				}
-				return result;
-			}
-		}
-
-		ProjectData GetProjectData (ProjectId id)
-		{
-			lock (projectIdMap) {
-				ProjectData result;
-				if (!projectDataMap.TryGetValue (id, out result)) {
-					result = new ProjectData (id);
-					projectDataMap [id] = result;
-				}
-				return result;
-			}
-		}
-		
-
-		class ProjectData
-		{
-			readonly ProjectId projectId;
-			readonly Dictionary<string, DocumentId> documentIdMap = new Dictionary<string, DocumentId> ();
-
-			public ProjectInfo Info {
-				get;
-				set;
-			}
-
-			public ProjectData (ProjectId projectId)
-			{
-				this.projectId = projectId;
-			}
-
-			public DocumentId GetOrCreateDocumentId (string name)
-			{
-				lock (documentIdMap) {
-					DocumentId result;
-					if (!documentIdMap.TryGetValue (name, out result)) {
-						result = DocumentId.CreateNewId (projectId, name);
-						documentIdMap [name] = result;
-					}
-					return result;
-				}
-			}
-			
-			public DocumentId GetDocumentId (string name)
-			{
-				DocumentId result;
-				if (!documentIdMap.TryGetValue (name, out result))
-					return null;
-				return result;
-			}
-		}
-
-		internal DocumentId GetDocumentId (ProjectId projectId, string name)
-		{
-			var data = GetProjectData (projectId);
-			return data.GetDocumentId (name);
-		}
-
-		ProjectInfo LoadProject (MonoDevelop.Projects.Project p)
-		{
-			var projectId = GetProjectId (p);
-			var projectData = GetProjectData (projectId); 
-			var config = p.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration;
-			MonoDevelop.Projects.DotNetConfigurationParameters cp = null;
-			if (config != null)
-				cp = config.CompilationParameters as MonoDevelop.Projects.DotNetConfigurationParameters;
-			var info = ProjectInfo.Create (
-				projectId,
-				VersionStamp.Create (),
-				p.Name,
-				p.Name,
-				LanguageNames.CSharp,
-				p.FileName,
-				p.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration),
-				cp != null ? cp.CreateCompilationOptions () : null,
-				cp != null ? cp.CreateParseOptions () : null,
-				GetDocuments (projectData, p),
-				GetProjectReferences (p),
-				GetMetadataReferences (p)
-			);
-			projectData.Info = info;
-			return info;
-		}
-
-		internal static Func<string, TextLoader> CreateTextLoader = fileName => new MonoDevelopTextLoader (fileName);
-
-		IEnumerable<DocumentInfo> GetDocuments (ProjectData id, MonoDevelop.Projects.Project p)
-		{
-			return p.Files
-				.Where (f => f.BuildAction == MonoDevelop.Projects.BuildAction.Compile)
-				.Select (f => DocumentInfo.Create (
-				id.GetOrCreateDocumentId (f.Name),
-				f.FilePath,
-				null,
-				SourceCodeKind.Regular,
-				CreateTextLoader (f.Name),
-				f.Name,
-				false
-			));
-		}
-
-		IEnumerable<MetadataReference> GetMetadataReferences (MonoDevelop.Projects.Project p)
-		{
-			var netProject = p as MonoDevelop.Projects.DotNetProject;
-			if (netProject == null)
-				yield break;
-			var config = IdeApp.Workspace != null ? netProject.GetConfiguration (IdeApp.Workspace.ActiveConfiguration) as MonoDevelop.Projects.DotNetProjectConfiguration : null;
-			bool noStdLib = false;
-			if (config != null) {
-				var parameters = config.CompilationParameters as MonoDevelop.Projects.DotNetConfigurationParameters;
-				if (parameters != null) {
-					noStdLib = parameters.NoStdLib;
-				}
-			}
-
-			if (!noStdLib && netProject.TargetRuntime != null && netProject.TargetRuntime.AssemblyContext != null) {
-				var corLibRef = netProject.TargetRuntime.AssemblyContext.GetAssemblyForVersion (
-					                typeof(object).Assembly.FullName,
-					                null,
-					                netProject.TargetFramework
-				                );
-				if (corLibRef != null) {
-					yield return referenceProvider.GetReference (corLibRef.Location, MetadataReferenceProperties.Assembly);
-				}
-			}
-
-			foreach (string file in netProject.GetReferencedAssemblies (MonoDevelop.Projects.ConfigurationSelector.Default, false)) {
-				string fileName;
-				if (!Path.IsPathRooted (file)) {
-					fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
-				} else {
-					fileName = Path.GetFullPath (file);
-				}
-				yield return referenceProvider.GetReference (fileName, MetadataReferenceProperties.Assembly);
-			}
-		}
-
-		IEnumerable<ProjectReference> GetProjectReferences (MonoDevelop.Projects.Project p)
-		{
-			foreach (var pr in p.GetReferencedItems (MonoDevelop.Projects.ConfigurationSelector.Default)) {
-				var referencedProject = pr as MonoDevelop.Projects.Project;
-				if (referencedProject != null) {
-					yield return new ProjectReference (GetProjectId (referencedProject));
-				}
-			}
-		}
-
-		#region Open documents
-		public override bool CanOpenDocuments {
-			get {
-				return true;
-			}
-		}
-
-		public override void OpenDocument (DocumentId documentId, bool activate = true)
-		{
-			var document = CurrentSolution.GetDocument (documentId);
-			if (document == null)
-				return;
-			MonoDevelop.Projects.Project prj = null;
-			foreach (var curPrj in IdeApp.Workspace.GetAllProjects ()) {
-				if (GetProjectId (curPrj) == documentId.ProjectId) {
-					prj = curPrj;
-					break;
-				}
-			}
-			IdeApp.Workbench.OpenDocument (new MonoDevelop.Ide.Gui.FileOpenInformation (
-				document.FilePath,
-				prj,
-				activate
-			)); 
-		}
-
-		internal void InformDocumentOpen (DocumentId documentId, TextEditorData editor)
-		{
-			var document = CurrentSolution.GetDocument (documentId);
-			if (document == null)
-				return;
-			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (editor);
-			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
-		}
-		
-//		internal override bool CanChangeActiveContextDocument {
-//			get {
-//				return true;
-//			}
-//		}
-
-		public void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, string filePath)
-		{
-			OnDocumentClosed (analysisDocument, new MonoDevelopTextLoader (filePath)); 
-
-		}
-		
-		public override void CloseDocument (DocumentId documentId)
-		{
-		}
-		
-		protected override void ChangedDocumentText(DocumentId documentId, SourceText text)
-		{
-			var document = CurrentSolution.GetDocument (documentId);
-			
-			if (document == null)
-				return;
-			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath);
-			
-			foreach (var change in text.GetTextChanges (document.GetTextAsync ().Result)) {
-				data.Replace (change.Span.Start, change.Span.Length, change.NewText);
-			}
-			
-			OnDocumentTextChanged (documentId, text, PreservationMode.PreserveValue);
-		}
-		#endregion
-
-		public Document GetDocument (DocumentId documentId, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var projectData = GetProjectData (documentId.ProjectId); 
-			if (projectData == null)
-				return null;
-
-			return CurrentSolution.GetDocument (documentId); 
-		}
-	}
 
 //	static class MonoDevelopWorkspaceFeatures
 //	{
@@ -367,21 +79,44 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class RoslynTypeSystemService
 	{
-		static MonoDevelopWorkspace workspace;
+		static readonly MonoDevelopWorkspace emptyWorkspace;
+
+		static Dictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> workspaces = new Dictionary<MonoDevelop.Projects.Solution, MonoDevelopWorkspace> ();
+
+		static readonly List<string> outputTrackedProjects = new List<string> ();
+
+		static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
+		{
+			MonoDevelopWorkspace result;
+			if (workspaces.TryGetValue (solution, out result))
+				return result;
+			return emptyWorkspace;
+		}
 
 		public static MonoDevelopWorkspace Workspace {
 			get {
-				return workspace;
+				return GetWorkspace (IdeApp.ProjectOperations.CurrentSelectedSolution);
 			}
 		}
 		
 		static RoslynTypeSystemService ()
 		{
 			try {
-				workspace = new MonoDevelopWorkspace ("");
+				emptyWorkspace = new MonoDevelopWorkspace ();
 			} catch (Exception e) {
 				LoggingService.LogFatalError ("Can't create roslyn workspace", e); 
 			}
+
+			FileService.FileChanged += delegate(object sender, FileEventArgs e) {
+//				if (!TrackFileChanges)
+//					return;
+				foreach (var file in e) {
+					// Open documents are handled by the Document class itself.
+					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
+						continue;
+					emptyWorkspace.UpdateFileContent (file.FileName);
+				}
+			};
 		}
 
 		public static void Load (MonoDevelop.Projects.WorkspaceItem item)
@@ -397,27 +132,54 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (ws != null) {
 				foreach (var it in ws.Items)
 					InternalLoad (it);
+				ws.ItemAdded += OnWorkspaceItemAdded;
+				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
-					workspace = new MonoDevelopWorkspace (IdeApp.Workspace != null ? IdeApp.Workspace.ActiveConfigurationId : "");
-					workspace.LoadSolution (solution);
+					var newWorkspace = new MonoDevelopWorkspace ();
+					newWorkspace.LoadSolution (solution);
+					workspaces [solution] = newWorkspace;
+					solution.SolutionItemAdded += OnSolutionItemAdded;
+					solution.SolutionItemRemoved += OnSolutionItemRemoved;
+				}
+			}
+		}
+
+		public static void Unload (MonoDevelop.Projects.WorkspaceItem item)
+		{
+			var ws = item as MonoDevelop.Projects.Workspace;
+			if (ws != null) {
+				foreach (var it in ws.Items)
+					Unload (it);
+				ws.ItemAdded -= OnWorkspaceItemAdded;
+				ws.ItemRemoved -= OnWorkspaceItemRemoved;
+			} else {
+				var solution = item as MonoDevelop.Projects.Solution;
+				if (solution != null) {
+					MonoDevelopWorkspace result;
+					if (workspaces.TryGetValue (solution, out result)) {
+						workspaces.Remove (solution);
+						result.Dispose ();
+					}
+					solution.SolutionItemAdded -= OnSolutionItemAdded;
+					solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 				}
 			}
 		}
 
 		public static DocumentId GetDocument (MonoDevelop.Projects.Project project, string fileName)
 		{
-			var projectId = workspace.GetProjectId (project);
-			return workspace.GetDocumentId (projectId, fileName);
+			var projectId = emptyWorkspace.GetProjectId (project);
+			return emptyWorkspace.GetDocumentId (projectId, fileName);
 		}
 
 		public static Project GetProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			var projectId = workspace.GetProjectId (project); 
-			return workspace.CurrentSolution.GetProject (projectId);
+			var projectId = emptyWorkspace.GetProjectId (project); 
+			return emptyWorkspace.CurrentSolution.GetProject (projectId);
 		}
 
 		public static void UpdateDocument (Project project, FilePath fileName, string currentParseText)
@@ -428,9 +190,59 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			var projectId = workspace.GetProjectId (project); 
-			Project roslynProject = workspace.CurrentSolution.GetProject (projectId);
+			var projectId = emptyWorkspace.GetProjectId (project); 
+			Project roslynProject = emptyWorkspace.CurrentSolution.GetProject (projectId);
 			return await roslynProject.GetCompilationAsync (cancellationToken);
 		}
+
+		static void OnWorkspaceItemAdded (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
+		{
+			Load (args.Item);
+		}
+
+		static void OnWorkspaceItemRemoved (object s, MonoDevelop.Projects.WorkspaceItemEventArgs args)
+		{
+			Unload (args.Item);
+		}
+
+		static void OnSolutionItemAdded (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
+		{
+			var project = args.SolutionItem as MonoDevelop.Projects.Project;
+			if (project != null) {
+				var ws = GetWorkspace (project.ParentSolution);
+				ws.AddProject (project);
+			}
+		}
+
+		static void OnSolutionItemRemoved (object sender, MonoDevelop.Projects.SolutionItemChangeEventArgs args)
+		{
+			var project = args.SolutionItem as MonoDevelop.Projects.Project;
+			if (project != null) {
+				var ws = GetWorkspace (project.ParentSolution);
+				ws.RemoveProject (project);
+			}
+		}
+
+
+//		static void CheckProjectOutput (DotNetProject project, bool autoUpdate)
+//		{
+//			if (project == null)
+//				throw new ArgumentNullException ("project");
+//			if (project.GetProjectTypes ().Any (p => outputTrackedProjects.Contains (p, StringComparer.OrdinalIgnoreCase))) {
+//				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
+//
+//				var wrapper = GetProjectContentWrapper (project);
+//				bool update = wrapper.UpdateTrackedOutputAssembly (fileName);
+//				if (autoUpdate && update) {
+//					wrapper.ReconnectAssemblyReferences ();
+//
+//					// update documents
+//					foreach (var openDocument in IdeApp.Workbench.Documents) {
+//						openDocument.ReparseDocument ();
+//					}
+//				}
+//			}
+//		}
 	}
+
 }

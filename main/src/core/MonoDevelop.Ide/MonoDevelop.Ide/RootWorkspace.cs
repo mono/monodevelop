@@ -983,7 +983,6 @@ namespace MonoDevelop.Ide
 		{
 			try {
 //				Mono.Profiler.RuntimeControls.EnableProfiler ();
-				MonoDevelop.Ide.TypeSystem.TypeSystemService.Load (item);
 				MonoDevelop.Ide.TypeSystem.RoslynTypeSystemService.Load (item);
 //				Mono.Profiler.RuntimeControls.DisableProfiler ();
 //				Console.WriteLine ("PARSE LOAD: " + (DateTime.Now - t).TotalMilliseconds);
@@ -1042,10 +1041,8 @@ namespace MonoDevelop.Ide
 				if (LastWorkspaceItemClosed != null)
 					LastWorkspaceItemClosed (this, EventArgs.Empty);
 			}
-			
-			MonoDevelop.Ide.TypeSystem.TypeSystemService.Unload (item);
-//			ParserDatabase.Unload (item);
-			
+			MonoDevelop.Ide.TypeSystem.RoslynTypeSystemService.Unload (item);
+
 			NotifyDescendantItemRemoved (this, args);
 		}
 		
