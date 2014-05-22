@@ -1,5 +1,5 @@
 ﻿//
-// PackageSearchCriteria.cs
+// PackageSearchCriteriaTests.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,64 +26,49 @@
 
 using System;
 using NuGet;
+using NUnit.Framework;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests
 {
-	public class PackageSearchCriteria
+	[TestFixture]
+	public class PackageSearchCriteriaTests
 	{
-		WildcardVersionSpec wildcardVersionSpec;
+		PackageSearchCriteria search;
 
-		public PackageSearchCriteria (string searchText)
+		void CreateSearch (string text)
 		{
-			SearchText = RemoveWhitespace (searchText);
-			ParseSearchText (SearchText);
+			search = new PackageSearchCriteria (text);
 		}
 
-		public string PackageId { get; private set; }
-		public string SearchText { get; private set; }
+		[TestCase ("NUnit", false)]
+		[TestCase ("NUnit -version", true)]
+		[TestCase ("NUnit -v", true)]
+		public void IsPackageVersionSearch (string searchText, bool expectedResult)
+		{
+			CreateSearch (searchText);
 
-		public bool IsPackageVersionSearch {
-			get { return !String.IsNullOrEmpty (PackageId); }
+			bool result = search.IsPackageVersionSearch;
+
+			Assert.AreEqual (expectedResult, result);
 		}
 
-		public bool IsVersionMatch (SemanticVersion version)
+		[TestCase ("NUnit -version", "1.0", true)]
+		[TestCase ("NUnit -version *", "1.0", true)]
+		[TestCase ("NUnit -version 1.0", "1.0", true)]
+		[TestCase ("NUnit -version 1.0", "1.1", false)]
+		[TestCase ("NUnit -version 1", "1.0", true)]
+		[TestCase ("NUnit -version 1", "1.1", true)]
+		[TestCase ("NUnit -version 1", "1.9", true)]
+		[TestCase ("NUnit -version 1", "1.9.2", true)]
+		[TestCase ("NUnit -version 1", "2.0", false)]
+		public void IsVersionMatch (string searchText, string versionToMatch, bool expectedResult)
 		{
-			if (wildcardVersionSpec == null)
-				return true;
+			CreateSearch (searchText);
 
-			return wildcardVersionSpec.Satisfies (version);
-		}
+			bool result = search.IsVersionMatch (new SemanticVersion (versionToMatch));
 
-		string RemoveWhitespace (string searchText)
-		{
-			if (String.IsNullOrWhiteSpace (searchText))
-				return null;
-
-			return searchText;
-		}
-
-		void ParseSearchText (string searchText)
-		{
-			if (searchText == null)
-				return;
-
-			string[] parts = searchText.Split (new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
-			if (parts.Length < 2)
-				return;
-
-			if (!IsVersionOption (parts [1]))
-				return;
-
-			PackageId = parts [0].Trim ();
-
-			if (parts.Length > 2) {
-				wildcardVersionSpec = new WildcardVersionSpec (parts [2]);
-			}
-		}
-
-		bool IsVersionOption (string option)
-		{
-			return option.Contains ("-v");
+			Assert.AreEqual (expectedResult, result);
 		}
 	}
 }
+
