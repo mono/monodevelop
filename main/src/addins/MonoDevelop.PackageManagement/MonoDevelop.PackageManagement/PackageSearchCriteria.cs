@@ -83,7 +83,15 @@ namespace MonoDevelop.PackageManagement
 
 		bool IsVersionOption (string option)
 		{
-			return option.Contains ("-v");
+			return
+				IsMatch (option, "-v") ||
+				IsMatch (option, "-ver") ||
+				IsMatch (option, "-version");
+		}
+
+		static bool IsMatch (string a, string b)
+		{
+			return String.Equals (a, b, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

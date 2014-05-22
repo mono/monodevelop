@@ -43,6 +43,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		[TestCase ("NUnit", false)]
 		[TestCase ("NUnit -version", true)]
 		[TestCase ("NUnit -v", true)]
+		[TestCase ("NUnit -ver", true)]
+		[TestCase ("NUnit -V", true)]
+		[TestCase ("NUnit -VER", true)]
+		[TestCase ("NUnit a-v", false)]
+		[TestCase ("NUnit -Version", true)]
+		[TestCase ("  NUnit   -Version  ", true)]
 		public void IsPackageVersionSearch (string searchText, bool expectedResult)
 		{
 			CreateSearch (searchText);
@@ -61,6 +67,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[TestCase ("NUnit -version 1", "1.9", true)]
 		[TestCase ("NUnit -version 1", "1.9.2", true)]
 		[TestCase ("NUnit -version 1", "2.0", false)]
+		[TestCase ("   NUnit    -version    1   ", "2.0", false)]
 		public void IsVersionMatch (string searchText, string versionToMatch, bool expectedResult)
 		{
 			CreateSearch (searchText);
