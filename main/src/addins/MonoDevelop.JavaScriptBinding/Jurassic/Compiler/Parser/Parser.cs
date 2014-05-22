@@ -1149,8 +1149,7 @@ namespace Jurassic.Compiler
 			// Function declarations do nothing at the point of declaration - everything happens
 			// at the top of the function/global code.
 			// return new EmptyStatement(this.labelsForCurrentStatement);
-			var sourceSpan = new SourceCodeSpan (start, PositionBeforeWhitespace);
-			return new FunctionStatement (expression.FunctionName, expression.ArgumentNames, expression.BodyRoot, sourceSpan, labelsForCurrentStatement);
+			return new FunctionStatement (expression.FunctionName, expression.ArgumentNames, expression.BodyRoot, expression.SourceSpan, labelsForCurrentStatement);
 		}
 
 		enum FunctionType
@@ -1234,7 +1233,7 @@ namespace Jurassic.Compiler
 			Expect (PunctuatorToken.RightParenthesis);
 
 			// Record the start of the function body.
-			var startPosition = PositionBeforeWhitespace;
+			var startPosition = new SourceCodePosition (lexer.LineNumber, lexer.ColumnNumber - 1);
 
 			// Since the parser reads one token in advance, start capturing the function body here.
 			var bodyTextBuilder = new StringBuilder ();
@@ -1267,15 +1266,11 @@ namespace Jurassic.Compiler
 				// The end token '}' will be consumed by the parent function.
 				if (nextToken != PunctuatorToken.RightBrace)
 					throw new JavaScriptException (engine, "SyntaxError", "Expected '}'", LineNumber, SourcePath);
-
-				// Record the end of the function body.
-				endPosition = new SourceCodePosition (PositionAfterWhitespace.Line, PositionAfterWhitespace.Column + 1);
+				endPosition = new SourceCodePosition(lexer.LineNumber, lexer.ColumnNumber);
 			} else {
 				// Consume the '}'.
 				Expect (PunctuatorToken.RightBrace);
-
-				// Record the end of the function body.
-				endPosition = new SourceCodePosition (PositionAfterWhitespace.Line, PositionAfterWhitespace.Column + 1);
+				endPosition = PositionBeforeWhitespace;
 			}
 
 			// Create a new function expression.

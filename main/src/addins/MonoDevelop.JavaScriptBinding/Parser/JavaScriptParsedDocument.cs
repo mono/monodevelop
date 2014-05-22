@@ -122,28 +122,40 @@ namespace MonoDevelop.JavaScript.Parser
 				return;
 
 			foreach (var node in astNodes) {
-				var expressionStatement = node as Jurassic.Compiler.ExpressionStatement;
-				if (expressionStatement != null) {
-					if (expressionStatement.SourceSpan != null) {
-						if (expressionStatement.SourceSpan.EndLine > expressionStatement.SourceSpan.StartLine + 2) {
-							var region = DomRegionFactory.CreateDomRegion (fileName, expressionStatement.SourceSpan);
-							foldings.Add (new FoldingRegion (region));
-						}
-					}
-
-					setFoldings (expressionStatement.ChildNodes);
-
-					continue;
-				}
-
 				var function = node as Jurassic.Compiler.FunctionStatement;
 				if (function != null) {
 					if (function.SourceSpan != null) {
 						var region = DomRegionFactory.CreateDomRegion (fileName, function.SourceSpan);
-						foldings.Add (new FoldingRegion (function.BuildFunctionSignature (), region));
+						foldings.Add (new FoldingRegion (region));
 					}
 
 					setFoldings (function.BodyRoot.ChildNodes);
+
+					continue;
+				}
+
+				var literal = node as Jurassic.Compiler.LiteralExpression;
+				if (literal != null) {
+					if (literal.Value != null) {
+						var properties = literal.Value as Dictionary<string, object>;
+						if (properties != null) {
+							foreach (var value in properties.Values) {
+								var objFuncExpression = value as Jurassic.Compiler.FunctionExpression;
+								if (objFuncExpression != null) {
+									setFoldingsForFunctionExpression (objFuncExpression);
+									continue;
+								}
+
+								var objGetSetFunc = value as Jurassic.Compiler.Parser.ObjectLiteralAccessor;
+								if (objGetSetFunc != null) {
+									setFoldingsForFunctionExpression (objGetSetFunc.Getter);
+									setFoldingsForFunctionExpression (objGetSetFunc.Setter);
+								}
+							}
+						}
+					}
+
+					setFoldings (literal.ChildNodes);
 
 					continue;
 				}
@@ -184,20 +196,27 @@ namespace MonoDevelop.JavaScript.Parser
 
 				var functionExpression = node as Jurassic.Compiler.FunctionExpression;
 				if (functionExpression != null) {
-					if (functionExpression.SourceSpan != null) {
-						if (functionExpression.SourceSpan.EndLine > functionExpression.SourceSpan.StartLine + 2) {
-							var region = DomRegionFactory.CreateDomRegion (fileName, functionExpression.SourceSpan);
-							foldings.Add (new FoldingRegion (functionExpression.BuildFunctionSignature (), region));
-						}
-					}
-
-					setFoldings (functionExpression.BodyRoot.ChildNodes);
-
+					setFoldingsForFunctionExpression (functionExpression);
 					continue;
 				}
 
 				setFoldings (node.ChildNodes);
 			}
+		}
+
+		void setFoldingsForFunctionExpression (Jurassic.Compiler.FunctionExpression functionExpression)
+		{
+			if (functionExpression == null)
+				return;
+
+			if (functionExpression.SourceSpan != null) {
+				if (functionExpression.SourceSpan.EndLine > functionExpression.SourceSpan.StartLine) {
+					var region = DomRegionFactory.CreateDomRegion (fileName, functionExpression.SourceSpan);
+					foldings.Add (new FoldingRegion (region));
+				}
+			}
+
+			setFoldings (functionExpression.BodyRoot.ChildNodes);
 		}
 
 		void setComments (List<Jurassic.Compiler.Comment> comments)
