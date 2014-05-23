@@ -525,18 +525,19 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation OpenWorkspaceItem (string filename, bool closeCurrent, bool loadPreferences)
 		{
-			if (closeCurrent) {
-				if (!Close ())
-					return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Failure;
-			}
-
 			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
 
 			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == filename);
 			if (item != null) {
 				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = item;
+				IdeApp.Workbench.StatusBar.ShowWarning (GettextCatalog.GetString ("{0} is already opened", item.FileName.FileName));
 				return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+			}
+
+			if (closeCurrent) {
+				if (!Close ())
+					return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Failure;
 			}
 
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
