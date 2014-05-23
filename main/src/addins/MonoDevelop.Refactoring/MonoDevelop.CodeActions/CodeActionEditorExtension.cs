@@ -159,6 +159,11 @@ namespace MonoDevelop.CodeActions
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Document.Editor.Caret.Offset;
 					var ad = Document.AnalysisDocument;
+					if (ad == null) {
+						quickFixTimeout = 0;
+						return false;
+					}
+
 					TextSpan span;
 					if (Document.Editor.IsSomethingSelected)
 						span = TextSpan.FromBounds (document.Editor.SelectionRange.Offset, document.Editor.SelectionRange.EndOffset) ;

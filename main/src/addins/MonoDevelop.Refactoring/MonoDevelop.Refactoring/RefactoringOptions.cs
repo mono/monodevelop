@@ -123,8 +123,13 @@ namespace MonoDevelop.Refactoring
 		
 		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (Document doc, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
+			if (doc == null)
+				throw new System.ArgumentNullException ("doc");
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return ImmutableArray<string>.Empty;
 			var result = ImmutableArray<string>.Empty.ToBuilder ();
-			var sm = await doc.AnalysisDocument.GetSyntaxRootAsync (cancellationToken); 
+			var sm = await analysisDocument.GetSyntaxRootAsync (cancellationToken); 
 			var node = sm.FindNode (TextSpan.FromBounds (offset, offset)); 
 			
 			while (node != null) {

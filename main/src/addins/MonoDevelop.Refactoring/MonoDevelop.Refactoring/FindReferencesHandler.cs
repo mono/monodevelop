@@ -74,8 +74,11 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null)
 				FindRefs (sym);
@@ -120,7 +123,10 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null)
 				FindRefs (sym, doc.GetCompilationAsync ());

@@ -42,7 +42,7 @@ namespace MonoDevelop.CodeIssues
 	{
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
+			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
 
 			var model = input.GetCompilationAsync (cancellationToken).Result;

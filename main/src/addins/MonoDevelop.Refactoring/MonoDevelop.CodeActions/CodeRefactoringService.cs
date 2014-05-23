@@ -59,9 +59,12 @@ namespace MonoDevelop.CodeActions
 
 		public static async Task<IEnumerable<Tuple<CodeRefactoringDescriptor, CodeAction>>> GetValidActionsAsync (MonoDevelop.Ide.Gui.Document doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
 		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
 			var analysisDocument = doc.AnalysisDocument;
 			var actions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
-
+			if (analysisDocument == null)
+				return actions;
 			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(doc.Editor.MimeType))) {
 				var refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (analysisDocument, span, cancellationToken);
 				if (refactorings != null) {

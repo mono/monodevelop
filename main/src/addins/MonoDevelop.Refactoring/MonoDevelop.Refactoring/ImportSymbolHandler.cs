@@ -86,7 +86,10 @@ namespace MonoDevelop.Refactoring
 			}
 			result.GenerateUsing = true;
 			
-			var model = doc.AnalysisDocument.GetSemanticModelAsync ().Result;
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return result;
+			var model = analysisDocument.GetSemanticModelAsync ().Result;
 			
 			return result;
 		}
@@ -212,7 +215,10 @@ namespace MonoDevelop.Refactoring
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null || doc.AnalysisDocument == null)
+			if (doc == null || doc.FileName == FilePath.Null)
+				return;
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
 				return;
 			ITextEditorExtension ext = doc.EditorExtension;
 			while (ext != null && !(ext is CompletionTextEditorExtension))
@@ -220,7 +226,7 @@ namespace MonoDevelop.Refactoring
 			if (ext == null)
 				return;
 			
-			var semanticModel = doc.AnalysisDocument.GetSemanticModelAsync ().Result; 
+			var semanticModel = analysisDocument.GetSemanticModelAsync ().Result; 
 			
 			var cache = new ImportSymbolCache (semanticModel);
 

@@ -204,7 +204,12 @@ namespace MonoDevelop.Refactoring
 		
 		public static PossibleNamespaceResult GetPossibleNamespaces (MonoDevelop.Ide.Gui.Document doc, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			var semanticModel = doc.AnalysisDocument.GetSemanticModelAsync (cancellationToken).Result; 
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
+			var semanticModel = analysisDocument.GetSemanticModelAsync (cancellationToken).Result; 
 			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
 			var offset = doc.Editor.LocationToOffset (location);
 			bool addUsings = true;
