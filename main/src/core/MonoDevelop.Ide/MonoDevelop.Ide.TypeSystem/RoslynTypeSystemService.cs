@@ -25,16 +25,9 @@
 // THE SOFTWARE.
 using System;
 using Microsoft.CodeAnalysis;
-using System.Linq;
-using System.IO;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading;
-using System.Reflection;
-using Microsoft.CodeAnalysis.Text;
-using Mono.TextEditor;
-using Microsoft.CodeAnalysis.Host.Mef;
-using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -180,10 +173,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				throw new ArgumentNullException ("project");
 			var projectId = emptyWorkspace.GetProjectId (project); 
 			return emptyWorkspace.CurrentSolution.GetProject (projectId);
-		}
-
-		public static void UpdateDocument (Project project, FilePath fileName, string currentParseText)
-		{
 		}
 
 		public static async Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))

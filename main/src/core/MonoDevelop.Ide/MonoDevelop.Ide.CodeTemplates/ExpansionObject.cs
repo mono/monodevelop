@@ -52,7 +52,10 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public SemanticModel Compilation {
 			get {
-				return Document.AnalysisDocument.GetSemanticModelAsync ().Result;
+				var analysisDocument = Document.AnalysisDocument;
+				if (analysisDocument == null)
+					return null;
+				return analysisDocument.GetSemanticModelAsync ().Result;
 			}
 		}
 
@@ -207,7 +210,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public string GetSimpleTypeName (string fullTypeName)
 		{
-			if (CurrentContext.Compilation == null)
+			var compilation = CurrentContext.Compilation;
+			if (compilation == null)
 				return fullTypeName.Replace ("#", ".");
 			string ns = "";
 			string name = "";
@@ -228,15 +232,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 
 			var metadataName = string.IsNullOrEmpty (ns) ? name : ns + "." + name;
-			var type = CurrentContext.Compilation.Compilation.GetTypeByMetadataName (metadataName);
+			var type = compilation.Compilation.GetTypeByMetadataName (metadataName);
 			if (type != null) {
-				var minimalName = type.ToMinimalDisplayString (CurrentContext.Compilation, CurrentContext.Document.Editor.Caret.Offset);
+				var minimalName = type.ToMinimalDisplayString (compilation, CurrentContext.Document.Editor.Caret.Offset);
 				return string.IsNullOrEmpty (member) ? minimalName :  minimalName + "." + member;
 			}
 			return fullTypeName.Replace ("#", ".");
 		}
 		
-		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
+		static readonly Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
 		
 		
 		// We should use reflection here (but for 5 functions it doesn't hurt) !!! - Mike

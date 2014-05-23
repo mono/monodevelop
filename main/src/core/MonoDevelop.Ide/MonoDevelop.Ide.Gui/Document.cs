@@ -83,6 +83,10 @@ namespace MonoDevelop.Ide.Gui
 			get { return this.editorExtension; }
 		}
 
+		/// <summary>
+		/// Returns the roslyn document for this document. This may return <c>null</c> if it's no compileable document.
+		/// Even if it's a C# file.
+		/// </summary>
 		public Microsoft.CodeAnalysis.Document AnalysisDocument {
 			get {
 				if (analysisDocument == null)
@@ -243,15 +247,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public Task<Microsoft.CodeAnalysis.SyntaxTree> GetSyntaxTreeAsync(CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var doc = RoslynTypeSystemService.Workspace.GetDocument (analysisDocument); 
-			return doc.GetSyntaxTreeAsync (cancellationToken);
-		}
-
 		public Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var project = RoslynTypeSystemService.GetProject (Project); 
+			if (project == null)
+				return new Task<Microsoft.CodeAnalysis.Compilation> (() => null);
 			return project.GetCompilationAsync (cancellationToken);
 		}
 

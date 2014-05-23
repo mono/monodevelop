@@ -40,7 +40,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
-	public class MonoDevelopWorkspace : Workspace, IDisposable
+	public class MonoDevelopWorkspace : Workspace
 	{
 		readonly static MefHostServices services = MefHostServices.Create(new [] { 
 				typeof(MefHostServices).Assembly,
@@ -59,8 +59,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public void Dispose ()
+		protected override void Dispose (bool finalize)
 		{
+			base.Dispose (finalize);
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 				IdeApp.ProjectOperations.EndBuild -= HandleEndBuild;
