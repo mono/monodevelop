@@ -53,6 +53,7 @@ namespace MonoDevelop.CSharp
 		readonly MonoDevelop.Ide.Gui.Document document;
 		readonly OptionSet options;
 		readonly ColorScheme colorStyle;
+		readonly int offset;
 
 		public bool BreakLineAfterReturnType {
 			get;
@@ -70,8 +71,9 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public SignatureMarkupCreator (MonoDevelop.Ide.Gui.Document document)
+		public SignatureMarkupCreator (MonoDevelop.Ide.Gui.Document document, int offset)
 		{
+			this.offset = offset;
 			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
 
 			this.document = document;
@@ -94,23 +96,13 @@ namespace MonoDevelop.CSharp
 			}
 			if (type.TypeKind == TypeKind.PointerType)
 				return GetTypeReferenceString (((IPointerTypeSymbol)type).PointedAtType, highlight) + "*";
-			var typeSyntax = type.GenerateTypeSyntax ();
-//			AstType astType;
-//			try {
-//				astType = astBuilder.ConvertType (type);
-//			} catch (Exception e) {
-//				var compilation = GetCompilation (type);
-//				if (compilation == null) {
-//					LoggingService.LogWarning ("type:" + type.GetType (), e);
-//					return "?";
-//				}
-//				astType = new TypeSystemAstBuilder (new CSharpResolver (compilation)).ConvertType (type);
-//			}
-//
-//			if (astType is PrimitiveType) {
-//				return Highlight (astType.ToString (formattingOptions), colorStyle.KeywordTypes);
-//			}
-			var text = AmbienceService.EscapeText (typeSyntax.ToFullString ());
+
+			SemanticModel model = null;
+			var analysisDocument = document.AnalysisDocument;
+			if (analysisDocument != null) {
+				model = analysisDocument.GetSemanticModelAsync ().Result;
+			}
+			var text = AmbienceService.EscapeText (type.ToMinimalDisplayString (model, offset));
 			return highlight ? HighlightSemantically (text, colorStyle.UserTypes) : text;
 		}
 
