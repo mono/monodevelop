@@ -453,7 +453,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			if (searchResult.ProjectIcon == null)
+			if (searchResult.ProjectIcon == null && searchResult.Projects.Count > 0)
 				searchResult.ProjectIcon = ImageService.GetIcon (searchResult.Projects [0].StockIcon).WithSize (Gtk.IconSize.Menu);
 			fileNamePixbufRenderer.Image = searchResult.ProjectIcon;
 		}
@@ -467,7 +467,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (searchResult == null)
 				return;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			pathRenderer.Markup = MarkupText (String.Join (", ", searchResult.Projects), didRead);
+			if (searchResult.Projects.Count > 0)
+				pathRenderer.Markup = MarkupText (String.Join (", ", searchResult.Projects.Select (p => p.Name)), didRead);
+			else
+				pathRenderer.Markup = "";
 		}
 
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
