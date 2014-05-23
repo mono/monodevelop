@@ -1514,11 +1514,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else {
 				buildItem.UnsetMetadata ("Visible");
 			}
-			
-			if (file.BuildAction == BuildAction.EmbeddedResource) {
-				//Emit LogicalName only when it does not match the default Id
-				if (GetDefaultResourceId (file) != file.ResourceId)
-					buildItem.SetMetadata ("LogicalName", file.ResourceId);
+
+			var resId = file.ResourceId;
+
+			//For EmbeddedResource, emit LogicalName only when it does not match the default Id
+			if (file.BuildAction == BuildAction.EmbeddedResource && GetDefaultResourceId (file) == resId)
+				resId = null;
+
+			if (!string.IsNullOrEmpty (resId)) {
+				buildItem.SetMetadata ("LogicalName", resId);
+			} else {
+				buildItem.UnsetMetadata ("LogicalName");
 			}
 		}
 		
