@@ -533,6 +533,12 @@ namespace MonoDevelop.Ide
 			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
 
+			var item = GetAllItems<WorkspaceItem> ().FirstOrDefault (w => w.FileName == filename);
+			if (item != null) {
+				IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = item;
+				return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+			}
+
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				bool reloading = IsReloading;
 
@@ -574,14 +580,6 @@ namespace MonoDevelop.Ide
 					return;
 				}
 
-				for (int i = 0; i < Items.Count; i++) {
-					if (Items[i].FileName == filename) {
-						IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = Items[i];
-						monitor.Dispose ();
-						return;
-					}
-				}
-				
 				if (!Services.ProjectService.IsWorkspaceItemFile (filename)) {
 					if (!Services.ProjectService.IsSolutionItemFile (filename)) {
 						monitor.ReportError (GettextCatalog.GetString ("File is not a project or solution: {0}", filename), null);
