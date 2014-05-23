@@ -416,10 +416,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
 			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
 			if (searchResult1 == null || searchResult2 == null ||
-				searchResult1.Project == null || searchResult2.Project == null ||
-				searchResult1.Project.FileName == null || searchResult2.Project.FileName == null)
+				searchResult1.Projects == null || searchResult2.Projects == null ||
+				searchResult1.Projects.Count == 0 || searchResult2.Projects.Count == 0)
 				return -1;
-			return System.IO.Path.GetFileName (searchResult1.Project.FileName).CompareTo (System.IO.Path.GetFileName (searchResult2.Project.FileName));
+			return System.IO.Path.GetFileName (searchResult1.Projects[0].FileName).CompareTo (System.IO.Path.GetFileName (searchResult2.Projects[0].FileName));
 		}
 
 		static int CompareFilePaths (TreeModel model, TreeIter first, TreeIter second)
@@ -454,7 +454,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (searchResult == null)
 				return;
 			if (searchResult.ProjectIcon == null)
-				searchResult.ProjectIcon = ImageService.GetIcon (searchResult.Project.StockIcon).WithSize (Gtk.IconSize.Menu);
+				searchResult.ProjectIcon = ImageService.GetIcon (searchResult.Projects [0].StockIcon).WithSize (Gtk.IconSize.Menu);
 			fileNamePixbufRenderer.Image = searchResult.ProjectIcon;
 		}
 
@@ -467,7 +467,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (searchResult == null)
 				return;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			pathRenderer.Markup = MarkupText (searchResult.Project.Name, didRead);
+			pathRenderer.Markup = MarkupText (String.Join (", ", searchResult.Projects), didRead);
 		}
 
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)

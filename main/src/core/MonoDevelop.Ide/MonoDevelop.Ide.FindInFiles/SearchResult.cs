@@ -28,6 +28,7 @@
 
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -75,13 +76,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 
-		private Project project;
-		public Project Project {
+		private List<Project> projects;
+		public List<Project> Projects {
 			get {
-				if (project == null) {
-					project = IdeApp.Workspace.GetProjectContainingFile (FileName);
+				if (projects == null) {
+					projects = new List<Project> (IdeApp.Workspace.GetProjectsContainingFile (FileName));
 				}
-				return project;
+				return projects;
 			}
 		}
 		#endregion
