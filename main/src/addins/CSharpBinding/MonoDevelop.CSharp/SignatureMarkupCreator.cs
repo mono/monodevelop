@@ -96,13 +96,20 @@ namespace MonoDevelop.CSharp
 			}
 			if (type.TypeKind == TypeKind.PointerType)
 				return GetTypeReferenceString (((IPointerTypeSymbol)type).PointedAtType, highlight) + "*";
+			string displayString;
 
-			SemanticModel model = null;
-			var analysisDocument = document.AnalysisDocument;
-			if (analysisDocument != null) {
-				model = analysisDocument.GetSemanticModelAsync ().Result;
+			if (document != null) {
+				SemanticModel model = null;
+				var analysisDocument = document.AnalysisDocument;
+				if (analysisDocument != null) {
+					model = analysisDocument.GetSemanticModelAsync ().Result;
+				}
+				displayString = type.ToMinimalDisplayString (model, offset);
+			} else {
+				displayString = type.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
 			}
-			var text = AmbienceService.EscapeText (type.ToMinimalDisplayString (model, offset));
+
+			var text = AmbienceService.EscapeText (displayString);
 			return highlight ? HighlightSemantically (text, colorStyle.UserTypes) : text;
 		}
 

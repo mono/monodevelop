@@ -170,7 +170,7 @@ namespace MonoDevelop.CSharp.Completion
 			var tooltipInfo = new TooltipInformation ();
 //			if (resolver == null)
 //				resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
-			var sig = new SignatureMarkupCreator (doc, doc.Editor.Caret.Offset);
+			var sig = new SignatureMarkupCreator (doc, doc != null ? doc.Editor.Caret.Offset : 0);
 			sig.BreakLineAfterReturnType = smartWrap;
 			try {
 				tooltipInfo.SignatureMarkup = sig.GetMarkup (entity);
