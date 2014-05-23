@@ -170,6 +170,11 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
+			RoslynTypeSystemService.Workspace.WorkspaceChanged += delegate(object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e) {
+				if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.DocumentChanged) {
+					Console.WriteLine ("change !!!");
+				}
+			};
 		}
 
 /*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
@@ -852,14 +857,6 @@ namespace MonoDevelop.Ide.Gui
 		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
 		static IUnresolvedAssembly System { get { return system.Value; } }
 
-		public bool IsProjectContextInUpdate {
-			get {
-				if (currentWrapper == null)
-					return false;
-				return !currentWrapper.IsLoaded || !currentWrapper.ReferencesConnected;
-			}
-		}
-
 		public virtual IProjectContent GetProjectContext ()
 		{
 			if (Project == null) {
@@ -896,23 +893,18 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			EnsureAnalysisDocumentIsOpen ();
 			CancelParseTimeout ();
-			if (IsProjectContextInUpdate)
-				return;
 			//if (analysisDocument != null && RoslynTypeSystemService.Workspace.IsDocumentOpen (analysisDocument))
 			//	RoslynTypeSystemService.Workspace.OnDocumentTextChanged (analysisDocument, Microsoft.CodeAnalysis.Text.SourceText.From (Editor.Text), Microsoft.CodeAnalysis.PreservationMode.PreserveIdentity); 
 
 			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
 				var editor = Editor;
-				if (editor == null || IsProjectContextInUpdate) {
+				if (editor == null) {
 					parseTimeout = 0;
 					return false;	
 				}
 				string currentParseText = editor.Text;
 				string mimeType = editor.Document.MimeType;
-
 				ThreadPool.QueueUserWorkItem (delegate {
-					if (IsProjectContextInUpdate)
-						return;
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
 					Application.Invoke (delegate {

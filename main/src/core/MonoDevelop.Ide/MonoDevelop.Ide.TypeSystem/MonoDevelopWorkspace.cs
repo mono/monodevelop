@@ -70,6 +70,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
+			if (currentMonoDevelopSolution == null)
+				return;
 			OnSolutionReloaded (CreateSolutionInfo (currentMonoDevelopSolution));
 //			foreach (var pr in projectContents.Keys.ToArray ()) {
 //				var project = pr as DotNetProject;
@@ -106,13 +108,15 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		Dictionary<MonoDevelop.Projects.Solution, SolutionId> solutionIdMap = new Dictionary<MonoDevelop.Projects.Solution, SolutionId> ();
 
-		internal SolutionId GetSolutionId (MonoDevelop.Projects.Solution p)
+		internal SolutionId GetSolutionId (MonoDevelop.Projects.Solution solution)
 		{
+			if (solution == null)
+				throw new ArgumentNullException ("solution");
 			lock (solutionIdMap) {
 				SolutionId result;
-				if (!solutionIdMap.TryGetValue (p, out result)) {
-					result = SolutionId.CreateNewId (p.Name);
-					solutionIdMap [p] = result;
+				if (!solutionIdMap.TryGetValue (solution, out result)) {
+					result = SolutionId.CreateNewId (solution.Name);
+					solutionIdMap [solution] = result;
 				}
 				return result;
 			}

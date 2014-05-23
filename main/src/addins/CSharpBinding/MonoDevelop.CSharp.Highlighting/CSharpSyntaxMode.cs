@@ -139,20 +139,17 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (src != null)
 				src.Cancel ();
 			resolver = null;
-			if (guiDocument.IsProjectContextInUpdate) {
-				return;
-			}
 			if (guiDocument != null && SemanticHighlightingEnabled) {
 				if (guiDocument.Project != null && guiDocument.IsCompileableInProject) {
 					src = new CancellationTokenSource ();
 					var analysisDocument = guiDocument.AnalysisDocument;
 					if (analysisDocument == null)
 						return;
-					var newResolverTask = analysisDocument.GetSemanticModelAsync ();
 					var cancellationToken = src.Token;
+					var newResolverTask = analysisDocument.GetSemanticModelAsync (cancellationToken);
+					if (newResolverTask == null)
+						return;
 					System.Threading.Tasks.Task.Factory.StartNew (delegate {
-						if (newResolverTask == null)
-							return;
 						var newResolver = newResolverTask.Result;
 						if (newResolver == null)
 							return;

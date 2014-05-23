@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					// Open documents are handled by the Document class itself.
 					if (IdeApp.Workbench != null && IdeApp.Workbench.GetDocument (file.FileName) != null)
 						continue;
-					emptyWorkspace.UpdateFileContent (file.FileName);
+					Workspace.UpdateFileContent (file.FileName);
 				}
 			};
 		}
@@ -125,16 +125,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (ws != null) {
 				foreach (var it in ws.Items)
 					InternalLoad (it);
-				ws.ItemAdded += OnWorkspaceItemAdded;
-				ws.ItemRemoved += OnWorkspaceItemRemoved;
+//				ws.ItemAdded += OnWorkspaceItemAdded;
+//				ws.ItemRemoved += OnWorkspaceItemRemoved;
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
 					var newWorkspace = new MonoDevelopWorkspace ();
 					newWorkspace.LoadSolution (solution);
 					workspaces [solution] = newWorkspace;
-					solution.SolutionItemAdded += OnSolutionItemAdded;
-					solution.SolutionItemRemoved += OnSolutionItemRemoved;
+//					solution.SolutionItemAdded += OnSolutionItemAdded;
+//					solution.SolutionItemRemoved += OnSolutionItemRemoved;
 				}
 			}
 		}
@@ -163,24 +163,27 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static DocumentId GetDocument (MonoDevelop.Projects.Project project, string fileName)
 		{
-			var projectId = emptyWorkspace.GetProjectId (project);
-			return emptyWorkspace.GetDocumentId (projectId, fileName);
+			var w = Workspace;
+			var projectId = w.GetProjectId (project);
+			return w.GetDocumentId (projectId, fileName);
 		}
 
 		public static Project GetProject (MonoDevelop.Projects.Project project)
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			var projectId = emptyWorkspace.GetProjectId (project); 
-			return emptyWorkspace.CurrentSolution.GetProject (projectId);
+			var w = Workspace;
+			var projectId = w.GetProjectId (project); 
+			return w.CurrentSolution.GetProject (projectId);
 		}
 
 		public static async Task<Compilation> GetCompilationAsync (MonoDevelop.Projects.Project project, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (project == null)
 				throw new ArgumentNullException ("project");
-			var projectId = emptyWorkspace.GetProjectId (project); 
-			Project roslynProject = emptyWorkspace.CurrentSolution.GetProject (projectId);
+			var w = Workspace;
+			var projectId = w.GetProjectId (project); 
+			Project roslynProject = w.CurrentSolution.GetProject (projectId);
 			return await roslynProject.GetCompilationAsync (cancellationToken);
 		}
 
