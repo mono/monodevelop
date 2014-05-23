@@ -119,9 +119,24 @@ namespace MonoDevelop.Ide.FindInFiles
 			
 			this.ShowAll ();
 
-			var fileNameColumn = new TreeViewColumn {
+			var projectColumn = new TreeViewColumn {
 				Resizable = true,
 				SortColumnId = 0,
+				Title = GettextCatalog.GetString ("Project"),
+				FixedWidth = 100
+			};
+
+			var projectPixbufRenderer = new CellRendererImage ();
+			projectColumn.PackStart (projectPixbufRenderer, false);
+			projectColumn.SetCellDataFunc (projectPixbufRenderer, ResultProjectIconDataFunc);
+
+			projectColumn.PackStart (treeviewSearchResults.TextRenderer, true);
+			projectColumn.SetCellDataFunc (treeviewSearchResults.TextRenderer, ResultProjectDataFunc);
+			treeviewSearchResults.AppendColumn (projectColumn);
+
+			var fileNameColumn = new TreeViewColumn {
+				Resizable = true,
+				SortColumnId = 1,
 				Title = GettextCatalog.GetString ("File"),
 				FixedWidth = 200
 			};
@@ -149,7 +164,8 @@ namespace MonoDevelop.Ide.FindInFiles
 			pathColumn.FixedWidth = 500;
 
 
-			store.SetSortFunc (0, CompareFileNames);
+			store.SetSortFunc (0, CompareProjectFileNames);
+			store.SetSortFunc (1, CompareFileNames);
 			store.SetSortFunc (3, CompareFilePaths);
 
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
@@ -232,8 +248,8 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
-			newStore.SetSortFunc (0, CompareFileNames);
-			newStore.SetSortFunc (1, CompareLineNumbers);
+			newStore.SetSortFunc (0, CompareProjectFileNames);
+			newStore.SetSortFunc (1, CompareFileNames);
 			newStore.SetSortFunc (3, CompareFilePaths);
 
 			treeviewSearchResults.Model = newStore;
@@ -344,9 +360,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
 			if (searchResult == null)
 				return;
-			if (searchResult.Icon == null)
-				searchResult.Icon = DesktopService.GetIconForFile (searchResult.FileName, IconSize.Menu);
-			fileNamePixbufRenderer.Image = searchResult.Icon;
+			if (searchResult.FileIcon == null)
+				searchResult.FileIcon = DesktopService.GetIconForFile (searchResult.FileName, IconSize.Menu);
+			fileNamePixbufRenderer.Image = searchResult.FileIcon;
 		}
 
 
@@ -394,7 +410,18 @@ namespace MonoDevelop.Ide.FindInFiles
 				return -1;
 			return System.IO.Path.GetFileName (searchResult1.FileName).CompareTo (System.IO.Path.GetFileName (searchResult2.FileName));
 		}
-		
+
+		static int CompareProjectFileNames (TreeModel model, TreeIter first, TreeIter second)
+		{
+			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
+			var searchResult2 = (SearchResult)model.GetValue (second, SearchResultColumn);
+			if (searchResult1 == null || searchResult2 == null ||
+				searchResult1.Project == null || searchResult2.Project == null ||
+				searchResult1.Project.FileName == null || searchResult2.Project.FileName == null)
+				return -1;
+			return System.IO.Path.GetFileName (searchResult1.Project.FileName).CompareTo (System.IO.Path.GetFileName (searchResult2.Project.FileName));
+		}
+
 		static int CompareFilePaths (TreeModel model, TreeIter first, TreeIter second)
 		{
 			var searchResult1 = (SearchResult)model.GetValue (first, SearchResultColumn);
@@ -416,6 +443,31 @@ namespace MonoDevelop.Ide.FindInFiles
 				return;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
 			pathRenderer.Markup = MarkupText (System.IO.Path.GetDirectoryName (searchResult.FileName), didRead);
+		}
+
+		void ResultProjectIconDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			if (TreeIter.Zero.Equals (iter))
+				return;
+			var fileNamePixbufRenderer = (CellRendererImage) cell;
+			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			if (searchResult == null)
+				return;
+			if (searchResult.ProjectIcon == null)
+				searchResult.ProjectIcon = ImageService.GetIcon (searchResult.Project.StockIcon).WithSize (Gtk.IconSize.Menu);
+			fileNamePixbufRenderer.Image = searchResult.ProjectIcon;
+		}
+
+		void ResultProjectDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
+		{
+			if (TreeIter.Zero.Equals (iter))
+				return;
+			var pathRenderer = (CellRendererText)cell;
+			var searchResult = (SearchResult)store.GetValue (iter, SearchResultColumn);
+			if (searchResult == null)
+				return;
+			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
+			pathRenderer.Markup = MarkupText (searchResult.Project.Name, didRead);
 		}
 
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
