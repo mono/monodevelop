@@ -263,6 +263,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
 		public Project GetProjectContainingFile (string fileName)
 		{
 			foreach (WorkspaceItem it in Items) {
@@ -272,7 +273,16 @@ namespace MonoDevelop.Ide
 			}
 			return null;
 		}
-		
+
+		public IEnumerable<Project> GetProjectsContainingFile (string fileName)
+		{
+			foreach (WorkspaceItem it in Items) {
+				foreach (Project p in it.GetProjectsContainingFile (fileName)) {
+					yield return p;
+				}
+			}
+		}
+
 #endregion
 		
 #region Build and run operations

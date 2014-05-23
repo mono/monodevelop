@@ -96,7 +96,7 @@ namespace MonoDevelop.Projects
 			return null;
 		}
 
-
+		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
 		public override Project GetProjectContainingFile (FilePath fileName)
 		{
 			foreach (WorkspaceItem it in Items) {
@@ -105,6 +105,15 @@ namespace MonoDevelop.Projects
 					return p;
 			}
 			return null;
+		}
+
+		public override IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
+		{
+			foreach (WorkspaceItem it in Items) {
+				foreach (Project p in it.GetProjectsContainingFile (fileName)) {
+					yield return p;
+				}
+			}
 		}
 
 		public override bool ContainsItem (IWorkspaceObject obj)
