@@ -467,7 +467,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (searchResult == null)
 				return;
 			bool didRead = (bool)store.GetValue (iter, DidReadColumn);
-			pathRenderer.Markup = MarkupText (String.Join (", ", searchResult.Projects), didRead);
+			pathRenderer.Markup = MarkupText (String.Join (", ", searchResult.Projects.Select (p => p.Name)), didRead);
 		}
 
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
