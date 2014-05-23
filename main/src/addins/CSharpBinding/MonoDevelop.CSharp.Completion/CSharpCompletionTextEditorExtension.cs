@@ -237,14 +237,18 @@ namespace MonoDevelop.CSharp.Completion
 
 			var list = new CSharpCompletionDataList ();
 			try {
-				Microsoft.CodeAnalysis.Compilation compilation;
+				var analysisDocument = document.AnalysisDocument;
+				if (analysisDocument == null)
+					return null;
+
+				Compilation compilation;
 				compilation = document.GetCompilationAsync ().Result; 
 
 				if (compilation != null) {
-					var syntaxTree = document.GetSyntaxTreeAsync ().Result;
+					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
 					var engine = new CompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
 					
-					var completionResult = engine.GetCompletionData (document.AnalysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace);
+					var completionResult = engine.GetCompletionData (analysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace);
 					foreach (var symbol in completionResult) {
 						list.Add (symbol); 
 					}
@@ -339,7 +343,10 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
 		{
-			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (document.AnalysisDocument, provider.StartOffset, document.Editor.Caret.Offset).Result;
+			var analysisDocument = document.AnalysisDocument;
+			if (analysisDocument == null)
+				return -1;
+			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, provider.StartOffset, document.Editor.Caret.Offset).Result;
 			var cparam = result.ParameterIndex;
 			var list = result.UsedNamespaceParameters;
 			if (cparam > provider[currentOverload].ParameterCount && !provider[currentOverload].IsParameterListAllowed || !HasAllUsedParameters (provider[currentOverload], list)) {
@@ -501,9 +508,12 @@ namespace MonoDevelop.CSharp.Completion
 				var compilation = document.GetCompilationAsync ().Result; 
 
 				if (compilation != null) {
-					var syntaxTree = document.GetSyntaxTreeAsync ().Result;
+					var analysisDocument = document.AnalysisDocument;
+					if (analysisDocument == null)
+						return null;
+					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
 					var engine = new ParameterHintingEngine (RoslynTypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-					return engine.GetParameterDataProvider (document.AnalysisDocument, compilation.GetSemanticModel (syntaxTree), offset);
+					return engine.GetParameterDataProvider (analysisDocument, compilation.GetSemanticModel (syntaxTree), offset);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
@@ -535,7 +545,10 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
- 			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (document.AnalysisDocument, startOffset, document.Editor.Caret.Offset).Result;
+			var analysisDocument = document.AnalysisDocument;
+			if (analysisDocument == null)
+				return -1;
+ 			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, startOffset, document.Editor.Caret.Offset).Result;
 			return result.ParameterIndex;
 		}
 

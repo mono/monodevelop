@@ -40,9 +40,14 @@ namespace MonoDevelop.CSharp
 {
 	class UnitTestTextEditorExtension : AbstractUnitTestTextEditorExtension
 	{
+		static readonly IList<UnitTestLocation> emptyResult = new List<UnitTestLocation> ();
+
 		public override async Task<IList<UnitTestLocation>> GatherUnitTests (CancellationToken token)
 		{
-			var semanticModel = await document.AnalysisDocument.GetSemanticModelAsync (token);
+			var analysisDocument = document.AnalysisDocument;
+			if (analysisDocument == null)
+				return emptyResult;
+			var semanticModel = await analysisDocument.GetSemanticModelAsync (token);
 
 			var visitor = new NUnitVisitor (semanticModel, token);
 			try {

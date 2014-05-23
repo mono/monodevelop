@@ -162,7 +162,10 @@ namespace MonoDevelop.DocFood
 		
 		ISymbol GetMemberToDocument ()
 		{
-			var parsedDocument = Document.AnalysisDocument.GetSemanticModelAsync ().Result;
+			var analysisDocument = Document.AnalysisDocument;
+			if (analysisDocument == null)
+				return null;
+			var parsedDocument = analysisDocument.GetSemanticModelAsync ().Result;
 			var caretOffset = textEditorData.Caret.Offset;
 			var offset = caretOffset;
 			var root = parsedDocument.SyntaxTree.GetRoot ();

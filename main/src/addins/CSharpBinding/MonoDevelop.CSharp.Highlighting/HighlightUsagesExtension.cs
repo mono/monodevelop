@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		public Document Document;
 
 		public ISymbol Symbol {
-			get { return SymbolInfo.Symbol ?? SymbolInfo.DeclaredSymbol; }
+			get { return SymbolInfo != null ? SymbolInfo.Symbol ?? SymbolInfo.DeclaredSymbol : null; }
 		}
 	}
 	
@@ -75,14 +75,17 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected async override Task<UsageData> ResolveAsync (CancellationToken token)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.FileName == FilePath.Null) {
+			if (doc == null || doc.FileName == FilePath.Null)
 				return new UsageData ();
-			}
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return new UsageData ();
 
-			var document = doc.AnalysisDocument;
-			var symbolInfo = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (document, doc.Editor.Caret.Offset, token);
+			var symbolInfo = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset, token);
+			if (symbolInfo.Symbol == null && symbolInfo.DeclaredSymbol == null)
+				return new UsageData ();
 			return new UsageData {
-				Document = document,
+				Document = analysisDocument,
 				SymbolInfo = symbolInfo
 			};
 		}

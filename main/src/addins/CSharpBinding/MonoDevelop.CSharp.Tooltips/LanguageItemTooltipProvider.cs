@@ -63,9 +63,12 @@ namespace MonoDevelop.SourceEditor
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			if (doc == null || doc.AnalysisDocument == null)
+			if (doc == null)
 				return null;
-			var unit = doc.AnalysisDocument.GetSemanticModelAsync ().Result;
+			var analysisDocument = doc.AnalysisDocument;
+			if (analysisDocument == null)
+				return null;
+			var unit = analysisDocument.GetSemanticModelAsync ().Result;
 			if (unit == null)
 				return null;
 			

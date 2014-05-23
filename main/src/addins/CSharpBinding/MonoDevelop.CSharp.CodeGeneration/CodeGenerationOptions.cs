@@ -85,7 +85,9 @@ namespace MonoDevelop.CodeGeneration
 
 		internal CodeGenerationOptions (MonoDevelop.Ide.Gui.Document document)
 		{
-			CurrentState = document.AnalysisDocument.GetSemanticModelAsync ().Result;
+			var analysisDocument = document.AnalysisDocument;
+			if (analysisDocument != null)
+				CurrentState = analysisDocument.GetSemanticModelAsync ().Result;
 			offset = document.Editor.Caret.Offset;
 			var node = CurrentState.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset));
 			EnclosingMember = node.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault ();
