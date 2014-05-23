@@ -184,7 +184,14 @@ namespace MonoDevelop.CodeActions
 							var provider = cfp.GetCodeFixProvider ();
 							if (!provider.GetFixableDiagnosticIds ().Any (diagnosticIds.Contains))
 								continue;
-							var fixes = provider.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result.ToList ();
+
+							List<CodeAction> fixes;
+							try {
+								fixes = provider.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result.ToList ();
+							} catch (Exception e) {
+								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, e); 
+								continue;
+							}
 							foreach (var fix in fixes)
 								codeIssueFixes.Add (Tuple.Create (cfp, fix));
 						}

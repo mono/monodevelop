@@ -33,6 +33,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeActions
 {
@@ -66,7 +67,13 @@ namespace MonoDevelop.CodeActions
 			if (analysisDocument == null)
 				return actions;
 			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(doc.Editor.MimeType))) {
-				var refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (analysisDocument, span, cancellationToken);
+				IEnumerable<CodeAction> refactorings;
+				try {
+					refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (analysisDocument, span, cancellationToken);
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while getting refactorings from " + descriptor.IdString, e); 
+					continue;
+				}
 				if (refactorings != null) {
 					foreach (var action in refactorings)
 						actions.Add (Tuple.Create (descriptor, action));
