@@ -56,7 +56,9 @@ module CompilerArguments =
 
             project.TargetRuntime.GetReferenceFrameworkDirectories() 
             |> Seq.tryFind (fun fd ->  Directory.Exists(fd.Combine([|TargetFrameworkMoniker.ID_PORTABLE|]).ToString()))
-            |> function Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName)) | None -> Seq.empty
+            |> function
+               | Some fd -> Directory.EnumerateFiles(Path.Combine(fd.ToString(), assemblyDirectoryName), "*.dll")
+               | None -> Seq.empty
 
         project.GetReferencedAssemblies(configSelector) 
         |> Seq.append portableReferences
