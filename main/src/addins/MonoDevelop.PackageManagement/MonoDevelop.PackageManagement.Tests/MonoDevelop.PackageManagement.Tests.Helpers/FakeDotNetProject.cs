@@ -112,6 +112,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			ImportsRemoved.Add (name);
 		}
+
+		public event EventHandler<ProjectModifiedEventArgs> Modified;
+
+		public void RaiseModifiedEvent (ProjectModifiedEventArgs e)
+		{
+			if (Modified != null) {
+				Modified (this, e);
+			}
+		}
 	}
 }
 

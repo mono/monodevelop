@@ -104,6 +104,31 @@ namespace MonoDevelop.PackageManagement.Commands
 			info.Enabled = false;
 			info.Text = packageReferenceNode.GetPackageVersionLabel ();
 		}
+
+		[CommandUpdateHandler (PackageReferenceNodeCommands.ReinstallPackage)]
+		public void UpdateReinstallPackageItem (CommandInfo info)
+		{
+			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			info.Visible = packageReferenceNode.IsReinstallNeeded;
+		}
+
+		[CommandHandler (PackageReferenceNodeCommands.ReinstallPackage)]
+		public void ReinstallPackage ()
+		{
+			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateReinstallingSinglePackageMessage (packageReferenceNode.Id);
+
+			try {
+				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				ReinstallPackageAction action = project.CreateReinstallPackageAction ();
+				action.PackageId = packageReferenceNode.Id;
+				action.PackageVersion = packageReferenceNode.Version;
+
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
+			} catch (Exception ex) {
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+			}
+		}
 	}
 }
 

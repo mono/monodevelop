@@ -121,6 +121,26 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public static ProgressMonitorStatusMessage CreateCheckingPackageCompatibilityMessage ()
+		{
+			return new ProgressMonitorStatusMessage (
+				GetString ("Checking package compatibility with new target framework..."),
+				GetString ("Packages are compatible."),
+				GetString ("Could not check package compatibility. Please see Package Console for details."),
+				GetString ("Package reinstallation required. Please see Package Console for details.")
+			);
+		}
+
+		public static ProgressMonitorStatusMessage CreateReinstallingSinglePackageMessage (string packageId)
+		{
+			return new ProgressMonitorStatusMessage (
+				GetString ("Reinstalling {0}...", packageId),
+				GetString ("{0} successfully reinstalled.", packageId),
+				GetString ("Could not reinstall {0}. Please see Package Console for details.", packageId),
+				GetString ("{0} reinstalled with warnings. Please see Package Console for details.", packageId)
+			);
+		}
+
 		static string GetString (string phrase)
 		{
 			return GettextCatalog.GetString (phrase);

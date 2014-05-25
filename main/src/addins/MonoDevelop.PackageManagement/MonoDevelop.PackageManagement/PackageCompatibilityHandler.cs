@@ -1,5 +1,5 @@
 ﻿//
-// FakeSolution.cs
+// PackagesRequiringReinstallationMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,39 +25,23 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Core;
+using ICSharpCode.PackageManagement;
+using MonoDevelop.Ide;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeSolution : ISolution
+	public class PackageCompatibilityHandler
 	{
-		public FilePath BaseDirectory { get; set; }
-		public FilePath FileName { get; set; }
-
-		public FakeSolution ()
+		public PackageCompatibilityHandler (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
 		{
+			projectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
 		}
 
-		public FakeSolution (string fileName)
+		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
 		{
-			FileName = new FilePath (fileName.ToNativePath ());
-			BaseDirectory = FileName.ParentDirectory;
-		}
-
-		public List<FakeDotNetProject> Projects = new List<FakeDotNetProject> ();
-
-		public IEnumerable<IDotNetProject> GetAllProjects ()
-		{
-			return Projects;
-		}
-
-		public event EventHandler<DotNetProjectEventArgs> ProjectAdded;
-
-		public void RaiseProjectAddedEvent (DotNetProjectEventArgs e)
-		{
-			if (ProjectAdded != null) {
-				ProjectAdded (this, e);
+			if (e.Project.HasPackages ()) {
+				var runner = new PackageCompatibilityRunner (e.Project);
+				runner.Run ();
 			}
 		}
 	}

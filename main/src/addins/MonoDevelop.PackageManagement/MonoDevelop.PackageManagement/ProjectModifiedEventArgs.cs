@@ -1,5 +1,5 @@
 ﻿//
-// FakeSolution.cs
+// ProjectModifiedEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,38 +26,38 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeSolution : ISolution
+	public class ProjectModifiedEventArgs : EventArgs
 	{
-		public FilePath BaseDirectory { get; set; }
-		public FilePath FileName { get; set; }
+		public ProjectModifiedEventArgs (IDotNetProject project, string propertyName)
+		{
+			Project = project;
+			PropertyName = propertyName;
+		}
 
-		public FakeSolution ()
+		public ProjectModifiedEventArgs (DotNetProject project, string propertyName)
+			: this (new DotNetProjectProxy (project), propertyName)
 		{
 		}
 
-		public FakeSolution (string fileName)
+		public IDotNetProject Project { get; private set; }
+		public string PropertyName { get; private set; }
+
+		public bool IsTargetFramework ()
 		{
-			FileName = new FilePath (fileName.ToNativePath ());
-			BaseDirectory = FileName.ParentDirectory;
+			return String.Equals ("TargetFramework", PropertyName, StringComparison.OrdinalIgnoreCase);
 		}
 
-		public List<FakeDotNetProject> Projects = new List<FakeDotNetProject> ();
-
-		public IEnumerable<IDotNetProject> GetAllProjects ()
+		public static IEnumerable<ProjectModifiedEventArgs> Create (SolutionItemModifiedEventArgs e)
 		{
-			return Projects;
-		}
-
-		public event EventHandler<DotNetProjectEventArgs> ProjectAdded;
-
-		public void RaiseProjectAddedEvent (DotNetProjectEventArgs e)
-		{
-			if (ProjectAdded != null) {
-				ProjectAdded (this, e);
+			foreach (SolutionItemModifiedEventInfo eventInfo in e) {
+				var project = eventInfo.SolutionItem as DotNetProject;
+				if (project != null) {
+					yield return new ProjectModifiedEventArgs (project, eventInfo.Hint);
+				}
 			}
 		}
 	}

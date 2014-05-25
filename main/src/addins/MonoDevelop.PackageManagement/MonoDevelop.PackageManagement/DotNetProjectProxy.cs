@@ -33,6 +33,7 @@ namespace MonoDevelop.PackageManagement
 	public class DotNetProjectProxy : ProjectProxy, IDotNetProject
 	{
 		DotNetProject project;
+		EventHandler<ProjectModifiedEventArgs> projectModifiedHandler;
 
 		public DotNetProjectProxy (DotNetProject project)
 			: base (project)
@@ -83,6 +84,28 @@ namespace MonoDevelop.PackageManagement
 		public void RemoveImport (string name)
 		{
 			project.RemoveImport (name);
+		}
+
+		public event EventHandler<ProjectModifiedEventArgs> Modified {
+			add {
+				if (projectModifiedHandler == null) {
+					project.Modified += ProjectModified;
+				}
+				projectModifiedHandler += value;
+			}
+			remove {
+				projectModifiedHandler -= value;
+				if (projectModifiedHandler == null) {
+					project.Modified -= ProjectModified;
+				}
+			}
+		}
+
+		void ProjectModified (object sender, SolutionItemModifiedEventArgs e)
+		{
+			foreach (ProjectModifiedEventArgs eventArgs in ProjectModifiedEventArgs.Create (e)) {
+				projectModifiedHandler (this, eventArgs);
+			}
 		}
 	}
 }

@@ -32,6 +32,8 @@ namespace MonoDevelop.PackageManagement
 {
 	public interface IDotNetProject : IProject
 	{
+		event EventHandler<ProjectModifiedEventArgs> Modified;
+
 		DotNetProject DotNetProject { get; }
 		TargetFrameworkMoniker TargetFrameworkMoniker { get; }
 		string DefaultNamespace { get; }

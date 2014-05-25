@@ -28,6 +28,10 @@
 			_description="Current package version"
 			_label="Version" />
 		<Command
+			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage"
+			_description="Reinstall package"
+			_label="Re_install" />
+		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage"
 			_description="Update package"
 			_label="_Update" />
@@ -121,6 +125,7 @@
 
 	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
@@ -33,6 +34,10 @@ namespace MonoDevelop.PackageManagement
 	{
 		FilePath BaseDirectory { get; }
 		FilePath FileName { get; }
+
+		IEnumerable<IDotNetProject> GetAllProjects ();
+
+		event EventHandler<DotNetProjectEventArgs> ProjectAdded;
 	}
 }
 

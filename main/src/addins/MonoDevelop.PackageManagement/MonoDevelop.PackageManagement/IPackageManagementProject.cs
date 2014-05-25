@@ -28,10 +28,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using System.Linq;
 
 using NuGet;
-using System.Runtime.Versioning;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace ICSharpCode.PackageManagement
@@ -72,7 +73,8 @@ namespace ICSharpCode.PackageManagement
 		UninstallPackageAction CreateUninstallPackageAction();
 		UpdatePackageAction CreateUpdatePackageAction();
 		UpdatePackagesAction CreateUpdatePackagesAction();
-		
+		ReinstallPackageAction CreateReinstallPackageAction ();
+
 		void RunPackageOperations(IEnumerable<PackageOperation> expectedOperations);
 	}
 }

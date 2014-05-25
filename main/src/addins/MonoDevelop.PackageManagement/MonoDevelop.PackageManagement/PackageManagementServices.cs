@@ -48,7 +48,9 @@ namespace ICSharpCode.PackageManagement
 		static readonly BackgroundPackageActionRunner backgroundPackageActionRunner;
 		static readonly IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		static readonly PackageManagementProgressProvider progressProvider;
-		
+		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
+		static readonly PackageCompatibilityHandler packageCompatibilityHander;
+
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
@@ -66,6 +68,9 @@ namespace ICSharpCode.PackageManagement
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
 			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);
+
+			projectTargetFrameworkMonitor = new ProjectTargetFrameworkMonitor (projectService);
+			packageCompatibilityHander = new PackageCompatibilityHandler (projectTargetFrameworkMonitor);
 
 			InitializeCredentialProvider();
 		}
@@ -132,6 +137,10 @@ namespace ICSharpCode.PackageManagement
 
 		public static IRecentPackageRepository RecentPackageRepository {
 			get { return packageRepositoryCache.RecentPackageRepository; }
+		}
+
+		public static IProgressProvider ProgressProvider {
+			get { return progressProvider; }
 		}
 	}
 }

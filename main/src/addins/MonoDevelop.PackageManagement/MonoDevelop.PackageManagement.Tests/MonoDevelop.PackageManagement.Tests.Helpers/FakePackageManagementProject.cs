@@ -290,6 +290,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				throw new NotImplementedException ();
 			}
 		}
+
+		public ReinstallPackageAction CreateReinstallPackageAction ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 

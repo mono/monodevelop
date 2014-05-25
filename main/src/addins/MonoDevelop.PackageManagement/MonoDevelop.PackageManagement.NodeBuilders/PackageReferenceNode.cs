@@ -39,11 +39,17 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			PackageReference = packageReference;
 			Installed = installed;
 			IsInstallPending = pending;
+
+			if (Installed) {
+				IsReinstallNeeded = packageReference.RequireReinstallation;
+				Installed = !IsReinstallNeeded;
+			}
 		}
 
 		public PackageReference PackageReference { get; private set; }
 		public bool Installed { get; private set; }
 		public bool IsInstallPending { get; private set; }
+		public bool IsReinstallNeeded { get; private set; }
 
 		public string Name {
 			get { return PackageReference.Id; }

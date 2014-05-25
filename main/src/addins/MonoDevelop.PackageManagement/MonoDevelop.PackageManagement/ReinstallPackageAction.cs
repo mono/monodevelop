@@ -1,5 +1,5 @@
-﻿//
-// FakeSolution.cs
+//
+// ReinstallPackageAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,40 +25,52 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.PackageManagement.NodeBuilders;
+using MonoDevelop.Projects;
+using ICSharpCode.PackageManagement;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeSolution : ISolution
+	public class ReinstallPackageAction : ProcessPackageAction
 	{
-		public FilePath BaseDirectory { get; set; }
-		public FilePath FileName { get; set; }
-
-		public FakeSolution ()
+		public ReinstallPackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents)
+			: base (project, packageManagementEvents)
 		{
 		}
 
-		public FakeSolution (string fileName)
-		{
-			FileName = new FilePath (fileName.ToNativePath ());
-			BaseDirectory = FileName.ParentDirectory;
+		protected override string StartingMessageFormat {
+			get { return "Reinstalling {0}..." + Environment.NewLine; }
 		}
 
-		public List<FakeDotNetProject> Projects = new List<FakeDotNetProject> ();
-
-		public IEnumerable<IDotNetProject> GetAllProjects ()
+		protected override void ExecuteCore ()
 		{
-			return Projects;
+			UninstallPackage ();
+			InstallPackage ();
 		}
 
-		public event EventHandler<DotNetProjectEventArgs> ProjectAdded;
-
-		public void RaiseProjectAddedEvent (DotNetProjectEventArgs e)
+		void UninstallPackage ()
 		{
-			if (ProjectAdded != null) {
-				ProjectAdded (this, e);
-			}
+			Logger.Log (MessageLevel.Info, GettextCatalog.GetString ("Uninstalling {0}...", Package.Id));
+
+			UninstallPackageAction action = Project.CreateUninstallPackageAction ();
+			action.Package = Package;
+			action.Execute ();
+		}
+
+		void InstallPackage ()
+		{
+			Logger.Log (MessageLevel.Info, GettextCatalog.GetString ("Installing {0}...", Package.Id));
+
+			InstallPackageAction action = Project.CreateInstallPackageAction ();
+			action.Package = Package;
+			action.Execute ();
 		}
 	}
 }

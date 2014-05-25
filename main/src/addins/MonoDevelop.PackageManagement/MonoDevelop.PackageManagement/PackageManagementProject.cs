@@ -189,6 +189,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new UpdatePackagesAction(this, packageManagementEvents);
 		}
+
+		public ReinstallPackageAction CreateReinstallPackageAction ()
+		{
+			return new ReinstallPackageAction (this, packageManagementEvents);
+		}
 		
 		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
 			IEnumerable<IPackage> packages,

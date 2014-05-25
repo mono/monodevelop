@@ -323,6 +323,15 @@
     <Compile Include="MonoDevelop.PackageManagement\SettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSearchCriteria.cs" />
     <Compile Include="MonoDevelop.PackageManagement\WildcardVersionSpec.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkChangedEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectModifiedEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityChecker.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectRetargetingUtility.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
