@@ -31,8 +31,7 @@ namespace MonoDevelop.NUnit
 {
 	public interface ITestDiscoverer
 	{
-		void Discover(IWorkspaceObject entry, ITestDiscoveryContext context,
-			ITestDiscoverySink sink);
+		void Discover (IWorkspaceObject entry, ITestDiscoveryContext context, ITestDiscoverySink sink);
 	}
 
 	public interface ITestDiscoveryContext
@@ -42,7 +41,7 @@ namespace MonoDevelop.NUnit
 
 	public interface ITestDiscoverySink
 	{
-		void SendTestCase(TestCase testCase);
+		void SendTest (TestCase testCase);
 	}
 }
 

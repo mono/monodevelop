@@ -26,34 +26,41 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MonoDevelop.NUnit
 {
 	/// <summary>
-	/// Data container used for test discovery/execution needs.
+	/// Data used to identify a test during discovery and execution.
 	/// </summary>
+	[Serializable]
 	public class TestCase
 	{
-		readonly string fullName;
+		readonly string name;
 
-		public string FullName {
+		public string Name {
 			get {
-				return fullName;
+				return name;
 			}
 		}
 
-		internal TestCaseDecorator Decorator {
+		public string Source {
 			get;
 			set;
 		}
 
-		public TestCase (string fullName)
+		public TestCase (string name)
 		{
-			this.fullName = fullName;
+			if (String.IsNullOrEmpty (name))
+				throw new ArgumentException ("Name cannot be null or emptry", "name");
+
+			this.name = name;
 		}
 	}
 
-	public class TestCaseResult
+	[Serializable]
+	public sealed class TestCaseResult
 	{
 		readonly TestCase testCase;
 
@@ -100,15 +107,15 @@ namespace MonoDevelop.NUnit
 
 	/// <summary>
 	/// Encapsulates internal data without affecting TestCase
-	/// that is exposed as a part of external interface.
+	/// that is exposed as a part of the interface.
 	/// </summary>
-	public class TestCaseDecorator: TestCase, IComparable<TestCase>
+	public class TestCaseWrapper: IComparable<TestCaseWrapper>
 	{
-		readonly TestCase decorated;
+		readonly TestCase wrapped;
 
-		public TestCase DecoratedTestCase {
+		public TestCase TestCase {
 			get {
-				return decorated;
+				return wrapped;
 			}
 		}
 
@@ -117,25 +124,55 @@ namespace MonoDevelop.NUnit
 		public string[] NameParts {
 			get {
 				if (nameParts == null)
-					nameParts = FullName.Split ('.');
+					nameParts = Split(wrapped.Name);
+
 				return nameParts;
 			}
 		}
 
-		public string DiscovererId { get; set; }
-
-		public UnitTestTreeLeafNode OwnerUnitTest { get; set; }
-
-		public TestCaseDecorator (TestCase testCase)
-			: base (testCase.FullName)
+		public TestCaseWrapper (TestCase testCase)
 		{
-			decorated = testCase;
-			testCase.Decorator = this;
+			wrapped = testCase;
 		}
 
-		int IComparable<TestCase>.CompareTo (TestCase other)
+		int IComparable<TestCaseWrapper>.CompareTo (TestCaseWrapper other)
 		{
-			return FullName.CompareTo (other.FullName);
+			return wrapped.Name.CompareTo (other.wrapped.Name);
+		}
+
+		string[] Split (string name)
+		{
+			// split string using the dot character as delimiter
+			// except the dots escaped with a backslash
+			var parts = new List<string> ();
+			var builder = new StringBuilder ();
+			bool escape = false;
+			foreach (char c in name) {
+				switch (c) {
+				case '\\':
+					if (escape) {
+						builder.Append (c);
+						escape = false;
+					} else {
+						escape = true;
+					}
+					break;
+				case '.':
+					if (escape) {
+						builder.Append (c);
+						escape = false;
+					} else {
+						parts.Add (builder.ToString());
+						builder.Clear ();
+					}
+					break;
+				default:
+					builder.Append (c);
+					break;
+				}
+			}
+			parts.Add (builder.ToString());
+			return parts.ToArray ();
 		}
 	}
 }

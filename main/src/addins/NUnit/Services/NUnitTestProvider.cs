@@ -27,19 +27,18 @@
 
 using System;
 using MonoDevelop.Projects;
+using System.Collections.Generic;
 
 namespace MonoDevelop.NUnit
 {
 	public class NUnitTestProvider: ITestProvider
 	{
-		public UnitTest CreateUnitTest (MonoDevelop.Projects.IWorkspaceObject entry)
+		public IEnumerable<UnitTest> CreateUnitTests (IWorkspaceObject entry)
 		{
 			if (entry is DotNetProject)
-				return NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
+				yield return NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
 			if (entry is NUnitAssemblyGroupProject)
-				return ((NUnitAssemblyGroupProject)entry).RootTest;
-
-			return null;
+				yield return ((NUnitAssemblyGroupProject)entry).RootTest;
 		}
 
 		public Type[] GetOptionTypes ()

@@ -31,26 +31,28 @@ using System.IO;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Extensions;
 using MonoDevelop.NUnit;
+using System.Collections.Generic;
 
 namespace MonoDeveloper
 {	
 	class MonoTestProvider: ITestProvider
 	{
-		public UnitTest CreateUnitTest (IWorkspaceObject entry)
+		public IEnumerable<UnitTest> CreateUnitTests (IWorkspaceObject entry)
 		{
 			if (entry is DotNetProject) {
 				DotNetProject project = (DotNetProject) entry;
 				MonoSolutionItemHandler handler = ProjectExtensionUtil.GetItemHandler (project) as MonoSolutionItemHandler;
 				if (handler != null) {
-					if (handler.UnitTest != null)
-						return (UnitTest) handler.UnitTest;
-					string testFileBase = handler.GetTestFileBase ();
-					UnitTest testSuite = new MonoTestSuite (project, project.Name, testFileBase);
-					handler.UnitTest = testSuite;
-					return testSuite;
+					if (handler.UnitTest != null) {
+						yield return (UnitTest)handler.UnitTest;
+					} else {
+						string testFileBase = handler.GetTestFileBase ();
+						UnitTest testSuite = new MonoTestSuite (project, project.Name, testFileBase);
+						handler.UnitTest = testSuite;
+						yield return testSuite;
+					}
 				}
 			}
-			return null;
 		}
 		
 		public Type[] GetOptionTypes ()

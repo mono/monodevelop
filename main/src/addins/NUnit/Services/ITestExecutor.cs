@@ -36,18 +36,20 @@ namespace MonoDevelop.NUnit
 
 	public interface ITestExecutionContext
 	{
-
+		bool IsCancelRequested { get; }
 	}
 
 	public interface ITestExecutionHandler
 	{
 		void RecordStart(TestCase testCase);
 		void RecordResult(TestCaseResult testCaseResult);
+		void RecordEnd(TestCase testCase);
 	}
 
 	public interface ITestExecutionDispatcher
 	{
-		void DispatchExecution (IEnumerable<TestCaseDecorator> decorators, TestContext context, ITestExecutionHandler handler);
+		void DispatchExecution (IEnumerable<TestCase> testCases, TestContext context,
+			ITestExecutionHandler handler);
 	}
 }
 

@@ -56,24 +56,24 @@ namespace MonoDevelop.NUnit
 
 				if (attr != null) {
 					extensions = attr.Extensions;
-					useProjectOutput = attr.Target.HasFlag(Target.ProjectOutput);
-					useProjectFiles = attr.Target.HasFlag(Target.ProjectFiles);
+					useProjectOutput = attr.Target.HasFlag (Target.ProjectOutput);
+					useProjectFiles = attr.Target.HasFlag (Target.ProjectFiles);
 				}
 			}
 
 			public IEnumerator<string> GetEnumerator ()
 			{
 				if (useProjectOutput) {
-					foreach (var file in project.GetOutputFiles(IdeApp.Workspace.ActiveConfiguration)) {
+					foreach (var file in project.GetOutputFiles (IdeApp.Workspace.ActiveConfiguration)) {
 						string path = file;
-						if (MatchesExtensions(path))
+						if (MatchesExtensions (path))
 							yield return path;
 					}
 				}
 				if (useProjectFiles) {
 					foreach (var file in project.Files) {
 						string path = file.FilePath;
-						if (MatchesExtensions(path))
+						if (MatchesExtensions (path))
 							yield return path;
 					}
 				}
@@ -116,7 +116,7 @@ namespace MonoDevelop.NUnit
 					new Type[] { typeof(IEnumerable<string>), typeof(ITestDiscoveryContext), typeof(ITestDiscoverySink) });
 
 				var attr = (TestDiscoveryAttribute) method.GetCustomAttributes (
-					typeof(TestDiscoveryAttribute), false).SingleOrDefault();
+					typeof(TestDiscoveryAttribute), false).SingleOrDefault ();
 
 				Discover (new ProjectFilesFilter (project, attr), context, sink);
 			}

@@ -117,6 +117,10 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\NUnitAssemblyGroup.xpt.xml">
@@ -221,7 +225,6 @@
     <Compile Include="Services\SolutionFolderTestGroup.cs" />
     <Compile Include="Services\ITestProvider.cs" />
     <Compile Include="Services\NUnitService.cs" />
-    <Compile Include="Services\SystemTestProvider.cs" />
     <Compile Include="Services\ITestProgressMonitor.cs" />
     <Compile Include="Services\TestContext.cs" />
     <Compile Include="Services\UnitTestCollection.cs" />
@@ -255,17 +258,13 @@
     <Compile Include="Services\ITestExecutor.cs" />
     <Compile Include="Services\ExtensibleTestProvider.cs" />
     <Compile Include="Services\UnitTestTree.cs" />
-    <Compile Include="TestDiscovererNode.cs" />
     <Compile Include="Services\DotNetTestProvider.cs" />
     <Compile Include="Services\ProjectTestDiscoverer.cs" />
-    <Compile Include="Dumb\DumbDiscoverer.cs" />
-    <Compile Include="Services\DotNetProjectTestSuite.cs" />
+    <Compile Include="Services\ExtensionRegistry.cs" />
+    <Compile Include="Services\WorkspaceTestProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Dumb\" />
-  </ItemGroup>
 </Project>

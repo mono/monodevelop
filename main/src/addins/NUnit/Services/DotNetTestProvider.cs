@@ -26,18 +26,49 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.NUnit
 {
-	public class DotNetTestProvider: ExtensibleTestProvider
+	public class DotNetTestProvider: ExtensibleTestProvider<DotNetProject>
 	{
-		public override UnitTest CreateUnitTest (IWorkspaceObject entry)
+		protected override UnitTest CreateUnitTest (DotNetProject project, string discovererId,
+			ITestDiscoverer discoverer, ITestExecutionDispatcher dispatcher)
 		{
-			if (entry is DotNetProject)
-				return new DotNetProjectTestSuite ((DotNetProject) entry, base.CreateUnitTest);
+			return new DotNetProjectTestSuite (project, discovererId, discoverer, dispatcher);
+		}
+	}
 
-			return null;
+	public class DotNetProjectTestSuite: UnitTestTree
+	{
+		public DotNetProjectTestSuite (DotNetProject owner, string tag, ITestDiscoverer discoverer,
+			ITestExecutionDispatcher dispatcher) : base (owner, tag, discoverer, dispatcher)
+		{
+			owner.NameChanged += new SolutionItemRenamedEventHandler (OnProjectRenamed);
+			IdeApp.ProjectOperations.EndBuild += new BuildEventHandler (OnProjectBuilt);
+		}
+
+		void OnProjectRenamed (object sender, SolutionItemRenamedEventArgs e)
+		{
+			UnitTestGroup parent = Parent as UnitTestGroup;
+			if (parent != null)
+				parent.UpdateTests ();
+		}
+
+		void OnProjectBuilt (object sender, BuildEventArgs args)
+		{
+			foreach (var test in Tests) {
+				test.Dispose ();
+			}
+			Tests.Clear ();
+			OnCreateTests ();
+			OnTestChanged ();
 		}
 	}
 }

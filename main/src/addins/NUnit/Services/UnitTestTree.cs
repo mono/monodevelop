@@ -33,42 +33,83 @@ using System.Collections;
 
 namespace MonoDevelop.NUnit
 {
-	public class UnitTestTree: UnitTestTreeBranchNode
+	public class UnitTestTree: UnitTestTreeBranchNode, ITestDiscoverySink
 	{
-		public UnitTestTree (IWorkspaceObject owner, ITestExecutionDispatcher dispatcher, List<TestCaseDecorator> decorators)
-			: base (owner.Name, dispatcher, Prepare(decorators), 0)
+		readonly IWorkspaceObject owner;
+		readonly ITestDiscoverer discoverer;
+
+		/*public override string Title {
+			get {
+				return string.Format ("{0} ({1})", Name, Tag);
+			}
+		}*/
+
+		public UnitTestTree (IWorkspaceObject owner, string tag, List<TestCaseWrapper> wrappers, ITestExecutionDispatcher dispatcher)
+			: base (String.Format("{0} ({1})", owner.Name, tag), tag, Prepare(wrappers), 0, dispatcher)
 		{
+			this.owner = owner;
 		}
 
-		public UnitTestTree (string name, IWorkspaceObject ownerSolutionItem)
-			: base (name, ownerSolutionItem)
+		public UnitTestTree (IWorkspaceObject owner, string tag, ITestDiscoverer discoverer, ITestExecutionDispatcher dispatcher)
+			: this (owner, tag, new List<TestCaseWrapper>(), dispatcher)
 		{
+			this.discoverer = discoverer;
 		}
 
-		static List<TestCaseDecorator> Prepare(List<TestCaseDecorator> decorators)
+		protected override void OnCreateTests ()
 		{
-			if (decorators.Count < 1)
-				throw new ArgumentException ("TestCase list cannot be empty");
+			if (discoverer != null) {
+				wrappers.Clear ();
+				discoverer.Discover (owner, null, this);
+				Prepare (wrappers);
+			}
 
-			decorators.Sort ();
+			base.OnCreateTests ();
+		}
+
+		void ITestDiscoverySink.SendTest (TestCase testCase)
+		{
+			wrappers.Add (new TestCaseWrapper (testCase));
+		}
+
+		static List<TestCaseWrapper> Prepare(List<TestCaseWrapper> wrappers)
+		{
+			wrappers.Sort ();
 			// TODO: check that the list is a valid tree
-			return decorators;
+			return wrappers;
 		}
 	}
 
 	public class UnitTestTreeBranchNode: UnitTestGroup
 	{
-		public ITestExecutionDispatcher Dispatcher { get; set; }
+		readonly string tag;
+		readonly ITestExecutionDispatcher dispatcher;
+		readonly int level;
+		protected List<TestCaseWrapper> wrappers;
 
-		public UnitTestTreeBranchNode (string name, ITestExecutionDispatcher dispatcher, List<TestCaseDecorator> decorator,
-			int level) : base (name)
+		public string Tag {
+			get {
+				return tag;
+			}
+		}
+
+		public UnitTestTreeBranchNode (string name, string tag, List<TestCaseWrapper> wrappers, int level,
+			ITestExecutionDispatcher dispatcher) : base (name)
 		{
-			this.Dispatcher = dispatcher;
+			this.dispatcher = dispatcher;
+			this.wrappers = wrappers;
+			this.level = level;
+			this.tag = tag;
+		}
+
+		protected override void OnCreateTests ()
+		{
 			// build tree using 'name parts' array
-			var groups = decorator.GroupBy (d => d.NameParts [level]);
+			var groups = wrappers.GroupBy (d => d.NameParts [level]);
+			Tests.Clear ();
 
 			foreach (var group in groups) {
-				var list = new List<TestCaseDecorator> (group);
+				var list = new List<TestCaseWrapper> (group);
 				// we can safely assume that all items at group
 				// have the same NameParts elements up to current level
 				// so we will just take the first one
@@ -78,24 +119,16 @@ namespace MonoDevelop.NUnit
 				// if the group has only one element and it does not have
 				// children then the test is a leaf node otherwise it's a branch
 				if (list.Count == 1 && arr.Length == level + 1)
-					test = new UnitTestTreeLeafNode (arr [level], dispatcher, list);
+					test = new UnitTestTreeLeafNode (arr [level], tag, list, dispatcher);
 				else
-					test = new UnitTestTreeBranchNode (arr [level], dispatcher, list, level + 1);
+					test = new UnitTestTreeBranchNode (arr [level], tag, list, level + 1, dispatcher);
 
-				test.SetParent (this);
 				Tests.Add (test);
 			}
 		}
 
-		public UnitTestTreeBranchNode (string name, IWorkspaceObject ownerSolutionItem)
-			: base (name, ownerSolutionItem)
-		{
-		}
-
 		int childrenStarted;
-
 		int childrenFinished;
-
 		UnitTestResult combinedResult;
 
 		void ResetExecutionInfo ()
@@ -142,12 +175,13 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
-		class ChildTestsSession : ITestExecutionHandler
+		class ChildTestsSession: ITestExecutionHandler
 		{
 			readonly TestContext context;
 			readonly UnitTest origin;
 
-			HashSet<TestCaseDecorator> decorators = new HashSet<TestCaseDecorator>();
+			Dictionary<string, UnitTestTreeLeafNode> owners = new Dictionary<string, UnitTestTreeLeafNode> ();
+			Dictionary<string, UnitTestResult> results = new Dictionary<string, UnitTestResult> ();
 
 			public ChildTestsSession (UnitTestTreeBranchNode test, TestContext context)
 			{
@@ -166,46 +200,58 @@ namespace MonoDevelop.NUnit
 						CollectTestCases (branch.Tests);
 					} else {
 						var unitTest = ((UnitTestTreeLeafNode)test);
-						decorators.Add (unitTest.TestCaseDecorator);
+						var testCase = unitTest.TestCase;
+						owners.Add (testCase.Name, unitTest);
 					}
 				}
 			}
 
 			void ITestExecutionHandler.RecordStart (TestCase testCase)
 			{
-				var unitTest = testCase.Decorator.OwnerUnitTest;
+				var unitTest = owners [testCase.Name];
 				// notify the parent before starting the test
 				unitTest.MessageParentAboutStart (context, origin);
 				context.Monitor.BeginTest (unitTest);
+				if (!results.ContainsKey (testCase.Name))
+					results.Add (testCase.Name, new UnitTestResult ());
 			}
 
 			void ITestExecutionHandler.RecordResult (TestCaseResult testCaseResult)
 			{
-				var unitTest = testCaseResult.TestCase.Decorator.OwnerUnitTest;
+				var unitTest = owners [testCaseResult.TestCase.Name];
 				var unitTestResult = (UnitTestResult)testCaseResult;
+				results [testCaseResult.TestCase.Name].Add (unitTestResult);
+				context.Monitor.EndTest (unitTest, unitTestResult);
+			}
+
+			void ITestExecutionHandler.RecordEnd (TestCase testCase)
+			{
+				var unitTest = owners [testCase.Name];
+				var unitTestResult = results [testCase.Name];
 				// end the test, only then notify the parent
 				unitTest.RegisterResult (context, unitTestResult);
-				context.Monitor.EndTest (unitTest, unitTestResult);
-				decorators.Remove (testCaseResult.TestCase.Decorator);
+				//context.Monitor.EndTest (unitTest, unitTestResult);
+				results.Remove (testCase.Name);
+				owners.Remove (testCase.Name);
 				unitTest.MessageParentAboutResult (unitTestResult, context, origin);
 			}
 
 			public void Run (ITestExecutionDispatcher dispatcher)
 			{
-				dispatcher.DispatchExecution (decorators, context, this);
+				dispatcher.DispatchExecution (owners.Select (o => o.Value.TestCase).ToList (), context, this);
 			}
 
-			public void HandleNotExecutedTests ()
+			public void HandleNotEndedTests ()
 			{
-				foreach (var decorator in decorators) {
-					var unitTest = decorator.OwnerUnitTest;
+				foreach (var pair in owners) {
+					var unitTest = pair.Value;
 					if (unitTest.Status != TestStatus.Running) {
 						// notify the parent before starting the test
 						unitTest.MessageParentAboutStart (context, origin);
 						context.Monitor.BeginTest (unitTest);
 					}
 
-					var unitTestResult = new UnitTestResult { Skipped = 1 };
+					var unitTestResult = new UnitTestResult ();
 
 					// end the test, only then notify the parent
 					unitTest.RegisterResult (context, unitTestResult);
@@ -220,12 +266,11 @@ namespace MonoDevelop.NUnit
 		{
 			OnBeginTest (testContext);
 
-			ChildTestsSession session = null;
+			ChildTestsSession session = new ChildTestsSession (this, testContext);
 			try {
-				session = new ChildTestsSession(this, testContext);
-				session.Run (Dispatcher);
+				session.Run (dispatcher);
 			} finally {
-				session.HandleNotExecutedTests ();
+				session.HandleNotEndedTests ();
 				OnEndTest (testContext);
 			}
 
@@ -236,21 +281,27 @@ namespace MonoDevelop.NUnit
 	public class UnitTestTreeLeafNode: UnitTest, ITestExecutionHandler
 	{
 		readonly ITestExecutionDispatcher dispatcher;
+		readonly TestCase testCase;
+		readonly string tag;
 
-		readonly TestCaseDecorator decorator;
-
-		public TestCaseDecorator TestCaseDecorator {
+		public string Tag {
 			get {
-				return decorator;
+				return tag;
 			}
 		}
 
-		public UnitTestTreeLeafNode (string name, ITestExecutionDispatcher dispatcher, List<TestCaseDecorator> decorators)
+		public TestCase TestCase {
+			get {
+				return testCase;
+			}
+		}
+
+		public UnitTestTreeLeafNode (string name, string tag, List<TestCaseWrapper> wrappers, ITestExecutionDispatcher dispatcher)
 			: base (name)
 		{
 			this.dispatcher = dispatcher;
-			this.decorator = decorators [0];
-			this.decorator.OwnerUnitTest = this;
+			this.testCase = wrappers [0].TestCase;
+			this.tag = tag;
 		}
 
 		public void MessageParentAboutStart (TestContext context, UnitTest origin)
@@ -273,13 +324,18 @@ namespace MonoDevelop.NUnit
 
 		void ITestExecutionHandler.RecordResult (TestCaseResult testCaseResult)
 		{
-			unitTestResult = (UnitTestResult) testCaseResult;
+			unitTestResult.Add((UnitTestResult)testCaseResult);
+		}
+
+		void ITestExecutionHandler.RecordEnd (TestCase testCase)
+		{
 		}
 
 		protected override UnitTestResult OnRun (TestContext context)
 		{
-			dispatcher.DispatchExecution (new TestCaseDecorator[] { decorator }, context, this);
-			UnitTestResult result = unitTestResult ?? new UnitTestResult { Skipped = 1 };
+			unitTestResult = new UnitTestResult ();
+			dispatcher.DispatchExecution (new TestCase[] { testCase }, context, this);
+			UnitTestResult result = unitTestResult;
 			unitTestResult = null;
 			RegisterResult (context, result);
 			return result;

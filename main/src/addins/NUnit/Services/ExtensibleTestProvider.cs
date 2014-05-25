@@ -29,86 +29,169 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Execution;
+using System.Reflection;
+using MonoDevelop.Core;
+using System.IO;
+using MonoDevelop.Debugger;
 
 namespace MonoDevelop.NUnit
 {
-	public abstract class ExtensibleTestProvider: ITestProvider, ITestExecutionDispatcher
+	public abstract class ExtensibleTestProvider<T>: IExtensibleTestProvider
+		where T: IWorkspaceObject
 	{
-		Dictionary<string, ITestDiscoverer> testDiscoverers = new Dictionary<string, ITestDiscoverer> ();
+		public string Id { get; set; }
 
-		Dictionary<string, ITestExecutor> testExecutors = new Dictionary<string, ITestExecutor> ();
+		public ExtensionRegistry Registry { get; set; }
 
-		public void RegisterTestDiscoverer (string id, ITestDiscoverer discoverer)
+		protected abstract UnitTest CreateUnitTest (T entry, string discovererId,
+			ITestDiscoverer discoverer, ITestExecutionDispatcher dispatcher);
+
+		public IEnumerable<UnitTest> CreateUnitTests (IWorkspaceObject entry)
 		{
-			testDiscoverers.Add (id, discoverer);
+			if (entry is T) {
+				foreach (var tuple in Registry.GetDiscoverers(Id)) {
+					var discovererId = tuple.Item1;
+					var discovererType = tuple.Item2;
+					yield return CreateUnitTest ((T)entry, discovererId, new LazyDiscoverer (discovererType),
+						new ExecutionDispatcher (Registry, Id, discovererId));
+				}
+			}
 		}
 
-		public void UnregisterTestDiscoverer (string id)
+		class ExecutionDispatcher: ITestExecutionDispatcher
 		{
-			testDiscoverers.Remove (id);
-		}
-
-		public void RegisterTestExecutor (string id, ITestExecutor executor)
-		{
-			testExecutors.Add (id, executor);
-		}
-
-		public void UnregisterTestExecutor (string id)
-		{
-			testExecutors.Remove (id);
-		}
-
-		class DiscoverySink: ITestDiscoverySink
-		{
-			readonly List<TestCaseDecorator> testCases;
-
+			readonly string providerId;
 			readonly string discovererId;
+			ExtensionRegistry registry;
 
-			public DiscoverySink (List<TestCaseDecorator> testCases, string discovererId)
+			public ExecutionDispatcher (ExtensionRegistry registry, string providerId, string discovererId)
 			{
-				this.testCases = testCases;
+				this.providerId = providerId;
 				this.discovererId = discovererId;
+				this.registry = registry;
 			}
 
-			public void SendTestCase(TestCase testCase)
+			public void DispatchExecution (IEnumerable<TestCase> testCases, TestContext context,
+				ITestExecutionHandler handler)
 			{
-				testCases.Add (new TestCaseDecorator(testCase) { DiscovererId = discovererId });
+				var executorType = registry.GetDefaultExecutor(providerId, discovererId);
+
+				ExternalExecutor externalExecutor = (ExternalExecutor)Runtime.ProcessService.CreateExternalProcessObject (typeof(ExternalExecutor),
+                	context.ExecutionContext);
+
+				try {
+					externalExecutor.Preload(executorType.Assembly.Location, executorType.FullName);
+					var externalHandler = new ExternalExecutionHandler(handler);
+					externalExecutor.Execute (testCases.ToList(), new ExternalExecutionContext(context), externalHandler);
+				} catch (Exception e) {
+					throw e;
+				} finally {
+					externalExecutor.Dispose ();
+				}
 			}
 		}
 
-		public virtual UnitTest CreateUnitTest (IWorkspaceObject entry)
+		class LazyDiscoverer: ITestDiscoverer
 		{
-			var testCases = new List<TestCaseDecorator> ();
+			Type discovererType;
 
-			foreach (var item in testDiscoverers) {
-				var discoverer = item.Value;
-				var sink = new DiscoverySink (testCases, item.Key);
-				discoverer.Discover (entry, null, sink);
+			public LazyDiscoverer (Type discovererType)
+			{
+				this.discovererType = discovererType;
 			}
 
-			if (testCases.Count > 0)
-				return new UnitTestTree(entry, this, testCases);
-			else
-				return null;
-		}
-
-		void ITestExecutionDispatcher.DispatchExecution (IEnumerable<TestCaseDecorator> decorators,
-			TestContext context, ITestExecutionHandler handler)
-		{
-			// dispatch tests to corresponding executors
-			var groups = decorators.GroupBy (d => d.DiscovererId, d => d.DecoratedTestCase);
-
-			foreach (var group in groups) {
-				var testExecutor = testExecutors[group.Key];
-				testExecutor.Execute (group, null, handler);
+			public void Discover (IWorkspaceObject entry, ITestDiscoveryContext context, ITestDiscoverySink sink)
+			{
+				// TODO: do we need to instantiate it as an external process object? (like executor)
+				// TODO: is there need for caching discoverer?
+				var discoverer = (ITestDiscoverer) Activator.CreateInstance (discovererType);
+				discoverer.Discover (entry, context, sink);
 			}
 		}
 
 		public virtual Type[] GetOptionTypes ()
 		{
-			return new Type[0];
+			return null;
+		}
+	}
+
+	public interface IExtensibleTestProvider: ITestProvider
+	{
+		string Id { get; set; }
+		ExtensionRegistry Registry { get; set; }
+	}
+
+	public class ExternalExecutor: RemoteProcessObject
+	{
+		Assembly assembly;
+		Type type;
+
+		public ExternalExecutor ()
+		{
+			// In some cases MS.NET can't properly resolve assemblies even if they
+			// are already loaded. For example, when deserializing objects from remoting.
+			/*AppDomain.CurrentDomain.AssemblyResolve += delegate (object s, ResolveEventArgs args) {
+				foreach (Assembly am in AppDomain.CurrentDomain.GetAssemblies ()) {
+					if (am.GetName ().FullName == args.Name)
+						return am;
+				}
+				return null;
+			};*/
 		}
 
+		public void Preload (string assembly, string type)
+		{
+			this.assembly = Assembly.LoadFile (assembly);
+			this.type = this.assembly.GetType (type);
+		}
+
+		public void Execute (List<TestCase> testCases, ITestExecutionContext context, ITestExecutionHandler handler)
+		{
+			var executor = Activator.CreateInstance (type) as ITestExecutor;
+			executor.Execute (testCases, context, handler);
+		}
+	}
+
+	public class ExternalExecutionHandler: MarshalByRefObject, ITestExecutionHandler
+	{
+		ITestExecutionHandler handler;
+
+		public ExternalExecutionHandler (ITestExecutionHandler handler)
+		{
+			this.handler = handler;
+		}
+
+		public void RecordStart (TestCase testCase)
+		{
+			handler.RecordStart (testCase);
+		}
+
+		public void RecordResult (TestCaseResult testCaseResult)
+		{
+			handler.RecordResult (testCaseResult);
+		}
+
+		public void RecordEnd (TestCase testCase)
+		{
+			handler.RecordEnd (testCase);
+		}
+	}
+
+	public class ExternalExecutionContext: MarshalByRefObject, ITestExecutionContext
+	{
+		TestContext context;
+
+		public ExternalExecutionContext (TestContext context)
+		{
+			this.context = context;
+		}
+
+		public bool IsCancelRequested {
+			get {
+				return context.Monitor.IsCancelRequested;
+			}
+		}
 	}
 }
 
