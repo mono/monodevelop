@@ -109,6 +109,16 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			return false;
 		}
 
+		protected override IEnumerable<string> GetStandardBuildActions ()
+		{
+			return BuildAction.DotNetActions;
+		}
+
+		protected override IList<string> GetCommonBuildActions ()
+		{
+			return BuildAction.DotNetCommonActions;
+		}
+
 		protected override void OnBoundToSolution ()
 		{
 			if (currentSolution != null)
