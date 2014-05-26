@@ -138,7 +138,7 @@ namespace MonoDevelop.Components.MainToolbar
 			var renderer = (CellRendererText) cell;
 			TreeIter parent;
 
-			renderer.Sensitive = !(target is ExecutionTargetGroup);
+			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
 
 			if (target == null) {
 				renderer.Xpad = (uint) 0;
@@ -620,7 +620,7 @@ namespace MonoDevelop.Components.MainToolbar
 			do {
 				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
 
-				if (target == null)
+				if (target == null || !target.Enabled)
 					continue;
 
 				if (target is ExecutionTargetGroup) {
