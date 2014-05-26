@@ -190,9 +190,11 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			pref.Flags = ProjectItemFlags.DontPersist;
 			pref.SetItemsProjectPath (Path.ChangeExtension (FileName, ".projitems"));
 			foreach (var f in Files) {
-				var cf = (ProjectFile) f.Clone ();
-				cf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
-				pref.OwnerProject.Files.Add (cf);
+				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null) {
+					var cf = (ProjectFile)f.Clone ();
+					cf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
+					pref.OwnerProject.Files.Add (cf);
+				}
 			}
 		}
 
@@ -216,11 +218,11 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.OnFileAddedToProject (e);
 			foreach (var p in GetReferencingProjects ()) {
 				foreach (var f in e) {
-					if (f.ProjectFile.Subtype == Subtype.Directory)
-						continue;
-					var pf = (ProjectFile) f.ProjectFile.Clone ();
-					pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
-					p.Files.Add (pf);
+					if (f.ProjectFile.Subtype != Subtype.Directory && p.Files.GetFile (f.ProjectFile.FilePath) == null) {
+						var pf = (ProjectFile)f.ProjectFile.Clone ();
+						pf.Flags |= ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
+						p.Files.Add (pf);
+					}
 				}
 			}
 		}
