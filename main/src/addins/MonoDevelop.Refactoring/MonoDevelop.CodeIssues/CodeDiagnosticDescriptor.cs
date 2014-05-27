@@ -57,7 +57,7 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Gets the description of the issue provider (used in the option panel).
 		/// </summary>
-		public string Description { get { return nrefactoryAttr != null ? nrefactoryAttr.Description : null; } }
+
 		public string AnalysisDisableKeyword { get { return nrefactoryAttr != null ? nrefactoryAttr.AnalysisDisableKeyword : null; } }
 		public string SuppressMessageCategory { get { return nrefactoryAttr != null ? nrefactoryAttr.SuppressMessageCategory : null; } }
 		public string SuppressMessageCheckId { get { return nrefactoryAttr != null ? nrefactoryAttr.SuppressMessageCheckId : null; } }

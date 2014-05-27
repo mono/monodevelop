@@ -47,7 +47,7 @@ namespace MonoDevelop.CodeActions
 				var exportAttr = type.GetCustomAttributes (typeof(ExportCodeRefactoringProviderAttribute), false).FirstOrDefault () as ExportCodeRefactoringProviderAttribute;
 				if (exportAttr == null)
 					continue;
-				codeActions.Add (new CodeRefactoringDescriptor (exportAttr.Name, exportAttr.Language, type)); 
+				codeActions.Add (new CodeRefactoringDescriptor (type, exportAttr)); 
 			}
 		}
 

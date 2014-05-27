@@ -36,6 +36,8 @@ namespace MonoDevelop.CodeActions
 	class CodeRefactoringDescriptor
 	{
 		readonly Type codeActionType;
+		readonly ExportCodeRefactoringProviderAttribute attr;
+
 		ICodeRefactoringProvider instance;
 
 		/// <summary>
@@ -50,12 +52,12 @@ namespace MonoDevelop.CodeActions
 		/// <summary>
 		/// Gets the display name for this action.
 		/// </summary>
-		public string Name { get; private set; }
+		public string Name { get { return attr.Name; } }
 
 		/// <summary>
 		/// Gets the language for this action.
 		/// </summary>
-		public string Language { get; private set; }
+		public string Language { get { return attr.Language; } }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this code action is enabled by the user.
@@ -70,17 +72,14 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-		internal CodeRefactoringDescriptor (string name, string language, Type codeActionType)
+		internal CodeRefactoringDescriptor (Type codeActionType, ExportCodeRefactoringProviderAttribute attr)
 		{
-			if (string.IsNullOrEmpty (name))
-				throw new ArgumentNullException ("name");
-			if (string.IsNullOrEmpty (language))
-				throw new ArgumentNullException ("language");
 			if (codeActionType == null)
 				throw new ArgumentNullException ("codeActionType");
-			Name = name;
-			Language = language;
+			if (attr == null)
+				throw new ArgumentNullException ("attr");
 			this.codeActionType = codeActionType;
+			this.attr = attr;
 		}
 
 		/// <summary>
