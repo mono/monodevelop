@@ -62,7 +62,7 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

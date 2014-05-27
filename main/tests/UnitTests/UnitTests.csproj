@@ -62,11 +62,11 @@
       <HintPath>..\..\external\guiunit\bin\net_4_0\GuiUnit.exe</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
-      <HintPath>..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.dll</HintPath>
+      <HintPath>..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\external\roslyn\rcsc\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <HintPath>..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -287,22 +287,12 @@
     <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
     <Compile Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
-    <Compile Include="MonoDevelop.Refactoring\GroupingProviderTestBase.cs" />
-    <Compile Include="MonoDevelop.Refactoring\CategoryGroupingProviderTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ProviderGroupingProviderTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\SeverityGroupingProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <Compile Include="MonoDevelop.AspNet\AspNetTesting.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\AnalysisJobQueueTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\SimpleAnalysisJobTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\ProjectGroupingProviderTests.cs" />
-    <Compile Include="MonoDevelop.Refactoring\FileGroupingProviderTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\LogViewTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\JSonIndentEngineTests.cs" />
     <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
@@ -318,6 +308,16 @@
     <None Include="MonoDevelop.Projects\DomTests.cs" />
     <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
     <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
+    <None Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
+    <None Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
+    <None Include="MonoDevelop.Refactoring\GroupingProviderTestBase.cs" />
+    <None Include="MonoDevelop.Refactoring\CategoryGroupingProviderTests.cs" />
+    <None Include="MonoDevelop.Refactoring\ProviderGroupingProviderTests.cs" />
+    <None Include="MonoDevelop.Refactoring\SeverityGroupingProviderTests.cs" />
+    <None Include="MonoDevelop.Refactoring\AnalysisJobQueueTests.cs" />
+    <None Include="MonoDevelop.Refactoring\SimpleAnalysisJobTests.cs" />
+    <None Include="MonoDevelop.Refactoring\ProjectGroupingProviderTests.cs" />
+    <None Include="MonoDevelop.Refactoring\FileGroupingProviderTests.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
