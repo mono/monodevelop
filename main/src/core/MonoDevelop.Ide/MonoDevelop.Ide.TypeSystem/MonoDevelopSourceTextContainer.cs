@@ -39,6 +39,12 @@ namespace MonoDevelop.Ide.TypeSystem
 	{
 		readonly Mono.TextEditor.TextDocument doc;
 
+		public override System.Text.Encoding Encoding {
+			get {
+				return System.Text.Encoding.UTF8;
+			}
+		}
+
 		public MonoDevelopSourceText (Mono.TextEditor.TextDocument doc)
 		{
 			if (doc == null)
