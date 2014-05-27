@@ -2296,8 +2296,6 @@ namespace MonoDevelop.Ide.TypeSystem
 								LoggingService.LogWarning ("Ignoring error while reading xml doc from " + xmlDocFile, ex);
 							} 
 						}
-						if (baseProvider == null)
-							baseProvider = new MonoDocDocumentationProvider ();
 					}
 					return baseProvider;
 				}

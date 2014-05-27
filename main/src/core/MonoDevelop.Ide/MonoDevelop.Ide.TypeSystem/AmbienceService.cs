@@ -153,7 +153,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (member == null)
 				return null;
-			string documentation = member.GetDocumentationCommentXml ();
+			string documentation = GetDocumentation (member);
 			if (string.IsNullOrEmpty (documentation))
 				return null;
 
@@ -202,6 +202,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (member == null)
 				return null;
 			var documentation = member.GetDocumentationCommentXml ();
+			if (string.IsNullOrEmpty (documentation))
+				documentation = MonoDocDocumentationProvider.GetDocumentation (member);
 			if (documentation != null)
 				return CleanEmpty (documentation);
 			return null;

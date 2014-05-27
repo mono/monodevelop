@@ -147,6 +147,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					Unload (it);
 				ws.ItemAdded -= OnWorkspaceItemAdded;
 				ws.ItemRemoved -= OnWorkspaceItemRemoved;
+				MonoDocDocumentationProvider.ClearCommentCache ();
 			} else {
 				var solution = item as MonoDevelop.Projects.Solution;
 				if (solution != null) {
@@ -157,6 +158,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					solution.SolutionItemAdded -= OnSolutionItemAdded;
 					solution.SolutionItemRemoved -= OnSolutionItemRemoved;
+					if (solution.ParentWorkspace == null)
+						MonoDocDocumentationProvider.ClearCommentCache ();
 				}
 			}
 		}
