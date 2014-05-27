@@ -5,11 +5,14 @@ all:
 clean:
 
 if ENABLE_MACPLATFORM
-all:
-	$(MAKE) -C monomac/src
+all: Xamarin.Mac.dll
+
+Xamarin.Mac.dll: /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/i386/full/Xamarin.Mac.dll
+	cp $< $@
+	cp $<.mdb $@.mdb
 
 clean:
-	$(MAKE) -C monomac/src clean
+	rm -f Xamarin.Mac.dll*
 endif
 
 install:

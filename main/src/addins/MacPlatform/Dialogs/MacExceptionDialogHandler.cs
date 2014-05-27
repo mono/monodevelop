@@ -25,11 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
+
+using Foundation;
+using CoreGraphics;
+using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -43,7 +44,7 @@ namespace MonoDevelop.MacIntegration
 	{
 		class MyTextView : NSTextView
 		{
-			public MyTextView (RectangleF frame)
+			public MyTextView (CGRect frame)
 				: base (frame)
 			{
 
@@ -103,13 +104,13 @@ namespace MonoDevelop.MacIntegration
 				}
 
 				if (data.Exception != null) {
-					var scrollSize = new SizeF (400, 130);
+					var scrollSize = new CGSize (400, 130);
 					float spacing = 4;
 					
 					string title = GettextCatalog.GetString ("View details");
 					string altTitle = GettextCatalog.GetString ("Hide details");
 					
-					var buttonFrame = new RectangleF (0, 0, 0, 0);
+					var buttonFrame = new CGRect (0, 0, 0, 0);
 					var button = new NSButton (buttonFrame) {
 						BezelStyle = NSBezelStyle.Disclosure,
 						Title = "",
@@ -123,23 +124,23 @@ namespace MonoDevelop.MacIntegration
 					};
 					label.SizeToFit ();
 					
-					button.SetFrameSize (new SizeF (button.Frame.Width, Math.Max (button.Frame.Height, label.Frame.Height)));
-					label.SetFrameOrigin (new PointF (button.Frame.Width + 5, button.Frame.Y));
+					button.SetFrameSize (new CGSize (button.Frame.Width, NMath.Max (button.Frame.Height, label.Frame.Height)));
+					label.SetFrameOrigin (new CGPoint (button.Frame.Width + 5, button.Frame.Y));
 					
-					var text = new MyTextView (new RectangleF (0, 0, float.MaxValue, float.MaxValue)) {
+					var text = new MyTextView (new CGRect (0, 0, float.MaxValue, float.MaxValue)) {
 						HorizontallyResizable = true,
 					};
-					text.TextContainer.ContainerSize = new SizeF (float.MaxValue, float.MaxValue);
+					text.TextContainer.ContainerSize = new CGSize (float.MaxValue, float.MaxValue);
 					text.TextContainer.WidthTracksTextView = true;
 					text.InsertText (new NSString (data.Exception.ToString ()));
 					text.Editable = false;
 
-					var scrollView = new NSScrollView (new RectangleF (PointF.Empty, SizeF.Empty)) {
+					var scrollView = new NSScrollView (new CGRect (CGPoint.Empty, CGSize.Empty)) {
 						HasHorizontalScroller = true,
 						HasVerticalScroller = true,
 					};
 					
-					var accessory = new NSView (new RectangleF (0, 0, scrollSize.Width, button.Frame.Height));
+					var accessory = new NSView (new CGRect (0, 0, scrollSize.Width, button.Frame.Height));
 					accessory.AddSubview (scrollView);
 					accessory.AddSubview (button);
 					accessory.AddSubview (label);
@@ -147,18 +148,18 @@ namespace MonoDevelop.MacIntegration
 					alert.AccessoryView = accessory;
 					
 					button.Activated += delegate {
-						float change;
+						nfloat change;
 						if (button.State == NSCellStateValue.On) {
 							change = scrollSize.Height + spacing;
 							label.StringValue = altTitle;
 							scrollView.Hidden = false;
-							scrollView.Frame = new RectangleF (PointF.Empty, scrollSize);
+							scrollView.Frame = new CGRect (CGPoint.Empty, scrollSize);
 							scrollView.DocumentView = text;
 						} else {
 							change = -(scrollSize.Height + spacing);
 							label.StringValue = title;
 							scrollView.Hidden = true;
-							scrollView.Frame = new RectangleF (PointF.Empty, SizeF.Empty);
+							scrollView.Frame = new CGRect (CGPoint.Empty, CGSize.Empty);
 						}
 						var f = accessory.Frame;
 						f.Height += change;
@@ -182,7 +183,7 @@ namespace MonoDevelop.MacIntegration
 					label.OnMouseUp += (sender, e) => button.PerformClick (e.Event);
 				}
 
-				int result = alert.RunModal () - (int)NSAlertButtonReturn.First;
+				var result = (int)(nint)alert.RunModal () - (int)(long)NSAlertButtonReturn.First;
 				data.ResultButton = buttons != null ? buttons [result] : null;
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			}

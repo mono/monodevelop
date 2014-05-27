@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using MonoMac.AppKit;
+using AppKit;
 using System.Linq;
 
 namespace MonoDevelop.MacIntegration
@@ -121,8 +121,8 @@ namespace MonoDevelop.MacIntegration
 				Autosize ();
 			} else {
 				var size = view.Frame.Size;
-				MinHeight = size.Height;
-				MinWidth = size.Width;
+				MinHeight = (float)size.Height;
+				MinWidth = (float)size.Width;
 			}
 		}
 		
@@ -138,8 +138,8 @@ namespace MonoDevelop.MacIntegration
 		{
 			((NSControl)View).SizeToFit ();
 			var size = View.Frame.Size;
-			MinHeight = size.Height;
-			MinWidth = size.Width;
+			MinHeight = (float)size.Height;
+			MinWidth = (float)size.Width;
 		}
 		
 		protected override void OnLayoutEnded (RectangleF frame)

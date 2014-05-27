@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.MacInterop;
-using MonoMac.AppKit;
+using AppKit;
 using MonoDevelop.Components;
 using Mono.TextEditor;
 using MonoDevelop.Components.Extensions;

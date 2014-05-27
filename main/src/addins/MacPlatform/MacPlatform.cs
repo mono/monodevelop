@@ -35,8 +35,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using MonoMac.AppKit;
-using MonoMac.Foundation;
+using AppKit;
+using Foundation;
+using CoreGraphics;
 
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
@@ -418,7 +419,7 @@ namespace MonoDevelop.MacIntegration
 
 		public static Gdk.Pixbuf GetPixbufFromNSImageRep (NSImageRep rep, int width, int height)
 		{
-			var rect = new RectangleF (0, 0, width, height);
+			var rect = new CGRect (0, 0, width, height);
 
 			var bitmap = rep as NSBitmapImageRep;
 			try {
@@ -438,7 +439,7 @@ namespace MonoDevelop.MacIntegration
 
 		public static Gdk.Pixbuf GetPixbufFromNSImage (NSImage icon, int width, int height)
 		{
-			var rect = new RectangleF (0, 0, width, height);
+			var rect = new CGRect (0, 0, width, height);
 
 			var rep = icon.BestRepresentation (rect, null, null);
 			var bitmap = rep as NSBitmapImageRep;
@@ -467,7 +468,7 @@ namespace MonoDevelop.MacIntegration
 				System.Runtime.InteropServices.Marshal.Copy (tiff.Bytes, data, 0, data.Length);
 			}
 
-			int pw = bitmap.PixelsWide, ph = bitmap.PixelsHigh;
+			int pw = (int)bitmap.PixelsWide, ph = (int)bitmap.PixelsHigh;
 			var pixbuf = new Gdk.Pixbuf (data, pw, ph);
 
 			// if one dimension matches, and the other is same or smaller, use as-is
@@ -549,7 +550,7 @@ namespace MonoDevelop.MacIntegration
 			//for now, just filter out the duplicates
 			var checkUniqueName = new HashSet<string> ();
 			var checkUniquePath = new HashSet<string> ();
-			
+
 			//FIXME: bundle path is wrong because of how MD is built into an app
 			//var thisPath = NSBundle.MainBundle.BundleUrl.Path;
 			//checkUniquePath.Add (thisPath);
@@ -557,11 +558,13 @@ namespace MonoDevelop.MacIntegration
 			checkUniqueName.Add ("MonoDevelop");
 			checkUniqueName.Add (BrandingService.ApplicationName);
 			
-			string def = CoreFoundation.GetApplicationUrl (filename, CoreFoundation.LSRolesMask.All);
+			string def = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (filename,
+				MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
 			
 			var apps = new List<DesktopApplication> ();
 			
-			foreach (var app in CoreFoundation.GetApplicationUrls (filename, CoreFoundation.LSRolesMask.All)) {
+			foreach (var app in MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (filename,
+				MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All)) {
 				if (string.IsNullOrEmpty (app) || !checkUniquePath.Add (app))
 					continue;
 				var name = NSFileManager.DefaultManager.DisplayName (app);
@@ -591,14 +594,14 @@ namespace MonoDevelop.MacIntegration
 					NSWorkspace.SharedWorkspace.OpenFile (file, Id);
 			}
 		}
-		
+
 		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
 		{
 			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor_id);
 			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
 			NSScreen monitor = NSScreen.Screens[monitor_id];
-			RectangleF visible = monitor.VisibleFrame;
-			RectangleF frame = monitor.Frame;
+			var visible = monitor.VisibleFrame;
+			var frame = monitor.Frame;
 			
 			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
 			// coordinates.
@@ -611,11 +614,11 @@ namespace MonoDevelop.MacIntegration
 			//
 			// We need to swap the Y offset with the menu height because our callers expect the Y offset
 			// to be from the top of the screen, not from the bottom of the screen.
-			float x, y, width, height;
+			nfloat x, y, width, height;
 			
 			if (visible.Height <= frame.Height) {
-				float dockHeight = visible.Y - frame.Y;
-				float menubarHeight = (frame.Height - visible.Height) - dockHeight;
+				var dockHeight = visible.Y - frame.Y;
+				var menubarHeight = (frame.Height - visible.Height) - dockHeight;
 				
 				height = frame.Height - menubarHeight - dockHeight;
 				y = ygeometry.Y + menubarHeight;
@@ -625,8 +628,8 @@ namespace MonoDevelop.MacIntegration
 			}
 			
 			// Takes care of the possibility of the Dock being positioned on the left or right edge of the screen.
-			width = Math.Min (visible.Width, frame.Width);
-			x = Math.Max (visible.X, frame.X);
+			width = NMath.Min (visible.Width, frame.Width);
+			x = NMath.Max (visible.X, frame.X);
 			
 			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
@@ -639,7 +642,7 @@ namespace MonoDevelop.MacIntegration
 
 		static Cairo.Color ConvertColor (NSColor color)
 		{
-			float r, g, b, a;
+			nfloat r, g, b, a;
 			if (color.ColorSpaceName == NSColorSpace.DeviceWhite) {
 				a = 1.0f;
 				r = g = b = color.WhiteComponent;
@@ -725,13 +728,8 @@ namespace MonoDevelop.MacIntegration
 			}
 
 			NSWindow nswin = GtkQuartz.GetWindow (window);
-			if (isFullscreen != ((nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0)) {
-				//HACK: workaround for MonoMac not allowing null as argument
-				MonoMac.ObjCRuntime.Messaging.void_objc_msgSend_IntPtr (
-					nswin.Handle,
-					MonoMac.ObjCRuntime.Selector.GetHandle ("toggleFullScreen:"),
-					IntPtr.Zero);
-			}
+			if (isFullscreen != ((nswin.StyleMask & NSWindowStyle.FullScreenWindow) != 0))
+				nswin.ToggleFullScreen (null);
 		}
 
 		public override bool IsModalDialogRunning ()

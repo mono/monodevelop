@@ -30,8 +30,10 @@ using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
+
+using Foundation;
+using CoreGraphics;
+using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -185,7 +187,7 @@ namespace MonoDevelop.MacIntegration
 			var popup = new NSPopUpButton (new RectangleF (0, 6, 200, 18), false);
 			popup.SizeToFit ();
 			var rect = popup.Frame;
-			popup.Frame = new RectangleF (rect.X, rect.Y, 200, rect.Height);
+			popup.Frame = new CGRect (rect.X, rect.Y, 200, rect.Height);
 			
 			foreach (var filter in filters)
 				popup.AddItem (filter.Name);
@@ -197,7 +199,7 @@ namespace MonoDevelop.MacIntegration
 			panel.ShouldEnableUrl = GetFileFilter (filters[defaultIndex]);
 			
 			popup.Activated += delegate {
-				panel.ShouldEnableUrl = GetFileFilter (filters[popup.IndexOfSelectedItem]);
+				panel.ShouldEnableUrl = GetFileFilter (filters[(int)popup.IndexOfSelectedItem]);
 				panel.Display ();
 			};
 			
@@ -219,7 +221,7 @@ namespace MonoDevelop.MacIntegration
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
 			};
 			
-			var text = new NSTextField (new RectangleF (0, 6, 100, 20)) {
+			var text = new NSTextField (new CGRect (0, 6, 100, 20)) {
 				StringValue = label,
 				DrawsBackground = false,
 				Bordered = false,
@@ -227,17 +229,17 @@ namespace MonoDevelop.MacIntegration
 				Selectable = false
 			};
 			text.SizeToFit ();
-			float textWidth = text.Frame.Width;
-			float textHeight = text.Frame.Height;
+			var textWidth = text.Frame.Width;
+			var textHeight = text.Frame.Height;
 			
 			control.SizeToFit ();
 			var rect = control.Frame;
-			float controlHeight = rect.Height;
-			control.Frame = new RectangleF (textWidth + 5, 0, controlWidth, rect.Height);
+			var controlHeight = rect.Height;
+			control.Frame = new CGRect (textWidth + 5, 0, controlWidth, rect.Height);
 			
 			rect = view.Frame;
 			rect.Width = control.Frame.Width + textWidth + 5;
-			rect.Height = Math.Max (controlHeight, textHeight);
+			rect.Height = NMath.Max (controlHeight, textHeight);
 			view.Frame = rect;
 			
 			view.AddSubview (text);

@@ -28,8 +28,9 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
+using Foundation;
+using AppKit;
+using CoreGraphics;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -135,7 +136,7 @@ namespace MonoDevelop.MacIntegration
 				// Hack up a slightly wider than normal alert dialog. I don't know how to do this in a nicer way
 				// as the min size constraints are apparently ignored.
 				var frame = ((NSPanel) alert.Window).Frame;
-				((NSPanel) alert.Window).SetFrame (new RectangleF (frame.X, frame.Y, Math.Max (frame.Width, 600), frame.Height), true);
+				((NSPanel) alert.Window).SetFrame (new CGRect (frame.X, frame.Y, NMath.Max (frame.Width, 600), frame.Height), true);
 				alert.Layout ();
 				
 				bool completed = false;
@@ -150,10 +151,10 @@ namespace MonoDevelop.MacIntegration
 				}
 				
 				if (!data.Message.CancellationToken.IsCancellationRequested) {
-					int result = alert.RunModal () - (int)NSAlertButtonReturn.First;
+					var result = (int)alert.RunModal () - (long)(int)NSAlertButtonReturn.First;
 					completed = true;
 					if (result >= 0 && result < buttons.Count) {
-						data.ResultButton = buttons [result];
+						data.ResultButton = buttons [(int)result];
 					} else {
 						data.ResultButton = null;
 					}
@@ -165,7 +166,7 @@ namespace MonoDevelop.MacIntegration
 				
 				if (optionButtons != null) {
 					foreach (var button in optionButtons) {
-						var option = data.Options[button.Tag];
+						var option = data.Options[(int)button.Tag];
 						data.Message.SetOptionValue (option.Id, button.State != 0);
 					}
 				}

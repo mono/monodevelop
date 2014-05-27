@@ -48,8 +48,8 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
-    <Reference Include="MonoMac">
-      <HintPath>..\..\..\external\monomac\src\MonoMac.dll</HintPath>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
@@ -128,6 +128,7 @@
     <Compile Include="MacProxyCredentialProvider.cs" />
     <Compile Include="ExtendedTitleBarWindowBackend.cs" />
     <Compile Include="ExtendedTitleBarDialogBackend.cs" />
+    <Compile Include="MacInterop\NMath.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

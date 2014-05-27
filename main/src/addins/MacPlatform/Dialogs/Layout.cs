@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using MonoMac.AppKit;
+using AppKit;
 using System.Linq;
 
 namespace MonoDevelop.MacIntegration

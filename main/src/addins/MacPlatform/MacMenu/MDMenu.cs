@@ -26,9 +26,9 @@
 
 using System;
 using System.Linq;
-using MonoMac.AppKit;
+using AppKit;
 using MonoDevelop.Components.Commands;
-using MonoMac.Foundation;
+using Foundation;
 using System.Diagnostics;
 using MonoDevelop.Core;
 

@@ -28,8 +28,8 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
+using Foundation;
+using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -189,7 +189,7 @@ namespace MonoDevelop.MacIntegration
 					if (closeSolutionButton != null)
 						data.CloseCurrentWorkspace = closeSolutionButton.State != NSCellStateValue.Off;
 					data.SelectedViewer = viewerSelector.IndexOfSelectedItem >= 0 ?
-						currentViewers[viewerSelector.IndexOfSelectedItem] : null;
+						currentViewers[(int)viewerSelector.IndexOfSelectedItem] : null;
 				}
 				
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);

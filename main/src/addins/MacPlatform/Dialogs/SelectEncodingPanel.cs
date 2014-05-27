@@ -30,8 +30,9 @@ using System.Drawing;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
+using AppKit;
+using Foundation;
+using CoreGraphics;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -81,19 +82,19 @@ namespace MonoDevelop.MacIntegration
 			buttonView.Frame = buttonRect;
 			view.AddSubview (buttonView);
 			
-			float buttonAreaTop = buttonRect.Height + padding * 2;
-			
+			var buttonAreaTop = buttonRect.Height + padding * 2;
+
 			var label = CreateLabel (GettextCatalog.GetString ("Available encodings:"));
 			var labelSize = label.Frame.Size;
-			float labelBottom = size.Height - 12 - labelSize.Height;
-			label.Frame = new RectangleF (12, labelBottom, labelSize.Width, labelSize.Height);
+			var labelBottom = size.Height - 12 - labelSize.Height;
+			label.Frame = new CGRect (12, labelBottom, labelSize.Width, labelSize.Height);
 			view.AddSubview (label);
 			
 			var moveButtonWidth = 32;
 			var tableHeight = labelBottom - buttonAreaTop - padding;
 			var tableWidth = size.Width / 2 - padding * 3 - moveButtonWidth + padding / 2;
 			
-			allTable = new NSTableView (new RectangleF (padding, buttonAreaTop, tableWidth, tableHeight));
+			allTable = new NSTableView (new CGRect (padding, buttonAreaTop, tableWidth, tableHeight));
 			allTable.HeaderView = null;
 			var allScroll = new NSScrollView (allTable.Frame) {
 				BorderType = NSBorderType.BezelBorder,
@@ -107,10 +108,10 @@ namespace MonoDevelop.MacIntegration
 			
 			var selectedLabel = CreateLabel (GettextCatalog.GetString ("Encodings shown in menu:"));
 			var selectedLabelSize = selectedLabel.Frame.Size;
-			selectedLabel.Frame = new RectangleF (center, labelBottom, selectedLabelSize.Width, selectedLabelSize.Height);
+			selectedLabel.Frame = new CGRect (center, labelBottom, selectedLabelSize.Width, selectedLabelSize.Height);
 			view.AddSubview (selectedLabel);
 			
-			selectedTable = new NSTableView (new RectangleF (center, buttonAreaTop, tableWidth, tableHeight));
+			selectedTable = new NSTableView (new CGRect (center, buttonAreaTop, tableWidth, tableHeight));
 			selectedTable.HeaderView = null;
 			var selectedScroll = new NSScrollView (selectedTable.Frame) {
 				BorderType = NSBorderType.BezelBorder,
@@ -120,12 +121,12 @@ namespace MonoDevelop.MacIntegration
 			};
 			view.AddSubview (selectedScroll);
 			
-			float buttonLevel = tableHeight / 2 + buttonAreaTop;
+			var buttonLevel = tableHeight / 2 + buttonAreaTop;
 			
 			var goRightImage = NSImage.ImageNamed ("NSGoRightTemplate");
 			
 			addButton = new NSButton (
-				new RectangleF (tableWidth + padding * 2, buttonLevel + padding / 2,
+				new CGRect (tableWidth + padding * 2, buttonLevel + padding / 2,
 					moveButtonWidth, moveButtonWidth)) {
 				//Title = "\u2192",
 				BezelStyle = NSBezelStyle.SmallSquare,
@@ -135,7 +136,7 @@ namespace MonoDevelop.MacIntegration
 			view.AddSubview (addButton);
 			
 			removeButton = new NSButton (
-				new RectangleF (tableWidth + padding * 2, buttonLevel - padding / 2 - moveButtonWidth,
+				new CGRect (tableWidth + padding * 2, buttonLevel - padding / 2 - moveButtonWidth,
 					moveButtonWidth, moveButtonWidth)) {
 				//Title = "\u2190",
 				BezelStyle = NSBezelStyle.SmallSquare,
@@ -145,7 +146,7 @@ namespace MonoDevelop.MacIntegration
 			view.AddSubview (removeButton);
 			
 			upButton = new NSButton (
-				new RectangleF (center + tableWidth + padding, buttonLevel + padding / 2,
+				new CGRect (center + tableWidth + padding, buttonLevel + padding / 2,
 					moveButtonWidth, moveButtonWidth)) {
 				//Title = "\u2191",
 				BezelStyle = NSBezelStyle.SmallSquare,
@@ -155,7 +156,7 @@ namespace MonoDevelop.MacIntegration
 			view.AddSubview (upButton);
 			
 			downButton = new NSButton (
-				new RectangleF (center + tableWidth + padding, buttonLevel - padding / 2 - moveButtonWidth,
+				new CGRect (center + tableWidth + padding, buttonLevel - padding / 2 - moveButtonWidth,
 					moveButtonWidth, moveButtonWidth)) {
 				//Title = "\u2193",
 				BezelStyle = NSBezelStyle.SmallSquare,
@@ -204,9 +205,9 @@ namespace MonoDevelop.MacIntegration
 
 		void Add (object sender, EventArgs e)
 		{
-			var fromIndex = allTable.SelectedRow;
+			int fromIndex = (int)allTable.SelectedRow;
 			var encoding = allSource.encodings[fromIndex];
-			var toIndex = selectedTable.SelectedRow + 1;
+			var toIndex = (int)(selectedTable.SelectedRow + 1);
 			if (toIndex <= 0)
 				toIndex = selectedSource.encodings.Count;
 			selectedSource.encodings.Insert (toIndex, encoding);
@@ -217,7 +218,7 @@ namespace MonoDevelop.MacIntegration
 		
 		void Remove (object sender, EventArgs e)
 		{
-			var index = selectedTable.SelectedRow;
+			var index = (int)selectedTable.SelectedRow;
 			selectedSource.encodings.RemoveAt (index);
 			selectedTable.ReloadData ();
 			if (index >= selectedSource.encodings.Count)
@@ -228,7 +229,7 @@ namespace MonoDevelop.MacIntegration
 
 		void MoveUp (object sender, EventArgs e)
 		{
-			var index = selectedTable.SelectedRow;
+			var index = (int)selectedTable.SelectedRow;
 			var selected = selectedSource.encodings[index];
 			selectedSource.encodings[index] = selectedSource.encodings[index - 1];
 			selectedSource.encodings[index - 1] = selected;
@@ -239,7 +240,7 @@ namespace MonoDevelop.MacIntegration
 		
 		void MoveDown (object sender, EventArgs e)
 		{
-			var index = selectedTable.SelectedRow;
+			var index = (int)selectedTable.SelectedRow;
 			var selected = selectedSource.encodings[index];
 			selectedSource.encodings[index] = selectedSource.encodings[index + 1];
 			selectedSource.encodings[index + 1] = selected;
@@ -250,11 +251,11 @@ namespace MonoDevelop.MacIntegration
 		
 		void UpdateButtons ()
 		{
-			var allIndex = allTable.SelectedRow;
+			var allIndex = (int)allTable.SelectedRow;
 			var allEncoding = allIndex >= 0? allSource.encodings[allIndex] : null;
 			addButton.Enabled = allEncoding != null && !selectedSource.encodings.Any (e => e.Id == allEncoding.Id);
 			
-			var selectedIndex = selectedTable.SelectedRow;
+			var selectedIndex = (int)selectedTable.SelectedRow;
 			removeButton.Enabled = selectedIndex >= 0 && selectedSource.encodings.Count > 0;
 			upButton.Enabled = selectedIndex > 0;
 			downButton.Enabled = selectedIndex >= 0 && selectedIndex < selectedSource.encodings.Count - 1;
@@ -277,7 +278,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			this.DidResignKey += StopSharedAppModal;
 			try {
-				return SaveIfOk (NSApplication.SharedApplication.RunModalForWindow (this));
+				return SaveIfOk ((int)NSApplication.SharedApplication.RunModalForWindow (this));
 			} finally {
 				this.DidResignKey -= StopSharedAppModal;
 			}
@@ -292,12 +293,12 @@ namespace MonoDevelop.MacIntegration
 		
 		public int RunModalSheet (NSWindow parent)
 		{
-			var sel = new MonoMac.ObjCRuntime.Selector ("sheetSel");
+			var sel = new ObjCRuntime.Selector ("sheetSel");
 			NSApplication.SharedApplication.BeginSheet (this, parent, this, sel, IntPtr.Zero);
 			this.DidResignKey += StopSharedAppModal;
 			try {
 				sheet = true;
-				return SaveIfOk (NSApplication.SharedApplication.RunModalForWindow (this));
+				return SaveIfOk ((int)NSApplication.SharedApplication.RunModalForWindow (this));
 			} finally {
 				sheet = false;
 				this.DidResignKey -= StopSharedAppModal;
@@ -336,14 +337,14 @@ namespace MonoDevelop.MacIntegration
 				this.encodings = new List<TextEncoding> (encodings);
 			}
 			
-			public override int GetRowCount (NSTableView tableView)
+			public override nint GetRowCount (NSTableView tableView)
 			{
 				return encodings.Count;
 			}
 			
-			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
+			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
-				var encoding = encodings[row];
+				var encoding = encodings[(int)row];
 				return new NSString (string.Format ("{0} ({1})", encoding.Name, encoding.Id));
 			}
 		}

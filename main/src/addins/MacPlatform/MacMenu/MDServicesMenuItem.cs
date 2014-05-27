@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoMac.AppKit;
+using AppKit;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.MacIntegration.MacMenu

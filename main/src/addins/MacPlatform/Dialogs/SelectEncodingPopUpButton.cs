@@ -28,8 +28,8 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
+using Foundation;
+using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -43,8 +43,8 @@ namespace MonoDevelop.MacIntegration
 {
 	class SelectEncodingPopUpButton : NSPopUpButton
 	{
-		MonoMac.ObjCRuntime.Selector itemActivationSel = new MonoMac.ObjCRuntime.Selector ("itemActivated:");
-		MonoMac.ObjCRuntime.Selector addRemoveActivationSel = new MonoMac.ObjCRuntime.Selector ("addRemoveActivated:");
+		ObjCRuntime.Selector itemActivationSel = new ObjCRuntime.Selector ("itemActivated:");
+		ObjCRuntime.Selector addRemoveActivationSel = new ObjCRuntime.Selector ("addRemoveActivated:");
 		
 		NSMenuItem autoDetectedItem, addRemoveItem;
 		int[] encodings;
