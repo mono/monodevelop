@@ -37,11 +37,11 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	class MonoDevelopSourceText : SourceText
 	{
-		readonly Mono.TextEditor.TextDocument doc;
+		readonly string doc;
 
 		public override System.Text.Encoding Encoding {
 			get {
-				return System.Text.Encoding.UTF8;
+				return System.Text.Encoding.Default;
 			}
 		}
 
@@ -49,30 +49,30 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			this.doc = doc;
+			this.doc = doc.Text;
 		}
 
 		#region implemented abstract members of SourceText
 		public override void CopyTo (int sourceIndex, char[] destination, int destinationIndex, int count)
 		{
 			while (count --> 0) {
-				destination[destinationIndex++] = doc.GetCharAt (sourceIndex++);
+				destination[destinationIndex++] = doc[sourceIndex++];
 			}
 		}
 		
 		public override int Length {
 			get {
-				return doc.TextLength;
+				return doc.Length;
 			}
 		}
 		public override char this [int index] {
 			get {
-				return doc.GetCharAt (index);
+				return doc [index];
 			}
 		}
 		#endregion
-		
 	}
+
 	class MonoDevelopSourceTextContainer : SourceTextContainer
 	{
 		readonly Mono.TextEditor.TextDocument document;
