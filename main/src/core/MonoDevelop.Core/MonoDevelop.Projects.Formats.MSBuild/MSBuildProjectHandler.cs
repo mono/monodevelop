@@ -358,6 +358,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (itemGuid == null)
 				throw new UserException ("Project file doesn't have a valid ProjectGuid");
 
+			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
+			// of shared projects.
+			if (!itemGuid.StartsWith ("{") && fileName.EndsWith (".shproj"))
+				itemGuid = "{" + itemGuid + "}";
+
 			itemGuid = itemGuid.ToUpper ();
 			string projectTypeGuids = globalGroup.GetPropertyValue ("ProjectTypeGuids");
 			string itemType = globalGroup.GetPropertyValue ("ItemType");
