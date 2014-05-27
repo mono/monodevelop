@@ -25,10 +25,11 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Serialization;
-using NuGet;
 using System.Runtime.Versioning;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide.Gui;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -40,10 +41,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			Installed = installed;
 			IsInstallPending = pending;
 
-			if (Installed) {
-				IsReinstallNeeded = packageReference.RequireReinstallation;
-				Installed = !IsReinstallNeeded;
-			}
+			IsReinstallNeeded = packageReference.RequireReinstallation;
 		}
 
 		public PackageReference PackageReference { get; private set; }
@@ -73,6 +71,24 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IVersionSpec VersionConstraint {
 			get { return PackageReference.VersionConstraint; }
+		}
+
+		public string GetLabel ()
+		{
+			if (!Installed || IsReinstallNeeded) {
+				return "<span color='#c99c00'>" + Id + "</span>";
+			}
+			return Id;
+		}
+
+		public IconId GetIconId ()
+		{
+			if (!Installed || IsReinstallNeeded) {
+				if (!IsInstallPending) {
+					return Stock.ReferenceWarning;
+				}
+			}
+			return Stock.Reference;
 		}
 
 		public string GetPackageVersionLabel ()

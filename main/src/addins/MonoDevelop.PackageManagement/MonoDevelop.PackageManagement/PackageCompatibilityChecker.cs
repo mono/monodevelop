@@ -36,18 +36,17 @@ namespace MonoDevelop.PackageManagement
 	public class PackageCompatibilityChecker
 	{
 		IPackageManagementSolution solution;
+		IRegisteredPackageRepositories registeredRepositories;
 		List<IPackage> packagesRequiringReinstallation = new List<IPackage> ();
 		PackageReferenceFile packageReferenceFile;
 		List<PackageReference> packageReferences;
 
-		public PackageCompatibilityChecker ()
-			: this (PackageManagementServices.Solution)
-		{
-		}
-
-		public PackageCompatibilityChecker (IPackageManagementSolution solution)
+		public PackageCompatibilityChecker (
+			IPackageManagementSolution solution,
+			IRegisteredPackageRepositories registeredRepositories)
 		{
 			this.solution = solution;
+			this.registeredRepositories = registeredRepositories;
 		}
 
 		public string PackageReferenceFileName {
@@ -56,9 +55,9 @@ namespace MonoDevelop.PackageManagement
 
 		public void CheckProjectPackages (IDotNetProject project)
 		{
-			IPackageManagementProject packageManagementProject = solution.GetProject (PackageManagementServices.RegisteredPackageRepositories.ActiveRepository, project);
+			IPackageManagementProject packageManagementProject = solution.GetProject (registeredRepositories.ActiveRepository, project);
 
-			packageReferenceFile = new PackageReferenceFile (project.GetPackagesConfigFilePath ());
+			packageReferenceFile = CreatePackageReferenceFile (project.GetPackagesConfigFilePath ());
 			packageReferences = packageReferenceFile.GetPackageReferences ().ToList ();
 
 			foreach (PackageReference packageReference in packageReferences) {
@@ -67,6 +66,11 @@ namespace MonoDevelop.PackageManagement
 					packagesRequiringReinstallation.Add (package);
 				}
 			}
+		}
+
+		protected virtual PackageReferenceFile CreatePackageReferenceFile (string fileName)
+		{
+			return new PackageReferenceFile (fileName);
 		}
 
 		bool PackageNeedsReinstall (IDotNetProject project, IPackage package, FrameworkName packageTargetFramework)

@@ -45,6 +45,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			FakeUninstallPackageAction = new FakeUninstallPackageAction (this);
 
+			FindPackageAction = packageId => {
+				return FakePackages.FirstOrDefault (package => package.Id == packageId);
+			};
+
 			this.Name = name;
 		}
 
@@ -278,9 +282,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
 		#pragma warning restore 0067
 
+		public Func<string, IPackage> FindPackageAction;
+
 		public IPackage FindPackage (string packageId)
 		{
-			throw new NotImplementedException ();
+			return FindPackageAction (packageId);
 		}
 
 		public FrameworkName TargetFramework { get; set; }

@@ -1,5 +1,5 @@
-﻿//
-// PackageReferenceNodeBuilder.cs
+//
+// TestablePackageCompatibilityChecker.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,40 +25,27 @@
 // THE SOFTWARE.
 
 using System;
-using Gdk;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Components;
-using MonoDevelop.PackageManagement.Commands;
+using ICSharpCode.PackageManagement;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement.NodeBuilders
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class PackageReferenceNodeBuilder : TypeNodeBuilder
+	public class TestablePackageCompatibilityChecker : PackageCompatibilityChecker
 	{
-		public override Type NodeDataType {
-			get { return typeof(PackageReferenceNode); }
-		}
-
-		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		public TestablePackageCompatibilityChecker (
+			IPackageManagementSolution solution,
+			IRegisteredPackageRepositories registeredRepositories)
+			: base (solution, registeredRepositories)
 		{
-			var packageReferenceNode = (PackageReferenceNode)dataObject;
-			return packageReferenceNode.Name;
 		}
 
-		public override string ContextMenuAddinPath {
-			get { return "/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference"; }
-		}
+		public PackageReferenceFile PackageReferenceFile;
 
-		public override Type CommandHandlerType {
-			get { return typeof(PackageReferenceNodeCommandHandler); }
-		}
-
-		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
+		protected override PackageReferenceFile CreatePackageReferenceFile (string fileName)
 		{
-			var packageReferenceNode = (PackageReferenceNode)dataObject;
-			nodeInfo.Label = packageReferenceNode.GetLabel ();
-			nodeInfo.Icon = Context.GetIcon (packageReferenceNode.GetIconId ());
+			return PackageReferenceFile;
 		}
 	}
+
 }
 

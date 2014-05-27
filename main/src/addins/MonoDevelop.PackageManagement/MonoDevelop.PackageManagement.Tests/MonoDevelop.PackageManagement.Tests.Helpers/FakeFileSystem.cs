@@ -45,6 +45,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public string Root { get; set; }
 
+		public FakeFileSystem ()
+		{
+			FileExistsAction = path => {
+				PathPassedToFileExists = path;
+				return FileExistsReturnValue;
+			};
+		}
+
 		public void DeleteDirectory (string path, bool recursive)
 		{
 			throw new NotImplementedException ();
@@ -72,13 +80,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void DeleteFile (string path)
 		{
-			throw new NotImplementedException ();
 		}
+
+		public Func<string, bool> FileExistsAction;
 
 		public bool FileExists (string path)
 		{
-			PathPassedToFileExists = path;
-			return FileExistsReturnValue;
+			return FileExistsAction (path);
 		}
 
 		public bool DirectoryExists (string path)
@@ -120,8 +128,16 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void AddFile (string path, Action<Stream> writeToStream)
 		{
-			throw new NotImplementedException ();
+			var memoryStream = new MemoryStream();
+			writeToStream (memoryStream);
+			memoryStream = new MemoryStream (memoryStream.ToArray ());
+			FilesAdded [path] = memoryStream;
 		}
+
+		public Dictionary<string, MemoryStream> FilesAdded = 
+			new Dictionary<string, MemoryStream> ();
+
+		public string LastAddedFile;
 
 		public void MakeFileWritable (string path)
 		{

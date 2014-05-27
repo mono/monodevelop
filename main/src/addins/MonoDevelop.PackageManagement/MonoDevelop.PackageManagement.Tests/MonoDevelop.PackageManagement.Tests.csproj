@@ -173,6 +173,11 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\SettingProviderTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSearchCriteriaTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\WildcardVersionSpecTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectTargetFrameworkMonitorTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReferenceNodeTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageCompatibilityRunnerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityChecker.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

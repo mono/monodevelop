@@ -115,10 +115,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public event EventHandler<ProjectModifiedEventArgs> Modified;
 
-		public void RaiseModifiedEvent (ProjectModifiedEventArgs e)
+		public void RaiseModifiedEvent (IDotNetProject project, string propertyName)
 		{
 			if (Modified != null) {
-				Modified (this, e);
+				Modified (this, new ProjectModifiedEventArgs (project, propertyName));
 			}
 		}
 	}

@@ -54,10 +54,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public event EventHandler<DotNetProjectEventArgs> ProjectAdded;
 
-		public void RaiseProjectAddedEvent (DotNetProjectEventArgs e)
+		public void RaiseProjectAddedEvent (IDotNetProject project)
 		{
 			if (ProjectAdded != null) {
-				ProjectAdded (this, e);
+				ProjectAdded (this, new DotNetProjectEventArgs (project));
 			}
 		}
 	}

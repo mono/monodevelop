@@ -36,6 +36,8 @@ namespace MonoDevelop.PackageManagement
 	public class PackageCompatibilityRunner
 	{
 		IDotNetProject project;
+		IPackageManagementSolution solution;
+		IRegisteredPackageRepositories registeredRepositories;
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		ProgressMonitorStatusMessage progressMessage;
 		IProgressMonitor progressMonitor;
@@ -44,11 +46,15 @@ namespace MonoDevelop.PackageManagement
 
 		public PackageCompatibilityRunner (
 			IDotNetProject project,
+			IPackageManagementSolution solution,
+			IRegisteredPackageRepositories registeredRepositories,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
 			IPackageManagementEvents packageManagementEvents,
 			IProgressProvider progressProvider)
 		{
 			this.project = project;
+			this.solution = solution;
+			this.registeredRepositories = registeredRepositories;
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
 			this.progressProvider = progressProvider;
@@ -57,6 +63,8 @@ namespace MonoDevelop.PackageManagement
 		public PackageCompatibilityRunner (IDotNetProject project)
 			: this (
 				project,
+				PackageManagementServices.Solution,
+				PackageManagementServices.RegisteredPackageRepositories,
 				PackageManagementServices.ProgressMonitorFactory,
 				PackageManagementServices.PackageManagementEvents,
 				PackageManagementServices.ProgressProvider)
@@ -65,12 +73,17 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run ()
 		{
+			BackgroundDispatch (() => RunInternal ());
+		}
+
+		protected virtual void BackgroundDispatch (MessageHandler handler)
+		{
 			DispatchService.BackgroundDispatch (() => RunInternal ());
 		}
 
 		void RunInternal ()
 		{
-			progressMessage = ProgressMonitorStatusMessageFactory.CreateCheckingPackageCompatibilityMessage ();
+			progressMessage = CreateCheckingPackageCompatibilityMessage ();
 
 			using (progressMonitor = CreateProgressMonitor ()) {
 				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (progressMonitor)) {
@@ -81,6 +94,11 @@ namespace MonoDevelop.PackageManagement
 					}
 				}
 			}
+		}
+
+		protected virtual ProgressMonitorStatusMessage CreateCheckingPackageCompatibilityMessage ()
+		{
+			return ProgressMonitorStatusMessageFactory.CreateCheckingPackageCompatibilityMessage ();
 		}
 
 		IProgressMonitor CreateProgressMonitor ()
@@ -103,7 +121,7 @@ namespace MonoDevelop.PackageManagement
 
 		void CheckCompatibility ()
 		{
-			var checker = new PackageCompatibilityChecker ();
+			PackageCompatibilityChecker checker = CreatePackageCompatibilityChecker (solution, registeredRepositories);
 			checker.CheckProjectPackages (project);
 
 			if (checker.AnyPackagesRequireReinstallation ()) {
@@ -115,14 +133,28 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		protected virtual PackageCompatibilityChecker CreatePackageCompatibilityChecker (IPackageManagementSolution solution, IRegisteredPackageRepositories registeredRepositories)
+		{
+			return new PackageCompatibilityChecker (solution, registeredRepositories);
+		}
+
 		void ReportPackageReinstallationWarning (IEnumerable<string> packages)
 		{
-			string message = "The following NuGet packages were installed with a target framework that is different from the project's current target framework and should be reinstalled.";
-			progressMonitor.Log.WriteLine (message);
+			progressMonitor.Log.WriteLine (GetPackageReinstallationWarningMessage ());
 			foreach (string package in packages) {
 				progressMonitor.Log.WriteLine (package);
 			}
 			progressMonitor.ReportWarning (progressMessage.Warning);
+			ShowPackageConsole (progressMonitor);
+		}
+
+		protected virtual string GetPackageReinstallationWarningMessage()
+		{
+			return GettextCatalog.GetString ("The following NuGet packages were installed with a target framework that is different from the project's current target framework and should be reinstalled.");
+		}
+
+		protected virtual void ShowPackageConsole (IProgressMonitor progressMonitor)
+		{
 			progressMonitor.ShowPackageConsole ();
 		}
 	}
