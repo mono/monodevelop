@@ -27,9 +27,8 @@
 using Mono.TextEditor;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.Refactoring;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {

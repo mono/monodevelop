@@ -127,7 +127,7 @@ namespace MonoDevelop.CodeIssues
 		static string GetDescription (DiagnosticSeverity severity)
 		{
 			switch (severity) {
-			case DiagnosticSeverity.None:
+			case DiagnosticSeverity.Hidden:
 				return GettextCatalog.GetString ("Do not show");
 			case DiagnosticSeverity.Error:
 				return GettextCatalog.GetString ("Error");

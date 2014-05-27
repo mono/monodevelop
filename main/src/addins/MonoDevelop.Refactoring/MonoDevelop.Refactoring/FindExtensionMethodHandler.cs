@@ -31,7 +31,6 @@ using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
-using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.Refactoring
 {

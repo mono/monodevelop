@@ -64,9 +64,9 @@ namespace MonoDevelop.CodeIssues
 		public int PragmaWarning { get { return nrefactoryAttr != null ? nrefactoryAttr.PragmaWarning : 0; }}
 
 		/// <summary>
-		/// Gets the language for this issue.
+		/// Gets the languages for this issue.
 		/// </summary>
-		public string Language { get; private set; }
+		public string[] Languages { get; private set; }
 
 		public DiagnosticSeverity? DiagnosticSeverity {
 			get {
@@ -111,34 +111,34 @@ namespace MonoDevelop.CodeIssues
 
 		internal DiagnosticSeverity GetSeverity (DiagnosticDescriptor diagnostic)
 		{
-			return PropertyService.Get ("CodeIssues." + Language + "." + IdString + "." + diagnostic.Id + ".severity", diagnostic.DefaultSeverity);
+			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".severity", diagnostic.DefaultSeverity);
 		}
 
 		internal void SetSeverity (DiagnosticDescriptor diagnostic, DiagnosticSeverity severity)
 		{
-			PropertyService.Set ("CodeIssues." + Language + "." + IdString + "." + diagnostic.Id + ".severity", severity);
+			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".severity", severity);
 		}
 
 		internal bool GetIsEnabled (DiagnosticDescriptor diagnostic)
 		{
-			return PropertyService.Get ("CodeIssues." + Language + "." + IdString + "." + diagnostic.Id + ".enabled", true);
+			return PropertyService.Get ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", true);
 		}
 
 		internal void SetIsEnabled (DiagnosticDescriptor diagnostic, bool value)
 		{
-			PropertyService.Set ("CodeIssues." + Language + "." + IdString + "." + diagnostic.Id + ".enabled", value);
+			PropertyService.Set ("CodeIssues." + Languages + "." + IdString + "." + diagnostic.Id + ".enabled", value);
 		}
 
-		internal CodeDiagnosticDescriptor (string name, string language, Type codeIssueType, NRefactoryCodeDiagnosticAnalyzerAttribute nrefactoryAttr)
+		internal CodeDiagnosticDescriptor (string name, string[] languages, Type codeIssueType, NRefactoryCodeDiagnosticAnalyzerAttribute nrefactoryAttr)
 		{
 			if (string.IsNullOrEmpty (name))
 				throw new ArgumentNullException ("name");
-			if (string.IsNullOrEmpty (language))
-				throw new ArgumentNullException ("language");
+			if (languages == null)
+				throw new ArgumentNullException ("languages");
 			if (codeIssueType == null)
 				throw new ArgumentNullException ("codeIssueType");
 			Name = name;
-			Language = language;
+			Languages = languages;
 			this.codeIssueType = codeIssueType;
 			this.nrefactoryAttr = nrefactoryAttr;
 		}
@@ -156,7 +156,7 @@ namespace MonoDevelop.CodeIssues
 
 		public override string ToString ()
 		{
-			return string.Format ("[CodeIssueDescriptor: IdString={0}, Name={1}, Language={2}]", IdString, Name, Language);
+			return string.Format ("[CodeIssueDescriptor: IdString={0}, Name={1}, Language={2}]", IdString, Name, Languages);
 		}
 
 		public bool CanDisableOnce { get { return !string.IsNullOrEmpty (AnalysisDisableKeyword); } }

@@ -30,7 +30,6 @@ using MonoDevelop.AnalysisCore.Extensions;
 using MonoDevelop.SourceEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.CSharp;
 using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.AnalysisCore

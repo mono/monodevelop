@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
-using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;

@@ -52,7 +52,7 @@ namespace MonoDevelop.CodeIssues
 				var analyzerAttr = (ExportDiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(ExportDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 				var nrefactoryAnalyzerAttribute = (NRefactoryCodeDiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(NRefactoryCodeDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 				if (analyzerAttr != null) {
-					analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Name, analyzerAttr.Language, type, nrefactoryAnalyzerAttribute));
+					analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Name, analyzerAttr.Languages, type, nrefactoryAnalyzerAttribute));
 				}
 				
 				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes(typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
@@ -69,14 +69,14 @@ namespace MonoDevelop.CodeIssues
 		{
 			if (string.IsNullOrEmpty (language))
 				return includeDisabledNodes ? codeIssues : codeIssues.Where (act => act.IsEnabled);
-			return includeDisabledNodes ? codeIssues.Where (ca => ca.Language == language) : codeIssues.Where (ca => ca.Language == language && ca.IsEnabled);
+			return includeDisabledNodes ? codeIssues.Where (ca => ca.Languages.Contains (language)) : codeIssues.Where (ca => ca.Languages.Contains (language) && ca.IsEnabled);
 		}
 
 		public static IEnumerable<CodeFixDescriptor> GetCodeFixDescriptor (string language)
 		{
 			if (string.IsNullOrEmpty (language))
 				return codeFixProvider;
-			return codeFixProvider.Where (cfp => cfp.Language == language);
+			return codeFixProvider.Where (cfp => cfp.Languages.Contains (language));
 		}
 	}
 }

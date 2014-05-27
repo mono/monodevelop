@@ -33,7 +33,6 @@ using System.IO;
 using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.AnalysisCore.Gui

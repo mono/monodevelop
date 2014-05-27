@@ -77,7 +77,7 @@ namespace MonoDevelop.CodeIssues
 		static Severity ConvertSeverity (DiagnosticSeverity severity)
 		{
 			switch (severity) {
-			case DiagnosticSeverity.None:
+			case DiagnosticSeverity.Hidden:
 				return Severity.None;
 			case DiagnosticSeverity.Info:
 				return Severity.Hint;

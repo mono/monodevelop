@@ -35,8 +35,6 @@ using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory;
 using System.Threading;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Gui;

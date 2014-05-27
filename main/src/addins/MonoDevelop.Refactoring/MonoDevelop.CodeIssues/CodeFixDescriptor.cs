@@ -42,9 +42,9 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
-		public string Language {
+		public string[] Languages {
 			get {
-				return attribute.Language;
+				return attribute.Languages;
 			}
 		}
 

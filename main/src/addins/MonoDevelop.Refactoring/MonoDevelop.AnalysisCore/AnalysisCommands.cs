@@ -34,7 +34,6 @@ using Gtk;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
