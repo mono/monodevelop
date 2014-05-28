@@ -116,18 +116,8 @@ namespace MonoDevelop.PackageManagement.Commands
 		public void ReinstallPackage ()
 		{
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateReinstallingSinglePackageMessage (packageReferenceNode.Id);
-
-			try {
-				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-				ReinstallPackageAction action = project.CreateReinstallPackageAction ();
-				action.PackageId = packageReferenceNode.Id;
-				action.PackageVersion = packageReferenceNode.Version;
-
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
-			} catch (Exception ex) {
-				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
-			}
+			var reinstaller = new PackageReinstaller ();
+			reinstaller.Run (packageReferenceNode);
 		}
 	}
 }

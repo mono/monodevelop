@@ -43,7 +43,9 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakePackageManagementProject (string name)
 		{
-			FakeUninstallPackageAction = new FakeUninstallPackageAction (this);
+			FakeUninstallPackageAction = new FakeUninstallPackageAction (this) {
+				Logger = new FakeLogger ()
+			};
 
 			FindPackageAction = packageId => {
 				return FakePackages.FirstOrDefault (package => package.Id == packageId);
@@ -299,8 +301,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public ReinstallPackageAction CreateReinstallPackageAction ()
 		{
-			throw new NotImplementedException ();
+			var action = new ReinstallPackageAction (this, new PackageManagementEvents ());
+			ReinstallPackageActionsCreated.Add (action);
+			return action;
 		}
+
+		public List<ReinstallPackageAction> ReinstallPackageActionsCreated = new List<ReinstallPackageAction> ();
 	}
 }
 

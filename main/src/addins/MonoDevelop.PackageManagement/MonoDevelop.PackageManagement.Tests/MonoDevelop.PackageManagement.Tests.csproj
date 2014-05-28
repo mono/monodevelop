@@ -178,6 +178,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageCompatibilityRunnerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityChecker.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReinstallerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeBackgroundPackageActionRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallPackageActionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

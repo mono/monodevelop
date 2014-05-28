@@ -1,5 +1,5 @@
 ﻿//
-// FakeInstallPackageAction.cs
+// FakeBackgroundPackageActionRunner.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -27,42 +27,56 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
-using NuGet;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeInstallPackageAction : InstallPackageAction
+	public class FakeBackgroundPackageActionRunner : IBackgroundPackageActionRunner
 	{
-		public FakeInstallPackageAction ()
-			: this (null)
+		public IEnumerable<InstallPackageAction> PendingInstallActionsForProject (DotNetProject project)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public ProgressMonitorStatusMessage RunProgressMessage;
+		public IPackageAction ActionRun;
+
+		public Action<ProgressMonitorStatusMessage, IPackageAction> RunAction = 
+			(progressMessage, action) => { };
+
+		public void Run (ProgressMonitorStatusMessage progressMessage, IPackageAction action)
+		{
+			RunProgressMessage = progressMessage;
+			ActionRun = action;
+
+			RunAction (progressMessage, action);
+		}
+
+		public void Run (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
 		{
 		}
 
-		public FakeInstallPackageAction (IPackageManagementProject project)
-			: this (project, null)
+		public void ShowError (ProgressMonitorStatusMessage progressMessage, Exception exception)
 		{
+			ShowErrorProgressMessage = progressMessage;
+			ShowErrorException = exception;
 		}
 
-		public FakeInstallPackageAction (IPackageManagementProject project, IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+		public void ShowError (ProgressMonitorStatusMessage progressMessage, string message)
 		{
-			Operations = new List<PackageOperation> ();
-			Logger = new FakeLogger ();
+			ShowErrorProgressMessage = progressMessage;
+			ShowErrorMessage = message;
 		}
 
-		public bool IsExecuteCalled;
+		public ProgressMonitorStatusMessage ShowErrorProgressMessage;
+		public string ShowErrorMessage;
+		public Exception ShowErrorException;
 
-		protected override void ExecuteCore ()
-		{
-			IsExecuteCalled = true;
-			ExecuteAction ();
+		public IEnumerable<InstallPackageAction> PendingInstallActions {
+			get {
+				throw new NotImplementedException ();
+			}
 		}
-
-		protected override void BeforeExecute ()
-		{
-		}
-
-		public Action ExecuteAction = () => { };
 	}
 }
 

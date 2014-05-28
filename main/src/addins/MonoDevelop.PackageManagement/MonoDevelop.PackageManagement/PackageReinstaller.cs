@@ -1,5 +1,5 @@
 ﻿//
-// FakeInstallPackageAction.cs
+// PackageReinstaller.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,44 +25,50 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
-using NuGet;
+using MonoDevelop.PackageManagement.NodeBuilders;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeInstallPackageAction : InstallPackageAction
+	public class PackageReinstaller
 	{
-		public FakeInstallPackageAction ()
-			: this (null)
+		IPackageManagementSolution solution;
+		IBackgroundPackageActionRunner runner;
+
+		public PackageReinstaller ()
+			: this (
+				PackageManagementServices.Solution,
+				PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
-		public FakeInstallPackageAction (IPackageManagementProject project)
-			: this (project, null)
+		public PackageReinstaller (
+			IPackageManagementSolution solution,
+			IBackgroundPackageActionRunner runner)
 		{
+			this.solution = solution;
+			this.runner = runner;
 		}
 
-		public FakeInstallPackageAction (IPackageManagementProject project, IPackageManagementEvents packageManagementEvents)
-			: base (project, packageManagementEvents)
+		public void Run (PackageReferenceNode packageReferenceNode)
 		{
-			Operations = new List<PackageOperation> ();
-			Logger = new FakeLogger ();
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateReinstallingSinglePackageMessage (packageReferenceNode.Id);
+			Run (packageReferenceNode, progressMessage);
 		}
 
-		public bool IsExecuteCalled;
-
-		protected override void ExecuteCore ()
+		public void Run (PackageReferenceNode packageReferenceNode, ProgressMonitorStatusMessage progressMessage)
 		{
-			IsExecuteCalled = true;
-			ExecuteAction ();
-		}
+			try {
+				IPackageManagementProject project = solution.GetActiveProject ();
+				ReinstallPackageAction action = project.CreateReinstallPackageAction ();
+				action.PackageId = packageReferenceNode.Id;
+				action.PackageVersion = packageReferenceNode.Version;
 
-		protected override void BeforeExecute ()
-		{
+				runner.Run (progressMessage, action);
+			} catch (Exception ex) {
+				runner.ShowError (progressMessage, ex);
+			}
 		}
-
-		public Action ExecuteAction = () => { };
 	}
 }
 
