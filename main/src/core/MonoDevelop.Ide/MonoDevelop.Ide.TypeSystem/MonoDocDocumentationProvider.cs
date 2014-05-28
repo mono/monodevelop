@@ -60,13 +60,14 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (entity.Kind == SymbolKind.NamedType) {
 					doc = helpTree.GetHelpXml (idString);
 				} else {
-					var parentId = entity.ContainingType.GetDocumentationCommentId ();
-
+					var containingType = entity.ContainingType;
+					if (containingType == null)
+						return null;
+					var parentId = containingType.GetDocumentationCommentId ();
 					doc = helpTree.GetHelpXml (parentId);
 					if (doc == null)
 						return null;
 					XmlNode node = SelectNode (doc, entity);
-					
 					if (node != null)
 						return commentCache [idString] = node.OuterXml;
 					return null;
@@ -138,60 +139,20 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			return null;
 		}
-		
 
 		static string GetTypeString (ITypeSymbol t)
 		{
-			return t.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
-//			if (t.TypeKind == TypeKind.Unknown)
-//				return t.Name;
-//			
-//			if (t.TypeKind == TypeKind.TypeParameter)
-//				return t.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat);
-//			
-////			var typeWithElementType = t as ;
-////			if (typeWithElementType != null) {
-////				var sb = new StringBuilder ();
-////			
-////				if (typeWithElementType is PointerType) {
-////					sb.Append ("*");
-////				} 
-////				sb.Append (GetTypeString (typeWithElementType.ElementType));
-////
-////				if (typeWithElementType is ArrayType) {
-////					sb.Append ("[");
-////					sb.Append (new string (',', ((ArrayType)t).Dimensions - 1));
-////					sb.Append ("]");
-////				}
-////				return sb.ToString ();
-////			}
-//
-//			var result = new StringBuilder ();
-//			
-//			if (t.ContainingType != null) {
-//				string typeString = GetTypeString (t.ContainingType);
-//				result.Append (typeString);
-//				result.Append (".");
-//			} else {
-//				result.Append (t.ContainingNamespace.ToDisplayString (SymbolDisplayFormat.CSharpErrorMessageFormat) + ".");
-//			}
-//
-//			result.Append (t.Name);
-//
-////			if (t.par > 0) {
-////				result.Append ("<");
-////				for (int i = 0; i < t.TypeParameterCount; i++) {
-////					if (i > 0)
-////						result.Append (",");
-////					if (t.TypeArguments.Count > 0) {
-////						result.Append (GetTypeString (t.TypeArguments [i]));
-////					} else {
-////						result.Append (t.TypeParameters [i].FullName);
-////					}
-////				}
-////				result.Append (">");
-////			}
-//			return result.ToString ();
+			switch (t.TypeKind) {
+			case TypeKind.ArrayType:
+				var arr = (IArrayTypeSymbol)t;
+				return GetTypeString (arr.ElementType) + "[" + new string (',', arr.Rank - 1) + "]";
+			case TypeKind.PointerType:
+				var ptr = (IPointerTypeSymbol)t;
+				return "*" + GetTypeString (ptr.PointedAtType);
+			default:
+				var docComment = t.GetDocumentationCommentId ();
+				return docComment != null && docComment.Length > 2 ? docComment.Substring (2) : t.Name;
+			}
 		}
 	}
 }
