@@ -1502,7 +1502,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				buildItem.UnsetMetadata ("LastGenOutput");
 			
 			if (!string.IsNullOrEmpty (file.Link))
-				buildItem.SetMetadata ("Link", pathPrefix + MSBuildProjectService.ToMSBuildPathRelative (Item.ItemDirectory, file.Link));
+				buildItem.SetMetadata ("Link", MSBuildProjectService.ToMSBuildPathRelative (Item.ItemDirectory, file.Link));
 			else
 				buildItem.UnsetMetadata ("Link");
 			
