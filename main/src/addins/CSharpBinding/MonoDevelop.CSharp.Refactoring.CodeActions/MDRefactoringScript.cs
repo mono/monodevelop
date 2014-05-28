@@ -352,7 +352,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				insertLocation = content.Length;
 			content = content.Substring (0, insertLocation) + newType.ToString (FormattingOptions) + content.Substring (insertLocation);
 
-			var project = context.Project;
+			var project = context.FileContainerProject;
 			if (project != null) {
 				var policy = project.Policies.Get<CSharpFormattingPolicy> ();
 				var textPolicy = project.Policies.Get<TextStylePolicy> ();
