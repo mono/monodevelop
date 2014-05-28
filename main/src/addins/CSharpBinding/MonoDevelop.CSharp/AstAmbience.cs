@@ -176,7 +176,7 @@ namespace MonoDevelop.CSharp
 				sb.Append (method.Identifier);
 				AppendTypeParameter (sb, method.TypeParameterList);
 				AppendParameter (sb, method.ParameterList);
-				if (!method.Body.IsMissing) {
+				if (method.Body != null && !method.Body.IsMissing) {
 					string tag = null;
 					if (method.Modifiers.Any (m => m.CSharpKind () == SyntaxKind.AbstractKeyword))
 						tag = GettextCatalog.GetString ("(abstract)");
