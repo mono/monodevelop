@@ -5,9 +5,6 @@
 [submodule "main/external/mono-tools"]
 	path = main/external/mono-tools
 	url = git://github.com/mono/mono-tools.git
-[submodule "main/external/monomac"]
-	path = main/external/monomac
-	url = git://github.com/mono/monomac.git
 [submodule "main/external/ngit"]
 	path = main/external/ngit
 	url = git://github.com/mono/ngit.git
@@ -16,7 +13,7 @@
 	url = git://github.com/mono/mdtestharness.git
 [submodule "main/external/xwt"]
 	path = main/external/xwt
-	url = git://github.com/mono/xwt.git
+	url = git://github.com/xamarin/xwt.git
 [submodule "main/external/Newtonsoft.Json"]
 	path = main/external/Newtonsoft.Json
 	url = git://github.com/mono/Newtonsoft.Json.git
