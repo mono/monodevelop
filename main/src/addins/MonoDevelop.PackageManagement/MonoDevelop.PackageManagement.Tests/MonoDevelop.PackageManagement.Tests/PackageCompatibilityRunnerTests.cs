@@ -94,8 +94,6 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void ProjectHasOnePackageReferenceNeedingReinstall (string packageId)
 		{
-			runner.FileSystem.FileExistsReturnValue = true;
-
 			var package = FakePackage.CreatePackageWithVersion (packageId, "1.2.3.4");
 			package.AddFile (@"lib\net45\MyPackage.dll");
 
@@ -103,12 +101,19 @@ namespace MonoDevelop.PackageManagement.Tests
 				solution.AddFakeProjectToReturnFromGetProject (project.Name);
 			packageManagementProject.FakePackages.Add (package);
 
-			runner.FileSystem.FileToReturnFromOpenFile =
-				string.Format (
-					@"<packages>
-						<package id='{0}' version='1.2.3.4' targetFramework='net40'/>
-					</packages>",
+			string xml = String.Format (
+				@"<packages>
+					<package id='{0}' version='1.2.3.4' targetFramework='net40'/>
+				</packages>",
 				packageId);
+
+			SetProjectPackagesConfigFileContents (xml);
+		}
+
+		void SetProjectPackagesConfigFileContents (string xml)
+		{
+			runner.FileSystem.FileExistsReturnValue = true;
+			runner.FileSystem.FileToReturnFromOpenFile = xml;
 		}
 
 		void ProjectPackagesAreNotRestored ()
@@ -133,6 +138,16 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AssertPackageMarkedForReinstallationInPackagesConfigFile (string packageId)
 		{
+			AssertPackageMarkedForReinstallationInPackagesConfigFile (packageId, true);
+		}
+
+		void AssertPackageNotMarkedForReinstallationInPackagesConfigFile (string packageId)
+		{
+			AssertPackageMarkedForReinstallationInPackagesConfigFile (packageId, false);
+		}
+
+		void AssertPackageMarkedForReinstallationInPackagesConfigFile (string packageId, bool expectedReinstallationSetting)
+		{
 			var fileSystem = new FakeFileSystem ();
 			fileSystem.FileExistsReturnValue = true;
 			MemoryStream stream = runner.FileSystem.FilesAdded.First ().Value;
@@ -143,7 +158,14 @@ namespace MonoDevelop.PackageManagement.Tests
 				.GetPackageReferences ()
 				.FirstOrDefault (packageReference => packageReference.Id == packageId);
 
-			Assert.IsTrue (matchedReference.RequireReinstallation);
+			Assert.AreEqual (expectedReinstallationSetting, matchedReference.RequireReinstallation);
+		}
+
+		FilePath ConfigurePackagesConfigFilePath (string packagesconfigFileName)
+		{
+			string fileName = Path.Combine (project.BaseDirectory, packagesconfigFileName);
+			runner.FileSystem.PathToReturnFromGetFullPath = fileName.ToNativePath ();
+			return new FilePath (fileName.ToNativePath ());
 		}
 
 		[Test]
@@ -269,9 +291,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			ProjectHasOnePackageReferenceNeedingReinstall ("MyPackageId");
-			string fileName = Path.Combine (project.BaseDirectory, "packages.config");
-			runner.FileSystem.PathToReturnFromGetFullPath = fileName.ToNativePath ();
-			var expectedFilePath = new FilePath (fileName.ToNativePath ());
+			FilePath expectedFilePath = ConfigurePackagesConfigFilePath ("packages.config");
 
 			Run ();
 
@@ -288,6 +308,51 @@ namespace MonoDevelop.PackageManagement.Tests
 			Run ();
 
 			AssertPackageMarkedForReinstallationInPackagesConfigFile ("MyPackageId");
+		}
+
+		[Test]
+		public void Run_PackagesConfigFileHasReinstallationAttributeSetButPackageDoesNotRequireReinstall_PackagesConfigUpdatedToRemoveReinstallationAttributes ()
+		{
+			CreateRunner ();
+			ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework ("MyPackageId");
+			string xml =
+				@"<packages>
+					<package id='MyPackageId' version='1.2.3.4' targetFramework='net40' requireReinstallation='True' />
+				</packages>";
+			SetProjectPackagesConfigFileContents (xml);
+
+			Run ();
+
+			AssertPackageNotMarkedForReinstallationInPackagesConfigFile ("MyPackageId");
+		}
+
+		[Test]
+		public void Run_PackagesConfigFileHasReinstallationAttributeSetButPackageDoesNotRequireReinstall_PackageConfigFileChangedNotificationIsGenerated ()
+		{
+			CreateRunner ();
+			ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework ("MyPackageId");
+			string xml =
+				@"<packages>
+					<package id='MyPackageId' version='1.2.3.4' targetFramework='net40' requireReinstallation='True' />
+				</packages>";
+			SetProjectPackagesConfigFileContents (xml);
+			FilePath expectedFilePath = ConfigurePackagesConfigFilePath ("packages.config");
+
+			Run ();
+
+			Assert.AreEqual (1, runner.EventsMonitor.FilesChanged.Count);
+			Assert.AreEqual (expectedFilePath, runner.EventsMonitor.FilesChanged [0]);
+		}
+
+		[Test]
+		public void Run_PackageDoesNotRequireReinstall_PackagesConfigIsNotUpdated ()
+		{
+			CreateRunner ();
+			ProjectHasOnePackageReferenceCompatibleWithCurrentProjectTargetFramework ("MyPackageId");
+
+			Run ();
+
+			Assert.AreEqual (0, runner.FileSystem.FilesAdded.Count);
 		}
 	}
 }

@@ -125,10 +125,12 @@ namespace MonoDevelop.PackageManagement
 			checker.CheckProjectPackages (project);
 
 			if (checker.AnyPackagesRequireReinstallation ()) {
-				checker.MarkPackagesForReinstallation ();
-				packageManagementEvents.OnFileChanged (checker.PackageReferenceFileName);
+				MarkPackagesForReinstallation (checker);
 				ReportPackageReinstallationWarning (checker.GetPackagesRequiringReinstallation ());
 			} else {
+				if (checker.PackagesMarkedForReinstallationInPackageReferenceFile ()) {
+					MarkPackagesForReinstallation (checker);
+				}
 				progressMonitor.ReportSuccess (progressMessage.Success);
 			}
 		}
@@ -136,6 +138,12 @@ namespace MonoDevelop.PackageManagement
 		protected virtual PackageCompatibilityChecker CreatePackageCompatibilityChecker (IPackageManagementSolution solution, IRegisteredPackageRepositories registeredRepositories)
 		{
 			return new PackageCompatibilityChecker (solution, registeredRepositories);
+		}
+
+		void MarkPackagesForReinstallation (PackageCompatibilityChecker checker)
+		{
+			checker.MarkPackagesForReinstallation ();
+			packageManagementEvents.OnFileChanged (checker.PackageReferenceFileName);
 		}
 
 		void ReportPackageReinstallationWarning (IEnumerable<string> packages)

@@ -107,6 +107,11 @@ namespace MonoDevelop.PackageManagement
 					reinstall);
 			}
 		}
+
+		public bool PackagesMarkedForReinstallationInPackageReferenceFile ()
+		{
+			return packageReferences.Any (packageReference => packageReference.RequireReinstallation);
+		}
 	}
 }
 
