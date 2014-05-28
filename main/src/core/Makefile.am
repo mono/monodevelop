@@ -2,5 +2,6 @@ SUBDIRS = \
 	MonoDevelop.Projects.Formats.MSBuild \
 	MonoDevelop.Core \
 	Mono.Texteditor \
-	MonoDevelop.Ide MonoDevelop.Startup 
+	MonoDevelop.Ide MonoDevelop.Startup \
+	MonoDevelop.TextEditor.Tests
 
