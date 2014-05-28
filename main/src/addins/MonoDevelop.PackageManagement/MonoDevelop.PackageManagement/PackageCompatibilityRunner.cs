@@ -158,7 +158,7 @@ namespace MonoDevelop.PackageManagement
 
 		protected virtual string GetPackageReinstallationWarningMessage()
 		{
-			return GettextCatalog.GetString ("The following NuGet packages were installed with a target framework that is different from the project's current target framework and should be reinstalled.");
+			return GettextCatalog.GetString ("The following NuGet packages were installed with a target framework that is different from the project's current target framework and should be reinstalled." + Environment.NewLine);
 		}
 
 		protected virtual void ShowPackageConsole (IProgressMonitor progressMonitor)
