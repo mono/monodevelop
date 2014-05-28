@@ -43,7 +43,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			project = new FakePackageManagementProject ();
 			FakePackageOperation operation = project.AddFakeInstallOperation ();
-			//project.LastInstallPackageCreated
 
 			packageManagementEvents = new PackageManagementEvents ();
 
@@ -79,6 +78,17 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (project.LastInstallPackageCreated.IsExecuteCalled);
 			Assert.AreEqual (package, project.LastInstallPackageCreated.Package);
+		}
+
+		[Test]
+		public void Execute_PackageExistsInSourceRepository_PackageIsForcefullyRemovedSoItDoesNotFailIfOtherPackagesDependOnIt ()
+		{
+			CreateAction ("MyPackage", "1.2.3.4");
+			FakePackage package = AddPackageToSourceRepository ("MyPackage", "1.2.3.4");
+
+			action.Execute ();
+
+			Assert.IsTrue (project.FakeUninstallPackageAction.ForceRemove);
 		}
 	}
 }

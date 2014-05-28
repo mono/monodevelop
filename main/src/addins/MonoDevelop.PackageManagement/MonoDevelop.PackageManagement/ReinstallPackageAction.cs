@@ -61,6 +61,7 @@ namespace MonoDevelop.PackageManagement
 
 			UninstallPackageAction action = Project.CreateUninstallPackageAction ();
 			action.Package = Package;
+			action.ForceRemove = true;
 			action.Execute ();
 		}
 
