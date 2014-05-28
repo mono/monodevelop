@@ -42,14 +42,25 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	public class MonoDevelopWorkspace : Workspace
 	{
-		readonly static MefHostServices services = MefHostServices.Create(new [] { 
-				typeof(MefHostServices).Assembly,
-				typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly
-			});
+		readonly static MefHostServices services;
 			
 		readonly MetadataFileReferenceProvider referenceProvider = new MetadataFileReferenceProvider ();
 
 		MonoDevelop.Projects.Solution currentMonoDevelopSolution;
+
+		static MonoDevelopWorkspace ()
+		{
+			try {
+				services = MefHostServices.Create(new [] { 
+					typeof(MefHostServices).Assembly,
+					typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly
+				});
+				LoggingService.LogInfo (services.GetExports<object> ().Count () + " roslyn services registered.");
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't create host services", e); 
+				services = MefHostServices.Create(new Assembly[0]);
+			}
+		}
 
 		public MonoDevelopWorkspace () : base (services, "MonoDevelopWorkspace")
 		{
@@ -72,7 +83,11 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (currentMonoDevelopSolution == null)
 				return;
-			OnSolutionReloaded (CreateSolutionInfo (currentMonoDevelopSolution));
+			try {
+				OnSolutionReloaded (CreateSolutionInfo (currentMonoDevelopSolution));
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error while reloading solution.", ex); 
+			}
 //			foreach (var pr in projectContents.Keys.ToArray ()) {
 //				var project = pr as DotNetProject;
 //				if (project != null)
@@ -328,10 +343,13 @@ namespace MonoDevelop.Ide.TypeSystem
 //			}
 //		}
 
-		public void InformDocumentClose (Microsoft.CodeAnalysis.DocumentId analysisDocument, string filePath)
+		public void InformDocumentClose (DocumentId analysisDocument, string filePath)
 		{
-			OnDocumentClosed (analysisDocument, new MonoDevelopTextLoader (filePath)); 
-
+			try {
+				OnDocumentClosed (analysisDocument, new MonoDevelopTextLoader (filePath)); 
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while closing document.", e); 
+			}
 		}
 		
 		public override void CloseDocument (DocumentId documentId)

@@ -170,11 +170,6 @@ namespace MonoDevelop.Ide.Gui
 			if (window.ViewContent.Project != null)
 				window.ViewContent.Project.Modified += HandleProjectModified;
 			window.ViewsChanged += HandleViewsChanged;
-			RoslynTypeSystemService.Workspace.WorkspaceChanged += delegate(object sender, Microsoft.CodeAnalysis.WorkspaceChangeEventArgs e) {
-				if (e.Kind == Microsoft.CodeAnalysis.WorkspaceChangeKind.DocumentChanged) {
-					Console.WriteLine ("change !!!");
-				}
-			};
 		}
 
 /*		void UpdateRegisteredDom (object sender, ProjectDomEventArgs e)
@@ -770,6 +765,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Window.ViewContent.Project == project)
 				return;
+			analysisDocument = null;
 			DetachExtensionChain ();
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
 			if (pr != null) {

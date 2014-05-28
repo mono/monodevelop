@@ -80,6 +80,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static MonoDevelopWorkspace GetWorkspace (MonoDevelop.Projects.Solution solution)
 		{
+			if (solution == null)
+				throw new ArgumentNullException ("solution");
 			MonoDevelopWorkspace result;
 			if (workspaces.TryGetValue (solution, out result))
 				return result;
@@ -88,7 +90,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static MonoDevelopWorkspace Workspace {
 			get {
-				return GetWorkspace (IdeApp.ProjectOperations.CurrentSelectedSolution);
+				var solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+				if (solution == null)
+					return emptyWorkspace;
+				return GetWorkspace (solution);
 			}
 		}
 		

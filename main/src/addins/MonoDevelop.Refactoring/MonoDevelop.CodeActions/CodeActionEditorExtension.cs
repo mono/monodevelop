@@ -179,6 +179,8 @@ namespace MonoDevelop.CodeActions
 						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
 						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToList ();
 						foreach (var cfp in CodeDiagnosticService.GetCodeFixDescriptor (CodeRefactoringService.MimeTypeToLanguage(document.Editor.MimeType))) {
+							if (token.IsCancellationRequested)
+								return;
 							var provider = cfp.GetCodeFixProvider ();
 							if (!provider.GetFixableDiagnosticIds ().Any (diagnosticIds.Contains))
 								continue;
