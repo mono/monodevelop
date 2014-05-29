@@ -68,8 +68,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		void RefreshAllChildNodes ()
 		{
 			DispatchService.GuiDispatch (() => {
-				foreach (DotNetProject project in PackageManagementServices.Solution.GetDotNetProjects ()) {
-					RefreshChildNodes (project);
+				foreach (IDotNetProject project in PackageManagementServices.Solution.GetDotNetProjects ()) {
+					RefreshChildNodes (project.DotNetProject);
 				}
 			});
 		}

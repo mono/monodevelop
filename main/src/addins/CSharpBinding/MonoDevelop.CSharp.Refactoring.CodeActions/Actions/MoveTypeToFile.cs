@@ -71,8 +71,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				string correctFileName = GetCorrectFileName (ctx, type);
 				if (IsSingleType (ctx)) {
 					FileService.RenameFile (ctx.TextEditor.FileName, correctFileName);
-					if (ctx.Project != null)
-						ctx.Project.Save (new NullProgressMonitor ());
+					if (ctx.FileContainerProject != null)
+						ctx.FileContainerProject.Save (new NullProgressMonitor ());
 					return;
 				}
 				
@@ -94,16 +94,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				content = content.Remove (start, end - start);
 			}
 			
-			if (context.Project != null) {
-				string header = StandardHeaderService.GetHeader (context.Project, correctFileName, true);
+			if (context.FileContainerProject != null) {
+				string header = StandardHeaderService.GetHeader (context.FileContainerProject, correctFileName, true);
 				if (!string.IsNullOrEmpty (header))
 					content = header + context.TextEditor.EolMarker + StripHeader (content);
 			}
 			content = StripDoubleBlankLines (content);
 			
 			File.WriteAllText (correctFileName, content);
-			context.Project.AddFile (correctFileName);
-			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.Project);
+			context.FileContainerProject.AddFile (correctFileName);
+			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.FileContainerProject);
 		}
 
 		static bool IsBlankLine (TextDocument doc, int i)

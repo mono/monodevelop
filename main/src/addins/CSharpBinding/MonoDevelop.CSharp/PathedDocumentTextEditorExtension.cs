@@ -273,9 +273,9 @@ namespace MonoDevelop.CSharp
 				} else {
 					var node = memberList [n];
 					if (node is EntityDeclaration) {
-						icon = ((EntityDeclaration)node).GetStockIcon (false);
+						icon = ((EntityDeclaration)node).GetStockIcon ();
 					} else {
-						icon = ((EntityDeclaration)node.Parent).GetStockIcon (false);
+						icon = ((EntityDeclaration)node.Parent).GetStockIcon ();
 					}
 				}
 				return ImageService.GetIcon (icon, Gtk.IconSize.Menu);
@@ -301,6 +301,9 @@ namespace MonoDevelop.CSharp
 						if (node is OperatorDeclaration) { 
 							line = Math.Max (1, ((OperatorDeclaration)node).OperatorToken.StartLocation.Line);
 							col = Math.Max (1, ((OperatorDeclaration)node).OperatorToken.StartLocation.Column);
+						} else if (node is IndexerDeclaration) { 
+							line = Math.Max (1, ((IndexerDeclaration)node).ThisToken.StartLocation.Line);
+							col = Math.Max (1, ((IndexerDeclaration)node).ThisToken.StartLocation.Column);
 						} else if (node is EntityDeclaration && !(node is Accessor)) {
 							line = Math.Max (1, ((EntityDeclaration)node).NameToken.StartLocation.Line);
 							col = Math.Max (1, ((EntityDeclaration)node).NameToken.StartLocation.Column);
@@ -477,7 +480,7 @@ namespace MonoDevelop.CSharp
 			}
 
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);
-			if (curType == curMember)
+			if (curType == curMember || curType is DelegateDeclaration)
 				curMember = null;
 			if (isPathSet && curType == lastType && curMember == lastMember && curProject == lastProject)
 				return;
@@ -500,7 +503,7 @@ namespace MonoDevelop.CSharp
 
 			if (ownerProjects.Count > 1) {
 				// Current project if there is more than one
-				result.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
+				result.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
 			}
 
 			if (curType == null) {
@@ -520,17 +523,17 @@ namespace MonoDevelop.CSharp
 				var pos = result.Count;
 				while (type != null) {
 					var declaringType = type.Parent as TypeDeclaration;
-					result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (false), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (AstNode)declaringType ?? unit });
+					result.Insert (pos, new PathEntry (ImageService.GetIcon (type.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (type)) { Tag = (AstNode)declaringType ?? unit });
 					type = declaringType;
 				}
 			}
 				
 			if (curMember != null) {
-				result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (true), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
+				result.Add (new PathEntry (ImageService.GetIcon (curMember.GetStockIcon (), Gtk.IconSize.Menu), curMemberMarkup) { Tag = curMember });
 				if (curMember is Accessor) {
 					var parent = curMember.Parent as EntityDeclaration;
 					if (parent != null)
-						result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (true), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
+						result.Insert (result.Count - 1, new PathEntry (ImageService.GetIcon (parent.GetStockIcon (), Gtk.IconSize.Menu), GetEntityMarkup (parent)) { Tag = parent });
 				}
 			}
 				

@@ -34,18 +34,38 @@
 		<StockIcon stockid="md-component-folder-open" resource="special-folder-win-light-16.png" size="Menu" />
 	</Condition>
 
+  <!-- GTK icons redefined -->
 	<StockIcon stockid="gtk-add" resource="add-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-apply" resource="done-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-cancel" resource="remove-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-clear" resource="clear-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-close" resource="remove-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-copy" resource="copy-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-delete" resource="remove-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-edit" resource="edit-light-16.png" size="Menu" />
-	<StockIcon stockid="gtk-find" resource="pad-search-results-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-find" resource="find-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-find-and-replace" resource="find-and-replace-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-go-back" resource="go-back-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-go-down" resource="go-down-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-go-forward" resource="go-forward-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-go-up" resource="go-up-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-home" resource="home-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-jump-to" resource="jump-to-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-media-play" resource="media-play-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-missing-image" resource="missing-image-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-new" resource="add-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-ok" resource="done-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-open" resource="open-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-properties" resource="properties-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-refresh" resource="refresh-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-remove" resource="remove-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-save" resource="save-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-stop" resource="stop-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-undo" resource="undo-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-zoom-in" resource="zoom-in-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-zoom-out" resource="zoom-out-light-16.png" size="Menu" />
+  
+  <!-- MD icons -->
 	<StockIcon stockid="md-add" resource="add-light-16.png" size="Menu" />
 	<StockIcon stockid="md-assembly-project" resource="assembly-project-light-16.png" size="Menu" />
 	<StockIcon stockid="md-breadcrumb-next" resource="breadcrumb-next-normal-light-16.png" size="Menu" />
@@ -67,7 +87,6 @@
 	<StockIcon stockid="md-disclose-arrow-down" resource="disclose-arrow-down-light-16.png" size="Menu" />
 	<StockIcon stockid="md-disclose-arrow-up" resource="disclose-arrow-up-light-16.png" size="Menu" />
 	<StockIcon stockid="md-done" resource="done-light-16.png" size="Menu" />
-	<StockIcon stockid="md-empty-category" resource="command-light-16.png" size="Menu" />
 	<StockIcon stockid="md-empty-file-icon" resource="file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid="md-enum" resource="element-enumeration-light-16.png" size="Menu" />
 	<StockIcon stockid="md-enum-file" resource="file-enumeration-light-32.png" size="Dnd" />
@@ -75,6 +94,7 @@
 	<StockIcon stockid="md-errors-list-has-errors" resource="pad-error-list-errors-light-16.png" size="Menu" />
 	<StockIcon stockid="md-errors-list-has-warnings" resource="pad-error-list-warnings-light-16.png" size="Menu" />
 	<StockIcon stockid="md-event" resource="element-event-light-16.png" size="Menu" />
+	<StockIcon stockid="md-exception" resource="element-exception-light-16.png" size="Menu" />
 	<StockIcon stockid="md-extensionmethod" resource="element-extensionmethod-light-16.png" size="Menu" />
 	<StockIcon stockid="md-feedback" resource="feedback-light-16.png" size="Menu" />
 	<StockIcon stockid="md-field" resource="element-field-light-16.png" size="Menu" />
@@ -84,6 +104,7 @@
 	<StockIcon stockid="md-file-source" resource="file-source-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-file-unit-test" resource="file-unit-test-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-folder-overlay" resource="assembly-reference-overlay-light-16.png" size="Menu" />
+	<StockIcon stockid="md-fs-field" resource="element-fs-field-light-16.png" size="Menu" />
 	<StockIcon stockid="md-generic-pad" resource="pad-generic-pad-light-16.png" size="Menu" />
 	<StockIcon stockid="md-group-by-category" resource="group-by-category-light-16.png" size="Menu" />
 	<StockIcon stockid="md-gui-file" resource="file-gtk-light-32.png" size="Dnd" />
@@ -102,8 +123,10 @@
 	<StockIcon stockid="md-message-log" resource="pad-application-output-light-16.png" size="Menu" />
 	<StockIcon stockid="md-method" resource="element-method-light-16.png" size="Menu" />
 	<StockIcon stockid="md-misc-files" resource="file-generic-light-16.png" size="Menu" />
+	<StockIcon stockid="md-module" resource="element-module-light-16.png" size="Menu" />
 	<StockIcon stockid="md-name-space" resource="element-namespace-light-16.png" size="Menu" />
 	<StockIcon stockid="md-newmethod" resource="element-method-new-light-16.png" size="Menu" />
+	<StockIcon stockid="md-other-declaration" resource="element-other-declaration-light-16.png" size="Menu" />
 	<StockIcon stockid="md-output-icon" resource="pad-application-output-light-16.png" size="Menu" />
 	<StockIcon stockid="md-package-source" resource="package-source-light-16.png" size="Menu" />
 	<StockIcon stockid="md-parser" resource="parser-light-16.png" size="Menu" />
@@ -112,6 +135,24 @@
 	<StockIcon stockid="md-popup-close" resource="popup-close-light-16.png" size="Menu" />
 	<StockIcon stockid="md-popup-close-hover" resource="popup-close-hover-light-16.png" size="Menu" />
 	<StockIcon stockid="md-preferences" resource="preferences-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-author-information" resource="prefs-author-information-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-build" resource="prefs-build-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-code-formatting" resource="prefs-code-formatting-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-code-templates" resource="prefs-code-templates-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-csharp" resource="prefs-csharp-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-dotnet-naming-policies" resource="prefs-dotnet-naming-policies-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-external-tools" resource="prefs-external-tools-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-fonts" resource="prefs-fonts-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-generic" resource="prefs-generic-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-key-bindings" resource="prefs-key-bindings-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-language" resource="prefs-language-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-load-save" resource="prefs-load-save-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-name-conventions" resource="prefs-name-conventions-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-play" resource="prefs-play-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-sdk-locations" resource="prefs-sdk-locations-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-standard-header" resource="prefs-standard-header-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-task-list" resource="prefs-task-list-light-16.png" size="Menu" />
+	<StockIcon stockid="md-prefs-updates" resource="prefs-updates-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-overlay" resource="project-reference-overlay-light-16.png" size="Menu" />
@@ -121,6 +162,9 @@
 	<StockIcon stockid="md-regular-file" resource="file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid="md-resource-file-icon" resource="file-resource-light-16.png" size="Menu" />
 	<StockIcon stockid="md-resource-file-icon" resource="file-resource-light-32.png" size="Dnd" />
+	<StockIcon stockid="md-save-all" resource="save-all-light-16.png" size="Menu" />
+	<StockIcon stockid="md-script-file-icon" resource="file-script-light-16.png" size="Menu" />
+	<StockIcon stockid="md-script-file-icon" resource="file-script-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-searchbox-clear" resource="searchbox-clear-light-16.png" size="Menu" />
 	<StockIcon stockid="md-searchbox-search" resource="searchbox-search-light-16.png" size="Menu" />
 	<StockIcon stockid="md-solution" resource="solution-light-16.png" size="Menu" />
@@ -129,11 +173,12 @@
 	<StockIcon stockid="md-stop" resource="stop-light-16.png" size="Menu" />
 	<StockIcon stockid="md-struct" resource="element-structure-light-16.png" size="Menu" />
 	<StockIcon stockid="md-struct-file" resource="file-struct-light-32.png" size="Dnd" />
-	<StockIcon stockid="md-task-list-icon" resource="pad-task-list-light-16.png" size="Menu" />
+	<StockIcon stockid="md-task-list" resource="pad-task-list-light-16.png" size="Menu" />
 	<StockIcon stockid="md-template" resource="element-template-light-16.png" size="Menu" />
 	<StockIcon stockid="md-template-surroundwith" resource="element-template-surroundwith-light-16.png" size="Menu" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-light-16.png" size="Menu" />
 	<StockIcon stockid="md-text-file-icon" resource="file-text-light-32.png" size="Dnd" />
+	<StockIcon stockid="md-type" resource="element-type-light-16.png" size="Menu" />
 	<StockIcon stockid="md-updates" resource="updates-light-16.png" size="Menu" />
 	<StockIcon stockid="md-variable" resource="element-variable-light-16.png" size="Menu" />
 	<StockIcon stockid="md-warning-overlay" resource="invalid-reference-overlay-light-16.png" size="Menu" />
@@ -164,6 +209,13 @@
 	<StockIcon stockid="gtk-dialog-info" resource="information-light-24.png" size="LargeToolbar" />
 	<StockIcon stockid="gtk-dialog-info" resource="information-light-32.png" size="Dnd" />
 	<StockIcon stockid="gtk-dialog-info" resource="information-light-48.png" size="Dialog" />
+  
+	<StockIcon stockid="gtk-dialog-question" resource="question-light-16.png" />
+	<StockIcon stockid="gtk-dialog-question" resource="question-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-dialog-question" resource="question-light-24.png" size="Button" />
+	<StockIcon stockid="gtk-dialog-question" resource="question-light-24.png" size="LargeToolbar" />
+	<StockIcon stockid="gtk-dialog-question" resource="question-light-32.png" size="Dnd" />
+	<StockIcon stockid="gtk-dialog-question" resource="question-light-48.png" size="Dialog" />
 
 	<StockIcon stockid="md-error" resource="error-light-16.png" />
 	<StockIcon stockid="md-error" resource="error-light-16.png" size="Menu" />
@@ -200,22 +252,11 @@
 	<StockIcon stockid="md-clear-all-bookmarks" resource="clear-all-bookmarks-16.png" size="Menu" />
 	<StockIcon stockid="md-close-all-documents" resource="close-all-documents-16.png" size="Menu" />
 	<StockIcon stockid="md-close-combine-icon" resource="close-solution-16.png" size="Menu" />
-	<StockIcon stockid="md-compiler-options" resource="compiler-options-16.png" size="Menu" />
-	<StockIcon stockid="md-custom-commands" resource="custom-commands-16.png" size="Menu" />
-	<StockIcon stockid="md-drive" resource="drive-16.png" size="Menu" />
 	<StockIcon stockid="md-empty" resource="empty-16.png" size="Menu" />
-	<StockIcon stockid="md-external-tools" resource="tools-external-tools-16.png" size="Menu" />
 	<StockIcon stockid="md-find-in-files" resource="find-in-files-16.png" size="Menu" />
 	<StockIcon stockid="md-find-next-icon" resource="edit-find-next-16.png" size="Menu" />
-	<StockIcon stockid="md-formatting" resource="formatting-16.png" size="Menu" />
 	<StockIcon stockid="md-goto-nextbookmark" resource="goto-next-bookmark-16.png" size="Menu" />
 	<StockIcon stockid="md-goto-prevbookmark" resource="goto-prev-bookmark-16.png" size="Menu" />
-	<StockIcon stockid="md-hammer" resource="hammer-16.png" size="Menu" />
-	<StockIcon stockid="md-keyboard-shortcuts" resource="keyboard-shortcuts-16.png" size="Menu" />
-	<StockIcon stockid="md-letters" resource="letters-16.png" size="Menu" />
-	<StockIcon stockid="md-locale" resource="locale-16.png" size="Menu" />
-	<StockIcon stockid="md-markers-rulers" resource="markers-rulers-16.png" size="Menu" />
-	<StockIcon stockid="md-monkey" resource="monkey-16.png" size="Menu" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-16.png" size="Menu" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" />
 	<StockIcon stockid="md-monodevelop" resource="monodevelop-22.png" size="Button" />
@@ -228,15 +269,9 @@
 	<StockIcon stockid="md-new-solution" resource="solution-new-16.png" size="Menu" />
 	<StockIcon stockid="md-new-solution-folder" resource="solution-folder-new-16.png" size="Menu" />
 	<StockIcon stockid="md-replace-in-files" resource="replace-in-files-16.png" size="Menu" />
-	<StockIcon stockid="md-save-all-icon" resource="save-all-16.png" size="Menu" />
 	<StockIcon stockid="md-select-all" resource="edit-select-all-16.png" size="Menu" />
-	<StockIcon stockid="md-syntax-highlighting" resource="syntax-highlighting-16.png" size="Menu" />
-	<StockIcon stockid="md-text-editor" resource="text-editor-16.png" size="Menu" />
-	<StockIcon stockid="md-text-editor-behavior" resource="text-editor-behavior-16.png" size="Menu" />
-	<StockIcon stockid="md-text-quickfix" resource="text-quickfix-16.png" size="Menu" />
 	<StockIcon stockid="md-toggle-bookmark" resource="toggle-bookmark-16.png" size="Menu" />
 	<StockIcon stockid="md-web-search-icon" resource="web-search-16.png" size="Menu" />
-	<StockIcon stockid="sdk-locations" resource="sdk-locations-16.png" size="Menu" />
 
 	<!-- Status icons -->
 	<StockIcon stockid="md-status-build" animation="res:status-building-1-light-14.png;res:status-building-2-light-14.png;res:status-building-3-light-14.png;res:status-building-4-light-14.png;res:status-building-5-light-14.png" size="Menu" />

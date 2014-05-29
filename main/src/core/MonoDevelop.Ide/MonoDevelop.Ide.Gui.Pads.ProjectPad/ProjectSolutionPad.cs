@@ -77,6 +77,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			base.OnCloseWorkspace (sender, e);
 			IdeApp.ProjectOperations.CurrentSelectedSolutionItem = null;
 			IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem = null;
+			IdeApp.ProjectOperations.CurrentSelectedItem = null;
 		}
 		
 		void OnWindowChanged (object ob, EventArgs args)

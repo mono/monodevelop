@@ -253,7 +253,9 @@ namespace MonoDevelop.VersionControl.Views
 
 		internal void SetToolbar (DocumentToolbar toolbar)
 		{
-			toolbar.Add (revertButton);
+			if (info.Repository.SupportsRevertRevision)
+				toolbar.Add (revertButton);
+
 			toolbar.Add (revertToButton);
 			toolbar.Add (refreshButton);
 
@@ -464,9 +466,9 @@ namespace MonoDevelop.VersionControl.Views
 			var rev = (Revision)model.GetValue (iter, 0);
 			string day;
 			var age = rev.Time - DateTime.Now;
-			if (age.TotalDays == 0) {
+			if (age.Days == 0) {
 				day = GettextCatalog.GetString ("Today");
-			} else if (age.TotalDays == 1) {
+			} else if (age.Days == 1) {
 				day = GettextCatalog.GetString ("Yesterday");
 			} else {
 				day = rev.Time.ToShortDateString ();

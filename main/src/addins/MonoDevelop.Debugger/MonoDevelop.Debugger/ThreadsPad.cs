@@ -46,6 +46,8 @@ namespace MonoDevelop.Debugger
 		TreeViewState treeViewState;
 		PadTreeView tree;
 		TreeStore store;
+		bool needsUpdate;
+		IPadWindow window;
 		
 		enum Columns
 		{
@@ -127,9 +129,22 @@ namespace MonoDevelop.Debugger
 		
 		void IPadContent.Initialize (IPadWindow window)
 		{
+			this.window = window;
+			window.PadContentShown += delegate {
+				if (needsUpdate)
+					Update ();
+			};
 		}
 		
 		public void UpdateDisplay ()
+		{
+			if (window != null && window.ContentVisible)
+				Update ();
+			else
+				needsUpdate = true;
+		}
+
+		void Update ()
 		{
 			if (tree.IsRealized)
 				tree.ScrollToPoint (0, 0);
@@ -140,7 +155,7 @@ namespace MonoDevelop.Debugger
 
 			if (!DebuggingService.IsPaused)
 				return;
-			
+
 			try {
 				ProcessInfo[] currentProcesses = DebuggingService.DebuggerSession.GetProcesses ();
 				

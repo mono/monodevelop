@@ -132,5 +132,14 @@ namespace Mono.TextEditor.Tests
 			TestOutput ("///<summary>foo bar</summary>",
 			            "<span foreground=\"#888888\" style=\"Italic\">///</span><span foreground=\"#888888\" style=\"Italic\">&lt;</span><span foreground=\"#888888\" style=\"Italic\">summary</span><span foreground=\"#888888\" style=\"Italic\">&gt;</span><span foreground=\"#888888\" style=\"Italic\">foo bar</span><span foreground=\"#888888\" style=\"Italic\">&lt;</span><span foreground=\"#888888\" style=\"Italic\">/</span><span foreground=\"#888888\" style=\"Italic\">summary</span><span foreground=\"#888888\" style=\"Italic\">&gt;</span>");
 		}
+
+		[Test]
+		public void TestFSharpLineBug ()
+		{
+			TestOutput (
+				"\n\n\nlet x = 2",
+				"<span foreground=\"#009695\">let </span><span foreground=\"#333333\">x = </span><span foreground=\"#F57D00\">2</span>",
+				"text/x-fsharp");
+		}
 	}
 }

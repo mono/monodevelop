@@ -122,13 +122,15 @@ namespace Microsoft.Samples.Debugging.Extensions
 			si.hStdError = errorWritePipe;
 		}
 
-		internal static void SetupOutputRedirection (STARTUPINFO si, ref int flags, SafeFileHandle outReadPipe, SafeFileHandle errorReadPipe)
+		internal static void SetupOutputRedirection (STARTUPINFO si, ref int flags, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
 		{
 			if ((flags & CREATE_REDIRECT_STD) != 0) {
 				CreateHandles (si, out outReadPipe, out errorReadPipe);
 				flags &= ~CREATE_REDIRECT_STD;
 			}
 			else {
+				outReadPipe = null;
+				errorReadPipe = null;
 				si.hStdInput = new SafeFileHandle (IntPtr.Zero, false);
 				si.hStdOutput = new SafeFileHandle (IntPtr.Zero, false);
 				si.hStdError = new SafeFileHandle (IntPtr.Zero, false);

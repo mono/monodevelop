@@ -27,11 +27,12 @@
 //
 
 using System;
+using System.IO;
+using MonoDevelop.Core;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using MonoDevelop.Projects.Formats.MSBuild;
 using NuGet;
-using System.IO;
-using MonoDevelop.Core;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -40,20 +41,12 @@ namespace ICSharpCode.PackageManagement
 		public static readonly Guid WebApplication = Guid.Parse("{349C5851-65DF-11DA-9384-00065B846F21}");
 		public static readonly Guid WebSite = Guid.Parse("{E24C65DC-7377-472B-9ABA-BC803B73C61A}");
 		
-		public static bool IsWebProject(this DotNetProject project)
+		public static bool IsWebProject(this IDotNetProject project)
 		{
 			return project.HasProjectType(WebApplication) || project.HasProjectType(WebSite);
 		}
 		
-		public static string GetEvaluatedProperty(this DotNetProject project, string name)
-		{
-			if ("RootNamespace".Equals(name, StringComparison.OrdinalIgnoreCase)) {
-				return project.DefaultNamespace;
-			}
-			return String.Empty;
-		}
-		
-		public static bool HasProjectType(this DotNetProject project, Guid projectTypeGuid)
+		public static bool HasProjectType(this IDotNetProject project, Guid projectTypeGuid)
 		{
 			foreach (string guid in project.GetProjectTypeGuids()) {
 				if (IsMatch(projectTypeGuid, guid)) {
@@ -63,7 +56,7 @@ namespace ICSharpCode.PackageManagement
 			return false;
 		}
 		
-		public static string[] GetProjectTypeGuids(this DotNetProject project)
+		public static string[] GetProjectTypeGuids(this IDotNetProject project)
 		{
 			string projectTypeGuids = project.GetProjectTypeGuidPropertyValue();
 			return projectTypeGuids.Split(new char[] {';'}, StringSplitOptions.RemoveEmptyEntries);
@@ -78,37 +71,13 @@ namespace ICSharpCode.PackageManagement
 			return false;
 		}
 		
-		public static string GetProjectTypeGuidPropertyValue(this DotNetProject project)
+		public static string GetProjectTypeGuidPropertyValue (this IDotNetProject project)
 		{
 			string propertyValue = null;
 			if (project.ExtendedProperties.Contains("ProjectTypeGuids")) {
 				propertyValue = project.ExtendedProperties["ProjectTypeGuids"] as String;
 			}
 			return propertyValue ?? String.Empty;
-		}
-		
-		public static void AddImportIfMissing(
-			this DotNetProject project,
-			string importedProjectFile,
-			ProjectImportLocation importLocation)
-		{
-			var msbuildProject = new MSBuildProject ();
-			msbuildProject.Load (project.FileName);
-			msbuildProject.AddImportIfMissing (importedProjectFile, importLocation, GetCondition (importedProjectFile));
-			msbuildProject.Save (project.FileName);
-		}
-
-		static string GetCondition(string importedProjectFile)
-		{
-			return String.Format("Exists('{0}')", importedProjectFile);
-		}
-
-		public static void RemoveImport(this DotNetProject project, string importedProjectFile)
-		{
-			var msbuildProject = new MSBuildProject ();
-			msbuildProject.Load (project.FileName);
-			msbuildProject.RemoveImportIfExists (importedProjectFile);
-			msbuildProject.Save (project.FileName);
 		}
 
 		public static bool HasPackages (this DotNetProject project)

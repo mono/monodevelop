@@ -35,8 +35,25 @@ namespace ICSharpCode.PackageManagement
 {
 	public class NuGetPackageRestoreCommandLine
 	{
-		public NuGetPackageRestoreCommandLine(IPackageManagementSolution solution)
+		MonoRuntimeInfo monoRuntime;
+		bool isMonoRuntime;
+
+		public NuGetPackageRestoreCommandLine (IPackageManagementSolution solution)
+			: this (
+				solution,
+				MonoRuntimeInfo.FromCurrentRuntime (),
+				EnvironmentUtility.IsMonoRuntime)
 		{
+		}
+
+		public NuGetPackageRestoreCommandLine (
+			IPackageManagementSolution solution,
+			MonoRuntimeInfo monoRuntime,
+			bool isMonoRuntime)
+		{
+			this.monoRuntime = monoRuntime;
+			this.isMonoRuntime = isMonoRuntime;
+
 			GenerateCommandLine(solution);
 			GenerateWorkingDirectory(solution);
 		}
@@ -47,7 +64,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void GenerateCommandLine(IPackageManagementSolution solution)
 		{
-			if (EnvironmentUtility.IsMonoRuntime) {
+			if (isMonoRuntime) {
 				GenerateMonoCommandLine(solution);
 			} else {
 				GenerateWindowsCommandLine(solution);
@@ -61,8 +78,7 @@ namespace ICSharpCode.PackageManagement
 				NuGetExePath.GetPath(),
 				solution.FileName);
 
-			string monoPrefix = MonoRuntimeInfo.FromCurrentRuntime().Prefix;
-			Command = Path.Combine(monoPrefix, "bin", "mono");
+			Command = Path.Combine (monoRuntime.Prefix, "bin", "mono");
 		}
 		
 		void GenerateWindowsCommandLine(IPackageManagementSolution solution)

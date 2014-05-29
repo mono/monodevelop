@@ -704,5 +704,33 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
 		}
+
+		[Test]
+		public void BuildSolutionWithUnsupportedProjects ()
+		{
+			string solFile = Util.GetSampleProject ("unsupported-project", "console-with-libs.sln");
+
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			var res = sol.Build (Util.GetMonitor (), "Debug");
+
+			// The solution has a console app that references an unsupported library. The build of the solution should fail.
+			Assert.IsTrue (res.ErrorCount == 1);
+
+			var app = (DotNetAssemblyProject) sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.FileName.FileName == "console-with-libs.csproj");
+
+			// The console app references an unsupported library. The build of the project should fail.
+			res = app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
+			Assert.IsTrue (res.ErrorCount == 1);
+
+			// A solution build should succeed if it has unbuildable projects but those projects are not referenced by buildable projects
+			app.References.Clear ();
+			sol.Save (Util.GetMonitor ());
+			res = sol.Build (Util.GetMonitor (), "Debug");
+			Assert.IsTrue (res.ErrorCount == 0);
+
+			// Regular project not referencing anything else. Should build.
+			res = app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
+			Assert.IsTrue (res.ErrorCount == 0);
+		}
 	}
 }

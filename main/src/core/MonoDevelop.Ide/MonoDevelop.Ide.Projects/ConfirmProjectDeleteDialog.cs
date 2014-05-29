@@ -36,7 +36,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public partial class ConfirmProjectDeleteDialog : Gtk.Dialog
+	partial class ConfirmProjectDeleteDialog : Gtk.Dialog
 	{
 		TreeStore store;
 		IWorkspaceFileObject item;

@@ -224,8 +224,20 @@ namespace MonoDevelop.PackageManagement
 		{
 			viewModel.IsEditingSelectedPackageSource = false;
 			using (var dialog = new AddPackageSourceDialog (viewModel)) {
-				dialog.ShowWithParent ();
+				if (dialog.ShowWithParent () == Xwt.Command.Ok) {
+					UpdateSelectedPackageSource ();
+				}
 				UpdateEnabledButtons ();
+			}
+		}
+
+		void UpdateSelectedPackageSource ()
+		{
+			TreeIter iter = GetTreeIter (viewModel.SelectedPackageSourceViewModel);
+			if (iter.Equals (TreeIter.Zero)) {
+				packageSourcesTreeView.Selection.UnselectAll ();
+			} else {
+				packageSourcesTreeView.Selection.SelectIter (iter);
 			}
 		}
 

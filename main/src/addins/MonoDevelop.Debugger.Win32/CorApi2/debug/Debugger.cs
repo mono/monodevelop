@@ -202,7 +202,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             // initialize safe handles 
 			// [Xamarin] ASP.NET Debugging and output redirection.
 			SafeFileHandle outReadPipe = null, errorReadPipe = null;
-			DebuggerExtensions.SetupOutputRedirection (si, ref flags, outReadPipe, errorReadPipe);
+			DebuggerExtensions.SetupOutputRedirection (si, ref flags, out outReadPipe, out errorReadPipe);
 			IntPtr env = DebuggerExtensions.SetupEnvironment (environment);
 
             CorProcess ret;

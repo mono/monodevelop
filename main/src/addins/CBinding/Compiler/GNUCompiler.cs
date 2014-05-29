@@ -484,34 +484,33 @@ namespace CBinding
 			errorOutput = string.Empty;
 			int exitCode = -1;
 			
-			StringWriter swError = new StringWriter ();
-			LogTextWriter chainedError = new LogTextWriter ();
-			chainedError.ChainWriter (monitor.Log);
-			chainedError.ChainWriter (swError);
+			using (var swError = new StringWriter ()) {
+				using (var chainedError = new LogTextWriter ()) {
+					chainedError.ChainWriter (monitor.Log);
+					chainedError.ChainWriter (swError);
 			
-			monitor.Log.WriteLine ("{0} {1}", command, args);
+					monitor.Log.WriteLine ("{0} {1}", command, args);
 			
-			AggregatedOperationMonitor operationMonitor = new AggregatedOperationMonitor (monitor);
-			
-			try {
-				ProcessWrapper p = Runtime.ProcessService.StartProcess (command, args, baseDirectory, monitor.Log, chainedError, null);
-				operationMonitor.AddOperation (p); //handles cancellation
+					using (var operationMonitor = new AggregatedOperationMonitor (monitor)) {
+						using (ProcessWrapper p = Runtime.ProcessService.StartProcess (command, args, baseDirectory, monitor.Log, chainedError, null)) {
+							operationMonitor.AddOperation (p); //handles cancellation
 				
-				p.WaitForOutput ();
-				errorOutput = swError.ToString ();
-				exitCode = p.ExitCode;
-				p.Dispose ();
+							p.WaitForOutput ();
+							chainedError.UnchainWriter (monitor.Log);
+							chainedError.UnchainWriter (swError);
+
+							errorOutput = swError.ToString ();
+							exitCode = p.ExitCode;
 				
-				if (monitor.IsCancelRequested) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Build cancelled"));
-					monitor.ReportError (GettextCatalog.GetString ("Build cancelled"), null);
-					if (exitCode == 0)
-						exitCode = -1;
+							if (monitor.IsCancelRequested) {
+								monitor.Log.WriteLine (GettextCatalog.GetString ("Build cancelled"));
+								monitor.ReportError (GettextCatalog.GetString ("Build cancelled"), null);
+								if (exitCode == 0)
+									exitCode = -1;
+							}
+						}
+					}
 				}
-			} finally {
-				chainedError.Close ();
-				swError.Close ();
-				operationMonitor.Dispose ();
 			}
 			
 			return exitCode;
@@ -748,21 +747,22 @@ namespace CBinding
 
 		// expands backticked portions of the parameter-list using "sh" and "echo"
 		// TODO: Do this ourselves, relying on sh/echo - and launching an entire process just for this is ... excessive.
-		public string ExpandBacktickedParameters(string tmp)
+		public string ExpandBacktickedParameters (string tmp)
 		{
 			// 1) Quadruple \ required, to escape both echo's and sh's escape character filtering
 			// 2) \\\" required inside of echo, to translate into \" in sh, so it translates back as a " to MD...
-			string parameters = "-c \"echo -n " + tmp.Replace("\\", "\\\\\\\\").Replace("\"", "\\\\\\\"") + "\"";
-			Process p = new Process();
-			
-			p.StartInfo.FileName = "sh";
-			p.StartInfo.Arguments = parameters;
-			p.StartInfo.UseShellExecute = false;
-			p.StartInfo.RedirectStandardOutput = true;
-			p.Start();
-			p.WaitForExit();
+			string parameters = "-c \"echo " + tmp.Replace("\\", "\\\\\\\\").Replace("\"", "\\\\\\\"") + "\"";
 
-			return p.StandardOutput.ReadToEnd();
+			var p = Process.Start (new ProcessStartInfo ("sh", parameters) {
+				UseShellExecute = false,
+				RedirectStandardOutput = true
+			});
+			p.Start ();
+			p.WaitForExit ();
+
+			//TODO: use async reads so we don't deadlock if stdout fills up
+			//TODO: check return code
+			return p.StandardOutput.ReadToEnd ().Trim ();
 		}
 		
 		bool CheckApp (string app)

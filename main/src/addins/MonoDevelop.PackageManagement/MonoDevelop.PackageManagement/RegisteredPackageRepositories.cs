@@ -113,12 +113,21 @@ namespace ICSharpCode.PackageManagement
 
 		public void UpdatePackageSources (IEnumerable<PackageSource> updatedPackageSources)
 		{
-			PackageSources.Clear ();
-			foreach (PackageSource updatedPackageSource in updatedPackageSources) {
-				PackageSources.Add (updatedPackageSource);
-			}
+			List<PackageSource> packageSourcesBackup = PackageSources.ToList ();
 
-			UpdateActivePackageSource ();
+			try {
+				PackageSources.Clear ();
+				foreach (PackageSource updatedPackageSource in updatedPackageSources) {
+					PackageSources.Add (updatedPackageSource);
+				}
+
+				UpdateActivePackageSource ();
+			} catch (Exception) {
+				PackageSources.AddRange (packageSourcesBackup);
+				UpdateActivePackageSource ();
+
+				throw;
+			}
 		}
 
 		void UpdateActivePackageSource ()

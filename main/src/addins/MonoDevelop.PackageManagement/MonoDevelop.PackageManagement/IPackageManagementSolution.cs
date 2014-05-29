@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -41,11 +42,11 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementProject GetActiveProject(IPackageRepository sourceRepository);
 		IPackageManagementProject GetProject(PackageSource source, string projectName);
 		IPackageManagementProject GetProject(IPackageRepository sourceRepository, string projectName);
-		IPackageManagementProject GetProject(IPackageRepository sourceRepository, Project project);
+		IPackageManagementProject GetProject (IPackageRepository sourceRepository, IDotNetProject project);
 		IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository);
 		
-		Project GetActiveDotNetProject();
-		IEnumerable<Project> GetDotNetProjects();
+		IDotNetProject GetActiveDotNetProject ();
+		IEnumerable<IDotNetProject> GetDotNetProjects ();
 		bool HasMultipleProjects();
 		
 		bool IsPackageInstalled(IPackage package);

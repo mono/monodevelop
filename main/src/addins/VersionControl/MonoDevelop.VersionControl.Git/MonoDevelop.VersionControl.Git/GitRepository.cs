@@ -185,6 +185,7 @@ namespace MonoDevelop.VersionControl.Git
 
 					cachedSubmodules = submoduleStatus.Call ()
 						.Select(s => SubmoduleWalk.GetSubmoduleRepository (RootRepository, s.Key))
+						.Where(s => s != null)	// TODO: Make this so we can tell user to clone them.
 						.ToArray ();
 				}
 				return cachedSubmodules;
@@ -400,14 +401,12 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			if (!Directory.Exists (dir))
 				return;
-			foreach (string file in Directory.GetFiles (dir))
-				files.Add (new FilePath (file).CanonicalPath);
 
-			foreach (string sub in Directory.GetDirectories (dir)) {
-				directories.Add (new FilePath (sub));
-				if (recursive)
-					CollectFiles (files, directories, sub, true);
-			}
+			directories.AddRange (Directory.GetDirectories (dir, "*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+				.Select (f => new FilePath (f)));
+
+			files.UnionWith (Directory.GetFiles (dir, "*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
+				.Select (f => new FilePath (f).CanonicalPath));
 		}
 
 		protected override Repository OnPublish (string serverPath, FilePath localPath, FilePath[] files, string message, IProgressMonitor monitor)
@@ -507,9 +506,9 @@ namespace MonoDevelop.VersionControl.Git
 				var status = statusCommand.Call ();
 
 				if (status.IsClean ())
-					updateSubmodules.Add (submodule.WorkTree);
+					updateSubmodules.Add (RootRepository.ToGitPath (submodule.WorkTree.GetAbsolutePath ()));
 				else
-					dirtySubmodules.Add (submodule.WorkTree);
+					dirtySubmodules.Add (RootRepository.ToGitPath (submodule.WorkTree.GetAbsolutePath ()));
 			}
 
 			if (dirtySubmodules.Count != 0) {
@@ -776,7 +775,6 @@ namespace MonoDevelop.VersionControl.Git
 			ConflictResult res = ConflictResult.Abort;
 			DispatchService.GuiSyncDispatch (delegate {
 				ConflictResolutionDialog dlg = new ConflictResolutionDialog ();
-				dlg.Load (file);
 				try {
 					dlg.Load (file);
 					var dres = (Gtk.ResponseType) MessageService.RunCustomDialog (dlg);
@@ -1005,22 +1003,8 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnRevertRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
-			var git = new NGit.Api.Git (GetRepository (localPath));
-			var gitRev = (GitRevision)revision;
-			var revert = git.Revert ().Include (gitRev.Commit.ToObjectId ());
-			revert.Call ();
-
-			var revertResult = revert.GetFailingResult ();
-			if (revertResult == null) {
-				monitor.ReportSuccess (GettextCatalog.GetString ("Revision {0} successfully reverted", gitRev));
-			} else {
-				var errorMessage = GettextCatalog.GetString ("Could not revert commit {0}", gitRev);
-				var description = GettextCatalog.GetString ("The following files had merge conflicts");
-				description += Environment.NewLine + string.Join (Environment.NewLine, revertResult.GetFailingPaths ().Keys);
-				monitor.ReportError (errorMessage, new UserException (errorMessage, description));
-			} 
+			throw new NotSupportedException ();
 		}
-
 
 		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
@@ -1029,9 +1013,8 @@ namespace MonoDevelop.VersionControl.Git
 			GitRevision gitRev = (GitRevision)revision;
 
 			// Rewrite file data from selected revision.
-			foreach (var path in GetFilesInPaths (new FilePath[] { localPath })) {
-				MonoDevelop.Projects.Text.TextFile.WriteFile (path, GetCommitTextContent (gitRev.Commit, path), null);
-			}
+			foreach (var path in GetFilesInPaths (new [] { localPath }))
+				MonoDevelop.Projects.Text.TextFile.WriteFile (repo.FromGitPath (path), GetCommitTextContent (gitRev.Commit, path), null);
 
 			monitor.ReportSuccess (GettextCatalog.GetString ("Successfully reverted {0} to revision {1}", localPath, gitRev));
 		}
@@ -1196,7 +1179,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var content = GetCommitContent (c, file);
 			if (RawText.IsBinary (content))
-				return null;
+				return String.Empty;
 			return Mono.TextEditor.Utils.TextFileUtility.GetText (content);
 		}
 		

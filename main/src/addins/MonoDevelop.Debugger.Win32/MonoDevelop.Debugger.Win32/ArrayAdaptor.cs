@@ -73,7 +73,7 @@ namespace MonoDevelop.Debugger.Win32
 				idx[i] = indices[i];
 
 			for (int i = 0; i < count; i++) {
-				elements.Add (GetElement (idx));
+				elements.Add (GetElement ((int[])idx.Clone ()));
 				idx[idx.Length - 1]++;
 			}
 
@@ -83,6 +83,7 @@ namespace MonoDevelop.Debugger.Win32
 		public void SetElement (int[] indices, object val)
 		{
 			CorValRef it = (CorValRef) GetElement (indices);
+			obj.IsValid = false;
 			it.SetValue (ctx, (CorValRef) val);
 		}
 		

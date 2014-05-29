@@ -57,8 +57,7 @@ namespace ICSharpCode.PackageManagement
 				new ManagePackagesViewModel(
 					packagesViewModels,
 					new ManagePackagesViewTitle(solution),
-					packageManagementEvents,
-					new ManagePackagesUserPrompts(packageManagementEvents));
+					packageManagementEvents);
 		}
 		
 		void CreateRegisteredPackageRepositories()

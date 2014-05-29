@@ -163,7 +163,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 		public override Type DeclaringType
 		{
-			get { throw new NotImplementedException (); }
+			get {
+				return m_declaringType;
+			}
 		}
 
 		public override bool IsDefined (Type attributeType, bool inherit)

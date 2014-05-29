@@ -166,9 +166,9 @@ namespace MonoDevelop.CodeActions
 							if (token.IsCancellationRequested)
 								return;
 							CreateSmartTag (fixes, loc);
-							quickFixTimeout = 0;
 						});
 					});
+					quickFixTimeout = 0;
 					return false;
 				});
 			} else {

@@ -44,13 +44,21 @@ namespace ICSharpCode.PackageManagement
 		{
 		}
 		
-		public PackageManagementSelectedProject(
+		public PackageManagementSelectedProject (
 			IPackageManagementProject project,
 			bool selected,
 			bool enabled)
+			: this (project.Name, selected, enabled)
 		{
 			this.Project = project;
-			this.Name = Project.Name;
+		}
+
+		public PackageManagementSelectedProject (
+			string name,
+			bool selected,
+			bool enabled)
+		{
+			this.Name = name;
 			this.IsSelected = selected;
 			this.IsEnabled = enabled;
 		}

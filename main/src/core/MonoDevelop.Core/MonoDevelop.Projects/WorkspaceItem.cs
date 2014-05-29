@@ -217,9 +217,15 @@ namespace MonoDevelop.Projects
 			return list.AsReadOnly ();
 		}
 
+		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
 		public virtual Project GetProjectContainingFile (FilePath fileName)
 		{
 			return null;
+		}
+
+		public virtual IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
+		{
+			yield break;
 		}
 		
 		public virtual ReadOnlyCollection<string> GetConfigurations ()
@@ -265,6 +271,11 @@ namespace MonoDevelop.Projects
 		public bool SupportsTarget (string target)
 		{
 			return Services.ProjectService.GetExtensionChain (this).SupportsTarget (this, target);
+		}
+
+		public bool SupportsExecute ()
+		{
+			return Services.ProjectService.GetExtensionChain (this).SupportsExecute (this);
 		}
 
 		public BuildResult Build (IProgressMonitor monitor, string configuration)
@@ -417,6 +428,11 @@ namespace MonoDevelop.Projects
 		}
 		
 		internal protected virtual bool OnGetSupportsTarget (string target)
+		{
+			return true;
+		}
+
+		internal protected virtual bool OnGetSupportsExecute ()
 		{
 			return true;
 		}

@@ -42,14 +42,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			CheckError (error, null);
 		}
 
-		public static void CheckError (IntPtr error, int? allowedError)
+		public static SubversionException CheckErrorNoThrow (IntPtr error, int? allowedError)
 		{
 			string msg = null;
 			int errorCode = 0; // Innermost error-code.
 			while (error != IntPtr.Zero) {
-				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t) Marshal.PtrToStructure (error, typeof (LibSvnClient.svn_error_t));
+				LibSvnClient.svn_error_t error_t = (LibSvnClient.svn_error_t)Marshal.PtrToStructure (error, typeof(LibSvnClient.svn_error_t));
 				if (allowedError.HasValue && error_t.apr_err == allowedError.Value)
-					return;
+					return null;
 
 				errorCode = error_t.apr_err;
 				if (msg != null)
@@ -61,8 +61,14 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				if (msg == null)
 					msg = GettextCatalog.GetString ("Unknown error");
 			}
-			if (msg != null)
-				throw new SubversionException (msg, errorCode);
+			return msg != null ? new SubversionException (msg, errorCode) : null;
+		}
+
+		public static void CheckError (IntPtr error, int? allowedError)
+		{
+			SubversionException ex = CheckErrorNoThrow (error, allowedError);
+			if (ex != null)
+				throw ex;
 		}
 		
 		static string GetErrorMessage (LibSvnClient.svn_error_t error)
@@ -222,6 +228,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		static void CheckError (IntPtr error, int? allowedError)
 		{
 			SvnClient.CheckError (error, allowedError);
+		}
+
+		static SubversionException CheckErrorNoThrow (IntPtr error, int? allowedError)
+		{
+			return SvnClient.CheckErrorNoThrow (error, allowedError);
 		}
 
 		static IntPtr newpool (IntPtr parent)
@@ -391,6 +402,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		static IntPtr OnAuthSimplePrompt (ref IntPtr cred, IntPtr baton, string realm, string user_name, bool may_save, IntPtr pool)
 		{
 			LibSvnClient.svn_auth_cred_simple_t data = new LibSvnClient.svn_auth_cred_simple_t ();
+			data.username = user_name;
 			bool ms;
 			if (SimpleAuthenticationPrompt (realm, may_save, ref data.username, out data.password, out ms)) {
 				data.may_save = ms;
@@ -1106,6 +1118,36 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 		}
 
+		public override bool HasNeedLock (FilePath file)
+		{
+			IntPtr hash_item, hash_name, hash_val;
+			int length;
+			IntPtr result;
+			IntPtr props_ptr = IntPtr.Zero;
+			StringBuilder props = new StringBuilder ();
+			string new_path;
+			LibSvnClient.svn_string_t new_props;
+			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
+
+			var localpool = TryStartOperation (null);
+			try {
+				new_path = NormalizePath (file, localpool);
+				CheckError (svn.client_propget (out result, "svn:needs-lock", new_path,
+					ref rev, false, ctx, localpool));
+				hash_item = apr.hash_first (localpool, result);
+				while (hash_item != IntPtr.Zero) {
+					apr.hash_this (hash_item, out hash_name, out length, out hash_val);
+					new_props = (LibSvnClient.svn_string_t) Marshal.PtrToStructure (hash_val, typeof (LibSvnClient.svn_string_t));
+					props.Append (Marshal.PtrToStringAnsi (new_props.data));
+					hash_item = apr.hash_next (hash_item);
+				}
+				return props.Length != 0;
+			} finally {
+				apr.pool_destroy (localpool);
+				TryEndOperation ();
+			}
+		}
+
 		public override string GetTextBase (string sourcefile)
 		{
 			MemoryStream data = new MemoryStream ();
@@ -1487,9 +1529,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			var localpool = TryStartOperation (null);
 			try {
 				string new_path = NormalizePath (path.FullPath, localpool);
-				try {
-					CheckError (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch));
-				} catch (SubversionException e) {
+				SubversionException e = CheckErrorNoThrow (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch), null);
+				if (e != null) {
 					// SVN_ERR_SVN_ERR_WC_UPGRADE_REQUIRED
 					Upgrading = e.ErrorCode == 155036;
 
@@ -1508,7 +1549,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					case 155036:
 						return String.Empty;
 					}
-					throw;
+					throw e;
 				}
 				return Marshal.PtrToStringAnsi (result);
 			} finally {

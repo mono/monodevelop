@@ -30,9 +30,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Runtime.Versioning;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
-using System.Runtime.Versioning;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -41,29 +42,29 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopPackageManager packageManager;
 		ISharpDevelopProjectManager projectManager;
 		IPackageManagementEvents packageManagementEvents;
-		DotNetProject msbuildProject;
+		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
 
-		public PackageManagementProject(
+		public PackageManagementProject (
 			IPackageRepository sourceRepository,
-			DotNetProject project,
+			IDotNetProject project,
 			IPackageManagementEvents packageManagementEvents,
 			IPackageManagerFactory packageManagerFactory)
 		{
 			SourceRepository = sourceRepository;
-			msbuildProject = project;
+			this.project = project;
 			this.packageManagementEvents = packageManagementEvents;
 			
-			packageManager = packageManagerFactory.CreatePackageManager(sourceRepository, project);
+			packageManager = packageManagerFactory.CreatePackageManager (sourceRepository, project);
 			projectManager = packageManager.ProjectManager;
 		}
 		
 		public string Name {
-			get { return msbuildProject.Name; }
+			get { return project.Name; }
 		}
 
 		public DotNetProject DotNetProject {
-			get { return msbuildProject; }
+			get { return project.DotNetProject; }
 		}
 
 		public FrameworkName TargetFramework {
@@ -73,7 +74,7 @@ namespace ICSharpCode.PackageManagement
 		FrameworkName GetTargetFramework()
 		{
 			if (targetFramework == null) {
-				targetFramework = new ProjectTargetFramework(msbuildProject);
+				targetFramework = new ProjectTargetFramework(project);
 			}
 			return targetFramework.TargetFrameworkName;
 		}

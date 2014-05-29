@@ -409,7 +409,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (keyChar == ';' && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get (
 				    "SmartSemicolonPlacement",
 				    false
-			    )) {
+			    ) && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				DocumentLine curLine = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 				string text = textEditorData.Document.GetTextAt (curLine);
@@ -506,7 +506,8 @@ namespace MonoDevelop.CSharp.Formatting
 					//inserted rather than just updating the stack due to moving around
 
 					SafeUpdateIndentEngine (textEditorData.Caret.Offset);
-					automaticReindent = (stateTracker.NeedsReindent && lastCharInserted != '\0');
+					// Automatically reindent in text link mode will cause the mode exiting, therefore we need to prevent that.
+					automaticReindent = (stateTracker.NeedsReindent && lastCharInserted != '\0') && !(textEditorData.CurrentMode is TextLinkEditMode);
 					if (key == Gdk.Key.Return && (reIndent || automaticReindent)) {
 						if (textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
 							if (textEditorData.GetLine (textEditorData.Caret.Line).Length == 0)
@@ -522,7 +523,7 @@ namespace MonoDevelop.CSharp.Formatting
 						DoReSmartIndent ();
 					}
 				}
-				if (!skipFormatting) {
+				if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 					if (keyChar == ';' || keyChar == '}') {
 						using (var undo = textEditorData.OpenUndoGroup ()) {
 							if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
@@ -549,7 +550,7 @@ namespace MonoDevelop.CSharp.Formatting
 			//and calls HandleCodeCompletion etc to handles completion
 			var result = base.KeyPress (key, keyChar, modifier);
 
-			if (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) {
+			if (!indentationDisabled && (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter)) {
 				DoReSmartIndent ();
 			}
 

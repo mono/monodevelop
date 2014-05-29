@@ -70,14 +70,22 @@ namespace MonoDevelop.Components
 				}
 			).ContinueWith (t => {
 				try {
-					// If the errorcode is NotModified the file we cached on disk is still the latest one.
 					if (t.IsFaulted) {
 						var wex = t.Exception.Flatten ().InnerException as WebException;
 						if (wex != null) {
 							var resp = wex.Response as HttpWebResponse;
-							if (resp != null && resp.StatusCode == HttpStatusCode.NotModified) {
-								Cleanup ();
-								return;
+							if (resp != null) {
+								// If the errorcode is NotModified the file we cached on disk is still the latest one.
+								if (resp.StatusCode == HttpStatusCode.NotModified) {
+									Cleanup ();
+									return;
+								}
+								//if 404, there is no gravatar for the user
+								if (resp.StatusCode == HttpStatusCode.NotFound) {
+									image = null;
+									Cleanup ();
+									return;
+								}
 							}
 						}
 					}
@@ -97,14 +105,21 @@ namespace MonoDevelop.Components
 						LoadFromDisk (cachePath, true);
 					}
 				} catch (Exception ex) {
-					LoggingService.LogError ("Error in image loader", ex);
+					var aex = ex as AggregateException;
+					if (aex != null)
+						ex = aex.Flatten ().InnerException;
+					var wex = ex as WebException;
+					if (wex != null && wex.Status.IsCannotReachInternetError ())
+						LoggingService.LogWarning ("Gravatar service could not be reached.");
+					else
+						LoggingService.LogError ("Error in Gravatar downloader.", ex);
 					Cleanup ();
 				} finally {
 					try {
 						if (File.Exists (tempPath))
 							File.Delete (tempPath);
 					} catch (Exception ex) {
-						LoggingService.LogError ("Error deleting temp file", ex);
+						LoggingService.LogError ("Error deleting Gravatar temp file.", ex);
 					}
 				}
 			});
@@ -112,9 +127,7 @@ namespace MonoDevelop.Components
 
 		void Cleanup ()
 		{
-			Xwt.Application.Invoke (delegate {
-				UpdateImage (image, true);
-			});
+			Xwt.Application.Invoke (() => UpdateImage (image, true));
 		}
 
 		void LoadFromDisk (string path, bool downloaded)

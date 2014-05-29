@@ -119,11 +119,14 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				grp.SetPropertyValue ("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)", false);
 				grp.SetPropertyValue ("HasSharedItems", "true", false);
 				grp.SetPropertyValue ("SharedGUID", EntityItem.ItemId, false);
-
-				grp = projitemsProject.AddNewPropertyGroup (true);
-				grp.Label = "Configuration";
-				grp.SetPropertyValue ("Import_RootNamespace", ((SharedAssetsProject)EntityItem).DefaultNamespace, false);
 			}
+
+			var configGrp = projitemsProject.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
+			if (configGrp == null) {
+				configGrp = projitemsProject.AddNewPropertyGroup (true);
+				configGrp.Label = "Configuration";
+			}
+			configGrp.SetPropertyValue ("Import_RootNamespace", ((SharedAssetsProject)EntityItem).DefaultNamespace, false);
 
 			SaveProjectItems (monitor, new MSBuildFileFormatVS12 (), ser, projitemsProject, "$(MSBuildThisFileDirectory)");
 

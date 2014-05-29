@@ -212,7 +212,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             get 
             {
-                throw new NotImplementedException();
+                return Type.GetType (FullName);
             }
         }
 
@@ -444,7 +444,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 						break;
 					var prop = new MetadataPropertyInfo (m_importer, methodToken, this);
 					try {
-						MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
+						MethodInfo mi = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
 						if (mi == null)
 							continue;
 						if (MetadataExtensions.TypeFlagsMatch (mi.IsPublic, mi.IsStatic, bindingAttr))
