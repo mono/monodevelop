@@ -279,6 +279,7 @@ src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
 src/core/MonoDevelop.Ide/Makefile
 src/core/MonoDevelop.Startup/Makefile
+src/core/MonoDevelop.TextEditor.Tests/Makefile
 src/tools/Makefile
 src/tools/mdhost/Makefile
 src/tools/mdtool/Makefile
@@ -342,6 +343,8 @@ src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Tests/Mak
 tests/Makefile
 tests/UnitTests/Makefile
 tests/UserInterfaceTests/Makefile
+tests/TestRunner/Makefile
+tests/Ide.Tests/Makefile
 tests/MacPlatform.Tests/Makefile
 Makefile
 monodevelop

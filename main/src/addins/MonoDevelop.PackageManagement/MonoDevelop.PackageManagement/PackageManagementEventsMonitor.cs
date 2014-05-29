@@ -76,7 +76,7 @@ namespace MonoDevelop.PackageManagement
 			if (UserPreviouslySelectedOverwriteAllOrIgnoreAll ()) {
 				e.Resolution = lastFileConflictResolution;
 			} else {
-				DispatchService.GuiSyncDispatch (() => {
+				GuiSyncDispatch (() => {
 					e.Resolution = fileConflictResolver.ResolveFileConflict (e.Message);
 				});
 				lastFileConflictResolution = e.Resolution;
@@ -89,7 +89,12 @@ namespace MonoDevelop.PackageManagement
 				(lastFileConflictResolution == FileConflictResolution.IgnoreAll) ||
 				(lastFileConflictResolution == FileConflictResolution.OverwriteAll);
 		}
-		
+
+		protected virtual void GuiSyncDispatch (MessageHandler handler)
+		{
+			DispatchService.GuiSyncDispatch (handler);
+		}
+
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
 		{
 			if (e.Message.Level == MessageLevel.Warning) {
@@ -161,14 +166,19 @@ namespace MonoDevelop.PackageManagement
 
 		void NotifyFilesChanged ()
 		{
-			DispatchService.GuiSyncDispatch (() => {
+			GuiSyncDispatch (() => {
 				FilePath[] files = fileChangedEvents
 					.SelectMany (fileChangedEvent => fileChangedEvent.ToArray ())
 					.Select (fileInfo => fileInfo.FileName)
 					.ToArray ();
 
-				FileService.NotifyFilesChanged (files);
+				NotifyFilesChanged (files);
 			});
+		}
+
+		protected virtual void NotifyFilesChanged (FilePath[] files)
+		{
+			FileService.NotifyFilesChanged (files);
 		}
 
 		public void ReportError (ProgressMonitorStatusMessage progressMessage, Exception ex)
@@ -176,8 +186,13 @@ namespace MonoDevelop.PackageManagement
 			LoggingService.LogInternalError (ex);
 			progressMonitor.Log.WriteLine (ex.Message);
 			progressMonitor.ReportError (progressMessage.Error, null);
-			progressMonitor.ShowPackageConsole ();
+			ShowPackageConsole (progressMonitor);
 			packageManagementEvents.OnPackageOperationError (ex);
+		}
+
+		protected virtual void ShowPackageConsole (IProgressMonitor progressMonitor)
+		{
+			progressMonitor.ShowPackageConsole ();
 		}
 	}
 }

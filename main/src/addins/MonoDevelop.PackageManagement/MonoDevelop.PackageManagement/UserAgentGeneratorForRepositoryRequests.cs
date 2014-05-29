@@ -34,8 +34,8 @@ namespace ICSharpCode.PackageManagement
 	public class UserAgentGeneratorForRepositoryRequests
 	{
 		MonoDevelopHttpUserAgent userAgent = new MonoDevelopHttpUserAgent();
-		
-		public UserAgentGeneratorForRepositoryRequests(IPackageRepositoryFactoryEvents repositoryFactoryEvents)
+
+		public void Register (IPackageRepositoryFactoryEvents repositoryFactoryEvents)
 		{
 			repositoryFactoryEvents.RepositoryCreated += RepositoryCreated;
 		}

@@ -27,7 +27,8 @@ THE SOFTWARE.
 -->
 
 <SyntaxMode name = "Typescript" mimeTypes="application/typescript;text/typescript">
-	
+	<Property name="LineComment">//</Property>
+
 	<EolSpan color = "Script Comment" rule="Comment">//</EolSpan>
 	
 	<Span color = "Script Comment" rule="Comment">

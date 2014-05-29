@@ -39,14 +39,17 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
+		IProgressProvider progressProvider;
 		List<InstallPackageAction> pendingInstallActions = new List<InstallPackageAction> ();
 
 		public BackgroundPackageActionRunner (
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider)
 		{
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
+			this.progressProvider = progressProvider;
 		}
 
 		public IEnumerable<InstallPackageAction> PendingInstallActions {
@@ -67,7 +70,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			AddInstallActionsToPendingQueue (actions);
 			packageManagementEvents.OnPackageOperationsStarting ();
-			DispatchService.BackgroundDispatch (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+			BackgroundDispatch (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
 		}
 
 		void AddInstallActionsToPendingQueue (IEnumerable<IPackageAction> actions)
@@ -80,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
 		{
 			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {
-				using (var eventMonitor = new PackageManagementEventsMonitor (monitor, packageManagementEvents, PackageManagementServices.ProgressProvider)) {
+				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (monitor)) {
 					try {
 						monitor.BeginTask (null, installPackageActions.Count);
 						RunActionsWithProgressMonitor (monitor, installPackageActions);
@@ -90,13 +93,26 @@ namespace MonoDevelop.PackageManagement
 						eventMonitor.ReportError (progressMessage, ex);
 					} finally {
 						monitor.EndTask ();
-						DispatchService.GuiDispatch (() => {
+						GuiDispatch (() => {
 							RemoveInstallActions (installPackageActions);
 							packageManagementEvents.OnPackageOperationsFinished ();
 						});
 					}
 				}
 			}
+		}
+
+		PackageManagementEventsMonitor CreateEventMonitor (IProgressMonitor monitor)
+		{
+			return CreateEventMonitor (monitor, packageManagementEvents, progressProvider);
+		}
+
+		protected virtual PackageManagementEventsMonitor CreateEventMonitor (
+			IProgressMonitor monitor,
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider)
+		{
+			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
 		}
 
 		void RunActionsWithProgressMonitor (IProgressMonitor monitor, IList<IPackageAction> packageActions)
@@ -127,6 +143,16 @@ namespace MonoDevelop.PackageManagement
 				monitor.ReportError (progressMessage.Error, null);
 				monitor.ShowPackageConsole ();
 			}
+		}
+
+		protected virtual void BackgroundDispatch (MessageHandler handler)
+		{
+			DispatchService.BackgroundDispatch (handler);
+		}
+
+		protected virtual void GuiDispatch (MessageHandler handler)
+		{
+			DispatchService.GuiDispatch (handler);
 		}
 	}
 }

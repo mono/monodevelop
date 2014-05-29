@@ -112,10 +112,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		
 		public virtual bool Filter (string keyword)
 		{
-			return ((Name==null)? false :
-			        (Name.ToLower ().IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0))
-			    || ((Description == null)? false :
-				(Description.ToLower ().IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
+			return ((Name != null) && (Name.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0))
+			    || ((Description != null) && (Description.IndexOf (keyword, StringComparison.InvariantCultureIgnoreCase) >= 0));
 		}
 		
 		public override bool Equals (object o)

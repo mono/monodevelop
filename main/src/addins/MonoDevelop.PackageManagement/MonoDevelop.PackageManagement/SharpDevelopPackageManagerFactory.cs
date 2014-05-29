@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -57,10 +58,10 @@ namespace ICSharpCode.PackageManagement
 		
 		public ISharpDevelopPackageManager CreatePackageManager(
 			IPackageRepository sourceRepository,
-			DotNetProject project)
+			IDotNetProject project)
 		{
-			SolutionPackageRepository solutionPackageRepository = CreateSolutionPackageRepository(project.ParentSolution);
-			IProjectSystem projectSystem = CreateProjectSystem(project);
+			SolutionPackageRepository solutionPackageRepository = CreateSolutionPackageRepository (project.ParentSolution);
+			IProjectSystem projectSystem = CreateProjectSystem (project.DotNetProject);
 			PackageOperationsResolverFactory packageOperationResolverFactory = new PackageOperationsResolverFactory();
 			
 			return new SharpDevelopPackageManager(
@@ -70,9 +71,9 @@ namespace ICSharpCode.PackageManagement
 				packageOperationResolverFactory);
 		}
 		
-		SolutionPackageRepository CreateSolutionPackageRepository(Solution solution)
+		SolutionPackageRepository CreateSolutionPackageRepository (ISolution solution)
 		{
-			return new SolutionPackageRepository(solution, packageRepositoryFactory, options);
+			return new SolutionPackageRepository (solution, packageRepositoryFactory, options);
 		}
 		
 		IProjectSystem CreateProjectSystem(DotNetProject project)

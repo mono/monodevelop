@@ -30,7 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using MonoDevelop.Projects;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -43,16 +43,16 @@ namespace ICSharpCode.PackageManagement
 		PhysicalFileSystem fileSystem;
 		ISharedPackageRepository repository;
 		
-		public SolutionPackageRepository(Solution solution)
-			: this(
+		public SolutionPackageRepository (ISolution solution)
+			: this (
 				solution,
 				new SharpDevelopPackageRepositoryFactory(),
 				PackageManagementServices.Options)
 		{
 		}
 		
-		public SolutionPackageRepository(
-			Solution solution,
+		public SolutionPackageRepository (
+			ISolution solution,
 			ISharpDevelopPackageRepositoryFactory repositoryFactory,
 			PackageManagementOptions options)
 		{

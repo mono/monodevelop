@@ -747,21 +747,22 @@ namespace CBinding
 
 		// expands backticked portions of the parameter-list using "sh" and "echo"
 		// TODO: Do this ourselves, relying on sh/echo - and launching an entire process just for this is ... excessive.
-		public string ExpandBacktickedParameters(string tmp)
+		public string ExpandBacktickedParameters (string tmp)
 		{
 			// 1) Quadruple \ required, to escape both echo's and sh's escape character filtering
 			// 2) \\\" required inside of echo, to translate into \" in sh, so it translates back as a " to MD...
-			string parameters = "-c \"echo -n " + tmp.Replace("\\", "\\\\\\\\").Replace("\"", "\\\\\\\"") + "\"";
-			Process p = new Process();
-			
-			p.StartInfo.FileName = "sh";
-			p.StartInfo.Arguments = parameters;
-			p.StartInfo.UseShellExecute = false;
-			p.StartInfo.RedirectStandardOutput = true;
-			p.Start();
-			p.WaitForExit();
+			string parameters = "-c \"echo " + tmp.Replace("\\", "\\\\\\\\").Replace("\"", "\\\\\\\"") + "\"";
 
-			return p.StandardOutput.ReadToEnd();
+			var p = Process.Start (new ProcessStartInfo ("sh", parameters) {
+				UseShellExecute = false,
+				RedirectStandardOutput = true
+			});
+			p.Start ();
+			p.WaitForExit ();
+
+			//TODO: use async reads so we don't deadlock if stdout fills up
+			//TODO: check return code
+			return p.StandardOutput.ReadToEnd ().Trim ();
 		}
 		
 		bool CheckApp (string app)

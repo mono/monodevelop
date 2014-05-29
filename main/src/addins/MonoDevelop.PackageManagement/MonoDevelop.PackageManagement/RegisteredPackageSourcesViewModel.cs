@@ -127,7 +127,11 @@ namespace ICSharpCode.PackageManagement
 		public ICommand BrowsePackageFolderCommand {
 			get { return browsePackageFolderCommand; }
 		}
-		
+
+		public ICommand UpdatePackageSourceCommand {
+			get { return updatePackageSourceCommand; }
+		}
+
 		public ObservableCollection<PackageSourceViewModel> PackageSourceViewModels {
 			get { return packageSourceViewModels; }
 		}
