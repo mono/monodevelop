@@ -156,6 +156,8 @@ namespace MonoDevelop.Components.MainToolbar
 				else
 					renderer.Text = target.Name;
 			}
+
+			renderer.WidthChars = renderer.Text != null ? (indent ? renderer.Text.Length + 6 : 0) : 0;
 		}
 
 		public MainToolbar ()
