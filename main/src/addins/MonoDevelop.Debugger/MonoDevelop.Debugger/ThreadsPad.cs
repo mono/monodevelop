@@ -183,6 +183,7 @@ namespace MonoDevelop.Debugger
 			Array.Sort (threads, delegate (ThreadInfo t1, ThreadInfo t2) {
 				return t1.Id.CompareTo (t2.Id);
 			});
+			DebuggingService.DebuggerSession.FetchFrames (threads);
 			foreach (ThreadInfo t in threads) {
 				ThreadInfo activeThread = DebuggingService.DebuggerSession.ActiveThread;
 				Pango.Weight wi = t == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
