@@ -316,28 +316,8 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			var notebook = ((DefaultWorkbench)IdeApp.Workbench.RootWindow).TabControl;
-			var container = (MonoDevelop.Components.DockNotebook.DockNotebookContainer)notebook.Parent;
-			var mother = container.MotherContainer ();
-			var paned = mother.Child as Gtk.Paned;
-
-			var container1 = paned.Child1 as MonoDevelop.Components.DockNotebook.DockNotebookContainer;
-			var container2 = paned.Child2 as MonoDevelop.Components.DockNotebook.DockNotebookContainer;
-
-			var notebook1 = container1.TabControl;
-			var notebook2 = container2.TabControl;
-
-			var tabCount = notebook2.TabCount;
-
-			for (var i = 0; i < tabCount; i++) {
-				var tab = notebook2.GetTab (0);
-				var window = (SdiWorkspaceWindow)tab.Content;
-				notebook2.RemoveTab (0, false);
-
-				var newtab = notebook1.InsertTab (-1);
-				newtab.Content = window;
-				window.SetDockNotebook (notebook1, newtab);
-			}
+			var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+			window.SwitchToSingleMode ();
 		}
 	}
 
