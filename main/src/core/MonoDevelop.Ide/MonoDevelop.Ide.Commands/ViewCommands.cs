@@ -327,7 +327,9 @@ namespace MonoDevelop.Ide.Commands
 			var notebook1 = container1.TabControl;
 			var notebook2 = container2.TabControl;
 
-			for (var i = 0; i < notebook2.TabCount; i++) {
+			var tabCount = notebook2.TabCount;
+
+			for (var i = 0; i < tabCount; i++) {
 				var tab = notebook2.GetTab (0);
 				var window = (SdiWorkspaceWindow)tab.Content;
 				notebook2.RemoveTab (0, false);
