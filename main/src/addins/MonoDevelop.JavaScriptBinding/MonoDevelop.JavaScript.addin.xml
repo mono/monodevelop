@@ -28,7 +28,7 @@
 		<StockIcon stockid="md-js-file" resource="javascript_icon_32.png" size="Menu" />
 	</Extension>
 	<Extension path="/MonoDevelop/Core/MimeTypes">
-		<MimeType id="application/javascript" icon="md-js-file" _description="JavaScript Source Code" isText="true">
+		<MimeType id="application/javascript" _description="Javascript source code" icon="md-script-file-icon" isText="true">
 			<File pattern="*.js" />
 		</MimeType>
 	</Extension>
