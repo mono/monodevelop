@@ -367,9 +367,15 @@ namespace MonoDevelop.Projects
 			return RootFolder.GetAllProjectsWithTopologicalSort (configuration);
 		}
 
+		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
 		public override Project GetProjectContainingFile (FilePath fileName) 
 		{
 			return RootFolder.GetProjectContainingFile (fileName);
+		}
+
+		public override IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
+		{
+			return RootFolder.GetProjectsContainingFile (fileName);
 		}
 		
 		public override bool ContainsItem (IWorkspaceObject obj)

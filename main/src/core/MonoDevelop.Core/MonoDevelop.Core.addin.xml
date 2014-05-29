@@ -316,6 +316,7 @@
 		<ProjectType guid = "{4925A630-B079-445d-BCD4-3A9C94FE9307}" name = "F#" extension="fsproj" addin = "F#" />
 		<ProjectType guid = "{F2A71F9B-5D33-465A-A702-920D77279786}" name = "F#" extension="fsproj" addin = "F#" />
 		<ProjectType guid = "{C089C8C0-30E0-4E22-80C0-CE093F111A43}" name = "Windows Phone" />
+		<ProjectType guid = "{76F1466A-8B6D-4E39-A767-685A06062A39}" name = "Windows Phone" />
 		<ProjectType guid = "{E24C65DC-7377-472B-9ABA-BC803B73C61A}" name = "ASP.NET Web Site" />
 		<ProjectType guid = "{F135691A-BF7E-435D-8960-F99683D2D49C}" name = "MS Distributed System" loadFiles="False" />
 		<ProjectType guid = "{3D9AD99F-2412-4246-B90B-4EAA41C64699}" name = "Windows Communication Foundation (WCF)" />

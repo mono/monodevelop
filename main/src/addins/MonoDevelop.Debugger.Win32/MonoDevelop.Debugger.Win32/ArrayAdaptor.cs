@@ -73,7 +73,7 @@ namespace MonoDevelop.Debugger.Win32
 				idx[i] = indices[i];
 
 			for (int i = 0; i < count; i++) {
-				elements.Add (GetElement (idx));
+				elements.Add (GetElement ((int[])idx.Clone ()));
 				idx[idx.Length - 1]++;
 			}
 

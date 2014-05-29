@@ -217,9 +217,15 @@ namespace MonoDevelop.Projects
 			return list.AsReadOnly ();
 		}
 
+		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
 		public virtual Project GetProjectContainingFile (FilePath fileName)
 		{
 			return null;
+		}
+
+		public virtual IEnumerable<Project> GetProjectsContainingFile (FilePath fileName)
+		{
+			yield break;
 		}
 		
 		public virtual ReadOnlyCollection<string> GetConfigurations ()
