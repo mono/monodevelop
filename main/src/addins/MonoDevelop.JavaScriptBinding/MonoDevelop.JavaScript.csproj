@@ -148,6 +148,7 @@
     <Compile Include="Jurassic\Compiler\Lexer\MultilineComment.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\Comment.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\SingleLineComment.cs" />
+    <Compile Include="Services\JSTypeSystemService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icons\javascript_icon_32.png" />
@@ -190,4 +191,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
 </Project>

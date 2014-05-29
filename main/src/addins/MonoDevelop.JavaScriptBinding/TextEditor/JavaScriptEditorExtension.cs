@@ -441,6 +441,40 @@ namespace MonoDevelop.JavaScript.TextEditor
 					continue;
 				}
 
+				var literal = node as Jurassic.Compiler.LiteralExpression;
+				if (literal != null) {
+					if (literal.Value != null) {
+						var properties = literal.Value as Dictionary<string, object>;
+						if (properties != null) {
+							for (int i = 0; i < properties.Count; i++) {
+								string key = properties.Keys.ElementAt (i); // Key holds the value for then 
+								object value = properties.Values.ElementAt (i);
+
+								var objFuncExpression = value as Jurassic.Compiler.FunctionExpression;
+								if (objFuncExpression != null) {
+									completionList.Add (new CompletionData (objFuncExpression));
+									completionList.AddRange (buildCodeCompletionList (objFuncExpression.BodyRoot.ChildNodes));
+									continue;
+								}
+
+								var objGetSetFunc = value as Jurassic.Compiler.Parser.ObjectLiteralAccessor;
+								if (objGetSetFunc != null) {
+									if (objGetSetFunc.Getter != null) {
+										completionList.Add (new CompletionData (objGetSetFunc.Getter));
+										completionList.AddRange (buildCodeCompletionList (objGetSetFunc.Getter.BodyRoot.ChildNodes));
+									}
+									if (objGetSetFunc.Setter != null) {
+										completionList.Add (new CompletionData (objGetSetFunc.Setter));
+										completionList.AddRange (buildCodeCompletionList (objGetSetFunc.Setter.BodyRoot.ChildNodes));
+									}
+								}
+							}
+						}
+					}
+
+					continue;
+				}
+
 				completionList.AddRange (buildCodeCompletionList (node.ChildNodes));
 			}
 
