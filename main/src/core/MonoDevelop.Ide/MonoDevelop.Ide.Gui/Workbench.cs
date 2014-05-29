@@ -576,6 +576,11 @@ namespace MonoDevelop.Ide.Gui
 			document.StartReparseThread ();
 			return document;
 		}
+
+		public void SetSingleMode ()
+		{
+			ActiveDocument.Window.SwitchToSingleMode ();
+		}
 		
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow)
 		{

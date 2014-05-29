@@ -316,8 +316,7 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
-			var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
-			window.SwitchToSingleMode ();
+			IdeApp.Workbench.SetSingleMode ();
 		}
 	}
 

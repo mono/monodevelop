@@ -303,25 +303,7 @@ namespace MonoDevelop.Ide.Gui
 		public void SwitchToSingleMode ()
 		{
 			var container = (DockNotebookContainer)TabControl.Parent;
-			var mother = container.MotherContainer ();
-			var paned = mother.Child as Paned;
-
-			var container1 = paned.Child1 as DockNotebookContainer;
-			var container2 = paned.Child2 as DockNotebookContainer;
-
-			var notebook1 = container1.TabControl;
-			var notebook2 = container2.TabControl;
-			var tabCount = notebook2.TabCount;
-
-			for (var i = 0; i < tabCount; i++) {
-				var tab = notebook2.GetTab (0);
-				var window = (SdiWorkspaceWindow)tab.Content;
-				notebook2.RemoveTab (0, false);
-
-				var newTab = notebook1.InsertTab (-1);
-				newTab.Content = window;
-				window.SetDockNotebook (notebook1, newTab);
-			}
+			container.SetSingleMode ();
 		}
 
 		public void MoveToNextNotebook ()

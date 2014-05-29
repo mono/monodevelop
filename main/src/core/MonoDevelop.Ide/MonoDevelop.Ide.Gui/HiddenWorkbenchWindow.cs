@@ -89,6 +89,10 @@ namespace MonoDevelop.Ide.Gui
 		public void SwitchView (MonoDevelop.Ide.Gui.IAttachableViewContent subViewContent)
 		{
 		}
+
+		public void SwitchToSingleMode ()
+		{
+		}
 		
 		public int FindView<T> ()
 		{
