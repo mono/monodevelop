@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		TextTag bold;
 		TextTag errorTag;
 		TextTag consoleLogTag;
+		TextTag debugTag;
 		int ident = 0;
 		List<TextTag> tags = new List<TextTag> ();
 		Stack<string> indents = new Stack<string> ();
@@ -141,10 +142,14 @@ namespace MonoDevelop.Ide.Gui.Components
 			buffer.TagTable.Add (bold);
 			
 			errorTag = new TextTag ("error");
-			errorTag.Foreground = "red";
+			errorTag.Foreground = "#dc3122";
 			errorTag.Weight = Weight.Bold;
 			buffer.TagTable.Add (errorTag);
-			
+
+			debugTag = new TextTag ("debug");
+			debugTag.Foreground = "#256ada";
+			buffer.TagTable.Add (debugTag);
+
 			consoleLogTag = new TextTag ("consoleLog");
 			consoleLogTag.Foreground = "darkgrey";
 			buffer.TagTable.Add (consoleLogTag);
@@ -303,6 +308,15 @@ namespace MonoDevelop.Ide.Gui.Components
 			var w = new QueuedTextWrite (text, errorTag);
 			addQueuedUpdate (w);
 		}
+
+		public void WriteDebug (int level, string category, string message)
+		{
+			//TODO: Give user ability to filter levels and categories
+			if (string.IsNullOrEmpty (category))
+				addQueuedUpdate (new QueuedTextWrite (message, debugTag));
+			else
+				addQueuedUpdate (new QueuedTextWrite (category + ": " + message, debugTag));
+		}
 		
 		protected void UnsafeAddText (string text, TextTag extraTag)
 		{
@@ -416,13 +430,14 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 	}
 
-	public class LogViewProgressMonitor : NullProgressMonitor, IConsole
+	public class LogViewProgressMonitor : NullProgressMonitor, IDebugConsole
 	{
 		LogView outputPad;
 		event EventHandler stopRequested;
 		
 		LogTextWriter logger = new LogTextWriter ();
 		LogTextWriter internalLogger = new LogTextWriter ();
+		LogTextWriter errorLogger = new LogTextWriter();
 		NotSupportedTextReader inputReader = new NotSupportedTextReader ();
 		
 		public LogView LogView {
@@ -435,6 +450,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			outputPad.Clear ();
 			logger.TextWritten += outputPad.WriteText;
 			internalLogger.TextWritten += outputPad.WriteConsoleLogText;
+			errorLogger.TextWritten += outputPad.WriteError;
 		}
 		
 		public override void BeginTask (string name, int totalWork)
@@ -499,8 +515,13 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		
 		TextWriter IConsole.Error {
-			get { return logger; }
+			get { return errorLogger; }
 		} 
+
+		void IDebugConsole.Debug (int level, string category, string message)
+		{
+			outputPad.WriteDebug (level, category, message);
+		}
 		
 		bool IConsole.CloseOnDispose {
 			get { return false; }

@@ -123,15 +123,16 @@ namespace MonoDevelop.AspNet.Deployment
 			ICollection<WebDeployTarget> targets = null;
 			
 			var response = ResponseType.None;
-			do {
-				response = (ResponseType) MessageService.RunCustomDialog (dialog, MessageService.RootWindow);
-			} while (response != ResponseType.Ok && response != ResponseType.Cancel && response != ResponseType.DeleteEvent);
-			
-			if (response == Gtk.ResponseType.Ok)
-				targets = dialog.GetSelectedTargets ();
-			
-			dialog.Destroy ();
-			
+			try {
+				do {
+					response = (ResponseType) MessageService.RunCustomDialog (dialog, MessageService.RootWindow);
+				} while (response != ResponseType.Ok && response != ResponseType.Cancel && response != ResponseType.DeleteEvent);
+
+				if (response == Gtk.ResponseType.Ok)
+					targets = dialog.GetSelectedTargets ();
+			} finally {
+				dialog.Destroy ();
+			}
 			if (targets != null && targets.Count > 0)
 				Deploy (project, targets, IdeApp.Workspace.ActiveConfiguration);
 		}

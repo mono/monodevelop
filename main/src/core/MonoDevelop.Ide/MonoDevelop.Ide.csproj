@@ -69,6 +69,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Design" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -1526,6 +1527,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-overlay-9%402x.png">
       <LogicalName>warning-overlay-light-9@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-8.png">
+      <LogicalName>warning-light-8.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-8%402x.png">
+      <LogicalName>warning-light-8@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-16.png">
       <LogicalName>warning-light-16.png</LogicalName>

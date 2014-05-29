@@ -359,40 +359,57 @@ namespace MonoDevelop.VersionControl
 			}
 		}
 		
-		internal static bool NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
+		internal static void NotifyPrepareCommit (Repository repo, ChangeSet changeSet)
 		{
+			if (!DispatchService.IsGuiThread) {
+				Gtk.Application.Invoke (delegate {
+					NotifyPrepareCommit (repo, changeSet);
+				});
+				return;
+			}
+
 			if (PrepareCommit != null) {
 				try {
 					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
-					return false;
 				}
 			}
-			return true;
 		}
 		
-		internal static bool NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
+		internal static void NotifyBeforeCommit (Repository repo, ChangeSet changeSet)
 		{
+			if (!DispatchService.IsGuiThread) {
+				Gtk.Application.Invoke (delegate {
+					NotifyBeforeCommit (repo, changeSet);
+				});
+				return;
+			}
+
 			if (BeginCommit != null) {
 				try {
 					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
-					return false;
 				}
 			}
-			return true;
 		}
 		
-		internal static bool NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
+		internal static void NotifyAfterCommit (Repository repo, ChangeSet changeSet, bool success)
 		{
+			if (!DispatchService.IsGuiThread) {
+				Gtk.Application.Invoke (delegate {
+					NotifyAfterCommit (repo, changeSet, success);
+				});
+				return;
+			}
+
 			if (EndCommit != null) {
 				try {
 					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
-					return false;
+					return;
 				}
 			}
 			if (success) {
@@ -400,7 +417,6 @@ namespace MonoDevelop.VersionControl
 					SetCommitComment (it.LocalPath, null, false);
 				SaveComments ();
 			}
-			return true;
 		}
 
 		public static void NotifyFileStatusChanged (IEnumerable<VersionControlItem> items) 

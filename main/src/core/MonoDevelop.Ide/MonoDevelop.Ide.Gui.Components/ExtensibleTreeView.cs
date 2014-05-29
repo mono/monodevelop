@@ -88,6 +88,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeNodeNavigator workNode;
 		TreeNodeNavigator compareNode1;
 		TreeNodeNavigator compareNode2;
+
 		internal bool sorting;
 
 		object[] copyObjects;
@@ -1462,6 +1463,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				return string.Compare (tb1.GetNodeName (compareNode1, o1), tb2.GetNodeName (compareNode2, o2), true);
 			} finally {
 				sorting = false;
+				compareNode1.MoveToIter (Gtk.TreeIter.Zero);
+				compareNode2.MoveToIter (Gtk.TreeIter.Zero);
 			}
 		}
 
@@ -1655,6 +1658,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				name = name.Replace ("/","_%_");
 				sb.Insert (0, name);
 			} while (workNode.MoveToParent ());
+
+			workNode.MoveToIter (Gtk.TreeIter.Zero);
 
 			return sb.ToString ();
 		}

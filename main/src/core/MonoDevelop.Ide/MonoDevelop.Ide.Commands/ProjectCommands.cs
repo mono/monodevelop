@@ -563,8 +563,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			ApplyPolicyDialog dlg = new ApplyPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
-			MessageService.RunCustomDialog (dlg);
-			dlg.Destroy ();
+			MessageService.ShowCustomDialog (dlg);
 		}
 	}
 	
@@ -578,8 +577,7 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Run ()
 		{
 			ExportProjectPolicyDialog dlg = new ExportProjectPolicyDialog ((IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolutionItem ?? (IPolicyProvider)IdeApp.ProjectOperations.CurrentSelectedSolution);
-			MessageService.RunCustomDialog (dlg);
-			dlg.Destroy ();
+			MessageService.ShowCustomDialog (dlg);
 		}
 	}
 }

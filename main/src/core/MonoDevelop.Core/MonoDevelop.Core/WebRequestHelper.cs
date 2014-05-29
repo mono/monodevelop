@@ -41,16 +41,16 @@ namespace MonoDevelop.Core
 		const string WebCredentialProvidersPath = "/MonoDevelop/Core/WebCredentialProviders";
 
 		static ProxyCache proxyCache;
-		static CredentialStore credentialStore;
 		static ICredentialProvider credentialProvider;
 
 		internal static void Initialize ()
 		{
-			credentialStore = new CredentialStore ();
 			proxyCache = new ProxyCache ();
 			credentialProvider = AddinManager.GetExtensionObjects<ICredentialProvider> (WebCredentialProvidersPath).FirstOrDefault ();
 
-			if (credentialProvider == null) {
+			if (credentialProvider != null) {
+				credentialProvider = new CachingCredentialProvider (credentialProvider);
+			} else {
 				LoggingService.LogWarning ("No proxy credential provider was found");
 				credentialProvider = new NullCredentialProvider ();
 			}
@@ -111,7 +111,7 @@ namespace MonoDevelop.Core
 			}
 
 			var handler = new RequestHelper (
-				createRequest, prepareRequest, proxyCache, credentialStore, credentialProvider
+				createRequest, prepareRequest, proxyCache, CredentialStore.Instance, credentialProvider
 			);
 
 			return handler.GetResponse (token);
@@ -144,6 +144,53 @@ namespace MonoDevelop.Core
 				if (r != null)
 					r.Abort ();
 			});
+		}
+
+		// RequestHelper doesn't cache proxy credentials, only request credentials. We'll cache proxy credentials
+		// to avoid propting auth for the system store multiple times.
+		//
+		// We implement caching here so we can use the same store without making it public
+		// and so that the providers don't have to implement caching too.
+		class CachingCredentialProvider : ICredentialProvider
+		{
+			readonly ICredentialProvider wrapped;
+			readonly object locker = new object ();
+
+			public CachingCredentialProvider (ICredentialProvider wrapped)
+			{
+				this.wrapped = wrapped;
+			}
+
+			public ICredentials GetCredentials (Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
+			{
+				if (credentialType != CredentialType.ProxyCredentials)
+					return wrapped.GetCredentials (uri, proxy, credentialType, retrying);
+
+				var proxyUri = proxy.GetProxy (uri);
+				if (proxyUri == null)
+					return null;
+
+				if (!retrying) {
+					var cached = CredentialStore.Instance.GetCredentials (proxyUri);
+					if (cached != null)
+						return cached;
+				}
+
+				lock (locker) {
+					if (!retrying) {
+						var cached = CredentialStore.Instance.GetCredentials (proxyUri);
+						if (cached != null)
+							return cached;
+					}
+
+					var creds = wrapped.GetCredentials (uri, proxy, credentialType, retrying);
+					
+					if (creds != null)
+						CredentialStore.Instance.Add (proxyUri, creds);
+					
+					return creds;
+				}
+			}
 		}
 	}
 }
