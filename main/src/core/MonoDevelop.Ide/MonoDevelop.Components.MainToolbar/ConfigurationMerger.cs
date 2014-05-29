@@ -185,7 +185,8 @@ namespace MonoDevelop.Components.MainToolbar
 					if (first != null)
 						return first;
 				} else if (!(target is DummyExecutionTarget)) {
-					return target;
+					if (target.Enabled)
+						return target;
 				}
 			}
 
