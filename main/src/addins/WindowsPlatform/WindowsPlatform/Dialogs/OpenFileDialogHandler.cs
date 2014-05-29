@@ -124,9 +124,8 @@ namespace MonoDevelop.Platform
 			if (viewerCombo != null ) {
 				if (closeSolution != null)
 					data.CloseCurrentWorkspace = closeSolution.Visible && closeSolution.IsChecked;
-				data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items[viewerCombo.SelectedIndex]).Viewer;
+				data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items [viewerCombo.SelectedIndex]).Viewer;
 			}
-
 
 			return true;
 		}
@@ -165,15 +164,16 @@ namespace MonoDevelop.Platform
 		static void BuildEncodingsCombo (CustomCommonFileDialogComboBox combo, bool showAutoDetected, Encoding selectedEncoding)
 		{
 			combo.Items.Clear ();
+			int i = 0;
 
 			if (showAutoDetected) {
 				combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Auto Detected")));
 				combo.SelectedIndex = 0;
+				i = 1;
 			}
 
 			var encodings = TextEncoding.ConversionEncodings;
-			for (int i = 0; i < encodings.Length; i++) {
-				var e = encodings [i];
+			foreach (var e in encodings) {
 				var mdEnc = TextEncoding.SupportedEncodings.FirstOrDefault (t => t.CodePage == e.CodePage);
 				string name = mdEnc != null
 					? mdEnc.Name + " (" + mdEnc.Id + ")"
@@ -181,8 +181,11 @@ namespace MonoDevelop.Platform
 				var item = new EncodingComboItem (Encoding.GetEncoding (e.CodePage), name);
 				combo.Items.Add (item);
 				if (e.Equals (selectedEncoding))
-					combo.SelectedIndex = i + 1;
+					combo.SelectedIndex = i;
+				i++;
 			}
+			if (combo.SelectedIndex == -1)
+				combo.SelectedIndex = 0;
 			combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Add or Remove...")));
 		}
 

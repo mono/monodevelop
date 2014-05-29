@@ -65,7 +65,7 @@ namespace MonoDevelop.Platform
 			SelectFileDialogHandler.GetCommonFormProperties (data, dialog);
 			var idx = buildActionCombo.SelectedIndex;
 			if (idx > 0)
-				data.OverrideAction = data.BuildActions[idx];
+				data.OverrideAction = buildActionCombo.Items [idx].Text;
 
 			return true;
 		}

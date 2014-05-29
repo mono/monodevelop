@@ -91,15 +91,8 @@ namespace MonoDevelop.Platform
 
 		static void SetFilters (SelectFileDialogData data, CommonFileDialog dialog)
 		{
-			foreach (var f in data.Filters) {
-				var filter = new CommonFileDialogFilter {
-					DisplayName = f.Name,
-					ShowExtensions = true
-				};
-				foreach (var p in f.Patterns)
-					filter.Extensions.Add (p);
-				dialog.Filters.Add (filter);
-			}
+			foreach (var f in data.Filters)
+				dialog.Filters.Add (new CommonFileDialogFilter (f.Name, string.Join (",", f.Patterns)));
 
 			SetDefaultExtension (data, dialog);
 		}
@@ -117,7 +110,7 @@ namespace MonoDevelop.Platform
 					foreach (var f in data.Filters) {
 						foreach (var p in f.Patterns) {
 							if (string.Equals (p, pattern, StringComparison.OrdinalIgnoreCase)) {
-								dialog.DefaultExtension = p;
+								dialog.DefaultExtension = p.TrimStart ('*', '.');
 								return;
 							}
 						}
@@ -125,7 +118,7 @@ namespace MonoDevelop.Platform
 				}
 			}
 
-			dialog.DefaultExtension = defExt;
+			dialog.DefaultExtension = defExt.TrimStart ('*', '.');
 		}
 	}
 }
