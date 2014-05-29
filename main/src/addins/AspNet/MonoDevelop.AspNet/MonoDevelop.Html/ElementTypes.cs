@@ -68,6 +68,17 @@ namespace MonoDevelop.Html
 			"pre", "script", "style"
 		};
 		
+		public static readonly ICollection<string> ParaOptionalClosing = new String[] {
+			"address", "article", "aside", "blockquote", "div", "dl", "fieldset", "footer", 
+			"form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", "main", 
+			"nav", "ol", "p", "pre", "section", "table", "ul"
+		};
+
+		public static bool IsParaOptionalClosing (string elementName)
+		{
+			return ParaOptionalClosing.Contains (elementName.ToLower ());	
+		}
+		
 		public static bool IsInline (string elementName)
 		{
 			return Inline.Contains (elementName.ToLower ());

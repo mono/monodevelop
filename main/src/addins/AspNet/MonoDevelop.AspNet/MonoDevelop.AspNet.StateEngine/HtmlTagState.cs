@@ -38,7 +38,6 @@ namespace MonoDevelop.AspNet.StateEngine
 	public class HtmlTagState : XmlTagState
 	{
 		HtmlScriptBodyState ScriptState;
-		bool warnAutoClose;
 		
 		public HtmlTagState (bool warnAutoClose) : this (warnAutoClose, new XmlAttributeState ()) {}
 		
@@ -78,10 +77,6 @@ namespace MonoDevelop.AspNet.StateEngine
 					while (parent != null && parent.ValidAndNoPrefix () && parent.IsImplicitlyClosedBy (element)) {
 						context.Nodes.Pop ();
 						context.Nodes.Pop ();
-						if (warnAutoClose) {
-							context.LogWarning (string.Format ("Tag '{0}' implicitly closed by tag '{1}'.",
-							                                   parent.Name.Name, element.Name.Name), parent.Region);
-						}
 						//parent.Region.End = element.Region.Start;
 						//parent.Region.EndColumn = Math.Max (parent.Region.EndColumn - 1, 1);
 						parent.Close (parent);
@@ -103,10 +98,6 @@ namespace MonoDevelop.AspNet.StateEngine
 						element.Close (element);
 						context.Nodes.Pop ();
 						
-						if (warnAutoClose) {
-							context.LogWarning (string.Format ("Implicitly closed empty tag '{0}'", element.Name.Name),
-							                    element.Region);
-						}
 					}
 				}
 			}
@@ -127,10 +118,33 @@ namespace MonoDevelop.AspNet.StateEngine
 		public static bool IsImplicitlyClosedBy (this XElement parent, INamedXObject current)
 		{
 			//inline and paragraph tags are implicitly closed by block tags and paragraph tags
-			if (ElementTypes.IsInline (parent.Name.Name) || ElementTypes.IsParagraph (parent.Name.Name))
-				return ElementTypes.IsBlock (current.Name.Name) || ElementTypes.IsParagraph (current.Name.Name);
-
-			return false;
+			switch (parent.Name.Name) {
+			case "p":
+				return ElementTypes.IsParaOptionalClosing (current.Name.Name);
+			case "td":
+				return current.Name.Name == "td" || current.Name.Name == "th";
+			case "th":
+				return current.Name.Name == "td" || current.Name.Name == "th";
+			case "dt":
+				return current.Name.Name == "dt" || current.Name.Name == "dd";
+			case "dd":
+				return current.Name.Name == "dt" || current.Name.Name == "dd";
+			case "thead":
+				return current.Name.Name == "tbody" || current.Name.Name == "tfoot";
+			case "tbody":
+				return current.Name.Name == "tbody" || current.Name.Name == "tfoot";
+			case "option":
+				return current.Name.Name == "option" || current.Name.Name == "optgroup";
+			case "tr":
+				return current.Name.Name == "tr";
+			case "li":
+				return current.Name.Name == "li";
+			case "tfoot":
+				return current.Name.Name == "tbody";
+			case "optgroup":
+				return current.Name.Name == "optgroup";
+			default :
+				return false;
 		}
 	}
 }
