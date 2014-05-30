@@ -182,6 +182,8 @@ namespace MonoDevelop.Debugger
 
 			Array.Sort (threads, (ThreadInfo t1, ThreadInfo t2) => t1.Id.CompareTo (t2.Id));
 
+			DebuggingService.DebuggerSession.FetchFrames (threads);
+
 			foreach (var thread in threads) {
 				ThreadInfo activeThread = DebuggingService.DebuggerSession.ActiveThread;
 				var weight = thread == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
