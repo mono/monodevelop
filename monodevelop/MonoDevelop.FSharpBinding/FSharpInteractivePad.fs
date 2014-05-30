@@ -44,6 +44,7 @@ type FSharpCommands =
   | ShowFSharpInteractive = 0
   | SendSelection = 1
   | SendLine = 2
+  | SendFile = 3
 
 type KillIntent = 
   | Restart
@@ -240,6 +241,11 @@ type FSharpInteractivePad() =
       //advance to the next line
       IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo(line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
 
+  member x.SendFile() =
+    let text = IdeApp.Workbench.ActiveDocument.Editor.Document.Text
+    ensureCorrectDirectory()
+    sendCommand (AddSourceToSelection text)
+
   member x.IsSelectionNonEmpty = 
     if IdeApp.Workbench.ActiveDocument = null || 
        IdeApp.Workbench.ActiveDocument.FileName.FileName = null then false  
@@ -336,7 +342,10 @@ type SendSelection() =
 
 type SendLine() =
   inherit InteractiveCommand(fun fsi -> fsi.SendLine())
-  
+
+type SendFile() =
+  inherit InteractiveCommand(fun fsi -> fsi.SendFile())
+    
 type SendReferences() =
   inherit InteractiveCommand(fun fsi -> fsi.LoadReferences())
 

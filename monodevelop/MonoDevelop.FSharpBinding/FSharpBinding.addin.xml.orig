@@ -187,6 +187,13 @@
           macShortcut="Meta|Control|F"
           defaultHandler="MonoDevelop.FSharp.ShowFSharpInteractive" />
 
+      <Command id="MonoDevelop.FSharp.FSharpCommands.SendFile"
+          _label = "Send current file to F# Interactive"
+          _description="Send the current file to F# Interactive"
+          shortcut=""
+          macShortcut=""
+          defaultHandler="MonoDevelop.FSharp.SendFile" />
+
       <Command id="MonoDevelop.FSharp.FSharpCommands.SendSelection"
           _label = "Send selection to F# Interactive"
           _description="Send the selected text to F# Interactive"
@@ -228,12 +235,14 @@
 
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
     <SeparatorItem id = "FSharpInteractiveStart" />
+    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendFile" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
+    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendFile" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
     <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
