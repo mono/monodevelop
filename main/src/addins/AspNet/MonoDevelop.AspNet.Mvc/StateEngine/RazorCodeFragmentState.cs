@@ -56,7 +56,7 @@ namespace MonoDevelop.AspNet.Mvc.StateEngine
 		public bool IsInsideGenerics { get; protected set; }
 
 		public RazorCodeFragmentState ()
-			: this (new HtmlTagState (true), new HtmlClosingTagState (true),
+			: this (new HtmlTagState (), new HtmlClosingTagState (true),
 			new RazorCommentState (), new RazorExpressionState (), new RazorSpeculativeState ())
 		{
 		}

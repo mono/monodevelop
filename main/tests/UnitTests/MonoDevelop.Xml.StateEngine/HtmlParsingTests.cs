@@ -38,7 +38,7 @@ namespace MonoDevelop.Xml.StateEngine
 		
 		public override XmlFreeState CreateRootState ()
 		{
-			return new XmlFreeState (new HtmlTagState (true), new HtmlClosingTagState (true));
+			return new XmlFreeState (new HtmlTagState (), new HtmlClosingTagState (true));
 		}
 		
 		

@@ -44,7 +44,7 @@ namespace MonoDevelop.AspNet.Mvc.StateEngine
 
 		public RazorFreeState ()
 			: this (
-				new HtmlTagState (true),
+				new HtmlTagState (),
 				new HtmlClosingTagState (true),
 				new XmlCommentState (),
 				new XmlCDataState (),
