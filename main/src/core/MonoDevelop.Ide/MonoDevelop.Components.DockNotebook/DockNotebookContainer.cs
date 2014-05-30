@@ -106,6 +106,11 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public static void MoveToFloatingWindow (SdiWorkspaceWindow workspaceWindow)
 		{
+			MoveToFloatingWindow (workspaceWindow, 0, 0, 640, 480);
+		}
+
+		public static void MoveToFloatingWindow (SdiWorkspaceWindow workspaceWindow, int x, int y, int width, int height)
+		{
 			var window = new DockWindow ();
 			var notebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
 
@@ -122,7 +127,8 @@ namespace MonoDevelop.Components.DockNotebook
 			workspaceWindow.SetDockNotebook (notebook, tab);
 
 			window.ShowAll ();
-			window.Resize (640, 480);
+			window.Move (x, y);
+			window.Resize (width, height);
 		}
 
 		static void HandlePageRemoved (object sender, EventArgs e)

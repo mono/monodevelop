@@ -159,6 +159,12 @@ namespace MonoDevelop.Ide.Gui
 		public int WindowId;
 
 		[ItemProperty]
+		public int X;
+
+		[ItemProperty]
+		public int Y;
+
+		[ItemProperty]
 		public int Width;
 
 		[ItemProperty]

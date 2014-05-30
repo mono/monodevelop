@@ -931,8 +931,12 @@ namespace MonoDevelop.Ide.Gui
 
 			if (FloatingEditors.Count > 0) {
 				foreach (var window in FloatingEditors) {
+					int x, y;
+					window.GetPosition (out x, out y);
 					var fwp = new FloatingWindowUserPrefs {
 						WindowId = fwId,
+						X = x,
+						Y = y,
 						Width = window.Allocation.Width,
 						Height = window.Allocation.Height
 					};
@@ -1050,7 +1054,7 @@ namespace MonoDevelop.Ide.Gui
 			
 			args.Properties.SetValue ("MonoDevelop.Ide.Workbench", prefs);
 		}
-		
+
 		void OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
 			WorkbenchUserPrefs prefs = args.Properties.GetValue<WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
@@ -1083,8 +1087,9 @@ namespace MonoDevelop.Ide.Gui
 							viewsDict.Add (view, doc.NotebookId);
 							docViews.Add (view);
 
-							if (doc.FloatingWindowId > 0)
+							if (doc.FloatingWindowId > 0) {
 								floatsDict.Add (view, doc.FloatingWindowId);
+							}
 						}
 					} 
 				}
@@ -1103,6 +1108,7 @@ namespace MonoDevelop.Ide.Gui
 				if (floatsDict.ContainsKey (view)) {
 					var tabControl = ((DefaultWorkbench)RootWindow).TabControl;
 					var oldTabControl = ((DefaultWorkbench)RootWindow).TabControl;
+					var floatId = floatsDict [view];
 
 					for (var i = 0; i < oldTabControl.TabCount; i++) {
 						var tab = oldTabControl.GetTab (i);
@@ -1112,7 +1118,9 @@ namespace MonoDevelop.Ide.Gui
 						}
 					}
 
-					MonoDevelop.Components.DockNotebook.DockNotebookContainer.MoveToFloatingWindow (tmp_window);
+					var floatPrefs = prefs.FloatingWindows.Find (w => w.WindowId == floatId);
+
+					MonoDevelop.Components.DockNotebook.DockNotebookContainer.MoveToFloatingWindow (tmp_window, floatPrefs.X, floatPrefs.Y, floatPrefs.Width, floatPrefs.Height);
 				}
 
 				if (notebookId == 0) {
