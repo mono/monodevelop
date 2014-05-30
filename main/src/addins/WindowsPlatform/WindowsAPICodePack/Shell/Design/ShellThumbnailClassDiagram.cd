@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="Microsoft.WindowsAPICodePack.Shell.ShellThumbnail">
+    <Position X="0.5" Y="0.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>QAABAABAAAAAAASAABkIABggAQAACgABgBIQAAEAAEI=</HashCode>
+      <FileName>Common\ShellThumbnail.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Shell.DefaultIconSize">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAQAAAAAABgAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Common\DefaultShellImageSizes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.WindowsAPICodePack.Shell.DefaultThumbnailSize">
+    <Position X="7" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAQAAAAAABgAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Common\DefaultShellImageSizes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="Microsoft.WindowsAPICodePack.Shell.ShellThumbnailRetrievalOptions">
+    <Position X="5.25" Y="2.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAIAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Common\ShellThumbnailEnums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Microsoft.WindowsAPICodePack.Shell.ShellThumbnailFormatOptions">
+    <Position X="8.25" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAACAAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Common\ShellThumbnailEnums.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -114,11 +114,11 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					return -1;
 				else if (encodingMenu.History < firstEncIndex || encodingMenu.History == selectOption)
 					return -1;
-				return SeletedEncodings.ConversionEncodings [encodingMenu.History - firstEncIndex];
+				return SelectedEncodings.ConversionEncodings [encodingMenu.History - firstEncIndex];
 			}
 			set {
-				for (uint n=0; n < SeletedEncodings.ConversionEncodings.Length; n++) {
-					if (SeletedEncodings.ConversionEncodings [n] == value) {
+				for (uint n=0; n < SelectedEncodings.ConversionEncodings.Length; n++) {
+					if (SelectedEncodings.ConversionEncodings [n] == value) {
 						encodingMenu.SetHistory (n + (uint)firstEncIndex);
 						Menu menu = (Menu)encodingMenu.Menu;
 						RadioMenuItem rm = (RadioMenuItem) menu.Children [n + firstEncIndex];
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			} else
 				firstEncIndex = 0;
 			
-			foreach (var codePage in SeletedEncodings.ConversionEncodings) {
+			foreach (var codePage in SelectedEncodings.ConversionEncodings) {
 				var enc = Encoding.GetEncoding (codePage);
 				RadioMenuItem mitem = new RadioMenuItem (enc.EncodingName + " (" + enc.WebName + ")");
 				menu.Append (mitem);
@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			encodingMenu.SetHistory (0);
 					
-			selectOption = firstEncIndex + SeletedEncodings.ConversionEncodings.Length + 1;
+			selectOption = firstEncIndex + SelectedEncodings.ConversionEncodings.Length + 1;
 		}
 		
 		void EncodingChanged (object s, EventArgs args)

@@ -347,7 +347,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 		protected override bool SupportsToolsVersion (string version)
 		{
-			return version == "4.0" || version == DefaultToolsVersion;
+			return version == "4.0" || version == "12.0";
 		}
 	}
 }

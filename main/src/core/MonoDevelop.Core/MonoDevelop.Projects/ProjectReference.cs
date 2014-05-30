@@ -536,6 +536,22 @@ namespace MonoDevelop.Projects
 			if (StatusChanged != null)
 				StatusChanged (this, EventArgs.Empty);
 		}
+
+		/// <summary>
+		/// Resolves a project for a ReferenceType.Project reference type in a given solution.
+		/// </summary>
+		/// <returns>The project, or <c>null</c> if it couldn't be resolved.</returns>
+		/// <param name="inSolution">The solution the project is in.</param>
+		/// <exception cref="T:System.ArgumentNullException">Thrown if inSolution == null</exception>
+		/// <exception cref="T:System.InvalidOperationException">Thrown if ReferenceType != ReferenceType.Project</exception>
+		public Project ResolveProject (Solution inSolution)
+		{
+			if (inSolution == null)
+				throw new ArgumentNullException ("inSolution");
+			if (ReferenceType != ReferenceType.Project)
+				throw new InvalidOperationException ("ResolveProject is only definied for Project reference type.");
+			return inSolution.FindProjectByName (Reference);
+		}
 	}
 	
 	public class UnknownProjectReference: ProjectReference
