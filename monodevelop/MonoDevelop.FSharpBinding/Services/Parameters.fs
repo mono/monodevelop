@@ -64,6 +64,8 @@ type FSharpCompilerParameters() as this =
 #else
 #if MDVERSION_4_2_4
 #else
+#if MDVERSION_4_2_5
+#else
 #if MDVERSION_4_3_3
 #else
 #if MDVERSION_4_3_4
@@ -77,7 +79,7 @@ type FSharpCompilerParameters() as this =
 #endif
 #endif
 #endif
-
+#endif
   override x.HasDefineSymbol(symbol) =
     x.DefineConstants.Split(';', ',', ' ', '\t') |> Array.exists (fun s -> symbol = s)
 
