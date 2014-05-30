@@ -89,8 +89,14 @@ namespace MonoDevelop.Components.DockNotebook
 			var container1 = paned.Child1 as DockNotebookContainer;
 			var container2 = paned.Child2 as DockNotebookContainer;
 
-			var notebook1 = container1.TabControl;
-			var notebook2 = container2.TabControl;
+			DockNotebook notebook1, notebook2;
+			if (container1.isMasterTab) {
+				notebook1 = container1.TabControl;
+				notebook2 = container2.TabControl;
+			} else {
+				notebook1 = container2.TabControl;
+				notebook2 = container1.TabControl;
+			}
 			var tabCount = notebook2.TabCount;
 
 			for (var i = 0; i < tabCount; i++) {
