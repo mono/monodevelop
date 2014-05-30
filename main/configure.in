@@ -329,9 +329,6 @@ src/addins/WindowsPlatform/Makefile
 src/addins/WindowsPlatform/WindowsAPICodePack/Makefile
 src/addins/WindowsPlatform/WindowsAPICodePack/Core/Makefile
 src/addins/WindowsPlatform/WindowsAPICodePack/Shell/Makefile
-src/addins/WindowsPlatform/WindowsAPICodePack.Tests/Makefile
-src/addins/WindowsPlatform/WindowsAPICodePack.Tests/Core/Makefile
-src/addins/WindowsPlatform/WindowsAPICodePack.Tests/Shell/Makefile
 src/addins/WindowsPlatform/WindowsPlatform/Makefile
 src/addins/MonoDevelop.AssemblyBrowser/Makefile
 src/addins/MonoDevelop.SourceEditor2/Makefile
