@@ -65,7 +65,6 @@ namespace MonoDevelop.Components.DockNotebook
 			IdeApp.CommandService.RegisterTopWindow (this);
 			AddAccelGroup (IdeApp.CommandService.AccelGroup);
 			this.DeleteEvent += delegate(object o, DeleteEventArgs args) {
-				IdeApp.Workbench.FloatingEditors.Remove (this);
 				var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
 				//					bool showDirtyDialog = false;
 				//					foreach (var content in documents) {
@@ -109,6 +108,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override void OnDestroyed ()
 		{
+			IdeApp.Workbench.FloatingEditors.Remove (this);
 			RemoveAccelGroup (IdeApp.CommandService.AccelGroup);
 			base.OnDestroyed ();
 		}
