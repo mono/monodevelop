@@ -44,6 +44,9 @@
 	</Span>
 	
 	<Match color = "Script Number">CSharpNumber</Match>
+
+	<!-- To detect regex in Javascript -->
+	<Match color = "Script String">(?&lt;!\\)\/.*?(?&lt;!\\)\/[a-zA-Z]?</Match>
 	
 	<Keywords color = "Script Keyword">
 		<Word>this</Word>

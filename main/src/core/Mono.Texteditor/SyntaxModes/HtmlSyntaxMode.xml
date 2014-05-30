@@ -130,6 +130,9 @@ THE SOFTWARE.
 			<Begin>/*</Begin>
 			<End>*/</End>
 		</Span>
+
+    <!-- To detect regex in Javascript -->
+    <Match color = "Script String">(?&lt;!\\)\/.*?(?&lt;!\\)\/[a-zA-Z]?</Match>
 		
 		<Span color = "String" stopateol = "true" escape="\">
 			<Begin>"</Begin>
