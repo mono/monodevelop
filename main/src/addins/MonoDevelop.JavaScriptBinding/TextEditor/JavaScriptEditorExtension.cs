@@ -190,24 +190,13 @@ namespace MonoDevelop.JavaScript.TextEditor
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedProject == null)
 				return null;
 
-			var documents = new List<JavaScriptParsedDocument> ();
-			foreach (var file in Ide.IdeApp.ProjectOperations.CurrentSelectedProject.Files) {
-				if (!file.Name.ToUpper ().EndsWith (".JS"))
-					continue;
-
-				var parsedDoc = file.ExtendedProperties [JavaScriptParser.ParsedDocumentProperty] as JavaScriptParsedDocument;
-				if (parsedDoc == null ||
-				    !parsedDoc.IsInvalid) {
-					continue;
-				}
-
-				documents.Add (parsedDoc);
-			}
+			List<JavaScriptParsedDocument> parsedDocuments = JSTypeSystemService.GetAllDocumentsForProject (Ide.IdeApp.ProjectOperations.CurrentSelectedProject.ItemId);
 
 			// TODO: Find the current scope.
 			var dataList = new CompletionDataList ();
-			foreach (JavaScriptParsedDocument parsedDocument in documents) {
-				dataList.AddRange (buildCodeCompletionList (parsedDocument.AstNodes));
+			foreach (JavaScriptParsedDocument parsedDocument in parsedDocuments) {
+				if (parsedDocument != null)
+					dataList.AddRange (buildCodeCompletionList (parsedDocument.AstNodes));
 			}
 			return dataList;
 		}

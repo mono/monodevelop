@@ -24,6 +24,11 @@ namespace MonoDevelop.JavaScript
 			get { return "*/"; }
 		}
 
+		public JavaScriptLanguageBinding()
+		{
+			JSTypeSystemService.Initialize ();
+		}
+
 		public bool IsSourceCodeFile (Core.FilePath fileName)
 		{
 			return fileName.ToString ().EndsWith (".js", StringComparison.OrdinalIgnoreCase);

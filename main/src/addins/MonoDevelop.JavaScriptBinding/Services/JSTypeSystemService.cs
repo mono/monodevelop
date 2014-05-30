@@ -24,14 +24,83 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using MonoDevelop.JavaScript.Parser;
 
 namespace MonoDevelop.JavaScript
 {
-	public class JSTypeSystemService
+	static class JSTypeSystemService
 	{
-		public JSTypeSystemService ()
-		{
+		readonly static List<JavaScriptDocumentCache> solutionParsedDocuments;
+		static bool isInitialized = false;
 
+		static JSTypeSystemService ()
+		{
+			MonoDevelop.Ide.IdeApp.Workspace.SolutionLoaded += HandleSolutionLoaded;
+			MonoDevelop.Ide.IdeApp.Workspace.SolutionUnloaded += HandleSolutionUnloaded;
+
+			solutionParsedDocuments = new List<JavaScriptDocumentCache> ();
+		}
+
+		static void HandleSolutionLoaded (object sender, MonoDevelop.Projects.SolutionEventArgs e)
+		{
+			solutionParsedDocuments.Clear ();
+			if (e.Solution != null) {
+				refreshSolutionParsedDocuments (e.Solution);
+			}
+		}
+
+		static void HandleSolutionUnloaded (object sender, MonoDevelop.Projects.SolutionEventArgs e)
+		{
+			solutionParsedDocuments.Clear ();
+		}
+
+		public static void Initialize ()
+		{
+			isInitialized = true;
+		}
+
+		public static void AddUpdateParsedDocument (string projectId, string fileName, JavaScriptParsedDocument parsedDocument)
+		{
+			if (!fileName.ToUpper ().EndsWith ("JS"))
+				return;
+
+			var currentParsedDocument = solutionParsedDocuments.FirstOrDefault (i => i.FileName == fileName);
+			if (currentParsedDocument != null) {
+				currentParsedDocument.ParsedDocument = parsedDocument;
+			} else {
+				solutionParsedDocuments.Add (new JavaScriptDocumentCache {
+					FileName = fileName,
+					ParsedDocument = parsedDocument,
+					ProjectId = projectId
+				});
+			}
+		}
+
+		public static List<JavaScriptParsedDocument> GetAllDocumentsForProject (string projectId)
+		{
+			return (from item in solutionParsedDocuments
+				where item.ProjectId == projectId
+			        select item.ParsedDocument).ToList ();
+		}
+
+		static void refreshSolutionParsedDocuments (MonoDevelop.Projects.Solution solution)
+		{
+			if (solution == null)
+				return;
+
+			foreach (MonoDevelop.Projects.Project project in solution.GetAllProjects ()) {
+				foreach (MonoDevelop.Projects.ProjectFile file in project.Files) {
+					if (!file.Name.ToUpper ().EndsWith ("JS"))
+						continue;
+
+					string fileContent = System.IO.File.ReadAllText (file.Name);
+					var parsedDocument = new JavaScriptParsedDocument (file.Name, fileContent);
+					AddUpdateParsedDocument (project.ItemId, file.Name, null);
+				}
+			}
 		}
 	}
 }

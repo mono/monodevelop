@@ -149,11 +149,10 @@
     <Compile Include="Jurassic\Compiler\Lexer\Comment.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\SingleLineComment.cs" />
     <Compile Include="Services\JSTypeSystemService.cs" />
+    <Compile Include="DomainObjects\JavaScriptDocumentCache.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icons\javascript_icon_32.png" />
     <EmbeddedResource Include="Formatting\MonoJSPolicy.xml" />
-    <Content Include="Icons\Credits.txt" />
     <Content Include="Jurassic\License.txt" />
     <Content Include="Notes\JurrasicJSMap.txt" />
     <EmbeddedResource Include="MonoDevelop.JavaScript.addin.xml" />
@@ -193,5 +192,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Services\" />
+    <Folder Include="DomainObjects\" />
   </ItemGroup>
 </Project>
