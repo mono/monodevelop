@@ -93,20 +93,24 @@ namespace MonoDevelop.Platform
 				group.Items.Add (viewerCombo);
 				dialog.Controls.Add (group);
 
-				var group2 = new CommonFileDialogGroupBox ();
+				if (IdeApp.Workspace.IsOpen) {
+					var group2 = new CommonFileDialogGroupBox ();
 
-				// "Close current workspace" is too long and splits the text on 2 lines.
-				closeSolution = new CommonFileDialogCheckBox ("Close workspace") {
-					Visible = false
-				};
-				group2.Items.Add (closeSolution);
-				dialog.Controls.Add (group2);
+					// "Close current workspace" is too long and splits the text on 2 lines.
+					closeSolution = new CommonFileDialogCheckBox ("Close workspace", true) {
+						Visible = false
+					};
+					group2.Items.Add (closeSolution);
+					dialog.Controls.Add (group2);
+				}
 
 				dialog.SelectionChanged += (sender, e) => {
 					try {
 						var files = GetSelectedItems (dialog);
 						var file = files.Count == 0 ? null : files[0];
-						closeSolution.Visible = FillViewers (viewerCombo, file);
+						bool hasBench = FillViewers (viewerCombo, file);
+						if (closeSolution != null)
+							closeSolution.Visible = hasBench;
 						dialog.ApplyControlPropertyChange ("Items", viewerCombo);
 					} catch (Exception ex) {
 						LoggingService.LogError (e.ToString ());
@@ -121,7 +125,7 @@ namespace MonoDevelop.Platform
 			if (encodingCombo != null)
 				data.Encoding = ((EncodingComboItem)encodingCombo.Items [encodingCombo.SelectedIndex]).Encoding;
 
-			if (viewerCombo != null ) {
+			if (viewerCombo != null) {
 				if (closeSolution != null)
 					data.CloseCurrentWorkspace = closeSolution.Visible && closeSolution.IsChecked;
 				data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items [viewerCombo.SelectedIndex]).Viewer;
