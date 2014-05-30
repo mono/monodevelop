@@ -80,6 +80,10 @@ namespace MonoDevelop.Components.DockNotebook
 		public void SetSingleMode ()
 		{
 			var mother = MotherContainer ();
+
+			if (mother == null)
+				return;
+
 			var paned = mother.Child as Paned;
 
 			var container1 = paned.Child1 as DockNotebookContainer;

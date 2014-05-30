@@ -234,6 +234,17 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		public void EnsureValidSplits ()
+		{
+			foreach (var split in Splits) {
+				if (split.Notebook1.TabControl.TabCount == 0) {
+					SetSingleMode ();
+					Splits.Clear ();
+					return;
+				}
+			}
+		}
+
 		public IList<string> Layouts {
 			get { return workbench.Layouts; }
 		}

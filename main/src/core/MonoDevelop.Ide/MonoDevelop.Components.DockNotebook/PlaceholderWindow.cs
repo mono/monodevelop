@@ -438,6 +438,8 @@ namespace MonoDevelop.Components.DockNotebook
 			notebook.RemoveTab (tab.Index, false); 
 
 			(placementDelegate ?? PlaceInFloatingFrame) (notebook, tab, allocation, ox, oy);
+
+			IdeApp.Workbench.EnsureValidSplits ();
 		}
 	}
 }
