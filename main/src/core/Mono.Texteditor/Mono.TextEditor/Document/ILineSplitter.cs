@@ -24,7 +24,7 @@ namespace Mono.TextEditor
 		/// Initializes the splitter with a new text. No events are fired during this process.
 		/// </summary>
 		/// <param name="text"></param>
-		void Initalize (string text);
+		void Initalize (string text, out DocumentLine longestLine);
 
 		DocumentLine Get (int number);
 		DocumentLine GetLineByOffset (int offset);
