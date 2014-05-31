@@ -143,6 +143,7 @@ namespace MonoDevelop.AspNet.StateEngine
 				return current.Name.Name == "optgroup";
 			default :
 				return false;
+			}
 		}
 	}
 }
