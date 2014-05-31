@@ -157,7 +157,8 @@ namespace MonoDevelop.Components.MainToolbar
 					renderer.Text = target.Name;
 			}
 
-			renderer.WidthChars = renderer.Text != null ? (indent ? renderer.Text.Length + 6 : 0) : 0;
+			if (Platform.IsMac)
+				renderer.WidthChars = renderer.Text != null ? (indent ? renderer.Text.Length + 6 : 0) : 0;
 		}
 
 		public MainToolbar ()
@@ -192,6 +193,8 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.Model = runtimeStore;
 			ctx = new Gtk.CellRendererText ();
+			if (Platform.IsWindows)
+				ctx.Ellipsize = Pango.EllipsizeMode.Middle;
 			runtimeCombo.PackStart (ctx, true);
 			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
 			runtimeCombo.RowSeparatorFunc = RuntimeIsSeparator;
