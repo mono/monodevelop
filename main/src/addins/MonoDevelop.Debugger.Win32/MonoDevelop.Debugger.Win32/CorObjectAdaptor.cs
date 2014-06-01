@@ -916,7 +916,7 @@ namespace MonoDevelop.Debugger.Win32
 				foreach (PropertyInfo prop in type.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 					MethodInfo mi = null;
 					try {
-						mi = prop.CanRead ? prop.GetGetMethod () : null;
+						mi = prop.CanRead ? prop.GetGetMethod (true) : null;
 					}
 					catch {
 						// Ignore
@@ -1017,7 +1017,7 @@ namespace MonoDevelop.Debugger.Win32
 				foreach (PropertyInfo prop in type.GetProperties (bindingFlags)) {
 					MethodInfo mi = null;
 					try {
-						mi = prop.CanRead ? prop.GetGetMethod () : null;
+						mi = prop.CanRead ? prop.GetGetMethod (true) : null;
 					} catch {
 						// Ignore
 					}
