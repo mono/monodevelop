@@ -17,6 +17,7 @@ namespace Stetic
 	internal class BinContainer
 	{
 		private Gtk.Widget child;
+		
 		private Gtk.UIManager uimanager;
 
 		public static BinContainer Attach (Gtk.Bin bin)
@@ -58,7 +59,8 @@ namespace Stetic
 			if ((this.uimanager != null)) {
 				Gtk.Widget w;
 				w = this.child.Toplevel;
-				if (((w != null) && typeof(Gtk.Window).IsInstanceOfType (w))) {
+				if (((w != null)
+				    && typeof(Gtk.Window).IsInstanceOfType (w))) {
 					((Gtk.Window)(w)).AddAccelGroup (this.uimanager.AccelGroup);
 					this.uimanager = null;
 				}
@@ -76,7 +78,7 @@ namespace Stetic
 			} else {
 				int sz;
 				int sy;
-				global::Gtk.Icon.SizeLookup (size, out  sz, out  sy);
+				global::Gtk.Icon.SizeLookup (size, out sz, out sy);
 				try {
 					return Gtk.IconTheme.Default.LoadIcon (name, sz, 0);
 				} catch (System.Exception) {
@@ -91,8 +93,12 @@ namespace Stetic
 						pmap.DrawRectangle (gc, false, 0, 0, (sz - 1), (sz - 1));
 						gc.SetLineAttributes (3, Gdk.LineStyle.Solid, Gdk.CapStyle.Round, Gdk.JoinStyle.Round);
 						gc.RgbFgColor = new Gdk.Color (255, 0, 0);
-						pmap.DrawLine (gc, (sz / 4), (sz / 4), ((sz - 1) - (sz / 4)), ((sz - 1) - (sz / 4)));
-						pmap.DrawLine (gc, ((sz - 1) - (sz / 4)), (sz / 4), (sz / 4), ((sz - 1) - (sz / 4)));
+						pmap.DrawLine (gc, (sz / 4), (sz / 4), ((sz - 1)
+						- (sz / 4)), ((sz - 1)
+						- (sz / 4)));
+						pmap.DrawLine (gc, ((sz - 1)
+						- (sz / 4)), (sz / 4), (sz / 4), ((sz - 1)
+						- (sz / 4)));
 						return Gdk.Pixbuf.FromDrawable (pmap, pmap.Colormap, 0, 0, 0, 0, sz, sz);
 					}
 				}
