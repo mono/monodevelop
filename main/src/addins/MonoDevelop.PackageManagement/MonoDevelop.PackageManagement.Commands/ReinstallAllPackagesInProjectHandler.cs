@@ -30,6 +30,7 @@ using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.PackageManagement.NodeBuilders;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -63,7 +64,17 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = SelectedDotNetProjectHasPackages ();
+			info.Visible = SelectedDotNetProjectHasPackagesRequiringReinstall ();
+		}
+
+		bool SelectedDotNetProjectHasPackagesRequiringReinstall ()
+		{
+			DotNetProject project = GetSelectedDotNetProject ();
+			if (project == null)
+				return false;
+
+			var packageReferenceFile = new ProjectPackageReferenceFile (project);
+			return packageReferenceFile.AnyPackagesToBeReinstalled ();
 		}
 	}
 }

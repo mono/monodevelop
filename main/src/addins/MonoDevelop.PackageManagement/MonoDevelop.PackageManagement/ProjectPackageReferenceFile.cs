@@ -53,6 +53,12 @@ namespace MonoDevelop.PackageManagement
 			}
 			return false;
 		}
+
+		public bool AnyPackagesToBeReinstalled ()
+		{
+			return GetPackageReferences ()
+				.Any (packageReference => packageReference.RequireReinstallation);
+		}
 	}
 }
 
