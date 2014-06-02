@@ -379,6 +379,23 @@ namespace MonoDevelop.Refactoring
 			return sb.ToString ();
 		}
 		
+		static bool CanReference (Document doc, MonoDevelop.Projects.ProjectReference projectReference)
+		{
+			var project = doc.Project as DotNetProject;
+			if (project == null || projectReference == null || project.ParentSolution == null)
+				return true;
+			switch (projectReference.ReferenceType) {
+			case ReferenceType.Project:
+				var referenceProject = projectReference.ResolveProject (project.ParentSolution) as DotNetProject;
+				if (referenceProject == null)
+					return true;
+				string reason;
+				return project.CanReferenceProject (referenceProject, out reason);
+			}
+			return true;
+
+		}
+
 		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForTypes (MonoDevelop.Ide.Gui.Document doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
 		{
 			if (resolveResult.Symbol != null)
@@ -472,7 +489,8 @@ namespace MonoDevelop.Refactoring
 								if (!semanticModel.IsAccessible (location, childType))
 									continue;
 								if (childType.Arity == tc && (childType.Name == name || childType.Name == possibleAttributeName)) {
-									yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs) + "." + GetNestedTypeString(nested), false, requiredReference);
+									if (CanReference(doc, requiredReference))
+										yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs) + "." + GetNestedTypeString(nested), false, requiredReference);
 								}
 								typeStack.Push (childType);
 							}
@@ -491,13 +509,15 @@ namespace MonoDevelop.Refactoring
 					foreach (var typeDefinition in allTypes) {
 						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc &&
 						    lookup.IsAccessible (typeDefinition, false)) {
-							if (typeDefinition.DeclaringTypeDefinition != null) {
-								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
-								foundIdentifier = true;
-								yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
-							} else {
-								foundIdentifier = true;
-								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+							if (CanReference (doc, requiredReference)) {
+								if (typeDefinition.DeclaringTypeDefinition != null) {
+									var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
+									foundIdentifier = true;
+									yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
+								} else {
+									foundIdentifier = true;
+									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+								}
 							}
 						}
 					}
@@ -519,7 +539,8 @@ namespace MonoDevelop.Refactoring
 								true,
 								out inferredTypes
 							)) {
-								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+								if (CanReference(doc, requiredReference))
+									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 								goto skipType;
 							}
 						}
@@ -538,7 +559,8 @@ namespace MonoDevelop.Refactoring
 								if ((identifier.Name == possibleAttributeName || identifier.Name == uiResult.Identifier) && 
 									typeDefinition.TypeParameterCount == tc && 
 									lookup.IsAccessible (typeDefinition, false))
-									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+									if (CanReference(doc, requiredReference))
+										yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 							}
 						}
 					}
@@ -639,7 +661,8 @@ namespace MonoDevelop.Refactoring
 					var comp = RoslynTypeSystemService.GetProject (curProject).GetCompilationAsync ().Result;
 					if (comp == null)
 						continue;
-					compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
+					if (CanReference(doc, new MonoDevelop.Projects.ProjectReference (curProject)))
+						compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
 				}
 			}
 			
@@ -663,7 +686,8 @@ namespace MonoDevelop.Refactoring
 							if (!semanticModel.IsAccessible (location, member))
 								continue;
 							if (member.ReduceExtensionMethod (tsym)  != null) {
-								yield return PossibleNamespace.Create (type.ContainingNamespace, false, requiredReference);
+								if (CanReference(doc, requiredReference))
+									yield return PossibleNamespace.Create (type.ContainingNamespace, false, requiredReference);
 							}
 						}
 					} 

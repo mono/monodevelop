@@ -26,13 +26,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagementProjectFactory
 	{
-		IPackageManagementProject CreateProject(IPackageRepository sourceRepository, DotNetProject project);
+		IPackageManagementProject CreateProject (IPackageRepository sourceRepository, IDotNetProject project);
 	}
 }

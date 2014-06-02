@@ -110,7 +110,15 @@ namespace MonoDevelop.Debugger.Win32
 			threads = null;
 			processes = null;
 			activeThread = null;
-			GC.Collect ();
+
+			ThreadPool.QueueUserWorkItem (delegate {
+				Thread.Sleep (2000);
+				GC.Collect ();
+				GC.WaitForPendingFinalizers ();
+				Thread.Sleep (20000);
+				GC.Collect ();
+				GC.WaitForPendingFinalizers ();
+			});
 		}
 
 		void TerminateDebugger ()

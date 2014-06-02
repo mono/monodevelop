@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			document.DocumentParsed += HandleDocumentParsed; 
+			document.DocumentParsed += HandleDocumentParsed;
 		}
 			
 		[CommandUpdateHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]

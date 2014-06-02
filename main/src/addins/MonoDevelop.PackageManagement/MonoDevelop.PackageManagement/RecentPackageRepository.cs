@@ -41,16 +41,13 @@ namespace ICSharpCode.PackageManagement
 		int maximumPackagesCount = DefaultMaximumPackagesCount;
 		IList<RecentPackageInfo> savedRecentPackages;
 		IPackageRepository aggregateRepository;
-		IPackageManagementEvents packageManagementEvents;
-		
+
 		public RecentPackageRepository(
 			IList<RecentPackageInfo> recentPackages,
-			IPackageRepository aggregateRepository,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageRepository aggregateRepository)
 		{
 			this.savedRecentPackages = recentPackages;
 			this.aggregateRepository = aggregateRepository;
-			this.packageManagementEvents = packageManagementEvents;
 
 			//UpdatePackages ();
 		}

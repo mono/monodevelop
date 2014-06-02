@@ -492,7 +492,8 @@ namespace MonoDevelop.Projects
 					GetAllBuildableReferences (list, it, configuration, includeExternalReferences);
 			}
 		}
-		
+
+		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
 		public Project GetProjectContainingFile (string fileName) 
 		{
 			ReadOnlyCollection<Project> projects = GetAllProjects ();
@@ -502,6 +503,31 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return null;
+		}
+
+		public IEnumerable<Project> GetProjectsContainingFile (string fileName)
+		{
+			ReadOnlyCollection<Project> projects = GetAllProjects ();
+
+			Project mainProject = null;
+			var projectsWithLinks = new List<Project>();
+			foreach (Project projectEntry in projects) {
+				if (projectEntry.FileName == fileName || projectEntry.IsFileInProject(fileName)) {
+					var projectPath = Path.GetDirectoryName (projectEntry.FileName);
+					if (fileName.StartsWith (projectPath)) {
+						mainProject = projectEntry;
+					} else {
+						projectsWithLinks.Add (projectEntry);
+					}
+				}
+			}
+
+			if (mainProject != null) {
+				yield return mainProject;
+			}
+			foreach (var project in projectsWithLinks) {
+				yield return project;
+			}
 		}
 		
 		public SolutionEntityItem FindSolutionItem (string fileName)

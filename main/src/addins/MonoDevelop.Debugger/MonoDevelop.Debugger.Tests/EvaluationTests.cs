@@ -85,6 +85,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void This ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			ObjectValue val = Eval ("this");
 			Assert.AreEqual ("{MonoDevelop.Debugger.Tests.TestApp.TestEvaluation}", val.Value);
 			Assert.AreEqual ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation", val.TypeName);
@@ -177,6 +181,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public virtual void Typeof ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			var val = Eval ("typeof(System.Console)");
 			Assert.IsTrue (val.TypeName == "System.MonoType" || val.TypeName == "System.RuntimeType", "Incorrect type name: " + val.TypeName);
 			if (!AllowTargetInvokes) {
@@ -194,6 +202,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void MethodInvoke ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("TestMethod ()");
 			if (!AllowTargetInvokes) {
@@ -335,6 +347,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void GenericMethodInvoke ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			if (Session.GetType ().Name == "CorDebuggerSession")
 				Assert.Ignore ("TODO: Win32 support generic invokes");
 
@@ -475,10 +491,22 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 		}
 
+		void CheckValue (string expected, string actual)
+		{
+			if (AllowTargetInvokes)
+				Assert.AreEqual (expected, actual);
+			else
+				Assert.AreEqual ("Implicit evaluation is disabled", actual);
+		}
+
 		[Test]
 		public void MemberReference ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("\"someString\".Length");
 			if (!AllowTargetInvokes) {
@@ -570,6 +598,106 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.staticString");
 			Assert.AreEqual ("\"some static\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("richObject");
+			Assert.AreEqual ("{RichClass}", val.Value);
+			Assert.AreEqual ("RichClass", val.TypeName);
+
+			var richChildren = val.GetAllChildren ();
+			Assert.AreEqual (13, richChildren.Length);
+			Assert.AreEqual ("publicInt1", richChildren [0].Name);
+			Assert.AreEqual ("int", richChildren [0].TypeName);
+			Assert.AreEqual ("1", richChildren [0].Value);
+			Assert.AreEqual ("publicInt2", richChildren [1].Name);
+			Assert.AreEqual ("int", richChildren [1].TypeName);
+			Assert.AreEqual ("2", richChildren [1].Value);
+			Assert.AreEqual ("publicInt3", richChildren [2].Name);
+			Assert.AreEqual ("int", richChildren [2].TypeName);
+			Assert.AreEqual ("3", richChildren [2].Value);
+			Assert.AreEqual ("publicPropInt1", richChildren [3].Name);
+			Assert.AreEqual ("int", richChildren [3].TypeName);
+			CheckValue ("1", richChildren [3].Value);
+			Assert.AreEqual ("publicPropInt2", richChildren [4].Name);
+			Assert.AreEqual ("int", richChildren [4].TypeName);
+			CheckValue ("2", richChildren [4].Value);
+			Assert.AreEqual ("publicPropInt3", richChildren [5].Name);
+			Assert.AreEqual ("int", richChildren [5].TypeName);
+			CheckValue ("3", richChildren [5].Value);
+			Assert.AreEqual ("publicPropStringA", richChildren [6].Name);
+			Assert.AreEqual ("string", richChildren [6].TypeName);
+			CheckValue ("\"stringA\"", richChildren [6].Value);
+			Assert.AreEqual ("publicPropStringB", richChildren [7].Name);
+			Assert.AreEqual ("string", richChildren [7].TypeName);
+			CheckValue ("\"stringB\"", richChildren [7].Value);
+			Assert.AreEqual ("publicPropStringC", richChildren [8].Name);
+			Assert.AreEqual ("string", richChildren [8].TypeName);
+			CheckValue ("\"stringC\"", richChildren [8].Value);
+			Assert.AreEqual ("publicStringA", richChildren [9].Name);
+			Assert.AreEqual ("string", richChildren [9].TypeName);
+			Assert.AreEqual ("\"stringA\"", richChildren [9].Value);
+			Assert.AreEqual ("publicStringB", richChildren [10].Name);
+			Assert.AreEqual ("string", richChildren [10].TypeName);
+			Assert.AreEqual ("\"stringB\"", richChildren [10].Value);
+			Assert.AreEqual ("publicStringC", richChildren [11].Name);
+			Assert.AreEqual ("string", richChildren [11].TypeName);
+			Assert.AreEqual ("\"stringC\"", richChildren [11].Value);
+			Assert.AreEqual ("Non-public members", richChildren [12].Name);
+
+			richChildren = richChildren [12].GetAllChildren ();
+			Assert.AreEqual (12, richChildren.Length);
+			Assert.AreEqual ("privateInt1", richChildren [0].Name);
+			Assert.AreEqual ("int", richChildren [0].TypeName);
+			Assert.AreEqual ("1", richChildren [0].Value);
+			Assert.AreEqual ("privateInt2", richChildren [1].Name);
+			Assert.AreEqual ("int", richChildren [1].TypeName);
+			Assert.AreEqual ("2", richChildren [1].Value);
+			Assert.AreEqual ("privateInt3", richChildren [2].Name);
+			Assert.AreEqual ("int", richChildren [2].TypeName);
+			Assert.AreEqual ("3", richChildren [2].Value);
+			Assert.AreEqual ("privatePropInt1", richChildren [3].Name);
+			Assert.AreEqual ("int", richChildren [3].TypeName);
+			CheckValue ("1", richChildren [3].Value);
+			Assert.AreEqual ("privatePropInt2", richChildren [4].Name);
+			Assert.AreEqual ("int", richChildren [4].TypeName);
+			CheckValue ("2", richChildren [4].Value);
+			Assert.AreEqual ("privatePropInt3", richChildren [5].Name);
+			Assert.AreEqual ("int", richChildren [5].TypeName);
+			CheckValue ("3", richChildren [5].Value);
+			Assert.AreEqual ("privatePropStringA", richChildren [6].Name);
+			Assert.AreEqual ("string", richChildren [6].TypeName);
+			CheckValue ("\"stringA\"", richChildren [6].Value);
+			Assert.AreEqual ("privatePropStringB", richChildren [7].Name);
+			Assert.AreEqual ("string", richChildren [7].TypeName);
+			CheckValue ("\"stringB\"", richChildren [7].Value);
+			Assert.AreEqual ("privatePropStringC", richChildren [8].Name);
+			Assert.AreEqual ("string", richChildren [8].TypeName);
+			CheckValue ("\"stringC\"", richChildren [8].Value);
+			Assert.AreEqual ("privateStringA", richChildren [9].Name);
+			Assert.AreEqual ("string", richChildren [9].TypeName);
+			Assert.AreEqual ("\"stringA\"", richChildren [9].Value);
+			Assert.AreEqual ("privateStringB", richChildren [10].Name);
+			Assert.AreEqual ("string", richChildren [10].TypeName);
+			Assert.AreEqual ("\"stringB\"", richChildren [10].Value);
+			Assert.AreEqual ("privateStringC", richChildren [11].Name);
+			Assert.AreEqual ("string", richChildren [11].TypeName);
+			Assert.AreEqual ("\"stringC\"", richChildren [11].Value);
+
+			if (AllowTargetInvokes) {
+				val = Eval ("richObject.publicStringB=\"changedTextB\"");
+				Assert.AreEqual ("string", val.TypeName);
+				Assert.AreEqual ("\"changedTextB\"", val.Value);
+				val = Eval ("richObject.publicStringB");
+				Assert.AreEqual ("string", val.TypeName);
+				Assert.AreEqual ("\"changedTextB\"", val.Value);
+
+				val = Eval ("richObject");
+				Assert.AreEqual ("{RichClass}", val.Value);
+				Assert.AreEqual ("RichClass", val.TypeName);
+				richChildren = val.GetAllChildren ();
+				Assert.AreEqual ("publicPropStringB", richChildren [7].Name);
+				Assert.AreEqual ("string", richChildren [7].TypeName);
+				Assert.AreEqual ("\"stringB\"", richChildren [7].Value);
+			}
 		}
 
 		[Test]
@@ -588,6 +716,11 @@ namespace MonoDevelop.Debugger.Tests
 		public void Cast ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("(byte)n");
 			Assert.AreEqual ("32", val.Value);
 			Assert.AreEqual ("byte", val.TypeName);
@@ -714,6 +847,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void BinaryOperators ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 			
 			// Boolean
 			
@@ -832,6 +969,10 @@ namespace MonoDevelop.Debugger.Tests
 
 			if (!AllowTargetInvokes)
 				return;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("Requires a newer version of the Mono runtime.");
 
 			val = Eval ("ops1 == ops3");
 			Assert.AreEqual ("false", val.Value);
@@ -1010,6 +1151,10 @@ namespace MonoDevelop.Debugger.Tests
 			
 			val = Eval ("(ulong)123");
 			Assert.AreEqual ("123", val.Value);
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				return;
 			
 			val = Eval ("dec");
 			Assert.AreEqual ("123.456", val.Value);
@@ -1094,6 +1239,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatObject ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 			
 			val = Eval ("c");
 			Assert.AreEqual ("{C}", val.Value);
@@ -1160,11 +1309,16 @@ namespace MonoDevelop.Debugger.Tests
 			}
 			Assert.AreEqual ("{System.Collections.Generic.Dictionary<int,string[]>[2,3]}", val.Value);
 			Assert.AreEqual ("System.Collections.Generic.Dictionary<int,string[]>[,]", val.TypeName);
-			
+
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				return;
+
 			val = Eval ("thing.done");
 			Assert.AreEqual ("{Thing<string>.Done<int>[1]}", val.Value);
 			Assert.AreEqual ("Thing<string>.Done<int>[]", val.TypeName);
-			
+
 			val = Eval ("done");
 			Assert.AreEqual ("{Thing<string>.Done<int>}", val.Value);
 			Assert.AreEqual ("Thing<string>.Done<int>", val.TypeName);
@@ -1174,6 +1328,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void FormatEnum ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 			
 			val = Eval ("SomeEnum.one");
 			Assert.AreEqual ("SomeEnum.one", val.Value);
@@ -1193,6 +1351,10 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			ObjectValue val;
 
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("action");
 			Assert.AreEqual ("{System.Action}", val.Value);
 			Assert.AreEqual ("System.Action", val.TypeName);
@@ -1207,6 +1369,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void Structures ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("simpleStruct");
 			if (!AllowTargetInvokes) {
@@ -1307,6 +1473,10 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			ObjectValue val;
 
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			val = Eval ("new A().ConstructedBy");
 			if (!AllowTargetInvokes) {
 				var options = Session.Options.EvaluationOptions.Clone ();
@@ -1347,13 +1517,13 @@ namespace MonoDevelop.Debugger.Tests
 			if (!AllowTargetInvokes)
 				return;
 
-			var soft = Session as Mono.Debugging.Soft.SoftDebuggerSession;
+			var soft = Session as SoftDebuggerSession;
 
 			if (soft == null)
 				Assert.Ignore ("TODO: Win32 support generic invokes");
 
-			if (soft.ProtocolVersion < new Version (2, 31))
-				Assert.Inconclusive ("Mono SDB protocol version >= 2.31 required for this test.");
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Inconclusive ("A newer version of the Mono runtime is required.");
 
 			ObjectValue val;
 
@@ -1365,6 +1535,10 @@ namespace MonoDevelop.Debugger.Tests
 		public void Inheriting ()
 		{
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("a.Prop");
 			if (!AllowTargetInvokes) {
@@ -1584,6 +1758,10 @@ namespace MonoDevelop.Debugger.Tests
 		{
 			ObjectValue[] children;
 			ObjectValue val;
+
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("dict");
 			children = val.GetAllChildren ();

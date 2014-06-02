@@ -156,33 +156,11 @@ namespace MonoDevelop.Debugger
 			}
 			DebugWriter (0, "", trace + Environment.NewLine);
 		}
-		
+
+		[Obsolete]
 		public static string[] EnginePriority {
-			get {
-				string priority = PropertyService.Get ("MonoDevelop.Debugger.DebuggingService.EnginePriority", "");
-				if (priority.Length == 0) {
-					// Set the initial priorities
-					var engines = new List<string> ();
-					int i = 0;
-
-					foreach (DebuggerEngineExtensionNode engine in AddinManager.GetExtensionNodes (FactoriesPath)) {
-						if (engine.Id.StartsWith ("Mono.Debugger.Soft", StringComparison.Ordinal)) // Give priority to soft debugger by default
-							engines.Insert (i++, engine.Id);
-						else
-							engines.Add (engine.Id);
-					}
-
-					var parray = engines.ToArray ();
-					EnginePriority = parray;
-
-					return parray;
-				}
-
-				return priority.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-			} set {
-				string s = string.Join (",", value);
-				PropertyService.Set ("MonoDevelop.Debugger.DebuggingService.EnginePriority", s);
-				engines = null;
+			get { return new string[0]; }
+			set {
 			}
 		}
 		
@@ -925,25 +903,6 @@ namespace MonoDevelop.Debugger
 		{
 			return GetFactoryForCommand (command) != null;
 		}
-
-		static int GetClosestEngineMatch (string[] priorities, DebuggerEngine engine)
-		{
-			int matchLength = 0;
-			int best = -1;
-
-			for (int i = 0; i < priorities.Length; i++) {
-				if (priorities[i].Length > engine.Id.Length || priorities[i].Length < matchLength)
-					continue;
-
-				if (engine.Id.StartsWith (priorities[i], StringComparison.Ordinal)) {
-					// Note: the idea is that since Mono.Debugger.Soft.IPhoneBackgroundFetch starts with Mono.Debugger.Soft.IPhone, we want it to sort just after IPhone
-					matchLength = priorities[i].Length;
-					best = i + 1;
-				}
-			}
-
-			return best != -1 ? best : priorities.Length + 1;
-		}
 		
 		public static DebuggerEngine[] GetDebuggerEngines ()
 		{
@@ -952,22 +911,6 @@ namespace MonoDevelop.Debugger
 
 				foreach (DebuggerEngineExtensionNode node in AddinManager.GetExtensionNodes (FactoriesPath))
 					list.Add (new DebuggerEngine (node));
-				
-				var priorities = EnginePriority;
-
-				list.Sort (delegate (DebuggerEngine engine1, DebuggerEngine engine2) {
-					int index1 = Array.IndexOf (priorities, engine1.Id);
-					int index2 = Array.IndexOf (priorities, engine2.Id);
-					
-					// ensure that soft debugger is prioritised over newly installed debuggers
-					index1 = index1 < 0 ? GetClosestEngineMatch (priorities, engine1) : index1;
-					index2 = index2 < 0 ? GetClosestEngineMatch (priorities, engine2) : index2;
-					
-					if (index1 == index2)
-						return string.Compare (engine1.Id, engine2.Id, StringComparison.Ordinal);
-
-					return index1.CompareTo (index2);
-				});
 
 				engines = list.ToArray ();
 			}
@@ -989,11 +932,20 @@ namespace MonoDevelop.Debugger
 		
 		static DebuggerEngine GetFactoryForCommand (ExecutionCommand cmd)
 		{
+			DebuggerEngine supportedEngine = null;
+
+			// Get the default engine for the command if available,
+			// or the first engine that supports the command otherwise
+
 			foreach (DebuggerEngine factory in GetDebuggerEngines ()) {
-				if (factory.CanDebugCommand (cmd))
-					return factory;
+				if (factory.CanDebugCommand (cmd)) {
+					if (factory.IsDefaultDebugger (cmd))
+						return factory;
+					if (supportedEngine == null)
+						supportedEngine = factory;
+				}
 			}
-			return null;
+			return supportedEngine;
 		}
 		
 		static void OnLineCountChanged (object ob, LineCountEventArgs a)

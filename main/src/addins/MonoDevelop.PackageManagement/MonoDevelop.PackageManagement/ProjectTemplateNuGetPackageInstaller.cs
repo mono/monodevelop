@@ -38,13 +38,11 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementSolution packageManagementSolution;
 		IPackageRepositoryCache packageRepositoryCache;
-		IPackageManagementEvents packageManagementEvents;
 		IBackgroundPackageActionRunner backgroundPackageActionRunner;
 
 		public ProjectTemplateNuGetPackageInstaller ()
 			: this(
 				PackageManagementServices.Solution,
-				PackageManagementServices.PackageManagementEvents,
 				PackageManagementServices.ProjectTemplatePackageRepositoryCache,
 				PackageManagementServices.BackgroundPackageActionRunner)
 		{
@@ -52,12 +50,10 @@ namespace MonoDevelop.PackageManagement
 
 		public ProjectTemplateNuGetPackageInstaller (
 			IPackageManagementSolution solution,
-			IPackageManagementEvents packageManagementEvents,
 			IPackageRepositoryCache packageRepositoryCache,
 			IBackgroundPackageActionRunner backgroundPackageActionRunner)
 		{
 			this.packageManagementSolution = solution;
-			this.packageManagementEvents = packageManagementEvents;
 			this.packageRepositoryCache = packageRepositoryCache;
 			this.backgroundPackageActionRunner = backgroundPackageActionRunner;
 		}
@@ -103,8 +99,9 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		IPackageManagementProject CreatePackageManagementProject (DotNetProject dotNetProject)
+		IPackageManagementProject CreatePackageManagementProject (DotNetProject project)
 		{
+			var dotNetProject = new DotNetProjectProxy (project);
 			return packageManagementSolution.GetProject (packageRepositoryCache.CreateAggregateRepository (), dotNetProject);
 		}
 	}
