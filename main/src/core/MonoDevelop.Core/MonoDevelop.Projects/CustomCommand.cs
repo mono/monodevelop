@@ -178,6 +178,11 @@ namespace MonoDevelop.Projects
 			StringTagModel tagSource = GetTagModel (entry, configuration);
 			ParseCommand (tagSource, out exe, out args);
 			
+			ProjectConfiguration config = null;
+			
+			if (entry is IConfigurationTarget)
+				config = configuration.GetConfiguration ((IConfigurationTarget)entry) as ProjectConfiguration;
+
 			//if the executable name matches an executable in the project directory, use that, for back-compat
 			//else fall back and let the execution handler handle it via PATH, working directory, etc.
 			if (!Path.IsPathRooted (exe)) {
@@ -201,6 +206,10 @@ namespace MonoDevelop.Projects
 				var vars = new Dictionary<string, string> ();
 				foreach (var v in environmentVariables)
 					vars [v.Key] = StringParserService.Parse (v.Value, tagSource);
+				if (config != null) {
+					foreach (var v in config.EnvironmentVariables)
+						vars [v.Key] = StringParserService.Parse (v.Value, tagSource);
+				}
 				cmd.EnvironmentVariables = vars;
 			}
 			
