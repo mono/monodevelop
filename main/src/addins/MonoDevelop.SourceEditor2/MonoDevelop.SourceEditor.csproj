@@ -197,6 +197,7 @@
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.SourceEditor\AbstractUsagesExtension.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\XwtColorSchemeEditor.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\LabeledColorButton.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
