@@ -172,8 +172,8 @@ namespace MonoDevelop.AssemblyBrowser
 				new AssemblyNodeBuilder (this),
 				new ModuleReferenceNodeBuilder (),
 				new AssemblyReferenceNodeBuilder (this),
-				new AssemblyReferenceFolderNodeBuilder (this),
-				new AssemblyResourceFolderNodeBuilder (),
+				//new AssemblyReferenceFolderNodeBuilder (this),
+				//new AssemblyResourceFolderNodeBuilder (),
 				new ResourceNodeBuilder (),
 				new NamespaceBuilder (this),
 				new DomTypeNodeBuilder (this),
@@ -380,8 +380,10 @@ namespace MonoDevelop.AssemblyBrowser
 			if (nav != null)
 				return nav;
 			// Constructor may be a generated default without implementation.
-			if (helpUrl.StartsWith ("M:", StringComparison.Ordinal) && helpUrl.EndsWith (".#ctor", StringComparison.Ordinal))
-				return SearchMember ("T" + helpUrl.Substring (1, helpUrl.Length - 1 - ".#ctor".Length));
+			var ctorIdx = helpUrl.IndexOf (".#ctor", StringComparison.Ordinal);
+			if (helpUrl.StartsWith ("M:", StringComparison.Ordinal) && ctorIdx > 0) {
+				return SearchMember ("T" + helpUrl.Substring (1, ctorIdx - 1));
+			}
 			return null;
 		}
 		
@@ -1419,7 +1421,11 @@ namespace MonoDevelop.AssemblyBrowser
 				// Select the result.
 				if (selectReference) {
 					ITreeNavigator navigator = TreeView.GetNodeAtObject (result);
-					navigator.Selected = true;
+					if (navigator != null) {
+						navigator.Selected = true;
+					} else {
+						LoggingService.LogWarning (result + " could not be found.");
+					}
 				}
 
 				return result;

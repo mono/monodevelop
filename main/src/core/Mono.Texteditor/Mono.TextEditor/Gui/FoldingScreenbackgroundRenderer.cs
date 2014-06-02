@@ -100,6 +100,8 @@ namespace Mono.TextEditor
 			const int rightMarginPadding = 16;
 			for (int i = foldSegments.Count - 1; i >= 0 ; i--) {
 				var segment = foldSegments [i];
+				if (segment.IsInvalid)
+					continue;
 				var segmentStartLine = segment.StartLine;
 				var segmentEndLine = segment.EndLine;
 

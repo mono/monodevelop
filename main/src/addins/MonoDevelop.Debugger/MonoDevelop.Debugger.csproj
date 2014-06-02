@@ -150,6 +150,7 @@
     <Compile Include="MonoDevelop.Debugger\InfoFrame.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
@@ -242,11 +243,11 @@
     <EmbeddedResource Include="icons\light\continue-16%402x.png">
       <LogicalName>continue-light-16@2x.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bug-16.png">
-      <LogicalName>bug-light-16.png</LogicalName>
+    <EmbeddedResource Include="icons\light\prefs-debugger-16.png">
+      <LogicalName>prefs-debugger-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\bug-16%402x.png">
-      <LogicalName>bug-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="icons\light\prefs-debugger-16%402x.png">
+      <LogicalName>prefs-debugger-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\lightning-16.png">
       <LogicalName>lightning-light-16.png</LogicalName>

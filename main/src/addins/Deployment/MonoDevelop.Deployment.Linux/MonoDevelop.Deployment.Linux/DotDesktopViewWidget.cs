@@ -226,13 +226,16 @@ namespace MonoDevelop.Deployment.Linux
 		protected virtual void OnButtonAddCategoriesClicked(object sender, System.EventArgs e)
 		{
 			MenuCategorySelectorDialog dlg = new MenuCategorySelectorDialog ();
-			if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
-				foreach (string s in dlg.Selection)
-					entry.Categories.Add (s);
-				FillCategs ();
-				NotifyChanged ();
+			try {
+				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+					foreach (string s in dlg.Selection)
+						entry.Categories.Add (s);
+					FillCategs ();
+					NotifyChanged ();
+				}
+			} finally {
+				dlg.Destroy ();
 			}
-			dlg.Destroy ();
 		}
 
 		protected virtual void OnButtonRemoveCategoryClicked(object sender, System.EventArgs e)

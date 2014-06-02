@@ -85,5 +85,10 @@ namespace Mono.TextEditor
 		{
 			return new TextSegment (chunk.Offset, chunk.Length);
 		}
+		
+		public override string ToString ()
+		{
+			return string.Format ("[Chunk: Style={0}, Offset={1}, Length={2}]", Style, Offset, Length);
+		}
 	}
 }

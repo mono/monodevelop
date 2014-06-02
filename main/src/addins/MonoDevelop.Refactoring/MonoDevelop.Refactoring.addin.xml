@@ -162,18 +162,14 @@
 	<!-- Options panels -->
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
-		<Section id = "C#" _label = "C#">
-			<Section id = "CodeIssuePanel" _label = "Code Rules" fill="true"
-				class="MonoDevelop.CodeIssues.CodeIssuePanel"/>
-			<Section id = "CodeActions" _label = "Code Actions" fill="true"
-				icon="md-text-quickfix" 
-				class="MonoDevelop.CodeActions.CodeActionPanel"/>
+		<Section id="C#" _label="C#" icon="md-prefs-csharp">
+			<Section id="CodeIssuePanel" _label="Code Rules" fill="true" class="MonoDevelop.CodeIssues.CodeIssuePanel" icon="md-prefs-code-rules" />
+			<Section id="CodeActions" _label="Code Actions" fill="true" class="MonoDevelop.CodeActions.CodeActionPanel" icon="md-prefs-code-actions" />
 		</Section>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
-		<Section id = "Analysis" _label = "Source Analysis" fill="true"
-			class="MonoDevelop.AnalysisCore.Gui.AnalysisOptionsPanel"/>
+		<Section id="Analysis" _label="Source Analysis" fill="true" class="MonoDevelop.AnalysisCore.Gui.AnalysisOptionsPanel" icon="md-prefs-code-analysis" />
 	</Extension>
 	
 	<!-- Extensions to the addin points defined by this addin -->
@@ -195,5 +191,11 @@
 	<Extension path = "/MonoDevelop/AnalysisCore/FixHandlers">
 		<Handler fixName="RenameMember" class = "MonoDevelop.AnalysisCore.Fixes.RenameMemberHandler" />
 		<Handler fixName="Generic" class = "MonoDevelop.AnalysisCore.Fixes.GenericFixHandler" />
+	</Extension>
+    
+	<Extension path="/MonoDevelop/Core/StockIcons">
+		<StockIcon stockid="md-prefs-code-actions" resource="prefs-code-actions-light-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-code-rules" resource="prefs-code-rules-light-16.png" size="Menu" />
+		<StockIcon stockid="md-prefs-code-analysis" resource="prefs-code-analysis-light-16.png" size="Menu" />
 	</Extension>
 </ExtensionModel>

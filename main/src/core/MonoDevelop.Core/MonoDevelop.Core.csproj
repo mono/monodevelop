@@ -85,6 +85,8 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Core\StringParserService.cs" />
@@ -442,7 +444,6 @@
     <Compile Include="MonoDevelop.Core.Execution\DotNetCommandFactory.cs" />
     <Compile Include="BuildVariables.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.Core.Web\ICredentialProvider.cs" />
     <Compile Include="MonoDevelop.Core.Logging\AssertLoggingTraceListener.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MD1\MD1ProjectService.cs" />
     <Compile Include="MonoDevelop.Projects\UnknownProject.cs" />
@@ -452,14 +453,22 @@
     <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectMSBuildHandler.cs" />
     <Compile Include="MonoDevelop.Projects.SharedAssetsProjects\SharedAssetsProjectBinding.cs" />
     <Compile Include="MonoDevelop.Core\WebRequestHelper.cs" />
-    <Compile Include="MonoDevelop.Core.Web\CredentialsUtility.cs" />
     <Compile Include="MonoDevelop.Core.Web\IProxyAuthenticationHandler.cs" />
-    <Compile Include="MonoDevelop.Core.Web\CredentialType.cs" />
     <Compile Include="MonoDevelop.Core.Web\CredentialStore.cs" />
-    <Compile Include="MonoDevelop.Core.Web\ProxyAuthenticationHandler.cs" />
-    <Compile Include="MonoDevelop.Core.Web\WebService.cs" />
-    <Compile Include="MonoDevelop.Core.Web\MonoAddinsProxyWrapper.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialType.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ICredentialCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\ICredentialProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IHttpWebResponse.cs" />
+    <Compile Include="MonoDevelop.Core.Web\IProxyCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\MemoryCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\NullCredentialProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\ProxyCache.cs" />
+    <Compile Include="MonoDevelop.Core.Web\RequestHelper.cs" />
+    <Compile Include="MonoDevelop.Core.Web\StringExtensions.cs" />
+    <Compile Include="MonoDevelop.Core.Web\STSAuthHelper.cs" />
+    <Compile Include="MonoDevelop.Core.Web\WIFTypeProvider.cs" />
+    <Compile Include="MonoDevelop.Core.Web\CredentialProviderExtensions.cs" />
+    <Compile Include="MonoDevelop.Core.Execution\IDebugConsole.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -558,7 +567,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MonoDevelop.Core.Web\" />
     <Folder Include="MonoDevelop.Projects.SharedAssetsProjects\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs">

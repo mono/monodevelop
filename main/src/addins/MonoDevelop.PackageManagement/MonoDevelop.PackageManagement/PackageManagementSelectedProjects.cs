@@ -34,13 +34,14 @@ using System.Runtime.Versioning;
 
 using MonoDevelop.Projects;
 using NuGet;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementSelectedProjects
 	{
 		bool? singleProjectSelected;
-		Project singleDotNetProjectSelected;
+		IDotNetProject singleDotNetProjectSelected;
 		
 		public PackageManagementSelectedProjects(IPackageManagementSolution solution)
 		{
@@ -55,8 +56,8 @@ namespace ICSharpCode.PackageManagement
 			if (HasSingleProjectSelected()) {
 				yield return GetSingleProjectSelected(package);
 			} else {
-				foreach (Project project in GetOpenProjects()) {
-					yield return CreateSelectedProject(project, package);
+				foreach (IDotNetProject project in GetOpenProjects ()) {
+					yield return CreateSelectedProject (project, package);
 				}
 			}
 		}
@@ -75,7 +76,7 @@ namespace ICSharpCode.PackageManagement
 			singleProjectSelected = singleDotNetProjectSelected != null;
 		}
 		
-		IEnumerable<Project> GetOpenProjects()
+		IEnumerable<IDotNetProject> GetOpenProjects ()
 		{
 			return Solution.GetDotNetProjects();
 		}
@@ -85,7 +86,7 @@ namespace ICSharpCode.PackageManagement
 			return CreateSelectedProject(singleDotNetProjectSelected, package);
 		}
 		
-		IPackageManagementSelectedProject CreateSelectedProject(Project dotNetProject, IPackageFromRepository package)
+		IPackageManagementSelectedProject CreateSelectedProject(IDotNetProject dotNetProject, IPackageFromRepository package)
 		{
 			IPackageManagementProject project = Solution.GetProject(package.Repository, dotNetProject);
 			return CreateSelectedProject(project, package);
@@ -191,7 +192,7 @@ namespace ICSharpCode.PackageManagement
 		public FrameworkName GetTargetFramework ()
 		{
 			if (HasSingleProjectSelected ()) {
-				return new ProjectTargetFramework ((DotNetProject)singleDotNetProjectSelected)
+				return new ProjectTargetFramework (singleDotNetProjectSelected)
 					.TargetFrameworkName;
 			}
 			return null;

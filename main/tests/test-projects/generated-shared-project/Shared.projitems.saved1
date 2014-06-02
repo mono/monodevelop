@@ -6,8 +6,7 @@
     <SharedGUID>{8DD793BE-42C3-4D66-8359-460CEE75980D}</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>
-    </Import_RootNamespace>
+    <Import_RootNamespace>TestNamespace2</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Test.cs" />

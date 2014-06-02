@@ -409,7 +409,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (keyChar == ';' && !(textEditorData.CurrentMode is TextLinkEditMode) && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get (
 				    "SmartSemicolonPlacement",
 				    false
-			    )) {
+			    ) && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				DocumentLine curLine = textEditorData.Document.GetLine (textEditorData.Caret.Line);
 				string text = textEditorData.Document.GetTextAt (curLine);
@@ -523,7 +523,7 @@ namespace MonoDevelop.CSharp.Formatting
 						DoReSmartIndent ();
 					}
 				}
-				if (!skipFormatting) {
+				if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 					if (keyChar == ';' || keyChar == '}') {
 						using (var undo = textEditorData.OpenUndoGroup ()) {
 							if (OnTheFlyFormatting && textEditorData != null && !(textEditorData.CurrentMode is TextLinkEditMode) && !(textEditorData.CurrentMode is InsertionCursorEditMode)) {
@@ -550,7 +550,7 @@ namespace MonoDevelop.CSharp.Formatting
 			//and calls HandleCodeCompletion etc to handles completion
 			var result = base.KeyPress (key, keyChar, modifier);
 
-			if (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) {
+			if (!indentationDisabled && (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter)) {
 				DoReSmartIndent ();
 			}
 

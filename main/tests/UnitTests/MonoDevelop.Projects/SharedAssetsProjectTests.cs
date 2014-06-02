@@ -168,7 +168,8 @@ namespace MonoDevelop.Projects
 			// Add shared project
 
 			var sp = new SharedAssetsProject () {
-				LanguageName = "C#"
+				LanguageName = "C#",
+				DefaultNamespace = "TestNamespace"
 			};
 
 			sp.AddFile (sol.ItemDirectory.Combine ("Test.cs"));
@@ -212,8 +213,9 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refSharedProjectXml, sharedProjectXml);
 			Assert.AreEqual (refSharedProjectItemsXml, sharedProjectItemsXml);
 
-			// Add a file
+			// Add a file and change the default namespace
 
+			sp.DefaultNamespace = "TestNamespace2";
 			var file = sp.AddFile (sol.ItemDirectory.Combine ("Test2.cs"));
 			sol.Save (Util.GetMonitor ());
 
@@ -229,8 +231,9 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refSharedProjectXml, sharedProjectXml);
 			Assert.AreEqual (refSharedProjectItemsXml, sharedProjectItemsXml);
 
-			// Remove a file
+			// Remove a file and restore the namespace
 
+			sp.DefaultNamespace = "TestNamespace";
 			sp.Files.Remove (file);
 			sol.Save (Util.GetMonitor ());
 
@@ -262,6 +265,60 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (refProjectXml, projectXml);
 			Assert.AreEqual (refSharedProjectXml, sharedProjectXml);
 			Assert.AreEqual (refSharedProjectItemsXml, sharedProjectItemsXml);
+		}
+
+		[Test]
+		public void SharedProjectCantBeStartup ()
+		{
+			var sol = new Solution ();
+			var shared = new SharedAssetsProject ();
+
+			// Shared projects are not executable
+			Assert.IsFalse (shared.SupportsExecute ());
+
+			sol.RootFolder.AddItem (shared);
+
+			// The shared project is not executable, so it shouldn't be set as startup by default
+			Assert.IsNull (sol.StartupItem);
+
+			// An executable project is set as startup by default when there is no startup project
+			DotNetAssemblyProject project = new DotNetAssemblyProject ("C#");
+			sol.RootFolder.AddItem (project);
+			Assert.IsTrue (sol.StartupItem == project);
+		}
+
+		[Test]
+		public void IncludingProjectAddedAfterShared ()
+		{
+			var sol = new Solution ();
+			var shared = new SharedAssetsProject ("C#");
+			shared.AddFile ("Foo.cs");
+
+			sol.RootFolder.AddItem (shared);
+
+			// Reference to shared is added before adding project to solution
+			var main = new DotNetAssemblyProject ("C#");
+			main.References.Add (new ProjectReference (shared));
+			sol.RootFolder.AddItem (main);
+
+			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
+		}
+
+		[Test]
+		public void SharedProjectAddedAfterIncluder ()
+		{
+			var sol = new Solution ();
+			var shared = new SharedAssetsProject ("C#");
+			shared.AddFile ("Foo.cs");
+
+			// Reference to shared is added before adding project to solution
+			var main = new DotNetAssemblyProject ("C#");
+			main.References.Add (new ProjectReference (shared));
+			sol.RootFolder.AddItem (main);
+
+			sol.RootFolder.AddItem (shared);
+
+			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
 		}
 	}
 }

@@ -67,7 +67,7 @@ namespace MonoDevelop.NUnit
 				return null;
 
 			foreach (var p in project.References)
-				if (p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1)
+				if (p.Reference.IndexOf ("GuiUnit", StringComparison.OrdinalIgnoreCase) != -1 || p.Reference.IndexOf ("nunit.framework") != -1 || p.Reference.IndexOf ("nunit.core") != -1 || p.Reference.IndexOf ("nunitlite") != -1)
 					return new NUnitProjectTestSuite (project);
 			return null;
 		}

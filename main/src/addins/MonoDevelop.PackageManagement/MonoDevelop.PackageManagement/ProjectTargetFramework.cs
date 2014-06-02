@@ -29,16 +29,17 @@
 using System;
 using System.Runtime.Versioning;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class ProjectTargetFramework
 	{
-		DotNetProject project;
+		IDotNetProject project;
 		FrameworkName targetFramework;
-		
-		public ProjectTargetFramework(DotNetProject project)
+
+		public ProjectTargetFramework (IDotNetProject project)
 		{
 			this.project = project;
 			GetTargetFramework();
@@ -65,7 +66,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		TargetFrameworkMoniker TargetFrameworkMoniker {
-			get { return project.TargetFramework.Id; }
+			get { return project.TargetFrameworkMoniker; }
 		}
 		
 		string UseDefaultIfNullOrEmpty(string value, string defaultValue)

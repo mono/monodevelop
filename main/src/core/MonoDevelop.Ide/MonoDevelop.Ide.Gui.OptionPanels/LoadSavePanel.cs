@@ -73,8 +73,6 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 
 	partial class LoadSavePanelWidget : Gtk.Bin
 	{
-		List<string> formats = new List<string> ();
-		
 		public LoadSavePanelWidget ()
 		{
 			Build ();

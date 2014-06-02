@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (FileCommands.ReloadFile)]
 		protected void OnUpdateReloadFile (CommandInfo info)
 		{
-			info.Enabled = window.ViewContent.ContentName != null && !window.ViewContent.IsViewOnly;
+			info.Enabled = window.ViewContent.ContentName != null && !window.ViewContent.IsViewOnly && window.Document != null && window.Document.IsDirty;
 		}
 
 		[CommandHandler (FileCommands.OpenContainingFolder)]

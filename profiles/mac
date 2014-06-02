@@ -1,2 +1,2 @@
 main --disable-update-mimedb --disable-update-desktopdb --disable-gnomeplatform --enable-macplatform --enable-tests
-main/external/fsharpbinding/monodevelop --addins-dir=bin/mac-linux/Debug
+main/external/fsharpbinding/monodevelop --addins-dir=bin/mac-linux/Debug --no-prefix

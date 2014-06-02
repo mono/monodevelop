@@ -53,7 +53,8 @@ namespace ICSharpCode.PackageManagement
 		{
 			options = new PackageManagementOptions();
 			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
-			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests(packageRepositoryCache);
+			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests ();
+			userAgentGenerator.Register (packageRepositoryCache);
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
 			registeredPackageRepositories = new RegisteredPackageRepositories(packageRepositoryCache, options);
 			projectTemplatePackageSources = new RegisteredProjectTemplatePackageSources();
@@ -64,7 +65,7 @@ namespace ICSharpCode.PackageManagement
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
-			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents);
+			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);
 
 			InitializeCredentialProvider();
 		}
@@ -131,10 +132,6 @@ namespace ICSharpCode.PackageManagement
 
 		public static IRecentPackageRepository RecentPackageRepository {
 			get { return packageRepositoryCache.RecentPackageRepository; }
-		}
-
-		public static IProgressProvider ProgressProvider {
-			get { return progressProvider; }
 		}
 	}
 }

@@ -33,7 +33,7 @@ namespace MonoDevelop.Debugger
 {
 	public class DebuggerEngine
 	{
-		IDebuggerEngine engine;
+		DebuggerEngineBackend engine;
 		DebuggerEngineExtensionNode node;
 		bool gotEngine;
 		
@@ -66,7 +66,14 @@ namespace MonoDevelop.Debugger
 		{
 			if (!gotEngine) {
 				gotEngine = true;
-				engine = (IDebuggerEngine) node.GetInstance ();
+				var ob = node.GetInstance ();
+				#pragma warning disable 618
+				var legacyEngine = ob as IDebuggerEngine;
+				#pragma warning restore 618
+				if (legacyEngine != null)
+					engine = new LegacyDebuggerEngineBackend (legacyEngine);
+				else
+					engine = (DebuggerEngineBackend) node.GetInstance ();
 			}
 		}
 		
@@ -76,6 +83,12 @@ namespace MonoDevelop.Debugger
 			return engine != null && engine.CanDebugCommand (cmd);
 		}
 		
+		public bool IsDefaultDebugger (ExecutionCommand cmd)
+		{
+			LoadEngine ();
+			return engine != null && engine.IsDefaultDebugger (cmd);
+		}
+
 		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand cmd)
 		{
 			LoadEngine ();

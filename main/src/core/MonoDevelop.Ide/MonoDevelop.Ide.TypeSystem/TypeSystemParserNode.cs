@@ -27,13 +27,16 @@ using System;
 using Mono.Addins;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core.StringParsing;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	public class TypeSystemParserNode : TypeExtensionNode
 	{
+		const string ApiDefinitionBuildAction = "ObjcBindingApiDefinition";
+
 		[NodeAttribute (Description="The build actions.")]
-		string[] buildActions = new string[] { MonoDevelop.Projects.BuildAction.Compile };
+		string[] buildActions = { MonoDevelop.Projects.BuildAction.Compile, ApiDefinitionBuildAction };
 
 		public string[] BuildActions {
 			get {
@@ -72,6 +75,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!mimeTypes.Contains (mimeType, StringComparer.Ordinal))
 				return false;
 			return buildActions.Any (action => string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase));
+		}
+
+		public static bool IsCompileBuildAction(string buildAction)
+		{
+			return buildAction == MonoDevelop.Projects.BuildAction.Compile ||
+			buildAction == ApiDefinitionBuildAction;
 		}
 	}
 

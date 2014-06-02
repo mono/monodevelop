@@ -44,6 +44,7 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
+using System.Text;
 
 
 namespace MonoDevelop.Components.MainToolbar
@@ -51,8 +52,11 @@ namespace MonoDevelop.Components.MainToolbar
 	class MainToolbar: Gtk.EventBox, ICommandBar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
+		const string TargetsMenuPath = "/MonoDevelop/Ide/TargetSelectorCommands";
+
 		const int RuntimeExecutionTarget = 0;
 		const int RuntimeIsIndented = 1;
+		const int RuntimeCommand = 2;
 
 		EventHandler executionTargetsChanged;
 
@@ -64,12 +68,12 @@ namespace MonoDevelop.Components.MainToolbar
 		TreeStore configurationStore = new TreeStore (typeof(string), typeof(string));
 
 		ComboBox runtimeCombo;
-		TreeStore runtimeStore = new TreeStore (typeof (ExecutionTarget), typeof (bool));
+		TreeStore runtimeStore = new TreeStore (typeof (ExecutionTarget), typeof (bool), typeof(ActionCommand));
 
 		StatusArea statusArea;
 
 		SearchEntry matchEntry;
-		static object lastCommandTarget;
+		static WeakReference lastCommandTarget;
 
 		ButtonBar buttonBar = new ButtonBar ();
 		RoundButton button = new RoundButton ();
@@ -113,7 +117,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		internal static object LastCommandTarget {
-			get { return lastCommandTarget; }
+			get { return lastCommandTarget != null ? lastCommandTarget.Target : null; }
 		}
 
 		void SetSearchCategory (string category)
@@ -126,19 +130,27 @@ namespace MonoDevelop.Components.MainToolbar
 
 		static bool RuntimeIsSeparator (TreeModel model, TreeIter iter)
 		{
-			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
-
-			return target == null;
+			return model.GetValue (iter, RuntimeExecutionTarget) == null && model.GetValue (iter, RuntimeCommand) == null;
 		}
 
 		void RuntimeRenderCell (CellLayout layout, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			var target = (ExecutionTarget) model.GetValue (iter, RuntimeExecutionTarget);
 			var indent = (bool) model.GetValue (iter, RuntimeIsIndented);
+			var cmd = (ActionCommand) model.GetValue (iter, RuntimeCommand);
 			var renderer = (CellRendererText) cell;
 			TreeIter parent;
 
 			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
+			if (cmd != null) {
+				var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (LastCommandTarget));
+				renderer.Text = RemoveUnderline (ci.Text);
+				renderer.Visible = ci.Visible;
+				renderer.Sensitive = ci.Enabled;
+				renderer.Xpad = 3;
+				return;
+			}
+			renderer.Sensitive = !(target is ExecutionTargetGroup);
 
 			if (target == null) {
 				renderer.Xpad = (uint) 0;
@@ -159,6 +171,23 @@ namespace MonoDevelop.Components.MainToolbar
 
 			if (Platform.IsMac)
 				renderer.WidthChars = renderer.Text != null ? (indent ? renderer.Text.Length + 6 : 0) : 0;
+		}
+
+		string RemoveUnderline (string s)
+		{
+			int i = s.IndexOf ('_');
+			if (i == -1)
+				return s;
+			var sb = new StringBuilder (s.Substring (0, i));
+			for (; i < s.Length; i++) {
+				if (s [i] == '_') {
+					i++;
+					if (i >= s.Length)
+						break;
+				}
+				sb.Append (s [i]);
+			}
+			return sb.ToString ();
 		}
 
 		public MainToolbar ()
@@ -335,7 +364,7 @@ namespace MonoDevelop.Components.MainToolbar
 			IdeApp.CommandService.RegisterCommandBar (this);
 
 			IdeApp.CommandService.ActiveWidgetChanged += (sender, e) => {
-				lastCommandTarget = e.OldActiveWidget;
+				lastCommandTarget = new WeakReference (e.OldActiveWidget);
 			};
 
 			this.ShowAll ();
@@ -350,9 +379,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
-			if (evnt.Button == 1 && evnt.Window == this.GdkWindow) {
-				(Toplevel as Gtk.Window).BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
-				return true;
+			if (evnt.Button == 1 && evnt.Window == GdkWindow) {
+				var window = (Window)Toplevel;
+				if (!DesktopService.GetIsFullscreen (window)) {
+					window.BeginMoveDrag (1, (int)evnt.XRoot, (int)evnt.YRoot, evnt.Time);
+					return true;
+				}
 			}
 			return base.OnButtonPressEvent (evnt);
 		}
@@ -364,7 +396,7 @@ namespace MonoDevelop.Components.MainToolbar
 				currentSolution.Saved -= HandleSolutionSaved;
 			}
 
-			currentSolution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			currentSolution = e.Solution;
 
 			if (currentSolution != null) {
 				currentSolution.StartupItemChanged += HandleStartupItemChanged;
@@ -542,10 +574,23 @@ namespace MonoDevelop.Components.MainToolbar
 			return (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
 		}
 
+		Gtk.TreeIter lastRuntimeSelection = Gtk.TreeIter.Zero;
+
 		void HandleRuntimeChanged (object sender, EventArgs e)
 		{
-			if (ignoreRuntimeChangedCount == 0)
+			if (ignoreRuntimeChangedCount == 0) {
+				Gtk.TreeIter it;
+				if (runtimeCombo.GetActiveIter (out it)) {
+					var cm = (ActionCommand) runtimeStore.GetValue (it, RuntimeCommand);
+					if (cm != null) {
+						runtimeCombo.SetActiveIter (lastRuntimeSelection);
+						IdeApp.CommandService.DispatchCommand (cm.Id, CommandSource.ContextMenu);
+						return;
+					}
+					lastRuntimeSelection = it;
+				}
 				NotifyConfigurationChange ();
+			}
 		}
 
 		void HandleConfigurationChanged (object sender, EventArgs e)
@@ -771,6 +816,24 @@ namespace MonoDevelop.Components.MainToolbar
 					previous = target;
 				}
 
+				var cmds = IdeApp.CommandService.CreateCommandEntrySet (TargetsMenuPath);
+				if (cmds.Count > 0) {
+					bool needsSeparator = runtimes > 0;
+					foreach (CommandEntry ce in cmds) {
+						if (needsSeparator)
+							runtimeStore.AppendValues (null, false);
+						if (ce.CommandId == Command.Separator) {
+							needsSeparator = true;
+							continue;
+						}
+						var cmd = ce.GetCommand (IdeApp.CommandService) as ActionCommand;
+						if (cmd != null) {
+							runtimeStore.AppendValues (null, false, cmd);
+							runtimes++;
+						}
+					}
+				}
+
 				runtimeCombo.Sensitive = runtimes > 1;
 			} finally {
 				ignoreRuntimeChangedCount--;
@@ -918,6 +981,9 @@ namespace MonoDevelop.Components.MainToolbar
 			base.OnDestroyed ();
 
 			AddinManager.ExtensionChanged -= OnExtensionChanged;
+			if (button != null)
+				button.Clicked -= HandleStartButtonClicked;
+
 			if (Background != null) {
 				((IDisposable)Background).Dispose ();
 				Background = null;

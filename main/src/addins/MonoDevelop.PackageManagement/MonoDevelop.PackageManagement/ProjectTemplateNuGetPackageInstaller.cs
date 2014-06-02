@@ -38,13 +38,11 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementSolution packageManagementSolution;
 		IPackageRepositoryCache packageRepositoryCache;
-		IPackageManagementEvents packageManagementEvents;
 		IBackgroundPackageActionRunner backgroundPackageActionRunner;
 
 		public ProjectTemplateNuGetPackageInstaller ()
 			: this(
 				PackageManagementServices.Solution,
-				PackageManagementServices.PackageManagementEvents,
 				PackageManagementServices.ProjectTemplatePackageRepositoryCache,
 				PackageManagementServices.BackgroundPackageActionRunner)
 		{
@@ -52,28 +50,25 @@ namespace MonoDevelop.PackageManagement
 
 		public ProjectTemplateNuGetPackageInstaller (
 			IPackageManagementSolution solution,
-			IPackageManagementEvents packageManagementEvents,
 			IPackageRepositoryCache packageRepositoryCache,
 			IBackgroundPackageActionRunner backgroundPackageActionRunner)
 		{
 			this.packageManagementSolution = solution;
-			this.packageManagementEvents = packageManagementEvents;
 			this.packageRepositoryCache = packageRepositoryCache;
 			this.backgroundPackageActionRunner = backgroundPackageActionRunner;
 		}
 
-		public override void Run (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		public override void Run (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
-			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (packageReferencesForCreatedProjects);
+			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (solution, packageReferencesForCreatedProjects);
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateInstallingProjectTemplatePackagesMessage ();
 			backgroundPackageActionRunner.Run (progressMessage, installPackageActions);
 		}
 
-		List<InstallPackageAction> CreateInstallPackageActions (IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		List<InstallPackageAction> CreateInstallPackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
 			var installPackageActions = new List<InstallPackageAction> ();
 
-			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
 			foreach (PackageReferencesForCreatedProject packageReferences in packageReferencesForCreatedProjects) {
 				var project = solution.GetAllProjects ().First (p => p.Name == packageReferences.ProjectName) as DotNetProject;
 				if (project != null) {
@@ -104,8 +99,9 @@ namespace MonoDevelop.PackageManagement
 			return null;
 		}
 
-		IPackageManagementProject CreatePackageManagementProject (DotNetProject dotNetProject)
+		IPackageManagementProject CreatePackageManagementProject (DotNetProject project)
 		{
+			var dotNetProject = new DotNetProjectProxy (project);
 			return packageManagementSolution.GetProject (packageRepositoryCache.CreateAggregateRepository (), dotNetProject);
 		}
 	}

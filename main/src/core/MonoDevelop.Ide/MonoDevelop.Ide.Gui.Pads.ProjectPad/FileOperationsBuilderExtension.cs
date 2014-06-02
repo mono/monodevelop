@@ -67,10 +67,15 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		[AllowMultiSelection]
 		public void OnOpenFolder ()
 		{
-			HashSet<string> paths = new HashSet<string> ();
+			var paths = new HashSet<string> ();
 			foreach (ITreeNavigator node in CurrentNodes) {
-				string path = GetDir (node.DataItem);
-				if (!string.IsNullOrEmpty (path) && paths.Add (path))
+				FilePath path = GetDir (node.DataItem);
+
+				//if folder doesn't exist, walk up to parent that does
+				while (!path.IsNullOrEmpty && !path.IsDirectory)
+					path = path.ParentDirectory;
+
+				if (!path.IsNullOrEmpty && paths.Add (path))
 					DesktopService.OpenFolder (path);
 			}
 		}

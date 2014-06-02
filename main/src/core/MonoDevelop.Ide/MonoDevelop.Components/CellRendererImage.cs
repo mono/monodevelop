@@ -42,7 +42,7 @@ namespace MonoDevelop.Components
 		/// Image to be used to represent "no image". This is necessary since GLib.Value can't hold
 		/// null values for object that are not of subclasses of GLib.Object
 		/// </summary>
-		public static readonly Xwt.Drawing.Image NullImage = ImageService.GetIcon ("gtk-empty");
+		public static readonly Xwt.Drawing.Image NullImage = ImageService.GetIcon ("md-empty");
 
 		public CellRendererImage ()
 		{

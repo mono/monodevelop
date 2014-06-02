@@ -29,7 +29,6 @@ namespace MonoDevelop.Debugger.Tests.Win32
 {
 	[TestFixture]
 	[Platform (Include = "Win")]
-	[Ignore ("Disabled for now")]
 	public class CorStackFrameAllowTargetInvokesTests : StackFrameTests
 	{
 		public CorStackFrameAllowTargetInvokesTests (): base ("MonoDevelop.Debugger.Win32", true)
@@ -39,7 +38,6 @@ namespace MonoDevelop.Debugger.Tests.Win32
 
 	[TestFixture]
 	[Platform (Include = "Win")]
-	[Ignore ("Disabled for now")]
 	public class CorStackFrameNoTargetInvokesTests : StackFrameTests
 	{
 		public CorStackFrameNoTargetInvokesTests (): base ("MonoDevelop.Debugger.Win32", false)

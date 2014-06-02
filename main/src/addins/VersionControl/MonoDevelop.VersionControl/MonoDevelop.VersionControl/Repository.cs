@@ -711,7 +711,6 @@ namespace MonoDevelop.VersionControl
 					} else {
 						if (fileName != null) {
 							list.Add (new DiffInfo (basePath, fileName, content.ToString ()));
-							fileName = null;
 						}
 						fileName = line.Substring (6).Trim ();
 						fileName = fileName.Replace ('/', Path.DirectorySeparatorChar); // svn returns paths using unix separators

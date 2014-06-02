@@ -164,7 +164,8 @@ namespace MonoDevelop.Core.Assemblies
 			SystemPackageInfo info = base.GetFrameworkPackageInfo (packageName);
 			if (framework.Id.Version == "3.0" && packageName == "olive") {
 				info.IsCorePackage = false;
-			} else {
+			}
+			if (String.IsNullOrEmpty (info.Name)) {
 				info.Name = "mono";
 			}
 			return info;

@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -71,14 +72,19 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		public static void RunTest ()
 		{
 			var obj = new TestEvaluation ();
-			obj.Test ();
+			obj.Test ("testString", 55);
 		}
 
-		public void Test ()
+		public void Test (string stringParam, int intParam = 22, int intParam2 = 66)
 		{
 			int intZero = 0, intOne = 1;
 			int n = 32;
 			decimal dec = 123.456m;
+			var stringList = new List<string> ();
+			stringList.Add ("aaa");
+			stringList.Add ("bbb");
+			stringList.Add ("ccc");
+
 			var alist = new ArrayList ();
 			alist.Add (1);
 			alist.Add ("two");
@@ -96,7 +102,12 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var numbersArrays = new int [2][];
 			var numbersMulti = new int [3, 4, 5];
 
+			var ops1 = new BinaryOperatorOverrides (1);
+			var ops2 = new BinaryOperatorOverrides (2);
+			var ops3 = new BinaryOperatorOverrides (2);
+
 			var dict = new Dictionary<int, string[]> ();
+			dict.Add (5, new string[]{ "a", "b" });
 			var dictArray = new Dictionary<int, string[]> [2, 3];
 			var thing = new Thing<string> ();
 			var done = new Thing<string>.Done<int> ();
@@ -110,6 +121,15 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				modifyInLamda = "modified";
 			});
 			action ();
+
+			dynamic dynObj = new ExpandoObject ();
+			dynObj.someInt = 53;
+			dynObj.someString = "Hello dynamic objects!";
+
+			var objWithMethodA = new ClassWithMethodA ();
+
+			var richObject = new RichClass ();
+
 			Console.WriteLine (n); /*break*/
 		}
 
@@ -192,6 +212,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 
 			}
 		}
+
+		class NestedGenericClass<T1,T2>
+		{
+
+		}
 	}
 
 	public class SomeClassInNamespace
@@ -200,8 +225,110 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 	}
 }
 
+class RichClass
+{
+	public int publicInt1 = 1;
+	public int publicInt2 = 2;
+	public int publicInt3 = 3;
+
+	public string publicStringA = "stringA";
+	public string publicStringB = "stringB";
+	public string publicStringC = "stringC";
+
+	private int privateInt1 = 1;
+	private int privateInt2 = 2;
+	private int privateInt3 = 3;
+
+	private string privateStringA = "stringA";
+	private string privateStringB = "stringB";
+	private string privateStringC = "stringC";
+
+	public int publicPropInt1  { get; set; }
+
+	public int publicPropInt2  { get; set; }
+
+	public int publicPropInt3  { get; set; }
+
+	public string publicPropStringA  { get; set; }
+
+	public string publicPropStringB { get; set; }
+
+	public string publicPropStringC  { get; set; }
+
+	private int privatePropInt1  { get; set; }
+
+	private int privatePropInt2 { get; set; }
+
+	private int privatePropInt3 { get; set; }
+
+	private string privatePropStringA { get; set; }
+
+	private string privatePropStringB { get; set; }
+
+	private string privatePropStringC { get; set; }
+
+	public RichClass()
+	{
+		publicPropInt1 = 1;
+		publicPropInt2 = 2;
+		publicPropInt3 = 3;
+
+		publicPropStringA = "stringA";
+		publicPropStringB = "stringB";
+		publicPropStringC = "stringC";
+
+		privatePropInt1 = 1;
+		privatePropInt2 = 2;
+		privatePropInt3 = 3;
+
+		privatePropStringA = "stringA";
+		privatePropStringB = "stringB";
+		privatePropStringC = "stringC";
+	}
+}
+
+interface IInterfaceWithMethodA
+{
+	string MethodA ();
+}
+
+abstract class AbstractClassWithMethodA
+{
+	public abstract string MethodA ();
+}
+
+class ClassWithMethodA : AbstractClassWithMethodA, IInterfaceWithMethodA
+{
+	public override string MethodA ()
+	{
+		return "AbstractImplementation";
+	}
+
+	string IInterfaceWithMethodA.MethodA ()
+	{
+		return "InterfaceImplementation";
+	}
+}
+
 class A
 {
+	public string ConstructedBy { get; private set; }
+
+	public A ()
+	{
+		ConstructedBy = "NoArg";
+	}
+
+	public A (int i)
+	{
+		ConstructedBy = "IntArg";
+	}
+
+	public A (string str)
+	{
+		ConstructedBy = "StringArg";
+	}
+
 	public virtual int Prop { get { return 1; } }
 
 	public int PropNoVirt1 { get { return 1; } }
@@ -360,5 +487,100 @@ struct SimpleStruct
 	public override string ToString ()
 	{
 		return StringField + " " + IntField + " " + NulledIntField;
+	}
+}
+
+class BinaryOperatorOverrides
+{
+	int value;
+
+	public BinaryOperatorOverrides (int num)
+	{
+		value = num;
+	}
+
+	public override string ToString ()
+	{
+		return string.Format ("[BinaryOperatorOverrides {0}]", value);
+	}
+
+	public static bool operator== (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value == ops2.value;
+	}
+
+	public static bool operator!= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value != ops2.value;
+	}
+
+	public static bool operator>= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value >= ops2.value;
+	}
+
+	public static bool operator> (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value > ops2.value;
+	}
+
+	public static bool operator<= (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value <= ops2.value;
+	}
+
+	public static bool operator< (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return ops1.value < ops2.value;
+	}
+
+	public static BinaryOperatorOverrides operator+ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value + ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator- (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value - ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator* (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value * ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator/ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value / ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator% (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value % ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator& (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value & ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator| (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value | ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator^ (BinaryOperatorOverrides ops1, BinaryOperatorOverrides ops2)
+	{
+		return new BinaryOperatorOverrides (ops1.value ^ ops2.value);
+	}
+
+	public static BinaryOperatorOverrides operator<< (BinaryOperatorOverrides ops1, int shift)
+	{
+		return new BinaryOperatorOverrides (ops1.value << shift);
+	}
+
+	public static BinaryOperatorOverrides operator>> (BinaryOperatorOverrides ops1, int shift)
+	{
+		return new BinaryOperatorOverrides (ops1.value >> shift);
 	}
 }

@@ -30,7 +30,6 @@ namespace MonoDevelop.Debugger.Tests.Win32
 {
 	[TestFixture]
 	[Platform (Include = "Win")]
-	[Ignore ("Disabled for now")]
 	public class CorEvaluationAllowTargetInvokesTests: EvaluationTests
 	{
 		public CorEvaluationAllowTargetInvokesTests (): base ("MonoDevelop.Debugger.Win32", true)

@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using Mono.Debugging.Client;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger.Tests
 {
@@ -518,7 +519,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void SetBreakpointOnColumn()
+		public void SetBreakpointOnColumn ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74", 1, "testClass.Iter_1");
@@ -536,7 +537,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void RunToCursorTest()
+		public void RunToCursorTest ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("b73bec88-2c43-4157-8574-ad517730bc74");
@@ -550,7 +551,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void RunToCursorTest2()
+		public void RunToCursorTest2 ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
@@ -661,7 +662,7 @@ namespace MonoDevelop.Debugger.Tests
 		/// Bug 11868
 		/// </summary>
 		[Test]
-		[Ignore("Todo")]
+		[Ignore ("Todo")]
 		public void AwaitCall ()
 		{
 			InitializeTest ();
@@ -712,7 +713,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void SetNextStatementTest()
+		public void SetNextStatementTest ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
@@ -724,7 +725,7 @@ namespace MonoDevelop.Debugger.Tests
 
 
 		[Test]
-		public void SetNextStatementTest2()
+		public void SetNextStatementTest2 ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
@@ -735,7 +736,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void SetNextStatementTest3()
+		public void SetNextStatementTest3 ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("f4e3a214-229e-44dd-9da2-db82ddfbec11", 1);
@@ -752,7 +753,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void CatchPointTest1()
+		public void CatchPointTest1 ()
 		{
 			InitializeTest ();
 			AddBreakpoint ("fcdc2412-c00e-4c95-b2ea-e3cf5d5bf856");
@@ -760,6 +761,13 @@ namespace MonoDevelop.Debugger.Tests
 			StartTest ("Catchpoint1");
 			if (!CheckPosition ("526795d3-ee9e-44a7-8423-df0b406e9e8d", 1, null, true))//Workaround for Win32 debugger which stops at +1 line
 				CheckPosition ("526795d3-ee9e-44a7-8423-df0b406e9e8d");
+			var ops = Session.EvaluationOptions.Clone ();
+			ops.MemberEvaluationTimeout = 0;
+			ops.EvaluationTimeout = 0;
+			ops.EllipsizeStrings = false;
+
+			var val = Frame.GetException (ops);
+			Assert.AreEqual ("System.NotImplementedException", val.Type);
 
 			InitializeTest ();
 			AddBreakpoint ("fcdc2412-c00e-4c95-b2ea-e3cf5d5bf856");
@@ -769,7 +777,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void CatchPointTest2()
+		public void CatchPointTest2 ()
 		{
 			InitializeTest ();
 			AddCatchpoint ("System.Exception", true);
@@ -777,6 +785,222 @@ namespace MonoDevelop.Debugger.Tests
 			CheckPosition ("d24b1c9d-3944-4f0d-be31-5556251fbdf5");
 			Assert.IsTrue (Session.ActiveThread.Backtrace.GetFrame (0).IsExternalCode);
 			Assert.IsFalse (Session.ActiveThread.Backtrace.GetFrame (1).IsExternalCode);
+		}
+
+		[Test]
+		public void ConditionalBreakpoints ()
+		{
+			ObjectValue val;
+			Breakpoint bp;
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.ConditionExpression = "i==2";
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			Assert.Ignore ("TODO: Conditional breakpoints with compare against string or enum is not working");
+
+			InitializeTest ();
+			bp = AddBreakpoint ("033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7");
+			bp.ConditionExpression = "str == \"bbb\"";
+			StartTest ("ConditionalBreakpointString");
+			CheckPosition ("033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7");
+			val = Eval ("str");
+			Assert.AreEqual ("\"bbb\"", val.Value);
+
+			InitializeTest ();
+			bp = AddBreakpoint ("ecf764bf-9182-48d6-adb0-0ba36e2653a7");
+			bp.ConditionExpression = "en == BooleanEnum.False";
+			StartTest ("ConitionalBreakpointEnum");
+			CheckPosition ("ecf764bf-9182-48d6-adb0-0ba36e2653a7");
+			val = Eval ("en");
+			Assert.AreEqual ("BooleanEnum.False", val.Value);
+		}
+
+		[Test]
+		public void HitCountBreakpoints ()
+		{
+			ObjectValue val;
+			Breakpoint bp;
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.EqualTo;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.GreaterThan;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("3", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("4", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("5", val.Value);
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.GreaterThanOrEqualTo;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("3", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("4", val.Value);
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.LessThan;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("0", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("1", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.LessThanOrEqualTo;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("0", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("1", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.MultipleOf;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("2", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("5", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("8", val.Value);
+			Continue ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+
+			InitializeTest ();
+			AddBreakpoint ("3e2e4759-f6d9-4839-98e6-4fa96b227458");
+			bp = AddBreakpoint ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			bp.HitCount = 3;
+			bp.HitCountMode = HitCountMode.None;
+			StartTest ("ForLoop10");
+			CheckPosition ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("0", val.Value);
+			Continue ("eef5bea2-aaa6-4718-b26f-b35be6a6a13e");
+			val = Eval ("i");
+			Assert.AreEqual ("1", val.Value);
+		}
+
+		[Test]
+		public void Bug13401 ()
+		{
+			InitializeTest ();
+			AddBreakpoint ("977ee8ce-ee61-4de0-9fc1-138fa164870b");
+			StartTest ("Bug13401");
+			CheckPosition ("977ee8ce-ee61-4de0-9fc1-138fa164870b");
+			var val = Eval ("s");
+			Assert.AreEqual ("string", val.TypeName);
+			Assert.AreEqual ("\"Hello from Bar\"", val.Value);
+		}
+
+		[Test]
+		public void OutputAndDebugWriter ()
+		{
+			//Interesting fact... Debug.Write(""); produces log entry
+			//but Console.Write(""); does not
+
+			InitializeTest ();
+			AddBreakpoint ("5070ed1c-593d-4cbe-b4fa-b2b0c7b25289");
+			var errorsList = new List<string> ();
+			errorsList.Add ("ErrorText");
+			var outputList = new HashSet<string> ();
+			outputList.Add ("NormalText");
+			var debugList = new List<Tuple<int,string,string>> ();
+			debugList.Add (new Tuple<int,string,string> (0, "", "DebugText"));
+			debugList.Add (new Tuple<int, string, string> (3, "SomeCategory", "DebugText2"));
+			debugList.Add (new Tuple<int,string,string> (0, "", ""));
+
+			var unexpectedOutput = new List<string> ();
+			var unexpectedError = new List<string> ();
+			var unexpectedDebug = new List<Tuple<int,string,string>> ();
+
+			Session.DebugWriter = delegate(int level, string category, string message) {
+				var entry = new Tuple<int,string,string> (level, category, message);
+				if (debugList.Contains (entry)) {
+					debugList.Remove (entry);
+				} else {
+					unexpectedDebug.Add (entry);
+				}
+			};
+			Session.OutputWriter = delegate(bool isStderr, string text) {
+				if (isStderr) {
+					if (errorsList.Contains (text))
+						errorsList.Remove (text);
+					else
+						unexpectedError.Add (text);
+				} else {
+					if (outputList.Contains (text))
+						outputList.Remove (text);
+					else
+						unexpectedOutput.Add (text);
+				}
+			};
+			StartTest ("OutputAndDebugWriter");
+			CheckPosition ("5070ed1c-593d-4cbe-b4fa-b2b0c7b25289");
+			if (outputList.Count > 0)
+				Assert.Fail ("Output list still has following items:" + string.Join (",", outputList));
+			if (errorsList.Count > 0)
+				Assert.Fail ("Error list still has following items:" + string.Join (",", errorsList));
+			if (debugList.Count > 0)
+				Assert.Fail ("Debug list still has following items:" + string.Join (",", debugList));
+			if (unexpectedOutput.Count > 0)
+				Assert.Fail ("Unexcpected Output list has following items:" + string.Join (",", unexpectedOutput));
+			if (unexpectedError.Count > 0)
+				Assert.Fail ("Unexcpected Error list has following items:" + string.Join (",", unexpectedError));
+			if (unexpectedDebug.Count > 0)
+				Assert.Fail ("Unexcpected Debug list has following items:" + string.Join (",", unexpectedDebug));
 		}
 	}
 }

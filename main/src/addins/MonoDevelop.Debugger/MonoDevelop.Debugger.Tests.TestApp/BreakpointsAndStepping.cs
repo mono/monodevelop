@@ -29,6 +29,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Diagnostics;
 
 namespace MonoDevelop.Debugger.Tests.TestApp
 {
@@ -51,6 +52,17 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 				} catch {
 				}
 			}
+		}
+
+		public void OutputAndDebugWriter ()
+		{
+			Console.Write ("NormalText");
+			Debug.Write ("DebugText");
+			Debug.Write ("");
+			System.Diagnostics.Debugger.Log (3, "SomeCategory", "DebugText2");
+			Console.Error.Write ("ErrorText");
+			Console.Write ("");
+			Console.Write ("");/*5070ed1c-593d-4cbe-b4fa-b2b0c7b25289*/
 		}
 
 		public void OneLineProperty ()
@@ -155,6 +167,17 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		public void NoConstructor ()
 		{
 			var obj = new EmptyClassWithoutConstructor ();/*84fc04b2-ede2-4d8b-acc4-28441e1c5f55*/
+		}
+
+		static async Task<string> AsyncBug13401 ()
+		{
+			return "Hello from Bar";
+		}
+
+		public static async Task Bug13401 ()
+		{
+			string s = await AsyncBug13401 ();
+			Console.Write ("");/*977ee8ce-ee61-4de0-9fc1-138fa164870b*/
 		}
 
 		public PListScheme PListSchemeTest ()
@@ -284,6 +307,29 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 		private void EmptyMethod ()
 		{
 			/*3c27f60f-fdfa-44c0-b58f-552ecaaa77f1*/
+		}
+
+		public void ConitionalBreakpointEnum ()
+		{
+			SomeMethod (BooleanEnum.True);
+			SomeMethod (BooleanEnum.False);
+		}
+
+		private void SomeMethod (BooleanEnum en)
+		{
+			int i = 0;/*ecf764bf-9182-48d6-adb0-0ba36e2653a7*/
+		}
+
+		public void ConditionalBreakpointString ()
+		{
+			SomeMethod ("aaa");
+			SomeMethod ("bbb");
+			SomeMethod ("ccc");
+		}
+
+		private void SomeMethod (string str)
+		{
+			int i = 0;/*033dd01d-6cb4-4e1a-b445-de6d7fa0d2a7*/
 		}
 
 		public void Catchpoint1 ()
@@ -519,5 +565,11 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			}
 		}
 	}
+}
+
+public enum BooleanEnum
+{
+	False,
+	True
 }
 /*invalidBreakpointAtEndOfFile*/

@@ -151,7 +151,7 @@ namespace MonoDevelop.Debugger
 			return index < text.Length;
 		}
 
-		static readonly string[] SyntaxTokens = new string[] {
+		static readonly string[] SyntaxTokens = {
 			"=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "~=",
 			"+", "-", "*", "/", "%", "&", "|", "~",
 			"==", "!=", ">", ">=", "<", "<=",
@@ -372,7 +372,7 @@ namespace MonoDevelop.Debugger
 
 		CodeCompletionContext ICompletionWidget.CreateCodeCompletionContext (int triggerOffset)
 		{
-			CodeCompletionContext c = new CodeCompletionContext ();
+			var c = new CodeCompletionContext ();
 			c.TriggerLine = 0;
 			c.TriggerOffset = triggerOffset;
 			c.TriggerLineOffset = c.TriggerOffset;
@@ -384,7 +384,7 @@ namespace MonoDevelop.Debugger
 
 			var rect = GetIterLocation (Cursor);
 
-			c.TriggerYCoord = y + lineY + height;
+			c.TriggerYCoord = y + lineY + height - (int)Vadjustment.Value;
 			c.TriggerXCoord = x + rect.X;
 			c.TriggerTextHeight = height;
 
