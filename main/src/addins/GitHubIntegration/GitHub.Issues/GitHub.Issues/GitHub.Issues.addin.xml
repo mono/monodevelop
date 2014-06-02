@@ -1,0 +1,17 @@
+﻿<ExtensionModel>
+
+	<Extension path = "/MonoDevelop/Ide/Commands">  
+    	<Category _name = "GitHub Issues" id = "GitHubIssues">
+	    	<Command id = "MonoDevelop.GitHubIssues.Commands.Add"
+				_label = "_Add"
+				description = "Add node to repository in the next commit."/>
+			<Command id = "MonoDevelop.GitHubIssues.Commands.Remove"
+				_label = "_Remove"
+				description = "Remove node to repository in the next commit."/>
+			<Command id = "MonoDevelop.GitHubIssues.Commands.Diff"
+				_label = "_Diff"
+				description = "Show the changes made to the local copy since the last update."/>
+		</Category>
+	</Extension>
+
+</ExtensionModel>
