@@ -1479,7 +1479,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			WriteBuildItemMetadata (ser, buildItem, file, oldItems);
 			
 			if (!string.IsNullOrEmpty (file.DependsOn))
-				buildItem.SetMetadata ("DependentUpon", pathPrefix + MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
+				buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
 			else
 				buildItem.UnsetMetadata ("DependentUpon");
 
