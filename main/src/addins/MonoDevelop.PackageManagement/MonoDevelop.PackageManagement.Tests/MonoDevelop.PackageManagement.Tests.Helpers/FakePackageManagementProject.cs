@@ -266,6 +266,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return PackageOperationsToReturnFromGetUpdatePackagesOperations;
 		}
 
+		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public void RunPackageOperations (IEnumerable<PackageOperation> expectedOperations)
 		{
 		}
@@ -307,6 +312,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public List<ReinstallPackageAction> ReinstallPackageActionsCreated = new List<ReinstallPackageAction> ();
+
+		public void AddPackageReference (IPackage package)
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 

@@ -141,6 +141,26 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public static ProgressMonitorStatusMessage CreateReinstallingPackagesInProjectMessage (int count)
+		{
+			return new ProgressMonitorStatusMessage (
+				GetString ("Reinstalling {0} packages...", count),
+				GetString ("{0} packages successfully reinstalled.", count),
+				GetString ("Could not reinstall packages. Please see Package Console for details."),
+				GetString ("{0} packages reinstalled with warnings. Please see Package Console for details.", count)
+			);
+		}
+
+		public static ProgressMonitorStatusMessage CreateReinstallingPackagesInProjectMessage ()
+		{
+			return new ProgressMonitorStatusMessage (
+				GetString ("Reinstalling packages..."),
+				GetString ("Packages successfully reinstalled."),
+				GetString ("Could not reinstall packages. Please see Package Console for details."),
+				GetString ("Packages reinstalled with warnings. Please see Package Console for details.")
+			);
+		}
+
 		static string GetString (string phrase)
 		{
 			return GettextCatalog.GetString (phrase);

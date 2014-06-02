@@ -45,6 +45,11 @@
 			_description="Update all packages in the solution"
 			_label="_Update Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
+		<Command
+			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
+			_description="Reinstall all packages"
+			_label="Re_install"
+			defaultHandler="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProjectHandler" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
@@ -76,6 +81,8 @@
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages" />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem

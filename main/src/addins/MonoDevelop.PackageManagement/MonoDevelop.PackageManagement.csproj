@@ -333,6 +333,9 @@
     <Compile Include="MonoDevelop.PackageManagement\ProjectRetargetingUtility.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageReinstaller.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallProjectPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageOperations.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\ReinstallAllPackagesInProjectHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

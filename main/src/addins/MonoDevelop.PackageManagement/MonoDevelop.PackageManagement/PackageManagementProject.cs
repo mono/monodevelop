@@ -201,6 +201,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			return packageManager.GetUpdatePackageOperations(packages, settings);
 		}
+
+		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
+		{
+			return packageManager.GetReinstallPackageOperations (packages);
+		}
 		
 		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
 		{
@@ -215,6 +220,13 @@ namespace ICSharpCode.PackageManagement
 		public void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings)
 		{
 			packageManager.UpdatePackageReference(package, settings);
+		}
+
+		public void AddPackageReference (IPackage package)
+		{
+			bool allowPrerelease = !package.IsReleaseVersion ();
+			bool ignoreDependencies = true;
+			packageManager.AddPackageReference (package, ignoreDependencies, allowPrerelease);
 		}
 
 		public IPackage FindPackage(string packageId)
