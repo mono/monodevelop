@@ -25,7 +25,7 @@ type HighlightUsagesExtension() as this =
             let source = this.Editor.Text
             let projectContent = this.Document.ProjectContent
 
-            let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(this.Document.Project :?> DotNetProject, IdeApp.Workspace.ActiveConfiguration)
+            let projectFilename, files, args, framework = MonoDevelop.getCheckerArgs(this.Document.Project :?> DotNetProject, currentFile)
 
             let symbolReferences =
                 Async.RunSynchronously(async{return! MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile(projectFilename, currentFile, source, files, line, col, lineStr, args, framework)},

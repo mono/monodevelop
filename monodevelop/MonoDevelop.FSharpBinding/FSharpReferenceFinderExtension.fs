@@ -63,7 +63,7 @@ type FSharpReferenceFinder() =
             // Get the source, but only in order to infer the project options for a script.
             let activeDocSource = activeDoc.Editor.Text
             
-            let projectFilename, projectFiles, projectArgs, projectFramework = MonoDevelop.getCheckerArgsFromProject(project :?> DotNetProject, IdeApp.Workspace.ActiveConfiguration)
+            let projectFilename, projectFiles, projectArgs, projectFramework = MonoDevelop.getCheckerArgs(project, activeDocFileName)
             let references = 
                 try Some(MDLanguageService.Instance.GetUsesOfSymbolInProject(projectFilename, activeDocFileName, activeDocSource, projectFiles, projectArgs, projectFramework, fsSymbol.FSharpSymbol) 
                     |> Async.RunSynchronously)

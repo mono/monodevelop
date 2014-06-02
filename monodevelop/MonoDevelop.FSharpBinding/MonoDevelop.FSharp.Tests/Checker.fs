@@ -33,7 +33,7 @@ type CompilerArgumentsTests() =
         //The two paths for mscorlib and FSharp.Core should match
         match references |> List.map Path.GetDirectoryName with
         | [one; two] -> one |> should equal two
-        | _ -> Assert.Fail("Too many references retuened")
+        | _ -> Assert.Fail("Too many references returned")
 
     [<TestCaseAttribute("FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
     [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/3.4.0/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 

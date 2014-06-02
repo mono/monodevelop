@@ -31,13 +31,10 @@ type FSharpTooltipProvider() =
         let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
-        let proj = extEditor.Project :?> MonoDevelop.Projects.DotNetProject
-        let files = CompilerArguments.getSourceFiles(extEditor.Project.Items) |> Array.ofList
-        let args = CompilerArguments.getArgumentsFromProject(proj)
-        let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
+        let projFile, files, args, framework = MonoDevelop.getCheckerArgs(extEditor.Project, extEditor.FileName)
         let tyResOpt =
             MDLanguageService.Instance.GetTypedParseResultWithTimeout
-                 (extEditor.Project.FileName.ToString(),
+                 (projFile,
                   editor.FileName, 
                   docText, 
                   files,

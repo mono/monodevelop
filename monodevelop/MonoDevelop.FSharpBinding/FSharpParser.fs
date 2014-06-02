@@ -97,12 +97,9 @@ type FSharpParser() =
 
     match filePathOpt with 
     | None -> ()
-    | Some filePath -> 
-        let proj = proj :?> MonoDevelop.Projects.DotNetProject
-        let files = CompilerArguments.getSourceFiles(proj.Items) |> Array.ofList
-        let args = CompilerArguments.getArgumentsFromProject(proj)
-        let framework = CompilerArguments.getTargetFramework(proj.TargetFramework.Id)
-        let results = MDLanguageService.Instance.ParseAndCheckFileInProject(proj.FileName.ToString(), filePath, fileContent, files, args, framework, storeAst)
+    | Some filePath ->
+        let projFile, files, args, framework = MonoDevelop.getCheckerArgs(proj, fileName)
+        let results = MDLanguageService.Instance.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, framework, storeAst)
                        |> Async.RunSynchronously
 
         match results.GetErrors() with
