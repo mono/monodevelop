@@ -70,11 +70,6 @@
       <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\AspNet\MonoDevelop.AspNet\MonoDevelop.AspNet.csproj">
-      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
-      <Name>MonoDevelop.AspNet</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
@@ -83,6 +78,11 @@
     <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Web\MonoDevelop.AspNet\MonoDevelop.AspNet.csproj">
+      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
+      <Name>MonoDevelop.AspNet</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

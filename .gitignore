@@ -26,6 +26,7 @@ obj/
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi2/bin
 /main/src/core/MonoDevelop.Core/BuildVariables.cs
 /scripts/configure.exe
+/main/packages
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
@@ -49,6 +50,7 @@ autom4te.cache/
 *.tar.gz
 tarballs/
 test-results/
+Thumbs.db
 
 #Mac bundle stuff
 *.dmg
@@ -85,8 +87,6 @@ main/external/Makefile
 /main/po/Makefile
 /main/src/Makefile
 /main/src/addins/AspNet/Makefile
-/main/src/addins/AspNet/MonoDevelop.AspNet.Mvc/Makefile
-/main/src/addins/AspNet/MonoDevelop.AspNet/Makefile
 /main/src/addins/CBinding/Makefile
 /main/src/addins/CSharpBinding/AspNet/Makefile
 /main/src/addins/CSharpBinding/Autotools/Makefile

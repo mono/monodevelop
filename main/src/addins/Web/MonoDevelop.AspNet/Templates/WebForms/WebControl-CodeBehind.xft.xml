@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<Template	Originator="Michael Hutchinson"
+			Created="2006/06/06"
+			LastModified="2006/06/18">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>User Control with CodeBehind</_Name>
+		<_Category>ASP.NET Web Forms</_Category>
+		<Icon>md-html-file-icon</Icon>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<_Description>Creates an ASP.NET user control with a CodeBehind class.</_Description>
+	</TemplateConfiguration>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File DefaultExtension=".ascx" name="${Name}.ascx">
+<![CDATA[<%@ Control Language="C#" Inherits="${Namespace}.${EscapedIdentifier}" %>
+]]>
+		</File>
+		<File name="${Name}.ascx.cs" DependsOn="${Name}.ascx" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+
+namespace ${Namespace} {
+
+	public partial class ${EscapedIdentifier} : System.Web.UI.UserControl
+	{
+	}
+}
+]]>
+		</File>
+		<File name="${Name}.ascx.designer.cs" ShowAutogenerationNotice="True" 
+			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.ascx" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+
+namespace ${Namespace} {
+
+	public partial class ${EscapedIdentifier}
+	{
+	}
+}
+]]>
+		</File>
+	</TemplateFiles>
+</Template>

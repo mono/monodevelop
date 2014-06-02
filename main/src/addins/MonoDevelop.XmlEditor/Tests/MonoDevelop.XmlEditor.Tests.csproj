@@ -141,6 +141,8 @@
     <Compile Include="Parser\AttributeValueUnderCursorTests.cs" />
     <Compile Include="MimeTypeHandledTests.cs" />
     <Compile Include="Schema\SchemaAssociationTests.cs" />
+    <Compile Include="StateEngine\ParsingTests.cs" />
+    <Compile Include="StateEngine\TestParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Parser\" />
@@ -152,6 +154,7 @@
     <Folder Include="CompletionData\" />
     <Folder Include="XPathQuery\" />
     <Folder Include="FindSchemaObject\" />
+    <Folder Include="StateEngine\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\xhtml1-strict-modified.xsd">
