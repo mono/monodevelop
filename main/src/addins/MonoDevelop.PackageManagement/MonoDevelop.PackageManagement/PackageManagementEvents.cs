@@ -57,7 +57,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public void OnPackageOperationError(Exception ex)
 		{
-			LoggingService.LogInfo("Package operation error: " + ex.ToString());
 			if (PackageOperationError != null) {
 				PackageOperationError(this, new PackageOperationExceptionEventArgs(ex));
 			}
