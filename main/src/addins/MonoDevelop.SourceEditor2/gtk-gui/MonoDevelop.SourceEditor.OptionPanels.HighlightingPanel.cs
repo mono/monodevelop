@@ -23,7 +23,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		private global::Gtk.Button addButton;
 		private global::Gtk.Button removeButton;
 		private global::Gtk.Button buttonExport;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
