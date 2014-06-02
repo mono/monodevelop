@@ -379,7 +379,7 @@ namespace MonoDevelop.Refactoring
 			return sb.ToString ();
 		}
 		
-		static bool CanReference (Document doc, MonoDevelop.Projects.ProjectReference projectReference)
+		static bool CanReference (MonoDevelop.Ide.Gui.Document doc, MonoDevelop.Projects.ProjectReference projectReference)
 		{
 			var project = doc.Project as DotNetProject;
 			if (project == null || projectReference == null || project.ParentSolution == null)

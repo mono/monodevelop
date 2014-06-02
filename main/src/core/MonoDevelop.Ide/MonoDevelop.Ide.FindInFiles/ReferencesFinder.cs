@@ -172,75 +172,77 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		public static IEnumerable<MemberReference> FindReferences (Solution solution, object member, bool searchForAllOverloads, RefactoryScope scope = RefactoryScope.Unknown, IProgressMonitor monitor = null)
 		{
-			if (member == null)
-				yield break;
-			if (solution == null && member is IEntity) {
-				var project = TypeSystemService.GetProject ((member as IEntity).Compilation.MainAssembly.UnresolvedAssembly.Location);
-				if (project == null)
-					yield break;
-				solution = project.ParentSolution;
-			}
-			
-			IList<object> searchNodes = new [] { member };
-			if (member is ITypeParameter) {
-				// nothing
-			} else if (member is IType) {
-				searchNodes = CollectMembers ((IType)member).ToList<object> ();
-			} else if (member is IEntity) {
-				var e = (IEntity)member;
-				if (e.SymbolKind == SymbolKind.Destructor) {
-					foreach (var r in FindReferences (solution, e.DeclaringType, searchForAllOverloads, scope, monitor)) {
-						yield return r;
-					}
-					yield break;
-				}
-				if (member is IMember)
-					searchNodes = CollectMembers (solution, (IMember)member, scope, searchForAllOverloads).ToList<object> ();
-			}
-			// prepare references finder
-			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
-			var curList = new List<FilePath> ();
-			int totalFiles = 0;
-			foreach (var info in GetFileNames (solution, member, scope, monitor, searchNodes)) {
-				string oldMime = null;
-				foreach (var file in info.Files) {
-					if (monitor != null && monitor.IsCancelRequested)
-						yield break;
-					
-					string mime = DesktopService.GetMimeTypeForUri (file);
-					if (mime != oldMime) {
-						var finder = GetReferenceFinder (mime);
-						if (finder == null)
-							continue;
-						
-						oldMime = mime;
-						
-						curList = new List<FilePath> ();
-						preparedFinders.Add (Tuple.Create (finder, info.Project, info.Content, curList));
-					}
-					curList.Add (file);
-					totalFiles++;
-				}
-			}
-			
-			// execute search
-			if (monitor != null)
-				monitor.BeginTask (GettextCatalog.GetString ("Analyzing files..."), totalFiles);
-			var foundOccurrences = new HashSet<Tuple<string, DomRegion>> ();
-			foreach (var tuple in preparedFinders) {
-				var finder = tuple.Item1;
-				foreach (var foundReference in finder.FindReferences (tuple.Item2, tuple.Item3, tuple.Item4, monitor, searchNodes)) {
-					if (monitor != null && monitor.IsCancelRequested)
-						yield break;
-					var tag = Tuple.Create (foundReference.FileName, foundReference.Region);
-					if (foundOccurrences.Contains (tag))
-						continue;
-					foundOccurrences.Add (tag);
-					yield return foundReference;
-				}
-			}
-			if (monitor != null)
-				monitor.EndTask ();
+			yield break;
+
+//			if (member == null)
+//				yield break;
+//			if (solution == null && member is IEntity) {
+//				var project = TypeSystemService.GetProject ((member as IEntity).Compilation.MainAssembly.UnresolvedAssembly.Location);
+//				if (project == null)
+//					yield break;
+//				solution = project.ParentSolution;
+//			}
+//			
+//			IList<object> searchNodes = new [] { member };
+//			if (member is ITypeParameter) {
+//				// nothing
+//			} else if (member is IType) {
+//				searchNodes = CollectMembers ((IType)member).ToList<object> ();
+//			} else if (member is IEntity) {
+//				var e = (IEntity)member;
+//				if (e.SymbolKind == SymbolKind.Destructor) {
+//					foreach (var r in FindReferences (solution, e.DeclaringType, searchForAllOverloads, scope, monitor)) {
+//						yield return r;
+//					}
+//					yield break;
+//				}
+//				if (member is IMember)
+//					searchNodes = CollectMembers (solution, (IMember)member, scope, searchForAllOverloads).ToList<object> ();
+//			}
+//			// prepare references finder
+//			var preparedFinders = new List<Tuple<ReferenceFinder, Project, IProjectContent, List<FilePath>>> ();
+//			var curList = new List<FilePath> ();
+//			int totalFiles = 0;
+//			foreach (var info in GetFileNames (solution, member, scope, monitor, searchNodes)) {
+//				string oldMime = null;
+//				foreach (var file in info.Files) {
+//					if (monitor != null && monitor.IsCancelRequested)
+//						yield break;
+//					
+//					string mime = DesktopService.GetMimeTypeForUri (file);
+//					if (mime != oldMime) {
+//						var finder = GetReferenceFinder (mime);
+//						if (finder == null)
+//							continue;
+//						
+//						oldMime = mime;
+//						
+//						curList = new List<FilePath> ();
+//						preparedFinders.Add (Tuple.Create (finder, info.Project, info.Content, curList));
+//					}
+//					curList.Add (file);
+//					totalFiles++;
+//				}
+//			}
+//			
+//			// execute search
+//			if (monitor != null)
+//				monitor.BeginTask (GettextCatalog.GetString ("Analyzing files..."), totalFiles);
+//			var foundOccurrences = new HashSet<Tuple<string, DomRegion>> ();
+//			foreach (var tuple in preparedFinders) {
+//				var finder = tuple.Item1;
+//				foreach (var foundReference in finder.FindReferences (tuple.Item2, tuple.Item3, tuple.Item4, monitor, searchNodes)) {
+//					if (monitor != null && monitor.IsCancelRequested)
+//						yield break;
+//					var tag = Tuple.Create (foundReference.FileName, foundReference.Region);
+//					if (foundOccurrences.Contains (tag))
+//						continue;
+//					foundOccurrences.Add (tag);
+//					yield return foundReference;
+//				}
+//			}
+//			if (monitor != null)
+//				monitor.EndTask ();
 		}
 
 		public abstract IEnumerable<MemberReference> FindReferences (Project project, IProjectContent content, IEnumerable<FilePath> files, IProgressMonitor monitor, IEnumerable<object> searchedMembers);

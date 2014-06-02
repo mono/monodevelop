@@ -32,8 +32,11 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading.Tasks;
+using System.Collections.Immutable;
+using System.Threading;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MonoDevelop.Refactoring
 {

@@ -9,7 +9,7 @@ MONO_AOT:=MONO_PATH=$(AOT_DIRECTORIES):$(MONO_PATH) mono --aot --debug
 all: update_submodules roslyn all-recursive
 
 roslyn:
-	find main/external/roslyn -name "obj" -exec rm -f {} \;
+	find main/external/roslyn -name "obj" | xargs rm -fdr
 	xbuild main/external/roslyn/Src/Compilers/CSharp/rcsc/rcsc.csproj
 	xbuild main/external/roslyn/Src/Workspaces/CSharp/CSharpWorkspace.csproj
 	
