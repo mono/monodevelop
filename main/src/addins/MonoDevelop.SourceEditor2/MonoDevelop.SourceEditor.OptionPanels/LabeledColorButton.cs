@@ -1,5 +1,5 @@
 //
-// XwtLabeledColorPicker.cs
+// XwtLabeledColorButton.cs
 //
 // Author:
 //       Aleksandr Shevchenko <alexandre.shevchenko@gmail.com>
@@ -67,14 +67,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void ColorButton_Clicked (object sender, EventArgs e)
 		{
 			var colorDialog = new SelectColorDialog (label.Text);
+			colorDialog.Color = this.Color;
 			var result = colorDialog.Run (ParentWindow);
 
 			if (result)
-				color = colorDialog.Color;
-
-			//var colorSelector = new ColorSelector ();
-			//var popOver = new Popover (colorSelector);
-			//popOver.Show (Popover.Position.Top, (Button)sender);
+				Color = colorDialog.Color;
 		}
 	}
 }
