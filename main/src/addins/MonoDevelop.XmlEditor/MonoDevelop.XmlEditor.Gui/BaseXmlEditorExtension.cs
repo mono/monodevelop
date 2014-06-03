@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using Mono.TextEditor;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -58,6 +59,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
+		List<DotNetProject> ownerProjects;
 
 		#region Setup and teardown
 
@@ -75,6 +77,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		public override void Initialize ()
 		{
 			base.Initialize ();
+			UpdateOwnerProjects ();
 			Parser parser = new Parser (CreateRootState (), false);
 			tracker = new DocumentStateTracker<Parser> (parser, Editor);
 			Document.DocumentParsed += delegate {
@@ -85,6 +88,23 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (Document.ParsedDocument != null) {
 				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
+			}
+			UpdatePath ();
+		}
+
+		void UpdateOwnerProjects ()
+		{
+			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
+			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
+				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
+				var dnp = Document.Project as DotNetProject;
+				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
+					// If the project for the document is not a DotNetProject but there is a project containing this file
+					// in the current solution, then use that project
+					var pp = Document.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == Document.Project.ParentSolution) : null;
+					if (pp != null)
+						Document.AttachToProject (pp);
+				}
 			}
 		}
 
@@ -579,7 +599,6 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			//locate the node
 			List<XObject> path = new List<XObject> (treeParser.Nodes);
-			
 			//note: list is backwards, and we want ignore the root XDocument
 			XObject ob = path [path.Count - (depth + 2)];
 			XNode node = ob as XNode;
@@ -641,19 +660,77 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		public Gtk.Widget CreatePathWidget (int index)
 		{
-			Menu menu = new Menu ();
-			MenuItem mi = new MenuItem (GettextCatalog.GetString ("Select"));
-			mi.Activated += delegate {
-				SelectPath (index);
-			};
-			menu.Add (mi);
-			mi = new MenuItem (GettextCatalog.GetString ("Select contents"));
-			mi.Activated += delegate {
-				SelectPathContents (index);
-			};
-			menu.Add (mi);
-			menu.ShowAll ();
-			return menu;
+			if (ownerProjects.Count > 1 && index == 0) {
+				var window = new DropDownBoxListWindow (new DataProvider (this));
+				window.FixedRowHeight = 22;
+				window.MaxVisibleRows = 14;
+				window.SelectItem (currentPath [index].Tag);
+				return window;
+			} else {
+				if (ownerProjects.Count > 1)
+					index--;
+				Menu menu = new Menu ();
+				MenuItem mi = new MenuItem (GettextCatalog.GetString ("Select"));
+				mi.Activated += delegate {
+					SelectPath (index);
+				};
+				menu.Add (mi);
+				mi = new MenuItem (GettextCatalog.GetString ("Select contents"));
+				mi.Activated += delegate {
+					SelectPathContents (index);
+				};
+				menu.Add (mi);
+				menu.ShowAll ();
+				return menu;
+			}
+		}
+
+
+		class DataProvider : DropDownBoxListWindow.IListDataProvider
+		{
+
+			readonly BaseXmlEditorExtension ext;
+
+			public DataProvider (BaseXmlEditorExtension ext)
+			{
+				if (ext == null)
+					throw new ArgumentNullException ("ext");
+				this.ext = ext;
+			}
+
+			#region IListDataProvider implementation
+
+			public void Reset ()
+			{
+			}
+
+			public string GetMarkup (int n)
+			{
+				return GLib.Markup.EscapeText (ext.ownerProjects [n].Name);
+			}
+
+			public Xwt.Drawing.Image GetIcon (int n)
+			{
+				return ImageService.GetIcon (ext.ownerProjects [n].StockIcon, IconSize.Menu);
+			}
+
+			public object GetTag (int n)
+			{
+				return ext.ownerProjects [n];
+			}
+
+			public void ActivateItem (int n)
+			{
+				ext.Document.AttachToProject (ext.ownerProjects [n]);
+			}
+
+			public int IconCount {
+				get {
+					return ext.ownerProjects.Count;
+				}
+			}
+
+			#endregion
 		}
 		
 		protected void OnPathChanged (PathEntry[] oldPath)
@@ -736,18 +813,21 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			List<XObject> l = GetCurrentPath ();
 
-			if (l == null)
-				return;
 			
 			//build the list
-			PathEntry[] path = new PathEntry[l.Count];
-			for (int i = 0; i < l.Count; i++) {
-				if (l[i].FriendlyPathRepresentation == null) System.Console.WriteLine(l[i].GetType ());
-				path[i] = new PathEntry (GLib.Markup.EscapeText (l[i].FriendlyPathRepresentation ?? "<>"));
+			var path = new List<PathEntry> ();
+			if (ownerProjects.Count > 1) {
+				// Current project if there is more than one
+				path.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
+			}
+			if (l != null) {
+				for (int i = 0; i < l.Count; i++) {
+					path.Add (new PathEntry (GLib.Markup.EscapeText (l [i].FriendlyPathRepresentation ?? "<>")));
+				}
 			}
 			
 			PathEntry[] oldPath = currentPath;
-			currentPath = path;
+			currentPath = path.ToArray ();
 			
 			OnPathChanged (oldPath);
 		}
