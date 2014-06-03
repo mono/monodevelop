@@ -89,11 +89,23 @@ namespace MonoDevelop.XmlEditor.Gui
 				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			}
-			UpdatePath ();
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.FileAddedToProject += HandleProjectChanged;
+				IdeApp.Workspace.FileRemovedFromProject += HandleProjectChanged;
+			}
+		}
+
+		void HandleProjectChanged (object sender, ProjectFileEventArgs e)
+		{
+			UpdateOwnerProjects ();
 		}
 
 		void UpdateOwnerProjects ()
 		{
+			if (IdeApp.Workspace == null) {
+				ownerProjects = new List<DotNetProject> ();
+				return;
+			}
 			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
@@ -106,6 +118,9 @@ namespace MonoDevelop.XmlEditor.Gui
 						Document.AttachToProject (pp);
 				}
 			}
+			if (Document.Project == null && ownerProjects.Count > 0)
+				Document.AttachToProject (ownerProjects[0]);
+			UpdatePath ();
 		}
 
 		public override void Dispose ()
@@ -113,6 +128,10 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (tracker != null) {
 				tracker = null;
 				base.Dispose ();
+			}
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
+				IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 			}
 		}
 
