@@ -112,24 +112,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					ChangeColor (cw);
 			}
 		}
-		
-		static CommonAboutDialog instance;
-		
+
 		public static void ShowAboutDialog ()
 		{
-			if (Platform.IsMac) {
-				if (instance == null) {
-					instance = new CommonAboutDialog ();
-					MessageService.PlaceDialog (instance, IdeApp.Workbench.RootWindow);
-					instance.Response += delegate {
-						instance.Destroy ();
-						instance = null;
-					};
-				}
-				instance.Present ();
-				return;
-			}
-			
 			MessageService.ShowCustomDialog (new CommonAboutDialog ());
 		}
 	}
