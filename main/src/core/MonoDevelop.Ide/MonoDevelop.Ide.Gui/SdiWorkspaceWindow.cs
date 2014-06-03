@@ -68,6 +68,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool show_notification = false;
 
+		uint present_timeout = 0;
+
 		ViewCommandHandlers commandHandler;
 
 		public event EventHandler ViewsChanged;
@@ -262,8 +264,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
 			if (window != null) {
-				GLib.Timeout.Add (10, delegate {
+				present_timeout = GLib.Timeout.Add (10, delegate {
 					window.Present ();
+
 					return false;
 				});
 			}
@@ -510,6 +513,10 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override void OnDestroyed ()
 		{
+			if (present_timeout != 0) {
+				GLib.Source.Remove (present_timeout);
+			}
+
 			base.OnDestroyed ();
 			if (viewContents != null) {
 				foreach (IAttachableViewContent sv in SubViewContents) {
