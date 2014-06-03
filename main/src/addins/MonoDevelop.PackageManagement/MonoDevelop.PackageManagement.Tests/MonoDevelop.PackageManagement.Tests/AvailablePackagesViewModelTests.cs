@@ -169,7 +169,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void SearchForAllPackageVersions (string packageId, string versions = "")
 		{
-			viewModel.SearchTerms = string.Format ("{0} -version {1}", packageId, versions).TrimEnd ();
+			viewModel.SearchTerms = string.Format ("{0} version:{1}", packageId, versions).TrimEnd ();
 		}
 
 		[Test]

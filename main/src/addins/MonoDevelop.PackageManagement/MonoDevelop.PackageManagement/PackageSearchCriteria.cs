@@ -76,22 +76,18 @@ namespace MonoDevelop.PackageManagement
 
 			PackageId = parts [0].Trim ();
 
-			if (parts.Length > 2) {
-				wildcardVersionSpec = new WildcardVersionSpec (parts [2]);
-			}
+			wildcardVersionSpec = new WildcardVersionSpec (GetVersion (parts [1]));
 		}
 
 		bool IsVersionOption (string option)
 		{
-			return
-				IsMatch (option, "-v") ||
-				IsMatch (option, "-ver") ||
-				IsMatch (option, "-version");
+			return option.StartsWith ("version:", StringComparison.OrdinalIgnoreCase);
 		}
 
-		static bool IsMatch (string a, string b)
+		string GetVersion (string option)
 		{
-			return String.Equals (a, b, StringComparison.OrdinalIgnoreCase);
+			int index = option.IndexOf (':');
+			return option.Substring (index + 1);
 		}
 	}
 }
