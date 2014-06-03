@@ -132,9 +132,9 @@ namespace MonoDevelop.Components.DockNotebook
 
 			workspaceWindow.SetDockNotebook (notebook, tab);
 
-			window.ShowAll ();
 			window.Move (x, y);
 			window.Resize (width, height);
+			window.ShowAll ();
 		}
 
 		static void HandlePageRemoved (object sender, EventArgs e)
