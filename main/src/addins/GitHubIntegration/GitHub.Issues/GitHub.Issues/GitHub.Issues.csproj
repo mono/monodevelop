@@ -38,16 +38,37 @@
     <Reference Include="Mono.Addins">
       <HintPath>..\..\..\..\..\build\bin\Mono.Addins.dll</HintPath>
     </Reference>
+    <Reference Include="GitHub.Auth">
+      <HintPath>..\..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Octokit">
+      <HintPath>..\..\GitHub.Auth\packages\Octokit.0.3.4\lib\netcore45\Octokit.dll</HintPath>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="IssuesManager.cs" />
+    <Compile Include="Commands.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Dialogs\TestWindow.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.TestWindow.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <EmbeddedResource Include="GitHub.Issues.addin.xml">
       <LogicalName>VersionControl.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dialogs\" />
   </ItemGroup>
 </Project>

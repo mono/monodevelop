@@ -2,16 +2,18 @@
 
 	<Extension path = "/MonoDevelop/Ide/Commands">  
     	<Category _name = "GitHub Issues" id = "GitHubIssues">
-	    	<Command id = "MonoDevelop.GitHubIssues.Commands.Add"
-				_label = "_Add"
-				description = "Add node to repository in the next commit."/>
-			<Command id = "MonoDevelop.GitHubIssues.Commands.Remove"
-				_label = "_Remove"
-				description = "Remove node to repository in the next commit."/>
-			<Command id = "MonoDevelop.GitHubIssues.Commands.Diff"
-				_label = "_Diff"
-				description = "Show the changes made to the local copy since the last update."/>
+	    	<Command id = "MonoDevelop.GitHubIssues.Commands.GetAllIssues"
+				_label = "Get _All Issues"
+				defaultHandler = "GitHub.Issues.GetAllIssuesHandler"
+				description = "Gets all issues from the current account."/>
 		</Category>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/MainMenu">
+		<ItemSet id="GitHubIssues" _label="_GitHub Issues" insertafter="VersionControl">
+			<CommandItem id="MonoDevelop.GitHubIssues.Commands.GetAllIssues"/>
+			<SeparatorItem/>
+		</ItemSet>
 	</Extension>
 
 </ExtensionModel>
