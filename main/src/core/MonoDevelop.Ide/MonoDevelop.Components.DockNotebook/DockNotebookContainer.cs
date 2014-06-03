@@ -132,6 +132,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			workspaceWindow.SetDockNotebook (notebook, tab);
 
+			PlaceholderWindow.NotebookWasPlacedInFloatingFrame (notebook);
+
 			window.Move (x, y);
 			window.Resize (width, height);
 			window.ShowAll ();

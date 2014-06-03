@@ -396,20 +396,25 @@ namespace MonoDevelop.Components.DockNotebook
 			var newWindow = new DockWindow ();
 			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
 			newNotebook.NavigationButtonsVisible = false;
-			newNotebooks.Add (newNotebook);
-			
+			NotebookWasPlacedInFloatingFrame (newNotebook);
+
 			newWindow.Container = new DockNotebookContainer (newNotebook);
 			newNotebook.InitSize ();
 
-			var window2 = (SdiWorkspaceWindow)tab.Content;
-			var newTab2 = newNotebook.InsertTab (-1); 
-			newTab2.Content = window2;
-			newWindow.Title = DefaultWorkbench.GetTitle (window2);
+			var workspaceWindow = (SdiWorkspaceWindow)tab.Content;
+			var newTab = newNotebook.InsertTab (-1);
+			newTab.Content = workspaceWindow;
+			newWindow.Title = DefaultWorkbench.GetTitle (workspaceWindow);
 
-			window2.SetDockNotebook (newNotebook, newTab2); 
+			workspaceWindow.SetDockNotebook (newNotebook, newTab);
 			newWindow.Move (ox + allocation.Width / 2 - w / 2, oy + allocation.Height / 2 - h / 2);
 			newWindow.Resize (w, h);
 			newWindow.ShowAll ();
+		}
+
+		internal static void NotebookWasPlacedInFloatingFrame (SdiDragNotebook notebook)
+		{
+			newNotebooks.Add (notebook);
 		}
 
 		const int w = 640;
