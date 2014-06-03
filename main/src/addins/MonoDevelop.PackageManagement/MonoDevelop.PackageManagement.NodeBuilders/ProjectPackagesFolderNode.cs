@@ -36,6 +36,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 	public class ProjectPackagesFolderNode
 	{
 		DotNetProject project;
+		List<PackageReference> packageReferences;
 
 		public ProjectPackagesFolderNode (DotNetProject project)
 		{
@@ -44,6 +45,15 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public DotNetProject Project {
 			get { return project; }
+		}
+
+		IEnumerable<PackageReference> PackageReferences {
+			get {
+				if (packageReferences == null) {
+					packageReferences = GetPackageReferences ().ToList ();
+				}
+				return packageReferences;
+			}
 		}
 
 		IEnumerable<PackageReference> GetPackageReferences ()
@@ -57,7 +67,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
 		{
-			return GetPackageReferences ().Select (reference => CreatePackageReferenceNode (reference));
+			return PackageReferences.Select (reference => CreatePackageReferenceNode (reference));
 		}
 
 		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference)
