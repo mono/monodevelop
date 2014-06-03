@@ -331,7 +331,7 @@ namespace MonoDevelop.Projects
 			Items.Add (item);
 			
 			SolutionEntityItem eitem = item as SolutionEntityItem;
-			if (eitem != null && createSolutionConfigurations) {
+			if (eitem != null && createSolutionConfigurations && eitem.SupportsBuild ()) {
 				// Create new solution configurations for item configurations
 				foreach (ItemConfiguration iconf in eitem.Configurations) {
 					bool found = false;

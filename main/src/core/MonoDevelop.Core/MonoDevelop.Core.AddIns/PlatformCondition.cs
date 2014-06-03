@@ -35,7 +35,7 @@ namespace MonoDevelop.Core.AddIns
 		{
 			string plat = conditionNode.GetAttribute ("value");
 			bool negate = false;
-			if (plat.StartsWith ("!")) {
+			if (plat.StartsWith ("!", StringComparison.Ordinal)) {
 				plat = plat.Substring (1);
 				negate = true;
 			}
@@ -54,6 +54,11 @@ namespace MonoDevelop.Core.AddIns
 				default:
 					result = false; break;
 			}
+
+			Version version;
+			if (Version.TryParse (conditionNode.GetAttribute ("minVersion"), out version))
+				result |= Environment.OSVersion.Version >= version;
+
 			return negate ? !result : result;
 		}
 	}

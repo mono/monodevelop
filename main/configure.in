@@ -326,6 +326,10 @@ src/addins/CBinding/Makefile
 src/addins/GnomePlatform/Makefile
 src/addins/MacPlatform/Makefile
 src/addins/WindowsPlatform/Makefile
+src/addins/WindowsPlatform/WindowsAPICodePack/Makefile
+src/addins/WindowsPlatform/WindowsAPICodePack/Core/Makefile
+src/addins/WindowsPlatform/WindowsAPICodePack/Shell/Makefile
+src/addins/WindowsPlatform/WindowsPlatform/Makefile
 src/addins/MonoDevelop.AssemblyBrowser/Makefile
 src/addins/MonoDevelop.SourceEditor2/Makefile
 src/addins/MonoDevelop.XmlEditor/Makefile

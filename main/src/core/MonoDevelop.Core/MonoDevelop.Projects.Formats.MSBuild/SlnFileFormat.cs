@@ -317,6 +317,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 				foreach (SolutionConfigurationEntry cce in cc.Configurations) {
 					SolutionEntityItem p = cce.Item;
+
+					// Don't save configurations for shared projects
+					if (!p.SupportsBuild ())
+						continue;
 					
                     // <ProjectGuid>...</ProjectGuid> in some Visual Studio generated F# project files 
                     // are missing "{"..."}" in their guid. This is not generally a problem since it
@@ -1069,7 +1073,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				SolutionEntityItem item;
-				if (slnData.ItemsByGuid.TryGetValue (projGuid, out item)) {
+				if (slnData.ItemsByGuid.TryGetValue (projGuid, out item) && item.SupportsBuild ()) {
 					string key = projGuid + "." + slnConfig;
 					SolutionConfigurationEntry combineConfigEntry = null;
 					if (cache.ContainsKey (key)) {

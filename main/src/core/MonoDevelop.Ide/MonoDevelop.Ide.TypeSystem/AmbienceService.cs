@@ -152,10 +152,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				return null;
 			string documentation = member.Documentation.Xml.Text;
 			if (!string.IsNullOrEmpty (documentation)) {
-				int idx1 = documentation.IndexOf ("<summary>");
-				int idx2 = documentation.IndexOf ("</summary>");
+				int idx1 = documentation.IndexOf ("<summary>", StringComparison.Ordinal);
+				int idx2 = documentation.LastIndexOf ("</summary>", StringComparison.Ordinal);
 				string result;
-				if (idx2 >= 0 && idx1 >= 0) {
+				if (idx1 >= 0 && idx2 > idx1) {
 					try {
 						var xmlText = documentation.Substring (idx1, idx2 - idx1 + "</summary>".Length);
 						return ParseBody (member,
@@ -166,7 +166,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					} catch (Exception e) {
 						LoggingService.LogWarning ("Malformed documentation xml detected:" + documentation, e);
 						// may happen on malformed xml.
-						result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
+						var len = idx2 - idx1 - "</summary>".Length;
+						result = len > 0 ? documentation.Substring (idx1 + "<summary>".Length, len) : documentation;
 					}
 				} else if (idx1 >= 0) {
 					result = documentation.Substring (idx1 + "<summary>".Length);

@@ -2810,16 +2810,9 @@ namespace Mono.TextEditor
 		
 		void OnTextSet (object sender, EventArgs e)
 		{
-			DocumentLine longest = longestLine;
-			foreach (DocumentLine line in Document.Lines) {
-				if (longest == null || line.Length > longest.Length)
-					longest = line;
-			}
+			DocumentLine longest = Document.longestLineAtTextSet;
 			if (longest != longestLine) {
-				var layoutWrapper = textViewMargin.GetLayout (longest);
-				int width = (int)(layoutWrapper.Width);
-				if (layoutWrapper.IsUncached)
-					layoutWrapper.Dispose ();
+				int width = (int)(longest.Length * textViewMargin.CharWidth);
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;
 					this.longestLine = longest;
