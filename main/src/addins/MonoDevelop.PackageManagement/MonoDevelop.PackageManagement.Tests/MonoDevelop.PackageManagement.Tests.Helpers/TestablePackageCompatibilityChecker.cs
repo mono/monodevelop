@@ -27,6 +27,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using NuGet;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -44,6 +45,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		protected override PackageReferenceFile CreatePackageReferenceFile (string fileName)
 		{
 			return PackageReferenceFile;
+		}
+
+		protected override void GuiDispatch (MessageHandler handler)
+		{
+			handler.Invoke ();
 		}
 	}
 

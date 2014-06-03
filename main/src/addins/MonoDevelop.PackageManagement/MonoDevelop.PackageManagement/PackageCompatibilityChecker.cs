@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Ide;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement
@@ -98,19 +99,26 @@ namespace MonoDevelop.PackageManagement
 
 		public void MarkPackagesForReinstallation ()
 		{
-			foreach (PackageReference packageReference in packageReferences) {
-				bool reinstall = packagesRequiringReinstallation.Any (package => package.Id == packageReference.Id);
-				packageReferenceFile.MarkEntryForReinstallation (
-					packageReference.Id,
-					packageReference.Version,
-					packageReference.TargetFramework,
-					reinstall);
-			}
+			GuiDispatch (() => {
+				foreach (PackageReference packageReference in packageReferences) {
+					bool reinstall = packagesRequiringReinstallation.Any (package => package.Id == packageReference.Id);
+					packageReferenceFile.MarkEntryForReinstallation (
+						packageReference.Id,
+						packageReference.Version,
+						packageReference.TargetFramework,
+						reinstall);
+				}
+			});
 		}
 
 		public bool PackagesMarkedForReinstallationInPackageReferenceFile ()
 		{
 			return packageReferences.Any (packageReference => packageReference.RequireReinstallation);
+		}
+
+		protected virtual void GuiDispatch (MessageHandler handler)
+		{
+			DispatchService.GuiDispatch (handler);
 		}
 	}
 }
