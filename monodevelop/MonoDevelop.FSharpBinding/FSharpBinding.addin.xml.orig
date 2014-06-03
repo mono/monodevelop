@@ -291,18 +291,28 @@
   </Extension>
 
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-    <SeparatorItem id = "FSharpInteractiveStart" />
-    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendFile" />
-    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
-    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
-    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
+    <ComplexCondition>
+      <Or>
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      </Or>
+      <SeparatorItem id = "FSharpInteractiveStart" />
+      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
+      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
+      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
+    </ComplexCondition>
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/MainMenu/Edit">
-    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendFile" />
-    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
-    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
-    <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
+    <ComplexCondition>
+      <Or>
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      </Or>
+      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendSelection" />
+      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendLine" />
+      <CommandItem id = "MonoDevelop.FSharp.FSharpCommands.SendReferences" />
+    </ComplexCondition>
   </Extension>
 
   <!--- F# Android -->
