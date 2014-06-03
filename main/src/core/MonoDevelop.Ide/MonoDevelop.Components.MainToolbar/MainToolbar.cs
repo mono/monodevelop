@@ -141,7 +141,6 @@ namespace MonoDevelop.Components.MainToolbar
 			var renderer = (CellRendererText) cell;
 			TreeIter parent;
 
-			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
 			if (cmd != null) {
 				var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (LastCommandTarget));
 				renderer.Text = RemoveUnderline (ci.Text);
@@ -150,7 +149,7 @@ namespace MonoDevelop.Components.MainToolbar
 				renderer.Xpad = 3;
 				return;
 			}
-			renderer.Sensitive = !(target is ExecutionTargetGroup);
+			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
 
 			if (target == null) {
 				renderer.Xpad = (uint) 0;
