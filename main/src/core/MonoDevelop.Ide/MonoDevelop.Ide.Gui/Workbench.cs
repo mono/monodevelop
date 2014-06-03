@@ -1069,6 +1069,7 @@ namespace MonoDevelop.Ide.Gui
 			var windowsDict = new Dictionary<int, SdiWorkspaceWindow> ();
 			FilePath baseDir = args.Item.BaseDirectory;
 			IViewContent currentView = null;
+			var dockWindows = new Dictionary<int, MonoDevelop.Components.DockNotebook.DockWindow> ();
 			
 			using (IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
 				string currentFileName = prefs.ActiveDocument != null ? baseDir.Combine (prefs.ActiveDocument).FullPath : null;
@@ -1118,9 +1119,18 @@ namespace MonoDevelop.Ide.Gui
 						}
 					}
 
-					var floatPrefs = prefs.FloatingWindows.Find (w => w.WindowId == floatId);
+					if (dockWindows.ContainsKey (floatId)) {
+						var dockWin = dockWindows [floatId];
+						var container = dockWin.Container;
+						var newTab = container.TabControl.InsertTab (-1);
+						newTab.Content = tmp_window;
+						tmp_window.SetDockNotebook (container.TabControl, newTab);
+					} else {
+						var floatPrefs = prefs.FloatingWindows.Find (w => w.WindowId == floatId);
+						var tmp_win = MonoDevelop.Components.DockNotebook.DockNotebookContainer.MoveToFloatingWindow (tmp_window, floatPrefs.X, floatPrefs.Y, floatPrefs.Width, floatPrefs.Height);
 
-					MonoDevelop.Components.DockNotebook.DockNotebookContainer.MoveToFloatingWindow (tmp_window, floatPrefs.X, floatPrefs.Y, floatPrefs.Width, floatPrefs.Height);
+						dockWindows.Add (floatId, tmp_win);
+					}
 				}
 
 				if (notebookId == 0) {
