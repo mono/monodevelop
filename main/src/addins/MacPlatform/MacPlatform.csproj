@@ -128,7 +128,6 @@
     <Compile Include="MacProxyCredentialProvider.cs" />
     <Compile Include="ExtendedTitleBarWindowBackend.cs" />
     <Compile Include="ExtendedTitleBarDialogBackend.cs" />
-    <Compile Include="MacInterop\NMath.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

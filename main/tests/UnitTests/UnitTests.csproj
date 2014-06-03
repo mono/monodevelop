@@ -297,21 +297,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <MonoDevelop.Autotools.MakefileInfo RelativeMakefileName="Makefile.am" BuildTargetName="" CleanTargetName="" SyncReferences="True" IsAutotoolsProject="True" RelativeConfigureInPath="../..">
-          <BuildFilesVar Sync="True" Name="FILES" />
-          <DeployFilesVar />
-          <ResourcesVar Sync="True" Name="RES" />
-          <OthersVar />
-          <GacRefVar Sync="True" Name="REFS" Prefix="-r:" />
-          <AsmRefVar Sync="True" Name="REFS" Prefix="-r:" />
-          <ProjectRefVar Sync="True" Name="REFS" Prefix="-r:" />
-        </MonoDevelop.Autotools.MakefileInfo>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
   <ItemGroup>
     <None Include="Makefile.am" />
     <None Include="MonoDevelop.Projects\CompletionDatabaseTests.cs" />
