@@ -224,7 +224,13 @@
   <!-- F# interactive -->
 
   <Extension path="/MonoDevelop/Ide/Pads">
-    <Pad id="MonoDevelop.FSharp.FSharpInteractivePad" defaultLayout="*" defaultPlacement="Bottom" _label="F# Interactive" icon="md-project" class="MonoDevelop.FSharp.FSharpInteractivePad" />
+    <ComplexCondition>
+      <Or>
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      </Or>
+      <Pad id="MonoDevelop.FSharp.FSharpInteractivePad" defaultLayout="*" defaultPlacement="Bottom" _label="F# Interactive" icon="md-project" class="MonoDevelop.FSharp.FSharpInteractivePad" />
+    </ComplexCondition>
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
@@ -232,58 +238,56 @@
   </Extension>
 
   <Extension path="/MonoDevelop/Ide/Commands">
-    <Category _name = "F# Integration" id="F# Integration">
-      <Command id="MonoDevelop.FSharp.FSharpCommands.ShowFSharpInteractive"
-          _label = "F# Interactive"
-          type="check"
-          _description="Show F# Interactive pad."
-          shortcut="Control|Alt|F"
-          macShortcut="Meta|Control|F"
-          defaultHandler="MonoDevelop.FSharp.ShowFSharpInteractive" />
+    <ComplexCondition>
+      <Or>
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+        <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      </Or>
+      <Category _name = "F# Integration" id="F# Integration">
+        <Command id="MonoDevelop.FSharp.FSharpCommands.ShowFSharpInteractive"
+            _label = "F# Interactive"
+            type="check"
+            _description="Show F# Interactive pad."
+            shortcut="Control|Alt|F"
+            macShortcut="Meta|Control|F"
+            defaultHandler="MonoDevelop.FSharp.ShowFSharpInteractive" />
 
-      <Command id="MonoDevelop.FSharp.FSharpCommands.SendFile"
-          _label = "Send current file to F# Interactive"
-          _description="Send the current file to F# Interactive"
-          shortcut=""
-          macShortcut=""
-          defaultHandler="MonoDevelop.FSharp.SendFile" />
+        <Command id="MonoDevelop.FSharp.FSharpCommands.SendSelection"
+            _label = "Send selection to F# Interactive"
+            _description="Send the selected text to F# Interactive"
+            shortcut="Ctrl|Return"
+            macShortcut="Ctrl|Return"
+            defaultHandler="MonoDevelop.FSharp.SendSelection" />
 
-      <Command id="MonoDevelop.FSharp.FSharpCommands.SendSelection"
-          _label = "Send selection to F# Interactive"
-          _description="Send the selected text to F# Interactive"
-          shortcut="Ctrl|Return"
-          macShortcut="Ctrl|Return"
-          defaultHandler="MonoDevelop.FSharp.SendSelection" />
+        <Command id="MonoDevelop.FSharp.FSharpCommands.SendLine"
+            _label = "Send line to F# Interactive"
+            _description="Send the current line to F# Interactive"
+            shortcut="Ctrl|Alt|L"
+            macShortcut="Meta|Control|L"
+            defaultHandler="MonoDevelop.FSharp.SendLine" />
 
-      <Command id="MonoDevelop.FSharp.FSharpCommands.SendLine"
-          _label = "Send line to F# Interactive"
-          _description="Send the current line to F# Interactive"
-          shortcut="Ctrl|Alt|L"
-          macShortcut="Meta|Control|L"
-          defaultHandler="MonoDevelop.FSharp.SendLine" />
-
-      <Command _description="Send the current project references to F# Interactive"
-          _label="Send references to F# Interactive"
-          defaultHandler="MonoDevelop.FSharp.SendReferences"
-          id="MonoDevelop.FSharp.FSharpCommands.SendReferences"
-          macShortcut="Meta|Control|P"
-          shortcut="Ctrl|Alt|P" />
-          
-      <Command _description="Restart F# Interactive"
-          _label="Restart F# Interactive"
-          defaultHandler="MonoDevelop.FSharp.RestartFsi"
-          id="MonoDevelop.FSharp.FSharpCommands.RestartFsi"
-          macShortcut="Meta|Control|R"
-          shortcut="Ctrl|Alt|R" />
-          
-      <Command _description="Clear F# Interactive"
-          _label="Clear F# Interactive"
-          defaultHandler="MonoDevelop.FSharp.ClearFsi"
-          id="MonoDevelop.FSharp.FSharpCommands.ClearFsi"
-          macShortcut="Meta|Control|C"
-          shortcut="Ctrl|Alt|C" />
-
-    </Category>
+        <Command _description="Send the current project references to F# Interactive"
+            _label="Send references to F# Interactive"
+            defaultHandler="MonoDevelop.FSharp.SendReferences"
+            id="MonoDevelop.FSharp.FSharpCommands.SendReferences"
+            macShortcut="Meta|Control|P"
+            shortcut="Ctrl|Alt|P" />
+            
+        <Command _description="Restart F# Interactive"
+            _label="Restart F# Interactive"
+            defaultHandler="MonoDevelop.FSharp.RestartFsi"
+            id="MonoDevelop.FSharp.FSharpCommands.RestartFsi"
+            macShortcut="Meta|Control|R"
+            shortcut="Ctrl|Alt|R" />
+            
+        <Command _description="Clear F# Interactive"
+            _label="Clear F# Interactive"
+            defaultHandler="MonoDevelop.FSharp.ClearFsi"
+            id="MonoDevelop.FSharp.FSharpCommands.ClearFsi"
+            macShortcut="Meta|Control|C"
+            shortcut="Ctrl|Alt|C" />
+      </Category>
+    </ComplexCondition>
   </Extension>
 
   <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
