@@ -83,7 +83,9 @@ namespace MonoDevelop.MacIntegration
 			timer.BeginTiming ();
 			
 			systemVersion = Carbon.Gestalt ("sysv");
-			
+
+			ObjCRuntime.Dlfcn.dlopen ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib", 0);
+
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 
 			//make sure the menu app name is correct even when running Mono 2.6 preview, or not running from the .app
