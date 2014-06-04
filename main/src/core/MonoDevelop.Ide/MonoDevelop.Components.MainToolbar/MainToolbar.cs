@@ -819,16 +819,21 @@ namespace MonoDevelop.Components.MainToolbar
 				if (cmds.Count > 0) {
 					bool needsSeparator = runtimes > 0;
 					foreach (CommandEntry ce in cmds) {
-						if (needsSeparator)
-							runtimeStore.AppendValues (null, false);
 						if (ce.CommandId == Command.Separator) {
 							needsSeparator = true;
 							continue;
 						}
 						var cmd = ce.GetCommand (IdeApp.CommandService) as ActionCommand;
 						if (cmd != null) {
-							runtimeStore.AppendValues (null, false, cmd);
-							runtimes++;
+							var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (LastCommandTarget));
+							if (ci.Visible) {
+								if (needsSeparator) {
+									runtimeStore.AppendValues (null, false);
+									needsSeparator = false;
+								}
+								runtimeStore.AppendValues (null, false, cmd);
+								runtimes++;
+							}
 						}
 					}
 				}

@@ -2811,7 +2811,7 @@ namespace Mono.TextEditor
 		void OnTextSet (object sender, EventArgs e)
 		{
 			DocumentLine longest = Document.longestLineAtTextSet;
-			if (longest != longestLine) {
+			if (longest != longestLine && longest != null) {
 				int width = (int)(longest.Length * textViewMargin.CharWidth);
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;

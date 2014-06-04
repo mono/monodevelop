@@ -141,7 +141,7 @@ namespace Mono.TextEditor
 		{
 			LineEndingMismatch = false;
 			Clear ();
-			longestLine = null;
+			longestLine = Get (0);
 			if (string.IsNullOrEmpty (text))
 				return;
 			var nodes = new List<TreeNode> ();

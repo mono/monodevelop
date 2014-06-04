@@ -27,7 +27,7 @@
 
 
 using System;
-using System.Collections;
+using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -43,7 +43,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		
 		public override Widget CreatePanelWidget()
 		{
-			return widget = new CombineConfigurationPanelWidget ((MultiConfigItemOptionsDialog) ParentDialog);
+			return widget = new CombineConfigurationPanelWidget ((MultiConfigItemOptionsDialog) ParentDialog, ConfiguredSolution);
 		}
 
 		public override void LoadConfigData ()
@@ -62,13 +62,20 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 		ListStore store;
 		SolutionConfiguration configuration;
 		MultiConfigItemOptionsDialog parentDialog;
+		Solution solution;
+
+		const int ProjectNameCol = 0;
+		const int BuildFlagCol = 1;
+		const int ProjectCol = 2;
 		
-		public CombineConfigurationPanelWidget (MultiConfigItemOptionsDialog parentDialog)
+		public CombineConfigurationPanelWidget (MultiConfigItemOptionsDialog parentDialog, Solution solution)
 		{
 			Build ();
 			
 			this.parentDialog = parentDialog;
-			store = new ListStore (typeof(object), typeof(string), typeof(bool));
+			this.solution = solution;
+
+			store = new ListStore (typeof(string), typeof(bool), typeof(SolutionEntityItem));
 			configsList.Model = store;
 			configsList.HeadersVisible = true;
 			
@@ -76,20 +83,20 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			CellRendererText sr = new CellRendererText ();
 			col.PackStart (sr, true);
 			col.Expand = true;
-			col.AddAttribute (sr, "text", 1);
+			col.AddAttribute (sr, "text", ProjectNameCol);
 			col.Title = GettextCatalog.GetString ("Solution Item");
 			configsList.AppendColumn (col);
-			col.SortColumnId = 1;
+			col.SortColumnId = ProjectNameCol;
 			
 			CellRendererToggle tt = new CellRendererToggle ();
 			tt.Activatable = true;
 			tt.Toggled += new ToggledHandler (OnBuildToggled);
-			configsList.AppendColumn (GettextCatalog.GetString ("Build"), tt, "active", 2);
+			configsList.AppendColumn (GettextCatalog.GetString ("Build"), tt, "active", BuildFlagCol);
 			
 			CellRendererComboBox comboCell = new CellRendererComboBox ();
 			comboCell.Changed += new ComboSelectionChangedHandler (OnConfigSelectionChanged);
 			configsList.AppendColumn (GettextCatalog.GetString ("Configuration"), comboCell, new TreeCellDataFunc (OnSetConfigurationsData));
-			store.SetSortColumnId (1, SortType.Ascending);
+			store.SetSortColumnId (ProjectNameCol, SortType.Ascending);
 		}
 		
 		public void Load (SolutionConfiguration config)
@@ -97,46 +104,68 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			configuration = config;
 
 			store.Clear ();
-			foreach (SolutionConfigurationEntry ce in configuration.Configurations) {
-				if (ce.Item != null && !(ce.Item is UnknownSolutionItem))
-					store.AppendValues (ce, ce.Item.Name, ce.Build);
+			foreach (var it in solution.GetAllSolutionItems ().OfType<SolutionEntityItem> ().Where (s => s.SupportsBuild ())) {
+				var ce = config.GetEntryForItem (it);
+				store.AppendValues (it.Name, ce != null && ce.Build, it);
 			}
 		}
 		
 		void OnSetConfigurationsData (Gtk.TreeViewColumn treeColumn, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
-			SolutionConfigurationEntry entry = (SolutionConfigurationEntry) store.GetValue (iter, 0);
+			var item = (SolutionEntityItem) store.GetValue (iter, ProjectCol);
+			ConfigurationData data = parentDialog.ConfigurationData.FindConfigurationData (item);
 			
-			ConfigurationData data = parentDialog.ConfigurationData.FindConfigurationData (entry.Item);
-			
-			string[] values = new string [data.Configurations.Count];
-			for (int n=0; n<values.Length; n++)
-				values [n] = data.Configurations [n].Id;
 			CellRendererComboBox comboCell = (CellRendererComboBox) cell;
-			comboCell.Values = values;
+			comboCell.Values = data.Configurations.Select (c => c.Id).ToArray ();
 
-			var escaped = GLib.Markup.EscapeText (entry.ItemConfiguration);
-			if (entry.Item.Configurations [entry.ItemConfiguration] == null)
+			var conf = GetSelectedConfiguration (item);
+			var escaped = GLib.Markup.EscapeText (conf);
+			if (item.Configurations [conf] == null)
 				comboCell.Markup = string.Format ("<span color='red'>{0}</span>", escaped);
 			else
 				comboCell.Markup = escaped;
+		}
+
+		string GetSelectedConfiguration (SolutionEntityItem item)
+		{
+			var entry = configuration.GetEntryForItem (item);
+			return entry != null ? entry.ItemConfiguration : (item.DefaultConfiguration != null ? item.DefaultConfiguration.Id : "");
 		}
 		
 		void OnBuildToggled (object sender, ToggledArgs args)
 		{
 			TreeIter iter;
 			if (store.GetIter (out iter, new TreePath (args.Path))) {
-				SolutionConfigurationEntry entry = (SolutionConfigurationEntry) store.GetValue (iter, 0);
-				entry.Build = !entry.Build;
-				store.SetValue (iter, 2, entry.Build);
+				var item = (SolutionEntityItem) store.GetValue (iter, ProjectCol);
+				var entry = configuration.GetEntryForItem (item);
+				if (entry == null) {
+					entry = CreateDefaultMapping (item);
+					entry.Build = true;
+				} else
+					entry.Build = !entry.Build;
+				store.SetValue (iter, BuildFlagCol, entry.Build);
 			}
+		}
+
+		SolutionConfigurationEntry CreateDefaultMapping (SolutionEntityItem item)
+		{
+			var conf = GetSelectedConfiguration (item);
+			var entry = configuration.AddItem (item);
+			entry.ItemConfiguration = conf;
+			return entry;
 		}
 		
 		void OnConfigSelectionChanged (object s, ComboSelectionChangedArgs args)
 		{
 			TreeIter iter;
 			if (store.GetIter (out iter, new TreePath (args.Path))) {
-				SolutionConfigurationEntry entry = (SolutionConfigurationEntry) store.GetValue (iter, 0);
+				var item = (SolutionEntityItem) store.GetValue (iter, ProjectCol);
+				var entry = configuration.GetEntryForItem (item);
+				if (entry == null) {
+					entry = CreateDefaultMapping (item);
+					entry.Build = false;
+				}
+
 				if (args.Active != -1) {
 					ConfigurationData data = parentDialog.ConfigurationData.FindConfigurationData (entry.Item);
 					entry.ItemConfiguration = data.Configurations [args.Active].Id;

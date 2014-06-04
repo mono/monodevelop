@@ -1285,6 +1285,11 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("numbersMulti");
 			Assert.AreEqual ("{int[3,4,5]}", val.Value);
 			Assert.AreEqual ("int[,,]", val.TypeName);
+
+			val = Eval ("nulledByteArray");
+			Assert.AreEqual ("(null)", val.Value);
+			Assert.AreEqual ("byte[]", val.TypeName);
+
 		}
 
 		[Test]

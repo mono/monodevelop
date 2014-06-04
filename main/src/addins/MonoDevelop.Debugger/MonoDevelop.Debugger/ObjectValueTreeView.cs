@@ -762,7 +762,7 @@ namespace MonoDevelop.Debugger
 			
 			strval = strval.Replace (Environment.NewLine, " ");
 			
-			bool showViewerButton = DebuggingService.HasValueVisualizers (val);
+			bool showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 
 			bool hasChildren = val.HasChildren;
 			string icon = GetIcon (val.Flags);
