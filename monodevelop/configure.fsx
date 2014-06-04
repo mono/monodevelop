@@ -100,8 +100,11 @@ let getMdExeVersion mdDir =
 
 let (mdDir, mdVersion) =
     match getPrefix args with
-    | Some path ->
+    | Some path when File.Exists (GetPath [path; MdCheckFile]) ->
         path, getMdExeVersion path
+    | Some _ ->
+        printfn "No MonoDevelop libraries found in specified prefix."
+        exit 1
     | None when (File.Exists (GetPath ["../../../monodevelop.pc.in"])) -> 
         // Local MonoDevelop build directory
         let dir = GetPath [Environment.CurrentDirectory + "/../../../build"]
@@ -116,12 +119,12 @@ let (mdDir, mdVersion) =
         match mdDirs with
         | [] -> 
             printfn "No MonoDevelop libraries found. Please install MonoDevelop or use --prefix={path-to-md-libraries}" 
-            exit 0
+            exit 1
         | [dir, version] -> 
             dir, version
         | _ -> 
             printfn "Multiple MonoDevelop library directories found. Use --prefix{path-to-md-libraries} to select one.\r\nOptions: \r\n%A" mdDirs 
-            exit 0
+            exit 1
 
 if not isWindows then
     // Update the makefile. We don't use that on windows
