@@ -47,7 +47,7 @@ namespace MonoDevelop.Html
 			
 			try {
 				Parser xmlParser = new Parser (
-					new XmlFreeState (new HtmlTagState (true), new HtmlClosingTagState (true)),
+					new XmlFreeState (new HtmlTagState (), new HtmlClosingTagState (true)),
 					true);
 				
 				xmlParser.Parse (tr);
