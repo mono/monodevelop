@@ -125,6 +125,7 @@
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj">
       <Project>{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}</Project>
       <Name>ICSharpCode.NRefactory.CSharp.Refactoring</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Xml\ICSharpCode.NRefactory.Xml.csproj">
       <Project>{DC393B66-92ED-4CAD-AB25-CFEF23F3D7C6}</Project>
