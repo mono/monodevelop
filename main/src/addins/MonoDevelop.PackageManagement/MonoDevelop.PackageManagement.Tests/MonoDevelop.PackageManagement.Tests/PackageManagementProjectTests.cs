@@ -52,15 +52,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreateProject ()
 		{
+			fakeSourceRepository = new FakePackageRepository ();
+			CreateProject (fakeSourceRepository);
+		}
+
+		void CreateProject (IPackageRepository sourceRepository)
+		{
 			fakePackageManagerFactory = new FakePackageManagerFactory ();
 			fakePackageManager = fakePackageManagerFactory.FakePackageManager;
 			fakeProjectManager = fakePackageManager.FakeProjectManager;
-			fakeSourceRepository = new FakePackageRepository ();
 			fakeProject = new FakeDotNetProject ();
 			packageManagementEvents = new PackageManagementEvents ();
 
 			project = new PackageManagementProject (
-				fakeSourceRepository,
+				sourceRepository,
 				fakeProject,
 				packageManagementEvents,
 				fakePackageManagerFactory);
@@ -751,6 +756,18 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (package, fakePackageManager.PackagePassedToUpdatePackageReference);
 			Assert.AreEqual (updatePackagesAction, fakePackageManager.SettingsPassedToUpdatePackageReference);
+		}
+
+		[Test]
+		public void Logger_SetLoggerWhenSourceRepositoryIsAggregateRepository_LoggerOnAggregateRepositoryIsSet ()
+		{
+			var aggregateRepository = new AggregateRepository (new FakePackageRepository [0]);
+			CreateProject (aggregateRepository);
+			var expectedLogger = new FakeLogger ();
+
+			project.Logger = expectedLogger;
+
+			Assert.AreEqual (expectedLogger, aggregateRepository.Logger);
 		}
 	}
 }

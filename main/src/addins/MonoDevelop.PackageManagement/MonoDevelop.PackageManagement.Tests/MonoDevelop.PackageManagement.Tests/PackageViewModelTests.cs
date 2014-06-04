@@ -766,6 +766,42 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			operationAwareRepository.AssertOperationWasStartedAndDisposed (RepositoryOperationNames.Install, "MyPackage");
 		}
+
+		[Test]
+		public void GetDownloadCountOrVersionDisplayText_PackageDownloadCountIsMinusOne_ReturnsEmptyString ()
+		{
+			CreateViewModel ();
+			fakePackage.DownloadCount = -1;
+
+			string result = viewModel.GetDownloadCountOrVersionDisplayText ();
+
+			Assert.AreEqual (String.Empty, result);
+		}
+
+		[Test]
+		public void GetDownloadCountOrVersionDisplayText_PackageHasTenThousandDownloads_ReturnsDownloadCountFormattedForLocale ()
+		{
+			CreateViewModel ();
+			fakePackage.DownloadCount = 10000;
+
+			string result = viewModel.GetDownloadCountOrVersionDisplayText ();
+
+			string expectedResult = 10000.ToString ("N0");
+			Assert.AreEqual (expectedResult, result);
+		}
+
+		[Test]
+		public void GetDownloadCountOrVersionDisplayText_PackageWasPartOfGroupIncludingAllVersions_ReturnsVersionNumberInsteadOfDownloadCount ()
+		{
+			CreateViewModel ();
+			viewModel.ShowVersionInsteadOfDownloadCount = true;
+			fakePackage.DownloadCount = 10000;
+			fakePackage.Version = new SemanticVersion ("1.2.3.4");
+
+			string result = viewModel.GetDownloadCountOrVersionDisplayText ();
+
+			Assert.AreEqual ("1.2.3.4", result);
+		}
 	}
 }
 
