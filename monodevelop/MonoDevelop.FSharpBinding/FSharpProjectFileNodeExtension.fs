@@ -153,7 +153,7 @@ type FSharpProjectFileNodeExtension() =
             match folderIndex with
             | Some i -> i
             | _ -> NodeBuilder.DefaultSort
-     | _ -> NodeBuilder.DefaultSort
+     | NotSupported -> NodeBuilder.DefaultSort
     
 
   override x.CanBuildNode(dataType:Type) =
@@ -162,8 +162,9 @@ type FSharpProjectFileNodeExtension() =
 
   override x.CompareObjects(thisNode:ITreeNavigator, otherNode:ITreeNavigator) : int =
     match (otherNode.DataItem, thisNode.DataItem) with
-    | null, _ | _, null -> NodeBuilder.DefaultSort
-    | other, thisNode -> compare (findIndex thisNode) (findIndex other)
+    | SupportedProjectFile other, SupportedProjectFolder thisNode -> compare (findIndex thisNode) (findIndex other)
+    | SupportedProjectFolder other, SupportedProjectFile thisNode -> compare (findIndex thisNode) (findIndex other)
+    | _ -> NodeBuilder.DefaultSort
 
   override x.CommandHandlerType = typeof<FSharpProjectNodeCommandHandler>
 
