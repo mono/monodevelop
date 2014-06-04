@@ -24,9 +24,9 @@ vcrevision:
 
 $(buildinfo):
 	@mkdir -p "$(top_builddir)/build/bin"
-	# in a tarball, there is a generated buildinfo, which needs to be copied to the right place
-	# otherwise, the file buildinfo will be generated based on git revision etc.
-	@if [ -f "$(top_srcdir)/buildinfo" ]; then cp "$(top_srcdir)/buildinfo" "$(top_builddir)/build/bin/buildinfo"; else $(MD_CONFIGURE) gen-buildinfo "$(top_builddir)/build/bin"; fi
+# in a tarball, there is a generated buildinfo, which needs to be copied to the right place
+# otherwise, the file buildinfo will be generated based on git revision etc.
+	@if test -f "$(top_srcdir)/buildinfo"; then cp "$(top_srcdir)/buildinfo" "$(top_builddir)/build/bin/buildinfo"; else $(MD_CONFIGURE) gen-buildinfo "$(top_builddir)/build/bin"; fi
 	@echo "Updated build information"
 	@cat $(buildinfo)
 
