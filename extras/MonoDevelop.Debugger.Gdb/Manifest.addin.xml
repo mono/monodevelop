@@ -5,17 +5,17 @@
        description = "GNU Debugger support for Mono.Debugging"
        copyright   = "MIT X11"
        category = "Debugging"
-       version   = "5.0">
+       version   = "5.0.1">
 
 	<Dependencies>
-		<Addin id="MonoDevelop.Core" version="5.0"/>
-		<Addin id="MonoDevelop.Ide" version="5.0"/>
-		<Addin id="MonoDevelop.Debugger" version="5.0"/>
+		<Addin id="MonoDevelop.Core" version="5.0.1"/>
+		<Addin id="MonoDevelop.Ide" version="5.0.1"/>
+		<Addin id="MonoDevelop.Debugger" version="5.0.1"/>
 	</Dependencies>
-	
+
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
-		<DebuggerEngine id="Mono.Debugger.Gdb" 
-			name="GNU Debugger (GDB)" 
+		<DebuggerEngine id="Mono.Debugger.Gdb"
+			name="GNU Debugger (GDB)"
 			features="ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching, DebugFile, Stepping, Pause, Breakpoints, Disassembly"
 			type="MonoDevelop.Debugger.Gdb.GdbSessionFactory" />
 	</Extension>
