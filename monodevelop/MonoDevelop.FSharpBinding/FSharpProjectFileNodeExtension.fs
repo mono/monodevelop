@@ -162,6 +162,8 @@ type FSharpProjectFileNodeExtension() =
 
   override x.CompareObjects(thisNode:ITreeNavigator, otherNode:ITreeNavigator) : int =
     match (otherNode.DataItem, thisNode.DataItem) with
+    | SupportedProjectFile other, SupportedProjectFile thisNode -> compare (findIndex thisNode) (findIndex other)
+    | SupportedProjectFolder other, SupportedProjectFolder thisNode -> compare (findIndex thisNode) (findIndex other)
     | SupportedProjectFile other, SupportedProjectFolder thisNode -> compare (findIndex thisNode) (findIndex other)
     | SupportedProjectFolder other, SupportedProjectFile thisNode -> compare (findIndex thisNode) (findIndex other)
     | _ -> NodeBuilder.DefaultSort
