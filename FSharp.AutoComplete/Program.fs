@@ -322,9 +322,10 @@ module internal Main =
       ok
 
     /// Is the specified position consistent with internal state of file?
+    //  Note that both emacs and FSC use 1-based line indexing
     let posok file line col =
       let lines = state.Files.[file]
-      let ok = line < lines.Length && line >= 1 &&
+      let ok = line <= lines.Length && line >= 1 &&
                col <= lines.[line - 1].Length && col >= 0
       if not ok then printMsg "ERROR" "Position is out of range"
       ok
