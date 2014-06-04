@@ -36,7 +36,6 @@ build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.
 
 
 pack: build
-	cp -pr bin/$(config)/* bin/$(MDTAG)/$(config)/
 	-rm -fr pack/$(VERSION)/$(MDTAG)/$(config)
 	@-mkdir -p pack/$(VERSION)/$(MDTAG)/$(config)
 	$(MDTOOL) setup pack bin/$(MDTAG)/$(config)/FSharpBinding.dll -d:pack/$(VERSION)/$(MDTAG)/$(config)
