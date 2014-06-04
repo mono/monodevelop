@@ -181,6 +181,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReinstallerTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeBackgroundPackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallPackageActionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallProjectPackagesActionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

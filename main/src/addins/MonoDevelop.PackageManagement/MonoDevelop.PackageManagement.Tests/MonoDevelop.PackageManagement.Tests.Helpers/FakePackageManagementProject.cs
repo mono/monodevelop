@@ -266,13 +266,20 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return PackageOperationsToReturnFromGetUpdatePackagesOperations;
 		}
 
+		public ReinstallPackageOperations ReinstallOperations;
+		public IEnumerable<IPackage> PackagesPassedToGetReinstallPackageOperations;
+
 		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
 		{
-			throw new NotImplementedException ();
+			PackagesPassedToGetReinstallPackageOperations = packages;
+			return ReinstallOperations;
 		}
 
-		public void RunPackageOperations (IEnumerable<PackageOperation> expectedOperations)
+		public IEnumerable<PackageOperation> PackageOperationsRun;
+
+		public void RunPackageOperations (IEnumerable<PackageOperation> operations)
 		{
+			PackageOperationsRun = operations;
 		}
 
 		public bool HasOlderPackageInstalled (IPackage package)
@@ -313,9 +320,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public List<ReinstallPackageAction> ReinstallPackageActionsCreated = new List<ReinstallPackageAction> ();
 
+		public List<IPackage> PackageReferencesAdded = new List<IPackage> ();
+
 		public void AddPackageReference (IPackage package)
 		{
-			throw new NotImplementedException ();
+			PackageReferencesAdded.Add (package);
 		}
 	}
 }
