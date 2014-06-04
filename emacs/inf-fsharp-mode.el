@@ -61,6 +61,7 @@ be sent from another buffer in fsharp mode.
   (interactive)
   (comint-mode)
   (setq comint-prompt-regexp "^# ?")
+  (setq comint-prompt-read-only t)
   (setq major-mode 'inferior-fsharp-mode)
 
   (setq mode-name "Inferior fsharp")
