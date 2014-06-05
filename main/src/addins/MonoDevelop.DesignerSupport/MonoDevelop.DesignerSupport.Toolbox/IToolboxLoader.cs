@@ -48,12 +48,12 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get;
 		}
 		
-		System.Collections.Generic.IList<ItemToolboxNode> Load (LoaderContext context, string filename);
+		IList<ItemToolboxNode> Load (LoaderContext context, string filename);
 	}
 	
 	public class LoaderContext
 	{
-		Hashtable values = new Hashtable ();
+		readonly Hashtable values = new Hashtable ();
 		Dictionary<TargetRuntime, ExternalLoader> externalLoaders;
 		int counter;
 		

@@ -40,40 +40,11 @@ namespace MonoDevelop.Refactoring
 {
     public static class ExtensionMethods
     {
-
 		class ResolverAnnotation
 		{
 			public CancellationTokenSource SharedTokenSource;
-			public TaskWrapper Task;
+			public Task<CSharpAstResolver> Task;
 			public CSharpUnresolvedFile ParsedFile;
-		}
-
-		public class TaskWrapper {
-			readonly Task<CSharpAstResolver> underlyingTask;
-
-			public CSharpAstResolver Result {
-				get {
-					if (underlyingTask.IsCanceled)
-						return null;
-					try {
-						return underlyingTask.Result;
-					} catch (AggregateException ae) {
-						if (ae.InnerException is TaskCanceledException)
-							return null;
-						throw;
-					}  catch (TaskCanceledException) {
-						return null;
-					} catch (Exception e) {
-						LoggingService.LogWarning ("Exception while getting shared AST resolver.", e);
-						return null;
-					}
-				}
-			}
-			public TaskWrapper (Task<CSharpAstResolver> underlyingTask)
-			{
-				this.underlyingTask = underlyingTask;
-			}
-			
 		}
 
 		public static TimerCounter ResolveCounter = InstrumentationService.CreateTimerCounter("Resolve document", "Parsing");
@@ -84,7 +55,7 @@ namespace MonoDevelop.Refactoring
 		/// resolve navigator.
 		/// Note: The shared resolver is fully resolved.
 		/// </summary>
-		public static TaskWrapper GetSharedResolver (this Document document)
+		public static Task<CSharpAstResolver> GetSharedResolver (this Document document)
 		{
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument == null || document.IsProjectContextInUpdate || document.Project != null && !(document.Project is DotNetProject))
@@ -122,12 +93,25 @@ namespace MonoDevelop.Refactoring
 					return null;
 				}
 			}, token);
-			var wrapper = new TaskWrapper (resolveTask);
+
+			var wrapper = resolveTask.ContinueWith (t => {
+				if (t.IsCanceled)
+					return null;
+				if (t.IsFaulted) {
+					var ex = t.Exception.Flatten ().InnerException;
+					if (!(ex is TaskCanceledException))
+						LoggingService.LogWarning ("Exception while getting shared AST resolver.", ex);
+					return null;
+				}
+				return t.Result;
+			}, TaskContinuationOptions.ExecuteSynchronously);
+
 			document.AddAnnotation (new ResolverAnnotation {
 				Task = wrapper,
 				ParsedFile = parsedFile,
 				SharedTokenSource = tokenSource
 			});
+
 			return wrapper;
 		}
 

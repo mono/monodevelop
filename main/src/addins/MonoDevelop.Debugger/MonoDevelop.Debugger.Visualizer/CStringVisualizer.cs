@@ -83,7 +83,7 @@ namespace MonoDevelop.Debugger.Visualizer
 
 		static string ByteArrayToCString (byte[] buf)
 		{
-			StringBuilder text = new StringBuilder ();
+			var text = new StringBuilder ();
 
 			for (int i = 0; i < buf.Length; i++)
 				AppendByte (text, buf[i]);
@@ -93,7 +93,7 @@ namespace MonoDevelop.Debugger.Visualizer
 
 		static string SByteArrayToCString (sbyte[] buf)
 		{
-			StringBuilder text = new StringBuilder ();
+			var text = new StringBuilder ();
 
 			for (int i = 0; i < buf.Length; i++)
 				AppendByte (text, (byte) buf[i]);
@@ -141,7 +141,10 @@ namespace MonoDevelop.Debugger.Visualizer
 
 		void PopulateTextView (ObjectValue value)
 		{
-			rawArray = value.GetRawValue () as RawValueArray;
+			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			ops.AllowTargetInvoke = true;
+
+			rawArray = value.GetRawValue (ops) as RawValueArray;
 			length = rawArray.Length;
 			offset = 0;
 

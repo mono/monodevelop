@@ -358,6 +358,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (itemGuid == null)
 				throw new UserException ("Project file doesn't have a valid ProjectGuid");
 
+			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
+			// of shared projects.
+			if (!itemGuid.StartsWith ("{") && fileName.EndsWith (".shproj"))
+				itemGuid = "{" + itemGuid + "}";
+
 			itemGuid = itemGuid.ToUpper ();
 			string projectTypeGuids = globalGroup.GetPropertyValue ("ProjectTypeGuids");
 			string itemType = globalGroup.GetPropertyValue ("ItemType");
@@ -1474,7 +1479,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			WriteBuildItemMetadata (ser, buildItem, file, oldItems);
 			
 			if (!string.IsNullOrEmpty (file.DependsOn))
-				buildItem.SetMetadata ("DependentUpon", pathPrefix + MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
+				buildItem.SetMetadata ("DependentUpon", MSBuildProjectService.ToMSBuildPath (Path.GetDirectoryName (file.FilePath), file.DependsOn));
 			else
 				buildItem.UnsetMetadata ("DependentUpon");
 
@@ -1497,7 +1502,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				buildItem.UnsetMetadata ("LastGenOutput");
 			
 			if (!string.IsNullOrEmpty (file.Link))
-				buildItem.SetMetadata ("Link", pathPrefix + MSBuildProjectService.ToMSBuildPathRelative (Item.ItemDirectory, file.Link));
+				buildItem.SetMetadata ("Link", MSBuildProjectService.ToMSBuildPathRelative (Item.ItemDirectory, file.Link));
 			else
 				buildItem.UnsetMetadata ("Link");
 			
@@ -1514,11 +1519,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			} else {
 				buildItem.UnsetMetadata ("Visible");
 			}
-			
-			if (file.BuildAction == BuildAction.EmbeddedResource) {
-				//Emit LogicalName only when it does not match the default Id
-				if (GetDefaultResourceId (file) != file.ResourceId)
-					buildItem.SetMetadata ("LogicalName", file.ResourceId);
+
+			var resId = file.ResourceId;
+
+			//For EmbeddedResource, emit LogicalName only when it does not match the default Id
+			if (file.BuildAction == BuildAction.EmbeddedResource && GetDefaultResourceId (file) == resId)
+				resId = null;
+
+			if (!string.IsNullOrEmpty (resId)) {
+				buildItem.SetMetadata ("LogicalName", resId);
+			} else {
+				buildItem.UnsetMetadata ("LogicalName");
 			}
 		}
 		

@@ -724,6 +724,7 @@ namespace MonoDevelop.Projects
 
 			// A solution build should succeed if it has unbuildable projects but those projects are not referenced by buildable projects
 			app.References.Clear ();
+			sol.Save (Util.GetMonitor ());
 			res = sol.Build (Util.GetMonitor (), "Debug");
 			Assert.IsTrue (res.ErrorCount == 0);
 

@@ -307,6 +307,23 @@ namespace MonoDevelop.Refactoring
 			return !string.IsNullOrEmpty (result);
 		}
 
+		static bool CanReference (Document doc, MonoDevelop.Projects.ProjectReference projectReference)
+		{
+			var project = doc.Project as DotNetProject;
+			if (project == null || projectReference == null || project.ParentSolution == null)
+				return true;
+			switch (projectReference.ReferenceType) {
+			case ReferenceType.Project:
+				var referenceProject = projectReference.ResolveProject (project.ParentSolution) as DotNetProject;
+				if (referenceProject == null)
+					return true;
+				string reason;
+				return project.CanReferenceProject (referenceProject, out reason);
+			}
+			return true;
+
+		}
+
 		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
@@ -377,7 +394,8 @@ namespace MonoDevelop.Refactoring
 								if (typeDefinition.Name == aResult.Type.Name && 
 								    typeDefinition.TypeParameterCount == tc &&
 								    lookup.IsAccessible (typeDefinition, false)) {
-									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+									if (CanReference(doc, requiredReference))
+										yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 								}
 							}
 						}
@@ -391,13 +409,15 @@ namespace MonoDevelop.Refactoring
 					foreach (var typeDefinition in allTypes) {
 						if ((typeDefinition.Name == possibleAttributeName || typeDefinition.Name == uiResult.Identifier) && typeDefinition.TypeParameterCount == tc &&
 						    lookup.IsAccessible (typeDefinition, false)) {
-							if (typeDefinition.DeclaringTypeDefinition != null) {
-								var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
-								foundIdentifier = true;
-								yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
-							} else {
-								foundIdentifier = true;
-								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+							if (CanReference (doc, requiredReference)) {
+								if (typeDefinition.DeclaringTypeDefinition != null) {
+									var builder = new TypeSystemAstBuilder (new CSharpResolver (doc.Compilation));
+									foundIdentifier = true;
+									yield return new PossibleNamespace (builder.ConvertType (typeDefinition.DeclaringTypeDefinition).ToString (), false, requiredReference);
+								} else {
+									foundIdentifier = true;
+									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+								}
 							}
 						}
 					}
@@ -419,7 +439,8 @@ namespace MonoDevelop.Refactoring
 								true,
 								out inferredTypes
 							)) {
-								yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+								if (CanReference(doc, requiredReference))
+									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 								goto skipType;
 							}
 						}
@@ -438,7 +459,8 @@ namespace MonoDevelop.Refactoring
 								if ((identifier.Name == possibleAttributeName || identifier.Name == uiResult.Identifier) && 
 									typeDefinition.TypeParameterCount == tc && 
 									lookup.IsAccessible (typeDefinition, false))
-									yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
+									if (CanReference(doc, requiredReference))
+										yield return new PossibleNamespace (typeDefinition.Namespace, true, requiredReference);
 							}
 						}
 					}
@@ -463,7 +485,8 @@ namespace MonoDevelop.Refactoring
 							LoggingService.LogError (string.Format ("Error while looking up identifier {0}", uiResult.Identifier), e);
 					}
 					foreach(var kv in lookups)
-						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
+						if (CanReference(doc, new MonoDevelop.Projects.ProjectReference (kv.Item2)))
+							yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
 
 				}
 			}
@@ -484,7 +507,8 @@ namespace MonoDevelop.Refactoring
 							LoggingService.LogError (string.Format ("Error while looking up member resolve result {0}", node), e);
 					}
 					foreach(var kv in lookups)
-						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
+						if (CanReference(doc, new MonoDevelop.Projects.ProjectReference (kv.Item2)))
+							yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
 				}
 			}
 

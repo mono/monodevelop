@@ -57,6 +57,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.Project;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -181,14 +182,12 @@ namespace MonoDevelop.CSharp.Completion
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			StopPositionChangedTask ();
-			Task.Factory.StartNew (delegate {
-				var doc = Document;
-				if (doc == null || doc.Editor == null)
-					return;
-				var ctx = MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, src.Token);
-				if (ctx != null)
-					MDRefactoringCtx = ctx;
-			});
+			var doc = Document;
+			if (doc == null || doc.Editor == null)
+				return;
+			MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, src.Token).ContinueWith (t => {
+				MDRefactoringCtx = t.Result;
+			}, TaskContinuationOptions.ExecuteSynchronously);
 		}
 		
 		[CommandUpdateHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
@@ -364,7 +363,7 @@ namespace MonoDevelop.CSharp.Completion
 			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
 			if (MDRefactoringCtx == null) {
 				src.Cancel ();
-				MDRefactoringCtx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location);
+				MDRefactoringCtx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location).Result;
 			}
 
 			var engine = new MonoCSharpCompletionEngine (
