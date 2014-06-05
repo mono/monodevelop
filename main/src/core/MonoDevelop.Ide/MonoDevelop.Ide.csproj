@@ -2673,6 +2673,8 @@
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CodeCompletion\ParameterHintingData.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.cs" />
+    <Compile Include="MonoDevelop.Ide.TypeSystem\CodeTranslator.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Content\CompletionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
