@@ -164,7 +164,7 @@ namespace MonoDevelop.MacIntegration
 				globalPattern.Append (pattern);
 			}
 
-			return new Regex (globalPattern.ToString (), RegexOptions.Compiled | RegexOptions.IgnoreCase);
+			return new Regex (globalPattern.ToString (), RegexOptions.IgnoreCase);
 		}
 		
 		internal static NSPopUpButton CreateFileFilterPopup (SelectFileDialogData data, NSSavePanel panel)
