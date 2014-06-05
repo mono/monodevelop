@@ -177,5 +177,5 @@ mkdir pack\windows\%s
 %%MDROOT%%\bin\mdtool.exe setup pack bin\windows\%s\FSharpBinding.dll -d:pack\windows\%s
 %%MDROOT%%\bin\mdtool.exe setup install -y pack\windows\%s\MonoDevelop.FSharpBinding_%s.mpack 
 """
-           config config mdDir config config config config config FSharpVersion)
+           config mdDir config config config config FSharpVersion)
 
