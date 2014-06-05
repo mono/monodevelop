@@ -378,7 +378,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public void ShowViewInFloatingWindow (DockWindow dockWindow, IViewContent content)
+		private Xwt.Drawing.Image PrepareShowView (IViewContent content)
 		{
 			viewContentCollection.Add (content);
 
@@ -404,6 +404,12 @@ namespace MonoDevelop.Ide.Gui
 				mimeimage = DesktopService.GetIconForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
 			}
 
+			return mimeimage;
+		}
+
+		public void ShowViewInFloatingWindow (DockWindow dockWindow, IViewContent content)
+		{
+			var mimeimage = PrepareShowView (content);
 			IDockNotebookTab tab;
 			SdiDragNotebook addToControl;
 			if (dockWindow.Container == null) {
@@ -440,30 +446,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public virtual void ShowView (IViewContent content, bool bringToFront)
 		{
-			viewContentCollection.Add (content);
-			
-			if (PropertyService.Get ("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
-				try {
-					Properties memento = GetStoredMemento(content);
-					if (memento != null) {
-						((IMementoCapable)content).Memento = memento;
-					}
-				} catch (Exception e) {
-					LoggingService.LogError ("Can't get/set memento : " + e.ToString());
-				}
-			}
-			
-			Xwt.Drawing.Image mimeimage = null;
-			
-			if (content.StockIconId != null ) {
-				mimeimage = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
-			}
-			else if (content.IsUntitled && content.UntitledName == null) {
-				mimeimage = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
-			} else {
-				mimeimage = DesktopService.GetIconForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
-			}			
-
+			var mimeimage = PrepareShowView (content);
 			var addToControl = activeTabControl ?? tabControl;
 			var tab = addToControl.InsertTab (-1);
 

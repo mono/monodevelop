@@ -1142,7 +1142,7 @@ namespace MonoDevelop.Ide.Gui
 					dockWindow.ShowAll ();
 				}
 			}
-			
+
 			foreach (var view in docViews) {
 				Document doc = WrapDocument (view.WorkbenchWindow);
 				var tmp_window = (SdiWorkspaceWindow)doc.Window;
