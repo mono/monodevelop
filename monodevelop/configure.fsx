@@ -170,12 +170,10 @@ if isWindows then
        sprintf """
 @echo off
 set MSBUILD=%%WINDIR%%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe
-%%MSBUILD%% ..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj /p:Configuration=%s
 %%MSBUILD%% MonoDevelop.FSharpBinding\MonoDevelop.FSharp.windows.fsproj /p:Configuration=%s
 set MDROOT="%s"
 rmdir /s /q pack
 mkdir pack\windows\%s
-xcopy /s /I /y dependencies\AspNetMvc4 bin\windows\%s\packages\AspNetMvc4
 %%MDROOT%%\bin\mdtool.exe setup pack bin\windows\%s\FSharpBinding.dll -d:pack\windows\%s
 %%MDROOT%%\bin\mdtool.exe setup install -y pack\windows\%s\MonoDevelop.FSharpBinding_%s.mpack 
 """
