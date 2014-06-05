@@ -414,7 +414,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 		internal static void NotebookWasPlacedInFloatingFrame (SdiDragNotebook notebook)
 		{
-			newNotebooks.Add (notebook);
+			if (!newNotebooks.Contains (notebook))
+				newNotebooks.Add (notebook);
 		}
 
 		const int w = 640;

@@ -49,6 +49,7 @@ using MonoDevelop.Ide.Projects;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Components.Docking;
+using MonoDevelop.Components.DockNotebook;
 using System.Text;
 
 namespace MonoDevelop.Ide.Gui
@@ -444,6 +445,20 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
+		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding Encoding, IViewDisplayBinding binding, DockWindow dockWindow)
+		{
+			var openFileInfo = new FileOpenInformation (fileName, project) {
+				Options = options,
+				Line = line,
+				Column = column,
+				DisplayBinding = binding,
+				Encoding = Encoding,
+				DockWindow = dockWindow
+			};
+
+			return OpenDocument (openFileInfo);
+		}
+
 
 		public Document OpenDocument (FileOpenInformation info)
 		{
@@ -522,8 +537,8 @@ namespace MonoDevelop.Ide.Gui
 				return null;
 			}
 		}
-		
-		IViewContent BatchOpenDocument (IProgressMonitor monitor, FilePath fileName, Project project, int line, int column)
+
+		IViewContent BatchOpenDocument (IProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockWindow dockWindow)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
@@ -533,6 +548,7 @@ namespace MonoDevelop.Ide.Gui
 					Options = OpenDocumentOptions.OnlyInternalViewer,
 					Line = line,
 					Column = column,
+					DockWindow = dockWindow
 				};
 				
 				RealOpenFile (monitor, openFileInfo);
@@ -1065,12 +1081,12 @@ namespace MonoDevelop.Ide.Gui
 			
 			List<IViewContent> docViews = new List<IViewContent> ();
 			var viewsDict = new Dictionary<IViewContent, int> ();
-			var floatsDict = new Dictionary<IViewContent, int> ();
 			var windowsDict = new Dictionary<int, SdiWorkspaceWindow> ();
 			FilePath baseDir = args.Item.BaseDirectory;
 			IViewContent currentView = null;
-			var dockWindows = new Dictionary<int, MonoDevelop.Components.DockNotebook.DockWindow> ();
-			
+			var dockWindows = new Dictionary<int, DockWindow> ();
+			var floatDocs = new List<DocumentUserPrefs> ();
+
 			using (IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
 				string currentFileName = prefs.ActiveDocument != null ? baseDir.Combine (prefs.ActiveDocument).FullPath : null;
 
@@ -1079,17 +1095,17 @@ namespace MonoDevelop.Ide.Gui
 
 					if (File.Exists (fileName)) {
 						// TODO: Get the correct project.
-						var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column);
+						if (doc.FloatingWindowId > 0) {
+							floatDocs.Add (doc);
+						} else {
+							var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, null);
 
-						if (fileName == currentFileName)
-							currentView = view;
+							if (fileName == currentFileName)
+								currentView = view;
 
-						if (view != null) {
-							viewsDict.Add (view, doc.NotebookId);
-							docViews.Add (view);
-
-							if (doc.FloatingWindowId > 0) {
-								floatsDict.Add (view, doc.FloatingWindowId);
+							if (view != null) {
+								viewsDict.Add (view, doc.NotebookId);
+								docViews.Add (view);
 							}
 						}
 					} 
@@ -1099,39 +1115,39 @@ namespace MonoDevelop.Ide.Gui
 				// This is EXTREMELY important, because without this main-loop pumping action, the next foreach() loop will
 				// not cause the Solution tree-view to properly expand, nor will the ActiveDocument be set properly.
 			}
+
+			foreach (var doc in floatDocs) {
+				string fileName = baseDir.Combine (doc.FileName).FullPath;
+				DockWindow dockWindow;
+				if (dockWindows.ContainsKey (doc.FloatingWindowId)) {
+					// This floating window has already been created, so let's load this document to it.
+					dockWindow = dockWindows [doc.FloatingWindowId];
+
+					IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
+						GettextCatalog.GetString ("Opening {0}", fileName),
+						Stock.StatusWorking,
+						true
+					);
+
+					IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, dockWindow);
+					pm.Dispose ();
+				} else {
+					// This is the first doc in this floating window, so create and position the dock window.
+					var floatPrefs = prefs.FloatingWindows.Find (w => w.WindowId == doc.FloatingWindowId);
+					dockWindow = new DockWindow ();
+					dockWindows.Add (doc.FloatingWindowId, dockWindow);
+					dockWindow.Move (floatPrefs.X, floatPrefs.Y);
+					dockWindow.Resize (floatPrefs.Width, floatPrefs.Height);
+					IdeApp.Workbench.OpenDocument (fileName, null, doc.Line, doc.Column, OpenDocumentOptions.None, null, null, dockWindow);
+					dockWindow.ShowAll ();
+				}
+			}
 			
 			foreach (var view in docViews) {
 				Document doc = WrapDocument (view.WorkbenchWindow);
 				var tmp_window = (SdiWorkspaceWindow)doc.Window;
 
 				int notebookId = viewsDict [view];
-
-				if (floatsDict.ContainsKey (view)) {
-					var tabControl = ((DefaultWorkbench)RootWindow).TabControl;
-					var oldTabControl = ((DefaultWorkbench)RootWindow).TabControl;
-					var floatId = floatsDict [view];
-
-					for (var i = 0; i < oldTabControl.TabCount; i++) {
-						var tab = oldTabControl.GetTab (i);
-
-						if (tab.Content == tmp_window) {
-							oldTabControl.RemoveTab (tab.Index, false);
-						}
-					}
-
-					if (dockWindows.ContainsKey (floatId)) {
-						var dockWin = dockWindows [floatId];
-						var container = dockWin.Container;
-						var newTab = container.TabControl.InsertTab (-1);
-						newTab.Content = tmp_window;
-						tmp_window.SetDockNotebook (container.TabControl, newTab);
-					} else {
-						var floatPrefs = prefs.FloatingWindows.Find (w => w.WindowId == floatId);
-						var tmp_win = MonoDevelop.Components.DockNotebook.DockNotebookContainer.MoveToFloatingWindow (tmp_window, floatPrefs.X, floatPrefs.Y, floatPrefs.Width, floatPrefs.Height);
-
-						dockWindows.Add (floatId, tmp_win);
-					}
-				}
 
 				if (notebookId == 0) {
 					if (view == currentView) {
@@ -1179,7 +1195,7 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
-			
+
 			foreach (PadUserPrefs pi in prefs.Pads) {
 				foreach (Pad pad in IdeApp.Workbench.Pads) {
 
@@ -1382,6 +1398,7 @@ namespace MonoDevelop.Ide.Gui
 		public IViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
+		public object DockWindow { get; set; }
 
 		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)")]
 		public FileOpenInformation (string fileName, int line, int column, OpenDocumentOptions options) 
@@ -1491,8 +1508,12 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			Counters.OpenDocumentTimer.Trace ("Showing view");
-			
-			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront));
+
+			if (fileInfo.DockWindow == null) {
+				workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront));
+			} else {
+				workbench.ShowViewInFloatingWindow ((DockWindow)fileInfo.DockWindow, newContent);
+			}
 			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow, binding);
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			

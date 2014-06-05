@@ -377,7 +377,67 @@ namespace MonoDevelop.Ide.Gui
 				OnActiveWindowChanged (null, null);
 			}
 		}
-		
+
+		public void ShowViewInFloatingWindow (DockWindow dockWindow, IViewContent content)
+		{
+			viewContentCollection.Add (content);
+
+			if (PropertyService.Get ("SharpDevelop.LoadDocumentProperties", true) && content is IMementoCapable) {
+				try {
+					Properties memento = GetStoredMemento(content);
+					if (memento != null) {
+						((IMementoCapable)content).Memento = memento;
+					}
+				} catch (Exception e) {
+					LoggingService.LogError ("Can't get/set memento : " + e.ToString());
+				}
+			}
+
+			Xwt.Drawing.Image mimeimage = null;
+
+			if (content.StockIconId != null ) {
+				mimeimage = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
+			}
+			else if (content.IsUntitled && content.UntitledName == null) {
+				mimeimage = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
+			} else {
+				mimeimage = DesktopService.GetIconForFile (content.ContentName ?? content.UntitledName, Gtk.IconSize.Menu);
+			}
+
+			IDockNotebookTab tab;
+			SdiDragNotebook addToControl;
+			if (dockWindow.Container == null) {
+				// This dock window doesn't yet have any tabs inserted.
+				addToControl = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+				tab = addToControl.InsertTab (-1);
+
+				dockWindow.Container = new DockNotebookContainer (addToControl);
+				addToControl.InitSize ();
+			} else {
+				// Use the existing tab control.
+				addToControl = (SdiDragNotebook)dockWindow.Container.TabControl;
+				tab = dockWindow.Container.TabControl.InsertTab (-1);
+			}
+
+			var sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, addToControl, tab);
+			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
+			sdiWorkspaceWindow.Closed += CloseWindowEvent;
+			sdiWorkspaceWindow.ShowAll ();
+
+			tab.Content = sdiWorkspaceWindow;
+
+			sdiWorkspaceWindow.SetDockNotebook (addToControl, tab);
+			MonoDevelop.Components.DockNotebook.PlaceholderWindow.NotebookWasPlacedInFloatingFrame (addToControl);
+
+			if (mimeimage != null)
+				tab.Icon = mimeimage;
+
+			if (content.Project != null)
+				content.Project.NameChanged += HandleProjectNameChanged;
+
+			OnActiveWindowChanged (null, null);
+		}
+
 		public virtual void ShowView (IViewContent content, bool bringToFront)
 		{
 			viewContentCollection.Add (content);
