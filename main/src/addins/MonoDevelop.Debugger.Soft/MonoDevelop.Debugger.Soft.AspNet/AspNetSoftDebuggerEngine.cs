@@ -39,9 +39,9 @@ using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft.AspNet
 {
-	public class AspNetSoftDebuggerEngine: IDebuggerEngine
+	public class AspNetSoftDebuggerEngine: DebuggerEngineBackend
 	{
-		public bool CanDebugCommand (ExecutionCommand command)
+		public override bool CanDebugCommand (ExecutionCommand command)
 		{
 			var cmd = command as AspNetExecutionCommand;
 			return cmd != null && SoftDebuggerEngine.CanDebugRuntime (cmd.TargetRuntime);
@@ -65,7 +65,7 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			throw new InvalidOperationException (string.Format ("Unknown runtime version '{0}'", version));
 		}
 		
-		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
+		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand command)
 		{
 			var cmd = (AspNetExecutionCommand) command;
 			var evars = new Dictionary<string, string>(cmd.EnvironmentVariables);
@@ -104,14 +104,9 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			return startInfo;
 		}
 
-		public DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession ()
 		{
 			return new SoftDebuggerSession ();
-		}
-		
-		public ProcessInfo[] GetAttachableProcesses ()
-		{
-			return new ProcessInfo[0];
 		}
 	}
 }

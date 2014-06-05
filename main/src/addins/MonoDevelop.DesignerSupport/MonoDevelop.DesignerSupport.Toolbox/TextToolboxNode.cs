@@ -38,8 +38,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 	[Serializable]
 	public class TextToolboxNode : ItemToolboxNode, ITextToolboxNode
 	{
-		private string text = string.Empty;
-		string domain = MonoDevelop.Core.GettextCatalog.GetString ("Text Snippets");
+		string text = string.Empty;
+		string domain = GettextCatalog.GetString ("Text Snippets");
 		
 		public TextToolboxNode (string text)
 		{

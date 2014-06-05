@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 			// Package download count.
 			if (packageViewModel.HasDownloadCount) {
 				var downloadCountTextLayout = new TextLayout ();
-				downloadCountTextLayout.Text = packageViewModel.GetDownloadCountDisplayText ();
+				downloadCountTextLayout.Text = packageViewModel.GetDownloadCountOrVersionDisplayText ();
 				Size size = downloadCountTextLayout.GetSize ();
 				Point location = new Point (cellArea.Right - packageDescriptionPadding.Right, cellArea.Top + packageDescriptionPadding.Top);
 				Point downloadLocation = location.Offset (-size.Width, 0);

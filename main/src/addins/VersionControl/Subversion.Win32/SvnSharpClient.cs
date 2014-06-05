@@ -16,17 +16,24 @@ namespace SubversionAddinWindows
 	sealed class SvnSharpClient: SubversionVersionControl
 	{
 		static bool errorShown;
-		static readonly bool installError;
-		static readonly SvnClient client;
+		static bool installError {
+			get { return client.Value == null; }
+		}
+		static readonly internal Lazy<SvnClient> client;
 		
 		static SvnSharpClient ()
 		{
+			client = new Lazy<SvnClient> (CheckInstalled);
+		}
+
+		static SvnClient CheckInstalled ()
+		{
 			try {
-				client = new SvnClient ();
+				return new SvnClient ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("SVN client could not be initialized", ex);
-				installError = true;
 			}
+			return null;
 		}
 
 		public override SubversionBackend CreateBackend ()
@@ -37,7 +44,7 @@ namespace SubversionAddinWindows
 		public override string GetPathUrl (FilePath path)
 		{
 			lock (client) {
-				Uri u = client.GetUriFromWorkingCopy (path);
+				Uri u = client.Value.GetUriFromWorkingCopy (path);
 				return u != null ? u.ToString () : null;
 			}
 		}
@@ -62,7 +69,7 @@ namespace SubversionAddinWindows
 		{
 			string wc_path;
 			try {
-				wc_path = client.GetWorkingCopyRoot (path.FullPath);
+				wc_path = client.Value.GetWorkingCopyRoot (path.FullPath);
 				return wc_path;
 			} catch (SvnException e) {
 				switch (e.SvnErrorCode) {
@@ -77,7 +84,10 @@ namespace SubversionAddinWindows
 
 	sealed class SvnSharpBackend: SubversionBackend
 	{
-		SvnClient client;
+		static SvnClient client {
+			get { return SvnSharpClient.client.Value; }
+		}
+
 		IProgressMonitor updateMonitor;
 		NotifData notifyData;
 		ProgressData progressData;
@@ -107,7 +117,6 @@ namespace SubversionAddinWindows
 
 		void Init ()
 		{
-			client = new SvnClient ();
 			client.Authentication.SslClientCertificateHandlers += AuthenticationSslClientCertificateHandlers;
 			client.Authentication.SslClientCertificatePasswordHandlers += AuthenticationSslClientCertificatePasswordHandlers;
 			client.Authentication.SslServerTrustHandlers += AuthenticationSslServerTrustHandlers;

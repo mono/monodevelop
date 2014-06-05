@@ -29,6 +29,8 @@
 	<Property name="BlockCommentEnd">*)</Property>
 	<Property name="StringQuote">"</Property>
 
+	<Delimiters>&amp;&lt;&gt;~@%^*()-+=|\#/{}[]:;"' ,	?</Delimiters>
+
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#if</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#else</EolSpan>
 	<EolSpan tagColor = "Preprocessor" rule="text.preprocessor">#elif</EolSpan>
@@ -95,6 +97,14 @@
 
 
 	<Match color="Number">CSharpNumber</Match>
+	<Match color="Keyword(Iteration)">let(!)?</Match>
+	<Match color="Keyword(Iteration)">use(!)?</Match>
+	<Match color="Keyword(Iteration)">yield(!)?</Match>
+	<Match color="Keyword(Iteration)">return(!)?</Match>
+	<Match color="Keyword(Iteration)">do(!)?</Match>
+
+	<!-- reserved-ident-keyword F# spec v3.0 section 3.4 -->
+	<Match color="Keyword(Other)">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?</Match>
 
 	<!-- It is really impossible to do some intelligent grouping here, because
 	     it looks weird no matter what we do... some things are context-sensitive,
@@ -114,17 +124,9 @@
 		<Word>with</Word>
 
 		<Word>val</Word>
-		<Word>use</Word>
-		<Word>yield</Word>
-		<Word>let!</Word>
-		<Word>use!</Word>
-		<Word>do!</Word>
-		<Word>yield!</Word>
-		<Word>return!</Word>
 		<Word>while</Word>
 		<Word>for</Word>
 
-		<Word>do</Word>
 		<Word>begin</Word>
 		<Word>done</Word>
 		<Word>elif</Word>
@@ -132,7 +134,6 @@
 		<Word>end</Word>
 		<Word>if</Word>
 		<Word>match</Word>
-		<Word>return</Word>
 		<Word>then</Word>
 		<Word>when</Word>
 
@@ -176,6 +177,7 @@
 		<Word>lazy</Word>
 		<Word>and</Word>
 		<Word>downcast</Word>
+		<Word>select</Word>
 	</Keywords>
 
 	<Keywords color="Keyword(Constants)">
@@ -214,6 +216,15 @@
 	</Keywords>
 
 	<Keywords color="Keyword(Other)">
+		<!-- reserved OCaml keywords -->
+		<Word>asr</Word>
+		<Word>land</Word>
+		<Word>lor</Word>
+		<Word>lsl</Word>
+		<Word>lsr</Word>
+		<Word>lxor</Word>
+		<Word>mod</Word>
+		<Word>sig</Word>
 	</Keywords>
 
 	<Rule name="text.preprocessor" ignorecase="True">

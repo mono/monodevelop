@@ -61,21 +61,25 @@ namespace Mono.TextEditor
 			get { return GetLinesStartingAt (DocumentLocation.MinLine); }
 		}
 
-		public void Initalize (string text)
+		public void Initalize (string text, out DocumentLine longestLine)
 		{
 			delimiters = new List<LineSplitter.Delimiter> ();
 
-			int offset = 0;
+			int offset = 0, maxLength = 0, maxLine = 0;
 			while (true) {
 				var delimiter = LineSplitter.NextDelimiter (text, offset);
 				if (delimiter.IsInvalid)
 					break;
 
+				var length = delimiter.EndOffset - offset;
+				if (length > maxLength) {
+					maxLength = length;
+					maxLine = delimiters.Count;
+				}
 				delimiters.Add (delimiter);
-
 				offset = delimiter.EndOffset;
 			}
-
+			longestLine = Get (maxLine);
 
 			textLength = text.Length;
 		}

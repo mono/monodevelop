@@ -30,38 +30,70 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementProjectService : IPackageManagementProjectService
 	{
-		public PackageManagementProjectService()
+		public PackageManagementProjectService ()
 		{
+			IdeApp.Workspace.SolutionLoaded += (sender, e) => OnSolutionLoaded (e.Solution);
+			IdeApp.Workspace.SolutionUnloaded += (sender, e) => OnSolutionUnloaded ();
 		}
-		
-		public Project CurrentProject {
-			get { return IdeApp.ProjectOperations.CurrentSelectedProject; }
-		}
-		
-		public Solution OpenSolution {
-			get { return IdeApp.ProjectOperations.CurrentSelectedSolution; }
-		}
-		
-		public IEnumerable<DotNetProject> GetOpenProjects()
+
+		public event EventHandler SolutionLoaded;
+
+		void OnSolutionLoaded (Solution solution)
 		{
-			Solution solution = OpenSolution;
-			if (solution != null) {
-				return solution.GetAllProjects ().OfType<DotNetProject> ();
+			OpenSolution = new SolutionProxy (solution);
+
+			EventHandler handler = SolutionLoaded;
+			if (handler != null) {
+				handler (this, new EventArgs ());
 			}
-			return new DotNetProject [0];
 		}
-		
-		public void Save(Solution solution)
+
+		public event EventHandler SolutionUnloaded;
+
+		void OnSolutionUnloaded ()
 		{
-			solution.Save();
+			OpenSolution = null;
+
+			var handler = SolutionUnloaded;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
 		}
-		
+
+		public IProject CurrentProject {
+			get {
+				Project project = IdeApp.ProjectOperations.CurrentSelectedProject;
+				if (project != null) {
+					if (project is DotNetProject) {
+						return new DotNetProjectProxy ((DotNetProject)project);
+					}
+					return new ProjectProxy (project);
+				}
+				return null;
+			}
+		}
+
+		public ISolution OpenSolution { get; private set; }
+
+		public IEnumerable<IDotNetProject> GetOpenProjects ()
+		{
+			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+			if (solution != null) {
+				return solution
+					.GetAllProjects ()
+					.OfType<DotNetProject> ()
+					.Select (project => new DotNetProjectProxy (project));
+			}
+			return new IDotNetProject [0];
+		}
+
 		public IProjectBrowserUpdater CreateProjectBrowserUpdater()
 		{
 			return new ThreadSafeProjectBrowserUpdater();

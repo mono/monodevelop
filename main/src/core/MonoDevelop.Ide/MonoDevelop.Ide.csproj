@@ -69,6 +69,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Design" />
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -1354,16 +1355,16 @@
       <LogicalName>element-module-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-other-declaration-16.png">
-      <LogicalName>element-other-declaration-16.png</LogicalName>
+      <LogicalName>element-other-declaration-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-other-declaration-16%402x.png">
-      <LogicalName>element-other-declaration-16@2x.png</LogicalName>
+      <LogicalName>element-other-declaration-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-type-16.png">
-      <LogicalName>element-type-16.png</LogicalName>
+      <LogicalName>element-type-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-type-16%402x.png">
-      <LogicalName>element-type-16@2x.png</LogicalName>
+      <LogicalName>element-type-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-source-16.png">
       <LogicalName>file-source-light-16.png</LogicalName>
@@ -1527,6 +1528,12 @@
     <EmbeddedResource Include="icons\light\warning-overlay-9%402x.png">
       <LogicalName>warning-overlay-light-9@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-8.png">
+      <LogicalName>warning-light-8.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\warning-8%402x.png">
+      <LogicalName>warning-light-8@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\warning-16.png">
       <LogicalName>warning-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1580,6 +1587,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\done-16%402x.png">
       <LogicalName>done-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\edit-16.png">
+      <LogicalName>edit-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\edit-16%402x.png">
+      <LogicalName>edit-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\star-16.png">
       <LogicalName>star-light-16.png</LogicalName>

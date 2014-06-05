@@ -215,7 +215,7 @@ fi
 
 AM_CONDITIONAL(ENABLE_MACPLATFORM, [test x$enable_macplatform = xyes])
 
-# Mac bundle 
+# Mac bundle
 AC_ARG_ENABLE(macbundle,
 	AC_HELP_STRING([--enable-macbundle],
 		[enable Mac bundle packaging [default=no]]),
@@ -235,7 +235,7 @@ fi
 AM_CONDITIONAL(ENABLE_WINDOWSPLATFORM, [test x$enable_windowsplatform = xyes])
 
 dnl Intl
-ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu nb"
+ALL_LINGUAS="cs da de es fr ja pt_BR tr pl it zh_TW zh_CN ru sl ca gl pt sv nl id hu nb ko"
 AC_SUBST(ALL_LINGUAS)
 GETTEXT_PACKAGE=monodevelop
 AC_SUBST(GETTEXT_PACKAGE)
@@ -279,6 +279,7 @@ src/core/MonoDevelop.Core/Makefile
 src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
 src/core/MonoDevelop.Ide/Makefile
 src/core/MonoDevelop.Startup/Makefile
+src/core/MonoDevelop.TextEditor.Tests/Makefile
 src/tools/Makefile
 src/tools/mdhost/Makefile
 src/tools/mdtool/Makefile
@@ -325,11 +326,16 @@ src/addins/CBinding/Makefile
 src/addins/GnomePlatform/Makefile
 src/addins/MacPlatform/Makefile
 src/addins/WindowsPlatform/Makefile
+src/addins/WindowsPlatform/WindowsAPICodePack/Makefile
+src/addins/WindowsPlatform/WindowsAPICodePack/Core/Makefile
+src/addins/WindowsPlatform/WindowsAPICodePack/Shell/Makefile
+src/addins/WindowsPlatform/WindowsPlatform/Makefile
 src/addins/MonoDevelop.AssemblyBrowser/Makefile
 src/addins/MonoDevelop.SourceEditor2/Makefile
 src/addins/MonoDevelop.XmlEditor/Makefile
 src/addins/MonoDevelop.Refactoring/Makefile
 src/addins/MonoDevelop.Debugger/Makefile
+src/addins/MonoDevelop.Debugger.Gdb/Makefile
 src/addins/MonoDevelop.Debugger.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft/Makefile
 src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.AspNet/Makefile
@@ -340,6 +346,8 @@ src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Tests/Mak
 tests/Makefile
 tests/UnitTests/Makefile
 tests/UserInterfaceTests/Makefile
+tests/TestRunner/Makefile
+tests/Ide.Tests/Makefile
 tests/MacPlatform.Tests/Makefile
 Makefile
 monodevelop

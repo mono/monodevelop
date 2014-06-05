@@ -24,7 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
+using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
+
 using NUnit.Framework;
 
 namespace MonoDevelop.Debugger.Tests
@@ -48,6 +52,10 @@ namespace MonoDevelop.Debugger.Tests
 		[Test]
 		public void VirtualProperty ()
 		{
+			var soft = Session as SoftDebuggerSession;
+			if (soft != null && soft.ProtocolVersion < new Version (2, 31))
+				Assert.Ignore ("A newer version of the Mono runtime is required.");
+
 			var ops = EvaluationOptions.DefaultOptions.Clone ();
 			ops.FlattenHierarchy = false;
 

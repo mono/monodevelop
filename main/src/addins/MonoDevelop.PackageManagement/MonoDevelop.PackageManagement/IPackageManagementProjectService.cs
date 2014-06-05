@@ -28,18 +28,20 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
 
 namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagementProjectService
 	{
-		Project CurrentProject { get; }
-		Solution OpenSolution { get; }
+		event EventHandler SolutionLoaded;
+		event EventHandler SolutionUnloaded;
 
-		void Save(Solution solution);
-		
-		IEnumerable<DotNetProject> GetOpenProjects();
+		IProject CurrentProject { get; }
+		ISolution OpenSolution { get; }
+
+		IEnumerable<IDotNetProject> GetOpenProjects ();
 		
 		IProjectBrowserUpdater CreateProjectBrowserUpdater();
 		

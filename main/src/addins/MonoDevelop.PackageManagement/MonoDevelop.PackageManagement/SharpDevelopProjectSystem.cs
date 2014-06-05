@@ -41,25 +41,30 @@ namespace ICSharpCode.PackageManagement
 {
 	public class SharpDevelopProjectSystem : PhysicalFileSystem, IProjectSystem
 	{
-		DotNetProject project;
+		IDotNetProject project;
 		ProjectTargetFramework targetFramework;
 		IPackageManagementFileService fileService;
-		IPackageManagementProjectService projectService;
-		
+		Action<MessageHandler> guiSyncDispatcher;
+
 		public SharpDevelopProjectSystem(DotNetProject project)
-			: this(project, new PackageManagementFileService(), new PackageManagementProjectService())
+			: this (
+				new DotNetProjectProxy (project),
+				new PackageManagementFileService (),
+				PackageManagementServices.ProjectService,
+				DispatchService.GuiSyncDispatch)
 		{
 		}
 		
-		public SharpDevelopProjectSystem(
-			DotNetProject project,
+		public SharpDevelopProjectSystem (
+			IDotNetProject project,
 			IPackageManagementFileService fileService,
-			IPackageManagementProjectService projectService)
-			: base(AppendTrailingSlashToDirectory(project.BaseDirectory))
+			IPackageManagementProjectService projectService,
+			Action<MessageHandler> guiSyncDispatcher)
+			: base (AppendTrailingSlashToDirectory (project.BaseDirectory))
 		{
 			this.project = project;
 			this.fileService = fileService;
-			this.projectService = projectService;
+			this.guiSyncDispatcher = guiSyncDispatcher;
 		}
 		
 		static string AppendTrailingSlashToDirectory(string directory)
@@ -88,14 +93,17 @@ namespace ICSharpCode.PackageManagement
 				return GuiSyncDispatch (() => project.Name);
 			}
 		}
-		
-		public dynamic GetPropertyValue(string propertyName)
+
+		public dynamic GetPropertyValue (string propertyName)
 		{
 			return GuiSyncDispatch (() => {
-				return project.GetEvaluatedProperty (propertyName);
+				if ("RootNamespace".Equals(propertyName, StringComparison.OrdinalIgnoreCase)) {
+					return project.DefaultNamespace;
+				}
+				return String.Empty;
 			});
 		}
-		
+
 		public void AddReference(string referencePath, Stream stream)
 		{
 			GuiSyncDispatch (() => {
@@ -249,10 +257,15 @@ namespace ICSharpCode.PackageManagement
 		
 		public override void AddFile(string path, Action<Stream> writeToStream)
 		{
-			base.AddFile(path, writeToStream);
+			PhysicalFileSystemAddFile (path, writeToStream);
 			GuiSyncDispatch (() => AddFileToProject (path));
 		}
-		
+
+		protected virtual void PhysicalFileSystemAddFile (string path, Action<Stream> writeToStream)
+		{
+			base.AddFile(path, writeToStream);
+		}
+
 		void AddFileToProject(string path)
 		{
 			if (ShouldAddFileToProject(path)) {
@@ -416,13 +429,13 @@ namespace ICSharpCode.PackageManagement
 		T GuiSyncDispatch<T> (Func<T> action)
 		{
 			T result = default(T);
-			DispatchService.GuiSyncDispatch (() => result = action ());
+			guiSyncDispatcher (() => result = action ());
 			return result;
 		}
 
 		void GuiSyncDispatch (Action action)
 		{
-			DispatchService.GuiSyncDispatch (() => action ());
+			guiSyncDispatcher (() => action ());
 		}
 	}
 }

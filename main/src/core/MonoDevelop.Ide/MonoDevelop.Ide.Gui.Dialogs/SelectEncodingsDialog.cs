@@ -35,7 +35,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide
 {
-	public static class SeletedEncodings
+	public static class SelectedEncodings
 	{
 		static int[] conversionEncodings = null;
 		public static int[] ConversionEncodings {
@@ -91,7 +91,7 @@ namespace MonoDevelop.Ide
 					storeAvail.AppendValues (enc.EncodingName, enc.WebName, e.CodePage);
 				}
 				
-				foreach (var e in SeletedEncodings.ConversionEncodings) {
+				foreach (var e in SelectedEncodings.ConversionEncodings) {
 					var enc = Encoding.GetEncoding (e);
 					storeSelected.AppendValues (enc.EncodingName, enc.WebName, enc.CodePage);
 				}
@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide
 					list.Add (enc);
 				} while (storeSelected.IterNext (ref iter));
 			}
-			SeletedEncodings.ConversionEncodings = list.ToArray ();
+			SelectedEncodings.ConversionEncodings = list.ToArray ();
 		}
 		
 		protected void OnAddClicked (object ob, EventArgs args)

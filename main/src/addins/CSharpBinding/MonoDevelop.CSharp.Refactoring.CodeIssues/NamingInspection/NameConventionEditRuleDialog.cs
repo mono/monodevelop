@@ -129,14 +129,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 				entrySuffix.Text = rule.RequiredSuffixes.FirstOrDefault (); 
 			styleComboBox.AppendText ("PascalCase"); 
 			styleComboBox.AppendText ("CamelCase"); 
-			styleComboBox.AppendText ("all_lower"); 
-			styleComboBox.AppendText ("ALL_UPPER"); 
-			styleComboBox.AppendText ("ALL_UPPER"); 
-			styleComboBox.AppendText ("First_upper"); 
-			styleComboBox.AppendText ("PascalCase_UnderscoreTolerant"); 
+			styleComboBox.AppendText ("ALLUPPER"); 
+			styleComboBox.AppendText ("alllower"); 
+			styleComboBox.AppendText ("Firstupper"); 
 			styleComboBox.AppendText ("PascalCase_underscoreTolerant"); 
-			styleComboBox.AppendText ("CamelCase_UnderscoreTolerant"); 
+			styleComboBox.AppendText ("PascalCase_UnderscoreTolerant"); 
 			styleComboBox.AppendText ("CamelCase_underscoreTolerant"); 
+			styleComboBox.AppendText ("CamelCase_UnderscoreTolerant"); 
 
 			styleComboBox.Active = (int)rule.NamingStyle - 1;
 

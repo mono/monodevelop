@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -41,13 +42,13 @@ namespace ICSharpCode.PackageManagement
 			Skip = viewModel.ItemsBeforeFirstPage;
 			Take = viewModel.PageSize;
 			AllPackages = allPackages;
-			SearchCriteria = searchCriteria;
+			SearchCriteria = new PackageSearchCriteria (searchCriteria);
 			TotalPackages = viewModel.TotalItems;
 		}
 
 		public int Skip { get; private set; }
 		public int Take { get; private set; }
-		public string SearchCriteria { get; private set; }
+		public PackageSearchCriteria SearchCriteria { get; private set; }
 
 		public int TotalPackages { get; set; }
 		public IEnumerable<IPackage> AllPackages { get; set; }

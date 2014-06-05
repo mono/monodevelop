@@ -145,6 +145,18 @@ namespace MonoDevelop.Ide.Tasks
 			// Initialize with existing tags.
 			foreach (Task t in comments)
 				AddGeneratedTask (t);
+
+			view.Destroyed += delegate {
+				view.RowActivated -= OnRowActivated;
+				TaskService.CommentTasksChanged -= OnCommentTasksChanged;
+				CommentTag.SpecialCommentTagsChanged -= OnCommentTagsChanged;
+				IdeApp.Workspace.WorkspaceItemLoaded -= OnWorkspaceItemLoaded;
+				IdeApp.Workspace.WorkspaceItemUnloaded -= OnWorkspaceItemUnloaded;
+				comments.TasksAdded -= DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskAdded);
+				comments.TasksRemoved -= DispatchService.GuiDispatch<TaskEventHandler> (GeneratedTaskRemoved);
+
+				PropertyService.PropertyChanged -= DispatchService.GuiDispatch<EventHandler<PropertyChangedEventArgs>> (OnPropertyUpdated);
+			};
 		}
 
 		void LoadColumnsVisibility ()

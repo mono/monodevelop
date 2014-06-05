@@ -46,7 +46,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		bool initialized;
 		
 		public string[] FileTypes {
-			get { return new string[] {"dll", "exe"}; }
+			get { return new [] {"dll", "exe"}; }
 		}
 		
 		public IList<ItemToolboxNode> Load (LoaderContext ctx, string filename)
@@ -70,7 +70,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			if (!found) {
 				// If the file does not belong to any known package, assume it is a wild assembly and make it
-				// avaliable to all frameworks
+				// available to all runtimes
 				foreach (TargetRuntime runtime in Runtime.SystemAssemblyService.GetTargetRuntimes ())
 					yield return runtime;
 			}
@@ -87,7 +87,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				else
 					scanAssem = System.Reflection.Assembly.LoadFile (filename);
 			} catch (Exception ex) {
-				MonoDevelop.Core.LoggingService.LogError ("ToolboxItemToolboxLoader: Could not load assembly '"
+				LoggingService.LogError ("ToolboxItemToolboxLoader: Could not load assembly '"
 				    + filename + "'", ex);
 				return list;
 			}
@@ -102,25 +102,29 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 			
 			//detect the runtime version
-			MonoDevelop.Core.ClrVersion clrVersion = MonoDevelop.Core.ClrVersion.Default;
-			byte[] corlibKey = new byte[] { 0xb7, 0x7a, 0x5c, 0x56, 0x19, 0x34, 0xe0, 0x89 };      
-			//the other system.{...} key: 	
-			//{ 0xb0, 0x3f, 0x5f, 0x7f, 0x11, 0xd5, 0x0a, 0x3a };
+			var clrVersion = ClrVersion.Default;
+			byte[] corlibKey = { 0xb7, 0x7a, 0x5c, 0x56, 0x19, 0x34, 0xe0, 0x89 };
 			foreach (System.Reflection.AssemblyName an in scanAssem.GetReferencedAssemblies ()) {
 				if (an.Name == "mscorlib" && byteArraysEqual (corlibKey, an.GetPublicKeyToken ())) {
-					if (an.Version == new Version (2, 0, 0, 0)) {
-						clrVersion = MonoDevelop.Core.ClrVersion.Net_2_0;
+					if (an.Version == new Version (4, 0, 0, 0)) {
+						clrVersion = ClrVersion.Net_4_0;
 						break;
-					} else if (an.Version == new Version (1, 0, 5000, 0)) {
-						clrVersion = MonoDevelop.Core.ClrVersion.Net_1_1;
+					}
+					if (an.Version == new Version (2, 0, 0, 0)) {
+						clrVersion = ClrVersion.Net_2_0;
+						break;
+					}
+					if (an.Version == new Version (1, 0, 5000, 0)) {
+						clrVersion = ClrVersion.Net_1_1;
 						break;
 					}
 				}
 			}
 			
-			if (clrVersion == MonoDevelop.Core.ClrVersion.Default) {
-				MonoDevelop.Core.LoggingService.LogError ("ToolboxItemToolboxLoader: assembly '"
-				    + filename + "' references unknown runtime version.");
+			if (clrVersion == ClrVersion.Default) {
+				LoggingService.LogError (
+					"ToolboxItemToolboxLoader: assembly '{0}' references unknown runtime version.", filename
+				);
 				return list;
 			}
 			
@@ -128,7 +132,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			foreach (Type t in types) {
 				//skip inaccessible types
-				if (t.IsAbstract || !t.IsPublic || !t.IsClass) continue;
+				if (t.IsAbstract || !t.IsPublic || !t.IsClass)
+					continue;
 				
 				//get the ToolboxItemAttribute if present
 				object[] atts = t.GetCustomAttributes (typeof (ToolboxItemAttribute), true);
@@ -154,7 +159,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 						list.Add (node);
 					}
 				} catch (Exception ex) {
-					MonoDevelop.Core.LoggingService.LogError (
+					LoggingService.LogError (
 					    "Unhandled error in toolbox node loader '" + GetType ().FullName 
 					    + "' with type '" + t.FullName
 					    + "' in assembly '" + scanAssem.FullName + "'",
@@ -165,7 +170,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return list;// Load (scanAssem);
 		}
 		
-		bool byteArraysEqual (byte[] a, byte[] b)
+		static bool byteArraysEqual (byte[] a, byte[] b)
 		{
 			if (a == null)
 				return b == null;
@@ -193,7 +198,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		    ToolboxItemAttribute attribute,
 		    string attributeCategory,
 		    string assemblyPath,
-		    MonoDevelop.Core.ClrVersion referencedRuntime
-		    );
+		    ClrVersion referencedRuntime
+		);
 	}
 }

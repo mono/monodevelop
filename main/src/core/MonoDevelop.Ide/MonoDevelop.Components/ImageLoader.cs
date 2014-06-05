@@ -70,14 +70,22 @@ namespace MonoDevelop.Components
 				}
 			).ContinueWith (t => {
 				try {
-					// If the errorcode is NotModified the file we cached on disk is still the latest one.
 					if (t.IsFaulted) {
 						var wex = t.Exception.Flatten ().InnerException as WebException;
 						if (wex != null) {
 							var resp = wex.Response as HttpWebResponse;
-							if (resp != null && resp.StatusCode == HttpStatusCode.NotModified) {
-								Cleanup ();
-								return;
+							if (resp != null) {
+								// If the errorcode is NotModified the file we cached on disk is still the latest one.
+								if (resp.StatusCode == HttpStatusCode.NotModified) {
+									Cleanup ();
+									return;
+								}
+								//if 404, there is no gravatar for the user
+								if (resp.StatusCode == HttpStatusCode.NotFound) {
+									image = null;
+									Cleanup ();
+									return;
+								}
 							}
 						}
 					}
@@ -111,7 +119,7 @@ namespace MonoDevelop.Components
 						if (File.Exists (tempPath))
 							File.Delete (tempPath);
 					} catch (Exception ex) {
-						LoggingService.LogError ("Error deleting Gravatar temp fil.e", ex);
+						LoggingService.LogError ("Error deleting Gravatar temp file.", ex);
 					}
 				}
 			});

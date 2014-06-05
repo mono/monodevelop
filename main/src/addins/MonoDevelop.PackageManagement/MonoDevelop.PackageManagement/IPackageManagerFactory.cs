@@ -27,15 +27,15 @@
 //
 
 using System;
-using MonoDevelop.Projects;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagerFactory
 	{
-		ISharpDevelopPackageManager CreatePackageManager(
+		ISharpDevelopPackageManager CreatePackageManager (
 			IPackageRepository sourceRepository, 
-			DotNetProject project);
+			IDotNetProject project);
 	}
 }

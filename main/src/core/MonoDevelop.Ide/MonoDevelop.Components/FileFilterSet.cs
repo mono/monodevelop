@@ -80,11 +80,16 @@ namespace MonoDevelop.Components
 				throw new InvalidOperationException ("Already called");
 			
 			useDefaultFilters = true;
-			
+
+			if (Platform.IsWindows)
+				filters.Add (SelectFileDialogFilter.AllFiles);
+
 			foreach (var f in GetDefaultFilters ())
 				filters.Add (f);
-			filters.Add (SelectFileDialogFilter.AllFiles);
-			
+
+			if (!Platform.IsWindows)
+				filters.Add (SelectFileDialogFilter.AllFiles);
+
 			LoadDefaultFilter ();
 		}
 		

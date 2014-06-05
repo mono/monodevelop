@@ -139,6 +139,8 @@ namespace MonoDevelop.NUnit
 
 			public override void InformMouseHover (TextEditor editor, Margin margin, MarginMouseEventArgs args)
 			{
+				if (!(margin is ActionMargin))
+					return;
 				string toolTip;
 				if (unitTest.IsFixture) {
 					if (isFailed) {
@@ -178,6 +180,8 @@ namespace MonoDevelop.NUnit
 
 			public override void InformMousePress (TextEditor editor, Margin margin, MarginMouseEventArgs args)
 			{
+				if (!(margin is ActionMargin))
+					return;
 				if (menu != null) {
 					menu.Destroy ();
 				}

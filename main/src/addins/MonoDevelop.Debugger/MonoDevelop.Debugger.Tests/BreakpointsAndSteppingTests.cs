@@ -26,6 +26,7 @@
 using System;
 using NUnit.Framework;
 using Mono.Debugging.Client;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Debugger.Tests
 {
@@ -787,7 +788,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void ConditionalBreakpoints()
+		public void ConditionalBreakpoints ()
 		{
 			ObjectValue val;
 			Breakpoint bp;
@@ -822,7 +823,7 @@ namespace MonoDevelop.Debugger.Tests
 		}
 
 		[Test]
-		public void HitCountBreakpoints()
+		public void HitCountBreakpoints ()
 		{
 			ObjectValue val;
 			Breakpoint bp;
@@ -942,6 +943,64 @@ namespace MonoDevelop.Debugger.Tests
 			var val = Eval ("s");
 			Assert.AreEqual ("string", val.TypeName);
 			Assert.AreEqual ("\"Hello from Bar\"", val.Value);
+		}
+
+		[Test]
+		public void OutputAndDebugWriter ()
+		{
+			//Interesting fact... Debug.Write(""); produces log entry
+			//but Console.Write(""); does not
+
+			InitializeTest ();
+			AddBreakpoint ("5070ed1c-593d-4cbe-b4fa-b2b0c7b25289");
+			var errorsList = new List<string> ();
+			errorsList.Add ("ErrorText");
+			var outputList = new HashSet<string> ();
+			outputList.Add ("NormalText");
+			var debugList = new List<Tuple<int,string,string>> ();
+			debugList.Add (new Tuple<int,string,string> (0, "", "DebugText"));
+			debugList.Add (new Tuple<int, string, string> (3, "SomeCategory", "DebugText2"));
+			debugList.Add (new Tuple<int,string,string> (0, "", ""));
+
+			var unexpectedOutput = new List<string> ();
+			var unexpectedError = new List<string> ();
+			var unexpectedDebug = new List<Tuple<int,string,string>> ();
+
+			Session.DebugWriter = delegate(int level, string category, string message) {
+				var entry = new Tuple<int,string,string> (level, category, message);
+				if (debugList.Contains (entry)) {
+					debugList.Remove (entry);
+				} else {
+					unexpectedDebug.Add (entry);
+				}
+			};
+			Session.OutputWriter = delegate(bool isStderr, string text) {
+				if (isStderr) {
+					if (errorsList.Contains (text))
+						errorsList.Remove (text);
+					else
+						unexpectedError.Add (text);
+				} else {
+					if (outputList.Contains (text))
+						outputList.Remove (text);
+					else
+						unexpectedOutput.Add (text);
+				}
+			};
+			StartTest ("OutputAndDebugWriter");
+			CheckPosition ("5070ed1c-593d-4cbe-b4fa-b2b0c7b25289");
+			if (outputList.Count > 0)
+				Assert.Fail ("Output list still has following items:" + string.Join (",", outputList));
+			if (errorsList.Count > 0)
+				Assert.Fail ("Error list still has following items:" + string.Join (",", errorsList));
+			if (debugList.Count > 0)
+				Assert.Fail ("Debug list still has following items:" + string.Join (",", debugList));
+			if (unexpectedOutput.Count > 0)
+				Assert.Fail ("Unexcpected Output list has following items:" + string.Join (",", unexpectedOutput));
+			if (unexpectedError.Count > 0)
+				Assert.Fail ("Unexcpected Error list has following items:" + string.Join (",", unexpectedError));
+			if (unexpectedDebug.Count > 0)
+				Assert.Fail ("Unexcpected Debug list has following items:" + string.Join (",", unexpectedDebug));
 		}
 	}
 }

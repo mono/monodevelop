@@ -107,12 +107,17 @@ namespace MonoDevelop.Projects
 
 		public ProjectReference (ReferenceType referenceType, string reference, string hintPath)
 		{
-			if (referenceType == ReferenceType.Assembly)
+			if (referenceType == ReferenceType.Assembly) {
 				specificVersion = false;
+				if (hintPath == null) {
+					hintPath = reference;
+					reference = Path.GetFileNameWithoutExtension (reference);
+				}
+			}
 
 			this.referenceType = referenceType;
-			this.reference     = reference;
-			this.hintPath = hintPath ?? (referenceType == ReferenceType.Assembly ? reference : null);
+			this.reference = reference;
+			this.hintPath = hintPath;
 			UpdatePackageReference ();
 		}
 		
@@ -530,6 +535,22 @@ namespace MonoDevelop.Projects
 		{
 			if (StatusChanged != null)
 				StatusChanged (this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Resolves a project for a ReferenceType.Project reference type in a given solution.
+		/// </summary>
+		/// <returns>The project, or <c>null</c> if it couldn't be resolved.</returns>
+		/// <param name="inSolution">The solution the project is in.</param>
+		/// <exception cref="T:System.ArgumentNullException">Thrown if inSolution == null</exception>
+		/// <exception cref="T:System.InvalidOperationException">Thrown if ReferenceType != ReferenceType.Project</exception>
+		public Project ResolveProject (Solution inSolution)
+		{
+			if (inSolution == null)
+				throw new ArgumentNullException ("inSolution");
+			if (ReferenceType != ReferenceType.Project)
+				throw new InvalidOperationException ("ResolveProject is only definied for Project reference type.");
+			return inSolution.FindProjectByName (Reference);
 		}
 	}
 	

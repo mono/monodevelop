@@ -35,11 +35,11 @@ using Mono.Debugging.Soft;
 
 namespace MonoDevelop.Debugger.Soft
 {
-	class CustomSoftDebuggerEngine: IDebuggerEngine
+	class CustomSoftDebuggerEngine: DebuggerEngineBackend
 	{
 		bool? available;
 		
-		public bool CanDebugCommand (ExecutionCommand cmd)
+		public override bool CanDebugCommand (ExecutionCommand cmd)
 		{
 			// This isn't polished enough to show it by default. GUI needs work, and it should be exposed
 			// via "run with->custom parameters", not a toplevel command and dialog.
@@ -50,17 +50,12 @@ namespace MonoDevelop.Debugger.Soft
 			return available.Value;
 		}
 
-		public DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession ()
 		{
 			return new CustomSoftDebuggerSession ();
 		}
 		
-		public ProcessInfo[] GetAttachableProcesses ()
-		{
-			return new ProcessInfo[0];
-		}
-		
-		public DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
+		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
 		{
 			//WORKAROUND: explicit generic type argument works around a gmcs 2.6.x type inference bug 
 			return InvokeSynch<SoftDebuggerStartInfo> (GetDebuggerInfo) ??
@@ -148,12 +143,12 @@ namespace MonoDevelop.Debugger.Soft
 			
 			void ProcessOutput (object sender, string message)
 			{
-				OnTargetOutput (true, message);
+				OnTargetOutput (false, message);
 			}
 			
 			void ProcessError (object sender, string message)
 			{
-				OnTargetOutput (false, message);
+				OnTargetOutput (true, message);
 			}
 			
 			protected override void EndSession ()

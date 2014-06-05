@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -36,30 +37,30 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageManagementProjectService projectService;
 		
-		public OpenDotNetProjects(IPackageManagementProjectService projectService)
+		public OpenDotNetProjects (IPackageManagementProjectService projectService)
 		{
 			this.projectService = projectService;
 		}
 		
-		public DotNetProject FindProject(string name)
+		public IDotNetProject FindProject (string name)
 		{
-			foreach (Project project in projectService.GetOpenProjects()) {
-				if (IsProjectNameMatch(project, name)) {
-					return project as DotNetProject;
+			foreach (IProject project in projectService.GetOpenProjects ()) {
+				if (IsProjectNameMatch (project, name)) {
+					return project as IDotNetProject;
 				}
 			}
 			return null;
 		}
 		
-		bool IsProjectNameMatch(Project project, string name)
+		bool IsProjectNameMatch (IProject project, string name)
 		{
-			return IsMatchIgnoringCase(project.Name, name) ||
+			return IsMatchIgnoringCase (project.Name, name) ||
 				(project.FileName == name);
 		}
 		
-		bool IsMatchIgnoringCase(string a, string b)
+		bool IsMatchIgnoringCase (string a, string b)
 		{
-			return String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+			return String.Equals (a, b, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }
