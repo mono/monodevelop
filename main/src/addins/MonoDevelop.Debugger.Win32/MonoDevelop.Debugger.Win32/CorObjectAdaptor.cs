@@ -80,8 +80,12 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsNull (EvaluationContext ctx, object gval)
 		{
-			CorValRef val = (CorValRef) gval;
-			return val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue) val.Val).IsNull);
+			var val = (CorValRef)gval;
+			if (val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue)val.Val).IsNull))
+				return true;
+
+			var obj = GetRealObject (ctx, val);
+			return (obj is CorReferenceValue) && ((CorReferenceValue)obj).IsNull;
 		}
 
 		public override bool IsValueType (object type)
