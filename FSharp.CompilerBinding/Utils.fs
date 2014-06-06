@@ -35,7 +35,8 @@ module Option =
         function
         | Some x -> Some x
         | None -> v
-    
+
+// Async helper functions copied from https://github.com/jack-pappas/ExtCore/blob/master/ExtCore/ControlCollections.Async.fs
 [<RequireQualifiedAccess>]
 module Async =
     /// Transforms an Async value using the specified function.
@@ -47,6 +48,24 @@ module Async =
             // Apply the mapping function and return the result.
             return mapping x
         }
+
+    [<RequireQualifiedAccess>]    
+    module Array =
+        /// Async implementation of Array.map.
+        let map (mapping : 'T -> Async<'U>) (array : 'T[]) : Async<'U[]> =
+            let len = Array.length array
+            let result = Array.zeroCreate len
+
+            async {
+                // Apply the mapping function to each array element.
+                for i in 0 .. len - 1 do
+                    let! mappedValue = mapping array.[i]
+                    result.[i] <- mappedValue
+
+                // Return the completed results.
+                return result
+            }
+
 
 /// Maybe computation expression builder, copied from ExtCore library
 /// https://github.com/jack-pappas/ExtCore/blob/master/ExtCore/Control.fs
