@@ -96,6 +96,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			var package = FakePackage.CreatePackageWithVersion (packageId, "1.2.3.4");
 			package.AddFile (@"lib\net45\MyPackage.dll");
+			package.AddFile (@"lib\net40\MyPackage.dll");
 
 			FakePackageManagementProject packageManagementProject =
 				solution.AddFakeProjectToReturnFromGetProject (project.Name);
@@ -126,6 +127,15 @@ namespace MonoDevelop.PackageManagement.Tests
 			ProjectHasOnePackageReferenceNeedingReinstall (packageId);
 
 			solution.FakeProjectsToReturnFromGetProject ["MyProject"].FakePackages [0].FilesList.Clear ();
+		}
+
+		void ProjectHasOnePackageReferenceIncompatibleWithCurrentProjectTargetFramework (string packageId)
+		{
+			ProjectHasOnePackageReferenceNeedingReinstall (packageId);
+
+			FakePackage package = solution.FakeProjectsToReturnFromGetProject ["MyProject"].FakePackages [0];
+			package.FilesList.Clear ();
+			package.AddFile (@"lib\wp8\MyPackage.dll");
 		}
 
 		void FindPackageInProjectThrowsException (string errorMessage)
@@ -352,6 +362,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			Run ();
 
 			Assert.AreEqual (0, runner.FileSystem.FilesAdded.Count);
+		}
+
+		[Test]
+		public void Run_OnePackageInProjectIncompatibleWithNewProjectTargetFramework_IncompatiblePackageErrorMessageDisplayed ()
+		{
+			CreateRunner ();
+			ProjectHasOnePackageReferenceIncompatibleWithCurrentProjectTargetFramework ("MyPackageId");
+
+			Run ();
+
+			Assert.AreEqual ("Incompatible package found. Please see Package Console for details.", progressMonitor.ReportedErrorMessage);
+			Assert.IsTrue (runner.PackageConsoleIsShown);
 		}
 	}
 }

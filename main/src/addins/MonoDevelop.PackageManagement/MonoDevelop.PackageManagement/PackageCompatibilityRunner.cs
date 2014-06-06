@@ -149,7 +149,11 @@ namespace MonoDevelop.PackageManagement
 		void ReportPackageReinstallationWarning (PackageCompatibilityChecker checker)
 		{
 			checker.GenerateReport (progressMonitor.Log);
-			progressMonitor.ReportWarning (progressMessage.Warning);
+			if (checker.AnyIncompatiblePackages ()) {
+				progressMonitor.ReportError (GettextCatalog.GetString ("Incompatible package found. Please see Package Console for details."), null);
+			} else {
+				progressMonitor.ReportWarning (progressMessage.Warning);
+			}
 			ShowPackageConsole (progressMonitor);
 		}
 

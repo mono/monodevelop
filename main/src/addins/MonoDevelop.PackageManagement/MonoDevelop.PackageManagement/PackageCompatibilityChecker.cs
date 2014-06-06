@@ -89,6 +89,11 @@ namespace MonoDevelop.PackageManagement
 			return compatibility.ShouldReinstallPackage;
 		}
 
+		public bool AnyIncompatiblePackages ()
+		{
+			return compatibilityReport.AnyIncompatiblePackages ();
+		}
+
 		public bool AnyPackagesRequireReinstallation ()
 		{
 			return packagesRequiringReinstallation.Any ();

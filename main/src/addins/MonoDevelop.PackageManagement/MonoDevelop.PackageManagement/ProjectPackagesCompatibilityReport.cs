@@ -59,6 +59,11 @@ namespace MonoDevelop.PackageManagement
 			ReportPackagesNeedingReinstall ();
 		}
 
+		public bool AnyIncompatiblePackages ()
+		{
+			return GetPackagesIncompatibleWithNewProjectTargetFramework ().Any ();
+		}
+
 		void ReportIncompatiblePackages ()
 		{
 			List<IPackage> incompatiblePackages = GetPackagesIncompatibleWithNewProjectTargetFramework ().ToList ();
