@@ -28,7 +28,7 @@ open Android.Runtime
 open Android.Views
 open Android.Widget
 
-type ${Name} =
+type ${Name} = class end
 
 ]]></File>
 	</TemplateFiles>

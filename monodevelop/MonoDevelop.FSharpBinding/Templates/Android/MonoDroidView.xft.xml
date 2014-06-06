@@ -29,19 +29,13 @@ open Android.Util
 open Android.Views
 open Android.Widget
 
-type ${Name} (context:Context, attrs:IAttributeSet, defStyle:int) =
-  inherit View (context, attrs, defStyle)
-  Initialize ()
+type ${Name} =
+    inherit View
+    new (context, attrs, defStyle) as x = { inherit View(context, attrs, defStyle) } then x.Initialize()
+    new (context:Context, attrs:IAttributeSet) as x = { inherit View(context, attrs) } then x.Initialize()
+    new (context:Context) as x = { inherit View(context) } then x.Initialize()
 
-  new(context:Context, attrs:IAttributeSet) =
-    inherit View (context, attrs)
-    Initialize ()
-
-  new(context:Context) =
-    inherit View (context)
-    Initialize ()
-
-  member Initialize () =
+    member x.Initialize () = ()
 
 ]]></File>
 	</TemplateFiles>
