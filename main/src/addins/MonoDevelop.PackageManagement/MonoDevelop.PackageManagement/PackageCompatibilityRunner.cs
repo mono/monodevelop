@@ -126,7 +126,7 @@ namespace MonoDevelop.PackageManagement
 
 			if (checker.AnyPackagesRequireReinstallation ()) {
 				MarkPackagesForReinstallation (checker);
-				ReportPackageReinstallationWarning (checker.GetPackagesRequiringReinstallation ());
+				ReportPackageReinstallationWarning (checker);
 			} else {
 				if (checker.PackagesMarkedForReinstallationInPackageReferenceFile ()) {
 					MarkPackagesForReinstallation (checker);
@@ -146,19 +146,11 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.OnFileChanged (checker.PackageReferenceFileName);
 		}
 
-		void ReportPackageReinstallationWarning (IEnumerable<string> packages)
+		void ReportPackageReinstallationWarning (PackageCompatibilityChecker checker)
 		{
-			progressMonitor.Log.WriteLine (GetPackageReinstallationWarningMessage ());
-			foreach (string package in packages) {
-				progressMonitor.Log.WriteLine (package);
-			}
+			checker.GenerateReport (progressMonitor.Log);
 			progressMonitor.ReportWarning (progressMessage.Warning);
 			ShowPackageConsole (progressMonitor);
-		}
-
-		protected virtual string GetPackageReinstallationWarningMessage()
-		{
-			return GettextCatalog.GetString ("The following NuGet packages were installed with a target framework that is different from the project's current target framework and should be reinstalled." + Environment.NewLine);
 		}
 
 		protected virtual void ShowPackageConsole (IProgressMonitor progressMonitor)

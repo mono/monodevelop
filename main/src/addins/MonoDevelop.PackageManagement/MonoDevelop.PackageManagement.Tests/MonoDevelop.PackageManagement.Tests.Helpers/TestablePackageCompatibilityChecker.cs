@@ -52,6 +52,5 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			handler.Invoke ();
 		}
 	}
-
 }
 

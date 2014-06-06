@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
 using ICSharpCode.PackageManagement;
@@ -41,6 +42,7 @@ namespace MonoDevelop.PackageManagement
 		List<IPackage> packagesRequiringReinstallation = new List<IPackage> ();
 		PackageReferenceFile packageReferenceFile;
 		List<PackageReference> packageReferences;
+		ProjectPackagesCompatibilityReport compatibilityReport;
 
 		public PackageCompatibilityChecker (
 			IPackageManagementSolution solution,
@@ -61,10 +63,14 @@ namespace MonoDevelop.PackageManagement
 			packageReferenceFile = CreatePackageReferenceFile (project.GetPackagesConfigFilePath ());
 			packageReferences = packageReferenceFile.GetPackageReferences ().ToList ();
 
+			compatibilityReport = new ProjectPackagesCompatibilityReport (packageManagementProject.TargetFramework);
+
 			foreach (PackageReference packageReference in packageReferences) {
 				IPackage package = packageManagementProject.FindPackage (packageReference.Id);
-				if (PackageNeedsReinstall (project, package, packageReference.TargetFramework)) {
-					packagesRequiringReinstallation.Add (package);
+				if (package != null) {
+					if (PackageNeedsReinstall (project, package, packageReference.TargetFramework)) {
+						packagesRequiringReinstallation.Add (package);
+					}
 				}
 			}
 		}
@@ -76,25 +82,16 @@ namespace MonoDevelop.PackageManagement
 
 		bool PackageNeedsReinstall (IDotNetProject project, IPackage package, FrameworkName packageTargetFramework)
 		{
-			if (package == null)
-				return false;
+			var compatibility = new PackageCompatibility (project, package, packageTargetFramework);
+			compatibility.CheckCompatibility ();
+			compatibilityReport.Add (compatibility);
 
-			var projectTargetFramework = new ProjectTargetFramework (project);
-			return ProjectRetargetingUtility.ShouldPackageBeReinstalled (
-					projectTargetFramework.TargetFrameworkName,
-					packageTargetFramework,
-					package);
+			return compatibility.ShouldReinstallPackage;
 		}
 
 		public bool AnyPackagesRequireReinstallation ()
 		{
 			return packagesRequiringReinstallation.Any ();
-		}
-
-		public IEnumerable<string> GetPackagesRequiringReinstallation ()
-		{
-			return packagesRequiringReinstallation
-				.Select (package => package.Id);
 		}
 
 		public void MarkPackagesForReinstallation ()
@@ -119,6 +116,11 @@ namespace MonoDevelop.PackageManagement
 		protected virtual void GuiDispatch (MessageHandler handler)
 		{
 			DispatchService.GuiDispatch (handler);
+		}
+
+		public void GenerateReport (TextWriter writer)
+		{
+			compatibilityReport.GenerateReport (writer);
 		}
 	}
 }

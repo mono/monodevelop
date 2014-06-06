@@ -95,13 +95,6 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public PackageReferenceFile PackageReferenceFile;
 		public FakeFileSystem FileSystem = new FakeFileSystem ();
 
-		public string PackageInstallationWarningMessage = "Reinstallation warning message";
-
-		protected override string GetPackageReinstallationWarningMessage ()
-		{
-			return PackageInstallationWarningMessage;
-		}
-
 		public bool PackageConsoleIsShown;
 
 		protected override void ShowPackageConsole (IProgressMonitor progressMonitor)

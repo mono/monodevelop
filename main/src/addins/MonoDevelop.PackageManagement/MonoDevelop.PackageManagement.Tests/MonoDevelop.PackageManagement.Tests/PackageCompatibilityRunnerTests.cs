@@ -228,11 +228,10 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateRunner ();
 			ProjectHasOnePackageReferenceNeedingReinstall ("MyPackageId");
-			runner.PackageInstallationWarningMessage = "Reinstall packages";
 
 			Run ();
 
-			progressMonitor.AssertMessageIsLogged ("Reinstall packages");
+			progressMonitor.AssertMessageIsLogged ("should be reinstalled");
 		}
 
 		[Test]
