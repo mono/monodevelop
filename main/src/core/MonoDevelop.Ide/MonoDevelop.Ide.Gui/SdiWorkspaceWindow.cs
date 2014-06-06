@@ -161,7 +161,7 @@ namespace MonoDevelop.Ide.Gui
 		protected override bool OnWidgetEvent (Gdk.Event evt)
 		{
 			if (evt.Type == Gdk.EventType.VisibilityNotify || evt.Type == Gdk.EventType.ButtonRelease) {
-				SelectWindow ();
+				SelectWindow (false);
 				((DefaultWorkbench)IdeApp.Workbench.RootWindow).FocusMayHaveChanged ((SdiDragNotebook)Parent.Parent);
 			}
 
@@ -259,11 +259,16 @@ namespace MonoDevelop.Ide.Gui
 			if (subViewToolbar != null)
 				subViewToolbar.Tabs [subViewToolbar.ActiveTab].Activate ();
 		}
+
+		public void SelectWindow ()
+		{
+			SelectWindow (true);
+		}
 		
-		public void SelectWindow()
+		public void SelectWindow (bool doPresent)
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
-			if (window != null) {
+			if (window != null && doPresent) {
 				present_timeout = GLib.Timeout.Add (10, delegate {
 					window.Present ();
 
