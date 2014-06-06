@@ -31,7 +31,7 @@ type CorrectGuidMSBuildExtension() =
                     (fun guids ->
                         guids.Element.InnerText <-
                             guids.Element.InnerText.Split ([|';'|], StringSplitOptions.RemoveEmptyEntries)
-                            |> Array.filter (fun guid -> guid.Equals ("{4925A630-B079-445D-BCD4-3A9C94FE9307}", StringComparison.OrdinalIgnoreCase))
+                            |> Array.filter (fun guid -> not (guid.Equals ("{4925A630-B079-445D-BCD4-3A9C94FE9307}", StringComparison.OrdinalIgnoreCase)))
                             |> String.concat ";" )
 
          with exn -> LoggingService.LogWarning ("Failed to remove old F# guid", exn)
