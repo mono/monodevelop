@@ -1135,7 +1135,6 @@ namespace MonoDevelop.Ide.Gui
 					// This is the first doc in this floating window, so create and position the dock window.
 					var floatPrefs = prefs.FloatingWindows.Find (w => w.WindowId == doc.FloatingWindowId);
 					dockWindow = new DockWindow ();
-					dockWindow.FocusOnMap = false;
 					dockWindows.Add (doc.FloatingWindowId, dockWindow);
 					dockWindow.Move (floatPrefs.X, floatPrefs.Y);
 					dockWindow.Resize (floatPrefs.Width, floatPrefs.Height);
