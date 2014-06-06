@@ -99,7 +99,7 @@ namespace MonoDevelop.PackageManagement
 
 		void LogReinstallingPackagesMessage ()
 		{
-			string message = GettextCatalog.GetString ("Reinstalling packages...{0}", Environment.NewLine);
+			string message = GettextCatalog.GetString ("Retargeting packages...{0}", Environment.NewLine);
 			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Info, message);
 		}
 

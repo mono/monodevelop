@@ -29,8 +29,8 @@
 			_label="Version" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage"
-			_description="Reinstall package"
-			_label="Re_install" />
+			_description="Retarget package"
+			_label="Re_target" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage"
 			_description="Update package"
@@ -47,8 +47,8 @@
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
-			_description="Reinstall all packages"
-			_label="Re_install"
+			_description="Retargets all packages"
+			_label="Re_target"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProjectHandler" />
 	</Extension>
 	

@@ -241,7 +241,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Run ();
 
-			progressMonitor.AssertMessageIsLogged ("should be reinstalled");
+			progressMonitor.AssertMessageIsLogged ("should be retargeted");
 		}
 
 		[Test]
@@ -372,7 +372,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Run ();
 
-			Assert.AreEqual ("Incompatible package found. Please see Package Console for details.", progressMonitor.ReportedErrorMessage);
+			Assert.AreEqual ("Incompatible packages found. Please see Package Console for details.", progressMonitor.ReportedErrorMessage);
 			Assert.IsTrue (runner.PackageConsoleIsShown);
 		}
 	}

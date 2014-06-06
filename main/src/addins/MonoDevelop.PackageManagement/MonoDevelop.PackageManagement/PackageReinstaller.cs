@@ -52,7 +52,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run (PackageReferenceNode packageReferenceNode)
 		{
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateReinstallingSinglePackageMessage (packageReferenceNode.Id);
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRetargetingSinglePackageMessage (packageReferenceNode.Id);
 			Run (packageReferenceNode, progressMessage);
 		}
 

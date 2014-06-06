@@ -51,9 +51,9 @@ namespace MonoDevelop.PackageManagement.Commands
 		ProgressMonitorStatusMessage CreateProgressMessage (ReinstallProjectPackagesAction reinstallAction)
 		{
 			if (reinstallAction.Packages.Count () == 1) {
-				return ProgressMonitorStatusMessageFactory.CreateReinstallingSinglePackageMessage (reinstallAction.Packages.First ().Id);
+				return ProgressMonitorStatusMessageFactory.CreateRetargetingSinglePackageMessage (reinstallAction.Packages.First ().Id);
 			}
-			return ProgressMonitorStatusMessageFactory.CreateReinstallingPackagesInProjectMessage (reinstallAction.Packages.Count ());
+			return ProgressMonitorStatusMessageFactory.CreateRetargetingPackagesInProjectMessage (reinstallAction.Packages.Count ());
 		}
 
 		void ShowStatusBarError (Exception ex)

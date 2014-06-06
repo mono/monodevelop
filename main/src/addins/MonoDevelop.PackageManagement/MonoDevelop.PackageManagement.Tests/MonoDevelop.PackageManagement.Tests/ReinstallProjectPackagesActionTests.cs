@@ -162,11 +162,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void Execute_OneProjectPackage_PackageReinstallMessageIsLogged ()
+		public void Execute_OneProjectPackage_PackageRetargetingMessageIsLogged ()
 		{
 			CreateAction ();
 			AddPackageToProjectAndSourceRepository ("MyPackage");
-			string expectedMessage = GettextCatalog.GetString ("Reinstalling packages...{0}", Environment.NewLine);
+			string expectedMessage = GettextCatalog.GetString ("Retargeting packages...{0}", Environment.NewLine);
 			var messages = new List<string> ();
 			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
 				messages.Add (e.Message.ToString ());

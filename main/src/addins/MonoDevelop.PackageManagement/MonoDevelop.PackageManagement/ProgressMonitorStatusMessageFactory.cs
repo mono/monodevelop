@@ -127,37 +127,37 @@ namespace MonoDevelop.PackageManagement
 				GetString ("Checking package compatibility with new target framework..."),
 				GetString ("Packages are compatible."),
 				GetString ("Could not check package compatibility. Please see Package Console for details."),
-				GetString ("Package reinstallation required. Please see Package Console for details.")
+				GetString ("Package retargeting required. Please see Package Console for details.")
 			);
 		}
 
-		public static ProgressMonitorStatusMessage CreateReinstallingSinglePackageMessage (string packageId)
+		public static ProgressMonitorStatusMessage CreateRetargetingSinglePackageMessage (string packageId)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Reinstalling {0}...", packageId),
-				GetString ("{0} successfully reinstalled.", packageId),
-				GetString ("Could not reinstall {0}. Please see Package Console for details.", packageId),
-				GetString ("{0} reinstalled with warnings. Please see Package Console for details.", packageId)
+				GetString ("Retargeting {0}...", packageId),
+				GetString ("{0} successfully retargeted.", packageId),
+				GetString ("Could not retarget {0}. Please see Package Console for details.", packageId),
+				GetString ("{0} retargeted with warnings. Please see Package Console for details.", packageId)
 			);
 		}
 
-		public static ProgressMonitorStatusMessage CreateReinstallingPackagesInProjectMessage (int count)
+		public static ProgressMonitorStatusMessage CreateRetargetingPackagesInProjectMessage (int count)
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Reinstalling {0} packages...", count),
-				GetString ("{0} packages successfully reinstalled.", count),
-				GetString ("Could not reinstall packages. Please see Package Console for details."),
-				GetString ("{0} packages reinstalled with warnings. Please see Package Console for details.", count)
+				GetString ("Retargeting {0} packages...", count),
+				GetString ("{0} packages successfully retargeted.", count),
+				GetString ("Could not retarget packages. Please see Package Console for details."),
+				GetString ("{0} packages retargeted with warnings. Please see Package Console for details.", count)
 			);
 		}
 
-		public static ProgressMonitorStatusMessage CreateReinstallingPackagesInProjectMessage ()
+		public static ProgressMonitorStatusMessage CreateRetargetingPackagesInProjectMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
-				GetString ("Reinstalling packages..."),
-				GetString ("Packages successfully reinstalled."),
-				GetString ("Could not reinstall packages. Please see Package Console for details."),
-				GetString ("Packages reinstalled with warnings. Please see Package Console for details.")
+				GetString ("Retargeting packages..."),
+				GetString ("Packages successfully retargeted."),
+				GetString ("Could not retarget packages. Please see Package Console for details."),
+				GetString ("Packages retarget with warnings. Please see Package Console for details.")
 			);
 		}
 

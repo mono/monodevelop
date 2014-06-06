@@ -109,13 +109,13 @@ namespace MonoDevelop.PackageManagement
 
 		string GetIncompatiblePackagesWarningMessage ()
 		{
-			return GettextCatalog.GetString ("The following packages are incompatible with the current project target framework '{0}'. The packages do not contain any assembly references or content files that are compatible with the current project target framework and may no longer work. Reinstallation of these packages will fail and cause them to be removed from the project.",
+			return GettextCatalog.GetString ("The following packages are incompatible with the current project target framework '{0}'. The packages do not contain any assembly references or content files that are compatible with the current project target framework and may no longer work. Retargeting these packages will fail and cause them to be removed from the project.",
 				projectTargetFramework);
 		}
 
 		string GetPackageReinstallationWarningMessage()
 		{
-			return GettextCatalog.GetString ("The following packages should be reinstalled. They were installed with a target framework that is different from the current project target framework '{0}'. The packages contain assembly references or content files for the current project target framework which are not currently installed.",
+			return GettextCatalog.GetString ("The following packages should be retargeted. They were installed with a target framework that is different from the current project target framework '{0}'. The packages contain assembly references or content files for the current project target framework which are not currently installed.",
 				projectTargetFramework);
 		}
 	}

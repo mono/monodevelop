@@ -46,7 +46,7 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		protected override string StartingMessageFormat {
-			get { return "Reinstalling {0}..." + Environment.NewLine; }
+			get { return "Retargeting {0}..." + Environment.NewLine; }
 		}
 
 		protected override void ExecuteCore ()
@@ -57,7 +57,7 @@ namespace MonoDevelop.PackageManagement
 
 		void UninstallPackage ()
 		{
-			Logger.Log (MessageLevel.Info, GettextCatalog.GetString ("Uninstalling {0}...", Package.Id));
+			Logger.Log (MessageLevel.Info, GettextCatalog.GetString ("Removing {0}...", Package.Id));
 
 			UninstallPackageAction action = Project.CreateUninstallPackageAction ();
 			action.Package = Package;
@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 
 		void InstallPackage ()
 		{
-			Logger.Log (MessageLevel.Info, GettextCatalog.GetString ("Installing {0}...", Package.Id));
+			Logger.Log (MessageLevel.Info, GettextCatalog.GetString ("Adding {0}...", Package.Id));
 
 			InstallPackageAction action = Project.CreateInstallPackageAction ();
 			action.Package = Package;
