@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -54,9 +55,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			engine.UnloadProject (pb);
 		}
 
-		public void Initialize (string slnFile, CultureInfo uiCulture)
+		public void SetCulture (CultureInfo uiCulture)
 		{
-			engine.Initialize (slnFile, uiCulture);
+			engine.SetCulture (uiCulture);
+		}
+
+		public void SetGlobalProperties (IDictionary<string, string> properties)
+		{
+			engine.SetGlobalProperties (properties);
 		}
 		
 		public void Dispose ()
