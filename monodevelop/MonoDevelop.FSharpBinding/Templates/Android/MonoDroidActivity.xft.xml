@@ -29,7 +29,7 @@ open Android.Views
 open Android.Widget
 
 [<Activity (Label = "${Name}")>]
-type ${Name} =
+type ${Name}() =
   inherit Activity()
 
   override x.OnCreate(bundle) =

@@ -29,10 +29,10 @@ open Android.Util
 open Android.Views
 open Android.Widget
 
-type ${Name} =
+type ${Name}() =
   inherit Fragment ()
 
-  override OnCreate (savedInstanceState) =
+  override x.OnCreate (savedInstanceState) =
     base.OnCreate (savedInstanceState)
     // Create your fragment here
 

@@ -32,8 +32,8 @@ open Android.Widget
 type ${Name} =
   inherit BroadcastReceiver ()
 
-  override x.OnCreate (context, intent) =
-    Toast.MakeText (context, "Received intent!", ToastLength.Short).Show ()
+  override x.OnReceive (context, intent) =
+    Toast.MakeText(context, "Received intent!", ToastLength.Short).Show ()
 
 ]]></File>
 	</TemplateFiles>
