@@ -19,11 +19,22 @@ type CorrectGuidMSBuildExtension() =
     inherit MSBuildExtension()
 
     override x.SaveProject (monitor, item, project) =
-        try 
-        let guids = project.GetGlobalPropertyGroup().Properties.FirstOrDefault (fun p -> p.Name = "ProjectTypeGuids")
-        if guids <> null && guids.Element.InnerText <> null then
-            guids.Element.InnerText <- guids.Element.InnerText.Replace ("4925A630-B079-445D-BCD4-3A9C94FE9307", "f2a71f9b-5d33-465a-a702-920d77279786")
-        with exn -> LoggingService.LogWarning ("Failed to update old F# guid", exn)
+        try
+            let fsimportExists =
+                project.Imports
+                |> Seq.exists (fun import -> import.Project.EndsWith ("FSharp.Targets"))
+
+            if fsimportExists then
+                project.GetGlobalPropertyGroup().Properties
+                |> Seq.tryFind (fun p -> p.Name = "ProjectTypeGuids")
+                |> Option.iter
+                    (fun guids ->
+                        guids.Element.InnerText <-
+                            guids.Element.InnerText.Split ([|';'|], StringSplitOptions.RemoveEmptyEntries)
+                            |> Array.filter (fun guid -> guid.Equals ("{4925A630-B079-445D-BCD4-3A9C94FE9307}", StringComparison.OrdinalIgnoreCase))
+                            |> String.concat ";" )
+
+         with exn -> LoggingService.LogWarning ("Failed to remove old F# guid", exn)
 
 
 type FSharpLanguageBinding() =
