@@ -54,6 +54,7 @@
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   -->
   <ItemGroup>
+    <Compile Include="CodeGeneration.fs" />
     <Compile Include="Utils.fs" />
     <Compile Include="Digraph.fs" />
     <Compile Include="OrderAssemblyReferences.fs" />
