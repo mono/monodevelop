@@ -57,8 +57,6 @@ namespace MonoDevelop.PackageManagement
 
 		void UninstallPackage ()
 		{
-			Logger.Log (MessageLevel.Info, GettextCatalog.GetString ("Removing {0}...", Package.Id));
-
 			UninstallPackageAction action = Project.CreateUninstallPackageAction ();
 			action.Package = Package;
 			action.ForceRemove = true;
@@ -67,8 +65,6 @@ namespace MonoDevelop.PackageManagement
 
 		void InstallPackage ()
 		{
-			Logger.Log (MessageLevel.Info, GettextCatalog.GetString ("Adding {0}...", Package.Id));
-
 			InstallPackageAction action = Project.CreateInstallPackageAction ();
 			action.Package = Package;
 			action.Execute ();
