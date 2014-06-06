@@ -187,7 +187,8 @@ namespace Mono.TextEditor
 		}
 
 		public bool SuppressHighlightUpdate { get; set; }
-		
+		internal DocumentLine longestLineAtTextSet;
+
 		public string Text {
 			get {
 				return buffer.Text;
@@ -198,7 +199,7 @@ namespace Mono.TextEditor
 				OnTextReplacing (args);
 				buffer.Text = value;
 				extendingTextMarkers = new List<TextLineMarker> ();
-				splitter.Initalize (value);
+				splitter.Initalize (value, out longestLineAtTextSet);
 				ClearFoldSegments ();
 				OnTextReplaced (args);
 				versionProvider = new TextSourceVersionProvider ();

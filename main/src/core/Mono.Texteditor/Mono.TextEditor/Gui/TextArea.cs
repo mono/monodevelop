@@ -1697,7 +1697,7 @@ namespace Mono.TextEditor
 			if (this.textEditorData.VAdjustment != null) {
 				double maxY = textEditorData.HeightTree.TotalHeight;
 				//				if (maxY > allocation.Height)
-				maxY += allocation.Height - LineHeight;
+				maxY += allocation.Height / 2 - LineHeight;
 
 				foreach (var containerChild in editor.containerChildren.Concat (containerChildren)) {
 					maxY = System.Math.Max (maxY, containerChild.Y + containerChild.Child.SizeRequest().Height);
@@ -2810,16 +2810,9 @@ namespace Mono.TextEditor
 		
 		void OnTextSet (object sender, EventArgs e)
 		{
-			DocumentLine longest = longestLine;
-			foreach (DocumentLine line in Document.Lines) {
-				if (longest == null || line.Length > longest.Length)
-					longest = line;
-			}
-			if (longest != longestLine) {
-				var layoutWrapper = textViewMargin.GetLayout (longest);
-				int width = (int)(layoutWrapper.Width);
-				if (layoutWrapper.IsUncached)
-					layoutWrapper.Dispose ();
+			DocumentLine longest = Document.longestLineAtTextSet;
+			if (longest != longestLine && longest != null) {
+				int width = (int)(longest.Length * textViewMargin.CharWidth);
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;
 					this.longestLine = longest;

@@ -43,6 +43,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public readonly string Pattern;
 		public readonly int    LineNumber;
 		public readonly int    Column;
+		public readonly string UnparsedPattern;
 
 		public bool HasLineNumber {
 			get {
@@ -55,12 +56,13 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
-		public SearchPopupSearchPattern (string tag, string pattern, int lineNumber = -1, int column = -1)
+		public SearchPopupSearchPattern (string tag, string pattern, int lineNumber = -1, int column = -1, string unparsedPattern = "")
 		{
 			Tag = tag;
 			Pattern = pattern;
 			LineNumber = lineNumber;
 			Column = column;
+			UnparsedPattern = unparsedPattern;
 		}
 
 		public static SearchPopupSearchPattern ParsePattern (string searchPattern)
@@ -122,7 +124,7 @@ namespace MonoDevelop.Components.MainToolbar
 					lineNumber = 0;
 				break;
 			}
-			return new SearchPopupSearchPattern (tag, pattern, lineNumber, column);
+			return new SearchPopupSearchPattern (tag, pattern, lineNumber, column, searchPattern);
 		}
 
 		static bool TryParseLineColumn (string str, ref int lineNumber, ref int columnNumber)

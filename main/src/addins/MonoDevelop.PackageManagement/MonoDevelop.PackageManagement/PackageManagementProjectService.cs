@@ -37,8 +37,34 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementProjectService : IPackageManagementProjectService
 	{
-		public PackageManagementProjectService()
+		public PackageManagementProjectService ()
 		{
+			IdeApp.Workspace.SolutionLoaded += (sender, e) => OnSolutionLoaded (e.Solution);
+			IdeApp.Workspace.SolutionUnloaded += (sender, e) => OnSolutionUnloaded ();
+		}
+
+		public event EventHandler SolutionLoaded;
+
+		void OnSolutionLoaded (Solution solution)
+		{
+			OpenSolution = new SolutionProxy (solution);
+
+			EventHandler handler = SolutionLoaded;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
+
+		public event EventHandler SolutionUnloaded;
+
+		void OnSolutionUnloaded ()
+		{
+			OpenSolution = null;
+
+			var handler = SolutionUnloaded;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
 		}
 
 		public IProject CurrentProject {
@@ -54,15 +80,7 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		public ISolution OpenSolution {
-			get {
-				Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-				if (solution != null) {
-					return new SolutionProxy (solution);
-				}
-				return null;
-			}
-		}
+		public ISolution OpenSolution { get; private set; }
 
 		public IEnumerable<IDotNetProject> GetOpenProjects ()
 		{

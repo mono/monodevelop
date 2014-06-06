@@ -157,10 +157,10 @@ namespace MonoDevelop.Debugger.Tests
 			var done = new ManualResetEvent (false);
 
 			Session.TargetHitBreakpoint += (sender, e) => {
-				done.Set ();
 				Frame = e.Backtrace.GetFrame (0);
 				lastStoppedPosition = Frame.SourceLocation;
 				targetStoppedEvent.Set ();
+				done.Set ();
 			};
 
 			Session.TargetExceptionThrown += (sender, e) => {

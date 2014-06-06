@@ -45,20 +45,25 @@ namespace MonoDevelop.Debugger.Visualizer
 		
 		public override Gtk.Widget GetVisualizerWidget (ObjectValue val)
 		{
-			Gdk.Pixbuf pixbuf;
+			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 			string file = Path.GetTempFileName ();
+			Gdk.Pixbuf pixbuf;
+
+			ops.AllowTargetInvoke = true;
+
 			try {
-				RawValue pix = (RawValue) val.GetRawValue ();
+				var pix = (RawValue) val.GetRawValue (ops);
 				pix.CallMethod ("Save", file, "png");
 				pixbuf = new Gdk.Pixbuf (file);
 			} finally {
 				File.Delete (file);
 			}
-			Gtk.ScrolledWindow sc = new Gtk.ScrolledWindow ();
+
+			var sc = new Gtk.ScrolledWindow ();
 			sc.ShadowType = Gtk.ShadowType.In;
 			sc.HscrollbarPolicy = Gtk.PolicyType.Automatic;
 			sc.VscrollbarPolicy = Gtk.PolicyType.Automatic;
-			Gtk.Image image = new Gtk.Image (pixbuf);
+			var image = new Gtk.Image (pixbuf);
 			sc.AddWithViewport (image);
 			sc.ShowAll ();
 			return sc;

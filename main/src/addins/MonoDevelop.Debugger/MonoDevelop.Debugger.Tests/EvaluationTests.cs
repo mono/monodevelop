@@ -491,6 +491,14 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 		}
 
+		void CheckValue (string expected, string actual)
+		{
+			if (AllowTargetInvokes)
+				Assert.AreEqual (expected, actual);
+			else
+				Assert.AreEqual ("Implicit evaluation is disabled", actual);
+		}
+
 		[Test]
 		public void MemberReference ()
 		{
@@ -590,6 +598,106 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("MonoDevelop.Debugger.Tests.TestApp.TestEvaluation.staticString");
 			Assert.AreEqual ("\"some static\"", val.Value);
 			Assert.AreEqual ("string", val.TypeName);
+
+			val = Eval ("richObject");
+			Assert.AreEqual ("{RichClass}", val.Value);
+			Assert.AreEqual ("RichClass", val.TypeName);
+
+			var richChildren = val.GetAllChildren ();
+			Assert.AreEqual (13, richChildren.Length);
+			Assert.AreEqual ("publicInt1", richChildren [0].Name);
+			Assert.AreEqual ("int", richChildren [0].TypeName);
+			Assert.AreEqual ("1", richChildren [0].Value);
+			Assert.AreEqual ("publicInt2", richChildren [1].Name);
+			Assert.AreEqual ("int", richChildren [1].TypeName);
+			Assert.AreEqual ("2", richChildren [1].Value);
+			Assert.AreEqual ("publicInt3", richChildren [2].Name);
+			Assert.AreEqual ("int", richChildren [2].TypeName);
+			Assert.AreEqual ("3", richChildren [2].Value);
+			Assert.AreEqual ("publicPropInt1", richChildren [3].Name);
+			Assert.AreEqual ("int", richChildren [3].TypeName);
+			CheckValue ("1", richChildren [3].Value);
+			Assert.AreEqual ("publicPropInt2", richChildren [4].Name);
+			Assert.AreEqual ("int", richChildren [4].TypeName);
+			CheckValue ("2", richChildren [4].Value);
+			Assert.AreEqual ("publicPropInt3", richChildren [5].Name);
+			Assert.AreEqual ("int", richChildren [5].TypeName);
+			CheckValue ("3", richChildren [5].Value);
+			Assert.AreEqual ("publicPropStringA", richChildren [6].Name);
+			Assert.AreEqual ("string", richChildren [6].TypeName);
+			CheckValue ("\"stringA\"", richChildren [6].Value);
+			Assert.AreEqual ("publicPropStringB", richChildren [7].Name);
+			Assert.AreEqual ("string", richChildren [7].TypeName);
+			CheckValue ("\"stringB\"", richChildren [7].Value);
+			Assert.AreEqual ("publicPropStringC", richChildren [8].Name);
+			Assert.AreEqual ("string", richChildren [8].TypeName);
+			CheckValue ("\"stringC\"", richChildren [8].Value);
+			Assert.AreEqual ("publicStringA", richChildren [9].Name);
+			Assert.AreEqual ("string", richChildren [9].TypeName);
+			Assert.AreEqual ("\"stringA\"", richChildren [9].Value);
+			Assert.AreEqual ("publicStringB", richChildren [10].Name);
+			Assert.AreEqual ("string", richChildren [10].TypeName);
+			Assert.AreEqual ("\"stringB\"", richChildren [10].Value);
+			Assert.AreEqual ("publicStringC", richChildren [11].Name);
+			Assert.AreEqual ("string", richChildren [11].TypeName);
+			Assert.AreEqual ("\"stringC\"", richChildren [11].Value);
+			Assert.AreEqual ("Non-public members", richChildren [12].Name);
+
+			richChildren = richChildren [12].GetAllChildren ();
+			Assert.AreEqual (12, richChildren.Length);
+			Assert.AreEqual ("privateInt1", richChildren [0].Name);
+			Assert.AreEqual ("int", richChildren [0].TypeName);
+			Assert.AreEqual ("1", richChildren [0].Value);
+			Assert.AreEqual ("privateInt2", richChildren [1].Name);
+			Assert.AreEqual ("int", richChildren [1].TypeName);
+			Assert.AreEqual ("2", richChildren [1].Value);
+			Assert.AreEqual ("privateInt3", richChildren [2].Name);
+			Assert.AreEqual ("int", richChildren [2].TypeName);
+			Assert.AreEqual ("3", richChildren [2].Value);
+			Assert.AreEqual ("privatePropInt1", richChildren [3].Name);
+			Assert.AreEqual ("int", richChildren [3].TypeName);
+			CheckValue ("1", richChildren [3].Value);
+			Assert.AreEqual ("privatePropInt2", richChildren [4].Name);
+			Assert.AreEqual ("int", richChildren [4].TypeName);
+			CheckValue ("2", richChildren [4].Value);
+			Assert.AreEqual ("privatePropInt3", richChildren [5].Name);
+			Assert.AreEqual ("int", richChildren [5].TypeName);
+			CheckValue ("3", richChildren [5].Value);
+			Assert.AreEqual ("privatePropStringA", richChildren [6].Name);
+			Assert.AreEqual ("string", richChildren [6].TypeName);
+			CheckValue ("\"stringA\"", richChildren [6].Value);
+			Assert.AreEqual ("privatePropStringB", richChildren [7].Name);
+			Assert.AreEqual ("string", richChildren [7].TypeName);
+			CheckValue ("\"stringB\"", richChildren [7].Value);
+			Assert.AreEqual ("privatePropStringC", richChildren [8].Name);
+			Assert.AreEqual ("string", richChildren [8].TypeName);
+			CheckValue ("\"stringC\"", richChildren [8].Value);
+			Assert.AreEqual ("privateStringA", richChildren [9].Name);
+			Assert.AreEqual ("string", richChildren [9].TypeName);
+			Assert.AreEqual ("\"stringA\"", richChildren [9].Value);
+			Assert.AreEqual ("privateStringB", richChildren [10].Name);
+			Assert.AreEqual ("string", richChildren [10].TypeName);
+			Assert.AreEqual ("\"stringB\"", richChildren [10].Value);
+			Assert.AreEqual ("privateStringC", richChildren [11].Name);
+			Assert.AreEqual ("string", richChildren [11].TypeName);
+			Assert.AreEqual ("\"stringC\"", richChildren [11].Value);
+
+			if (AllowTargetInvokes) {
+				val = Eval ("richObject.publicStringB=\"changedTextB\"");
+				Assert.AreEqual ("string", val.TypeName);
+				Assert.AreEqual ("\"changedTextB\"", val.Value);
+				val = Eval ("richObject.publicStringB");
+				Assert.AreEqual ("string", val.TypeName);
+				Assert.AreEqual ("\"changedTextB\"", val.Value);
+
+				val = Eval ("richObject");
+				Assert.AreEqual ("{RichClass}", val.Value);
+				Assert.AreEqual ("RichClass", val.TypeName);
+				richChildren = val.GetAllChildren ();
+				Assert.AreEqual ("publicPropStringB", richChildren [7].Name);
+				Assert.AreEqual ("string", richChildren [7].TypeName);
+				Assert.AreEqual ("\"stringB\"", richChildren [7].Value);
+			}
 		}
 
 		[Test]
@@ -1169,14 +1277,20 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("numbers");
 			Assert.AreEqual ("{string[3]}", val.Value);
 			Assert.AreEqual ("string[]", val.TypeName);
-			
+
 			val = Eval ("numbersArrays");
 			Assert.AreEqual ("{int[2][]}", val.Value);
 			Assert.AreEqual ("int[][]", val.TypeName);
-			
+
 			val = Eval ("numbersMulti");
 			Assert.AreEqual ("{int[3,4,5]}", val.Value);
 			Assert.AreEqual ("int[,,]", val.TypeName);
+			Assert.IsFalse (val.IsNull);
+
+			val = Eval ("nulledByteArray");
+			Assert.AreEqual ("(null)", val.Value);
+			Assert.AreEqual ("byte[]", val.TypeName);
+			Assert.IsTrue (val.IsNull);
 		}
 
 		[Test]

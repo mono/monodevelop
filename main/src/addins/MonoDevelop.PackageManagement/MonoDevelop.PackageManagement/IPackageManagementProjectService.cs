@@ -35,6 +35,9 @@ namespace ICSharpCode.PackageManagement
 {
 	public interface IPackageManagementProjectService
 	{
+		event EventHandler SolutionLoaded;
+		event EventHandler SolutionUnloaded;
+
 		IProject CurrentProject { get; }
 		ISolution OpenSolution { get; }
 

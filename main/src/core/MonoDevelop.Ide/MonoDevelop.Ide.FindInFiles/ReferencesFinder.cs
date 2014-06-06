@@ -226,11 +226,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			// execute search
 			if (monitor != null)
 				monitor.BeginTask (GettextCatalog.GetString ("Analyzing files..."), totalFiles);
+			var foundOccurrences = new HashSet<Tuple<string, DomRegion>> ();
 			foreach (var tuple in preparedFinders) {
 				var finder = tuple.Item1;
 				foreach (var foundReference in finder.FindReferences (tuple.Item2, tuple.Item3, tuple.Item4, monitor, searchNodes)) {
 					if (monitor != null && monitor.IsCancelRequested)
 						yield break;
+					var tag = Tuple.Create (foundReference.FileName, foundReference.Region);
+					if (foundOccurrences.Contains (tag))
+						continue;
+					foundOccurrences.Add (tag);
 					yield return foundReference;
 				}
 			}

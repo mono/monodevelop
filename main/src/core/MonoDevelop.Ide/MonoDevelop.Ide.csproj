@@ -1355,16 +1355,16 @@
       <LogicalName>element-module-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-other-declaration-16.png">
-      <LogicalName>element-other-declaration-16.png</LogicalName>
+      <LogicalName>element-other-declaration-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-other-declaration-16%402x.png">
-      <LogicalName>element-other-declaration-16@2x.png</LogicalName>
+      <LogicalName>element-other-declaration-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-type-16.png">
-      <LogicalName>element-type-16.png</LogicalName>
+      <LogicalName>element-type-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-type-16%402x.png">
-      <LogicalName>element-type-16@2x.png</LogicalName>
+      <LogicalName>element-type-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-source-16.png">
       <LogicalName>file-source-light-16.png</LogicalName>
@@ -1587,6 +1587,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\done-16%402x.png">
       <LogicalName>done-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\edit-16.png">
+      <LogicalName>edit-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\edit-16%402x.png">
+      <LogicalName>edit-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\star-16.png">
       <LogicalName>star-light-16.png</LogicalName>

@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet.StateEngine
 		readonly AspNetServerCommentState serverCommentState;
 		
 		public AspNetFreeState () : this (
-			new HtmlTagState (true, new XmlAttributeState (new XmlNameState (), new AspNetAttributeValueState ())),
+			new HtmlTagState (new XmlAttributeState (new XmlNameState (), new AspNetAttributeValueState ())),
 			new HtmlClosingTagState (true),
 			new XmlCommentState (),
 			new XmlCDataState (),
