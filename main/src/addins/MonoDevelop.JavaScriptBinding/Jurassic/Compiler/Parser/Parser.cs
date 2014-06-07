@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Core;
-using MonoDevelop.JavaScript.Factories;
 
 namespace Jurassic.Compiler
 {
