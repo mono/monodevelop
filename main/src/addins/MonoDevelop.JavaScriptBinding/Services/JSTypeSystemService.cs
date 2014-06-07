@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using MonoDevelop.JavaScript.Parser;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.JavaScript
 {
@@ -69,21 +69,21 @@ namespace MonoDevelop.JavaScript
 
 			var currentParsedDocument = solutionParsedDocuments.FirstOrDefault (i => i.FileName == fileName);
 			if (currentParsedDocument != null) {
-				currentParsedDocument.ParsedDocument = parsedDocument;
+				currentParsedDocument.SimpleAst = parsedDocument.SimpleAst;
 			} else {
 				solutionParsedDocuments.Add (new JavaScriptDocumentCache {
 					FileName = fileName,
-					ParsedDocument = parsedDocument,
+					SimpleAst = parsedDocument.SimpleAst,
 					ProjectId = projectId
 				});
 			}
 		}
 
-		public static List<JavaScriptParsedDocument> GetAllDocumentsForProject (string projectId)
+		public static List<SimpleJSAst> GetAllJSAstsForProject (string projectId)
 		{
 			return (from item in solutionParsedDocuments
 				where item.ProjectId == projectId
-			        select item.ParsedDocument).ToList ();
+				select item.SimpleAst).ToList ();
 		}
 
 		static void refreshSolutionParsedDocuments (MonoDevelop.Projects.Solution solution)
@@ -91,16 +91,20 @@ namespace MonoDevelop.JavaScript
 			if (solution == null)
 				return;
 
-			foreach (MonoDevelop.Projects.Project project in solution.GetAllProjects ()) {
-				foreach (MonoDevelop.Projects.ProjectFile file in project.Files) {
-					if (!file.Name.ToUpper ().EndsWith ("JS"))
-						continue;
+			Task parsingTask = new Task (delegate() {
+				foreach (MonoDevelop.Projects.Project project in solution.GetAllProjects ()) {
+					foreach (MonoDevelop.Projects.ProjectFile file in project.Files) {
+						if (!file.Name.ToUpper ().EndsWith ("JS"))
+							continue;
 
-					string fileContent = System.IO.File.ReadAllText (file.Name);
-					var parsedDocument = new JavaScriptParsedDocument (file.Name, fileContent);
-					AddUpdateParsedDocument (project.ItemId, file.Name, null);
+						string fileContent = System.IO.File.ReadAllText (file.Name);
+						var parsedDocument = new JavaScriptParsedDocument (file.Name, fileContent);
+						AddUpdateParsedDocument (project.ItemId, file.Name, parsedDocument);
+					}
 				}
-			}
+			});
+
+			parsingTask.Start ();
 		}
 	}
 }

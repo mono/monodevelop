@@ -29,10 +29,8 @@ using System.Linq;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory;
-using MonoDevelop.JavaScript.Factories;
 
-namespace MonoDevelop.JavaScript.Parser
+namespace MonoDevelop.JavaScript
 {
 	class JavaScriptParsedDocument : ParsedDocument
 	{
@@ -66,6 +64,11 @@ namespace MonoDevelop.JavaScript.Parser
 			get {
 				return foldings;
 			}
+		}
+
+		public SimpleJSAst SimpleAst {
+			get;
+			private set;
 		}
 
 		#endregion
@@ -109,6 +112,7 @@ namespace MonoDevelop.JavaScript.Parser
 			var scope = scriptEngine.CreateGlobalScope ();
 			var compilerOptions = new Jurassic.Compiler.CompilerOptions ();
 			var parser = new Jurassic.Compiler.Parser (scriptEngine, lexar, scope, compilerOptions, Jurassic.Compiler.CodeContext.Global);
+			SimpleAst = new SimpleJSAst();
 
 			Jurassic.Compiler.Statement parserResult = null;
 			try {
@@ -124,6 +128,7 @@ namespace MonoDevelop.JavaScript.Parser
 				AstNodes = parserResult.ChildNodes;
 				setFoldings (AstNodes);
 				setComments (parser.Comments);
+				SimpleAst = SimpleJSAstFactory.CreateFromJavaScriptParsedDocument (AstNodes);
 			}
 		}
 

@@ -34,10 +34,9 @@ using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using Gtk;
-using MonoDevelop.JavaScript.Parser;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.JavaScript.TextEditor
+namespace MonoDevelop.JavaScript
 {
 	class JavaScriptEditorExtension : CompletionTextEditorExtension, IOutlinedDocument
 	{
@@ -54,7 +53,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 		#region Properties
 
-		public JavaScript.Parser.JavaScriptParsedDocument ParsedDoc { get; private set; }
+		public JavaScriptParsedDocument ParsedDoc { get; private set; }
 
 		#endregion
 
@@ -73,7 +72,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			ParsedDoc = (JavaScript.Parser.JavaScriptParsedDocument)Document.ParsedDocument;
+			ParsedDoc = (JavaScriptParsedDocument)Document.ParsedDocument;
 			if (ParsedDoc != null)
 				refreshOutline ();
 		}
@@ -190,13 +189,13 @@ namespace MonoDevelop.JavaScript.TextEditor
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedProject == null)
 				return null;
 
-			List<JavaScriptParsedDocument> parsedDocuments = JSTypeSystemService.GetAllDocumentsForProject (Ide.IdeApp.ProjectOperations.CurrentSelectedProject.ItemId);
+			List<SimpleJSAst> parsedDocuments = JSTypeSystemService.GetAllJSAstsForProject (Ide.IdeApp.ProjectOperations.CurrentSelectedProject.ItemId);
 
 			// TODO: Find the current scope.
 			var dataList = new CompletionDataList ();
-			foreach (JavaScriptParsedDocument parsedDocument in parsedDocuments) {
-				if (parsedDocument != null)
-					dataList.AddRange (buildCodeCompletionList (parsedDocument.AstNodes));
+			foreach (SimpleJSAst parsedDocumentAstNodes in parsedDocuments) {
+				if (parsedDocumentAstNodes != null)
+					dataList.AddRange (buildCodeCompletionList (parsedDocumentAstNodes.AstNodes));
 			}
 			return dataList;
 		}
@@ -219,7 +218,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 				pixRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Method, IconSize.Menu);
 			} else if (o is Jurassic.Compiler.VariableDeclaration) {
 				pixRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Field, IconSize.Menu);
-			} else if (o is JavaScript.Parser.JavaScriptParsedDocument) {
+			} else if (o is JavaScriptParsedDocument) {
 				pixRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.FileXmlIcon, IconSize.Menu);
 			} else {
 				throw new ArgumentException (string.Format ("Type {0} is not supported in JavaScript Outline.", o.GetType ().Name));
@@ -249,7 +248,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 				return;
 			}
 
-			var document = o as JavaScript.Parser.JavaScriptParsedDocument;
+			var document = o as JavaScriptParsedDocument;
 			if (document != null) {
 				txtRenderer.Text = System.IO.Path.GetFileName (document.FileName);
 				return;
@@ -293,7 +292,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 			Gdk.Threads.Leave ();
 		}
 
-		void refillOutlineStore (JavaScript.Parser.JavaScriptParsedDocument doc, Gtk.TreeStore store)
+		void refillOutlineStore (JavaScriptParsedDocument doc, Gtk.TreeStore store)
 		{
 			if (doc == null)
 				return;
@@ -384,7 +383,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 			} else if (node is Jurassic.Compiler.FunctionExpression) {
 				line = (node as Jurassic.Compiler.FunctionExpression).SourceSpan.StartLine;
 				column = (node as Jurassic.Compiler.FunctionExpression).SourceSpan.StartColumn;
-			} else if (node is JavaScript.Parser.JavaScriptParsedDocument) {
+			} else if (node is JavaScriptParsedDocument) {
 				line = 0;
 				column = 0;
 			} else {
@@ -398,7 +397,7 @@ namespace MonoDevelop.JavaScript.TextEditor
 			}
 		}
 
-		CompletionDataList buildCodeCompletionList (IEnumerable<Jurassic.Compiler.JSAstNode> nodes)
+		CompletionDataList buildCodeCompletionList (IEnumerable<JSStatement> nodes)
 		{
 			// TODO: Store all functions, variables in project, similar C Binding
 			if (nodes == null)
@@ -406,61 +405,18 @@ namespace MonoDevelop.JavaScript.TextEditor
 
 			var completionList = new CompletionDataList ();
 
-			foreach (Jurassic.Compiler.JSAstNode node in nodes) {
-				var variableStatement = node as Jurassic.Compiler.VarStatement;
-				if (variableStatement != null) {
-					foreach (Jurassic.Compiler.VariableDeclaration variableDeclaration in variableStatement.Declarations) {
-						completionList.Add (new CompletionData (variableDeclaration));
-					}
-					completionList.AddRange (buildCodeCompletionList (variableStatement.ChildNodes));
+			foreach (JSStatement node in nodes) {
+				var variableDeclaration = node as JSVariableDeclaration;
+				if (variableDeclaration != null) {
+					completionList.Add (new CompletionData (variableDeclaration));
+					completionList.AddRange (buildCodeCompletionList (variableDeclaration.ChildNodes));
 					continue;
 				}
 
-				var functionStatement = node as Jurassic.Compiler.FunctionStatement;
+				var functionStatement = node as JSFunctionStatement;
 				if (functionStatement != null) {
 					completionList.Add (new CompletionData (functionStatement));
-					completionList.AddRange (buildCodeCompletionList (functionStatement.BodyRoot.ChildNodes));
-					continue;
-				}
-
-				var functionExpression = node as Jurassic.Compiler.FunctionExpression;
-				if (functionExpression != null) {
-					completionList.Add (new CompletionData (functionExpression));
-					completionList.AddRange (buildCodeCompletionList (functionExpression.BodyRoot.ChildNodes));
-					continue;
-				}
-
-				var literal = node as Jurassic.Compiler.LiteralExpression;
-				if (literal != null) {
-					if (literal.Value != null) {
-						var properties = literal.Value as Dictionary<string, object>;
-						if (properties != null) {
-							for (int i = 0; i < properties.Count; i++) {
-								string key = properties.Keys.ElementAt (i); // Key holds the value for then 
-								object value = properties.Values.ElementAt (i);
-
-								var objFuncExpression = value as Jurassic.Compiler.FunctionExpression;
-								if (objFuncExpression != null) {
-									completionList.Add (new CompletionData (objFuncExpression));
-									completionList.AddRange (buildCodeCompletionList (objFuncExpression.BodyRoot.ChildNodes));
-									continue;
-								}
-
-								var objGetSetFunc = value as Jurassic.Compiler.Parser.ObjectLiteralAccessor;
-								if (objGetSetFunc != null) {
-									if (objGetSetFunc.Getter != null) {
-										completionList.Add (new CompletionData (objGetSetFunc.Getter));
-										completionList.AddRange (buildCodeCompletionList (objGetSetFunc.Getter.BodyRoot.ChildNodes));
-									}
-									if (objGetSetFunc.Setter != null) {
-										completionList.Add (new CompletionData (objGetSetFunc.Setter));
-										completionList.AddRange (buildCodeCompletionList (objGetSetFunc.Setter.BodyRoot.ChildNodes));
-									}
-								}
-							}
-						}
-					}
-
+					completionList.AddRange (buildCodeCompletionList (functionStatement.ChildNodes));
 					continue;
 				}
 

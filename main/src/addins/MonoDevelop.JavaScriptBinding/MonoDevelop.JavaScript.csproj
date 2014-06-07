@@ -149,7 +149,12 @@
     <Compile Include="Jurassic\Compiler\Lexer\Comment.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\SingleLineComment.cs" />
     <Compile Include="Services\JSTypeSystemService.cs" />
-    <Compile Include="DomainObjects\JavaScriptDocumentCache.cs" />
+    <Compile Include="DomainObjects\Cache\JavaScriptDocumentCache.cs" />
+    <Compile Include="DomainObjects\Cache\JSStatement.cs" />
+    <Compile Include="DomainObjects\Cache\JSFunctionStatement.cs" />
+    <Compile Include="DomainObjects\Cache\JSVariableDeclaration.cs" />
+    <Compile Include="DomainObjects\Cache\SimpleJSAst.cs" />
+    <Compile Include="Factories\SimpleJSAstFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Formatting\MonoJSPolicy.xml" />
@@ -193,5 +198,6 @@
   <ItemGroup>
     <Folder Include="Services\" />
     <Folder Include="DomainObjects\" />
+    <Folder Include="DomainObjects\Cache\" />
   </ItemGroup>
 </Project>

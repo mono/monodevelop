@@ -1,5 +1,5 @@
 ﻿//
-// DomRegionFactory.cs
+// JSFunctionStatement.cs
 //
 // Author:
 //       Harsimran Bath <harsimranbath@gmail.com>
@@ -22,32 +22,44 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
+// THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MonoDevelop.JavaScript
 {
-	static class DomRegionFactory
+	enum JSFunctionType
 	{
-		public static DomRegion CreateDomRegion (string filename, Jurassic.Compiler.SourceCodeSpan position)
-		{
-			return CreateDomRegion (filename, position.StartLine, position.StartColumn, position.EndLine, position.EndColumn);
+		FunctionStatement,
+		FunctionExpression,
+		GetterFunctionExpression,
+		SetterFunctionExpression
+	}
+
+	class JSFunctionStatement : JSStatement
+	{
+		public string FunctionSignature {
+			get;
+			set;
 		}
 
-		public static DomRegion CreateDomRegion (string filename, int startLine, int startColumn, int endLine, int endColumn)
-		{
-			var region = new DomRegion (filename,
-				             startLine,
-				             startColumn,
-				             endLine,
-				             endColumn);
+		public JSFunctionType FunctionType {
+			get;
+			set;
+		}
 
-			return region;
+		public JSFunctionStatement (Jurassic.Compiler.FunctionStatement functionStatement)
+			: base (functionStatement.FunctionName, functionStatement.SourceSpan)
+		{
+			FunctionSignature = functionStatement.BuildFunctionSignature ();
+			FunctionType = JSFunctionType.FunctionStatement;
+		}
+
+		public JSFunctionStatement (Jurassic.Compiler.FunctionExpression functionStatement, JSFunctionType functionType = JSFunctionType.FunctionExpression)
+			: base (functionStatement.FunctionName, functionStatement.SourceSpan)
+		{
+			FunctionSignature = functionStatement.BuildFunctionSignature ();
+			FunctionType = functionType;
 		}
 	}
 }
+

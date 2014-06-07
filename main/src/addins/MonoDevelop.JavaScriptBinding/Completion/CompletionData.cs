@@ -29,33 +29,25 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.JavaScript
 {
-	public class CompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
+	class CompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
 	{
 		IconId image;
 		string text;
 		string description;
 		string completionString;
 
-		public CompletionData (Jurassic.Compiler.FunctionStatement statement)
+		public CompletionData (JSVariableDeclaration statement)
 		{
 			image = Stock.Method;
-			text = statement.BuildFunctionSignature ();
+			text = statement.Name;
 			completionString = text;
 			description = string.Empty; // TODO
 		}
 
-		public CompletionData (Jurassic.Compiler.FunctionExpression statement)
+		public CompletionData (JSFunctionStatement statement)
 		{
 			image = Stock.Method;
-			text = statement.BuildFunctionSignature ();
-			completionString = text;
-			description = string.Empty; // TODO
-		}
-
-		public CompletionData (Jurassic.Compiler.VariableDeclaration varDeclaration)
-		{
-			image = Stock.Field;
-			text = varDeclaration.VariableName;
+			text = statement.FunctionSignature;
 			completionString = text;
 			description = string.Empty; // TODO
 		}

@@ -1,5 +1,5 @@
 ﻿//
-// DomRegionFactory.cs
+// JSVariableDeclaration.cs
 //
 // Author:
 //       Harsimran Bath <harsimranbath@gmail.com>
@@ -22,32 +22,17 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
+// THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MonoDevelop.JavaScript
 {
-	static class DomRegionFactory
+	class JSVariableDeclaration : JSStatement
 	{
-		public static DomRegion CreateDomRegion (string filename, Jurassic.Compiler.SourceCodeSpan position)
+		public JSVariableDeclaration (Jurassic.Compiler.VariableDeclaration varDeclaration)
+			: base (varDeclaration.VariableName, varDeclaration.SourceSpan)
 		{
-			return CreateDomRegion (filename, position.StartLine, position.StartColumn, position.EndLine, position.EndColumn);
-		}
-
-		public static DomRegion CreateDomRegion (string filename, int startLine, int startColumn, int endLine, int endColumn)
-		{
-			var region = new DomRegion (filename,
-				             startLine,
-				             startColumn,
-				             endLine,
-				             endColumn);
-
-			return region;
 		}
 	}
 }
+

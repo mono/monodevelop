@@ -36,7 +36,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.JavaScript.Parser
+namespace MonoDevelop.JavaScript
 {
 	class JavaScriptParser : TypeSystemParser
 	{
