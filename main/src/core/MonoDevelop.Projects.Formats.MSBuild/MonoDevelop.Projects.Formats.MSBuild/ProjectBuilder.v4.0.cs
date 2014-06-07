@@ -74,34 +74,60 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (currentLogWriter != null)
 				currentLogWriter.WriteLine (txt);
 		}
-		
-		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,
-			MSBuildVerbosity verbosity)
+
+		public MSBuildResult Run (
+			ProjectConfigurationInfo[] configurations, ILogWriter logWriter, MSBuildVerbosity verbosity,
+			string[] runTargets, string[] evaluateItems, string[] evaluateProperties)
 		{
-			MSBuildResult[] result = null;
-			BuildEngine.RunSTA (delegate
-			{
+			MSBuildResult result = null;
+			BuildEngine.RunSTA (delegate {
 				try {
 					var project = SetupProject (configurations);
 					currentLogWriter = logWriter;
 
-					var logger = new LocalLogger (file);
 					engine.UnregisterAllLoggers ();
-					engine.RegisterLogger (logger);
-					engine.RegisterLogger (consoleLogger);
 
-					consoleLogger.Verbosity = GetVerbosity (verbosity);
-					
-					project.Build (target);
-					
-					result = logger.BuildResult.ToArray ();
+					var logger = new LocalLogger (file);
+					engine.RegisterLogger (logger);
+					if (logWriter != null) {
+						engine.RegisterLogger (consoleLogger);
+						consoleLogger.Verbosity = GetVerbosity (verbosity);
+					}
+
+					if (runTargets != null && runTargets.Length > 0) {
+						project.Build (runTargets);
+					}
+
+					result = new MSBuildResult (logger.BuildResult.ToArray ());
+
+					if (evaluateProperties != null) {
+						foreach (var name in evaluateProperties) {
+							var prop = project.GetProperty (name);
+							result.Properties [name] = prop != null? prop.EvaluatedValue : null;
+						}
+					}
+
+					if (evaluateItems != null) {
+						foreach (var name in evaluateItems) {
+							var grp = project.GetItems (name);
+							var list = new List<MSBuildEvaluatedItem> ();
+							foreach (var item in grp) {
+								var evItem = new MSBuildEvaluatedItem (name, UnescapeString (item.EvaluatedInclude));
+								foreach (var m in item.DirectMetadata) {
+									evItem.Metadata [m.Name] = UnescapeString (m.EvaluatedValue);
+								}
+								list.Add (evItem);
+							}
+							result.Items[name] = list;
+						}
+					}
 				} catch (Microsoft.Build.Exceptions.InvalidProjectFileException ex) {
-						var r = new MSBuildResult (
-							file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
-							ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
-							ex.BaseMessage, ex.HelpKeyword);
-						logWriter.WriteLine (r.ToString ());
-						result = new [] { r };
+					var r = new MSBuildTargetResult (
+						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
+						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
+						ex.BaseMessage, ex.HelpKeyword);
+					logWriter.WriteLine (r.ToString ());
+					result = new MSBuildResult (new [] { r });
 				} finally {
 					currentLogWriter = null;
 				}
