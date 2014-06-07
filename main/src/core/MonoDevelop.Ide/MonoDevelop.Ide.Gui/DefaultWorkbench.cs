@@ -415,6 +415,7 @@ namespace MonoDevelop.Ide.Gui
 			if (dockWindow.Container == null) {
 				// This dock window doesn't yet have any tabs inserted.
 				addToControl = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+				addToControl.NavigationButtonsVisible = false;
 				tab = addToControl.InsertTab (-1);
 
 				dockWindow.Container = new DockNotebookContainer (addToControl);
