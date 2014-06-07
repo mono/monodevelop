@@ -71,6 +71,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			using (var stream = Mono.TextEditor.Utils.TextFileUtility.OpenStream (fileName)) 
 				return Parse (storeAst, fileName, stream, project);
 		}
+
+		/// <summary>
+		/// Whether the output of the parser for files with the specified build
+		/// action should be stored in the project content.
+		/// </summary>
+		public virtual bool ShouldStoreInProjectContent (string buildAction)
+		{
+			return TypeSystemParserNode.IsCompileBuildAction (buildAction);
+		}
+
+		/// <summary>
+		/// The project content extension type used for storing output of this parser, if it can't be stored on
+		/// the IProjectContent. It should implement TypeSystemService.IUpdateableProjectContent.
+		/// </summary>
+		public virtual Type GetProjectContentExtensionType (string buildAction)
+		{
+			return null;
+		}
 	}
 }
 
