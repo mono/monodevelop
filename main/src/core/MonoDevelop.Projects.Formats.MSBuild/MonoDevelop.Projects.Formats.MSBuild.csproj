@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ProjectBuilder.cs" />
-    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildResult.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\LocalLogger.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ILogWriter.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IProjectBuilder.cs" />
@@ -49,6 +48,9 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IBuildEngine.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\ConsoleLogger.cs" />
     <Compile Include="AssemblyInfo.v4.0.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildTargetResult.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildResult.cs" />
+    <Compile Include="MonoDevelop.Projects.Formats.MSBuild\MSBuildEvaluatedItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

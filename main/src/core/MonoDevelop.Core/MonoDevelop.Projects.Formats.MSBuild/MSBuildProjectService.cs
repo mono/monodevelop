@@ -502,7 +502,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
+		internal static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
 				//attempt to use 12.0 builder first if available
