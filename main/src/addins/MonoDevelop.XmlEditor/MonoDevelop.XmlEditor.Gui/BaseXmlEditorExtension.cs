@@ -358,10 +358,10 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			//attribute name completion
 			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject && !tracker.Engine.Nodes.Peek ().IsEnded)
-			     || (Tracker.Engine.CurrentState is XmlNameState 
-			 	 && Tracker.Engine.CurrentState.Parent is XmlAttributeState
-			         && Tracker.Engine.CurrentStateLength == 1)
-			) {
+			     || ((Tracker.Engine.CurrentState is XmlNameState
+			    && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
+			    Tracker.Engine.CurrentState is XmlTagState)
+			    && (Tracker.Engine.CurrentStateLength == 1 || forced)) {
 				IAttributedXObject attributedOb = (Tracker.Engine.Nodes.Peek () as IAttributedXObject) ?? 
 					Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
 				if (attributedOb == null)
