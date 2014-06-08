@@ -292,15 +292,6 @@ namespace MonoDevelop.XmlEditor.Gui
 				return null;
 			}
 			
-			//element completion
-			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState ||
-				(tracker.Engine.CurrentState is XmlNameState && forced)) {
-				CompletionDataList list = new CompletionDataList ();
-				GetElementCompletions (list);
-				AddCloseTag (list, Tracker.Engine.Nodes);
-				return list.Count > 0? list : null;
-			}
-			
 			//entity completion
 			if (currentChar == '&' && (tracker.Engine.CurrentState is XmlFreeState ||
 			                           tracker.Engine.CurrentState is XmlAttributeValueState))
@@ -390,7 +381,16 @@ namespace MonoDevelop.XmlEditor.Gui
 //				if (line < 3) {
 //				cp.Add ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
 //			}
-			
+
+			//element completion
+			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState ||
+				(tracker.Engine.CurrentState is XmlNameState && forced)) {
+				CompletionDataList list = new CompletionDataList ();
+				GetElementCompletions (list);
+				AddCloseTag (list, Tracker.Engine.Nodes);
+				return list.Count > 0? list : null;
+			}
+
 			if (forced && Tracker.Engine.CurrentState is XmlFreeState) {
 				CompletionDataList list = new CompletionDataList ();
 				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (Document.Name, list);
