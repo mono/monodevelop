@@ -29,6 +29,10 @@ using MonoDevelop.Ide.CodeCompletion;
 using System;
 using MonoDevelop.XmlEditor;
 using MonoDevelop.Core;
+using Mono.TextEditor;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.XmlEditor.Completion
 {
@@ -79,7 +83,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		}
 		
 		public override IconId Icon {
-			get { return Gtk.Stock.GoForward; }
+			get { return base.Icon.IsNull ? (IconId)Gtk.Stock.GoForward : base.Icon; }
 		}
 		
 		public override string DisplayText {
@@ -99,6 +103,21 @@ namespace MonoDevelop.XmlEditor.Completion
 				
 				// Move caret in the middle of the attribute quotes.
 				return String.Concat (text, "=\"|\"");
+			}
+		}
+
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, ModifierType modifier)
+		{
+			if (XmlEditorOptions.AutoInsertFragments && dataType == DataType.XmlAttribute) {
+				var textEditorDataProvier = window.CompletionWidget as ITextEditorDataProvider;
+				var textBuffer = window.CompletionWidget as ITextBuffer;
+				base.InsertCompletionText (window, ref ka, closeChar, keyChar, modifier);
+				if (textEditorDataProvier != null && textBuffer != null)
+					textEditorDataProvier.GetTextEditorData ().SetSkipChar (textBuffer.CursorPosition, '"');
+				IdeApp.CommandService.DispatchCommand (TextEditorCommands.ShowCompletionWindow);
+				ka &= ~KeyActions.CloseWindow;
+			} else {
+				base.InsertCompletionText (window, ref ka, closeChar, keyChar, modifier);
 			}
 		}
 		
