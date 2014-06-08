@@ -29,6 +29,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -56,9 +57,9 @@ namespace MonoDevelop.VersionControl.Git
 			if (branch != null) {
 				if (!isNew)
 					oldName = branch.Name;
-				currentTracking = branch.Tracking;
+				currentTracking = branch.TrackedBranch.Name;
 				entryName.Text = branch.Name;
-				checkTrack.Active = currentTracking != null;
+				checkTrack.Active = branch.IsTracking;
 			}
 			
 			foreach (Branch b in repo.GetBranches ()) {
@@ -68,7 +69,7 @@ namespace MonoDevelop.VersionControl.Git
 			foreach (string t in repo.GetTags ())
 				AddValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu));
 			
-			foreach (RemoteSource r in repo.GetRemotes ()) {
+			foreach (Remote r in repo.GetRemotes ()) {
 				foreach (string b in repo.GetRemoteBranches (r.Name))
 					AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu));
 			}
@@ -106,7 +107,7 @@ namespace MonoDevelop.VersionControl.Git
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;
-			} else if (!GitUtil.IsValidBranchName (entryName.Text)) {
+			} else if (!Reference.IsValidName (entryName.Text)) {
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString (@"A branch name can not:
 Start with '.' or end with '/' or '.lock'
 Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";

@@ -28,8 +28,8 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.ProgressMonitoring;
-using NGit.Api;
 using System.Threading;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -137,16 +137,13 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 		
-		public static IAsyncOperation ApplyStash (Stash s)
+		public static IAsyncOperation ApplyStash (GitRepository repo, Stash s)
 		{
 			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					MergeCommandResult result;
-					using (var gm = new GitMonitor (monitor))
-						result = s.Apply (gm);
-					ReportStashResult (monitor, result);
+					ReportStashResult (repo.ApplyStash (s));
 				} catch (Exception ex) {
 					string msg = GettextCatalog.GetString ("Stash operation failed.");
 					monitor.ReportError (msg, ex);
@@ -159,24 +156,9 @@ namespace MonoDevelop.VersionControl.Git
 			return monitor.AsyncOperation;
 		}
 		
-		public static void ReportStashResult (IProgressMonitor monitor, MergeCommandResult result)
+		public static void ReportStashResult (MergeResult result)
 		{
-			if (result.GetMergeStatus () == MergeStatus.FAILED) {
-				string msg = GettextCatalog.GetString ("Stash operation failed.");
-				DispatchService.GuiDispatch (delegate {
-					IdeApp.Workbench.StatusBar.ShowWarning (msg);
-				});
-				string txt = msg + "\n\n" + GetMergeResultErrorDetail (result);
-				monitor.ReportError (txt, null);
-			}
-			else if (result.GetMergeStatus () == MergeStatus.NOT_SUPPORTED) {
-				string msg = GettextCatalog.GetString ("Operation not supported");
-				monitor.ReportError (msg, null);
-				DispatchService.GuiDispatch (delegate {
-					IdeApp.Workbench.StatusBar.ShowWarning (msg);
-				});
-			}
-			else if (result.GetMergeStatus () == MergeStatus.CONFLICTING) {
+			if (result.Status == MergeStatus.Conflicts) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
@@ -188,23 +170,6 @@ namespace MonoDevelop.VersionControl.Git
 					IdeApp.Workbench.StatusBar.ShowMessage (msg);
 				});
 			}
-		}
-		
-		internal static string GetMergeResultErrorDetail (MergeCommandResult result)
-		{
-			string msg = "";
-			if (result.GetFailingPaths () != null) {
-				foreach (var f in result.GetFailingPaths ()) {
-					if (msg.Length > 0)
-						msg += "\n";
-					switch (f.Value) {
-					case NGit.Merge.ResolveMerger.MergeFailureReason.DIRTY_WORKTREE: msg += GettextCatalog.GetString ("The file '{0}' has unstaged changes", f.Key); break;
-					case NGit.Merge.ResolveMerger.MergeFailureReason.DIRTY_INDEX: msg += GettextCatalog.GetString ("The file '{0}' has staged changes", f.Key); break;
-					case NGit.Merge.ResolveMerger.MergeFailureReason.COULD_NOT_DELETE: msg += GettextCatalog.GetString ("The file '{0}' could not be deleted", f.Key); break;
-					}
-				}
-			}
-			return msg;
 		}
 	}
 }

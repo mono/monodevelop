@@ -28,11 +28,10 @@ using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using NGit.Transport;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	sealed class GitCredentials: CredentialsProvider
+	/*sealed class GitCredentials: CredentialsProvider
 	{
 		bool HasReset {
 			get; set;
@@ -131,6 +130,6 @@ namespace MonoDevelop.VersionControl.Git
 
 			return false;
 		}
-	}
+	}*/
 }
 

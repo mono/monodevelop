@@ -81,10 +81,8 @@
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.GitCommitDialogExtensionWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitCommitDialogExtension.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitSupportFeature.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Git\FilteredStatus.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\UserGitConfigDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.VersionControl.Git.UserGitConfigDialog.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Git\MyersDiff.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitSelectRevisionDialog.cs" />
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
@@ -118,6 +116,10 @@
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\libgit2sharp\LibGit2Sharp\LibGit2Sharp.csproj">
+      <Project>{EE6ED99F-CB12-4683-B055-D28FC7357A34}</Project>
+      <Name>LibGit2Sharp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

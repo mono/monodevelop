@@ -26,13 +26,12 @@
 using System.Linq;
 using System.Collections.Generic;
 using Gtk;
-using NGit.Transport;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	partial class CredentialsDialog : Gtk.Dialog
 	{
-		readonly CredentialItem.YesNoType singleYesNoCred;
+		/*readonly CredentialItem.YesNoType singleYesNoCred;
 		
 		public CredentialsDialog (URIish uri, IEnumerable<CredentialItem> credentials)
 		{
@@ -103,17 +102,17 @@ namespace MonoDevelop.VersionControl.Git
 			table.ShowAll ();
 			Focus = firstEditor;
 			Default = buttonOk;
-		}
+		}*/
 		
 		protected virtual void OnButtonYesClicked (object sender, System.EventArgs e)
 		{
-			singleYesNoCred.SetValue (true);
+			//singleYesNoCred.SetValue (true);
 			Respond (ResponseType.Ok);
 		}
 		
 		protected virtual void OnButtonNoClicked (object sender, System.EventArgs e)
 		{
-			singleYesNoCred.SetValue (false);
+			//singleYesNoCred.SetValue (false);
 			Respond (ResponseType.Cancel);
 		}
 	}

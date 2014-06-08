@@ -31,6 +31,7 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide.ProgressMonitoring;
 using System.Threading;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -139,8 +140,7 @@ namespace MonoDevelop.VersionControl.Git
 					var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
-							using (var gm = new GitMonitor (monitor))
-								stashes.Create (gm, comment);
+							Repository.CreateStash (comment);
 						} catch (Exception ex) {
 							MessageService.ShowException (ex);
 						}
@@ -165,10 +165,7 @@ namespace MonoDevelop.VersionControl.Git
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					NGit.Api.MergeCommandResult result;
-					using (var gm = new GitMonitor (monitor))
-						result = stashes.Pop (gm);
-					GitService.ReportStashResult (monitor, result);
+					GitService.ReportStashResult (Repository.PopStash ());
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
 				}

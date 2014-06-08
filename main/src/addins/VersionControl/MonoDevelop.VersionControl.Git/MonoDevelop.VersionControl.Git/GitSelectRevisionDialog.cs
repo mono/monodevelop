@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core;
 using System.Text;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -119,7 +120,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void CheckSensitive ()
 		{
-			if (!String.IsNullOrWhiteSpace (tagNameEntry.Text) && GitUtil.IsValidBranchName (tagNameEntry.Text) &&
+			if (!String.IsNullOrWhiteSpace (tagNameEntry.Text) && Reference.IsValidName (tagNameEntry.Text) &&
 				revisionList.SelectedRow != -1) {
 				buttonOk.Sensitive = true;
 				return;

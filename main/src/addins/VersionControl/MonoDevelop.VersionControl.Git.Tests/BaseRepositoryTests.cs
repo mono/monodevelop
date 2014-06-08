@@ -301,7 +301,7 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", "text", true, true);
 			// TODO: Extend and test each member and more types.
 			foreach (var rev in Repo.GetRevisionChanges (GetHeadRevision ())) {
-				Assert.AreEqual (rev.Action, RevisionAction.Add);
+				Assert.AreEqual (RevisionAction.Add, rev.Action);
 			}
 		}
 
@@ -437,10 +437,8 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
-		[Ignore]
 		// TODO: Fix Subversion for Unix not returning the correct value.
 		// TODO: Fix SvnSharp logic failing to generate correct URL.
-		// TODO: Fix Git TreeWalk failing.
 		// Tests Repository.GetTextAtRevision.
 		public void CorrectTextAtRevision ()
 		{
@@ -448,7 +446,7 @@ namespace MonoDevelop.VersionControl.Tests
 			AddFile ("testfile", "text1", true, true);
 			File.AppendAllText (added, "text2");
 			CommitFile (added);
-			string text = Repo.GetTextAtRevision (LocalPath, GetHeadRevision ());
+			string text = Repo.GetTextAtRevision (added, GetHeadRevision ());
 			Assert.AreEqual ("text1text2", text);
 		}
 

@@ -29,6 +29,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -66,7 +67,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			// Sources tree
 			
-			storeRemotes = new TreeStore (typeof(RemoteSource), typeof(string), typeof(string), typeof(string), typeof(string));
+			storeRemotes = new TreeStore (typeof(Remote), typeof(string), typeof(string), typeof(string), typeof(string));
 			treeRemotes.Model = storeRemotes;
 			treeRemotes.HeadersVisible = true;
 			
@@ -96,7 +97,7 @@ namespace MonoDevelop.VersionControl.Git
 			string currentBranch = repo.GetCurrentBranch ();
 			foreach (Branch branch in repo.GetBranches ()) {
 				string text = branch.Name == currentBranch ? "<b>" + branch.Name + "</b>" : branch.Name;
-				storeBranches.AppendValues (branch, text, branch.Tracking, branch.Name);
+				storeBranches.AppendValues (branch, text, branch.TrackedBranch.Name, branch.Name);
 			}
 			state.Load ();
 		}
@@ -107,13 +108,13 @@ namespace MonoDevelop.VersionControl.Git
 			state.Save ();
 			storeRemotes.Clear ();
 			string currentRemote = repo.GetCurrentRemote ();
-			foreach (RemoteSource remote in repo.GetRemotes ()) {
+			foreach (Remote remote in repo.GetRemotes ()) {
 				string text = remote.Name == currentRemote ? "<b>" + remote.Name + "</b>" : remote.Name;
 				string url;
-				if (remote.FetchUrl == remote.PushUrl)
-					url = remote.FetchUrl;
+				if (remote.Url == remote.Url)
+					url = remote.Url;
 				else
-					url = remote.FetchUrl + " (fetch)\n" + remote.PushUrl + " (push)";
+					url = remote.Url + " (fetch)\n" + remote.Url + " (push)";
 				TreeIter it = storeRemotes.AppendValues (remote, text, url, null, remote.Name);
 				foreach (string branch in repo.GetRemoteBranches (remote.Name))
 					storeRemotes.AppendValues (it, null, branch, null, branch, remote.Name + "/" + branch);
@@ -197,7 +198,9 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnButtonAddRemoteClicked (object sender, EventArgs e)
 		{
-			var remote = new RemoteSource ();
+			// TODO:
+			/*
+			var remote = new Remote ();
 			var dlg = new EditRemoteDialog (remote, true);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
@@ -206,7 +209,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
-			}
+			}*/
 		}
 		
 		protected virtual void OnButtonEditRemoteClicked (object sender, EventArgs e)
@@ -215,7 +218,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (!treeRemotes.Selection.GetSelected (out it))
 				return;
 			
-			RemoteSource remote = (RemoteSource) storeRemotes.GetValue (it, 0);
+			var remote = (Remote) storeRemotes.GetValue (it, 0);
 			if (remote == null)
 				return;
 
@@ -226,7 +229,6 @@ namespace MonoDevelop.VersionControl.Git
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					if (remote.Name != oldName)
 						repo.RenameRemote (oldName, remote.Name);
-					repo.UpdateRemote (remote);
 					FillRemotes ();
 				}
 			} finally {
@@ -240,7 +242,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (!treeRemotes.Selection.GetSelected (out it))
 				return;
 
-			RemoteSource remote = (RemoteSource) storeRemotes.GetValue (it, 0);
+			var remote = (Remote) storeRemotes.GetValue (it, 0);
 			if (remote == null)
 				return;
 
@@ -257,14 +259,15 @@ namespace MonoDevelop.VersionControl.Git
 				buttonAddRemote.Sensitive = buttonEditRemote.Sensitive = buttonRemoveRemote.Sensitive = buttonTrackRemote.Sensitive = false;
 				return;
 			}
-			RemoteSource remote = (RemoteSource) storeRemotes.GetValue (it, 0);
+			var remote = (Remote) storeRemotes.GetValue (it, 0);
 			buttonTrackRemote.Sensitive = remote == null;
 			buttonAddRemote.Sensitive = buttonEditRemote.Sensitive = buttonRemoveRemote.Sensitive = remote != null;
 		}
 		
 		protected virtual void OnButtonTrackRemoteClicked (object sender, EventArgs e)
 		{
-			TreeIter it;
+			// TODO:
+			/*TreeIter it;
 			if (!treeRemotes.Selection.GetSelected (out it))
 				return;
 			string branchName = (string) storeRemotes.GetValue (it, 3);
@@ -272,7 +275,7 @@ namespace MonoDevelop.VersionControl.Git
 				return;
 			
 			storeRemotes.IterParent (out it, it);
-			RemoteSource remote = (RemoteSource) storeRemotes.GetValue (it, 0);
+			var remote = (Remote) storeRemotes.GetValue (it, 0);
 			
 			Branch b = new Branch ();
 			b.Name = branchName;
@@ -286,7 +289,7 @@ namespace MonoDevelop.VersionControl.Git
 				}
 			} finally {
 				dlg.Destroy ();
-			}
+			}*/
 		}
 
 		protected void OnButtonNewTagClicked (object sender, EventArgs e)

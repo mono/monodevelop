@@ -29,6 +29,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -102,11 +103,11 @@ namespace MonoDevelop.VersionControl.Git
 			
 			foreach (Branch b in repo.GetBranches ())
 				store.AppendValues (b.Name, ImageService.GetIcon ("vc-branch", IconSize.Menu), b.Name, "branch");
-			
+
 			foreach (string t in repo.GetTags ())
 				store.AppendValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu), t, "tag");
 			
-			foreach (RemoteSource r in repo.GetRemotes ()) {
+			foreach (Remote r in repo.GetRemotes ()) {
 				TreeIter it = store.AppendValues (null, ImageService.GetIcon ("vc-repository", IconSize.Menu), r.Name, null);
 				foreach (string b in repo.GetRemoteBranches (r.Name))
 					store.AppendValues (it, r.Name + "/" + b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "remote");
