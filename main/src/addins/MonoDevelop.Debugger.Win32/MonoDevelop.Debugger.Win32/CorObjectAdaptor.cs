@@ -1096,7 +1096,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (field != null && (field.IsStatic || co != null))
 					return new FieldReference (ctx, co as CorValRef, type, field);
 
-				PropertyInfo prop = FindByName (tt.GetProperties (), p => p.Name, name, ctx.CaseSensitive);
+				PropertyInfo prop = FindByName (tt.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance), p => p.Name, name, ctx.CaseSensitive);
 				if (prop != null && (IsStatic (prop) || co != null)) {
 					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
 					// This way we avoid overhead of invoking methods on the debugee when the value is requested.
