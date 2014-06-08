@@ -79,7 +79,7 @@ namespace MonoDevelop.XmlEditor.Completion
 		}
 		
 		public override IconId Icon {
-			get { return Gtk.Stock.GoForward; }
+			get { return base.Icon.IsNull ? (IconId)Gtk.Stock.GoForward : base.Icon; }
 		}
 		
 		public override string DisplayText {
