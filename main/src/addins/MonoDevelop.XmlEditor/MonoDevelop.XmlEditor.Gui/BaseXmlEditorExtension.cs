@@ -334,6 +334,37 @@ namespace MonoDevelop.XmlEditor.Gui
 				}
 				return null;
 			}
+
+			//attribute value completion
+			//determine whether to trigger completion within attribute values quotes
+			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
+			    //trigger on the opening quote
+			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
+			    //or trigger on first letter of value, if unforced
+			    || (!forced && Tracker.Engine.CurrentStateLength == 1))) {
+				var att = (XAttribute)Tracker.Engine.Nodes.Peek ();
+
+				if (att.IsNamed) {
+					var attributedOb = Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
+					if (attributedOb == null)
+						return null;
+
+					char next = ' ';
+					if (completionContext.TriggerOffset < buf.Length)
+						next = buf.GetCharAt (completionContext.TriggerOffset);
+
+					char compareChar = (Tracker.Engine.CurrentStateLength == 1) ? currentChar : previousChar;
+
+					if ((compareChar == '"' || compareChar == '\'')
+					    && (next == compareChar || char.IsWhiteSpace (next))) {
+						//if triggered by first letter of value, grab that letter
+						if (Tracker.Engine.CurrentStateLength == 2)
+							triggerWordLength = 1;
+
+						return GetAttributeValueCompletions (attributedOb, att);
+					}
+				}
+			}
 			
 			//attribute name completion
 			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject && !tracker.Engine.Nodes.Peek ().IsEnded)
@@ -362,41 +393,6 @@ namespace MonoDevelop.XmlEditor.Gui
 					
 					return GetAttributeCompletions (attributedOb, existingAtts);
 				}
-			}
-			
-			//attribute value completion
-			//determine whether to trigger completion within attribute values quotes
-			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
-			    //trigger on the opening quote
-			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
-			        //or trigger on first letter of value, if unforced
-			        || (!forced && Tracker.Engine.CurrentStateLength == 1))
-			    )
-			{
-				var att = (XAttribute) Tracker.Engine.Nodes.Peek ();
-				
-				if (att.IsNamed) {
-					var attributedOb = Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
-					if (attributedOb == null)
-						return null;
-					
-					char next = ' ';
-					if (completionContext.TriggerOffset < buf.Length)
-						next = buf.GetCharAt (completionContext.TriggerOffset);
-					
-					char compareChar = (Tracker.Engine.CurrentStateLength == 1)? currentChar : previousChar;
-					
-					if ((compareChar == '"' || compareChar == '\'') 
-					    && (next == compareChar || char.IsWhiteSpace (next))
-					) {
-						//if triggered by first letter of value, grab that letter
-						if (Tracker.Engine.CurrentStateLength == 2)
-							triggerWordLength = 1;
-						
-						return GetAttributeValueCompletions (attributedOb, att);
-					}
-				}
-				
 			}
 			
 //			if (Tracker.Engine.CurrentState is XmlFreeState) {
