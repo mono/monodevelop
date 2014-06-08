@@ -400,42 +400,31 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			// Initialize the repository
 			RootRepository = new LibGit2Sharp.Repository (LibGit2Sharp.Repository.Init (localPath));
+			RootPath = localPath.Combine (".git");
 			RootRepository.Network.Remotes.Add ("origin", Url);
-			/*
-			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
-			try {
-				var refs = git.Fetch ().Call ().GetAdvertisedRefs ();
-				if (refs.Count > 0) {
-					throw new UserException ("The remote repository already contains branches. Publishing is only possible to an empty repository");
-				}
-			} catch {
-				try {
-					RootRepository.Close ();
-				} catch {
-				
-				}
-				if (Directory.Exists (RootRepository.Directory))
-					Directory.Delete (RootRepository.Directory, true);
-				RootRepository = null;
-				throw;
-			}
 
-			RootPath = localPath;
 			// Add the project files
 			ChangeSet cs = CreateChangeSet (localPath);
-			var cmd = git.Add ();
 			foreach (FilePath fp in files) {
-				cmd.AddFilepattern (RootRepository.ToGitPath (fp));
+				RootRepository.Index.Stage (RootRepository.ToGitPath (fp));
 				cs.AddFile (fp);
 			}
-			cmd.Call ();
-			
+
 			// Create the initial commit
 			cs.GlobalComment = message;
 			Commit (cs, monitor);
 
-			// Push to remote repo
-			Push (monitor, "origin", "master");*/
+			RootRepository.Branches.Update (RootRepository.Branches ["master"], branch => branch.TrackedBranch = "refs/remotes/origin/master");
+
+			RootRepository.Network.Push (RootRepository.Head, new PushOptions {
+				OnPushStatusError = delegate (PushStatusError e) {
+					RootRepository.Dispose ();
+					RootRepository = null;
+					if (RootPath.IsDirectory)
+						Directory.Delete (RootPath, true);
+					throw new UserException (e.Message);
+				}
+			});
 
 			return this;
 		}
@@ -446,33 +435,13 @@ namespace MonoDevelop.VersionControl.Git
 			// do rebase
 			// else
 			// Default to merge.
-			RootRepository.Network.Pull (GetSignature (), new PullOptions {
-				FetchOptions = null
-			});
-			/*
-			IEnumerable<DiffEntry> statusList = null;
-			
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
+			RootRepository.Network.Pull (GetSignature (), new PullOptions {
+				FetchOptions = null, // Progress of pulling.
+				MergeOptions = null  // Get files that have changed and such.
+			});
 
-			// Fetch remote commits
-			Fetch (monitor);
-			string upstreamRef = GitUtil.GetUpstreamSource (RootRepository, GetCurrentBranch ());
-			if (upstreamRef == null)
-				upstreamRef = GetCurrentRemote () + "/" + GetCurrentBranch ();
-
-			GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
-			if (GitService.UseRebaseOptionWhenPulling)
-				Rebase (upstreamRef, options, monitor);
-			else
-				Merge (upstreamRef, options, monitor);
-
-			monitor.Step (1);
-			
-			// Notify changes
-			if (statusList != null)
-				NotifyFileChanges (monitor, statusList);
-			
-			monitor.EndTask ();*/
+			monitor.EndTask ();
 		}
 
 		public void Fetch (IProgressMonitor monitor)
@@ -482,48 +451,6 @@ namespace MonoDevelop.VersionControl.Git
 				OnTransferProgress = null,
 				OnUpdateTips = null
 			});
-		}
-
-		bool GetSubmodulesToUpdate (List<string> updateSubmodules)
-		{
-			/*List<string> dirtySubmodules = new List<string> ();
-
-			// Iterate submodules and do status.
-			// SubmoduleStatus does not report changes for dirty submodules.
-			foreach (var submodule in CachedSubmodules) {
-				var submoduleGit = new NGit.Api.Git (submodule);
-				var statusCommand = submoduleGit.Status ();
-				var status = statusCommand.Call ();
-
-				if (status.IsClean ())
-					updateSubmodules.Add (RootRepository.ToGitPath (submodule.WorkTree.GetAbsolutePath ()));
-				else
-					dirtySubmodules.Add (RootRepository.ToGitPath (submodule.WorkTree.GetAbsolutePath ()));
-			}
-
-			if (dirtySubmodules.Count != 0) {
-				StringBuilder submodules = new StringBuilder (Environment.NewLine + Environment.NewLine);
-				foreach (var item in dirtySubmodules)
-					submodules.AppendLine (item);
-
-				AlertButton response = MessageService.GenericAlert (
-					MonoDevelop.Ide.Gui.Stock.Question,
-					GettextCatalog.GetString ("You have local changes in the submodules below"),
-					GettextCatalog.GetString ("Do you want continue? Detached HEADs will have their changes lost.{0}", submodules.ToString ()),
-					new AlertButton[] {
-							AlertButton.No,
-							new AlertButton ("Only unchanged"),
-							AlertButton.Yes
-						}
-				);
-
-				if (response == AlertButton.No)
-					return false;
-
-				if (response == AlertButton.Yes)
-					updateSubmodules.AddRange (dirtySubmodules);
-			}*/
-			return true;
 		}
 
 		public void Rebase (string upstreamRef, GitUpdateOptions options, IProgressMonitor monitor)
@@ -837,27 +764,6 @@ namespace MonoDevelop.VersionControl.Git
 				OnTransferProgress = null
 			});
 			RootRepository = new LibGit2Sharp.Repository (RootPath);
-			/*CloneCommand cmd = NGit.Api.Git.CloneRepository ();
-			cmd.SetURI (Url);
-			cmd.SetRemote ("origin");
-			cmd.SetBranch ("refs/heads/master");
-			cmd.SetDirectory ((string)targetLocalPath);
-			cmd.SetCloneSubmodules (true);
-			using (var gm = new GitMonitor (monitor, 4)) {
-				cmd.SetProgressMonitor (gm);
-				try {
-					cmd.Call ();
-				} catch (NGit.Api.Errors.JGitInternalException e) {
-					// We cancelled and NGit throws.
-					// Or URL is wrong.
-					if (e.InnerException is NGit.Errors.MissingObjectException ||
-						e.InnerException is NGit.Errors.TransportException ||
-						e.InnerException is NGit.Errors.NotSupportedException) {
-						FileService.DeleteDirectory (targetLocalPath);
-						throw new VersionControlException (e.InnerException.Message);
-					}
-				}
-			}*/
 		}
 
 		protected override void OnRevert (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
@@ -1033,50 +939,18 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Push (IProgressMonitor monitor, string remote, string remoteBranch)
 		{
-			RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch,
-				new PushOptions () {
-
-				});
-			// TODO:
-			/*
-			var push = new NGit.Api.Git (RootRepository).Push ();
-
-			// We only have one pushed branch.
-			push.SetRemote (remote).SetRefSpecs (new RefSpec (remoteRef));
-			using (var gm = new GitMonitor (monitor)) {
-				push.SetProgressMonitor (gm);
-
-				try {
-					res = push.Call ();
-				} catch (NGit.Api.Errors.JGitInternalException e) {
-					if (e.InnerException is NGit.Errors.TransportException)
-						throw new VersionControlException (e.InnerException.Message);
-					throw;
+			bool success = true;
+			RootRepository.Network.Push (RootRepository.Network.Remotes [remote], "refs/heads/" + remoteBranch,	new PushOptions {
+				OnPushStatusError = delegate (PushStatusError pushStatusErrors) {
+					monitor.ReportError (pushStatusErrors.Message, null);
+					success = false;
 				}
-			}
+			});
 
-			foreach (var pr in res) {
-				var remoteUpdate = pr.GetRemoteUpdate (remoteRef);
+			if (!success)
+				return;
 
-				switch (remoteUpdate.GetStatus ()) {
-					case RemoteRefUpdate.Status.UP_TO_DATE: monitor.ReportSuccess (GettextCatalog.GetString ("Remote branch is up to date.")); break;
-					case RemoteRefUpdate.Status.REJECTED_NODELETE: monitor.ReportError (GettextCatalog.GetString ("The server is configured to deny deletion of the branch"), null); break;
-					case RemoteRefUpdate.Status.REJECTED_NONFASTFORWARD: monitor.ReportError (GettextCatalog.GetString ("The update is a non-fast-forward update. Merge the remote changes before pushing again."), null); break;
-					case RemoteRefUpdate.Status.OK:
-						monitor.ReportSuccess (GettextCatalog.GetString ("Push operation successfully completed."));
-						// Update the remote branch
-						ObjectId headId = remoteUpdate.GetNewObjectId ();
-						RefUpdate updateRef = RootRepository.UpdateRef (Constants.R_REMOTES + remote + "/" + remoteBranch);
-						updateRef.SetNewObjectId(headId);
-						updateRef.Update();
-						break;
-					default:
-						string msg = remoteUpdate.GetMessage ();
-						msg = !string.IsNullOrEmpty (msg) ? msg : GettextCatalog.GetString ("Push operation failed");
-						monitor.ReportError (msg, null);
-						break;
-				}
-			}*/
+			monitor.ReportSuccess (GettextCatalog.GetString ("Push operation successfully completed."));
 		}
 
 		public void CreateBranchFromCommit (string name, Commit id)
@@ -1194,7 +1068,9 @@ namespace MonoDevelop.VersionControl.Git
 
 			try {
 				RootRepository.Reset (ResetMode.Hard);
-				RootRepository.Checkout (branch);
+				RootRepository.Checkout (branch, new CheckoutOptions {
+					OnCheckoutNotify = null
+				});
 			} finally {
 				// Restore the branch stash
 				if (GitService.StashUnstashWhenSwitchingBranches) {
