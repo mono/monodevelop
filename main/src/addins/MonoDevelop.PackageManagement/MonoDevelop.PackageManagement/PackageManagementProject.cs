@@ -89,6 +89,16 @@ namespace ICSharpCode.PackageManagement
 			
 				projectManager.Logger = value;
 				projectManager.Project.Logger = value;
+
+				ConfigureLoggerForSourceRepository ();
+			}
+		}
+
+		void ConfigureLoggerForSourceRepository ()
+		{
+			var aggregateRepository = SourceRepository as AggregateRepository;
+			if (aggregateRepository != null) {
+				aggregateRepository.Logger = Logger;
 			}
 		}
 		

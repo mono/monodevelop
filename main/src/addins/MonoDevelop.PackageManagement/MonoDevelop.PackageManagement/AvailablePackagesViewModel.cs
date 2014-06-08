@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -63,48 +64,65 @@ namespace ICSharpCode.PackageManagement
 				errorMessage = ex.Message;
 			}
 		}
-		
-		protected override IQueryable<IPackage> GetPackages(string search)
+
+		protected override IQueryable<IPackage> GetPackages (PackageSearchCriteria search)
 		{
 			if (repository == null) {
-				throw new ApplicationException(errorMessage);
+				throw new ApplicationException (errorMessage);
 			}
+
+			if (search.IsPackageVersionSearch) {
+				return repository
+					.FindPackagesById (search.PackageId)
+					.Where (package => IncludePrerelease || package.IsReleaseVersion ())
+					.AsQueryable ();
+			}
+
 			if (IncludePrerelease) {
 				return repository
-					.Search (search, new string[0], IncludePrerelease)
+					.Search (search.SearchText, new string[0], IncludePrerelease)
 					.Where (package => package.IsAbsoluteLatestVersion);
 			}
 			return repository
-				.Search (search, new string[0], IncludePrerelease)
+				.Search (search.SearchText, new string[0], IncludePrerelease)
 				.Where (package => package.IsLatestVersion);
 		}
 		
 		/// <summary>
 		/// Order packages by most downloaded first.
 		/// </summary>
-		protected override IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
+		protected override IQueryable<IPackage> OrderPackages (IQueryable<IPackage> packages, PackageSearchCriteria search)
 		{
-			if (GetSearchCriteria () != null) {
+			if (search.IsPackageVersionSearch) {
+				return packages.OrderByDescending (package => package.Version);
+			}
+
+			if (search.SearchText != null) {
 				// Order by relevance for searches.
 				return packages;
 			}
 			return packages.OrderByDescending(package => package.DownloadCount);
 		}
 		
-		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
+		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults (IQueryable<IPackage> allPackages, PackageSearchCriteria search)
 		{
+			if (search.IsPackageVersionSearch) {
+				return base.GetFilteredPackagesBeforePagingResults (allPackages, search)
+					.Where (package => search.IsVersionMatch (package.Version));
+			}
+
 			if (IncludePrerelease) {
-				return base.GetFilteredPackagesBeforePagingResults(allPackages)
+				return base.GetFilteredPackagesBeforePagingResults(allPackages, search)
 					.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 			}
-			return base.GetFilteredPackagesBeforePagingResults(allPackages)
+			return base.GetFilteredPackagesBeforePagingResults(allPackages, search)
 				.Where(package => package.IsReleaseVersion())
 				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 		}
 
-		protected override IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, string searchCriteria)
+		protected override IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
-			List<IPackage> recentPackages = GetRecentPackages (searchCriteria).ToList ();
+			List<IPackage> recentPackages = GetRecentPackages (search).ToList ();
 
 			if (PackageViewModels.Count == 0) {
 				foreach (IPackage package in recentPackages) {
@@ -119,9 +137,19 @@ namespace ICSharpCode.PackageManagement
 			}
 		}
 
-		IEnumerable<IPackage> GetRecentPackages (string searchCriteria)
+		IEnumerable<IPackage> GetRecentPackages (PackageSearchCriteria search)
 		{
-			return recentPackageRepository.Search (searchCriteria, IncludePrerelease);
+			if (search.IsPackageVersionSearch) {
+				return Enumerable.Empty<IPackage> ();
+			}
+			return recentPackageRepository.Search (search.SearchText, IncludePrerelease);
+		}
+
+		protected override PackageViewModel CreatePackageViewModel (IPackage package, PackageSearchCriteria search)
+		{
+			PackageViewModel viewModel = base.CreatePackageViewModel (package, search);
+			viewModel.ShowVersionInsteadOfDownloadCount = search.IsPackageVersionSearch;
+			return viewModel;
 		}
 	}
 }

@@ -164,7 +164,7 @@ namespace MonoDevelop.CodeIssues
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
 			foreach (var g in grouped) {
-				TreeIter categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>", null, "");
+				TreeIter categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>", null, null);
 				categories [g.Key] = categoryIter;
 
 				foreach (var node in g.OrderBy (n => n.Title, StringComparer.Ordinal)) {

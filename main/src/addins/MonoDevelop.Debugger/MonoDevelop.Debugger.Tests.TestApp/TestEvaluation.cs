@@ -129,6 +129,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var objWithMethodA = new ClassWithMethodA ();
 
 			var richObject = new RichClass ();
+			byte[] nulledByteArray = null;
 
 			Console.WriteLine (n); /*break*/
 		}

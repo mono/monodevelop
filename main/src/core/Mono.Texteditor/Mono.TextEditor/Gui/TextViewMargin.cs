@@ -1985,7 +1985,7 @@ namespace Mono.TextEditor
 				}
 				mouseSelectionMode = MouseSelectionMode.SingleChar;
 
-				if (textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset <= offset && offset < textEditor.SelectionRange.EndOffset && clickLocation != textEditor.Caret.Location) {
+				if (textEditor.IsSomethingSelected && IsInsideSelection (clickLocation) && clickLocation != textEditor.Caret.Location) {
 					inDrag = true;
 				} else {
 					if ((args.ModifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
@@ -2037,6 +2037,19 @@ namespace Mono.TextEditor
 				if (autoScroll)
 					textEditor.Caret.ActivateAutoScrollWithoutMove ();
 			}
+		}
+
+		bool IsInsideSelection (DocumentLocation clickLocation)
+		{
+			var selection = textEditor.MainSelection;
+			if (selection.SelectionMode == SelectionMode.Block) {
+				int minColumn = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
+				int maxColumn = System.Math.Max (selection.Anchor.Column, selection.Lead.Column);
+
+				return selection.MinLine <= clickLocation.Line && clickLocation.Line <= selection.MaxLine &&
+					minColumn <= clickLocation.Column && clickLocation.Column <= maxColumn;
+			}
+			return selection.Start <= clickLocation && clickLocation < selection.End;
 		}
 
 		protected internal override void MouseReleased (MarginMouseEventArgs args)

@@ -597,20 +597,26 @@ namespace MonoDevelop.SourceEditor
 			HideTooltip ();
 			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
 			var ctx = ExtensionContext ?? AddinManager.AddinEngine;
+
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
-			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
-			var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
-			if (imMenu != null) {
-				menu.Append (new SeparatorMenuItem ());
-				menu.Append (imMenu);
-			}
-			
-			menu.Hidden += HandleMenuHidden; 
-			if (evt != null) {
-				GtkWorkarounds.ShowContextMenu (menu, this, evt);
+
+			if (Platform.IsMac) {
+				IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
 			} else {
-				var pt = LocationToPoint (this.Caret.Location);
-				GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
+				Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+				var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
+				if (imMenu != null) {
+					menu.Append (new SeparatorMenuItem ());
+					menu.Append (imMenu);
+				}
+
+				menu.Hidden += HandleMenuHidden;
+				if (evt != null) {
+					GtkWorkarounds.ShowContextMenu (menu, this, evt);
+				} else {
+					var pt = LocationToPoint (this.Caret.Location);
+					GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
+				}
 			}
 		}
 
