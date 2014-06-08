@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.JavaScript
 {
-	abstract class JSStatement
+	public abstract class JSStatement
 	{
 		public string Name {
 			get;

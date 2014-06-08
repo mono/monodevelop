@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.JavaScript
 {
-	class JavaScriptDocumentCache
+	public class JavaScriptDocumentCache
 	{
 		public Guid SolutionId {
 			get;

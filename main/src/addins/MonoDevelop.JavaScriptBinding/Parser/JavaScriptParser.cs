@@ -47,11 +47,21 @@ namespace MonoDevelop.JavaScript
 			var parseDocument = new JavaScriptParsedDocument (fileName, content);
 			parseDocument.Flags |= ParsedDocumentFlags.NonSerializable;
 
-			if (project != null) {
-				JSTypeSystemService.AddUpdateParsedDocument (project.ItemId, fileName, parseDocument);
-			}
+            //if (project != null) {
+            //    JSTypeSystemService.AddUpdateParsedDocument (project.ItemId, fileName, parseDocument);
+            //}
 
 			return parseDocument;
 		}
+
+//		public override Type GetProjectContentExtensionType (string buildAction)
+//		{
+//			return typeof(JSUpdateableProjectContent);
+//		}
+//
+//		public override bool ShouldStoreInProjectContent (string buildAction)
+//		{
+//			return true;
+//		}
 	}
 }

@@ -155,6 +155,7 @@
     <Compile Include="DomainObjects\Cache\JSVariableDeclaration.cs" />
     <Compile Include="DomainObjects\Cache\SimpleJSAst.cs" />
     <Compile Include="Factories\SimpleJSAstFactory.cs" />
+    <Compile Include="Parser\JSUpdateableProjectContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Formatting\MonoJSPolicy.xml" />

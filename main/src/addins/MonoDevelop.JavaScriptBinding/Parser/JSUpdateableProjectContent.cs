@@ -1,5 +1,5 @@
 ﻿//
-// JSFunctionStatement.cs
+// JSUpdateableProjectContent.cs
 //
 // Author:
 //       Harsimran Bath <harsimranbath@gmail.com>
@@ -24,41 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.JavaScript
 {
-	public enum JSFunctionType
+	[Serializable]
+	public class JSUpdateableProjectContent //: TypeSystemService.IUpdateableProjectContent
 	{
-		FunctionStatement,
-		FunctionExpression,
-		GetterFunctionExpression,
-		SetterFunctionExpression
-	}
-
-	public class JSFunctionStatement : JSStatement
-	{
-		public string FunctionSignature {
+		public List<JavaScriptDocumentCache> DocumentsCache {
 			get;
 			set;
 		}
 
-		public JSFunctionType FunctionType {
-			get;
-			set;
+		public JSUpdateableProjectContent()
+		{
+			DocumentsCache = new List<JavaScriptDocumentCache> ();
 		}
 
-		public JSFunctionStatement (Jurassic.Compiler.FunctionStatement functionStatement)
-			: base (functionStatement.FunctionName, functionStatement.SourceSpan)
+		public void AddOrUpdateFiles (IEnumerable<ParsedDocument> docs)
 		{
-			FunctionSignature = functionStatement.BuildFunctionSignature ();
-			FunctionType = JSFunctionType.FunctionStatement;
+			foreach (var doc in docs.OfType<JavaScriptParsedDocument> ()) {
+				DocumentsCache.Add (new JavaScriptDocumentCache{
+					FileName = doc.FileName,
+					SimpleAst = doc.SimpleAst
+				});
+			}
 		}
 
-		public JSFunctionStatement (Jurassic.Compiler.FunctionExpression functionStatement, JSFunctionType functionType = JSFunctionType.FunctionExpression)
-			: base (functionStatement.FunctionName, functionStatement.SourceSpan)
+		public void RemoveFiles (IEnumerable<string> filenames)
 		{
-			FunctionSignature = functionStatement.BuildFunctionSignature ();
-			FunctionType = functionType;
+			foreach (var fileName in filenames)
+				DocumentsCache.RemoveAll (i=>i.FileName == fileName);			
 		}
 	}
 }

@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 
 namespace MonoDevelop.JavaScript
 {
+	/*
 	static class JSTypeSystemService
 	{
 		readonly static List<JavaScriptDocumentCache> solutionParsedDocuments;
@@ -107,5 +108,6 @@ namespace MonoDevelop.JavaScript
 			parsingTask.Start ();
 		}
 	}
+	*/
 }
 

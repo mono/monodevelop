@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.JavaScript
 {
-	class SimpleJSAst
+	public class SimpleJSAst
 	{
 		public List<JSStatement> AstNodes {
 			get;

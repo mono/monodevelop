@@ -27,7 +27,7 @@ using System;
 
 namespace MonoDevelop.JavaScript
 {
-	class JSVariableDeclaration : JSStatement
+	public class JSVariableDeclaration : JSStatement
 	{
 		public JSVariableDeclaration (Jurassic.Compiler.VariableDeclaration varDeclaration)
 			: base (varDeclaration.VariableName, varDeclaration.SourceSpan)

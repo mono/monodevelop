@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using Gtk;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.JavaScript
 {
@@ -189,13 +190,15 @@ namespace MonoDevelop.JavaScript
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedProject == null)
 				return null;
 
-			List<SimpleJSAst> parsedDocuments = JSTypeSystemService.GetAllJSAstsForProject (Ide.IdeApp.ProjectOperations.CurrentSelectedProject.ItemId);
+			var wrapper = TypeSystemService.GetProjectContentWrapper (IdeApp.ProjectOperations.CurrentSelectedProject).GetExtensionObject<JSUpdateableProjectContent> ();
+			List<JavaScriptDocumentCache> parsedDocuments = wrapper.DocumentsCache;
+			//List<SimpleJSAst> parsedDocuments = JSTypeSystemService.GetAllJSAstsForProject (Ide.IdeApp.ProjectOperations.CurrentSelectedProject.ItemId);
 
 			// TODO: Find the current scope.
 			var dataList = new CompletionDataList ();
-			foreach (SimpleJSAst parsedDocumentAstNodes in parsedDocuments) {
-				if (parsedDocumentAstNodes != null)
-					dataList.AddRange (buildCodeCompletionList (parsedDocumentAstNodes.AstNodes));
+			foreach (JavaScriptDocumentCache parsedDocumentAstNodes in parsedDocuments) {
+				if (parsedDocumentAstNodes != null && parsedDocumentAstNodes.SimpleAst != null)
+					dataList.AddRange (buildCodeCompletionList (parsedDocumentAstNodes.SimpleAst.AstNodes));
 			}
 			return dataList;
 		}
