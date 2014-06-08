@@ -196,6 +196,7 @@
     <Compile Include="MonoDevelop.SourceEditor\AbstractUsagesExtension.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\XwtColorSchemeEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\LabeledColorButton.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\ColorSchemeEditorHistory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
