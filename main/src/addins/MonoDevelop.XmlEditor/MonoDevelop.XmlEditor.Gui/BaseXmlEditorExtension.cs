@@ -341,7 +341,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			    //trigger on the opening quote
 			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
 			    //or trigger on first letter of value, if unforced
-			    || (!forced && Tracker.Engine.CurrentStateLength == 1))) {
+			    || (forced || Tracker.Engine.CurrentStateLength == 2))) {
 				var att = (XAttribute)Tracker.Engine.Nodes.Peek ();
 
 				if (att.IsNamed) {
@@ -349,20 +349,10 @@ namespace MonoDevelop.XmlEditor.Gui
 					if (attributedOb == null)
 						return null;
 
-					char next = ' ';
-					if (completionContext.TriggerOffset < buf.Length)
-						next = buf.GetCharAt (completionContext.TriggerOffset);
+					//if triggered by first letter of value or forced, grab those letters
+					triggerWordLength = Tracker.Engine.CurrentStateLength - 1;
 
-					char compareChar = (Tracker.Engine.CurrentStateLength == 1) ? currentChar : previousChar;
-
-					if ((compareChar == '"' || compareChar == '\'')
-					    && (next == compareChar || char.IsWhiteSpace (next))) {
-						//if triggered by first letter of value, grab that letter
-						if (Tracker.Engine.CurrentStateLength == 2)
-							triggerWordLength = 1;
-
-						return GetAttributeValueCompletions (attributedOb, att);
-					}
+					return GetAttributeValueCompletions (attributedOb, att);
 				}
 			}
 			
