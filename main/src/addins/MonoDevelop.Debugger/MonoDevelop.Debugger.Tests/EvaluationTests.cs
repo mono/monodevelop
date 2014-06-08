@@ -1108,6 +1108,9 @@ namespace MonoDevelop.Debugger.Tests
 
 			AssertAssignment ("alist[0] = 6", "alist[0]", "6", "int");
 			AssertAssignment ("alist[0] = 1", "alist[0]", "1", "int");
+
+			AssertAssignment ("ProtectedStringProperty = \"test\"", "ProtectedStringProperty", "\"test\"", "string");
+			AssertAssignment ("ProtectedStringProperty = \"hi\"", "ProtectedStringProperty", "\"hi\"", "string");
 		}
 
 		[Test]
