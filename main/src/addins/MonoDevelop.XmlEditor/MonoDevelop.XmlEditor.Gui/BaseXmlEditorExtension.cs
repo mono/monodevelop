@@ -293,7 +293,8 @@ namespace MonoDevelop.XmlEditor.Gui
 			}
 			
 			//element completion
-			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState) {
+			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState ||
+				(tracker.Engine.CurrentState is XmlNameState && forced)) {
 				CompletionDataList list = new CompletionDataList ();
 				GetElementCompletions (list);
 				AddCloseTag (list, Tracker.Engine.Nodes);
