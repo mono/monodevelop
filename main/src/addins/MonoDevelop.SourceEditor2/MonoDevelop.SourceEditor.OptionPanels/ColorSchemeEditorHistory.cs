@@ -62,7 +62,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var command = undoStack.Pop ();
 			command.Undo (dataField);
 			redoStack.Push (command);
-			treeView.SelectRow (command.Position);
+			SelectAndScroll (command.Position);
+		}
+
+		private void SelectAndScroll (TreePosition position)
+		{
+			treeView.SelectRow (position);
+			treeView.ScrollToRow (position);
 		}
 
 		public void Redo ()
@@ -72,7 +78,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var command = redoStack.Pop ();
 			undoStack.Push (command);
 			command.Redo (dataField);
-			treeView.SelectRow (command.Position);
+			SelectAndScroll (command.Position);
 		}
 	}
 

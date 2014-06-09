@@ -47,9 +47,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		DataField<ColorScheme.PropertyDecsription> propertyField = new DataField<ColorScheme.PropertyDecsription> ();
 		TreeStore colorStore;
 		TreeView treeviewColors = new TreeView ();
-		LabeledColorButton colorbuttonPrimary = new LabeledColorButton ("Primary color:");
-		LabeledColorButton colorbuttonSecondary = new LabeledColorButton ("Secondary color:");
-		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border color:");
+		LabeledColorButton colorbuttonPrimary = new LabeledColorButton ("Primary:");
+		LabeledColorButton colorbuttonSecondary = new LabeledColorButton ("Secondary:");
+		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border:");
 		ToggleButton togglebuttonBold = new ToggleButton ("B");
 		ToggleButton togglebuttonItalic = new ToggleButton ("I");
 		Button buttonFormat = new Button ("FBP");
@@ -126,16 +126,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			var treeBox = new VBox ();
 			treeBox.PackStart (searchEntry);
+			searchEntry.MarginTop = 1;
 			treeBox.PackStart (treeviewColors, true, true);
 			box.Panel1.Content = treeBox;
 			box.Panel2.Content = table;
+			table.MarginLeft = 3;
 			box.Panel2.Resize = true;
-			box.Position = 400;
+			box.Position = 300;
 			
 			mainTable.Add (box, 0, 1, 1, 1, true, true);
 			this.Content = mainTable;
 
-			this.Height = 400;
+			this.Height = 500;
+			this.Width = 800;
 
 			TreeviewColorsSelectionChanged (null, null);
 		}

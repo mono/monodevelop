@@ -33,13 +33,23 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	{
 		Color color = Colors.AliceBlue;
 		Label label = new Label ();
-		Button colorButton = new Button ("Color");
+		Button colorButton = new Button () { ImagePosition=ContentPosition.Center };
+		ImageBuilder builder = new ImageBuilder (40, 15);
 
 		public LabeledColorButton ()
 		{
 			PackStart (label);
 			PackStart (colorButton);
+			SetColorToButton (Color);
 			colorButton.Clicked += ColorButton_Clicked;
+		}
+
+		private void SetColorToButton (Color color)
+		{
+			builder.Context.SetColor (color);
+			builder.Context.Rectangle (0, 0, builder.Width, builder.Height);
+			builder.Context.Fill ();
+			colorButton.Image = builder.ToBitmap ();
 		}
 
 		public LabeledColorButton (string labelText)
@@ -59,6 +69,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			get{ return color;}
 			set {
 				color = value;
+				SetColorToButton (color);
+
 				if (ColorSet != null)
 					ColorSet (this, new EventArgs ());
 			}
