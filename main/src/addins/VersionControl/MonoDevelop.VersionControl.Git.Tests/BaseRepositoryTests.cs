@@ -56,6 +56,10 @@ namespace MonoDevelop.VersionControl.Tests
 		[TearDown]
 		public virtual void TearDown ()
 		{
+			if (Repo != null) {
+				Repo.Dispose ();
+				Repo = null;
+			}
 			DeleteDirectory (RemotePath);
 			DeleteDirectory (LocalPath);
 			AddedItems.Clear ();
@@ -254,6 +258,7 @@ namespace MonoDevelop.VersionControl.Tests
 			Repo.Update (Repo.RootPath, true, new NullProgressMonitor ());
 			Assert.True (File.Exists (LocalPath + "testfile2"));
 
+			Repo2.Dispose ();
 			DeleteDirectory (second);
 		}
 

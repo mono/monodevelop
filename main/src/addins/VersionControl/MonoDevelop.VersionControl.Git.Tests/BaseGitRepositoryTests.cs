@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			RemotePath = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
 			LocalPath = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
 			Directory.CreateDirectory (RemotePath.FullPath + "repo.git");
-			RemoteUrl = "file://" + RemotePath.FullPath + "repo.git";
+			RemoteUrl = "file://" + (Platform.IsWindows ? "/" : "") + RemotePath.FullPath + "repo.git";
 
 			LibGit2Sharp.Repository.Init (RemotePath.FullPath + "repo.git", true);
 

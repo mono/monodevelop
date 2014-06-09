@@ -78,7 +78,9 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void Dispose ()
 		{
-			((GitVersionControl)VersionControlSystem).UnregisterRepo (this);
+			if (VersionControlSystem != null)
+				((GitVersionControl)VersionControlSystem).UnregisterRepo (this);
+
 			if (RootRepository != null)
 				RootRepository.Dispose ();
 			foreach (var rep in cachedSubmodules)
