@@ -189,6 +189,16 @@ THE SOFTWARE.
 			<Word>var</Word>
 			<Word>function</Word>
 		</Keywords>
+
+    <Rule name = "Comment">
+      <Keywords color="Comment Tag" ignorecase="True">
+        <Word>TODO</Word>
+        <Word>FIXME</Word>
+        <Word>HACK</Word>
+        <Word>UNDONE</Word>
+      </Keywords>
+    </Rule>
+    
 	</Rule>
 	
 </SyntaxMode>
