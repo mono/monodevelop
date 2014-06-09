@@ -44,14 +44,14 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			RemotePath = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
 			LocalPath = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
 			Directory.CreateDirectory (RemotePath.FullPath + "repo.git");
-			RemoteUrl = "file:///" + RemotePath.FullPath + "repo.git";
+			RemoteUrl = "file://" + RemotePath.FullPath + "repo.git";
 
-			var path = LibGit2Sharp.Repository.Init (RemotePath.FullPath + "repo.git", true);
-			var bare = new LibGit2Sharp.Repository (RemotePath.FullPath + "repo.git");
+			LibGit2Sharp.Repository.Init (RemotePath.FullPath + "repo.git", true);
 
 			// Check out the repository.
 			Checkout (LocalPath, RemoteUrl);
 			Repo = GetRepo (LocalPath, RemoteUrl);
+			ModifyPath (Repo, ref LocalPath);
 			DotDir = ".git";
 		}
 
@@ -80,11 +80,9 @@ index e69de29..8e27be7 100644
 			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
 
-		[Test]
-		[Platform (Exclude = "Win")]
-		public override void UpdateIsDone ()
+		protected override void ModifyPath (Repository repo, ref FilePath old)
 		{
-			base.UpdateIsDone ();
+			old = ((GitRepository)repo).RootRepository.Info.WorkingDirectory;
 		}
 
 		[Test]

@@ -240,11 +240,12 @@ namespace MonoDevelop.VersionControl.Tests
 			FilePath second = new FilePath (FileService.CreateTempDirectory () + Path.DirectorySeparatorChar);
 			Checkout (second, RemoteUrl);
 			Repo2 = GetRepo (second, RemoteUrl);
+			ModifyPath (Repo2, ref second);
 			string added = second + "testfile2";
 			File.Create (added).Close ();
 			Repo2.Add (added, false, new NullProgressMonitor ());
-			ChangeSet changes = Repo.CreateChangeSet (Repo.RootPath);
-			changes.AddFile (Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
+			ChangeSet changes = Repo2.CreateChangeSet (Repo2.RootPath);
+			changes.AddFile (Repo2.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache));
 			changes.GlobalComment = "test2";
 			Repo2.Commit (changes, new NullProgressMonitor ());
 
@@ -254,6 +255,10 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.True (File.Exists (LocalPath + "testfile2"));
 
 			DeleteDirectory (second);
+		}
+
+		protected virtual void ModifyPath (Repository repo, ref FilePath old)
+		{
 		}
 
 		[Test]
