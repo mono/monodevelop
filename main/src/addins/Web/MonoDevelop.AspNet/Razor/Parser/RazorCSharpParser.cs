@@ -39,9 +39,12 @@ using System.Web.Razor.Parser.SyntaxTree;
 using System.Web.Razor.Text;
 using System.Web.WebPages.Razor;
 using System.Web.WebPages.Razor.Configuration;
+
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+
 using Mono.TextEditor;
+
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
@@ -268,7 +271,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			}
 		}
 
-		Xml.StateEngine.XDocument htmlParsedDocument;
+		MonoDevelop.Xml.Dom.XDocument htmlParsedDocument;
 		IList<Comment> comments;
 
 		void ParseHtmlDocument (List<Error> errors)
@@ -307,7 +310,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 
 			editorParser.CurrentParseTree.Accept (new CallbackVisitor (action));
 
-			var parser = new Xml.StateEngine.Parser (new WebFormsFreeState (), true);
+			var parser = new MonoDevelop.Xml.Parser.XmlParser (new WebFormsRootState (), true);
 
 			try {
 				parser.Parse (new StringReader (sb.ToString ()));

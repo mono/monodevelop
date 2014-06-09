@@ -26,12 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using S = MonoDevelop.Xml.StateEngine;
-using MonoDevelop.AspNet.WebForms.Parser;
-using Mono.TextEditor;
-using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using Mono.TextEditor;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 
@@ -134,20 +133,20 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		#region parsing for expression and runat="server" script tags
 		
-		public List<S.XNode> XExpressions { get; private set; }
-		public List<S.XElement> XScriptBlocks { get; private set; }
+		public List<XNode> XExpressions { get; private set; }
+		public List<XElement> XScriptBlocks { get; private set; }
 		
 		void BuildExpressionAndScriptsLists ()
 		{
-			XExpressions = new List<S.XNode> ();
-			XScriptBlocks = new List<S.XElement> ();
+			XExpressions = new List<XNode> ();
+			XScriptBlocks = new List<XElement> ();
 			
-			foreach (S.XNode node in AspNetDocument.XDocument.AllDescendentNodes) {
+			foreach (XNode node in AspNetDocument.XDocument.AllDescendentNodes) {
 				if (node is WebFormsRenderExpression || node is WebFormsHtmlEncodedExpression || node is WebFormsRenderBlock) {
 					XExpressions.Add (node);
 					continue;
 				}
-				S.XElement el = node as S.XElement;
+				var el = node as XElement;
 				if (el == null) {
 					continue;
 				}

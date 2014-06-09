@@ -26,9 +26,10 @@
 
 using System;
 using System.Text;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html.Parser;
 using MonoDevelop.AspNet.Razor.Dom;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.Razor.Parser
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			bracketsBuilder = new StringBuilder ();
 		}
 
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			switch (context.StateTag) {
 			case SOLIDUS:
@@ -176,9 +177,9 @@ namespace MonoDevelop.AspNet.Razor.Parser
 		// The simplified version is used mostly for testing. In real environment finding matching brackets
 		// precisely is necessary for code completion.
 
-		public virtual State ParseOpeningBracket (char c, IParseContext context)
+		public virtual XmlParserState ParseOpeningBracket (char c, IXmlParserContext context)
 		{
-			var rootState = RootState as RazorFreeState;
+			var rootState = RootState as RazorRootState;
 			if (!rootState.UseSimplifiedBracketTracker && !CorrespondingBlock.FirstBracket.HasValue)
 				CorrespondingBlock.FindFirstBracket (context.Location);
 			else if (rootState.UseSimplifiedBracketTracker)
@@ -186,10 +187,10 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			return null;
 		}
 
-		public virtual State ParseClosingBracket<T> (char c, IParseContext context, State stateToReturn) where T : XNode
+		public virtual XmlParserState ParseClosingBracket<T> (char c, IXmlParserContext context, XmlParserState stateToReturn) where T : XNode
 		{
 			bool isEnding = false;
-			var rootState = RootState as RazorFreeState;
+			var rootState = RootState as RazorRootState;
 			if (rootState.UseSimplifiedBracketTracker) {
 				if (bracketsBuilder.Length > 0)
 					bracketsBuilder.Remove (0, 1);

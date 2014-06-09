@@ -38,11 +38,12 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Dom;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html;
 using MonoDevelop.AspNet.Mvc.Completion;
-using MonoDevelop.AspNet.Razor.Parser;
 using MonoDevelop.AspNet.Razor.Dom;
+using MonoDevelop.AspNet.Razor.Parser;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -68,9 +69,9 @@ namespace MonoDevelop.AspNet.Razor
 			get { return razorDocument.PageInfo; }
 		}
 
-		protected override RootState CreateRootState ()
+		protected override XmlRootState CreateRootState ()
 		{
-			return new RazorFreeState ();
+			return new RazorRootState ();
 		}
 
 		public override string CompletionLanguage {

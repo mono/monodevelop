@@ -24,25 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Xml.StateEngine;
 using NUnit.Framework;
 using MonoDevelop.AspNet.Razor.Parser;
+using MonoDevelop.Xml.Tests.Parser;
 
 namespace MonoDevelop.AspNet.Tests.Razor.Dom
 {
 	[TestFixture]
 	public abstract class RazorParsingTests
 	{
-		protected TestParser parser;
+		protected TestXmlParser parser;
 
 		[SetUp]
 		public void Init ()
 		{
-			parser = new TestParser (new RazorTestFreeState ());
+			parser = new TestXmlParser (new RazorTestFreeState ());
 		}
 	}
 
-	class RazorTestFreeState : RazorFreeState
+	class RazorTestFreeState : RazorRootState
 	{
 		public RazorTestFreeState ()
 		{

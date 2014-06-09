@@ -1,7 +1,5 @@
 
-using System;
 using Mono.Addins;
-using Mono.Addins.Description;
 
 [assembly:Addin ("Web", 
                  Namespace = "MonoDevelop",
@@ -14,5 +12,5 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("Core", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("DesignerSupport", MonoDevelop.BuildInfo.Version)]
-[assembly:AddinDependency ("XmlEditor", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("Xml", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)]

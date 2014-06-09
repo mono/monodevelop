@@ -28,18 +28,19 @@
 
 using System.Diagnostics;
 
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.WebForms.Parser
 {
-	public class WebFormsExpressionState : State
+	public class WebFormsExpressionState : XmlParserState
 	{
 		const int NONE = 0;
 		const int PERCENT = 1;
 		
 		
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
 				AddExpressionNode (c, context);
@@ -68,7 +69,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 			return null;
 		}
 
-		internal static void AddExpressionNode (char c, IParseContext context)
+		internal static void AddExpressionNode (char c, IXmlParserContext context)
 		{
 			Debug.Assert (c != '@' && c!= '-', "AspNetExpressionState should not be passed a directive or comment");
 

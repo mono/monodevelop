@@ -24,21 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Xml.StateEngine;
-using ICSharpCode.NRefactory;
 using System.Diagnostics;
+using ICSharpCode.NRefactory;
 using MonoDevelop.Core;
+using MonoDevelop.Xml.Dom;
+using MonoDevelop.Xml.Parser;
 
 namespace MonoDevelop.AspNet.Razor.Parser
 {
 	public static class StateEngineService
 	{
-		public static void EndCodeFragment<T> (IParseContext context, int minus = 0) where T : XNode
+		public static void EndCodeFragment<T> (IXmlParserContext context, int minus = 0) where T : XNode
 		{
 			EndCodeFragment<T> (context, context.LocationMinus (minus));
 		}
 
-		public static void EndCodeFragment<T> (IParseContext context, TextLocation loc) where T : XNode
+		public static void EndCodeFragment<T> (IXmlParserContext context, TextLocation loc) where T : XNode
 		{
 			var top = context.Nodes.Pop ();
 			var node = top as T;

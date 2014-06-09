@@ -39,7 +39,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@inherits");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -51,7 +51,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@model");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -63,7 +63,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@sessionstate");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -75,7 +75,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@layout");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -87,7 +87,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@using");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -99,7 +99,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@using");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -114,7 +114,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@using");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -126,7 +126,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@inherits");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -138,7 +138,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@inherits");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -150,7 +150,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@model");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -165,7 +165,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@functions");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -180,7 +180,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@section/p");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -195,7 +195,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@helper");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -210,7 +210,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorDirectiveState> ();
 				parser.AssertPath ("//@helper");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}

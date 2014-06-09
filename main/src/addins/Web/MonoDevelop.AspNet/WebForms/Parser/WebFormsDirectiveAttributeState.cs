@@ -27,13 +27,13 @@
 using System;
 using System.Diagnostics;
 
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 
 namespace MonoDevelop.AspNet.WebForms.Parser
 {
 	public class WebFormsDirectiveAttributeState : XmlAttributeValueState
 	{
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			// allow < in values
 			if (context.StateTag != '\0' && context.CurrentStateLength > 1 && c == '<') {

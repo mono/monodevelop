@@ -31,14 +31,13 @@ using System.Collections.Generic;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
-using MonoDevelop.AspNet.WebForms.Parser;
 
 namespace MonoDevelop.AspNet.WebForms
 {
-	public class WebFormsParsedDocument : XmlParsedDocument
+	public class WebFormsParsedDocument : MonoDevelop.Xml.Editor.XmlParsedDocument
 	{
 		// Constructor used for testing the XDOM
 		public WebFormsParsedDocument (string fileName, WebSubtype type, WebFormsPageInfo info, XDocument xDoc) : 

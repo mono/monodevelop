@@ -29,7 +29,7 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
-using MonoDevelop.XmlEditor.Completion;
+using MonoDevelop.Xml.Completion;
 
 namespace MonoDevelop.AspNet.Html
 {

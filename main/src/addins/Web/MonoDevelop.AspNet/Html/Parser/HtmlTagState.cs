@@ -27,15 +27,18 @@
 //
 
 using System;
-
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Dom;
 	
 namespace MonoDevelop.AspNet.Html.Parser
 {
 	public class HtmlTagState : XmlTagState
 	{
-		HtmlScriptBodyState ScriptState;
-		public HtmlTagState () : this (new XmlAttributeState ()) {}
+		readonly HtmlScriptBodyState scriptState;
+
+		public HtmlTagState () : this (new XmlAttributeState ())
+		{
+		}
 		
 		public HtmlTagState (XmlAttributeState attributeState)
 			: this (attributeState, new XmlNameState ())
@@ -50,12 +53,12 @@ namespace MonoDevelop.AspNet.Html.Parser
 		public HtmlTagState (XmlAttributeState attributeState, XmlNameState nameState, HtmlScriptBodyState scriptState)
 			: base (attributeState, nameState)
 		{
-			this.ScriptState = scriptState;
+			this.scriptState = scriptState;
 			
-			Adopt (this.ScriptState);
+			Adopt (this.scriptState);
 		}
 
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1 && context.PreviousState is HtmlScriptBodyState)
 				return Parent;
@@ -63,7 +66,7 @@ namespace MonoDevelop.AspNet.Html.Parser
 			//NOTE: This is (mostly) duplicated in HtmlClosingTagState
 			//handle "paragraph" tags implicitly closed by block-level elements
 			if (context.CurrentStateLength == 1 && context.PreviousState is XmlNameState) {
-				XElement element = (XElement) context.Nodes.Peek ();
+				var element = (XElement) context.Nodes.Peek ();
 
 				if (!element.Name.HasPrefix && element.Name.IsValid) {
 					//Note: the node stack will always be at least 1 deep due to the XDocument
@@ -82,17 +85,17 @@ namespace MonoDevelop.AspNet.Html.Parser
 				}
 			}
 						
-			State ret = base.PushChar (c, context, ref rollback);
+			XmlParserState ret = base.PushChar (c, context, ref rollback);
 			
 			if (ret == Parent && c == '>') {
 				var element = context.Nodes.Peek () as XElement;
 				if (element != null && !element.Name.HasPrefix && element.Name.IsValid) {
 					if (element.Name.Name.Equals ("script", StringComparison.OrdinalIgnoreCase)) {
-					    return ScriptState;
-					} else if (ElementTypes.IsEmpty (element.Name.Name)) {
+						return scriptState;
+					}
+					if (ElementTypes.IsEmpty (element.Name.Name)) {
 						element.Close (element);
 						context.Nodes.Pop ();
-						
 					}
 				}
 			}

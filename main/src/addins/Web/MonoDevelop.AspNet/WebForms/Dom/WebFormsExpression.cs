@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 
 
-using MonoDevelop.Xml.StateEngine;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.WebForms.Dom
 {

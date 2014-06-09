@@ -30,10 +30,9 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 
-using MonoDevelop.AspNet.WebForms.Parser;
-using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.WebForms
 {

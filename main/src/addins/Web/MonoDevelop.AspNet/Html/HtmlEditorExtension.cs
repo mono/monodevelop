@@ -26,12 +26,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Collections.Generic;
-
-using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.Html
 {
@@ -42,7 +39,7 @@ namespace MonoDevelop.AspNet.Html
 		
 		protected override void RefillOutlineStore (ParsedDocument doc, Gtk.TreeStore store)
 		{
-			XDocument xdoc = ((XmlParsedDocument)doc).XDocument;
+			XDocument xdoc = ((MonoDevelop.Xml.Editor.XmlParsedDocument)doc).XDocument;
 			if (xdoc == null)
 				return;
 //			Gtk.TreeIter iter = outlineTreeStore.AppendValues (System.IO.Path.GetFileName (CU.Document.FilePath), p);
@@ -53,7 +50,7 @@ namespace MonoDevelop.AspNet.Html
 		{
 			outlineTree.TextRenderer.Xpad = 0;
 			outlineTree.TextRenderer.Ypad = 0;
-			outlineTree.AppendColumn ("Node", outlineTree.TextRenderer, new Gtk.TreeCellDataFunc (outlineTreeDataFunc));
+			outlineTree.AppendColumn ("Node", outlineTree.TextRenderer, OutlineTreeDataFunc);
 		}
 		
 		protected override void OutlineSelectionChanged (object selection)
@@ -76,7 +73,7 @@ namespace MonoDevelop.AspNet.Html
 			}
 		}
 		
-		void outlineTreeDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
+		void OutlineTreeDataFunc (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter)
 		{
 			Gtk.CellRendererText txtRenderer = (Gtk.CellRendererText) cell;
 			XNode n = (XNode) model.GetValue (iter, 0);

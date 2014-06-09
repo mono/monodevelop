@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 
 using NUnit.Framework;
-using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.Razor.Parser;
 using MonoDevelop.AspNet.Razor.Dom;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.Tests.Razor.Dom
 {
@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@for");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -55,7 +55,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@foreach");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -68,7 +68,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@switch");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -81,7 +81,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@while");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -94,7 +94,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@lock");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -107,7 +107,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@do");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -120,7 +120,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@using");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -147,7 +147,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@if");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -230,7 +230,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertPath ("//@try");
 				parser.AssertNodeIs<RazorStatement> ();
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -291,7 +291,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorStatementState> ();
 				parser.AssertPath ("//@foreach");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}

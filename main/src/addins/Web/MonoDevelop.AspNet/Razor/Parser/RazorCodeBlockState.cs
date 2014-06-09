@@ -25,14 +25,14 @@
 // THE SOFTWARE.
 
 using System.Linq;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Razor.Dom;
 
 namespace MonoDevelop.AspNet.Razor.Parser
 {
 	public class RazorCodeBlockState : RazorCodeFragmentState
 	{
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
 				bracketsBuilder.Clear ();

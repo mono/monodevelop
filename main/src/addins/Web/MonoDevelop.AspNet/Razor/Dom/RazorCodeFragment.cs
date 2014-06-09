@@ -24,11 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Xml.StateEngine;
+using System.Linq;
 using ICSharpCode.NRefactory;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
-using System.Linq;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.Razor.Dom
 {

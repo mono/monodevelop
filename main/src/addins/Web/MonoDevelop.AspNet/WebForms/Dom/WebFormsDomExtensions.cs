@@ -27,7 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.WebForms.Dom
 {

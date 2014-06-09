@@ -39,7 +39,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorCommentState> ();
 				parser.AssertPath ("//@* *@");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -51,7 +51,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorCommentState> ();
 				parser.AssertPath ("//@* *@");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -63,7 +63,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorCommentState> ();
 				parser.AssertPath ("//@* *@");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -90,7 +90,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertStateIs<RazorCommentState> ();
 				parser.AssertPath ("//@* *@");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}

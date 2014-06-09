@@ -27,7 +27,8 @@
 //
 
 
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Dom;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
 
 namespace MonoDevelop.AspNet.WebForms.Parser
@@ -50,12 +51,12 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 		protected new static readonly int TagMask = 15 << XmlAttributeValueState.TagShift;
 		protected new static readonly int TagShift = 4 + XmlAttributeValueState.TagShift;
 
-		void SetTag (IParseContext context, AttState value)
+		void SetTag (IXmlParserContext context, AttState value)
 		{
 			context.StateTag = (context.StateTag & ~TagMask) | ((int)value << XmlAttributeValueState.TagShift);
 		}
 
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			var maskedTag = (AttState) ((context.StateTag & TagMask) >> XmlAttributeValueState.TagShift);
 			switch (maskedTag) {

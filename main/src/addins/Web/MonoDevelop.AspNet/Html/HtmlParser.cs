@@ -27,13 +27,15 @@
 //
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
-using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.Xml.Dom;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html.Parser;
 
 namespace MonoDevelop.AspNet.Html
@@ -42,12 +44,12 @@ namespace MonoDevelop.AspNet.Html
 	{
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader tr, Project project = null)
 		{
-			var doc = new XmlParsedDocument (fileName);
+			var doc = new MonoDevelop.Xml.Editor.XmlParsedDocument (fileName);
 			doc.Flags = ParsedDocumentFlags.NonSerializable;
 			
 			try {
-				var xmlParser = new MonoDevelop.Xml.StateEngine.Parser (
-					new XmlFreeState (new HtmlTagState (), new HtmlClosingTagState (true)),
+				var xmlParser = new XmlParser (
+					new XmlRootState (new HtmlTagState (), new HtmlClosingTagState (true)),
 					true);
 				
 				xmlParser.Parse (tr);

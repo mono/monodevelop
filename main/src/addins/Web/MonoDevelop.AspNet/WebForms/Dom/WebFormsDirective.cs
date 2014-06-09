@@ -27,7 +27,7 @@
 using System.Diagnostics;
 using System.Text;
 using ICSharpCode.NRefactory;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.WebForms.Dom
 {

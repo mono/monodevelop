@@ -40,7 +40,6 @@ using MonoDevelop.DesignerSupport;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Projects;
-using MonoDevelop.AspNet.WebForms.Parser;
 
 namespace MonoDevelop.AspNet.WebForms
 {

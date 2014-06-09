@@ -23,27 +23,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using System.Linq;
-using MonoDevelop.AspNet.StateEngine;
+using MonoDevelop.AspNet.Html.Parser;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Tests.Parser;
 using NUnit.Framework;
 
-namespace MonoDevelop.Xml.StateEngine
+namespace MonoDevelop.AspNet.Tests.Html
 {
 	[TestFixture]
 	public class HtmlImplicitClosingTests : ParsingTests
 	{
 
-		public override XmlFreeState CreateRootState ()
+		public override XmlRootState CreateRootState ()
 		{
-			return new XmlFreeState (new HtmlTagState (), new HtmlClosingTagState (true));
+			return new XmlRootState (new HtmlTagState (), new HtmlClosingTagState (true));
 		}
 
 
 		[Test]
 		public void TestHtmlImplicitClosing ()
 		{
-			TestParser parser = new TestParser (CreateRootState ());
+			var parser = new TestXmlParser (CreateRootState ());
 			parser.Parse(@"
 <html>
 	<body>

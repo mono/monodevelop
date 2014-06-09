@@ -32,7 +32,7 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.XmlEditor.Completion;
+using MonoDevelop.Xml.Completion;
 
 namespace MonoDevelop.AspNet.Html
 {

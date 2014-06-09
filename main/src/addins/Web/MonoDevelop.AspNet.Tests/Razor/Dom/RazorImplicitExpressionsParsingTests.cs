@@ -79,7 +79,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 		public void ImplicitExpressionTerminatesAtWhitespace ()
 		{
 			parser.Parse ("@Foo X", 'X', () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertNodeIs<RazorImplicitExpression> ();
 				parser.AssertPath ("//@");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -101,7 +101,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 		public void ImplicitExpressionTerminatesAtTag ()
 		{
 			parser.Parse ("@Foo<p>X", 'X', () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("//p");
 			});
 		}
@@ -110,7 +110,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 		public void ImplicitExpressionTerminatesAtTransition ()
 		{
 			parser.Parse ("@Foo@X", 'X', () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -123,7 +123,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 				parser.AssertNodeIs<RazorImplicitExpression> ();
 				parser.AssertPath ("//body/p/@");
 			}, () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}
@@ -132,7 +132,7 @@ namespace MonoDevelop.AspNet.Tests.Razor.Dom
 		public void EmailAddressNotRecognizedAsExpression ()
 		{
 			parser.Parse ("foo@barX.com", 'X', () => {
-				parser.AssertStateIs<RazorFreeState> ();
+				parser.AssertStateIs<RazorRootState> ();
 				parser.AssertPath ("/");
 			});
 		}

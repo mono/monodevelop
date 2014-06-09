@@ -32,14 +32,14 @@ using System.Collections.Generic;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
-
-using MonoDevelop.Xml.StateEngine;
-using MonoDevelop.AspNet.Html.Parser; 
+using MonoDevelop.AspNet.Html.Parser;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Dom; 
 
 namespace MonoDevelop.AspNet.Html
 {
 	
-	public abstract class BaseHtmlEditorExtension : MonoDevelop.XmlEditor.Gui.BaseXmlEditorExtension
+	public abstract class BaseHtmlEditorExtension : MonoDevelop.Xml.Editor.BaseXmlEditorExtension
 	{
 		HtmlSchema schema;
 		bool resolvedDocType;
@@ -79,9 +79,9 @@ namespace MonoDevelop.AspNet.Html
 		
 		#region Setup and teardown
 		
-		protected override RootState CreateRootState ()
+		protected override XmlRootState CreateRootState ()
 		{
-			return new XmlFreeState (new HtmlTagState (), new HtmlClosingTagState (true));
+			return new XmlRootState (new HtmlTagState (), new HtmlClosingTagState (true));
 		}
 		
 		public override void Initialize ()

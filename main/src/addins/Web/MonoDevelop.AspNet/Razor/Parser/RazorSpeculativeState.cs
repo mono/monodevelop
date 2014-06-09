@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Razor.Parser;
 using MonoDevelop.AspNet.Razor.Dom;
 
@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 		RazorDirectiveState directiveState;
 		RazorStatementState statementState;
 
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			string key;
 
@@ -94,7 +94,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			return null;
 		}
 
-		State SwitchToDirective (IParseContext context, ref string rollback)
+		XmlParserState SwitchToDirective (IXmlParserContext context, ref string rollback)
 		{
 			string key = context.KeywordBuilder.ToString ();
 			string name = key.Trim ();
@@ -107,7 +107,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			return EnsureSetAndAdopted<RazorDirectiveState> (ref directiveState);
 		}
 
-		State SwitchToStatement (IParseContext context, ref string rollback)
+		XmlParserState SwitchToStatement (IXmlParserContext context, ref string rollback)
 		{
 			string key = context.KeywordBuilder.ToString ();
 			var stm = new RazorStatement (context.LocationMinus (key.Length + 2)) { Name = key.Trim () };

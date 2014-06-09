@@ -29,12 +29,13 @@
 using System;
 using System.Diagnostics;
 
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.WebForms.Parser
 {	
-	public class WebFormsDirectiveState : State
+	public class WebFormsDirectiveState : XmlParserState
 	{
 		readonly XmlAttributeState AttributeState;
 		readonly XmlNameState NameState;
@@ -58,7 +59,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 		
 		const int ENDING = 1;
 		
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			var directive = context.Nodes.Peek () as WebFormsDirective;
 			
@@ -91,7 +92,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 					} else {
 						directive.End (context.Location);
 						if (context.BuildTree) {
-							XContainer container = (XContainer)context.Nodes.Peek ();
+							var container = (XContainer)context.Nodes.Peek ();
 							container.AddChildNode (directive);
 						}
 					}

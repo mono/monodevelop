@@ -44,8 +44,10 @@ using MonoDevelop.AspNet.Html;
 using MonoDevelop.AspNet.Html.Parser;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
-using S = MonoDevelop.Xml.StateEngine;
+using S = MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -68,9 +70,9 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		#region Setup and teardown
 		
-		protected override S.RootState CreateRootState ()
+		protected override XmlRootState CreateRootState ()
 		{
-			return new WebFormsFreeState ();
+			return new WebFormsRootState ();
 		}
 		
 		#endregion
@@ -137,7 +139,7 @@ namespace MonoDevelop.AspNet.WebForms
 				}
 				return null;
 			}
-			if (Tracker.Engine.CurrentState is S.XmlNameState && Tracker.Engine.CurrentState.Parent is WebFormsDirectiveState) {
+			if (Tracker.Engine.CurrentState is XmlNameState && Tracker.Engine.CurrentState.Parent is WebFormsDirectiveState) {
 				var directive = Tracker.Engine.Nodes.Peek () as WebFormsDirective;
 				if (HasDoc && directive != null && directive.Region.BeginLine == completionContext.TriggerLine &&
 				    directive.Region.BeginColumn + 4 == completionContext.TriggerLineOffset && char.IsLetter (currentChar))
@@ -151,7 +153,7 @@ namespace MonoDevelop.AspNet.WebForms
 			bool isAspExprState =  Tracker.Engine.CurrentState is WebFormsExpressionState;
 			
 			//non-xml tag completion
-			if (currentChar == '<' && !(isAspExprState || Tracker.Engine.CurrentState is S.XmlFreeState)) {
+			if (currentChar == '<' && !(isAspExprState || Tracker.Engine.CurrentState is XmlRootState)) {
 				var list = new CompletionDataList ();
 				AddAspBeginExpressions (list);
 				return list;
@@ -161,14 +163,14 @@ namespace MonoDevelop.AspNet.WebForms
 				//FIXME: get doctype from master page
 				DocType = null;
 			} else {
-				DocType = new MonoDevelop.Xml.StateEngine.XDocType (TextLocation.Empty);
+				DocType = new XDocType (TextLocation.Empty);
 				var matches = DocTypeRegex.Match (aspDoc.Info.DocType);
 				DocType.PublicFpi = matches.Groups["fpi"].Value;
 				DocType.Uri = matches.Groups["uri"].Value;
 			}
 			
 			if (Tracker.Engine.CurrentState is HtmlScriptBodyState) {
-				var el = Tracker.Engine.Nodes.Peek () as S.XElement;
+				var el = Tracker.Engine.Nodes.Peek () as XElement;
 				if (el != null) {
 					if (el.IsRunatServer ()) {
 						if (documentBuilder != null) {
@@ -193,7 +195,7 @@ namespace MonoDevelop.AspNet.WebForms
 		}
 		
 		//case insensitive, no prefix
-		static S.XAttribute GetHtmlAtt (S.XElement el, string name)
+		static XAttribute GetHtmlAtt (XElement el, string name)
 		{
 			return el.Attributes.FirstOrDefault (a => a.IsNamed && !a.Name.HasPrefix && a.Name.Name.Equals (name, StringComparison.OrdinalIgnoreCase));
 		}
@@ -348,7 +350,7 @@ namespace MonoDevelop.AspNet.WebForms
 
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
-			S.XName parentName = GetParentElementName (0);
+			XName parentName = GetParentElementName (0);
 			
 			//fallback
 			if (!HasDoc) {
@@ -367,7 +369,7 @@ namespace MonoDevelop.AspNet.WebForms
 			if (parentName.HasPrefix) {
 				controlClass = refman.GetControlType (parentName.Prefix, parentName.Name);
 			} else {
-				S.XName grandparentName = GetParentElementName (1);
+				XName grandparentName = GetParentElementName (1);
 				if (grandparentName.IsValid && grandparentName.HasPrefix)
 					controlClass = refman.GetControlType (grandparentName.Prefix, grandparentName.Name);
 			}
@@ -377,7 +379,7 @@ namespace MonoDevelop.AspNet.WebForms
 				//root element?
 				if (!parentName.IsValid) {
 					if (aspDoc.Info.Subtype == WebSubtype.WebControl) {
-						AddHtmlTagCompletionData (list, Schema, new S.XName ("div"));
+						AddHtmlTagCompletionData (list, Schema, new XName ("div"));
 						AddAspBeginExpressions (list);
 						list.AddRange (refman.GetControlCompletionData ());
 						AddMiscBeginTags (list);
@@ -404,7 +406,7 @@ namespace MonoDevelop.AspNet.WebForms
 				list.AddRange (refman.GetControlCompletionData ());
 				AddMiscBeginTags (list);
 				//TODO: get correct parent for Content tags
-				AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
+				AddHtmlTagCompletionData (list, Schema, new XName ("body"));
 				return;
 			}
 			
@@ -439,7 +441,7 @@ namespace MonoDevelop.AspNet.WebForms
 				if (property.ReturnType.ToString () == "System.Web.UI.ITemplate") {
 					AddAspBeginExpressions (list);
 					AddMiscBeginTags (list);
-					AddHtmlTagCompletionData (list, Schema, new S.XName ("body"));
+					AddHtmlTagCompletionData (list, Schema, new XName ("body"));
 					list.AddRange (refman.GetControlCompletionData ());
 					return;
 				}
@@ -479,11 +481,11 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		protected override CompletionDataList GetAttributeCompletions (S.IAttributedXObject attributedOb,
+		protected override CompletionDataList GetAttributeCompletions (IAttributedXObject attributedOb,
 		                                                 Dictionary<string, string> existingAtts)
 		{
 			var list = base.GetAttributeCompletions (attributedOb, existingAtts) ?? new CompletionDataList ();
-			if (attributedOb is S.XElement) {
+			if (attributedOb is XElement) {
 				
 				if (!existingAtts.ContainsKey ("runat"))
 					list.Add ("runat=\"server\"", "md-literal",
@@ -511,10 +513,10 @@ namespace MonoDevelop.AspNet.WebForms
 			return list.Count > 0? list : null;
 		}
 		
-		protected override CompletionDataList GetAttributeValueCompletions (S.IAttributedXObject ob, S.XAttribute att)
+		protected override CompletionDataList GetAttributeValueCompletions (IAttributedXObject ob, XAttribute att)
 		{
 			var list = base.GetAttributeValueCompletions (ob, att) ?? new CompletionDataList ();
-			if (ob is S.XElement) {
+			if (ob is XElement) {
 				if (ob.Name.HasPrefix) {
 					string id = ob.GetId ();
 					if (string.IsNullOrEmpty (id) || string.IsNullOrEmpty (id.Trim ()))
@@ -587,7 +589,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		void AddAspAttributeCompletionData (CompletionDataList list, S.XName name, Dictionary<string, string> existingAtts)
+		void AddAspAttributeCompletionData (CompletionDataList list, XName name, Dictionary<string, string> existingAtts)
 		{
 			Debug.Assert (name.IsValid);
 			Debug.Assert (name.HasPrefix);
@@ -628,7 +630,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		void AddAspAttributeValueCompletionData (CompletionDataList list, S.XName tagName, S.XName attName, string id)
+		void AddAspAttributeValueCompletionData (CompletionDataList list, XName tagName, XName attName, string id)
 		{
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
 			Debug.Assert (attName.IsValid && !attName.HasPrefix);

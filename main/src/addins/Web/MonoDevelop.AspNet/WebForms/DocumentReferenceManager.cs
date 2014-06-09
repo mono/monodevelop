@@ -38,10 +38,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 using Mono.TextEditor;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.Projects;
-using MonoDevelop.AspNet.WebForms.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.WebForms
 {

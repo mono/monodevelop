@@ -24,18 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 
 namespace MonoDevelop.AspNet.Razor.Parser
 {
-	public class RazorState : State
+	public class RazorState : XmlParserState
 	{
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			return null;
 		}
 
-		public virtual State EnsureSetAndAdopted<T> (ref T state) where T : State, new ()
+		public virtual XmlParserState EnsureSetAndAdopted<T> (ref T state) where T : XmlParserState, new ()
 		{
 			if (state == null) {
 				state = new T ();

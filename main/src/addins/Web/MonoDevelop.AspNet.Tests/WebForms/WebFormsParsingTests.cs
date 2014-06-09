@@ -25,26 +25,28 @@
 // THE SOFTWARE.
 
 using System.Linq;
+using MonoDevelop.AspNet.Tests.Html;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.AspNet.WebForms.Parser;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Dom;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Tests.Parser;
 using NUnit.Framework;
-using MonoDevelop.AspNet.Tests.Html;
 
 namespace MonoDevelop.AspNet.Tests.WebForms
 {
 	[TestFixture]
 	class WebFormsParsingTests : HtmlParsingTests
 	{
-		public override XmlFreeState CreateRootState ()
+		public override XmlRootState CreateRootState ()
 		{
-			return new WebFormsFreeState ();
+			return new WebFormsRootState ();
 		}
 
 		[Test]
 		public void Directives ()
 		{
-			var parser = new TestParser (CreateRootState (), true);
+			var parser = new TestXmlParser (CreateRootState (), true);
 			parser.Parse (@"<%@ Page Language=""C#"" Inherits=""SomeGenericType<int>"" %>");
 			parser.AssertNoErrors ();
 			var doc = (XDocument) parser.Nodes.Peek ();
@@ -63,7 +65,7 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 		[Test]
 		public void AttributeWithExpression ()
 		{
-			var parser = new TestParser (CreateRootState (), true);
+			var parser = new TestXmlParser (CreateRootState (), true);
 			parser.Parse (@"<tag
 foo='<%=5$%>'
 bar=""<%$$5$%><%--$--%>""

@@ -28,7 +28,8 @@
 
 using System;
 
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Dom;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
 
 namespace MonoDevelop.AspNet.WebForms.Parser
@@ -41,7 +42,7 @@ namespace MonoDevelop.AspNet.WebForms.Parser
 		const int DOUBLE_DASH = 2;
 		const int PERCENT = 3;
 		
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
 				context.Nodes.Push (new WebFormsServerComment (context.LocationMinus (context.CurrentStateLength + "<%--".Length)));

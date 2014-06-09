@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\build\tests</OutputPath>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\build\tests</OutputPath>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -76,11 +76,6 @@
       <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
-      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
-      <Name>MonoDevelop.XmlEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
@@ -91,11 +86,6 @@
       <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\MonoDevelop.XmlEditor\Tests\MonoDevelop.XmlEditor.Tests.csproj">
-      <Project>{8E47B77A-A649-494C-9BF2-B845E39CADE9}</Project>
-      <Name>MonoDevelop.XmlEditor.Tests</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\tests\UnitTests\UnitTests.csproj">
       <Project>{1497D0A8-AFF1-4938-BC22-BE79B358BA5B}</Project>
       <Name>UnitTests</Name>
@@ -104,6 +94,16 @@
     <ProjectReference Include="..\MonoDevelop.AspNet\MonoDevelop.AspNet.csproj">
       <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
       <Name>MonoDevelop.AspNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xml\MonoDevelop.Xml.csproj">
+      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
+      <Name>MonoDevelop.Xml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xml\Tests\MonoDevelop.Xml.Tests.csproj">
+      <Project>{8E47B77A-A649-494C-9BF2-B845E39CADE9}</Project>
+      <Name>MonoDevelop.Xml.Tests</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

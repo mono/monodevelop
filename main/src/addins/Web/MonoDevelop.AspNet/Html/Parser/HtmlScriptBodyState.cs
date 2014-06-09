@@ -23,21 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.Html.Parser
 {
-	public class HtmlScriptBodyState : State
+	public class HtmlScriptBodyState : XmlParserState
 	{
 		const string CLOSE = "</script>";
-		
-		public HtmlScriptBodyState ()
-		{
-		}
-		
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+				
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 0)
 				context.StateTag = 0;

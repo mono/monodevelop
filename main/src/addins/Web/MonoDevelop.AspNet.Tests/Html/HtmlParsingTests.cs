@@ -24,25 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
 using MonoDevelop.AspNet.Html.Parser;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Tests.Parser;
+using NUnit.Framework;
 
 namespace MonoDevelop.AspNet.Tests.Html
 {
 	[TestFixture]
 	class HtmlParsingTests : ParsingTests
 	{
-		public override XmlFreeState CreateRootState ()
+		public override XmlRootState CreateRootState ()
 		{
-			return new XmlFreeState (new HtmlTagState (), new HtmlClosingTagState (true));
+			return new XmlRootState (new HtmlTagState (), new HtmlClosingTagState (true));
 		}
 		
 		
 		[Test]
 		public void TestAutoClosing ()
 		{
-			TestParser parser = new TestParser (CreateRootState ());
+			var parser = new TestXmlParser (CreateRootState ());
 			parser.Parse (@"
 <html>
 	<body>

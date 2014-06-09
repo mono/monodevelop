@@ -82,11 +82,6 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
-      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
-      <Name>MonoDevelop.XmlEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>

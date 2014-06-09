@@ -34,7 +34,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Dom;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
 
@@ -47,8 +48,8 @@ namespace MonoDevelop.AspNet.WebForms
 			var info = new WebFormsPageInfo ();
 			var errors = new List<Error> ();
 
-			Xml.StateEngine.Parser parser = new Xml.StateEngine.Parser (
-				new WebFormsFreeState (),
+			var parser = new XmlParser (
+				new WebFormsRootState (),
 				true
 			);
 			

@@ -330,7 +330,7 @@ src/addins/WindowsPlatform/WindowsAPICodePack/Shell/Makefile
 src/addins/WindowsPlatform/WindowsPlatform/Makefile
 src/addins/MonoDevelop.AssemblyBrowser/Makefile
 src/addins/MonoDevelop.SourceEditor2/Makefile
-src/addins/MonoDevelop.XmlEditor/Makefile
+src/addins/Xml/Makefile
 src/addins/MonoDevelop.Refactoring/Makefile
 src/addins/MonoDevelop.Debugger/Makefile
 src/addins/MonoDevelop.Debugger.Gdb/Makefile

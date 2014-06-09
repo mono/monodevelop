@@ -78,7 +78,7 @@ Thumbs.db
 /main/man/Makefile
 /main/build/MacOSX/Makefile
 /main/build/Makefile
-main/external/Makefile
+/main/external/Makefile
 /main/contrib/Makefile
 /main/contrib/Mono.Cecil/Makefile
 /main/contrib/ICSharpCode.NRefactory.CSharp/Makefile
@@ -122,7 +122,7 @@ main/external/Makefile
 /main/src/addins/MonoDevelop.RegexToolkit/Makefile
 /main/src/addins/MonoDevelop.SourceEditor2/Makefile
 /main/src/addins/MonoDevelop.WebReferences/Makefile
-/main/src/addins/MonoDevelop.XmlEditor/Makefile
+/main/src/addins/Xml/Makefile
 /main/src/addins/MonoDeveloperExtensions/Makefile
 /main/src/addins/MonoDeveloperExtensions/NUnit/Makefile
 /main/src/addins/NUnit/Makefile

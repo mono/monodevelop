@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 using System.Diagnostics;
 using MonoDevelop.AspNet.Razor.Parser;
 using MonoDevelop.AspNet.Razor.Dom;
@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			get { return CorrespondingBlock as RazorStatement; }
 		}
 
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
 				bracketsBuilder.Clear ();
@@ -111,7 +111,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			return base.PushChar (c, context, ref rollback);
 		}
 
-		State SwitchToContinuationStatement (IParseContext context, string key)
+		XmlParserState SwitchToContinuationStatement (IXmlParserContext context, string key)
 		{
 			string name = key.Trim ();
 			int length = key.Length;
@@ -124,7 +124,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 			return EnsureSetAndAdopted<RazorStatementState> (ref statementState);
 		}
 
-		public override State ParseClosingBracket<T> (char c, IParseContext context, State stateToReturn)
+		public override XmlParserState ParseClosingBracket<T> (char c, IXmlParserContext context, XmlParserState stateToReturn)
 		{
 			if (base.ParseClosingBracket<T> (c, context, stateToReturn) != null) {
 				if (RazorSymbols.CanBeContinued (CorrespondingBlock.Name)) {

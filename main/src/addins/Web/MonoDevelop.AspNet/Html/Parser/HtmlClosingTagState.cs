@@ -27,14 +27,15 @@
 //
 
 using System;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.Html.Parser
 {
 	
 	public class HtmlClosingTagState : XmlClosingTagState
 	{
-		bool warnAutoClose;
+		readonly bool warnAutoClose;
 		
 		public HtmlClosingTagState (bool warnAutoClose)
 			: this (warnAutoClose, new XmlNameState ())
@@ -47,13 +48,13 @@ namespace MonoDevelop.AspNet.Html.Parser
 			this.warnAutoClose = warnAutoClose;
 		}
 
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			//NOTE: This is (mostly) duplicated in HtmlTagState
 			//handle inline tags implicitly closed by block-level elements
 			if (context.CurrentStateLength == 1 && context.PreviousState is XmlNameState)
 			{
-				XClosingTag ct = (XClosingTag) context.Nodes.Peek ();
+				var ct = (XClosingTag) context.Nodes.Peek ();
 				if (!ct.Name.HasPrefix && ct.Name.IsValid) {
 					//Note: the node stack will always be at least 1 deep due to the XDocument
 					var parent = context.Nodes.Peek (1) as XElement;

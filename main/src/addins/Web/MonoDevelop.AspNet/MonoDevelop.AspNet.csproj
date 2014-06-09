@@ -55,11 +55,6 @@
       <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
-      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
-      <Name>MonoDevelop.XmlEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
       <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
       <Name>Mono.TextEditor</Name>
@@ -133,6 +128,11 @@
     <Reference Include="System.Web.Mvc">
       <HintPath>..\..\..\..\packages\Microsoft.AspNet.Mvc.4.0.30506.0\lib\net40\System.Web.Mvc.dll</HintPath>
     </Reference>
+    <ProjectReference Include="..\..\Xml\MonoDevelop.Xml.csproj">
+      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
+      <Name>MonoDevelop.Xml</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -209,7 +209,6 @@
     <Compile Include="Razor\Parser\RazorCommentState.cs" />
     <Compile Include="Razor\Parser\RazorDirectiveState.cs" />
     <Compile Include="Razor\Parser\RazorExpressionState.cs" />
-    <Compile Include="Razor\Parser\RazorFreeState.cs" />
     <Compile Include="Razor\Parser\RazorSpeculativeState.cs" />
     <Compile Include="Razor\Parser\RazorState.cs" />
     <Compile Include="Razor\Parser\RazorStatementState.cs" />
@@ -239,7 +238,6 @@
     <Compile Include="WebForms\WebFormsCodeBehindTypeNameCache.cs" />
     <Compile Include="WebForms\Parser\WebFormsAttributeValueState.cs" />
     <Compile Include="WebForms\Parser\WebFormsServerCommentState.cs" />
-    <Compile Include="WebForms\Parser\WebFormsFreeState.cs" />
     <Compile Include="WebForms\Parser\WebFormsDirectiveState.cs" />
     <Compile Include="WebForms\Parser\WebFormsDirectiveAttributeState.cs" />
     <Compile Include="WebForms\Parser\WebFormsExpressionState.cs" />
@@ -291,6 +289,8 @@
     <Compile Include="WebForms\WebFormsParsedDocument.cs" />
     <Compile Include="WebForms\WebFormsPageInfo.cs" />
     <Compile Include="WebForms\SuggestedHandlerCompletionData.cs" />
+    <Compile Include="Razor\Parser\RazorRootState.cs" />
+    <Compile Include="WebForms\Parser\WebFormsRootState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -24,9 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Xml.StateEngine;
-using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Xml.Dom;
 
 namespace MonoDevelop.AspNet.Razor.Dom
 {

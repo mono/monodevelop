@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Razor.Dom;
 
 namespace MonoDevelop.AspNet.Razor.Parser
@@ -34,7 +34,7 @@ namespace MonoDevelop.AspNet.Razor.Parser
 		protected const int NOMATCH = 0;
 		protected const int STAR = 1;
 
-		public override State PushChar (char c, IParseContext context, ref string rollback)
+		public override XmlParserState PushChar (char c, IXmlParserContext context, ref string rollback)
 		{
 			if (context.CurrentStateLength == 1) {
 				context.Nodes.Push (new RazorComment (context.LocationMinus (2)));

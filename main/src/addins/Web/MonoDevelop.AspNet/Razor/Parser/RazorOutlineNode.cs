@@ -26,7 +26,7 @@
 
 using System.Web.Razor.Parser.SyntaxTree;
 using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Xml.StateEngine;
+using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.WebForms.Dom;
 
 namespace MonoDevelop.AspNet.Razor.Parser
