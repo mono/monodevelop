@@ -1779,6 +1779,11 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
+			if (Platform.IsMac) {
+				this.GrabFocus ();
+				DispatchService.RunPendingEvents ();
+			}
+
 			var entryset = BuildEntrySet ();
 
 			IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
