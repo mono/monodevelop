@@ -82,7 +82,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		protected StyleCommand (TreeNavigator navigator)
 		{
-			this.navigator = navigator;
+			this.navigator = navigator.Clone ();
 		}
 
 		public TreePosition Position{ get { return navigator.CurrentPosition; } }
