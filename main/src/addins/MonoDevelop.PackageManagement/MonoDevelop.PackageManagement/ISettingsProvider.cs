@@ -1,5 +1,5 @@
 ﻿//
-// FakeRecentPackageRepository.cs
+// ISettingsProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,45 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using ICSharpCode.PackageManagement;
 using NuGet;
 
-namespace MonoDevelop.PackageManagement.Tests.Helpers
+namespace MonoDevelop.PackageManagement
 {
-	public class FakeRecentPackageRepository : IRecentPackageRepository
+	public interface ISettingsProvider
 	{
-		public string Source { get; set; }
-
-		public List<FakePackage> FakePackages = new List<FakePackage> ();
-
-		public IQueryable<IPackage> GetPackages ()
-		{
-			return FakePackages.AsQueryable ();
-		}
-
-		public void AddPackage (IPackage package)
-		{
-			FakePackages.Add (package as FakePackage);
-		}
-
-		public void RemovePackage (IPackage package)
-		{
-		}
-
-		public bool IsClearCalled;
-
-		public void Clear ()
-		{
-			IsClearCalled = true;
-		}
-
-		public bool HasRecentPackages { get; set; }
-
-		public bool SupportsPrereleasePackages { get; set; }
-
-		public PackageSaveModes PackageSaveMode { get; set; }
+		event EventHandler SettingsChanged;
+		ISettings LoadSettings();
 	}
 }
 

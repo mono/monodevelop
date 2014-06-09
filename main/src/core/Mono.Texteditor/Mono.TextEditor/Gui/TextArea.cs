@@ -1697,7 +1697,7 @@ namespace Mono.TextEditor
 			if (this.textEditorData.VAdjustment != null) {
 				double maxY = textEditorData.HeightTree.TotalHeight;
 				//				if (maxY > allocation.Height)
-				maxY += allocation.Height - LineHeight;
+				maxY += allocation.Height / 2 - LineHeight;
 
 				foreach (var containerChild in editor.containerChildren.Concat (containerChildren)) {
 					maxY = System.Math.Max (maxY, containerChild.Y + containerChild.Child.SizeRequest().Height);

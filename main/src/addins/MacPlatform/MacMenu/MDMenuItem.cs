@@ -110,6 +110,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 		void PopulateArrayItems (CommandArrayInfo infos, NSMenu parent, ref NSMenuItem lastSeparator, ref int index)
 		{
+			if (infos == null)
+				return;
+
 			foreach (CommandInfo ci in infos) {
 				if (ci.IsArraySeparator) {
 					var n = NSMenuItem.SeparatorItem;

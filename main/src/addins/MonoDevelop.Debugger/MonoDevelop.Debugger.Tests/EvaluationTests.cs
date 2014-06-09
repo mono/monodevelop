@@ -1108,6 +1108,9 @@ namespace MonoDevelop.Debugger.Tests
 
 			AssertAssignment ("alist[0] = 6", "alist[0]", "6", "int");
 			AssertAssignment ("alist[0] = 1", "alist[0]", "1", "int");
+
+			AssertAssignment ("ProtectedStringProperty = \"test\"", "ProtectedStringProperty", "\"test\"", "string");
+			AssertAssignment ("ProtectedStringProperty = \"hi\"", "ProtectedStringProperty", "\"hi\"", "string");
 		}
 
 		[Test]
@@ -1277,19 +1280,20 @@ namespace MonoDevelop.Debugger.Tests
 			val = Eval ("numbers");
 			Assert.AreEqual ("{string[3]}", val.Value);
 			Assert.AreEqual ("string[]", val.TypeName);
-			
+
 			val = Eval ("numbersArrays");
 			Assert.AreEqual ("{int[2][]}", val.Value);
 			Assert.AreEqual ("int[][]", val.TypeName);
-			
+
 			val = Eval ("numbersMulti");
 			Assert.AreEqual ("{int[3,4,5]}", val.Value);
 			Assert.AreEqual ("int[,,]", val.TypeName);
+			Assert.IsFalse (val.IsNull);
 
 			val = Eval ("nulledByteArray");
 			Assert.AreEqual ("(null)", val.Value);
 			Assert.AreEqual ("byte[]", val.TypeName);
-
+			Assert.IsTrue (val.IsNull);
 		}
 
 		[Test]

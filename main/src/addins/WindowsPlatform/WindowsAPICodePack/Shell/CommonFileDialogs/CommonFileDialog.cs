@@ -349,9 +349,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
         /// 
         private void SyncFileTypeComboToDefaultExtension(IFileDialog dialog)
         {
-            // make sure it's a Save dialog and that there is a default 
-            // extension to sync to.
-            if (!(this is CommonSaveFileDialog) || DefaultExtension == null ||
+            if (DefaultExtension == null ||
                 filters.Count <= 0)
             {
                 return;

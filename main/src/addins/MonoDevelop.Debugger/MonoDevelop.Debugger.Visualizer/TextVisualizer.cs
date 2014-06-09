@@ -107,6 +107,7 @@ namespace MonoDevelop.Debugger.Visualizer
 		void PopulateTextView (ObjectValue value)
 		{
 			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			ops.AllowTargetInvoke = true;
 			ops.ChunkRawStrings = true;
 
 			if (value.TypeName == "string") {
@@ -124,7 +125,7 @@ namespace MonoDevelop.Debugger.Visualizer
 					};
 				}
 			} else if (value.TypeName == "char[]") {
-				rawArray = value.GetRawValue () as RawValueArray;
+				rawArray = value.GetRawValue (ops) as RawValueArray;
 				length = rawArray.Length;
 				offset = 0;
 

@@ -50,7 +50,7 @@ namespace ICSharpCode.PackageManagement
 			: this (
 				new DotNetProjectProxy (project),
 				new PackageManagementFileService (),
-				new PackageManagementProjectService (),
+				PackageManagementServices.ProjectService,
 				DispatchService.GuiSyncDispatch)
 		{
 		}

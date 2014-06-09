@@ -709,6 +709,7 @@ namespace MonoDevelop.Debugger
 			name = name ?? val.Name;
 
 			bool hasParent = !parent.Equals (TreeIter.Zero);
+			bool showViewerButton = false;
 			
 			string valPath;
 			if (!hasParent)
@@ -728,23 +729,20 @@ namespace MonoDevelop.Debugger
 					canEdit = !val.IsReadOnly;
 					strval = string.Empty;
 				}
-			}
-			else if (val.IsError) {
+			} else if (val.IsError) {
 				strval = val.Value;
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
 					strval = strval.Substring (0, i);
 				valueColor = errorColor;
 				canEdit = false;
-			}
-			else if (val.IsNotSupported) {
+			} else if (val.IsNotSupported) {
 				strval = val.Value;
 				valueColor = disabledColor;
 				if (val.CanRefresh)
 					valueButton = Stock.Refresh;
 				canEdit = false;
-			}
-			else if (val.IsEvaluating) {
+			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
 				valueColor = disabledColor;
 				if (val.IsEvaluatingGroup) {
@@ -752,8 +750,8 @@ namespace MonoDevelop.Debugger
 					name = val.Name;
 				}
 				canEdit = false;
-			}
-			else {
+			} else {
+				showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 				canEdit = val.IsPrimitive && !val.IsReadOnly;
 				strval = val.DisplayValue ?? "(null)";
 				if (oldValue != null && strval != oldValue)
@@ -761,8 +759,6 @@ namespace MonoDevelop.Debugger
 			}
 			
 			strval = strval.Replace (Environment.NewLine, " ");
-			
-			bool showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 
 			bool hasChildren = val.HasChildren;
 			string icon = GetIcon (val.Flags);
