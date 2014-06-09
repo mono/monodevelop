@@ -36,6 +36,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public partial class XwtColorSchemeEditor:Dialog
 	{
+		bool handleUIEvents = true;
 		ColorSchemeEditorHistory history;
 		TextEditor textEditor;
 		ColorScheme colorScheme;
@@ -82,6 +83,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var undoRedoButton = new SegmentedButton ();
 			undoRedoButton.Items.Add (undoButton);
 			undoRedoButton.Items.Add (redoButton);
+			undoButton.Clicked += Undo;
+			redoButton.Clicked += Redo;
 			commandHBox.PackStart (undoRedoButton);
 			commandHBox.PackStart (new Button ("AutoSet"));
 			table.Add (commandHBox, 0, 0);
@@ -116,7 +119,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.treeviewColors.Columns.Add (GettextCatalog.GetString ("Name"), nameField);
 			this.treeviewColors.HeadersVisible = false;
 			this.treeviewColors.DataSource = colorStore;
-			this.treeviewColors.SelectionChanged += HandleTreeviewColorsSelectionChanged;
+			this.treeviewColors.SelectionChanged += TreeviewColorsSelectionChanged;
 			history = new ColorSchemeEditorHistory (treeviewColors, styleField);
 
 			var box = new HPaned ();
@@ -134,10 +137,28 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			this.Height = 400;
 
-			HandleTreeviewColorsSelectionChanged (null, null);
+			TreeviewColorsSelectionChanged (null, null);
 		}
 
-		void HandleTreeviewColorsSelectionChanged (object sender, EventArgs e)
+		void Undo (object sender, EventArgs e)
+		{
+			if (!history.CanUndo)
+				return;
+
+			history.Undo ();
+			ApplyNewScheme ();
+		}
+
+		void Redo (object sender, EventArgs e)
+		{
+			if (!history.CanRedo)
+				return;
+
+			history.Redo ();
+			ApplyNewScheme ();
+		}
+
+		void TreeviewColorsSelectionChanged (object sender, EventArgs e)
 		{
 			this.colorbuttonPrimary.Sensitive = false;
 			this.colorbuttonSecondary.Sensitive = false;
@@ -161,6 +182,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void ChunkStyleSelected (ChunkStyle chunkStyle)
 		{
+			handleUIEvents = false;
+
 			SetColorToButton (colorbuttonPrimary, chunkStyle.Foreground);
 			SetColorToButton (colorbuttonSecondary, chunkStyle.Background);
 
@@ -178,10 +201,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.togglebuttonBold.Visible = true;
 			this.togglebuttonItalic.Visible = true;
 			this.colorbuttonBorder.Visible = false;
+
+			handleUIEvents = true;
 		}
 
 		void AmbientColorSelected (AmbientColor ambientColor)
 		{
+			handleUIEvents = false;
+
 			SetColorToButton (colorbuttonPrimary, ambientColor.Color);
 			SetColorToButton (colorbuttonSecondary, ambientColor.SecondColor);
 			SetColorToButton (colorbuttonBorder, ambientColor.BorderColor);
@@ -196,6 +223,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			this.colorbuttonPrimary.LabelText = "Primary color:";
 			this.colorbuttonSecondary.LabelText = "Secondary color:";
+
+			handleUIEvents = true;
 		}
 
 		void SetColorToButton (LabeledColorButton button, Cairo.Color color)
@@ -237,14 +266,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				newStyle.FontStyle = FontStyle.Normal;
 			}
 
-			history.AddCommand (new ChangeChunkStyleCommand (oldStyle, newStyle, navigator));
+			if (handleUIEvents)
+				history.AddCommand (new ChangeChunkStyleCommand (oldStyle, newStyle, navigator));
+
 			ApplyNewScheme ();
 		}
 
 		void ApplyNewScheme ()
 		{
 			var newscheme = colorScheme.Clone ();
-			ApplyScheme (newscheme);
+			WriteDataToScheme (newscheme);
 
 			this.textEditor.TextViewMargin.PurgeLayoutCache ();
 			this.textEditor.Document.MimeType = "text/x-csharp";
@@ -258,7 +289,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			newStyle.Color = GetColorFromButton (colorbuttonPrimary);
 			newStyle.SecondColor = GetColorFromButton (colorbuttonSecondary);
 
-			history.AddCommand (new ChangeAmbientColorCommand (oldStyle, newStyle, navigator));
+			if (handleUIEvents)
+				history.AddCommand (new ChangeAmbientColorCommand (oldStyle, newStyle, navigator));
+
 			ApplyNewScheme ();
 		}
 
@@ -267,7 +300,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			return new Cairo.Color (button.Color.Red, button.Color.Green, button.Color.Blue, button.Color.Alpha);
 		}
 
-		void ApplyScheme (ColorScheme scheme)
+		void WriteDataToScheme (ColorScheme scheme)
 		{
 			scheme.Name = entryName.Text;
 			scheme.Description = entryDescription.Text;
@@ -288,7 +321,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		protected override void OnCommandActivated (Command cmd)
 		{
 			if (cmd.Equals (Command.Ok)) {
-				ApplyScheme (colorScheme);
+				WriteDataToScheme (colorScheme);
 				try {
 					if (fileName.EndsWith (".vssettings", StringComparison.Ordinal)) {
 						System.IO.File.Delete (fileName);
