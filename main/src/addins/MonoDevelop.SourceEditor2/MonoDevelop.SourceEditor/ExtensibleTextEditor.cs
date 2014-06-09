@@ -606,11 +606,6 @@ namespace MonoDevelop.SourceEditor
 			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
 			var ctx = ExtensionContext ?? AddinManager.AddinEngine;
 
-			if (Platform.IsMac) {
-				this.GrabFocus ();
-				DispatchService.RunPendingEvents ();
-			}
-
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 
 			if (Platform.IsMac) {
