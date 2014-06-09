@@ -30,10 +30,11 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.IO;
 using System.Xml;
+using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
-	public class SharedAssetsProject: Project
+	public class SharedAssetsProject: Project, IDotNetFileContainer
 	{
 		Solution currentSolution;
 		IDotNetLanguageBinding languageBinding;
@@ -117,6 +118,15 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		protected override IList<string> GetCommonBuildActions ()
 		{
 			return BuildAction.DotNetCommonActions;
+		}
+
+		/// <summary>
+		/// Gets the default namespace for the file, according to the naming policy.
+		/// </summary>
+		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
+		public string GetDefaultNamespace (string fileName)
+		{
+			return DotNetProject.GetDefaultNamespace (this, DefaultNamespace, fileName);
 		}
 
 		protected override void OnBoundToSolution ()
