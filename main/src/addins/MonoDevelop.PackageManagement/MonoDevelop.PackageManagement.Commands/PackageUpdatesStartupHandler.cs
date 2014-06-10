@@ -42,6 +42,10 @@ namespace MonoDevelop.PackageManagement.Commands
 		void SolutionLoaded (object sender, EventArgs e)
 		{
 			PackageManagementServices.UpdatedPackagesInSolution.Clear ();
+
+			if (!PackageManagementServices.Options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled)
+				return;
+
 			DispatchService.BackgroundDispatch (() => {
 				PackageManagementServices.UpdatedPackagesInSolution.CheckForUpdates ();
 			});

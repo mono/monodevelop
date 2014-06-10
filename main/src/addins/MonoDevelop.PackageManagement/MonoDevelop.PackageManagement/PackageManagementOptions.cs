@@ -41,6 +41,7 @@ namespace ICSharpCode.PackageManagement
 		const string PackageDirectoryPropertyName = "PackagesDirectory";
 		const string RecentPackagesPropertyName = "RecentPackages";
 		const string AutomaticPackageRestoreOnOpeningSolutionPropertyName = "AutomaticPackageRestoreOnOpeningSolution";
+		const string CheckUpdatedPackagesOnOpeningSolutionPropertyName = "CheckUpdatedPackagesOnOpeningSolution";
 
 		RegisteredPackageSourceSettings registeredPackageSourceSettings;
 		Properties properties;
@@ -74,6 +75,11 @@ namespace ICSharpCode.PackageManagement
 		public bool IsAutomaticPackageRestoreOnOpeningSolutionEnabled {
 			get { return properties.Get(AutomaticPackageRestoreOnOpeningSolutionPropertyName, true); }
 			set { properties.Set(AutomaticPackageRestoreOnOpeningSolutionPropertyName, value); }
+		}
+
+		public bool IsCheckForPackageUpdatesOnOpeningSolutionEnabled {
+			get { return properties.Get(CheckUpdatedPackagesOnOpeningSolutionPropertyName, true); }
+			set { properties.Set(CheckUpdatedPackagesOnOpeningSolutionPropertyName, value); }
 		}
 		
 		public RegisteredPackageSources PackageSources {
