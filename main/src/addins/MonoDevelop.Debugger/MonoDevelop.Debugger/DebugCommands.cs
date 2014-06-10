@@ -55,7 +55,6 @@ namespace MonoDevelop.Debugger
 		DisableAllBreakpoints,
 		ShowDisassembly,
 		NewBreakpoint,
-		NewFunctionBreakpoint,
 		RemoveBreakpoint,
 		ShowBreakpointProperties,
 		ExpressionEvaluator,
