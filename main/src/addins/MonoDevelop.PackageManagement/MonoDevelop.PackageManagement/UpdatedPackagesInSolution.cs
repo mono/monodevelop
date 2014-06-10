@@ -37,14 +37,17 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
+		IPackageManagementEvents packageManagementEvents;
 		List<UpdatedPackagesInProject> projectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
 
 		public UpdatedPackagesInSolution (
 			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredPackageRepositories)
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.solution = solution;
 			this.registeredPackageRepositories = registeredPackageRepositories;
+			this.packageManagementEvents = packageManagementEvents;
 		}
 
 		public void Clear ()
@@ -56,6 +59,10 @@ namespace MonoDevelop.PackageManagement
 		{
 			foreach (IPackageManagementProject project in GetProjects ()) {
 				CheckForUpdates (project);
+			}
+
+			if (AnyUpdates ()) {
+				packageManagementEvents.OnUpdatedPackagesAvailable ();
 			}
 		}
 
@@ -87,6 +94,13 @@ namespace MonoDevelop.PackageManagement
 				return updatedPackages;
 			}
 			return new UpdatedPackagesInProject (project);
+		}
+
+		bool AnyUpdates ()
+		{
+			return GuiSyncDispatch (() => {
+				return projectsWithUpdatedPackages.Any ();
+			});
 		}
 
 		protected virtual void GuiDispatch (MessageHandler handler)

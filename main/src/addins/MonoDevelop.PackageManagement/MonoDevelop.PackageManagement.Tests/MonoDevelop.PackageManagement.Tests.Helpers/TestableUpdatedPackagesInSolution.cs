@@ -34,8 +34,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public TestableUpdatedPackagesInSolution (
 			IPackageManagementSolution solution,
-			IRegisteredPackageRepositories registeredPackageRepositories)
-			: base (solution, registeredPackageRepositories)
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagementEvents packageManagementEvents)
+			: base (
+				solution,
+				registeredPackageRepositories,
+				packageManagementEvents)
 		{
 		}
 

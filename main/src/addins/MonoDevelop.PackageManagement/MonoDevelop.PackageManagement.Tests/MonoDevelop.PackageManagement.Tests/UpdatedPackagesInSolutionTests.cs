@@ -26,6 +26,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.PackageManagement;
 using NUnit.Framework;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 
@@ -37,12 +38,17 @@ namespace MonoDevelop.PackageManagement.Tests
 		TestableUpdatedPackagesInSolution updatedPackagesInSolution;
 		FakePackageManagementSolution solution;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
+		PackageManagementEvents packageManagementEvents;
 
 		void CreateUpdatedPackagesInSolution ()
 		{
 			solution = new FakePackageManagementSolution ();
 			registeredPackageRepositories = new FakeRegisteredPackageRepositories ();
-			updatedPackagesInSolution = new TestableUpdatedPackagesInSolution (solution, registeredPackageRepositories);
+			packageManagementEvents = new PackageManagementEvents ();
+			updatedPackagesInSolution = new TestableUpdatedPackagesInSolution (
+				solution,
+				registeredPackageRepositories,
+				packageManagementEvents);
 		}
 
 		FakePackageManagementProject AddProjectToSolution ()
@@ -82,7 +88,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			FakePackageManagementProject project = AddProjectToSolution ();
 			project.AddFakePackage ("MyPackage", "1.0");
 			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
-			var expectedPackages = new FakePackage [] { updatedPackage };
 
 			updatedPackagesInSolution.CheckForUpdates ();
 			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
@@ -111,8 +116,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
 			project.AddFakePackage ("MyPackage", "1.0");
-			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
-			var expectedPackages = new FakePackage [] { updatedPackage };
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			updatedPackagesInSolution.CheckForUpdates ();
 
 			updatedPackagesInSolution.Clear ();
@@ -122,6 +126,40 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (project.Project, updatedPackages.Project);
 			Assert.IsNotNull (updatedPackages.Project);
 			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
+
+		[Test]
+		public void CheckForUpdates_OnePackageUpdated_UpdatedPackagesAvailableEventIsFired ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddFakePackage ("MyPackage", "1.0");
+			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			bool fired = false;
+			packageManagementEvents.UpdatedPackagesAvailable += (sender, e) => {
+				fired = true;
+			};
+
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			Assert.IsTrue (fired);
+		}
+
+		[Test]
+		public void CheckForUpdates_NoPackagesUpdated_UpdatedPackagesAvailableEventIsNotFired ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddFakePackage ("MyPackage", "1.0");
+			updatedPackagesInSolution.CheckForUpdates ();
+			bool fired = false;
+			packageManagementEvents.UpdatedPackagesAvailable += (sender, e) => {
+				fired = true;
+			};
+
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			Assert.IsFalse (fired);
 		}
 	}
 }

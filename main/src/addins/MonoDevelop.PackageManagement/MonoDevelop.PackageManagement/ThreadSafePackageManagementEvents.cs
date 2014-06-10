@@ -262,5 +262,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			unsafeEvents.OnFileChanged (path);
 		}
+
+		public event EventHandler UpdatedPackagesAvailable {
+			add { unsafeEvents.UpdatedPackagesAvailable += value; }
+			remove { unsafeEvents.UpdatedPackagesAvailable -= value; }
+		}
+
+		public void OnUpdatedPackagesAvailable ()
+		{
+			unsafeEvents.OnUpdatedPackagesAvailable ();
+		}
 	}
 }

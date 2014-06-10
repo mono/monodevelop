@@ -152,5 +152,14 @@ namespace ICSharpCode.PackageManagement
 				FileChanged (this, new FileEventArgs (new FilePath (path), false));
 			}
 		}
+
+		public event EventHandler UpdatedPackagesAvailable;
+
+		public void OnUpdatedPackagesAvailable ()
+		{
+			if (UpdatedPackagesAvailable != null) {
+				UpdatedPackagesAvailable (this, new EventArgs ());
+			}
+		}
 	}
 }

@@ -73,7 +73,7 @@ namespace ICSharpCode.PackageManagement
 			projectTargetFrameworkMonitor = new ProjectTargetFrameworkMonitor (projectService);
 			packageCompatibilityHander = new PackageCompatibilityHandler (projectTargetFrameworkMonitor);
 
-			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories);
+			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories, packageManagementEvents);
 
 			InitializeCredentialProvider();
 		}
