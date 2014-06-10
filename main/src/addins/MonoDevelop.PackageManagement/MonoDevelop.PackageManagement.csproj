@@ -340,6 +340,7 @@
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageUpdatesStartupHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

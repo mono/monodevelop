@@ -143,6 +143,7 @@
 
 	<Extension path="/MonoDevelop/Ide/StartupHandlers">
 		<Class class="MonoDevelop.PackageManagement.Commands.PackageRestoreStartupHandler" />
+		<Class class="MonoDevelop.PackageManagement.Commands.PackageUpdatesStartupHandler" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/SearchCategories">
