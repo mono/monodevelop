@@ -391,13 +391,13 @@ namespace MonoDevelop.Platform
 			}
 		}
 
-
-
 		static WindowsDesktopApplication WindowsAppFromProgID (string progID, string defaultApp)
 		{
 			try {
 				string displayName = QueryAssociationString (progID, AssociationString.FriendlyAppName, AssociationFlags.None, "open");
 				string exePath = QueryAssociationString (progID, AssociationString.Executable, AssociationFlags.None, "open");
+				if (System.Reflection.Assembly.GetEntryAssembly ().Location == exePath)
+					return null;
 				return new WindowsDesktopApplication (progID, displayName, exePath, progID.Equals (defaultApp));
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Failed to read info for ProgID '{0}'", progID), ex);
@@ -410,6 +410,8 @@ namespace MonoDevelop.Platform
 			try {
 				string displayName = QueryAssociationString (exeName, AssociationString.FriendlyAppName, AssociationFlags.OpenByExeName, "open");
 				string exePath = QueryAssociationString (exeName, AssociationString.Executable, AssociationFlags.OpenByExeName, "open");
+				if (System.Reflection.Assembly.GetEntryAssembly ().Location == exePath)
+					return null;
 				return new WindowsDesktopApplication (exeName, displayName, exePath, exeName.Equals (defaultApp));
 			} catch (Exception ex) {
 				LoggingService.LogError (string.Format ("Failed to read info for ExeName '{0}'", exeName), ex);
