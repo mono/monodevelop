@@ -54,6 +54,12 @@ namespace MonoDevelop.PackageManagement
 		{
 			return packages;
 		}
+
+		public IPackageName GetUpdatedPackage (string packageId)
+		{
+			return packages
+				.FirstOrDefault (package => package.Id == packageId);
+		}
 	}
 }
 

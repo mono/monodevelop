@@ -122,12 +122,17 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
 		{
-			return PackageReferences.Select (reference => CreatePackageReferenceNode (reference));
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project);
+			return PackageReferences.Select (reference => CreatePackageReferenceNode (reference, updatedPackages));
 		}
 
-		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference)
+		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference, UpdatedPackagesInProject updatedPackages)
 		{
-			return new PackageReferenceNode (reference, IsPackageInstalled (reference));
+			return new PackageReferenceNode (
+				reference,
+				IsPackageInstalled (reference),
+				false,
+				updatedPackages.GetUpdatedPackage (reference.Id));
 		}
 
 		protected virtual bool IsPackageInstalled (PackageReference reference)

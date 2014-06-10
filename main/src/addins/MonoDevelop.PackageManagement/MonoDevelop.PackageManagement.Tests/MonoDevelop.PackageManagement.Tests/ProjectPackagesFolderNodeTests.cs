@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.PackageManagement.NodeBuilders;
@@ -74,6 +76,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		void NoUpdatedPackages ()
 		{
 			updatedPackagesInSolution.AddUpdatedPackages (project);
+		}
+
+		void PackageIsInstalledInProject (PackageReference packageReference)
+		{
+			packagesFolderNode.PackageReferencesWithPackageInstalled.Add (packageReference);
 		}
 
 		[Test]
@@ -132,6 +139,53 @@ namespace MonoDevelop.PackageManagement.Tests
 			string label = packagesFolderNode.GetLabel ();
 
 			Assert.AreEqual ("Packages <span color='grey'>(2 updates)</span>", label);
+		}
+
+		[Test]
+		public void GetPackageReferencesNodes_OnePackageReferenceButNoUpdatedPackages_ReturnsOneNode ()
+		{
+			CreateNode ();
+			PackageReference packageReference = AddPackageReferenceToProject ("MyPackage", "1.0");
+			PackageIsInstalledInProject (packageReference);
+			NoUpdatedPackages ();
+
+			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();
+
+			PackageReferenceNode referenceNode = nodes.FirstOrDefault ();
+			Assert.AreEqual (1, nodes.Count);
+			Assert.IsTrue (referenceNode.Installed);
+			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
+		}
+
+		[Test]
+		public void GetPackageReferencesNodes_OnePackageReferenceButPackageNotInstalledAndNoUpdatedPackages_ReturnsOneNode ()
+		{
+			CreateNode ();
+			AddPackageReferenceToProject ("MyPackage", "1.0");
+			NoUpdatedPackages ();
+
+			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();
+
+			PackageReferenceNode referenceNode = nodes.FirstOrDefault ();
+			Assert.AreEqual (1, nodes.Count);
+			Assert.IsFalse (referenceNode.Installed);
+			Assert.AreEqual ("<span color='#c99c00'>MyPackage</span>", referenceNode.GetLabel ());
+		}
+
+		[Test]
+		public void GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackages_ReturnsOneNodeWithUpdatedVersionInformationInLabel ()
+		{
+			CreateNode ();
+			PackageReference packageReference = AddPackageReferenceToProject ("MyPackage", "1.0");
+			PackageIsInstalledInProject (packageReference);
+			AddUpdatedPackageForProject ("MyPackage", "1.2");
+
+			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();
+
+			PackageReferenceNode referenceNode = nodes.FirstOrDefault ();
+			Assert.AreEqual (1, nodes.Count);
+			Assert.AreEqual ("1.2", referenceNode.UpdatedVersion.ToString ());
+			Assert.AreEqual ("MyPackage <span color='grey'>(1.2 available)</span>", referenceNode.GetLabel ());
 		}
 	}
 }

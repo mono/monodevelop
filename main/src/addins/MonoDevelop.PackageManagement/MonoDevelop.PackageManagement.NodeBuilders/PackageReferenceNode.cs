@@ -35,13 +35,26 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	public class PackageReferenceNode
 	{
-		public PackageReferenceNode (PackageReference packageReference, bool installed, bool pending = false)
+		public PackageReferenceNode (
+			PackageReference packageReference,
+			bool installed,
+			bool pending = false,
+			IPackageName updatedPackage = null)
 		{
 			PackageReference = packageReference;
 			Installed = installed;
 			IsInstallPending = pending;
 
+			UpdatedVersion = GetUpdatedPackageVersion (updatedPackage);
 			IsReinstallNeeded = packageReference.RequireReinstallation;
+		}
+
+		SemanticVersion GetUpdatedPackageVersion (IPackageName updatedPackage)
+		{
+			if (updatedPackage != null) {
+				return updatedPackage.Version;
+			}
+			return null;
 		}
 
 		public PackageReference PackageReference { get; private set; }
@@ -61,6 +74,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			get { return PackageReference.Version; }
 		}
 
+		public SemanticVersion UpdatedVersion { get; private set; }
+
 		public bool IsDevelopmentDependency {
 			get { return PackageReference.IsDevelopmentDependency; }
 		}
@@ -78,7 +93,22 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (!Installed || IsReinstallNeeded) {
 				return "<span color='#c99c00'>" + Id + "</span>";
 			}
+			return GetLabelText ();
+		}
+
+		string GetLabelText ()
+		{
+			if (UpdatedVersion != null) {
+				return Id + GetUpdatedVersionLabelText ();
+			}
 			return Id;
+		}
+
+		string GetUpdatedVersionLabelText ()
+		{
+			return String.Format (" <span color='grey'>({0} {1})</span>",
+				UpdatedVersion,
+				GettextCatalog.GetString ("available"));
 		}
 
 		public IconId GetIconId ()
