@@ -518,7 +518,7 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 				const string reindentChars = ";){}";
-				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent && (reindentChars.IndexOf (keyChar) >= 0)) {
+				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent && reindentChars.Contains (keyChar)) {
 					using (var undo = textEditorData.OpenUndoGroup ()) {
 						DoReSmartIndent ();
 					}
