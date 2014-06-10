@@ -236,47 +236,6 @@ namespace MonoDevelop.Platform
 			return new WindowsRecentFiles ();
 		}
 
-		public enum AssociationFlags {
-			None = 0x00000000,
-			InitNoRemapClsid = 0x00000001,
-			InitByExeName = 0x00000002,
-			OpenByExeName = 0x00000002,
-			InitDefaultToStar = 0x00000004,
-			InitDefaultToFolder = 0x00000008,
-			NoUserSettings = 0x00000010,
-			NoTruncate = 0x00000020,
-			Verify = 0x00000040,
-			RemapRunDll = 0x00000080,
-			NoFixups = 0x00000100,
-			IgnoreBaseClass = 0x00000200,
-			InitIgnoreUnknown = 0x00000400,
-			InitFixedProgid = 0x00000800,
-			IsProtocol = 0x00001000
-		}
-
-		public enum AssociationString {
-			Command = 1,
-			Executable,
-			FriendlyDocName,
-			FriendlyAppName,
-			NoOpen,
-			ShellNewValue,
-			DdeCommand,
-			DdeIfExec,
-			DdeApplication,
-			DdeTopic,
-			InfoTip,
-			QuickTip,
-			Tileinfo,
-			ContentType,
-			DefaultIcon,
-			ShellExtension,
-			DropTrget,
-			DelegateExecute,
-			SupportedUriProtocols,
-			MaxString
-		}
-
 		public static string QueryAssociationString (string assoc, AssociationString str, AssociationFlags flags, string extra = null)
 		{
 			if (assoc == null)
@@ -289,19 +248,15 @@ namespace MonoDevelop.Platform
 			var builder = new StringBuilder (512);
 			int size = builder.Length;
 
-			var result = AssocQueryStringW (flags, str, assoc, extra, builder, ref size);
+			var result = Win32.AssocQueryStringW (flags, str, assoc, extra, builder, ref size);
 
 			if (result == unchecked((int)E_POINTER)) {
 				builder.Length = size;
-				result = AssocQueryStringW (flags, str, assoc, extra, builder, ref size);
+				result = Win32.AssocQueryStringW (flags, str, assoc, extra, builder, ref size);
 			}
 			Marshal.ThrowExceptionForHR (result);
 			return builder.ToString ();
 		}
-
-		[DllImport ("Shlwapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-		static extern int AssocQueryStringW (AssociationFlags flags, AssociationString str, string assoc,
-						    string extra, StringBuilder outBuffer, ref int outBufferSize);
 
 		static string GetDefaultApp (string extension)
 		{
@@ -396,7 +351,7 @@ namespace MonoDevelop.Platform
 			try {
 				string displayName = QueryAssociationString (progID, AssociationString.FriendlyAppName, AssociationFlags.None, "open");
 				string exePath = QueryAssociationString (progID, AssociationString.Executable, AssociationFlags.None, "open");
-				if (System.Reflection.Assembly.GetEntryAssembly ().Location == exePath)
+				if(System.Reflection.Assembly.GetEntryAssembly ().Location == exePath)
 					return null;
 				return new WindowsDesktopApplication (progID, displayName, exePath, progID.Equals (defaultApp));
 			} catch (Exception ex) {
@@ -410,7 +365,7 @@ namespace MonoDevelop.Platform
 			try {
 				string displayName = QueryAssociationString (exeName, AssociationString.FriendlyAppName, AssociationFlags.OpenByExeName, "open");
 				string exePath = QueryAssociationString (exeName, AssociationString.Executable, AssociationFlags.OpenByExeName, "open");
-				if (System.Reflection.Assembly.GetEntryAssembly ().Location == exePath)
+				if(System.Reflection.Assembly.GetEntryAssembly ().Location == exePath)
 					return null;
 				return new WindowsDesktopApplication (exeName, displayName, exePath, exeName.Equals (defaultApp));
 			} catch (Exception ex) {
