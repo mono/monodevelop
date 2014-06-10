@@ -50,6 +50,7 @@ namespace ICSharpCode.PackageManagement
 		static readonly PackageManagementProgressProvider progressProvider;
 		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
 		static readonly PackageCompatibilityHandler packageCompatibilityHander;
+		static readonly UpdatedPackagesInSolution updatedPackagesInSolution;
 
 		static PackageManagementServices()
 		{
@@ -71,6 +72,8 @@ namespace ICSharpCode.PackageManagement
 
 			projectTargetFrameworkMonitor = new ProjectTargetFrameworkMonitor (projectService);
 			packageCompatibilityHander = new PackageCompatibilityHandler (projectTargetFrameworkMonitor);
+
+			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories);
 
 			InitializeCredentialProvider();
 		}
@@ -141,6 +144,10 @@ namespace ICSharpCode.PackageManagement
 
 		public static IProgressProvider ProgressProvider {
 			get { return progressProvider; }
+		}
+
+		public static IUpdatedPackagesInSolution UpdatedPackagesInSolution {
+			get { return updatedPackagesInSolution; }
 		}
 	}
 }

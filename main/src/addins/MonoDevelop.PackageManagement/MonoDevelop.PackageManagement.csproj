@@ -337,6 +337,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Commands\ReinstallAllPackagesInProjectHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageCompatibility.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackagesCompatibilityReport.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

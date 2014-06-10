@@ -232,6 +232,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FakePackages.Add (new FakePackage (id));
 		}
 
+		public void AddFakePackage (string id, string version)
+		{
+			FakePackages.Add (new FakePackage (id, version));
+		}
+
 		public void AddFakePackageToSourceRepository (string packageId)
 		{
 			FakeSourceRepository.AddFakePackage (packageId);
@@ -325,6 +330,12 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void AddPackageReference (IPackage package)
 		{
 			PackageReferencesAdded.Add (package);
+		}
+
+		public FakeDotNetProject FakeDotNetProject = new FakeDotNetProject ();
+
+		public IDotNetProject Project {
+			get { return FakeDotNetProject; }
 		}
 	}
 }

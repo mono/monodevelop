@@ -50,7 +50,8 @@ namespace ICSharpCode.PackageManagement
 		FrameworkName TargetFramework { get; }
 
 		DotNetProject DotNetProject { get; }
-		
+		IDotNetProject Project { get; }
+
 		bool IsPackageInstalled(IPackage package);
 		bool IsPackageInstalled(string packageId);
 		bool HasOlderPackageInstalled(IPackage package);
