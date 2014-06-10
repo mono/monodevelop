@@ -186,6 +186,9 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedPackagesTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedPackagesInSolutionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackagesFolderNodeTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackagesFolderNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUpdatedPackagesInSolution.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

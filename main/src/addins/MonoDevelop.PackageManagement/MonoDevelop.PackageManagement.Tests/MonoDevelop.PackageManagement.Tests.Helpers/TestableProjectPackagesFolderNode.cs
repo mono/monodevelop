@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetProject.cs
+// TestableProjectPackagesFolderNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,27 +25,34 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects;
+using System.Collections.Generic;
+using MonoDevelop.PackageManagement.NodeBuilders;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public interface IDotNetProject : IProject
+	public class TestableProjectPackagesFolderNode : ProjectPackagesFolderNode
 	{
-		event EventHandler<ProjectModifiedEventArgs> Modified;
+		public TestableProjectPackagesFolderNode (
+			IDotNetProject project,
+			IUpdatedPackagesInSolution updatedPackagesInSolution)
+			: base (project, updatedPackagesInSolution)
+		{
+		}
 
-		DotNetProject DotNetProject { get; }
-		TargetFrameworkMoniker TargetFrameworkMoniker { get; }
-		string DefaultNamespace { get; }
-		ProjectReferenceCollection References { get; }
-		ProjectFileCollection Files { get; }
+		public List<PackageReference> PackageReferences = new List<PackageReference> ();
 
-		void AddFile (ProjectFile projectFile);
-		string GetDefaultBuildAction (string fileName);
-		bool IsFileInProject (string fileName);
-		void AddImportIfMissing (string name, string condition);
-		void RemoveImport (string name);
-		bool Equals (IDotNetProject project);
+		protected override IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			return PackageReferences;
+		}
+
+		public List<PackageReference> PackageReferencesWithPackageInstalled = new List<PackageReference> ();
+
+		protected override bool IsPackageInstalled (PackageReference reference)
+		{
+			return PackageReferencesWithPackageInstalled.Contains (reference);
+		}
 	}
 }
 

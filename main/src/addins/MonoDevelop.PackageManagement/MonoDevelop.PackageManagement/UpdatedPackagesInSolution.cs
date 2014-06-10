@@ -88,7 +88,7 @@ namespace MonoDevelop.PackageManagement
 		public UpdatedPackagesInProject GetUpdatedPackages (IDotNetProject project)
 		{
 			UpdatedPackagesInProject updatedPackages = projectsWithUpdatedPackages
-				.FirstOrDefault (item => item.Project == project);
+				.FirstOrDefault (item => item.Project.Equals (project));
 
 			if (updatedPackages != null) {
 				return updatedPackages;

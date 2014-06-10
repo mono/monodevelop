@@ -107,6 +107,11 @@ namespace MonoDevelop.PackageManagement
 				projectModifiedHandler (this, eventArgs);
 			}
 		}
+
+		public bool Equals (IDotNetProject project)
+		{
+			return DotNetProject == project.DotNetProject;
+		}
 	}
 }
 

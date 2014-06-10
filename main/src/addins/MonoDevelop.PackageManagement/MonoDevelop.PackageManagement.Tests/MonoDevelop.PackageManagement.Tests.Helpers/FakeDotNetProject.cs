@@ -40,6 +40,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			References = new ProjectReferenceCollection ();
 			Files = new ProjectFileCollection ();
 			TargetFrameworkMoniker = new TargetFrameworkMoniker ("v4.5");
+			CreateEqualsAction ();
 		}
 
 		public FakeDotNetProject (string fileName)
@@ -47,6 +48,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			References = new ProjectReferenceCollection ();
 			Files = new ProjectFileCollection ();
+			CreateEqualsAction ();
 		}
 
 		public DotNetProject DotNetProject { get; set; }
@@ -120,6 +122,20 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			if (Modified != null) {
 				Modified (this, new ProjectModifiedEventArgs (project, propertyName));
 			}
+		}
+
+		public Func<IDotNetProject, bool> EqualsAction;
+
+		void CreateEqualsAction ()
+		{
+			EqualsAction = project => {
+				return this == project;
+			};
+		}
+
+		public bool Equals (IDotNetProject project)
+		{
+			return EqualsAction (project);
 		}
 	}
 }

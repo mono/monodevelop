@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetProject.cs
+// UpdatedPackagesInSolution.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,27 +25,35 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects;
+using System.Collections.Generic;
+using System.Linq;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public interface IDotNetProject : IProject
+	public class FakeUpdatedPackagesInSolution : IUpdatedPackagesInSolution
 	{
-		event EventHandler<ProjectModifiedEventArgs> Modified;
+		public List<UpdatedPackagesInProject> ProjectsWithUpdatedPackages = new List<UpdatedPackagesInProject> ();
 
-		DotNetProject DotNetProject { get; }
-		TargetFrameworkMoniker TargetFrameworkMoniker { get; }
-		string DefaultNamespace { get; }
-		ProjectReferenceCollection References { get; }
-		ProjectFileCollection Files { get; }
+		public void AddUpdatedPackages (FakeDotNetProject project, params PackageName[] packageNames)
+		{
+			var updatedPackages = new UpdatedPackagesInProject (project, packageNames);
+			ProjectsWithUpdatedPackages.Add (updatedPackages);
+		}
 
-		void AddFile (ProjectFile projectFile);
-		string GetDefaultBuildAction (string fileName);
-		bool IsFileInProject (string fileName);
-		void AddImportIfMissing (string name, string condition);
-		void RemoveImport (string name);
-		bool Equals (IDotNetProject project);
+		public void Clear ()
+		{
+			ProjectsWithUpdatedPackages.Clear ();
+		}
+
+		public void CheckForUpdates ()
+		{
+		}
+
+		public UpdatedPackagesInProject GetUpdatedPackages (IDotNetProject project)
+		{
+			return ProjectsWithUpdatedPackages.FirstOrDefault (item => item.Project == project);
+		}
 	}
 }
 

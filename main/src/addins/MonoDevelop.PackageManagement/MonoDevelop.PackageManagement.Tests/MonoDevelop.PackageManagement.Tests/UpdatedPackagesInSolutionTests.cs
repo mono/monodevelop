@@ -161,6 +161,27 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsFalse (fired);
 		}
+
+		[Test]
+		public void GetUpdatedPackages_OnePackageUpdatedSameUnderlyingDotNetProjectButDifferentProxy_OneUpdatedPackageFoundForProject ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddFakePackage ("MyPackage", "1.0");
+			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			var expectedPackages = new FakePackage [] { updatedPackage };
+			var newProject = new FakeDotNetProject ();
+			project.FakeDotNetProject.EqualsAction = p => {
+				return p == newProject;
+			};
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (newProject);
+
+			Assert.IsNotNull (updatedPackages.Project);
+			CollectionAssert.AreEqual (expectedPackages, updatedPackages.GetPackages ());
+			Assert.AreNotEqual (newProject, updatedPackages.Project);
+		}
 	}
 }
 
