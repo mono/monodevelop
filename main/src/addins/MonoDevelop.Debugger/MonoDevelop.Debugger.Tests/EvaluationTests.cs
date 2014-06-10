@@ -491,9 +491,9 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 		}
 
-		void CheckValue (string expected, string actual)
+		void CheckValue (string expected, string actual, bool isSimpleProperty)
 		{
-			if (AllowTargetInvokes)
+			if (AllowTargetInvokes || isSimpleProperty)
 				Assert.AreEqual (expected, actual);
 			else
 				Assert.AreEqual ("Implicit evaluation is disabled", actual);
@@ -509,7 +509,8 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("\"someString\".Length");
-			if (!AllowTargetInvokes) {
+			if (!AllowTargetInvokes && soft == null) {
+				// Note: this is a simple property which gets evaluated client-side by the SDB backend
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -567,7 +568,8 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("bool", val.TypeName);
 
 			val = Eval ("alist.Count");
-			if (!AllowTargetInvokes) {
+			if (!AllowTargetInvokes && soft == null) {
+				// Note: this is a simple property which gets evaluated client-side by the SDB backend
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -616,22 +618,22 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("3", richChildren [2].Value);
 			Assert.AreEqual ("publicPropInt1", richChildren [3].Name);
 			Assert.AreEqual ("int", richChildren [3].TypeName);
-			CheckValue ("1", richChildren [3].Value);
+			CheckValue ("1", richChildren [3].Value, soft != null);
 			Assert.AreEqual ("publicPropInt2", richChildren [4].Name);
 			Assert.AreEqual ("int", richChildren [4].TypeName);
-			CheckValue ("2", richChildren [4].Value);
+			CheckValue ("2", richChildren [4].Value, soft != null);
 			Assert.AreEqual ("publicPropInt3", richChildren [5].Name);
 			Assert.AreEqual ("int", richChildren [5].TypeName);
-			CheckValue ("3", richChildren [5].Value);
+			CheckValue ("3", richChildren [5].Value, soft != null);
 			Assert.AreEqual ("publicPropStringA", richChildren [6].Name);
 			Assert.AreEqual ("string", richChildren [6].TypeName);
-			CheckValue ("\"stringA\"", richChildren [6].Value);
+			CheckValue ("\"stringA\"", richChildren [6].Value, soft != null);
 			Assert.AreEqual ("publicPropStringB", richChildren [7].Name);
 			Assert.AreEqual ("string", richChildren [7].TypeName);
-			CheckValue ("\"stringB\"", richChildren [7].Value);
+			CheckValue ("\"stringB\"", richChildren [7].Value, soft != null);
 			Assert.AreEqual ("publicPropStringC", richChildren [8].Name);
 			Assert.AreEqual ("string", richChildren [8].TypeName);
-			CheckValue ("\"stringC\"", richChildren [8].Value);
+			CheckValue ("\"stringC\"", richChildren [8].Value, soft != null);
 			Assert.AreEqual ("publicStringA", richChildren [9].Name);
 			Assert.AreEqual ("string", richChildren [9].TypeName);
 			Assert.AreEqual ("\"stringA\"", richChildren [9].Value);
@@ -656,22 +658,22 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("3", richChildren [2].Value);
 			Assert.AreEqual ("privatePropInt1", richChildren [3].Name);
 			Assert.AreEqual ("int", richChildren [3].TypeName);
-			CheckValue ("1", richChildren [3].Value);
+			CheckValue ("1", richChildren [3].Value, soft != null);
 			Assert.AreEqual ("privatePropInt2", richChildren [4].Name);
 			Assert.AreEqual ("int", richChildren [4].TypeName);
-			CheckValue ("2", richChildren [4].Value);
+			CheckValue ("2", richChildren [4].Value, soft != null);
 			Assert.AreEqual ("privatePropInt3", richChildren [5].Name);
 			Assert.AreEqual ("int", richChildren [5].TypeName);
-			CheckValue ("3", richChildren [5].Value);
+			CheckValue ("3", richChildren [5].Value, soft != null);
 			Assert.AreEqual ("privatePropStringA", richChildren [6].Name);
 			Assert.AreEqual ("string", richChildren [6].TypeName);
-			CheckValue ("\"stringA\"", richChildren [6].Value);
+			CheckValue ("\"stringA\"", richChildren [6].Value, soft != null);
 			Assert.AreEqual ("privatePropStringB", richChildren [7].Name);
 			Assert.AreEqual ("string", richChildren [7].TypeName);
-			CheckValue ("\"stringB\"", richChildren [7].Value);
+			CheckValue ("\"stringB\"", richChildren [7].Value, soft != null);
 			Assert.AreEqual ("privatePropStringC", richChildren [8].Name);
 			Assert.AreEqual ("string", richChildren [8].TypeName);
-			CheckValue ("\"stringC\"", richChildren [8].Value);
+			CheckValue ("\"stringC\"", richChildren [8].Value, soft != null);
 			Assert.AreEqual ("privateStringA", richChildren [9].Name);
 			Assert.AreEqual ("string", richChildren [9].TypeName);
 			Assert.AreEqual ("\"stringA\"", richChildren [9].Value);
