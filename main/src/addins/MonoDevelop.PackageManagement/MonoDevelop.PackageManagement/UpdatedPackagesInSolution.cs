@@ -48,6 +48,21 @@ namespace MonoDevelop.PackageManagement
 			this.solution = solution;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.packageManagementEvents = packageManagementEvents;
+
+			this.packageManagementEvents.ParentPackageInstalled += PackageInstalled;
+		}
+
+		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
+		{
+			GuiDispatch (() => {
+				RefreshUpdatedPackages (e);
+			});
+		}
+
+		void RefreshUpdatedPackages (ParentPackageOperationEventArgs e)
+		{
+			UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
+			updatedPackages.RemovePackage (e.Package);
 		}
 
 		public void Clear ()

@@ -60,6 +60,11 @@ namespace MonoDevelop.PackageManagement
 			return packages
 				.FirstOrDefault (package => package.Id == packageId);
 		}
+
+		public void RemovePackage (IPackageName package)
+		{
+			packages.Remove (package);
+		}
 	}
 }
 
