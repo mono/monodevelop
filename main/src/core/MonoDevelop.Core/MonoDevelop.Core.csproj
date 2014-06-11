@@ -463,6 +463,7 @@
     <Compile Include="MonoDevelop.Core.Text\StringTextSource.cs" />
     <Compile Include="MonoDevelop.Core.Text\TextLocation.cs" />
     <Compile Include="MonoDevelop.Core.Text\TextFileUtility.cs" />
+    <Compile Include="MonoDevelop.Core.Text\ITextSourceVersion.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

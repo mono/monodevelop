@@ -126,7 +126,7 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Mono.TextEditor.TextSegment"/> struct.
+		/// Initializes a new instance of the <see cref="TextSegment"/> struct.
 		/// </summary>
 		/// <param name='offset'>
 		/// The offset of the segment.
@@ -160,34 +160,6 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
-		/// Determines whether this instance contains the specified offset. 
-		/// </summary>
-		/// <returns>
-		/// <c>true</c> if this instance contains the specified offset (upper bound exclusive); otherwise, <c>false</c>.
-		/// </returns>
-		/// <param name='offset'>
-		/// The offset.
-		/// </param>
-		public bool Contains (int offset)
-		{
-			return Offset <= offset && offset < EndOffset;
-		}
-
-		/// <summary>
-		/// Determines whether this instance contains the specified segment. 
-		/// </summary>
-		/// <returns>
-		/// <c>true</c> if this instance contains the specified segment (upper bound inclusive); otherwise, <c>false</c>.
-		/// </returns>
-		/// <param name='segment'>
-		/// The segment.
-		/// </param>
-		public bool Contains (ISegment segment)
-		{
-			return Offset <= segment.Offset && segment.EndOffset <= EndOffset;
-		}
-
-		/// <summary>
 		/// Determines whether this instance is inside the specified offset. 
 		/// </summary>
 		/// <returns>
@@ -202,14 +174,14 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
-		/// Determines whether the specified <see cref="Mono.TextEditor.TextSegment"/> is equal to the current <see cref="Mono.TextEditor.TextSegment"/>.
+		/// Determines whether the specified <see cref="TextSegment"/> is equal to the current <see cref="TextSegment"/>.
 		/// </summary>
 		/// <param name='other'>
-		/// The <see cref="Mono.TextEditor.TextSegment"/> to compare with the current <see cref="Mono.TextEditor.TextSegment"/>.
+		/// The <see cref="TextSegment"/> to compare with the current <see cref="TextSegment"/>.
 		/// </param>
 		/// <returns>
-		/// <c>true</c> if the specified <see cref="Mono.TextEditor.TextSegment"/> is equal to the current
-		/// <see cref="Mono.TextEditor.TextSegment"/>; otherwise, <c>false</c>.
+		/// <c>true</c> if the specified <see cref="TextSegment"/> is equal to the current
+		/// <see cref="TextSegment"/>; otherwise, <c>false</c>.
 		/// </returns>
 		public bool Equals (TextSegment other)
 		{
@@ -217,14 +189,14 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
-		/// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="Mono.TextEditor.TextSegment"/>.
+		/// Determines whether the specified <see cref="System.Object"/> is equal to the current <see cref="TextSegment"/>.
 		/// </summary>
 		/// <param name='obj'>
-		/// The <see cref="System.Object"/> to compare with the current <see cref="Mono.TextEditor.TextSegment"/>.
+		/// The <see cref="System.Object"/> to compare with the current <see cref="TextSegment"/>.
 		/// </param>
 		/// <returns>
 		/// <c>true</c> if the specified <see cref="System.Object"/> is equal to the current
-		/// <see cref="Mono.TextEditor.TextSegment"/>; otherwise, <c>false</c>.
+		/// <see cref="TextSegment"/>; otherwise, <c>false</c>.
 		/// </returns>
 		public override bool Equals (object obj)
 		{
@@ -232,7 +204,7 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
-		/// Serves as a hash function for a <see cref="Mono.TextEditor.TextSegment"/> object.
+		/// Serves as a hash function for a <see cref="TextSegment"/> object.
 		/// </summary>
 		/// <returns>
 		/// A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.
@@ -242,13 +214,6 @@ namespace MonoDevelop.Core.Text
 			return Offset ^ Length;
 		}
 
-//		public DocumentRegion GetRegion (TextDocument document)
-//		{
-//			if (document == null)
-//				throw new System.ArgumentNullException ("document");
-//			return new DocumentRegion (document.OffsetToLocation (Offset), document.OffsetToLocation (EndOffset));
-//		}
-
 		public static TextSegment FromBounds (int startOffset, int endOffset)
 		{
 			if (startOffset > endOffset)
@@ -257,17 +222,16 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents the current <see cref="Mono.TextEditor.TextSegment"/>.
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="TextSegment"/>.
 		/// </summary>
 		/// <returns>
-		/// A <see cref="System.String"/> that represents the current <see cref="Mono.TextEditor.TextSegment"/>.
+		/// A <see cref="System.String"/> that represents the current <see cref="TextSegment"/>.
 		/// </returns>
 		public override string ToString ()
 		{
 			return string.Format ("[TextSegment: Offset={0}, Length={1}]", Offset, Length);
 		}
 	}
-
 
 	/// <summary>
 	/// Extension methods for <see cref="ISegment"/>.
@@ -283,19 +247,49 @@ namespace MonoDevelop.Core.Text
 		/// </remarks>
 		public static bool Contains (this ISegment segment, int offset, int length)
 		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
 			return segment.Offset <= offset && offset + length <= segment.EndOffset;
 		}
 
 		/// <summary>
-		/// Gets whether <paramref name="thisSegment"/> fully contains the specified segment.
+		/// Gets whether <paramref name="segment"/> fully contains the specified segment.
 		/// </summary>
-		public static bool Contains (this ISegment thisSegment, ISegment segment)
+		public static bool Contains (this ISegment segment, ISegment span)
 		{
-			return segment != null && thisSegment.Offset <= segment.Offset && segment.EndOffset <= thisSegment.EndOffset;
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			if (span == null)
+				throw new ArgumentNullException ("span");
+			return segment.Offset <= span.Offset && span.EndOffset <= segment.EndOffset;
+		}
+
+		/// <summary>
+		/// Gets whether the offset is within the <paramref name="segment"/>.
+		/// </summary>
+		public static bool Contains (this ISegment segment, int offset)
+		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return unchecked((uint)(offset - segment.Offset) < (uint)segment.Length);
+		}
+
+		/// <summary>
+		/// Determines whether <paramref name="other"/> overlaps this span. Two spans are considered to overlap 
+		/// if they have positions in common and neither is empty. Empty spans do not overlap with any 
+		/// other span.
+		/// </summary>
+		public static bool OverlapsWith(this ISegment segment, ISegment other)
+		{
+			int overlapStart = Math.Max(segment.Offset, other.Offset);
+			int overlapEnd = Math.Min(segment.EndOffset, other.EndOffset);
+			return overlapStart < overlapEnd;
 		}
 
 		public static ISegment AdjustSegment (this ISegment segment, TextChangeEventArgs args)
 		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
 			if (args.Offset < segment.Offset)
 				return new TextSegment (segment.Offset + args.InsertionLength - args.RemovalLength, segment.Length);
 			if (args.Offset <= segment.EndOffset)
@@ -305,10 +299,11 @@ namespace MonoDevelop.Core.Text
 
 		public static IEnumerable<ISegment> AdjustSegments (this IEnumerable<ISegment> segments, TextChangeEventArgs args)
 		{
+			if (segments == null)
+				throw new ArgumentNullException ("segments");
 			foreach (var segment in segments) {
 				yield return segment.AdjustSegment (args);
 			}
 		}
 	}
 }
-

@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace MonoDevelop.Core.Text
 {
@@ -40,6 +41,16 @@ namespace MonoDevelop.Core.Text
 		/// Returns null for unversioned text sources.
 		/// </summary>
 		ITextSourceVersion Version { get; }
+
+		/// <summary>
+		/// Determines if a byte order mark was read or is going to be written.
+		/// </summary>
+		bool UseBOM { get; }
+
+		/// <summary>
+		/// Encoding of the text that was read from or is going to be saved to.
+		/// </summary>
+		Encoding Encoding { get; }
 
 		/// <summary>
 		/// Gets the total text length.
@@ -63,7 +74,7 @@ namespace MonoDevelop.Core.Text
 		/// <returns>The character at the specified position.</returns>
 		/// <remarks>This is the same as Text[offset], but is more efficient because
 		///  it doesn't require creating a String object.</remarks>
-		char GetCharAt(int offset);
+		char this[int offset] { get; }
 
 		/// <summary>
 		/// Retrieves the text for a portion of the document.
@@ -72,56 +83,26 @@ namespace MonoDevelop.Core.Text
 		/// <remarks>This is the same as Text.Substring, but is more efficient because
 		///  it doesn't require creating a String object for the whole document.</remarks>
 		string GetTextAt(int offset, int length);
+	}
 
+	public static class TextSourceExtension
+	{
 		/// <summary>
 		/// Retrieves the text for a portion of the document.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
-		string GetTextAt(ISegment segment);
-	}
-
-	/// <summary>
-	/// Represents a version identifier for a text source.
-	/// </summary>
-	/// <remarks>
-	/// Verions can be used to efficiently detect whether a document has changed and needs reparsing;
-	/// or even to implement incremental parsers.
-	/// It is a separate class from ITextSource to allow the GC to collect the text source while
-	/// the version checkpoint is still in use.
-	/// </remarks>
-	public interface ITextSourceVersion
-	{
-		/// <summary>
-		/// Gets whether this checkpoint belongs to the same document as the other checkpoint.
-		/// </summary>
-		/// <remarks>
-		/// Returns false when given <c>null</c>.
-		/// </remarks>
-		bool BelongsToSameDocumentAs(ITextSourceVersion other);
-
-		/// <summary>
-		/// Compares the age of this checkpoint to the other checkpoint.
-		/// </summary>
-		/// <remarks>This method is thread-safe.</remarks>
-		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this version.</exception>
-		/// <returns>-1 if this version is older than <paramref name="other"/>.
-		/// 0 if <c>this</c> version instance represents the same version as <paramref name="other"/>.
-		/// 1 if this version is newer than <paramref name="other"/>.</returns>
-		int CompareAge(ITextSourceVersion other);
-
-		/// <summary>
-		/// Gets the changes from this checkpoint to the other checkpoint.
-		/// If 'other' is older than this checkpoint, reverse changes are calculated.
-		/// </summary>
-		/// <remarks>This method is thread-safe.</remarks>
-		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this checkpoint.</exception>
-		IEnumerable<TextChangeEventArgs> GetChangesTo(ITextSourceVersion other);
-
-		/// <summary>
-		/// Calculates where the offset has moved in the other buffer version.
-		/// </summary>
-		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this checkpoint.</exception>
-		int MoveOffsetTo(ITextSourceVersion other, int oldOffset);
+		public static string GetTextAt(this ITextSource source, ISegment segment)
+		{
+			if (source == null)
+				throw new ArgumentNullException ("source");
+			return source.GetTextAt (segment.Offset, segment.Length);
+		}
+	
+		public static void WriteTo (this ITextSource source, string fileName)
+		{
+			if (source == null)
+				throw new ArgumentNullException ("source");
+			TextFileUtility.WriteText (fileName, source.Text, source.Encoding, source.UseBOM); 
+		}
 	}
 }
-

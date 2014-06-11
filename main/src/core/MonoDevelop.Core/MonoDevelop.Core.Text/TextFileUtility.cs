@@ -53,13 +53,13 @@ namespace MonoDevelop.Core.Text
 				var bom = encoding.GetPreamble ();
 				if (bom == null || bom.Length == 0)
 					continue;
-				maxBomLength = System.Math.Max (maxBomLength, bom.Length);
+				maxBomLength = Math.Max (maxBomLength, bom.Length);
 				encodings.Add (encoding);
 			}
 			encodingsWithBom = encodings.ToArray ();
 
 			// Encoding verifiers
-			var verifierList = new List<Verifier> () {
+			var verifierList = new List<Verifier> {
 				new Utf8Verifier (),
 				new GB18030CodePageVerifier (),
 				new WindowsCodePageVerifier (),
@@ -114,7 +114,7 @@ namespace MonoDevelop.Core.Text
 			if (stream == null)
 				throw new ArgumentNullException ("stream");
 			byte[] possibleBom = new byte[maxBomLength];
-			stream.Read (possibleBom, 0, System.Math.Min ((int)stream.Length, maxBomLength));
+			stream.Read (possibleBom, 0, Math.Min ((int)stream.Length, maxBomLength));
 
 			foreach (var encoding in encodingsWithBom) {
 				var bom = encoding.GetPreamble ();
@@ -212,7 +212,6 @@ namespace MonoDevelop.Core.Text
 		#endregion
 
 		#region file methods
-
 		public static void WriteText (string fileName, string text, Encoding encoding, bool hadBom)
 		{
 			if (fileName == null)
@@ -236,7 +235,7 @@ namespace MonoDevelop.Core.Text
 				SystemRename (tmpPath, fileName);
 			} catch (Exception) {
 				try {
-					System.IO.File.Delete (tmpPath);
+					File.Delete (tmpPath);
 				} catch {
 					// nothing
 				}
@@ -314,6 +313,7 @@ namespace MonoDevelop.Core.Text
 				return GetText (stream, out encoding, out hadBom);
 			}
 		}
+
 		public static string ReadAllText (string fileName, Encoding encoding, out bool hadBom)
 		{
 			if (fileName == null)
@@ -339,7 +339,6 @@ namespace MonoDevelop.Core.Text
 			return true;
 		}
 		#endregion
-
 
 		#region Binary check
 		public static bool IsBinary (byte[] bytes)
@@ -369,13 +368,13 @@ namespace MonoDevelop.Core.Text
 		#endregion
 
 		#region Encoding autodetection
-		static Verifier[] verifiers;
-		static byte[][][] stateTables;
+		static readonly Verifier[] verifiers;
+		static readonly byte[][][] stateTables;
 
 		static unsafe Encoding AutoDetectEncoding (Stream stream)
 		{
 			try {
-				int max = (int)System.Math.Min (stream.Length, 50 * 1024);
+				int max = (int)Math.Min (stream.Length, 50 * 1024);
 				byte[] readBuf = new byte[max];
 				int readLength = stream.Read (readBuf, 0, max);
 				stream.Position = 0;
@@ -849,4 +848,3 @@ namespace MonoDevelop.Core.Text
 		#endregion
 	}
 }
-

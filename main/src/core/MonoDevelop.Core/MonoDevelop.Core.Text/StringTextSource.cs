@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.IO;
+using System.Text;
 
 namespace MonoDevelop.Core.Text
 {
@@ -43,24 +43,38 @@ namespace MonoDevelop.Core.Text
 		readonly ITextSourceVersion version;
 
 		/// <summary>
+		/// Determines if a byte order mark was read or is going to be written.
+		/// </summary>
+		public bool UseBOM { get; private set;}
+	
+		/// <summary>
+		/// Encoding of the text that was read from or is going to be saved to.
+		/// </summary>
+		public Encoding Encoding { get; private set; }
+
+		/// <summary>
 		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextSource(string text)
+		public StringTextSource(string text, Encoding encoding = null, bool useBom = true)
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
 			this.text = text;
+			this.UseBOM = useBom;
+			this.Encoding = encoding ?? Encoding.UTF8;
 		}
 
 		/// <summary>
 		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextSource(string text, ITextSourceVersion version)
+		public StringTextSource(string text, ITextSourceVersion version, Encoding encoding = null, bool useBom = true)
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
 			this.text = text;
 			this.version = version;
+			this.UseBOM = useBom;
+			this.Encoding = encoding ?? Encoding.UTF8;
 		}
 
 		/// <inheritdoc/>
@@ -91,33 +105,10 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <inheritdoc/>
-		public TextReader CreateReader()
-		{
-			return new StringReader(text);
-		}
-
-		/// <inheritdoc/>
-		public TextReader CreateReader(int offset, int length)
-		{
-			return new StringReader(text.Substring(offset, length));
-		}
-
-		/// <inheritdoc/>
-		public void WriteTextTo(TextWriter writer)
-		{
-			writer.Write(text);
-		}
-
-		/// <inheritdoc/>
-		public void WriteTextTo(TextWriter writer, int offset, int length)
-		{
-			writer.Write(text.Substring(offset, length));
-		}
-
-		/// <inheritdoc/>
-		public char GetCharAt(int offset)
-		{
-			return text[offset];
+		public char this[int offset] {
+			get {
+				return text [offset];
+			}
 		}
 
 		/// <inheritdoc/>
@@ -125,44 +116,23 @@ namespace MonoDevelop.Core.Text
 		{
 			return text.Substring(offset, length);
 		}
-
-		/// <inheritdoc/>
-		public string GetTextAt(ISegment segment)
+	
+		public StringTextSource WithEncoding (Encoding encoding)
 		{
-			if (segment == null)
-				throw new ArgumentNullException("segment");
-			return text.Substring(segment.Offset, segment.Length);
+			return new StringTextSource (text, encoding, UseBOM);
 		}
 
-		/// <inheritdoc/>
-		public int IndexOf(char c, int startIndex, int count)
+		public StringTextSource WithBom (bool useBom)
 		{
-			return text.IndexOf(c, startIndex, count);
+			return new StringTextSource (text, Encoding, useBom);
 		}
 
-		/// <inheritdoc/>
-		public int IndexOfAny(char[] anyOf, int startIndex, int count)
+		public static StringTextSource ReadFrom (string fileName)
 		{
-			return text.IndexOfAny(anyOf, startIndex, count);
-		}
-
-		/// <inheritdoc/>
-		public int IndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
-		{
-			return text.IndexOf(searchText, startIndex, count, comparisonType);
-		}
-
-		/// <inheritdoc/>
-		public int LastIndexOf(char c, int startIndex, int count)
-		{
-			return text.LastIndexOf(c, startIndex + count - 1, count);
-		}
-
-		/// <inheritdoc/>
-		public int LastIndexOf(string searchText, int startIndex, int count, StringComparison comparisonType)
-		{
-			return text.LastIndexOf(searchText, startIndex + count - 1, count, comparisonType);
+			bool hadBom;
+			Encoding encoding;
+			var text = TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
+			return new StringTextSource (text, encoding, hadBom);
 		}
 	}
 }
-
