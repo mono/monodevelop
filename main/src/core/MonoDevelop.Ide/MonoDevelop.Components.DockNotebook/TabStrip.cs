@@ -369,9 +369,9 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			string newTooltip = null;
 			if (placeholderWindow != null) {
-				int ox, oy;
-				GdkWindow.GetOrigin (out ox, out oy);
-				placeholderWindow.MovePosition ((int)evnt.X + ox, (int)evnt.Y + oy); 
+				int x, y;
+				Gdk.Display.Default.GetPointer (out x, out y);
+				placeholderWindow.MovePosition (x, y); 
 				return base.OnMotionNotifyEvent (evnt);
 			}
 
