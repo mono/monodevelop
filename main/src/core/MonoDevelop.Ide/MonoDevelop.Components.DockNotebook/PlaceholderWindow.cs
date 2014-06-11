@@ -139,6 +139,7 @@ namespace MonoDevelop.Components.DockNotebook
 		int rx, ry, rw, rh;
 
 		int controlKeyMask;
+		DocumentTitleWindow titleWindow;
 
 		static PlaceholderWindow ()
 		{
@@ -156,19 +157,14 @@ namespace MonoDevelop.Components.DockNotebook
 
 		IDockNotebookTab frame;
 		
-		public PlaceholderWindow (IDockNotebookTab frame): base (Gtk.WindowType.Toplevel)
+		public PlaceholderWindow (IDockNotebookTab tab): base (Gtk.WindowType.Toplevel)
 		{
-			this.frame = frame;
+			this.frame = tab;
 			SkipTaskbarHint = true;
 			Decorated = false;
-			TransientFor = IdeApp.Workbench.RootWindow;
 			TypeHint = WindowTypeHint.Utility;
-			KeepAbove = true;
-			// Create the mask for the arrow
 
-			Realize ();
-			redgc = new Gdk.GC (GdkWindow);
-			redgc.RgbFgColor = frame.Content.Style.Background (StateType.Selected);
+			titleWindow = new DocumentTitleWindow (this, tab);
 		}
 
 		protected override bool OnKeyPressEvent (EventKey evnt)
@@ -215,14 +211,28 @@ namespace MonoDevelop.Components.DockNotebook
 			return controlKeyMask == 0 && hoverNotebook != null && (hoverNotebook.TabCount != 1 || hoverNotebook.TabCount == 1 && hoverNotebook.Tabs [0] != frame);
 		}
 
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			Gtk.Application.Invoke (delegate {
+				titleWindow.Destroy ();
+			});
+		}
+
 		int curX, curY;
 		public void MovePosition (int x, int y)
 		{
 			this.curX = x;
 			this.curY = y;
 			hoverNotebook = null;
-			this.KeepAbove = true;
-			
+
+			titleWindow.ShowAll ();
+
+			int winw, winh;
+			titleWindow.GetSize (out winw, out winh);
+			titleWindow.Move (x - winw/2, y - winh/2);
+			titleWindow.GdkWindow.Raise ();
+
 			// TODO: Handle z-ordering of floating windows.
 			int ox = 0, oy = 0;
 			foreach (var notebook in DockNotebook.AllNotebooks) {
@@ -304,58 +314,23 @@ namespace MonoDevelop.Components.DockNotebook
 			base.OnRealized ();
 			GdkWindow.Opacity = 0.6;
 		}
-
-		void CreateShape (int width, int height)
-		{
-			Color black, white;
-			black = new Color (0, 0, 0);
-			black.Pixel = 1;
-			white = new Color (255, 255, 255);
-			white.Pixel = 0;
-
-			var pm = new Pixmap (GdkWindow, width, height, 1);
-			var gc = new Gdk.GC (pm);
-			gc.Background = white;
-			gc.Foreground = white;
-			pm.DrawRectangle (gc, true, 0, 0, width, height);
-
-			gc.Foreground = black;
-			pm.DrawRectangle (gc, false, 0, 0, width - 1, height - 1);
-			pm.DrawRectangle (gc, false, 1, 1, width - 3, height - 3);
-
-			ShapeCombineMask (pm, 0, 0);
-		}
-
-		protected override void OnSizeAllocated (Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
-			CreateShape (allocation.Width, allocation.Height);
-		}
-
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
-			//base.OnExposeEvent (args);
 			int w, h;
-			GetSize (out w, out h);
-			GdkWindow.DrawRectangle (redgc, false, 0, 0, w-1, h-1);
-			GdkWindow.DrawRectangle (redgc, false, 1, 1, w-3, h-3);
+			using (var redgc = new Gdk.GC (GdkWindow)) {
+				redgc.RgbFgColor = Style.Background (StateType.Selected);
+				GetSize (out w, out h);
+				GdkWindow.DrawRectangle (redgc, false, 0, 0, w - 1, h - 1);
+				GdkWindow.DrawRectangle (redgc, false, 1, 1, w - 3, h - 3);
+			}
 			return true;
 		}
 
 		public void Relocate (int x, int y, int w, int h, bool animate)
 		{
-			var geometry = Screen.GetUsableMonitorGeometry (Screen.GetMonitorAtPoint (x, y));
-			if (x < geometry.X)
-				x = geometry.X;
-			if (x + w > geometry.Right)
-				x = geometry.Right - w;
-			if (y < geometry.Y)
-				y = geometry.Y;
-			if (y > geometry.Bottom - h)
-				y = geometry.Bottom - h;
-
 			if (x != rx || y != ry || w != rw || h != rh) {
-				Resize (w, h);
+				if (w != rw || h != rh)
+					Resize (w, h);
 				Move (x, y);
 
 				rx = x; ry = y; rw = w; rh = h;
@@ -443,6 +418,42 @@ namespace MonoDevelop.Components.DockNotebook
 			(placementDelegate ?? PlaceInFloatingFrame) (notebook, tab, allocation, ox, oy);
 
 			IdeApp.Workbench.EnsureValidSplits ();
+		}
+	}
+
+
+	class DocumentTitleWindow: Gtk.Window
+	{
+		public DocumentTitleWindow (Gtk.Window parent, IDockNotebookTab draggedItem): base (Gtk.WindowType.Popup)
+		{
+			SdiWorkspaceWindow w;
+
+			SkipTaskbarHint = true;
+			Decorated = false;
+			//KeepAbove = true;
+			
+			//TransientFor = parent;
+			TypeHint = WindowTypeHint.Utility;
+
+			VBox mainBox = new VBox ();
+
+			HBox box = new HBox (false, 3);
+			if (draggedItem.Icon != null) {
+				var img = new Xwt.ImageView (draggedItem.Icon);
+				box.PackStart (img.ToGtkWidget (), false, false, 0);
+			}
+			Gtk.Label la = new Label ();
+			la.Markup = draggedItem.Text;
+			box.PackStart (la, false, false, 0);
+
+			mainBox.PackStart (box, false, false, 0);
+
+			CustomFrame f = new CustomFrame ();
+			f.SetPadding (12, 12, 12, 12);
+			f.SetMargins (1, 1, 1, 1);
+			f.Add (mainBox);
+
+			Add (f);
 		}
 	}
 }
