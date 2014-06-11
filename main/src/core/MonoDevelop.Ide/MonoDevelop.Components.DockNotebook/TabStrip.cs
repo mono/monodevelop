@@ -566,6 +566,8 @@ namespace MonoDevelop.Components.DockNotebook
 			} else {
 				LastTabWidthAdjustment = 0;
 			}
+			if (!IsRealized)
+				TabWidth = TargetWidth;
 		}
 
 		static int Clamp (int val, int min, int max)
