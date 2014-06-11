@@ -1138,7 +1138,6 @@ namespace MonoDevelop.Ide.Gui
 					dockWindow.Move (floatPrefs.X, floatPrefs.Y);
 					dockWindow.Resize (floatPrefs.Width, floatPrefs.Height);
 					IdeApp.Workbench.OpenDocument (fileName, null, doc.Line, doc.Column, OpenDocumentOptions.None, null, null, dockWindow);
-					dockWindow.ShowAll ();
 				}
 			}
 
@@ -1204,6 +1203,9 @@ namespace MonoDevelop.Ide.Gui
 					}
 				}
 			}
+
+			foreach (var w in dockWindows.Values)
+				w.ShowAll ();
 		}
 		
 		internal Document FindDocument (IWorkbenchWindow window)

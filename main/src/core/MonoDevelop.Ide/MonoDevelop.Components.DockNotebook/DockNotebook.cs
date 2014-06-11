@@ -292,6 +292,12 @@ namespace MonoDevelop.Components.DockNotebook
 				contentBox.Child = tab.Content;
 		}
 
+		protected override bool OnButtonPressEvent (EventButton evnt)
+		{
+			ActiveNotebook = this;
+			return base.OnButtonPressEvent (evnt);
+		}
+
 		protected override void OnDestroyed ()
 		{
 			allNotebooks.Remove (this);
