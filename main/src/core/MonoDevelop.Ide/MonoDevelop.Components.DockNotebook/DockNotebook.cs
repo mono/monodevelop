@@ -43,6 +43,7 @@ namespace MonoDevelop.Components.DockNotebook
 		TabStrip tabStrip;
 		Gtk.EventBox contentBox;
 		ReadOnlyCollection<IDockNotebookTab> pagesCol;
+		const int MAX_LASTACTIVEWINDOWS = 10;
 
 		IDockNotebookTab currentTab;
 
@@ -158,6 +159,8 @@ namespace MonoDevelop.Components.DockNotebook
 						}
 						pagesHistory.Remove (currentTab);
 						pagesHistory.Insert (0, currentTab);
+						if (pagesHistory.Count > MAX_LASTACTIVEWINDOWS)
+							pagesHistory.RemoveAt (pagesHistory.Count - 1);
 					}
 
 					tabStrip.Update ();
@@ -176,6 +179,22 @@ namespace MonoDevelop.Components.DockNotebook
 				else
 					CurrentTab = pages [value]; 
 			}
+		}
+
+		void SelectLastActiveTab ()
+		{
+			if (pages.Count == 0) {
+				CurrentTab = null;
+				return;
+			}
+
+			while (pagesHistory.Count > 0 && pagesHistory [0].Content == null)
+				pagesHistory.RemoveAt (0);
+
+			if (pagesHistory.Count > 0)
+				CurrentTab = pagesHistory [0];
+			else
+				CurrentTab = null;
 		}
 
 		public int TabCount {
@@ -239,17 +258,11 @@ namespace MonoDevelop.Components.DockNotebook
 			var tab = pages [page];
 			if (animate)
 				tabStrip.StartCloseAnimation ((DockNotebookTab)tab);
-			if (page == CurrentTabIndex) {
-				if (page < pages.Count - 1)
-					CurrentTabIndex = page + 1;
-				else if (page > 0)
-					CurrentTabIndex = page - 1;
-				else
-					CurrentTab = null;
-			}
+			pagesHistory.Remove (tab);
+			if (page == CurrentTabIndex)
+				SelectLastActiveTab ();
 			pages.RemoveAt (page);
 			UpdateIndexes (page);
-			pagesHistory.Remove (tab);
 			tabStrip.Update ();
 			tabStrip.DropDownButton.Sensitive = pages.Count > 0;
 

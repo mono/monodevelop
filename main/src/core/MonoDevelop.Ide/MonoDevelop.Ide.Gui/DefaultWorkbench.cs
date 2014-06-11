@@ -76,8 +76,7 @@ namespace MonoDevelop.Ide.Gui
 		Dictionary<IPadWindow, PadCodon> padCodons = new Dictionary<IPadWindow, PadCodon> ();
 		
 		IWorkbenchWindow lastActive;
-		LinkedList<IWorkbenchWindow> lastActiveWindows = new LinkedList<IWorkbenchWindow> ();
-		
+
 		bool closeAll;
 		bool ignorePageSwitch;
 
@@ -783,11 +782,6 @@ namespace MonoDevelop.Ide.Gui
 			if (lastActive != null)
 				((SdiWorkspaceWindow)lastActive).OnDeactivated ();
 
-			if (lastActiveWindows.Count > MAX_LASTACTIVEWINDOWS)
-				lastActiveWindows.RemoveFirst ();
-
-			lastActiveWindows.Remove (lastActive);
-			lastActiveWindows.AddLast (lastActive);
 			lastActive = ActiveWorkbenchWindow;
 			SetWorkbenchTitle ();
 
@@ -1208,34 +1202,11 @@ namespace MonoDevelop.Ide.Gui
 		
 		#region View management
 		
-		bool SelectLastActiveWindow (IWorkbenchWindow cur)
-		{
-			if (lastActiveWindows.Count == 0)
-				return false;
-			IWorkbenchWindow last = null;
-			do {
-				last = lastActiveWindows.Last.Value;
-				lastActiveWindows.RemoveLast ();
-			} while (lastActiveWindows.Count > 0 && (last == cur || last == null || (last != null && last.ViewContent == null)));
-
-			if (last != null && last != cur) {
-				last.SelectWindow ();
-				return true;
-			}
-			return false;
-		}
-		
 		void CloseWindowEvent (object sender, WorkbenchWindowEventArgs e)
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow) sender;
-			lastActiveWindows.Remove (f);
-
-			if (f.ViewContent != null) {
+			if (f.ViewContent != null)
 				CloseContent (f.ViewContent);
-				if (e.WasActive && !SelectLastActiveWindow (f))
-					OnActiveWindowChanged(this, null);
-			}
-			lastActiveWindows.Remove (f);
 		}
 		
 		internal void CloseClicked (object o, TabEventArgs e)
