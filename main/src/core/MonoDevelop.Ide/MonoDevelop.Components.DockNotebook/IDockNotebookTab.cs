@@ -39,5 +39,6 @@ namespace MonoDevelop.Components.DockNotebook
 		bool Notify { get; set; }
 		bool Hidden { get; set; }
 		bool Dirty { get; set; }
+		DockNotebook Notebook { get; }
 	}
 }

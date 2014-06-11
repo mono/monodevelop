@@ -42,6 +42,8 @@ namespace MonoDevelop.Components.DockNotebook
 		internal Gdk.Rectangle Allocation;
 		internal Gdk.Rectangle CloseButtonAllocation;
 
+		public DockNotebook Notebook { get { return notebook; } }
+
 		public int Index { get; internal set; }
 
 		public bool Notify { get; set; }

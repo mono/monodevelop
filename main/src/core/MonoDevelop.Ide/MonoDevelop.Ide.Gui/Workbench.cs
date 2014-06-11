@@ -526,7 +526,6 @@ namespace MonoDevelop.Ide.Gui
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (info.NewContent.WorkbenchWindow);
 					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
-						Present ();
 						doc.RunWhenLoaded (() => {
 							if (doc.Window != null)
 								doc.Window.SelectWindow ();

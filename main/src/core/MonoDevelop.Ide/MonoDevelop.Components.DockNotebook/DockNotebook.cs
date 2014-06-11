@@ -46,6 +46,11 @@ namespace MonoDevelop.Components.DockNotebook
 
 		IDockNotebookTab currentTab;
 
+		static DockNotebook activeNotebook;
+		static List<DockNotebook> allNotebooks = new List<DockNotebook> ();
+
+		public static event EventHandler ActiveNotebookChanged;
+
 		public DockNotebook ()
 		{
 			pagesCol = new ReadOnlyCollection<IDockNotebookTab> (pages);
@@ -80,8 +85,25 @@ namespace MonoDevelop.Components.DockNotebook
 				menu.ShowAll ();
 				return menu;
 			};
+
+			allNotebooks.Add (this);
 		}
-		
+
+		public static DockNotebook ActiveNotebook {
+			get { return activeNotebook; }
+			set {
+				if (activeNotebook != value) {
+					activeNotebook = value;
+					if (ActiveNotebookChanged != null)
+						ActiveNotebookChanged (null, EventArgs.Empty);
+				}
+			}
+		}
+
+		public static IEnumerable<DockNotebook> AllNotebooks {
+			get { return allNotebooks; }
+		}
+
 		Cursor fleurCursor = new Cursor (CursorType.Fleur);
 
 		public event TabsReorderedHandler TabsReordered;
@@ -272,6 +294,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override void OnDestroyed ()
 		{
+			allNotebooks.Remove (this);
 			if (fleurCursor != null) {
 				fleurCursor.Dispose ();
 				fleurCursor = null;

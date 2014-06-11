@@ -83,10 +83,28 @@ namespace MonoDevelop.Components.DockNotebook
 				//						}
 				//					}
 				foreach (var d in documents) {
-					if (!d.Close ())
+					if (!d.Close ()) {
 						args.RetVal = true;
+						break;
+					}
 				}
 			};
+		}
+
+		public IDockNotebookTab AddTab ()
+		{
+			if (Container == null) {
+				// This dock window doesn't yet have any tabs inserted.
+				var addToControl = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+				addToControl.NavigationButtonsVisible = false;
+				var tab = addToControl.InsertTab (-1);
+				Container = new DockNotebookContainer (addToControl);
+				addToControl.InitSize ();
+				return tab;
+			} else {
+				// Use the existing tab control.
+				return Container.TabControl.InsertTab (-1);
+			}
 		}
 
 		protected override bool OnConfigureEvent (EventConfigure evnt)
@@ -190,16 +208,6 @@ namespace MonoDevelop.Components.DockNotebook
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 
-
-		internal static List<DockNotebook> newNotebooks = new List<DockNotebook> ();
-
-		static IEnumerable<DockNotebook> AllNotebooks ()
-		{
-			yield return ((DefaultWorkbench)IdeApp.Workbench.RootWindow).TabControl;
-			foreach (var notebook in newNotebooks)
-				yield return notebook;
-		}
-
 		DockNotebook hoverNotebook;
 
 		bool CanPlaceInHoverNotebook ()
@@ -217,7 +225,7 @@ namespace MonoDevelop.Components.DockNotebook
 			
 			// TODO: Handle z-ordering of floating windows.
 			int ox = 0, oy = 0;
-			foreach (var notebook in AllNotebooks ()) {
+			foreach (var notebook in DockNotebook.AllNotebooks) {
 				if (notebook.GdkWindow == null)
 					continue;
 				int ox2, oy2;
@@ -394,15 +402,10 @@ namespace MonoDevelop.Components.DockNotebook
 		static void PlaceInFloatingFrame (DockNotebook notebook, IDockNotebookTab tab, Rectangle allocation, int ox, int oy)
 		{
 			var newWindow = new DockWindow ();
-			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
-			newNotebook.NavigationButtonsVisible = false;
-			NotebookWasPlacedInFloatingFrame (newNotebook);
-
-			newWindow.Container = new DockNotebookContainer (newNotebook);
-			newNotebook.InitSize ();
+			var newTab = newWindow.AddTab ();
+			var newNotebook = newTab.Notebook;
 
 			var workspaceWindow = (SdiWorkspaceWindow)tab.Content;
-			var newTab = newNotebook.InsertTab (-1);
 			newTab.Content = workspaceWindow;
 			newWindow.Title = DefaultWorkbench.GetTitle (workspaceWindow);
 
@@ -410,12 +413,6 @@ namespace MonoDevelop.Components.DockNotebook
 			newWindow.Move (ox + allocation.Width / 2 - w / 2, oy + allocation.Height / 2 - h / 2);
 			newWindow.Resize (w, h);
 			newWindow.ShowAll ();
-		}
-
-		internal static void NotebookWasPlacedInFloatingFrame (SdiDragNotebook notebook)
-		{
-			if (!newNotebooks.Contains (notebook))
-				newNotebooks.Add (notebook);
 		}
 
 		const int w = 640;

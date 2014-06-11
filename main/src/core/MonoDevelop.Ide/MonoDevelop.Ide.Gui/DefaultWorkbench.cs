@@ -88,7 +88,6 @@ namespace MonoDevelop.Ide.Gui
 		DockToolbarFrame toolbarFrame;
 		DockFrame dock;
 		SdiDragNotebook tabControl;
-		SdiDragNotebook activeTabControl;
 		Gtk.MenuBar topMenu;
 		Gtk.VBox fullViewVBox;
 		DockItem documentDockItem;
@@ -145,10 +144,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal IWorkbenchWindow ActiveWorkbenchWindow {
 			get {
-				if (activeTabControl == null || activeTabControl.CurrentTabIndex < 0 || activeTabControl.CurrentTabIndex >= activeTabControl.TabCount)  {
+				if (DockNotebook.ActiveNotebook == null || DockNotebook.ActiveNotebook.CurrentTabIndex < 0 || DockNotebook.ActiveNotebook.CurrentTabIndex >= DockNotebook.ActiveNotebook.TabCount)  {
 					return null;
 				}
-				return (IWorkbenchWindow) activeTabControl.CurrentTab.Content;
+				return (IWorkbenchWindow) DockNotebook.ActiveNotebook.CurrentTab.Content;
 			}
 		}
 		
@@ -409,22 +408,9 @@ namespace MonoDevelop.Ide.Gui
 
 		public void ShowViewInFloatingWindow (DockWindow dockWindow, IViewContent content)
 		{
+			IDockNotebookTab tab = dockWindow.AddTab ();
 			var mimeimage = PrepareShowView (content);
-			IDockNotebookTab tab;
-			SdiDragNotebook addToControl;
-			if (dockWindow.Container == null) {
-				// This dock window doesn't yet have any tabs inserted.
-				addToControl = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
-				addToControl.NavigationButtonsVisible = false;
-				tab = addToControl.InsertTab (-1);
-
-				dockWindow.Container = new DockNotebookContainer (addToControl);
-				addToControl.InitSize ();
-			} else {
-				// Use the existing tab control.
-				addToControl = (SdiDragNotebook)dockWindow.Container.TabControl;
-				tab = dockWindow.Container.TabControl.InsertTab (-1);
-			}
+			var addToControl = (SdiDragNotebook)tab.Notebook;
 
 			var sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, addToControl, tab);
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
@@ -434,21 +420,18 @@ namespace MonoDevelop.Ide.Gui
 			tab.Content = sdiWorkspaceWindow;
 
 			sdiWorkspaceWindow.SetDockNotebook (addToControl, tab);
-			MonoDevelop.Components.DockNotebook.PlaceholderWindow.NotebookWasPlacedInFloatingFrame (addToControl);
 
 			if (mimeimage != null)
 				tab.Icon = mimeimage;
 
 			if (content.Project != null)
 				content.Project.NameChanged += HandleProjectNameChanged;
-
-			OnActiveWindowChanged (null, null);
 		}
 
 		public virtual void ShowView (IViewContent content, bool bringToFront)
 		{
 			var mimeimage = PrepareShowView (content);
-			var addToControl = activeTabControl ?? tabControl;
+			var addToControl = DockNotebook.ActiveNotebook ?? tabControl;
 			var tab = addToControl.InsertTab (-1);
 
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, addToControl, tab);
@@ -467,11 +450,6 @@ namespace MonoDevelop.Ide.Gui
 
 			// The insertion of the tab may have changed the active view (or maybe not, this is checked in OnActiveWindowChanged)
 			OnActiveWindowChanged (null, null);
-		}
-
-		public void FocusMayHaveChanged (SdiDragNotebook notebook)
-		{
-			OnActiveWindowChanged (notebook, null);
 		}
 
 		void HandleProjectNameChanged (object sender, SolutionItemRenamedEventArgs e)
@@ -797,11 +775,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (ignorePageSwitch)
 				return;
-			if (sender != null) {
-				activeTabControl.Destroyed -= HandleActiveTabControlDestroyed;
-				activeTabControl = sender as SdiDragNotebook ?? activeTabControl ?? tabControl;
-				activeTabControl.Destroyed += HandleActiveTabControlDestroyed;
-			}
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
 
@@ -826,11 +799,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		void HandleActiveTabControlDestroyed (object sender, EventArgs e)
-		{
-			activeTabControl = tabControl;
-		}
-		
 		public PadCodon GetPad(Type type)
 		{
 			foreach (PadCodon pad in PadContentCollection) {
@@ -907,8 +875,11 @@ namespace MonoDevelop.Ide.Gui
 			toolbarFrame.AddContent (dock);
 			
 			// Create the notebook for the various documents.
-			activeTabControl = tabControl = new SdiDragNotebook (this);
+			tabControl = new SdiDragNotebook (this);
 
+			DockNotebook.ActiveNotebookChanged += delegate {
+				OnActiveWindowChanged (null, null);
+			};
 
 			Add (fullViewVBox);
 			fullViewVBox.ShowAll ();
@@ -1202,12 +1173,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		void SwitchToDocument (int number)
 		{
-			if (activeTabControl == null)
+			if (DockNotebook.ActiveNotebook == null)
 				return;
 			
-			if (number >= activeTabControl.TabCount || number < 0)
+			if (number >= DockNotebook.ActiveNotebook.TabCount || number < 0)
 				return;
-			var window = activeTabControl.Tabs [number].Content as IWorkbenchWindow;
+			var window = DockNotebook.ActiveNotebook.Tabs [number].Content as IWorkbenchWindow;
 			if (window != null)
 				window.SelectWindow ();
 		}

@@ -118,21 +118,14 @@ namespace MonoDevelop.Components.DockNotebook
 		public static DockWindow MoveToFloatingWindow (SdiWorkspaceWindow workspaceWindow, int x, int y, int width, int height)
 		{
 			var window = new DockWindow ();
-			var notebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+			var tab = window.AddTab ();
+			var notebook = tab.Notebook;
 
-			notebook.NavigationButtonsVisible = false;
-
-			window.Container = new DockNotebookContainer (notebook);
-			notebook.InitSize ();
-
-			var tab = notebook.InsertTab (-1);
 			tab.Content = workspaceWindow;
 
 			window.Title = DefaultWorkbench.GetTitle (workspaceWindow);
 
 			workspaceWindow.SetDockNotebook (notebook, tab);
-
-			PlaceholderWindow.NotebookWasPlacedInFloatingFrame (notebook);
 
 			window.Move (x, y);
 			window.Resize (width, height);
@@ -177,17 +170,13 @@ namespace MonoDevelop.Components.DockNotebook
 			controlContainer.Parent.Destroy ();
 		}
 
-		void Insert(SdiWorkspaceWindow window, Func<DockNotebookContainer, Split> callback)
+		void Insert (SdiWorkspaceWindow window, Func<DockNotebookContainer, Split> callback)
 		{
 			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
 
 			newNotebook.NavigationButtonsVisible = false;
-			PlaceholderWindow.newNotebooks.Add (newNotebook);
 			newNotebook.InitSize ();
 			var newContainer = new DockNotebookContainer (newNotebook);
-			newNotebook.Destroyed += delegate {
-				PlaceholderWindow.newNotebooks.Remove (newNotebook);
-			};
 			newNotebook.PageRemoved += HandlePageRemoved;
 
 			var newTab = newNotebook.InsertTab (-1);

@@ -160,10 +160,8 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override bool OnWidgetEvent (Gdk.Event evt)
 		{
-			if (evt.Type == Gdk.EventType.VisibilityNotify || evt.Type == Gdk.EventType.ButtonRelease) {
-				SelectWindow ();
-				((DefaultWorkbench)IdeApp.Workbench.RootWindow).FocusMayHaveChanged ((SdiDragNotebook)Parent.Parent);
-			}
+			if (evt.Type == Gdk.EventType.ButtonRelease)
+				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
 
 			return base.OnWidgetEvent (evt);
 		}
@@ -789,6 +787,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
 		{
+			// If command checks are flowing through this view, it means the view's notebook
+			// is the active notebook.
+			DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
+
 			Gtk.Widget w = content as Gtk.Widget;
 			if (w != this.tabPage) {
 				// Route commands to the view
