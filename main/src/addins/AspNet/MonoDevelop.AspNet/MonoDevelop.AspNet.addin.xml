@@ -260,4 +260,8 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete language="Html" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\" />
 	</Extension>
+
+	<Extension path = "/MonoDevelop/TypeSystem/CodeTranslator">
+		<Type class ="MonoDevelop.AspNet.Gui.ASPNetCodeTranslator" />
+	</Extension>
 </ExtensionModel>

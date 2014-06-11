@@ -26,16 +26,65 @@
 
 using System;
 using Microsoft.CodeAnalysis.Text;
-using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.Generic;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	public abstract class CodeTranslator
 	{
+		static readonly List<CodeTranslator> parsers;
+
+		static CodeTranslator ()
+		{
+			parsers = new List<CodeTranslator> ();
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/TypeSystem/CodeTranslator", delegate (object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					parsers.Add ((CodeTranslator)args.ExtensionObject);
+					break;
+				case ExtensionChange.Remove:
+					parsers.Remove ((CodeTranslator)args.ExtensionObject);
+					break;
+				}
+			});
+		}
+
 		public abstract bool CanTranslate (string fromMimeType, string toMimeType);
 
 		public abstract CodeMapping GetMapping (string fromMimeType, string toMimeType, SourceText textSource);
+	}
+
+	public struct OffsetInfo 
+	{
+		public readonly int OriginalOffset;
+		public readonly int TranslatedOffset;
+		public readonly int Length;
+
+		public OffsetInfo (int orginalOffset, int translatedOffset, int length)
+		{
+			OriginalOffset = orginalOffset;
+			TranslatedOffset = translatedOffset;
+			Length = length;
+		}
+
+		public bool OriginalContains (int offset)
+		{
+			var translatedOffset = offset - OriginalOffset;
+			return 0 <= translatedOffset && translatedOffset < Length;
+		}
+
+		public bool TranslatedContains (int offset)
+		{
+			var translatedOffset = offset - OriginalOffset;
+			return 0 <= translatedOffset && translatedOffset < Length;
+		}
+
+		public int Translate (int offsetInOrigin)
+		{
+			return offsetInOrigin - OriginalOffset + TranslatedOffset;
+		}
 	}
 
 	public class CodeMapping
@@ -43,7 +92,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static readonly CodeMapping Invalid = new InvalidMapping ();
 
 		readonly SourceText text;
-		readonly ImmutableArray<Tuple<TextSpan, TextSpan>> projections;
+		readonly ImmutableArray<OffsetInfo> projections;
 
 		public virtual bool IsInvalid {
 			get {
@@ -61,13 +110,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 		}
 
-		CodeMapping (SourceText text, ImmutableArray<Tuple<TextSpan, TextSpan>> projections)
+		CodeMapping (SourceText text, ImmutableArray<OffsetInfo> projections)
 		{
 			this.text = text;
 			this.projections = projections;
 		}
 
-		public static CodeMapping CreateProjectionMapping (SourceText text, ImmutableArray<Tuple<TextSpan, TextSpan>> projections)
+		public static CodeMapping CreateProjectionMapping (SourceText text, ImmutableArray<OffsetInfo> projections)
 		{
 			if (text == null)
 				throw new ArgumentNullException ("text");
@@ -78,23 +127,21 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			if (text == null)
 				throw new ArgumentNullException ("text");
-			var span = TextSpan.FromBounds (0, text.Length);
-			return new CodeMapping (text, ImmutableArray.Create (Tuple.Create (span, span)));
+			return new CodeMapping (text, ImmutableArray.Create (new OffsetInfo (0, 0, text.Length)));
 		}
 
 		public CodeMapping UpdateMapping (Mono.TextEditor.DocumentChangeEventArgs e)
 		{
 			for (int i = 0; i < projections.Length; i++) {
 				var projection = projections [i];
-				if (projection.Item1.Contains (e.Offset)) {
+				if (projection.OriginalContains (e.Offset)) {
 
-					var newProjections = projections.SetItem (i, Tuple.Create (
-						TextSpan.FromBounds (projection.Item1.Start, projection.Item1.End + e.ChangeDelta),
-						TextSpan.FromBounds (projection.Item2.Start, projection.Item2.End + e.ChangeDelta)
-					)); 
+					var newProjections = projections.SetItem (i, 
+						new OffsetInfo (projection.OriginalOffset, projection.TranslatedOffset, projection.Length + e.ChangeDelta)
+					); 
 
 					var newText = text.Replace (
-						projection.Item2.Start + projection.Item1.Start - e.Offset,
+						projection.Translate (e.Offset),
 						e.RemovalLength,
 						e.InsertedText.Text
 					); 

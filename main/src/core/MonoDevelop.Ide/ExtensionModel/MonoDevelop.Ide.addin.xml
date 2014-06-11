@@ -164,6 +164,10 @@
 		<ExtensionNode name="Generator" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/TypeSystem/CodeTranslator" name = "Code translators">
+		<ExtensionNode name="Type" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
