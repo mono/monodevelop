@@ -507,9 +507,20 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.GetEndFoldings (line);
 		}
 
+		/// <summary>
+		/// Gets a character at the specified position in the document.
+		/// </summary>
+		/// <paramref name="offset">The index of the character to get.</paramref>
+		/// <exception cref="ArgumentOutOfRangeException">Offset is outside the valid range (0 to TextLength-1).</exception>
+		/// <returns>The character at the specified position.</returns>
+		/// <remarks>This is the same as Text[offset], but is more efficient because
+		///  it doesn't require creating a String object.</remarks>
+		public char this[int offset] { get { return textDocument[offset]; } } 
+
+		[Obsolete("Use this[int offset]")]
 		public char GetCharAt (int offset)
 		{
-			return textDocument.GetCharAt (offset);
+			return textDocument[offset]; 
 		}
 
 		public string GetTextAt (int offset, int length)

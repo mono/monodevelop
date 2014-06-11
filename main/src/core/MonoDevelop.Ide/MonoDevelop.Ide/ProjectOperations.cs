@@ -2087,7 +2087,7 @@ namespace MonoDevelop.Ide
 			var data = GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
 			operation (data);
 			if (!isOpen) {
-				try { 
+				try {
 					TextFileUtility.WriteText (filePath, data.Text, encoding, hadBom);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while saving changes to : " + filePath, e);

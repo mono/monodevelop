@@ -113,7 +113,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			// get the engine caught up
 			int nextSave = (cachedEngines.Count == 0)? BUFFER_SIZE : cachedEngines.Peek ().Position + BUFFER_SIZE;
 			if (currentEngine.Position + 1 == position) {
-				char ch = editor.GetCharAt (currentEngine.Position);
+				char ch = editor[currentEngine.Position];
 				currentEngine.Push (ch);
 				ConsoleWrite ("pushing character '{0}'", ch);
 				if (currentEngine.Position == nextSave)

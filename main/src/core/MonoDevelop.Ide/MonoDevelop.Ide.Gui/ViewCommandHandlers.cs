@@ -438,7 +438,7 @@ namespace MonoDevelop.Ide.Gui
 			public static RemoveInfo GetRemoveInfo (TextEditor document, ref int pos)
 			{
 				int len = 0;
-				while (pos > 0 && IsWhiteSpace (document.GetCharAt (pos))) {
+				while (pos > 0 && IsWhiteSpace (document[pos])) {
 					--pos;
 					++len;
 				}
@@ -469,9 +469,9 @@ namespace MonoDevelop.Ide.Gui
 				removeList.Add (removeInfo);
 			
 			while (pos >= 0) {
-				char ch = data.GetCharAt (pos);
+				char ch = data[pos];
 				if (ch == '\n' || ch == '\r') {
-					if (RemoveInfo.IsWhiteSpace (data.GetCharAt (pos - 1))) {
+					if (RemoveInfo.IsWhiteSpace (data[pos - 1])) {
 						--pos;
 						removeInfo = RemoveInfo.GetRemoveInfo (data, ref pos);
 						if (!removeInfo.IsEmpty)

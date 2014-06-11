@@ -39,10 +39,6 @@ namespace MonoDevelop.Ide.Editor
 
 		string MimeType { get; }
 
-		bool UseBOM { get; }
-
-		Encoding Encoding { get; }
-
 		string EolMarker { get; }
 
 		/// <summary>
@@ -116,6 +112,17 @@ namespace MonoDevelop.Ide.Editor
 
 	public static class DocumentExtensions
 	{
+		/// <summary>
+		/// Retrieves the text for a portion of the document.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
+		public static string GetTextAt(this IReadonlyTextDocument source, ISegment segment)
+		{
+			if (source == null)
+				throw new ArgumentNullException ("source");
+			return source.GetTextAt (segment.Offset, segment.Length);
+		}
+
 		public static IEnumerable<IDocumentLine> GetLines (this IReadonlyTextDocument document)
 		{
 			if (document == null)

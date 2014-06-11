@@ -122,7 +122,7 @@ namespace MonoDevelop.Ide.Templates
 		static bool IsBlankLine (IReadonlyTextDocument doc, IDocumentLine line)
 		{
 			for (int i = 0; i < line.Length; i++) {
-				if (!Char.IsWhiteSpace (doc.GetCharAt (line.Offset + i)))
+				if (!Char.IsWhiteSpace (doc[line.Offset + i]))
 					return false;
 			}
 			return true;

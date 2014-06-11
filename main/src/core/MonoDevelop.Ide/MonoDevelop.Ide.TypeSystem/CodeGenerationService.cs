@@ -307,7 +307,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			int offset = data.LocationToOffset (type.Region.Begin.Line, type.Region.Begin.Column);
 			if (offset < 0 || type.BodyRegion.IsEmpty)
 				return result;
-			while (offset < data.TextLength && data.GetCharAt (offset) != '{') {
+			while (offset < data.TextLength && data[offset] != '{') {
 				offset++;
 			}
 			var realStartLocation = data.OffsetToLocation (offset);
@@ -353,7 +353,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (line != null) {
 					var lineOffset = line.Offset;
 					col = Math.Min (line.Length, col);
-					while (lineOffset + col - 2 >= 0 && col > 1 && char.IsWhiteSpace (data.GetCharAt (lineOffset + col - 2)))
+					while (lineOffset + col - 2 >= 0 && col > 1 && char.IsWhiteSpace (data[lineOffset + col - 2]))
 						col--;
 				}
 				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (type.BodyRegion.EndLine, col), insertLine, NewLineInsertion.Eol));
@@ -420,7 +420,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				return new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
 			
 			for (int i = nextLine.Offset; i < nextLine.EndOffset; i++) {
-				char ch = doc.GetCharAt (i);
+				char ch = doc[i];
 				if (!char.IsWhiteSpace (ch)) {
 					// case2: next line contains non ws chars.
 					return new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
@@ -430,7 +430,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var nextLine2 = doc.GetLine (line + 2);
 			if (nextLine2 != null) {
 				for (int i = nextLine2.Offset; i < nextLine2.EndOffset; i++) {
-					char ch = doc.GetCharAt (i);
+					char ch = doc[i];
 					if (!char.IsWhiteSpace (ch)) {
 						// case3: one blank line
 						return new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol);
