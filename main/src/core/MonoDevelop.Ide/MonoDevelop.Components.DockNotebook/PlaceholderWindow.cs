@@ -163,7 +163,6 @@ namespace MonoDevelop.Components.DockNotebook
 			SkipTaskbarHint = true;
 			Decorated = false;
 			TypeHint = WindowTypeHint.Utility;
-
 			titleWindow = new DocumentTitleWindow (this, tab);
 		}
 
@@ -208,7 +207,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		bool CanPlaceInHoverNotebook ()
 		{
-			return controlKeyMask == 0 && hoverNotebook != null && (hoverNotebook.TabCount != 1 || hoverNotebook.TabCount == 1 && hoverNotebook.Tabs [0] != frame);
+			return controlKeyMask == 0 && hoverNotebook != null;
 		}
 
 		protected override void OnDestroyed ()
@@ -238,11 +237,15 @@ namespace MonoDevelop.Components.DockNotebook
 			foreach (var notebook in DockNotebook.AllNotebooks) {
 				if (notebook.GdkWindow == null)
 					continue;
+
 				int ox2, oy2;
-				notebook.GdkWindow.GetOrigin (out ox2, out oy2);
+				notebook.ParentWindow.GetOrigin (out ox2, out oy2);
 				var alloc = notebook.Allocation;
+				ox2 += alloc.X;
+				ox2 += alloc.Y;
 				if (ox2 <= x && x <= ox2 + alloc.Width && oy2 <= y && y <= oy2 + alloc.Height) {
 					hoverNotebook = notebook;
+					TransientFor = (Gtk.Window) hoverNotebook.Toplevel;
 					ox = ox2;
 					oy = oy2;
 				}
@@ -252,12 +255,12 @@ namespace MonoDevelop.Components.DockNotebook
 				var container = (DockNotebookContainer)hoverNotebook.Parent;
 				var alloc = hoverNotebook.Allocation;
 
-				if (x <= ox + DockFrame.GroupDockSeparatorSize) {
+				if (x <= ox + alloc.Width / 3) {
 					if (container.AllowLeftInsert) {
 						Relocate (
 							ox,
 							oy,
-							alloc.Width / 3,
+							alloc.Width / 2,
 							alloc.Height,
 							false
 						);
@@ -269,12 +272,12 @@ namespace MonoDevelop.Components.DockNotebook
 					}
 				}
 
-				if (x >= ox + alloc.Width - DockFrame.GroupDockSeparatorSize) {
+				if (x >= ox + alloc.Width - alloc.Width / 3) {
 					if (container.AllowRightInsert) {
 						Relocate (
-							ox + alloc.Width * 2 / 3,
+							ox + alloc.Width / 2,
 							oy,
-							alloc.Width / 3,
+							alloc.Width / 2,
 							alloc.Height,
 							false
 						);
@@ -286,52 +289,57 @@ namespace MonoDevelop.Components.DockNotebook
 					}
 				}
 
-				if (!hoverNotebook.Tabs.Contains (frame)) {
-					Relocate (
-						ox + alloc.Width / 3, 
-						oy + alloc.Height / 3, 
-						alloc.Width - alloc.Width * 2 / 3, 
-						alloc.Height - alloc.Height * 2 / 3, 
-						false
-					); 
+				Relocate (
+					ox, 
+					oy, 
+					alloc.Width, 
+					alloc.Height, 
+					false
+				); 
+				if (!hoverNotebook.Tabs.Contains (frame))
 					placementDelegate = PlaceInHoverNotebook;
-					return;
-				}
+				else
+					placementDelegate = null;
+				return;
 			}
 
-			Relocate (
+			Hide ();
+/*			Relocate (
 				x - w / 2, 
 				y - h / 2, 
 				w, 
 				h, 
 				false
-			); 
+			); */
 			placementDelegate = PlaceInFloatingFrame;
 		}
 
 		protected override void OnRealized ()
 		{
 			base.OnRealized ();
-			GdkWindow.Opacity = 0.6;
+			GdkWindow.Opacity = 0.4;
 		}
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			int w, h;
-			using (var redgc = new Gdk.GC (GdkWindow)) {
-				redgc.RgbFgColor = Style.Background (StateType.Selected);
-				GetSize (out w, out h);
-				GdkWindow.DrawRectangle (redgc, false, 0, 0, w - 1, h - 1);
-				GdkWindow.DrawRectangle (redgc, false, 1, 1, w - 3, h - 3);
+			GetSize (out w, out h);
+
+			using (var ctx = CairoHelper.Create (evnt.Window)) {
+				ctx.SetSourceColor (new Cairo.Color (0.17, 0.55, 0.79));
+				ctx.Rectangle (Allocation.ToCairoRect ());
+				ctx.Fill ();
 			}
 			return true;
 		}
 
 		public void Relocate (int x, int y, int w, int h, bool animate)
 		{
-			if (x != rx || y != ry || w != rw || h != rh) {
+			if (!Visible || x != rx || y != ry || w != rw || h != rh) {
+				Hide ();
 				if (w != rw || h != rh)
 					Resize (w, h);
 				Move (x, y);
+				ShowAll ();
 
 				rx = x; ry = y; rw = w; rh = h;
 
@@ -412,12 +420,14 @@ namespace MonoDevelop.Components.DockNotebook
 			var allocation = Allocation;
 			Destroy ();
 
-			var tab = notebook.CurrentTab;
-			notebook.RemoveTab (tab.Index, false); 
+			if (placementDelegate != null) {
+				var tab = notebook.CurrentTab;
+				notebook.RemoveTab (tab.Index, false); 
 
-			(placementDelegate ?? PlaceInFloatingFrame) (notebook, tab, allocation, ox, oy);
+				placementDelegate (notebook, tab, allocation, ox, oy);
 
-			IdeApp.Workbench.EnsureValidSplits ();
+				IdeApp.Workbench.EnsureValidSplits ();
+			}
 		}
 	}
 
