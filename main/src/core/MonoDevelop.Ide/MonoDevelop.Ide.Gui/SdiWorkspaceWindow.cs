@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Gui
 		Dictionary<IBaseViewContent,DocumentToolbar> documentToolbars = new Dictionary<IBaseViewContent, DocumentToolbar> ();
 
 		VBox box;
-		IDockNotebookTab tab;
+		DockNotebookTab tab;
 		Widget tabPage;
 		DockNotebook tabControl;
 		
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal void SetDockNotebook (DockNotebook tabControl, IDockNotebookTab tabLabel)
+		internal void SetDockNotebook (DockNotebook tabControl, DockNotebookTab tabLabel)
 		{
 			this.tabControl = tabControl;
 			this.tab = tabLabel;
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 			SetDockNotebookTabTitle ();
 		}
 
-		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, IDockNotebookTab tabLabel) : base ()
+		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, DockNotebookTab tabLabel) : base ()
 		{
 			this.workbench = workbench;
 			this.tabControl = tabControl;
@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal IDockNotebookTab TabLabel {
+		internal DockNotebookTab TabLabel {
 			get { return tab; }
 		}
 		

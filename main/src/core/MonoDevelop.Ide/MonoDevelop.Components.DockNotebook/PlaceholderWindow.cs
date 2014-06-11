@@ -91,7 +91,7 @@ namespace MonoDevelop.Components.DockNotebook
 			};
 		}
 
-		public IDockNotebookTab AddTab ()
+		public DockNotebookTab AddTab ()
 		{
 			if (Container == null) {
 				// This dock window doesn't yet have any tabs inserted.
@@ -155,9 +155,9 @@ namespace MonoDevelop.Components.DockNotebook
 			};
 		}
 
-		IDockNotebookTab frame;
+		DockNotebookTab frame;
 		
-		public PlaceholderWindow (IDockNotebookTab tab): base (Gtk.WindowType.Toplevel)
+		public PlaceholderWindow (DockNotebookTab tab): base (Gtk.WindowType.Toplevel)
 		{
 			this.frame = tab;
 			SkipTaskbarHint = true;
@@ -264,7 +264,7 @@ namespace MonoDevelop.Components.DockNotebook
 							alloc.Height,
 							false
 						);
-						placementDelegate = delegate(DockNotebook arg1, IDockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
+						placementDelegate = delegate(DockNotebook arg1, DockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
 							var window = (SdiWorkspaceWindow)tab.Content;
 							container.InsertLeft (window);
 						};
@@ -281,7 +281,7 @@ namespace MonoDevelop.Components.DockNotebook
 							alloc.Height,
 							false
 						);
-						placementDelegate = delegate(DockNotebook arg1, IDockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
+						placementDelegate = delegate(DockNotebook arg1, DockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
 							var window = (SdiWorkspaceWindow)tab.Content;
 							container.InsertRight (window);
 						};
@@ -382,7 +382,7 @@ namespace MonoDevelop.Components.DockNotebook
 			DockRect = rect;
 		}
 
-		static void PlaceInFloatingFrame (DockNotebook notebook, IDockNotebookTab tab, Rectangle allocation, int ox, int oy)
+		static void PlaceInFloatingFrame (DockNotebook notebook, DockNotebookTab tab, Rectangle allocation, int ox, int oy)
 		{
 			var newWindow = new DockWindow ();
 			var newTab = newWindow.AddTab ();
@@ -401,7 +401,7 @@ namespace MonoDevelop.Components.DockNotebook
 		const int w = 640;
 		const int h = 480;
 
-		void PlaceInHoverNotebook (DockNotebook notebook, IDockNotebookTab tab, Rectangle allocation, int ox, int oy)
+		void PlaceInHoverNotebook (DockNotebook notebook, DockNotebookTab tab, Rectangle allocation, int ox, int oy)
 		{
 			var window = (SdiWorkspaceWindow)tab.Content;
 			var newTab = hoverNotebook.InsertTab (-1); 
@@ -410,7 +410,7 @@ namespace MonoDevelop.Components.DockNotebook
 			window.SelectWindow ();
 		}
 
-		Action<DockNotebook, IDockNotebookTab, Rectangle, int, int> placementDelegate;
+		Action<DockNotebook, DockNotebookTab, Rectangle, int, int> placementDelegate;
 
 		public void PlaceWindow (DockNotebook notebook)
 		{
@@ -434,7 +434,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 	class DocumentTitleWindow: Gtk.Window
 	{
-		public DocumentTitleWindow (Gtk.Window parent, IDockNotebookTab draggedItem): base (Gtk.WindowType.Popup)
+		public DocumentTitleWindow (Gtk.Window parent, DockNotebookTab draggedItem): base (Gtk.WindowType.Popup)
 		{
 			SdiWorkspaceWindow w;
 

@@ -299,7 +299,7 @@ namespace MonoDevelop.Ide.Commands
 			var container = (MonoDevelop.Components.DockNotebook.DockNotebookContainer)notebook.Parent;
 
 			if (container.AllowRightInsert) {
-				var tab = (MonoDevelop.Components.DockNotebook.IDockNotebookTab)notebook.CurrentTab;
+				var tab = (MonoDevelop.Components.DockNotebook.DockNotebookTab)notebook.CurrentTab;
 				var window = (SdiWorkspaceWindow)tab.Content;
 				notebook.RemoveTab (tab.Index, false);
 				container.InsertRight (window);

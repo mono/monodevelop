@@ -29,7 +29,7 @@ using Xwt.Motion;
 
 namespace MonoDevelop.Components.DockNotebook
 {
-	class DockNotebookTab: IDockNotebookTab, IAnimatable
+	class DockNotebookTab: IAnimatable
 	{
 		DockNotebook notebook;
 		readonly TabStrip strip;

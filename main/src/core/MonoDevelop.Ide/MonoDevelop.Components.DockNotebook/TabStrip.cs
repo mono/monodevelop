@@ -907,7 +907,7 @@ namespace MonoDevelop.Components.DockNotebook
 			return la;
 		}
 
-		Pango.Layout CreateTabLayout (IDockNotebookTab tab)
+		Pango.Layout CreateTabLayout (DockNotebookTab tab)
 		{
 			Pango.Layout la = CreateSizedLayout ();
 			if (!string.IsNullOrEmpty (tab.Markup))

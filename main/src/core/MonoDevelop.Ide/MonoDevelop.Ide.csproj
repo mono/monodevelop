@@ -2650,7 +2650,6 @@
     <Compile Include="MonoDevelop.Components.DockNotebook\PlaceholderWindow.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\TabStrip.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\TabEventArgs.cs" />
-    <Compile Include="MonoDevelop.Components.DockNotebook\IDockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />

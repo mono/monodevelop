@@ -38,14 +38,14 @@ namespace MonoDevelop.Components.DockNotebook
 
 	class DockNotebook : Gtk.VBox
 	{
-		List<IDockNotebookTab> pages = new List<IDockNotebookTab> ();
-		List<IDockNotebookTab> pagesHistory = new List<IDockNotebookTab> ();
+		List<DockNotebookTab> pages = new List<DockNotebookTab> ();
+		List<DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
 		TabStrip tabStrip;
 		Gtk.EventBox contentBox;
-		ReadOnlyCollection<IDockNotebookTab> pagesCol;
+		ReadOnlyCollection<DockNotebookTab> pagesCol;
 		const int MAX_LASTACTIVEWINDOWS = 10;
 
-		IDockNotebookTab currentTab;
+		DockNotebookTab currentTab;
 
 		static DockNotebook activeNotebook;
 		static List<DockNotebook> allNotebooks = new List<DockNotebook> ();
@@ -54,7 +54,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public DockNotebook ()
 		{
-			pagesCol = new ReadOnlyCollection<IDockNotebookTab> (pages);
+			pagesCol = new ReadOnlyCollection<DockNotebookTab> (pages);
 			AddEvents ((Int32)(EventMask.AllEventsMask));
 
 			tabStrip = new TabStrip (this);
@@ -140,11 +140,11 @@ namespace MonoDevelop.Components.DockNotebook
 			set { tabStrip.NavigationButtonsVisible = value; }
 		}
 
-		public ReadOnlyCollection<IDockNotebookTab> Tabs {
+		public ReadOnlyCollection<DockNotebookTab> Tabs {
 			get { return pagesCol; }
 		}
 
-		public IDockNotebookTab CurrentTab {
+		public DockNotebookTab CurrentTab {
 			get { return currentTab; }
 			set {
 				if (currentTab != value) {
@@ -212,7 +212,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public Action<DockNotebook, int,Gdk.EventButton> DoPopupMenu { get; set; }
 
-		public IDockNotebookTab InsertTab (int index)
+		public DockNotebookTab InsertTab (int index)
 		{
 			var tab = new DockNotebookTab (this, tabStrip);
 			if (index == -1) {
@@ -245,7 +245,7 @@ namespace MonoDevelop.Components.DockNotebook
 				((DockNotebookTab)pages [n]).Index = n;
 		}
 
-		public IDockNotebookTab GetTab (int n)
+		public DockNotebookTab GetTab (int n)
 		{
 			if (n < 0 || n >= pages.Count)
 				return null;

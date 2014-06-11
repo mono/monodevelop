@@ -407,7 +407,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public void ShowViewInFloatingWindow (DockWindow dockWindow, IViewContent content)
 		{
-			IDockNotebookTab tab = dockWindow.AddTab ();
+			DockNotebookTab tab = dockWindow.AddTab ();
 			var mimeimage = PrepareShowView (content);
 			var addToControl = (SdiDragNotebook)tab.Notebook;
 
