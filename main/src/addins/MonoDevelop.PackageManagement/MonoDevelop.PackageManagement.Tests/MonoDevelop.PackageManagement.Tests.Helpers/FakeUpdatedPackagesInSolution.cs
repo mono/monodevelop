@@ -54,6 +54,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			return ProjectsWithUpdatedPackages.FirstOrDefault (item => item.Project == project);
 		}
+
+		public bool AnyUpdates ()
+		{
+			return ProjectsWithUpdatedPackages.Any ();
+		}
 	}
 }
 

@@ -47,7 +47,8 @@ namespace MonoDevelop.PackageManagement.Commands
 				return;
 
 			DispatchService.BackgroundDispatch (() => {
-				PackageManagementServices.UpdatedPackagesInSolution.CheckForUpdates ();
+				var checker = new PackageUpdateChecker ();
+				checker.Run ();
 			});
 		}
 

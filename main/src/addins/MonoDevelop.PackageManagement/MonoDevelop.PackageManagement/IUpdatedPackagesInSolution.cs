@@ -33,6 +33,7 @@ namespace MonoDevelop.PackageManagement
 		void Clear ();
 		void CheckForUpdates ();
 		UpdatedPackagesInProject GetUpdatedPackages (IDotNetProject project);
+		bool AnyUpdates ();
 	}
 }
 

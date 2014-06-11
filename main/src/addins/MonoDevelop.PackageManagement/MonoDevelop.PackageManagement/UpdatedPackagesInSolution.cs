@@ -96,7 +96,7 @@ namespace MonoDevelop.PackageManagement
 			return new UpdatedPackagesInProject (project);
 		}
 
-		bool AnyUpdates ()
+		public bool AnyUpdates ()
 		{
 			return GuiSyncDispatch (() => {
 				return projectsWithUpdatedPackages.Any ();
