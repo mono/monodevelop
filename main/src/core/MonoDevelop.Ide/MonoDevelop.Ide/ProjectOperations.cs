@@ -2026,10 +2026,11 @@ namespace MonoDevelop.Ide
 			
 			public int InsertText (int position, string text)
 			{
-				int result = data.Insert (position, text);
+				text = data.FormatString (position, text);
+				data.Insert (position, text);
 				Save ();
 				
-				return result;
+				return text.Length;
 			}
 			
 			public void DeleteText (int position, int length)
@@ -2076,7 +2077,7 @@ namespace MonoDevelop.Ide
 		/// <returns><c>true</c>, if file operation was saved, <c>false</c> otherwise.</returns>
 		/// <param name="filePath">File path.</param>
 		/// <param name="operation">The operation.</param>
-		public bool EditFile (FilePath filePath, Action<TextEditor> operation)
+		public bool EditFile (FilePath filePath, Action<ITextDocument> operation)
 		{
 			if (operation == null)
 				throw new ArgumentNullException ("operation");
@@ -2096,13 +2097,13 @@ namespace MonoDevelop.Ide
 			return true;
 		}
 
-		public TextEditor GetTextEditorData (FilePath filePath)
+		public ITextDocument GetTextEditorData (FilePath filePath)
 		{
 			bool isOpen;
 			return GetTextEditorData (filePath, out isOpen);
 		}
 
-		public TextEditor GetReadOnlyTextEditorData (FilePath filePath)
+		public IReadonlyTextDocument GetReadOnlyTextEditorData (FilePath filePath)
 		{
 			if (filePath.IsNullOrEmpty)
 				throw new ArgumentNullException ("filePath");
@@ -2114,20 +2115,18 @@ namespace MonoDevelop.Ide
 			bool hadBom;
 			Encoding encoding;
 			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
-			var data = DocumentFactory.CreateNewReadonlyDocument (text);
-			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
-			data.FileName = filePath;
+			var data = DocumentFactory.CreateNewReadonlyDocument (filePath, text);
 			return data;
 		}
 
-		public TextEditor GetTextEditorData (FilePath filePath, out bool isOpen)
+		public ITextDocument GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
 			bool hadBom;
 			Encoding encoding;
 			return GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
 		}
 
-		public TextEditor GetTextEditorData (FilePath filePath, out bool hadBom, out Encoding encoding, out bool isOpen)
+		public ITextDocument GetTextEditorData (FilePath filePath, out bool hadBom, out Encoding encoding, out bool isOpen)
 		{
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
@@ -2139,7 +2138,7 @@ namespace MonoDevelop.Ide
 			}
 
 			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
-			var data = DocumentFactory.CreateNewEditor ();
+			var data = DocumentFactory.CreateNewDocument ();
 			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
 			data.FileName = filePath;
 			data.Text = text;

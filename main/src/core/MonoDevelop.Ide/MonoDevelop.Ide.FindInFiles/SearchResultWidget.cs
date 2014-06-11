@@ -587,9 +587,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				var content = result.FileProvider.ReadString ();
 				if (content == null)
 					return null;
-				doc = DocumentFactory.CreateNewReadonlyDocument (content);
-				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
-				
+
+				doc = DocumentFactory.CreateNewEditor (DocumentFactory.CreateNewReadonlyDocument (result.FileName, content));
+
 				documents [result.FileName] = doc;	
 			}
 			return doc;

@@ -295,7 +295,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			var tabToSpaces = textPolicy.TabsToSpaces? new string (' ', textPolicy.TabWidth) : null;
 			
-			foreach (var line in doc.Lines) {
+			foreach (var line in doc.GetLines ()) {
 				var lineText = doc.GetTextAt (line.Offset, line.Length);
 				if (tabToSpaces != null)
 					lineText = lineText.Replace ("\t", tabToSpaces);

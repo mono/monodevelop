@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Templates
 			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
-		static bool IsBlankLine (TextEditor doc, IDocumentLine line)
+		static bool IsBlankLine (IReadonlyTextDocument doc, IDocumentLine line)
 		{
 			for (int i = 0; i < line.Length; i++) {
 				if (!Char.IsWhiteSpace (doc.GetCharAt (line.Offset + i)))

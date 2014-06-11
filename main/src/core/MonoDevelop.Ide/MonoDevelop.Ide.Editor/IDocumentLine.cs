@@ -30,7 +30,7 @@ using System.Text;
 namespace MonoDevelop.Ide.Editor
 {
 	/// <summary>
-	/// A line inside a <see cref="IDocument"/>.
+	/// A line inside a <see cref="ITextDocument"/>.
 	/// </summary>
 	public interface IDocumentLine : ISegment
 	{
@@ -85,13 +85,11 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		bool IsDeleted { get; }
 
-
 		CloneableStack<Span> StartSpan { get; set; }
 	}
 
 	public static class DocumentLineExt
 	{
-
 		/// <summary>
 		/// This method gets the line indentation.
 		/// </summary>
@@ -101,7 +99,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <returns>
 		/// The indentation of the line (all whitespace chars up to the first non ws char).
 		/// </returns>
-		public static string GetIndentation (this IDocumentLine line, TextEditor doc)
+		public static string GetIndentation (this IDocumentLine line, IReadonlyTextDocument  doc)
 		{
 			var result = new StringBuilder ();
 			int offset = line.Offset;

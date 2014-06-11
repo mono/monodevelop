@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			options.ShowFoldMargin = false;
 			options.ShowIconMargin = false;
 			textEditor.Options = options;
-			textEditor.ReadOnly = true;
+			textEditor.IsReadOnly = true;
 			this.buttonAdd.Clicked += ButtonAddClicked;
 			this.buttonEdit.Clicked += ButtonEditClicked;
 			this.buttonRemove.Clicked += ButtonRemoveClicked;

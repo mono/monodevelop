@@ -29,23 +29,14 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public interface ITextEditorImpl : ITextSource
+	public interface ITextEditorImpl
 	{
 		ISyntaxMode SyntaxMode { get; set; }
 		ITextEditorOptions Options { get; set; }
-
+		IReadonlyTextDocument Document { get; set; }
+	
 		TextLocation CaretLocation { get; set; }
 		int CaretOffset { get; set; }
-
-		void Undo ();
-		void Redo ();
-
-		IDisposable OpenUndoGroup();
-
-		bool ReadOnly {
-			get;
-			set;
-		}
 
 		bool IsSomethingSelected { get; }
 
@@ -72,10 +63,6 @@ namespace MonoDevelop.Ide.Editor
 
 		IEditorActionHost Actions { get; }
 
-		bool IsInAtomicUndo {
-			get;
-		}
-
 		event EventHandler BeginUndo;
 		event EventHandler EndUndo;
 
@@ -96,54 +83,6 @@ namespace MonoDevelop.Ide.Editor
 		TextLocation PointToLocation (double xp, double yp, bool endAtEol = false);
 
 		Cairo.PointD LocationToPoint (TextLocation currentSmartTagBegin);
-
-		/// <summary>
-		/// Gets/Sets the text of the whole document..
-		/// </summary>
-		new string Text { get; set; } // hides ITextSource.Text to add the setter
-
-		string EolMarker { get; }
-
-		/// <summary>
-		/// This event is called directly before a change is applied to the document.
-		/// </summary>
-		/// <remarks>
-		/// It is invalid to modify the document within this event handler.
-		/// Aborting the change (by throwing an exception) is likely to cause corruption of data structures
-		/// that listen to the Changing and Changed events.
-		/// </remarks>
-		event EventHandler<TextChangeEventArgs> TextChanging;
-
-		/// <summary>
-		/// This event is called directly after a change is applied to the document.
-		/// </summary>
-		/// <remarks>
-		/// It is invalid to modify the document within this event handler.
-		/// Aborting the event handler (by throwing an exception) is likely to cause corruption of data structures
-		/// that listen to the Changing and Changed events.
-		/// </remarks>
-		event EventHandler<TextChangeEventArgs> TextChanged;
-
-		/// <summary>
-		/// Gets the number of lines in the document.
-		/// </summary>
-		int LineCount { get; }
-
-		int LocationToOffset (TextLocation location);
-
-		TextLocation OffsetToLocation (int offset);
-
-		int Insert (int offset, string text);
-
-		void Remove (ISegment segment);
-
-		int Replace (int offset, int count, string value);
-
-		IDocumentLine GetLine (int lineNumber);
-
-		IDocumentLine GetLineByOffset (int offset);
-
-		int OffsetToLineNumber (int offset);
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);
@@ -175,4 +114,3 @@ namespace MonoDevelop.Ide.Editor
 		IEnumerable<IFoldSegment> GetEndFoldings (IDocumentLine line);
 	}
 }
-

@@ -86,16 +86,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 		
-		public static CodeGenerator CreateGenerator (TextEditor editor, ICompilation compilation)
+		public static CodeGenerator CreateGenerator (ITextDocument editor, ICompilation compilation)
 		{
 			MimeTypeExtensionNode node;
 			if (!generators.TryGetValue (editor.MimeType, out node))
 				return null;
 
 			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = editor.Options.TabsToSpaces;
+			//result.UseSpaceIndent = editor.Options.TabsToSpaces;
 			result.EolMarker = editor.EolMarker;
-			result.TabSize = editor.Options.TabSize;
+			//result.TabSize = editor.Options.TabSize;
 			result.Compilation = compilation;
 			return result;
 		}

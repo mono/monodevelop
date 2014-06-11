@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return result.ToString ();
 		}
 
-		static void IndentCode (MonoDevelop.Ide.Editor.TextEditor data, string lineIndent)
+		static void IndentCode (ITextDocument data, string lineIndent)
 		{
 			for (int i = 1; i < data.LineCount; i++) {
 				var line = data.GetLine (i + 1);
@@ -349,7 +349,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var doc = DocumentFactory.CreateNewDocument ();
 			doc.Text = text;
 			var result = new StringBuilder ();
-			foreach (var line in doc.Lines) {
+			foreach (var line in doc.GetLines ()) {
 				string curLineIndent = line.GetIndentation (doc);
 				int offset = Math.Min (curLineIndent.Length, indent.Length);
 				result.Append (doc.GetTextBetween (line.Offset + offset, line.EndOffsetIncludingDelimiter));
@@ -362,7 +362,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var doc = DocumentFactory.CreateNewDocument ();
 			doc.Text = text;
 			var result = new StringBuilder ();
-			foreach (var line in doc.Lines) {
+			foreach (var line in doc.GetLines ()) {
 				if (result.Length > 0)
 					result.Append (indent);
 				result.Append (doc.GetTextAt (line.SegmentIncludingDelimiter));

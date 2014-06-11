@@ -26,16 +26,18 @@
 using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
+using System.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class TextEditor : ITextEditorImpl
+	public class TextEditor : ITextDocument
 	{
 		readonly ITextEditorImpl textEditorImpl;
+		readonly ITextDocument textDocument;
 
 		public ITextSourceVersion Version {
 			get {
-				return textEditorImpl.Version;
+				return textDocument.Version;
 			}
 		}
 
@@ -60,15 +62,14 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		public event EventHandler<TextChangeEventArgs> TextChanging {
-			add { textEditorImpl.TextChanging += value; }
-			remove { textEditorImpl.TextChanging -= value; }
+			add { textDocument.TextChanging += value; }
+			remove { textDocument.TextChanging -= value; }
 		}
 
 		public event EventHandler<TextChangeEventArgs> TextChanged {
-			add { textEditorImpl.TextChanged += value; }
-			remove { textEditorImpl.TextChanged -= value; }
+			add { textDocument.TextChanged += value; }
+			remove { textDocument.TextChanged -= value; }
 		}
-
 
 		public ISyntaxMode SyntaxMode {
 			get {
@@ -124,12 +125,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public bool ReadOnly {
+		public bool IsReadOnly {
 			get {
-				return textEditorImpl.ReadOnly;
+				return textDocument.IsReadOnly;
 			}
 			set {
-				textEditorImpl.ReadOnly = value;
+				textDocument.IsReadOnly = value;
 			}
 		}
 
@@ -165,7 +166,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string SelectedText {
 			get {
-				return IsSomethingSelected ? textEditorImpl.GetTextAt (SelectionRange) : null;
+				return IsSomethingSelected ? textDocument.GetTextAt (SelectionRange) : null;
 			}
 		}
 
@@ -177,7 +178,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public bool IsInAtomicUndo {
 			get {
-				return textEditorImpl.IsInAtomicUndo;
+				return textDocument.IsInAtomicUndo;
 			}
 		}
 
@@ -192,34 +193,50 @@ namespace MonoDevelop.Ide.Editor
 		/// </summary>
 		/// <value>The type of the MIME.</value>
 		public string MimeType {
-			get;
-			set;
+			get {
+				return textDocument.MimeType;
+			}
+			set {
+				textDocument.MimeType = value;
+			}
 		}
 
 		public string Text {
 			get {
-				return textEditorImpl.Text;
+				return textDocument.Text;
 			}
 			set {
-				textEditorImpl.Text = value;
+				textDocument.Text = value;
 			}
 		}
 
 		public string EolMarker {
 			get {
-				return textEditorImpl.EolMarker;
+				return textDocument.EolMarker;
+			}
+		}
+
+		public bool UseBOM {
+			get {
+				return textDocument.UseBOM;
+			}
+			set {
+				textDocument.UseBOM = value;
+			}
+		}
+
+		public Encoding Encoding {
+			get {
+				return textDocument.Encoding;
+			}
+			set {
+				textDocument.Encoding = value;
 			}
 		}
 
 		public int LineCount {
 			get {
-				return textEditorImpl.LineCount;
-			}
-		}
-
-		public IEnumerable<IDocumentLine> Lines {
-			get {
-				return GetLinesStartingAt (1);
+				return textDocument.LineCount;
 			}
 		}
 
@@ -249,23 +266,23 @@ namespace MonoDevelop.Ide.Editor
 
 		public int TextLength {
 			get {
-				return textEditorImpl.TextLength;
+				return textDocument.TextLength;
 			}
 		}
 	
 		public void Undo ()
 		{
-			textEditorImpl.Undo ();
+			textDocument.Undo ();
 		}
 
 		public void Redo ()
 		{
-			textEditorImpl.Redo ();
+			textDocument.Redo ();
 		}
 
 		public IDisposable OpenUndoGroup ()
 		{
-			return textEditorImpl.OpenUndoGroup ();
+			return textDocument.OpenUndoGroup ();
 		}
 
 		public void SetSelection (int anchorOffset, int leadOffset)
@@ -319,6 +336,11 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.FormatString (insertPosition, code);
 		}
 
+		public string FormatString (int offset, string code)
+		{
+			return textEditorImpl.FormatString (OffsetToLocation (offset), code);
+		}
+
 		public void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> action)
 		{
 			textEditorImpl.StartInsertionMode (operation, insertionPoints, action);
@@ -355,52 +377,24 @@ namespace MonoDevelop.Ide.Editor
 			return GetTextAt (includeDelimiter ? segment.SegmentIncludingDelimiter : segment);
 		}
 
-		public IEnumerable<IDocumentLine> GetLinesBetween (int startLine, int endLine)
-		{
-			var curLine = GetLine (startLine);
-			int count = endLine - startLine;
-			while (curLine != null && count --> 0) {
-				yield return curLine;
-				curLine = curLine.NextLine;
-			}
-		}
-
-		public IEnumerable<IDocumentLine> GetLinesStartingAt (int startLine)
-		{
-			var curLine = GetLine (startLine);
-			while (curLine != null) {
-				yield return curLine;
-				curLine = curLine.NextLine;
-			}
-		}
-
-		public IEnumerable<IDocumentLine> GetLinesReverseStartingAt (int startLine)
-		{
-			var curLine = GetLine (startLine);
-			while (curLine != null) {
-				yield return curLine;
-				curLine = curLine.PreviousLine;
-			}
-		}
-
 		public int LocationToOffset (int line, int column)
 		{
-			return textEditorImpl.LocationToOffset (new TextLocation (line, column));
+			return textDocument.LocationToOffset (new TextLocation (line, column));
 		}
 
 		public int LocationToOffset (TextLocation location)
 		{
-			return textEditorImpl.LocationToOffset (location);
+			return textDocument.LocationToOffset (location);
 		}
 
 		public TextLocation OffsetToLocation (int offset)
 		{
-			return textEditorImpl.OffsetToLocation (offset);
+			return textDocument.OffsetToLocation (offset);
 		}
 
-		public int Insert (int offset, string text)
+		public void Insert (int offset, string text)
 		{
-			return textEditorImpl.Insert (offset, text);
+			textDocument.Insert (offset, text);
 		}
 
 		public void Remove (int offset, int count)
@@ -410,37 +404,32 @@ namespace MonoDevelop.Ide.Editor
 
 		public void Remove (ISegment segment)
 		{
-			textEditorImpl.Remove (segment);
+			textDocument.Remove (segment);
 		}
 
-		public int Replace (int offset, int count, string value)
+		public void Replace (int offset, int count, string value)
 		{
-			return textEditorImpl.Replace (offset, count, value);
+			textDocument.Replace (offset, count, value);
 		}
 
-		public string GetTextBetween (int startOffset, int endOffset)
+		public void Replace (ISegment segment, string value)
 		{
-			return GetTextAt (startOffset, endOffset - startOffset);
-		}
-
-		public string GetTextBetween (TextLocation start, TextLocation end)
-		{
-			return GetTextBetween (LocationToOffset (start), LocationToOffset (end));
+			textDocument.Replace (segment.Offset, segment.Length, value);
 		}
 
 		public IDocumentLine GetLine (int lineNumber)
 		{
-			return textEditorImpl.GetLine (lineNumber);
+			return textDocument.GetLine (lineNumber);
 		}
 
 		public IDocumentLine GetLineByOffset (int offset)
 		{
-			return textEditorImpl.GetLineByOffset (offset);
+			return textDocument.GetLineByOffset (offset);
 		}
 
 		public int OffsetToLineNumber (int offset)
 		{
-			return textEditorImpl.OffsetToLineNumber (offset);
+			return textDocument.OffsetToLineNumber (offset);
 		}
 
 		public void AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
@@ -520,68 +509,22 @@ namespace MonoDevelop.Ide.Editor
 
 		public char GetCharAt (int offset)
 		{
-			return textEditorImpl.GetCharAt (offset);
+			return textDocument.GetCharAt (offset);
 		}
 
 		public string GetTextAt (int offset, int length)
 		{
-			return GetTextAt (offset, length);
+			return textDocument.GetTextAt (offset, length);
 		}
 
 		public string GetTextAt (ISegment segment)
 		{
-			return textEditorImpl.GetTextAt (segment);
-		}
-	}
-
-	public static class DocumentExtensions
-	{
-		public static string GetTextBetween (this TextEditor document, int startLine, int startColumn, int endLine, int endColumn)
-		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
-			return document.GetTextBetween (new TextLocation (startLine, startColumn), new TextLocation (endLine, endColumn));
+			return textDocument.GetTextAt (segment);
 		}
 
-		public static string GetLineIndent (this TextEditor document, int lineNumber)
+		public IReadonlyTextDocument CreateDocumentSnapshot ()
 		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
-			return document.GetLineIndent (document.GetLine (lineNumber));
-		}
-
-		public static string GetLineIndent (this TextEditor document, IDocumentLine segment)
-		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
-			if (segment == null)
-				throw new ArgumentNullException ("segment");
-			return segment.GetIndentation (document);
-		}
-
-		static int[] GetDiffCodes (TextEditor document, ref int codeCounter, Dictionary<string, int> codeDictionary, bool includeEol)
-		{
-			int i = 0;
-			var result = new int[document.LineCount];
-			foreach (var line in document.Lines) {
-				string lineText = document.GetTextAt (line.Offset, includeEol ? line.LengthIncludingDelimiter : line.Length);
-				int curCode;
-				if (!codeDictionary.TryGetValue (lineText, out curCode)) {
-					codeDictionary[lineText] = curCode = ++codeCounter;
-				}
-				result[i] = curCode;
-				i++;
-			}
-			return result;
-		}
-
-		public static IEnumerable<Hunk> Diff (this TextEditor document, TextEditor changedDocument, bool includeEol = true)
-		{
-			var codeDictionary = new Dictionary<string, int> ();
-			int codeCounter = 0;
-			return MonoDevelop.Ide.Editor.Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, includeEol),
-				GetDiffCodes (changedDocument, ref codeCounter, codeDictionary, includeEol));
+			return textDocument.CreateDocumentSnapshot ();
 		}
 	}
 }
-

@@ -31,17 +31,26 @@ namespace MonoDevelop.Ide.Editor
 {
 	public static class DocumentFactory
 	{
-		public static TextEditor CreateNewDocument ()
+		public static ITextDocument CreateNewDocument ()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public static TextEditor CreateNewReadonlyDocument (string text)
+		public static IReadonlyTextDocument CreateNewReadonlyDocument (string fileName, string text)
 		{
+			/*
+			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
+			data.FileName = filePath;
+			 * */
 			throw new NotImplementedException ();
 		}
 
 		public static TextEditor CreateNewEditor ()
+		{
+			throw new NotImplementedException ();
+		}
+
+		public static TextEditor CreateNewEditor (IReadonlyTextDocument document)
 		{
 			throw new NotImplementedException ();
 		}
