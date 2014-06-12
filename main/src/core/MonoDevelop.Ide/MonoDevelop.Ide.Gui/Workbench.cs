@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.Gui
 		readonly ProgressMonitorManager monitors = new ProgressMonitorManager ();
 		readonly List<Document> documents = new List<Document> ();
 		readonly List<Split> splits = new List<Split> ();
-		readonly List<Gtk.Window> dockWindows = new List<Gtk.Window> ();
 		DefaultWorkbench workbench;
 		PadCollection pads;
 
@@ -169,9 +168,6 @@ namespace MonoDevelop.Ide.Gui
 				return pads;
 			}
 		}
-
-		internal List<Split> Splits { get { return splits; } }
-		internal List<Gtk.Window> FloatingEditors { get { return dockWindows; } }
 
 		public WorkbenchWindow RootWindow {
 			get { return workbench; }
@@ -434,7 +430,7 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
-		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding Encoding, IViewDisplayBinding binding, DockWindow dockWindow)
+		internal Document OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options, Encoding Encoding, IViewDisplayBinding binding, DockNotebook dockNotebook)
 		{
 			var openFileInfo = new FileOpenInformation (fileName, project) {
 				Options = options,
@@ -442,7 +438,7 @@ namespace MonoDevelop.Ide.Gui
 				Column = column,
 				DisplayBinding = binding,
 				Encoding = Encoding,
-				DockWindow = dockWindow
+				DockNotebook = dockNotebook
 			};
 
 			return OpenDocument (openFileInfo);
@@ -526,7 +522,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		IViewContent BatchOpenDocument (IProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockWindow dockWindow)
+		IViewContent BatchOpenDocument (IProgressMonitor monitor, FilePath fileName, Project project, int line, int column, DockNotebook dockNotebook)
 		{
 			if (string.IsNullOrEmpty (fileName))
 				return null;
@@ -536,7 +532,7 @@ namespace MonoDevelop.Ide.Gui
 					Options = OpenDocumentOptions.OnlyInternalViewer,
 					Line = line,
 					Column = column,
-					DockWindow = dockWindow
+					DockNotebook = dockNotebook
 				};
 				
 				RealOpenFile (monitor, openFileInfo);
@@ -923,112 +919,33 @@ namespace MonoDevelop.Ide.Gui
 
 		void OnStoringWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
-			var addedFiles = new List<string> ();
 			WorkbenchUserPrefs prefs = new WorkbenchUserPrefs ();
 			var nbId = 0;
 			var fwId = 1;
 
-			if (FloatingEditors.Count > 0) {
-				foreach (var window in FloatingEditors) {
-					int x, y;
-					window.GetPosition (out x, out y);
-					var fwp = new FloatingWindowUserPrefs {
-						WindowId = fwId,
-						X = x,
-						Y = y,
-						Width = window.Allocation.Width,
-						Height = window.Allocation.Height
-					};
+			foreach (var window in DockWindow.GetAllWindows ()) {
+				int x, y;
+				window.GetPosition (out x, out y);
+				var fwp = new FloatingWindowUserPrefs {
+					WindowId = fwId,
+					X = x,
+					Y = y,
+					Width = window.Allocation.Width,
+					Height = window.Allocation.Height
+				};
 
-					fwId++;
+				prefs.FloatingWindows.Add (fwp);
 
-					prefs.FloatingWindows.Add (fwp);
+				foreach (var nb in window.Container.GetNotebooks ())
+					AddNotebookDocuments (args, fwp.Files, nb, nbId++);
 
-					// TODO - iterate through notebooks in window
-					//var container = window.Parent.Parent as MonoDevelop.Components.DockNotebook.DockNotebookContainer;
-					var container = window.Child as MonoDevelop.Components.DockNotebook.DockNotebookContainer;
-
-					foreach (var tab in container.TabControl.Tabs) {
-						var sdiwindow = (SdiWorkspaceWindow)tab.Content;
-						var document = sdiwindow.Document;
-
-						if (!String.IsNullOrEmpty (document.FileName)) {
-							var dp = new DocumentUserPrefs ();
-							dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
-							dp.FloatingWindowId = fwp.WindowId;
-							if (document.Editor != null) {
-								dp.Line = document.Editor.Caret.Line;
-								dp.Column = document.Editor.Caret.Column;
-							}
-
-							prefs.Files.Add (dp);
-							addedFiles.Add (dp.FileName);
-						}
-					}
-				}
+				fwId++;
 			}
 
-			if (Splits.Count > 0) {
-				foreach (var obj in Splits) {
-					var notebook1 = obj.Notebook1;
-					var notebook2 = obj.Notebook2;
+			var mainContainer = workbench.TabControl.Container;
 
-					foreach (var tab in notebook1.TabControl.Tabs) {
-						var sdiwindow = (SdiWorkspaceWindow)tab.Content;
-						var document = sdiwindow.Document;
-
-						if (!String.IsNullOrEmpty (document.FileName)) {
-							var dp = new DocumentUserPrefs ();
-							dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
-							dp.NotebookId = 0;
-							if (document.Editor != null) {
-								dp.Line = document.Editor.Caret.Line;
-								dp.Column = document.Editor.Caret.Column;
-							}
-
-							prefs.Files.Add (dp);
-						}
-					}
-
-					foreach (var tab in notebook2.TabControl.Tabs) {
-						var window = (SdiWorkspaceWindow)tab.Content;
-						var document = window.Document;
-
-						if (!String.IsNullOrEmpty (document.FileName)) {
-							var dp = new DocumentUserPrefs ();
-							dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
-							dp.NotebookId = 1;
-							if (document.Editor != null) {
-								dp.Line = document.Editor.Caret.Column;
-								dp.Column = document.Editor.Caret.Column;
-							}
-
-							prefs.Files.Add (dp);
-						}
-					}
-
-					var sp = new SplitUserPrefs {
-						Mode = "Vertical"
-					};
-
-					sp.Notebook1 = new NotebookUserPrefs { NotebookId = nbId++ };
-					sp.Notebook2 = new NotebookUserPrefs { NotebookId = nbId++ };
-
-					prefs.Splits.Add (sp);
-				}
-			} else {
-				foreach (Document document in Documents) {
-					if (!String.IsNullOrEmpty (document.FileName) && !addedFiles.Contains (document.FileName)) {
-						DocumentUserPrefs dp = new DocumentUserPrefs ();
-						dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
-						if (document.Editor != null) {
-							dp.Line = document.Editor.Caret.Line;
-							dp.Column = document.Editor.Caret.Column;
-						}
-						prefs.Files.Add (dp);
-					}
-				}
-			}
+			foreach (var nb in mainContainer.GetNotebooks ())
+				AddNotebookDocuments (args, prefs.Files, nb, nbId++);
 
 			foreach (Pad pad in Pads) {
 				IMementoCapable mc = pad.GetMementoCapable ();
@@ -1054,142 +971,120 @@ namespace MonoDevelop.Ide.Gui
 			args.Properties.SetValue ("MonoDevelop.Ide.Workbench", prefs);
 		}
 
+		static void AddNotebookDocuments (UserPreferencesEventArgs args, List<DocumentUserPrefs> files, DockNotebook notebook, int notebookId)
+		{
+			foreach (var tab in notebook.Tabs) {
+				var sdiwindow = (SdiWorkspaceWindow)tab.Content;
+				var document = sdiwindow.Document;
+				if (!String.IsNullOrEmpty (document.FileName)) {
+					var dp = CreateDocumentPrefs (args, document);
+					dp.NotebookId = notebookId;
+					files.Add (dp);
+				}
+			}
+		}
+
+		static DocumentUserPrefs CreateDocumentPrefs (UserPreferencesEventArgs args, Document document)
+		{
+			var dp = new DocumentUserPrefs ();
+			dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
+			if (document.Editor != null) {
+				dp.Line = document.Editor.Caret.Column;
+				dp.Column = document.Editor.Caret.Column;
+			}
+			return dp;
+		}
+
 		void OnLoadingWorkspaceUserPreferences (object s, UserPreferencesEventArgs args)
 		{
 			WorkbenchUserPrefs prefs = args.Properties.GetValue<WorkbenchUserPrefs> ("MonoDevelop.Ide.Workbench");
 			if (prefs == null)
 				return;
-			
-			NavigationHistoryService.LogActiveDocument ();
-			
-			List<IViewContent> docViews = new List<IViewContent> ();
-			var viewsDict = new Dictionary<IViewContent, int> ();
-			var windowsDict = new Dictionary<int, SdiWorkspaceWindow> ();
-			FilePath baseDir = args.Item.BaseDirectory;
-			IViewContent currentView = null;
-			var dockWindows = new Dictionary<int, DockWindow> ();
-			var floatDocs = new List<DocumentUserPrefs> ();
 
-			using (IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
+			try {
+				IdeApp.Workbench.LockActiveWindowChangeEvent ();
+				NavigationHistoryService.LogActiveDocument ();
+				
+				List<Tuple<IViewContent,string>> docViews = new List<Tuple<IViewContent,string>> ();
+				FilePath baseDir = args.Item.BaseDirectory;
+				var floatingWindows = new List<DockWindow> ();
+
+				using (IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (GettextCatalog.GetString ("Loading workspace documents"), Stock.StatusSolutionOperation, true)) {
+
+					var docList = prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId).ToList ();
+					OpenDocumentsInContainer (pm, baseDir, docViews, docList, workbench.TabControl.Container);
+
+					foreach (var fw in prefs.FloatingWindows) {
+						var dockWindow = new DockWindow ();
+						dockWindow.Move (fw.X, fw.Y);
+						dockWindow.Resize (fw.Width, fw.Height);
+						docList = fw.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId).ToList ();
+						OpenDocumentsInContainer (pm, baseDir, docViews, docList, dockWindow.Container);
+						floatingWindows.Add (dockWindow);
+					}
+
+					// Note: At this point, the progress monitor will be disposed which causes the gtk main-loop to be pumped.
+					// This is EXTREMELY important, because without this main-loop pumping action, the next foreach() loop will
+					// not cause the Solution tree-view to properly expand, nor will the ActiveDocument be set properly.
+				}
+
 				string currentFileName = prefs.ActiveDocument != null ? baseDir.Combine (prefs.ActiveDocument).FullPath : null;
 
-				foreach (DocumentUserPrefs doc in prefs.Files.Distinct (new DocumentUserPrefsFilenameComparer ()).OrderBy (d => d.NotebookId)) {
-					string fileName = baseDir.Combine (doc.FileName).FullPath;
-
-					if (File.Exists (fileName)) {
-						// TODO: Get the correct project.
-						if (doc.FloatingWindowId > 0) {
-							floatDocs.Add (doc);
-						} else {
-							var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, null);
-
-							if (fileName == currentFileName)
-								currentView = view;
-
-							if (view != null) {
-								viewsDict.Add (view, doc.NotebookId);
-								docViews.Add (view);
-							}
-						}
-					} 
+				Document activeDoc = null;
+				foreach (var t in docViews) {
+					Document doc = WrapDocument (t.Item1.WorkbenchWindow);
+					if (t.Item2 == currentFileName)
+						activeDoc = doc;
 				}
-				
-				// Note: At this point, the progress monitor will be disposed which causes the gtk main-loop to be pumped.
-				// This is EXTREMELY important, because without this main-loop pumping action, the next foreach() loop will
-				// not cause the Solution tree-view to properly expand, nor will the ActiveDocument be set properly.
-			}
 
-			foreach (var doc in floatDocs) {
+				foreach (PadUserPrefs pi in prefs.Pads) {
+					foreach (Pad pad in IdeApp.Workbench.Pads) {
+
+						if (pi.Id == pad.Id) {
+							pad.InternalContent.SetPreferences(pi);
+							break;
+						}
+					}
+				}
+
+				foreach (var w in floatingWindows)
+					w.ShowAll ();
+
+				if (activeDoc != null) {
+					activeDoc.RunWhenLoaded (() => {
+						var window = activeDoc.Window;
+						if (window != null)
+							window.SelectWindow ();
+					});
+				}
+
+			} finally {
+				IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
+			}
+		}
+
+		void OpenDocumentsInContainer (IProgressMonitor pm, FilePath baseDir, List<Tuple<IViewContent,string>> docViews, List<DocumentUserPrefs> list, DockNotebookContainer container)
+		{
+			int currentNotebook = -1;
+			DockNotebook nb = container.GetFirstNotebook ();
+
+			foreach (var doc in list) {
 				string fileName = baseDir.Combine (doc.FileName).FullPath;
-				DockWindow dockWindow;
-				if (dockWindows.ContainsKey (doc.FloatingWindowId)) {
-					// This floating window has already been created, so let's load this document to it.
-					dockWindow = dockWindows [doc.FloatingWindowId];
-
-					IProgressMonitor pm = ProgressMonitors.GetStatusProgressMonitor (
-						GettextCatalog.GetString ("Opening {0}", fileName),
-						Stock.StatusWorking,
-						true
-					);
-
-					IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, dockWindow);
-					pm.Dispose ();
-				} else {
-					// This is the first doc in this floating window, so create and position the dock window.
-					var floatPrefs = prefs.FloatingWindows.Find (w => w.WindowId == doc.FloatingWindowId);
-					dockWindow = new DockWindow ();
-					dockWindows.Add (doc.FloatingWindowId, dockWindow);
-					dockWindow.Move (floatPrefs.X, floatPrefs.Y);
-					dockWindow.Resize (floatPrefs.Width, floatPrefs.Height);
-					IdeApp.Workbench.OpenDocument (fileName, null, doc.Line, doc.Column, OpenDocumentOptions.None, null, null, dockWindow);
-				}
-			}
-
-			foreach (var view in docViews) {
-				Document doc = WrapDocument (view.WorkbenchWindow);
-				var tmp_window = (SdiWorkspaceWindow)doc.Window;
-
-				int notebookId = viewsDict [view];
-
-				if (notebookId == 0) {
-					if (view == currentView) {
-						Present ();
-						doc.RunWhenLoaded (() => {
-							var window = doc.Window;
-							if (window != null)
-								window.SelectWindow ();
-						});
+				if (File.Exists (fileName)) {
+					if (doc.NotebookId != currentNotebook) {
+						if (currentNotebook != -1 || nb == null)
+							nb = container.InsertRight (null);
+						currentNotebook = doc.NotebookId;
 					}
-				} else {
-					if (windowsDict.ContainsKey (notebookId)) {
-						var window = windowsDict [notebookId];
-						var tabControl = window.TabControl;
+					// TODO: Get the correct project.
+					var view = IdeApp.Workbench.BatchOpenDocument (pm, fileName, null, doc.Line, doc.Column, nb);
 
-						var oldTabControl = ((DefaultWorkbench)RootWindow).TabControl;
-						var notebookContainer = (MonoDevelop.Components.DockNotebook.DockNotebookContainer)oldTabControl.Parent;
-
-						for (var i = 0; i < oldTabControl.TabCount; i++) {
-							var tab = oldTabControl.GetTab (i);
-
-							if (tab.Content == tmp_window) {
-								oldTabControl.RemoveTab (tab.Index, false);
-							}
-						}
-
-						var newTab = tabControl.InsertTab (-1);
-						newTab.Content = tmp_window;
-						tmp_window.SetDockNotebook (tabControl, newTab);
-					} else {
-						var tabControl = ((DefaultWorkbench)RootWindow).TabControl;
-						var notebookContainer = (MonoDevelop.Components.DockNotebook.DockNotebookContainer)tabControl.Parent;
-
-						if (notebookContainer.AllowRightInsert) {
-							for (int i = 0; i < tabControl.TabCount; i++) {
-								var tab = tabControl.GetTab (i);
-
-								if (tab.Content == tmp_window) {
-									tabControl.RemoveTab (tab.Index, false);
-									notebookContainer.InsertRight (tmp_window);
-									windowsDict.Add (notebookId, tmp_window);
-								}
-							}
-						}
+					if (view != null) {
+						var t = new Tuple<IViewContent,string> (view, fileName);
+						docViews.Add (t);
 					}
 				}
 			}
-
-			foreach (PadUserPrefs pi in prefs.Pads) {
-				foreach (Pad pad in IdeApp.Workbench.Pads) {
-
-					if (pi.Id == pad.Id) {
-						pad.InternalContent.SetPreferences(pi);
-						break;
-					}
-				}
-			}
-
-			foreach (var w in dockWindows.Values)
-				w.ShowAll ();
 		}
 		
 		internal Document FindDocument (IWorkbenchWindow window)
@@ -1228,7 +1123,18 @@ namespace MonoDevelop.Ide.Gui
 		{
 			workbench.ResetToolbars ();
 		}
-		
+
+
+		internal void LockActiveWindowChangeEvent ()
+		{
+			workbench.LockActiveWindowChangeEvent ();
+		}
+
+		internal void UnlockActiveWindowChangeEvent ()
+		{
+			workbench.UnlockActiveWindowChangeEvent ();
+		}
+
 		List<FileData> fileStatus;
 		object fileStatusLock = new object ();
 		
@@ -1383,7 +1289,7 @@ namespace MonoDevelop.Ide.Gui
 		public IViewContent NewContent { get; set; }
 		public Encoding Encoding { get; set; }
 		public Project Project { get; set; }
-		public object DockWindow { get; set; }
+		internal DockNotebook DockNotebook { get; set; }
 
 		[Obsolete("Use FileOpenInformation (FilePath filePath, Project project, int line, int column, OpenDocumentOptions options)")]
 		public FileOpenInformation (string fileName, int line, int column, OpenDocumentOptions options) 
@@ -1494,11 +1400,8 @@ namespace MonoDevelop.Ide.Gui
 
 			Counters.OpenDocumentTimer.Trace ("Showing view");
 
-			if (fileInfo.DockWindow == null) {
-				workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront));
-			} else {
-				workbench.ShowViewInFloatingWindow ((DockWindow)fileInfo.DockWindow, newContent);
-			}
+			workbench.ShowView (newContent, fileInfo.Options.HasFlag (OpenDocumentOptions.BringToFront), fileInfo.DockNotebook);
+
 			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow, binding);
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			

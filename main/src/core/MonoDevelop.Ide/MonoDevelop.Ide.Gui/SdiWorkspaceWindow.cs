@@ -262,11 +262,10 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
 			if (window != null) {
-				present_timeout = GLib.Timeout.Add (10, delegate {
+//				present_timeout = GLib.Timeout.Add (10, delegate {
 					window.Present ();
-
-					return false;
-				});
+//					return false;
+//				});
 			}
 
 			tabControl.CurrentTabIndex = tab.Index;
@@ -294,9 +293,10 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			TabControl.RemoveTab (tab.Index, true);
-			var newTab = nextNotebook.InsertTab (-1);
+			var newTab = nextNotebook.AddTab ();
 			newTab.Content = this;
 			SetDockNotebook (nextNotebook, newTab);
+			SelectWindow ();
 		}
 
 		public void MoveToPreviousNotebook ()
@@ -306,9 +306,10 @@ namespace MonoDevelop.Ide.Gui
 				return;
 
 			TabControl.RemoveTab (tab.Index, true);
-			var newTab = nextNotebook.InsertTab (-1);
+			var newTab = nextNotebook.AddTab ();
 			newTab.Content = this;
 			SetDockNotebook (nextNotebook, newTab);
+			SelectWindow ();
 		}
 		
 		static void DeepGrabFocus (Gtk.Widget widget)
@@ -734,7 +735,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// If command checks are flowing through this view, it means the view's notebook
 			// is the active notebook.
-			DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
+			if (((Gtk.Window)Toplevel).HasToplevelFocus)
+				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
 
 			Gtk.Widget w = content as Gtk.Widget;
 			if (w != this.tabPage) {

@@ -38,48 +38,29 @@ namespace MonoDevelop.Components.DockNotebook
 {
 	class DockWindow : Gtk.Window
 	{
-		DockNotebookContainer container;
+		static List<DockWindow> allWindows = new List<DockWindow> ();
 
 		public DockWindow () : base (Gtk.WindowType.Toplevel)
 		{
-			IdeApp.Workbench.FloatingEditors.Add (this);
 			IdeApp.CommandService.RegisterTopWindow (this);
 			AddAccelGroup (IdeApp.CommandService.AccelGroup);
-			this.DeleteEvent += delegate(object o, DeleteEventArgs args) {
-				var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
-				//					bool showDirtyDialog = false;
-				//					foreach (var content in documents) {
-				//						if (content.IsDirty) {
-				//							showDirtyDialog = true;
-				//							break;
-				//						}
-				//					}
-				//
-				//					if (showDirtyDialog) {
-				//						var dlg = new MonoDevelop.Ide.Gui.Dialogs.DirtyFilesDialog ();
-				//						dlg.Modal = true;
-				//						if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok) {
-				//							args.RetVal = true;
-				//							return;
-				//						}
-				//					}
-				foreach (var d in documents) {
-					if (!d.Close ()) {
-						args.RetVal = true;
-						break;
-					}
-				}
-			};
+
+			allWindows.Add (this);
+
+			var notebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
+			notebook.NavigationButtonsVisible = false;
+			Child = new DockNotebookContainer (notebook);
+			notebook.InitSize ();
+		}
+
+		public static IEnumerable<DockWindow> GetAllWindows ()
+		{
+			return allWindows;
 		}
 
 		public DockNotebookContainer Container {
 			get {
-				return container;
-			}
-
-			set {
-				container = value;
-				Child = value;
+				return (DockNotebookContainer) Child;
 			}
 		}
 
@@ -91,20 +72,14 @@ namespace MonoDevelop.Components.DockNotebook
 			return control == this;
 		}
 
-		public DockNotebookTab AddTab ()
+		protected override bool OnDeleteEvent (Event evnt)
 		{
-			if (Container == null) {
-				// This dock window doesn't yet have any tabs inserted.
-				var addToControl = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
-				addToControl.NavigationButtonsVisible = false;
-				var tab = addToControl.InsertTab (-1);
-				Container = new DockNotebookContainer (addToControl);
-				addToControl.InitSize ();
-				return tab;
-			} else {
-				// Use the existing tab control.
-				return Container.TabControl.InsertTab (-1);
+			var documents = IdeApp.Workbench.Documents.Where (IsChildOfMe).ToList ();
+			foreach (var d in documents) {
+				if (!d.Close ())
+					return true;
 			}
+			return base.OnDeleteEvent (evnt);
 		}
 
 		protected override bool OnConfigureEvent (EventConfigure evnt)
@@ -126,7 +101,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		protected override void OnDestroyed ()
 		{
-			IdeApp.Workbench.FloatingEditors.Remove (this);
+			allWindows.Remove (this);
 			RemoveAccelGroup (IdeApp.CommandService.AccelGroup);
 			base.OnDestroyed ();
 		}

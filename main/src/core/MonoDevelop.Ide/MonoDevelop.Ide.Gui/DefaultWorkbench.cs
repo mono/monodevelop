@@ -78,7 +78,6 @@ namespace MonoDevelop.Ide.Gui
 		IWorkbenchWindow lastActive;
 
 		bool closeAll;
-		bool ignorePageSwitch;
 
 		bool fullscreen;
 		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
@@ -405,33 +404,11 @@ namespace MonoDevelop.Ide.Gui
 			return mimeimage;
 		}
 
-		public void ShowViewInFloatingWindow (DockWindow dockWindow, IViewContent content)
-		{
-			DockNotebookTab tab = dockWindow.AddTab ();
-			var mimeimage = PrepareShowView (content);
-			var addToControl = (SdiDragNotebook)tab.Notebook;
-
-			var sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, addToControl, tab);
-			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
-			sdiWorkspaceWindow.Closed += CloseWindowEvent;
-			sdiWorkspaceWindow.ShowAll ();
-
-			tab.Content = sdiWorkspaceWindow;
-
-			sdiWorkspaceWindow.SetDockNotebook (addToControl, tab);
-
-			if (mimeimage != null)
-				tab.Icon = mimeimage;
-
-			if (content.Project != null)
-				content.Project.NameChanged += HandleProjectNameChanged;
-		}
-
-		public virtual void ShowView (IViewContent content, bool bringToFront)
+		public virtual void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null)
 		{
 			var mimeimage = PrepareShowView (content);
-			var addToControl = DockNotebook.ActiveNotebook ?? tabControl;
-			var tab = addToControl.InsertTab (-1);
+			var addToControl = notebook ?? DockNotebook.ActiveNotebook ?? tabControl;
+			var tab = addToControl.AddTab ();
 
 			SdiWorkspaceWindow sdiWorkspaceWindow = new SdiWorkspaceWindow (this, content, addToControl, tab);
 			sdiWorkspaceWindow.TitleChanged += delegate { SetWorkbenchTitle (); };
@@ -769,10 +746,23 @@ namespace MonoDevelop.Ide.Gui
 		{
 			SetWorkbenchTitle ();
 		}
+
+		int activeWindowChangeLock = 0;
+
+		public void LockActiveWindowChangeEvent ()
+		{
+			activeWindowChangeLock++;
+		}
 		
+		public void UnlockActiveWindowChangeEvent ()
+		{
+			activeWindowChangeLock--;
+			OnActiveWindowChanged (null, null);
+		}
+
 		internal void OnActiveWindowChanged (object sender, EventArgs e)
 		{
-			if (ignorePageSwitch)
+			if (activeWindowChangeLock > 0)
 				return;
 			if (lastActive == ActiveWorkbenchWindow)
 				return;
@@ -1221,14 +1211,11 @@ namespace MonoDevelop.Ide.Gui
 			try {
 				// Weird switch page events are fired when a tab is removed.
 				// This flag avoids unneeded events.
-				ignorePageSwitch = true;
+				LockActiveWindowChangeEvent ();
 				IWorkbenchWindow w = ActiveWorkbenchWindow;
 				tabControl.RemoveTab (pageNum, animate);
-				ignorePageSwitch = false;
-				if (w != ActiveWorkbenchWindow)
-					OnActiveWindowChanged (null, null);
 			} finally {
-				ignorePageSwitch = false;
+				UnlockActiveWindowChangeEvent ();
 			}
 		}
 

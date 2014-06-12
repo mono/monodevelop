@@ -235,6 +235,14 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public Action<DockNotebook, int,Gdk.EventButton> DoPopupMenu { get; set; }
 
+		public DockNotebookTab AddTab (Gtk.Widget content = null)
+		{
+			var t = InsertTab (-1);
+			if (content != null)
+				t.Content = content;
+			return t;
+		}
+
 		public DockNotebookTab InsertTab (int index)
 		{
 			var tab = new DockNotebookTab (this, tabStrip);

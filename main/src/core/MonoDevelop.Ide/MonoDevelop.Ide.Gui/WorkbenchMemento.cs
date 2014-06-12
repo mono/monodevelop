@@ -137,9 +137,6 @@ namespace MonoDevelop.Ide.Gui
 
 		[ItemProperty (DefaultValue = 0)]
 		public int NotebookId;
-
-		[ItemProperty (DefaultValue = 0)]
-		public int FloatingWindowId;
 	}
 	
 	[DataItem ("Pad")]
@@ -169,22 +166,9 @@ namespace MonoDevelop.Ide.Gui
 
 		[ItemProperty]
 		public int Height;
-	}
-
-	[DataItem ("Split")]
-	class SplitUserPrefs
-	{
-		[ItemProperty (DefaultValue = 0)]
-		public int SplitId;
 
 		[ItemProperty]
-		public string Mode;
-
-		[ItemProperty]
-		public NotebookUserPrefs Notebook1;
-
-		[ItemProperty]
-		public NotebookUserPrefs Notebook2;
+		public List<DocumentUserPrefs> Files = new List<DocumentUserPrefs> ();
 	}
 
 	[DataItem ("Notebook")]
@@ -208,9 +192,6 @@ namespace MonoDevelop.Ide.Gui
 		
 		[ItemProperty]
 		public List<DocumentUserPrefs> Files = new List<DocumentUserPrefs> ();
-
-		[ItemProperty]
-		public List<SplitUserPrefs> Splits = new List<SplitUserPrefs> ();
 
 		[ItemProperty]
 		public List<FloatingWindowUserPrefs> FloatingWindows = new List<FloatingWindowUserPrefs> ();

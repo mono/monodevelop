@@ -291,11 +291,14 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
+			IdeApp.Workbench.LockActiveWindowChangeEvent ();
 			var container = DockNotebook.ActiveNotebook.Container;
 			var tab = DockNotebook.ActiveNotebook.CurrentTab;
 			var window = (SdiWorkspaceWindow)tab.Content;
 			DockNotebook.ActiveNotebook.RemoveTab (tab.Index, false);
-			container.InsertRight (window);
+			DockNotebook.ActiveNotebook = container.InsertRight (window);
+			window.SelectWindow ();
+			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
 		}
 	}
 
@@ -308,7 +311,22 @@ namespace MonoDevelop.Ide.Commands
 
 		protected override void Run ()
 		{
+			IdeApp.Workbench.LockActiveWindowChangeEvent ();
+
+			SdiWorkspaceWindow window = null;
+			if (DockNotebook.ActiveNotebook != null) {
+				var tab = DockNotebook.ActiveNotebook.CurrentTab;
+				if (tab != null)
+					window = (SdiWorkspaceWindow)tab.Content;
+			}
 			DockNotebook.ActiveNotebook.Container.SetSingleMode ();
+
+			if (window != null) {
+				DockNotebook.ActiveNotebook = window.TabControl;
+				window.SelectWindow ();
+			}
+
+			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
 		}
 	}
 

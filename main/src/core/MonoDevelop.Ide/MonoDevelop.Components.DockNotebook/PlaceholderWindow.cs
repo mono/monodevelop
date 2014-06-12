@@ -67,6 +67,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Decorated = false;
 			TypeHint = WindowTypeHint.Utility;
 			titleWindow = new DocumentTitleWindow (this, tab);
+			IdeApp.Workbench.LockActiveWindowChangeEvent ();
 		}
 
 		DockNotebook hoverNotebook;
@@ -82,6 +83,7 @@ namespace MonoDevelop.Components.DockNotebook
 			Gtk.Application.Invoke (delegate {
 				titleWindow.Destroy ();
 			});
+			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
 		}
 
 		int curX, curY;
@@ -147,7 +149,8 @@ namespace MonoDevelop.Components.DockNotebook
 						);
 						placementDelegate = delegate(DockNotebook arg1, DockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
 							var window = (SdiWorkspaceWindow)tab.Content;
-							container.InsertLeft (window);
+							DockNotebook.ActiveNotebook = container.InsertLeft (window);
+							window.SelectWindow ();
 						};
 						return;
 					}
@@ -164,7 +167,8 @@ namespace MonoDevelop.Components.DockNotebook
 						);
 						placementDelegate = delegate(DockNotebook arg1, DockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
 							var window = (SdiWorkspaceWindow)tab.Content;
-							container.InsertRight (window);
+							DockNotebook.ActiveNotebook = container.InsertRight (window);
+							window.SelectWindow ();
 						};
 						return;
 					}
@@ -261,8 +265,8 @@ namespace MonoDevelop.Components.DockNotebook
 		static void PlaceInFloatingFrame (DockNotebook notebook, DockNotebookTab tab, Rectangle allocation, int ox, int oy)
 		{
 			var newWindow = new DockWindow ();
-			var newTab = newWindow.AddTab ();
-			var newNotebook = newTab.Notebook;
+			var newNotebook = newWindow.Container.GetFirstNotebook ();
+			var newTab = newNotebook.AddTab ();
 
 			var workspaceWindow = (SdiWorkspaceWindow)tab.Content;
 			newTab.Content = workspaceWindow;
@@ -281,9 +285,9 @@ namespace MonoDevelop.Components.DockNotebook
 		void PlaceInHoverNotebook (DockNotebook notebook, DockNotebookTab tab, Rectangle allocation, int ox, int oy)
 		{
 			var window = (SdiWorkspaceWindow)tab.Content;
-			var newTab = hoverNotebook.InsertTab (-1); 
-			newTab.Content = window;
+			var newTab = hoverNotebook.AddTab (window); 
 			window.SetDockNotebook (hoverNotebook, newTab); 
+			DockNotebook.ActiveNotebook = hoverNotebook;
 			window.SelectWindow ();
 		}
 
@@ -291,14 +295,21 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void PlaceWindow (DockNotebook notebook)
 		{
-			var allocation = Allocation;
-			Destroy ();
+			try {
+				IdeApp.Workbench.LockActiveWindowChangeEvent ();
+				var allocation = Allocation;
+				Destroy ();
 
-			if (placementDelegate != null) {
-				var tab = notebook.CurrentTab;
-				notebook.RemoveTab (tab.Index, true); 
-
-				placementDelegate (notebook, tab, allocation, curX, curY);
+				if (placementDelegate != null) {
+					var tab = notebook.CurrentTab;
+					notebook.RemoveTab (tab.Index, true); 
+					placementDelegate (notebook, tab, allocation, curX, curY);
+				} else {
+					DockNotebook.ActiveNotebook = frame.Notebook;
+					((SdiWorkspaceWindow)frame.Content).SelectWindow ();
+				}
+			} finally {
+				IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
 			}
 		}
 	}

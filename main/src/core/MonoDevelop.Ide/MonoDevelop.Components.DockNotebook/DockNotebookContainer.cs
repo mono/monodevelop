@@ -36,7 +36,7 @@ namespace MonoDevelop.Components.DockNotebook
 	class DockNotebookContainer : EventBox
 	{
 		bool isMasterTab;
-
+		bool splitsInitialized;
 		DockNotebook tabControl;
 
 		int MAX_SPLITS = 1;
@@ -86,6 +86,22 @@ namespace MonoDevelop.Components.DockNotebook
 				return ((DockNotebookContainer)w).SplitCount;
 		}
 
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+			if (!splitsInitialized) {
+				splitsInitialized = true;
+				if (Child is HPaned) {
+					var p = (HPaned)Child;
+					p.Position = allocation.Width / 2;
+				}
+				else if (Child is VPaned) {
+					var p = (VPaned)Child;
+					p.Position = allocation.Height / 2;
+				}
+			}
+		}
+
 		internal DockNotebookContainer MotherContainer ()
 		{
 			if (Parent == null)
@@ -111,8 +127,7 @@ namespace MonoDevelop.Components.DockNotebook
 					var window = (SdiWorkspaceWindow)tab.Content;
 					nb.RemoveTab (0, false);
 
-					var newTab = single.InsertTab (-1);
-					newTab.Content = window;
+					var newTab = single.AddTab (window);
 					window.SetDockNotebook (single, newTab);
 				}
 			}
@@ -126,9 +141,8 @@ namespace MonoDevelop.Components.DockNotebook
 		public static DockWindow MoveToFloatingWindow (SdiWorkspaceWindow workspaceWindow, int x, int y, int width, int height)
 		{
 			var window = new DockWindow ();
-			var tab = window.AddTab ();
-			var notebook = tab.Notebook;
-
+			var notebook = window.Container.GetFirstNotebook ();
+			var tab = notebook.AddTab ();
 			tab.Content = workspaceWindow;
 
 			window.Title = DefaultWorkbench.GetTitle (workspaceWindow);
@@ -178,7 +192,7 @@ namespace MonoDevelop.Components.DockNotebook
 			controlContainer.Parent.Destroy ();
 		}
 
-		void Insert (SdiWorkspaceWindow window, Func<DockNotebookContainer, Split> callback)
+		DockNotebook Insert (SdiWorkspaceWindow window, Action<DockNotebookContainer> callback)
 		{
 			var newNotebook = new SdiDragNotebook ((DefaultWorkbench)IdeApp.Workbench.RootWindow);
 
@@ -187,24 +201,22 @@ namespace MonoDevelop.Components.DockNotebook
 			var newContainer = new DockNotebookContainer (newNotebook);
 			newNotebook.PageRemoved += HandlePageRemoved;
 
-			var newTab = newNotebook.InsertTab (-1);
-			newTab.Content = window;
-			window.SetDockNotebook (newNotebook, newTab);
+			if (window != null) {
+				var newTab = newNotebook.AddTab (window);
+				window.SetDockNotebook (newNotebook, newTab);
+			}
 			Remove (Child);
 
-			var split = callback (newContainer);
-
-			newNotebook.Destroyed += delegate(object sender, EventArgs e) {
-				IdeApp.Workbench.Splits.Remove (split);
-			};
+			callback (newContainer);
 
 			tabControl.InitSize ();
 			ShowAll ();
+			return newNotebook;
 		}
 
-		public void InsertLeft (SdiWorkspaceWindow window)
+		public DockNotebook InsertLeft (SdiWorkspaceWindow window)
 		{
-			Insert (window, container => {
+			return Insert (window, container => {
 				var box = new HPaned ();
 				var new_container = new DockNotebookContainer (tabControl);
 
@@ -212,14 +224,12 @@ namespace MonoDevelop.Components.DockNotebook
 				box.Add2 (new_container);
 				box.Position = Allocation.Width / 2;
 				Child = box;
-
-				return AddSplit (container, new_container);
 			});
 		}
 
-		public void InsertRight (SdiWorkspaceWindow window)
+		public DockNotebook InsertRight (SdiWorkspaceWindow window)
 		{
-			Insert (window, container => {
+			return Insert (window, container => {
 				var box = new HPaned ();
 				var new_container = new DockNotebookContainer (tabControl);
 
@@ -227,21 +237,7 @@ namespace MonoDevelop.Components.DockNotebook
 				box.Add2 (container);
 				box.Position = Allocation.Width / 2;
 				Child = box;
-
-				return AddSplit (new_container, container);
 			});
-		}
-
-		private Split AddSplit (DockNotebookContainer container1, DockNotebookContainer container2)
-		{
-			var split = new Split ();
-
-			split.Notebook1 = container1;
-			split.Notebook2 = container2;
-
-			IdeApp.Workbench.Splits.Add (split);
-
-			return split;
 		}
 
 		public DockNotebook GetFirstNotebook ()
@@ -274,7 +270,7 @@ namespace MonoDevelop.Components.DockNotebook
 		public DockNotebook GetNextNotebook (DockNotebook current)
 		{
 			var container = (DockNotebookContainer)current.Parent;
-			var rootContainer = container.MotherContainer ();
+			var rootContainer = current.Container;
 			if (container == rootContainer)
 				return null;
 
@@ -305,7 +301,7 @@ namespace MonoDevelop.Components.DockNotebook
 		public DockNotebook GetPreviousNotebook (DockNotebook current)
 		{
 			var container = (DockNotebookContainer)current.Parent;
-			var rootContainer = container.MotherContainer ();
+			var rootContainer = current.Container;
 			if (container == rootContainer)
 				return null;
 
