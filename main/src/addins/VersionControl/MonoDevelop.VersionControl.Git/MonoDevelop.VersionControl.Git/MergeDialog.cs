@@ -39,6 +39,7 @@ namespace MonoDevelop.VersionControl.Git
 		readonly GitRepository repo;
 		string currentSel;
 		string currentType;
+		string currentRemote;
 		readonly bool rebasing;
 		
 		public MergeDialog (GitRepository repo, bool rebasing)
@@ -76,6 +77,10 @@ namespace MonoDevelop.VersionControl.Git
 		public string SelectedBranch {
 			get { return currentSel; }
 		}
+
+		public string RemoteName {
+			get { return currentRemote; }
+		}
 		
 		public bool StageChanges {
 			get { return checkStage.Active; }
@@ -91,6 +96,13 @@ namespace MonoDevelop.VersionControl.Git
 			if (tree.Selection.GetSelected (out it)) {
 				currentSel = (string) store.GetValue (it, 0);
 				currentType = (string) store.GetValue (it, 3);
+				if (IsRemote) {
+					TreeIter it2;
+					store.IterParent (out it2, it);
+					currentRemote = (string)store.GetValue (it2, 2);
+				} else {
+					currentRemote = null;
+				}
 			}
 			else
 				currentSel = null;

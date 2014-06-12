@@ -93,13 +93,13 @@ namespace MonoDevelop.VersionControl.Git
 					if (rebasing) {
 						using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Rebasing branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
-								repo.Fetch (monitor);
+								repo.Fetch (monitor, dlg.RemoteName);
 							repo.Rebase (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
 						}
 					} else {
 						using (IProgressMonitor monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Merging branch '{0}'...", dlg.SelectedBranch))) {
 							if (dlg.IsRemote)
-								repo.Fetch (monitor);
+								repo.Fetch (monitor, dlg.RemoteName);
 							repo.Merge (dlg.SelectedBranch, dlg.StageChanges ? GitUpdateOptions.SaveLocalChanges : GitUpdateOptions.None, monitor);
 						}
 					}
