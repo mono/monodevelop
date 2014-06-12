@@ -526,9 +526,9 @@ namespace MonoDevelop.Debugger
 			
 			if (valueNames.Count > 0) {
 				ObjectValue[] expValues = GetValues (valueNames.ToArray ());
-				for (int n=0; n<expValues.Length; n++) {
-					AppendValue (TreeIter.Zero, valueNames [n], expValues [n]);
-					if (expValues [n].HasChildren)
+				for (int n = 0; n < expValues.Length; n++) {
+					AppendValue (TreeIter.Zero, valueNames[n], expValues[n]);
+					if (expValues[n].HasChildren)
 						showExpanders = true;
 				}
 			}

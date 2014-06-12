@@ -250,10 +250,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			foreach (var pr in projectContents.Keys.ToArray ()) {
-				var project = pr as DotNetProject;
+			foreach (var pr in projectContents.ToArray ()) {
+				var project = pr.Key as DotNetProject;
 				if (project != null)
 					CheckProjectOutput (project, true);
+
+				pr.Value.ReconnectAssemblyReferences ();
 			}
 		}
 

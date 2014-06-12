@@ -205,21 +205,23 @@ namespace MonoDevelop.MacIntegration
 
 		public override bool ShowContextMenu (CommandManager commandManager, Gtk.Widget widget, double x, double y, CommandEntrySet entrySet)
 		{
-			var menu = new MDMenu (commandManager, entrySet);
-			var nsview = MacInterop.GtkQuartz.GetView (widget);
-			var toplevel = widget.Toplevel as Gtk.Window;
-			int trans_x, trans_y;
-			widget.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
+			Gtk.Application.Invoke (delegate {
+				var menu = new MDMenu (commandManager, entrySet);
+				var nsview = MacInterop.GtkQuartz.GetView (widget);
+				var toplevel = widget.Toplevel as Gtk.Window;
+				int trans_x, trans_y;
+				widget.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
 
-			var pt = nsview.ConvertPointFromBase (new PointF ((float)trans_x, (float)trans_y));
+				var pt = nsview.ConvertPointFromBase (new PointF ((float)trans_x, (float)trans_y));
 
-			var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
-				pt,
-				0, 0,
-				MacInterop.GtkQuartz.GetWindow (toplevel).WindowNumber,
-				null, 0, 0, 0);
+				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
+					pt,
+					0, 0,
+					MacInterop.GtkQuartz.GetWindow (toplevel).WindowNumber,
+					null, 0, 0, 0);
 
-			NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+			});
 
 			return true;
 		}

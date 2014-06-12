@@ -469,6 +469,7 @@
     <Compile Include="MonoDevelop.Core.Web\WIFTypeProvider.cs" />
     <Compile Include="MonoDevelop.Core.Web\CredentialProviderExtensions.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IDebugConsole.cs" />
+    <Compile Include="MonoDevelop.Projects\IDotNetFileContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

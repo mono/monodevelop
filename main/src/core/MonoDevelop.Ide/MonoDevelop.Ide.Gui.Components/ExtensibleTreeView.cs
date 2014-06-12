@@ -1779,7 +1779,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			var entryset = BuildEntrySet ();
+			var entryset = BuildEntrySet () ?? new CommandEntrySet ();
 
 			IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
 		}
