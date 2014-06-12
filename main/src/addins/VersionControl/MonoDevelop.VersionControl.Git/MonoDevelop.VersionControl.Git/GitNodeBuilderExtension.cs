@@ -74,7 +74,7 @@ namespace MonoDevelop.VersionControl.Git
 			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
 			if (rep != null && !repos.ContainsKey (rep.RootPath.CanonicalPath)) {
-				repos [rep.RootPath] = ob;
+				repos [rep.RootPath.CanonicalPath] = ob;
 			}
 		}
 		
