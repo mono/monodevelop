@@ -150,22 +150,22 @@ namespace MonoDevelop.VersionControl.Git
 			return RootRepository.Stashes;
 		}
 
-		public MergeResult ApplyStash (Stash stash)
+		public CherryPickResult ApplyStash (Stash stash)
 		{
 			var name = RootRepository.Config.Get<string> ("user.name").Value;
 			var email = RootRepository.Config.Get<string> ("user.email").Value;
-			MergeResult mr = RootRepository.Merge (stash.Index, new Signature (name, email, DateTimeOffset.Now));
+			CherryPickResult mr = RootRepository.CherryPick (stash.Index, new Signature (name, email, DateTimeOffset.Now));
 
 			foreach (var change in RootRepository.Diff.Compare<TreeChanges> (stash.Index.Tree, stash.Base.Tree))
 				RootRepository.Index.Stage (change.Path);
 			return mr;
 		}
 
-		public MergeResult PopStash ()
+		public CherryPickResult PopStash ()
 		{
 			int i = RootRepository.Stashes.Count () - 1;
 			var stash = RootRepository.Stashes [i];
-			MergeResult mr = ApplyStash (stash);
+			CherryPickResult mr = ApplyStash (stash);
 			RootRepository.Stashes.Remove (i);
 
 			return mr;

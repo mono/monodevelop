@@ -156,9 +156,9 @@ namespace MonoDevelop.VersionControl.Git
 			return monitor.AsyncOperation;
 		}
 		
-		public static void ReportStashResult (MergeResult result)
+		public static void ReportStashResult (CherryPickResult result)
 		{
-			if (result.Status == MergeStatus.Conflicts) {
+			if (result.Status == CherryPickStatus.Conflicts) {
 				string msg = GettextCatalog.GetString ("Stash applied with conflicts");
 				DispatchService.GuiDispatch (delegate {
 					IdeApp.Workbench.StatusBar.ShowWarning (msg);
