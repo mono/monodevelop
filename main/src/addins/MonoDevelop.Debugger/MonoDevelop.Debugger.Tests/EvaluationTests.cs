@@ -1552,7 +1552,7 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("a.Prop");
-			if (!AllowTargetInvokes) {
+			if (!AllowTargetInvokes && soft == null) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -1564,7 +1564,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("a.PropNoVirt1");
-			if (!AllowTargetInvokes) {
+			if (!AllowTargetInvokes && soft == null) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -1576,7 +1576,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("a.PropNoVirt2");
-			if (!AllowTargetInvokes) {
+			if (!AllowTargetInvokes && soft == null) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -1628,7 +1628,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("b.Prop");
-			if (!AllowTargetInvokes) {
+			if (!AllowTargetInvokes && soft == null) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -1640,7 +1640,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("b.PropNoVirt1");
-			if (!AllowTargetInvokes) {
+			if (!AllowTargetInvokes && soft == null) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 
@@ -1652,7 +1652,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("int", val.TypeName);
 
 			val = Eval ("b.PropNoVirt2");
-			if (!AllowTargetInvokes) {
+			if (!AllowTargetInvokes && soft == null) {
 				var options = Session.Options.EvaluationOptions.Clone ();
 				options.AllowTargetInvoke = true;
 

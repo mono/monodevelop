@@ -347,6 +347,7 @@ namespace MonoDevelop.Debugger
 			var options = DebuggingService.DebuggerSession.Options.EvaluationOptions.Clone ();
 			options.AllowMethodEvaluation = true;
 			options.AllowToStringCalls = true;
+			options.AllowTargetInvoke = true;
 
 			do {
 				if ((bool) store.GetValue (iter, CanRefreshColumn)) {
