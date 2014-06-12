@@ -342,6 +342,7 @@
     <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\PackageUpdatesStartupHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageUpdateChecker.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\FallbackRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
