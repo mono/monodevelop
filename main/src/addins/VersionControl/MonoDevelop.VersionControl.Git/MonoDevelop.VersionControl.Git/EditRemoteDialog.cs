@@ -31,7 +31,6 @@ namespace MonoDevelop.VersionControl.Git
 	partial class EditRemoteDialog : Gtk.Dialog
 	{
 		readonly Remote remote;
-		readonly bool updating;
 
 		// TODO: Add user possibility to choose refspecs.
 		public EditRemoteDialog ()

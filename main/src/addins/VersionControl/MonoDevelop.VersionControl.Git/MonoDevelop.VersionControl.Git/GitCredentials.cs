@@ -24,112 +24,75 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Linq;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using LibGit2Sharp.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	/*sealed class GitCredentials: CredentialsProvider
+	static class GitCredentials
 	{
-		bool HasReset {
-			get; set;
-		}
-		
-		public override bool IsInteractive ()
-		{
-			return true;
-		}
-		
-		public override bool Supports (params CredentialItem[] items)
-		{
-			return true;
-		}
-
-		public override bool Get (URIish uri, params CredentialItem[] items)
+		public static bool TryGetHandles (Uri uri, out string username, out string password)
 		{
 			bool result = false;
-			CredentialItem.Password passwordItem = null;
-			CredentialItem.StringType passphraseItem = null;
-			
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
-			if (TryGetUsernamePassword (uri, items, out passwordItem) || TryGetPassphrase (uri, items, out passphraseItem)) {
-				// If the password store has a password and we already tried using it, it could be incorrect.
-				// If this happens, do not return true and ask the user for a new password.
-				if (!HasReset) {
-					return true;
-				}
-			}
+			if (TryGetUsernamePassword (uri, out username, out password)/* || TryGetPassphrase (uri, items, out passphraseItem)*/)
+				return true;
+
+			string tempuser = String.Empty;
+			string temppass = string.Empty;
 
 			DispatchService.GuiSyncDispatch (delegate {
-				CredentialsDialog dlg = new CredentialsDialog (uri, items);
+				var dlg = new CredentialsDialog (uri, GitCredentialType.UserPassPlaintext);
 				try {
 					result = MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok;
+					tempuser = dlg.Username;
+					temppass = dlg.Password;
 				} finally {
 					dlg.Destroy ();
 				}
 			});
-				
-			HasReset = false;
+
+			username = tempuser;
+			password = temppass;
+
 			if (result) {
-				var user = items.OfType<CredentialItem.Username> ().FirstOrDefault ();
-				if (passwordItem != null) {
-					PasswordService.AddWebUserNameAndPassword (new Uri (uri.ToString ()), user.GetValue (), new string (passwordItem.GetValue ()));
-				} else if (passphraseItem != null) {
-					PasswordService.AddWebPassword (new Uri (uri.ToString ()), passphraseItem.GetValue ());
-				}
+				if (password != null) {
+					PasswordService.AddWebUserNameAndPassword (uri, username, password);
+				}/* else if (passphraseItem != null) {
+					PasswordService.AddWebPassword (new Uri (uri), passphraseItem);
+				}*/
 			}
 			return result;
 		}
 		
-		public override void Reset (URIish uri)
+		static bool TryGetPassphrase (Uri uri, out string passphrase)
 		{
-			HasReset = true;
-		}
-		
-		static bool TryGetPassphrase (URIish uri, CredentialItem[] items, out CredentialItem.StringType passphraseItem)
-		{
-			var actualUrl = new Uri (uri.ToString ());
-			var passphrase = (CredentialItem.StringType) items.FirstOrDefault (i => i is CredentialItem.StringType);
-			
-			if (items.Length == 1 && passphrase != null) {
-				passphraseItem = passphrase;
-
-				var passphraseValue = PasswordService.GetWebPassword (actualUrl);
-				if (passphraseValue != null) {
-					passphrase.SetValue (passphraseValue);
-					return true;
-				}
-			} else {
-				passphraseItem = null;
+			var passphraseValue = PasswordService.GetWebPassword (uri);
+			if (passphraseValue != null) {
+				passphrase = passphraseValue;
+				return true;
 			}
-			
+
+			passphrase = null;
 			return false;
 		}
 		
-		static bool TryGetUsernamePassword (URIish uri, CredentialItem[] items, out CredentialItem.Password passwordItem)
+		static bool TryGetUsernamePassword (Uri uri, out string username, out string password)
 		{
-			var actualUrl = new Uri (uri.ToString ());
-			var username = (CredentialItem.Username) items.FirstOrDefault (i => i is CredentialItem.Username);
-			var password = (CredentialItem.Password) items.FirstOrDefault (i => i is CredentialItem.Password);
-
-			if (items.Length == 2 && username != null && password != null) {
-				passwordItem = password;
-
-				var cred = PasswordService.GetWebUserNameAndPassword (actualUrl);
-				if (cred != null) {
-					username.SetValue (cred.Item1);
-					password.SetValueNoCopy (cred.Item2.ToArray ());
-					return true;
-				}
-			} else {
-				passwordItem = null;
+			var cred = PasswordService.GetWebUserNameAndPassword (uri);
+			if (cred != null) {
+				username = cred.Item1;
+				password = cred.Item2;
+				return true;
 			}
 
+			username = null;
+			password = null;
 			return false;
 		}
-	}*/
+	}
 }
 

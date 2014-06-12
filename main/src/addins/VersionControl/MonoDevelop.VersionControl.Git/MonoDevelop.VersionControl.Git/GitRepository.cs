@@ -821,7 +821,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnDeleteFiles (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			DeleteCore (localPaths, force, monitor, keepLocal);
+			DeleteCore (localPaths, keepLocal);
 
 			foreach (var path in localPaths) {
 				if (keepLocal) {
@@ -841,7 +841,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnDeleteDirectories (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
-			DeleteCore (localPaths, force, monitor, keepLocal);
+			DeleteCore (localPaths, keepLocal);
 
 			foreach (var path in localPaths) {
 				if (keepLocal) {
@@ -861,7 +861,7 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		void DeleteCore (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
+		void DeleteCore (FilePath[] localPaths, bool keepLocal)
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
@@ -1042,7 +1042,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public IEnumerable<string> GetRemoteBranches (string remoteName)
 		{
-			return RootRepository.Branches.Where (b => b.IsRemote && b.Remote.Name == remoteName).Select (b => b.Name);
+			return RootRepository.Branches.Where (b => b.IsRemote && b.Remote.Name == remoteName).Select (b => b.Name.Substring (b.Name.IndexOf ('/') + 1));
 		}
 
 		public string GetCurrentBranch ()
@@ -1135,7 +1135,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			ChangeSet cset = CreateChangeSet (RootPath);
 
-			Commit reference = RootRepository.Branches[branch].TrackedBranch.Tip;
+			Commit reference = RootRepository.Branches [remote + "/" + branch].Tip;
 			Commit compared = RootRepository.Head.Tip;
 			
 			foreach (var change in GitUtil.CompareCommits (RootRepository, reference, compared)) {

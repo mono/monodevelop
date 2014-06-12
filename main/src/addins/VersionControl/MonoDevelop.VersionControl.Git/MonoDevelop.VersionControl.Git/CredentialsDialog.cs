@@ -23,97 +23,77 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Linq;
-using System.Collections.Generic;
 using Gtk;
+using LibGit2Sharp.Core;
+using System;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	partial class CredentialsDialog : Gtk.Dialog
 	{
-		/*readonly CredentialItem.YesNoType singleYesNoCred;
-		
-		public CredentialsDialog (URIish uri, IEnumerable<CredentialItem> credentials)
+		uint r = 0;
+		public CredentialsDialog (Uri uri, GitCredentialType type)
 		{
 			this.Build ();
 			
 			labelTop.Text = string.Format (labelTop.Text, uri.ToString ());
 			
-			Gtk.Table table = new Gtk.Table (0, 0, false);
+			var table = new Table (0, 0, false);
 			table.ColumnSpacing = 6;
 			vbox.PackStart (table, true, true, 0);
-			
-			uint r = 0;
+
 			Widget firstEditor = null;
-			foreach (CredentialItem c in credentials) {
-				Label lab = new Label (c.GetPromptText () + ":");
-				lab.Xalign = 0;
-				table.Attach (lab, 0, 1, r, r + 1);
-				Table.TableChild tc = (Table.TableChild) table [lab];
-				tc.XOptions = AttachOptions.Shrink;
-				
-				Widget editor = null;
-				
-				if (c is CredentialItem.YesNoType) {
-					CredentialItem.YesNoType cred = (CredentialItem.YesNoType) c;
-					if (credentials.Count (i => i is CredentialItem.YesNoType) == 1) {
-						singleYesNoCred = cred;
-						buttonOk.Hide ();
-						buttonYes.Show ();
-						buttonNo.Show ();
-						// Remove the last colon
-						lab.Text = lab.Text.Substring (0, lab.Text.Length - 1);
-					}
-					else {
-						CheckButton btn = new CheckButton ();
-						editor = btn;
-						btn.Toggled += delegate {
-							cred.SetValue (btn.Active);
-						};
-					}
-				}
-				else if (c is CredentialItem.StringType || c is CredentialItem.CharArrayType) {
-					CredentialItem cred = c;
-					Entry e = new Entry ();
-					editor = e;
-					e.ActivatesDefault = true;
-					if (cred.IsValueSecure ())
-						e.Visibility = false;
-					e.Changed += delegate {
-						if (cred is CredentialItem.StringType)
-							((CredentialItem.StringType)cred).SetValue (e.Text);
-						else
-							((CredentialItem.CharArrayType)cred).SetValue (e.Text.ToCharArray ());
-					};
-					
-					if (c is CredentialItem.Username)
-						e.Text = uri.GetUser () ?? "";
-				}
-				if (editor != null) {
-					table.Attach (editor, 1, 2, r, r + 1);
-					tc = (Table.TableChild) table [lab];
-					tc.XOptions = AttachOptions.Fill;
-					if (firstEditor == null)
-						firstEditor = editor;
-				}
-				
-				r++;
+			switch (type) {
+			case GitCredentialType.UserPassPlaintext:
+				firstEditor = CreateEntry (table, uri, "Username:", false);
+				CreateEntry (table, uri, "Password:", false);
+				break;
 			}
 			table.ShowAll ();
 			Focus = firstEditor;
 			Default = buttonOk;
-		}*/
-		
-		protected virtual void OnButtonYesClicked (object sender, System.EventArgs e)
-		{
-			//singleYesNoCred.SetValue (true);
-			Respond (ResponseType.Ok);
 		}
-		
-		protected virtual void OnButtonNoClicked (object sender, System.EventArgs e)
+
+		Widget CreateEntry (Table table, Uri uri, string text, bool password)
 		{
-			//singleYesNoCred.SetValue (false);
-			Respond (ResponseType.Cancel);
+			var lab = new Label (text);
+			lab.Xalign = 0;
+			table.Attach (lab, 0, 1, r, r + 1);
+			var tc = (Table.TableChild)table [lab];
+			tc.XOptions = AttachOptions.Shrink;
+
+			var e = new Entry ();
+			Widget editor = e;
+			e.ActivatesDefault = true;
+			if (password)
+				e.Visibility = false;
+			else
+				e.Text = uri.UserInfo;
+			e.Changed += delegate {
+				if (password) {
+					Password = e.Text;
+				} else {
+					Username = e.Text;
+				}
+			};
+
+			if (editor != null) {
+				table.Attach (editor, 1, 2, r, r + 1);
+				tc = (Table.TableChild)table [lab];
+				tc.XOptions = AttachOptions.Fill;
+			}
+			r++;
+			return editor;
+		}
+
+		public string Username {
+			get;
+			private set;
+		}
+
+		public string Password {
+			get;
+			private set;
 		}
 	}
 }
