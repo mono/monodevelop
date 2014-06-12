@@ -340,10 +340,8 @@ namespace MonoDevelop.Ide.Templates
 			
 			//need a default namespace or if there is no project, substitutions can get very messed up
 			string ns;
-			if (netProject != null)
-				ns = netProject.GetDefaultNamespace (fileName);
-			else if (project is SharedAssetsProject)
-				ns = ((SharedAssetsProject)project).DefaultNamespace;
+			if (project is IDotNetFileContainer)
+				ns = ((IDotNetFileContainer)project).GetDefaultNamespace (fileName);
 			else
 				ns = "Application";
 			

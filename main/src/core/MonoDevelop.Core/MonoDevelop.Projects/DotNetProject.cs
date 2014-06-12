@@ -49,7 +49,7 @@ namespace MonoDevelop.Projects
 {
 	[DataInclude(typeof(DotNetProjectConfiguration))]
 	[ProjectModelDataItem ("AbstractDotNetProject")]
-	public abstract class DotNetProject : Project, IAssemblyProject
+	public abstract class DotNetProject : Project, IAssemblyProject, IDotNetFileContainer
 	{
 		bool usePartialTypes = true;
 		ProjectParameters languageParameters;
@@ -956,20 +956,29 @@ namespace MonoDevelop.Projects
 				return false;
 			return LanguageBinding.IsSourceCodeFile (fileName);
 		}
-		
+
 		/// <summary>
 		/// Gets the default namespace for the file, according to the naming policy.
 		/// </summary>
 		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
 		public virtual string GetDefaultNamespace (string fileName)
 		{
-			DotNetNamingPolicy pol = Policies.Get<DotNetNamingPolicy> ();
+			return GetDefaultNamespace (this, DefaultNamespace, fileName);
+		}
+
+		/// <summary>
+		/// Gets the default namespace for the file, according to the naming policy.
+		/// </summary>
+		/// <remarks>Always returns a valid namespace, even if the fileName is null.</remarks>
+		internal static string GetDefaultNamespace (Project project, string defaultNamespace, string fileName)
+		{
+			DotNetNamingPolicy pol = project.Policies.Get<DotNetNamingPolicy> ();
 
 			string root = null;
 			string dirNamespc = null;
-			string defaultNmspc = !string.IsNullOrEmpty (DefaultNamespace)
-				? DefaultNamespace
-				: SanitisePotentialNamespace (Name) ?? "Application";
+			string defaultNmspc = !string.IsNullOrEmpty (defaultNamespace)
+				? defaultNamespace
+				: SanitisePotentialNamespace (project.Name) ?? "Application";
 			
 			if (string.IsNullOrEmpty (fileName)) {
 				return defaultNmspc;
@@ -978,7 +987,7 @@ namespace MonoDevelop.Projects
 			string dirname = Path.GetDirectoryName (fileName);
 			string relativeDirname = null;
 			if (!String.IsNullOrEmpty (dirname)) {
-				relativeDirname = GetRelativeChildPath (dirname);
+				relativeDirname = project.GetRelativeChildPath (dirname);
 				if (string.IsNullOrEmpty (relativeDirname) || relativeDirname.StartsWith (".."))
 					relativeDirname = null;
 			}
@@ -1014,7 +1023,7 @@ namespace MonoDevelop.Projects
 			return defaultNmspc;
 		}
 
-		string GetHierarchicalNamespace (string relativePath)
+		static string GetHierarchicalNamespace (string relativePath)
 		{
 			StringBuilder sb = new StringBuilder (relativePath);
 			for (int i = 0; i < sb.Length; i++) {
@@ -1024,7 +1033,7 @@ namespace MonoDevelop.Projects
 			return sb.ToString ();
 		}
 
-		string SanitisePotentialNamespace (string potential)
+		static string SanitisePotentialNamespace (string potential)
 		{
 			StringBuilder sb = new StringBuilder ();
 			foreach (char c in potential) {

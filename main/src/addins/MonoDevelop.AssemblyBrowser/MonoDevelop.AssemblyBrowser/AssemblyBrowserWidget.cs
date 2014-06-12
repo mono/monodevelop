@@ -173,7 +173,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new ModuleReferenceNodeBuilder (),
 				new AssemblyReferenceNodeBuilder (this),
 				//new AssemblyReferenceFolderNodeBuilder (this),
-				//new AssemblyResourceFolderNodeBuilder (),
+				new AssemblyResourceFolderNodeBuilder (),
 				new ResourceNodeBuilder (),
 				new NamespaceBuilder (this),
 				new DomTypeNodeBuilder (this),
