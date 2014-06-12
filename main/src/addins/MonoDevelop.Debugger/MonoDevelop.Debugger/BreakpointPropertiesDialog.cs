@@ -71,7 +71,7 @@ namespace MonoDevelop.Debugger
 		// Text entries
 		readonly TextEntry entryFunctionName = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.object.ToString") };
 		readonly TextEntry entryLocationFile = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. ./monodevelop/main/src/addins/YCombinator.cs:515:16") };
-		readonly TextEntry entryExceptionType = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.InvalidOperationException") };
+		readonly TextEntryWithCodeCompletion entryExceptionType = new TextEntryWithCodeCompletion (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.InvalidOperationException") };
 		readonly TextEntry entryConditionalExpression = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. colorName == \"Red\"") };
 		readonly TextEntry entryPrintExpression = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("e.g. Value of 'name' is {name}") };
 
@@ -106,6 +106,7 @@ namespace MonoDevelop.Debugger
 		string[] parsedParamTypes;
 		string parsedFunction;
 		readonly HashSet<string> classes = new HashSet<string> ();
+
 
 		public BreakpointPropertiesDialog (BreakEvent be)
 		{
@@ -169,10 +170,6 @@ namespace MonoDevelop.Debugger
 			entryLocationFile.Changed += OnUpdateText;
 			entryExceptionType.Changed += OnUpdateText;
 			entryPrintExpression.Changed += OnUpdateText;
-
-			// TODO: Fix completion.
-			//entryExceptionType.KeyReleased += OnEditKeyRelease;
-			//entryExceptionType.KeyPressed += PopupCompletion;
 
 			buttonOk.Clicked += OnSave;
 		}
@@ -549,6 +546,7 @@ namespace MonoDevelop.Debugger
 						classes.Add (t.ReflectionName);
 				}
 			}
+			entryExceptionType.SetCodeCompletionList (classes.ToList ());
 		}
 
 		public BreakEvent GetBreakEvent ()
@@ -653,6 +651,14 @@ namespace MonoDevelop.Debugger
 			Buttons.Add (buttonOk);
 
 			Content = vbox;
+
+			if (IdeApp.Workbench != null) {
+				Gtk.Widget parent = ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (vbox)).Parent;
+				while (parent != null && !(parent is Gtk.Window))
+					parent = parent.Parent;
+				if (parent is Gtk.Window)
+					((Gtk.Window)parent).TransientFor = IdeApp.Workbench.RootWindow;
+			}
 
 			OnUpdateControls (null, null);
 		}

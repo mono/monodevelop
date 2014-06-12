@@ -146,6 +146,7 @@
     <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
     <Compile Include="MonoDevelop.Debugger\BreakpointPropertiesDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger\TextEntryWithCodeCompletion.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
