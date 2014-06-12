@@ -40,25 +40,6 @@ namespace MonoDevelop.Components.DockNotebook
 	{
 		DockNotebookContainer container;
 
-		public DockNotebookContainer Container {
-			get {
-				return container;
-			}
-
-			set {
-				container = value;
-				Child = value;
-			}
-		}
-
-		bool IsChildOfMe (Document d)
-		{
-			Widget control = ((SdiWorkspaceWindow)d.Window).TabControl;
-			while (control.Parent != null)
-				control = control.Parent;
-			return control == this;
-		}
-
 		public DockWindow () : base (Gtk.WindowType.Toplevel)
 		{
 			IdeApp.Workbench.FloatingEditors.Add (this);
@@ -89,6 +70,25 @@ namespace MonoDevelop.Components.DockNotebook
 					}
 				}
 			};
+		}
+
+		public DockNotebookContainer Container {
+			get {
+				return container;
+			}
+
+			set {
+				container = value;
+				Child = value;
+			}
+		}
+
+		bool IsChildOfMe (Document d)
+		{
+			Widget control = ((SdiWorkspaceWindow)d.Window).TabControl;
+			while (control.Parent != null)
+				control = control.Parent;
+			return control == this;
 		}
 
 		public DockNotebookTab AddTab ()
@@ -129,6 +129,17 @@ namespace MonoDevelop.Components.DockNotebook
 			IdeApp.Workbench.FloatingEditors.Remove (this);
 			RemoveAccelGroup (IdeApp.CommandService.AccelGroup);
 			base.OnDestroyed ();
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			// A small delay to make sure the window is fully rendered before showing it
+			GdkWindow.Opacity = 0;
+			GLib.Timeout.Add (120, delegate {
+				GdkWindow.Opacity = 1;
+				return false;
+			});
 		}
 	}
 	
