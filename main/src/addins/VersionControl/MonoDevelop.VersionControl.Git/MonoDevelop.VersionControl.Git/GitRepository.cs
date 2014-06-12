@@ -62,17 +62,12 @@ namespace MonoDevelop.VersionControl.Git
 			Url = "git://";
 		}
 
-		static string GetRepositoryPath (string path)
-		{
-			return LibGit2Sharp.Repository.Discover (path);
-		}
-
 		public GitRepository (FilePath path, string url)
 		{
-			path = GetRepositoryPath (path);
 			RootPath = path;
-			if (!string.IsNullOrEmpty (path))
-				RootRepository = new LibGit2Sharp.Repository (path);
+			string discovered = LibGit2Sharp.Repository.Discover (path);
+			if (!string.IsNullOrEmpty (discovered))
+				RootRepository = new LibGit2Sharp.Repository (discovered);
 			Url = url;
 		}
 		
@@ -405,7 +400,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			// Initialize the repository
 			RootRepository = new LibGit2Sharp.Repository (LibGit2Sharp.Repository.Init (localPath));
-			RootPath = localPath.Combine (".git");
+			RootPath = localPath;
 			RootRepository.Network.Remotes.Add ("origin", Url);
 
 			// Add the project files
@@ -425,8 +420,8 @@ namespace MonoDevelop.VersionControl.Git
 				OnPushStatusError = delegate (PushStatusError e) {
 					RootRepository.Dispose ();
 					RootRepository = null;
-					if (RootPath.IsDirectory)
-						Directory.Delete (RootPath, true);
+					if (RootPath.Combine (".git").IsDirectory)
+						Directory.Delete (RootPath.Combine (".git"), true);
 					throw new UserException (e.Message);
 				}
 			});
@@ -1217,7 +1212,6 @@ namespace MonoDevelop.VersionControl.Git
 
 			File.AppendAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
 			RootRepository.Index.Stage (".gitignore");
-			RootRepository.Ignore.AddTemporaryRules (RootRepository.ToGitPath (localPath));
 		}
 
 		protected override void OnUnignore (FilePath[] localPath)
@@ -1239,7 +1233,6 @@ namespace MonoDevelop.VersionControl.Git
 
 			File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
 			RootRepository.Index.Stage (".gitignore");
-			RootRepository.Ignore.ResetAllTemporaryRules ();
 		}
 	}
 	
