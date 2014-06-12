@@ -84,7 +84,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (RootRepository != null)
 				RootRepository.Dispose ();
 			foreach (var rep in cachedSubmodules)
-				rep.Dispose ();
+				rep.Item2.Dispose ();
 			base.Dispose ();
 		}
 		
@@ -186,14 +186,16 @@ namespace MonoDevelop.VersionControl.Git
 		}
 
 		DateTime cachedSubmoduleTime = DateTime.MinValue;
-		LibGit2Sharp.Repository[] cachedSubmodules = new LibGit2Sharp.Repository[0];
-		LibGit2Sharp.Repository[] CachedSubmodules {
+		Tuple<FilePath, LibGit2Sharp.Repository>[] cachedSubmodules = new Tuple<FilePath, LibGit2Sharp.Repository>[0];
+		Tuple<FilePath, LibGit2Sharp.Repository>[] CachedSubmodules {
 			get {
 				var submoduleWriteTime = File.GetLastWriteTimeUtc(RootPath.Combine(".gitmodules"));
 				if (cachedSubmoduleTime != submoduleWriteTime) {
 					cachedSubmoduleTime = submoduleWriteTime;
-					cachedSubmodules = RootRepository.Submodules.Select (s => new LibGit2Sharp.Repository (
-						Path.Combine (RootRepository.Info.WorkingDirectory, s.Path.Replace ('/', Path.DirectorySeparatorChar)))).ToArray ();
+					cachedSubmodules = RootRepository.Submodules.Select (s => {
+						var fp = new FilePath (Path.Combine (RootRepository.Info.WorkingDirectory, s.Path.Replace ('/', Path.DirectorySeparatorChar))).CanonicalPath;
+						return new Tuple<FilePath, LibGit2Sharp.Repository> (fp, new LibGit2Sharp.Repository (fp));
+					}).ToArray ();
 				}
 				return cachedSubmodules;
 			}
@@ -207,10 +209,10 @@ namespace MonoDevelop.VersionControl.Git
 		IEnumerable<IGrouping<LibGit2Sharp.Repository, FilePath>> GroupByRepository (IEnumerable<FilePath> files)
 		{
 			var cache = CachedSubmodules;
-			return files.GroupBy (f => cache.FirstOrDefault (s => {
-				var fullPath = s.Info.WorkingDirectory;
-				return f.IsChildPathOf (fullPath) || f.FullPath == fullPath;
-			}) ?? RootRepository);
+			return files.GroupBy (f => {
+				var res = cache.FirstOrDefault (s => f.IsChildPathOf (s.Item1) || f.FullPath == s.Item1);
+				return res != null ? res.Item2 : RootRepository;
+			});
 		}
 
 		protected override Revision[] OnGetHistory (FilePath localFile, Revision since)
