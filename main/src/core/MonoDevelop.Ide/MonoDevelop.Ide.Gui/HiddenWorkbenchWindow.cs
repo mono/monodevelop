@@ -90,10 +90,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 		}
 
-		public void SwitchToSingleMode ()
-		{
-		}
-		
 		public int FindView<T> ()
 		{
 			return -1;

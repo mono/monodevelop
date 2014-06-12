@@ -56,8 +56,6 @@ namespace MonoDevelop.Ide.Gui
 		bool CloseWindow (bool force);
 		void SelectWindow ();
 
-		void SwitchToSingleMode ();
-
 		/// <summary>
 		/// Returns a toolbar for the pad.
 		/// </summary>

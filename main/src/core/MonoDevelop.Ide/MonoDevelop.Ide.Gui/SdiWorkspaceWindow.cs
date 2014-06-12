@@ -287,11 +287,6 @@ namespace MonoDevelop.Ide.Gui
 			return TabControl.GetPreviousNotebook () != null;
 		}
 
-		public void SwitchToSingleMode ()
-		{
-		//	tab.SwitchToSingleMode ();
-		}
-
 		public void MoveToNextNotebook ()
 		{
 			var nextNotebook = TabControl.GetNextNotebook ();
