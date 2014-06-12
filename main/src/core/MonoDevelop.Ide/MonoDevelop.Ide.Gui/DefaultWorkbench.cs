@@ -784,6 +784,8 @@ namespace MonoDevelop.Ide.Gui
 
 			lastActive = ActiveWorkbenchWindow;
 			SetWorkbenchTitle ();
+			if (lastActive != null)
+				lastActive.SelectWindow ();
 
 			if (!closeAll && ActiveWorkbenchWindow != null)
 				((SdiWorkspaceWindow)ActiveWorkbenchWindow).OnActivated ();
