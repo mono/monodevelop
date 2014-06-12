@@ -39,12 +39,12 @@ namespace MonoDevelop.VersionControl.Git
 		readonly string currentTracking;
 		readonly string oldName;
 		readonly GitRepository repo;
-		
-		public EditBranchDialog (GitRepository repo, Branch branch, bool isNew)
+
+		public EditBranchDialog (GitRepository repo)
 		{
 			this.Build ();
 			this.repo =  repo;
-			
+
 			comboStore = new ListStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string));
 			comboSources.Model = comboStore;
 			var crp = new CellRendererImage ();
@@ -53,30 +53,30 @@ namespace MonoDevelop.VersionControl.Git
 			var crt = new CellRendererText ();
 			comboSources.PackStart (crt, true);
 			comboSources.AddAttribute (crt, "text", 2);
-			
-			if (branch != null) {
-				if (!isNew)
-					oldName = branch.Name;
-				currentTracking = branch.TrackedBranch.Name;
-				entryName.Text = branch.Name;
-				checkTrack.Active = branch.IsTracking;
-			}
-			
+
 			foreach (Branch b in repo.GetBranches ()) {
 				AddValues (b.Name, ImageService.GetIcon ("vc-branch", IconSize.Menu));
 			}
-			
+
 			foreach (string t in repo.GetTags ())
 				AddValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu));
-			
+
 			foreach (Remote r in repo.GetRemotes ()) {
 				foreach (string b in repo.GetRemoteBranches (r.Name))
 					AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu));
 			}
-				
+
 			UpdateStatus ();
 		}
 		
+		public EditBranchDialog (GitRepository repo, string name, string tracking) : this (repo)
+		{
+			oldName = name;
+			currentTracking = tracking;
+			entryName.Text = name;
+			checkTrack.Active = !string.IsNullOrEmpty (tracking);
+		}
+
 		void AddValues (string name, Xwt.Drawing.Image icon)
 		{
 			TreeIter it = comboStore.AppendValues (name, icon, name);

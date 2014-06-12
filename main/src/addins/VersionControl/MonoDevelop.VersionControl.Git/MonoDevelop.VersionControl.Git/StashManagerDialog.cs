@@ -115,7 +115,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			Stash s = GetSelected ();
 			if (s != null) {
-				var dlg = new EditBranchDialog (repository, null, true);
+				var dlg = new EditBranchDialog (repository);
 				try {
 					if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 						repository.CreateBranchFromCommit (dlg.BranchName, s.Base);

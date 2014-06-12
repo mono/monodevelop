@@ -32,21 +32,29 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		readonly Remote remote;
 		readonly bool updating;
-		
-		public EditRemoteDialog (Remote remote, bool isNew)
+
+		// TODO: Add user possibility to choose refspecs.
+		public EditRemoteDialog ()
 		{
 			this.Build ();
-			this.remote = remote;
-			
-			updating = true;
+
 			entryName.Text = remote.Name;
-			// TODO: Push/Fetch URL
 			entryUrl.Text = remote.Url ?? "";
-			entryPushUrl.Text = string.IsNullOrEmpty (remote.Url) ? remote.Url : remote.Url;
-			if (!isNew)
-				checkImportTags.Visible = false;
-			updating = false;
 			UpdateButtons ();
+		}
+
+		public EditRemoteDialog (Remote remote) : this()
+		{
+			this.remote = remote;
+			checkImportTags.Visible = false;
+		}
+
+		public string RemoteName {
+			get { return entryName.Text; }
+		}
+
+		public string RemoteUrl {
+			get { return entryUrl.Text; }
 		}
 		
 		public bool ImportTags {
@@ -60,28 +68,12 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnEntryNameChanged (object sender, System.EventArgs e)
 		{
-			/*if (updating)
-				return;
-			remote.Name = entryName.Text;
-			UpdateButtons ();*/
+			UpdateButtons ();
 		}
 		
 		protected virtual void OnEntryUrlChanged (object sender, System.EventArgs e)
-		{/*
-			if (updating)
-				return;
-			if (remote.FetchUrl == remote.PushUrl)
-				entryPushUrl.Text = entryUrl.Text;
-			remote.FetchUrl = entryUrl.Text;
-			UpdateButtons ();*/
-		}
-		
-		protected virtual void OnEntryPushUrlChanged (object sender, System.EventArgs e)
-		{/*
-			if (updating)
-				return;
-			remote.PushUrl = entryPushUrl.Text;
-			UpdateButtons ();*/
+		{
+			UpdateButtons ();
 		}
 	}
 }

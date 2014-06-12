@@ -999,12 +999,12 @@ namespace MonoDevelop.VersionControl.Git
 			RootRepository.Network.Remotes.Rename (name, newName);
 		}
 
-		public void AddRemote (Remote remote, bool importTags)
+		public void AddRemote (string name, string url, bool importTags)
 		{
-			if (string.IsNullOrEmpty (remote.Name))
+			if (string.IsNullOrEmpty (name))
 				throw new InvalidOperationException ("Name not set");
 
-			RootRepository.Network.Remotes.Update (RootRepository.Network.Remotes.Add (remote.Name, remote.Url),
+			RootRepository.Network.Remotes.Update (RootRepository.Network.Remotes.Add (name, url),
 				r => r.TagFetchMode = importTags ? TagFetchMode.All : TagFetchMode.Auto);
 		}
 

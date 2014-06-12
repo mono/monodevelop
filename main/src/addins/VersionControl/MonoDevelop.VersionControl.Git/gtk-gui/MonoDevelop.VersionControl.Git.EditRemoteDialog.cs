@@ -7,7 +7,6 @@ namespace MonoDevelop.VersionControl.Git
 		private global::Gtk.VBox vbox7;
 		private global::Gtk.Table table3;
 		private global::Gtk.Entry entryName;
-		private global::Gtk.Entry entryPushUrl;
 		private global::Gtk.Entry entryUrl;
 		private global::Gtk.Label label7;
 		private global::Gtk.Label label8;
@@ -48,19 +47,6 @@ namespace MonoDevelop.VersionControl.Git
 			w2.LeftAttach = ((uint)(1));
 			w2.RightAttach = ((uint)(2));
 			w2.YOptions = ((global::Gtk.AttachOptions)(4));
-			// Container child table3.Gtk.Table+TableChild
-			this.entryPushUrl = new global::Gtk.Entry ();
-			this.entryPushUrl.CanFocus = true;
-			this.entryPushUrl.Name = "entryPushUrl";
-			this.entryPushUrl.IsEditable = true;
-			this.entryPushUrl.InvisibleChar = '●';
-			this.table3.Add (this.entryPushUrl);
-			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.table3 [this.entryPushUrl]));
-			w3.TopAttach = ((uint)(2));
-			w3.BottomAttach = ((uint)(3));
-			w3.LeftAttach = ((uint)(1));
-			w3.RightAttach = ((uint)(2));
-			w3.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table3.Gtk.Table+TableChild
 			this.entryUrl = new global::Gtk.Entry ();
 			this.entryUrl.CanFocus = true;
@@ -165,7 +151,6 @@ namespace MonoDevelop.VersionControl.Git
 			this.DefaultHeight = 206;
 			this.Hide ();
 			this.entryUrl.Changed += new global::System.EventHandler (this.OnEntryUrlChanged);
-			this.entryPushUrl.Changed += new global::System.EventHandler (this.OnEntryPushUrlChanged);
 			this.entryName.Changed += new global::System.EventHandler (this.OnEntryNameChanged);
 		}
 	}

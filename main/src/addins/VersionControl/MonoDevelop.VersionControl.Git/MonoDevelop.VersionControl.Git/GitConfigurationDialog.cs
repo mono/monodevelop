@@ -109,12 +109,9 @@ namespace MonoDevelop.VersionControl.Git
 			storeRemotes.Clear ();
 			string currentRemote = repo.GetCurrentRemote ();
 			foreach (Remote remote in repo.GetRemotes ()) {
+				// Take into account fetch/push ref specs.
 				string text = remote.Name == currentRemote ? "<b>" + remote.Name + "</b>" : remote.Name;
-				string url;
-				if (remote.Url == remote.Url)
-					url = remote.Url;
-				else
-					url = remote.Url + " (fetch)\n" + remote.Url + " (push)";
+				string url = remote.Url;
 				TreeIter it = storeRemotes.AppendValues (remote, text, url, null, remote.Name);
 				foreach (string branch in repo.GetRemoteBranches (remote.Name))
 					storeRemotes.AppendValues (it, null, branch, null, branch, remote.Name + "/" + branch);
@@ -132,7 +129,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnButtonAddBranchClicked (object sender, EventArgs e)
 		{
-			var dlg = new EditBranchDialog (repo, null, true);
+			var dlg = new EditBranchDialog (repo);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					repo.CreateBranch (dlg.BranchName, dlg.TrackSource);
@@ -149,7 +146,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
 			Branch b = (Branch) storeBranches.GetValue (it, 0);
-			var dlg = new EditBranchDialog (repo, b, false);
+			var dlg = new EditBranchDialog (repo, b.Name, b.TrackedBranch.CanonicalName);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					if (dlg.BranchName != b.Name) {
@@ -198,18 +195,15 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnButtonAddRemoteClicked (object sender, EventArgs e)
 		{
-			// TODO:
-			/*
-			var remote = new Remote ();
-			var dlg = new EditRemoteDialog (remote, true);
+			var dlg = new EditRemoteDialog ();
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-					repo.AddRemote (remote, dlg.ImportTags);
+					repo.AddRemote (dlg.RemoteName, dlg.RemoteUrl, dlg.ImportTags);
 					FillRemotes ();
 				}
 			} finally {
 				dlg.Destroy ();
-			}*/
+			}
 		}
 		
 		protected virtual void OnButtonEditRemoteClicked (object sender, EventArgs e)
@@ -222,13 +216,11 @@ namespace MonoDevelop.VersionControl.Git
 			if (remote == null)
 				return;
 
-			string oldName = remote.Name;
-			
-			var dlg = new EditRemoteDialog (remote, false);
+			var dlg = new EditRemoteDialog (remote);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-					if (remote.Name != oldName)
-						repo.RenameRemote (oldName, remote.Name);
+					if (remote.Name != dlg.RemoteName)
+						repo.RenameRemote (remote.Name, dlg.RemoteName);
 					FillRemotes ();
 				}
 			} finally {
@@ -266,8 +258,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected virtual void OnButtonTrackRemoteClicked (object sender, EventArgs e)
 		{
-			// TODO:
-			/*TreeIter it;
+			TreeIter it;
 			if (!treeRemotes.Selection.GetSelected (out it))
 				return;
 			string branchName = (string) storeRemotes.GetValue (it, 3);
@@ -276,20 +267,16 @@ namespace MonoDevelop.VersionControl.Git
 			
 			storeRemotes.IterParent (out it, it);
 			var remote = (Remote) storeRemotes.GetValue (it, 0);
-			
-			Branch b = new Branch ();
-			b.Name = branchName;
-			b.Tracking = remote.Name + "/" + branchName;
-			
-			var dlg = new EditBranchDialog (repo, b, true);
+
+			var dlg = new EditBranchDialog (repo, branchName, remote.Name + "/" + branchName);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
-					repo.CreateBranch (dlg.BranchName, dlg.TrackSource);
+					repo.SetBranchTrackSource (dlg.BranchName, dlg.TrackSource);
 					FillBranches ();
 				}
 			} finally {
 				dlg.Destroy ();
-			}*/
+			}
 		}
 
 		protected void OnButtonNewTagClicked (object sender, EventArgs e)
