@@ -218,6 +218,7 @@ namespace MonoDevelop.VersionControl.Git
 			List<Revision> revs = new List<Revision> ();
 
 			var repository = GetRepository (localFile);
+			localFile = repository.ToGitPath (localFile);
 			var sinceRev = (GitRevision)since;
 			var hc = GetHeadCommit (repository);
 			if (hc == null)
@@ -863,7 +864,6 @@ namespace MonoDevelop.VersionControl.Git
 		void DeleteCore (FilePath[] localPaths, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
-				List<FilePath> backupFiles = new List<FilePath> ();
 				var repository = group.Key;
 				var files = group;
 
@@ -1240,7 +1240,9 @@ namespace MonoDevelop.VersionControl.Git
 		internal GitRevision GetPreviousRevisionFor (GitRevision revision)
 		{
 			var id = revision.Commit.Parents.FirstOrDefault ();
-			return id == null ? null : new GitRevision (this, revision.GitRepository, id.Sha);
+			return id == null ? null : new GitRevision (this, revision.GitRepository, id.Sha) {
+				Commit = id
+			};
 		}
 
 		protected override void OnIgnore (FilePath[] localPath)
