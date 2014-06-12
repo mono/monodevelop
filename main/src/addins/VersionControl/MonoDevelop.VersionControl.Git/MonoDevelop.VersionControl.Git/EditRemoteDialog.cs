@@ -30,22 +30,20 @@ namespace MonoDevelop.VersionControl.Git
 {
 	partial class EditRemoteDialog : Gtk.Dialog
 	{
-		readonly Remote remote;
-
 		// TODO: Add user possibility to choose refspecs.
-		public EditRemoteDialog ()
+		public EditRemoteDialog () : this (null)
 		{
-			this.Build ();
-
-			entryName.Text = remote.Name;
-			entryUrl.Text = remote.Url ?? "";
-			UpdateButtons ();
 		}
 
-		public EditRemoteDialog (Remote remote) : this()
+		public EditRemoteDialog (Remote remote)
 		{
-			this.remote = remote;
-			checkImportTags.Visible = false;
+			this.Build ();
+			if (remote != null) {
+				entryName.Text = remote.Name;
+				entryUrl.Text = remote.Url ?? "";
+			}
+			checkImportTags.Visible = remote == null;
+			UpdateButtons ();
 		}
 
 		public string RemoteName {

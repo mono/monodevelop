@@ -30,6 +30,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using LibGit2Sharp;
+using System;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -40,12 +41,18 @@ namespace MonoDevelop.VersionControl.Git
 		readonly string oldName;
 		readonly GitRepository repo;
 
-		public EditBranchDialog (GitRepository repo)
+		public EditBranchDialog (GitRepository repo) : this(repo, string.Empty, string.Empty)
+		{
+		}
+
+		public EditBranchDialog (GitRepository repo, string name, string tracking)
 		{
 			this.Build ();
-			this.repo =  repo;
+			this.repo = repo;
+			oldName = name;
+			currentTracking = tracking;
 
-			comboStore = new ListStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string));
+			comboStore = new ListStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string), typeof(string));
 			comboSources.Model = comboStore;
 			var crp = new CellRendererImage ();
 			comboSources.PackStart (crp, false);
@@ -55,31 +62,23 @@ namespace MonoDevelop.VersionControl.Git
 			comboSources.AddAttribute (crt, "text", 2);
 
 			foreach (Branch b in repo.GetBranches ()) {
-				AddValues (b.Name, ImageService.GetIcon ("vc-branch", IconSize.Menu));
+				AddValues (b.Name, ImageService.GetIcon ("vc-branch", IconSize.Menu), "refs/heads/");
 			}
-
-			foreach (string t in repo.GetTags ())
-				AddValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu));
 
 			foreach (Remote r in repo.GetRemotes ()) {
 				foreach (string b in repo.GetRemoteBranches (r.Name))
-					AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu));
+					AddValues (r.Name + "/" + b, ImageService.GetIcon ("vc-repository", IconSize.Menu), "refs/remotes/");
 			}
+
+			entryName.Text = name;
+			checkTrack.Active = !string.IsNullOrEmpty (tracking);
 
 			UpdateStatus ();
 		}
-		
-		public EditBranchDialog (GitRepository repo, string name, string tracking) : this (repo)
-		{
-			oldName = name;
-			currentTracking = tracking;
-			entryName.Text = name;
-			checkTrack.Active = !string.IsNullOrEmpty (tracking);
-		}
 
-		void AddValues (string name, Xwt.Drawing.Image icon)
+		void AddValues (string name, Xwt.Drawing.Image icon, string prefix)
 		{
-			TreeIter it = comboStore.AppendValues (name, icon, name);
+			TreeIter it = comboStore.AppendValues (name, icon, name, prefix);
 			if (name == currentTracking)
 				comboSources.SetActiveIter (it);
 		}
@@ -89,7 +88,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (checkTrack.Active) {
 					TreeIter it;
 					if (comboSources.GetActiveIter (out it))
-						return (string) comboStore.GetValue (it, 0);
+						return (string)comboStore.GetValue (it, 3) + (string)comboStore.GetValue (it, 0);
 				}
 				return null;
 			}
@@ -107,7 +106,7 @@ namespace MonoDevelop.VersionControl.Git
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString ("A branch with this name already exists") + "</span>";
 				labelError.Show ();
 				buttonOk.Sensitive = false;
-			} else if (!Reference.IsValidName (entryName.Text)) {
+			} else if (!Reference.IsValidName ("refs/" + entryName.Text)) {
 				labelError.Markup = "<span color='red'>" + GettextCatalog.GetString (@"A branch name can not:
 Start with '.' or end with '/' or '.lock'
 Contain a ' ', '..', '~', '^', ':', '\', '?', '['") + "</span>";

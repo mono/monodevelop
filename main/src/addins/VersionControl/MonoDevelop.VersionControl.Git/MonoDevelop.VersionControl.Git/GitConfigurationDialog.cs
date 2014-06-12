@@ -97,7 +97,7 @@ namespace MonoDevelop.VersionControl.Git
 			string currentBranch = repo.GetCurrentBranch ();
 			foreach (Branch branch in repo.GetBranches ()) {
 				string text = branch.Name == currentBranch ? "<b>" + branch.Name + "</b>" : branch.Name;
-				storeBranches.AppendValues (branch, text, branch.TrackedBranch.Name, branch.Name);
+				storeBranches.AppendValues (branch, text, branch.IsTracking ? branch.TrackedBranch.Name : String.Empty, branch.Name);
 			}
 			state.Load ();
 		}
@@ -146,7 +146,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
 			Branch b = (Branch) storeBranches.GetValue (it, 0);
-			var dlg = new EditBranchDialog (repo, b.Name, b.TrackedBranch.CanonicalName);
+			var dlg = new EditBranchDialog (repo, b.Name, b.IsTracking ? b.TrackedBranch.Name : String.Empty);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
 					if (dlg.BranchName != b.Name) {

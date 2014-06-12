@@ -947,7 +947,7 @@
               <widget class="Gtk.CheckButton" id="checkTrack">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Track a branch or tag:</property>
+                <property name="Label" translatable="yes">Track a branch:</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>

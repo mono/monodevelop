@@ -970,8 +970,11 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void SetBranchTrackSource (string name, string trackSource)
 		{
-			RootRepository.Branches.Update (RootRepository.Branches [name],
-				bu => bu.Remote = trackSource);
+			var branch = RootRepository.Branches [name];
+			if (branch != null) {
+				RootRepository.Branches.Update (branch,	bu => bu.TrackedBranch = trackSource);
+			} else
+				RootRepository.Branches.Add (name, trackSource);
 		}
 
 		public void RemoveBranch (string name)
