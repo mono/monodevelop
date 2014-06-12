@@ -98,7 +98,6 @@ namespace MonoDevelop.Components.DockNotebook
 
 			ShowPlaceholder (x, y);
 
-			int winw, winh;
 			var alloc = titleWindow.Child.SizeRequest ();
 			titleWindow.Move (x - alloc.Width / 2, y - alloc.Height / 2);
 			titleWindow.Show ();
@@ -270,7 +269,7 @@ namespace MonoDevelop.Components.DockNotebook
 			newWindow.Title = DefaultWorkbench.GetTitle (workspaceWindow);
 
 			workspaceWindow.SetDockNotebook (newNotebook, newTab);
-			newWindow.Move (ox + allocation.Width / 2 - w / 2, oy + allocation.Height / 2 - h / 2);
+			newWindow.Move (ox - w / 2, oy - h / 2);
 			newWindow.Resize (w, h);
 			newWindow.ShowAll ();
 			DockNotebook.ActiveNotebook = newNotebook;
