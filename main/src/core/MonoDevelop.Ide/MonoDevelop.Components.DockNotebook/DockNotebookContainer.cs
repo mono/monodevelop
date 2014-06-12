@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -38,17 +39,17 @@ namespace MonoDevelop.Components.DockNotebook
 
 		DockNotebook tabControl;
 
-		List<DockNotebook> notebooks = new List<DockNotebook> ();
+		int MAX_SPLITS = 1;
 
 		public bool AllowLeftInsert {
 			get {
-				return IdeApp.Workbench.Splits.Count == 0;
+				return SplitCount < MAX_SPLITS;
 			}
 		}
 
 		public bool AllowRightInsert {
 			get {
-				return IdeApp.Workbench.Splits.Count == 0;
+				return SplitCount < MAX_SPLITS;
 			}
 		}
 
@@ -68,7 +69,24 @@ namespace MonoDevelop.Components.DockNotebook
 				tabControl.PageRemoved += HandlePageRemoved;
 		}
 
-		public DockNotebookContainer MotherContainer ()
+		public int SplitCount {
+			get {
+				if (Child is DockNotebook)
+					return 0;
+				return GetSplitCount (Child); 
+			}
+		}
+
+		int GetSplitCount (Widget w)
+		{
+			var p = w as Paned;
+			if (p != null)
+				return 1 + GetSplitCount (p.Child1) + GetSplitCount (p.Child2);
+			else
+				return ((DockNotebookContainer)w).SplitCount;
+		}
+
+		internal DockNotebookContainer MotherContainer ()
 		{
 			if (Parent == null)
 				return null;
@@ -79,34 +97,24 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void SetSingleMode ()
 		{
-			var mother = MotherContainer ();
-
-			if (mother == null)
+			var notebooks = GetNotebooks ().ToArray ();
+			if (notebooks.Length <= 1)
 				return;
 
-			var paned = mother.Child as Paned;
+			var single = notebooks [0];
+			for (int n = 1; n < notebooks.Length; n++) {
+				var nb = notebooks [n];
+				var tabCount = nb.TabCount;
 
-			var container1 = paned.Child1 as DockNotebookContainer;
-			var container2 = paned.Child2 as DockNotebookContainer;
+				for (var i = 0; i < tabCount; i++) {
+					var tab = nb.GetTab (0);
+					var window = (SdiWorkspaceWindow)tab.Content;
+					nb.RemoveTab (0, false);
 
-			DockNotebook notebook1, notebook2;
-			if (container2.isMasterTab) {
-				notebook1 = container2.TabControl;
-				notebook2 = container1.TabControl;
-			} else {
-				notebook1 = container1.TabControl;
-				notebook2 = container2.TabControl;
-			}
-			var tabCount = notebook2.TabCount;
-
-			for (var i = 0; i < tabCount; i++) {
-				var tab = notebook2.GetTab (0);
-				var window = (SdiWorkspaceWindow)tab.Content;
-				notebook2.RemoveTab (0, false);
-
-				var newTab = notebook1.InsertTab (-1);
-				newTab.Content = window;
-				window.SetDockNotebook (notebook1, newTab);
+					var newTab = single.InsertTab (-1);
+					newTab.Content = window;
+					window.SetDockNotebook (single, newTab);
+				}
 			}
 		}
 
@@ -234,6 +242,83 @@ namespace MonoDevelop.Components.DockNotebook
 			IdeApp.Workbench.Splits.Add (split);
 
 			return split;
+		}
+
+		public DockNotebook GetFirstNotebook ()
+		{
+			var p = Child;
+			while (true) {
+				if (p is DockNotebook)
+					return (DockNotebook)p;
+				if (p is DockNotebookContainer)
+					return ((DockNotebookContainer)p).TabControl;
+				p = ((Paned)p).Child1;
+			}
+		}
+
+		public DockNotebook GetLastNotebook ()
+		{
+			var p = Child;
+			while (true) {
+				if (p is DockNotebook)
+					return (DockNotebook)p;
+				if (p is DockNotebookContainer)
+					return ((DockNotebookContainer)p).TabControl;
+				p = ((Paned)p).Child2;
+			}
+		}
+
+		/// <summary>
+		/// Returns the next notebook in the same window
+		/// </summary>
+		public DockNotebook GetNextNotebook (DockNotebook current)
+		{
+			var container = (DockNotebookContainer)current.Parent;
+			var rootContainer = container.MotherContainer ();
+			if (container == rootContainer)
+				return null;
+
+			Widget curChild = container;
+			var paned = (Paned)container.Parent;
+			do {
+				if (paned.Child1 == curChild)
+					return ((DockNotebookContainer)paned.Child2).GetFirstNotebook ();
+				curChild = paned;
+				paned = paned.Parent as Paned;
+			}
+			while (paned != null);
+			return null;
+		}
+
+		public IEnumerable<DockNotebook> GetNotebooks ()
+		{
+			var nb = GetFirstNotebook ();
+			while (nb != null) {
+				yield return nb;
+				nb = GetNextNotebook (nb);
+			}
+		}
+
+		/// <summary>
+		/// Returns the previous notebook in the same window
+		/// </summary>
+		public DockNotebook GetPreviousNotebook (DockNotebook current)
+		{
+			var container = (DockNotebookContainer)current.Parent;
+			var rootContainer = container.MotherContainer ();
+			if (container == rootContainer)
+				return null;
+
+			Widget curChild = container;
+			var paned = (Paned)container.Parent;
+			do {
+				if (paned.Child2 == curChild)
+					return ((DockNotebookContainer)paned.Child1).GetLastNotebook ();
+				curChild = paned;
+				paned = paned.Parent as Paned;
+			}
+			while (paned != null);
+			return null;
 		}
 	}
 }

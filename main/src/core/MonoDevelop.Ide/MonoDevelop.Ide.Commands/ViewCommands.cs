@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.DockNotebook;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -285,25 +286,16 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.Workbench.Splits.Count == 0) {
-				var notebook = ((DefaultWorkbench)IdeApp.Workbench.RootWindow).TabControl;
-				info.Enabled = (notebook.Tabs.Count > 1);
-			} else {
-				info.Enabled = false;
-			}
+			info.Enabled = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.TabCount > 1 && DockNotebook.ActiveNotebook.Container.AllowRightInsert;
 		}
 
 		protected override void Run ()
 		{
-			var notebook = ((DefaultWorkbench)IdeApp.Workbench.RootWindow).TabControl;
-			var container = (MonoDevelop.Components.DockNotebook.DockNotebookContainer)notebook.Parent;
-
-			if (container.AllowRightInsert) {
-				var tab = (MonoDevelop.Components.DockNotebook.DockNotebookTab)notebook.CurrentTab;
-				var window = (SdiWorkspaceWindow)tab.Content;
-				notebook.RemoveTab (tab.Index, false);
-				container.InsertRight (window);
-			}
+			var container = DockNotebook.ActiveNotebook.Container;
+			var tab = DockNotebook.ActiveNotebook.CurrentTab;
+			var window = (SdiWorkspaceWindow)tab.Content;
+			DockNotebook.ActiveNotebook.RemoveTab (tab.Index, false);
+			container.InsertRight (window);
 		}
 	}
 
@@ -311,12 +303,12 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = (IdeApp.Workbench.Splits.Count > 0);
+			info.Enabled = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.Container.SplitCount > 0;
 		}
 
 		protected override void Run ()
 		{
-			IdeApp.Workbench.SetSingleMode ();
+			DockNotebook.ActiveNotebook.Container.SetSingleMode ();
 		}
 	}
 
@@ -324,7 +316,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.Workbench.Splits.Count == 0) {
+			if (IdeApp.Workbench.ActiveDocument == null) {
 				info.Enabled = false;
 			} else {
 				var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
@@ -343,7 +335,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			if (IdeApp.Workbench.Splits.Count == 0) {
+			if (IdeApp.Workbench.ActiveDocument == null) {
 				info.Enabled = false;
 			} else {
 				var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;

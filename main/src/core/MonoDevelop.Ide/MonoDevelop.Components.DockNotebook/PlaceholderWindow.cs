@@ -138,7 +138,6 @@ namespace MonoDevelop.Components.DockNotebook
 		uint anim;
 		int rx, ry, rw, rh;
 
-		int controlKeyMask;
 		DocumentTitleWindow titleWindow;
 
 		static PlaceholderWindow ()
@@ -166,48 +165,11 @@ namespace MonoDevelop.Components.DockNotebook
 			titleWindow = new DocumentTitleWindow (this, tab);
 		}
 
-		protected override bool OnKeyPressEvent (EventKey evnt)
-		{
-			if (evnt.Key == Gdk.Key.Escape)
-				Destroy ();
-			if (evnt.Key == Gdk.Key.Control_L)
-				controlKeyMask |= 1;
-			if (evnt.Key == Gdk.Key.Control_R)
-				controlKeyMask |= 2;
-			MovePosition (curX, curY);
-
-			return base.OnKeyPressEvent (evnt);
-		}
-
-
-		protected override bool OnKeyReleaseEvent (EventKey evnt)
-		{
-			if (evnt.Key == Gdk.Key.Control_L)
-				controlKeyMask &= ~1;
-			if (evnt.Key == Gdk.Key.Control_R)
-				controlKeyMask &= ~2;
-			MovePosition (curX, curY);
-
-			return base.OnKeyReleaseEvent (evnt);
-		}
-
-		protected override bool OnButtonReleaseEvent (EventButton evnt)
-		{
-			Destroy ();
-			return base.OnButtonReleaseEvent (evnt);
-		}
-
-		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
-		{
-			Destroy ();
-			return base.OnLeaveNotifyEvent (evnt);
-		}
-
 		DockNotebook hoverNotebook;
 
 		bool CanPlaceInHoverNotebook ()
 		{
-			return controlKeyMask == 0 && hoverNotebook != null;
+			return !titleWindow.ControlPressed && hoverNotebook != null;
 		}
 
 		protected override void OnDestroyed ()
@@ -219,18 +181,29 @@ namespace MonoDevelop.Components.DockNotebook
 		}
 
 		int curX, curY;
+
+		public void UpdatePosition ()
+		{
+			MovePosition (curX, curY);
+		}
+
 		public void MovePosition (int x, int y)
 		{
 			this.curX = x;
 			this.curY = y;
-			hoverNotebook = null;
 
-			titleWindow.ShowAll ();
+			ShowPlaceholder (x, y);
 
 			int winw, winh;
-			titleWindow.GetSize (out winw, out winh);
-			titleWindow.Move (x - winw/2, y - winh/2);
-			titleWindow.GdkWindow.Raise ();
+			var alloc = titleWindow.Child.SizeRequest ();
+			titleWindow.Move (x - alloc.Width / 2, y - alloc.Height / 2);
+			titleWindow.Show ();
+			titleWindow.Present ();
+		}
+
+		public void ShowPlaceholder (int x, int y)
+		{
+			hoverNotebook = null;
 
 			// TODO: Handle z-ordering of floating windows.
 			int ox = 0, oy = 0;
@@ -248,14 +221,19 @@ namespace MonoDevelop.Components.DockNotebook
 					TransientFor = (Gtk.Window) hoverNotebook.Toplevel;
 					ox = ox2;
 					oy = oy2;
+					break;
 				}
 			}
 
 			if (CanPlaceInHoverNotebook ()) {
-				var container = (DockNotebookContainer)hoverNotebook.Parent;
+				var container = hoverNotebook.Container;
 				var alloc = hoverNotebook.Allocation;
+				var targetTabCount = hoverNotebook.TabCount;
 
-				if (x <= ox + alloc.Width / 3) {
+				if (hoverNotebook.Tabs.Contains (frame))
+					targetTabCount--; // Current is going to be removed, so it doesn't count
+
+				if (targetTabCount > 0 && x <= ox + alloc.Width / 3) {
 					if (container.AllowLeftInsert) {
 						Relocate (
 							ox,
@@ -272,7 +250,7 @@ namespace MonoDevelop.Components.DockNotebook
 					}
 				}
 
-				if (x >= ox + alloc.Width - alloc.Width / 3) {
+				if (targetTabCount > 0 && x >= ox + alloc.Width - alloc.Width / 3) {
 					if (container.AllowRightInsert) {
 						Relocate (
 							ox + alloc.Width / 2,
@@ -304,14 +282,8 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 
 			Hide ();
-/*			Relocate (
-				x - w / 2, 
-				y - h / 2, 
-				w, 
-				h, 
-				false
-			); */
 			placementDelegate = PlaceInFloatingFrame;
+			titleWindow.SetDectorated (true);
 		}
 
 		protected override void OnRealized ()
@@ -340,6 +312,7 @@ namespace MonoDevelop.Components.DockNotebook
 					Resize (w, h);
 				Move (x, y);
 				ShowAll ();
+				titleWindow.SetDectorated (false);
 
 				rx = x; ry = y; rw = w; rh = h;
 
@@ -396,6 +369,7 @@ namespace MonoDevelop.Components.DockNotebook
 			newWindow.Move (ox + allocation.Width / 2 - w / 2, oy + allocation.Height / 2 - h / 2);
 			newWindow.Resize (w, h);
 			newWindow.ShowAll ();
+			DockNotebook.ActiveNotebook = newNotebook;
 		}
 
 		const int w = 640;
@@ -414,19 +388,14 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public void PlaceWindow (DockNotebook notebook)
 		{
-			int ox, oy;
-			GdkWindow.GetOrigin (out ox, out oy); 
-
 			var allocation = Allocation;
 			Destroy ();
 
 			if (placementDelegate != null) {
 				var tab = notebook.CurrentTab;
-				notebook.RemoveTab (tab.Index, false); 
+				notebook.RemoveTab (tab.Index, true); 
 
-				placementDelegate (notebook, tab, allocation, ox, oy);
-
-				IdeApp.Workbench.EnsureValidSplits ();
+				placementDelegate (notebook, tab, allocation, curX, curY);
 			}
 		}
 	}
@@ -434,36 +403,111 @@ namespace MonoDevelop.Components.DockNotebook
 
 	class DocumentTitleWindow: Gtk.Window
 	{
-		public DocumentTitleWindow (Gtk.Window parent, DockNotebookTab draggedItem): base (Gtk.WindowType.Popup)
+		int controlKeyMask;
+		PlaceholderWindow placeholder;
+		HBox titleBox;
+
+		public DocumentTitleWindow (PlaceholderWindow placeholder, DockNotebookTab draggedItem): base (Gtk.WindowType.Toplevel)
 		{
-			SdiWorkspaceWindow w;
+			this.placeholder = placeholder;
 
 			SkipTaskbarHint = true;
 			Decorated = false;
-			//KeepAbove = true;
-			
+
 			//TransientFor = parent;
 			TypeHint = WindowTypeHint.Utility;
 
 			VBox mainBox = new VBox ();
+			mainBox.Spacing = 3;
 
-			HBox box = new HBox (false, 3);
+			titleBox = new HBox (false, 3);
 			if (draggedItem.Icon != null) {
 				var img = new Xwt.ImageView (draggedItem.Icon);
-				box.PackStart (img.ToGtkWidget (), false, false, 0);
+				titleBox.PackStart (img.ToGtkWidget (), false, false, 0);
 			}
 			Gtk.Label la = new Label ();
 			la.Markup = draggedItem.Text;
-			box.PackStart (la, false, false, 0);
+			titleBox.PackStart (la, false, false, 0);
 
-			mainBox.PackStart (box, false, false, 0);
+			mainBox.PackStart (titleBox, false, false, 0);
+
+			var wi = RenderWidget (draggedItem.Content);
+			if (wi != null) {
+				wi = wi.WithBoxSize (200);
+				mainBox.PackStart (new ImageView (wi), false, false, 0);
+			}
 
 			CustomFrame f = new CustomFrame ();
-			f.SetPadding (12, 12, 12, 12);
+			f.SetPadding (2, 2, 2, 2);
 			f.SetMargins (1, 1, 1, 1);
 			f.Add (mainBox);
 
 			Add (f);
+			mainBox.CanFocus = true;
+			Child.ShowAll ();
+		}
+
+		Xwt.Drawing.Image RenderWidget (Widget w)
+		{
+			Gdk.Window win = w.GdkWindow;
+			if (win != null && win.IsViewable)
+				return Xwt.Toolkit.CurrentEngine.WrapImage (Gdk.Pixbuf.FromDrawable (win, Colormap.System, w.Allocation.X, w.Allocation.Y, 0, 0, w.Allocation.Width, w.Allocation.Height));
+			else
+				return null;
+		}
+
+		public void SetDectorated (bool decorated)
+		{
+		//	Decorated = decorated;
+		//	titleBox.Visible = !decorated;
+		}
+
+		public bool ControlPressed {
+			get { return controlKeyMask != 0; }
+		}
+
+		protected override bool OnKeyPressEvent (EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Escape)
+				Close ();
+			if (evnt.Key == Gdk.Key.Control_L)
+				controlKeyMask |= 1;
+			if (evnt.Key == Gdk.Key.Control_R)
+				controlKeyMask |= 2;
+			placeholder.UpdatePosition ();
+
+			return base.OnKeyPressEvent (evnt);
+		}
+
+
+		protected override bool OnKeyReleaseEvent (EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Control_L)
+				controlKeyMask &= ~1;
+			if (evnt.Key == Gdk.Key.Control_R)
+				controlKeyMask &= ~2;
+			placeholder.UpdatePosition ();
+
+			return base.OnKeyReleaseEvent (evnt);
+		}
+
+		protected override bool OnButtonReleaseEvent (EventButton evnt)
+		{
+			Close ();
+			return base.OnButtonReleaseEvent (evnt);
+		}
+
+		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
+		{
+			Close ();
+			return base.OnLeaveNotifyEvent (evnt);
+		}
+
+		public void Close ()
+		{
+			Application.Invoke (delegate {
+				placeholder.Destroy ();
+			});
 		}
 	}
 }

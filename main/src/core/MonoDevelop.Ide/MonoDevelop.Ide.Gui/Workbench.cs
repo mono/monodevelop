@@ -235,17 +235,6 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public void EnsureValidSplits ()
-		{
-			foreach (var split in Splits) {
-				if (split.Notebook1.TabControl.TabCount == 0) {
-					SetSingleMode ();
-					Splits.Clear ();
-					return;
-				}
-			}
-		}
-
 		public IList<string> Layouts {
 			get { return workbench.Layouts; }
 		}
@@ -603,11 +592,6 @@ namespace MonoDevelop.Ide.Gui
 			return document;
 		}
 
-		public void SetSingleMode ()
-		{
-			ActiveDocument.Window.SwitchToSingleMode ();
-		}
-		
 		public void ShowGlobalPreferencesDialog (Gtk.Window parentWindow)
 		{
 			ShowGlobalPreferencesDialog (parentWindow, null);

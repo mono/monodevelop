@@ -210,6 +210,29 @@ namespace MonoDevelop.Components.DockNotebook
 			tabStrip.InitSize ();
 		}
 
+		public DockNotebookContainer Container {
+			get {
+				var container = (DockNotebookContainer)Parent;
+				return container.MotherContainer () ?? container;
+			}
+		}
+
+		/// <summary>
+		/// Returns the next notebook in the same window
+		/// </summary>
+		public DockNotebook GetNextNotebook ()
+		{
+			return Container.GetNextNotebook (this);
+		}
+
+		/// <summary>
+		/// Returns the previous notebook in the same window
+		/// </summary>
+		public DockNotebook GetPreviousNotebook ()
+		{
+			return Container.GetPreviousNotebook (this);
+		}
+
 		public Action<DockNotebook, int,Gdk.EventButton> DoPopupMenu { get; set; }
 
 		public DockNotebookTab InsertTab (int index)
@@ -314,6 +337,8 @@ namespace MonoDevelop.Components.DockNotebook
 		protected override void OnDestroyed ()
 		{
 			allNotebooks.Remove (this);
+			if (ActiveNotebook == this)
+				ActiveNotebook = null;
 			if (fleurCursor != null) {
 				fleurCursor.Dispose ();
 				fleurCursor = null;

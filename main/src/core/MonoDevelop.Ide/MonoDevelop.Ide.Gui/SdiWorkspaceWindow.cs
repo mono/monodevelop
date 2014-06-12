@@ -279,91 +279,41 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool CanMoveToNextNotebook ()
 		{
-			var container = (DockNotebookContainer)TabControl.Parent;
-			var mother = container.MotherContainer ();
-			var paned = mother.Child as Paned;
-			if (paned == null)
-				return false;
-			var container1 = paned.Child1 as DockNotebookContainer;
-
-			return (container == container1);
+			return TabControl.GetNextNotebook () != null;
 		}
 
 		public bool CanMoveToPreviousNotebook ()
 		{
-			var container = (DockNotebookContainer)TabControl.Parent;
-			var mother = container.MotherContainer ();
-			var paned = mother.Child as Paned;
-			if (paned == null)
-				return false;
-			var container2 = paned.Child2 as DockNotebookContainer;
-
-			return (container == container2);
+			return TabControl.GetPreviousNotebook () != null;
 		}
 
 		public void SwitchToSingleMode ()
 		{
-			var container = (DockNotebookContainer)TabControl.Parent;
-			container.SetSingleMode ();
+		//	tab.SwitchToSingleMode ();
 		}
 
 		public void MoveToNextNotebook ()
 		{
-			var container = (DockNotebookContainer)TabControl.Parent;
-			var mother = container.MotherContainer ();
-			var paned = mother.Child as Paned;
-			var container1 = paned.Child1 as DockNotebookContainer;
-			var container2 = paned.Child2 as DockNotebookContainer;
-
-			DockNotebookContainer target;
-			DockNotebookContainer source;
-
-			if (container1 == container) {
-				source = container1;
-				target = container2;
-			} else {
+			var nextNotebook = TabControl.GetNextNotebook ();
+			if (nextNotebook == null)
 				return;
-			}
 
-			if (source.TabControl.TabCount == 1) {
-				SwitchToSingleMode ();
-				return;
-			}
-
-			var tab = source.TabControl.CurrentTab;
-			var window = (SdiWorkspaceWindow)tab.Content;
-
-			source.TabControl.RemoveTab (source.TabControl.CurrentTabIndex, false);
-			var newTab = target.TabControl.InsertTab (-1);
-			newTab.Content = window;
-			window.SetDockNotebook (target.TabControl, newTab);
+			TabControl.RemoveTab (tab.Index, true);
+			var newTab = nextNotebook.InsertTab (-1);
+			newTab.Content = this;
+			SetDockNotebook (nextNotebook, newTab);
 		}
 
 		public void MoveToPreviousNotebook ()
 		{
-			var container = (DockNotebookContainer)TabControl.Parent;
-			var mother = container.MotherContainer ();
-			var paned = mother.Child as Paned;
-			var container1 = paned.Child1 as DockNotebookContainer;
-			var container2 = paned.Child2 as DockNotebookContainer;
-
-			DockNotebookContainer target;
-			DockNotebookContainer source;
-
-			if (container2 == container) {
-				source = container2;
-				target = container1;
-			} else {
+			var nextNotebook = TabControl.GetPreviousNotebook ();
+			if (nextNotebook == null)
 				return;
-			}
 
-			var tab = source.TabControl.CurrentTab;
-			var window = (SdiWorkspaceWindow)tab.Content;
-
-			source.TabControl.RemoveTab (source.TabControl.CurrentTabIndex, false);
-			var newTab = target.TabControl.InsertTab (-1);
-			newTab.Content = window;
-			window.SetDockNotebook (target.TabControl, newTab);
+			TabControl.RemoveTab (tab.Index, true);
+			var newTab = nextNotebook.InsertTab (-1);
+			newTab.Content = this;
+			SetDockNotebook (nextNotebook, newTab);
 		}
 		
 		static void DeepGrabFocus (Gtk.Widget widget)
