@@ -436,15 +436,17 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected override void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			// if (GitService.useRebaseOptionWhenPulling)
-			// do rebase
-			// else
-			// Default to merge.
+			// TODO: Make it work differently for submodules.
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
-			RootRepository.Network.Pull (GetSignature (), new PullOptions {
-				FetchOptions = null, // Progress of pulling.
-				MergeOptions = null  // Get files that have changed and such.
-			});
+			Fetch (monitor);
+
+			if (RootRepository.Head.IsTracking) {
+				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
+				if (GitService.UseRebaseOptionWhenPulling)
+					Merge (RootRepository.Head.TrackedBranch.Name, options, monitor);
+				else
+					Rebase (RootRepository.Head.TrackedBranch.Name, options, monitor);
+			}
 
 			monitor.EndTask ();
 		}
@@ -454,11 +456,11 @@ namespace MonoDevelop.VersionControl.Git
 			RootRepository.Fetch (RootRepository.Head.Remote.Name, new FetchOptions {
 				OnProgress = null,
 				OnTransferProgress = null,
-				OnUpdateTips = null
+				OnUpdateTips = null,
 			});
 		}
 
-		public void Rebase (string upstreamRef, GitUpdateOptions options, IProgressMonitor monitor)
+		public void Rebase (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
 			/*StashCollection stashes = GitUtil.GetStashes (RootRepository);
 			Stash stash = null;
@@ -467,21 +469,6 @@ namespace MonoDevelop.VersionControl.Git
 			{
 				monitor.BeginTask (GettextCatalog.GetString ("Rebasing"), 5);
 				List<string> UpdateSubmodules = new List<string> ();
-
-				// TODO: Fix stash so we don't have to do update before the main repo update.
-				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Checking repository submodules"));
-					if (!GetSubmodulesToUpdate (UpdateSubmodules))
-						return;
-
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
-					var submoduleUpdate = git.SubmoduleUpdate ();
-					foreach (var submodule in UpdateSubmodules)
-						submoduleUpdate.AddPath (submodule);
-
-					submoduleUpdate.Call ();
-					monitor.Step (1);
-				}
 
 				if ((options & GitUpdateOptions.SaveLocalChanges) != GitUpdateOptions.SaveLocalChanges) {
 					const VersionStatus unclean = VersionStatus.Modified | VersionStatus.ScheduledAdd | VersionStatus.ScheduledDelete;
@@ -584,35 +571,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Merge (string branch, GitUpdateOptions options, IProgressMonitor monitor)
 		{
-			RootRepository.Merge (branch, GetSignature (), new MergeOptions {
-
-			});
-			/*IEnumerable<DiffEntry> statusList = null;
 			Stash stash = null;
-			StashCollection stashes = GetStashes (RootRepository);
-			NGit.Api.Git git = new NGit.Api.Git (RootRepository);
+			StashCollection stashes = GetStashes ();
 
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Merging"), 5);
 				List<string> UpdateSubmodules = new List<string> ();
-
-				// TODO: Fix stash so we don't have to do update before the main repo update.
-				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Checking repository submodules"));
-					if (!GetSubmodulesToUpdate (UpdateSubmodules))
-						return;
-
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
-					var submoduleUpdate = git.SubmoduleUpdate ();
-					foreach (var submodule in UpdateSubmodules)
-						submoduleUpdate.AddPath (submodule);
-
-					submoduleUpdate.Call ();
-					monitor.Step (1);
-				}
-
-				// Get a list of files that are different in the target branch
-				statusList = GitUtil.GetChangedFiles (RootRepository, branch);
 				monitor.Step (1);
 
 				if ((options & GitUpdateOptions.SaveLocalChanges) != GitUpdateOptions.SaveLocalChanges) {
@@ -636,44 +600,33 @@ namespace MonoDevelop.VersionControl.Git
 
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
-					using (var gm = new GitMonitor (monitor))
-						stash = stashes.Create (gm, GetStashName ("_tmp_"));
+					CreateStash (GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
 				
 				// Apply changes
-				
-				ObjectId branchId = RootRepository.Resolve (branch);
+				MergeResult mergeResult = RootRepository.Merge (branch, GetSignature (), new MergeOptions {
+					CheckoutNotifyFlags = CheckoutNotifyFlags.Updated,
+					OnCheckoutNotify = (path, flags) => {
+						FileService.NotifyFileChanged (RootRepository.FromGitPath (path));
+						return true;
+					}
+				});
 
-				MergeCommandResult mergeResult = git.Merge ().SetStrategy (MergeStrategy.RESOLVE).Include (branchId).Call ();
-				if (mergeResult.GetMergeStatus () == MergeStatus.CONFLICTING || mergeResult.GetMergeStatus () == MergeStatus.FAILED) {
-					var conflicts = mergeResult.GetConflicts ();
+				if (mergeResult.Status == MergeStatus.Conflicts) {
 					bool commit = true;
-					if (conflicts != null) {
-						foreach (string conflictFile in conflicts.Keys) {
-							ConflictResult res = ResolveConflict (RootRepository.FromGitPath (conflictFile));
-							if (res == ConflictResult.Abort) {
-								GitUtil.HardReset (RootRepository, GetHeadCommit (RootRepository));
-								commit = false;
-								break;
-							} else if (res == ConflictResult.Skip) {
-								Revert (RootRepository.FromGitPath (conflictFile), false, monitor);
-								break;
-							}
+					foreach (var conflictFile in RootRepository.Index.Conflicts) {
+						ConflictResult res = ResolveConflict (RootRepository.FromGitPath (conflictFile.Ancestor.Path));
+						if (res == ConflictResult.Abort) {
+							RootRepository.Reset (ResetMode.Hard);
+							commit = false;
+							break;
+						} else if (res == ConflictResult.Skip) {
+							Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
+							break;
 						}
 					}
-					if (commit)
-						git.Commit ().Call ();
-				}
-
-				if ((options & GitUpdateOptions.UpdateSubmodules) == GitUpdateOptions.UpdateSubmodules) {
-					monitor.Log.WriteLine (GettextCatalog.GetString ("Updating repository submodules"));
-					var submoduleUpdate = git.SubmoduleUpdate ();
-					foreach (var submodule in UpdateSubmodules)
-						submoduleUpdate.AddPath (submodule);
-
-					submoduleUpdate.Call ();
-					monitor.Step (1);
+					RootRepository.Commit ("TODO: Fix this message.");
 				}
 			} finally {
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges)
@@ -682,17 +635,12 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stash != null) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					using (var gm = new GitMonitor (monitor))
-						stash.Apply (gm);
+					ApplyStash (stash);
 					stashes.Remove (stash);
 					monitor.Step (1);
 				}
 				monitor.EndTask ();
 			}
-			
-			// Notify changes
-			if (statusList != null)
-				NotifyFileChanges (monitor, statusList);*/
 		}
 
 		static ConflictResult ResolveConflict (string file)
