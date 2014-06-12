@@ -84,14 +84,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				Spacing = 0,
 				MarginLeft = 12
 			};
-			cbox.PackStart (new Xwt.Label ("© 2011-2013 "));
+			cbox.PackStart (new Xwt.Label ("© 2011-" + DateTime.Now.Year + " "));
 			cbox.PackStart (new Xwt.LinkLabel () {
 				Text = string.Format ("Xamarin Inc."),
 				Uri = new Uri ("http://www.xamarin.com")
 			});
 			infoBox.PackStart (cbox);
 			infoBox.PackStart (new Xwt.Label () {
-				Text = "© 2004-2013 MonoDevelop contributors",
+				Text = "© 2004-" + DateTime.Now.Year + " MonoDevelop contributors",
 				MarginLeft = 12
 			});
 

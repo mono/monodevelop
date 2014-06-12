@@ -292,14 +292,6 @@ namespace MonoDevelop.XmlEditor.Gui
 				return null;
 			}
 			
-			//element completion
-			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState) {
-				CompletionDataList list = new CompletionDataList ();
-				GetElementCompletions (list);
-				AddCloseTag (list, Tracker.Engine.Nodes);
-				return list.Count > 0? list : null;
-			}
-			
 			//entity completion
 			if (currentChar == '&' && (tracker.Engine.CurrentState is XmlFreeState ||
 			                           tracker.Engine.CurrentState is XmlAttributeValueState))
@@ -334,13 +326,34 @@ namespace MonoDevelop.XmlEditor.Gui
 				}
 				return null;
 			}
+
+			//attribute value completion
+			//determine whether to trigger completion within attribute values quotes
+			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
+			    //trigger on the opening quote
+			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
+			    //or trigger on first letter of value, if unforced
+			    || (forced || Tracker.Engine.CurrentStateLength == 2))) {
+				var att = (XAttribute)Tracker.Engine.Nodes.Peek ();
+
+				if (att.IsNamed) {
+					var attributedOb = Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
+					if (attributedOb == null)
+						return null;
+
+					//if triggered by first letter of value or forced, grab those letters
+					triggerWordLength = Tracker.Engine.CurrentStateLength - 1;
+
+					return GetAttributeValueCompletions (attributedOb, att);
+				}
+			}
 			
 			//attribute name completion
 			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject && !tracker.Engine.Nodes.Peek ().IsEnded)
-			     || (Tracker.Engine.CurrentState is XmlNameState 
-			 	 && Tracker.Engine.CurrentState.Parent is XmlAttributeState
-			         && Tracker.Engine.CurrentStateLength == 1)
-			) {
+			     || ((Tracker.Engine.CurrentState is XmlNameState
+			    && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
+			    Tracker.Engine.CurrentState is XmlTagState)
+			    && (Tracker.Engine.CurrentStateLength == 1 || forced)) {
 				IAttributedXObject attributedOb = (Tracker.Engine.Nodes.Peek () as IAttributedXObject) ?? 
 					Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
 				if (attributedOb == null)
@@ -364,46 +377,20 @@ namespace MonoDevelop.XmlEditor.Gui
 				}
 			}
 			
-			//attribute value completion
-			//determine whether to trigger completion within attribute values quotes
-			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
-			    //trigger on the opening quote
-			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
-			        //or trigger on first letter of value, if unforced
-			        || (!forced && Tracker.Engine.CurrentStateLength == 1))
-			    )
-			{
-				var att = (XAttribute) Tracker.Engine.Nodes.Peek ();
-				
-				if (att.IsNamed) {
-					var attributedOb = Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
-					if (attributedOb == null)
-						return null;
-					
-					char next = ' ';
-					if (completionContext.TriggerOffset < buf.Length)
-						next = buf.GetCharAt (completionContext.TriggerOffset);
-					
-					char compareChar = (Tracker.Engine.CurrentStateLength == 1)? currentChar : previousChar;
-					
-					if ((compareChar == '"' || compareChar == '\'') 
-					    && (next == compareChar || char.IsWhiteSpace (next))
-					) {
-						//if triggered by first letter of value, grab that letter
-						if (Tracker.Engine.CurrentStateLength == 2)
-							triggerWordLength = 1;
-						
-						return GetAttributeValueCompletions (attributedOb, att);
-					}
-				}
-				
-			}
-			
 //			if (Tracker.Engine.CurrentState is XmlFreeState) {
 //				if (line < 3) {
 //				cp.Add ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
 //			}
-			
+
+			//element completion
+			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState ||
+				(tracker.Engine.CurrentState is XmlNameState && forced)) {
+				CompletionDataList list = new CompletionDataList ();
+				GetElementCompletions (list);
+				AddCloseTag (list, Tracker.Engine.Nodes);
+				return list.Count > 0? list : null;
+			}
+
 			if (forced && Tracker.Engine.CurrentState is XmlFreeState) {
 				CompletionDataList list = new CompletionDataList ();
 				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (Document.Name, list);
