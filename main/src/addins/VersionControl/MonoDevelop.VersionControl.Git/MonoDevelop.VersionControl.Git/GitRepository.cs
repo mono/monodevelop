@@ -686,6 +686,7 @@ namespace MonoDevelop.VersionControl.Git
 				OnCheckoutProgress = null,
 				OnTransferProgress = null
 			});
+			RootPath = RootPath.ParentDirectory;
 			RootRepository = new LibGit2Sharp.Repository (RootPath);
 		}
 
