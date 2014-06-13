@@ -24,15 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using Gtk;
-using LibGit2Sharp.Core;
 using System;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	partial class CredentialsDialog : Gtk.Dialog
 	{
 		uint r = 0;
-		public CredentialsDialog (Uri uri, GitCredentialType type)
+		public CredentialsDialog (Uri uri, SupportedCredentialTypes type)
 		{
 			this.Build ();
 			
@@ -44,7 +44,7 @@ namespace MonoDevelop.VersionControl.Git
 
 			Widget firstEditor = null;
 			switch (type) {
-			case GitCredentialType.UserPassPlaintext:
+			case SupportedCredentialTypes.UsernamePassword:
 				firstEditor = CreateEntry (table, uri, "Username:", false);
 				CreateEntry (table, uri, "Password:", false);
 				break;

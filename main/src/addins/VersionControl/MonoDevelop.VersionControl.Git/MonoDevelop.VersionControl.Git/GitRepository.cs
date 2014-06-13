@@ -1,4 +1,4 @@
-// 
+	// 
 // GitRepository.cs
 //  
 // Author:
@@ -434,9 +434,10 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			// TODO: Make it work differently for submodules.
 			monitor.BeginTask (GettextCatalog.GetString ("Updating"), 5);
-			Fetch (monitor, RootRepository.Head.Remote.Name);
 
 			if (RootRepository.Head.IsTracking) {
+				Fetch (monitor, RootRepository.Head.Remote.Name);
+
 				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
 				if (GitService.UseRebaseOptionWhenPulling)
 					Merge (RootRepository.Head.TrackedBranch.Name, options, monitor);
@@ -450,6 +451,7 @@ namespace MonoDevelop.VersionControl.Git
 		public void Fetch (IProgressMonitor monitor, string remote)
 		{
 			RootRepository.Fetch (remote, new FetchOptions {
+				CredentialsProvider = GitCredentials.TryGet,
 				OnProgress = null,
 				OnTransferProgress = null,
 				OnUpdateTips = null,
@@ -681,8 +683,8 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnCheckout (FilePath targetLocalPath, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
 			RootPath = LibGit2Sharp.Repository.Clone (Url, targetLocalPath, new CloneOptions {
+				CredentialsProvider = GitCredentials.TryGet,
 				// TODO:
-				Credentials = null,
 				OnCheckoutProgress = null,
 				OnTransferProgress = null
 			});

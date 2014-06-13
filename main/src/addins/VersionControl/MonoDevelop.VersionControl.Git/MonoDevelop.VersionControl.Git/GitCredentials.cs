@@ -27,25 +27,34 @@ using System;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using LibGit2Sharp;
 using LibGit2Sharp.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	static class GitCredentials
 	{
-		public static bool TryGetHandles (Uri uri, out string username, out string password)
+		public static Credentials TryGet (string url, string userFromUrl, SupportedCredentialTypes types)
 		{
 			bool result = false;
+			var uri = new Uri (url);
+			string username;
+			string password;
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
-			if (TryGetUsernamePassword (uri, out username, out password)/* || TryGetPassphrase (uri, items, out passphraseItem)*/)
-				return true;
+			if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
+				if (TryGetUsernamePassword (uri, out username, out password))
+					return new UsernamePasswordCredentials {
+						Username = username,
+						Password = password
+					};
+			} /* no ssh support yet TryGetPassphrase (uri, out passphraseItem)*/
 
-			string tempuser = String.Empty;
+			string tempuser = string.Empty;
 			string temppass = string.Empty;
 
 			DispatchService.GuiSyncDispatch (delegate {
-				var dlg = new CredentialsDialog (uri, GitCredentialType.UserPassPlaintext);
+				var dlg = new CredentialsDialog (uri, SupportedCredentialTypes.UsernamePassword);
 				try {
 					result = MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok;
 					tempuser = dlg.Username;
@@ -59,13 +68,17 @@ namespace MonoDevelop.VersionControl.Git
 			password = temppass;
 
 			if (result) {
-				if (password != null) {
+				if (!string.IsNullOrEmpty (password)) {
 					PasswordService.AddWebUserNameAndPassword (uri, username, password);
 				}/* else if (passphraseItem != null) {
 					PasswordService.AddWebPassword (new Uri (uri), passphraseItem);
 				}*/
 			}
-			return result;
+
+			return new UsernamePasswordCredentials {
+				Username = username,
+				Password = password
+			};
 		}
 		
 		static bool TryGetPassphrase (Uri uri, out string passphrase)
