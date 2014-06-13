@@ -97,7 +97,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var aggregatedMonitor = (PackageManagementProgressMonitor)progressMonitor;
 
-			Runtime.ProcessService.StartConsoleProcess(
+			IProcessAsyncOperation operation = Runtime.ProcessService.StartConsoleProcess (
 				commandLine.Command,
 				commandLine.Arguments,
 				commandLine.WorkingDirectory,
@@ -108,6 +108,10 @@ namespace MonoDevelop.PackageManagement
 					}
 				}
 			);
+
+			// Wait for console to finish just so check for updates does not run until
+			// all packages are restored.
+			operation.WaitForCompleted ();
 		}
 
 		void OnPackageRestoreCompleted (
