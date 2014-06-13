@@ -278,7 +278,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessageFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessage.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageRestoreStartupHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReferenceFile.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreRunner.cs" />
@@ -340,9 +339,9 @@
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInProject.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageUpdatesStartupHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageUpdateChecker.cs" />
     <Compile Include="MonoDevelop.PackageManagement\FallbackRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageManagementStartupHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

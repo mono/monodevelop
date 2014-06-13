@@ -73,8 +73,11 @@ namespace MonoDevelop.PackageManagement
 				progressMonitor.ReportError (progressMessage.Error, null);
 				progressMonitor.ShowPackageConsole ();
 				progressMonitor.Dispose();
+				RestoreFailed = true;
 			}
 		}
+
+		public bool RestoreFailed { get; private set; }
 
 		IProgressMonitor CreateProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
@@ -148,6 +151,7 @@ namespace MonoDevelop.PackageManagement
 			} else {
 				progressMonitor.ReportError (progressMessage.Error, null);
 				progressMonitor.ShowPackageConsole ();
+				RestoreFailed = true;
 			}
 		}
 	}

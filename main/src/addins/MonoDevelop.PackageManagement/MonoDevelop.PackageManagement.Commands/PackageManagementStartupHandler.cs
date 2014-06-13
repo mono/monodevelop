@@ -1,5 +1,5 @@
 ﻿//
-// PackageUpdateStartupHandler.cs
+// PackageManagementStartupHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -28,33 +28,73 @@ using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
-	public class PackageUpdatesStartupHandler : CommandHandler
+	public class PackageManagementStartupHandler : CommandHandler
 	{
+		IPackageManagementProjectService projectService;
+
+		public PackageManagementStartupHandler ()
+		{
+			projectService = PackageManagementServices.ProjectService;
+		}
+
 		protected override void Run ()
 		{
-			PackageManagementServices.ProjectService.SolutionLoaded += SolutionLoaded;
-			PackageManagementServices.ProjectService.SolutionUnloaded += SolutionUnloaded;
+			projectService.SolutionLoaded += SolutionLoaded;
+			projectService.SolutionUnloaded += SolutionUnloaded;
 		}
 
 		void SolutionLoaded (object sender, EventArgs e)
 		{
+			ClearUpdatedPackagesInSolution ();
+
+			if (ShouldRestorePackages) {
+				RestoreAndCheckForUpdates ();
+			} else if (ShouldCheckForUpdates) {
+				DispatchService.GuiDispatch (() => {
+					CheckForUpdates ();
+				});
+			}
+		}
+
+		bool ShouldRestorePackages {
+			get { return PackageManagementServices.Options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled; }
+		}
+
+		bool ShouldCheckForUpdates {
+			get { return PackageManagementServices.Options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled; }
+		}
+
+		void ClearUpdatedPackagesInSolution ()
+		{
 			PackageManagementServices.UpdatedPackagesInSolution.Clear ();
-
-			if (!PackageManagementServices.Options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled)
-				return;
-
-			DispatchService.BackgroundDispatch (() => {
-				var checker = new PackageUpdateChecker ();
-				checker.Run ();
-			});
 		}
 
 		void SolutionUnloaded (object sender, EventArgs e)
 		{
-			PackageManagementServices.UpdatedPackagesInSolution.Clear ();
+			ClearUpdatedPackagesInSolution ();
+		}
+
+		void RestoreAndCheckForUpdates ()
+		{
+			bool checkUpdatesAfterRestore = ShouldCheckForUpdates;
+
+			var restorer = new PackageRestorer (projectService.OpenSolution.Solution);
+			DispatchService.BackgroundDispatch (() => {
+				restorer.Restore ();
+				if (checkUpdatesAfterRestore && !restorer.RestoreFailed) {
+					CheckForUpdates ();
+				}
+			});
+		}
+
+		void CheckForUpdates ()
+		{
+			var checker = new PackageUpdateChecker ();
+			checker.Run ();
 		}
 	}
 }

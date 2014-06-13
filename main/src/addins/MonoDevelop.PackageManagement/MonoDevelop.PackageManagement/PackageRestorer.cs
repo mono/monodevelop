@@ -51,6 +51,8 @@ namespace MonoDevelop.PackageManagement
 				.Select (project => new ProjectPackageReferenceFile (project));
 		}
 
+		public bool RestoreFailed { get; private set; }
+
 		public void Restore ()
 		{
 			try {
@@ -59,6 +61,7 @@ namespace MonoDevelop.PackageManagement
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
+				RestoreFailed = true;
 			}
 		}
 
@@ -71,6 +74,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var runner = new PackageRestoreRunner ();
 			runner.Run ();
+			RestoreFailed = runner.RestoreFailed;
 		}
 	}
 }

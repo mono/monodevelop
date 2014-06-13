@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -43,6 +44,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			FileName = new FilePath (fileName.ToNativePath ());
 			BaseDirectory = FileName.ParentDirectory;
+		}
+
+		public Solution Solution {
+			get { return null; }
 		}
 
 		public List<FakeDotNetProject> Projects = new List<FakeDotNetProject> ();

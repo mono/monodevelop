@@ -27,11 +27,14 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.PackageManagement
 {
 	public interface ISolution
 	{
+		Solution Solution { get; }
+
 		FilePath BaseDirectory { get; }
 		FilePath FileName { get; }
 

@@ -42,6 +42,10 @@ namespace MonoDevelop.PackageManagement
 			this.solution = solution;
 		}
 
+		public Solution Solution {
+			get { return solution; }
+		}
+
 		public FilePath BaseDirectory {
 			get { return solution.BaseDirectory; }
 		}
