@@ -256,6 +256,27 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.That (messagesLogged, Contains.Item ("2 updates found."));
 		}
+
+		[Test]
+		public void CheckForUpdates_ProjectHasNoPackagesConfigFile_NoProjectsCheckedForUpdates ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddFakePackage ("MyPackage", "1.0");
+			string expectedPackagesConfigFileName = @"d:\projects\MyProject\packages.config".ToNativePath ();
+			string fileChecked = null;
+			updatedPackagesInSolution.FileExistsAction = path => {
+				fileChecked = path;
+				return false;
+			};
+			project.FakeDotNetProject.BaseDirectory = @"d:\projects\MyProject".ToNativePath ();
+			CaptureMessagesLogged ();
+
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			Assert.AreEqual (0, messagesLogged.Count);
+			Assert.AreEqual (expectedPackagesConfigFileName, fileChecked);
+		}
 	}
 }
 

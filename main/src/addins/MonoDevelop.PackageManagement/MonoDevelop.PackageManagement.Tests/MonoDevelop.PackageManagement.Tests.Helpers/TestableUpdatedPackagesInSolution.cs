@@ -41,11 +41,21 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				registeredPackageRepositories,
 				packageManagementEvents)
 		{
+			FileExistsAction = path => {
+				return true;
+			};
 		}
 
 		protected override void GuiDispatch (MessageHandler handler)
 		{
 			handler.Invoke ();
+		}
+
+		public Func<string, bool> FileExistsAction;
+
+		protected override bool FileExists (string path)
+		{
+			return FileExistsAction (path);
 		}
 	}
 }

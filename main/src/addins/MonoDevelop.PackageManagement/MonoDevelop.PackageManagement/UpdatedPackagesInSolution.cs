@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
@@ -73,7 +74,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void CheckForUpdates ()
 		{
-			foreach (IPackageManagementProject project in GetProjects ()) {
+			foreach (IPackageManagementProject project in GetProjectsWithPackages ()) {
 				CheckForUpdates (project);
 			}
 
@@ -82,12 +83,22 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		IEnumerable<IPackageManagementProject> GetProjectsWithPackages ()
+		{
+			return GetProjects ().Where (project => HasPackages (project));
+		}
+
 		IEnumerable<IPackageManagementProject> GetProjects ()
 		{
 			return GuiSyncDispatch (() => {
 				IPackageRepository repository = registeredPackageRepositories.CreateAggregateRepository ();
 				return solution.GetProjects (repository).ToList ();
 			});
+		}
+
+		bool HasPackages (IPackageManagementProject project)
+		{
+			return FileExists (project.Project.GetPackagesConfigFilePath ());
 		}
 
 		void CheckForUpdates (IPackageManagementProject project)
@@ -153,6 +164,11 @@ namespace MonoDevelop.PackageManagement
 			T result = default(T);
 			GuiDispatch (() => result = action ());
 			return result;
+		}
+
+		protected virtual bool FileExists (string path)
+		{
+			return File.Exists (path);
 		}
 	}
 }

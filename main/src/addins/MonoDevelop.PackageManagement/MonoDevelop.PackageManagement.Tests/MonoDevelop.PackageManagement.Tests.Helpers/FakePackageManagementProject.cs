@@ -332,7 +332,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			PackageReferencesAdded.Add (package);
 		}
 
-		public FakeDotNetProject FakeDotNetProject = new FakeDotNetProject ();
+		public FakeDotNetProject FakeDotNetProject = new FakeDotNetProject (@"d:\projects\MyProject\MyProject.csproj");
 
 		public IDotNetProject Project {
 			get { return FakeDotNetProject; }

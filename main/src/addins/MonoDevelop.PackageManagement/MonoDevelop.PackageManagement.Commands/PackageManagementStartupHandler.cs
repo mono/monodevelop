@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
@@ -80,7 +81,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void RestoreAndCheckForUpdates ()
 		{
-			bool checkUpdatesAfterRestore = ShouldCheckForUpdates;
+			bool checkUpdatesAfterRestore = ShouldCheckForUpdates && AnyProjectHasPackages ();
 
 			var restorer = new PackageRestorer (projectService.OpenSolution.Solution);
 			DispatchService.BackgroundDispatch (() => {
@@ -89,6 +90,15 @@ namespace MonoDevelop.PackageManagement.Commands
 					CheckForUpdates ();
 				}
 			});
+		}
+
+		bool AnyProjectHasPackages ()
+		{
+			return projectService
+				.OpenSolution
+				.Solution
+				.GetAllProjectsWithPackages ()
+				.Any ();
 		}
 
 		void CheckForUpdates ()
