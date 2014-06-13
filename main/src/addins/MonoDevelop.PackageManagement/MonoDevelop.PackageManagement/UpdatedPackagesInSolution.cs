@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
 
@@ -91,13 +92,37 @@ namespace MonoDevelop.PackageManagement
 
 		void CheckForUpdates (IPackageManagementProject project)
 		{
+			LogCheckingForUpdates (project.Name);
+
 			var updatedPackages = new UpdatedPackages (project, project.SourceRepository);
 			List<IPackage> packages = updatedPackages.GetUpdatedPackages ().ToList ();
+
 			if (packages.Any ()) {
 				GuiDispatch (() => {
 					projectsWithUpdatedPackages.Add (new UpdatedPackagesInProject (project.Project, packages));
 				});
 			}
+
+			LogPackagesFound (packages.Count);
+		}
+
+		void LogCheckingForUpdates (string projectName)
+		{
+			Log (GettextCatalog.GetString ("Checking {0} for updates...", projectName));
+		}
+
+		void LogPackagesFound (int count)
+		{
+			if (count == 1) {
+				Log (GettextCatalog.GetString ("{0} update found.", count));
+			} else {
+				Log (GettextCatalog.GetString ("{0} updates found.", count));
+			}
+		}
+
+		void Log (string message)
+		{
+			packageManagementEvents.OnPackageOperationMessageLogged (MessageLevel.Info, message);
 		}
 
 		public UpdatedPackagesInProject GetUpdatedPackages (IDotNetProject project)

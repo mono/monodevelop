@@ -64,7 +64,9 @@ namespace MonoDevelop.PackageManagement
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateCheckingForPackageUpdatesMessage ();
 			using (IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage)) {
 				try {
-					CheckForPackageUpdates (progressMonitor, progressMessage);
+					using (IDisposable eventMonitor = new PackageUpdatesEventMonitor (progressMonitor)) {
+						CheckForPackageUpdates (progressMonitor, progressMessage);
+					}
 				} catch (Exception ex) {
 					LoggingService.LogInternalError (ex);
 					progressMonitor.Log.WriteLine (ex.Message);

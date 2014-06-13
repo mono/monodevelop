@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using NUnit.Framework;
@@ -39,6 +40,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackageManagementSolution solution;
 		FakeRegisteredPackageRepositories registeredPackageRepositories;
 		PackageManagementEvents packageManagementEvents;
+		List<string> messagesLogged;
 
 		void CreateUpdatedPackagesInSolution ()
 		{
@@ -62,6 +64,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackage AddUpdatedPackageToAggregateSourceRepository (string id, string version)
 		{
 			return registeredPackageRepositories.FakeAggregateRepository.AddFakePackageWithVersion (id, version);
+		}
+
+		void CaptureMessagesLogged ()
+		{
+			messagesLogged = new List<string> ();
+			packageManagementEvents.PackageOperationMessageLogged += (sender, e) => {
+				messagesLogged.Add (e.Message.ToString ());
+			};
 		}
 
 		[Test]
@@ -196,6 +206,55 @@ namespace MonoDevelop.PackageManagement.Tests
 			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
 
 			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
+
+		[Test]
+		public void CheckForUpdates_TwoProjectsAndNoPackagesUpdated_CheckingProjectMessageIsLogged ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project1 = AddProjectToSolution ();
+			project1.Name = "MyProject1";
+			project1.AddFakePackage ("MyPackage", "1.0");
+			FakePackageManagementProject project2 = AddProjectToSolution ();
+			project2.Name = "MyProject2";
+			updatedPackagesInSolution.CheckForUpdates ();
+			CaptureMessagesLogged ();
+
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			Assert.That (messagesLogged, Contains.Item ("Checking MyProject1 for updates..."));
+			Assert.That (messagesLogged, Contains.Item ("Checking MyProject2 for updates..."));
+			Assert.That (messagesLogged, Contains.Item ("0 updates found."));
+		}
+
+		[Test]
+		public void CheckForUpdates_OnePackageUpdated_OneFoundMessageLogged ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddFakePackage ("MyPackage", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			CaptureMessagesLogged ();
+
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			Assert.That (messagesLogged, Contains.Item ("1 update found."));
+		}
+
+		[Test]
+		public void CheckForUpdates_TwoPackagesUpdated_TwoUpdatesFoundMessageLogged ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddFakePackage ("One", "1.0");
+			project.AddFakePackage ("Two", "1.0");
+			AddUpdatedPackageToAggregateSourceRepository ("One", "1.1");
+			AddUpdatedPackageToAggregateSourceRepository ("Two", "1.4");
+			CaptureMessagesLogged ();
+
+			updatedPackagesInSolution.CheckForUpdates ();
+
+			Assert.That (messagesLogged, Contains.Item ("2 updates found."));
 		}
 	}
 }
