@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -333,12 +334,12 @@ namespace MonoDevelop.Ide.Editor
 
 		public string FormatString (TextLocation insertPosition, string code)
 		{
-			return textEditorImpl.FormatString (insertPosition, code);
+			return textEditorImpl.FormatString (LocationToOffset (insertPosition), code);
 		}
 
 		public string FormatString (int offset, string code)
 		{
-			return textEditorImpl.FormatString (OffsetToLocation (offset), code);
+			return textEditorImpl.FormatString (offset, code);
 		}
 
 		public void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> action)
@@ -366,7 +367,7 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.PointToLocation (xp, yp, endAtEol);
 		}
 
-		public Cairo.PointD LocationToPoint (TextLocation currentSmartTagBegin)
+		public Cairo.Point LocationToPoint (TextLocation currentSmartTagBegin)
 		{
 			return textEditorImpl.LocationToPoint (currentSmartTagBegin);
 		}
@@ -536,6 +537,11 @@ namespace MonoDevelop.Ide.Editor
 		public IReadonlyTextDocument CreateDocumentSnapshot ()
 		{
 			return textDocument.CreateDocumentSnapshot ();
+		}
+
+		internal IViewContent GetViewContent ()
+		{
+			return textEditorImpl;
 		}
 	}
 }

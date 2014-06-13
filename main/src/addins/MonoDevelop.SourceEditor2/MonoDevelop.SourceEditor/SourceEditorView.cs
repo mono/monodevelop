@@ -55,13 +55,16 @@ using System.Text;
 using Mono.Addins;
 using MonoDevelop.Components;
 using Mono.TextEditor.Utils;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
-		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable
+		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
+	ITextEditorImpl, IEditorActionHost
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -882,8 +885,8 @@ namespace MonoDevelop.SourceEditor
 
 		internal void LoadSettings ()
 		{
-			FileSettingsStore.Settings settings;
-			if (widget == null || string.IsNullOrEmpty (ContentName) || !FileSettingsStore.TryGetValue (ContentName, out settings))
+			MonoDevelop.Ide.Editor.FileSettingsStore.Settings settings;
+			if (widget == null || string.IsNullOrEmpty (ContentName) || !MonoDevelop.Ide.Editor.FileSettingsStore.TryGetValue (ContentName, out settings))
 				return;
 			
 			widget.TextEditor.Caret.Offset = settings.CaretOffset;
@@ -905,7 +908,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (string.IsNullOrEmpty (ContentName))
 				return;
-			FileSettingsStore.Store (ContentName, new FileSettingsStore.Settings () {
+			MonoDevelop.Ide.Editor.FileSettingsStore.Store (ContentName, new MonoDevelop.Ide.Editor.FileSettingsStore.Settings () {
 				CaretOffset = widget.TextEditor.Caret.Offset,
 				vAdjustment = widget.TextEditor.VAdjustment.Value,
 				hAdjustment = widget.TextEditor.HAdjustment.Value,
@@ -2334,6 +2337,9 @@ namespace MonoDevelop.SourceEditor
 		
 		void CorrectIndenting ()
 		{
+			var doc = this.Document as ITextDocument;
+			if (doc == null)
+				return;
 			var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
 			if (formatter == null || !formatter.SupportsCorrectingIndent)
 				return;
@@ -2347,12 +2353,12 @@ namespace MonoDevelop.SourceEditor
 					var version = TextEditor.Document.Version;
 					int max = selection.MaxLine;
 					for (int i = TextEditor.MainSelection.MinLine; i <= max; i++) {
-						formatter.CorrectIndenting (policies, editorData, i);
+						formatter.CorrectIndenting (policies, doc, i);
 					}
 					editorData.SetSelection (version.MoveOffsetTo (editorData.Document.Version, anchor), version.MoveOffsetTo (editorData.Document.Version, lead));
 				}
 			} else {
-				formatter.CorrectIndenting (policies, editorData, TextEditor.Caret.Line);
+				formatter.CorrectIndenting (policies, doc, TextEditor.Caret.Line);
 			}
 		}
 
@@ -2586,9 +2592,300 @@ namespace MonoDevelop.SourceEditor
 		{
 			widget.PrevIssueError ();
 		}
-
-
-
 		#endregion
+
+		event EventHandler ITextEditorImpl.SelectionChanged {
+			add {
+				this.TextEditor.SelectionChanged += value;
+			}
+			remove {
+				this.TextEditor.SelectionChanged -= value;
+			}
+		}
+
+		event EventHandler ITextEditorImpl.CaretPositionChanged {
+			add {
+				this.TextEditor.Caret.PositionChanged += value;
+			}
+			remove {
+				this.TextEditor.Caret.PositionChanged -= value;
+			}
+		}
+
+		event EventHandler ITextEditorImpl.BeginUndo {
+			add {
+				this.TextEditor.Document.BeginUndo += value;
+			}
+			remove {
+				this.TextEditor.Document.BeginUndo -= value;
+			}
+		}
+
+		event EventHandler ITextEditorImpl.EndUndo {
+			add {
+				this.TextEditor.Document.EndUndo += value;
+			}
+			remove {
+				this.TextEditor.Document.EndUndo -= value;
+			}
+		}
+
+		void ITextEditorImpl.SetSelection (int anchorOffset, int leadOffset)
+		{
+			this.TextEditor.SetSelection (anchorOffset, leadOffset);
+		}
+
+		void ITextEditorImpl.ClearSelection ()
+		{
+			this.TextEditor.ClearSelection ();
+		}
+
+		void ITextEditorImpl.CenterToCaret ()
+		{
+			this.TextEditor.CenterToCaret ();
+		}
+
+		void ITextEditorImpl.StartCaretPulseAnimation ()
+		{
+			this.TextEditor.StartCaretPulseAnimation ();
+		}
+
+		int ITextEditorImpl.EnsureCaretIsNotVirtual ()
+		{
+			this.TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
+		}
+
+		void ITextEditorImpl.FixVirtualIndentation ()
+		{
+			this.TextEditor.GetTextEditorData ().FixVirtualIndentation ();
+		}
+
+		Widget ITextEditorImpl.GetGtkWidget ()
+		{
+			return this.Control;
+		}
+
+		string ITextEditorImpl.FormatString (int offset, string code)
+		{
+			return TextEditor.GetTextEditorData ().FormatString (offset, code);
+		}
+
+		void ITextEditorImpl.StartInsertionMode (string operation, IList<MonoDevelop.Ide.Editor.InsertionPoint> insertionPoints, Action<MonoDevelop.Ide.Editor.InsertionCursorEventArgs> action)
+		{
+			throw new NotImplementedException ();
+		}
+
+		void ITextEditorImpl.StartTextLinkMode (List<MonoDevelop.Ide.Editor.TextLink> links)
+		{
+			throw new NotImplementedException ();
+		}
+
+		void ITextEditorImpl.RequestRedraw ()
+		{
+			TextEditor.QueueDraw ();
+		}
+
+		MonoDevelop.Core.Text.TextLocation ITextEditorImpl.PointToLocation (double xp, double yp, bool endAtEol)
+		{
+			var pt = TextEditor.PointToLocation (xp, yp);
+			return new MonoDevelop.Core.Text.TextLocation (pt.Line, pt.Column);
+		}
+
+		Cairo.Point ITextEditorImpl.LocationToPoint (MonoDevelop.Core.Text.TextLocation loc)
+		{
+			return TextEditor.LocationToPoint (loc.Line, loc.Column);
+		}
+
+		void ITextEditorImpl.AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
+		{
+			TextEditor.Document.AddMarker (((DocumentLineWrapper)line).Line, ((TextLineMarkerWrapper)lineMarker).Marker);
+		}
+
+		void ITextEditorImpl.RemoveMarker (ITextLineMarker lineMarker)
+		{
+			TextEditor.Document.RemoveMarker (((TextLineMarkerWrapper)lineMarker).Marker);
+		}
+
+		IEnumerable<ITextLineMarker> ITextEditorImpl.GetLineMarker (IDocumentLine line)
+		{
+			return ((DocumentLineWrapper)line).Line.Markers.Select (m => new TextLineMarkerWrapper (m));
+		}
+
+		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (MonoDevelop.Core.Text.ISegment segment)
+		{
+			throw new NotImplementedException ();
+		}
+
+		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (int offset)
+		{
+			throw new NotImplementedException ();
+		}
+
+		void ITextEditorImpl.AddMarker (ITextSegmentMarker marker)
+		{
+			throw new NotImplementedException ();
+		}
+
+		bool ITextEditorImpl.RemoveMarker (ITextSegmentMarker marker)
+		{
+			throw new NotImplementedException ();
+		}
+
+		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsFromOffset (int offset)
+		{
+			throw new NotImplementedException ();
+		}
+
+		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingContaining (IDocumentLine line)
+		{
+			throw new NotImplementedException ();
+		}
+
+		IEnumerable<IFoldSegment> ITextEditorImpl.GetStartFoldings (IDocumentLine line)
+		{
+			throw new NotImplementedException ();
+		}
+
+		IEnumerable<IFoldSegment> ITextEditorImpl.GetEndFoldings (IDocumentLine line)
+		{
+			throw new NotImplementedException ();
+		}
+
+		ISyntaxMode ITextEditorImpl.SyntaxMode {
+			get;
+			set;
+		}
+
+		MonoDevelop.Ide.Editor.ITextEditorOptions ITextEditorImpl.Options {
+			get {
+				throw new NotImplementedException ();
+			}
+			set {
+				throw new NotImplementedException ();
+			}
+		}
+
+		MonoDevelop.Core.Text.TextLocation ITextEditorImpl.CaretLocation {
+			get {
+				var loc = TextEditor.Caret.Location;
+				return new MonoDevelop.Core.Text.TextLocation (loc.Line, loc.Column);
+			}
+			set {
+				TextEditor.Caret.Location = new DocumentLocation (value.Line, value.Column);
+			}
+		}
+
+		bool ITextEditorImpl.IsSomethingSelected {
+			get {
+				return TextEditor.IsSomethingSelected;
+			}
+		}
+
+		MonoDevelop.Ide.Editor.SelectionMode ITextEditorImpl.SelectionMode {
+			get {
+				return (MonoDevelop.Ide.Editor.SelectionMode)TextEditor.SelectionMode;
+			}
+		}
+
+		MonoDevelop.Core.Text.ISegment ITextEditorImpl.SelectionRange {
+			get {
+				var range = TextEditor.SelectionRange;
+				return MonoDevelop.Core.Text.TextSegment.FromBounds (range.Offset, range.EndOffset);
+			}
+			set {
+				TextEditor.SelectionRange = new TextSegment (value.Offset, value.Length);
+			}
+		}
+
+		MonoDevelop.Ide.Editor.DocumentRegion ITextEditorImpl.SelectionRegion {
+			get {
+				return new MonoDevelop.Ide.Editor.DocumentRegion (
+					TextEditor.MainSelection.Start.Line,
+					TextEditor.MainSelection.Start.Column,
+					TextEditor.MainSelection.End.Line,
+					TextEditor.MainSelection.End.Column
+				);
+			}
+			set {
+				TextEditor.MainSelection = new Mono.TextEditor.Selection (
+					value.BeginLine,
+					value.BeginColumn,
+					value.EndLine,
+					value.EndColumn
+				);
+			}
+		}
+
+		IEditorActionHost ITextEditorImpl.Actions {
+			get {
+				return this;
+			}
+		}
+
+		double ITextEditorImpl.LineHeight {
+			get {
+				return TextEditor.GetTextEditorData ().LineHeight;
+			}
+		}
+
+		void IEditorActionHost.MoveCaretDown ()
+		{
+			CaretMoveActions.Down (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.MoveCaretUp ()
+		{
+			CaretMoveActions.Up (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.MoveCaretRight ()
+		{
+			CaretMoveActions.Right (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.MoveCaretLeft ()
+		{
+			CaretMoveActions.Left (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.MoveCaretToLineEnd ()
+		{
+			CaretMoveActions.LineEnd (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.MoveCaretToLineStart ()
+		{
+			CaretMoveActions.LineHome (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.MoveCaretToDocumentStart ()
+		{
+			CaretMoveActions.ToDocumentStart (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.MoveCaretToDocumentEnd ()
+		{
+			CaretMoveActions.ToDocumentEnd (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.Backspace ()
+		{
+			DeleteActions.Backspace (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.ClipboardCopy ()
+		{
+			ClipboardActions.Copy (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.ClipboardCut ()
+		{
+			ClipboardActions.Cut (TextEditor.GetTextEditorData ());
+		}
+
+		void IEditorActionHost.ClipboardPaste ()
+		{
+			ClipboardActions.Paste (TextEditor.GetTextEditorData ());
+		}
 	}
 } 

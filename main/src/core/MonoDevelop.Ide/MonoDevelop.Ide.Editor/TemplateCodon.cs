@@ -1,4 +1,4 @@
-// TemplateExtensionNodeLoader.cs
+// TemplateCodon.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -23,45 +23,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-
+using System.IO;
 using System;
-using Mono.TextEditor.Highlighting;
+using System.Xml;
+
 using Mono.Addins;
 
-namespace MonoDevelop.SourceEditor.Extension
+namespace MonoDevelop.Ide.Editor
 {
-	public static class TemplateExtensionNodeLoader
+	[ExtensionNode (Description="A template for color and syntax shemes.")]
+	class TemplateCodon : ExtensionNode, IStreamProvider
 	{
-		static bool initialized = false;
+		[NodeAttribute("resource", "Name of the resource where the template is stored.")]
+		string resource;
 		
-		public static void Init ()
+		[NodeAttribute("file", "Name of the file where the template is stored.")]
+		string file;
+		
+		public TemplateCodon ()
 		{
-			if (initialized)
-				return;
-			initialized = true;
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/SyntaxModes", OnSyntaxModeExtensionChanged);
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/Styles", OnStylesExtensionChanged);
+			resource = file = null;
 		}
-
-		static void OnSyntaxModeExtensionChanged (object s, ExtensionNodeEventArgs args)
+		
+		public Stream Open ()
 		{
-			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
-			if (args.Change == ExtensionChange.Add) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.AddSyntaxMode (codon);
+			Stream stream;
+			if (!string.IsNullOrEmpty (file)) {
+				stream = File.OpenRead (Addin.GetFilePath (file));
+			} else if (!string.IsNullOrEmpty (resource)) {
+				stream = Addin.GetResource (resource);
+				if (stream == null)
+					throw new ApplicationException ("Template " + resource + " not found");
 			} else {
-				Mono.TextEditor.Highlighting.SyntaxModeService.RemoveSyntaxMode (codon);
+				throw new InvalidOperationException ("Template file or resource not provided");
 			}
+			
+			return stream;
 		}
-		
-		static void OnStylesExtensionChanged (object s, ExtensionNodeEventArgs args)
-		{
-			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
-			if (args.Change == ExtensionChange.Add) {
-				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (codon);
-			} else {
-				Mono.TextEditor.Highlighting.SyntaxModeService.RemoveStyle (codon);
-			}
-		}
-		
 	}
 }

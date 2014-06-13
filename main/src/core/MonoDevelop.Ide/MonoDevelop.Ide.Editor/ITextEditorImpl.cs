@@ -26,10 +26,11 @@
 using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public interface ITextEditorImpl
+	public interface ITextEditorImpl : IViewContent
 	{
 		ISyntaxMode SyntaxMode { get; set; }
 		ITextEditorOptions Options { get; set; }
@@ -70,7 +71,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void RunWhenLoaded (Action action);
 
-		string FormatString (TextLocation insertPosition, string code);
+		string FormatString (int offset, string code);
 
 		void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> action);
 
@@ -82,7 +83,7 @@ namespace MonoDevelop.Ide.Editor
 
 		TextLocation PointToLocation (double xp, double yp, bool endAtEol = false);
 
-		Cairo.PointD LocationToPoint (TextLocation currentSmartTagBegin);
+		Cairo.Point LocationToPoint (TextLocation currentSmartTagBegin);
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);

@@ -116,7 +116,11 @@ namespace Mono.TextEditor
 			get;
 			set;
 		}
-		
+
+		public object Tag {
+			get;
+			set;
+		}		
 		
 		bool isVisible = true;
 		public virtual bool IsVisible {

@@ -63,7 +63,7 @@ namespace MonoDevelop.Debugger
 			ContentName = GettextCatalog.GetString ("Disassembly");
 			sw = new Gtk.ScrolledWindow ();
 			editor = DocumentFactory.CreateNewEditor ();
-			editor.ReadOnly = true;
+			editor.IsReadOnly = true;
 			
 			editor.Options = new CommonTextEditorOptions {
 				ShowLineNumberMargin = false,

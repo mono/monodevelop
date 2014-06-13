@@ -2423,6 +2423,10 @@
     <Compile Include="MonoDevelop.Ide.Editor\TextEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorImpl.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextDocument.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SyntaxModeCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TemplateCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TemplateExtensionNodeLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

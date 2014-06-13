@@ -164,6 +164,20 @@
 		<ExtensionNode name="Generator" type="MonoDevelop.Ide.Extensions.MimeTypeExtensionNode"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
+		<Description>Syntax modes</Description>
+		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.TemplateCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Styles" name = "Text editor styles">
+		<Description>Styles</Description>
+		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.TemplateCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/CustomModes" name = "Text editor custom syntax modes">
+		<Description>Styles</Description>
+		<ExtensionNode name="SyntaxMode" type="MonoDevelop.Ide.Editor.SyntaxModeCodon"/>
+	</ExtensionPoint>
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

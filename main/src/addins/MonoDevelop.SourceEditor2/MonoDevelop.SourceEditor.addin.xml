@@ -46,21 +46,6 @@
 		</ConditionType>
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
-		<Description>Syntax modes</Description>
-		<ExtensionNode name="Templates" type="MonoDevelop.SourceEditor.Extension.TemplateCodon"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Styles" name = "Text editor styles">
-		<Description>Styles</Description>
-		<ExtensionNode name="Templates" type="MonoDevelop.SourceEditor.Extension.TemplateCodon"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/CustomModes" name = "Text editor custom syntax modes">
-		<Description>Styles</Description>
-		<ExtensionNode name="SyntaxMode" type="MonoDevelop.SourceEditor.SyntaxModeCodon"/>
-	</ExtensionPoint>
-
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
@@ -135,13 +120,6 @@
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMinimap"
 				_label = "Show _Minimap"
 				type="radio"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding
-			id = "TextEditor"
-			insertafter ="DefaultDisplayBinding"
-			class = "MonoDevelop.SourceEditor.SourceEditorDisplayBinding" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">

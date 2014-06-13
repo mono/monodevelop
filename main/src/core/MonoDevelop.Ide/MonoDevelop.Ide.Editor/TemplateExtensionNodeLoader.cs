@@ -1,21 +1,20 @@
-// 
-// SyntaxModeService.cs
-//  
+// TemplateExtensionNodeLoader.cs
+//
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
 //
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,36 +22,44 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+//
 
 using System;
-using Mono.TextEditor.Highlighting;
 using Mono.Addins;
 
-
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.Ide.Editor
 {
-	public static class SyntaxModeService
+	public static class TemplateExtensionNodeLoader
 	{
-		static SyntaxModeService ()
+		static bool initialized = false;
+		
+		public static void Init ()
 		{
-//			Console.WriteLine ("SETUP SMS");
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/CustomModes", delegate(object sender, ExtensionNodeEventArgs args) {
-				SyntaxModeCodon syntaxModeCodon = (SyntaxModeCodon)args.ExtensionNode;
-				switch (args.Change) {
-				case ExtensionChange.Add:
-//					Console.WriteLine ("INstall:" + syntaxModeCodon.MimeTypes);
-					Mono.TextEditor.Highlighting.SyntaxModeService.InstallSyntaxMode (syntaxModeCodon.MimeTypes, new SyntaxModeProvider (d => {
-						var result = syntaxModeCodon.SyntaxMode;
-						result.Document = d;
-						return result;
-					}));
-					break;
-				}
-			});
+			if (initialized)
+				return;
+			initialized = true;
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/SyntaxModes", OnSyntaxModeExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/Styles", OnStylesExtensionChanged);
+		}
+
+		static void OnSyntaxModeExtensionChanged (object s, ExtensionNodeEventArgs args)
+		{
+			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
+			if (args.Change == ExtensionChange.Add) {
+				SyntaxModeService.AddSyntaxMode (codon);
+			} else {
+				SyntaxModeService.RemoveSyntaxMode (codon);
+			}
 		}
 		
-		public static void EnsureLoad ()
+		static void OnStylesExtensionChanged (object s, ExtensionNodeEventArgs args)
 		{
+			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
+			if (args.Change == ExtensionChange.Add) {
+				SyntaxModeService.AddStyle (codon);
+			} else {
+				SyntaxModeService.RemoveStyle (codon);
+			}
 		}
 	}
 }

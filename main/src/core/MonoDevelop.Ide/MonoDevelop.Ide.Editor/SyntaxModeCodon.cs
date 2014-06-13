@@ -25,11 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.TextEditor.Highlighting;
 using Mono.Addins;
 
-
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.Ide.Editor
 {
 	[ExtensionNode (Description="A syntax mode. The specified class must be a valid syntax mode.")]
 	class SyntaxModeCodon : TypeExtensionNode

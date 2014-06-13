@@ -60,4 +60,3 @@ namespace MonoDevelop.Ide.Editor
 		IEnumerable<Chunk> GetChunks (ColorScheme style, IDocumentLine line, int offset, int length);
 	}
 }
-

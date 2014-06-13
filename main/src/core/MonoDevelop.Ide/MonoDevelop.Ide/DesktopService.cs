@@ -151,14 +151,7 @@ namespace MonoDevelop.Ide
 			if (!File.Exists (file))
 				return false;
 
-			using (var f = File.OpenRead (file)) {
-				var buf = new byte[8192];
-				var read = f.Read (buf, 0, buf.Length);
-				for (int i = 0; i < read; i++)
-					if (buf [i] == 0)
-						return false;
-			}
-			return true;
+			return !MonoDevelop.Core.Text.TextFileUtility.IsBinary (file); 
 		}
 
 		public static bool GetMimeTypeIsSubtype (string subMimeType, string baseMimeType)

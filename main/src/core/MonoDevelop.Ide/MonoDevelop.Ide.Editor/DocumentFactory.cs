@@ -36,7 +36,26 @@ namespace MonoDevelop.Ide.Editor
 			throw new NotImplementedException ();
 		}
 
+		public static ITextDocument CreateNewDocument (string fileName, string text, string mimeType)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public static ITextDocument LoadDocument (string fileName, string mimeType)
+		{
+			throw new NotImplementedException ();
+		}
+
 		public static IReadonlyTextDocument CreateNewReadonlyDocument (string fileName, string text)
+		{
+			/*
+			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
+			data.FileName = filePath;
+			 * */
+			throw new NotImplementedException ();
+		}
+
+		public static IReadonlyTextDocument CreateNewReadonlyDocument (string fileName, string text, string mimeType)
 		{
 			/*
 			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
@@ -81,4 +100,3 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 }
-

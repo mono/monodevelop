@@ -34,6 +34,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Schema;
 using System.Linq;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -43,6 +44,7 @@ namespace MonoDevelop.Ide.Editor
 		static Dictionary<string, ColorScheme> styles      = new Dictionary<string, ColorScheme> ();
 		static Dictionary<string, IStreamProvider> syntaxModeLookup = new Dictionary<string, IStreamProvider> ();
 		static Dictionary<string, IStreamProvider> styleLookup      = new Dictionary<string, IStreamProvider> ();
+
 
 		public static string[] Styles {
 			get {
@@ -536,9 +538,20 @@ namespace MonoDevelop.Ide.Editor
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "Comment", new HighlightUrlSemanticRule ("Comment(Line)"));
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "XmlDocumentation", new HighlightUrlSemanticRule ("Comment(Doc)"));
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "String", new HighlightUrlSemanticRule ("String"));
-			
-			//			InstallSyntaxMode ("text/x-jay", new SyntaxModeProvider (doc => new JaySyntaxMode (doc)));
+//			InstallSyntaxMode ("text/x-jay", new SyntaxModeProvider (doc => new JaySyntaxMode (doc)));
+
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/CustomModes", delegate(object sender, ExtensionNodeEventArgs args) {
+				var syntaxModeCodon = (SyntaxModeCodon)args.ExtensionNode;
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					SyntaxModeService.InstallSyntaxMode (syntaxModeCodon.MimeTypes, new SyntaxModeProvider (d => {
+						var result = syntaxModeCodon.SyntaxMode;
+						result.Document = d;
+						return result;
+					}));
+					break;
+				}
+			});
 		}
 	}
 }
-

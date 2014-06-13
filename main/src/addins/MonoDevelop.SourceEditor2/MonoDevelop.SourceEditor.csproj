@@ -92,6 +92,10 @@
       <Name>ICSharpCode.NRefactory.CSharp</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -136,8 +140,6 @@
     <Compile Include="MonoDevelop.SourceEditor\CompileErrorTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueTooltipProvider.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Extension\TemplateCodon.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Extension\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.SourceEditor\IdeViMode.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs" />
@@ -148,8 +150,6 @@
     <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeCodon.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeService.cs" />
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
@@ -183,6 +183,8 @@
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.SourceEditor\AbstractUsagesExtension.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\DocumentLineWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextLineMarkerWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -229,5 +231,7 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.SourceEditor\" />
     <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
+    <Folder Include="MonoDevelop.SourceEditor.Extension\" />
+    <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
   </ItemGroup>
 </Project>

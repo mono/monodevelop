@@ -1,9 +1,10 @@
-// TemplateCodon.cs
+﻿//
+// TextLineMarkerWrapper.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,44 +23,47 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-using System.IO;
 using System;
-using System.Xml;
+using Mono.TextEditor;
 
-using Mono.Addins;
-using Mono.TextEditor.Highlighting;
-
-namespace MonoDevelop.SourceEditor.Extension
+namespace MonoDevelop.SourceEditor.Wrappers
 {
-	[ExtensionNode (Description="A template for color and syntax shemes.")]
-	public class TemplateCodon : ExtensionNode, Mono.TextEditor.Highlighting.IStreamProvider
+	class TextLineMarkerWrapper : MonoDevelop.Ide.Editor.ITextLineMarker
 	{
-		[NodeAttribute("resource", "Name of the resource where the template is stored.")]
-		string resource;
-		
-		[NodeAttribute("file", "Name of the file where the template is stored.")]
-		string file;
-		
-		public TemplateCodon ()
+		public TextLineMarker Marker { get; private set; }
+
+		public TextLineMarkerWrapper (TextLineMarker marker)
 		{
-			resource = file = null;
+			this.Marker = marker;
 		}
-		
-		public Stream Open ()
-		{
-			Stream stream;
-			if (!string.IsNullOrEmpty (file)) {
-				stream = File.OpenRead (Addin.GetFilePath (file));
-			} else if (!string.IsNullOrEmpty (resource)) {
-				stream = Addin.GetResource (resource);
-				if (stream == null)
-					throw new ApplicationException ("Template " + resource + " not found");
-			} else {
-				throw new InvalidOperationException ("Template file or resource not provided");
+
+		#region ITextLineMarker implementation
+
+		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
+			get {
+				return new DocumentLineWrapper (Marker.LineSegment);
 			}
-			
-			return stream;
 		}
+
+		bool MonoDevelop.Ide.Editor.ITextLineMarker.IsVisible {
+			get {
+				return Marker.IsVisible;
+			}
+			set {
+				Marker.IsVisible = value;
+			}
+		}
+
+		object MonoDevelop.Ide.Editor.ITextLineMarker.Tag {
+			get {
+				return Marker.Tag;
+			}
+			set {
+				Marker.Tag = value;
+			}
+		}
+
+		#endregion
 	}
 }
+

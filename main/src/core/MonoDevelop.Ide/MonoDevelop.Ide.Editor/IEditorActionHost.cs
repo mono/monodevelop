@@ -56,6 +56,4 @@ namespace MonoDevelop.Ide.Editor
 
 		void SelectAll ();
 	}
-
 }
-

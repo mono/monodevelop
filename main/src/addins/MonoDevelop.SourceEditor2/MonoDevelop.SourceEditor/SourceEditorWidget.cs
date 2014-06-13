@@ -50,7 +50,7 @@ using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.SourceEditor
 {
-	class SourceEditorWidget : ITextEditorExtension, IQuickTaskProvider
+	class SourceEditorWidget : ITextEditorExtension
 	{
 		SourceEditorView view;
 		DecoratedScrolledWindow mainsw;
