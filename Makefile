@@ -10,6 +10,7 @@ all: update_submodules roslyn all-recursive
 
 roslyn:
 	find main/external/roslyn -name "obj" | xargs rm -fdr
+	cp main/external/roslyn/Microsoft.Net.ToolsetCompilers.props main/external/roslyn/Src/packages/Microsoft.Net.ToolsetCompilers.0.7.4032713-beta/build
 	xbuild main/external/roslyn/Src/Compilers/CSharp/rcsc/rcsc.csproj
 	xbuild main/external/roslyn/Src/Workspaces/CSharp/CSharpWorkspace.csproj
 	
