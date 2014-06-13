@@ -253,7 +253,10 @@ namespace MonoDevelop.Configuration
 				else
 					GitExe = "git.exe";
 			} else {
-				GitExe = "git";
+				if (File.Exists ("/usr/bin/git"))
+					GitExe = "/usr/bin/git";
+				else
+					GitExe = "git";
 			}
 		}
 
