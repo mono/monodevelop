@@ -232,9 +232,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FakePackages.Add (new FakePackage (id));
 		}
 
-		public void AddFakePackage (string id, string version)
+		public FakePackage AddFakePackage (string id, string version)
 		{
-			FakePackages.Add (new FakePackage (id, version));
+			return AddFakePackage (new FakePackage (id, version));
+		}
+
+		public FakePackage AddFakePackage (FakePackage package)
+		{
+			FakePackages.Add (package);
+			return package;
 		}
 
 		public void AddFakePackageToSourceRepository (string packageId)

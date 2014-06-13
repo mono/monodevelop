@@ -63,7 +63,10 @@ namespace MonoDevelop.PackageManagement
 
 		public void RemovePackage (IPackageName package)
 		{
-			packages.Remove (package);
+			int index = packages.FindIndex (existingPackageName => existingPackageName.Id == package.Id);
+			if (index >= 0) {
+				packages.RemoveAt (index);
+			}
 		}
 	}
 }

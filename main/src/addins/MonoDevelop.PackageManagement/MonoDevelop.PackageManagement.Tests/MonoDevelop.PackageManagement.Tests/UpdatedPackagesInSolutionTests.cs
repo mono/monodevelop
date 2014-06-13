@@ -277,6 +277,21 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (0, messagesLogged.Count);
 			Assert.AreEqual (expectedPackagesConfigFileName, fileChecked);
 		}
+
+		[Test]
+		public void GetUpdatedPackages_OnePackageUpdatedAndPackageIsUninstalled_NoUpdatesAvailableForUninstalledPackage ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			FakePackage package = project.AddFakePackage ("MyPackage", "1.0");
+			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			updatedPackagesInSolution.CheckForUpdates ();
+			packageManagementEvents.OnParentPackageUninstalled (package, project);
+
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
 	}
 }
 

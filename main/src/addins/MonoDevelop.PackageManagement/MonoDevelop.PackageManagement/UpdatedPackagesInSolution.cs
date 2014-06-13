@@ -52,19 +52,25 @@ namespace MonoDevelop.PackageManagement
 			this.packageManagementEvents = packageManagementEvents;
 
 			this.packageManagementEvents.ParentPackageInstalled += PackageInstalled;
+			this.packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
 		}
 
 		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
 		{
-			GuiDispatch (() => {
-				RefreshUpdatedPackages (e);
-			});
+			RefreshUpdatedPackages (e);
+		}
+
+		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)
+		{
+			RefreshUpdatedPackages (e);
 		}
 
 		void RefreshUpdatedPackages (ParentPackageOperationEventArgs e)
 		{
-			UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
-			updatedPackages.RemovePackage (e.Package);
+			GuiDispatch (() => {
+				UpdatedPackagesInProject updatedPackages = GetUpdatedPackages (e.Project.Project);
+				updatedPackages.RemovePackage (e.Package);
+			});
 		}
 
 		public void Clear ()
