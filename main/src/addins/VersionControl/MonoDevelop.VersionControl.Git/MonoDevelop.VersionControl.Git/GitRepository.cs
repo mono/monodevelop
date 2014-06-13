@@ -424,7 +424,8 @@ namespace MonoDevelop.VersionControl.Git
 					if (RootPath.Combine (".git").IsDirectory)
 						Directory.Delete (RootPath.Combine (".git"), true);
 					throw new UserException (e.Message);
-				}
+				},
+				CredentialsProvider = GitCredentials.TryGet
 			});
 
 			return this;
