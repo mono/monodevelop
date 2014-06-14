@@ -45,23 +45,18 @@ namespace MonoDevelop.JavaScript
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Projects.Project project = null)
 		{
 			var parseDocument = new JavaScriptParsedDocument (fileName, content);
-			parseDocument.Flags |= ParsedDocumentFlags.NonSerializable;
-
-            //if (project != null) {
-            //    JSTypeSystemService.AddUpdateParsedDocument (project.ItemId, fileName, parseDocument);
-            //}
-
+			
 			return parseDocument;
 		}
 
-//		public override Type GetProjectContentExtensionType (string buildAction)
-//		{
-//			return typeof(JSUpdateableProjectContent);
-//		}
-//
-//		public override bool ShouldStoreInProjectContent (string buildAction)
-//		{
-//			return true;
-//		}
+		public override Type GetProjectContentExtensionType (string buildAction)
+		{
+			return typeof(JSUpdateableProjectContent);
+		}
+
+		public override bool ShouldStoreInProjectContent (string buildAction)
+		{
+			return true;
+		}
 	}
 }

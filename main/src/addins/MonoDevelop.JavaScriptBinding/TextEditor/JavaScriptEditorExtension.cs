@@ -36,6 +36,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.JavaScript
 {
@@ -104,7 +105,7 @@ namespace MonoDevelop.JavaScript
 			outlineTreeView.TextRenderer.Xpad = 0;
 			outlineTreeView.TextRenderer.Ypad = 0;
 
-			var pixRenderer = new CellRendererPixbuf ();
+			var pixRenderer = new CellRendererImage ();
 			pixRenderer.Xpad = 0;
 			pixRenderer.Ypad = 0;
 
@@ -192,8 +193,7 @@ namespace MonoDevelop.JavaScript
 
 			var wrapper = TypeSystemService.GetProjectContentWrapper (IdeApp.ProjectOperations.CurrentSelectedProject).GetExtensionObject<JSUpdateableProjectContent> ();
 			List<JavaScriptDocumentCache> parsedDocuments = wrapper.DocumentsCache;
-			//List<SimpleJSAst> parsedDocuments = JSTypeSystemService.GetAllJSAstsForProject (Ide.IdeApp.ProjectOperations.CurrentSelectedProject.ItemId);
-
+			
 			// TODO: Find the current scope.
 			var dataList = new CompletionDataList ();
 			foreach (JavaScriptDocumentCache parsedDocumentAstNodes in parsedDocuments) {
@@ -214,13 +214,13 @@ namespace MonoDevelop.JavaScript
 
 		void outlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
-			var pixRenderer = (CellRendererPixbuf)cell;
+			var pixRenderer = (CellRendererImage)cell;
 			object o = model.GetValue (iter, 0);
 
 			if (o is JSFunctionStatement) {
-				pixRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Method, IconSize.Menu);
+				pixRenderer.Image = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Method, IconSize.Menu);
 			} else if (o is JSVariableDeclaration) {
-				pixRenderer.Pixbuf = ImageService.GetPixbuf (MonoDevelop.Ide.Gui.Stock.Field, IconSize.Menu);
+				pixRenderer.Image = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.Field, IconSize.Menu);
 			} else {
 				throw new ArgumentException (string.Format ("Type {0} is not supported in JavaScript Outline.", o.GetType ().Name));
 			}

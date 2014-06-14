@@ -31,7 +31,7 @@ using System.Linq;
 namespace MonoDevelop.JavaScript
 {
 	[Serializable]
-	public class JSUpdateableProjectContent //: TypeSystemService.IUpdateableProjectContent
+	public class JSUpdateableProjectContent : TypeSystemService.IUpdateableProjectContent
 	{
 		public List<JavaScriptDocumentCache> DocumentsCache {
 			get;

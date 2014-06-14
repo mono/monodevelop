@@ -298,7 +298,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
 			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
-				var provider = Parsers.FirstOrDefault (p => p.CanParse (mt, buildAction));
+                var provider = Parsers.FirstOrDefault (p => p.CanParse (mt, buildAction));
 				if (provider != null)
 					return provider;
 			}
@@ -1112,10 +1112,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void AddOrUpdateFiles (params ParsedDocument[] docs)
 			{
 				lock (updateContentLock) {
-					LoadLazyProject ();
-					Content = Content.AddOrUpdateFiles (docs.Select (d => d.ParsedFile));
-					foreach (var t in extensionObjects.Values.OfType<IUpdateableProjectContent> ())
-						t.AddOrUpdateFiles (docs);
+                    LoadLazyProject ();
+                    Content = Content.AddOrUpdateFiles (docs.Select (d => d.ParsedFile));
+                    foreach (var t in extensionObjects.Values.OfType<IUpdateableProjectContent> ())
+                        t.AddOrUpdateFiles (docs);
 					ClearCachedCompilations ();
 					WasChanged = true;
 				}

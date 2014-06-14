@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		const string ApiDefinitionBuildAction = "ObjcBindingApiDefinition";
 
 		[NodeAttribute (Description="The build actions.")]
-		string[] buildActions = { MonoDevelop.Projects.BuildAction.Compile, ApiDefinitionBuildAction };
+        string[] buildActions = { MonoDevelop.Projects.BuildAction.Compile, ApiDefinitionBuildAction, MonoDevelop.Projects.BuildAction.Content };
 
 		public string[] BuildActions {
 			get {
