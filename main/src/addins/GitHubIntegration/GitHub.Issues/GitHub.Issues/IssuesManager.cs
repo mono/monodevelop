@@ -3,6 +3,7 @@ using GitHub.Auth;
 using Octokit;
 using System.Collections.Generic;
 using Gtk;
+using System.Threading.Tasks;
 
 namespace GitHub.Issues
 {
@@ -15,21 +16,10 @@ namespace GitHub.Issues
 			this.gitHubClient = GitHubService.Client;
 		}
 
-		public async void GetAllIssues()
+		public IReadOnlyList<Octokit.Issue> GetAllIssues()
 		{
-			IReadOnlyList<Octokit.Issue> allIssues = await gitHubClient.Issue.GetForRepository ("Kalnor", "testRepo");
-
-			String issueListString = "";
-
-			foreach (Octokit.Issue issue in allIssues) {
-				String assigned = "Not Assigned";
-
-				if (issue.Assignee != null) {
-					assigned = issue.Assignee.Login;
-				}
-
-				issueListString += String.Format ("    {0} - {1} - {2}    \n", issue.Title, issue.Body, assigned);
-			}
+			Task<IReadOnlyList<Octokit.Issue>> task = gitHubClient.Issue.GetForRepository ("Kalnor", "testRepo");
+			return task.Result;
 		}
 	}
 }

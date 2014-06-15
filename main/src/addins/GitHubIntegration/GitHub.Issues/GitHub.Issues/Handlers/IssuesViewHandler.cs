@@ -1,5 +1,6 @@
 ﻿using System;
 using GitHub.Issues.Views;
+using System.Collections.Generic;
 
 namespace GitHub.Issues
 {
@@ -14,9 +15,9 @@ namespace GitHub.Issues
 			return true;
 		}
 
-		public IIssuesView CreateView(String name)
+		public IIssuesView CreateView(String name, IReadOnlyList<Octokit.Issue> issues)
 		{
-			return new IssuesView (name);
+			return new IssuesView (name, issues);
 		}
 	}
 }

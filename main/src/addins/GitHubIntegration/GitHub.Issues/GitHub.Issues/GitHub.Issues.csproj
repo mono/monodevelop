@@ -65,6 +65,7 @@
     <Compile Include="gtk-gui\GitHub.Issues.UserInterface.IssuesWidget.cs" />
     <Compile Include="Handlers\IssuesViewHandler.cs" />
     <Compile Include="Handlers\IGitHubIssuesViewHandler.cs" />
+    <Compile Include="Views\IssueNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

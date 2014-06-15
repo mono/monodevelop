@@ -3,6 +3,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using GitHub.Issues.Views;
 using MonoDevelop.Ide.Gui;
+using System.Collections.Generic;
 
 namespace GitHub.Issues
 {
@@ -17,7 +18,11 @@ namespace GitHub.Issues
 		{
 			IWorkbenchWindow window = IdeApp.Workbench.ActiveDocument.Window;
 			// window.SwitchView (window.FindView<IIssuesView> ());
-			window.AttachViewContent (new IssuesView ("Issues View"));
+
+			IssuesManager manager = new IssuesManager ();
+			IReadOnlyList<Octokit.Issue> issues = manager.GetAllIssues ();
+
+			window.AttachViewContent (new IssuesView ("Issues View", issues));
 		}
 	}
 }

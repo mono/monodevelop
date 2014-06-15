@@ -1,6 +1,7 @@
 ﻿using System;
 using MonoDevelop.Ide.Gui;
 using GitHub.Issues.UserInterface;
+using System.Collections.Generic;
 
 namespace GitHub.Issues.Views
 {
@@ -12,6 +13,7 @@ namespace GitHub.Issues.Views
 	{
 		private IssuesWidget widget;
 		private String name;
+		private IReadOnlyList<Octokit.Issue> issues;
 
 		public IssuesWidget IssuesWidget {
 			get {
@@ -19,9 +21,10 @@ namespace GitHub.Issues.Views
 			}
 		}
 
-		public IssuesView (String name) : base(name)
+		public IssuesView (String name, IReadOnlyList<Octokit.Issue> issues) : base(name)
 		{
 			this.name = name;
+			this.issues = issues;
 		}
 
 		#region implemented abstract members of AbstractBaseViewContent
@@ -29,7 +32,7 @@ namespace GitHub.Issues.Views
 		public override Gtk.Widget Control {
 			get {
 				if (widget == null) {
-					CreateWidgetFromInfo ();
+					CreateWidgetFromInfo (this.issues);
 				}
 
 				return widget; 
@@ -38,9 +41,9 @@ namespace GitHub.Issues.Views
 
 		#endregion
 
-		private void CreateWidgetFromInfo ()
+		private void CreateWidgetFromInfo (IReadOnlyList<Octokit.Issue> issues)
 		{
-			this.widget = new IssuesWidget ();
+			this.widget = new IssuesWidget (issues);
 		}
 
 		void IAttachableViewContent.Selected ()
