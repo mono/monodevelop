@@ -41,7 +41,7 @@ namespace MonoDevelop.Debugger
 {
 	enum ConditionalHitWhen
 	{
-		Always,
+		ResetCondition,
 		ConditionIsTrue,
 		ExpressionChanges
 	}
@@ -50,11 +50,11 @@ namespace MonoDevelop.Debugger
 	{
 		// For button sensitivity.
 		DialogButton buttonOk;
+		bool editing;
 
 		// Groupings for sensitivity
 		HBox hboxFunction = new HBox (){ MarginLeft = 18 };
 		HBox hboxLocation = new HBox ();
-		HBox hboxLineColumn = new HBox ();
 		HBox hboxException = new HBox ();
 		HBox hboxCondition = new HBox ();
 		VBox vboxException = new VBox (){ MarginLeft = 18 };
@@ -132,7 +132,7 @@ namespace MonoDevelop.Debugger
 			stopOnLocation.Group = stopGroup;
 			stopOnException.Group = stopGroup;
 
-			ignoreHitType.Items.Add (HitCountMode.None, GettextCatalog.GetString ("Always"));
+			ignoreHitType.Items.Add (HitCountMode.None, GettextCatalog.GetString ("Reset condition"));
 			ignoreHitType.Items.Add (HitCountMode.LessThan, GettextCatalog.GetString ("When hit count is less than"));
 			ignoreHitType.Items.Add (HitCountMode.LessThanOrEqualTo, GettextCatalog.GetString ("When hit count is less than or equal to"));
 			ignoreHitType.Items.Add (HitCountMode.EqualTo, GettextCatalog.GetString ("When hit count is equal to"));
@@ -147,7 +147,7 @@ namespace MonoDevelop.Debugger
 			ignoreHitCount.MaximumValue = Int32.MaxValue;
 
 
-			conditionalHitType.Items.Add (ConditionalHitWhen.Always, GettextCatalog.GetString ("Always"));
+			conditionalHitType.Items.Add (ConditionalHitWhen.ResetCondition, GettextCatalog.GetString ("Reset condition"));
 			conditionalHitType.Items.Add (ConditionalHitWhen.ConditionIsTrue, GettextCatalog.GetString ("And the following condition is true"));
 			conditionalHitType.Items.Add (ConditionalHitWhen.ExpressionChanges, GettextCatalog.GetString ("And the following expression changes"));
 
@@ -200,7 +200,6 @@ namespace MonoDevelop.Debugger
 			breakpointLocation.Update (bp);
 
 			entryLocationFile.Text = breakpointLocation.ToString ();
-
 			Project project = null;
 			if (!string.IsNullOrEmpty (bp.FileName))
 				project = IdeApp.Workspace.GetProjectsContainingFile (bp.FileName).FirstOrDefault ();
@@ -234,8 +233,14 @@ namespace MonoDevelop.Debugger
 		void SetInitialData ()
 		{
 			if (be != null) {
-				ignoreHitType.SelectedItem = be.HitCountMode;
-				ignoreHitCount.Value = be.HitCount;
+				editing = true;
+				if (be.HitCountMode == HitCountMode.None) {
+					ignoreHitType.SelectedItem = HitCountMode.GreaterThanOrEqualTo;
+					ignoreHitCount.Value = 0;
+				} else {
+					ignoreHitType.SelectedItem = be.HitCountMode;
+					ignoreHitCount.Value = be.HitCount;
+				}
 
 				if ((be.HitAction & HitAction.Break) == HitAction.Break) {
 					breakpointActionPause.Active = true;
@@ -244,12 +249,10 @@ namespace MonoDevelop.Debugger
 					entryPrintExpression.Text = be.TraceExpression;
 				}
 
-				if (string.IsNullOrWhiteSpace (be.ConditionExpression)) {
-					conditionalHitType.SelectedItem = ConditionalHitWhen.Always;
-				} else {
-					entryConditionalExpression.Text = be.ConditionExpression;
-					conditionalHitType.SelectedItem = be.BreakIfConditionChanges ? ConditionalHitWhen.ExpressionChanges : ConditionalHitWhen.ConditionIsTrue;
-				}
+				entryConditionalExpression.Text = be.ConditionExpression ?? "";
+				conditionalHitType.SelectedItem = be.BreakIfConditionChanges ?
+					ConditionalHitWhen.ExpressionChanges : ConditionalHitWhen.ConditionIsTrue;
+
 
 				var fb = be as FunctionBreakpoint;
 				if (fb != null) {
@@ -263,8 +266,8 @@ namespace MonoDevelop.Debugger
 				if (cp != null)
 					SetInitialCatchpointData (cp);
 			} else {
-				ignoreHitType.SelectedItem = HitCountMode.None;
-				conditionalHitType.SelectedItem = ConditionalHitWhen.Always;
+				ignoreHitType.SelectedItem = HitCountMode.GreaterThanOrEqualTo;
+				conditionalHitType.SelectedItem = ConditionalHitWhen.ConditionIsTrue;
 
 				if (IdeApp.Workbench.ActiveDocument != null) {
 					breakpointLocation.Update (IdeApp.Workbench.ActiveDocument.FileName,
@@ -398,7 +401,11 @@ namespace MonoDevelop.Debugger
 			if (bp != null)
 				SaveBreakpoint (bp);
 
-			be.HitCountMode = (HitCountMode)ignoreHitType.SelectedItem;
+			if ((HitCountMode)ignoreHitType.SelectedItem == HitCountMode.GreaterThanOrEqualTo && (int)ignoreHitCount.Value == 0) {
+				be.HitCountMode = HitCountMode.None;
+			} else {
+				be.HitCountMode = (HitCountMode)ignoreHitType.SelectedItem;
+			}
 			be.HitCount = be.HitCountMode != HitCountMode.None ? (int)ignoreHitCount.Value : 0;
 
 
@@ -420,17 +427,23 @@ namespace MonoDevelop.Debugger
 
 		void OnUpdateControls (object sender, EventArgs e)
 		{
-			// Check which radio is selected.
-			hboxFunction.Sensitive = stopOnFunction.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			hboxLineColumn.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			hboxLocation.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
-			hboxException.Sensitive = stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
-			checkIncludeSubclass.Sensitive = stopOnException.Active;
-			hboxCondition.Sensitive = DebuggingService.IsFeatureSupported (DebuggerFeatures.ConditionalBreakpoints);
+			//Selection of None actually means ResetCondition
+			if (ignoreHitType.SelectedItem != null && (HitCountMode)ignoreHitType.SelectedItem == HitCountMode.None) {
+				ignoreHitType.SelectedItem = HitCountMode.GreaterThanOrEqualTo;
+				ignoreHitCount.Value = 0;
+			}
 
-			// Check ignoring hit counts.
-			ignoreHitCount.Sensitive = !ignoreHitType.SelectedItem.Equals (HitCountMode.None);
-			entryConditionalExpression.Sensitive = !ConditionalHitWhen.Always.Equals (conditionalHitType.SelectedItem);
+			if (conditionalHitType.SelectedItem != null && (ConditionalHitWhen)conditionalHitType.SelectedItem == ConditionalHitWhen.ResetCondition) {
+				conditionalHitType.SelectedItem = ConditionalHitWhen.ConditionIsTrue;
+				entryConditionalExpression.Text = "";
+			}
+
+			// Check which radio is selected.
+			hboxFunction.Sensitive = stopOnFunction.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && !editing;
+			hboxLocation.Sensitive = stopOnLocation.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints) && !editing;
+			hboxException.Sensitive = stopOnException.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints) && !editing;
+			checkIncludeSubclass.Sensitive = stopOnException.Active && !editing;
+			hboxCondition.Sensitive = DebuggingService.IsFeatureSupported (DebuggerFeatures.ConditionalBreakpoints);
 
 			// Check printing an expression.
 			entryPrintExpression.Sensitive = breakpointActionPrint.Active && DebuggingService.IsFeatureSupported (DebuggerFeatures.Tracepoints);
@@ -457,12 +470,6 @@ namespace MonoDevelop.Debugger
 			if (breakpointActionPrint.Active && string.IsNullOrWhiteSpace (entryPrintExpression.Text)) {
 				warningPrintExpression.Show ();
 				warningPrintExpression.TooltipText = GettextCatalog.GetString ("Trace expression not specified");
-				result = false;
-			}
-
-			if (!ConditionalHitWhen.Always.Equals (conditionalHitType.SelectedItem) && string.IsNullOrWhiteSpace (entryConditionalExpression.Text)) {
-				warningCondition.Show ();
-				warningCondition.TooltipText = GettextCatalog.GetString ("Condition expression not specified");
 				result = false;
 			}
 
