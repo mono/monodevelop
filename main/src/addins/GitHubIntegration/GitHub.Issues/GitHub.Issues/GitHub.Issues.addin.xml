@@ -16,4 +16,13 @@
 		</ItemSet>
 	</Extension>
 
+	<ExtensionPoint path = "/MonoDevelop/GitHub/Issues/IssuesViewHandler" name = "Issues view handler">
+		<Description>Handler used to create the issues view which can display the list of issues from GitHub.</Description>
+		<ExtensionNode name="Handler" objectType="GitHub.Issues.IIssuesViewHandler" />
+	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/GitHub/Issues/IssuesViewHandler">
+		<Handler class = "GitHub.Issues.IssuesViewHandler" />
+	</Extension>
+
 </ExtensionModel>

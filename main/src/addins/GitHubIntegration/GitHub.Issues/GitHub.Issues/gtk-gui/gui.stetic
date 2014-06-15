@@ -7,10 +7,9 @@
   <import>
     <widget-library name="../../../../../../build/AddIns/GitHubIntegration/GitHub.Issues/GitHub.Issues.dll" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="GitHub.Issues.TestWindow" design-size="400 300">
+  <widget class="Gtk.Bin" id="GitHub.Issues.UserInterface.IssuesWidget" design-size="300 300">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">TestWindow</property>
-    <property name="WindowPosition">CenterOnParent</property>
+    <property name="Visible">False</property>
     <child>
       <placeholder />
     </child>

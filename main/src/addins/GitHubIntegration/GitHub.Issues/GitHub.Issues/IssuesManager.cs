@@ -17,11 +17,6 @@ namespace GitHub.Issues
 
 		public async void GetAllIssues()
 		{
-			TestWindow dialog = new TestWindow ();
-			dialog.Resize (200, 200);
-
-			Gtk.Label issuesLabel = new Gtk.Label ();
-
 			IReadOnlyList<Octokit.Issue> allIssues = await gitHubClient.Issue.GetForRepository ("Kalnor", "testRepo");
 
 			String issueListString = "";
@@ -35,14 +30,6 @@ namespace GitHub.Issues
 
 				issueListString += String.Format ("    {0} - {1} - {2}    \n", issue.Title, issue.Body, assigned);
 			}
-
-			issuesLabel.Text = issueListString;
-
-			dialog.Add (issuesLabel);
-
-			dialog.ShowAll ();
-
-			IssueRequest issueRequest = new IssueRequest ();
 		}
 	}
 }

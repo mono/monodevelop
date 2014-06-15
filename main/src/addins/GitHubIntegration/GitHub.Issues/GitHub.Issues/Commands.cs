@@ -1,5 +1,8 @@
 ﻿using System;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
+using GitHub.Issues.Views;
+using MonoDevelop.Ide.Gui;
 
 namespace GitHub.Issues
 {
@@ -12,8 +15,9 @@ namespace GitHub.Issues
 	{
 		protected override void Run ()
 		{
-			IssuesManager manager = new IssuesManager ();
-			manager.GetAllIssues ();
+			IWorkbenchWindow window = IdeApp.Workbench.ActiveDocument.Window;
+			// window.SwitchView (window.FindView<IIssuesView> ());
+			window.AttachViewContent (new IssuesView ("Issues View"));
 		}
 	}
 }
