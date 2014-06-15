@@ -80,9 +80,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
-			var des = FontService.GetFontDescription ("Editor");
-			
-			headlabel.FontDescription = des;
+
+			headlabel.FontDescription = FontService.GetFontDescription ("Editor").CopyModified (1.1);
 			
 			headlabel.Wrap = Pango.WrapMode.WordChar;
 			headlabel.BreakOnCamelCasing = false;
@@ -167,6 +166,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			var catLabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			catLabel.Text = categoryName;
 			catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			catLabel.FontDescription = FontService.GetFontDescription ("Editor");
 			
 			vbox.PackStart (catLabel, false, true, 0);
 			
@@ -177,6 +177,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			contentLabel.BreakOnPunctuation = true;
 			contentLabel.Markup = categoryContentMarkup.Trim ();
 			contentLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			contentLabel.FontDescription = FontService.GetFontDescription ("Editor");
 			
 			vbox.PackStart (contentLabel, true, true, 0);
 			
