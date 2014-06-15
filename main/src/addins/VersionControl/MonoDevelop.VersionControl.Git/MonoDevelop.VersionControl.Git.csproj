@@ -182,8 +182,14 @@
       </ItemGroup>
     </When>
     <Otherwise>
+      <ItemGroup>
+        <NativeBinaries Include="..\..\..\..\external\libgit2sharp\libgit2\build\*.*" />
+      </ItemGroup>
     </Otherwise>
   </Choose>
+  <Target Name="BeforeBuild">
+    <Exec Command="sh build_libgit2.sh" Condition=" '$(Configuration)' == 'DebugGnome' "/>
+  </Target>
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(NativeBinaries)" DestinationFolder="$(OutputPath)\" SkipUnchangedFiles="true" />
   </Target>
