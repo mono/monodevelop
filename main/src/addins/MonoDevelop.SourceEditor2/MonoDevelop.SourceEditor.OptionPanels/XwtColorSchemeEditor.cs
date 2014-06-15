@@ -55,9 +55,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		Button buttonFormat = new Button ("FBP");
 		TextEntry entryName = new TextEntry ();
 		TextEntry entryDescription = new TextEntry ();
-		SearchTextEntry searchEntry = new SearchTextEntry ();
-		Button undoButton = new Button (ImageService.GetIcon (Stock.UndoIcon).WithSize (Xwt.IconSize.Small));
-		Button redoButton = new Button (ImageService.GetIcon (Stock.RedoIcon).WithSize (Xwt.IconSize.Small));
+		SearchTextEntry searchEntry = new SearchTextEntry (){ PlaceholderText = "Type here..." };
+		Button undoButton = new Button (ImageService.GetIcon (Stock.UndoIcon).WithSize (Xwt.IconSize.Small)){ Sensitive = false };
+		Button redoButton = new Button (ImageService.GetIcon (Stock.RedoIcon).WithSize (Xwt.IconSize.Small)){ Sensitive = false };
 
 		public XwtColorSchemeEditor (HighlightingPanel panel)
 		{
@@ -71,9 +71,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var mainTable = new Table ();
 
 			var headerTable = new Table ();
-			headerTable.Add (new Label () { Text="Name:" }, 0, 0);
+			headerTable.Add (new Label () { Text = "Name:" }, 0, 0);
 			headerTable.Add (entryName, 1, 0);
-			headerTable.Add (new Label () { Text="Description:" }, 2, 0);
+			headerTable.Add (new Label () { Text = "Description:" }, 2, 0);
 			headerTable.Add (entryDescription, 3, 0, 1, 1, true);
 			mainTable.Add (headerTable, 0, 0, 1, 1, true, false, WidgetPlacement.Fill, WidgetPlacement.Start);
 
@@ -110,8 +110,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var toolkit = Toolkit.CurrentEngine;
 			var wrappedTextEditor = toolkit.WrapWidget (textEditor);
 			var scrollView = new ScrollView (wrappedTextEditor) {
-				HorizontalScrollPolicy=ScrollPolicy.Always,
-				VerticalScrollPolicy=ScrollPolicy.Always
+				HorizontalScrollPolicy = ScrollPolicy.Always,
+				VerticalScrollPolicy = ScrollPolicy.Always
 			};
 			table.Add (scrollView, 0, 2, 1, 1, true, true);
 
@@ -121,6 +121,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.treeviewColors.DataSource = colorStore;
 			this.treeviewColors.SelectionChanged += TreeviewColorsSelectionChanged;
 			history = new ColorSchemeEditorHistory (treeviewColors, styleField);
+			history.CanUndoRedoChanged += CanUndoRedoChanged;
 
 			var box = new HPaned ();
 
@@ -137,10 +138,23 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			mainTable.Add (box, 0, 1, 1, 1, true, true);
 			this.Content = mainTable;
 
+			searchEntry.Changed += SearchTextChanged;
+
 			this.Height = 500;
 			this.Width = 800;
 
 			TreeviewColorsSelectionChanged (null, null);
+		}
+
+		void SearchTextChanged (object sender, EventArgs e)
+		{
+			//var searchText = searchEntry.Text;
+		}
+
+		void CanUndoRedoChanged (object sender, EventArgs e)
+		{
+			undoButton.Sensitive = history.CanUndo;
+			redoButton.Sensitive = history.CanRedo;
 		}
 
 		void Undo (object sender, EventArgs e)
@@ -257,17 +271,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			newStyle.Foreground = GetColorFromButton (colorbuttonPrimary);
 			newStyle.Background = GetColorFromButton (colorbuttonSecondary);
 
-			if (togglebuttonBold.Active) {
-				newStyle.FontWeight = FontWeight.Bold;
-			} else {
-				newStyle.FontWeight = FontWeight.Normal;
-			}
+			newStyle.FontWeight = togglebuttonBold.Active
+				? FontWeight.Bold
+				: FontWeight.Normal;
 
-			if (togglebuttonItalic.Active) {
-				newStyle.FontStyle = FontStyle.Italic;
-			} else {
-				newStyle.FontStyle = FontStyle.Normal;
-			}
+			newStyle.FontStyle = togglebuttonItalic.Active 
+				? FontStyle.Italic 
+				: FontStyle.Normal;
 
 			if (handleUIEvents)
 				history.AddCommand (new ChangeChunkStyleCommand (oldStyle, newStyle, navigator));
@@ -308,17 +318,23 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			scheme.Name = entryName.Text;
 			scheme.Description = entryDescription.Text;
 
-			TreePosition iter = treeviewColors.SelectedRow;
-			if (iter == null)
+			TreePosition pos = treeviewColors.SelectedRow;
+			if (pos == null)
 				return;
 
 			var navigator = colorStore.GetFirstNode ();
 
 			do {
-				var data = (ColorScheme.PropertyDecsription)navigator.GetValue (propertyField);
-				var style = navigator.GetValue (styleField);
-				data.Info.SetValue (scheme, style, null);
-			} while (navigator.MoveNext());			
+				navigator.MoveToChild ();
+
+				do {
+					var data = (ColorScheme.PropertyDecsription)navigator.GetValue (propertyField);
+					var style = navigator.GetValue (styleField);
+					data.Info.SetValue (scheme, style, null);
+				} while (navigator.MoveNext ());
+
+				navigator.MoveToParent ();
+			} while (navigator.MoveNext ());
 		}
 
 		protected override void OnCommandActivated (Command cmd)
@@ -374,20 +390,47 @@ class Example
 	}
 }";
 			foreach (var data in ColorScheme.TextColors) {
-				var navigator = colorStore.AddNode ();
+				var parent = GetGroupParentNode (data.Attribute.GroupName);
+				var navigator = parent.AddChild ();
 				navigator.SetValue (nameField, data.Attribute.Name);
 				navigator.SetValue (propertyField, data);
 				navigator.SetValue (styleField, data.Info.GetValue (scheme, null));
 			}
 
 			foreach (var data in ColorScheme.AmbientColors) {
-				var navigator = colorStore.AddNode ();
+				var parent = GetGroupParentNode (data.Attribute.GroupName);
+				var navigator = parent.AddChild ();
 				navigator.SetValue (nameField, data.Attribute.Name);
 				navigator.SetValue (propertyField, data);
 				navigator.SetValue (styleField, data.Info.GetValue (scheme, null));
 			}
 
+			treeviewColors.ExpandAll ();
 			StyleChanged (null, null);
+		}
+
+		TreeNavigator GetGroupParentNode (string groupName)
+		{
+			var name = string.Empty;
+			var navigator = colorStore.GetFirstNode ();
+			if (navigator.CurrentPosition == null)
+				return AddNewGroup (groupName);
+
+			name = navigator.GetValue (nameField);
+			while (name != groupName && navigator.MoveNext ())
+				name = navigator.GetValue (nameField);
+
+			if (name != groupName)
+				navigator = AddNewGroup (groupName);
+
+			return navigator;
+		}
+
+		TreeNavigator AddNewGroup (string groupName)
+		{
+			var navigator = colorStore.AddNode ();
+			navigator.SetValue (nameField, groupName);
+			return navigator;
 		}
 	}
 }

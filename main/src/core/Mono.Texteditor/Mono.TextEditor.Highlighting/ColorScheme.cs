@@ -203,7 +203,7 @@ namespace Mono.TextEditor.Highlighting
 
 		#region Text Colors
 
-		[ColorDescription("Plain Text", VSSetting = "Plain Text")]
+		[ColorDescription("Plain Text", VSSetting = "Plain Text", GroupName = "Text")]
 		public ChunkStyle PlainText { get; private set; }
 
 		[ColorDescription("Selected Text", VSSetting = "Selected Text")]
