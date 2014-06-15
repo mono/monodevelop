@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl.Git
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
 			if (rep != null) {
 				IWorkspaceObject rob;
-				if (repos.TryGetValue (rep.RootPath.CanonicalPath, out rob)) {
+				if (repos.TryGetValue (rep.RootPath, out rob)) {
 					if (ob == rob)
 						nodeInfo.Label += " (" + rep.GetCurrentBranch () + ")";
 				}
@@ -73,8 +73,8 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
-			if (rep != null && !repos.ContainsKey (rep.RootPath.CanonicalPath)) {
-				repos [rep.RootPath.CanonicalPath] = ob;
+			if (rep != null && !repos.ContainsKey (rep.RootPath)) {
+				repos [rep.RootPath] = ob;
 			}
 		}
 		
@@ -83,9 +83,9 @@ namespace MonoDevelop.VersionControl.Git
 			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
 			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
 			IWorkspaceObject rob;
-			if (rep != null && repos.TryGetValue (rep.RootPath.CanonicalPath, out rob)) {
+			if (rep != null && repos.TryGetValue (rep.RootPath, out rob)) {
 				if (ob == rob)
-					repos.Remove (rep.RootPath.CanonicalPath);
+					repos.Remove (rep.RootPath);
 			}
 		}
 
