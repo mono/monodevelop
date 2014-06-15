@@ -641,7 +641,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override string GutterFontName {
 			get {
-				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor(Gutter)"));
+				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
