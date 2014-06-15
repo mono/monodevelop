@@ -38,6 +38,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		readonly TreeView treeView;
 		readonly IDataField<object> dataField;
 
+		public event EventHandler CanUndoRedoChanged;
+
 		public ColorSchemeEditorHistory (TreeView treeView, IDataField<object> dataField)
 		{
 			this.treeView = treeView;
@@ -49,6 +51,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			redoStack.Clear ();
 			undoStack.Push (command);
 			command.Redo (dataField);
+
+			if (CanUndoRedoChanged != null)
+				CanUndoRedoChanged (this, new EventArgs ());
 		}
 
 		public bool CanUndo{ get { return undoStack.Count > 0; } }
@@ -63,6 +68,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			command.Undo (dataField);
 			redoStack.Push (command);
 			SelectAndScroll (command.Position);
+
+			if (CanUndoRedoChanged != null)
+				CanUndoRedoChanged (this, new EventArgs ());
 		}
 
 		private void SelectAndScroll (TreePosition position)
@@ -79,6 +87,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			undoStack.Push (command);
 			command.Redo (dataField);
 			SelectAndScroll (command.Position);
+
+			if (CanUndoRedoChanged != null)
+				CanUndoRedoChanged (this, new EventArgs ());
 		}
 	}
 
