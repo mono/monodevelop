@@ -24,7 +24,7 @@ PATH="/usr/local/bin:/usr/local:$PATH"
 cmake -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo \
       -DTHREADSAFE:BOOL=ON \
       -DBUILD_CLAR:BOOL=OFF \
-      -DUSE_SSH=OFF \
+      -DUSE_SSH=ON \
       -DLIBGIT2_FILENAME=git2-$SHORTSHA \
       -DCMAKE_OSX_ARCHITECTURES="i386;x86_64" \
       ..
