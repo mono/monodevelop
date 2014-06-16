@@ -55,7 +55,8 @@ Dependencies
 	monodoc >= 1.0
 	gecko-sharp-2.0 >= 0.10
 	gtksourceview-sharp >= 0.10
-	
+	CMake (Linux only for Git support)
+
 References
 ----------
 

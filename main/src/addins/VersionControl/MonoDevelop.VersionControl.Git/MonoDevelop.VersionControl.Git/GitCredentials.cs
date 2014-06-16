@@ -38,11 +38,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			bool result = false;
 			var uri = new Uri (url);
-			string username;
-			string password;
 			// We always need to run the TryGet* methods as we need the passphraseItem/passwordItem populated even
 			// if the password store contains an invalid password/no password
 			if ((types & SupportedCredentialTypes.UsernamePassword) != 0) {
+				string username = string.Empty;
+				string password = string.Empty;
 				if (TryGetUsernamePassword (uri, out username, out password))
 					return new UsernamePasswordCredentials {
 						Username = username,
@@ -50,35 +50,25 @@ namespace MonoDevelop.VersionControl.Git
 					};
 			} /* no ssh support yet TryGetPassphrase (uri, out passphraseItem)*/
 
-			string tempuser = string.Empty;
-			string temppass = string.Empty;
-
+			UsernamePasswordCredentials cred = new UsernamePasswordCredentials ();
 			DispatchService.GuiSyncDispatch (delegate {
-				var dlg = new CredentialsDialog (uri, SupportedCredentialTypes.UsernamePassword);
+				var dlg = new CredentialsDialog (uri, types, cred);
 				try {
 					result = MessageService.ShowCustomDialog (dlg) == (int)Gtk.ResponseType.Ok;
-					tempuser = dlg.Username;
-					temppass = dlg.Password;
 				} finally {
 					dlg.Destroy ();
 				}
 			});
 
-			username = tempuser;
-			password = temppass;
-
 			if (result) {
-				if (!string.IsNullOrEmpty (password)) {
-					PasswordService.AddWebUserNameAndPassword (uri, username, password);
+				if (!string.IsNullOrEmpty (cred.Password)) {
+					PasswordService.AddWebUserNameAndPassword (uri, cred.Username, cred.Password);
 				}/* else if (passphraseItem != null) {
 					PasswordService.AddWebPassword (new Uri (uri), passphraseItem);
 				}*/
 			}
 
-			return new UsernamePasswordCredentials {
-				Username = username,
-				Password = password
-			};
+			return cred;
 		}
 		
 		static bool TryGetPassphrase (Uri uri, out string passphrase)

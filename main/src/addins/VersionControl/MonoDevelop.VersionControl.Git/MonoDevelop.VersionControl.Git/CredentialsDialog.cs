@@ -32,7 +32,7 @@ namespace MonoDevelop.VersionControl.Git
 	partial class CredentialsDialog : Gtk.Dialog
 	{
 		uint r = 0;
-		public CredentialsDialog (Uri uri, SupportedCredentialTypes type)
+		public CredentialsDialog (Uri uri, SupportedCredentialTypes type, Credentials cred)
 		{
 			this.Build ();
 			
@@ -45,8 +45,9 @@ namespace MonoDevelop.VersionControl.Git
 			Widget firstEditor = null;
 			switch (type) {
 			case SupportedCredentialTypes.UsernamePassword:
+				upcred = (UsernamePasswordCredentials)cred;
 				firstEditor = CreateEntry (table, uri, "Username:", false);
-				CreateEntry (table, uri, "Password:", false);
+				CreateEntry (table, uri, "Password:", true);
 				break;
 			}
 			table.ShowAll ();
@@ -71,9 +72,9 @@ namespace MonoDevelop.VersionControl.Git
 				e.Text = uri.UserInfo;
 			e.Changed += delegate {
 				if (password) {
-					Password = e.Text;
+					upcred.Password = e.Text;
 				} else {
-					Username = e.Text;
+					upcred.Username = e.Text;
 				}
 			};
 
@@ -86,15 +87,7 @@ namespace MonoDevelop.VersionControl.Git
 			return editor;
 		}
 
-		public string Username {
-			get;
-			private set;
-		}
-
-		public string Password {
-			get;
-			private set;
-		}
+		UsernamePasswordCredentials upcred;
 	}
 }
 
