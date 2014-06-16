@@ -190,6 +190,7 @@
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\DocumentLineWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextLineMarkerWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SegmentMarker\UsageSegmentMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ITextDocumentWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

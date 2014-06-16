@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-	ITextEditorImpl, IEditorActionHost, ISegmentMarkerHost
+		ITextEditorImpl, IEditorActionHost, ISegmentMarkerHost
 	{
 
 		readonly SourceEditorWidget widget;
@@ -87,9 +87,12 @@ namespace MonoDevelop.SourceEditor
 		bool writeAllowed;
 		bool writeAccessChecked;
 		
-		public Mono.TextEditor.TextDocument Document {
+		public TextDocument Document {
 			get {
 				return widget.TextEditor.Document;
+			}
+			set {
+				widget.TextEditor.Document = value;
 			}
 		}
 
@@ -305,11 +308,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (wasEdited)
 				InformAutoSave ();
+			OnEndUndo (EventArgs.Empty);
 		}
 
 		void HandleBeginUndo (object sender, EventArgs e)
 		{
 			wasEdited = false;
+			OnBeginUndo (EventArgs.Empty);
 		}
 
 		void HandleUndone (object sender, TextDocument.UndoOperationEventArgs e)
@@ -321,6 +326,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			OnCaretPositionSet (EventArgs.Empty);
 			FireCompletionContextChanged ();
+			OnCaretPositionChanged (EventArgs.Empty);
 		}
 
 		void HandleFileExtensionRemoved (object sender, FileExtensionEventArgs args)
@@ -2595,6 +2601,17 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 
+		TextDocumentWrapper wrapper;
+		IReadonlyTextDocument ITextEditorImpl.Document {
+			get {
+				return wrapper;
+			}
+			set {
+				wrapper = (TextDocumentWrapper)value;
+				widget.TextEditor.Document = wrapper.Document;
+			}
+		}
+
 		event EventHandler ITextEditorImpl.SelectionChanged {
 			add {
 				this.TextEditor.SelectionChanged += value;
@@ -2604,31 +2621,32 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		event EventHandler ITextEditorImpl.CaretPositionChanged {
-			add {
-				this.TextEditor.Caret.PositionChanged += value;
-			}
-			remove {
-				this.TextEditor.Caret.PositionChanged -= value;
-			}
+
+		public event EventHandler CaretPositionChanged;
+
+		protected virtual void OnCaretPositionChanged (EventArgs e)
+		{
+			var handler = CaretPositionChanged;
+			if (handler != null)
+				handler (this, e);
 		}
 
-		event EventHandler ITextEditorImpl.BeginUndo {
-			add {
-				this.TextEditor.Document.BeginUndo += value;
-			}
-			remove {
-				this.TextEditor.Document.BeginUndo -= value;
-			}
+		public event EventHandler BeginUndo;
+
+		protected virtual void OnBeginUndo (EventArgs e)
+		{
+			var handler = BeginUndo;
+			if (handler != null)
+				handler (this, e);
 		}
 
-		event EventHandler ITextEditorImpl.EndUndo {
-			add {
-				this.TextEditor.Document.EndUndo += value;
-			}
-			remove {
-				this.TextEditor.Document.EndUndo -= value;
-			}
+		public event EventHandler EndUndo;
+
+		protected virtual void OnEndUndo (EventArgs e)
+		{
+			var handler = EndUndo;
+			if (handler != null)
+				handler (this, e);
 		}
 
 		void ITextEditorImpl.SetSelection (int anchorOffset, int leadOffset)
@@ -2653,7 +2671,7 @@ namespace MonoDevelop.SourceEditor
 
 		int ITextEditorImpl.EnsureCaretIsNotVirtual ()
 		{
-			this.TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
+			return this.TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
 		}
 
 		void ITextEditorImpl.FixVirtualIndentation ()
@@ -2898,7 +2916,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 	
-
+		 
 		#region ISegmentMarkerHost implementation
 
 		ITextSegmentMarker ISegmentMarkerHost.CreateUsageMarker (Usage usage)

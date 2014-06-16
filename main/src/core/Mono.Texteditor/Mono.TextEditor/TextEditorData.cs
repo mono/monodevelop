@@ -186,24 +186,28 @@ namespace Mono.TextEditor
 			caret.PositionChanged += CaretPositionChanged;
 
 			options = TextEditorOptions.DefaultOptions;
-			
 			document = doc;
-			document.BeginUndo += OnBeginUndo;
-			document.EndUndo += OnEndUndo;
-
-			document.Undone += DocumentHandleUndone;
-			document.Redone += DocumentHandleRedone;
-			document.LineChanged += HandleDocLineChanged;
-			document.TextReplaced += HandleTextReplaced;
-
-			document.TextSet += HandleDocTextSet;
-			document.Folded += HandleTextEditorDataDocumentFolded;
-			document.FoldTreeUpdated += HandleFoldTreeUpdated;
+			AttachDocument ();
 			SearchEngine = new BasicSearchEngine ();
 
 			HeightTree = new HeightTree (this);
 			HeightTree.Rebuild ();
 			IndentationTracker = new DefaultIndentationTracker (document);
+		}
+
+		void AttachDocument ()
+		{
+			if (document == null)
+				return;
+			document.BeginUndo += OnBeginUndo;
+			document.EndUndo += OnEndUndo;
+			document.Undone += DocumentHandleUndone;
+			document.Redone += DocumentHandleRedone;
+			document.LineChanged += HandleDocLineChanged;
+			document.TextReplaced += HandleTextReplaced;
+			document.TextSet += HandleDocTextSet;
+			document.Folded += HandleTextEditorDataDocumentFolded;
+			document.FoldTreeUpdated += HandleFoldTreeUpdated;
 		}
 
 		void HandleFoldTreeUpdated (object sender, EventArgs e)
@@ -245,6 +249,12 @@ namespace Mono.TextEditor
 		public TextDocument Document {
 			get {
 				return document;
+			}
+			set {
+				DetachDocument ();
+				document = value;
+				this.caret.SetDocument (document);
+				AttachDocument ();
 			}
 		}
 

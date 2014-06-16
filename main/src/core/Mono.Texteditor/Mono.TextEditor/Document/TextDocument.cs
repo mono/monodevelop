@@ -91,6 +91,16 @@ namespace Mono.TextEditor
 			set;
 		}
 
+		public bool UseBom {
+			get;
+			set;
+		}
+
+		public System.Text.Encoding Encoding {
+			get;
+			set;
+		}
+
 		internal ILineSplitter Splitter {
 			get {
 				return splitter;

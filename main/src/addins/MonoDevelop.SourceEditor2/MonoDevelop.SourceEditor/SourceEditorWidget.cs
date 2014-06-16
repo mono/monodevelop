@@ -47,6 +47,7 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -306,7 +307,7 @@ namespace MonoDevelop.SourceEditor
 				args.RetVal = true;
 			}
 		
-			public void SetTextEditor (TextEditor container)
+			public void SetTextEditor (Mono.TextEditor.TextEditor container)
 			{
 				scrolledWindow.Child = container;
 				this.strip.TextEditor = container;
@@ -318,13 +319,13 @@ namespace MonoDevelop.SourceEditor
 			
 			void OptionsChanged (object sender, EventArgs e)
 			{
-				TextEditor editor = (TextEditor)sender;
+				var editor = (Mono.TextEditor.TextEditor)sender;
 				scrolledWindow.ModifyBg (StateType.Normal, (Mono.TextEditor.HslColor)editor.ColorStyle.PlainText.Background);
 			}
 			
 			void RemoveEvents ()
 			{
-				var container = scrolledWindow.Child as TextEditor;
+				var container = scrolledWindow.Child as Mono.TextEditor.TextEditor;
 				if (container == null) {
 					LoggingService.LogError ("can't remove events from text editor container.");
 					return;
@@ -335,9 +336,9 @@ namespace MonoDevelop.SourceEditor
 				container.SelectionChanged -= parent.UpdateLineColOnEventHandler;
 			}
 			
-			public TextEditor RemoveTextEditor ()
+			public Mono.TextEditor.TextEditor RemoveTextEditor ()
 			{
-				var child = scrolledWindow.Child as TextEditor;
+				var child = scrolledWindow.Child as Mono.TextEditor.TextEditor;
 				if (child == null)
 					return null;
 				RemoveEvents ();
@@ -1752,7 +1753,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
 		{
 			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
 

@@ -28,13 +28,36 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	class UsageSegmentMarker : Mono.TextEditor.TextSegmentMarker
+	class UsageSegmentMarker : Mono.TextEditor.TextSegmentMarker, ITextSegmentMarker
 	{
 		readonly Usage usage;
 
-		public UsageSegmentMarker (Usage usage) : base (usage.Segment.Offset, usage.Segment.Length)
+		public UsageSegmentMarker (Usage usage) : base (usage.Offset, usage.Length)
 		{
 			this.usage = usage;
+		}
+
+		event EventHandler<TextMarkerMouseEventArgs> ITextSegmentMarker.MousePressed {
+			add {
+				// TODO
+			}
+			remove {
+				// TODO
+			}
+		}
+
+		event EventHandler<TextMarkerMouseEventArgs> ITextSegmentMarker.MouseHover {
+			add {
+				// TODO
+			}
+			remove {
+				// TODO
+			}
+		}
+
+		object ITextSegmentMarker.Tag {
+			get;
+			set;
 		}
 	}
 }

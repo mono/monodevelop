@@ -22,7 +22,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+/*
 using System;
 using System.IO;
 using MonoDevelop.Core;
@@ -54,9 +54,9 @@ namespace MonoDevelop.SourceEditor
 				return;
 			IsInitialized = true;
 			
-			MonoDevelop.SourceEditor.Extension.TemplateExtensionNodeLoader.Init ();
+			//MonoDevelop.SourceEditor.Extension.TemplateExtensionNodeLoader.Init ();
 			DefaultSourceEditorOptions.Init ();
-			SyntaxModeService.EnsureLoad ();
+			//SyntaxModeService.EnsureLoad ();
 			LoadCustomStylesAndModes ();
 		}
 		
@@ -107,3 +107,4 @@ namespace MonoDevelop.SourceEditor
 		}
 	}
 }
+*/

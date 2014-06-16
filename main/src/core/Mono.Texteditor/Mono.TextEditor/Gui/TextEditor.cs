@@ -375,6 +375,9 @@ namespace Mono.TextEditor
 			get {
 				return textArea.Document;
 			}
+			set {
+				textArea.Document = value;
+			}
 		}
 		
 		public bool IsDisposed {

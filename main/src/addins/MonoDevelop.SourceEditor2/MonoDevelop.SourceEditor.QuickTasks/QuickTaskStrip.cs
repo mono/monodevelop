@@ -35,6 +35,7 @@ using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
 using System.Linq;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -62,7 +63,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 		
 		Mono.TextEditor.TextEditor textEditor;
-		public TextEditor TextEditor {
+		public Mono.TextEditor.TextEditor TextEditor {
 			get {
 				return textEditor;
 			}
