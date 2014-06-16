@@ -209,6 +209,16 @@ namespace MonoDevelop.Debugger
 					UpdateDisplay ();
 			}
 		}
+
+		string GetIconId (BreakEvent bp)
+		{
+			if (bp is Catchpoint) {
+				return bp.Enabled ? "md-catchpoint" : "md-catchpoint-disabled";
+			} else {
+				return bp.Enabled ? "md-breakpoint" : "md-breakpoint-disabled";
+			}
+		}
+
 		
 		[CommandHandler (DebugCommands.EnableDisableBreakpoint)]
 		protected void OnEnableDisable ()
@@ -241,7 +251,7 @@ namespace MonoDevelop.Debugger
 					BreakEvent bp = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
 					bp.Enabled = enable;
 
-					store.SetValue (iter, (int) Columns.Icon, enable ? "md-breakpoint" : "md-breakpoint-disabled");
+					store.SetValue (iter, (int) Columns.Icon, GetIconId(bp));
 					store.SetValue (iter, (int) Columns.Selected, enable);
 				}
 			} finally {
@@ -365,7 +375,7 @@ namespace MonoDevelop.Debugger
 					BreakEvent bp = (BreakEvent) store.GetValue (iter, (int) Columns.Breakpoint);
 					bp.Enabled = !bp.Enabled;
 
-					store.SetValue (iter, (int) Columns.Icon, bp.Enabled ? "md-breakpoint" : "md-breakpoint-disabled");
+					store.SetValue (iter, (int) Columns.Icon, GetIconId(bp));
 					store.SetValue (iter, (int) Columns.Selected, bp.Enabled);
 				}
 			} finally {
@@ -405,10 +415,7 @@ namespace MonoDevelop.Debugger
 							name = "";
 						}
 
-						if (be.Enabled)
-							store.AppendValues ("md-breakpoint", true, name, be, bp != null ? bp.ConditionExpression : null, traceExp, hitCount, traceVal);
-						else
-							store.AppendValues ("md-breakpoint-disabled", false, name, be, bp != null ? bp.ConditionExpression : null, traceExp, hitCount, traceVal);
+						store.AppendValues (GetIconId (be), be.Enabled, name, be, bp != null ? bp.ConditionExpression : null, traceExp, hitCount, traceVal);
 					}
 				}
 			}

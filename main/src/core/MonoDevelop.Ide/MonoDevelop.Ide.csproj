@@ -1861,6 +1861,18 @@
     <EmbeddedResource Include="icons\light\zoom-out-16%402x.png">
       <LogicalName>zoom-out-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-16.png">
+      <LogicalName>catchpoint-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-16%402x.png">
+      <LogicalName>catchpoint-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-disabled-16.png">
+      <LogicalName>catchpoint-disabled-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-disabled-16%402x.png">
+      <LogicalName>catchpoint-disabled-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
