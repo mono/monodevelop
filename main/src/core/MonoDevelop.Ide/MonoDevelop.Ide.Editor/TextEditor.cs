@@ -177,6 +177,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public ISegmentMarkerHost SegmentMarkerHost {
+			get {
+				return textEditorImpl.SegmentMarkerHost;
+			}
+		}
+
 		public bool IsInAtomicUndo {
 			get {
 				return textDocument.IsInAtomicUndo;

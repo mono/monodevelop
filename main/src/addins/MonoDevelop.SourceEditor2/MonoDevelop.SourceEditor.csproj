@@ -103,18 +103,23 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
@@ -182,9 +187,9 @@
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
     <Compile Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\AbstractUsagesExtension.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\DocumentLineWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextLineMarkerWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SegmentMarker\UsageSegmentMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -233,5 +238,6 @@
     <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
     <Folder Include="MonoDevelop.SourceEditor.Extension\" />
     <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
+    <Folder Include="MonoDevelop.SourceEditor\SegmentMarker\" />
   </ItemGroup>
 </Project>

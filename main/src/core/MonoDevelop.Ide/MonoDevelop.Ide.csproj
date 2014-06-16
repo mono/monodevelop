@@ -50,18 +50,23 @@
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib" />
@@ -2389,7 +2394,9 @@
     <Compile Include="MonoDevelop.Components\HelperMethods.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SelectionMode.cs" />
     <Compile Include="MonoDevelop.Components\GtkGestures.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\FileSettingsStore.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\FileSettingsStore.cs">
+      <DependentUpon>EmacsWordFindStrategy.cs</DependentUpon>
+    </Compile>
     <Compile Include="MonoDevelop.Ide.Editor\SyntaxModeService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ISyntaxMode.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IStreamProvider.cs" />
@@ -2427,6 +2434,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\SyntaxModeCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TemplateExtensionNodeLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Extensions\AbstractUsagesExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ISegmentMarkerHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2471,6 +2480,7 @@
     <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
     <Folder Include="MonoDevelop.Ide.Editor\" />
+    <Folder Include="MonoDevelop.Ide.Editor\Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

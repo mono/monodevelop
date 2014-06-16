@@ -64,8 +64,9 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-	ITextEditorImpl, IEditorActionHost
+	ITextEditorImpl, IEditorActionHost, ISegmentMarkerHost
 	{
+
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
 		DateTime lastSaveTimeUtc;
@@ -2828,6 +2829,14 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		ISegmentMarkerHost ITextEditorImpl.SegmentMarkerHost {
+			get {
+				return this;
+			}
+		}
+
+		#region IEditorActionHost implementation
+
 		void IEditorActionHost.MoveCaretDown ()
 		{
 			CaretMoveActions.Down (TextEditor.GetTextEditorData ());
@@ -2887,5 +2896,16 @@ namespace MonoDevelop.SourceEditor
 		{
 			ClipboardActions.Paste (TextEditor.GetTextEditorData ());
 		}
+		#endregion
+	
+
+		#region ISegmentMarkerHost implementation
+
+		ITextSegmentMarker ISegmentMarkerHost.CreateUsageMarker (Usage usage)
+		{
+			return new UsageSegmentMarker (usage);
+		}
+
+		#endregion
 	}
 } 

@@ -234,6 +234,95 @@ namespace MonoDevelop.Core.Text
 	}
 
 	/// <summary>
+	/// An abstract implementation of the ISegment (Offset, Length) pair representing a text span.
+	/// </summary>
+	public abstract class AbstractSegment : ISegment
+	{
+		readonly int offset;
+
+		/// <summary>
+		///  Gets the start offset of the segment. 
+		/// </summary>
+		/// <value>
+		/// The offset.
+		/// </value>
+		public int Offset {
+			get {
+				return offset;
+			}
+		}
+
+		readonly int length;
+
+		/// <summary>
+		/// Gets the length of the segment. 
+		/// </summary>
+		/// <value>
+		/// The length.
+		/// </value>
+		public int Length {
+			get {
+				return length;
+			}
+		}
+
+		/// <summary>
+		/// Gets the end offset of the segment. 
+		/// </summary>
+		/// <remarks>
+		/// EndOffset = Offset + Length;
+		/// </remarks>
+		/// <value>
+		/// The end offset.
+		/// </value>
+		public int EndOffset {
+			get {
+				return Offset + Length;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this instance is empty.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is empty; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsEmpty {
+			get {
+				return Length == 0;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this instance is invalid.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is invalid; otherwise, <c>false</c>.
+		/// </value>
+		public bool IsInvalid {
+			get {
+				return Offset < 0;
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextSegment"/> struct.
+		/// </summary>
+		/// <param name='offset'>
+		/// The offset of the segment.
+		/// </param>
+		/// <param name='length'>
+		/// The length of the segment.
+		/// </param>
+		protected AbstractSegment (int offset, int length)
+		{
+			this.offset = offset;
+			this.length = length;
+		}
+	}
+
+
+	/// <summary>
 	/// Extension methods for <see cref="ISegment"/>.
 	/// </summary>
 	public static class ISegmentExtensions
