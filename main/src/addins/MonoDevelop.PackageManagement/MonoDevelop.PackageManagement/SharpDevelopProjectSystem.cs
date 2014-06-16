@@ -411,8 +411,18 @@ namespace ICSharpCode.PackageManagement
 			GuiSyncDispatch (() => {
 				string relativeTargetPath = GetRelativePath (targetPath);
 				project.RemoveImport (relativeTargetPath);
+				RemoveImportWithForwardSlashes (targetPath);
 				project.Save ();
 			});
+		}
+
+		void RemoveImportWithForwardSlashes (string targetPath)
+		{
+			string relativeTargetPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, targetPath);
+			if (Path.DirectorySeparatorChar == '\\') {
+				relativeTargetPath = relativeTargetPath.Replace ('\\', '/');
+			}
+			project.RemoveImport (relativeTargetPath);
 		}
 
 		/// <summary>

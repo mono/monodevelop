@@ -110,6 +110,11 @@ namespace MonoDevelop.PackageManagement.Tests
 //			Assert.AreEqual (expectedCondition, import.Condition);
 		}
 
+		void AssertImportRemoved (string expectedImportRemoved)
+		{
+			Assert.That (project.ImportsRemoved, Contains.Item (expectedImportRemoved));
+		}
+
 		[Test]
 		public void Root_NewInstanceCreated_ReturnsProjectDirectory ()
 		{
@@ -891,6 +896,18 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public void AddImport_SolutionAndProjectInSameDirectory_PathRelativeToProjectAddedAsLastImportInProject ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
+
+			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+
+			AssertLastMSBuildChildElementHasProjectAttributeValue (@"packages\Foo.0.1\build\Foo.targets");
+		}
+
+		[Test]
 		[Ignore ("MSBuild conditions not implemented")]
 		public void AddImport_AddImportToBottomOfProject_ImportAddedWithConditionThatChecksForExistenceOfTargetsFile ()
 		{
@@ -952,7 +969,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.RemoveImport (targetPath);
 
-			Assert.AreEqual (1, project.ImportsRemoved.Count);
+			AssertImportRemoved (@"..\packages\Foo.0.1\build\Foo.targets");
 		}
 
 		[Test]
@@ -967,7 +984,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.RemoveImport (targetPath2);
 
 			Assert.AreEqual (1, project.ImportsAdded.Count);
-			Assert.AreEqual (1, project.ImportsRemoved.Count);
+			Assert.AreEqual (2, project.ImportsRemoved.Count);
 		}
 
 		[Test]
@@ -1080,6 +1097,35 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			ProjectReference referenceItem = ProjectHelper.GetReference (project, "nunit.framework");
 			Assert.IsNull (referenceItem);
+		}
+
+		[Test]
+		public void RemoveImport_EnsureMacImportsWithWrongSeparatorAreRemoved_RemovesTwoImportsOneWithForwardSlashesAndOneWithBackslashesOnBothWindowsAndMac ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+			string expectedImportRemoved = @"..\packages\Foo.0.1\build\Foo.targets";
+
+			projectSystem.RemoveImport (targetPath.ToNativePath ());
+
+			AssertImportRemoved (expectedImportRemoved);
+			AssertImportRemoved (expectedImportRemoved.Replace ('\\', '/'));
+			Assert.AreEqual (2, project.ImportsRemoved.Count);
+		}
+
+		[Test]
+		public void RemoveImport_ProjectAndSolutionInSameDirectory_ImportRemoved ()
+		{
+			CreateTestProject (@"d:\projects\MyProject\MyProject.csproj");
+			CreateProjectSystem (project);
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
+			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
+
+			projectSystem.RemoveImport (targetPath);
+
+			AssertImportRemoved (@"packages\Foo.0.1\build\Foo.targets");
 		}
 	}
 }
