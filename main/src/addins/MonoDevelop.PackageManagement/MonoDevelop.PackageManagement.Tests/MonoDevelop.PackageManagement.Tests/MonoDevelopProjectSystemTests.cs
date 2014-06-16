@@ -84,11 +84,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			projectSystem.AddFile (fileName.ToNativePath (), (Stream)null);
 		}
 
-		void AssertLastMSBuildChildElementHasProjectAttributeValue (string expectedAttributeValue)
+		void AssertLastMSBuildChildElementHasProjectAttributeValue (string expectedImport)
 		{
-			throw new NotImplementedException ();
-//			ProjectImportElement import = project.GetLastMSBuildChildElement ();
-//			Assert.AreEqual (expectedAttributeValue, import.Project);
+			string import = project.ImportsAdded.Last ();
+			Assert.AreEqual (expectedImport, import);
 		}
 
 		void AssertLastMSBuildChildHasCondition (string expectedCondition)
@@ -98,11 +97,10 @@ namespace MonoDevelop.PackageManagement.Tests
 //			Assert.AreEqual (expectedCondition, import.Condition);
 		}
 
-		void AssertFirstMSBuildChildElementHasProjectAttributeValue (string expectedAttributeValue)
+		void AssertFirstMSBuildChildElementHasProjectAttributeValue (string expectedImport)
 		{
-			throw new NotImplementedException ();
-//			ProjectImportElement import = project.GetFirstMSBuildChildElement ();
-//			Assert.AreEqual (expectedAttributeValue, import.Project);
+			string import = project.ImportsAdded.First ();
+			Assert.AreEqual (expectedImport, import);
 		}
 
 		void AssertFirstMSBuildChildHasCondition (string expectedCondition)
@@ -881,12 +879,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		[Ignore ("Not implemented in NuGet addin - MSBuild imports added elsewhere")]
 		public void AddImport_FullImportFilePathAndBottomOfProject_PathRelativeToProjectAddedAsLastImportInProject ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
@@ -894,12 +891,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		[Ignore ("Not implemented in NuGet addin - MSBuild imports added elsewhere")]
+		[Ignore ("MSBuild conditions not implemented")]
 		public void AddImport_AddImportToBottomOfProject_ImportAddedWithConditionThatChecksForExistenceOfTargetsFile ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
@@ -911,7 +908,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
@@ -924,8 +921,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath1 = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
-			string targetPath2 = @"d:\projects\MyProject\packages\Foo.0.1\BUILD\FOO.TARGETS";
+			string targetPath1 = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
+			string targetPath2 = @"d:\projects\MyProject\packages\Foo.0.1\BUILD\FOO.TARGETS".ToNativePath ();
 			projectSystem.AddImport (targetPath1, ProjectImportLocation.Bottom);
 
 			projectSystem.AddImport (targetPath2, ProjectImportLocation.Bottom);
@@ -938,7 +935,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
@@ -950,7 +947,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
 			projectSystem.RemoveImport (targetPath);
@@ -963,9 +960,9 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath1 = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath1 = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 			projectSystem.AddImport (targetPath1, ProjectImportLocation.Bottom);
-			string targetPath2 = @"d:\projects\MyProject\packages\Foo.0.1\BUILD\FOO.TARGETS";
+			string targetPath2 = @"d:\projects\MyProject\packages\Foo.0.1\BUILD\FOO.TARGETS".ToNativePath ();
 
 			projectSystem.RemoveImport (targetPath2);
 
@@ -985,12 +982,11 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		[Ignore ("Not implemented in NuGet addin - MSBuild imports added elsewhere")]
 		public void AddImport_AddToTopOfProject_ImportAddedAsFirstChildElement ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
 
