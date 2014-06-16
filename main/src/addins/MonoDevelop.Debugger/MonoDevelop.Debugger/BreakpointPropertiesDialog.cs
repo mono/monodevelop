@@ -268,6 +268,7 @@ namespace MonoDevelop.Debugger
 			} else {
 				ignoreHitType.SelectedItem = HitCountMode.GreaterThanOrEqualTo;
 				conditionalHitType.SelectedItem = ConditionalHitWhen.ConditionIsTrue;
+				checkIncludeSubclass.Active = true;
 
 				if (IdeApp.Workbench.ActiveDocument != null) {
 					breakpointLocation.Update (IdeApp.Workbench.ActiveDocument.FileName,
