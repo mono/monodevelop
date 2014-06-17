@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace Mono.TextEditor
 {
-	public struct HslColor
+	struct HslColor
 	{
 		public double H {
 			get;
