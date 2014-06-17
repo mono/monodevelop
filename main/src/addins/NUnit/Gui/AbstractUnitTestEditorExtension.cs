@@ -51,7 +51,7 @@ namespace MonoDevelop.NUnit
 		{
 			if (document.Editor == null)
 				return;
-			document.Editor.Parent.TextArea.RedrawMargin (document.Editor.Parent.TextArea.ActionMargin);
+//			document.Editor.Parent.TextArea.RedrawMargin (document.Editor.Parent.TextArea.ActionMargin);
 		}
 
 		public override void Dispose ()
@@ -81,30 +81,30 @@ namespace MonoDevelop.NUnit
 				var foundTests = GatherUnitTests ();
 				if (foundTests == null)
 					return;
-				Application.Invoke (delegate {
-					var editor = document.Editor;
-					if (editor == null)
-						return;
-					var textEditor = editor.Parent;
-					if (textEditor == null)
-						return;
-					var actionMargin = textEditor.ActionMargin;
-					if (actionMargin == null)
-						return;
-					if (actionMargin.IsVisible ^ (foundTests.Count > 0))
-						textEditor.QueueDraw ();
-					actionMargin.IsVisible |= foundTests.Count > 0;
-					foreach (var oldMarker in currentMarker)
-						editor.Document.RemoveMarker (oldMarker);
-
-					foreach (var foundTest in foundTests) {
-						if (token.IsCancellationRequested)
-							return;
-						var unitTestMarker = new UnitTestMarker (foundTest, document);
-						currentMarker.Add (unitTestMarker);
-						editor.Document.AddMarker (foundTest.LineNumber, unitTestMarker);
-					}
-				});
+//				Application.Invoke (delegate {
+//					var editor = document.Editor;
+//					if (editor == null)
+//						return;
+//					var textEditor = editor.Parent;
+//					if (textEditor == null)
+//						return;
+//					var actionMargin = textEditor.ActionMargin;
+//					if (actionMargin == null)
+//						return;
+//					if (actionMargin.IsVisible ^ (foundTests.Count > 0))
+//						textEditor.QueueDraw ();
+//					actionMargin.IsVisible |= foundTests.Count > 0;
+//					foreach (var oldMarker in currentMarker)
+//						editor.Document.RemoveMarker (oldMarker);
+//
+//					foreach (var foundTest in foundTests) {
+//						if (token.IsCancellationRequested)
+//							return;
+//						var unitTestMarker = new UnitTestMarker (foundTest, document);
+//						currentMarker.Add (unitTestMarker);
+//						editor.Document.AddMarker (foundTest.LineNumber, unitTestMarker);
+//					}
+//				});
 			});
 		}
 
@@ -120,7 +120,7 @@ namespace MonoDevelop.NUnit
 
 		List<UnitTestMarker> currentMarker = new List<UnitTestMarker>();
 
-		class UnitTestMarker : MarginMarker
+		class UnitTestMarker// : MarginMarker
 		{
 			readonly UnitTestLocation unitTest;
 			readonly MonoDevelop.Ide.Gui.Document doc;
@@ -130,7 +130,7 @@ namespace MonoDevelop.NUnit
 				this.unitTest = unitTest;
 				this.doc = doc;
 			}
-
+			/*
 			public override bool CanDrawForeground (Margin margin)
 			{
 				return margin is ActionMargin;
@@ -414,7 +414,7 @@ namespace MonoDevelop.NUnit
 						icon = icon.WithBoxSize (metrics.Width, metrics.Height);
 					cr.DrawImage (editor, icon, Math.Truncate (metrics.X + metrics.Width / 2 - icon.Width / 2), Math.Truncate (metrics.Y + metrics.Height / 2 - icon.Height / 2));
 				}
-			}
+			}*/
 		}
 
 		public class UnitTestLocation
