@@ -103,7 +103,7 @@ namespace MonoDevelop.Core.Text
 		/// </summary>
 		public override int GetHashCode()
 		{
-			return unchecked (191 * column.GetHashCode() ^ line.GetHashCode());
+			return unchecked (column << 20 ^ line);
 		}
 
 		/// <summary>
