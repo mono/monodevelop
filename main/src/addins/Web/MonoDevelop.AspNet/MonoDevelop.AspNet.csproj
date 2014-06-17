@@ -14,7 +14,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.AspNet</OutputPath>
+    <OutputPath>..\..\..\..\build\AddIns\AspNet</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Execution>
@@ -22,13 +22,13 @@
     </Execution>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\..\build\AddIns\AspNet\MonoDevelop.AspNet.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.AspNet</OutputPath>
+    <OutputPath>..\..\..\..\build\AddIns\AspNet</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Execution>
@@ -36,7 +36,7 @@
     </Execution>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.AspNet\MonoDevelop.AspNet.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\..\build\AddIns\AspNet\MonoDevelop.AspNet.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
