@@ -64,9 +64,8 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-		ITextEditorImpl, IEditorActionHost, IMarkerHost
+	ITextEditorImpl, IEditorActionHost, IMarkerHost
 	{
-
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
 		DateTime lastSaveTimeUtc;
@@ -2927,6 +2926,30 @@ namespace MonoDevelop.SourceEditor
 			return new UsageSegmentMarker (usage);
 		}
 
+		IUrlTextLineMarker IMarkerHost.CreateUrlTextMarker (IDocumentLine line, string value, MonoDevelop.Ide.Editor.UrlType url, string syntax, int startCol, int endCol)
+		{
+			return null;
+		}
+
+		ICurrentDebugLineTextMarker IMarkerHost.CreateCurrentDebugLineTextMarker ()
+		{
+			return null;
+		}
+
+		ITextLineMarker IMarkerHost.CreateAsmLineMarker ()
+		{
+			return null;
+		}
+
+		IGenericTextSegmentMarker IMarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length)
+		{
+			return null;
+		}
+
+		IGenericTextSegmentMarker IMarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, MonoDevelop.Core.Text.ISegment segment)
+		{
+			return null;
+		}
 		#endregion
 	}
 } 

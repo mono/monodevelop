@@ -29,6 +29,7 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
