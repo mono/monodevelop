@@ -27,6 +27,9 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -54,9 +57,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			engine.UnloadProject (pb);
 		}
 
-		public void Initialize (string slnFile, CultureInfo uiCulture)
+		public void SetCulture (CultureInfo uiCulture)
 		{
-			engine.Initialize (slnFile, uiCulture);
+			engine.SetCulture (uiCulture);
+		}
+
+		public void SetGlobalProperties (IDictionary<string, string> properties)
+		{
+			engine.SetGlobalProperties (properties);
 		}
 		
 		public void Dispose ()
@@ -82,19 +90,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.engine = engine;
 			builder = engine.LoadProject (file);
 		}
-		
-		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,
-			MSBuildVerbosity verbosity)
-		{
-			if (target == null)
-				throw new ArgumentNullException ("target");
 
-			return builder.RunTarget (target, configurations, logWriter, verbosity);
-		}
-		
-		public string[] GetAssemblyReferences (ProjectConfigurationInfo[] configurations)
+		public MSBuildResult Run (
+			ProjectConfigurationInfo[] configurations,
+			ILogWriter logWriter,
+			MSBuildVerbosity verbosity,
+			string[] runTargets,
+			string[] evaluateItems,
+			string[] evaluateProperties)
 		{
-			return builder.GetAssemblyReferences (configurations);
+			return builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties);
 		}
 		
 		public void Refresh ()
