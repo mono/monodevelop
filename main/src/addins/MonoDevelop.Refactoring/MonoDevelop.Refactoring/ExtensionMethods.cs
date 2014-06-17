@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using System.Threading;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -159,6 +160,12 @@ namespace MonoDevelop.Refactoring
 					targetForResolveCalls.ProcessConversion(expression, result, conversion, targetType);
 			}
 		}
-
+			
+		public static int LocationToOffset (this IReadonlyTextDocument document, ICSharpCode.NRefactory.TextLocation location)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			return document.LocationToOffset (location.Line, location.Column);
+		}
     }
 }

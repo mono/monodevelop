@@ -107,7 +107,7 @@ namespace MonoDevelop.CodeIssues
 			if (file.BuildAction != BuildAction.Compile)
 				return;
 
-			TextEditor editor;
+			IReadonlyTextDocument editor;
 			try {
 				editor = TextFileProvider.Instance.GetReadOnlyTextEditorData (file.FilePath);
 			} catch (FileNotFoundException) {

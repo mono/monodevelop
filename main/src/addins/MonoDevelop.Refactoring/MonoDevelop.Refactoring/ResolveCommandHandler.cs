@@ -49,6 +49,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core.ProgressMonitoring;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
 {

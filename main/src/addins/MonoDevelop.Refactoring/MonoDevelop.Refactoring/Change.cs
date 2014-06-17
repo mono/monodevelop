@@ -129,26 +129,13 @@ namespace MonoDevelop.Refactoring
 
 			if (textEditorData == null) {
 				bool open;
-				textEditorData = TextFileProvider.Instance.GetTextEditorData (FileName, out hadBom, out encoding, out open);
-				saveEditor = true;
-			}
-		
-			
-			int offset = textEditorData.CaretOffset;
-			int charsInserted = textEditorData.Replace (Offset, RemovedChars, InsertedText);
-			if (MoveCaretToReplace) {
-				textEditorData.CaretOffset = Offset + charsInserted;
-			} else {
-				if (Offset < offset) {
-					int rem = RemovedChars;
-					if (Offset + rem > offset)
-						rem = offset - Offset;
-					textEditorData.CaretOffset = offset - rem + charsInserted;
-				}
-			}
-			
-			if (saveEditor)
+				var data = TextFileProvider.Instance.GetTextEditorData (FileName, out hadBom, out encoding, out open);
+				data.Replace (Offset, RemovedChars, InsertedText);
 				TextFileUtility.WriteText (FileName, textEditorData.Text, encoding, hadBom);
+			}
+
+			int offset = textEditorData.CaretOffset;
+			textEditorData.Replace (Offset, RemovedChars, InsertedText);
 		}
 		
 		public override string ToString ()

@@ -546,7 +546,7 @@ namespace MonoDevelop.CodeActions
 			RemoveWidget ();
 			currentSmartTagBegin = smartTagLocBegin;
 			var line = document.Editor.GetLine (smartTagLocBegin.Line);
-			currentSmartTag = DocumentFactory.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.SmartTag,
+			currentSmartTag = document.Editor.MarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.SmartTag,
 				(line.NextLine ?? line).Offset + smartTagLocBegin.Column - 1,
 				1
 			);

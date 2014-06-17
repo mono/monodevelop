@@ -196,7 +196,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 						if (start >= end)
 							continue;
 						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
-							var marker = DocumentFactory.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.GrayOut, TextSegment.FromBounds (start, end));
+							var marker = editor.MarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.GrayOut, TextSegment.FromBounds (start, end));
 							marker.IsVisible = currentResult.Underline;
 							marker.Tag = currentResult;
 							editor.AddMarker (marker);
@@ -204,7 +204,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 //							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
 //							editor.Parent.QueueDraw ();
 						} else {
-							var marker = DocumentFactory.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.WavedLine, TextSegment.FromBounds (start, end));
+							var marker = editor.MarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.WavedLine, TextSegment.FromBounds (start, end));
 							marker.IsVisible = currentResult.Underline;
 							marker.Tag = currentResult;
 							editor.AddMarker (marker);

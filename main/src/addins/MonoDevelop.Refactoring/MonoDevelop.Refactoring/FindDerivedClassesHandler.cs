@@ -61,7 +61,7 @@ namespace MonoDevelop.Refactoring
 			var projects = ReferenceFinder.GetAllReferencingProjects (solution, sourceProject);
 			ThreadPool.QueueUserWorkItem (delegate {
 				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					var cache = new Dictionary<string, TextEditor> ();
+					var cache = new Dictionary<string, ITextDocument> ();
 					monitor.BeginTask (GettextCatalog.GetString ("Searching for derived classes in solution..."), projects.Count);
 
 					Parallel.ForEach (projects, p => {
@@ -75,7 +75,7 @@ namespace MonoDevelop.Refactoring
 						foreach (var type in comp.MainAssembly.GetAllTypeDefinitions ()) {
 							if (!type.IsDerivedFrom (importedType)) 
 								continue;
-							TextEditor textFile;
+							ITextDocument textFile;
 							if (!cache.TryGetValue (type.Region.FileName, out textFile)) {
 								cache [type.Region.FileName] = textFile = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName);
 							}
@@ -101,7 +101,7 @@ namespace MonoDevelop.Refactoring
 							while (position < textFile.TextLength - keyword.Length) {
 								if (textFile.GetTextAt (position, keyword.Length) == keyword) {
 									position += keyword.Length;
-									while (position < textFile.TextLength && textFile.GetCharAt (position) == ' ' || textFile.GetCharAt (position) == '\t')
+									while (position < textFile.TextLength && textFile[position] == ' ' || textFile[position] == '\t')
 										position++;
 									break;
 								}
