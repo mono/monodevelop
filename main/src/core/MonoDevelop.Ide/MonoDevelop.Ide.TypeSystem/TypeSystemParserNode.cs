@@ -68,13 +68,14 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 		
 		HashSet<string> mimeTypes;
-		public bool CanParse (string mimeType, string buildAction)
+		public bool CanParse (string mimeType)
 		{
 			if (mimeTypes == null)
 				mimeTypes  = this.mimeType != null ? new HashSet<string> (this.mimeType.Split (',').Select (s => s.Trim ())) : new HashSet<string> ();
 			if (!mimeTypes.Contains (mimeType, StringComparer.Ordinal))
 				return false;
-			return buildActions.Any (action => string.Equals (action, buildAction, StringComparison.OrdinalIgnoreCase));
+
+			return true;
 		}
 
 		public static bool IsCompileBuildAction(string buildAction)

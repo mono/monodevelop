@@ -289,16 +289,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			CheckProjectOutput (project, true);
 		}
 
-		public static TypeSystemParser GetParser (string mimeType, string buildAction = BuildAction.Compile)
+		public static TypeSystemParser GetParser (string mimeType)
 		{
-			var n = GetTypeSystemParserNode (mimeType, buildAction);
-			return n != null ? n.Parser : null;
+			var provider = Parsers.FirstOrDefault (p => p.CanParse (mimeType));
+			return provider != null ? provider.Parser : null;
 		}
 
 		static TypeSystemParserNode GetTypeSystemParserNode (string mimeType, string buildAction)
 		{
 			foreach (var mt in DesktopService.GetMimeTypeInheritanceChain (mimeType)) {
-				var provider = Parsers.FirstOrDefault (p => p.CanParse (mt, buildAction));
+				var provider = Parsers.FirstOrDefault (p => p.CanParse (mt) && p.Parser.ShouldStoreInProjectContent (buildAction));
 				if (provider != null)
 					return provider;
 			}
@@ -2653,7 +2653,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (filesSkippedInParseThread.Any (f => f == fileName)) {
 							continue;
 						}
-						if (node == null || !node.CanParse (fileName, file.BuildAction)) {
+						if (node == null || !node.CanParse (fileName)) {
 							var newNode = GetTypeSystemParserNode (DesktopService.GetMimeTypeForUri (fileName), file.BuildAction);
 							var newParser = newNode != null ? newNode.Parser : null;
 							if (newParser == null)
@@ -2868,7 +2868,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						var file = v.Item1;
 						var oldFile = v.Item2;
 						if (oldFile == null) {
-							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.Name), file.BuildAction);
+							var parser = TypeSystemService.GetParser (DesktopService.GetMimeTypeForUri (file.Name));
 							if (parser == null)
 								continue;
 						}
