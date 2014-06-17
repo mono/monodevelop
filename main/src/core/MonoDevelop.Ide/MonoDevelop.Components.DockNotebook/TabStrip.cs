@@ -453,6 +453,8 @@ namespace MonoDevelop.Components.DockNotebook
 			var t = FindTab ((int)evnt.X, (int)evnt.Y);
 			if (t != null) {
 				if (evnt.IsContextMenuButton ()) {
+					DockNotebook.ActiveNotebook = notebook;
+					notebook.CurrentTab = t;
 					notebook.DoPopupMenu (notebook, t.Index, evnt);
 					return true;
 				}
