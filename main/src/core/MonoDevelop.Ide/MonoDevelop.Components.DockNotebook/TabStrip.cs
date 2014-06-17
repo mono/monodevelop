@@ -50,6 +50,7 @@ namespace MonoDevelop.Components.DockNotebook
 		bool overCloseButton;
 		bool buttonPressedOnTab;
 		int tabStartX, tabEndX;
+		bool isActiveNotebook;
 
 		MouseTracker tracker;
 
@@ -190,6 +191,16 @@ namespace MonoDevelop.Components.DockNotebook
 		void IAnimatable.BatchCommit ()
 		{
 			QueueDraw ();
+		}
+
+		public bool IsActiveNotebook {
+			get {
+				return this.isActiveNotebook;
+			}
+			set {
+				isActiveNotebook = value;
+				QueueDraw ();
+			}
 		}
 
 		public void StartOpenAnimation (DockNotebookTab tab)
@@ -575,13 +586,18 @@ namespace MonoDevelop.Components.DockNotebook
 			return Math.Max (min, Math.Min (max, val));
 		}
 
-		static void DrawBackground (Context ctx, Gdk.Rectangle region)
+		void DrawBackground (Context ctx, Gdk.Rectangle region)
 		{
 			var h = region.Height;
 			ctx.Rectangle (0, 0, region.Width, h);
 			using (var gr = new LinearGradient (0, 0, 0, h)) {
-				gr.AddColorStop (0, Styles.TabBarGradientStartColor);
-				gr.AddColorStop (1, Styles.TabBarGradientMidColor);
+				if (isActiveNotebook) {
+					gr.AddColorStop (0, Styles.TabBarActiveGradientStartColor);
+					gr.AddColorStop (1, Styles.TabBarActiveGradientEndColor);
+				} else {
+					gr.AddColorStop (0, Styles.TabBarGradientStartColor);
+					gr.AddColorStop (1, Styles.TabBarGradientEndColor);
+				}
 				ctx.SetSource (gr);
 				ctx.Fill ();
 			}

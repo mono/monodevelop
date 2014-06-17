@@ -94,7 +94,11 @@ namespace MonoDevelop.Components.DockNotebook
 			get { return activeNotebook; }
 			set {
 				if (activeNotebook != value) {
+					if (activeNotebook != null)
+						activeNotebook.tabStrip.IsActiveNotebook = false;
 					activeNotebook = value;
+					if (activeNotebook != null)
+						activeNotebook.tabStrip.IsActiveNotebook = true;
 					if (ActiveNotebookChanged != null)
 						ActiveNotebookChanged (null, EventArgs.Empty);
 				}
