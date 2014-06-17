@@ -369,7 +369,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
 			// of shared projects.
-			if (!itemGuid.StartsWith ("{") && fileName.EndsWith (".shproj"))
+			if (!itemGuid.StartsWith ("{"))
 				itemGuid = "{" + itemGuid + "}";
 
 			itemGuid = itemGuid.ToUpper ();
