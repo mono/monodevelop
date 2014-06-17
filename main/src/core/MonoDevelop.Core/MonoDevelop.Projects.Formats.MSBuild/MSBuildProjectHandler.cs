@@ -1313,21 +1313,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Impdate the imports section
 			
-			List<string> currentImports = msproject.Imports.Select (i => i.Project).ToList ();
-			List<string> imports = new List<string> (currentImports);
+			List<DotNetProjectImport> currentImports = msproject.Imports.Select (i => new DotNetProjectImport (i.Project)).ToList ();
+			List<DotNetProjectImport> imports = new List<DotNetProjectImport> (currentImports);
 			
 			// If the project is not new, don't add the default project imports,
 			// just assume that the current imports are correct
 			UpdateImports (imports, dotNetProject, newProject);
-			foreach (string imp in imports) {
+			foreach (DotNetProjectImport imp in imports) {
 				if (!currentImports.Contains (imp)) {
-					msproject.AddNewImport (imp);
+					MSBuildImport import = msproject.AddNewImport (imp.Name);
+					if (imp.HasCondition ())
+						import.Condition = imp.Condition;
 					currentImports.Add (imp);
 				}
 			}
-			foreach (string imp in currentImports) {
+			foreach (DotNetProjectImport imp in currentImports) {
 				if (!imports.Contains (imp))
-					msproject.RemoveImport (imp);
+					msproject.RemoveImport (imp.Name);
 			}
 			
 			DataItem extendedData = ser.ExternalItemProperties;
@@ -1640,14 +1642,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			buildItem.Condition = pref.Condition;
 		}
 		
-		void UpdateImports (List<string> imports, DotNetProject project, bool addItemTypeImports)
+		void UpdateImports (List<DotNetProjectImport> imports, DotNetProject project, bool addItemTypeImports)
 		{
 			if (targetImports != null && addItemTypeImports) {
 				AddMissingImports (imports, targetImports);
 			}
+
+			List <string> updatedImports = imports.Select (import => import.Name).ToList ();
 			foreach (IMSBuildImportProvider ip in AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/MSBuildImportProviders")) {
-				ip.UpdateImports (EntityItem, imports);
+				ip.UpdateImports (EntityItem, updatedImports);
 			}
+
+			UpdateImports (imports, updatedImports);
 
 			if (project != null) {
 				AddMissingImports (imports, project.ImportsAdded);
@@ -1656,16 +1662,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void AddMissingImports (List<string> existingImports, IEnumerable<string> newImports)
+		void AddMissingImports (List<DotNetProjectImport> existingImports, IEnumerable<string> newImports)
 		{
-			foreach (string imp in newImports)
+			AddMissingImports (existingImports, newImports.Select (import => new DotNetProjectImport (import)));
+		}
+
+		void AddMissingImports (List<DotNetProjectImport> existingImports, IEnumerable<DotNetProjectImport> newImports)
+		{
+			foreach (DotNetProjectImport imp in newImports)
 				if (!existingImports.Contains (imp))
 					existingImports.Add (imp);
 		}
 
-		void RemoveImports (List<string> existingImports, IEnumerable<string> importsToRemove)
+		void UpdateImports (List<DotNetProjectImport> existingImports, List<string> updatedImports)
 		{
-			foreach (string imp in importsToRemove)
+			RemoveMissingImports (existingImports, updatedImports);
+			AddMissingImports (existingImports, updatedImports);
+		}
+
+		void RemoveMissingImports (List<DotNetProjectImport> existingImports, List<string> updatedImports)
+		{
+			List <DotNetProjectImport> importsToRemove = existingImports.Where (import => !updatedImports.Contains (import.Name)).ToList ();
+			RemoveImports (existingImports, importsToRemove);
+		}
+
+		void RemoveImports (List<DotNetProjectImport> existingImports, IEnumerable<DotNetProjectImport> importsToRemove)
+		{
+			foreach (DotNetProjectImport imp in importsToRemove)
 				existingImports.Remove (imp);
 		}
 

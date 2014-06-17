@@ -1239,23 +1239,23 @@ namespace MonoDevelop.Projects
 
 		public void AddImportIfMissing (string name, string condition)
 		{
-			importsAdded.Add (name);
+			importsAdded.Add (new DotNetProjectImport (name, condition));
 		}
 
 		public void RemoveImport (string name)
 		{
-			importsRemoved.Add (name);
+			importsRemoved.Add (new DotNetProjectImport (name));
 		}
 
-		List <string> importsAdded = new List<string> ();
+		List <DotNetProjectImport> importsAdded = new List<DotNetProjectImport> ();
 
-		internal IList<string> ImportsAdded {
+		internal IList<DotNetProjectImport> ImportsAdded {
 			get { return importsAdded; }
 		}
 
-		List <string> importsRemoved = new List<string> ();
+		List <DotNetProjectImport> importsRemoved = new List<DotNetProjectImport> ();
 
-		internal IList<string> ImportsRemoved {
+		internal IList<DotNetProjectImport> ImportsRemoved {
 			get { return importsRemoved; }
 		}
 
