@@ -216,16 +216,18 @@ namespace MonoDevelop.VersionControl.Git
 			List<Revision> revs = new List<Revision> ();
 
 			var repository = GetRepository (localFile);
-			localFile = repository.ToGitPath (localFile);
 			var sinceRev = (GitRevision)since;
 			var hc = GetHeadCommit (repository);
 			if (hc == null)
 				return new GitRevision [0];
 
-			// TODO: Replace with queryby when it's implemented.
-			var commits = repository.Commits.Where (c => c.Parents.Count() == 1 && c.Tree [localFile] != null &&
-					(c.Parents.FirstOrDefault ().Tree [localFile] == null ||
-					c.Tree[localFile].Target.Id != c.Parents.FirstOrDefault ().Tree [localFile].Target.Id));
+			IEnumerable<Commit> commits = repository.Commits;
+			if (localFile.CanonicalPath != RootPath.CanonicalPath) {
+				var localPath = repository.ToGitPath (localFile);
+				commits = commits.Where (c => c.Parents.Count () == 1 && c.Tree [localPath] != null &&
+					(c.Parents.FirstOrDefault ().Tree [localPath] == null ||
+					c.Tree [localPath].Target.Id != c.Parents.FirstOrDefault ().Tree [localPath].Target.Id));
+			}
 
 			foreach (var commit in commits) {
 				var author = commit.Author;
@@ -961,10 +963,11 @@ namespace MonoDevelop.VersionControl.Git
 			RootRepository.Tags.Remove (name);
 		}
 
-		public void PushAllTags ()
+		public void PushTag (string name)
 		{
-			// TODO:
-			// https://github.com/libgit2/libgit2sharp/issues/104#issuecomment-13393975
+			RootRepository.Network.Push (RootRepository.Network.Remotes [GetCurrentRemote ()], "refs/tags/" + name + ":refs/tags/" + name, new PushOptions {
+				CredentialsProvider = GitCredentials.TryGet,
+			});
 		}
 
 		public IEnumerable<string> GetRemoteBranches (string remoteName)

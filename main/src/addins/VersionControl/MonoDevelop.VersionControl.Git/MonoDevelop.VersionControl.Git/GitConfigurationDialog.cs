@@ -303,7 +303,12 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected virtual void OnButtonPushTagClicked (object sender, EventArgs e)
 		{
-			repo.PushAllTags ();
+			TreeIter it;
+			if (!listTags.Selection.GetSelected (out it))
+				return;
+
+			string tagName = (string) storeTags.GetValue (it, 0);
+			repo.PushTag (tagName);
 		}
 	}
 }

@@ -32,14 +32,7 @@ namespace MonoDevelop.VersionControl.Git
 	abstract class GitVersionControl : VersionControlSystem
 	{
 		readonly Dictionary<FilePath,GitRepository> repositories = new Dictionary<FilePath,GitRepository> ();
-		
-		static GitVersionControl ()
-		{
-			// Initialize the credentials provider, to be used in all git operations
-			// TODO:
-			//NGit.Transport.CredentialsProvider.SetDefault (new GitCredentials ());
-		}
-		
+
 		public override string Name {
 			get { return "Git"; }
 		}

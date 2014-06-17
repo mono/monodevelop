@@ -120,7 +120,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		void CheckSensitive ()
 		{
-			if (!String.IsNullOrWhiteSpace (tagNameEntry.Text) && Reference.IsValidName (tagNameEntry.Text) &&
+			if (!String.IsNullOrWhiteSpace (tagNameEntry.Text) && Reference.IsValidName ("refs/tags/" + tagNameEntry.Text) &&
 				revisionList.SelectedRow != -1) {
 				buttonOk.Sensitive = true;
 				return;

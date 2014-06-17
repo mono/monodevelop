@@ -625,7 +625,7 @@
                             <property name="MemberName" />
                             <property name="CanFocus">True</property>
                             <property name="Type">TextOnly</property>
-                            <property name="Label" translatable="yes">_Push All Tags</property>
+                            <property name="Label" translatable="yes">_Push</property>
                             <property name="UseUnderline">True</property>
                           </widget>
                           <packing>
