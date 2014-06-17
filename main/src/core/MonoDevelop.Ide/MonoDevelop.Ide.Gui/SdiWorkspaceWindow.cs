@@ -278,19 +278,25 @@ namespace MonoDevelop.Ide.Gui
 
 		public bool CanMoveToNextNotebook ()
 		{
-			return TabControl.GetNextNotebook () != null;
+			return TabControl.GetNextNotebook () != null || (TabControl.Container.AllowRightInsert && TabControl.TabCount > 1);
 		}
 
 		public bool CanMoveToPreviousNotebook ()
 		{
-			return TabControl.GetPreviousNotebook () != null;
+			return TabControl.GetPreviousNotebook () != null || (TabControl.Container.AllowLeftInsert && TabControl.TabCount > 1);
 		}
 
 		public void MoveToNextNotebook ()
 		{
 			var nextNotebook = TabControl.GetNextNotebook ();
-			if (nextNotebook == null)
+			if (nextNotebook == null) {
+				if (TabControl.Container.AllowRightInsert) {
+					TabControl.RemoveTab (tab.Index, true);
+					TabControl.Container.InsertRight (this);
+					SelectWindow ();
+				}
 				return;
+			}
 
 			TabControl.RemoveTab (tab.Index, true);
 			var newTab = nextNotebook.AddTab ();
@@ -302,8 +308,14 @@ namespace MonoDevelop.Ide.Gui
 		public void MoveToPreviousNotebook ()
 		{
 			var nextNotebook = TabControl.GetPreviousNotebook ();
-			if (nextNotebook == null)
+			if (nextNotebook == null) {
+				if (TabControl.Container.AllowLeftInsert) {
+					TabControl.RemoveTab (tab.Index, true);
+					TabControl.Container.InsertLeft (this);
+					SelectWindow ();
+				}
 				return;
+			}
 
 			TabControl.RemoveTab (tab.Index, true);
 			var newTab = nextNotebook.AddTab ();

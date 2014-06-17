@@ -629,11 +629,11 @@
 			macShortcut = "Meta|Shift|1"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.NextNotebook"
 			defaultHandler = "MonoDevelop.Ide.Commands.NextNotebookHandler"
-			_label = "Next Notebook"
+			_label = "Move to Next Notebook"
 			macShortcut = "Meta|Shift|Right"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.PreviousNotebook"
 			defaultHandler = "MonoDevelop.Ide.Commands.PreviousNotebookHandler"
-			_label = "Previous Notebook"
+			_label = "Move to Previous Notebook"
 			macShortcut = "Meta|Shift|Left"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
