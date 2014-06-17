@@ -192,6 +192,23 @@ namespace MonoDevelop.Ide.Editor
 			return segment.GetIndentation (document);
 		}
 
+		public static string GetLineText (this IReadonlyTextDocument document, IDocumentLine line, bool includeDelimiter = false)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			if (line == null)
+				throw new ArgumentNullException ("line");
+			return document.GetTextAt (includeDelimiter ? line.SegmentIncludingDelimiter : line);
+		}
+
+		public static string GetLineText (this IReadonlyTextDocument document, int lineNumber, bool includeDelimiter = false)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			var line = document.GetLine (lineNumber);
+			return document.GetTextAt (includeDelimiter ? line.SegmentIncludingDelimiter : line);
+		}
+
 		static int[] GetDiffCodes (IReadonlyTextDocument document, ref int codeCounter, Dictionary<string, int> codeDictionary, bool includeEol)
 		{
 			int i = 0;
@@ -208,7 +225,7 @@ namespace MonoDevelop.Ide.Editor
 			return result;
 		}
 
-		public static IEnumerable<Hunk> Diff (this IReadonlyTextDocument document, TextEditor changedDocument, bool includeEol = true)
+		public static IEnumerable<Hunk> Diff (this IReadonlyTextDocument document, IReadonlyTextDocument changedDocument, bool includeEol = true)
 		{
 			var codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;

@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		#endregion
 
 		public Func<MonoDevelop.Ide.Gui.Document, CancellationToken, IRefactoringContext> CreateRefactoringContext;
-		public Func<TextEditor, object, CancellationToken, IRefactoringContext> CreateRefactoringContextWithEditor;
+		public Func<IReadonlyTextDocument, object, CancellationToken, IRefactoringContext> CreateRefactoringContextWithEditor;
 	}
 	
 	public class DefaultParsedDocument : ParsedDocument, IUnresolvedFile
