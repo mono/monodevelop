@@ -51,7 +51,7 @@ namespace MonoDevelop.Debugger
 		ICurrentDebugLineTextMarker currentDebugLineMarker;
 		bool dragging;
 		FilePath currentFile;
-		ITextLineMarker asmMarker = DocumentFactory.CreateAsmLineMarker ();
+		ITextLineMarker asmMarker;
 		
 		List<AssemblyLine> cachedLines = new List<AssemblyLine> ();
 		string cachedLinesAddrSpace;
@@ -64,7 +64,8 @@ namespace MonoDevelop.Debugger
 			sw = new Gtk.ScrolledWindow ();
 			editor = DocumentFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
-			
+			asmMarker = editor.MarkerHost.CreateAsmLineMarker ();
+
 			editor.Options = new CommonTextEditorOptions {
 				ShowLineNumberMargin = false,
 			};
@@ -81,7 +82,7 @@ namespace MonoDevelop.Debugger
 			
 			sw.Sensitive = false;
 			
-			currentDebugLineMarker = DocumentFactory.CreateCurrentDebugLineTextMarker (editor);
+			currentDebugLineMarker = editor.MarkerHost.CreateCurrentDebugLineTextMarker ();
 			DebuggingService.StoppedEvent += OnStop;
 		}
 		
