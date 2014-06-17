@@ -52,6 +52,3 @@
 [submodule "main/external/libgit-binary"]
 	path = main/external/libgit-binary
 	url = git://github.com/mono/libgit-binary.git
-[submodule "main/external/libssh2"]
-	path = main/external/libssh2
-	url = git://git.libssh2.org/libssh2.git
