@@ -34,11 +34,12 @@ namespace MonoDevelop.Ide.Editor
 	public class TextEditor : ITextDocument
 	{
 		readonly ITextEditorImpl textEditorImpl;
-		readonly ITextDocument textDocument;
+		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
+		ITextDocument ReadWriteTextDocument { get { return (ITextDocument)textEditorImpl.Document; } }
 
 		public ITextSourceVersion Version {
 			get {
-				return textDocument.Version;
+				return ReadOnlyTextDocument.Version;
 			}
 		}
 
@@ -63,13 +64,13 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		public event EventHandler<TextChangeEventArgs> TextChanging {
-			add { textDocument.TextChanging += value; }
-			remove { textDocument.TextChanging -= value; }
+			add { ReadWriteTextDocument.TextChanging += value; }
+			remove { ReadWriteTextDocument.TextChanging -= value; }
 		}
 
 		public event EventHandler<TextChangeEventArgs> TextChanged {
-			add { textDocument.TextChanged += value; }
-			remove { textDocument.TextChanged -= value; }
+			add { ReadWriteTextDocument.TextChanged += value; }
+			remove { ReadWriteTextDocument.TextChanged -= value; }
 		}
 
 		public ISyntaxMode SyntaxMode {
@@ -128,10 +129,10 @@ namespace MonoDevelop.Ide.Editor
 
 		public bool IsReadOnly {
 			get {
-				return textDocument.IsReadOnly;
+				return ReadOnlyTextDocument.IsReadOnly;
 			}
 			set {
-				textDocument.IsReadOnly = value;
+				ReadWriteTextDocument.IsReadOnly = value;
 			}
 		}
 
@@ -167,7 +168,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string SelectedText {
 			get {
-				return IsSomethingSelected ? textDocument.GetTextAt (SelectionRange) : null;
+				return IsSomethingSelected ? ReadOnlyTextDocument.GetTextAt (SelectionRange) : null;
 			}
 		}
 
@@ -185,7 +186,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public bool IsInAtomicUndo {
 			get {
-				return textDocument.IsInAtomicUndo;
+				return ReadWriteTextDocument.IsInAtomicUndo;
 			}
 		}
 
@@ -201,49 +202,55 @@ namespace MonoDevelop.Ide.Editor
 		/// <value>The type of the MIME.</value>
 		public string MimeType {
 			get {
-				return textDocument.MimeType;
+				return ReadOnlyTextDocument.MimeType;
 			}
 			set {
-				textDocument.MimeType = value;
+				ReadWriteTextDocument.MimeType = value;
 			}
 		}
 
 		public string Text {
 			get {
-				return textDocument.Text;
+				return ReadOnlyTextDocument.Text;
 			}
 			set {
-				textDocument.Text = value;
+				ReadWriteTextDocument.Text = value;
 			}
 		}
 
+		/// <summary>
+		/// Gets the eol marker. On a text editor always use that and not GetEolMarker.
+		/// The EOL marker of the document may get overwritten my the one from the options.
+		/// </summary>
 		public string EolMarker {
 			get {
-				return textDocument.EolMarker;
+				if (Options.OverrideDocumentEolMarker)
+					return Options.DefaultEolMarker;
+				return ReadOnlyTextDocument.GetEolMarker ();
 			}
 		}
 
 		public bool UseBOM {
 			get {
-				return textDocument.UseBOM;
+				return ReadOnlyTextDocument.UseBOM;
 			}
 			set {
-				textDocument.UseBOM = value;
+				ReadWriteTextDocument.UseBOM = value;
 			}
 		}
 
 		public Encoding Encoding {
 			get {
-				return textDocument.Encoding;
+				return ReadOnlyTextDocument.Encoding;
 			}
 			set {
-				textDocument.Encoding = value;
+				ReadWriteTextDocument.Encoding = value;
 			}
 		}
 
 		public int LineCount {
 			get {
-				return textDocument.LineCount;
+				return ReadOnlyTextDocument.LineCount;
 			}
 		}
 
@@ -273,23 +280,30 @@ namespace MonoDevelop.Ide.Editor
 
 		public int TextLength {
 			get {
-				return textDocument.TextLength;
+				return ReadOnlyTextDocument.TextLength;
 			}
+		}
+
+		public TextEditor (ITextEditorImpl textEditorImpl)
+		{
+			if (textEditorImpl == null)
+				throw new ArgumentNullException ("textEditorImpl");
+			this.textEditorImpl = textEditorImpl;
 		}
 	
 		public void Undo ()
 		{
-			textDocument.Undo ();
+			ReadWriteTextDocument.Undo ();
 		}
 
 		public void Redo ()
 		{
-			textDocument.Redo ();
+			ReadWriteTextDocument.Redo ();
 		}
 
 		public IDisposable OpenUndoGroup ()
 		{
-			return textDocument.OpenUndoGroup ();
+			return ReadWriteTextDocument.OpenUndoGroup ();
 		}
 
 		public void SetSelection (int anchorOffset, int leadOffset)
@@ -386,22 +400,22 @@ namespace MonoDevelop.Ide.Editor
 
 		public int LocationToOffset (int line, int column)
 		{
-			return textDocument.LocationToOffset (new TextLocation (line, column));
+			return ReadOnlyTextDocument.LocationToOffset (new TextLocation (line, column));
 		}
 
 		public int LocationToOffset (TextLocation location)
 		{
-			return textDocument.LocationToOffset (location);
+			return ReadOnlyTextDocument.LocationToOffset (location);
 		}
 
 		public TextLocation OffsetToLocation (int offset)
 		{
-			return textDocument.OffsetToLocation (offset);
+			return ReadOnlyTextDocument.OffsetToLocation (offset);
 		}
 
 		public void Insert (int offset, string text)
 		{
-			textDocument.Insert (offset, text);
+			ReadWriteTextDocument.Insert (offset, text);
 		}
 
 		public void Remove (int offset, int count)
@@ -411,32 +425,32 @@ namespace MonoDevelop.Ide.Editor
 
 		public void Remove (ISegment segment)
 		{
-			textDocument.Remove (segment);
+			ReadWriteTextDocument.Remove (segment);
 		}
 
 		public void Replace (int offset, int count, string value)
 		{
-			textDocument.Replace (offset, count, value);
+			ReadWriteTextDocument.Replace (offset, count, value);
 		}
 
 		public void Replace (ISegment segment, string value)
 		{
-			textDocument.Replace (segment.Offset, segment.Length, value);
+			ReadWriteTextDocument.Replace (segment.Offset, segment.Length, value);
 		}
 
 		public IDocumentLine GetLine (int lineNumber)
 		{
-			return textDocument.GetLine (lineNumber);
+			return ReadOnlyTextDocument.GetLine (lineNumber);
 		}
 
 		public IDocumentLine GetLineByOffset (int offset)
 		{
-			return textDocument.GetLineByOffset (offset);
+			return ReadOnlyTextDocument.GetLineByOffset (offset);
 		}
 
 		public int OffsetToLineNumber (int offset)
 		{
-			return textDocument.OffsetToLineNumber (offset);
+			return ReadOnlyTextDocument.OffsetToLineNumber (offset);
 		}
 
 		public void AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
@@ -522,27 +536,27 @@ namespace MonoDevelop.Ide.Editor
 		/// <returns>The character at the specified position.</returns>
 		/// <remarks>This is the same as Text[offset], but is more efficient because
 		///  it doesn't require creating a String object.</remarks>
-		public char this[int offset] { get { return textDocument[offset]; } } 
+		public char this[int offset] { get { return ReadOnlyTextDocument[offset]; } } 
 
 		[Obsolete("Use this[int offset]")]
 		public char GetCharAt (int offset)
 		{
-			return textDocument[offset]; 
+			return ReadOnlyTextDocument[offset]; 
 		}
 
 		public string GetTextAt (int offset, int length)
 		{
-			return textDocument.GetTextAt (offset, length);
+			return ReadOnlyTextDocument.GetTextAt (offset, length);
 		}
 
 		public string GetTextAt (ISegment segment)
 		{
-			return textDocument.GetTextAt (segment);
+			return ReadOnlyTextDocument.GetTextAt (segment);
 		}
 
 		public IReadonlyTextDocument CreateDocumentSnapshot ()
 		{
-			return textDocument.CreateDocumentSnapshot ();
+			return ReadWriteTextDocument.CreateDocumentSnapshot ();
 		}
 
 		internal IViewContent GetViewContent ()

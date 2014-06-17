@@ -36,8 +36,8 @@ namespace MonoDevelop.Ide.Editor
 
 		IReadonlyTextDocument CreateNewReadonlyDocument (ITextSource textSource, string fileName, string mimeType);
 
-		TextEditor CreateNewEditor ();
-		TextEditor CreateNewEditor (IReadonlyTextDocument document);
+		ITextEditorImpl CreateNewEditor ();
+		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document);
 	}
 
 	public static class DocumentFactory
@@ -75,14 +75,15 @@ namespace MonoDevelop.Ide.Editor
 			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
+
 		public static TextEditor CreateNewEditor ()
 		{
-			return currentFactory.CreateNewEditor ();
+			return new TextEditor (currentFactory.CreateNewEditor ());
 		}
 
 		public static TextEditor CreateNewEditor (IReadonlyTextDocument document)
 		{
-			return currentFactory.CreateNewEditor (document);
+			return new TextEditor (currentFactory.CreateNewEditor (document));
 		}
 	}
 }

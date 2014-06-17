@@ -187,7 +187,7 @@ namespace MonoDevelop.SourceEditor
 			});
 		}
 
-		public SourceEditorView ()
+		public SourceEditorView (IReadonlyTextDocument document = null)
 		{
 			Counters.LoadedEditors++;
 			currentFrameChanged = (EventHandler)DispatchService.GuiDispatch (new EventHandler (OnCurrentFrameChanged));
@@ -196,6 +196,15 @@ namespace MonoDevelop.SourceEditor
 			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
 
 			widget = new SourceEditorWidget (this);
+			if (document != null) {
+				var textDocument = document as TextDocument;
+				if (textDocument != null) {
+					widget.TextEditor.Document = textDocument;
+				} else {
+					widget.TextEditor.Document.Text = document.Text;
+				}
+			}
+
 			widget.TextEditor.Document.SyntaxModeChanged += HandleSyntaxModeChanged;
 			widget.TextEditor.Document.TextReplaced += HandleTextReplaced;
 			widget.TextEditor.Document.LineChanged += HandleLineChanged;

@@ -42,25 +42,42 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		public TextDocumentWrapper (TextDocument document)
 		{
 			this.document = document;
+			this.document.TextReplaced += HandleTextReplaced;
+			this.document.TextReplacing += HandleTextReplacing;
+		}
+
+		void HandleTextReplacing (object sender, DocumentChangeEventArgs e)
+		{
+			var handler = textChanging;
+			if (handler != null)
+				handler (this, new MonoDevelop.Core.Text.TextChangeEventArgs (e.Offset, e.RemovedText.Text, e.InsertedText.Text));
+		}
+
+		void HandleTextReplaced (object sender, DocumentChangeEventArgs e)
+		{
+			var handler = textChanged;
+			if (handler != null)
+				handler (this, new MonoDevelop.Core.Text.TextChangeEventArgs (e.Offset, e.RemovedText.Text, e.InsertedText.Text));
 		}
 		
 		#region ITextDocument implementation
-
+		event EventHandler<MonoDevelop.Core.Text.TextChangeEventArgs> textChanging;
 		event EventHandler<MonoDevelop.Core.Text.TextChangeEventArgs> ITextDocument.TextChanging {
 			add {
-				throw new NotImplementedException ();
+				textChanging += value;
 			}
 			remove {
-				throw new NotImplementedException ();
+				textChanging -= value;
 			}
 		}
 
+		event EventHandler<MonoDevelop.Core.Text.TextChangeEventArgs> textChanged;
 		event EventHandler<MonoDevelop.Core.Text.TextChangeEventArgs> ITextDocument.TextChanged {
 			add {
-				throw new NotImplementedException ();
+				textChanged += value;
 			}
 			remove {
-				throw new NotImplementedException ();
+				textChanged -= value;
 			}
 		}
 
@@ -170,46 +187,41 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		MonoDevelop.Core.Text.TextLocation IReadonlyTextDocument.OffsetToLocation (int offset)
 		{
-			throw new NotImplementedException ();
+			var loc = document.OffsetToLocation (offset);
+			return new MonoDevelop.Core.Text.TextLocation (loc.Line, loc.Column);
 		}
 
 		IDocumentLine IReadonlyTextDocument.GetLine (int lineNumber)
 		{
-			throw new NotImplementedException ();
+			return new DocumentLineWrapper (document.GetLine (lineNumber));
 		}
 
 		IDocumentLine IReadonlyTextDocument.GetLineByOffset (int offset)
 		{
-			throw new NotImplementedException ();
+			return new DocumentLineWrapper (document.GetLineByOffset (offset));
 		}
 
 		bool IReadonlyTextDocument.IsReadOnly {
 			get {
-				throw new NotImplementedException ();
+				return document.ReadOnly;
 			}
 		}
 
 		string IReadonlyTextDocument.FileName {
 			get {
-				throw new NotImplementedException ();
+				return document.FileName;
 			}
 		}
 
 		string IReadonlyTextDocument.MimeType {
 			get {
-				throw new NotImplementedException ();
-			}
-		}
-
-		string IReadonlyTextDocument.EolMarker {
-			get {
-				throw new NotImplementedException ();
+				return document.MimeType;
 			}
 		}
 
 		int IReadonlyTextDocument.LineCount {
 			get {
-				throw new NotImplementedException ();
+				return document.LineCount;
 			}
 		}
 
@@ -219,7 +231,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		string MonoDevelop.Core.Text.ITextSource.GetTextAt (int offset, int length)
 		{
-			throw new NotImplementedException ();
+			return document.GetTextAt (offset, length);
 		}
 
 		MonoDevelop.Core.Text.ITextSourceVersion MonoDevelop.Core.Text.ITextSource.Version {
@@ -230,31 +242,31 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		bool MonoDevelop.Core.Text.ITextSource.UseBOM {
 			get {
-				throw new NotImplementedException ();
+				return document.UseBom;
 			}
 		}
 
 		System.Text.Encoding MonoDevelop.Core.Text.ITextSource.Encoding {
 			get {
-				throw new NotImplementedException ();
+				return document.Encoding;
 			}
 		}
 
 		int MonoDevelop.Core.Text.ITextSource.TextLength {
 			get {
-				throw new NotImplementedException ();
+				return document.TextLength;
 			}
 		}
 
 		string MonoDevelop.Core.Text.ITextSource.Text {
 			get {
-				throw new NotImplementedException ();
+				return document.Text;
 			}
 		}
 
 		char MonoDevelop.Core.Text.ITextSource.this [int offset] {
 			get {
-				throw new NotImplementedException ();
+				return document.GetCharAt (offset);
 			}
 		}
 

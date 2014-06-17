@@ -62,10 +62,10 @@ namespace MonoDevelop.Ide.Editor
 			string str = null;
 			switch (insertion) {
 			case NewLineInsertion.Eol:
-				str = editor.EolMarker;
+				str = editor.GetEolMarker ();
 				break;
 			case NewLineInsertion.BlankLine:
-				str = editor.EolMarker + editor.EolMarker;
+				str = editor.GetEolMarker () + editor.GetEolMarker ();
 				break;
 			default:
 				return;

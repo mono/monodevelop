@@ -39,8 +39,6 @@ namespace MonoDevelop.Ide.Editor
 
 		string MimeType { get; }
 
-		string EolMarker { get; }
-
 		/// <summary>
 		/// Gets the number of lines in the document.
 		/// </summary>
@@ -266,6 +264,20 @@ namespace MonoDevelop.Ide.Editor
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			document.Replace (segment.Offset, segment.Length, value);
+		}
+
+		public static string GetEolMarker (this IReadonlyTextDocument document)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			string eol = null;
+			if (document.LineCount > 0) {
+				var line = document.GetLine (1);
+				if (line.DelimiterLength > 0) 
+					eol = document.GetTextAt (line.Length, line.DelimiterLength);
+			}
+
+			return !string.IsNullOrEmpty (eol) ? eol : DefaultSourceEditorOptions.Instance.DefaultEolMarker;
 		}
 	}
 }

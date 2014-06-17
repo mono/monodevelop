@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			var result = (CodeGenerator)node.CreateInstance ();
 			//result.UseSpaceIndent = editor.Options.TabsToSpaces;
-			result.EolMarker = editor.EolMarker;
+			result.EolMarker = editor.GetEolMarker ();
 			//result.TabSize = editor.Options.TabSize;
 			result.Compilation = compilation;
 			return result;
