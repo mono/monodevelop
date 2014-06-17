@@ -1061,12 +1061,17 @@ namespace MonoDevelop.Projects
 		{
 			foreach (ProjectReference pref in References) {
 				if (pref.ReferenceType == ReferenceType.Package) {
-					string newRef = AssemblyContext.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
-					if (newRef == null) {
+					// package name is only relevant if it's not a framework package
+					var pkg = pref.Package;
+					string packageName = pkg != null && !pkg.IsFrameworkPackage? pkg.Name : null;
+					// find the version of the assembly that's valid for the new framework
+					var newAsm = AssemblyContext.GetAssemblyForVersion (pref.Reference, packageName, TargetFramework);
+					// if it changed, clear assembly resolution caches and update reference
+					if (newAsm == null) {
 						pref.ResetReference ();
-					} else if (newRef != pref.Reference) {
-						pref.Reference = newRef;
-					} else if (!pref.IsValid) {
+					} else if (newAsm.FullName != pref.Reference) {
+						pref.Reference = newAsm.FullName;
+					} else if (!pref.IsValid || newAsm.Package != pref.Package) {
 						pref.ResetReference ();
 					}
 				}
