@@ -177,7 +177,7 @@
   <Choose>
     <When Condition=" '$(Configuration)' == 'DebugMac' ">
       <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit-binary\*.dylib" />
+        <NativeBinaries Include="..\..\..\..\external\libgit-binary\mac\*.dylib" />
       </ItemGroup>
     </When>
     <When Condition=" '$(Configuration)' == 'DebugWin32' ">
