@@ -396,9 +396,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			GuiSyncDispatch (() => {
 				string relativeTargetPath = GetRelativePath (targetPath);
-				project.AddImportIfMissing (relativeTargetPath, null);
+				string condition = GetCondition (relativeTargetPath);
+				project.AddImportIfMissing (relativeTargetPath, condition);
 				project.Save ();
 			});
+		}
+
+		static string GetCondition (string targetPath)
+		{
+			return String.Format ("Exists('{0}')", targetPath);
 		}
 
 		string GetRelativePath(string path)
