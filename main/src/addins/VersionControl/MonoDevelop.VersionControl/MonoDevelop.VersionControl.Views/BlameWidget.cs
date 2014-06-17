@@ -35,6 +35,7 @@ using System.Threading;
 using MonoDevelop.Core;
 using System.Text;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -754,7 +755,7 @@ namespace MonoDevelop.VersionControl.Views
 								e.Window.DrawLayout (Style.BlackGC, Allocation.Width - revisionWidth - margin - revisionWidth - dateRevisionSpacing, (int)(curY + (widget.Editor.LineHeight - h) / 2), layout);
 							}
 
-							using (var authorLayout = PangoUtil.CreateLayout (this)) {
+							using (var authorLayout = MonoDevelop.Components.PangoUtil.CreateLayout (this)) {
 								var description = Pango.FontDescription.FromString ("Tahoma " + (int)(10 * widget.Editor.Options.Zoom));
 								authorLayout.FontDescription = description;
 								authorLayout.SetText (ann.Author);

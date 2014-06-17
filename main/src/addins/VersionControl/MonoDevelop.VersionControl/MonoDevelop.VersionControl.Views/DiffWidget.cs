@@ -95,7 +95,7 @@ namespace MonoDevelop.VersionControl.Views
 			};
 			comparisonWidget.SetVersionControlInfo (info);
 			this.buttonDiff.Clicked += HandleButtonDiffhandleClicked;
-			diffTextEditor = new global::Mono.TextEditor.TextEditor (new Mono.TextEditor.TextDocument (), new CommonTextEditorOptions ());
+			diffTextEditor = new global::Mono.TextEditor.TextEditor (new Mono.TextEditor.TextDocument ()/*, new CommonTextEditorOptions ()*/);
 			diffTextEditor.Document.MimeType = "text/x-diff";
 			
 			diffTextEditor.Options.ShowFoldMargin = false;

@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -888,7 +889,7 @@ namespace MonoDevelop.VersionControl.Views
 								//	mx -= (int)x;
 								//	my -= (int)y;
 									using (var gradient = new Cairo.RadialGradient (mx, my, h, mx, my, 2)) {
-										var color = (HslColor)Style.Mid (StateType.Normal);
+										var color = (MonoDevelop.Components.HslColor)Style.Mid (StateType.Normal);
 										color.L *= 1.05;
 										gradient.AddColorStop (0, color);
 										color.L *= 1.07;
@@ -896,11 +897,11 @@ namespace MonoDevelop.VersionControl.Views
 										cr.SetSource (gradient);
 									}
 								} else {
-									cr.SetSourceColor ((HslColor)Style.Mid (StateType.Normal));
+									cr.SetSourceColor ((MonoDevelop.Components.HslColor)Style.Mid (StateType.Normal));
 								}
 								cr.FillPreserve ();
 								
-								cr.SetSourceColor ((HslColor)Style.Dark (StateType.Normal));
+								cr.SetSourceColor ((MonoDevelop.Components.HslColor)Style.Dark (StateType.Normal));
 								cr.Stroke ();
 								cr.LineWidth = 1;
 								cr.SetSourceRGB (0, 0, 0);
