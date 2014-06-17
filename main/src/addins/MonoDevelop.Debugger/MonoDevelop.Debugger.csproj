@@ -43,20 +43,25 @@
     <Reference Include="System" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Mono.Posix" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
@@ -100,7 +105,6 @@
     <Compile Include="MonoDevelop.Debugger\WatchPad.cs" />
     <Compile Include="MonoDevelop.Debugger\Initializer.cs" />
     <Compile Include="MonoDevelop.Debugger\DisassemblyView.cs" />
-    <Compile Include="MonoDevelop.Debugger\DebugTextMarker.cs" />
     <Compile Include="MonoDevelop.Debugger\BreakpointPad.cs" />
     <Compile Include="MonoDevelop.Debugger\LocalsPad.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValuePad.cs" />

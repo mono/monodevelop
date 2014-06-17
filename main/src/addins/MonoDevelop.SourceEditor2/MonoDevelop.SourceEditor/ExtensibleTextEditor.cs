@@ -645,7 +645,9 @@ namespace MonoDevelop.SourceEditor
 			using (var undo = Document.OpenUndoGroup ()) {
 				var result = template.InsertTemplateContents (document);
 
-				var links = result.TextLinks;
+				var links = result.TextLinks.Select (l => new TextLink (l.Name) {
+					Links = l.Links.Select (s => new TextSegment (s.Offset, s.Length)).ToList ()
+				}).ToList ();
 
 				var tle = new TextLinkEditMode (this, result.InsertPosition, links);
 				tle.TextLinkMode = TextLinkMode.General;

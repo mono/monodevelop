@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -325,7 +326,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 						              dy - y,
 						              Allocation.Width, 
 						              lineHeight * vadjustment.PageSize / TextEditor.LineHeight);
-						var c = (Cairo.Color)(HslColor)Style.Dark (State); 
+						var c = (Cairo.Color)(Mono.TextEditor.HslColor)Style.Dark (State); 
 						c.A = 0.2;
 						cr.SetSourceColor (c);
 						cr.Fill ();

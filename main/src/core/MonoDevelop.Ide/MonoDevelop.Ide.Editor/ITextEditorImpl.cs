@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Editor
 
 		IEditorActionHost Actions { get; }
 
-		ISegmentMarkerHost SegmentMarkerHost { get; }
+		IMarkerHost MarkerHost { get; }
 
 		event EventHandler BeginUndo;
 		event EventHandler EndUndo;

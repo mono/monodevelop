@@ -177,9 +177,9 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public ISegmentMarkerHost SegmentMarkerHost {
+		public IMarkerHost MarkerHost {
 			get {
-				return textEditorImpl.SegmentMarkerHost;
+				return textEditorImpl.MarkerHost;
 			}
 		}
 

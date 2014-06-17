@@ -184,13 +184,11 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\HoverCloseButton.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\DocumentLineWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextLineMarkerWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SegmentMarker\UsageSegmentMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\ITextDocumentWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UsageSegmentMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\DebugTextMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -239,6 +237,11 @@
     <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
     <Folder Include="MonoDevelop.SourceEditor.Extension\" />
     <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
-    <Folder Include="MonoDevelop.SourceEditor\SegmentMarker\" />
+    <Folder Include="MonoDevelop.SourceEditor\TextMarker\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
+    <None Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
+    <None Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
   </ItemGroup>
 </Project>

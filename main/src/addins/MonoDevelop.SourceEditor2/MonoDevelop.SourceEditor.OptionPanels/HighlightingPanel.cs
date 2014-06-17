@@ -44,8 +44,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.Build ();
 			styleTreeview.AppendColumn ("", new CellRendererText (), "markup", 0);
 			styleTreeview.Model = styleStore;
-			// ensure that custom styles are loaded.
-			new SourceEditorDisplayBinding ();
 		}
 		
 		protected override void OnDestroyed ()
@@ -164,8 +162,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var sheme = (ColorScheme)this.styleStore.GetValue (selectedIter, 1);
 			
 			string fileName = sheme.FileName;
-			
-			if (fileName != null && fileName.StartsWith (SourceEditorDisplayBinding.SyntaxModePath, StringComparison.Ordinal)) {
+
+			if (fileName != null && fileName.StartsWith (MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath, StringComparison.Ordinal)) {
 				Mono.TextEditor.Highlighting.SyntaxModeService.Remove (sheme);
 				File.Delete (fileName);
 				ShowStyles ();
@@ -201,7 +199,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (!dialog.Run ())
 				return;
 
-			string newFileName = SourceEditorDisplayBinding.SyntaxModePath.Combine (dialog.SelectedFile.FileName);
+			string newFileName = MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath.Combine (dialog.SelectedFile.FileName);
 
 			bool success = true;
 			try {
@@ -211,7 +209,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				LoggingService.LogError ("Can't copy syntax mode file.", e);
 			}
 			if (success) {
-				SourceEditorDisplayBinding.LoadCustomStylesAndModes ();
+				MonoDevelop.Ide.Editor.TextEditorDisplayBinding.LoadCustomStylesAndModes ();
 				ShowStyles ();
 			}
 		}
@@ -225,11 +223,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			if (IdeApp.Workbench.ActiveDocument != null) {
 				IdeApp.Workbench.ActiveDocument.UpdateParseDocument ();
-				var editor = IdeApp.Workbench.ActiveDocument.Editor;
-				if (editor != null) {
-					editor.Parent.TextViewMargin.PurgeLayoutCache ();
-					editor.Parent.QueueDraw ();
-				}
+//				var editor = IdeApp.Workbench.ActiveDocument.Editor;
+//				if (editor != null) {
+//					editor.Parent.TextViewMargin.PurgeLayoutCache ();
+//					editor.Parent.QueueDraw ();
+//				}
 			}
 		}
 		

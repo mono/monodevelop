@@ -35,6 +35,7 @@ using System.Text.RegularExpressions;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Fonts;
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {

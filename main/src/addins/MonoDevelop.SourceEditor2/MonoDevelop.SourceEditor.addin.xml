@@ -202,9 +202,9 @@
 		<Font name ="LanguageTooltips" _displayName="Editor tooltips" default ="_DEFAULT_SANS"/>
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+<!--	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class fileExtensions = ".json" class = "MonoDevelop.SourceEditor.JSon.JSonTextEditorExtension" />
-	</Extension>
+	</Extension>-->
 
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->

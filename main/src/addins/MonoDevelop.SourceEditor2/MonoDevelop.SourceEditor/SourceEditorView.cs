@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-		ITextEditorImpl, IEditorActionHost, ISegmentMarkerHost
+		ITextEditorImpl, IEditorActionHost, IMarkerHost
 	{
 
 		readonly SourceEditorWidget widget;
@@ -377,10 +377,10 @@ namespace MonoDevelop.SourceEditor
 				if (line == null)
 					return;
 
-				var marker = lineExt.CreateMarker ();
+				var marker = (TextLineMarker)lineExt.CreateMarker ();
 				widget.TextEditor.Document.AddMarker (line, marker);
 				widget.TextEditor.QueueDraw ();
-				markerExtensions [extension] = new Tuple<TextLineMarker,DocumentLine> (marker, line);
+				markerExtensions [extension] = new Tuple<TextLineMarker, DocumentLine> (marker, line);
 			}
 		}
 
@@ -1790,6 +1790,9 @@ namespace MonoDevelop.SourceEditor
 			get {
 				return TextEditor.Caret.Offset;
 			}
+			set {
+				TextEditor.Caret.Offset = value;
+			}
 		}
 		
 		public Gtk.Style GtkStyle { 
@@ -2727,7 +2730,7 @@ namespace MonoDevelop.SourceEditor
 
 		IEnumerable<ITextLineMarker> ITextEditorImpl.GetLineMarker (IDocumentLine line)
 		{
-			return ((DocumentLineWrapper)line).Line.Markers.Select (m => new TextLineMarkerWrapper (m));
+			return ((DocumentLineWrapper)line).Line.Markers.Select (m => m is ITextLineMarker ? ((ITextLineMarker)m) : new TextLineMarkerWrapper (m));
 		}
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (MonoDevelop.Core.Text.ISegment segment)
@@ -2847,7 +2850,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		ISegmentMarkerHost ITextEditorImpl.SegmentMarkerHost {
+		IMarkerHost ITextEditorImpl.MarkerHost {
 			get {
 				return this;
 			}
@@ -2919,7 +2922,7 @@ namespace MonoDevelop.SourceEditor
 		 
 		#region ISegmentMarkerHost implementation
 
-		ITextSegmentMarker ISegmentMarkerHost.CreateUsageMarker (Usage usage)
+		ITextSegmentMarker IMarkerHost.CreateUsageMarker (Usage usage)
 		{
 			return new UsageSegmentMarker (usage);
 		}

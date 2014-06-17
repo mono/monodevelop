@@ -28,6 +28,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.IO;
 using MonoDevelop.Projects;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -58,7 +59,8 @@ namespace MonoDevelop.Ide.Editor
 			LoadCustomStylesAndModes ();
 		}
 
-		internal static void LoadCustomStylesAndModes ()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void LoadCustomStylesAndModes ()
 		{
 			bool success = true;
 			if (!Directory.Exists (SyntaxModePath)) {

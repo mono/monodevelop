@@ -2435,7 +2435,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\TemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Extensions\AbstractUsagesExtension.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\ISegmentMarkerHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IMarkerHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

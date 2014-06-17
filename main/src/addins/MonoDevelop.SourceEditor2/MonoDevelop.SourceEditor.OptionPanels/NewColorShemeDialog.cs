@@ -67,7 +67,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			style.Name = this.entryName.Text;
 			style.Description = this.entryDescription.Text;
 			style.BaseScheme = name;
-			string path = SourceEditorDisplayBinding.SyntaxModePath;
+			string path = MonoDevelop.Ide.Editor.TextEditorDisplayBinding.SyntaxModePath;
 			string baseName = style.Name.Replace (" ", "_");
 			
 			while (File.Exists (System.IO.Path.Combine (path, baseName + "Style.json"))) {

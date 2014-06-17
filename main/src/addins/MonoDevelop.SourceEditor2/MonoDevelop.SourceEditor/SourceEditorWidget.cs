@@ -51,7 +51,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	class SourceEditorWidget : ITextEditorExtension
+	class SourceEditorWidget : ITextEditorExtension, IQuickTaskProvider
 	{
 		SourceEditorView view;
 		DecoratedScrolledWindow mainsw;
@@ -246,11 +246,11 @@ namespace MonoDevelop.SourceEditor
 				if (!QuickTaskStrip.MergeScrollBarAndQuickTasks)
 					return;
 				if (QuickTaskStrip.EnableFancyFeatures) {
-					GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Never);
+					MonoDevelop.Components.GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Never);
 					scrolledWindow.VScrollbar.SizeRequested += SuppressSize;
 					scrolledWindow.VScrollbar.ExposeEvent += SuppressExpose;
 				} else {
-					GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Automatic);
+					MonoDevelop.Components.GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Automatic);
 					scrolledWindow.VScrollbar.SizeRequested -= SuppressSize;
 					scrolledWindow.VScrollbar.ExposeEvent -= SuppressExpose;
 				}
@@ -1426,7 +1426,7 @@ namespace MonoDevelop.SourceEditor
 		#region commenting and indentation
 		internal void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
 		{
-			var mode = Document.SyntaxMode as SyntaxMode;
+			var mode = Document.SyntaxMode as MonoDevelop.Ide.Editor.SyntaxMode;
 			if (mode == null) {
 				info.Visible = false;
 				return;
@@ -1445,7 +1445,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void ToggleCodeCommentWithBlockComments ()
 		{
-			var mode = Document.SyntaxMode as SyntaxMode;
+			var mode = Document.SyntaxMode as MonoDevelop.Ide.Editor.SyntaxMode;
 			if (mode == null)
 				return;
 
@@ -1491,7 +1491,7 @@ namespace MonoDevelop.SourceEditor
 
 		bool TryGetLineCommentTag (out string commentTag)
 		{
-			var mode = Document.SyntaxMode as SyntaxMode;
+			var mode = Document.SyntaxMode as MonoDevelop.Ide.Editor.SyntaxMode;
 			List<string> lineComments;
 			if (mode == null || !mode.Properties.TryGetValue ("LineComment", out lineComments) || lineComments.Count == 0) {
 				commentTag = null;

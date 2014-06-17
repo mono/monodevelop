@@ -97,8 +97,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				if (editor == null)
 					continue;
 				doc.UpdateParseDocument ();
-				editor.Parent.TextViewMargin.PurgeLayoutCache ();
-				editor.Document.CommitUpdateAll ();
+//				editor.Parent.TextViewMargin.PurgeLayoutCache ();
+//				editor.Document.CommitUpdateAll ();
 			}
 		
 		}
