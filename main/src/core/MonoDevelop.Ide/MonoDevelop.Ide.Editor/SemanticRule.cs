@@ -65,10 +65,10 @@ namespace MonoDevelop.Ide.Editor
 				markers.ForEach (doc.RemoveMarker);
 
 				foreach (System.Text.RegularExpressions.Match m in UrlRegex.Matches (text)) {
-					doc.AddMarker (line, DocumentFactory.CreateUrlTextMarker (doc, line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+					doc.AddMarker (line, doc.MarkerHost.CreateUrlTextMarker (line, m.Value, UrlType.Url, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
 				}
 				foreach (System.Text.RegularExpressions.Match m in MailRegex.Matches (text)) {
-					doc.AddMarker (line, DocumentFactory.CreateUrlTextMarker (doc, line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
+					doc.AddMarker (line, doc.MarkerHost.CreateUrlTextMarker (line, m.Value, UrlType.Email, syntax, startColumn + m.Index, startColumn + m.Index + m.Length));
 				}
 			} finally {
 				inUpdate = false;

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -31,6 +32,11 @@ namespace MonoDevelop.Ide.Editor
 	{
 		ITextSegmentMarker CreateUsageMarker (Usage usage);
 
+		IUrlTextLineMarker CreateUrlTextMarker (IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol);
+		ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker ();
+		ITextLineMarker CreateAsmLineMarker ();
+		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length);
+		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, ISegment segment);
 
 //
 //		public class BreakpointTextMarker : DebugTextMarker

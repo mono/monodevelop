@@ -178,6 +178,12 @@
 		<Description>Styles</Description>
 		<ExtensionNode name="SyntaxMode" type="MonoDevelop.Ide.Editor.SyntaxModeCodon"/>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/EditorFactory" name = "Editor factories">
+		<Description>Allows providing a platform-specific implementation for the text editor</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">

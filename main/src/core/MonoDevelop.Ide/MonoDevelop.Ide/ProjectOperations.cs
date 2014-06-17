@@ -2112,10 +2112,7 @@ namespace MonoDevelop.Ide
 					return doc.Editor;
 				}
 			}
-			bool hadBom;
-			Encoding encoding;
-			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
-			var data = DocumentFactory.CreateNewReadonlyDocument (filePath, text);
+			var data = DocumentFactory.CreateNewReadonlyDocument (StringTextSource.ReadFrom (filePath), filePath);
 			return data;
 		}
 

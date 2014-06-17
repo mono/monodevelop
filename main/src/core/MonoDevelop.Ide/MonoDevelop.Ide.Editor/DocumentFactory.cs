@@ -23,80 +23,66 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using MonoDevelop.Ide.TextEditing;
+
 using MonoDevelop.Core.Text;
+using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor
 {
+	public interface ITextEditorFactory
+	{
+		ITextDocument CreateNewDocument ();
+		ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType);
+
+		IReadonlyTextDocument CreateNewReadonlyDocument (ITextSource textSource, string fileName, string mimeType);
+
+		TextEditor CreateNewEditor ();
+		TextEditor CreateNewEditor (IReadonlyTextDocument document);
+	}
+
 	public static class DocumentFactory
 	{
-		public static ITextDocument CreateNewDocument ()
+		static ITextEditorFactory currentFactory;
+
+		static DocumentFactory ()
 		{
-			throw new NotImplementedException ();
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/EditorFactory", delegate(object sender, ExtensionNodeEventArgs args) {
+				switch (args.Change) {
+				case ExtensionChange.Add:
+					currentFactory = (ITextEditorFactory)args.ExtensionObject;
+					break;
+				}
+			});
 		}
 
-		public static ITextDocument CreateNewDocument (string fileName, string text, string mimeType)
+		public static ITextDocument CreateNewDocument ()
 		{
-			throw new NotImplementedException ();
+			return currentFactory.CreateNewDocument ();
+		}
+
+		public static ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType)
+		{
+			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
 		public static ITextDocument LoadDocument (string fileName, string mimeType)
 		{
-			throw new NotImplementedException ();
+			return currentFactory.CreateNewDocument (StringTextSource.ReadFrom (fileName), fileName, mimeType); 
 		}
 
-		public static IReadonlyTextDocument CreateNewReadonlyDocument (string fileName, string text)
+		public static IReadonlyTextDocument CreateNewReadonlyDocument (ITextSource textSource, string fileName, string mimeType = null)
 		{
-			/*
-			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
-			data.FileName = filePath;
-			 * */
-			throw new NotImplementedException ();
-		}
-
-		public static IReadonlyTextDocument CreateNewReadonlyDocument (string fileName, string text, string mimeType)
-		{
-			/*
-			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
-			data.FileName = filePath;
-			 * */
-			throw new NotImplementedException ();
+			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
 		public static TextEditor CreateNewEditor ()
 		{
-			throw new NotImplementedException ();
+			return currentFactory.CreateNewEditor ();
 		}
 
 		public static TextEditor CreateNewEditor (IReadonlyTextDocument document)
 		{
-			throw new NotImplementedException ();
-		}
-
-		public static IUrlTextLineMarker CreateUrlTextMarker (TextEditor doc, IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor iTextEditor)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static ITextLineMarker CreateAsmLineMarker ()
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, ISegment segment)
-		{
-			throw new NotImplementedException ();
+			return currentFactory.CreateNewEditor (document);
 		}
 	}
 }

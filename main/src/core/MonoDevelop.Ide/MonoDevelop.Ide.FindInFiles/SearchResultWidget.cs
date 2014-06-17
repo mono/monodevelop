@@ -588,7 +588,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (content == null)
 					return null;
 
-				doc = DocumentFactory.CreateNewEditor (DocumentFactory.CreateNewReadonlyDocument (result.FileName, content));
+				doc = DocumentFactory.CreateNewEditor (DocumentFactory.CreateNewReadonlyDocument (new StringTextSource (content), result.FileName));
 
 				documents [result.FileName] = doc;	
 			}
