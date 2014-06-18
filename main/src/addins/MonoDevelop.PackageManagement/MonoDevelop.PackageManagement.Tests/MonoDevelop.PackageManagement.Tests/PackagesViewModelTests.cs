@@ -1118,7 +1118,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CompleteReadPackagesTask ();
 			
 			string expectedErrorMessage = 
-				"Test1\r\n" +
+				"Test1" + Environment.NewLine +
 				"Test2";
 			
 			Assert.AreEqual (expectedErrorMessage, viewModel.ErrorMessage);
@@ -1140,8 +1140,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			CompleteReadPackagesTask ();
 			
 			string expectedErrorMessage = 
-				"Test1\r\n" +
-				"Test2\r\n" +
+				"Test1" + Environment.NewLine +
+				"Test2" + Environment.NewLine +
 				"Test3";
 			
 			Assert.AreEqual (expectedErrorMessage, viewModel.ErrorMessage);
