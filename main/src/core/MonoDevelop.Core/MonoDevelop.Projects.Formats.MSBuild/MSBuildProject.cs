@@ -482,6 +482,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return EvaluatedElement.GetAttribute ("Project"); }
 			set { Element.SetAttribute ("Project", value); }
 		}
+
+		public string Condition {
+			get { return EvaluatedElement.GetAttribute ("Condition"); }
+			set { Element.SetAttribute ("Condition", value); }
+		}
 	}
 	
 	public class MSBuildProperty: MSBuildObject

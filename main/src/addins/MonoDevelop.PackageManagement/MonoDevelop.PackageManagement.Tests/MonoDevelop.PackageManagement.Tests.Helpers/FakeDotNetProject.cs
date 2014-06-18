@@ -101,11 +101,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return buildAction;
 		}
 
-		public List<string> ImportsAdded = new List<string> ();
+		public List<ImportAndCondition> ImportsAdded = new List<ImportAndCondition> ();
 
 		public void AddImportIfMissing (string name, string condition)
 		{
-			ImportsAdded.Add (name);
+			ImportsAdded.Add (new ImportAndCondition (name, condition));
 		}
 
 		public List<string> ImportsRemoved = new List <string> ();
