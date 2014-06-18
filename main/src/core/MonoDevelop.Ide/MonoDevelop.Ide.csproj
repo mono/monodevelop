@@ -2436,6 +2436,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Extensions\AbstractUsagesExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IMarkerHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IIndentationTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

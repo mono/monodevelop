@@ -89,6 +89,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);
+		void SetIndentationTracker (IIndentationTracker indentationTracker);
 
 		IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line);
 

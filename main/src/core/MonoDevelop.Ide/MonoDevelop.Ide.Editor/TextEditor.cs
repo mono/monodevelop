@@ -563,5 +563,12 @@ namespace MonoDevelop.Ide.Editor
 		{
 			return textEditorImpl;
 		}
+
+		public void SetIndentationTracker (IIndentationTracker indentationTracker)
+		{
+			if (indentationTracker == null)
+				throw new ArgumentNullException ("indentationTracker");
+			textEditorImpl.SetIndentationTracker (indentationTracker);
+		}
 	}
 }
