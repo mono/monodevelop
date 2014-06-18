@@ -149,7 +149,7 @@ namespace MonoDevelop.Components.MainToolbar
 				renderer.Xpad = 3;
 				return;
 			}
-			renderer.Sensitive = !(target is ExecutionTargetGroup);
+			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
 
 			if (target == null) {
 				renderer.Xpad = (uint) 0;
@@ -167,6 +167,9 @@ namespace MonoDevelop.Components.MainToolbar
 				else
 					renderer.Text = target.Name;
 			}
+
+			if (Platform.IsMac)
+				renderer.WidthChars = renderer.Text != null ? (indent ? renderer.Text.Length + 6 : 0) : 0;
 		}
 
 		string RemoveUnderline (string s)
@@ -218,6 +221,8 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.Model = runtimeStore;
 			ctx = new Gtk.CellRendererText ();
+			if (Platform.IsWindows)
+				ctx.Ellipsize = Pango.EllipsizeMode.Middle;
 			runtimeCombo.PackStart (ctx, true);
 			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
 			runtimeCombo.RowSeparatorFunc = RuntimeIsSeparator;
@@ -664,7 +669,7 @@ namespace MonoDevelop.Components.MainToolbar
 			do {
 				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
 
-				if (target == null)
+				if (target == null || !target.Enabled)
 					continue;
 
 				if (target is ExecutionTargetGroup) {

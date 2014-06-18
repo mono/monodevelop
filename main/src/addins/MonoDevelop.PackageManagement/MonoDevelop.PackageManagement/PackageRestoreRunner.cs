@@ -124,8 +124,19 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (operation.Success) {
 				RefreshProjectReferences ();
+				ForceCreationOfSharedRepositoriesConfigFile ();
 			}
 			ReportOutcome (operation, progressMonitor, progressMessage);
+		}
+
+		/// <summary>
+		/// Creating package managers for all the projects will force the 
+		/// repositories.config file to be created.
+		/// </summary>
+		void ForceCreationOfSharedRepositoriesConfigFile ()
+		{
+			var repository = PackageManagementServices.RegisteredPackageRepositories.CreateAggregateRepository ();
+			solution.GetProjects (repository).ToList ();
 		}
 
 		void RefreshProjectReferences ()

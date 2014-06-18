@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.PackageManagement;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.Formats.MSBuild;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -402,7 +403,7 @@ namespace ICSharpCode.PackageManagement
 
 		string GetRelativePath(string path)
 		{
-			return FileService.AbsoluteToRelativePath(project.BaseDirectory, path);
+			return MSBuildProjectService.ToMSBuildPath (project.BaseDirectory, path);
 		}
 		
 		public void RemoveImport(string targetPath)
@@ -410,8 +411,18 @@ namespace ICSharpCode.PackageManagement
 			GuiSyncDispatch (() => {
 				string relativeTargetPath = GetRelativePath (targetPath);
 				project.RemoveImport (relativeTargetPath);
+				RemoveImportWithForwardSlashes (targetPath);
 				project.Save ();
 			});
+		}
+
+		void RemoveImportWithForwardSlashes (string targetPath)
+		{
+			string relativeTargetPath = FileService.AbsoluteToRelativePath (project.BaseDirectory, targetPath);
+			if (Path.DirectorySeparatorChar == '\\') {
+				relativeTargetPath = relativeTargetPath.Replace ('\\', '/');
+			}
+			project.RemoveImport (relativeTargetPath);
 		}
 
 		/// <summary>

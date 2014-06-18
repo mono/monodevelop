@@ -259,8 +259,17 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				var configs = GetConfigurations (item, configuration);
-				foreach (string s in builder.GetAssemblyReferences (configs))
-					yield return s;
+
+				var result = builder.Run (
+					configs, null, MSBuildVerbosity.Normal,
+					new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null
+				);
+
+				List<MSBuildEvaluatedItem> items;
+				if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
+					foreach (var i in items)
+						yield return i.ItemSpec;
+				}
 			}
 			else {
 				CleanupProjectBuilder ();
@@ -282,19 +291,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
 					var configs = GetConfigurations (item, configuration);
-					MSBuildResult[] results = builder.RunTarget (target, configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity);
+					var result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					var br = new BuildResult ();
-					foreach (MSBuildResult res in results) {
+					foreach (var err in result.Errors) {
 						FilePath file = null;
-						if (res.File != null)
-							file = Path.Combine (Path.GetDirectoryName (res.ProjectFile), res.File);
+						if (err.File != null)
+							file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
 
-						if (res.IsWarning)
-							br.AddWarning (file, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
+						if (err.IsWarning)
+							br.AddWarning (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
 						else
-							br.AddError (file, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
+							br.AddError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
 					}
 					return br;
 				}
@@ -360,7 +369,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
 			// of shared projects.
-			if (!itemGuid.StartsWith ("{") && fileName.EndsWith (".shproj"))
+			if (!itemGuid.StartsWith ("{"))
 				itemGuid = "{" + itemGuid + "}";
 
 			itemGuid = itemGuid.ToUpper ();
