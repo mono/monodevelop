@@ -151,6 +151,10 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
+    <Compile Include="MonoDevelop.Debugger.Visualizer\ColorsConverters.cs" />
+    <Compile Include="MonoDevelop.Debugger.Visualizer\ColorConverter.cs" />
+    <Compile Include="MonoDevelop.Debugger.InlineVisualizers\ColorInlineVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.InlineVisualizers\InlineVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

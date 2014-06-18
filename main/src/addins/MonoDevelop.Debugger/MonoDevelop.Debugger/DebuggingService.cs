@@ -163,7 +163,7 @@ namespace MonoDevelop.Debugger
 			set {
 			}
 		}
-		
+
 		internal static IEnumerable<ValueVisualizer> GetValueVisualizers (ObjectValue val)
 		{
 			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ValueVisualizers", false)) {
@@ -174,10 +174,42 @@ namespace MonoDevelop.Debugger
 				}
 			}
 		}
-		
+
 		internal static bool HasValueVisualizers (ObjectValue val)
 		{
 			return GetValueVisualizers (val).Any ();
+		}
+
+		internal static InlineVisualizer GetInlineVisualizer (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/InlineVisualizers", true)) {
+				var cv = v as InlineVisualizer;
+				if (cv != null && cv.CanInlineVisualize (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		internal static bool HasInlineVisualizer (ObjectValue val)
+		{
+			return GetInlineVisualizer (val) != null;
+		}
+
+		internal static ColorConverter GetColorConverter (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ColorConverters", true)) {
+				var cv = v as ColorConverter;
+				if (cv != null && cv.CanGetColor (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		internal static bool HasColorConverter (ObjectValue val)
+		{
+			return GetColorConverter (val) != null;
 		}
 		
 		public static void ShowValueVisualizer (ObjectValue val)

@@ -15,6 +15,16 @@
 		<ExtensionNode name="Type"/>
 	</ExtensionPoint>
 
+	<ExtensionPoint path="/MonoDevelop/Debugging/ColorConverters">
+		<Description>Color visualizers. Specified classes must extend MonoDevelop.Debugger.ColorConverter</Description>
+		<ExtensionNode name="Type"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path="/MonoDevelop/Debugging/InlineVisualizers">
+		<Description>Inline visualizers. Specified classes must extend MonoDevelop.Debugger.InlineVisualizer</Description>
+		<ExtensionNode name="Type"/>
+	</ExtensionPoint>
+
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Category id="Debug" _name="Debug Windows">
 			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
@@ -34,6 +44,15 @@
 		<Type class="MonoDevelop.Debugger.Visualizer.TextVisualizer" />
 		<Type class="MonoDevelop.Debugger.Visualizer.PixbufVisualizer" />
 		<Type class="MonoDevelop.Debugger.Visualizer.CStringVisualizer" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Debugging/ColorConverters">
+		<Type class="MonoDevelop.Debugger.Visualizer.SystemDrawingColorConverter" />
+		<Type class="MonoDevelop.Debugger.Visualizer.GdkColorConverter" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Debugging/InlineVisualizers">
+		<Type class="MonoDevelop.Debugger.InlineVisualizers.ColorInlineVisualizer" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

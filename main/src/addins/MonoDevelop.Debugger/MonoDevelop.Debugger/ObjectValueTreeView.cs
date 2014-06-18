@@ -107,6 +107,7 @@ namespace MonoDevelop.Debugger
 		const int PinIconColumn = 10;
 		const int LiveUpdateIconColumn = 11;
 		const int ViewerButtonVisibleColumn = 12;
+		const int ColorPreviewColumn = 13;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
@@ -128,10 +129,35 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.Rename);
 			menuSet.AddItem (EditCommands.DeleteKey);
 		}
-		
+
+		class CellRendererColorPreview : CellRenderer
+		{
+			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+			{
+				using (Cairo.Context cr = Gdk.CairoHelper.Create (window)) {
+					cr.LineWidth = 0.5;
+					double center_x = cell_area.X + Math.Round ((double)(cell_area.Width / 2d));
+					double center_y = cell_area.Y + Math.Round ((double)(cell_area.Height / 2d));
+					cr.Arc (center_x, center_y, 5, 0, 2 * Math.PI);
+					cr.SetSourceRGBA (Color.Red, Color.Green, Color.Blue, 1);
+					cr.FillPreserve ();
+					cr.SetSourceRGBA (0, 0, 0, 1);
+					cr.Stroke ();
+				}
+			}
+
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				x_offset = y_offset = 0;
+				height = width = 16;
+			}
+
+			public Xwt.Drawing.Color Color { get; set; }
+		}
+
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(Xwt.Drawing.Color?));
 			Model = store;
 			RulesHint = true;
 			EnableSearch = false;
@@ -164,6 +190,17 @@ namespace MonoDevelop.Debugger
 			
 			valueCol = new TreeViewColumn ();
 			valueCol.Title = GettextCatalog.GetString ("Value");
+			var crColorPreview = new CellRendererColorPreview ();
+			valueCol.PackStart (crColorPreview, false);
+			valueCol.SetCellDataFunc (crColorPreview, new TreeCellDataFunc ((tree_column, cell, model, iter) => {
+				var color = model.GetValue (iter, ColorPreviewColumn);
+				if (color != null) {
+					((CellRendererColorPreview)cell).Color = (Xwt.Drawing.Color)color;
+					cell.Visible = true;
+				} else {
+					cell.Visible = false;
+				}
+			}));
 			crpViewer = new CellRendererImage ();
 			crpViewer.Image = ImageService.GetIcon (Stock.ZoomIn, IconSize.Menu);
 			valueCol.PackStart (crpViewer, false);
@@ -753,7 +790,11 @@ namespace MonoDevelop.Debugger
 			} else {
 				showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 				canEdit = val.IsPrimitive && !val.IsReadOnly;
-				strval = val.DisplayValue ?? "(null)";
+				if (!val.IsNull && DebuggingService.HasInlineVisualizer (val)) {
+					strval = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);
+				} else {
+					strval = val.DisplayValue ?? "(null)";
+				}
 				if (oldValue != null && strval != oldValue)
 					nameColor = valueColor = modifiedColor;
 			}
@@ -762,7 +803,6 @@ namespace MonoDevelop.Debugger
 
 			bool hasChildren = val.HasChildren;
 			string icon = GetIcon (val.Flags);
-
 			store.SetValue (it, NameColumn, name);
 			store.SetValue (it, ValueColumn, strval);
 			store.SetValue (it, TypeColumn, val.TypeName);
@@ -774,7 +814,12 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, ValueColorColumn, valueColor);
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);
 			store.SetValue (it, ViewerButtonVisibleColumn, showViewerButton);
-			
+
+			if (!val.IsNull && DebuggingService.HasColorConverter (val))
+				store.SetValue (it, ColorPreviewColumn, DebuggingService.GetColorConverter (val).GetColor (val));
+			else
+				store.SetValue (it, ColorPreviewColumn, null);
+
 			if (!hasParent && PinnedWatch != null) {
 				store.SetValue (it, PinIconColumn, "md-pin-down");
 				if (PinnedWatch.LiveUpdate)
