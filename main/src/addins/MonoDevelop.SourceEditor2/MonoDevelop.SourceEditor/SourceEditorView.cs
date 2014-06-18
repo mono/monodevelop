@@ -2864,6 +2864,23 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		MonoDevelop.Ide.Editor.EditMode ITextEditorImpl.EditMode {
+			get {
+				if (TextEditor.CurrentMode is TextLinkEditMode)
+					return MonoDevelop.Ide.Editor.EditMode.TextLink;
+				if (TextEditor.CurrentMode is InsertionCursorEditMode)
+					return MonoDevelop.Ide.Editor.EditMode.CursorInsertion;
+				return MonoDevelop.Ide.Editor.EditMode.Edit;
+			}
+		}
+
+		string ITextEditorImpl.GetVirtualIndentationString (int lineNumber)
+		{
+			if (!TextEditor.GetTextEditorData ().HasIndentationTracker)
+				return TextEditor.GetLineIndent (lineNumber);
+			return TextEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (lineNumber, 1);
+		}
+
 
 		void ITextEditorImpl.SetIndentationTracker (MonoDevelop.Ide.Editor.IIndentationTracker indentationTracker)
 		{
