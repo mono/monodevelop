@@ -191,6 +191,7 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\DebugTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditorFactory.cs" />
     <Compile Include="MonoDevelop.SourceEditor\IndentationTrackerWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SelectionSurroundingProviderWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

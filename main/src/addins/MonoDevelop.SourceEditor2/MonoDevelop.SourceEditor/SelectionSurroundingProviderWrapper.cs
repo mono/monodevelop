@@ -1,5 +1,5 @@
 ﻿//
-// ISelectionSurroundingProvider.cs
+// SelectionSurroundingProviderWrapper.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,34 +24,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Components.PropertyGrid.PropertyEditors;
+using Mono.TextEditor;
+using MonoDevelop.SourceEditor.Wrappers;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.SourceEditor
 {
-	/// <summary>
-	/// A selection surrounding provider handles a special handling how the text editor behaves when the user
-	/// types a key with a selection. The selection can be surrounded instead of beeing replaced.
-	/// </summary>
-	public interface ISelectionSurroundingProvider	
+	class SelectionSurroundingProviderWrapper : ISelectionSurroundingProvider
 	{
-		/// <summary>
-		/// Gets the selection surroundings for a given unicode key.
-		/// </summary>
-		/// <returns>
-		/// true, if the key is valid for a surrounding action.
-		/// </returns>
-		/// <param name='unicodeKey'>
-		/// The key to handle.
-		/// </param>
-		/// <param name='start'>
-		/// The start of the surrounding
-		/// </param>
-		/// <param name='end'>
-		/// The end of the surrounding
-		/// </param>
-		bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end);
+		readonly MonoDevelop.Ide.Editor.ISelectionSurroundingProvider surroundingProvider;
 
-		void HandleSpecialSelectionKey (uint unicodeKey);
+		public SelectionSurroundingProviderWrapper ( MonoDevelop.Ide.Editor.ISelectionSurroundingProvider surroundingProvider)
+		{
+			if (surroundingProvider == null)
+				throw new ArgumentNullException ("surroundingProvider");
+			this.surroundingProvider = surroundingProvider;
+		}
+
+		#region ISelectionSurroundingProvider implementation
+
+		bool ISelectionSurroundingProvider.GetSelectionSurroundings (TextEditorData textEditorData, uint unicodeKey, out string start, out string end)
+		{
+			return surroundingProvider.GetSelectionSurroundings (unicodeKey, out start, out end);
+		}
+
+		void ISelectionSurroundingProvider.HandleSpecialSelectionKey (TextEditorData textEditorData, uint unicodeKey)
+		{
+			surroundingProvider.HandleSpecialSelectionKey (unicodeKey);
+		}
+
+		#endregion
 	}
 }
 

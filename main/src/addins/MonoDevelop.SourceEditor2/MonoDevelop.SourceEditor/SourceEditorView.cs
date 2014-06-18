@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-	ITextEditorImpl, IEditorActionHost, IMarkerHost
+		ITextEditorImpl, IEditorActionHost, IMarkerHost
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -2870,7 +2870,10 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.GetTextEditorData ().IndentationTracker = new IndentationTrackerWrapper (wrapper, indentationTracker);
 		}
 
-
+		void ITextEditorImpl.SetSelectionSurroundingProvider (MonoDevelop.Ide.Editor.ISelectionSurroundingProvider surroundingProvider)
+		{
+			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = new SelectionSurroundingProviderWrapper (surroundingProvider);
+		}
 		#region IEditorActionHost implementation
 
 		void IEditorActionHost.MoveCaretDown ()
