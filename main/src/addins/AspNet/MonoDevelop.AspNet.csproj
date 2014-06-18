@@ -489,4 +489,12 @@
     <Folder Include="ProjectPad\" />
     <Folder Include="Templates\Projects\" />
   </ItemGroup>
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <NuGet>..\..\..\external\nuget-binary\NuGet.exe</NuGet>
+      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
+      <SlnDir>..\..\..</SlnDir>
+    </PropertyGroup>
+    <Exec Command="$(NuGet) restore -SolutionDirectory $(SlnDir)" />
+  </Target>
 </Project>
