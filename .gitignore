@@ -20,7 +20,7 @@ obj/
 /local-libs
 /main/build/tests
 /main/monodevelop_version
-/main/tests/TestResult.xml
+/main/tests/TestResult*.xml
 /main/tests/Ide.Tests/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi2/bin
