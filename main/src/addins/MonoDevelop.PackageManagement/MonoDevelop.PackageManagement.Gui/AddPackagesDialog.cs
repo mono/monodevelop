@@ -119,6 +119,10 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		public string SearchText {
+			get { return packageSearchEntry.Text; }
+		}
+
 		void InitializeListView ()
 		{
 			packageStore = new ListStore (packageHasBackgroundColorField, packageCheckBoxAlphaField, packageImageField, packageViewModelField);
