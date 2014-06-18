@@ -21,8 +21,15 @@ namespace ${Namespace}
 			// Act
 			ViewResult result = controller.Index () as ViewResult;
 
+			var mvcName = typeof(Controller).Assembly.GetName ();
+			var isMono = Type.GetType ("Mono.Runtime") != null;
+
+			var expectedVersion = mvcName.Version.Major;
+			var expectedRuntime = isMono? "Mono" : ".NET";
+
 			// Assert
-			Assert.AreEqual ("Welcome to ASP.NET MVC on Mono!", result.ViewData["Message"]);
+			Assert.AreEqual (expectedVersion, ViewData ["Version"]);
+			Assert.AreEqual (expectedRuntime, ViewData ["Runtime"]);
 		}
 	}
 }

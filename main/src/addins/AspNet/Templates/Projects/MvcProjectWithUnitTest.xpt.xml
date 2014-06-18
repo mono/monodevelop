@@ -61,9 +61,7 @@
 	<title></title>
 </head>
 <body>
-	<div>
-		<%= Html.Encode(ViewData["Message"]) %>
-	</div>
+	<h2>Welcome to ASP.NET MVC <%: ViewData["Version"] %> on <%: ViewData["Runtime"] %>!</h2>
 </body>
 ]]>
 						</File>

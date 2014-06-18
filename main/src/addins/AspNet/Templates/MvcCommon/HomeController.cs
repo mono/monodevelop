@@ -11,7 +11,12 @@ namespace ${Namespace}.Controllers
 	{
 		public ActionResult Index ()
 		{
-			ViewData["Message"] = "Welcome to ASP.NET MVC on Mono!";
+			var mvcName = typeof(Controller).Assembly.GetName ();
+			var isMono = Type.GetType ("Mono.Runtime") != null;
+
+			ViewData ["Version"] = mvcName.Version.Major;
+			ViewData ["Runtime"] = isMono? "Mono" : ".NET";
+
 			return View ();
 		}
 	}

@@ -52,8 +52,8 @@
 				<Directory name="Scripts" />
 				<Directory name="Views">
 					<FileTemplateReference TemplateID="AspMvcWebConfigViews" name="Web.config" SuppressAutoOpen="true"  />
-				<Directory name="Home">
-					<File name="Index.aspx">
+					<Directory name="Home">
+						<File name="Index.aspx">
 <![CDATA[<%@ Page Language="C#" Inherits="System.Web.Mvc.ViewPage" %>
 <!DOCTYPE html>
 <html>
@@ -61,12 +61,10 @@
 	<title></title>
 </head>
 <body>
-	<div>
-		<%= Html.Encode(ViewData["Message"]) %>
-	</div>
+	<h2>Welcome to ASP.NET MVC <%: ViewData["Version"] %> on <%: ViewData["Runtime"] %>!</h2>
 </body>
 ]]>
-					</File>
+						</File>
 					</Directory>
 					<Directory name="Shared">
 						<File name="Error.aspx">
