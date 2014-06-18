@@ -1,5 +1,5 @@
 ﻿//
-// RazorCSharpParsedDocument.cs
+// RazorPageInfo.cs
 //
 // Author:
 //		Piotr Dowgiallo <sparekd@gmail.com>
@@ -24,40 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Web.Razor;
+using System.Web.Razor.Parser.SyntaxTree;
+using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Xml.Dom;
 
-namespace MonoDevelop.AspNet.Razor.Parser
+namespace MonoDevelop.AspNet.Razor
 {
-	public class RazorCSharpParsedDocument : DefaultParsedDocument
+	public class RazorPageInfo
 	{
-		public RazorCSharpPageInfo PageInfo { get; set; }
+		public IEnumerable<Error> Errors { get; set; }
+		public IEnumerable<FoldingRegion> FoldingRegions { get; set; }
+		public IEnumerable<Comment> Comments { get; set; }
+		public GeneratorResults GeneratorResults { get; set; }
+		public Block RazorRoot { get { return GeneratorResults.Document; } }
+		public XDocument HtmlRoot { get; set; }
+		public IEnumerable<Span> Spans { get; set; }
+		public string DocType { get; set; }
+		public RazorHostKind HostKind { get; set; }
 
-		public RazorCSharpParsedDocument (string fileName, RazorCSharpPageInfo pageInfo) : base (fileName)
+		public RazorPageInfo ()
 		{
-			PageInfo = pageInfo;
-			Flags |= ParsedDocumentFlags.NonSerializable;
-			if (PageInfo.Errors != null)
-				Add (PageInfo.Errors);
+			// TODO: extract doctype from view or layout page
+			DocType = "<!DOCTYPE html>";
 		}
+	}
 
-		public override IEnumerable<FoldingRegion> Foldings	{
-			get	{
-				if (PageInfo.FoldingRegions != null) {
-					foreach (var region in PageInfo.FoldingRegions) {
-						yield return region;
-					}
-				}
-				if (PageInfo.Comments != null) {
-					foreach (var comment in PageInfo.Comments) {
-						if (comment.Region.BeginLine != comment.Region.EndLine)
-							yield return new FoldingRegion ("@* comment *@", comment.Region);
-					}
-				}
-			}
-		}
+	public class RazorCSharpPageInfo : RazorPageInfo
+	{
+		public ParsedDocumentDecorator CSharpParsedFile { get; set; }
+		public ICompilation Compilation { get; set; }
+		public string CSharpCode { get; set; }
+	}
+
+	public enum RazorHostKind
+	{
+		Template,
+		WebPage,
+		WebCode
 	}
 }

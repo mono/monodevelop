@@ -29,7 +29,7 @@ using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.AspNet.Mvc.Completion;
+using MonoDevelop.AspNet.Razor;
 
 namespace MonoDevelop.CSharp.Completion
 {

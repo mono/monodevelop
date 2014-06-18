@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -175,9 +175,6 @@
     <Compile Include="Html\DocTypeCompletionData.cs" />
     <Compile Include="Html\HtmlParser.cs" />
     <Compile Include="Html\ElementTypes.cs" />
-    <Compile Include="Razor\Parser\RazorCSharpParsedDocument.cs" />
-    <Compile Include="Razor\Parser\RazorCSharpParser.cs" />
-    <Compile Include="Razor\Parser\RazorPageInfo.cs" />
     <Compile Include="Razor\Parser\RazorSymbols.cs" />
     <Compile Include="Razor\Parser\RazorUtils.cs" />
     <Compile Include="Razor\RazorSyntaxMode.cs" />
@@ -291,6 +288,9 @@
     <Compile Include="WebForms\SuggestedHandlerCompletionData.cs" />
     <Compile Include="Razor\Parser\RazorRootState.cs" />
     <Compile Include="WebForms\Parser\WebFormsRootState.cs" />
+    <Compile Include="Razor\RazorCSharpParser.cs" />
+    <Compile Include="Razor\RazorCSharpParsedDocument.cs" />
+    <Compile Include="Razor\RazorPageInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

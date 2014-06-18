@@ -41,7 +41,6 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html;
-using MonoDevelop.AspNet.Mvc.Completion;
 using MonoDevelop.AspNet.Razor.Dom;
 using MonoDevelop.AspNet.Razor.Parser;
 

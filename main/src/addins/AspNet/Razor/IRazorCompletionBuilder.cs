@@ -24,17 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MonoDevelop.Ide.CodeCompletion;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory.TypeSystem;
 
-namespace MonoDevelop.AspNet.Mvc.Completion
+namespace MonoDevelop.AspNet.Razor
 {
 	// Based on MonoDevelop.AspNet.Gui.ILanguageCompletionBuilder
 

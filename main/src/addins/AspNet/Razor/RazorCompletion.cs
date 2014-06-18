@@ -24,15 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
-using MonoDevelop.AspNet.Razor.Parser;
 
-namespace MonoDevelop.AspNet.Mvc.Completion
+namespace MonoDevelop.AspNet.Razor
 {
 	// Directives and statements present in C# are left out to avoid duplication
 	static class RazorCompletion
@@ -68,7 +63,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 			}
 		}
 
-		private static void AddRazorTemplates (CompletionDataList list, RazorHostKind kind)
+		static void AddRazorTemplates (CompletionDataList list, RazorHostKind kind)
 		{
 			string icon = "md-template";
 			list.Add ("inherits", icon, "Template for inherits directive");

@@ -52,8 +52,9 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Parser;
+using MonoDevelop.AspNet.Razor.Parser;
 
-namespace MonoDevelop.AspNet.Razor.Parser
+namespace MonoDevelop.AspNet.Razor
 {
 	public class RazorCSharpParser : TypeSystemParser
 	{
