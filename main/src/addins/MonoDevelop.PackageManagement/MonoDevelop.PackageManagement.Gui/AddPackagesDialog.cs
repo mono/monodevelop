@@ -83,7 +83,7 @@ namespace MonoDevelop.PackageManagement
 
 			Build ();
 
-			packageSearchEntry.Text = initialSearch;
+			UpdatePackageSearchEntryWithInitialText (initialSearch);
 
 			InitializeListView ();
 			UpdateAddPackagesButton ();
@@ -109,6 +109,14 @@ namespace MonoDevelop.PackageManagement
 			parentViewModel.Dispose ();
 			DisposeExistingTimer ();
 			base.Dispose (disposing);
+		}
+
+		void UpdatePackageSearchEntryWithInitialText (string initialSearch)
+		{
+			packageSearchEntry.Text = initialSearch;
+			if (!String.IsNullOrEmpty (initialSearch)) {
+				packageSearchEntry.CursorPosition = initialSearch.Length;
+			}
 		}
 
 		void InitializeListView ()
