@@ -570,5 +570,12 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException ("indentationTracker");
 			textEditorImpl.SetIndentationTracker (indentationTracker);
 		}
+
+		public void SetSelectionSurroundingProvider (ISelectionSurroundingProvider surroundingProvider)
+		{
+			if (surroundingProvider == null)
+				throw new ArgumentNullException ("surroundingProvider");
+			textEditorImpl.SetSelectionSurroundingProvider (surroundingProvider);
+		}
 	}
 }

@@ -2434,9 +2434,10 @@
     <Compile Include="MonoDevelop.Ide.Editor\SyntaxModeCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TemplateExtensionNodeLoader.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\Extensions\AbstractUsagesExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IMarkerHost.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\IIndentationTracker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditorExtension\AbstractUsagesExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ExtensionInterfaces\IIndentationTracker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ExtensionInterfaces\ISelectionSurroundingProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2481,7 +2482,8 @@
     <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
     <Folder Include="MonoDevelop.Ide.Editor\" />
-    <Folder Include="MonoDevelop.Ide.Editor\Extensions\" />
+    <Folder Include="MonoDevelop.Ide.Editor\EditorExtension\" />
+    <Folder Include="MonoDevelop.Ide.Editor\ExtensionInterfaces\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">
