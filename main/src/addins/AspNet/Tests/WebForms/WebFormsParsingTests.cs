@@ -84,7 +84,6 @@ quux = <% 5 $%>  />", delegate {
 				parser.AssertNodeIs<WebFormsRenderBlock> ();
 			});
 			parser.AssertNoErrors ();
-			var doc = (XDocument) parser.Nodes.Peek ();
 		}
 	}
 }
