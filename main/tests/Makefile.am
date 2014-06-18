@@ -48,14 +48,14 @@ test:
 	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \
-				($(RUN_TEST) -xml=TestResults_`basename $$asm`.log $$asm) || exit $?; \
+				($(RUN_TEST) -xml=TestResults_`basename $$asm`.xml $$asm) || exit $?; \
 			fi; \
 		done; \
 	fi
 
 	@if ! test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
-			($(RUN_TEST) -xml=TestResults_`basename $$asm`.log $$asm) || exit $?; \
+			($(RUN_TEST) -xml=TestResults_`basename $$asm`.xml $$asm) || exit $?; \
 		done; \
 	fi
 
