@@ -91,6 +91,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public EditMode EditMode {
+			get {
+				return textEditorImpl.EditMode;
+			}
+		}
+
 		public TextLocation CaretLocation {
 			get {
 				return textEditorImpl.CaretLocation;
@@ -169,6 +175,11 @@ namespace MonoDevelop.Ide.Editor
 		public string SelectedText {
 			get {
 				return IsSomethingSelected ? ReadOnlyTextDocument.GetTextAt (SelectionRange) : null;
+			}
+			set {
+				var selection = SelectionRange;
+				Replace (selection, value);
+				SelectionRange = new TextSegment (selection.Offset, value.Length);
 			}
 		}
 
@@ -566,8 +577,6 @@ namespace MonoDevelop.Ide.Editor
 
 		public void SetIndentationTracker (IIndentationTracker indentationTracker)
 		{
-			if (indentationTracker == null)
-				throw new ArgumentNullException ("indentationTracker");
 			textEditorImpl.SetIndentationTracker (indentationTracker);
 		}
 
@@ -576,6 +585,34 @@ namespace MonoDevelop.Ide.Editor
 			if (surroundingProvider == null)
 				throw new ArgumentNullException ("surroundingProvider");
 			textEditorImpl.SetSelectionSurroundingProvider (surroundingProvider);
+		}
+
+		public string GetVirtualIndentationString (int lineNumber)
+		{
+			if (lineNumber < 1 || lineNumber >= LineCount)
+				throw new ArgumentOutOfRangeException ("lineNumber");
+			return textEditorImpl.GetVirtualIndentationString (lineNumber);
+		}
+
+		public string GetVirtualIndentationString (IDocumentLine line)
+		{
+			if (line == null)
+				throw new ArgumentNullException ("line");
+			return textEditorImpl.GetVirtualIndentationString (line.LineNumber);
+		}
+
+		public int GetVirtualIndentationColumn (int lineNumber)
+		{
+			if (lineNumber < 1 || lineNumber >= LineCount)
+				throw new ArgumentOutOfRangeException ("lineNumber");
+			return 1 + textEditorImpl.GetVirtualIndentationString (lineNumber).Length;
+		}
+
+		public int GetVirtualIndentationColumn (IDocumentLine line)
+		{
+			if (line == null)
+				throw new ArgumentNullException ("line");
+			return 1 + textEditorImpl.GetVirtualIndentationString (line.LineNumber).Length;
 		}
 	}
 }

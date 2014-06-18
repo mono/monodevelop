@@ -30,8 +30,15 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.Editor
 {
+	public enum EditMode {
+		Edit,
+		TextLink,
+		CursorInsertion
+	}
+
 	public interface ITextEditorImpl : IViewContent
 	{
+		EditMode EditMode { get; }
 		ISyntaxMode SyntaxMode { get; set; }
 		ITextEditorOptions Options { get; set; }
 		IReadonlyTextDocument Document { get; set; }
@@ -89,6 +96,8 @@ namespace MonoDevelop.Ide.Editor
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);
+
+		string GetVirtualIndentationString (int lineNumber);
 
 		void SetIndentationTracker (IIndentationTracker indentationTracker);
 		void SetSelectionSurroundingProvider (ISelectionSurroundingProvider surroundingProvider);

@@ -49,6 +49,13 @@ namespace MonoDevelop.Ide.Editor
 
 		CancellationTokenSource tooltipCancelSrc = new CancellationTokenSource ();
 		List<ITextSegmentMarker> markers = new List<ITextSegmentMarker> ();
+
+		public IList<ITextSegmentMarker> Markers {
+			get {
+				return markers;
+			}
+		}
+
 		uint popupTimer;
 
 		public override void Initialize ()
