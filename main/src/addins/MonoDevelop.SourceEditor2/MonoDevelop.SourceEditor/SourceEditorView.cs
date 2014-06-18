@@ -2864,6 +2864,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+
+		void ITextEditorImpl.SetIndentationTracker (MonoDevelop.Ide.Editor.IIndentationTracker indentationTracker)
+		{
+			TextEditor.GetTextEditorData ().IndentationTracker = new IndentationTrackerWrapper (wrapper, indentationTracker);
+		}
+
+
 		#region IEditorActionHost implementation
 
 		void IEditorActionHost.MoveCaretDown ()
