@@ -3,7 +3,6 @@ include $(top_srcdir)/xbuild.include
 SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests TestRunner Ide.Tests
 
 MONO=mono
-HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe -domain=multiple
 RUN_TEST=$(MDTOOL_RUN) run-md-tests
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
@@ -49,14 +48,14 @@ test:
 	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \
-				($(RUN_TEST) $$asm) || exit $?; \
+				($(RUN_TEST) -xml=TestResults_`basename $$asm`.log $$asm) || exit $?; \
 			fi; \
 		done; \
 	fi
 
 	@if ! test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
-			($(RUN_TEST) $$asm) || exit $?; \
+			($(RUN_TEST) -xml=TestResults_`basename $$asm`.log $$asm) || exit $?; \
 		done; \
 	fi
 
