@@ -54,9 +54,16 @@ test:
 	fi
 
 	@if ! test -n "$(assembly)"; then \
+		fail=0; \
 		for asm in $(TEST_ASSEMBLIES); do \
-			($(RUN_TEST) -xml=TestResults_`basename $$asm`.xml $$asm) || exit $?; \
+			($(RUN_TEST) -xml=TestResults_`basename $$asm`.xml $$asm); \
+			if [ $$? != 0 ]; then \
+				fail=1; \
+			fi; \
 		done; \
+		if [ $${fail} = 1 ]; then \
+			exit 1; \
+		fi; \
 	fi
 
 include $(top_srcdir)/Makefile.include
