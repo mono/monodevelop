@@ -31,6 +31,7 @@ using MonoDevelop.VersionControl.Tests;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using System;
 
 namespace MonoDevelop.VersionControl.Git.Tests
 {
@@ -51,6 +52,9 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			// Check out the repository.
 			Checkout (LocalPath, RemoteUrl);
 			Repo = GetRepo (LocalPath, RemoteUrl);
+			var repo = (GitRepository)Repo;
+			repo.RootRepository.Config.Set<string> ("user.name", Author);
+			repo.RootRepository.Config.Set<string> ("user.email", Email);
 			ModifyPath (Repo, ref LocalPath);
 			DotDir = ".git";
 		}
@@ -143,12 +147,11 @@ index e69de29..8e27be7 100644
 
 		protected override void BlameExtraInternals (Annotation [] annotations)
 		{
-			// TODO: Fix this for bots.
-//			for (int i = 0; i < 2; i++) {
-//				Assert.IsTrue (annotations [i].HasEmail);
-//				Assert.AreEqual (Author, annotations [i].Author);
-//				Assert.AreEqual (String.Format ("<{0}>", Email), annotations [i].Email);
-//			}
+			for (int i = 0; i < 2; i++) {
+				Assert.IsTrue (annotations [i].HasEmail);
+				Assert.AreEqual (Author, annotations [i].Author);
+				Assert.AreEqual (String.Format ("<{0}>", Email), annotations [i].Email);
+			}
 			Assert.IsTrue (annotations [2].HasDate);
 		}
 
@@ -284,9 +287,9 @@ index 0000000..009b64b
 		protected override void TestValidUrl ()
 		{
 			var repo2 = (GitRepository)Repo;
-			//Assert.IsTrue (repo2.IsUrlValid ("git@github.com:mono/monodevelop"));
+			Assert.IsTrue (repo2.IsUrlValid ("git@github.com:mono/monodevelop"));
 			Assert.IsTrue (repo2.IsUrlValid ("git://github.com:80/mono/monodevelop.git"));
-			//Assert.IsTrue (repo2.IsUrlValid ("ssh://user@host.com:80/mono/monodevelop.git"));
+			Assert.IsTrue (repo2.IsUrlValid ("ssh://user@host.com:80/mono/monodevelop.git"));
 			Assert.IsTrue (repo2.IsUrlValid ("http://github.com:80/mono/monodevelop.git"));
 			Assert.IsTrue (repo2.IsUrlValid ("https://github.com:80/mono/monodevelop.git"));
 			//Assert.IsTrue (repo2.IsUrlValid ("ftp://github.com:80/mono/monodevelop.git"));
