@@ -9,17 +9,17 @@ using ${SolutionName}.Controllers;
 
 namespace ${Namespace}
 {
-	[TestFixture ()]
+	[TestFixture]
 	public class ${Name}
 	{
-		[Test ()]
+		[Test]
 		public void Index ()
 		{
 			// Arrange
-			HomeController controller = new HomeController ();
+			var controller = new HomeController ();
 
 			// Act
-			ViewResult result = controller.Index () as ViewResult;
+			var result = (ViewResult) controller.Index ();
 
 			var mvcName = typeof(Controller).Assembly.GetName ();
 			var isMono = Type.GetType ("Mono.Runtime") != null;
@@ -28,8 +28,8 @@ namespace ${Namespace}
 			var expectedRuntime = isMono? "Mono" : ".NET";
 
 			// Assert
-			Assert.AreEqual (expectedVersion, ViewData ["Version"]);
-			Assert.AreEqual (expectedRuntime, ViewData ["Runtime"]);
+			Assert.AreEqual (expectedVersion, result.ViewData ["Version"]);
+			Assert.AreEqual (expectedRuntime, result.ViewData ["Runtime"]);
 		}
 	}
 }
