@@ -1012,7 +1012,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
 
@@ -1024,7 +1024,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
@@ -1100,7 +1100,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
 			CreateProjectSystem (project);
-			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets";
+			string targetPath = @"d:\projects\MyProject\packages\Foo.0.1\build\Foo.targets".ToNativePath ();
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 			string expectedImportRemoved = @"..\packages\Foo.0.1\build\Foo.targets";
 
