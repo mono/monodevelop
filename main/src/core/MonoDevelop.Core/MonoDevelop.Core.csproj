@@ -471,6 +471,7 @@
     <Compile Include="MonoDevelop.Core.Execution\IDebugConsole.cs" />
     <Compile Include="MonoDevelop.Projects\IDotNetFileContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildGlobalPropertyProvider.cs" />
+    <Compile Include="MonoDevelop.Projects\DotNetProjectImport.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

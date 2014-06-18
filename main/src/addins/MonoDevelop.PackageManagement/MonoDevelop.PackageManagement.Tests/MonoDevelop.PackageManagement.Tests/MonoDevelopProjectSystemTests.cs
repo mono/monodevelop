@@ -86,28 +86,26 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void AssertLastMSBuildChildElementHasProjectAttributeValue (string expectedImport)
 		{
-			string import = project.ImportsAdded.Last ();
-			Assert.AreEqual (expectedImport, import);
+			ImportAndCondition import = project.ImportsAdded.Last ();
+			Assert.AreEqual (expectedImport, import.Name);
 		}
 
-		void AssertLastMSBuildChildHasCondition (string expectedCondition)
+		void AssertLastImportHasCondition (string expectedCondition)
 		{
-			throw new NotImplementedException ();
-//			ProjectImportElement import = project.GetLastMSBuildChildElement ();
-//			Assert.AreEqual (expectedCondition, import.Condition);
+			ImportAndCondition import = project.ImportsAdded.Last ();
+			Assert.AreEqual (expectedCondition, import.Condition);
 		}
 
 		void AssertFirstMSBuildChildElementHasProjectAttributeValue (string expectedImport)
 		{
-			string import = project.ImportsAdded.First ();
-			Assert.AreEqual (expectedImport, import);
+			ImportAndCondition import = project.ImportsAdded.First ();
+			Assert.AreEqual (expectedImport, import.Name);
 		}
 
-		void AssertFirstMSBuildChildHasCondition (string expectedCondition)
+		void AssertFirstImportHasCondition (string expectedCondition)
 		{
-			throw new NotImplementedException ();
-//			ProjectImportElement import = project.GetFirstMSBuildChildElement ();
-//			Assert.AreEqual (expectedCondition, import.Condition);
+			ImportAndCondition import = project.ImportsAdded.First ();
+			Assert.AreEqual (expectedCondition, import.Condition);
 		}
 
 		void AssertImportRemoved (string expectedImportRemoved)
@@ -908,7 +906,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		[Ignore ("MSBuild conditions not implemented")]
 		public void AddImport_AddImportToBottomOfProject_ImportAddedWithConditionThatChecksForExistenceOfTargetsFile ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
@@ -917,7 +914,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Bottom);
 
-			AssertLastMSBuildChildHasCondition ("Exists('..\\packages\\Foo.0.1\\build\\Foo.targets')");
+			AssertLastImportHasCondition ("Exists('..\\packages\\Foo.0.1\\build\\Foo.targets')");
 		}
 
 		[Test]
@@ -1011,7 +1008,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		[Ignore ("MSBuild conditions not implemented")]
 		public void AddImport_AddImportToTopOfProject_ImportAddedWithConditionThatChecksForExistenceOfTargetsFile ()
 		{
 			CreateTestProject (@"d:\projects\MyProject\MyProject\MyProject.csproj");
@@ -1020,7 +1016,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			projectSystem.AddImport (targetPath, ProjectImportLocation.Top);
 
-			AssertFirstMSBuildChildHasCondition ("Exists('..\\packages\\Foo.0.1\\build\\Foo.targets')");
+			AssertFirstImportHasCondition ("Exists('..\\packages\\Foo.0.1\\build\\Foo.targets')");
 		}
 
 		[Test]
