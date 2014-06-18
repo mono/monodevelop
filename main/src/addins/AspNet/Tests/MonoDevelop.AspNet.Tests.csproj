@@ -91,10 +91,6 @@
       <Name>UnitTests</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.AspNet\MonoDevelop.AspNet.csproj">
-      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
-      <Name>MonoDevelop.AspNet</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Xml\MonoDevelop.Xml.csproj">
       <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
       <Name>MonoDevelop.Xml</Name>
@@ -103,6 +99,11 @@
     <ProjectReference Include="..\..\Xml\Tests\MonoDevelop.Xml.Tests.csproj">
       <Project>{8E47B77A-A649-494C-9BF2-B845E39CADE9}</Project>
       <Name>MonoDevelop.Xml.Tests</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.AspNet.csproj">
+      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
+      <Name>MonoDevelop.AspNet</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

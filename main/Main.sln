@@ -125,11 +125,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MacPlatform", "src\addins\M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.Refactoring", "src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj", "{100568FC-F4E8-439B-94AD-41D11724E45B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{0ADCD824-2506-4A61-9B88-ABF1D5267CE8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AspNet", "AspNet", "{0ADCD824-2506-4A61-9B88-ABF1D5267CE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNet", "src\addins\Web\MonoDevelop.AspNet\MonoDevelop.AspNet.csproj", "{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNet", "src\addins\AspNet\MonoDevelop.AspNet.csproj", "{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNet.Tests", "src\addins\Web\MonoDevelop.AspNet.Tests\MonoDevelop.AspNet.Tests.csproj", "{BEFADF93-EE92-4806-9C0B-937B25311C95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.AspNet.Tests", "src\addins\AspNet\Tests\MonoDevelop.AspNet.Tests.csproj", "{BEFADF93-EE92-4806-9C0B-937B25311C95}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TextTemplating", "TextTemplating", "{68F63ACB-A9B2-468F-B365-0F41F0D5F1DA}"
 EndProject

@@ -14,7 +14,7 @@ SUBDIRS = \
 	MonoDevelop.Gettext \
 	Xml \
 	TextTemplating \
-	Web \
+	AspNet \
 	CSharpBinding \
 	ILAsmBinding \
 	NUnit \
