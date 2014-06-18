@@ -56,6 +56,7 @@ test:
 	@if ! test -n "$(assembly)"; then \
 		fail=0; \
 		for asm in $(TEST_ASSEMBLIES); do \
+			echo Testing `basename $$asm`...; \
 			($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml $$asm); \
 			if [ $$? != 0 ]; then \
 				fail=1; \
