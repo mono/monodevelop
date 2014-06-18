@@ -31,8 +31,9 @@ using MonoDevelop.Projects.Formats.MSBuild;
 using Mono.Addins;
 using MonoDevelop.AspNet.Projects;
 
-namespace MonoDevelop.AspNet
+namespace MonoDevelop.AspNet.Projects
 {
+	/*
 	[Extension]
 	public class AspNetMSBuildImportProvider: IMSBuildImportProvider
 	{
@@ -57,5 +58,6 @@ namespace MonoDevelop.AspNet
 			}
 		}
 	}
+	*/
 }
 	
