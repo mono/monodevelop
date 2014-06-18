@@ -1,7 +1,7 @@
 
 using Mono.Addins;
 
-[assembly:Addin ("Web", 
+[assembly:Addin ("AspNet", 
                  Namespace = "MonoDevelop",
                  Version = MonoDevelop.BuildInfo.Version,
                  Category = "Web Development")]
