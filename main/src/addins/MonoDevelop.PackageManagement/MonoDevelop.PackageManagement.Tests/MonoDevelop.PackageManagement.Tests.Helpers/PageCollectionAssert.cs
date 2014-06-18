@@ -1,5 +1,5 @@
 ﻿//
-// FakeTaskFactory.cs
+// PageCollectionAssert.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -27,47 +27,34 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
-using NuGet;
+using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakeTaskFactory : ITaskFactory
+	public static class PageCollectionAssert
 	{
-		public bool IsCreateTaskCalled;
-		public bool RunTasksSynchronously;
+		public static void AreEqual (IEnumerable<Page> expectedPages, IEnumerable<Page> actualPages)
+		{
+			List<string> convertedExpectedPages = ConvertToStrings (expectedPages);
+			List<string> convertedActualPages = ConvertToStrings (actualPages);
 
-		public FakeTask<PackagesForSelectedPageResult> FirstFakeTaskCreated { 
-			get { return FakeTasksCreated [0] as FakeTask<PackagesForSelectedPageResult>; }
+			CollectionAssert.AreEqual (convertedExpectedPages, convertedActualPages);
 		}
 
-		public List<object> FakeTasksCreated = new List<object> ();
-
-		public ITask<TResult> CreateTask<TResult> (
-			Func<TResult> function,
-			Action<ITask<TResult>> continueWith)
+		static List<string> ConvertToStrings (IEnumerable<Page> pages)
 		{
-			IsCreateTaskCalled = true;
-			var task = new FakeTask<TResult> (function, continueWith, RunTasksSynchronously);
-			FakeTasksCreated.Add (task);
-			return task;
-		}
-
-		public void ExecuteAllFakeTasks ()
-		{
-			foreach (FakeTask<PackagesForSelectedPageResult> task in FakeTasksCreated) {
-				task.ExecuteTaskCompletely ();
+			List<string> pagesAsText = new List<string> ();
+			foreach (Page page in pages) {
+				pagesAsText.Add (GetPageAsString (page));
 			}
+			return pagesAsText;
 		}
 
-		public void ExecuteTask (int index)
+		static string GetPageAsString (Page page)
 		{
-			var task = FakeTasksCreated [index] as FakeTask<PackagesForSelectedPageResult>;
-			task.ExecuteTaskCompletely ();
-		}
-
-		public void ClearAllFakeTasks ()
-		{
-			FakeTasksCreated.Clear ();
+			return String.Format ("Page: Number: {0}, IsSelected: {1}",
+				page.Number,
+				page.IsSelected);
 		}
 	}
 }
