@@ -31,6 +31,7 @@ using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.PackageManagement.NodeBuilders;
 using MonoDevelop.Projects;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -40,20 +41,36 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			try {
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
-				var reinstallAction = new ReinstallProjectPackagesAction (project, PackageManagementServices.PackageManagementEvents);
-				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (reinstallAction);
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, reinstallAction);
+				List<ReinstallPackageAction> reinstallActions = CreateReinstallActions (project).ToList ();
+				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (reinstallActions);
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, reinstallActions);
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);
 			}
 		}
 
-		ProgressMonitorStatusMessage CreateProgressMessage (ReinstallProjectPackagesAction reinstallAction)
+		IEnumerable<ReinstallPackageAction> CreateReinstallActions (IPackageManagementProject project)
 		{
-			if (reinstallAction.Packages.Count () == 1) {
-				return ProgressMonitorStatusMessageFactory.CreateRetargetingSinglePackageMessage (reinstallAction.Packages.First ().Id);
+			var packageReferenceFile = new ProjectPackageReferenceFile (project.DotNetProject);
+			return packageReferenceFile.GetPackageReferences ()
+				.Select (packageReference => CreateReinstallPackageAction (project, packageReference));
+		}
+
+		ReinstallPackageAction CreateReinstallPackageAction (IPackageManagementProject project, PackageReference packageReference)
+		{
+			ReinstallPackageAction action = project.CreateReinstallPackageAction ();
+			action.PackageId = packageReference.Id;
+			action.PackageVersion = packageReference.Version;
+
+			return action;
+		}
+
+		ProgressMonitorStatusMessage CreateProgressMessage (IEnumerable<ReinstallPackageAction> actions)
+		{
+			if (actions.Count () == 1) {
+				return ProgressMonitorStatusMessageFactory.CreateRetargetingSinglePackageMessage (actions.First ().PackageId);
 			}
-			return ProgressMonitorStatusMessageFactory.CreateRetargetingPackagesInProjectMessage (reinstallAction.Packages.Count ());
+			return ProgressMonitorStatusMessageFactory.CreateRetargetingPackagesInProjectMessage (actions.Count ());
 		}
 
 		void ShowStatusBarError (Exception ex)
