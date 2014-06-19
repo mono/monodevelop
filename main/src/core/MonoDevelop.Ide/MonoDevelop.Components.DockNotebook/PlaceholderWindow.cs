@@ -41,6 +41,7 @@ namespace MonoDevelop.Components.DockNotebook
 	{
 		uint anim;
 		int rx, ry, rw, rh;
+		List<DockNotebook> allNotebooks;
 
 		DocumentTitleWindow titleWindow;
 
@@ -68,6 +69,17 @@ namespace MonoDevelop.Components.DockNotebook
 			TypeHint = WindowTypeHint.Utility;
 			titleWindow = new DocumentTitleWindow (this, tab);
 			IdeApp.Workbench.LockActiveWindowChangeEvent ();
+
+
+			var windowStack = IdeApp.CommandService.TopLevelWindowStack.ToArray ();
+			allNotebooks = DockNotebook.AllNotebooks.ToList ();
+			allNotebooks.Sort (delegate(DockNotebook x, DockNotebook y) {
+				var ix = Array.IndexOf (windowStack, (Gtk.Window) x.Toplevel);
+				var iy = Array.IndexOf (windowStack, (Gtk.Window) y.Toplevel);
+				if (ix == -1) ix = int.MaxValue;
+				if (iy == -1) iy = int.MaxValue;
+				return ix.CompareTo (iy);
+			});
 		}
 
 		DockNotebook hoverNotebook;
@@ -112,7 +124,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 			// TODO: Handle z-ordering of floating windows.
 			int ox = 0, oy = 0;
-			foreach (var notebook in DockNotebook.AllNotebooks) {
+			foreach (var notebook in allNotebooks) {
 				if (notebook.GdkWindow == null)
 					continue;
 
