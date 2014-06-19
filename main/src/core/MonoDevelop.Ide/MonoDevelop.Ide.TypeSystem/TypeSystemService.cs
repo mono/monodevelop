@@ -1559,7 +1559,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					var newReferencedAssemblies = new List<UnresolvedAssemblyProxy>();
 					try {
-						foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+						foreach (string file in netProject.GetReferencedAssemblies (IdeApp.Workspace.ActiveConfiguration, false)) {
 							string fileName;
 							if (!Path.IsPathRooted (file)) {
 								fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
