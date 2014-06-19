@@ -58,7 +58,6 @@ namespace MonoDevelop.PackageManagement
 		IDisposable searchTimer;
 		PackageSource dummyPackageSourceRepresentingConfigureSettingsItem =
 			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
-		int packagesCheckedCount;
 		ImageLoader imageLoader = new ImageLoader ();
 
 		public AddPackagesDialog (ManagePackagesViewModel parentViewModel, string initialSearch = null)
@@ -353,7 +352,6 @@ namespace MonoDevelop.PackageManagement
 		void ClearPackages ()
 		{
 			packageStore.Clear ();
-			packagesCheckedCount = 0;
 			ResetPackagesListViewScroll ();
 			UpdatePackageListViewSelectionColor ();
 			ShowLoadingMessage ();
@@ -433,7 +431,7 @@ namespace MonoDevelop.PackageManagement
 
 		double GetPackageCheckBoxAlpha ()
 		{
-			if (packagesCheckedCount == 0) {
+			if (PackagesCheckedCount == 0) {
 				return packageCheckBoxSemiTransarentAlpha;
 			}
 			return 1;
@@ -512,7 +510,7 @@ namespace MonoDevelop.PackageManagement
 
 		List<PackageViewModel> GetSelectedPackageViewModels ()
 		{
-			List<PackageViewModel> packageViewModels = GetCheckedPackageViewModels ();
+			List<PackageViewModel> packageViewModels = viewModel.CheckedPackageViewModels.ToList ();
 			if (packageViewModels.Count > 0) {
 				return packageViewModels;
 			}
@@ -520,18 +518,6 @@ namespace MonoDevelop.PackageManagement
 			PackageViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
 			if (selectedPackageViewModel != null) {
 				packageViewModels.Add (selectedPackageViewModel);
-			}
-			return packageViewModels;
-		}
-
-		List<PackageViewModel> GetCheckedPackageViewModels ()
-		{
-			var packageViewModels = new List<PackageViewModel> ();
-			for (int row = 0; row < viewModel.PackageViewModels.Count; ++row) {
-				PackageViewModel packageViewModel = viewModel.PackageViewModels [row];
-				if (packageViewModel.IsChecked) {
-					packageViewModels.Add (packageViewModel);
-				}
 			}
 			return packageViewModels;
 		}
@@ -571,7 +557,7 @@ namespace MonoDevelop.PackageManagement
 
 		void PackagesListRowActivated (object sender, ListViewRowEventArgs e)
 		{
-			if (packagesCheckedCount > 0) {
+			if (PackagesCheckedCount > 0) {
 				AddPackagesButtonClicked (sender, e);
 			} else {
 				PackageViewModel packageViewModel = packageStore.GetValue (e.RowIndex, packageViewModelField);
@@ -622,12 +608,6 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageCellViewPackageChecked (object sender, PackageCellViewEventArgs e)
 		{
-			if (e.PackageViewModel.IsChecked) {
-				packagesCheckedCount++;
-			} else {
-				packagesCheckedCount--;
-			}
-
 			UpdateAddPackagesButton ();
 			UpdatePackageListViewSelectionColor ();
 			UpdatePackageListViewCheckBoxAlpha ();
@@ -635,7 +615,7 @@ namespace MonoDevelop.PackageManagement
 
 		void UpdateAddPackagesButton ()
 		{
-			if (packagesCheckedCount >= 1) {
+			if (PackagesCheckedCount >= 1) {
 				addPackagesButton.Label = Catalog.GetString ("Add Packages");
 			} else {
 				if (OlderPackageInstalledThanPackageSelected ()) {
@@ -649,12 +629,12 @@ namespace MonoDevelop.PackageManagement
 
 		void UpdatePackageListViewSelectionColor ()
 		{
-			packageCellView.UseStrongSelectionColor = (packagesCheckedCount == 0);
+			packageCellView.UseStrongSelectionColor = (PackagesCheckedCount == 0);
 		}
 
 		void UpdatePackageListViewCheckBoxAlpha ()
 		{
-			if (packagesCheckedCount > 1)
+			if (PackagesCheckedCount > 1)
 				return;
 
 			double alpha = GetPackageCheckBoxAlpha ();
@@ -665,7 +645,7 @@ namespace MonoDevelop.PackageManagement
 
 		bool OlderPackageInstalledThanPackageSelected ()
 		{
-			if (packagesCheckedCount != 0) {
+			if (PackagesCheckedCount != 0) {
 				return false;
 			}
 
@@ -678,7 +658,11 @@ namespace MonoDevelop.PackageManagement
 
 		bool IsAtLeastOnePackageSelected ()
 		{
-			return (packagesCheckedCount) >= 1 || (packagesListView.SelectedRow != -1);
+			return (PackagesCheckedCount) >= 1 || (packagesListView.SelectedRow != -1);
+		}
+
+		int PackagesCheckedCount {
+			get { return viewModel.CheckedPackageViewModels.Count; }
 		}
 	}
 }

@@ -1383,5 +1383,133 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			Assert.IsFalse (fired);
 		}
+
+		[Test]
+		public void CheckedPackageViewModels_TwoPackagesAndOnePackageIsChecked_ReturnsOneCheckedPackage ()
+		{
+			CreateViewModel ();
+			FakePackage package = viewModel.AddFakePackage ("MyPackage");
+			var expectedPackages = new FakePackage [] { package };
+			viewModel.AddFakePackage ("Z-Package");
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			viewModel.PackageViewModels [0].IsChecked = true;
+
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.CheckedPackageViewModels);
+		}
+
+		[Test]
+		public void CheckedPackageViewModels_OnePackageIsCheckedThenNewSearchReturnsNoPackages_ReturnsCheckedPackageEvenWhenNotVisible ()
+		{
+			CreateViewModel ();
+			FakePackage package = viewModel.AddFakePackage ("MyPackage");
+			var expectedPackages = new FakePackage [] { package };
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+			viewModel.PackageViewModels [0].IsChecked = true;
+			viewModel.FakePackages.Clear ();
+			viewModel.AddFakePackage ("AnotherPackage");
+			viewModel.Search ();
+			CompleteReadPackagesTask ();
+
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.CheckedPackageViewModels);
+		}
+
+		[Test]
+		public void CheckedPackageViewModels_OnePackageIsCheckedAndThenUnchecked_ReturnsNoCheckedPackages ()
+		{
+			CreateViewModel ();
+			FakePackage package = viewModel.AddFakePackage ("MyPackage");
+			viewModel.AddFakePackage ("Z-Package");
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+			PackageViewModel packageViewModel = viewModel.PackageViewModels [0];
+			packageViewModel.IsChecked = true;
+			packageViewModel.IsChecked = false;
+
+			PackageCollectionAssert.AreEqual (new FakePackage [0], viewModel.CheckedPackageViewModels);
+		}
+
+		[Test]
+		public void PackageViewModels_OnePackageIsCheckedAndNewSearchReturnsOriginalPackage_PackageViewHasIsCheckedSetToTrue ()
+		{
+			CreateViewModel ();
+			viewModel.AddFakePackage ("MyPackage", "1.0");
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+			viewModel.PackageViewModels [0].IsChecked = true;
+			viewModel.FakePackages.Clear ();
+			viewModel.AddFakePackage ("MyPackage", "1.0");
+			viewModel.Search ();
+			CompleteReadPackagesTask ();
+
+			PackageViewModel packageViewModel = viewModel.PackageViewModels [0];
+
+			Assert.AreEqual ("MyPackage", packageViewModel.Id);
+			Assert.IsTrue (packageViewModel.IsChecked);
+		}
+
+		[Test]
+		public void PackageViewModels_OnePackageIsCheckedAndNewSearchReturnsOriginalPackageButWithDifferentVersion_PackageViewHasIsCheckedSetToFalse ()
+		{
+			CreateViewModel ();
+			viewModel.AddFakePackage ("MyPackage", "1.0");
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+			viewModel.PackageViewModels [0].IsChecked = true;
+			viewModel.FakePackages.Clear ();
+			viewModel.AddFakePackage ("MyPackage", "1.1");
+			viewModel.Search ();
+			CompleteReadPackagesTask ();
+
+			PackageViewModel packageViewModel = viewModel.PackageViewModels [0];
+
+			Assert.AreEqual ("MyPackage", packageViewModel.Id);
+			Assert.IsFalse (packageViewModel.IsChecked);
+		}
+
+		[Test]
+		public void CheckedPackageViewModels_OnePackageIsCheckedAndNewSearchReturnsMultipleVersionsOfOriginalPackage_OnlyPackageWithSameVersionIsChecked ()
+		{
+			CreateViewModel ();
+			viewModel.AddFakePackage ("MyPackage", "1.0");
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+			viewModel.PackageViewModels [0].IsChecked = true;
+			viewModel.FakePackages.Clear ();
+			viewModel.AddFakePackage ("MyPackage", "1.1");
+			viewModel.AddFakePackage ("MyPackage", "1.2");
+			viewModel.AddFakePackage ("MyPackage", "1.0");
+			viewModel.AddFakePackage ("MyPackage", "1.3");
+			viewModel.AddFakePackage ("MyPackage", "1.4");
+			viewModel.Search ();
+			CompleteReadPackagesTask ();
+
+			PackageViewModel packageViewModel = viewModel.CheckedPackageViewModels.FirstOrDefault ();
+
+			Assert.AreEqual ("MyPackage", packageViewModel.Id);
+			Assert.AreEqual ("1.0", packageViewModel.Version.ToString ());
+			Assert.AreEqual (1, viewModel.CheckedPackageViewModels.Count);
+		}
+
+		[Test]
+		public void PackageViewModels_OnePackageIsCheckedAndNewSearchReturnsOriginalPackageWhichIsThenUncheckedByUser_NoCheckedPackageViewModels ()
+		{
+			CreateViewModel ();
+			viewModel.AddFakePackage ("MyPackage", "1.0");
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+			viewModel.PackageViewModels [0].IsChecked = true;
+			viewModel.FakePackages.Clear ();
+			viewModel.AddFakePackage ("MyPackage", "1.0");
+			viewModel.Search ();
+			CompleteReadPackagesTask ();
+			PackageViewModel packageViewModel = viewModel.PackageViewModels [0];
+
+			viewModel.PackageViewModels [0].IsChecked = false;
+
+			PackageCollectionAssert.AreEqual (new FakePackage [0], viewModel.CheckedPackageViewModels);
+		}
 	}
 }

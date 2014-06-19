@@ -76,6 +76,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return package;
 		}
 
+		public FakePackage AddFakePackage (string packageId, string packageVersion)
+		{
+			FakePackage package = CreateFakePackage (packageId);
+			package.Version = new SemanticVersion (packageVersion);
+			FakePackages.Add (package);
+			return package;
+		}
+
 		FakePackage CreateFakePackage (string packageId)
 		{
 			return new FakePackage () {

@@ -50,6 +50,7 @@ namespace ICSharpCode.PackageManagement
 		ITask<PackagesForSelectedPageResult> task;
 		bool includePrerelease;
 		PackagesForSelectedPageQuery packagesForSelectedPageQuery;
+		bool ignorePackageCheckedChanged;
 
 		public PackagesViewModel(
 			IRegisteredPackageRepositories registeredPackageRepositories,
@@ -61,6 +62,7 @@ namespace ICSharpCode.PackageManagement
 			this.taskFactory = taskFactory;
 			
 			PackageViewModels = new ObservableCollection<PackageViewModel>();
+			CheckedPackageViewModels = new ObservableCollection <PackageViewModel> ();
 			ErrorMessage = String.Empty;
 			ClearPackagesOnPaging = true;
 
@@ -307,7 +309,9 @@ namespace ICSharpCode.PackageManagement
 		public IEnumerable<PackageViewModel> ConvertToPackageViewModels (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
 			foreach (IPackage package in packages) {
-				yield return CreatePackageViewModel (package, search);
+				PackageViewModel packageViewModel = CreatePackageViewModel (package, search);
+				CheckNewPackageViewModelIfPreviouslyChecked (packageViewModel);
+				yield return packageViewModel;
 			}
 		}
 		
@@ -482,5 +486,29 @@ namespace ICSharpCode.PackageManagement
 		public bool ShowPrerelease { get; set; }
 		public bool ClearPackagesOnPaging { get; set; }
 		public bool IsLoadingNextPage { get; private set; }
+
+		public ObservableCollection<PackageViewModel> CheckedPackageViewModels { get; private set; }
+
+		public void OnPackageCheckedChanged (PackageViewModel packageViewModel)
+		{
+			if (ignorePackageCheckedChanged)
+				return;
+
+			if (packageViewModel.IsChecked) {
+				CheckedPackageViewModels.Add (packageViewModel);
+			} else {
+				CheckedPackageViewModels.Remove (packageViewModel);
+			}
+		}
+
+		void CheckNewPackageViewModelIfPreviouslyChecked (PackageViewModel packageViewModel)
+		{
+			ignorePackageCheckedChanged = true;
+			try {
+				packageViewModel.IsChecked = CheckedPackageViewModels.Contains (packageViewModel);
+			} finally {
+				ignorePackageCheckedChanged = false;
+			}
+		}
 	}
 }
