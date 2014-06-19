@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		bool SupportsOnTheFlyFormatting { get; }
 		bool SupportsCorrectingIndent { get; }
 		
-		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, ITextDocument textEditorData, int line);
+		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor textEditorData, int line);
 		
 		void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset);
 		
@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 		}
 		
 		public virtual void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
-			ITextDocument data, int line)
+			TextEditor data, int line)
 		{
 			throw new NotSupportedException ();
 		}

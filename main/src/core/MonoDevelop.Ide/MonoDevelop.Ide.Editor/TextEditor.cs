@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class TextEditor : ITextDocument, IInternalEditorExtensions
+	public class TextEditor : ITextDocument, IInternalEditorExtensions, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
@@ -618,5 +618,45 @@ namespace MonoDevelop.Ide.Editor
 		{
 			textEditorImpl.SetTextPasteHandler (textPasteHandler);
 		}
+
+		public class SkipChar
+		{
+
+			public int Start { get; set; }
+
+			public int Offset { get; set; }
+
+			public char Char  { get; set; }
+
+			public override string ToString ()
+			{
+				return string.Format ("[SkipChar: Start={0}, Offset={1}, Char={2}]", Start, Offset, Char);
+			}
+		}
+
+		List<SkipChar> skipChars = new List<SkipChar> ();
+
+		public List<SkipChar> SkipChars {
+			get {
+				return skipChars;
+			}
+		}
+
+		/// <summary>
+		/// Skip chars are 
+		/// </summary>
+		public void AddSkipChar (int offset, char ch)
+		{
+			textEditorImpl.AddSkipChar (offset, ch);
+		}
+
+		#region IDisposable implementation
+
+		public void Dispose ()
+		{
+			textEditorImpl.Dispose ();
+		}
+
+		#endregion
 	}
 }

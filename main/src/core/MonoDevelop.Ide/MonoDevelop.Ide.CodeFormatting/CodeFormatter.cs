@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 			adv.OnTheFlyFormat (doc, startOffset, endOffset);
 		}
 		
-		public void CorrectIndenting (PolicyContainer policyParent, ITextDocument data, int line)
+		public void CorrectIndenting (PolicyContainer policyParent, TextEditor data, int line)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsCorrectingIndent)

@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Editor
 		CursorInsertion
 	}
 
-	public interface ITextEditorImpl : IViewContent, IInternalEditorExtensions
+	public interface ITextEditorImpl : IViewContent, IInternalEditorExtensions, IDisposable
 	{
 		EditMode EditMode { get; }
 		ISyntaxMode SyntaxMode { get; set; }
@@ -97,6 +97,8 @@ namespace MonoDevelop.Ide.Editor
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);
+
+		void AddSkipChar (int offset, char ch);
 
 		string GetVirtualIndentationString (int lineNumber);
 
