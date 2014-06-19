@@ -217,7 +217,7 @@ namespace MonoDevelop.Components.DockNotebook
 		public DockNotebook InsertLeft (SdiWorkspaceWindow window)
 		{
 			return Insert (window, container => {
-				var box = new HPaned ();
+				var box = new HPanedThin { GrabAreaSize = 6 };
 				var new_container = new DockNotebookContainer (tabControl);
 
 				box.Add1 (container);
@@ -230,7 +230,7 @@ namespace MonoDevelop.Components.DockNotebook
 		public DockNotebook InsertRight (SdiWorkspaceWindow window)
 		{
 			return Insert (window, container => {
-				var box = new HPaned ();
+				var box = new HPanedThin () { GrabAreaSize = 6 };
 				var new_container = new DockNotebookContainer (tabControl);
 
 				box.Add1 (new_container);
