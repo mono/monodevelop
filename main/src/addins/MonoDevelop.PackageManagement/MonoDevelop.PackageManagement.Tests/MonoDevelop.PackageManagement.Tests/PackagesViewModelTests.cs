@@ -1511,5 +1511,31 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			PackageCollectionAssert.AreEqual (new FakePackage [0], viewModel.CheckedPackageViewModels);
 		}
+
+		[Test]
+		public void CheckedPackageViewModels_OnePackageVersionIsCheckedThenDifferentVersionChecked_OldVersionIsUnchecked ()
+		{
+			CreateViewModel ();
+			FakePackage oldPackage = viewModel.AddFakePackage ("MyPackage", "1.1");
+			viewModel.AddFakePackage ("MyPackage", "1.2");
+			viewModel.AddFakePackage ("MyPackage", "1.0");
+			FakePackage newPackage = viewModel.AddFakePackage ("MyPackage", "1.3");
+			viewModel.AddFakePackage ("MyPackage", "1.4");
+			var expectedPackages = new FakePackage [] { newPackage };
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+			PackageViewModel oldPackageVersionViewModel = viewModel
+				.PackageViewModels
+				.First (item => item.Version == oldPackage.Version);
+			PackageViewModel newPackageVersionViewModel = viewModel
+				.PackageViewModels
+				.First (item => item.Version == newPackage.Version);
+			oldPackageVersionViewModel.IsChecked = true;
+
+			newPackageVersionViewModel.IsChecked = true;
+
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.CheckedPackageViewModels);
+			Assert.IsFalse (oldPackageVersionViewModel.IsChecked);
+		}
 	}
 }

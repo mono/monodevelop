@@ -495,6 +495,7 @@ namespace ICSharpCode.PackageManagement
 				return;
 
 			if (packageViewModel.IsChecked) {
+				UncheckExistingCheckedPackageWithDifferentVersion (packageViewModel);
 				CheckedPackageViewModels.Add (packageViewModel);
 			} else {
 				CheckedPackageViewModels.Remove (packageViewModel);
@@ -508,6 +509,17 @@ namespace ICSharpCode.PackageManagement
 				packageViewModel.IsChecked = CheckedPackageViewModels.Contains (packageViewModel);
 			} finally {
 				ignorePackageCheckedChanged = false;
+			}
+		}
+
+		void UncheckExistingCheckedPackageWithDifferentVersion (PackageViewModel packageViewModel)
+		{
+			PackageViewModel existingPackageViewModel = CheckedPackageViewModels
+				.FirstOrDefault (item => item.Id == packageViewModel.Id);
+
+			if (existingPackageViewModel != null) {
+				CheckedPackageViewModels.Remove (existingPackageViewModel);
+				existingPackageViewModel.IsChecked = false;
 			}
 		}
 	}
