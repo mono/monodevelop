@@ -774,8 +774,6 @@ namespace MonoDevelop.Ide.Gui
 
 			lastActive = ActiveWorkbenchWindow;
 			SetWorkbenchTitle ();
-			if (lastActive != null)
-				lastActive.SelectWindow ();
 
 			if (!closeAll && ActiveWorkbenchWindow != null)
 				((SdiWorkspaceWindow)ActiveWorkbenchWindow).OnActivated ();
@@ -1457,15 +1455,6 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.CommandService.RegisterCommandBar (this);
 		}
 		
-		void SwitchToDocument (int number)
-		{
-			if (number >= TabCount || number < 0)
-				return;
-			var window = Tabs [number].Content as SdiWorkspaceWindow;
-			if (window != null)
-				window.SelectWindow ();
-		}
-
 		protected override void OnDestroyed ()
 		{
 			IdeApp.CommandService.UnregisterCommandBar (this); 

@@ -261,19 +261,15 @@ namespace MonoDevelop.Ide.Gui
 		public void SelectWindow()
 		{
 			var window = tabControl.Toplevel as Gtk.Window;
-			if (window != null) {
-//				present_timeout = GLib.Timeout.Add (10, delegate {
-					window.Present ();
-//					return false;
-//				});
-			}
+			if (window != null)
+				window.Present ();
 
-			tabControl.CurrentTabIndex = tab.Index;
-			if (tabControl.FocusChild != null) {
-				tabControl.FocusChild.GrabFocus ();
-			} else {
+			// Focus the tab in the next iteration since focusing the window may take some time
+			Application.Invoke (delegate {
+				DockNotebook.ActiveNotebook = tabControl;
+				tabControl.CurrentTabIndex = tab.Index;
 				DeepGrabFocus (this.ActiveViewContent.Control);
-			}
+			});
 		}
 
 		public bool CanMoveToNextNotebook ()

@@ -296,7 +296,7 @@ namespace MonoDevelop.Ide.Commands
 			var tab = DockNotebook.ActiveNotebook.CurrentTab;
 			var window = (SdiWorkspaceWindow)tab.Content;
 			DockNotebook.ActiveNotebook.RemoveTab (tab.Index, false);
-			DockNotebook.ActiveNotebook = container.InsertRight (window);
+			container.InsertRight (window);
 			window.SelectWindow ();
 			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
 		}
@@ -321,10 +321,8 @@ namespace MonoDevelop.Ide.Commands
 			}
 			DockNotebook.ActiveNotebook.Container.SetSingleMode ();
 
-			if (window != null) {
-				DockNotebook.ActiveNotebook = window.TabControl;
+			if (window != null)
 				window.SelectWindow ();
-			}
 
 			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
 		}

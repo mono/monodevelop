@@ -161,7 +161,7 @@ namespace MonoDevelop.Components.DockNotebook
 						);
 						placementDelegate = delegate(DockNotebook arg1, DockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
 							var window = (SdiWorkspaceWindow)tab.Content;
-							DockNotebook.ActiveNotebook = container.InsertLeft (window);
+							container.InsertLeft (window);
 							window.SelectWindow ();
 						};
 						return;
@@ -179,7 +179,7 @@ namespace MonoDevelop.Components.DockNotebook
 						);
 						placementDelegate = delegate(DockNotebook arg1, DockNotebookTab tab, Rectangle allocation2, int x2, int y2) {
 							var window = (SdiWorkspaceWindow)tab.Content;
-							DockNotebook.ActiveNotebook = container.InsertRight (window);
+							container.InsertRight (window);
 							window.SelectWindow ();
 						};
 						return;
@@ -299,7 +299,6 @@ namespace MonoDevelop.Components.DockNotebook
 			var window = (SdiWorkspaceWindow)tab.Content;
 			var newTab = hoverNotebook.AddTab (window); 
 			window.SetDockNotebook (hoverNotebook, newTab); 
-			DockNotebook.ActiveNotebook = hoverNotebook;
 			window.SelectWindow ();
 		}
 
@@ -317,7 +316,6 @@ namespace MonoDevelop.Components.DockNotebook
 					notebook.RemoveTab (tab.Index, true); 
 					placementDelegate (notebook, tab, allocation, curX, curY);
 				} else {
-					DockNotebook.ActiveNotebook = frame.Notebook;
 					((SdiWorkspaceWindow)frame.Content).SelectWindow ();
 				}
 			} finally {
