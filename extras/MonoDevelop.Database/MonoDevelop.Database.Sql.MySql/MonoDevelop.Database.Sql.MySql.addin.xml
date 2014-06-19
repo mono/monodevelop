@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category    = "Database"
-	version		= "4.2.3">
+	version		= "5.1.1">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.MySql.dll"/>
@@ -15,12 +15,12 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 
 	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="Database.Sql" version="4.2.3"/>
-		<Addin id="Database.Components" version="4.2.3"/>
-		<Addin id="Database.Designer" version="4.2.3"/>
-		<Addin id="SourceEditor2" version="4.2.3"/>
+		<Addin id="Core" version="5.1.1"/>
+		<Addin id="Ide" version="5.1.1"/>
+		<Addin id="Database.Sql" version="5.1.1"/>
+		<Addin id="Database.Components" version="5.1.1"/>
+		<Addin id="Database.Designer" version="5.1.1"/>
+		<Addin id="SourceEditor2" version="5.1.1"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Database/Sql">

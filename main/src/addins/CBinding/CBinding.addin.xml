@@ -219,7 +219,7 @@
 	    </Runtime>
 	    
 		<Dependencies>
-			<Addin id = "MonoDevelop.Autotools" version = "4.2.3"/>
+			<Addin id = "MonoDevelop.Autotools" version = "5.1.1"/>
 		</Dependencies>
 		
 		<Extension path = "/Autotools/SimpleSetups">

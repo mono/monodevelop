@@ -6,16 +6,16 @@
 	url         = "http://www.monodevelop.com"
 	description = "HeapShot Profiler Add-in"
 	category    = "Profiling"
-	version     = "4.2.3">
+	version     = "5.1.1">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.Profiling.HeapShot.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="Profiling" version="4.2.3"/>
+		<Addin id="Core" version="5.1.1"/>
+		<Addin id="Ide" version="5.1.1"/>
+		<Addin id="Profiling" version="5.1.1"/>
 	</Dependencies>
 
 	<ExtensionPoint path = "/MonoDevelop/Profiling/ContextMenu/ProfilingPad/HeapShotProfilingSnapshotNode" name = "HeapShot snapshot node context menu">

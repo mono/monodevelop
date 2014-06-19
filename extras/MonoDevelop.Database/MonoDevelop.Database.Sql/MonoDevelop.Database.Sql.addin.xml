@@ -6,14 +6,14 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database Module"
 	category	= "Database"
-	version		= "4.2.3">
+	version		= "5.1.1">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.Sql.dll"/>
 	</Runtime>
 
 	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
+		<Addin id="Core" version="5.1.1"/>
 	</Dependencies>
 
   	<Localizer type="Gettext" catalog="monodevelop-database"/>

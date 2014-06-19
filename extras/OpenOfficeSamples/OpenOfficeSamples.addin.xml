@@ -6,7 +6,7 @@
        url         = "http://www.monodevelop.com/"
        description = "Samples for automating OpenOffice using Mono."
        category    = "Templates"
-       version     = "4.2.3">
+       version     = "5.1.1">
 	
 	<Runtime>
 		<Import file = "OpenOfficeSpreadsheetSample.xpt.xml"/>
@@ -18,8 +18,8 @@
 	</Runtime>
 
 	<Dependencies>
-		<Addin id = "Ide" version="4.2.3"/>
-		<Addin id = "CSharpBinding" version = "4.2.3" />
+		<Addin id = "Ide" version="5.1.1"/>
+		<Addin id = "CSharpBinding" version = "5.1.1" />
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
