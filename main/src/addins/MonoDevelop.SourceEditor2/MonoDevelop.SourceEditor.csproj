@@ -192,6 +192,7 @@
     <Compile Include="MonoDevelop.SourceEditor\EditorFactory.cs" />
     <Compile Include="MonoDevelop.SourceEditor\IndentationTrackerWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SelectionSurroundingProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextPasteHandlerWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

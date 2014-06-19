@@ -31,9 +31,9 @@ namespace MonoDevelop.SourceEditor
 {
 	class SelectionSurroundingProviderWrapper : ISelectionSurroundingProvider
 	{
-		readonly MonoDevelop.Ide.Editor.ISelectionSurroundingProvider surroundingProvider;
+		readonly MonoDevelop.Ide.Editor.Extension.ISelectionSurroundingProvider surroundingProvider;
 
-		public SelectionSurroundingProviderWrapper ( MonoDevelop.Ide.Editor.ISelectionSurroundingProvider surroundingProvider)
+		public SelectionSurroundingProviderWrapper (MonoDevelop.Ide.Editor.Extension.ISelectionSurroundingProvider surroundingProvider)
 		{
 			if (surroundingProvider == null)
 				throw new ArgumentNullException ("surroundingProvider");

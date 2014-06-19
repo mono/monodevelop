@@ -29,9 +29,9 @@ namespace MonoDevelop.SourceEditor
 	class IndentationTrackerWrapper : Mono.TextEditor.IIndentationTracker
 	{
 		readonly IReadonlyTextDocument document;
-		readonly MonoDevelop.Ide.Editor.IIndentationTracker indentationTracker;
+		readonly MonoDevelop.Ide.Editor.Extension.IIndentationTracker indentationTracker;
 
-		public IndentationTrackerWrapper (IReadonlyTextDocument document, MonoDevelop.Ide.Editor.IIndentationTracker indentationTracker)
+		public IndentationTrackerWrapper (IReadonlyTextDocument document, MonoDevelop.Ide.Editor.Extension.IIndentationTracker indentationTracker)
 		{
 			if (document == null)
 				throw new System.ArgumentNullException ("document");

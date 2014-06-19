@@ -57,6 +57,7 @@ using MonoDevelop.Components;
 using Mono.TextEditor.Utils;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor
 {	
@@ -2882,15 +2883,23 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		void ITextEditorImpl.SetIndentationTracker (MonoDevelop.Ide.Editor.IIndentationTracker indentationTracker)
+		void IInternalEditorExtensions.SetIndentationTracker (MonoDevelop.Ide.Editor.Extension.IIndentationTracker indentationTracker)
 		{
 			TextEditor.GetTextEditorData ().IndentationTracker = new IndentationTrackerWrapper (wrapper, indentationTracker);
 		}
 
-		void ITextEditorImpl.SetSelectionSurroundingProvider (MonoDevelop.Ide.Editor.ISelectionSurroundingProvider surroundingProvider)
+		void IInternalEditorExtensions.SetSelectionSurroundingProvider (MonoDevelop.Ide.Editor.Extension.ISelectionSurroundingProvider surroundingProvider)
 		{
 			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = new SelectionSurroundingProviderWrapper (surroundingProvider);
 		}
+		void IInternalEditorExtensions.SetTextPasteHandler (ITextPasteHandler textPasteHandler)
+		{
+			var data = TextEditor.GetTextEditorData ();
+			if (data.TextPasteHandler != null)
+				((TextPasteHandlerWrapper)data.TextPasteHandler).Dispose ();
+			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
+		}
+
 		#region IEditorActionHost implementation
 
 		void IEditorActionHost.MoveCaretDown ()
