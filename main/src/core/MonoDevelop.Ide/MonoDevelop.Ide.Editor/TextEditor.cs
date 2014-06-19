@@ -28,10 +28,11 @@ using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class TextEditor : ITextDocument
+	public class TextEditor : ITextDocument, IInternalEditorExtensions
 	{
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
@@ -575,18 +576,6 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl;
 		}
 
-		public void SetIndentationTracker (IIndentationTracker indentationTracker)
-		{
-			textEditorImpl.SetIndentationTracker (indentationTracker);
-		}
-
-		public void SetSelectionSurroundingProvider (ISelectionSurroundingProvider surroundingProvider)
-		{
-			if (surroundingProvider == null)
-				throw new ArgumentNullException ("surroundingProvider");
-			textEditorImpl.SetSelectionSurroundingProvider (surroundingProvider);
-		}
-
 		public string GetVirtualIndentationString (int lineNumber)
 		{
 			if (lineNumber < 1 || lineNumber >= LineCount)
@@ -613,6 +602,21 @@ namespace MonoDevelop.Ide.Editor
 			if (line == null)
 				throw new ArgumentNullException ("line");
 			return 1 + textEditorImpl.GetVirtualIndentationString (line.LineNumber).Length;
+		}
+
+		void IInternalEditorExtensions.SetIndentationTracker (IIndentationTracker indentationTracker)
+		{
+			textEditorImpl.SetIndentationTracker (indentationTracker);
+		}
+
+		void IInternalEditorExtensions.SetSelectionSurroundingProvider (ISelectionSurroundingProvider surroundingProvider)
+		{
+			textEditorImpl.SetSelectionSurroundingProvider (surroundingProvider);
+		}
+
+		void IInternalEditorExtensions.SetTextPasteHandler (ITextPasteHandler textPasteHandler)
+		{
+			textEditorImpl.SetTextPasteHandler (textPasteHandler);
 		}
 	}
 }

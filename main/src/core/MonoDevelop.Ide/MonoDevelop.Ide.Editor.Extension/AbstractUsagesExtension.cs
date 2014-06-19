@@ -35,7 +35,7 @@ using System.Diagnostics.CodeAnalysis;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Extension
 {
 	/// <summary>
 	/// Provides a base class for implementing highlighting of usages inside the text editor.

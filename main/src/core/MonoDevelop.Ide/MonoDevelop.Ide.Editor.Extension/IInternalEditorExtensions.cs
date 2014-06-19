@@ -1,5 +1,5 @@
 ﻿//
-// ISelectionSurroundingProvider.cs
+// IExtendibleEditor.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,34 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Extension
 {
 	/// <summary>
-	/// A selection surrounding provider handles a special handling how the text editor behaves when the user
-	/// types a key with a selection. The selection can be surrounded instead of beeing replaced.
+	/// This interface is used to change some editor high level features. 
+	/// These strategies set here shouldn't be part of the public API. So the text editor class
+	/// hides this API by implementing it explicitly.
 	/// </summary>
-	public interface ISelectionSurroundingProvider	
+	public interface IInternalEditorExtensions
 	{
-		/// <summary>
-		/// Gets the selection surroundings for a given unicode key.
-		/// </summary>
-		/// <returns>
-		/// true, if the key is valid for a surrounding action.
-		/// </returns>
-		/// <param name='unicodeKey'>
-		/// The key to handle.
-		/// </param>
-		/// <param name='start'>
-		/// The start of the surrounding
-		/// </param>
-		/// <param name='end'>
-		/// The end of the surrounding
-		/// </param>
-		bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end);
-
-		void HandleSpecialSelectionKey (uint unicodeKey);
+		void SetIndentationTracker (IIndentationTracker indentationTracker);
+		void SetSelectionSurroundingProvider (ISelectionSurroundingProvider surroundingProvider);
+		void SetTextPasteHandler (ITextPasteHandler textPasteHandler);
 	}
 }
-

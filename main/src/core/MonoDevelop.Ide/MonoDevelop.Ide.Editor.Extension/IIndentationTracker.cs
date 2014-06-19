@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 using MonoDevelop.Core.Text;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Extension
 {
 	/// <summary>
 	/// The indentation tracker is for giving the editor information about virtual line indentations.

@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.Ide.Editor
 		CursorInsertion
 	}
 
-	public interface ITextEditorImpl : IViewContent
+	public interface ITextEditorImpl : IViewContent, IInternalEditorExtensions
 	{
 		EditMode EditMode { get; }
 		ISyntaxMode SyntaxMode { get; set; }
@@ -98,9 +99,6 @@ namespace MonoDevelop.Ide.Editor
 		void RemoveMarker (ITextLineMarker lineMarker);
 
 		string GetVirtualIndentationString (int lineNumber);
-
-		void SetIndentationTracker (IIndentationTracker indentationTracker);
-		void SetSelectionSurroundingProvider (ISelectionSurroundingProvider surroundingProvider);
 
 		IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line);
 
