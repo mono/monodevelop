@@ -1861,6 +1861,66 @@
     <EmbeddedResource Include="icons\light\zoom-out-16%402x.png">
       <LogicalName>zoom-out-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-1.png">
+      <LogicalName>spinner-light-14-1.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-1%402x.png">
+      <LogicalName>spinner-light-14-1@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-2.png">
+      <LogicalName>spinner-light-14-2.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-2%402x.png">
+      <LogicalName>spinner-light-14-2@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-3.png">
+      <LogicalName>spinner-light-14-3.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-3%402x.png">
+      <LogicalName>spinner-light-14-3@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-4.png">
+      <LogicalName>spinner-light-14-4.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-4%402x.png">
+      <LogicalName>spinner-light-14-4@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-5.png">
+      <LogicalName>spinner-light-14-5.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-5%402x.png">
+      <LogicalName>spinner-light-14-5@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-1.png">
+      <LogicalName>spinner-light-18-1.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-1%402x.png">
+      <LogicalName>spinner-light-18-1@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-2.png">
+      <LogicalName>spinner-light-18-2.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-2%402x.png">
+      <LogicalName>spinner-light-18-2@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-3.png">
+      <LogicalName>spinner-light-18-3.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-3%402x.png">
+      <LogicalName>spinner-light-18-3@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-4.png">
+      <LogicalName>spinner-light-18-4.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-4%402x.png">
+      <LogicalName>spinner-light-18-4@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-5.png">
+      <LogicalName>spinner-light-18-5.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-5%402x.png">
+      <LogicalName>spinner-light-18-5@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

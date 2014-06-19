@@ -231,7 +231,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 			}
 		}
-		
+
+		[CommandHandler (FileCommands.ShowProperties)]
+		public void OnShowProperties ()
+		{
+			IdeApp.Workbench.Pads.PropertyPad.BringToFront (true);
+		}
+
 		public override DragOperation CanDragNode ()
 		{
 			return DragOperation.Copy;

@@ -284,6 +284,10 @@
 	<StockIcon stockid="md-status-warning" icon="res:status-warning-light-14.png" size="Menu" />
 	<StockIcon stockid="md-status-error" icon="res:status-failure-light-14.png" size="Menu" />
 
+	<!-- Spinners -->
+	<StockIcon stockid="md-spinner-14" animation="res:spinner-light-14-1.png;res:spinner-light-14-2.png;res:spinner-light-14-3.png;res:spinner-light-14-4.png;res:spinner-light-14-5.png" size="Menu" />
+	<StockIcon stockid="md-spinner-18" animation="res:spinner-light-18-1.png;res:spinner-light-18-2.png;res:spinner-light-18-3.png;res:spinner-light-18-4.png;res:spinner-light-18-5.png" size="Button" />
+
 	<!-- Overlays -->
 	<StockIcon stockid="md-internal-class" icon="res:element-class-light-16.png|res:element-visibility-internal-overlay-light-16.png" size="Menu" />
 	<StockIcon stockid="md-internal-delegate" icon="res:element-delegate-light-16.png|res:element-visibility-internal-overlay-light-16.png" size="Menu" />

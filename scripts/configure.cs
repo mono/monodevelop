@@ -178,7 +178,7 @@ namespace MonoDevelop.Configuration
 			while ((line = blame.ReadLine ()) != null && line.IndexOf ("Version=") == -1)
 				;
 			if (line != null) {
-				string hash = line.Substring (0, line.IndexOf (' '));
+				string hash = line.Substring (0, line.IndexOf (' ')).TrimStart ('^');
                 string dist = SystemUtil.RunProcess(SystemUtil.GitExe, "rev-list --count " + hash + "..HEAD", path);
 				return int.Parse (dist.Trim ());
 			}
@@ -253,7 +253,10 @@ namespace MonoDevelop.Configuration
 				else
 					GitExe = "git.exe";
 			} else {
-				GitExe = "git";
+				if (File.Exists ("/usr/bin/git"))
+					GitExe = "/usr/bin/git";
+				else
+					GitExe = "git";
 			}
 		}
 

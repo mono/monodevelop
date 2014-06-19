@@ -2403,20 +2403,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		static IEnumerable<SystemAssembly> GetFrameworkAssemblies (DotNetProject netProject)
 		{
 			var assemblies = new Dictionary<string, SystemAssembly> ();
-			foreach (var systemPackage in netProject.AssemblyContext.GetPackages ()) {
-				foreach (var assembly in systemPackage.Assemblies) {
-					SystemAssembly existing;
-					if (assemblies.TryGetValue (assembly.Name, out existing)) {
-						Version v1, v2;
-						if (!Version.TryParse (existing.Version, out v1))
-							continue;
-						if (!Version.TryParse (assembly.Version, out v2))
-							continue;
-						if (v1 > v2)
-							continue;
-					}
-					assemblies [assembly.Name] = assembly;
+			foreach (var assembly in netProject.AssemblyContext.GetAssemblies ()) {
+				SystemAssembly existing;
+				if (assemblies.TryGetValue (assembly.Name, out existing)) {
+					Version v1, v2;
+					if (!Version.TryParse (existing.Version, out v1))
+						continue;
+					if (!Version.TryParse (assembly.Version, out v2))
+						continue;
+					if (v1 > v2)
+						continue;
 				}
+				assemblies [assembly.Name] = assembly;
 			}
 			return assemblies.Values;
 		}
