@@ -41,6 +41,8 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			return 1;
 		}
 
+		protected string ProtectedStringProperty{ get; set; }
+
 		public virtual int TestMethodBase (string a)
 		{
 			return int.Parse (a) + 1;
@@ -127,6 +129,9 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			dynObj.someString = "Hello dynamic objects!";
 
 			var objWithMethodA = new ClassWithMethodA ();
+
+			var richObject = new RichClass ();
+			byte[] nulledByteArray = null;
 
 			Console.WriteLine (n); /*break*/
 		}
@@ -220,6 +225,68 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 	public class SomeClassInNamespace
 	{
 
+	}
+}
+
+class RichClass
+{
+	public int publicInt1 = 1;
+	public int publicInt2 = 2;
+	public int publicInt3 = 3;
+
+	public string publicStringA = "stringA";
+	public string publicStringB = "stringB";
+	public string publicStringC = "stringC";
+
+	private int privateInt1 = 1;
+	private int privateInt2 = 2;
+	private int privateInt3 = 3;
+
+	private string privateStringA = "stringA";
+	private string privateStringB = "stringB";
+	private string privateStringC = "stringC";
+
+	public int publicPropInt1  { get; set; }
+
+	public int publicPropInt2  { get; set; }
+
+	public int publicPropInt3  { get; set; }
+
+	public string publicPropStringA  { get; set; }
+
+	public string publicPropStringB { get; set; }
+
+	public string publicPropStringC  { get; set; }
+
+	private int privatePropInt1  { get; set; }
+
+	private int privatePropInt2 { get; set; }
+
+	private int privatePropInt3 { get; set; }
+
+	private string privatePropStringA { get; set; }
+
+	private string privatePropStringB { get; set; }
+
+	private string privatePropStringC { get; set; }
+
+	public RichClass ()
+	{
+		publicPropInt1 = 1;
+		publicPropInt2 = 2;
+		publicPropInt3 = 3;
+
+		publicPropStringA = "stringA";
+		publicPropStringB = "stringB";
+		publicPropStringC = "stringC";
+
+		privatePropInt1 = 1;
+		privatePropInt2 = 2;
+		privatePropInt3 = 3;
+
+		privatePropStringA = "stringA";
+		privatePropStringB = "stringB";
+		privatePropStringC = "stringC";
 	}
 }
 

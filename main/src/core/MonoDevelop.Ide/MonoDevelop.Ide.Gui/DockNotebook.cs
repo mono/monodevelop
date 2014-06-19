@@ -1109,15 +1109,25 @@ namespace MonoDevelop.Ide.Gui
 			int textStart = tabBounds.X + padding;
 
 			ctx.MoveTo (textStart, tabBounds.Y + TopPadding + TextOffset + VerticalTextSize);
-			// ellipses are for space wasting ..., we cant afford that
-			using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
-				var color = tab.Notify ? new Cairo.Color (0, 0, 1) : Styles.TabBarActiveTextColor;
-				color = color.MultiplyAlpha (tab.Opacity);
-				lg.AddColorStop (0, color);
-				color.A = 0;
-				lg.AddColorStop (1, color);
-				ctx.SetSource (lg);
+			if (!MonoDevelop.Core.Platform.IsMac && !MonoDevelop.Core.Platform.IsWindows) {
+				// This is a work around for a linux specific problem.
+				// A bug in the proprietary ATI driver caused TAB text not to draw. 
+				// If that bug get's fixed remove this HACK asap.
+				la.Ellipsize = Pango.EllipsizeMode.End;
+				la.Width = (int)(w * Pango.Scale.PangoScale);
+				ctx.SetSourceColor (tab.Notify ? new Cairo.Color (0, 0, 1) : Styles.TabBarActiveTextColor);
 				Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
+			} else {
+				// ellipses are for space wasting ..., we cant afford that
+				using (var lg = new LinearGradient (textStart + w - 5, 0, textStart + w + 3, 0)) {
+					var color = tab.Notify ? new Cairo.Color (0, 0, 1) : Styles.TabBarActiveTextColor;
+					color = color.MultiplyAlpha (tab.Opacity);
+					lg.AddColorStop (0, color);
+					color.A = 0;
+					lg.AddColorStop (1, color);
+					ctx.SetSource (lg);
+					Pango.CairoHelper.ShowLayoutLine (ctx, la.GetLine (0));
+				}
 			}
 			la.Dispose ();
 		}

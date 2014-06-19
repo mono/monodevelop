@@ -66,10 +66,8 @@ namespace MonoDevelop.Refactoring
 				return;
 			ResolveResult resolveResoult;
 			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
-			var entity = item as IEntity;
-			if (entity == null)
-				return;
-			FindRefs (entity);
+			if (item != null)
+				FindRefs (item);
 		}
 	}
 
@@ -102,10 +100,8 @@ namespace MonoDevelop.Refactoring
 				return;
 			ResolveResult resolveResoult;
 			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
-			var entity = item as IEntity;
-			if (entity == null)
-				return;
-			FindRefs (entity);
+			if (item != null)
+				FindRefs (item);
 		}
 	}
 }

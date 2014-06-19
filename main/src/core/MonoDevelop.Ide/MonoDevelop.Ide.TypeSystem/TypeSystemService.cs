@@ -250,10 +250,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			foreach (var pr in projectContents.Keys.ToArray ()) {
-				var project = pr as DotNetProject;
+			foreach (var pr in projectContents.ToArray ()) {
+				var project = pr.Key as DotNetProject;
 				if (project != null)
 					CheckProjectOutput (project, true);
+
+				pr.Value.ReconnectAssemblyReferences ();
 			}
 		}
 
@@ -2401,20 +2403,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		static IEnumerable<SystemAssembly> GetFrameworkAssemblies (DotNetProject netProject)
 		{
 			var assemblies = new Dictionary<string, SystemAssembly> ();
-			foreach (var systemPackage in netProject.AssemblyContext.GetPackages ()) {
-				foreach (var assembly in systemPackage.Assemblies) {
-					SystemAssembly existing;
-					if (assemblies.TryGetValue (assembly.Name, out existing)) {
-						Version v1, v2;
-						if (!Version.TryParse (existing.Version, out v1))
-							continue;
-						if (!Version.TryParse (assembly.Version, out v2))
-							continue;
-						if (v1 > v2)
-							continue;
-					}
-					assemblies [assembly.Name] = assembly;
+			foreach (var assembly in netProject.AssemblyContext.GetAssemblies ()) {
+				SystemAssembly existing;
+				if (assemblies.TryGetValue (assembly.Name, out existing)) {
+					Version v1, v2;
+					if (!Version.TryParse (existing.Version, out v1))
+						continue;
+					if (!Version.TryParse (assembly.Version, out v2))
+						continue;
+					if (v1 > v2)
+						continue;
 				}
+				assemblies [assembly.Name] = assembly;
 			}
 			return assemblies.Values;
 		}
@@ -2608,7 +2608,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (token.IsCancellationRequested)
 							return;
 						var fileName = file.FilePath;
-						if (!TypeSystemParserNode.IsCompileBuildAction (file.BuildAction) || filesSkippedInParseThread.Any (f => f == fileName)) {
+						if (filesSkippedInParseThread.Any (f => f == fileName)) {
 							continue;
 						}
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {

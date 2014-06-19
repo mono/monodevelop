@@ -32,6 +32,7 @@ using System.Collections.Specialized;
 using System.Linq;
 
 using MonoDevelop.Core;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -44,31 +45,39 @@ namespace ICSharpCode.PackageManagement
 			new PackageSource("(Aggregate source)", "All");
 
 		ISettings settings;
+		ISettingsProvider settingsProvider;
 		IPackageSourceProvider packageSourceProvider;
 		PackageSource defaultPackageSource;
 		RegisteredPackageSources packageSources;
 		PackageSource activePackageSource;
 		
-		public RegisteredPackageSourceSettings(ISettings settings)
+		public RegisteredPackageSourceSettings (ISettingsProvider settingsProvider)
 			: this(
-				settings,
-				CreatePackageSourceProvider (settings),
+				settingsProvider,
 				RegisteredPackageSources.DefaultPackageSource)
 		{
 		}
 		
-		public RegisteredPackageSourceSettings(
-			ISettings settings,
-			IPackageSourceProvider packageSourceProvider,
+		public RegisteredPackageSourceSettings (
+			ISettingsProvider settingsProvider,
 			PackageSource defaultPackageSource)
 		{
-			this.settings = settings;
-			this.packageSourceProvider = packageSourceProvider;
+			this.settingsProvider = settingsProvider;
 			this.defaultPackageSource = defaultPackageSource;
+
+			this.settings = settingsProvider.LoadSettings ();
+			this.packageSourceProvider = CreatePackageSourceProvider (settings);
+
 			ReadActivePackageSource();
+			RegisterSolutionEvents ();
 		}
 
-		static IPackageSourceProvider CreatePackageSourceProvider (ISettings settings)
+		void RegisterSolutionEvents ()
+		{
+			settingsProvider.SettingsChanged += SettingsChanged;
+		}
+
+		IPackageSourceProvider CreatePackageSourceProvider (ISettings settings)
 		{
 			return new PackageSourceProvider (settings, new [] { RegisteredPackageSources.DefaultPackageSource });
 		}
@@ -167,6 +176,22 @@ namespace ICSharpCode.PackageManagement
 		void SaveActivePackageSourceSetting(KeyValuePair<string, string> activePackageSource)
 		{
 			settings.SetValue(ActivePackageSourceSectionName, activePackageSource.Key, activePackageSource.Value);
+		}
+
+		void SettingsChanged (object sender, EventArgs e)
+		{
+			settings = settingsProvider.LoadSettings ();
+			packageSourceProvider = CreatePackageSourceProvider (settings);
+			ReadActivePackageSource ();
+			ResetPackageSources ();
+		}
+
+		void ResetPackageSources ()
+		{
+			if (packageSources != null) {
+				packageSources.CollectionChanged -= PackageSourcesChanged;
+				packageSources = null;
+			}
 		}
 	}
 }

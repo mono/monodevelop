@@ -103,6 +103,9 @@
 	<Match color="Keyword(Iteration)">return(!)?</Match>
 	<Match color="Keyword(Iteration)">do(!)?</Match>
 
+	<!-- reserved-ident-keyword F# spec v3.0 section 3.4 -->
+	<Match color="Keyword(Other)">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?</Match>
+
 	<!-- It is really impossible to do some intelligent grouping here, because
 	     it looks weird no matter what we do... some things are context-sensitive,
 	     some things may appear in unexpected place.. so just use single color -->
@@ -155,7 +158,6 @@
 		<Word>type</Word>
 
 		<Word>of</Word>
-		<Word>sig</Word>
 		<Word>class</Word>
 		<Word>delegate</Word>
 		<Word>exception</Word>
@@ -173,7 +175,6 @@
 		<Word>upcast</Word>
 		<Word>lazy</Word>
 		<Word>and</Word>
-		<Word>not</Word>
 		<Word>downcast</Word>
 		<Word>select</Word>
 	</Keywords>
@@ -223,34 +224,6 @@
 		<Word>lxor</Word>
 		<Word>mod</Word>
 		<Word>sig</Word>
-
-		<!-- Future expansions -->
-		<Word>atomic</Word>
-		<Word>break</Word>
-		<Word>checked</Word>
-		<Word>component</Word>
-		<Word>const</Word>
-		<Word>constraint</Word>
-		<Word>constructor</Word>
-		<Word>continue</Word>
-		<Word>eager</Word>
-		<Word>event</Word>
-		<Word>external</Word>
-		<Word>fixed</Word>
-		<Word>functor</Word>
-		<Word>include</Word>
-		<Word>method</Word>
-		<Word>mixin</Word>
-		<Word>object</Word>
-		<Word>parallel</Word>
-		<Word>process</Word>
-		<Word>protected</Word>
-		<Word>pure</Word>
-		<Word>sealed</Word>
-		<Word>tailcall</Word>
-		<Word>trait</Word>
-		<Word>virtual</Word>
-		<Word>volatile</Word>
 	</Keywords>
 
 	<Rule name="text.preprocessor" ignorecase="True">

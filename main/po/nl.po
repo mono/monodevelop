@@ -7679,7 +7679,7 @@ msgstr "_Oplossingnaam:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewProjectDialog.cs:2
 msgid "<b>Project Features</b>"
-msgstr "<B>Projectmogelijkheden</b>"
+msgstr "<b>Projectmogelijkheden</b>"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.NewProjectDialog.cs:2
 msgid ""

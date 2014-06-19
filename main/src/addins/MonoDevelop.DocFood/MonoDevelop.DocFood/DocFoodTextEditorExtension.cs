@@ -32,6 +32,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using System.Linq;
 
 namespace MonoDevelop.DocFood
 {
@@ -177,11 +178,18 @@ namespace MonoDevelop.DocFood
 				return null;
 			}
 			
-			IMember result = null;
+			IEntity result = null;
 			foreach (var member in type.Members) {
 				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
 					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
 					result = member.CreateResolved (ctx);
+				}
+			}
+
+			foreach (var member in type.NestedTypes) {
+				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
+					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
+					result = member.Resolve (ctx).GetDefinition ();
 				}
 			}
 			return result;

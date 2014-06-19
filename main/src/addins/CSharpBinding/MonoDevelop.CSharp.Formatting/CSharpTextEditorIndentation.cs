@@ -517,12 +517,13 @@ namespace MonoDevelop.CSharp.Formatting
 						}
 					}
 				}
-
-				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent) {
+				const string reindentChars = ";){}";
+				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent && reindentChars.Contains (keyChar)) {
 					using (var undo = textEditorData.OpenUndoGroup ()) {
 						DoReSmartIndent ();
 					}
 				}
+
 				if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 					if (keyChar == ';' || keyChar == '}') {
 						using (var undo = textEditorData.OpenUndoGroup ()) {

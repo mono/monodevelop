@@ -422,7 +422,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (node is PadCodon) {
 				PadCodon pad = (PadCodon) node;
-				RegisterPad (pad);
+				AddPad (pad, pad.DefaultPlacement, pad.DefaultStatus);
 			}
 			else if (node is CategoryNode) {
 				foreach (ExtensionNode cn in node.ChildNodes)
@@ -784,10 +784,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			AddinManager.AddExtensionNodeHandler (stockLayoutsPath, OnLayoutsExtensionChanged);
 			
-			ExtensionNodeList padCodons = AddinManager.GetExtensionNodes (viewContentPath);
-			foreach (ExtensionNode node in padCodons)
-				ShowPadNode (node);
-			
 			CreateComponents ();
 			
 			// Subscribe to changes in the extension
@@ -930,9 +926,10 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			// create DockItems for all the pads
-			foreach (PadCodon content in padContentCollection)
-				AddPad (content, content.DefaultPlacement, content.DefaultStatus);
-			
+			ExtensionNodeList padCodons = AddinManager.GetExtensionNodes (viewContentPath);
+			foreach (ExtensionNode node in padCodons)
+				ShowPadNode (node);
+
 			try {
 				if (System.IO.File.Exists (configFile)) {
 					dock.LoadLayouts (configFile);

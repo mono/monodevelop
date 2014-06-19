@@ -342,6 +342,7 @@ namespace MonoDevelop.SourceEditor
 				return true;
 
 			bool inStringOrComment = false;
+			bool isString = false;
 			DocumentLine line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return true;
@@ -350,12 +351,19 @@ namespace MonoDevelop.SourceEditor
 			var sm = Document.SyntaxMode as SyntaxMode;
 			if (sm != null)
 				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, sm, sm, stack, line.Offset, Caret.Offset);
-			string spanColor = null;
+
 			foreach (Span span in stack) {
 				if (string.IsNullOrEmpty (span.Color))
 					continue;
-				if (span.Color.StartsWith ("String", StringComparison.Ordinal) || span.Color.StartsWith ("Comment", StringComparison.Ordinal)) {
-					spanColor = span.Color;
+				if (span.Color.StartsWith ("String", StringComparison.Ordinal) ||
+				    span.Color.StartsWith ("Comment", StringComparison.Ordinal) ||
+				    span.Color.StartsWith ("Xml Attribute Value", StringComparison.Ordinal)) {
+					//Treat "Xml Attribute Value" as "String" so quotes in SkipChars works in Xml
+					if (span.Color.StartsWith ("Comment", StringComparison.Ordinal)) {
+						isString = false;
+					} else {
+						isString = true;
+					}
 					inStringOrComment = true;
 					break;
 				}
@@ -377,7 +385,7 @@ namespace MonoDevelop.SourceEditor
 				char charBefore = Document.GetCharAt (Caret.Offset - 1);
 				if (ch == '"') {
 					if (!inStringOrComment && charBefore == '"' || 
-					    inStringOrComment && spanColor == "String" && charBefore == '\\' ) {
+						isString && charBefore == '\\' ) {
 						skipChar = null;
 						braceIndex = -1;
 					}
@@ -597,20 +605,26 @@ namespace MonoDevelop.SourceEditor
 			HideTooltip ();
 			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
 			var ctx = ExtensionContext ?? AddinManager.AddinEngine;
+
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
-			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
-			var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
-			if (imMenu != null) {
-				menu.Append (new SeparatorMenuItem ());
-				menu.Append (imMenu);
-			}
-			
-			menu.Hidden += HandleMenuHidden; 
-			if (evt != null) {
-				GtkWorkarounds.ShowContextMenu (menu, this, evt);
+
+			if (Platform.IsMac) {
+				IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
 			} else {
-				var pt = LocationToPoint (this.Caret.Location);
-				GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
+				Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+				var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
+				if (imMenu != null) {
+					menu.Append (new SeparatorMenuItem ());
+					menu.Append (imMenu);
+				}
+
+				menu.Hidden += HandleMenuHidden;
+				if (evt != null) {
+					GtkWorkarounds.ShowContextMenu (menu, this, evt);
+				} else {
+					var pt = LocationToPoint (this.Caret.Location);
+					GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
+				}
 			}
 		}
 

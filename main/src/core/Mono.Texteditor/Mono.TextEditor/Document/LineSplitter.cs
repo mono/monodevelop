@@ -137,23 +137,29 @@ namespace Mono.TextEditor
 		}
 
 		//bool inInit;
-		public void Initalize (string text)
+		public void Initalize (string text, out DocumentLine longestLine)
 		{
 			LineEndingMismatch = false;
 			Clear ();
+			longestLine = Get (1);
 			if (string.IsNullOrEmpty (text))
 				return;
 			var nodes = new List<TreeNode> ();
 
 			var delimiterType = UnicodeNewline.Unknown;
-			int offset = 0;
+			int offset = 0, maxLength = 0;
 			while (true) {
 				var delimiter = NextDelimiter (text, offset);
 				if (delimiter.IsInvalid)
 					break;
 				int delimiterEndOffset = delimiter.Offset + delimiter.Length;
-				var newLine = new TreeNode (delimiterEndOffset - offset, delimiter.UnicodeNewline);
+				var length = delimiterEndOffset - offset;
+				var newLine = new TreeNode (length, delimiter.UnicodeNewline);
 				nodes.Add (newLine);
+				if (length > maxLength) {
+					maxLength = length;
+					longestLine = newLine;
+				}
 				if (offset > 0) {
 					LineEndingMismatch |= delimiterType != delimiter.UnicodeNewline;
 				} else {

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Core;
@@ -82,6 +83,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 	{
 		public override void DeleteMultipleItems ()
 		{
+			var modifiedSolutionsToSave = new HashSet<Solution> ();
 			QuestionMessage msg = new QuestionMessage ();
 			msg.SecondaryText = GettextCatalog.GetString ("The Delete option permanently removes the file from your hard disk. Click Remove from Solution if you only want to remove it from your current solution.");
 			AlertButton removeFromSolution = new AlertButton (GettextCatalog.GetString ("_Remove from Solution"), Gtk.Stock.Remove);
@@ -105,7 +107,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				if (result == AlertButton.Delete) {
 					FileService.DeleteFile (file.FileName);
 				}
+
+				if (file.Parent != null && file.Parent.ParentSolution != null) {
+					modifiedSolutionsToSave.Add (file.Parent.ParentSolution);
+				}
 			}
+				
+			IdeApp.ProjectOperations.Save (modifiedSolutionsToSave);
 		}
 		
 		public override void ActivateItem ()

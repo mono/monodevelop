@@ -101,9 +101,9 @@ namespace MonoDevelop.MacIntegration
 			if (clear)
 				Menu.RemoveAllItems ();
 				
-			encodings = SeletedEncodings.ConversionEncodings;
+			encodings = SelectedEncodings.ConversionEncodings;
 			if (encodings == null || encodings.Length == 0)
-				encodings = SeletedEncodings.DefaultEncodings;
+				encodings = SelectedEncodings.DefaultEncodings;
 			
 			if (autoDetectedItem != null) {
 				Menu.AddItem (autoDetectedItem);

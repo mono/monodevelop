@@ -36,6 +36,7 @@ using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.TextEditor;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -703,12 +704,26 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='initialCommandTarget'>
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
-		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
+		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
-			var menu = CreateMenu (entrySet);
-			if (menu != null)
-				ShowContextMenu (parent, evt, menu, initialCommandTarget);
+			if (Platform.IsMac) {
+				parent.GrabFocus ();
+				int x, y;
+				if (evt != null) {
+					x = (int)evt.X;
+					y = (int)evt.Y;
+				} else {
+					Gdk.Display.Default.GetPointer (out x, out y);
+				}
+				return DesktopService.ShowContextMenu (this, parent, x, y, entrySet, initialCommandTarget);
+			} else {
+				var menu = CreateMenu (entrySet);
+				if (menu != null)
+					ShowContextMenu (parent, evt, menu, initialCommandTarget);
+
+				return true;
+			}
 		}
 		
 		/// <summary>
@@ -732,7 +747,7 @@ namespace MonoDevelop.Components.Commands
 			if (menu is CommandMenu) {
 				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget ?? parent;
 			}
-			
+
 			Mono.TextEditor.GtkWorkarounds.ShowContextMenu (menu, parent, evt);
 		}
 		

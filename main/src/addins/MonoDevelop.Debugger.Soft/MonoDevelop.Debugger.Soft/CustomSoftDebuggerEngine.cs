@@ -133,6 +133,7 @@ namespace MonoDevelop.Debugger.Soft
 				} else {
 					var psi = new ProcessStartInfo (info.Command, info.Arguments) {
 						WorkingDirectory = info.WorkingDirectory,
+						UseShellExecute = false
 					};
 					foreach (KeyValuePair<string,string> kvp in info.EnvironmentVariables)
 						psi.EnvironmentVariables [kvp.Key] = kvp.Value;

@@ -5,6 +5,7 @@ SUBDIRS = \
 	GnomePlatform \
 	MonoDevelop.DesignerSupport \
 	MonoDevelop.Debugger \
+	MonoDevelop.Debugger.Gdb \
 	Deployment \
 	MonoDevelop.SourceEditor2 \
 	MonoDevelop.Refactoring \

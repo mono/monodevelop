@@ -42,6 +42,8 @@ namespace MonoDevelop.Ide
 {
 	public static class ImageService
 	{
+		const string IconsExtensionPath = "/MonoDevelop/Core/StockIcons";
+
 		static Gtk.IconFactory iconFactory = new Gtk.IconFactory ();
 
 		// Mapping of icon spec to stock icon id.
@@ -68,19 +70,17 @@ namespace MonoDevelop.Ide
 				EnsureStockIconIsLoaded (stockId);
 			};
 			
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Core/StockIcons", delegate (object sender, ExtensionNodeEventArgs args) {
+			AddinManager.AddExtensionNodeHandler (IconsExtensionPath, delegate (object sender, ExtensionNodeEventArgs args) {
 				StockIconCodon iconCodon = (StockIconCodon)args.ExtensionNode;
 				switch (args.Change) {
 				case ExtensionChange.Add:
 					if (!iconStock.ContainsKey (iconCodon.StockId))
 						iconStock[iconCodon.StockId] = new List<StockIconCodon> ();
 					iconStock[iconCodon.StockId].Add (iconCodon);
-					if (iconCodon.Addin == AddinManager.CurrentAddin)
-						EnsureStockIconIsLoaded (iconCodon.StockId);
 					break;
 				}
 			});
-			
+
 			for (int i = 0; i < iconSizes.Length; i++) {
 				int w, h;
 				if (!Gtk.Icon.SizeLookup ((Gtk.IconSize)i, out w, out h))
@@ -92,6 +92,11 @@ namespace MonoDevelop.Ide
 				iconSizes[(int)Gtk.IconSize.Menu].Width = 16;
 				iconSizes[(int)Gtk.IconSize.Menu].Height = 16;
 			}
+
+			// Preload icons defined in MD.Ide. Ensures that the gtk icon overrides are available.
+			var current = AddinManager.CurrentAddin;
+			foreach (var id in AddinManager.GetExtensionNodes (IconsExtensionPath).OfType<StockIconCodon> ().Where (c => c.Addin == current).Select (c => c.StockId).Distinct ())
+				EnsureStockIconIsLoaded (id);
 		}
 		
 		static void LoadStockIcon (StockIconCodon iconCodon, bool forceWildcard)

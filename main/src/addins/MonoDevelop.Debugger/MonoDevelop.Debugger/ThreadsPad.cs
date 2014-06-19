@@ -157,15 +157,14 @@ namespace MonoDevelop.Debugger
 				return;
 
 			try {
-				ProcessInfo[] currentProcesses = DebuggingService.DebuggerSession.GetProcesses ();
+				var processes = DebuggingService.DebuggerSession.GetProcesses ();
 				
-				if (currentProcesses.Length == 1) {
-					AppendThreads (TreeIter.Zero, currentProcesses [0]);
-				}
-				else {
-					foreach (ProcessInfo p in currentProcesses) {
-						TreeIter it = store.AppendValues (null, p.Id.ToString (), p.Name, p, (int) Pango.Weight.Normal, "");
-						AppendThreads (it, p);
+				if (processes.Length == 1) {
+					AppendThreads (TreeIter.Zero, processes[0]);
+				} else {
+					foreach (var process in processes) {
+						TreeIter iter = store.AppendValues (null, process.Id.ToString (), process.Name, process, (int) Pango.Weight.Normal, "");
+						AppendThreads (iter, process);
 					}
 				}
 			} catch (Exception ex) {
@@ -176,37 +175,86 @@ namespace MonoDevelop.Debugger
 			
 			treeViewState.Load ();
 		}
-		
-		void AppendThreads (TreeIter it, ProcessInfo p)
+
+		void AppendThreads (TreeIter iter, ProcessInfo process)
 		{
-			ThreadInfo[] threads = p.GetThreads ();
-			Array.Sort (threads, delegate (ThreadInfo t1, ThreadInfo t2) {
-				return t1.Id.CompareTo (t2.Id);
-			});
-			foreach (ThreadInfo t in threads) {
+			var threads = process.GetThreads ();
+
+			Array.Sort (threads, (ThreadInfo t1, ThreadInfo t2) => t1.Id.CompareTo (t2.Id));
+
+			DebuggingService.DebuggerSession.FetchFrames (threads);
+
+			foreach (var thread in threads) {
 				ThreadInfo activeThread = DebuggingService.DebuggerSession.ActiveThread;
-				Pango.Weight wi = t == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
-				string icon = t == activeThread ? Gtk.Stock.GoForward : null;
-				if (it.Equals (TreeIter.Zero))
-					store.AppendValues (icon, t.Id.ToString (), t.Name, t, (int) wi, t.Location);
+				var weight = thread == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
+				var icon = thread == activeThread ? Gtk.Stock.GoForward : null;
+
+				if (iter.Equals (TreeIter.Zero))
+					store.AppendValues (icon, thread.Id.ToString (), thread.Name, thread, (int) weight, thread.Location);
 				else
-					store.AppendValues (it, icon, t.Id.ToString (), t.Name, t, (int) wi, t.Location);
+					store.AppendValues (iter, icon, thread.Id.ToString (), thread.Name, thread, (int) weight, thread.Location);
 			}
 		}
-		
-		void OnRowActivated (object s, Gtk.RowActivatedArgs args)
+
+		void UpdateThread (TreeIter iter, ThreadInfo thread, ThreadInfo activeThread)
 		{
-			TreeIter it;
-			tree.Selection.GetSelected (out it);
-			ThreadInfo t = store.GetValue (it, (int)Columns.Object) as ThreadInfo;
-			if (t != null)
-				DebuggingService.ActiveThread = t;
+			var weight = thread == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
+			var icon = thread == activeThread ? Gtk.Stock.GoForward : null;
+
+			store.SetValue (iter, (int) Columns.Weight, (int) weight);
+			store.SetValue (iter, (int) Columns.Icon, icon);
+		}
+
+		void UpdateThreads (ThreadInfo activeThread)
+		{
+			TreeIter iter;
+
+			if (!store.GetIterFirst (out iter))
+				return;
+
+			do {
+				var thread = store.GetValue (iter, (int) Columns.Object) as ThreadInfo;
+
+				if (thread == null) {
+					// this is a process... descend into our children
+					TreeIter child;
+
+					if (store.IterChildren (out child)) {
+						do {
+							thread = store.GetValue (iter, (int) Columns.Object) as ThreadInfo;
+							UpdateThread (child, thread, activeThread);
+						} while (store.IterNext (ref child));
+					}
+				} else {
+					UpdateThread (iter, thread, activeThread);
+				}
+			} while (store.IterNext (ref iter));
 		}
 		
-		public Gtk.Widget Control {
-			get {
-				return this;
+		void OnRowActivated (object s, RowActivatedArgs args)
+		{
+			TreeIter iter, selected;
+
+			if (!tree.Selection.GetSelected (out selected))
+				return;
+
+			var thread = store.GetValue (selected, (int) Columns.Object) as ThreadInfo;
+
+			if (thread != null) {
+				DebuggingService.CallStackChanged -= OnStackChanged;
+
+				try {
+					// Note: setting the active thread causes CallStackChanged to be emitted, but we don't want to refresh our thread list.
+					DebuggingService.ActiveThread = thread;
+					UpdateThreads (thread);
+				} finally {
+					DebuggingService.CallStackChanged += OnStackChanged;
+				}
 			}
+		}
+
+		public Widget Control {
+			get { return this; }
 		}
 
 		public string Id {

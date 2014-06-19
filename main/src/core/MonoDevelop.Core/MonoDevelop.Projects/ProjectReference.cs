@@ -466,20 +466,8 @@ namespace MonoDevelop.Projects
 
 					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies
 					// (because non-gac assemblies should have a package name set)
-					SystemAssembly best = null;
-					foreach (SystemAssembly asm in AssemblyContext.GetAssembliesFromFullName (reference)) {
-						//highest priority to framework packages
-						if (ownerProject != null && asm.Package.IsFrameworkPackage) {
-							var targetFx = ownerProject.TargetFramework;
-							var packageFxId = asm.Package.TargetFramework;
-							if (targetFx.IncludesFramework (packageFxId))
-								return cachedPackage = asm.Package;
-						}
-						if (asm.Package.IsGacPackage)
-							best = asm;
-						else if (best == null)
-							best = asm;
-					}
+					TargetFramework fx = ownerProject == null? null : ownerProject.TargetFramework;
+					var best = AssemblyContext.GetAssemblyFromFullName (reference, null, fx);
 					if (best != null)
 						return cachedPackage = best.Package;
 				}
@@ -535,6 +523,22 @@ namespace MonoDevelop.Projects
 		{
 			if (StatusChanged != null)
 				StatusChanged (this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Resolves a project for a ReferenceType.Project reference type in a given solution.
+		/// </summary>
+		/// <returns>The project, or <c>null</c> if it couldn't be resolved.</returns>
+		/// <param name="inSolution">The solution the project is in.</param>
+		/// <exception cref="T:System.ArgumentNullException">Thrown if inSolution == null</exception>
+		/// <exception cref="T:System.InvalidOperationException">Thrown if ReferenceType != ReferenceType.Project</exception>
+		public Project ResolveProject (Solution inSolution)
+		{
+			if (inSolution == null)
+				throw new ArgumentNullException ("inSolution");
+			if (ReferenceType != ReferenceType.Project)
+				throw new InvalidOperationException ("ResolveProject is only definied for Project reference type.");
+			return inSolution.FindProjectByName (Reference);
 		}
 	}
 	
