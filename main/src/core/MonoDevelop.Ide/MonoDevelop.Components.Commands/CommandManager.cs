@@ -709,7 +709,7 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (Platform.IsMac) {
 				parent.GrabFocus ();
-				return DesktopService.ShowContextMenu (this, parent, evt.X, evt.Y, entrySet);
+				return DesktopService.ShowContextMenu (this, parent, evt.X, evt.Y, entrySet, initialCommandTarget);
 			} else {
 				var menu = CreateMenu (entrySet);
 				if (menu != null)
