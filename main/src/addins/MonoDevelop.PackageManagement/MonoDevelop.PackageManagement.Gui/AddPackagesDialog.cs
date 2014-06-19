@@ -59,6 +59,7 @@ namespace MonoDevelop.PackageManagement
 		PackageSource dummyPackageSourceRepresentingConfigureSettingsItem =
 			new PackageSource ("", Catalog.GetString ("Configure Sources..."));
 		ImageLoader imageLoader = new ImageLoader ();
+		bool loadingMessageVisible;
 
 		public AddPackagesDialog (ManagePackagesViewModel parentViewModel, string initialSearch = null)
 			: this (
@@ -155,6 +156,7 @@ namespace MonoDevelop.PackageManagement
 			noPackagesFoundFrame.Visible = false;
 			packagesListView.Visible = false;
 			loadingSpinnerFrame.Visible = true;
+			loadingMessageVisible = true;
 		}
 
 		void HideLoadingMessage ()
@@ -162,6 +164,7 @@ namespace MonoDevelop.PackageManagement
 			loadingSpinnerFrame.Visible = false;
 			packagesListView.Visible = true;
 			noPackagesFoundFrame.Visible = false;
+			loadingMessageVisible = false;
 		}
 
 		void UpdateSpinnerLabel ()
@@ -624,7 +627,7 @@ namespace MonoDevelop.PackageManagement
 					addPackagesButton.Label = Catalog.GetString ("Add Package");
 				}
 			}
-			addPackagesButton.Sensitive = IsAtLeastOnePackageSelected ();
+			addPackagesButton.Sensitive = IsAddPackagesButtonEnabled ();
 		}
 
 		void UpdatePackageListViewSelectionColor ()
@@ -654,6 +657,11 @@ namespace MonoDevelop.PackageManagement
 				return selectedPackageViewModel.IsOlderPackageInstalled ();
 			}
 			return false;
+		}
+
+		bool IsAddPackagesButtonEnabled ()
+		{
+			return !loadingMessageVisible && IsAtLeastOnePackageSelected ();
 		}
 
 		bool IsAtLeastOnePackageSelected ()
