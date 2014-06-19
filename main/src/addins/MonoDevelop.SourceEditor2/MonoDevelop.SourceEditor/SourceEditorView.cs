@@ -2356,7 +2356,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void CorrectIndenting ()
 		{
-			var doc = this.Document as ITextDocument;
+			var doc = this.ownerDocument.Editor;
 			if (doc == null)
 				return;
 			var formatter = CodeFormatterService.GetFormatter (Document.MimeType);
@@ -2898,6 +2898,11 @@ namespace MonoDevelop.SourceEditor
 			if (data.TextPasteHandler != null)
 				((TextPasteHandlerWrapper)data.TextPasteHandler).Dispose ();
 			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
+		}
+
+		void ITextEditorImpl.AddSkipChar (int offset, char ch)
+		{
+			TextEditor.GetTextEditorData ().SetSkipChar (offset, ch);
 		}
 
 		#region IEditorActionHost implementation
