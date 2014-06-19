@@ -329,7 +329,7 @@ namespace MonoDevelop.Ide.Desktop
 		}
 
 		public virtual bool ShowContextMenu (MonoDevelop.Components.Commands.CommandManager commandManager,
-			Gtk.Widget widget, double x, double y, MonoDevelop.Components.Commands.CommandEntrySet entrySet)
+			Gtk.Widget widget, double x, double y, MonoDevelop.Components.Commands.CommandEntrySet entrySet, object initialCommandTarget = null)
 		{
 			return false;
 		}
