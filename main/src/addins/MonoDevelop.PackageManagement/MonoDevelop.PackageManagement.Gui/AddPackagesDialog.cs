@@ -583,8 +583,15 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageSearchEntryActivated (object sender, EventArgs e)
 		{
-			PackageViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
-			InstallPackage (selectedPackageViewModel);
+			if (loadingMessageVisible)
+				return;
+
+			if (PackagesCheckedCount > 0) {
+				AddPackagesButtonClicked (sender, e);
+			} else {
+				PackageViewModel selectedPackageViewModel = GetSelectedPackageViewModel ();
+				InstallPackage (selectedPackageViewModel);
+			}
 		}
 
 		void PackagesListViewScrollValueChanged (object sender, EventArgs e)
