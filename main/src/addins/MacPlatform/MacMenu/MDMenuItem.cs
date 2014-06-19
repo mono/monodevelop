@@ -155,7 +155,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		void SetItemValues (NSMenuItem item, CommandInfo info)
 		{
 			item.SetTitleWithMnemonic (GetCleanCommandText (info));
-			item.Enabled = info.Enabled && (!IsGloballyDisabled || commandSource != CommandSource.ContextMenu);
+			item.Enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
 			item.Hidden = !info.Visible;
 			SetAccel (item, info.AccelKey);
 
