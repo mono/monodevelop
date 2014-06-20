@@ -34,7 +34,13 @@ namespace MonoDevelop.Ide.Gui
 {
 	public class HiddenTextEditorViewContent : MonoDevelop.Ide.Gui.AbstractViewContent, IEditableTextBuffer, IServiceProvider
 	{
-		TextEditor editor;
+		readonly TextEditor editor;
+
+		public TextEditor Editor {
+			get {
+				return editor;
+			}
+		}
 		
 		public override Gtk.Widget Control {
 			get {

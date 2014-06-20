@@ -2440,6 +2440,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\ITextPasteHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractUsagesExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IInternalEditorExtensions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SimpleBracketMatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
