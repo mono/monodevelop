@@ -1527,12 +1527,13 @@ namespace MonoDevelop.Debugger
 		bool GetCellAtPos (int x, int y, out TreePath path, out TreeViewColumn col, out CellRenderer cellRenderer)
 		{
 			int cx, cy;
-			if (GetPathAtPos (x, y, out path, out col, out cx, out cy)) {
-				GetCellArea (path, col);
+			if (GetPathAtPos (x, y, out path, out col)) {
+				var cellArea = GetCellArea (path, col);
+				x -= cellArea.X;
 				foreach (CellRenderer cr in col.CellRenderers) {
 					int xo, w;
 					col.CellGetPosition (cr, out xo, out w);
-					if (cr.Visible && cx >= xo && cx < xo + w) {
+					if (cr.Visible && x >= xo && x < xo + w) {
 						cellRenderer = cr;
 						return true;
 					}
