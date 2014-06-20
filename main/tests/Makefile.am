@@ -48,7 +48,7 @@ test:
 	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \
-				($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml $$asm) || exit $?; \
+				($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
 			fi; \
 		done; \
 	fi
@@ -57,7 +57,7 @@ test:
 		fail=0; \
 		for asm in $(TEST_ASSEMBLIES); do \
 			echo Testing `basename $$asm`...; \
-			($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml $$asm); \
+			($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm); \
 			if [ $$? != 0 ]; then \
 				fail=1; \
 			fi; \
