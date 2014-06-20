@@ -202,7 +202,7 @@ namespace MonoDevelop.Debugger
 				}
 			}));
 			crpViewer = new CellRendererImage ();
-			crpViewer.Image = ImageService.GetIcon (Stock.ZoomIn, IconSize.Menu);
+			crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
 			crpButton = new CellRendererImage ();
