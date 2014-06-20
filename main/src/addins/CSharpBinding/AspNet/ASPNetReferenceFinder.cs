@@ -37,6 +37,7 @@ using MonoDevelop.AspNet.Gui;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -47,7 +48,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			IncludeDocumentation = true;
 		}
 		
-		IEnumerable<DomRegion> SearchMember (IEntity member, ITypeResolveContext dom, FilePath fileName, Mono.TextEditor.TextEditorData editor, Mono.TextEditor.TextDocument buildDocument, List<LocalDocumentInfo.OffsetInfo> offsetInfos, ParsedDocument parsedDocument)
+		IEnumerable<DomRegion> SearchMember (IEntity member, ITypeResolveContext dom, FilePath fileName, TextEditor editor, ITextDocument buildDocument, List<LocalDocumentInfo.OffsetInfo> offsetInfos, ParsedDocument parsedDocument)
 		{ // TODO: Type system conversion.
 			yield break;
 //			var resolver = new NRefactoryResolver (dom, parsedDocument.CompilationUnit, ICSharpCode.OldNRefactory.SupportedLanguage.CSharp, editor, fileName);
