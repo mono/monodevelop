@@ -254,8 +254,8 @@ namespace MonoDevelop.Gettext
 			scrolledwindowPlural.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
 			this.texteditorOriginal.Options = options;
 			this.texteditorPlural.Options = options;
-			this.texteditorOriginal.ReadOnly = true;
-			this.texteditorPlural.ReadOnly = true;
+			this.texteditorOriginal.IsReadOnly = true;
+			this.texteditorPlural.IsReadOnly = true;
 		}
 
 		void HandleCellRendFuzzyToggled (object sender, ToggledArgs args)
