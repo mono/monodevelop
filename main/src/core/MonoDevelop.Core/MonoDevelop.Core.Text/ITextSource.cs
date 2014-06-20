@@ -83,6 +83,26 @@ namespace MonoDevelop.Core.Text
 		/// <remarks>This is the same as Text.Substring, but is more efficient because
 		///  it doesn't require creating a String object for the whole document.</remarks>
 		string GetTextAt(int offset, int length);
+
+		/// <summary>
+		/// Creates a new TextReader to read from this text source.
+		/// </summary>
+		TextReader CreateReader ();
+
+		/// <summary>
+		/// Creates a new TextReader to read from this text source.
+		/// </summary>
+		TextReader CreateReader (int offset, int length);
+
+		/// <summary>
+		/// Writes the text from this document into the TextWriter.
+		/// </summary>
+		void WriteTextTo (TextWriter writer);
+
+		/// <summary>
+		/// Writes the text from this document into the TextWriter.
+		/// </summary>
+		void WriteTextTo (TextWriter writer, int offset, int length);
 	}
 
 	public static class TextSourceExtension

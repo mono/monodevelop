@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Text;
+using System.IO;
 
 namespace MonoDevelop.Core.Text
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Gets a text source containing the empty string.
 		/// </summary>
-		public static readonly StringTextSource Empty = new StringTextSource(string.Empty);
+		public static readonly StringTextSource Empty = new StringTextSource (string.Empty);
 
 		readonly string text;
 		readonly ITextSourceVersion version;
@@ -45,8 +46,8 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Determines if a byte order mark was read or is going to be written.
 		/// </summary>
-		public bool UseBOM { get; private set;}
-	
+		public bool UseBOM { get; private set; }
+
 		/// <summary>
 		/// Encoding of the text that was read from or is going to be saved to.
 		/// </summary>
@@ -55,10 +56,10 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextSource(string text, Encoding encoding = null, bool useBom = true)
+		public StringTextSource (string text, Encoding encoding = null, bool useBom = true)
 		{
 			if (text == null)
-				throw new ArgumentNullException("text");
+				throw new ArgumentNullException ("text");
 			this.text = text;
 			this.UseBOM = useBom;
 			this.Encoding = encoding ?? Encoding.UTF8;
@@ -67,10 +68,10 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a new StringTextSource with the given text.
 		/// </summary>
-		public StringTextSource(string text, ITextSourceVersion version, Encoding encoding = null, bool useBom = true)
+		public StringTextSource (string text, ITextSourceVersion version, Encoding encoding = null, bool useBom = true)
 		{
 			if (text == null)
-				throw new ArgumentNullException("text");
+				throw new ArgumentNullException ("text");
 			this.text = text;
 			this.version = version;
 			this.UseBOM = useBom;
@@ -93,30 +94,30 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <inheritdoc/>
-		public ITextSource CreateSnapshot()
+		public ITextSource CreateSnapshot ()
 		{
 			return this; // StringTextSource is immutable
 		}
 
 		/// <inheritdoc/>
-		public ITextSource CreateSnapshot(int offset, int length)
+		public ITextSource CreateSnapshot (int offset, int length)
 		{
-			return new StringTextSource(text.Substring(offset, length));
+			return new StringTextSource (text.Substring (offset, length));
 		}
 
 		/// <inheritdoc/>
-		public char this[int offset] {
+		public char this [int offset] {
 			get {
 				return text [offset];
 			}
 		}
 
 		/// <inheritdoc/>
-		public string GetTextAt(int offset, int length)
+		public string GetTextAt (int offset, int length)
 		{
-			return text.Substring(offset, length);
+			return text.Substring (offset, length);
 		}
-	
+
 		public StringTextSource WithEncoding (Encoding encoding)
 		{
 			return new StringTextSource (text, encoding, UseBOM);
@@ -133,6 +134,30 @@ namespace MonoDevelop.Core.Text
 			Encoding encoding;
 			var text = TextFileUtility.ReadAllText (fileName, out hadBom, out encoding);
 			return new StringTextSource (text, encoding, hadBom);
+		}
+
+		/// <inheritdoc/>
+		public TextReader CreateReader ()
+		{
+			return new StringReader (text);
+		}
+
+		/// <inheritdoc/>
+		public TextReader CreateReader (int offset, int length)
+		{
+			return new StringReader (text.Substring (offset, length));
+		}
+
+		/// <inheritdoc/>
+		public void WriteTextTo (TextWriter writer)
+		{
+			writer.Write (text);
+		}
+
+		/// <inheritdoc/>
+		public void WriteTextTo (TextWriter writer, int offset, int length)
+		{
+			writer.Write (text.Substring (offset, length));
 		}
 	}
 }
