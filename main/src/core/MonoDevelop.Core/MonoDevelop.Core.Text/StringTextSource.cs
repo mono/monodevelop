@@ -31,6 +31,7 @@ namespace MonoDevelop.Core.Text
 {
 	/// <summary>
 	/// Implements the ITextSource interface using a string.
+	/// Note that objects from this class are immutable.
 	/// </summary>
 	[Serializable]
 	public class StringTextSource : ITextSource
@@ -151,12 +152,16 @@ namespace MonoDevelop.Core.Text
 		/// <inheritdoc/>
 		public void WriteTextTo (TextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
 			writer.Write (text);
 		}
 
 		/// <inheritdoc/>
 		public void WriteTextTo (TextWriter writer, int offset, int length)
 		{
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
 			writer.Write (text.Substring (offset, length));
 		}
 	}

@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -118,11 +117,40 @@ namespace MonoDevelop.Core.Text
 			return source.GetTextAt (segment.Offset, segment.Length);
 		}
 	
-		public static void WriteTo (this ITextSource source, string fileName)
+		/// <summary>
+		/// Writes the text from this document into a file.
+		/// </summary>
+		public static void WriteTextTo (this ITextSource source, string fileName)
 		{
 			if (source == null)
 				throw new ArgumentNullException ("source");
 			TextFileUtility.WriteText (fileName, source.Text, source.Encoding, source.UseBOM); 
+		}
+
+		/// <summary>
+		/// Writes the text from this document into the TextWriter.
+		/// </summary>
+		public static void WriteTextTo (this ITextSource source, TextWriter writer, ISegment segment)
+		{
+			if (source == null)
+				throw new ArgumentNullException ("source");
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			source.WriteTextTo (writer, segment.Offset, segment.Length);
+		}
+
+		/// <summary>
+		/// Creates a new TextReader to read from this text source.
+		/// </summary>
+		public static TextReader CreateReader (this ITextSource source, ISegment segment)
+		{
+			if (source == null)
+				throw new ArgumentNullException ("source");
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return source.CreateReader (segment.Offset, segment.Length);
 		}
 	}
 }
