@@ -74,6 +74,15 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <summary>
+		/// InsertionLength - RemovalLength
+		/// </summary>
+		public int ChangeDelta {
+			get {
+				return InsertionLength - RemovalLength;
+			}
+		}
+
+		/// <summary>
 		/// Creates a new TextChangeEventArgs object.
 		/// </summary>
 		public TextChangeEventArgs(int offset, string removedText, string insertedText)
