@@ -29,10 +29,10 @@ using System.Collections.Generic;
 using MonoDevelop.AspNet.Parser;
 using S = MonoDevelop.Xml.StateEngine;
 using MonoDevelop.AspNet.StateEngine;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Gui
 {
@@ -166,11 +166,11 @@ namespace MonoDevelop.AspNet.Gui
 	{
 		bool SupportsLanguage (string language);
 		
-		ParsedDocument BuildDocument (DocumentInfo info, TextEditorData textEditorData);
+		ParsedDocument BuildDocument (DocumentInfo info, TextEditor textEditorData);
 		
 		ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo);
 		
-		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData textEditorData, string expressionText, string textAfterCaret, bool isExpression);
+		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditor textEditorData, string expressionText, string textAfterCaret, bool isExpression);
 		
 		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo);
 		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);

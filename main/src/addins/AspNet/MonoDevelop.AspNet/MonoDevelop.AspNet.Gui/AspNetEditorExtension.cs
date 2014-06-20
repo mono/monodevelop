@@ -45,12 +45,13 @@ using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Gui
 {
 	public class AspNetEditorExtension : BaseHtmlEditorExtension
 	{
-		static readonly Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
+		static readonly System.Text.RegularExpressions.Regex DocTypeRegex = new System.Text.RegularExpressions.Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 
 		AspNetParsedDocument aspDoc;
 		AspNetAppProject project;
@@ -199,14 +200,14 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public void InitializeCodeCompletion (char ch)
 		{
-			int caretOffset = Document.Editor.Caret.Offset;
+			int caretOffset = Document.Editor.CaretOffset;
 			int start = caretOffset - Tracker.Engine.CurrentStateLength;
 			if (Document.Editor.GetCharAt (start) == '=') 
 				start++;
 			string sourceText = Document.Editor.GetTextBetween (start, caretOffset);
 			if (ch != '\0')
 				sourceText += ch;
-			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
+			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.TextLength, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
 
 			if (documentBuilder == null){
 				localDocumentInfo = null;
@@ -219,7 +220,7 @@ namespace MonoDevelop.AspNet.Gui
 			viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
 			
 			viewContent.Text = localDocumentInfo.LocalDocument;
-			viewContent.GetTextEditorData ().Caret.Offset = localDocumentInfo.CaretPosition;
+			viewContent.Editor.CaretOffset = localDocumentInfo.CaretPosition;
 
 			var workbenchWindow = new MonoDevelop.Ide.Gui.HiddenWorkbenchWindow ();
 			workbenchWindow.ViewContent = viewContent;
@@ -245,7 +246,7 @@ namespace MonoDevelop.AspNet.Gui
 			base.Initialize ();
 			defaultCompletionWidget = CompletionWidget;
 			defaultDocument = document;
-			defaultDocument.Editor.Caret.PositionChanged += delegate {
+			defaultDocument.Editor.CaretPositionChanged += delegate {
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
 			defaultDocument.Saved += AsyncUpdateDesignerFile;
