@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui;
 using System.Web.Razor.Generator;
 using System.Text.RegularExpressions;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -86,29 +87,29 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			defaultDocument = Document;
 			completionBuilder = RazorCompletionBuilderService.GetBuilder ("C#");
 
-			defaultDocument.Editor.Document.TextReplacing += UnderlyingDocument_TextReplacing;
-			defaultDocument.Editor.Caret.PositionChanged += delegate
+			defaultDocument.Editor.TextChanging += UnderlyingDocument_TextReplacing;
+			defaultDocument.Editor.CaretPositionChanged += delegate
 			{
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
-			syntaxMode = new RazorSyntaxMode (Document);
-			defaultDocument.Editor.Document.SyntaxMode = syntaxMode;
+//			syntaxMode = new RazorSyntaxMode (Document);
+//			defaultDocument.Editor.SyntaxMode = syntaxMode;
 
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				defaultDocument.Editor.Document.SyntaxMode = null;
+				defaultDocument.Editor.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
-			defaultDocument.Editor.Document.TextReplacing -= UnderlyingDocument_TextReplacing;
+			defaultDocument.Editor.TextChanging -= UnderlyingDocument_TextReplacing;
 			base.Dispose ();
 		}
 
 		// Handles text modifications in hidden document
-		void UnderlyingDocument_TextReplacing (object sender, DocumentChangeEventArgs e)
+		void UnderlyingDocument_TextReplacing (object sender, TextChangeEventArgs e)
 		{
 			if (razorDocument == null)
 				return;
@@ -118,9 +119,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 			if (e.RemovalLength > 0) {
 				int removalLength = e.RemovalLength;
-				if (off + removalLength > HiddenDoc.Editor.Length)
-					removalLength = HiddenDoc.Editor.Length - off;
-				HiddenDoc.Editor.Remove (new TextSegment (off, removalLength));
+				if (off + removalLength > HiddenDoc.Editor.TextLength)
+					removalLength = HiddenDoc.Editor.TextLength - off;
+				HiddenDoc.Editor.Remove (off, removalLength);
 			}
 			if (e.InsertionLength > 0) {
 				if (isInCSharpContext)
@@ -163,7 +164,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 		void CreateDocType ()
 		{
-			DocType = new MonoDevelop.Xml.StateEngine.XDocType (TextLocation.Empty);
+			DocType = new MonoDevelop.Xml.StateEngine.XDocType (ICSharpCode.NRefactory.TextLocation.Empty);
 			var matches = DocTypeRegex.Match (razorDocument.PageInfo.DocType);
 			if (matches.Success) {
 				DocType.PublicFpi = matches.Groups ["fpi"].Value;
@@ -220,7 +221,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			prevNode = n;
 
 			var state = Tracker.Engine.CurrentState;
-			int off = document.Editor.Caret.Offset;
+			int off = document.Editor.CaretOffset;
 
 			char previousChar = off > 0 ? document.Editor.GetCharAt (off - 1) : ' ';
 			char beforePrevious = off > 1 ? document.Editor.GetCharAt (off - 2) : ' ';
@@ -284,9 +285,9 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected void InitializeCodeCompletion ()
 		{
 			EnsureUnderlyingDocumentSet ();
-			hiddenInfo.OriginalCaretPosition = defaultDocument.Editor.Caret.Offset;
+			hiddenInfo.OriginalCaretPosition = defaultDocument.Editor.CaretOffset;
 			hiddenInfo.CaretPosition = CalculateCaretPosition ();
-			HiddenDoc.Editor.Caret.Offset = hiddenInfo.CaretPosition;
+			HiddenDoc.Editor.CaretOffset = hiddenInfo.CaretPosition;
 		}
 
 		class CodeFragment
@@ -324,7 +325,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 		int CalculateCaretPosition ()
 		{
-			return CalculateCaretPosition (defaultDocument.Editor.Caret.Offset);
+			return CalculateCaretPosition (defaultDocument.Editor.CaretOffset);
 		}
 
 		int CalculateCaretPosition (int currentOffset)
@@ -357,13 +358,13 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			}
 
 			string pattern = "#line " + map.Key + " ";
-			int pos = HiddenDoc.Editor.Document.IndexOf (pattern, 0, HiddenDoc.Editor.Document.TextLength, StringComparison.Ordinal);
+			int pos = HiddenDoc.Editor.Text.IndexOf (pattern, 0, HiddenDoc.Editor.TextLength, StringComparison.Ordinal);
 			if (pos == -1 || !map.Value.StartOffset.HasValue)
 				return defaultPosition;
 
 			int startRealOff = map.Value.StartOffset.Value;
 			int offDifference = currentOffset - (startRealOff + map.Value.CodeLength);
-			var line = HiddenDoc.Editor.Document.GetLineByOffset (pos);
+			var line = HiddenDoc.Editor.GetLineByOffset (pos);
 			int endHiddenOff = line.NextLine.Offset + map.Value.StartGeneratedColumn + map.Value.CodeLength;
 
 			int hiddenOff;
@@ -404,8 +405,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 //			if (!EnableCodeCompletion)
 //				return null;
 
-			char previousChar = defaultDocument.Editor.Caret.Offset > 1 ? defaultDocument.Editor.GetCharAt (
-				defaultDocument.Editor.Caret.Offset - 2) : ' ';
+			char previousChar = defaultDocument.Editor.CaretOffset > 1 ? defaultDocument.Editor.GetCharAt (
+				defaultDocument.Editor.CaretOffset - 2) : ' ';
 
 			// Don't show completion window when directive's name is being typed
 			var directive = Tracker.Engine.Nodes.Peek () as RazorDirective;
@@ -482,7 +483,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 //			if (!EnableCodeCompletion)
 //				return null;
 
-			var currentLocation = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
+			var currentLocation = new ICSharpCode.NRefactory.TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
 			char currentChar = completionContext.TriggerOffset < 1 ? ' ' : Buffer.GetCharAt (completionContext.TriggerOffset - 1);
 
 			var codeState = Tracker.Engine.CurrentState as RazorCodeFragmentState;
@@ -593,10 +594,10 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				if (el == null) {
 					var startLoc = node.Region.Begin;
 					var endLoc = node.Region.End;
-					var doc = defaultDocument.Editor.Document;
+					var doc = defaultDocument.Editor;
 
-					var blocksBetween = blocks.Where (n => n.Start.AbsoluteIndex >= doc.GetOffset (startLoc)
-						&& n.Start.AbsoluteIndex <= doc.GetOffset (endLoc));
+					var blocksBetween = blocks.Where (n => n.Start.AbsoluteIndex >= doc.LocationToOffset (startLoc.Line, startLoc.Column)
+						&& n.Start.AbsoluteIndex <= doc.LocationToOffset (endLoc.Line, endLoc.Column));
 
 					foreach (var block in blocksBetween) {
 						var outlineNode = new OutlineNode (block) {

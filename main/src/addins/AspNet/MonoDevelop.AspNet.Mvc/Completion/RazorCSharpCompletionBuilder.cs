@@ -34,6 +34,7 @@ using MonoDevelop.AspNet.Gui;
 using ICSharpCode.NRefactory.Completion;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Mvc.Completion
 {
@@ -147,7 +148,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		{
 			if (offset < 0 || offset >= TextLength)
 				return '\0';
-			return docInfo.UnderlyingDocument.Editor.GetCharAt (offset);
+			return docInfo.UnderlyingDocument.Editor[offset];
 		}
 
 		public void Replace (int offset, int count, string text)
@@ -161,10 +162,10 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 		{
 			var savedCtx = realDocument.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (
-				realDocument.Editor.Caret.Offset + triggerOffset - docInfo.CaretPosition);
+				realDocument.Editor.CaretOffset + triggerOffset - docInfo.CaretPosition);
 			var result = new CodeCompletionContext ();
 			result.TriggerOffset = triggerOffset;
-			var loc = docInfo.UnderlyingDocument.Editor.Document.OffsetToLocation (triggerOffset);
+			var loc = docInfo.UnderlyingDocument.Editor.OffsetToLocation (triggerOffset);
 			result.TriggerLine = loc.Line;
 			result.TriggerLineOffset = loc.Column - 1;
 
@@ -181,7 +182,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 				return null;
 			int min = Math.Min (ctx.TriggerOffset, CaretOffset);
 			int max = Math.Max (ctx.TriggerOffset, CaretOffset);
-			return docInfo.UnderlyingDocument.Editor.Document.GetTextBetween (min, max);
+			return docInfo.UnderlyingDocument.Editor.GetTextBetween (min, max);
 		}
 
 		public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
@@ -197,7 +198,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 
 			var translatedCtx = new CodeCompletionContext ();
 			translatedCtx.TriggerOffset = offset;
-			var loc = docInfo.UnderlyingDocument.Editor.Document.OffsetToLocation (offset);
+			var loc = docInfo.UnderlyingDocument.Editor.OffsetToLocation (offset);
 			translatedCtx.TriggerLine = loc.Line;
 			translatedCtx.TriggerLineOffset = loc.Column - 1;
 			translatedCtx.TriggerWordLength = ctx.TriggerWordLength;
@@ -208,14 +209,14 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		public int CaretOffset
 		{
 			get	{
-				return docInfo.UnderlyingDocument.Editor.Caret.Offset;
+				return docInfo.UnderlyingDocument.Editor.CaretOffset;
 			}
 		}
 
 		public int TextLength
 		{
 			get	{
-				return docInfo.UnderlyingDocument.Editor.Document.TextLength;
+				return docInfo.UnderlyingDocument.Editor.TextLength;
 			}
 		}
 

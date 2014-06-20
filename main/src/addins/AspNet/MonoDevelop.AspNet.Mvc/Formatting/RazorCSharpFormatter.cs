@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Mvc.Formatting
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.AspNet.Mvc.Formatting
 		public override bool SupportsCorrectingIndent { get { return true; } }
 
 		public override void CorrectIndenting (Projects.Policies.PolicyContainer policyParent,
-			IEnumerable<string> mimeTypeChain, Mono.TextEditor.TextEditorData data, int line)
+			IEnumerable<string> mimeTypeChain, TextEditor data, int line)
 		{
 		}
 

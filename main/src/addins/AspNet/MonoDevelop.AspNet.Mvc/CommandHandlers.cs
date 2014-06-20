@@ -33,6 +33,7 @@ using System.IO;
 using MonoDevelop.Core;
 using MonoDevelop.AspNet.Mvc.Gui;
 using System;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Mvc
 {
@@ -46,7 +47,7 @@ namespace MonoDevelop.AspNet.Mvc
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var currentLocation = doc.Editor.Caret.Location;
+			var currentLocation = doc.Editor.CaretLocation;
 
 			var controller = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
 			string controllerName = controller.Name;
@@ -56,7 +57,7 @@ namespace MonoDevelop.AspNet.Mvc
 
 			var baseDirectory = doc.FileName.ParentDirectory.ParentDirectory;
 
-			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
+			string actionName = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
 			var viewFoldersPaths = new FilePath[] {
 				baseDirectory.Combine ("Views", controllerName),
 				baseDirectory.Combine ("Views", "Shared")
@@ -88,7 +89,7 @@ namespace MonoDevelop.AspNet.Mvc
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var project = doc.Project as AspMvcProject;
-			var currentLocation = doc.Editor.Caret.Location;
+			var currentLocation = doc.Editor.CaretLocation;
 
 			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation).Name;
 			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
@@ -96,7 +97,7 @@ namespace MonoDevelop.AspNet.Mvc
 				controllerName = controllerName.Remove (pos);
 
 			string path = doc.FileName.ParentDirectory.ParentDirectory.Combine ("Views", controllerName);
-			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
+			string actionName = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
 			FolderCommandHandler.AddView (project, path, actionName);
 		}
 	}
@@ -138,15 +139,15 @@ namespace MonoDevelop.AspNet.Mvc
 				return;
 			}
 
-			var currentLocation = doc.Editor.Caret.Location;
-			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
+			var currentLocation = doc.Editor.CaretLocation;
+			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (new TextLocation (currentLocation.Line, currentLocation.Column));
 			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller", StringComparison.Ordinal)) {
 				info.Enabled = info.Visible = false;
 				return;
 			}
 
 			var correctReturnTypes = new string[] { "ActionResult", "ViewResultBase", "ViewResult", "PartialViewResult" };
-			var member = doc.ParsedDocument.GetMember (currentLocation) as IUnresolvedMethod;
+			var member = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)) as IUnresolvedMethod;
 			if (member == null || !member.IsPublic || !correctReturnTypes.Any (t => t == member.ReturnType.ToString ()))
 				info.Enabled = info.Visible = false;
 		}

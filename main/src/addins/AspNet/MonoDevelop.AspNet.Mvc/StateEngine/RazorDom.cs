@@ -31,6 +31,7 @@ using System.Diagnostics;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Mvc.StateEngine
 {
@@ -106,10 +107,10 @@ namespace MonoDevelop.AspNet.Mvc.StateEngine
 
 		public string Name { get; set; }
 		public TextLocation? FirstBracket { get; set; }
-		public TextDocument Document {
+		public MonoDevelop.Ide.Editor.TextEditor Document {
 			get	{
 				if (IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Editor != null)
-					return IdeApp.Workbench.ActiveDocument.Editor.Document;
+					return IdeApp.Workbench.ActiveDocument.Editor;
 				return null;
 			}
 		}
@@ -117,21 +118,22 @@ namespace MonoDevelop.AspNet.Mvc.StateEngine
 		public bool IsEndingBracket (TextLocation bracketLocation)
 		{
 			// If document isn't entirely loaded
-			if (Document == null || Document.Lines.Count () < Region.BeginLine)
+			if (Document == null || Document.LineCount < Region.BeginLine)
 				return false;
 
 			if (!FirstBracket.HasValue && !FindFirstBracket (bracketLocation))
 				return false;
 
-			int firstBracketOffset = Document.GetOffset (FirstBracket.Value);
-			int currentBracketOffset = Document.GetOffset (bracketLocation);
+			int firstBracketOffset = Document.LocationToOffset (FirstBracket.Value.Line, FirstBracket.Value.Column);
+			int currentBracketOffset = Document.LocationToOffset (bracketLocation.Line, bracketLocation.Column);
 
-			return Document.GetMatchingBracketOffset (firstBracketOffset) == currentBracketOffset;
+
+			return SimpleBracketMatcher.GetMatchingBracketOffset (Document, firstBracketOffset) == currentBracketOffset;
 		}
 
 		public bool FindFirstBracket (TextLocation currentLocation)
 		{
-			if (Document.Lines.Count () < Region.BeginLine)
+			if (Document.LineCount  < Region.BeginLine)
 				return false;
 
 			int firstBracketPosition = Document.GetTextBetween (Region.Begin, currentLocation).IndexOf ('{');

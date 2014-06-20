@@ -59,16 +59,16 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		AutoResetEvent parseComplete;
 		ChangeInfo lastChange;
 		string lastParsedFile;
-		TextDocument currentDocument;
+		MonoDevelop.Ide.Editor.ITextDocument currentDocument;
 		AspMvcProject aspProject;
 		DotNetProject project;
-		IList<TextDocument> openDocuments;
+		IList<MonoDevelop.Ide.Editor.ITextDocument> openDocuments;
 
-		public IList<TextDocument> OpenDocuments { get { return openDocuments; } }
+		public IList<MonoDevelop.Ide.Editor.ITextDocument> OpenDocuments { get { return openDocuments; } }
 
 		public RazorCSharpParser ()
 		{
-			openDocuments = new List<TextDocument> ();
+			openDocuments = new List<MonoDevelop.Ide.Editor.ITextDocument> ();
 
 			IdeApp.Exited += delegate {
 				//HACK: workaround for Mono's not shutting downs IsBackground threads in WaitAny calls
@@ -133,19 +133,19 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 		{
 			var guiDoc = IdeApp.Workbench.GetDocument (fileName);
 			if (guiDoc != null && guiDoc.Editor != null) {
-				currentDocument = guiDoc.Editor.Document;
-				currentDocument.TextReplacing += OnTextReplacing;
+				currentDocument = guiDoc.Editor;
+				currentDocument.TextChanging += OnTextReplacing;
 				lock (this) {
-					var newDocs = new List<TextDocument> (openDocuments);
+					var newDocs = new List<MonoDevelop.Ide.Editor.ITextDocument> (openDocuments);
 					newDocs.Add (currentDocument);
 					openDocuments = newDocs;
 				}
 				guiDoc.Closed += (sender, args) =>
 				{
 					var doc = sender as Document;
-					if (doc.Editor != null && doc.Editor.Document != null) {
+					if (doc.Editor != null && doc.Editor != null) {
 						lock (this) {
-							openDocuments = new List<TextDocument> (openDocuments.Where (d => d != doc.Editor.Document));
+							openDocuments = new List<MonoDevelop.Ide.Editor.ITextDocument> (openDocuments.Where (d => d.FileName != doc.Editor.FileName));
 						}
 					}
 
@@ -418,7 +418,7 @@ namespace MonoDevelop.AspNet.Mvc.Parser
 			}
 		}
 
-		void OnTextReplacing (object sender, DocumentChangeEventArgs e)
+		void OnTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			if (lastChange == null)
 				lastChange = new ChangeInfo (e.Offset, new SeekableTextReader((sender as TextDocument).Text));
