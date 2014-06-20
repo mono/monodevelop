@@ -44,10 +44,11 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 
 using CBinding.Parser;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace CBinding
 {
@@ -80,7 +81,7 @@ namespace CBinding
 			new KeyValuePair<string, GetMembersForExtension>(".", GetInstanceMembers)
 		};
 		
-		protected Mono.TextEditor.TextEditorData textEditorData{ get; set; }
+		protected TextEditor textEditorData{ get; set; }
 
 		public override string CompletionLanguage {
 			get {
@@ -101,20 +102,20 @@ namespace CBinding
 			return IsOpenBrace  (c) || IsCloseBrace (c);
 		}
 		
-		static int SearchMatchingBracket (TextEditorData editor, int offset, char openBracket, char closingBracket, int direction)
+		static int SearchMatchingBracket (IReadonlyTextDocument editor, int offset, char openBracket, char closingBracket, int direction)
 		{
 			bool isInString       = false;
 			bool isInChar         = false;	
 			bool isInBlockComment = false;
 			int depth = -1;
-			while (offset >= 0 && offset < editor.Length) {
-				char ch = editor.GetCharAt (offset);
+			while (offset >= 0 && offset < editor.TextLength) {
+				char ch = editor[offset];
 				switch (ch) {
 					case '/':
 						if (isInBlockComment) 
-							isInBlockComment = editor.GetCharAt (offset + direction) != '*';
-						if (!isInString && !isInChar && offset - direction < editor.Length) 
-							isInBlockComment = offset > 0 && editor.GetCharAt (offset - direction) == '*';
+							isInBlockComment = editor[offset + direction] != '*';
+					if (!isInString && !isInChar && offset - direction < editor.TextLength) 
+							isInBlockComment = offset > 0 && editor[offset - direction] == '*';
 						break;
 					case '"':
 						if (!isInChar && !isInBlockComment) 
@@ -142,7 +143,7 @@ namespace CBinding
 			return -1;
 		}
 		
-		static int GetClosingBraceForLine (TextEditorData editor, DocumentLine line, out int openingLine)
+		static int GetClosingBraceForLine (IReadonlyTextDocument editor, IDocumentLine line, out int openingLine)
 		{
 			int offset = SearchMatchingBracket (editor, line.Offset, '{', '}', -1);
 			if (offset == -1) {
@@ -150,15 +151,15 @@ namespace CBinding
 				return -1;
 			}
 				
-			openingLine = editor.Document.OffsetToLineNumber (offset);
+			openingLine = editor.OffsetToLineNumber (offset);
 			return offset;
 		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			var line = Editor.Document.GetLine (Editor.Caret.Line);
-			string lineText = Editor.GetLineText (Editor.Caret.Line);
-			int lineCursorIndex = Math.Min (lineText.Length, Editor.Caret.Column);
+			var line = Editor.GetLine (Editor.CaretLine);
+			string lineText = Editor.GetLineText (Editor.CaretLine);
+			int lineCursorIndex = Math.Min (lineText.Length, Editor.CaretColumn);
 			
 			// Smart Indentation
 			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart)
@@ -170,7 +171,6 @@ namespace CBinding
 						if(GetClosingBraceForLine(Editor, line, out braceOpeningLine) >= 0)
 						{
 							Editor.Replace (line.Offset, line.Length, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
-							Editor.Document.CommitLineUpdate (line);
 							return false;
 						}
 					}
@@ -184,12 +184,13 @@ namespace CBinding
 							string indent = String.Empty;
 							if (!String.IsNullOrEmpty (Editor.SelectedText)) {
 								int cursorPos = Editor.SelectionRange.Offset;
+
+								Editor.Remove (Editor.SelectionRange);
 							
-								Editor.DeleteSelectedText ();
-								Editor.Caret.Offset = cursorPos;
+								Editor.CaretOffset = cursorPos;
 								
-								lineText = Editor.GetLineText (Editor.Caret.Line);
-								lineCursorIndex = Editor.Caret.Column;
+								lineText = Editor.GetLineText (Editor.CaretLine);
+								lineCursorIndex = Editor.CaretColumn;
 	//							System.Console.WriteLine(TextEditorData.Caret.Offset);
 							}
 							if(lineText.Length > 0)
@@ -216,7 +217,7 @@ namespace CBinding
 							}
 						
 							// Default indentation method
-							Editor.InsertAtCaret (Editor.EolMarker + indent + GetIndent(Editor, Editor.Document.OffsetToLineNumber (line.Offset), lineCursorIndex));
+							Editor.InsertAtCaret (Editor.EolMarker + indent + GetIndent(Editor, Editor.OffsetToLineNumber (line.Offset), lineCursorIndex));
 							
 							return false;
 						
@@ -286,7 +287,7 @@ namespace CBinding
 		    CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
-			string lineText = Editor.GetLineText (Editor.Caret.Line).Trim();
+			string lineText = Editor.GetLineText (Editor.CaretLine).Trim();
 			
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
 				if(lineText.EndsWith(pair.Key)) {
@@ -579,7 +580,7 @@ namespace CBinding
 				return null;
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			string lineText = Editor.GetLineText (Editor.Caret.Line).TrimEnd ();
+			string lineText = Editor.GetLineText (Editor.CaretLine).TrimEnd ();
 			if (lineText.EndsWith (completionChar.ToString (), StringComparison.Ordinal))
 				lineText = lineText.Remove (lineText.Length-1).TrimEnd ();
 			
@@ -606,7 +607,7 @@ namespace CBinding
 		}
 		
 		// Snatched from DefaultFormattingStrategy
-		private string GetIndent (TextEditorData d, int lineNumber, int terminateIndex)
+		private string GetIndent (IReadonlyTextDocument d, int lineNumber, int terminateIndex)
 		{
 			string lineText = d.GetLineText (lineNumber);
 			if(terminateIndex > 0)
@@ -679,7 +680,7 @@ namespace CBinding
 		#endregion
 		
 		// Yoinked from C# binding
-		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		void UpdatePath (object sender, EventArgs e)
 		{
 	/*		var unit = Document.ParsedDocument;
 			if (unit == null)
@@ -723,7 +724,7 @@ namespace CBinding
 			base.Initialize ();
 			textEditorData = Document.Editor;
 			UpdatePath (null, null);
-			textEditorData.Caret.PositionChanged += UpdatePath;
+			textEditorData.CaretPositionChanged += UpdatePath;
 			Document.DocumentParsed += delegate { UpdatePath (null, null); };
 		}
 		
@@ -733,12 +734,12 @@ namespace CBinding
 		protected virtual int ResetTriggerOffset (CodeCompletionContext completionContext)
 		{
 			int i = completionContext.TriggerOffset;
-			if (i >= Editor.Length)
+			if (i >= Editor.TextLength)
 				return 0;
 			int accumulator = 0;
 			
 			for (;
-			     1 < i && char.IsLetterOrDigit (Editor.GetCharAt (i));
+			     1 < i && char.IsLetterOrDigit (Editor[i]);
 			     --i, ++accumulator);
 			completionContext.TriggerOffset = i-1;
 			return accumulator+1;
@@ -747,7 +748,7 @@ namespace CBinding
 		[CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
 		public void GotoDeclaration ()
 		{
-			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
+			LanguageItem item = GetLanguageItemAt (Editor.CaretLocation);
 			if (item != null)
 				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1);
 		}
@@ -755,11 +756,11 @@ namespace CBinding
 		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
 		public void CanGotoDeclaration (CommandInfo item)
 		{
-			item.Visible = (GetLanguageItemAt (Editor.Caret.Location) != null);
+			item.Visible = (GetLanguageItemAt (Editor.CaretLocation) != null);
 			item.Bypass = !item.Visible;
 		}
 		
-		private LanguageItem GetLanguageItemAt (DocumentLocation location)
+		private LanguageItem GetLanguageItemAt (TextLocation location)
 		{
 			CProject project = Document.Project as CProject;
 			string token = GetTokenAt (location);
@@ -771,7 +772,7 @@ namespace CBinding
 			return null;
 		}
 		
-		private string GetTokenAt (DocumentLocation location)
+		private string GetTokenAt (TextLocation location)
 		{
 			int lineOffset = location.Column-1;
 			string line = Editor.GetLineText (location.Line);

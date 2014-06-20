@@ -33,6 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using CBinding.Parser;
 using MonoDevelop.Ide;
+using MonoDevelop.Core.Text;
 
 namespace CBinding.Navigation
 {
@@ -44,7 +45,7 @@ namespace CBinding.Navigation
 			Document doc = IdeApp.Workbench.OpenDocument (item.File);
 			//bool isMacro = item is Macro;
 			
-			doc.Editor.SetCaretTo ((int)item.Line, 0); // TODO: get column?
+			doc.Editor.CaretLocation = new TextLocation ((int)item.Line, 1); // TODO: get column?
 		}
 	}
 }

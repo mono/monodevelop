@@ -40,12 +40,13 @@ using MonoDevelop.Ide.CodeCompletion;
 using CBinding.Parser;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor;
 
 namespace CBinding
 {
 	public class ParameterDataProvider : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider
 	{
-		private Mono.TextEditor.TextEditorData editor;
+		private TextEditor editor;
 		private List<Function> functions = new List<Function> ();
 
 		public ParameterDataProvider (int startOffset, Document document, ProjectInformation info, string functionName) :base (startOffset)
@@ -84,7 +85,7 @@ namespace CBinding
 		{
 			int cursor = widget.CurrentCodeCompletionContext.TriggerOffset;
 			int i = ctx.TriggerOffset;
-			if (i < 0 || i >= editor.Length || editor.GetCharAt (i) == ')')
+			if (i < 0 || i >= editor.TextLength || editor[i] == ')')
 				return -1;
 			
 			if (i > cursor)
