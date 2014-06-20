@@ -57,7 +57,7 @@ namespace MonoDevelop.Core.Text
 		/// <returns>The length of the text, in characters.</returns>
 		/// <remarks>This is the same as Text.Length, but is more efficient because
 		///  it doesn't require creating a String object.</remarks>
-		int TextLength { get; }
+		int Length { get; }
 
 		/// <summary>
 		/// Gets the whole text as string.

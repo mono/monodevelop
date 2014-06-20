@@ -85,7 +85,7 @@ namespace CBinding
 		{
 			int cursor = widget.CurrentCodeCompletionContext.TriggerOffset;
 			int i = ctx.TriggerOffset;
-			if (i < 0 || i >= editor.TextLength || editor[i] == ')')
+			if (i < 0 || i >= editor.Length || editor[i] == ')')
 				return -1;
 			
 			if (i > cursor)

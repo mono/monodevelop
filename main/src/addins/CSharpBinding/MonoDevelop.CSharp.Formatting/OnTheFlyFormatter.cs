@@ -47,7 +47,7 @@ namespace MonoDevelop.CSharp.Formatting
 	{
 		public static void Format (MonoDevelop.Ide.Gui.Document data)
 		{
-			Format (data, 0, data.Editor.TextLength);
+			Format (data, 0, data.Editor.Length);
 		}
 
 		public static void Format (MonoDevelop.Ide.Gui.Document data, TextLocation location)
@@ -249,7 +249,7 @@ namespace MonoDevelop.CSharp.Formatting
 						data.Editor.Replace (translatedOffset, replaceLength, insertText);
 					}, (replaceOffset, replaceLength, insertText) => {
 						int translatedOffset = realTextDelta + replaceOffset;
-						if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.TextLength || replaceLength < 0)
+						if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length || replaceLength < 0)
 							return true;
 						return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
 					});

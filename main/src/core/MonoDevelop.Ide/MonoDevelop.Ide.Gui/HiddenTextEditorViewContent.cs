@@ -95,7 +95,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int Length {
 			get {
-				return editor.TextLength;
+				return editor.Length;
 			}
 		}
 		

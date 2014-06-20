@@ -586,7 +586,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			XElement el = node as XElement;
 			
 			//hoist this as it may not be cheap to evaluate (P/Invoke), but won't be changing during the loop
-			int textLen = Editor.TextLength;
+			int textLen = Editor.Length;
 			
 			//run the parser until the tag's closed, or we move to its sibling or parent
 			if (node != null) {
@@ -670,7 +670,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			int start = end - this.tracker.Engine.CurrentStateLength;
 			int mid = -1;
 			
-			int limit = Math.Min (Editor.TextLength, end + 35);
+			int limit = Math.Min (Editor.Length, end + 35);
 			
 			//try to find the end of the name, but don't go too far
 			for (; end < limit; end++) {

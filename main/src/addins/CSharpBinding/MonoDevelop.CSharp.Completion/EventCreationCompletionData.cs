@@ -84,14 +84,14 @@ namespace MonoDevelop.CSharp.Completion
 			
 			// Search opening bracket of member
 			int pos = callingMember != null && !callingMember.BodyRegion.Begin.IsEmpty ? editor.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
-			while (pos < editor.TextLength && editor[pos] != '{') {
+			while (pos < editor.Length && editor[pos] != '{') {
 				pos++;
 			}
 			
 			// Search closing bracket of member
 			pos = SimpleBracketMatcher.GetMatchingBracketOffset (editor, pos) + 1;
 			
-			pos = Math.Max (0, Math.Min (pos, editor.TextLength - 1));
+			pos = Math.Max (0, Math.Min (pos, editor.Length - 1));
 			
 			// Insert new event handler after closing bracket
 			var line = callingMember != null ? editor.GetLine (callingMember.Region.BeginLine) : editor.GetLineByOffset (initialOffset);

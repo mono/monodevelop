@@ -276,7 +276,7 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		int ITextSource.TextLength {
 			get {
-				return document.TextLength;
+				return document.Length;
 			}
 		}
 

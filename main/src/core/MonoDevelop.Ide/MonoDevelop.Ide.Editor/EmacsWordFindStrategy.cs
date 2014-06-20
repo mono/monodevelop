@@ -43,12 +43,12 @@ namespace MonoDevelop.Ide.Editor
 		
 		int FindNextWordOffset (TextEditor doc, int offset, bool subword)
 		{
-			if (offset + 1 >= doc.TextLength)
-				return doc.TextLength;
+			if (offset + 1 >= doc.Length)
+				return doc.Length;
 			int result = offset + 1;
 			CC previous = SW.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
 			bool inIndentifier = previous != CC.Unknown && previous != CC.Whitespace;			
-			while (result < doc.TextLength) {
+			while (result < doc.Length) {
 				char ch = doc.GetCharAt (result);
 				CC current = SW.GetCharacterClass (ch, subword, treat_);
 				
@@ -106,7 +106,7 @@ namespace MonoDevelop.Ide.Editor
 						break;
 					} else if (current == CC.UppercaseLetter && previous != CC.UppercaseLetter) {
 						break;
-					} else if (current == CC.LowercaseLetter && previous == CC.UppercaseLetter && result + 2 < doc.TextLength
+					} else if (current == CC.LowercaseLetter && previous == CC.UppercaseLetter && result + 2 < doc.Length
 					           && SW.GetCharacterClass (doc.GetCharAt (result + 2), subword, treat_) != CC.LowercaseLetter)
 					{
 						result++;

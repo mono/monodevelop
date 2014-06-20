@@ -307,7 +307,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			int offset = data.LocationToOffset (type.Region.Begin.Line, type.Region.Begin.Column);
 			if (offset < 0 || type.BodyRegion.IsEmpty)
 				return result;
-			while (offset < data.TextLength && data[offset] != '{') {
+			while (offset < data.Length && data[offset] != '{') {
 				offset++;
 			}
 			var realStartLocation = data.OffsetToLocation (offset);

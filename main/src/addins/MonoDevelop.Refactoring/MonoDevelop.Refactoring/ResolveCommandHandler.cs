@@ -160,7 +160,7 @@ namespace MonoDevelop.Refactoring
 		{
 			if (offset <= 0)
 				return "";
-			string text = doc.Editor.GetTextAt (0, Math.Min (doc.Editor.TextLength, offset));
+			string text = doc.Editor.GetTextAt (0, Math.Min (doc.Editor.Length, offset));
 			var stub = new StringBuilder (text);
 			CSharpCompletionEngine.AppendMissingClosingBrackets (stub, false);
 			return stub.ToString ();
@@ -173,7 +173,7 @@ namespace MonoDevelop.Refactoring
 				return null;
 			int offset = editor.CaretOffset;
 			bool wasLetter = false, wasWhitespaceAfterLetter = false;
-			while (offset < editor.TextLength) {
+			while (offset < editor.Length) {
 				char ch = editor.GetCharAt (offset);
 				bool isLetter = char.IsLetterOrDigit (ch) || ch == '_';
 				bool isWhiteSpace = char.IsWhiteSpace (ch);

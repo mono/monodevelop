@@ -98,10 +98,10 @@ namespace MonoDevelop.Refactoring
 								keyword = "class";
 								break;
 							}
-							while (position < textFile.TextLength - keyword.Length) {
+							while (position < textFile.Length - keyword.Length) {
 								if (textFile.GetTextAt (position, keyword.Length) == keyword) {
 									position += keyword.Length;
-									while (position < textFile.TextLength && textFile[position] == ' ' || textFile[position] == '\t')
+									while (position < textFile.Length && textFile[position] == ' ' || textFile[position] == '\t')
 										position++;
 									break;
 								}

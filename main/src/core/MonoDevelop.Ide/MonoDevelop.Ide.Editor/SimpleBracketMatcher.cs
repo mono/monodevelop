@@ -36,7 +36,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public static int GetMatchingBracketOffset (TextEditor document, int offset)
 		{
-			if (offset < 0 || offset >= document.TextLength)
+			if (offset < 0 || offset >= document.Length)
 				return -1;
 			char ch = document [offset];
 			int bracket = openBrackets.IndexOf (ch);
@@ -69,7 +69,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			for (int i = 0; i < list.Count; i++) {
 				string item = list[i];
-				if (offset + item.Length < document.TextLength) {
+				if (offset + item.Length < document.Length) {
 					if (document.GetTextAt (offset, item.Length) == item) 
 						return i;
 				}
@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.Editor
 			List<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
 			List<string> stringQuotes       = GetList (document, "StringQuote");
 			int depth = -1;
-			while (offset >= 0 && offset < document.TextLength) {
+			while (offset >= 0 && offset < document.Length) {
 				if (curStringQuote < 0) {
 					// check line comments
 					if (!isInBlockComment && !isInLineComment) 
@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.Editor
 			if (!startsInLineComment)
 				offset = GetLastSourceCodePosition (document, offset);
 
-			while (offset >= 0 && offset < document.TextLength) {
+			while (offset >= 0 && offset < document.Length) {
 				char ch = document[offset];
 
 				// check block comments

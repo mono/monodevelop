@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var offset = line.Offset;
 			string curIndent = line.GetIndentation (data);
 			try {
-				stateTracker.Update (Math.Min (data.TextLength, offset + line.Length));
+				stateTracker.Update (Math.Min (data.Length, offset + line.Length));
 				int nlwsp = curIndent.Length;
 				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data[offset + nlwsp] == '*'))
 					return stateTracker.ThisLineIndent;

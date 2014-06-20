@@ -216,7 +216,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		public int TextLength
 		{
 			get	{
-				return docInfo.UnderlyingDocument.Editor.TextLength;
+				return docInfo.UnderlyingDocument.Editor.Length;
 			}
 		}
 

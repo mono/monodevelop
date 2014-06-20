@@ -463,7 +463,7 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			
 			System.Collections.Generic.List<RemoveInfo> removeList = new System.Collections.Generic.List<RemoveInfo> ();
-			int pos = data.TextLength - 1;
+			int pos = data.Length - 1;
 			RemoveInfo removeInfo = RemoveInfo.GetRemoveInfo (data, ref pos);
 			if (!removeInfo.IsEmpty)
 				removeList.Add (removeInfo);

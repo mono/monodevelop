@@ -196,7 +196,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			if (e.RemovalLength != 1 /*|| textEditorData.Document.CurrentAtomicUndoOperationType == OperationType.Format*/)
 				return;
-			SafeUpdateIndentEngine (Math.Min (textEditorData.TextLength, e.Offset + e.InsertionLength + 1));
+			SafeUpdateIndentEngine (Math.Min (textEditorData.Length, e.Offset + e.InsertionLength + 1));
 			if (wasInVerbatimString == true && !stateTracker.IsInsideVerbatimString) {
 				textEditorData.TextChanging -= HandleTextReplacing;
 				textEditorData.TextChanged -= HandleTextReplaced;
@@ -210,7 +210,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			wasInVerbatimString = null;
 			var o = e.Offset + e.RemovalLength;
-			if (o < 0 || o + 1 > textEditorData.TextLength || e.RemovalLength != 1/* || textEditorData.Document.IsInUndo*/) {
+			if (o < 0 || o + 1 > textEditorData.Length || e.RemovalLength != 1/* || textEditorData.Document.IsInUndo*/) {
 				return;
 			}
 			if (textEditorData[o] != '"')
@@ -250,10 +250,10 @@ namespace MonoDevelop.CSharp.Formatting
 		static void ConvertNormalToVerbatimString (ITextDocument textEditorData, int offset)
 		{
 			var endOffset = offset;
-			while (endOffset < textEditorData.TextLength) {
+			while (endOffset < textEditorData.Length) {
 				char ch = textEditorData[endOffset];
 				if (ch == '\\') {
-					if (endOffset + 1 < textEditorData.TextLength && NewLine.IsNewLine (textEditorData[endOffset + 1]))
+					if (endOffset + 1 < textEditorData.Length && NewLine.IsNewLine (textEditorData[endOffset + 1]))
 						return;
 
 					endOffset += 2;
@@ -265,7 +265,7 @@ namespace MonoDevelop.CSharp.Formatting
 					return;
 				endOffset++;
 			}
-			if (offset > endOffset || endOffset == textEditorData.TextLength)
+			if (offset > endOffset || endOffset == textEditorData.Length)
 				return;
 			var plainText = TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
 			var newText = TextPasteUtils.VerbatimStringStrategy.Encode (plainText);
@@ -275,9 +275,9 @@ namespace MonoDevelop.CSharp.Formatting
 		static void ConvertVerbatimStringToNormal (ITextDocument textEditorData, int offset)
 		{
 			var endOffset = offset;
-			while (endOffset < textEditorData.TextLength) {
+			while (endOffset < textEditorData.Length) {
 				char ch = textEditorData[endOffset];
-				if (ch == '"' && (endOffset + 1 < textEditorData.TextLength && textEditorData[endOffset + 1] == '"')) {
+				if (ch == '"' && (endOffset + 1 < textEditorData.Length && textEditorData[endOffset + 1] == '"')) {
 					endOffset += 2;
 					continue;
 				}
@@ -337,7 +337,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal void ReindentOnTab ()
 		{
 			int cursor = textEditorData.CaretOffset;
-			if (stateTracker.IsInsideVerbatimString && cursor > 0 && cursor < textEditorData.TextLength && textEditorData[cursor - 1] == '"')
+			if (stateTracker.IsInsideVerbatimString && cursor > 0 && cursor < textEditorData.Length && textEditorData[cursor - 1] == '"')
 				SafeUpdateIndentEngine (cursor + 1);
 			if (stateTracker.IsInsideVerbatimString) {
 				// insert normal tab inside @" ... "
@@ -427,7 +427,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (keyChar == '@') {
 					var retval = base.KeyPress (key, keyChar, modifier);
 					int cursor = textEditorData.CaretOffset;
-					if (cursor < textEditorData.TextLength && textEditorData[cursor] == '"')
+					if (cursor < textEditorData.Length && textEditorData[cursor] == '"')
 						ConvertNormalToVerbatimString (textEditorData, cursor + 1);
 					return retval;
 				}
@@ -438,7 +438,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (textEditorData.Options.IndentStyle == IndentStyle.Smart || textEditorData.Options.IndentStyle == IndentStyle.Virtual) {
 				bool retval;
 				//capture some of the current state
-				int oldBufLen = textEditorData.TextLength;
+				int oldBufLen = textEditorData.Length;
 				int oldLine = textEditorData.CaretLine + 1;
 				bool reIndent = false;
 
@@ -465,7 +465,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
 						FixLineStart (textEditorData, stateTracker, textEditorData.CaretLine + 1);
 					} else {
-						if (!(oldLine == textEditorData.CaretLine + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.TextLength || lastCharInserted != '\0')) {
+						if (!(oldLine == textEditorData.CaretLine + 1 && lastCharInserted == '\n') && (oldBufLen != textEditorData.Length || lastCharInserted != '\0')) {
 							DoPostInsertionSmartIndent (lastCharInserted, out reIndent);
 						} else {
 							reIndent = lastCharInserted == '\n';
@@ -651,13 +651,13 @@ namespace MonoDevelop.CSharp.Formatting
 		// removes "\s*\+\s*" patterns (used for special behaviour inside strings)
 		void HandleStringConcatinationDeletion (int start, int end)
 		{
-			if (start < 0 || end >= textEditorData.TextLength || textEditorData.IsSomethingSelected)
+			if (start < 0 || end >= textEditorData.Length || textEditorData.IsSomethingSelected)
 				return;
 			char ch = textEditorData.GetCharAt (start);
 			if (ch == '"') {
 				int sgn = Math.Sign (end - start);
 				bool foundPlus = false;
-				for (int max = start + sgn; max != end && max >= 0 && max < textEditorData.TextLength; max += sgn) {
+				for (int max = start + sgn; max != end && max >= 0 && max < textEditorData.Length; max += sgn) {
 					ch = textEditorData.GetCharAt (max);
 					if (Char.IsWhiteSpace (ch))
 						continue;
@@ -692,7 +692,7 @@ namespace MonoDevelop.CSharp.Formatting
 				break;
 			case Gdk.Key.Delete:
 				SafeUpdateIndentEngine (textEditorData.CaretOffset);
-				HandleStringConcatinationDeletion (textEditorData.CaretOffset, textEditorData.TextLength);
+				HandleStringConcatinationDeletion (textEditorData.CaretOffset, textEditorData.Length);
 				break;
 			}
 		}

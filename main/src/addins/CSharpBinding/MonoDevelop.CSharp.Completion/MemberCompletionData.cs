@@ -144,7 +144,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			pos = -1;
 			
-			for (int i = start; i < Editor.TextLength; i++) {
+			for (int i = start; i < Editor.Length; i++) {
 				char ch = Editor[i];
 				if (ch == '(') {
 					pos = i + 1;
@@ -180,13 +180,13 @@ namespace MonoDevelop.CSharp.Completion
 		bool IsBracketAlreadyInserted (IMethod method)
 		{
 			int offset = Editor.CaretOffset;
-			while (offset < Editor.TextLength) {
+			while (offset < Editor.Length) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsLetterOrDigit (ch))
 					break;
 				offset++;
 			}
-			while (offset < Editor.TextLength) {
+			while (offset < Editor.Length) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsWhiteSpace (ch))
 					return ch == '(' || ch == '<' && RequireGenerics (method);
@@ -209,13 +209,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 			offset = Editor.CaretOffset;
-			while (offset < Editor.TextLength) {
+			while (offset < Editor.Length) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsLetterOrDigit (ch))
 					break;
 				offset++;
 			}
-			while (offset < Editor.TextLength) {
+			while (offset < Editor.Length) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsWhiteSpace (ch))
 					return char.IsLetter (ch) || ch == '}';

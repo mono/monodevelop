@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 			if (formatter.SupportsOnTheFlyFormatting) {
 				using (var undo = doc.Editor.OpenUndoGroup ()) {
-					formatter.OnTheFlyFormat (doc, 0, doc.Editor.TextLength);
+					formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
 				}
 			} else {
 				doc.Editor.Text = formatter.FormatText (doc.Project.Policies, doc.Editor.Text); 

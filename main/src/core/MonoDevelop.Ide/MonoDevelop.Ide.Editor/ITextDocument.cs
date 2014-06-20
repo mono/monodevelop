@@ -237,7 +237,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			if (offset < 0 || offset > document.TextLength)
+			if (offset < 0 || offset > document.Length)
 				throw new ArgumentNullException ("offset");
 			return document.OffsetToLocation (offset).Line;
 		}
@@ -253,9 +253,9 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			if (startOffset < 0 || startOffset > document.TextLength)
+			if (startOffset < 0 || startOffset > document.Length)
 				throw new ArgumentNullException ("startOffset");
-			if (endOffset < 0 || endOffset > document.TextLength)
+			if (endOffset < 0 || endOffset > document.Length)
 				throw new ArgumentNullException ("endOffset");
 			if (startOffset > endOffset)
 				throw new InvalidOperationException ();

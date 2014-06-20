@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var result = new StringBuilder ();
 			int offset = line.Offset;
-			int max = Math.Min (offset + line.LengthIncludingDelimiter, doc.TextLength);
+			int max = Math.Min (offset + line.LengthIncludingDelimiter, doc.Length);
 			for (int i = offset; i < max; i++) {
 				char ch = doc[i];
 				if (ch != ' ' && ch != '\t')

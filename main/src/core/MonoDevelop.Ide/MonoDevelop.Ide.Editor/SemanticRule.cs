@@ -55,11 +55,11 @@ namespace MonoDevelop.Ide.Editor
 		bool inUpdate = false;
 		public override void Analyze (TextEditor doc, IDocumentLine line, Chunk startChunk, int startOffset, int endOffset)
 		{
-			if (endOffset <= startOffset || startOffset >= doc.TextLength || inUpdate)
+			if (endOffset <= startOffset || startOffset >= doc.Length || inUpdate)
 				return;
 			inUpdate = true;
 			try {
-				string text = doc.GetTextAt (startOffset, System.Math.Min (endOffset, doc.TextLength) - startOffset);
+				string text = doc.GetTextAt (startOffset, System.Math.Min (endOffset, doc.Length) - startOffset);
 				int startColumn = startOffset - line.Offset;
 				var markers = doc.GetLineMarker (line).Where (m => m is IUrlTextLineMarker).ToList ();
 				markers.ForEach (doc.RemoveMarker);

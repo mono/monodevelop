@@ -278,7 +278,7 @@ namespace MonoDevelop.Debugger
 			if (lastLine != int.MinValue && loc2.Line >= editor.LineCount - FillMarginLines) {
 				int num = (loc2.Line - (editor.LineCount - FillMarginLines) + 1) * 2;
 				int newFirst;
-				InsertLines (editor.TextLength, lastLine + 1, lastLine + num, out newFirst, out lastLine);
+				InsertLines (editor.Length, lastLine + 1, lastLine + num, out newFirst, out lastLine);
 			}
 		}
 		

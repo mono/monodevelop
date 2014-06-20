@@ -105,7 +105,7 @@ namespace MonoDevelop.Refactoring
 		public static string GetWhitespaces (Document document, int insertionOffset)
 		{
 			StringBuilder result = new StringBuilder ();
-			for (int i = insertionOffset; i < document.Editor.TextLength; i++) {
+			for (int i = insertionOffset; i < document.Editor.Length; i++) {
 				char ch = document.Editor.GetCharAt (i);
 				if (ch == ' ' || ch == '\t') {
 					result.Append (ch);

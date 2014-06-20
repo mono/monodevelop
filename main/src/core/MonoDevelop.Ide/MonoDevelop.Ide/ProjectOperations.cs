@@ -244,7 +244,7 @@ namespace MonoDevelop.Ide
 			var doc = DocumentFactory.CreateNewDocument ();
 			doc.Text = provider.ReadString ();
 			int position = doc.LocationToOffset (part.Region.BeginLine, part.Region.BeginColumn);
-			while (position + part.Name.Length < doc.TextLength) {
+			while (position + part.Name.Length < doc.Length) {
 				if (doc.GetTextAt (position, part.Name.Length) == part.Name)
 					break;
 				position++;
@@ -2000,7 +2000,7 @@ namespace MonoDevelop.Ide
 			#region IEditableTextFile implementation
 			public FilePath Name { get { return data.FileName; } }
 
-			public int Length { get { return data.TextLength; } }
+			public int Length { get { return data.Length; } }
 		
 			public string GetText (int startPosition, int endPosition)
 			{

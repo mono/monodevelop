@@ -291,9 +291,9 @@ namespace MonoDevelop.Ide.Editor
 
 		public event EventHandler FileNameChanged;
 
-		public int TextLength {
+		public int Length {
 			get {
-				return ReadOnlyTextDocument.TextLength;
+				return ReadOnlyTextDocument.Length;
 			}
 		}
 

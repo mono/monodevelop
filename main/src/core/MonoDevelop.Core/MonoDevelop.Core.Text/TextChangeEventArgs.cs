@@ -56,7 +56,7 @@ namespace MonoDevelop.Core.Text
 		/// The number of characters removed.
 		/// </summary>
 		public int RemovalLength {
-			get { return removedText.TextLength; }
+			get { return removedText.Length; }
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace MonoDevelop.Core.Text
 		/// The number of characters inserted.
 		/// </summary>
 		public int InsertionLength {
-			get { return insertedText.TextLength; }
+			get { return insertedText.Length; }
 		}
 
 		/// <summary>

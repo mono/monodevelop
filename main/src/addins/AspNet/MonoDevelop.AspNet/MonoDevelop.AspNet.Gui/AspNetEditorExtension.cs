@@ -207,7 +207,7 @@ namespace MonoDevelop.AspNet.Gui
 			string sourceText = Document.Editor.GetTextBetween (start, caretOffset);
 			if (ch != '\0')
 				sourceText += ch;
-			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.TextLength, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
+			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
 
 			if (documentBuilder == null){
 				localDocumentInfo = null;

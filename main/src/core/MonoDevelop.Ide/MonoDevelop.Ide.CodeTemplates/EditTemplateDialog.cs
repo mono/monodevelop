@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			comboboxVariables.Active = -1;
 			int offset = textEditor.CaretOffset;
 			int start = offset;
-			while (start >= 0 && start < textEditor.TextLength) { // caret offset may be behind the text
+			while (start >= 0 && start < textEditor.Length) { // caret offset may be behind the text
 				char ch = textEditor[start];
 				if (ch == '$')
 					break;
@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			
 			int end = offset;
-			while (end < textEditor.TextLength) {
+			while (end < textEditor.Length) {
 				char ch = textEditor[end];
 				if (ch == '$')
 					break;
@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					return;
 				end++;
 			}
-			if (start >= 0 && end < textEditor.TextLength) {
+			if (start >= 0 && end < textEditor.Length) {
 				string varName = textEditor.GetTextBetween (start, end).Trim ('$');
 				TreeIter iter;
 				if (variablesListStore.GetIterFirst (out iter)) {

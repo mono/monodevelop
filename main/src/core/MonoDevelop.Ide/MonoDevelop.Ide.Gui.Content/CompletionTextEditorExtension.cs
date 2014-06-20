@@ -336,7 +336,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			pos++;
 			cpos = pos;
-			int len = Editor.TextLength;
+			int len = Editor.Length;
 			
 			while (pos < len) {
 				char c = Editor[pos];

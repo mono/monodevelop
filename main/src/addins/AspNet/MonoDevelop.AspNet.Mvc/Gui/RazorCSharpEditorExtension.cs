@@ -119,8 +119,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 			if (e.RemovalLength > 0) {
 				int removalLength = e.RemovalLength;
-				if (off + removalLength > HiddenDoc.Editor.TextLength)
-					removalLength = HiddenDoc.Editor.TextLength - off;
+				if (off + removalLength > HiddenDoc.Editor.Length)
+					removalLength = HiddenDoc.Editor.Length - off;
 				HiddenDoc.Editor.Remove (off, removalLength);
 			}
 			if (e.InsertionLength > 0) {
@@ -358,7 +358,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			}
 
 			string pattern = "#line " + map.Key + " ";
-			int pos = HiddenDoc.Editor.Text.IndexOf (pattern, 0, HiddenDoc.Editor.TextLength, StringComparison.Ordinal);
+			int pos = HiddenDoc.Editor.Text.IndexOf (pattern, 0, HiddenDoc.Editor.Length, StringComparison.Ordinal);
 			if (pos == -1 || !map.Value.StartOffset.HasValue)
 				return defaultPosition;
 
