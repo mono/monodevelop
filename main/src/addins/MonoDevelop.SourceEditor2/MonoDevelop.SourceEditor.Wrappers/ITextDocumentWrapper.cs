@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide.Editor;
 using Mono.TextEditor;
+using System.IO;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -270,6 +271,30 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
+
+		TextReader MonoDevelop.Core.Text.ITextSource.CreateReader ()
+		{
+			return new StringReader (document.Text);
+		}
+
+		TextReader MonoDevelop.Core.Text.ITextSource.CreateReader (int offset, int length)
+		{
+			return new StringReader (document.GetTextAt (offset, length));
+		}
+
+		void MonoDevelop.Core.Text.ITextSource.WriteTextTo (TextWriter writer)
+		{
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
+			writer.Write (document.Text);
+		}
+
+		void MonoDevelop.Core.Text.ITextSource.WriteTextTo (TextWriter writer, int offset, int length)
+		{
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
+			writer.Write (document.GetTextAt (offset, length));
+		}
 		#endregion
 	}
 }
