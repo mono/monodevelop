@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Editor
 			return currentFactory.CreateNewDocument ();
 		}
 
-		public static ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType)
+		public static ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType = null)
 		{
 			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor.Extension;
+using System.IO;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -602,6 +603,26 @@ namespace MonoDevelop.Ide.Editor
 			if (line == null)
 				throw new ArgumentNullException ("line");
 			return 1 + textEditorImpl.GetVirtualIndentationString (line.LineNumber).Length;
+		}
+
+		public TextReader CreateReader ()
+		{
+			return ReadOnlyTextDocument.CreateReader ();
+		}
+
+		public TextReader CreateReader (int offset, int length)
+		{
+			return ReadOnlyTextDocument.CreateReader (offset, length);
+		}
+
+		public void WriteTextTo (TextWriter writer)
+		{
+			ReadOnlyTextDocument.WriteTextTo (writer);
+		}
+
+		public void WriteTextTo (TextWriter writer, int offset, int length)
+		{
+			ReadOnlyTextDocument.WriteTextTo (writer, offset, length);
 		}
 
 		void IInternalEditorExtensions.SetIndentationTracker (IIndentationTracker indentationTracker)
