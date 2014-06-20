@@ -43,6 +43,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
@@ -183,7 +184,8 @@ namespace MonoDevelop.AspNet.Projects
 			
 			var cfg = GetConfiguration (configuration);
 			var cmd = CreateExecutionCommand (configuration, cfg);
-			
+			var browserExcTarget = (BrowserExecutionTarget) context.ExecutionTarget;
+
 			IConsole console = null;
 			var operationMonitor = new AggregatedOperationMonitor (monitor);
 
@@ -213,7 +215,7 @@ namespace MonoDevelop.AspNet.Projects
 				
 				if (isXsp) {
 					console = new XspBrowserLauncherConsole (console, delegate (string port) {
-						BrowserLauncher.LaunchDefaultBrowser (String.Format("{0}:{1}", url, port));
+						browserExcTarget.desktopApp.Launch(String.Format("{0}:{1}", url, port));
 					});
 				}
 			
@@ -223,7 +225,7 @@ namespace MonoDevelop.AspNet.Projects
 				operationMonitor.AddOperation (op); //handles cancellation
 				
 				if (!isXsp)
-					BrowserLauncher.LaunchDefaultBrowser (url);
+					browserExcTarget.desktopApp.Launch(url);
 				
 				op.WaitForCompleted ();
 				
@@ -785,6 +787,32 @@ namespace MonoDevelop.AspNet.Projects
 			get {
 				return References.Any (r => r.Reference.StartsWith ("System.Web.Mvc", StringComparison.Ordinal));
 			}
+		}
+
+		class BrowserExecutionTarget : ExecutionTarget
+		{
+			string name, id;
+			public BrowserExecutionTarget (string id, string displayName, DesktopApplication app){
+				this.name = displayName;
+				this.id = id;
+				this.desktopApp = app;
+			}
+
+			public override string Name {
+				get { return name; }
+			}
+
+			public override string Id {
+				get { return id; }
+			}
+
+			public DesktopApplication desktopApp { get; private set; }
+		}
+
+		public override IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
+		{
+			foreach ( var browser in MonoDevelop.Ide.DesktopService.GetApplications("test.html"))
+				yield return new BrowserExecutionTarget(browser.Id,browser.DisplayName,browser);
 		}
 	}
 }

@@ -679,7 +679,7 @@ namespace MonoDevelop.Projects
 		/// </summary>
 		/// <returns>The execution targets.</returns>
 		/// <param name="configuration">The configuration.</param>
-		public IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
+		public virtual IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
 		{
 			return Services.ProjectService.GetExtensionChain (this).GetExecutionTargets (this, configuration);
 		}
