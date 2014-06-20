@@ -155,6 +155,10 @@
     <Compile Include="MonoDevelop.Debugger.Visualizer\ColorConverter.cs" />
     <Compile Include="MonoDevelop.Debugger.InlineVisualizers\ColorInlineVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.InlineVisualizers\InlineVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\SizePreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\ColorPreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewVisualizerWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
@@ -323,5 +327,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="MonoDevelop.Debugger.Visualizer\" />
+    <Folder Include="MonoDevelop.Debugger.PreviewVisualizers\" />
   </ItemGroup>
 </Project>

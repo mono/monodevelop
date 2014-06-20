@@ -196,6 +196,22 @@ namespace MonoDevelop.Debugger
 			return GetInlineVisualizer (val) != null;
 		}
 
+		internal static PreviewVisualizer GetPreviewVisualizer (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/PreviewVisualizers", true)) {
+				var cv = v as PreviewVisualizer;
+				if (cv != null && cv.CanVisualize (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		internal static bool HasPreviewVisualizer (ObjectValue val)
+		{
+			return GetPreviewVisualizer (val) != null;
+		}
+
 		internal static ColorConverter GetColorConverter (ObjectValue val)
 		{
 			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ColorConverters", true)) {
@@ -217,6 +233,12 @@ namespace MonoDevelop.Debugger
 			var dlg = new ValueVisualizerDialog ();
 			dlg.Show (val);
 			MessageService.ShowCustomDialog (dlg);
+		}
+
+		public static void ShowPreviewVisualizer (ObjectValue val, Gtk.Widget widget, Gdk.Rectangle previewButtonArea)
+		{
+			var dlg = new PreviewVisualizerWindow ();
+			dlg.Show (val, widget, previewButtonArea);
 		}
 		
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)

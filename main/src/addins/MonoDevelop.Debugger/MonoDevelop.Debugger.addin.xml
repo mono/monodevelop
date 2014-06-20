@@ -24,7 +24,10 @@
 		<Description>Inline visualizers. Specified classes must extend MonoDevelop.Debugger.InlineVisualizer</Description>
 		<ExtensionNode name="Type"/>
 	</ExtensionPoint>
-
+	<ExtensionPoint path="/MonoDevelop/Debugging/PreviewVisualizers">
+		<Description>Preview visualizers. Specified classes must extend MonoDevelop.Debugger.PreviewVisualizer</Description>
+		<ExtensionNode name="Type" />
+	</ExtensionPoint>
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Category id="Debug" _name="Debug Windows">
 			<Pad id = "MonoDevelop.Debugger.WatchPad" defaultLayout="Debug" defaultPlacement = "Bottom" icon="md-view-debug-watch" class = "MonoDevelop.Debugger.WatchPad" _label="Watch" />
@@ -53,6 +56,11 @@
 
 	<Extension path="/MonoDevelop/Debugging/InlineVisualizers">
 		<Type class="MonoDevelop.Debugger.InlineVisualizers.ColorInlineVisualizer" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Debugging/PreviewVisualizers">
+		<Type class="MonoDevelop.Debugger.PreviewVisualizers.SizePreviewVisualizer" />
+		<Type class="MonoDevelop.Debugger.PreviewVisualizers.ColorPreviewVisualizer" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

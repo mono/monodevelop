@@ -72,7 +72,7 @@ namespace MonoDevelop.Debugger
 		double expColWidth;
 		double valueColWidth;
 		double typeColWidth;
-		
+
 		readonly CellRendererText crtExp;
 		readonly CellRendererText crtValue;
 		readonly CellRendererText crtType;
@@ -80,6 +80,7 @@ namespace MonoDevelop.Debugger
 		readonly CellRendererImage crpPin;
 		readonly CellRendererImage crpLiveUpdate;
 		readonly CellRendererImage crpViewer;
+		readonly CellRendererImage crpPreviewButton;
 		Entry editEntry;
 		Mono.Debugging.Client.CompletionData currentCompletionData;
 		
@@ -108,6 +109,7 @@ namespace MonoDevelop.Debugger
 		const int LiveUpdateIconColumn = 11;
 		const int ViewerButtonVisibleColumn = 12;
 		const int ColorPreviewColumn = 13;
+		const int PreviewIconColumn = 14;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
@@ -157,7 +159,7 @@ namespace MonoDevelop.Debugger
 
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(Xwt.Drawing.Color?));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(Xwt.Drawing.Color?), typeof(string));
 			Model = store;
 			RulesHint = true;
 			EnableSearch = false;
@@ -186,6 +188,9 @@ namespace MonoDevelop.Debugger
 			expCol.MinWidth = 15;
 			expCol.AddNotification ("width", OnColumnWidthChanged);
 //			expCol.Expand = true;
+			crpPreviewButton = new CellRendererImage ();
+			expCol.PackStart (crpPreviewButton, false);
+			expCol.AddAttribute (crpPreviewButton, "stock_id", PreviewIconColumn);
 			AppendColumn (expCol);
 			
 			valueCol = new TreeViewColumn ();
@@ -1163,21 +1168,75 @@ namespace MonoDevelop.Debugger
 		}
 		
 		TreeIter lastPinIter;
-		
+
+		enum PreviewButtonIcons{
+			Hidden,
+			RowHover,
+			Hover,
+			Active
+		}
+
+		PreviewButtonIcons currentIcon;
+		TreeIter currentHoverIter = TreeIter.Zero;
+
+		bool blockPreviewButtonIcon;
+
+		void SetPreviewButtonIcon (PreviewButtonIcons icon, TreeIter it = default(TreeIter))
+		{
+			if (blockPreviewButtonIcon)
+				return;
+			if (currentIcon != icon || !currentHoverIter.Equals (it)) {
+				if (!currentHoverIter.Equals (TreeIter.Zero)) {
+					store.SetValue (currentHoverIter, PreviewIconColumn, null);
+				}
+				switch (icon) {
+				case PreviewButtonIcons.Hidden:
+					store.SetValue (it, PreviewIconColumn, null);
+					break;
+				case PreviewButtonIcons.RowHover:
+					store.SetValue (it, PreviewIconColumn, "md-preview-normal");
+					break;
+				case PreviewButtonIcons.Hover:
+					store.SetValue (it, PreviewIconColumn, "md-preview-hover");
+					break;
+				case PreviewButtonIcons.Active:
+					store.SetValue (it, PreviewIconColumn, "md-preview-active");
+					break;
+				}
+				currentIcon = icon;
+				currentHoverIter = it;
+			}
+		}
+
+
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
 			TreePath path;
-			if (!editing && AllowPinning && GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path)) {
+			if (!editing && GetPathAtPos ((int)evnt.X, (int)evnt.Y, out path)) {
+
 				TreeIter it;
-				if (path.Depth > 1 || PinnedWatch == null) {
-					store.GetIter (out it, path);
-					if (!it.Equals (lastPinIter)) {
-						store.SetValue (it, PinIconColumn, "md-pin-up");
-						CleanPinIcon ();
-						if (path.Depth > 1 || !RootPinAlwaysVisible)
-							lastPinIter = it;
+				if (store.GetIter (out it, path)) {
+					TreeViewColumn col;
+					CellRenderer cr;
+					if (GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && cr == crpPreviewButton) {
+						SetPreviewButtonIcon (PreviewButtonIcons.Hover, it);
+					} else {
+						SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
+					}
+
+					if (AllowPinning) {
+						if (path.Depth > 1 || PinnedWatch == null) {
+							if (!it.Equals (lastPinIter)) {
+								store.SetValue (it, PinIconColumn, "md-pin-up");
+								CleanPinIcon ();
+								if (path.Depth > 1 || !RootPinAlwaysVisible)
+									lastPinIter = it;
+							}
+						}
 					}
 				}
+			} else {
+				SetPreviewButtonIcon (PreviewButtonIcons.Hidden);
 			}
 			return base.OnMotionNotifyEvent (evnt);
 		}
@@ -1194,6 +1253,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (!editing)
 				CleanPinIcon ();
+			SetPreviewButtonIcon (PreviewButtonIcons.Hidden);
 			return base.OnLeaveNotifyEvent (evnt);
 		}
 		
@@ -1277,6 +1337,14 @@ namespace MonoDevelop.Debugger
 			return changed || base.OnKeyPressEvent (evnt);
 		}
 
+		Gdk.Rectangle GetCellRendererArea(TreePath path, TreeViewColumn col, CellRenderer cr)
+		{
+			var rect = this.GetCellArea (path, col);
+			int x, width;
+			col.CellGetPosition (cr, out x, out width);
+			return new Gdk.Rectangle (rect.X + x, rect.Y, width, rect.Height);
+		}
+
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			allowStoreColumnSizes = true;
@@ -1298,6 +1366,9 @@ namespace MonoDevelop.Debugger
 				if (cr == crpViewer) {
 					var val = (ObjectValue) store.GetValue (it, ObjectColumn);
 					DebuggingService.ShowValueVisualizer (val);
+				} else if (cr == crpPreviewButton) {
+					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
+					DebuggingService.ShowPreviewVisualizer (val, this, GetCellRendererArea (path, col, cr));
 				} else if (!editing) {
 					if (cr == crpButton) {
 						RefreshRow (it);
