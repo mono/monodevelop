@@ -33,8 +33,8 @@ using System.Threading;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
@@ -175,7 +175,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		{
 			document.Editor.Insert (
 				document.Editor.LocationToOffset (loc.BeginLine, 1), 
-				document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// " + analysisDisableTag + "disable once " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
+				document.Editor.GetVirtualIndentationString (loc.BeginLine) + "// " + analysisDisableTag + "disable once " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
 			); 
 		}
 
@@ -184,11 +184,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			using (document.Editor.OpenUndoGroup ()) {
 				document.Editor.Insert (
 					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
-					document.Editor.IndentationTracker.GetIndentationString (loc.End) + "// " + analysisDisableTag + "restore " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
+					document.Editor.GetVirtualIndentationString (loc.EndLine) + "// " + analysisDisableTag + "restore " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
 				); 
 				document.Editor.Insert (
 					document.Editor.LocationToOffset (loc.BeginLine, 1),
-					document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "// " + analysisDisableTag + "disable " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
+					document.Editor.GetVirtualIndentationString (loc.BeginLine) + "// " + analysisDisableTag + "disable " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
 				); 
 			}
 		}
@@ -198,11 +198,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			using (document.Editor.OpenUndoGroup ()) {
 				document.Editor.Insert (
 					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
-					document.Editor.IndentationTracker.GetIndentationString (loc.End) + "#pragma warning restore " + attr.PragmaWarning + document.Editor.EolMarker
+					document.Editor.GetVirtualIndentationString (loc.EndLine) + "#pragma warning restore " + attr.PragmaWarning + document.Editor.EolMarker
 				); 
 				document.Editor.Insert (
 					document.Editor.LocationToOffset (loc.BeginLine, 1),
-					document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + "#pragma warning disable " + attr.PragmaWarning + document.Editor.EolMarker
+					document.Editor.GetVirtualIndentationString (loc.BeginLine) + "#pragma warning disable " + attr.PragmaWarning + document.Editor.EolMarker
 				); 
 			}
 		}
@@ -212,7 +212,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			var member = document.ParsedDocument.GetMember (loc.End);
 			document.Editor.Insert (
 				document.Editor.LocationToOffset (member.Region.BeginLine, 1),
-				document.Editor.IndentationTracker.GetIndentationString (loc.Begin) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)
+				document.Editor.GetVirtualIndentationString (loc.BeginLine) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)
 			); 
 		}
 	}

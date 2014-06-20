@@ -46,18 +46,20 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
-using Mono.TextEditor;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.CodeGeneration;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using System.Threading;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor;
+using Mono.TextEditor;
+using MonoDevelop.CSharp.NRefactoryWrapper;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider
 	{
-		internal Mono.TextEditor.TextEditorData TextEditorData {
+		internal MonoDevelop.Ide.Editor.TextEditor TextEditorData {
 			get {
 				var doc = Document;
 				if (doc == null)
@@ -159,7 +161,7 @@ namespace MonoDevelop.CSharp.Completion
 				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
 				this.UnresolvedFileCompilation = Document.Compilation;
 				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-				document.Editor.Caret.PositionChanged += HandlePositionChanged;
+				document.Editor.CaretPositionChanged += HandlePositionChanged;
 			}
 			
 			Document.DocumentParsed += HandleDocumentParsed; 
@@ -173,14 +175,14 @@ namespace MonoDevelop.CSharp.Completion
 			src = new CancellationTokenSource ();
 		}
 
-		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
+		void HandlePositionChanged (object sender, EventArgs e)
 		{
 			StopPositionChangedTask ();
 			Task.Factory.StartNew (delegate {
 				var doc = Document;
 				if (doc == null || doc.Editor == null)
 					return;
-				var ctx = MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, src.Token);
+				var ctx = MDRefactoringContext.Create (doc, doc.Editor.CaretLocation, src.Token);
 				if (ctx != null)
 					MDRefactoringCtx = ctx;
 			});
@@ -198,7 +200,7 @@ namespace MonoDevelop.CSharp.Completion
 			var completionWidget = Document.GetContent<ICompletionWidget> ();
 			if (completionWidget == null)
 				return;
-			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);
+			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (Document.Editor.CaretOffset);
 			GenerateCodeWindow.ShowIfValid (Document, completionContext);
 		}
 
@@ -240,7 +242,9 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				unstableTypeSystemSegmentTree = newTree;
 			}
-			newTree.InstallListener (document.Editor.Document);
+			document.Editor.TextChanged += delegate(object sender2, MonoDevelop.Core.Text.TextChangeEventArgs e2) {
+				newTree.UpdateOnTextReplace (sender2, new DocumentChangeEventArgs (e2.Offset, e2.RemovedText.Text, e2.InsertedText.Text));
+			};
 
 			this.Unit = newDocument.GetAst<SyntaxTree> ();
 			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
@@ -319,9 +323,9 @@ namespace MonoDevelop.CSharp.Completion
 			if (compilation == null)
 				return null;
 			var rctx = new CSharpTypeResolveContext (compilation.MainAssembly);
-			var loc = TextEditorData.Caret.Location;
+			var loc = TextEditorData.CaretLocation;
 			rctx = rctx.WithUsingScope (CSharpUnresolvedFile.GetUsingScope (loc).Resolve (compilation));
-			int offset = TextEditorData.Caret.Offset;
+			int offset = TextEditorData.CaretOffset;
 			var curDef = GetTypeAt (offset);
 			if (curDef != null) {
 				var resolvedDef = curDef.Resolve (rctx).GetDefinition ();
@@ -342,29 +346,31 @@ namespace MonoDevelop.CSharp.Completion
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
 			var data = TextEditorData;
-			if (data.CurrentMode is TextLinkEditMode) {
-				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
-					return null;
-			}
+			if (data.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
+				return null;
+//			if (data.CurrentMode is TextLinkEditMode) {
+//				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
+//					return null;
+//			}
 			if (Unit == null || CSharpUnresolvedFile == null)
 				return null;
 			if(unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
 				return null;
 
 			var list = new CSharpCompletionDataList ();
-			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.Caret.Location) : new CSharpResolver (Compilation);
+			list.Resolver = CSharpUnresolvedFile != null ? CSharpUnresolvedFile.GetResolver (UnresolvedFileCompilation, Document.Editor.CaretLocation) : new CSharpResolver (Compilation);
 			var ctx = CreateTypeResolveContext ();
 			if (ctx == null)
 				return null;
 			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
 			if (MDRefactoringCtx == null) {
 				src.Cancel ();
-				MDRefactoringCtx = MDRefactoringContext.Create (Document, Document.Editor.Caret.Location);
+				MDRefactoringCtx = MDRefactoringContext.Create (Document, Document.Editor.CaretLocation);
 			}
 
 			var engine = new MonoCSharpCompletionEngine (
 				this,
-				data.Document,
+				new DocumentWrapper (data),
 				CreateContextProvider (),
 				completionDataFactory,
 				Document.GetProjectContext (),
@@ -437,14 +443,14 @@ namespace MonoDevelop.CSharp.Completion
 			if (ctx == null)
 				return -1;
 			var engine = new CSharpParameterCompletionEngine (
-				TextEditorData.Document,
+				new DocumentWrapper (TextEditorData),
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
 				ctx
 				);
 			List<string> list;
-			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, document.Editor.Caret.Offset, out list);
+			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, document.Editor.CaretOffset, out list);
 			if (cparam > provider.GetParameterCount (currentOverload) && !provider.AllowParameterList (currentOverload) || !HasAllUsedParameters (provider, list, currentOverload)) {
 				// Look for an overload which has more parameters
 				int bestOverload = -1;
@@ -600,7 +606,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			try {
 				var engine = new CSharpParameterCompletionEngine (
-					TextEditorData.Document,
+					new DocumentWrapper (TextEditorData),
 					CreateContextProvider (),
 					this,
 					Document.GetProjectContext (),
@@ -622,7 +628,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		List<string> GetUsedNamespaces ()
 		{
-			var scope = CSharpUnresolvedFile.GetUsingScope (document.Editor.Caret.Location);
+			var scope = CSharpUnresolvedFile.GetUsingScope (document.Editor.CaretLocation);
 			var result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);
@@ -647,13 +653,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 
 			var engine = new CSharpParameterCompletionEngine (
-				TextEditorData.Document,
+				new DocumentWrapper (TextEditorData),
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
 				ctx
 			);
-			engine.SetOffset (document.Editor.Caret.Offset);
+			engine.SetOffset (document.Editor.CaretOffset);
 			return engine.GetParameterCompletionCommandOffset (out cpos);
 		}
 
@@ -664,14 +670,14 @@ namespace MonoDevelop.CSharp.Completion
 				return -1;
 
 			var engine = new CSharpParameterCompletionEngine (
-				TextEditorData.Document,
+				new DocumentWrapper (TextEditorData),
 				CreateContextProvider (),
 				this,
 				Document.GetProjectContext (),
 				ctx
 			);
 			List<string> list;
-			return engine.GetCurrentParameterIndex (startOffset, document.Editor.Caret.Offset, out list);
+			return engine.GetCurrentParameterIndex (startOffset, document.Editor.CaretOffset, out list);
 		}
 		/*
 		internal int GetCurrentParameterIndex (ICompletionWidget widget, int offset, int memberStart)
@@ -1050,7 +1056,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 			{
-				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.document.Editor.Caret.Location);
+				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.document.Editor.CaretLocation);
 				return new NewOverrideCompletionData (ext, declarationBegin, type, m.CreateResolved (ctx));
 			}
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()

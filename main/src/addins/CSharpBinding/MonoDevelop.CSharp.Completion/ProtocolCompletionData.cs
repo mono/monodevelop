@@ -69,17 +69,17 @@ namespace MonoDevelop.CSharp.Completion
 			string sb = BaseExportCodeGenerator.GenerateMemberCode (engine.MDRefactoringCtx, builder, member);
 			sb = sb.TrimEnd ();
 
-			string indent = editor.GetIndentationString (editor.Caret.Location); 
+			string indent = editor.GetVirtualIndentationString (editor.CaretLine); 
 			sb = sb.Replace (editor.EolMarker, editor.EolMarker + indent);
 
 			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
 			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
 
-			editor.Replace (declarationBegin, editor.Caret.Offset - declarationBegin, sb);
+			editor.Replace (declarationBegin, editor.CaretOffset - declarationBegin, sb);
 			if (selectionEndPosition > 0) {
 				targetCaretPosition += declarationBegin;
 				selectionEndPosition += declarationBegin;
-				editor.Caret.Offset = selectionEndPosition;
+				editor.CaretOffset = selectionEndPosition;
 				editor.SetSelection (targetCaretPosition, selectionEndPosition);
 			}
 		}

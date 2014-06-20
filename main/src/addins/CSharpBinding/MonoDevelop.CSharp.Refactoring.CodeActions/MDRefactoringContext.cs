@@ -36,15 +36,17 @@ using System.Threading;
 using MonoDevelop.Ide.Gui;
 using System.Diagnostics;
 using MonoDevelop.CSharp.Refactoring.CodeIssues;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.CSharp.Formatting;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.CSharp.NRefactoryWrapper;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	public class MDRefactoringContext : RefactoringContext, IRefactoringContext
 	{
-		public TextEditorData TextEditor {
+		public ITextDocument TextEditor {
 			get;
 			private set;
 		}
@@ -101,31 +103,47 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override ICSharpCode.NRefactory.CSharp.TextEditorOptions TextEditorOptions {
 			get {
-				return TextEditor.CreateNRefactoryTextEditorOptions ();
+				if (TextEditor is TextEditor)
+					return ((TextEditor)TextEditor).CreateNRefactoryTextEditorOptions ();
+				var policy = Project.Policies.Get<CSharpFormattingPolicy> ();
+				var textPolicy = Project.Policies.Get<TextStylePolicy> ();
+				return TextEditor.CreateNRefactoryTextEditorOptions (policy, textPolicy);
 			}
 		}
 
 		public override bool IsSomethingSelected { 
 			get {
-				return TextEditor.IsSomethingSelected;
+				if (TextEditor is TextEditor)
+					return ((TextEditor)TextEditor).IsSomethingSelected;
+				return false;
 			}
 		}
 
 		public override string SelectedText {
 			get {
-				return TextEditor.SelectedText;
-			}
+				if (TextEditor is TextEditor)
+					return ((TextEditor)TextEditor).SelectedText;
+				return "";
+ 			}
 		}
 
 		public override TextLocation SelectionStart {
 			get {
-				return TextEditor.MainSelection.Start;
+				if (TextEditor is TextEditor) {
+					var begin = ((TextEditor)TextEditor).SelectionRegion.Begin;
+					return new TextLocation(begin.Line, begin.Column);
+				}
+				return TextLocation.Empty;
 			}
 		}
 
 		public override TextLocation SelectionEnd { 
 			get {
-				return TextEditor.MainSelection.End;
+				if (TextEditor is TextEditor) {
+					var end = ((TextEditor)TextEditor).SelectionRegion.End;
+					return new TextLocation(end.Line, end.Column);
+				}
+				return TextLocation.Empty;
 			}
 		}
 
@@ -151,7 +169,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override ICSharpCode.NRefactory.Editor.IDocumentLine GetLineByOffset (int offset)
 		{
-			return TextEditor.GetLineByOffset (offset);
+			return new DocumentLineWrapper (TextEditor.GetLineByOffset (offset));
 		}
 
 		readonly Document document;
@@ -215,7 +233,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			Services.AddService (typeof(ICSharpCode.NRefactory.CSharp.CodeGenerationService), new CSharpCodeGenerationService());
 		}
 
-		public MDRefactoringContext (DotNetProject project, TextEditorData data, ParsedDocument parsedDocument, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
+		public MDRefactoringContext (DotNetProject project, ITextDocument data, ParsedDocument parsedDocument, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
 		{
 			this.TextEditor = data;
 			this.ParsedDocument = parsedDocument;

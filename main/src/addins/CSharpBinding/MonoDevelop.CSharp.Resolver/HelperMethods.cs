@@ -41,13 +41,15 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Components.PropertyGrid.PropertyEditors;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp
 {
@@ -64,11 +66,9 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
+		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, IReadonlyTextDocument data)
 		{
-			using (var stream = data.OpenStream ()) {
-				return parser.Parse (stream, data.Document.FileName);
-			}
+			return parser.Parse (new ICSharpCode.NRefactory.Editor.StringTextSource (data.Text), data.FileName);
 		}
 		
 //		public static AstNode ParseSnippet (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
@@ -111,7 +111,7 @@ namespace MonoDevelop.CSharp
 			return codePolicy.CreateOptions ();
 		}
 		
-		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
+		public static bool TryResolveAt (this Document doc, TextLocation loc, out ResolveResult result, out AstNode node)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");

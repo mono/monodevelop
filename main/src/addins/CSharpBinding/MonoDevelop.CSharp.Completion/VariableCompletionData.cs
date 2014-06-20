@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
 			var tooltipInfo = new TooltipInformation ();
-			var resolver = ext.CSharpUnresolvedFile.GetResolver (ext.Compilation, ext.Document.Editor.Caret.Location);
+			var resolver = ext.CSharpUnresolvedFile.GetResolver (ext.Compilation, ext.Document.Editor.CaretLocation);
 			var sig = new SignatureMarkupCreator (resolver, ext.FormattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
 			tooltipInfo.SignatureMarkup = sig.GetLocalVariableMarkup (Variable);

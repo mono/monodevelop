@@ -32,7 +32,6 @@ using System.Threading;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues

@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			this.type = type;
 			
-			var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Document.Editor.CaretLocation) as CSharpTypeResolveContext;
 
 			var lookup = new MemberLookup (ctx.CurrentTypeDefinition, ext.Compilation.MainAssembly);
 			bool isProtectedAllowed = false;

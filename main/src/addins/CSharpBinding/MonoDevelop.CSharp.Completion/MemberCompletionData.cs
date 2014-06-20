@@ -34,7 +34,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.NRefactory.CSharp;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
@@ -47,6 +46,7 @@ using System.IO;
 using MonoDevelop.CSharp.Formatting;
 using Gtk;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -60,7 +60,7 @@ namespace MonoDevelop.CSharp.Completion
 		string displayText;
 		Dictionary<string, CompletionData> overloads;
 
-		Mono.TextEditor.TextEditorData Editor {
+		TextEditor Editor {
 			get {
 				return editorCompletion.TextEditorData;
 			}
@@ -144,8 +144,8 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			pos = -1;
 			
-			for (int i = start; i < Editor.Length; i++) {
-				char ch = Editor.GetCharAt (i);
+			for (int i = start; i < Editor.TextLength; i++) {
+				char ch = Editor[i];
 				if (ch == '(') {
 					pos = i + 1;
 					return true;
@@ -179,14 +179,14 @@ namespace MonoDevelop.CSharp.Completion
 
 		bool IsBracketAlreadyInserted (IMethod method)
 		{
-			int offset = Editor.Caret.Offset;
-			while (offset < Editor.Length) {
+			int offset = Editor.CaretOffset;
+			while (offset < Editor.TextLength) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsLetterOrDigit (ch))
 					break;
 				offset++;
 			}
-			while (offset < Editor.Length) {
+			while (offset < Editor.TextLength) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsWhiteSpace (ch))
 					return ch == '(' || ch == '<' && RequireGenerics (method);
@@ -208,14 +208,14 @@ namespace MonoDevelop.CSharp.Completion
 				offset--;
 			}
 
-			offset = Editor.Caret.Offset;
-			while (offset < Editor.Length) {
+			offset = Editor.CaretOffset;
+			while (offset < Editor.TextLength) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsLetterOrDigit (ch))
 					break;
 				offset++;
 			}
-			while (offset < Editor.Length) {
+			while (offset < Editor.TextLength) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsWhiteSpace (ch))
 					return char.IsLetter (ch) || ch == '}';
@@ -233,7 +233,7 @@ namespace MonoDevelop.CSharp.Completion
 			bool runCompletionCompletionCommand = false;
 			var method = Entity as IMethod;
 			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted (method)) {
-				var line = Editor.GetLine (Editor.Caret.Line);
+				var line = Editor.GetLine (Editor.CaretLine);
 				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				//var end = line.Offset + line.Length;
 				//string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
@@ -343,9 +343,9 @@ namespace MonoDevelop.CSharp.Completion
 				runCompletionCompletionCommand = true;
 			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
-			int offset = Editor.Caret.Offset;
+			int offset = Editor.CaretOffset;
 			for (int i = 0; i < skipChars; i++) {
-				Editor.SetSkipChar (offset, Editor.GetCharAt (offset));
+				Editor.AddSkipChar (offset, Editor[offset]);
 				offset++;
 			}
 			
@@ -384,7 +384,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		TypeSystemAstBuilder GetBuilder (ICompilation compilation)
 		{
-			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (editorCompletion.UnresolvedFileCompilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (editorCompletion.UnresolvedFileCompilation, editorCompletion.Document.Editor.CaretLocation) as CSharpTypeResolveContext;
 			var state = new CSharpResolver (ctx);
 			var builder = new TypeSystemAstBuilder (state);
 			builder.AddAnnotations = true;
@@ -677,16 +677,16 @@ namespace MonoDevelop.CSharp.Completion
 			return CreateTooltipInformation (editorCompletion.UnresolvedFileCompilation, editorCompletion.CSharpUnresolvedFile, resolver, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, entity, smartWrap);
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditor textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
 		{
 			return CreateTooltipInformation (compilation, file, null, textEditorData, formattingPolicy, entity, smartWrap, createFooter);
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, CSharpResolver resolver, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, CSharpResolver resolver, TextEditor textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
 		{
 			var tooltipInfo = new TooltipInformation ();
 			if (resolver == null)
-				resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
+				resolver = file != null ? file.GetResolver (compilation, textEditorData.CaretLocation) : new CSharpResolver (compilation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
 			try {
@@ -715,10 +715,10 @@ namespace MonoDevelop.CSharp.Completion
 			return tooltipInfo;
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditor textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IType type, bool smartWrap, bool createFooter = false)
 		{
 			var tooltipInfo = new TooltipInformation ();
-			var resolver = file != null ? file.GetResolver (compilation, textEditorData.Caret.Location) : new CSharpResolver (compilation);
+			var resolver = file != null ? file.GetResolver (compilation, textEditorData.CaretLocation) : new CSharpResolver (compilation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.BreakLineAfterReturnType = smartWrap;
 			try {

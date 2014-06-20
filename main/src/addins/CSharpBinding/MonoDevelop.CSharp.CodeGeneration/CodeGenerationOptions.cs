@@ -113,14 +113,14 @@ namespace MonoDevelop.CodeGeneration
 				var unit = parsedDocument.GetAst<SyntaxTree> ().Clone ();
 				var file = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 				
-				var resolvedNode = unit.GetNodeAt<BlockStatement> (Document.Editor.Caret.Location);
+				var resolvedNode = unit.GetNodeAt<BlockStatement> (Document.Editor.CaretLocation);
 				if (resolvedNode == null)
 					return null;
 				
 				var expr = new IdentifierExpression ("foo");
 				resolvedNode.Add (expr);
 				
-				var ctx = file.GetTypeResolveContext (Document.Compilation, Document.Editor.Caret.Location);
+				var ctx = file.GetTypeResolveContext (Document.Compilation, Document.Editor.CaretLocation);
 				
 				var resolver = new CSharpResolver (ctx);
 				
@@ -137,7 +137,7 @@ namespace MonoDevelop.CodeGeneration
 			
 			var compilation = Document.Compilation;
 			fullType = compilation.Import (fullType);
-			var csResolver = parsedFile.GetResolver (compilation, Document.Editor.Caret.Location);
+			var csResolver = parsedFile.GetResolver (compilation, Document.Editor.CaretLocation);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);
@@ -158,12 +158,12 @@ namespace MonoDevelop.CodeGeneration
 				Document = document
 			};
 			if (document.ParsedDocument != null && document.ParsedDocument.ParsedFile != null) {
-				options.EnclosingPart = document.ParsedDocument.ParsedFile.GetInnermostTypeDefinition (document.Editor.Caret.Location);
+				options.EnclosingPart = document.ParsedDocument.ParsedFile.GetInnermostTypeDefinition (document.Editor.CaretLocation);
 				var project = document.Project;
 				if (options.EnclosingPart != null && project != null)
 					options.EnclosingType = options.EnclosingPart.Resolve (project).GetDefinition ();
 				if (options.EnclosingType != null) {
-					options.EnclosingMember = options.EnclosingType.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (document.Editor.Caret.Location));
+					options.EnclosingMember = options.EnclosingType.Members.FirstOrDefault (m => !m.IsSynthetic && m.Region.FileName == document.FileName && m.Region.IsInside (document.Editor.CaretLocation));
 				}
 			}
 			return options;

@@ -32,9 +32,10 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -45,8 +46,8 @@ namespace MonoDevelop.CSharp.Completion
 //		CSharpCompletionTextEditorExtension ext;
 		int initialOffset;
 		public bool AddSemicolon = true;
-		TextEditorData editor;
-
+		TextEditor editor;
+		 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
 			var tooltipInfo = new TooltipInformation ();
@@ -73,28 +74,35 @@ namespace MonoDevelop.CSharp.Completion
 			this.parameterList = parameterList;
 			this.callingMember = callingMember;
 			this.Icon          = "md-newmethod";
-			this.initialOffset = editor.Caret.Offset;
+			this.initialOffset = editor.CaretOffset;
+		}
+
+		static int GetMatchingBracketOffset (TextEditor editor, int pos)
+		{
+			// TODO
+			return pos;
 		}
 		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			// insert add/remove event handler code after +=/-=
-			editor.Replace (initialOffset, editor.Caret.Offset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
+			editor.Replace (initialOffset, editor.CaretOffset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
 			
 			// Search opening bracket of member
-			int pos = callingMember != null && !callingMember.BodyRegion.Begin.IsEmpty ? editor.Document.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
-			while (pos < editor.Document.TextLength && editor.Document.GetCharAt (pos) != '{') {
+			int pos = callingMember != null && !callingMember.BodyRegion.Begin.IsEmpty ? editor.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
+			while (pos < editor.TextLength && editor[pos] != '{') {
 				pos++;
 			}
 			
 			// Search closing bracket of member
-			pos = editor.Document.GetMatchingBracketOffset (pos) + 1;
+
+			pos = GetMatchingBracketOffset (editor, pos) + 1;
 			
-			pos = Math.Max (0, Math.Min (pos, editor.Document.TextLength - 1));
+			pos = Math.Max (0, Math.Min (pos, editor.TextLength - 1));
 			
 			// Insert new event handler after closing bracket
-			var line = callingMember != null ? editor.Document.GetLine (callingMember.Region.BeginLine) : editor.Document.GetLineByOffset (initialOffset);
-			string indent = line.GetIndentation (editor.Document);
+			var line = callingMember != null ? editor.GetLine (callingMember.Region.BeginLine) : editor.GetLineByOffset (initialOffset);
+			string indent = line.GetIndentation (editor);
 			
 			StringBuilder sb = new StringBuilder ();
 			sb.Append (editor.EolMarker);
@@ -118,23 +126,24 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (indent);
 			sb.Append ("}");
 			editor.Insert (pos, sb.ToString ());
-			editor.Caret.Offset = cursorPos;
+			editor.CaretOffset = cursorPos;
 			
 			// start text link mode after insert
-			List<TextLink> links = new List<TextLink> ();
-			TextLink link = new TextLink ("name");
+			var links = new List<TextLink> ();
+			var link = new TextLink ("name");
 			
 			link.AddLink (new TextSegment (0, this.DisplayText.Length));
 			link.AddLink (new TextSegment (pos - initialOffset + pos2, this.DisplayText.Length));
 			links.Add (link);
+			editor.StartTextLinkMode (links);
 			
-			var tle = new TextLinkEditMode (editor.Parent, initialOffset, links);
+/*			var tle = new TextLinkEditMode (editor.Parent, initialOffset, links);
 			tle.TextLinkMode = TextLinkMode.EditIdentifier;
 			tle.SetCaretPosition = true;
 			tle.SelectPrimaryLink = true;
 			tle.OldMode = editor.CurrentMode;
 			tle.StartMode ();
-			editor.CurrentMode = tle;
+			editor.CurrentMode = tle;*/
 		}
 	}
 	

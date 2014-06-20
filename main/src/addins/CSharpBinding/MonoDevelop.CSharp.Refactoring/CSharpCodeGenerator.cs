@@ -34,7 +34,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Projects.Policies;
 using Mono.Cecil;
@@ -43,6 +42,8 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.CSharp.NRefactoryWrapper;
 
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -96,7 +97,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (typeDef == null)
 					return ns + "." + name;
 				var file = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-				var csResolver = file.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
+				var csResolver = file.GetResolver (Document.Compilation, Document.Editor.CaretLocation);
 				var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 				return OutputNode (Document, builder.ConvertType (typeDef));
 			}
@@ -881,7 +882,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		int CountBlankLines (MonoDevelop.Ide.Gui.Document doc, int startLine)
 		{
 			int result = 0;
-			DocumentLine line;
+			IDocumentLine line;
 			while ((line = doc.Editor.GetLine (startLine + result)) != null && doc.Editor.GetLineIndent (line).Length == line.Length) {
 				result++;
 			}
@@ -955,7 +956,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				text.Append (doc.Editor.EolMarker);
 			}
 			doc.Editor.Insert (offset, text.ToString ());
-			doc.Editor.Document.CommitUpdateAll ();
+			//doc.Editor.Document.CommitUpdateAll ();
 		}
 		
 		public override void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation)
@@ -1016,7 +1017,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type)
 		{
-			var shortType = CreateShortType (doc.Compilation, doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile, doc.Editor.Caret.Location, type);
+			var shortType = CreateShortType (doc.Compilation, doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile, doc.Editor.CaretLocation, type);
 			return OutputNode (doc, shortType);
 		}
 		
@@ -1045,8 +1046,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
 			int newOffset;
-			if (fixer.TryFix (doc.Editor.Document, doc.Editor.Caret.Offset, out newOffset)) {
-				doc.Editor.Caret.Offset = newOffset;
+			if (fixer.TryFix (new DocumentWrapper (doc.Editor), doc.Editor.CaretOffset, out newOffset)) {
+				doc.Editor.CaretOffset = newOffset;
 			}
 		}
 	}

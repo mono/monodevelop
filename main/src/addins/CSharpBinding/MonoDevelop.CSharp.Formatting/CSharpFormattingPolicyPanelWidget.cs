@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
 
 
 namespace MonoDevelop.CSharp.Formatting
@@ -33,7 +34,8 @@ namespace MonoDevelop.CSharp.Formatting
 	[System.ComponentModel.ToolboxItem(true)]
 	partial class CSharpFormattingPolicyPanelWidget : Gtk.Bin
 	{
-		readonly Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
+		readonly TextEditor texteditor = DocumentFactory.CreateNewEditor ();
+
 //		Gtk.ListStore model = new Gtk.ListStore (typeof(string));
 //		List<CSharpFormattingPolicy> policies = new List<CSharpFormattingPolicy> ();
 		const string example = @"using System;
@@ -77,15 +79,15 @@ namespace Example {
 			policy = new CSharpFormattingPolicy ();
 			buttonEdit.Clicked += HandleButtonEditClicked;
 			
-			var options = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance;
+			var options = DefaultSourceEditorOptions.Instance;
 			texteditor.Options.FontName = options.FontName;
 			texteditor.Options.ColorScheme = options.ColorScheme;
 			texteditor.Options.ShowFoldMargin = false;
 			texteditor.Options.ShowIconMargin = false;
 			texteditor.Options.ShowLineNumberMargin = false;
-			texteditor.Document.ReadOnly = true;
-			texteditor.Document.MimeType = CSharpFormatter.MimeType;
-			scrolledwindow1.Child = texteditor;
+			texteditor.IsReadOnly = true;
+			texteditor.MimeType = CSharpFormatter.MimeType;
+			scrolledwindow1.Child = texteditor.GetGtkWidget ();
 			ShowAll ();
 		}
 
@@ -96,7 +98,7 @@ namespace Example {
 				texteditor.Options.TabSize = textStylePolicy.TabWidth;
 				texteditor.Options.TabsToSpaces = textStylePolicy.TabsToSpaces;
 			}
-			texteditor.Document.Text = CSharpFormatter.FormatText (policy, textStylePolicy, CSharpFormatter.MimeType, example, 0, example.Length);
+			texteditor.Text = CSharpFormatter.FormatText (policy, textStylePolicy, CSharpFormatter.MimeType, example, 0, example.Length);
 		}
 
 		void HandleButtonEditClicked (object sender, EventArgs e)

@@ -32,29 +32,31 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
 using System.Threading;
 using MonoDevelop.SourceEditor;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
 	class HighlightUsagesExtension : AbstractUsagesExtension<ResolveResult>
 	{
-		CSharpSyntaxMode syntaxMode;
+		//CSharpSyntaxMode syntaxMode;
 
 		public override void Initialize ()
 		{
 			base.Initialize ();
 
-			TextEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
-			syntaxMode = new CSharpSyntaxMode (Document);
-			TextEditorData.Document.SyntaxMode = syntaxMode;
+			//TextEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
+			//syntaxMode = new CSharpSyntaxMode (Document);
+			//TextEditorData.Document.SyntaxMode = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
-			if (syntaxMode != null) {
-				TextEditorData.Document.SyntaxMode = null;
-				syntaxMode.Dispose ();
-				syntaxMode = null;
-			}
+//			if (syntaxMode != null) {
+//				TextEditorData.Document.SyntaxMode = null;
+//				syntaxMode.Dispose ();
+//				syntaxMode = null;
+//			}
 			base.Dispose ();
 		}
 
@@ -62,7 +64,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			AstNode node;
 			resolveResult = null;
-			if (!Document.TryResolveAt (Document.Editor.Caret.Location, out resolveResult, out node)) {
+			if (!Document.TryResolveAt (Document.Editor.CaretLocation, out resolveResult, out node)) {
 				return false;
 			}
 			if (node is PrimitiveType) {

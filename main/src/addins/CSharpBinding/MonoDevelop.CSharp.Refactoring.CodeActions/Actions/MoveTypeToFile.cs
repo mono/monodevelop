@@ -28,7 +28,6 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using System.Collections.Generic;
-using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Refactoring;
 using System.IO;
@@ -38,18 +37,21 @@ using MonoDevelop.Core.ProgressMonitoring;
 using ICSharpCode.NRefactory;
 using System.Threading;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	class MoveTypeToFile : MonoDevelop.CodeActions.CodeActionProvider
 	{
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, MonoDevelop.Core.Text.TextLocation loc, CancellationToken cancellationToken)
 		{
 			var context = refactoringContext as MDRefactoringContext;
 			if (context == null)
 				return Enumerable.Empty<MonoDevelop.CodeActions.CodeAction> ();
 			return GetActions (context);
 		}
+
 		protected IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context)
 		{
 			if (context.IsInvalid)
@@ -97,7 +99,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			if (context.Project != null) {
 				string header = StandardHeaderService.GetHeader (context.Project, correctFileName, true);
 				if (!string.IsNullOrEmpty (header))
-					content = header + context.TextEditor.EolMarker + StripHeader (content);
+					content = header + context.TextEditor.GetEolMarker () + StripHeader (content);
 			}
 			content = StripDoubleBlankLines (content);
 			
@@ -106,7 +108,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.Project);
 		}
 
-		static bool IsBlankLine (TextDocument doc, int i)
+		static bool IsBlankLine (IReadonlyTextDocument doc, int i)
 		{
 			var line = doc.GetLine (i);
 			return line.Length == line.GetIndentation (doc).Length;
@@ -114,7 +116,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		static string StripDoubleBlankLines (string content)
 		{
-			var doc = new Mono.TextEditor.TextDocument (content);
+			var doc = DocumentFactory.CreateNewDocument (new StringTextSource (content), "a.cs");
 			for (int i = 1; i + 1 <= doc.LineCount; i++) {
 				if (IsBlankLine (doc, i) && IsBlankLine (doc, i + 1)) {
 					doc.Remove (doc.GetLine (i).SegmentIncludingDelimiter);

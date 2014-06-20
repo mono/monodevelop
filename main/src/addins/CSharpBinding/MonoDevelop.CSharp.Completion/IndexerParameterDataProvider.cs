@@ -37,7 +37,6 @@ using MonoDevelop.CSharp.Parser;
 
 using System.Text.RegularExpressions;
 using ICSharpCode.NRefactory.CSharp;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.TypeSystem;

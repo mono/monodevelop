@@ -32,13 +32,14 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor;
 
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	partial class CSharpFormattingProfileDialog : Dialog
 	{
-		readonly Mono.TextEditor.TextEditor texteditor = new Mono.TextEditor.TextEditor ();
+		readonly TextEditor texteditor = DocumentFactory.CreateNewEditor ();
 		readonly CSharpFormattingPolicy profile;
 		TreeStore indentOptions, bacePositionOptions, newLineOptions, whiteSpaceOptions, wrappingOptions;
 		
@@ -469,15 +470,15 @@ namespace TestSpace {
 			};
 			comboboxCategories.Active = 0;
 			
-			var options = MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance;
+			var options = DefaultSourceEditorOptions.Instance;
 			texteditor.Options.FontName = options.FontName;
 			texteditor.Options.ColorScheme = options.ColorScheme;
 			texteditor.Options.ShowFoldMargin = false;
 			texteditor.Options.ShowIconMargin = false;
 			texteditor.Options.ShowLineNumberMargin = false;
-			texteditor.Document.ReadOnly = true;
-			texteditor.Document.MimeType = CSharpFormatter.MimeType;
-			scrolledwindow.Child = texteditor;
+			texteditor.IsReadOnly = true;
+			texteditor.MimeType = CSharpFormatter.MimeType;
+			scrolledwindow.Child = texteditor.GetGtkWidget ();
 			ShowAll ();
 			
 			#region Indent options
@@ -1247,7 +1248,7 @@ delegate void BarFoo ();
 			} else {
 				text = "";
 			}
-			texteditor.Document.Text = CSharpFormatter.FormatText (profile, null, CSharpFormatter.MimeType, text, 0, text.Length);
+			texteditor.Text = CSharpFormatter.FormatText (profile, null, CSharpFormatter.MimeType, text, 0, text.Length);
 		}
 		
 		static PropertyInfo GetProperty (TreeModel model, TreeIter iter)

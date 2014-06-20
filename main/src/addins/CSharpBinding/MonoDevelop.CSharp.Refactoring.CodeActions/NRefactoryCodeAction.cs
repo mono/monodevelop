@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.act = act;
 			this.SiblingKey = siblingKey;
 			this.Severity = act.Severity;
-			this.DocumentRegion = new Mono.TextEditor.DocumentRegion (act.Start, act.End);
+			this.DocumentRegion = new MonoDevelop.Ide.Editor.DocumentRegion (act.Start, act.End);
 		}
 
 		public override void Run (IRefactoringContext context, object script)

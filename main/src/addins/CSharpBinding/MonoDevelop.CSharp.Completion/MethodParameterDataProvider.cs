@@ -39,7 +39,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -129,10 +129,10 @@ namespace MonoDevelop.CSharp.Completion
 			return CreateTooltipInformation (compilation, file, ext.TextEditorData, ext.FormattingPolicy, entity, currentParameter, smartWrap);
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditor textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)
 		{
 			var tooltipInfo = new TooltipInformation ();
-			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);
+			var resolver = file.GetResolver (compilation, textEditorData.CaretLocation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());
 			sig.HighlightParameter = currentParameter;
 			sig.BreakLineAfterReturnType = smartWrap;
@@ -162,8 +162,8 @@ namespace MonoDevelop.CSharp.Completion
 				string docText = AmbienceService.GetDocumentation (entity);
 				if (!string.IsNullOrEmpty (docText)) {
 					string text = docText;
-					Regex paramRegex = new Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
-					Match match = paramRegex.Match (docText);
+					var paramRegex = new System.Text.RegularExpressions.Regex ("(\\<param\\s+name\\s*=\\s*\"" + curParameter.Name + "\"\\s*\\>.*?\\</param\\>)", RegexOptions.Compiled);
+					var match = paramRegex.Match (docText);
 					
 					if (match.Success) {
 						text = AmbienceService.GetDocumentationMarkup (entity, match.Groups [1].Value);

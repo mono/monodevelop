@@ -24,16 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
 	static class HelperMethods
 	{
-		public static TextReplaceChange GetRemoveNodeChange (this TextEditorData editor, AstNode n)
+		public static TextReplaceChange GetRemoveNodeChange (this IReadonlyTextDocument editor, AstNode n)
 		{
 			var change = new TextReplaceChange ();
 			change.FileName = editor.FileName;
@@ -47,10 +47,24 @@ namespace MonoDevelop.CSharp.Refactoring
 			return change;
 		}
 
-		public static ICSharpCode.NRefactory.CSharp.TextEditorOptions CreateNRefactoryTextEditorOptions (this TextEditorData doc)
+		public static ICSharpCode.NRefactory.CSharp.TextEditorOptions CreateNRefactoryTextEditorOptions (this IReadonlyTextDocument doc, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy policy, MonoDevelop.Ide.Gui.Content.TextStylePolicy textPolicy)
 		{
 			return new ICSharpCode.NRefactory.CSharp.TextEditorOptions () {
-				TabsToSpaces = doc.TabsToSpaces,
+				TabsToSpaces = textPolicy.TabsToSpaces,
+				TabSize = textPolicy.TabWidth,
+				IndentSize = textPolicy.IndentWidth,
+				ContinuationIndent = textPolicy.IndentWidth,
+				LabelIndent = -textPolicy.IndentWidth,
+				EolMarker = doc.GetEolMarker (),
+				IndentBlankLines = DefaultSourceEditorOptions.Instance.IndentStyle != IndentStyle.Virtual,
+				WrapLineLength = DefaultSourceEditorOptions.Instance.RulerColumn
+			};
+		}
+
+		public static ICSharpCode.NRefactory.CSharp.TextEditorOptions CreateNRefactoryTextEditorOptions (this TextEditor doc)
+		{
+			return new ICSharpCode.NRefactory.CSharp.TextEditorOptions () {
+				TabsToSpaces = doc.Options.TabsToSpaces,
 				TabSize = doc.Options.TabSize,
 				IndentSize = doc.Options.IndentationSize,
 				ContinuationIndent = doc.Options.IndentationSize,
@@ -61,12 +75,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			};
 		}
 
-		public static void RemoveNode (this TextEditorData editor, AstNode n)
+		public static void RemoveNode (this ITextDocument editor, AstNode n)
 		{
 			var change = editor.GetRemoveNodeChange (n);
 			editor.Remove (change.Offset, change.RemovedChars);
 		}
-		public static void Replace (this TextEditorData editor, AstNode n, AstNode replaceWith)
+
+		public static void Replace (this ITextDocument editor, AstNode n, AstNode replaceWith)
 		{
 			var change = editor.GetRemoveNodeChange (n);
 			editor.Replace (change.Offset, change.RemovedChars, replaceWith.ToString ());

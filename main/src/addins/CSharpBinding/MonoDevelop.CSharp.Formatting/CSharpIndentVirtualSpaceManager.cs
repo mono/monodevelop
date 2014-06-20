@@ -24,62 +24,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	class IndentVirtualSpaceManager : IIndentationTracker
 	{
-		readonly TextEditorData data;
+		readonly TextEditor data;
 		readonly CacheIndentEngine stateTracker;
 
-		public IndentVirtualSpaceManager(TextEditorData data, CacheIndentEngine stateTracker)
+		public IndentVirtualSpaceManager(TextEditor data, CacheIndentEngine stateTracker)
 		{
 			this.data = data;
 			this.stateTracker = stateTracker;
 		}
 
-		string GetIndentationString (DocumentLocation loc)
+		#region IIndentationTracker implementation
+		string IIndentationTracker.GetIndentationString (int lineNumber)
 		{
-			var line = data.Document.GetLine (loc.Line);
+			var line = data.GetLine (lineNumber);
 			if (line == null)
 				return "";
 			// Get context to the end of the line w/o changing the main engine's state
 			var offset = line.Offset;
-			string curIndent = line.GetIndentation (data.Document);
+			string curIndent = line.GetIndentation (data);
 			try {
-				stateTracker.Update (Math.Min (data.Length, offset + Math.Min (line.Length, loc.Column - 1)));
+				stateTracker.Update (Math.Min (data.TextLength, offset + line.Length));
 				int nlwsp = curIndent.Length;
-				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.Document.GetCharAt (offset + nlwsp) == '*'))
+				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data[offset + nlwsp] == '*'))
 					return stateTracker.ThisLineIndent;
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while indenting at "+ loc, e); 
+				LoggingService.LogError ("Error while indenting at line " + lineNumber, e); 
 			}
 			return curIndent;
 		}
-
-		public string GetIndentationString (int lineNumber, int column)
-		{
-			return GetIndentationString (new DocumentLocation (lineNumber, column));
-		}
-
-		public string GetIndentationString (int offset)
-		{
-			return GetIndentationString (data.OffsetToLocation (offset));
-		}
-
-		public int GetVirtualIndentationColumn (int offset)
-		{
-			return 1 + GetIndentationString (offset).Length;
-		}
-		
-		public int GetVirtualIndentationColumn (int lineNumber, int column)
-		{
-			return 1 + GetIndentationString (lineNumber, column).Length;
-		}
+		#endregion
 	}
 }
-

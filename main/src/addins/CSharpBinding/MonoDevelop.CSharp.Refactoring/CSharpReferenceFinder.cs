@@ -38,9 +38,10 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.IO;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Refactoring
 {
@@ -97,7 +98,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 		}
 		
-		MemberReference GetReference (Project project, ResolveResult result, AstNode node, SyntaxTree syntaxTree, string fileName, Mono.TextEditor.TextEditorData editor)
+		MemberReference GetReference (Project project, ResolveResult result, AstNode node, SyntaxTree syntaxTree, string fileName, IReadonlyTextDocument editor)
 		{
 			AstNode originalNode = node;
 			if (result == null)
@@ -316,40 +317,38 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0 &&
 					(keywordName == null || text.IndexOf (keywordName, StringComparison.Ordinal) < 0))
 					continue;
-				using (var editor = TextEditorData.CreateImmutable (text)) {
-					editor.Document.FileName = file;
-					var unit = new CSharpParser ().Parse (editor);
-					if (unit == null)
-						continue;
-					
-					var storedFile = content.GetFile (file);
-					var parsedFile = storedFile as CSharpUnresolvedFile;
-					
-					if (parsedFile == null && storedFile is ParsedDocumentDecorator) {
-						parsedFile = ((ParsedDocumentDecorator)storedFile).ParsedFile as CSharpUnresolvedFile;
-					}
-					
-					if (parsedFile == null) {
-						// for fallback purposes - should never happen.
-						parsedFile = unit.ToTypeSystem ();
-						content = content.AddOrUpdateFiles (parsedFile);
-						compilation = content.CreateCompilation ();
-					}
-					foreach (var scope in scopes) {
-						refFinder.FindReferencesInFile (
-							scope,
-							parsedFile,
-							unit,
-							compilation,
-							(astNode, result) => {
-								var newRef = GetReference (project, result, astNode, unit, file, editor);
-								if (newRef == null || refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
-									return;
-								refs.Add (newRef);
-							},
-							CancellationToken.None
-						);
-					}
+				var editor = DocumentFactory.CreateNewReadonlyDocument (new StringTextSource (text), file);
+				var unit = new CSharpParser ().Parse (editor);
+				if (unit == null)
+					continue;
+				
+				var storedFile = content.GetFile (file);
+				var parsedFile = storedFile as CSharpUnresolvedFile;
+				
+				if (parsedFile == null && storedFile is ParsedDocumentDecorator) {
+					parsedFile = ((ParsedDocumentDecorator)storedFile).ParsedFile as CSharpUnresolvedFile;
+				}
+				
+				if (parsedFile == null) {
+					// for fallback purposes - should never happen.
+					parsedFile = unit.ToTypeSystem ();
+					content = content.AddOrUpdateFiles (parsedFile);
+					compilation = content.CreateCompilation ();
+				}
+				foreach (var scope in scopes) {
+					refFinder.FindReferencesInFile (
+						scope,
+						parsedFile,
+						unit,
+						compilation,
+						(astNode, result) => {
+							var newRef = GetReference (project, result, astNode, unit, file, editor);
+							if (newRef == null || refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
+								return;
+							refs.Add (newRef);
+						},
+						CancellationToken.None
+					);
 				}
 			}
 			return refs;

@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			MimeType = "text/x-csharp";
 		}
 
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (Document document, object _context, TextLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (Document document, object _context, MonoDevelop.Core.Text.TextLocation loc, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 				yield break;

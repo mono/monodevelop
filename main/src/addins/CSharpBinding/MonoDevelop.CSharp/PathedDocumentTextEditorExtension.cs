@@ -36,6 +36,7 @@ using System.Linq;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp;
 using System.Text;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp
 {
@@ -43,10 +44,7 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
-			if (caret != null) {
-				caret.PositionChanged -= UpdatePath;
-				caret = null;
-			}
+			document.Editor.CaretPositionChanged -= UpdatePath;
 			if (ext != null) {
 				ext.TypeSegmentTreeUpdated -= HandleTypeSegmentTreeUpdated;
 				ext = null;
@@ -58,7 +56,6 @@ namespace MonoDevelop.CSharp
 		}
 
 		bool isPathSet;
-		Mono.TextEditor.Caret caret;
 		CSharpCompletionTextEditorExtension ext;
 
 		public override void Initialize ()
@@ -66,8 +63,7 @@ namespace MonoDevelop.CSharp
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			isPathSet = false;
 			UpdatePath (null, null);
-			caret = Document.Editor.Caret;
-			caret.PositionChanged += UpdatePath;
+			Document.Editor.CaretPositionChanged += UpdatePath;
 			ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
 			ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
 		}
@@ -359,7 +355,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		static PathEntry GetRegionEntry (ParsedDocument unit, Mono.TextEditor.DocumentLocation loc)
+		static PathEntry GetRegionEntry (ParsedDocument unit, TextLocation loc)
 		{
 			PathEntry entry;
 			if (!unit.UserRegions.Any ())
@@ -395,7 +391,7 @@ namespace MonoDevelop.CSharp
 			return amb.GetEntityMarkup (node);
 		}
 
-		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		void UpdatePath (object sender, EventArgs e)
 		{
 			var parsedDocument = Document.ParsedDocument;
 			if (parsedDocument == null || parsedDocument.ParsedFile == null)
@@ -406,9 +402,9 @@ namespace MonoDevelop.CSharp
 			if (unit == null)
 				return;
 
-			var loc = Document.Editor.Caret.Location;
+			var loc = Document.Editor.CaretLocation;
 			var compExt = Document.GetContent<CSharpCompletionTextEditorExtension> ();
-			var caretOffset = Document.Editor.Caret.Offset;
+			var caretOffset = Document.Editor.CaretOffset;
 			var segType = compExt.GetTypeAt (caretOffset);
 			if (segType != null)
 				loc = segType.Region.Begin;
@@ -420,7 +416,7 @@ namespace MonoDevelop.CSharp
 			if (segMember != null) {
 				loc = segMember.Region.Begin;
 			} else {
-				loc = Document.Editor.Caret.Location;
+				loc = Document.Editor.CaretLocation;
 			}
 
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);

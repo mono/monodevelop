@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.TypeSystem;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide;
