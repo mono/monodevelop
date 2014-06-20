@@ -28,9 +28,9 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Text;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DocFood
 {
@@ -45,7 +45,7 @@ namespace MonoDevelop.DocFood
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 				IdeApp.Workbench.ActiveDocument.Editor != null &&
-				IdeApp.Workbench.ActiveDocument.Editor.Document.MimeType == "text/x-csharp";
+				IdeApp.Workbench.ActiveDocument.Editor.MimeType == "text/x-csharp";
 			base.Update (info);
 		}
 		
@@ -61,7 +61,7 @@ namespace MonoDevelop.DocFood
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 				IdeApp.Workbench.ActiveDocument.Editor != null &&
-				IdeApp.Workbench.ActiveDocument.Editor.Document.MimeType == "text/x-csharp";
+				IdeApp.Workbench.ActiveDocument.Editor.MimeType == "text/x-csharp";
 			base.Update (info);
 		}
 		
@@ -73,7 +73,7 @@ namespace MonoDevelop.DocFood
 			var unit = document.ParsedDocument;
 			if (unit == null)
 				return;
-			TextEditorData data = IdeApp.Workbench.ActiveDocument.Editor;
+			var data = IdeApp.Workbench.ActiveDocument.Editor;
 			var types = new Stack<IUnresolvedTypeDefinition> (unit.TopLevelTypeDefinitions);
 			var docs = new List<KeyValuePair<int, string>> ();
 			while (types.Count > 0) {
@@ -105,29 +105,29 @@ namespace MonoDevelop.DocFood
 			}
 		}
 		
-		static bool NeedsDocumentation (TextEditorData data, IUnresolvedEntity member)
+		static bool NeedsDocumentation (TextEditor data, IUnresolvedEntity member)
 		{
 			int lineNr = member.Region.BeginLine - 1;
-			DocumentLine line;
+			IDocumentLine line;
 			do {
-				line = data.Document.GetLine (lineNr--);
-			} while (lineNr > 0 && data.Document.GetLineIndent (line).Length == line.Length);
-			return !data.Document.GetTextAt (line).TrimStart ().StartsWith ("///", StringComparison.Ordinal);
+				line = data.GetLine (lineNr--);
+			} while (lineNr > 0 && data.GetLineIndent (line).Length == line.Length);
+			return !data.GetTextAt (line).TrimStart ().StartsWith ("///", StringComparison.Ordinal);
 		}
 		
-		static string GetIndent (TextEditorData data, IEntity member, out int offset)
+		static string GetIndent (TextEditor data, IEntity member, out int offset)
 		{
-			DocumentLine line = data.Document.GetLine (member.Region.BeginLine);
+			var line = data.GetLine (member.Region.BeginLine);
 			offset = line.Offset;
-			return data.Document.GetLineIndent (line);
+			return data.GetLineIndent (line);
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, IEntity member, string indent)
+		internal static string GenerateDocumentation (TextEditor data, IEntity member, string indent)
 		{
 			return GenerateDocumentation (data, member, indent, "/// ");
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, IEntity member, string indent, string prefix)
+		internal static string GenerateDocumentation (TextEditor data, IEntity member, string indent, string prefix)
 		{
 			StringBuilder result = new StringBuilder ();
 			
@@ -217,7 +217,7 @@ namespace MonoDevelop.DocFood
 			return result.ToString ();
 		}
 		
-		internal static string GenerateEmptyDocumentation (TextEditorData data, IEntity member, string indent)
+		internal static string GenerateEmptyDocumentation (TextEditor data, IEntity member, string indent)
 		{
 			StringBuilder result = new StringBuilder ();
 			
