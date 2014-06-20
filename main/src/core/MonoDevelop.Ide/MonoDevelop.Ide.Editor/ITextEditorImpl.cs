@@ -98,6 +98,8 @@ namespace MonoDevelop.Ide.Editor
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);
 
+		void ScrollTo (int offset);
+
 		void AddSkipChar (int offset, char ch);
 
 		string GetVirtualIndentationString (int lineNumber);

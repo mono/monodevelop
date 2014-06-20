@@ -625,6 +625,16 @@ namespace MonoDevelop.Ide.Editor
 			ReadOnlyTextDocument.WriteTextTo (writer, offset, length);
 		}
 
+		public void ScrollTo (int offset)
+		{
+			textEditorImpl.ScrollTo (offset);
+		}
+
+		public void ScrollTo (TextLocation loc)
+		{
+			ScrollTo (LocationToOffset (loc));
+		}
+
 		void IInternalEditorExtensions.SetIndentationTracker (IIndentationTracker indentationTracker)
 		{
 			textEditorImpl.SetIndentationTracker (indentationTracker);
