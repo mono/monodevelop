@@ -1954,6 +1954,24 @@
     <EmbeddedResource Include="icons\light\spinner-18-5%402x.png">
       <LogicalName>spinner-light-18-5@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preview-active-16.png">
+      <LogicalName>preview-active-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preview-active-16%402x.png">
+      <LogicalName>preview-active-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preview-hover-16.png">
+      <LogicalName>preview-hover-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preview-hover-16%402x.png">
+      <LogicalName>preview-hover-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preview-normal-16.png">
+      <LogicalName>preview-normal-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preview-normal-16%402x.png">
+      <LogicalName>preview-normal-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
