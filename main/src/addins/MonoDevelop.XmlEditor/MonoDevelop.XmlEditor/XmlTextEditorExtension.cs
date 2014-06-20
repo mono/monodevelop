@@ -42,7 +42,7 @@ using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeFormatting;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -69,9 +69,9 @@ namespace MonoDevelop.XmlEditor
 			XmlSchemaManager.UserSchemaRemoved += UserSchemaRemoved;
 			SetDefaultSchema ();
 			
-			var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (view != null && string.IsNullOrEmpty (view.Document.MimeType)) {
-				view.Document.MimeType = ApplicationXmlMimeType;
+			//var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+			if (string.IsNullOrEmpty (Document.Editor.MimeType)) {
+				Document.Editor.MimeType = ApplicationXmlMimeType;
 				Document.ReparseDocument ();
 			}
 		}
@@ -460,7 +460,7 @@ namespace MonoDevelop.XmlEditor
 			
 			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
 				result = base.KeyPress (key, keyChar, modifier);
-				SmartIndentLine (Editor.Caret.Line);
+				SmartIndentLine (Editor.CaretLine);
 				return result;
 			}
 			return base.KeyPress (key, keyChar, modifier);

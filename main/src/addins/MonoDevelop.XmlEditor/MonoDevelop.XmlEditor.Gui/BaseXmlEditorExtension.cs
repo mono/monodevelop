@@ -45,7 +45,7 @@ using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -181,20 +181,20 @@ namespace MonoDevelop.XmlEditor.Gui
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart) {
-				var newLine = Editor.Caret.Line + 1;
+				var newLine = Editor.CaretLine + 1;
 				var ret = base.KeyPress (key, keyChar, modifier);
-				if (key == Gdk.Key.Return && Editor.Caret.Line == newLine) {
+				if (key == Gdk.Key.Return && Editor.CaretLine == newLine) {
 					string indent = GetLineIndent (newLine);
 					var oldIndent = Editor.GetLineIndent (newLine);
 					var seg = Editor.GetLine (newLine);
 					if (oldIndent != indent) {
-						int newCaretOffset = Editor.Caret.Offset;
+						int newCaretOffset = Editor.CaretOffset;
 						if (newCaretOffset > seg.Offset) {
 							newCaretOffset += (indent.Length - oldIndent.Length);
 						}
 						using (var undo = Editor.OpenUndoGroup ()) {
 							Editor.Replace (seg.Offset, oldIndent.Length, indent);
-							Editor.Caret.Offset = newCaretOffset;
+							Editor.CaretOffset = newCaretOffset;
 						}
 					}
 				}
@@ -432,7 +432,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		protected string GetLineIndent (int line)
 		{
-			var seg = Editor.Document.GetLine (line);
+			var seg = Editor.GetLine (line);
 			
 			//reset the tracker to the beginning of the line
 			Tracker.UpdateEngine (seg.Offset);
@@ -586,14 +586,14 @@ namespace MonoDevelop.XmlEditor.Gui
 			XElement el = node as XElement;
 			
 			//hoist this as it may not be cheap to evaluate (P/Invoke), but won't be changing during the loop
-			int textLen = Editor.Length;
+			int textLen = Editor.TextLength;
 			
 			//run the parser until the tag's closed, or we move to its sibling or parent
 			if (node != null) {
 				while (node.NextSibling == null &&
 					treeParser.Position < textLen && treeParser.Nodes.Peek () != ob.Parent)
 				{
-					char c = Editor.GetCharAt (treeParser.Position);
+					char c = Editor[treeParser.Position];
 					treeParser.Push (c);
 					if (el != null && el.IsClosed && el.ClosingTag.IsComplete)
 						break;
@@ -629,8 +629,8 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		protected void EditorSelect (DomRegion region)
 		{
-			int s = Editor.Document.LocationToOffset (region.BeginLine, region.BeginColumn);
-			int e = Editor.Document.LocationToOffset (region.EndLine, region.EndColumn);
+			int s = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
+			int e = Editor.LocationToOffset (region.EndLine, region.EndColumn);
 			if (s > -1 && e > s) {
 				Editor.SetSelection (s, e);
 				Editor.ScrollTo (s);
@@ -670,11 +670,11 @@ namespace MonoDevelop.XmlEditor.Gui
 			int start = end - this.tracker.Engine.CurrentStateLength;
 			int mid = -1;
 			
-			int limit = Math.Min (Editor.Length, end + 35);
+			int limit = Math.Min (Editor.TextLength, end + 35);
 			
 			//try to find the end of the name, but don't go too far
 			for (; end < limit; end++) {
-				char c = Editor.GetCharAt (end);
+				char c = Editor[end];
 				
 				if (c == ':') {
 					if (mid == -1)
