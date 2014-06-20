@@ -77,12 +77,6 @@ namespace MonoDevelop.CSharp.Completion
 			this.initialOffset = editor.CaretOffset;
 		}
 
-		static int GetMatchingBracketOffset (TextEditor editor, int pos)
-		{
-			// TODO
-			return pos;
-		}
-		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			// insert add/remove event handler code after +=/-=
@@ -95,8 +89,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			// Search closing bracket of member
-
-			pos = GetMatchingBracketOffset (editor, pos) + 1;
+			pos = SimpleBracketMatcher.GetMatchingBracketOffset (editor, pos) + 1;
 			
 			pos = Math.Max (0, Math.Min (pos, editor.TextLength - 1));
 			
