@@ -769,6 +769,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (expectedLogger, aggregateRepository.Logger);
 		}
+
+		[Test]
+		public void GetPackageReferences_ProjectManagerHasOnePackageReference_ReturnsOnePackageReference ()
+		{
+			CreateProject ();
+			fakeProjectManager.AddPackageReference ("MyPackage", "1.2.3.4");
+
+			List<PackageReference> packageReferences = project.GetPackageReferences ().ToList ();
+			PackageReference packageReference = packageReferences.FirstOrDefault ();
+
+			Assert.AreEqual ("MyPackage", packageReference.Id);
+			Assert.AreEqual ("1.2.3.4", packageReference.Version.ToString ());
+			Assert.AreEqual (1, packageReferences.Count);
+		}
 	}
 }
 

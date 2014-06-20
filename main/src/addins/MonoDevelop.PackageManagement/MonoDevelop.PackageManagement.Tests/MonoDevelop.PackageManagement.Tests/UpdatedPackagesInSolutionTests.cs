@@ -79,7 +79,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			var expectedPackages = new FakePackage [] { updatedPackage };
 
@@ -96,7 +96,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 
 			updatedPackagesInSolution.CheckForUpdates ();
@@ -110,7 +110,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 
 			updatedPackagesInSolution.CheckForUpdates ();
 			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
@@ -125,7 +125,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			updatedPackagesInSolution.CheckForUpdates ();
 
@@ -143,7 +143,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			bool fired = false;
 			packageManagementEvents.UpdatedPackagesAvailable += (sender, e) => {
@@ -160,7 +160,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			updatedPackagesInSolution.CheckForUpdates ();
 			bool fired = false;
 			packageManagementEvents.UpdatedPackagesAvailable += (sender, e) => {
@@ -177,7 +177,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			var expectedPackages = new FakePackage [] { updatedPackage };
 			var newProject = new FakeDotNetProject ();
@@ -198,7 +198,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			updatedPackagesInSolution.CheckForUpdates ();
 			packageManagementEvents.OnParentPackageInstalled (updatedPackage, project);
@@ -232,7 +232,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			CaptureMessagesLogged ();
 
@@ -246,8 +246,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("One", "1.0");
-			project.AddFakePackage ("Two", "1.0");
+			project.AddPackageReference ("One", "1.0");
+			project.AddPackageReference ("Two", "1.0");
 			AddUpdatedPackageToAggregateSourceRepository ("One", "1.1");
 			AddUpdatedPackageToAggregateSourceRepository ("Two", "1.4");
 			CaptureMessagesLogged ();
@@ -262,7 +262,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
 			string expectedPackagesConfigFileName = @"d:\projects\MyProject\packages.config".ToNativePath ();
 			string fileChecked = null;
 			updatedPackagesInSolution.FileExistsAction = path => {
@@ -283,7 +283,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
-			FakePackage package = project.AddFakePackage ("MyPackage", "1.0");
+			project.AddPackageReference ("MyPackage", "1.0");
+			var package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.0");
 			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			updatedPackagesInSolution.CheckForUpdates ();
 			packageManagementEvents.OnParentPackageUninstalled (package, project);

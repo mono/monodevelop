@@ -237,5 +237,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			return projectManager.LocalRepository.FindPackage (packageId);
 		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			return projectManager.GetPackageReferences ();
+		}
 	}
 }

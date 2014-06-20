@@ -42,8 +42,9 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakeServiceBasedRepository sourceRepository;
 		List<FakePackage> installedPackages;
 		List<FakePackage> sourceRepositoryPackages;
-		List<IPackage> packagesUsedWhenCheckingForUpdates;
+		List<IPackageName> packageNamesUsedWhenCheckingForUpdates;
 		bool includePreleaseUsedWhenCheckingForUpdates;
+		FakePackageManagementProject project;
 
 		[SetUp]
 		public void Init ()
@@ -51,17 +52,18 @@ namespace MonoDevelop.PackageManagement.Tests
 			sourceRepository = new FakeServiceBasedRepository ();
 			installedPackages = new List<FakePackage> ();
 			sourceRepositoryPackages = new List<FakePackage> ();
-			packagesUsedWhenCheckingForUpdates = new List<IPackage> ();
+			packageNamesUsedWhenCheckingForUpdates = new List<IPackageName> ();
+			project = new FakePackageManagementProject ();
 		}
 
 		void CreateUpdatedPackages ()
 		{
-			sourceRepository.GetUpdatesAction = (packages, includePrerelease, includeAllVersions, targetFrameworks, versionConstraints) => {
+			sourceRepository.GetUpdatesAction = (packagesNames, includePrerelease, includeAllVersions, targetFrameworks, versionConstraints) => {
 				includePreleaseUsedWhenCheckingForUpdates = includePrerelease;
-				packagesUsedWhenCheckingForUpdates.AddRange (packages.Select (p => (IPackage)p));
+				packageNamesUsedWhenCheckingForUpdates.AddRange (packagesNames.Select (p => (IPackageName)p));
 				return sourceRepositoryPackages.AsQueryable ();
 			};
-			updatedPackages = new UpdatedPackages (installedPackages.AsQueryable (), sourceRepository);
+			updatedPackages = new UpdatedPackages (project, sourceRepository);
 		}
 
 		FakePackage AddPackageToSourceRepository (string id, string version)
@@ -79,17 +81,15 @@ namespace MonoDevelop.PackageManagement.Tests
 			return helper.Package;
 		}
 
-		FakePackage AddInstalledPackage (string id, string version)
+		PackageReference AddPackageReference (string packageId, string packageVersion)
 		{
-			FakePackage package = CreatePackage (id, version);
-			installedPackages.Add (package);
-			return package;
+			return project.AddPackageReference (packageId, packageVersion);
 		}
 
 		[Test]
-		public void GetUpdatedPackages_OnePackageInstalledAndUpdateAvailable_UpdatedPackageReturned ()
+		public void GetUpdatedPackages_OnePackageReferenceAndUpdateAvailable_UpdatedPackageReturned ()
 		{
-			AddInstalledPackage ("Test", "1.0");
+			AddPackageReference ("Test", "1.0");
 			IPackage expectedPackage = AddPackageToSourceRepository ("Test", "1.1");
 			var expectedPackages = new IPackage[] { expectedPackage };
 			CreateUpdatedPackages ();
@@ -100,50 +100,56 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetUpdatedPackages_OnePackageInstalledAndUpdateAvailable_InstalledPackageUsedToCheckIfSourceRepositoryHasAnyUpdates ()
+		public void GetUpdatedPackages_OnePackageReferencedAndUpdateAvailable_InstalledPackageNameUsedToCheckIfSourceRepositoryHasAnyUpdates ()
 		{
-			IPackage expectedPackage = AddInstalledPackage ("Test", "1.0");
-			var expectedPackages = new IPackage[] { expectedPackage };
+			AddPackageReference ("Test", "1.0");
 			AddPackageToSourceRepository ("Test", "1.1");
 			CreateUpdatedPackages ();
 
 			IEnumerable<IPackage> packages = updatedPackages.GetUpdatedPackages ();
 
-			PackageCollectionAssert.AreEqual (expectedPackages, packagesUsedWhenCheckingForUpdates);
+			IPackageName packageChecked = packageNamesUsedWhenCheckingForUpdates.FirstOrDefault ();
+			Assert.AreSame ("Test", packageChecked.Id);
+			Assert.AreSame ("1.0", packageChecked.Version.ToString ());
+			Assert.AreEqual (1, packageNamesUsedWhenCheckingForUpdates.Count);
 		}
 
 		[Test]
 		public void GetUpdatedPackages_JQueryPackageInstalledTwiceWithDifferentVersions_OnlyOlderJQueryPackageUsedToDetermineUpdatedPackages ()
 		{
-			IPackage expectedPackage = AddInstalledPackage ("jquery", "1.6");
-			var expectedPackages = new IPackage[] { expectedPackage };
-			AddInstalledPackage ("jquery", "1.7");
+			AddPackageReference ("jquery", "1.6");
+			AddPackageReference ("jquery", "1.7");
 			AddPackageToSourceRepository ("jquery", "2.1");
 			CreateUpdatedPackages ();
 
 			updatedPackages.GetUpdatedPackages ();
 
-			PackageCollectionAssert.AreEqual (expectedPackages, packagesUsedWhenCheckingForUpdates);
+			IPackageName packageChecked = packageNamesUsedWhenCheckingForUpdates.FirstOrDefault ();
+			Assert.AreSame ("jquery", packageChecked.Id);
+			Assert.AreSame ("1.6", packageChecked.Version.ToString ());
+			Assert.AreEqual (1, packageNamesUsedWhenCheckingForUpdates.Count);
 		}
 
 		[Test]
 		public void GetUpdatedPackages_JQueryPackageInstalledTwiceWithDifferentVersionsAndNewerVersionsFirst_OnlyOlderJQueryPackageUsedToDetermineUpdatedPackages ()
 		{
-			AddInstalledPackage ("jquery", "1.7");
-			IPackage expectedPackage = AddInstalledPackage ("jquery", "1.6");
-			var expectedPackages = new IPackage[] { expectedPackage };
+			AddPackageReference ("jquery", "1.7");
+			AddPackageReference ("jquery", "1.6");
 			AddPackageToSourceRepository ("jquery", "2.1");
 			CreateUpdatedPackages ();
 
 			updatedPackages.GetUpdatedPackages ();
 
-			PackageCollectionAssert.AreEqual (expectedPackages, packagesUsedWhenCheckingForUpdates);
+			IPackageName packageChecked = packageNamesUsedWhenCheckingForUpdates.FirstOrDefault ();
+			Assert.AreSame ("jquery", packageChecked.Id);
+			Assert.AreSame ("1.6", packageChecked.Version.ToString ());
+			Assert.AreEqual (1, packageNamesUsedWhenCheckingForUpdates.Count);
 		}
 
 		[Test]
 		public void GetUpdatedPackages_AllowPrereleaseIsTrue_PrereleasePackagesAllowedForUpdates ()
 		{
-			AddInstalledPackage ("Test", "1.0");
+			AddPackageReference ("Test", "1.0");
 			CreateUpdatedPackages ();
 
 			updatedPackages.GetUpdatedPackages (includePrerelease: true);
@@ -154,7 +160,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void GetUpdatedPackages_AllowPrereleaseIsFalse_PrereleasePackagesNotAllowedForUpdates ()
 		{
-			AddInstalledPackage ("Test", "1.0");
+			AddPackageReference ("Test", "1.0");
 			CreateUpdatedPackages ();
 
 			updatedPackages.GetUpdatedPackages (includePrerelease: false);

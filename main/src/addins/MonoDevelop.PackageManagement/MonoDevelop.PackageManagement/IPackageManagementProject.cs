@@ -71,6 +71,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
 		void AddPackageReference (IPackage package);
+		IEnumerable<PackageReference> GetPackageReferences ();
 
 		InstallPackageAction CreateInstallPackageAction();
 		UninstallPackageAction CreateUninstallPackageAction();

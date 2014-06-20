@@ -343,6 +343,22 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public IDotNetProject Project {
 			get { return FakeDotNetProject; }
 		}
+
+		FakeProjectManager projectManager = new FakeProjectManager ();
+
+		public List<PackageReference> PackageReferences {
+			get { return projectManager.PackageReferences; }
+		}
+
+		public PackageReference AddPackageReference (string packageId, string packageVersion)
+		{
+			return projectManager.AddPackageReference (packageId, packageVersion);
+		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			return PackageReferences;
+		}
 	}
 }
 
