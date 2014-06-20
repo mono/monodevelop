@@ -237,7 +237,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		MonoDevelop.Core.Text.ITextSourceVersion MonoDevelop.Core.Text.ITextSource.Version {
 			get {
-				throw new NotImplementedException ();
+				return new TextSourceVersionWrapper (document.Version);
 			}
 		}
 
