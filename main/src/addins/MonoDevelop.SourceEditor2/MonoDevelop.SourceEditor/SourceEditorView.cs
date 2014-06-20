@@ -2905,6 +2905,12 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.GetTextEditorData ().SetSkipChar (offset, ch);
 		}
 
+		void ITextEditorImpl.ScrollTo (int offset)
+		{
+			TextEditor.ScrollTo (offset); 
+		}
+
+
 		#region IEditorActionHost implementation
 
 		void IEditorActionHost.MoveCaretDown ()
