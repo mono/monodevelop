@@ -515,7 +515,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		}
 		
 		TextWriter IConsole.Error {
-			get { return errorLogger; }
+			get { return logger; }
 		} 
 
 		void IDebugConsole.Debug (int level, string category, string message)
