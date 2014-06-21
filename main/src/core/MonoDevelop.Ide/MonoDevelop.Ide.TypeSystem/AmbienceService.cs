@@ -166,10 +166,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					} catch (Exception e) {
 						LoggingService.LogWarning ("Malformed documentation xml detected:" + documentation, e);
 						// may happen on malformed xml.
-						var len = idx2 - idx1 - "<summary>".Length;
-						if (len <= 0)
-							return "";
-						result = documentation.Substring (idx1 + "<summary>".Length, len);
+						result = documentation.Substring (idx1 + "<summary>".Length, idx2 - idx1 - "<summary>".Length);
 					}
 				} else if (idx1 >= 0) {
 					result = documentation.Substring (idx1 + "<summary>".Length);
