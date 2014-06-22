@@ -30,7 +30,6 @@ using MonoDevelop.Core;
 
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
-using MonoDevelop.AspNet.WebForms.Parser;
 using MonoDevelop.AspNet.WebForms;
 using MonoDevelop.AspNet.Projects;
 

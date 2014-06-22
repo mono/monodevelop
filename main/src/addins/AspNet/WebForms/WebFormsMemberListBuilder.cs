@@ -47,13 +47,13 @@ namespace MonoDevelop.AspNet.WebForms
 	//purpose is to find all named tags for code completion and compilation of base class
 	class WebFormsMemberListBuilder
 	{
-		readonly DocumentReferenceManager docRefMan;
+		readonly WebFormsTypeContext docRefMan;
 		XDocument xDocument;
 		
 		public IDictionary<string,CodeBehindMember> Members { get; private set; }
 		public IList<Error> Errors { get; private set; }
 		
-		public WebFormsMemberListBuilder (DocumentReferenceManager refMan, XDocument xDoc)
+		public WebFormsMemberListBuilder (WebFormsTypeContext refMan, XDocument xDoc)
 		{
 			docRefMan = refMan;
 			xDocument = xDoc;

@@ -86,20 +86,17 @@ namespace MonoDevelop.AspNet.WebForms
 	/// </summary>
 	public class DocumentInfo
 	{
-		public DocumentInfo (ICompilation dom, WebFormsParsedDocument aspNetParsedDocument, IEnumerable<string> imports,
-		                     IList<ICompilation> references)
+		public DocumentInfo (ICompilation dom, WebFormsParsedDocument aspNetParsedDocument, IEnumerable<string> imports)
 		{
 			this.Dom = dom;
 			this.AspNetDocument = aspNetParsedDocument;
 			this.Imports = imports;
-			this.References = references;
 			BuildExpressionAndScriptsLists ();
 		}
 		
 		public ICompilation Dom { get; private set; }
 		public WebFormsParsedDocument AspNetDocument { get; private set; }
 		public ParsedDocument ParsedDocument { get; set; }
-		public IList<ICompilation> References { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
 		
 		public IUnresolvedTypeDefinition CodeBesideClass { get; set; }

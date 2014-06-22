@@ -323,54 +323,6 @@ namespace MonoDevelop.AspNet.Projects
 		
 		#endregion
 		
-		public ICompilation ResolveAssemblyDom (string assemblyName)
-		{
-			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
-			if (string.IsNullOrEmpty (parsed.Name))
-				return null;
-			
-			var dllName = parsed.Name + ".dll";
-			
-			foreach (var reference in References) {
-				if (reference.ReferenceType == ReferenceType.Package || reference.ReferenceType == ReferenceType.Assembly) {
-					foreach (string refPath in reference.GetReferencedFileNames (null))
-						if (Path.GetFileName (refPath) == dllName)
-							return new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, refPath));
-				} else if (reference.ReferenceType == ReferenceType.Project && parsed.Name == reference.Reference) {
-					var p = ParentSolution.FindProjectByName (reference.Reference) as DotNetProject;
-					if (p == null) {
-						LoggingService.LogWarning ("Project '{0}' referenced from '{1}' could not be found", reference.Reference, Name);
-						continue;
-					}
-					return TypeSystemService.GetCompilation (p);
-				}
-			}
-			
-			string path = GetAssemblyPath (assemblyName);
-			if (path != null)
-				return new ICSharpCode.NRefactory.TypeSystem.Implementation.SimpleCompilation (TypeSystemService.LoadAssemblyContext (TargetRuntime, TargetFramework, path));
-			return null;
-		}
-		
-		string GetAssemblyPath (string assemblyName)
-		{
-			var parsed = SystemAssemblyService.ParseAssemblyName (assemblyName);
-			if (string.IsNullOrEmpty (parsed.Name))
-				return null;
-			
-			string localName = Path.Combine (Path.Combine (BaseDirectory, "bin"), parsed.Name + ".dll");
-			if (File.Exists (localName))
-				return localName;
-			
-			assemblyName = AssemblyContext.GetAssemblyFullName (assemblyName, TargetFramework);
-			if (assemblyName == null)
-				return null;
-			assemblyName = AssemblyContext.GetAssemblyNameForVersion (assemblyName, TargetFramework);
-			if (assemblyName == null)
-				return null;
-			return AssemblyContext.GetAssemblyLocation (assemblyName, TargetFramework);
-		}
-		
 		public ProjectFile ResolveVirtualPath (string virtualPath, string relativeToFile)
 		{
 			string name = VirtualToLocalPath (virtualPath, relativeToFile);
@@ -381,8 +333,7 @@ namespace MonoDevelop.AspNet.Projects
 		
 		public string VirtualToLocalPath (string virtualPath, string relativeToFile)
 		{
-			if (virtualPath == null || virtualPath.Length == 0 || virtualPath[0] == '/'
-			    	|| virtualPath.IndexOf (':') > -1)
+			if (string.IsNullOrEmpty (virtualPath) || virtualPath [0] == '/' || virtualPath.IndexOf (':') > -1)
 				return null;
 
 			FilePath relativeToDir;
@@ -451,7 +402,7 @@ namespace MonoDevelop.AspNet.Projects
 				if (string.IsNullOrEmpty (reference.Reference))
 					continue;
 				//these assemblies are referenced automatically by ASP.NET
-				if (IsSystemReference (reference.Reference))
+				if (WebFormsRegistrationCache.IsDefaultReference (reference.Reference))
 				    continue;
 				//bypass non dotnet projects
 				if ((reference.ReferenceType == ReferenceType.Project) &&
@@ -472,7 +423,7 @@ namespace MonoDevelop.AspNet.Projects
 			//can't use System.Web.Configuration.WebConfigurationManager, as it can only access virtual paths within an app
 			//so need full manual handling
 			try {
-				XmlDocument doc = new XmlDocument ();
+				var doc = new XmlDocument ();
 				
 				//FIXME: PreserveWhitespace doesn't handle whitespace in attribute lists
 				//doc.PreserveWhitespace = true;
@@ -569,38 +520,9 @@ namespace MonoDevelop.AspNet.Projects
 			return (string.Compare (file, webConf, StringComparison.OrdinalIgnoreCase) == 0);
 		}
 		
-		bool IsSystemReference (string reference)
-		{
-			foreach (string defaultPrefix in defaultAssemblyRefPrefixes)
-				if (reference.StartsWith (defaultPrefix, StringComparison.Ordinal))
-					return true;
-			return false;
-		}
-		
-		static string[] defaultAssemblyRefPrefixes = {
-			"mscorlib", 
-			"System,",
-			"System.Configuration,",
-			"System.Web,",
-			"System.Data,",
-			"System.Web.Services,",
-			"System.Xml,",
-			"System.Drawing,",
-			"System.EnterpriseServices,",
-			"System.Web.Mobile,",
-		};
-		
 		#endregion
 		
 		#region File event handlers
-		
-		protected override void OnFileChangedInProject (MonoDevelop.Projects.ProjectFileEventArgs e)
-		{
-			//if (!DisableCodeBehindGeneration) {
-			//FIXME implement codebehind updates
-			
-			base.OnFileChangedInProject (e);
-		}
 		
 		protected override void OnFileAddedToProject (ProjectFileEventArgs e)
 		{
@@ -680,17 +602,6 @@ namespace MonoDevelop.AspNet.Projects
 				BuildAction.Content,
 				BuildAction.EmbeddedResource,
 			};
-		}
-		
-		public IType GetCodebehindType (string fileName)
-		{
-			string typeName = GetCodebehindTypeName (fileName);
-			if (typeName != null) {
-				var dom = TypeSystemService.GetCompilation (this);
-				if (dom != null)
-					return ReflectionHelper.ParseReflectionName (typeName).Resolve (dom);
-			}
-			return null;
 		}
 		
 		public string GetCodebehindTypeName (string fileName)

@@ -117,7 +117,7 @@ namespace MonoDevelop.AspNet.WebForms
 			if (!tag.Contains ("{0}"))
 				return tag;
 			
-			if (base.Type.AssemblyName.StartsWith ("System.Web.UI.WebControls"))
+			if (Type.AssemblyName.StartsWith ("System.Web.UI.WebControls", StringComparison.Ordinal))
 				return string.Format (tag, "asp");
 			
 			//register the assembly and look up the class
@@ -129,19 +129,15 @@ namespace MonoDevelop.AspNet.WebForms
 			var cls = database.FindType (Type.Load ());
 			if (cls == null)
 				return tag;
-			
-			var doc = document.ParsedDocument as WebFormsParsedDocument;
-			if (doc == null)
+
+			var ed = document.GetContent<WebFormsEditorExtension> ();
+			if (ed == null)
 				return tag;
-			
+
 			var assemName = SystemAssemblyService.ParseAssemblyName (Type.AssemblyName);
-			
-			var refMan = new DocumentReferenceManager ((AspNetAppProject)document.Project) {
-				Doc = doc
-			};
-			
+
 			WebFormsPageInfo.RegisterDirective directive;
-			string prefix = refMan.GetTagPrefixWithNewDirective (cls, assemName.Name, null, out directive);
+			string prefix = ed.ReferenceManager.GetTagPrefixWithNewDirective (cls, assemName.Name, null, out directive);
 			
 			if (prefix == null)
 				return tag;
@@ -149,7 +145,7 @@ namespace MonoDevelop.AspNet.WebForms
 			tag = string.Format (tag, prefix);
 			
 			if (directive != null && insertDirective)
-				refMan.AddRegisterDirective (directive, document.Editor, true);
+				ed.ReferenceManager.AddRegisterDirective (directive, document.Editor, true);
 			
 			return tag;
 		}

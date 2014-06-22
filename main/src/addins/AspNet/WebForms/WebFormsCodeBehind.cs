@@ -117,7 +117,7 @@ namespace MonoDevelop.AspNet.WebForms
 			if (string.IsNullOrEmpty (className))
 				return result;
 			
-			var refman = new DocumentReferenceManager (project) { Doc = document };
+			var refman = new WebFormsTypeContext { Project = project,  Doc = document };
 			var memberList = new WebFormsMemberListBuilder (refman, document.XDocument);
 			memberList.Build ();
 
@@ -184,7 +184,7 @@ namespace MonoDevelop.AspNet.WebForms
 			if (memberList.Members.Count == 0)
 				return result;
 			
-			var dom = refman.TypeCtx.Compilation;
+			var dom = refman.Compilation;
 			var cls = ReflectionHelper.ParseReflectionName (className).Resolve (dom);
 			var members = GetDesignerMembers (memberList.Members.Values, cls, filename);
 			

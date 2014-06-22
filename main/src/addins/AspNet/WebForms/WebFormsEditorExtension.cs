@@ -57,7 +57,7 @@ namespace MonoDevelop.AspNet.WebForms
 
 		WebFormsParsedDocument aspDoc;
 		AspNetAppProject project;
-		DocumentReferenceManager refman;
+		WebFormsTypeContext refman = new WebFormsTypeContext ();
 
 		ILanguageCompletionBuilder documentBuilder;
 		LocalDocumentInfo localDocumentInfo;
@@ -66,7 +66,13 @@ namespace MonoDevelop.AspNet.WebForms
 		ICompletionWidget defaultCompletionWidget;
 		MonoDevelop.Ide.Gui.Document defaultDocument;
 		
-		bool HasDoc { get { return aspDoc != null; } } 
+		bool HasDoc { get { return aspDoc != null; } }
+
+		public WebFormsTypeContext ReferenceManager {
+			get {
+				return refman;
+			}
+		}
 		
 		#region Setup and teardown
 		
@@ -81,35 +87,30 @@ namespace MonoDevelop.AspNet.WebForms
 		{
 			base.OnParsedDocumentUpdated ();
 			aspDoc = CU as WebFormsParsedDocument;
-			
-			var newProj = base.Document.Project as AspNetAppProject;
-			if (newProj == null)
-				return;
-				//throw new InvalidOperationException ("Document has no project");
-			
-			if (project != newProj) {
-				project = newProj;
-				refman = new DocumentReferenceManager (project);
-			}
-			
 			if (HasDoc)
 				refman.Doc = aspDoc;
+			
+			var newProj = Document.Project as AspNetAppProject;
+			if (newProj != null) {
+				project = newProj;
+				refman.Project = newProj;
+			}
 			
 			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
 			if (documentBuilder != null) {
-				documentInfo = new DocumentInfo (document.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ());
+				documentInfo = new DocumentInfo (refman.Compilation, aspDoc, refman.GetUsings ());
 				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
 				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
 			}
 		}
 		
-		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, DocumentReferenceManager refman)
+		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, WebFormsTypeContext refman)
 		{
 			var memberList = new WebFormsMemberListBuilder (refman, info.AspNetDocument.XDocument);
 			memberList.Build ();
 			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
-			var dom = refman.TypeCtx.Compilation;
+			var dom = refman.Compilation;
 			var baseType = ReflectionHelper.ParseReflectionName (info.BaseType).Resolve (dom);
 			foreach (var m in WebFormsCodeBehind.GetDesignerMembers (memberList.Members.Values, baseType, null)) {
 				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
@@ -123,7 +124,7 @@ namespace MonoDevelop.AspNet.WebForms
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
 		{
-			ITextBuffer buf = this.Buffer;
+			ITextBuffer buf = Buffer;
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
 			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
 			//char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
@@ -252,6 +253,7 @@ namespace MonoDevelop.AspNet.WebForms
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
 			defaultDocument.Saved += AsyncUpdateDesignerFile;
+			OnParsedDocumentUpdated ();
 		}
 
 		void AsyncUpdateDesignerFile (object sender, EventArgs e)
@@ -351,18 +353,6 @@ namespace MonoDevelop.AspNet.WebForms
 		protected override void GetElementCompletions (CompletionDataList list)
 		{
 			XName parentName = GetParentElementName (0);
-			
-			//fallback
-			if (!HasDoc) {
-				AddAspBeginExpressions (list);
-				string aspPrefix = "asp:";
-				var type = ReflectionHelper.ParseReflectionName ("System.Web.UI.Control").Resolve (TypeSystemService.GetCompilation (project));
-				foreach (var cls in WebFormsTypeContext.ListSystemControlClasses (type, project))
-					list.Add (new AspTagCompletionData (aspPrefix, cls));
-				
-				base.GetElementCompletions (list);
-				return;
-			}
 			
 			IType controlClass = null;
 			
@@ -530,42 +520,39 @@ namespace MonoDevelop.AspNet.WebForms
 		}
 		
 		ClrVersion ProjClrVersion {
-			get { return project.TargetFramework.ClrVersion; }
+			get { return project == null? ClrVersion.Net_4_5 : project.TargetFramework.ClrVersion; }
 		}
 		
 		CompletionDataList HandleExpressionCompletion (WebFormsExpression expr)
 		{
 			if (!(expr is WebFormsBindingExpression || expr is WebFormsRenderExpression))
 				return null;
+
 			IType codeBehindClass;
-			ICompilation projectDatabase;
-			GetCodeBehind (out codeBehindClass, out projectDatabase);
-			
-			if (codeBehindClass == null)
+			if (!GetCodeBehind (out codeBehindClass))
 				return null;
 			
 			//list just the class's properties, not properties on base types
-			CompletionDataList list = new CompletionDataList ();
+			var list = new CompletionDataList ();
 			list.AddRange (from p in codeBehindClass.GetProperties ()
 				where p.IsPublic || p.IsPublic
-				select new CompletionData (p.Name, "md-property"));
+				select new AspAttributeCompletionData (p));
 			list.AddRange (from p in codeBehindClass.GetFields ()
 				where p.IsProtected || p.IsPublic
-				select new CompletionData (p.Name, "md-property"));
+				select new AspAttributeCompletionData (p));
 			
 			return list.Count > 0? list : null;
 		}
 		
-		void GetCodeBehind (out IType codeBehindClass, out ICompilation projectDatabase)
+		bool GetCodeBehind (out IType codeBehindClass)
 		{
-			codeBehindClass = null;
-			projectDatabase = null;
-			
 			if (HasDoc && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
-				projectDatabase = TypeSystemService.GetCompilation (project);
-				if (projectDatabase != null)
-					codeBehindClass = ReflectionHelper.ParseReflectionName (aspDoc.Info.InheritedClass).Resolve (projectDatabase);
+				codeBehindClass = ReflectionHelper.ParseReflectionName (aspDoc.Info.InheritedClass).Resolve (refman.Compilation);
+				return codeBehindClass != null;
 			}
+
+			codeBehindClass = null;
+			return false;
 		}
 		
 		#region ASP.NET data
@@ -594,39 +581,24 @@ namespace MonoDevelop.AspNet.WebForms
 			Debug.Assert (name.IsValid);
 			Debug.Assert (name.HasPrefix);
 			
-			var database = TypeSystemService.GetCompilation (project);
-			
-			if (database == null) {
-				LoggingService.LogWarning ("Could not obtain project DOM in AddAspAttributeCompletionData");
-				return;
-			}
-			
 			IType controlClass = refman.GetControlType (name.Prefix, name.Name);
-			if (controlClass == null) {
-				controlClass = ReflectionHelper.ParseReflectionName ("System.Web.UI.WebControls.WebControl").Resolve (database);
-				if (controlClass == null) {
-					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
-					return;
-				}
-			}
-			
-			AddControlMembers (list, controlClass, existingAtts);
+			if(controlClass != null)
+				AddControlMembers (list, controlClass, existingAtts);
 		}
 		
-		void AddControlMembers (CompletionDataList list, IType controlClass, 
-		                        Dictionary<string, string> existingAtts)
+		void AddControlMembers (CompletionDataList list, IType controlClass, Dictionary<string, string> existingAtts)
 		{
 			//add atts only if they're not already in the tag
 			foreach (var prop in GetUniqueMembers<IProperty> (controlClass.GetProperties ()))
 				if (prop.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (prop.Name)))
 				if (GetPersistenceMode (prop) == System.Web.UI.PersistenceMode.Attribute)
-						list.Add (prop.Name, prop.GetStockIcon (), AmbienceService.GetSummaryMarkup (prop));
+					list.Add (new AspAttributeCompletionData (prop));
 			
 			//similarly add events
 			foreach (var eve in GetUniqueMembers<IEvent> (controlClass.GetEvents ())) {
 				string eveName = "On" + eve.Name;
 				if (eve.Accessibility == Accessibility.Public && (existingAtts == null || !existingAtts.ContainsKey (eveName)))
-					list.Add (eveName, eve.GetStockIcon (), AmbienceService.GetSummaryMarkup (eve));
+					list.Add (new AspAttributeCompletionData (eve, eveName));
 			}
 		}
 		
@@ -635,24 +607,13 @@ namespace MonoDevelop.AspNet.WebForms
 			Debug.Assert (tagName.IsValid && tagName.HasPrefix);
 			Debug.Assert (attName.IsValid && !attName.HasPrefix);
 			
-			IType controlClass = HasDoc ? refman.GetControlType (tagName.Prefix, tagName.Name) : null;
-			
-			if (controlClass == null) {
-				LoggingService.LogWarning ("Could not obtain IType for {0}", tagName.FullName);
-				
-				var database = WebFormsTypeContext.GetSystemWebDom (project);
-				controlClass = ReflectionHelper.ParseReflectionName ("System.Web.UI.WebControls.WebControl").Resolve (database);
-
-				if (controlClass == null) {
-					LoggingService.LogWarning ("Could not obtain IType for System.Web.UI.WebControls.WebControl");
-					return;
-				}
-			}
+			IType controlClass = refman.GetControlType (tagName.Prefix, tagName.Name);
+			if (controlClass == null)
+				return;
 			
 			//find the codebehind class
 			IType codeBehindClass;
-			ICompilation projectDatabase;
-			GetCodeBehind (out codeBehindClass, out projectDatabase);
+			GetCodeBehind (out codeBehindClass);
 			
 			//if it's an event, suggest compatible methods 
 			if (codeBehindClass != null && attName.Name.StartsWith ("On", StringComparison.Ordinal)) {
@@ -684,19 +645,10 @@ namespace MonoDevelop.AspNet.WebForms
 						
 						list.Add (
 						    new SuggestedHandlerCompletionData (project, domMethod, codeBehindClass,
-						        MonoDevelop.DesignerSupport.CodeBehind.GetNonDesignerClass (codeBehindClass))
+						        CodeBehind.GetNonDesignerClass (codeBehindClass))
 						    );
 						return;
 					}
-				}
-			}
-			
-			if (projectDatabase == null) {
-				projectDatabase = WebFormsTypeContext.GetSystemWebDom (project);
-				
-				if (projectDatabase == null) {
-					LoggingService.LogWarning ("Could not obtain type database in AddAspAttributeCompletionData");
-					return;
 				}
 			}
 			
@@ -706,13 +658,13 @@ namespace MonoDevelop.AspNet.WebForms
 					continue;
 				
 				//boolean completion
-				if (prop.ReturnType.Equals (projectDatabase.FindType (KnownTypeCode.Boolean))) {
+				if (prop.ReturnType.Equals (refman.Compilation.FindType (KnownTypeCode.Boolean))) {
 					AddBooleanCompletionData (list);
 					return;
 				}
 				//color completion
-				if (prop.ReturnType.Equals (projectDatabase.FindType (typeof(System.Drawing.Color)))) {
-					System.Drawing.ColorConverter conv = new System.Drawing.ColorConverter ();
+				if (prop.ReturnType.Equals (refman.Compilation.FindType (typeof(System.Drawing.Color)))) {
+					var conv = new System.Drawing.ColorConverter ();
 					foreach (System.Drawing.Color c in conv.GetStandardValues (null)) {
 						if (c.IsSystemColor)
 							continue;
@@ -735,7 +687,7 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		static IEnumerable<T> GetUniqueMembers<T> (IEnumerable<T> members) where T : IMember
 		{
-			Dictionary <string, bool> existingItems = new Dictionary<string,bool> ();
+			var existingItems = new Dictionary<string,bool> ();
 			foreach (T item in members) {
 				if (existingItems.ContainsKey (item.Name))
 					continue;

@@ -214,7 +214,6 @@
     <Compile Include="Razor\RazorCompletion.cs" />
     <Compile Include="Razor\RazorCSharpEditorExtension.cs" />
     <Compile Include="Projects\WebSubtype.cs" />
-    <Compile Include="WebForms\DocumentReferenceManager.cs" />
     <Compile Include="Execution\AspNetExecutionCommand.cs" />
     <Compile Include="Execution\AspNetExecutionHandler.cs" />
     <Compile Include="Execution\LineInterceptingTextWriter.cs" />
@@ -256,7 +255,6 @@
     <Compile Include="Razor\Dom\RazorExplicitExpression.cs" />
     <Compile Include="Razor\Dom\RazorExpression.cs" />
     <Compile Include="WebForms\WebFormsDirectiveCompletion.cs" />
-    <Compile Include="WebForms\WebFormsTypeContext.cs" />
     <Compile Include="Razor\Parser\RazorOutlineNode.cs" />
     <Compile Include="Commands\AddControllerDialog.cs" />
     <Compile Include="Commands\AddViewDialog.cs" />
@@ -291,6 +289,7 @@
     <Compile Include="Razor\RazorCSharpParser.cs" />
     <Compile Include="Razor\RazorCSharpParsedDocument.cs" />
     <Compile Include="Razor\RazorPageInfo.cs" />
+    <Compile Include="WebForms\WebFormsTypeContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -40,11 +40,8 @@ namespace MonoDevelop.AspNet.WebForms
 {	
 	class WebFormsRegistrationCache : ProjectFileCache<AspNetAppProject,RegistrationInfo>
 	{
-		RegistrationInfo machineRegistrationInfo;
-		
 		public WebFormsRegistrationCache (AspNetAppProject project) : base (project)
 		{
-			machineRegistrationInfo = GetMachineInfo ();
 		}
 		
 		public IList<RegistrationInfo> GetInfosForPath (FilePath dir)
@@ -62,7 +59,7 @@ namespace MonoDevelop.AspNet.WebForms
 					infos.Add (reg);
 				dir = dir.ParentDirectory;
 			}
-			infos.Add (machineRegistrationInfo);
+			infos.Add (MachineRegistrationInfo);
 			return infos;
 		}
 		
@@ -79,7 +76,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return null;
 		}
 		
-		RegistrationInfo ReadFrom (string filename, XDocument doc)
+		static RegistrationInfo ReadFrom (string filename, XDocument doc)
 		{
 			var info = new RegistrationInfo ();
 			
@@ -128,53 +125,61 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 			return info;
 		}
+
 		
-		public IEnumerable<ControlRegistration> GetControlsForPath (string path)
-		{
-			//FIXME: handle removes as well as adds
-			return GetInfosForPath (path).SelectMany (x => x.Controls).Where (c => c.Add);
-		}
-		
-		public IEnumerable<string> GetAssembliesForPath (string path)
-		{
-			//FIXME: handle removes as well as adds
-			return GetInfosForPath (path).SelectMany (x => x.Assemblies).Where (c => c.Add).Select (c => c.Name);
-		}
-		
-		public IEnumerable<string> GetNamespacesForPath (string path)
-		{
-			//FIXME: handle removes as well as adds
-			return GetInfosForPath (path).SelectMany (x => x.Namespaces).Where (c => c.Add).Select (c => c.Namespace);
-		}
-		
-		//FIXME: add more default values
+		//FIXME: add more default values, controls, etc. make version dependent.
+		//FIXME: use actual machine web.config?
 		static RegistrationInfo GetMachineInfo ()
 		{
 			var info = new RegistrationInfo ();
-			
-			//see http://msdn.microsoft.com/en-us/library/eb44kack.aspx
-			string[] defaultNamespaces = {
-				"System",
-				"System.Collections",
-				"System.Collections.Specialized",
-				"System.Configuration",
-				"System.Text",
-				"System.Text.RegularExpressions",
-				"System.Web",
-				"System.Web.Caching",
-				"System.Web.Profile",
-				"System.Web.Security",
-				"System.Web.SessionState",
-				"System.Web.UI",
-				"System.Web.UI.HtmlControls",
-				"System.Web.UI.WebControls",
-				"System.Web.UI.WebControls.WebParts",
-			};
-			
-			info.Namespaces.AddRange (defaultNamespaces.Select (ns => new NamespaceRegistration (true, ns)));
-			
-			return info;
+
+ 			info.Namespaces.AddRange (defaultNamespaces.Select (ns => new NamespaceRegistration (true, ns)));
+			info.Assemblies.AddRange (defaultAssemblies.Select (asm => new AssemblyRegistration (true, asm)));
+ 			
+ 			return info;
+ 		}
+
+		static readonly string[] defaultAssemblies = {
+			"mscorlib", 
+			"System",
+			"System.Configuration",
+			"System.Web",
+			"System.Data",
+			"System.Web.Services",
+			"System.Xml",
+			"System.Drawing",
+			"System.EnterpriseServices",
+			"System.Web.Mobile",
+		};
+
+		//see http://msdn.microsoft.com/en-us/library/eb44kack.aspx
+		static readonly string[] defaultNamespaces = {
+			"System",
+			"System.Collections",
+			"System.Collections.Specialized",
+			"System.Configuration",
+			"System.Text",
+			"System.Text.RegularExpressions",
+			"System.Web",
+			"System.Web.Caching",
+			"System.Web.Profile",
+			"System.Web.Security",
+			"System.Web.SessionState",
+			"System.Web.UI",
+			"System.Web.UI.HtmlControls",
+			"System.Web.UI.WebControls",
+			"System.Web.UI.WebControls.WebParts",
+		};
+
+		public static bool IsDefaultReference (string reference)
+		{
+			return defaultAssemblies.Any (r =>
+				reference.StartsWith (r, StringComparison.Ordinal) &&
+				(reference.Length == r.Length || reference [r.Length] == ',')
+			);
 		}
+
+		public static readonly RegistrationInfo MachineRegistrationInfo = GetMachineInfo ();
 	}
 	
 	class RegistrationInfo
