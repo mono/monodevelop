@@ -107,13 +107,13 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			Assert.IsNotNull (provider.Find ("Inherits"));
 		}
 
-		void HeadBodyCompletion (bool ctrlSpace)
-		{
-			const string test = @"<%@ Page Language=""C#"" %>
+		const string pageStart = @"<%@ Page Language=""C#"" %>
 <!DOCTYPE html>
 <html>
-<$";
-			var provider = WebFormsTesting.CreateProvider (test, ".aspx", ctrlSpace);
+";
+		void HeadBodyCompletion (bool ctrlSpace)
+		{
+			var provider = WebFormsTesting.CreateProvider (pageStart + "<", ".aspx", ctrlSpace);
 			Assert.IsNotNull (provider);
 			Assert.IsNotNull (provider.Find ("head"));
 			Assert.IsNotNull (provider.Find ("body"));
@@ -132,6 +132,24 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 		public void HeadBodyCompletionCtrlSpace ()
 		{
 			HeadBodyCompletion (true);
+		}
+
+		[Test]
+		public void TagPropertiesAuto ()
+		{
+			var provider = WebFormsTesting.CreateProvider (pageStart + "<asp:Button r$", ".aspx");
+			Assert.IsNotNull (provider.Find ("runat=\"server\""));
+			Assert.IsNotNull (provider.Find ("BorderStyle"));
+		}
+
+		[Test]
+		public void TagPropertiesCtrlSpace ()
+		{
+			var provider = WebFormsTesting.CreateProvider (pageStart + "<asp:Button $", ".aspx", true);
+			Assert.IsNotNull (provider.Find ("runat=\"server\""));
+			Assert.IsNotNull (provider.Find ("id"));
+			Assert.IsNotNull (provider.Find ("BorderStyle"));
+			Assert.IsNotNull (provider.Find ("OnClick"));
 		}
 	}
 }
