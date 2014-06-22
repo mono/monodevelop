@@ -15,8 +15,8 @@
 		<ExtensionNode name="Type"/>
 	</ExtensionPoint>
 
-	<ExtensionPoint path="/MonoDevelop/Debugging/ColorConverters">
-		<Description>Color visualizers. Specified classes must extend MonoDevelop.Debugger.ColorConverter</Description>
+	<ExtensionPoint path="/MonoDevelop/Debugging/DebugValueConverters">
+		<Description>Debug value converters. Specified classes must extend MonoDevelop.Debugger.DebugValueConverter&lt;T&gt;</Description>
 		<ExtensionNode name="Type"/>
 	</ExtensionPoint>
 
@@ -49,9 +49,11 @@
 		<Type class="MonoDevelop.Debugger.Visualizer.CStringVisualizer" />
 	</Extension>
 
-	<Extension path="/MonoDevelop/Debugging/ColorConverters">
-		<Type class="MonoDevelop.Debugger.Visualizer.SystemDrawingColorConverter" />
-		<Type class="MonoDevelop.Debugger.Visualizer.GdkColorConverter" />
+	<Extension path="/MonoDevelop/Debugging/DebugValueConverters">
+		<Type class="MonoDevelop.Debugger.Converters.SystemDrawingColorConverter" />
+		<Type class="MonoDevelop.Debugger.Converters.GdkColorConverter" />
+		<Type class="MonoDevelop.Debugger.Converters.SizesConverters" />
+		<Type class="MonoDevelop.Debugger.Converters.RectanglesConverters" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Debugging/InlineVisualizers">
@@ -59,7 +61,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Debugging/PreviewVisualizers">
-		<Type class="MonoDevelop.Debugger.PreviewVisualizers.SizePreviewVisualizer" />
+		<Type class="MonoDevelop.Debugger.PreviewVisualizers.SizeAndRectanglePreviewVisualizer" />
 		<Type class="MonoDevelop.Debugger.PreviewVisualizers.ColorPreviewVisualizer" />
 	</Extension>
 

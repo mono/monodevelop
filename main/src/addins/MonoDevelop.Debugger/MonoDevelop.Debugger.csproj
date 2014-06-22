@@ -151,14 +151,16 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
-    <Compile Include="MonoDevelop.Debugger.Visualizer\ColorsConverters.cs" />
-    <Compile Include="MonoDevelop.Debugger.Visualizer\ColorConverter.cs" />
     <Compile Include="MonoDevelop.Debugger.InlineVisualizers\ColorInlineVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.InlineVisualizers\InlineVisualizer.cs" />
-    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\SizePreviewVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\ColorPreviewVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewVisualizerWindow.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\DebugValueConverter.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\ColorsConverters.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\SizesConverters.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\SizeAndRectanglePreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\RectanglesConverters.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
@@ -328,5 +330,6 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.Debugger.Visualizer\" />
     <Folder Include="MonoDevelop.Debugger.PreviewVisualizers\" />
+    <Folder Include="MonoDevelop.Debugger.Converters\" />
   </ItemGroup>
 </Project>

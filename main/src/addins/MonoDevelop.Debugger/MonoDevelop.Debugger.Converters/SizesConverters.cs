@@ -1,5 +1,5 @@
 ﻿//
-// ColorInlineVisualizer.cs
+// SizesConverters.cs
 //
 // Author:
 //       David Karlaš <david.karlas@xamarin.com>
@@ -24,27 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Xwt;
 using Mono.Debugging.Client;
-using Xwt.Drawing;
 
-namespace MonoDevelop.Debugger.InlineVisualizers
+namespace MonoDevelop.Debugger.Converters
 {
-	public class ColorInlineVisualizer : InlineVisualizer
+	class SizesConverters : DebugValueConverter<Size>
 	{
-		#region InlineVisualizer implementation
+		#region implemented abstract members of DebugValueConverter
 
-		public override bool CanInlineVisualize (ObjectValue val)
+		public override bool CanGetValue (ObjectValue val)
 		{
-			return DebuggingService.HasGetConverter<Color> (val);
+			return val.TypeName == "System.Drawing.Size" ||
+			val.TypeName == "Gdk.Size" ||
+			val.TypeName == "Xamarin.Forms.Size" ||
+			val.TypeName == "System.Drawing.SizeF";
 		}
 
-		public override string InlineVisualize (ObjectValue val)
+		public override Size GetValue (ObjectValue val)
 		{
-			var color = DebuggingService.GetGetConverter<Color> (val).GetValue (val);
-			return "R=" + ((byte)(color.Red * 255.0)) + ", " +
-			"G=" + ((byte)(color.Green * 255.0)) + ", " +
-			"B=" + ((byte)(color.Blue * 255.0)) + ", " +
-			"A=" + ((byte)(color.Alpha * 255.0));
+			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			ops.AllowTargetInvoke = true;
+			var size = new Size ();
+			if (val.TypeName == "System.Drawing.SizeF") {
+				size.Width = (float)val.GetChild ("Width", ops).GetRawValue (ops);
+				size.Height = (float)val.GetChild ("Height", ops).GetRawValue (ops);
+			} else {
+				size.Width = (int)val.GetChild ("Width", ops).GetRawValue (ops);
+				size.Height = (int)val.GetChild ("Height", ops).GetRawValue (ops);
+			}
+			return size;
 		}
 
 		#endregion

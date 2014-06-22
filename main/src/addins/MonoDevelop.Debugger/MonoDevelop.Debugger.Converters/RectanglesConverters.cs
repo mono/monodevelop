@@ -1,5 +1,5 @@
 ﻿//
-// ColorsConverters.cs
+// RectanglesConverters.cs
 //
 // Author:
 //       David Karlaš <david.karlas@xamarin.com>
@@ -24,51 +24,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Xwt;
 using Mono.Debugging.Client;
-using Xwt.Drawing;
 
-namespace MonoDevelop.Debugger.Visualizer
+namespace MonoDevelop.Debugger.Converters
 {
-	class SystemDrawingColorConverter : ColorConverter
+	class RectanglesConverters : DebugValueConverter<Rectangle>
 	{
-		#region ColorConverter implementation
+		#region implemented abstract members of DebugValueConverter
 
-		public override bool CanGetColor (ObjectValue val)
+		public override bool CanGetValue (ObjectValue val)
 		{
-			return val.TypeName == "System.Drawing.Color";
+			return val.TypeName == "System.Drawing.Rectangle" ||
+			val.TypeName == "Gdk.Rectangle" ||
+			val.TypeName == "Xamarin.Forms.Rectangle" ||
+			val.TypeName == "System.Drawing.RectangleF";
 		}
 
-		public override Color GetColor (ObjectValue val)
+		public override Rectangle GetValue (ObjectValue val)
 		{
 			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 			ops.AllowTargetInvoke = true;
-			var r = (byte)val.GetChild ("R", ops).GetRawValue (ops);
-			var g = (byte)val.GetChild ("G", ops).GetRawValue (ops);
-			var b = (byte)val.GetChild ("B", ops).GetRawValue (ops);
-			var a = (byte)val.GetChild ("A", ops).GetRawValue (ops);
-			return Color.FromBytes (r, g, b, a);
-		}
-
-		#endregion
-	}
-
-	class GdkColorConverter : ColorConverter
-	{
-		#region ColorConverter implementation
-
-		public override bool CanGetColor (ObjectValue val)
-		{
-			return val.TypeName == "Gdk.Color";
-		}
-
-		public override Color GetColor (ObjectValue val)
-		{
-			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-			ops.AllowTargetInvoke = true;
-			return new Color (
-				((ushort)val.GetChild ("Red", ops).GetRawValue (ops) / 65535.0),
-				((ushort)val.GetChild ("Green", ops).GetRawValue (ops) / 65535.0),
-				((ushort)val.GetChild ("Blue", ops).GetRawValue (ops) / 65535.0));
+			var rectangle = new Rectangle ();
+			if (val.TypeName == "System.Drawing.RectangleF") {
+				rectangle.X = (float)val.GetChild ("X", ops).GetRawValue (ops);
+				rectangle.Y = (float)val.GetChild ("Y", ops).GetRawValue (ops);
+				rectangle.Width = (float)val.GetChild ("Width", ops).GetRawValue (ops);
+				rectangle.Height = (float)val.GetChild ("Height", ops).GetRawValue (ops);
+			} else {
+				rectangle.X = (int)val.GetChild ("X", ops).GetRawValue (ops);
+				rectangle.Y = (int)val.GetChild ("Y", ops).GetRawValue (ops);
+				rectangle.Width = (int)val.GetChild ("Width", ops).GetRawValue (ops);
+				rectangle.Height = (int)val.GetChild ("Height", ops).GetRawValue (ops);
+			}
+			return rectangle;
 		}
 
 		#endregion

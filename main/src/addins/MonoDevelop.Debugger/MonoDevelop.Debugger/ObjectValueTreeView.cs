@@ -820,8 +820,8 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);
 			store.SetValue (it, ViewerButtonVisibleColumn, showViewerButton);
 
-			if (!val.IsNull && DebuggingService.HasColorConverter (val))
-				store.SetValue (it, ColorPreviewColumn, DebuggingService.GetColorConverter (val).GetColor (val));
+			if (!val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val))
+				store.SetValue (it, ColorPreviewColumn, DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val));
 			else
 				store.SetValue (it, ColorPreviewColumn, null);
 

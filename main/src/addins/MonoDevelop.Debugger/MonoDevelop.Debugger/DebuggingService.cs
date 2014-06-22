@@ -212,20 +212,36 @@ namespace MonoDevelop.Debugger
 			return GetPreviewVisualizer (val) != null;
 		}
 
-		internal static ColorConverter GetColorConverter (ObjectValue val)
+		internal static DebugValueConverter<T> GetGetConverter<T> (ObjectValue val)
 		{
-			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/ColorConverters", true)) {
-				var cv = v as ColorConverter;
-				if (cv != null && cv.CanGetColor (val)) {
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/DebugValueConverters", true)) {
+				var cv = v as DebugValueConverter<T>;
+				if (cv != null && cv.CanGetValue (val)) {
 					return cv;
 				}
 			}
 			return null;
 		}
 
-		internal static bool HasColorConverter (ObjectValue val)
+		internal static bool HasGetConverter<T> (ObjectValue val)
 		{
-			return GetColorConverter (val) != null;
+			return GetGetConverter<T> (val) != null;
+		}
+
+		internal static DebugValueConverter<T> GetSetConverter<T> (ObjectValue val)
+		{
+			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/DebugValueConverters", true)) {
+				var cv = v as DebugValueConverter<T>;
+				if (cv != null && cv.CanSetValue (val)) {
+					return cv;
+				}
+			}
+			return null;
+		}
+
+		internal static bool HasSetConverter<T> (ObjectValue val)
+		{
+			return GetSetConverter<T> (val) != null;
 		}
 		
 		public static void ShowValueVisualizer (ObjectValue val)

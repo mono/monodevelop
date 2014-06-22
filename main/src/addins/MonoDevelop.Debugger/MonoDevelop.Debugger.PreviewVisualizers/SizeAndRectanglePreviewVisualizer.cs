@@ -1,5 +1,5 @@
 ﻿//
-// SizePreviewVisualizer.cs
+// SizeAndRectanglePreviewVisualizer.cs
 //
 // Author:
 //       David Karlaš <david.karlas@xamarin.com>
@@ -29,54 +29,52 @@ using Gtk;
 
 namespace MonoDevelop.Debugger.PreviewVisualizers
 {
-	class SizePreviewVisualizer : PreviewVisualizer
+	class SizeAndRectanglePreviewVisualizer : PreviewVisualizer
 	{
 		#region implemented abstract members of PreviewVisualizer
 
 		public override bool CanVisualize (ObjectValue val)
 		{
-			return val.TypeName == "System.Drawing.Size" ||
-			val.TypeName == "Gdk.Size" ||
-			val.TypeName == "Xamarin.Forms.Size" ||
-			val.TypeName == "System.Drawing.SizeF";
+			return DebuggingService.HasGetConverter<Xwt.Size> (val) || DebuggingService.HasGetConverter<Xwt.Rectangle> (val);
 		}
 
 		public override Gtk.Widget GetVisualizerWidget (ObjectValue val)
 		{
-			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-			ops.AllowTargetInvoke = true;
-
-			double width, height;
-
-			if (val.TypeName == "System.Drawing.SizeF") {
-				width = (float)val.GetChild ("Width", ops).GetRawValue (ops);
-				height = (float)val.GetChild ("Height", ops).GetRawValue (ops);
-			} else {
-				width = (int)val.GetChild ("Width", ops).GetRawValue (ops);
-				height = (int)val.GetChild ("Height", ops).GetRawValue (ops);
+			var sizeConverter = DebuggingService.GetGetConverter<Xwt.Size> (val);
+			if (sizeConverter != null) {
+				var size = sizeConverter.GetValue (val);
+				return new SizeAndRectanglePreviewVisualizerWidget (size);
 			}
-			return new SizePreviewVisualizerWidget (width, height);
+			var rectangleConverter = DebuggingService.GetGetConverter<Xwt.Rectangle> (val);
+			var rectangle = rectangleConverter.GetValue (val);
+			return new SizeAndRectanglePreviewVisualizerWidget (rectangle);
 		}
 
 		#endregion
 	}
 
-	class SizePreviewVisualizerWidget : Gtk.DrawingArea
+	class SizeAndRectanglePreviewVisualizerWidget : Gtk.DrawingArea
 	{
-		double width;
-		double height;
+		bool drawLocation;
+		Xwt.Rectangle rectangle;
 
-		public SizePreviewVisualizerWidget (double width, double height)
+		public SizeAndRectanglePreviewVisualizerWidget (Xwt.Size size)
 		{
-			this.width = width;
-			this.height = height;
+			rectangle = new Xwt.Rectangle (Xwt.Point.Zero, size);
+			drawLocation = false;
+		}
+
+		public SizeAndRectanglePreviewVisualizerWidget (Xwt.Rectangle rectangle)
+		{
+			this.rectangle = rectangle;
+			drawLocation = true;
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 				ctx.SetSourceRGB (219 / 256.0, 229 / 256.0, 242 / 256.0);
-				ctx.Rectangle (10, 10, width, height);
+				ctx.Rectangle (10, 10, rectangle.Width, rectangle.Height);
 				ctx.FillPreserve ();
 				ctx.SetSourceRGB (74 / 256.0, 144 / 256.0, 226 / 256.0);
 				ctx.Antialias = Cairo.Antialias.None;
@@ -84,9 +82,10 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 				ctx.Stroke ();
 				ctx.Antialias = Cairo.Antialias.Default;
 
-				//TODO: Rectangle only dot
-//				ctx.Arc (10, height + 10, 4, 0, 2 * Math.PI);
-//				ctx.Fill ();
+				if (drawLocation) {
+					ctx.Arc (10, rectangle.Height + 10, 4, 0, 2 * Math.PI);
+					ctx.Fill ();
+				}
 
 				//TODO: Write width and height text(rectangle dot point)
 //				ctx.MoveTo (20, 20);
@@ -102,8 +101,8 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			requisition = new Requisition () {
-				Height = (int)height + 20,
-				Width = (int)width + 20
+				Height = (int)rectangle.Height + 20,
+				Width = (int)rectangle.Width + 20
 			};
 		}
 	}

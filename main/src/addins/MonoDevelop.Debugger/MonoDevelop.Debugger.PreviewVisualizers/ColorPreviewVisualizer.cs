@@ -34,12 +34,12 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 	{
 		public override bool CanVisualize (ObjectValue val)
 		{
-			return DebuggingService.HasColorConverter (val);
+			return DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val);
 		}
 
 		public override Gtk.Widget GetVisualizerWidget (ObjectValue val)
 		{
-			var color = DebuggingService.GetColorConverter (val).GetColor (val);
+			var color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
 			var mainBox = new HBox ();
 
 			var colorBox = new ColorBox { Color = color };
@@ -105,7 +105,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 				cr.RoundedRectangle (2, 2, 42, 42, 2);
 				cr.SetSourceRGB (Color.Red, Color.Green, Color.Blue);
 				cr.FillPreserve ();
-				var darkColor = Color.WithIncreasedLight (-0.5);
+				var darkColor = Color.WithIncreasedLight (-0.3);
 				cr.SetSourceRGB (darkColor.Red, darkColor.Green, darkColor.Blue);
 				cr.LineWidth = 1;
 				cr.Stroke ();

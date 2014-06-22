@@ -1,5 +1,5 @@
 ﻿//
-// ColorInlineVisualizer.cs
+// DebugValueConverter.cs
 //
 // Author:
 //       David Karlaš <david.karlas@xamarin.com>
@@ -25,29 +25,24 @@
 // THE SOFTWARE.
 using System;
 using Mono.Debugging.Client;
-using Xwt.Drawing;
 
-namespace MonoDevelop.Debugger.InlineVisualizers
+namespace MonoDevelop.Debugger
 {
-	public class ColorInlineVisualizer : InlineVisualizer
+	public abstract class DebugValueConverter<T>
 	{
-		#region InlineVisualizer implementation
+		public abstract bool CanGetValue (ObjectValue val);
 
-		public override bool CanInlineVisualize (ObjectValue val)
+		public abstract T GetValue (ObjectValue val);
+
+		public virtual bool CanSetValue (ObjectValue val)
 		{
-			return DebuggingService.HasGetConverter<Color> (val);
+			return false;
 		}
 
-		public override string InlineVisualize (ObjectValue val)
+		public virtual void SetValue (T value, ObjectValue val)
 		{
-			var color = DebuggingService.GetGetConverter<Color> (val).GetValue (val);
-			return "R=" + ((byte)(color.Red * 255.0)) + ", " +
-			"G=" + ((byte)(color.Green * 255.0)) + ", " +
-			"B=" + ((byte)(color.Blue * 255.0)) + ", " +
-			"A=" + ((byte)(color.Alpha * 255.0));
+			throw new NotImplementedException ();
 		}
-
-		#endregion
 	}
 }
 
