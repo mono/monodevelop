@@ -122,14 +122,12 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			Assert.IsNotNull (provider.Find ("asp:Button"));
 		}
 
-		[Ignore ("Not working")]
 		[Test]
 		public void HeadBodyCompletionAuto ()
 		{
 			HeadBodyCompletion (false);
 		}
 
-		[Ignore ("Not working")]
 		[Test]
 		public void HeadBodyCompletionCtrlSpace ()
 		{
