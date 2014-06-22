@@ -3,18 +3,19 @@
 		<Import assembly="Octokit.dll" />
 	</Runtime>
 
-  <Extension path = "/MonoDevelop/Ide/StartupHandlers">
-		<Class class="GitHub.Auth.Initializer" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<SolutionPad id = "GitHub.Repository.Gui.GitHubPad" defaultLayout="*" defaultPlacement = "Right" defaultStatus="AutoHide" _label = "My GitHub" icon = "nunit-pad-icon" class = "GitHub.Repository.Gui.GitHubPad">
-			<PadOption id = "ShowTestTime" _label = "Show Test Time" defaultValue = "False" />
-			<PadOption id = "ShowTestCounters" _label = "Show Test Counters" defaultValue = "False" />
-		</SolutionPad>
+
+		<Pad id = "GitHub.Repository.Gui.GitHubPad"
+			class = "GitHub.Repository.Gui.GitHubPad"
+			_label="My GitHub"
+			icon = "nunit-run"
+			defaultLayout="*"
+			defaultPlacement="Rright"
+			defaultStatus="AutoHide"
+			/>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "nunit-run" resource = "unit-run-light-16.png" size="Menu" />
+		<StockIcon stockid = "nunit-run" resource = "pad-unit-test-light-16.png" size="Menu" />
 	</Extension>
 </ExtensionModel>
