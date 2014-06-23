@@ -17,7 +17,7 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=534448716adaa778a8d5c251671622a3dbdd1ed5
+DEP_NEEDED_VERSION[0]=3059925488b4b4d96d9b92280488c0dbc65c441b
 DEP_BRANCH_AND_REMOTE[0]="aspnet-awesome origin/aspnet-awesome"
 
 # heap-shot

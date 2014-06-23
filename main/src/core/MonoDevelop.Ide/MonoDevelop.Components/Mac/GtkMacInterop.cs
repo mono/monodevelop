@@ -1,10 +1,10 @@
 //
-// MDMenuItem.cs
+// GtkMacInterop.cs
 //
 // Author:
-//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//       Jérémie Laval <jeremie.laval@xamarin.com>
 //
-// Copyright (c) 2013 Xamarin Inc.
+// Copyright (c) 2012 Xamarin, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,33 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if MAC
 using MonoMac.AppKit;
-using MonoDevelop.Components.Commands;
-using System.Linq;
+using System;
 
-namespace MonoDevelop.MacIntegration.MacMenu
+namespace MonoDevelop.Components.Mac
 {
-	class MDSubMenuItem : NSMenuItem, IUpdatableMenuItem
+	class GtkMacInterop
 	{
-		CommandEntrySet ces;
-
-		public MDSubMenuItem (CommandManager manager, CommandEntrySet ces, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
+		const string LibGdk = "libgdk-quartz-2.0.dylib";
+		const string LibGtk = "libgtk-quartz-2.0";
+		
+		[System.Runtime.InteropServices.DllImport (LibGtk)]
+		extern static IntPtr gtk_ns_view_new (IntPtr nsview);
+		
+		public static Gtk.Widget NSViewToGtkWidget (NSView view)
 		{
-			this.ces = ces;
-
-			this.Submenu = new MDMenu (manager, ces, commandSource, initialCommandTarget);
-			this.Title = this.Submenu.Title;
-		}
-
-		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
-		{
-			if (ces.AutoHide) {
-				((MDMenu)Submenu).UpdateCommands ();
-				Hidden = Submenu.ItemArray ().All (item => item.Hidden);
-			}
-			if (!Hidden) {
-				MDMenu.ShowLastSeparator (ref lastSeparator);
-			}
+			return new Gtk.Widget (gtk_ns_view_new ((IntPtr)view.Handle));
 		}
 	}
 }
+
+#endif

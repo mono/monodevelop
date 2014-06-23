@@ -39,6 +39,36 @@
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <DefineConstants>DEBUG,MAC</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\</OutputPath>
+    <DefineConstants>MAC</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -70,6 +100,9 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Design" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="MonoMac" Condition=" '$(Configuration)' == 'DebugMac' ">
+      <HintPath>..\..\..\external\monomac\src\MonoMac.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -2711,6 +2744,8 @@
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
+    <Compile Include="MonoDevelop.Components\Control.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
