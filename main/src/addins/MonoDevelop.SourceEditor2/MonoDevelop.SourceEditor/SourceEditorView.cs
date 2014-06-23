@@ -2889,16 +2889,16 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		void IInternalEditorExtensions.SetIndentationTracker (MonoDevelop.Ide.Editor.Extension.IIndentationTracker indentationTracker)
+		void IInternalEditorExtensions.SetIndentationTracker (MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker)
 		{
 			TextEditor.GetTextEditorData ().IndentationTracker = new IndentationTrackerWrapper (wrapper, indentationTracker);
 		}
 
-		void IInternalEditorExtensions.SetSelectionSurroundingProvider (MonoDevelop.Ide.Editor.Extension.ISelectionSurroundingProvider surroundingProvider)
+		void IInternalEditorExtensions.SetSelectionSurroundingProvider (MonoDevelop.Ide.Editor.Extension.SelectionSurroundingProvider surroundingProvider)
 		{
 			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = new SelectionSurroundingProviderWrapper (surroundingProvider);
 		}
-		void IInternalEditorExtensions.SetTextPasteHandler (ITextPasteHandler textPasteHandler)
+		void IInternalEditorExtensions.SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
 			var data = TextEditor.GetTextEditorData ();
 			if (data.TextPasteHandler != null)

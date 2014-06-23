@@ -28,10 +28,10 @@ namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class TextPasteHandlerWrapper : ICSharpCode.NRefactory.Editor.ITextPasteHandler, IDisposable
 	{
-		readonly MonoDevelop.Ide.Editor.Extension.ITextPasteHandler textPasteHandler;
+		readonly MonoDevelop.Ide.Editor.Extension.TextPasteHandler textPasteHandler;
 		readonly Mono.TextEditor.TextEditorData data;
 
-		public TextPasteHandlerWrapper (Mono.TextEditor.TextEditorData data, MonoDevelop.Ide.Editor.Extension.ITextPasteHandler textPasteHandler)
+		public TextPasteHandlerWrapper (Mono.TextEditor.TextEditorData data, MonoDevelop.Ide.Editor.Extension.TextPasteHandler textPasteHandler)
 		{
 			this.data = data;
 			this.textPasteHandler = textPasteHandler;
