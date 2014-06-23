@@ -24,7 +24,7 @@
 // THE SOFTWARE.
 using System;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class TextPasteHandlerWrapper : ICSharpCode.NRefactory.Editor.ITextPasteHandler, IDisposable
 	{

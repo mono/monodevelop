@@ -185,12 +185,12 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UsageSegmentMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\DebugTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\EditorFactory.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\IndentationTrackerWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SelectionSurroundingProviderWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\TextPasteHandlerWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextSourceVersionWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextChangeEventArgsWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\TextEditorToMonoDevelopOptionsWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextEditorToMonoDevelopOptionsWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextPasteHandlerWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\SelectionSurroundingProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\IndentationTrackerWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

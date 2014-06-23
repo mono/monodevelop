@@ -3018,12 +3018,6 @@ namespace MonoDevelop.SourceEditor
 			return null;
 		}
 
-		IGenericTextSegmentMarker IMarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, MonoDevelop.Core.Text.ISegment segment)
-		{
-			return null;
-		}
-
-
 		public ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink)
 		{
 			return null;

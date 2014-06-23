@@ -24,7 +24,7 @@
 // THE SOFTWARE.
 using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class IndentationTrackerWrapper : Mono.TextEditor.IIndentationTracker
 	{

@@ -27,7 +27,7 @@ using System;
 using Mono.TextEditor;
 using MonoDevelop.SourceEditor.Wrappers;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class SelectionSurroundingProviderWrapper : ISelectionSurroundingProvider
 	{

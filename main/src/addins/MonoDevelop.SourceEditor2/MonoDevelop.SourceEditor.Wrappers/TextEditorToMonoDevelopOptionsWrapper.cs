@@ -27,7 +27,7 @@
 using System;
 using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.SourceEditor.Wrappers
 {
 	class TextEditorToMonoDevelopOptionsWrapper : ITextEditorOptions
 	{
