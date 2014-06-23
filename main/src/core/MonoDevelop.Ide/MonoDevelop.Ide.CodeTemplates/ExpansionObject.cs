@@ -34,7 +34,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -271,7 +271,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return fullTypeName.Replace ("#", ".");
 		}
 		
-		static Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
+		static System.Text.RegularExpressions.Regex functionRegEx = new System.Text.RegularExpressions.Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
 		
 		
 		// We should use reflection here (but for 5 functions it doesn't hurt) !!! - Mike
@@ -292,7 +292,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public virtual IListDataProvider<string> RunFunction (TemplateContext context, Func<string, string> callback, string function)
 		{
 			this.CurrentContext = context;
-			Match match = functionRegEx.Match (function);
+			var match = functionRegEx.Match (function);
 			if (!match.Success)
 				return null;
 			string name = match.Groups[1].Value;

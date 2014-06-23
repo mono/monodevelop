@@ -1,5 +1,5 @@
 ﻿//
-// TextLocation.cs
+// DocumentLocation.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -27,7 +27,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace MonoDevelop.Core.Text
+namespace MonoDevelop.Ide.Editor
 {
 	/// <summary>
 	/// A line/column position.

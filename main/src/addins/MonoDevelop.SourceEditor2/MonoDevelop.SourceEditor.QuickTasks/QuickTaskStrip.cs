@@ -88,7 +88,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 		
 		Dictionary<IQuickTaskProvider, List<QuickTask>> providerTasks = new Dictionary<IQuickTaskProvider, List<QuickTask>> ();
-		Dictionary<IUsageProvider, List<DocumentLocation>> providerUsages = new Dictionary<IUsageProvider, List<DocumentLocation>> ();
+		Dictionary<IUsageProvider, List<Mono.TextEditor.DocumentLocation>> providerUsages = new Dictionary<IUsageProvider, List<Mono.TextEditor.DocumentLocation>> ();
 
 		public IEnumerable<QuickTask> AllTasks {
 			get {

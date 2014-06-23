@@ -87,7 +87,7 @@ namespace MonoDevelop.CodeActions
 			if (currentSmartTag != null) {
 				document.Editor.RemoveMarker (currentSmartTag);
 				currentSmartTag = null;
-				currentSmartTagBegin = MonoDevelop.Core.Text.DocumentLocation.Empty;
+				currentSmartTagBegin = MonoDevelop.Ide.Editor.DocumentLocation.Empty;
 			}
 			CancelSmartTagPopupTimeout ();
 
@@ -489,11 +489,11 @@ namespace MonoDevelop.CodeActions
 //		}
 
 		IGenericTextSegmentMarker currentSmartTag;
-		MonoDevelop.Core.Text.DocumentLocation currentSmartTagBegin;
+		MonoDevelop.Ide.Editor.DocumentLocation currentSmartTagBegin;
 
 		List<CodeAction> currentSmartTagfixes;
 
-		void CreateSmartTag (List<CodeAction> fixes, MonoDevelop.Core.Text.DocumentLocation loc)
+		void CreateSmartTag (List<CodeAction> fixes, MonoDevelop.Ide.Editor.DocumentLocation loc)
 		{
 			Fixes = fixes;
 			if (!AnalysisOptions.EnableFancyFeatures) {
@@ -526,7 +526,7 @@ namespace MonoDevelop.CodeActions
 				first = false;
 			}
 			if (smartTagLocBegin.Line != loc.Line)
-				smartTagLocBegin = new MonoDevelop.Core.Text.DocumentLocation (loc.Line, 1);
+				smartTagLocBegin = new MonoDevelop.Ide.Editor.DocumentLocation (loc.Line, 1);
 			// got no fix location -> try to search word start
 			if (first) {
 				int offset = document.Editor.LocationToOffset (smartTagLocBegin);

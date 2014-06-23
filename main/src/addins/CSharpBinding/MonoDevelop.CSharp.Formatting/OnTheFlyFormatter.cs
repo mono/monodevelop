@@ -67,7 +67,7 @@ namespace MonoDevelop.CSharp.Formatting
 			Format (policyParent, mimeTypeChain, data, startOffset, endOffset, exact);
 		}
 
-		public static void FormatStatmentAt (MonoDevelop.Ide.Gui.Document data, MonoDevelop.Core.Text.DocumentLocation location)
+		public static void FormatStatmentAt (MonoDevelop.Ide.Gui.Document data, MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
 			var offset = data.Editor.LocationToOffset (location);
 			var policyParent = data.Project != null ? data.Project.Policies : PolicyService.DefaultPolicies;

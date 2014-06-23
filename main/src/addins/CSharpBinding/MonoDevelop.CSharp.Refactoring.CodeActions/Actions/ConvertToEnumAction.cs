@@ -43,7 +43,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 	/// </summary>
 	class ConvertToEnumAction : MonoDevelop.CodeActions.CodeActionProvider
 	{
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, MonoDevelop.Core.Text.DocumentLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
 		{
 			var context = refactoringContext as MDRefactoringContext;
 

@@ -186,10 +186,10 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			return document.LocationToOffset (line, column);
 		}
 
-		MonoDevelop.Core.Text.DocumentLocation IReadonlyTextDocument.OffsetToLocation (int offset)
+		MonoDevelop.Ide.Editor.DocumentLocation IReadonlyTextDocument.OffsetToLocation (int offset)
 		{
 			var loc = document.OffsetToLocation (offset);
-			return new MonoDevelop.Core.Text.DocumentLocation (loc.Line, loc.Column);
+			return new MonoDevelop.Ide.Editor.DocumentLocation (loc.Line, loc.Column);
 		}
 
 		IDocumentLine IReadonlyTextDocument.GetLine (int lineNumber)

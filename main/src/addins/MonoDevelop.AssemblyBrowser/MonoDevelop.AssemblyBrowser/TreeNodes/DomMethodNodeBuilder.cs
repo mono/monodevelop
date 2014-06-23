@@ -208,7 +208,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedEntity)navigator.DataItem;
 			var source = StringTextSource.ReadFrom (method.Region.FileName);
 			data.Text = source.Text;
-			data.CaretLocation = new TextLocation (method.Region.BeginLine, method.Region.BeginColumn);
+			data.CaretLocation = new MonoDevelop.Ide.Editor.DocumentLocation (method.Region.BeginLine, method.Region.BeginColumn);
 			return true;
 		}
 		

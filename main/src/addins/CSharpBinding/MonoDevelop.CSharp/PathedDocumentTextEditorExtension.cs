@@ -36,7 +36,7 @@ using System.Linq;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp;
 using System.Text;
-using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp
 {

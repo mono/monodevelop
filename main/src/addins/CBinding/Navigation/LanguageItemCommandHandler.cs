@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Components;
 using CBinding.Parser;
 using MonoDevelop.Ide;
-using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace CBinding.Navigation
 {

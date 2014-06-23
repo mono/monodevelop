@@ -2437,6 +2437,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IndentationTracker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\SelectionSurroundingProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextPasteHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DocumentLocation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

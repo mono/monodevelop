@@ -1086,7 +1086,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			this.IsDirty = Document.IsDirty;
 			
-			DocumentLocation location = Document.OffsetToLocation (a.Offset);
+			var location = Document.OffsetToLocation (a.Offset);
 			
 			int i = 0, lines = 0;
 			while (i != -1 && i < oldReplaceText.Length) {
@@ -1406,7 +1406,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void OnIconButtonPress (object s, MarginMouseEventArgs args)
 		{
-			if (args.LineNumber < DocumentLocation.MinLine)
+			if (args.LineNumber < Mono.TextEditor.DocumentLocation.MinLine)
 				return;
 
 			if (args.TriggersContextMenu ()) {
@@ -1638,12 +1638,12 @@ namespace MonoDevelop.SourceEditor
 		
 		public int GetPositionFromLineColumn (int line, int column)
 		{
-			return this.widget.TextEditor.Document.LocationToOffset (new DocumentLocation (line, column));
+			return this.widget.TextEditor.Document.LocationToOffset (new Mono.TextEditor.DocumentLocation (line, column));
 		}
 
 		public void GetLineColumnFromPosition (int position, out int line, out int column)
 		{
-			DocumentLocation location = this.widget.TextEditor.Document.OffsetToLocation (position);
+			var location = this.widget.TextEditor.Document.OffsetToLocation (position);
 			line = location.Line;
 			column = location.Column;
 		}
@@ -1664,7 +1664,7 @@ namespace MonoDevelop.SourceEditor
 		#region IBookmarkBuffer
 		DocumentLine GetLine (int position)
 		{
-			DocumentLocation location = Document.OffsetToLocation (position);
+			var location = Document.OffsetToLocation (position);
 			return Document.GetLine (location.Line);
 		}
 				
@@ -1839,7 +1839,7 @@ namespace MonoDevelop.SourceEditor
 			return result;
 		}
 		
-		public Gdk.Point DocumentToScreenLocation (DocumentLocation location)
+		public Gdk.Point DocumentToScreenLocation (Mono.TextEditor.DocumentLocation location)
 		{
 			var p = widget.TextEditor.LocationToPoint (location);
 			int tx, ty;
@@ -1918,7 +1918,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					int minColumn = System.Math.Min (data.MainSelection.Anchor.Column, data.MainSelection.Lead.Column);
 					data.MainSelection = data.MainSelection.WithRange (
-						new DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn),
+						new Mono.TextEditor.DocumentLocation (data.Caret.Line == minLine ? maxLine : minLine, minColumn),
 						data.Caret.Location
 					);
 
@@ -2718,13 +2718,13 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.QueueDraw ();
 		}
 
-		MonoDevelop.Core.Text.DocumentLocation ITextEditorImpl.PointToLocation (double xp, double yp, bool endAtEol)
+		MonoDevelop.Ide.Editor.DocumentLocation ITextEditorImpl.PointToLocation (double xp, double yp, bool endAtEol)
 		{
 			var pt = TextEditor.PointToLocation (xp, yp);
-			return new MonoDevelop.Core.Text.DocumentLocation (pt.Line, pt.Column);
+			return new MonoDevelop.Ide.Editor.DocumentLocation (pt.Line, pt.Column);
 		}
 
-		Cairo.Point ITextEditorImpl.LocationToPoint (MonoDevelop.Core.Text.DocumentLocation loc)
+		Cairo.Point ITextEditorImpl.LocationToPoint (MonoDevelop.Ide.Editor.DocumentLocation loc)
 		{
 			return TextEditor.LocationToPoint (loc.Line, loc.Column);
 		}
@@ -2802,13 +2802,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		MonoDevelop.Core.Text.DocumentLocation ITextEditorImpl.CaretLocation {
+		MonoDevelop.Ide.Editor.DocumentLocation ITextEditorImpl.CaretLocation {
 			get {
 				var loc = TextEditor.Caret.Location;
-				return new MonoDevelop.Core.Text.DocumentLocation (loc.Line, loc.Column);
+				return new MonoDevelop.Ide.Editor.DocumentLocation (loc.Line, loc.Column);
 			}
 			set {
-				TextEditor.Caret.Location = new DocumentLocation (value.Line, value.Column);
+				TextEditor.Caret.Location = new Mono.TextEditor.DocumentLocation (value.Line, value.Column);
 			}
 		}
 
