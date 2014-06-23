@@ -593,7 +593,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				while (node.NextSibling == null &&
 					treeParser.Position < textLen && treeParser.Nodes.Peek () != ob.Parent)
 				{
-					char c = Editor[treeParser.Position];
+					char c = Editor.GetCharAt (treeParser.Position);
 					treeParser.Push (c);
 					if (el != null && el.IsClosed && el.ClosingTag.IsComplete)
 						break;
@@ -674,7 +674,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			//try to find the end of the name, but don't go too far
 			for (; end < limit; end++) {
-				char c = Editor[end];
+				char c = Editor.GetCharAt (end);
 				
 				if (c == ':') {
 					if (mid == -1)
