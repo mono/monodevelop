@@ -272,9 +272,9 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		void SelectSegment (Mono.TextTemplating.ISegment seg)
 		{
-			int s = Editor.Document.LocationToOffset (seg.TagStartLocation.Line, seg.TagStartLocation.Column);
+			int s = Editor.LocationToOffset (seg.TagStartLocation.Line, seg.TagStartLocation.Column);
 			if (s > -1) {
-				Editor.Caret.Offset = s;
+				Editor.CaretOffset = s;
 				Editor.CenterTo (s);
 			}
 		}
