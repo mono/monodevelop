@@ -6,7 +6,7 @@
 	url		= "http://www.monodevelop.com"
 	description	= "Database CodeGenerator Module"
 	category	= "Database"
-	version		= "4.2.3">
+	version		= "5.1.0">
     
 	<Runtime>
 		<Import assembly="MonoDevelop.Database.CodeGenerator.dll"/>
@@ -15,11 +15,11 @@
   	<Localizer type="Gettext" catalog="monodevelop-database"/>
 
 	<Dependencies>
-		<Addin id="Core" version="4.2.3"/>
-		<Addin id="Ide" version="4.2.3"/>
-		<Addin id="Database.Sql" version="4.2.3"/>
-		<Addin id="Database.Components" version="4.2.3"/>
-		<Addin id="Database.Query" version="4.2.3"/>
+		<Addin id="Core" version="5.1.0"/>
+		<Addin id="Ide" version="5.1.0"/>
+		<Addin id="Database.Sql" version="5.1.0"/>
+		<Addin id="Database.Components" version="5.1.0"/>
+		<Addin id="Database.Query" version="5.1.0"/>
 	</Dependencies>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">

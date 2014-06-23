@@ -14,7 +14,7 @@ ASSEMBLY_VERSION=4.0.0.0
 # 2) "VERSION_NUMBER BUILD_TYPE BUILD_NUMBER"		"2.0 Alpha 1"
 PACKAGE_VERSION_LABEL="m4_esyscmd_s([grep ^Label ../version.config|cut -d "=" -f 2|tr -d '\n'])"
 
-COMPAT_ADDIN_VERSION=m4_esyscmd_s([grep ^CompatVersion ../version.config|cut -d "=" -f 2|tr -d '\n'])
+COMPAT_ADDIN_VERSION=5.0.1
 
 AC_PATH_PROG(MONO, mono)
 AC_PATH_PROG(MCS, gmcs)

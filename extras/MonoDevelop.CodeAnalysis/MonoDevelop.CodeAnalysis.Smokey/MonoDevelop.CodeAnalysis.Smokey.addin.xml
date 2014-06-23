@@ -6,7 +6,7 @@
 	url         = "http://code.google.com/p/md-codeanalysis"
 	description = "MonoDevelop CodeAnalysis addin"
 	category    = "Code Analysis"
-	version     = "4.2.3">
+	version     = "5.1.0">
 
 	<Runtime>
 		<Import assembly="MonoDevelop.CodeAnalysis.dll"/>
