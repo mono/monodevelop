@@ -99,7 +99,6 @@ main/external/Makefile
 /main/src/addins/GnomePlatform/Makefile
 /main/src/addins/ILAsmBinding/Makefile
 /main/src/addins/MacPlatform/Makefile
-/main/src/addins/MonoDevelop.MacDev/Makefile
 /main/src/addins/Makefile
 /main/src/addins/MonoDevelop.AssemblyBrowser/Makefile
 /main/src/addins/MonoDevelop.Autotools/Makefile
@@ -165,7 +164,6 @@ main/external/Makefile
 /main/tests/Ide.Tests/Makefile
 /main/tests/Makefile
 /main/tests/MacPlatform.Tests/Makefile
-/main/tests/MonoDevelop.MacDev.Tests/Makefile
 /main/tests/TestRunner/Makefile
 /main/tests/UnitTests/Makefile
 /main/tests/UserInterfaceTests/Makefile
