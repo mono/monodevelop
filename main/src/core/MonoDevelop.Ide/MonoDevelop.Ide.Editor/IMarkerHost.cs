@@ -36,15 +36,19 @@ namespace MonoDevelop.Ide.Editor
 
 	public interface IMarkerHost
 	{
-		ITextSegmentMarker CreateUsageMarker (Usage usage);
-		ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink);
-
+		#region Line marker
 		IUrlTextLineMarker CreateUrlTextMarker (IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol);
 		ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker ();
 		ITextLineMarker CreateAsmLineMarker ();
-		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length);
-		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, ISegment segment);
+		#endregion
 
+		#region Segment marker
+		ITextSegmentMarker CreateUsageMarker (Usage usage);
+		ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink);
+
+		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length);
+
+		#endregion
 //
 //		public class BreakpointTextMarker : DebugTextMarker
 //		{
@@ -190,6 +194,27 @@ namespace MonoDevelop.Ide.Editor
 //				DrawBorder (cr, border, x, y, size);
 //			}
 //		}
+	}
+
+	public static class MarkerHostExtension
+	{
+		public static ITextSegmentMarker CreateLinkMarker (this IMarkerHost host, ISegment segment, Action<LinkRequest> activateLink)
+		{
+			if (host == null)
+				throw new ArgumentNullException ("host");
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return host.CreateLinkMarker (segment.Offset, segment.Length, activateLink);
+		}
+
+		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (this IMarkerHost host, TextSegmentMarkerEffect effect, ISegment segment)
+		{
+			if (host == null)
+				throw new ArgumentNullException ("host");
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return host.CreateGenericTextSegmentMarker (effect, segment.Offset, segment.Length);
+		}
 	}
 }
 
