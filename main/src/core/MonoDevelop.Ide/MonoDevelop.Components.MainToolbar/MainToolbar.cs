@@ -270,7 +270,7 @@ namespace MonoDevelop.Components.MainToolbar
 					var doc = IdeApp.Workbench.ActiveDocument;
 					if (doc != null && doc.Editor != null) {
 						doc.Select ();
-						doc.Editor.CaretLocation = new TextLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
+						doc.Editor.CaretLocation = new DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
 						doc.Editor.CenterToCaret ();
 						doc.Editor.StartCaretPulseAnimation ();
 					}

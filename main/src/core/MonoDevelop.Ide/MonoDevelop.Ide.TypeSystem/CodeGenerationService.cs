@@ -356,14 +356,14 @@ namespace MonoDevelop.Ide.TypeSystem
 					while (lineOffset + col - 2 >= 0 && col > 1 && char.IsWhiteSpace (data.GetCharAt (lineOffset + col - 2)))
 						col--;
 				}
-				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (type.BodyRegion.EndLine, col), insertLine, NewLineInsertion.Eol));
+				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (type.BodyRegion.EndLine, col), insertLine, NewLineInsertion.Eol));
 				CheckEndPoint (data, result [result.Count - 1], result.Count == 1);
 			}
 			
 			foreach (var region in parsedDocument.UserRegions.Where (r => type.BodyRegion.IsInside (r.Region.Begin))) {
-				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (region.Region.BeginLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
-				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (region.Region.EndLine, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
-				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (region.Region.BeginLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (region.Region.EndLine, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
+				result.Add (new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (region.Region.EndLine + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol));
 			}
 			result.Sort ((left, right) => left.Location.CompareTo (right.Location));
 //			foreach (var res in result)
@@ -394,7 +394,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					lineNr--;
 				}
 				line = doc.GetLine (lineNr);
-				point.Location = new MonoDevelop.Core.Text.TextLocation (lineNr, doc.GetLineIndent (line).Length + 1);
+				point.Location = new MonoDevelop.Core.Text.DocumentLocation (lineNr, doc.GetLineIndent (line).Length + 1);
 			}
 			
 			if (doc.GetLineIndent (line).Length + 1 < point.Location.Column)
@@ -410,20 +410,20 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (curLine != null) {
 				if (bodyEndOffset < curLine.Offset + curLine.Length) {
 					// case1: positition is somewhere inside the start line
-					return new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (line, column + 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
+					return new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (line, column + 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
 				}
 			}
 			
 			// -> if position is at line end check next line
 			var nextLine = doc.GetLine (line + 1);
 			if (nextLine == null) // check for 1 line case.
-				return new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
+				return new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
 			
 			for (int i = nextLine.Offset; i < nextLine.EndOffset; i++) {
 				char ch = doc.GetCharAt (i);
 				if (!char.IsWhiteSpace (ch)) {
 					// case2: next line contains non ws chars.
-					return new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
+					return new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.BlankLine);
 				}
 			}
 
@@ -433,12 +433,12 @@ namespace MonoDevelop.Ide.TypeSystem
 					char ch = doc.GetCharAt (i);
 					if (!char.IsWhiteSpace (ch)) {
 						// case3: one blank line
-						return new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol);
+						return new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.Eol);
 					}
 				}
 			}
 			// case4: more than 1 blank line
-			return new InsertionPoint (new MonoDevelop.Core.Text.TextLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.None);
+			return new InsertionPoint (new MonoDevelop.Core.Text.DocumentLocation (line + 1, 1), NewLineInsertion.Eol, NewLineInsertion.None);
 		}
 		
 		static InsertionPoint GetSuitableInsertionPoint (IEnumerable<InsertionPoint> points, IUnresolvedTypeDefinition cls, IUnresolvedMember member)
@@ -567,7 +567,7 @@ namespace MonoDevelop.Ide.TypeSystem
 	
 	public static class HelperMethods
 	{
-		public static TextLocation Convert (this MonoDevelop.Core.Text.TextLocation location)
+		public static TextLocation Convert (this MonoDevelop.Core.Text.DocumentLocation location)
 		{
 			return new TextLocation (location.Line, location.Column);
 		}

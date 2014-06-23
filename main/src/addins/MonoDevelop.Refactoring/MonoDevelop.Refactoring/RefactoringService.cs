@@ -197,7 +197,7 @@ namespace MonoDevelop.Refactoring
 			return inspectors.Where (i => i.MimeType == mimeType);
 		}
 
-		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, MonoDevelop.Core.Text.TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, MonoDevelop.Core.Text.DocumentLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var editor = doc.Editor;
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
@@ -228,7 +228,7 @@ namespace MonoDevelop.Refactoring
 			}, cancellationToken);
 		}
 
-		public static void QueueQuickFixAnalysis (Document doc, MonoDevelop.Core.Text.TextLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
+		public static void QueueQuickFixAnalysis (Document doc, MonoDevelop.Core.Text.DocumentLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
 		{
 			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 			var issues = ext != null ? ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
@@ -292,7 +292,7 @@ namespace MonoDevelop.Refactoring
 			return appliedFixes;
 		}
 
-		public static MonoDevelop.Core.Text.TextLocation GetCorrectResolveLocation (Document doc, MonoDevelop.Core.Text.TextLocation location)
+		public static MonoDevelop.Core.Text.DocumentLocation GetCorrectResolveLocation (Document doc, MonoDevelop.Core.Text.DocumentLocation location)
 		{
 			if (doc == null)
 				return location;
@@ -308,7 +308,7 @@ namespace MonoDevelop.Refactoring
 				return location;
 			int offset = editor.LocationToOffset (location);
 			if (offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1)))
-				return new MonoDevelop.Core.Text.TextLocation (location.Line, location.Column - 1);
+				return new MonoDevelop.Core.Text.DocumentLocation (location.Line, location.Column - 1);
 			return location;
 		}
 

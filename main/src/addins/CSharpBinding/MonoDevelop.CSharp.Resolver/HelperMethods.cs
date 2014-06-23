@@ -111,7 +111,7 @@ namespace MonoDevelop.CSharp
 			return codePolicy.CreateOptions ();
 		}
 		
-		public static bool TryResolveAt (this Document doc, TextLocation loc, out ResolveResult result, out AstNode node)
+		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");

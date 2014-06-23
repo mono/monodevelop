@@ -54,7 +54,7 @@ namespace MonoDevelop.CodeActions
 			Description = result.Message;
 		}
 		
-		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, MonoDevelop.Core.Text.TextLocation loc, CancellationToken cancellationToken)
+		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, MonoDevelop.Core.Text.DocumentLocation loc, CancellationToken cancellationToken)
 		{
 			yield return new AnalysisCodeAction (Action, Result) {
 				DocumentRegion = Action.DocumentRegion

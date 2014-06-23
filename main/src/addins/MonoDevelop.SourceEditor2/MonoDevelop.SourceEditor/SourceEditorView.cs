@@ -2718,13 +2718,13 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.QueueDraw ();
 		}
 
-		MonoDevelop.Core.Text.TextLocation ITextEditorImpl.PointToLocation (double xp, double yp, bool endAtEol)
+		MonoDevelop.Core.Text.DocumentLocation ITextEditorImpl.PointToLocation (double xp, double yp, bool endAtEol)
 		{
 			var pt = TextEditor.PointToLocation (xp, yp);
-			return new MonoDevelop.Core.Text.TextLocation (pt.Line, pt.Column);
+			return new MonoDevelop.Core.Text.DocumentLocation (pt.Line, pt.Column);
 		}
 
-		Cairo.Point ITextEditorImpl.LocationToPoint (MonoDevelop.Core.Text.TextLocation loc)
+		Cairo.Point ITextEditorImpl.LocationToPoint (MonoDevelop.Core.Text.DocumentLocation loc)
 		{
 			return TextEditor.LocationToPoint (loc.Line, loc.Column);
 		}
@@ -2802,10 +2802,10 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		MonoDevelop.Core.Text.TextLocation ITextEditorImpl.CaretLocation {
+		MonoDevelop.Core.Text.DocumentLocation ITextEditorImpl.CaretLocation {
 			get {
 				var loc = TextEditor.Caret.Location;
-				return new MonoDevelop.Core.Text.TextLocation (loc.Line, loc.Column);
+				return new MonoDevelop.Core.Text.DocumentLocation (loc.Line, loc.Column);
 			}
 			set {
 				TextEditor.Caret.Location = new DocumentLocation (value.Line, value.Column);

@@ -96,7 +96,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public TextLocation CaretLocation {
+		public DocumentLocation CaretLocation {
 			get {
 				return textEditorImpl.CaretLocation;
 			}
@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Editor
 				return CaretLocation.Line;
 			}
 			set {
-				CaretLocation = new TextLocation (value, CaretColumn);
+				CaretLocation = new DocumentLocation (value, CaretColumn);
 			}
 		}
 
@@ -119,7 +119,7 @@ namespace MonoDevelop.Ide.Editor
 				return CaretLocation.Column;
 			}
 			set {
-				CaretLocation = new TextLocation (CaretLine, value);
+				CaretLocation = new DocumentLocation (CaretLine, value);
 			}
 		}
 
@@ -321,7 +321,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.SetSelection (anchorOffset, leadOffset);
 		}
 
-		public void SetSelection (TextLocation anchor, TextLocation lead)
+		public void SetSelection (DocumentLocation anchor, DocumentLocation lead)
 		{
 			SetSelection (LocationToOffset (anchor), LocationToOffset (lead));
 		}
@@ -363,7 +363,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.RunWhenLoaded (action);
 		}
 
-		public string FormatString (TextLocation insertPosition, string code)
+		public string FormatString (DocumentLocation insertPosition, string code)
 		{
 			return textEditorImpl.FormatString (LocationToOffset (insertPosition), code);
 		}
@@ -401,12 +401,12 @@ namespace MonoDevelop.Ide.Editor
 			Insert (CaretOffset, text);
 		}
 
-		public TextLocation PointToLocation (double xp, double yp, bool endAtEol = false)
+		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
 		{
 			return textEditorImpl.PointToLocation (xp, yp, endAtEol);
 		}
 
-		public Cairo.Point LocationToPoint (TextLocation currentSmartTagBegin)
+		public Cairo.Point LocationToPoint (DocumentLocation currentSmartTagBegin)
 		{
 			return textEditorImpl.LocationToPoint (currentSmartTagBegin);
 		}
@@ -419,15 +419,15 @@ namespace MonoDevelop.Ide.Editor
 
 		public int LocationToOffset (int line, int column)
 		{
-			return ReadOnlyTextDocument.LocationToOffset (new TextLocation (line, column));
+			return ReadOnlyTextDocument.LocationToOffset (new DocumentLocation (line, column));
 		}
 
-		public int LocationToOffset (TextLocation location)
+		public int LocationToOffset (DocumentLocation location)
 		{
 			return ReadOnlyTextDocument.LocationToOffset (location);
 		}
 
-		public TextLocation OffsetToLocation (int offset)
+		public DocumentLocation OffsetToLocation (int offset)
 		{
 			return ReadOnlyTextDocument.OffsetToLocation (offset);
 		}
@@ -673,7 +673,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.ScrollTo (offset);
 		}
 
-		public void ScrollTo (TextLocation loc)
+		public void ScrollTo (DocumentLocation loc)
 		{
 			ScrollTo (LocationToOffset (loc));
 		}
@@ -683,7 +683,7 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.CenterTo (offset);
 		}
 
-		public void CenterTo (TextLocation loc)
+		public void CenterTo (DocumentLocation loc)
 		{
 			CenterTo (LocationToOffset (loc));
 		}

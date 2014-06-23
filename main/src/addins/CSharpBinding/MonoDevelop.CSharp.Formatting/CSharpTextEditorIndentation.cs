@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		void RunFormatter (MonoDevelop.Core.Text.TextLocation location)
+		void RunFormatter (MonoDevelop.Core.Text.DocumentLocation location)
 		{
 
 			if (OnTheFlyFormatting && textEditorData != null && textEditorData.EditMode == EditMode.Edit) {
@@ -526,7 +526,7 @@ namespace MonoDevelop.CSharp.Formatting
 			CheckXmlCommentCloseTag (keyChar);
 
 			if (!skipFormatting && keyChar == '}')
-				RunFormatter (new MonoDevelop.Core.Text.TextLocation (textEditorData.CaretLine, textEditorData.CaretColumn));
+				RunFormatter (new MonoDevelop.Core.Text.DocumentLocation (textEditorData.CaretLine, textEditorData.CaretColumn));
 			return result;
 		}
 

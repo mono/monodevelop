@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public TextLocation InsertPosition {
+		public DocumentLocation InsertPosition {
 			get;
 			set;
 		}

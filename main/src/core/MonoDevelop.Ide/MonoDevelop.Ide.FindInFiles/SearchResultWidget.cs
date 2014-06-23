@@ -630,16 +630,16 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 		}
 		
-		TextLocation GetLocation (SearchResult searchResult)
+		DocumentLocation GetLocation (SearchResult searchResult)
 		{
 			var doc = GetDocument (searchResult);
 			if (doc == null)
-				return TextLocation.Empty;
+				return DocumentLocation.Empty;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
 			var line = doc.GetLine (lineNr);
 			if (line == null)
-				return TextLocation.Empty;
-			return new TextLocation (lineNr, searchResult.Offset - line.Offset + 1);
+				return DocumentLocation.Empty;
+			return new DocumentLocation (lineNr, searchResult.Offset - line.Offset + 1);
 		}
 		
 		public void OpenSelectedMatches ()

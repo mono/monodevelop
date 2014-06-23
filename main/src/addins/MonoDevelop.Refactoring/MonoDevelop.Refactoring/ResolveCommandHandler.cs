@@ -166,7 +166,7 @@ namespace MonoDevelop.Refactoring
 			return stub.ToString ();
 		}
 
-		static ResolveResult GetHeuristicResult (Document doc, TextLocation location, ref AstNode node)
+		static ResolveResult GetHeuristicResult (Document doc, DocumentLocation location, ref AstNode node)
 		{
 			var editor = doc.Editor;
 			if (editor == null)
@@ -308,7 +308,7 @@ namespace MonoDevelop.Refactoring
 			return !string.IsNullOrEmpty (result);
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, TextLocation location)
+		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)

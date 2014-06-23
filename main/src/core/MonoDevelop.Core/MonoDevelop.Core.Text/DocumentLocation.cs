@@ -38,13 +38,13 @@ namespace MonoDevelop.Core.Text
 	/// <see cref="Editor.IDocument.GetOffset(TextLocation)"/> to convert between offsets and TextLocations.
 	/// </remarks>
 	[Serializable]
-	[TypeConverter(typeof(TextLocationConverter))]
-	public struct TextLocation : IComparable<TextLocation>, IEquatable<TextLocation>
+	[TypeConverter(typeof(DocumentLocationConverter))]
+	public struct DocumentLocation : IComparable<DocumentLocation>, IEquatable<DocumentLocation>
 	{
 		/// <summary>
 		/// Represents no text location (0, 0).
 		/// </summary>
-		public static readonly TextLocation Empty = new TextLocation(0, 0);
+		public static readonly DocumentLocation Empty = new DocumentLocation(0, 0);
 
 		/// <summary>
 		/// Constant of the minimum line.
@@ -59,7 +59,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Creates a TextLocation instance.
 		/// </summary>
-		public TextLocation(int line, int column)
+		public DocumentLocation(int line, int column)
 		{
 			this.line = line;
 			this.column = column;
@@ -111,14 +111,14 @@ namespace MonoDevelop.Core.Text
 		/// </summary>
 		public override bool Equals(object obj)
 		{
-			if (!(obj is TextLocation)) return false;
-			return (TextLocation)obj == this;
+			if (!(obj is DocumentLocation)) return false;
+			return (DocumentLocation)obj == this;
 		}
 
 		/// <summary>
 		/// Equality test.
 		/// </summary>
-		public bool Equals(TextLocation other)
+		public bool Equals(DocumentLocation other)
 		{
 			return this == other;
 		}
@@ -126,7 +126,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Equality test.
 		/// </summary>
-		public static bool operator ==(TextLocation left, TextLocation right)
+		public static bool operator ==(DocumentLocation left, DocumentLocation right)
 		{
 			return left.column == right.column && left.line == right.line;
 		}
@@ -134,7 +134,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Inequality test.
 		/// </summary>
-		public static bool operator !=(TextLocation left, TextLocation right)
+		public static bool operator !=(DocumentLocation left, DocumentLocation right)
 		{
 			return left.column != right.column || left.line != right.line;
 		}
@@ -142,7 +142,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Compares two text locations.
 		/// </summary>
-		public static bool operator <(TextLocation left, TextLocation right)
+		public static bool operator <(DocumentLocation left, DocumentLocation right)
 		{
 			if (left.line < right.line)
 				return true;
@@ -155,7 +155,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Compares two text locations.
 		/// </summary>
-		public static bool operator >(TextLocation left, TextLocation right)
+		public static bool operator >(DocumentLocation left, DocumentLocation right)
 		{
 			if (left.line > right.line)
 				return true;
@@ -168,7 +168,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Compares two text locations.
 		/// </summary>
-		public static bool operator <=(TextLocation left, TextLocation right)
+		public static bool operator <=(DocumentLocation left, DocumentLocation right)
 		{
 			return !(left > right);
 		}
@@ -176,25 +176,25 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Compares two text locations.
 		/// </summary>
-		public static bool operator >=(TextLocation left, TextLocation right)
+		public static bool operator >=(DocumentLocation left, DocumentLocation right)
 		{
 			return !(left < right);
 		}
 
-		public static implicit operator ICSharpCode.NRefactory.TextLocation (TextLocation location)
+		public static implicit operator ICSharpCode.NRefactory.TextLocation (DocumentLocation location)
 		{
 			return new ICSharpCode.NRefactory.TextLocation (location.Line, location.Column);
 		}
 
-		public static implicit operator TextLocation(ICSharpCode.NRefactory.TextLocation location)
+		public static implicit operator DocumentLocation(ICSharpCode.NRefactory.TextLocation location)
 		{
-			return new TextLocation (location.Line, location.Column);
+			return new DocumentLocation (location.Line, location.Column);
 		}
 
 		/// <summary>
 		/// Compares two text locations.
 		/// </summary>
-		public int CompareTo(TextLocation other)
+		public int CompareTo(DocumentLocation other)
 		{
 			if (this == other)
 				return 0;
@@ -205,7 +205,7 @@ namespace MonoDevelop.Core.Text
 		}
 	}
 
-	public class TextLocationConverter : TypeConverter
+	public class DocumentLocationConverter : TypeConverter
 	{
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
@@ -214,7 +214,7 @@ namespace MonoDevelop.Core.Text
 
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
-			return destinationType == typeof(TextLocation) || base.CanConvertTo(context, destinationType);
+			return destinationType == typeof(DocumentLocation) || base.CanConvertTo(context, destinationType);
 		}
 
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
@@ -222,7 +222,7 @@ namespace MonoDevelop.Core.Text
 			if (value is string) {
 				string[] parts = ((string)value).Split(';', ',');
 				if (parts.Length == 2) {
-					return new TextLocation(int.Parse(parts[0]), int.Parse(parts[1]));
+					return new DocumentLocation(int.Parse(parts[0]), int.Parse(parts[1]));
 				}
 			}
 			return base.ConvertFrom(context, culture, value);
@@ -230,8 +230,8 @@ namespace MonoDevelop.Core.Text
 
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			if (value is TextLocation) {
-				var loc = (TextLocation)value;
+			if (value is DocumentLocation) {
+				var loc = (DocumentLocation)value;
 				return loc.Line + ";" + loc.Column;
 			}
 			return base.ConvertTo(context, culture, value, destinationType);

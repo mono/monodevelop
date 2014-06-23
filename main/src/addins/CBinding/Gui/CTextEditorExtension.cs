@@ -760,7 +760,7 @@ namespace CBinding
 			item.Bypass = !item.Visible;
 		}
 		
-		private LanguageItem GetLanguageItemAt (TextLocation location)
+		private LanguageItem GetLanguageItemAt (DocumentLocation location)
 		{
 			CProject project = Document.Project as CProject;
 			string token = GetTokenAt (location);
@@ -772,7 +772,7 @@ namespace CBinding
 			return null;
 		}
 		
-		private string GetTokenAt (TextLocation location)
+		private string GetTokenAt (DocumentLocation location)
 		{
 			int lineOffset = location.Column-1;
 			string line = Editor.GetLineText (location.Line);

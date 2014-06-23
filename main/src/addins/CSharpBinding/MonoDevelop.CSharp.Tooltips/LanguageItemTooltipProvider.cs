@@ -89,7 +89,7 @@ namespace MonoDevelop.SourceEditor
 			ResolveResult result;
 			AstNode node;
 			var loc = editor.OffsetToLocation (offset);
-			if (!doc.TryResolveAt (new TextLocation (loc.Line, loc.Column), out result, out node)) {
+			if (!doc.TryResolveAt (new DocumentLocation (loc.Line, loc.Column), out result, out node)) {
 				if (node is CSharpTokenNode) {
 					int startOffset2 = editor.LocationToOffset (node.StartLocation);
 					int endOffset2 = editor.LocationToOffset (node.EndLocation);

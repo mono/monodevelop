@@ -502,7 +502,7 @@ namespace MonoDevelop.Ide.Tasks
 							string line = doc.Editor.GetLineText (task.Line);
 							int index = line.IndexOf (commentTags[0]);
 							if (index != -1) {
-								doc.Editor.CaretLocation = new TextLocation (task.Line, task.Column);
+								doc.Editor.CaretLocation = new DocumentLocation (task.Line, task.Column);
 								doc.Editor.StartCaretPulseAnimation ();
 								line = line.Substring (0, index);
 								var ls = doc.Editor.GetLine (task.Line);

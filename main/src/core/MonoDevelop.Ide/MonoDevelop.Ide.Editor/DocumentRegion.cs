@@ -69,15 +69,15 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public TextLocation Begin {
+		public DocumentLocation Begin {
 			get {
-				return new TextLocation (BeginLine, BeginColumn);
+				return new DocumentLocation (BeginLine, BeginColumn);
 			}
 		}
 		
-		public TextLocation End {
+		public DocumentLocation End {
 			get {
-				return new TextLocation (EndLine, EndColumn);
+				return new DocumentLocation (EndLine, EndColumn);
 			}
 		}
 
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Editor
 			this.endColumn = endColumn;
 		}
 		
-		public DocumentRegion (TextLocation begin, TextLocation end)
+		public DocumentRegion (DocumentLocation begin, DocumentLocation end)
 		{
 			beginLine = begin.Line;
 			beginColumn = begin.Column;
@@ -97,14 +97,14 @@ namespace MonoDevelop.Ide.Editor
 			endColumn = end.Column;
 		}
 
-		public bool Contains (TextLocation location)
+		public bool Contains (DocumentLocation location)
 		{
 			return Begin <= location && location < End;
 		}
 		
 		public bool Contains (int line, int column)
 		{
-			return Contains (new TextLocation (line, column));
+			return Contains (new DocumentLocation (line, column));
 		}
 
 		public override bool Equals (object obj)

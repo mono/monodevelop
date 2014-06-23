@@ -212,7 +212,7 @@ namespace MonoDevelop.Refactoring
 		}
 
 
-		TextLocation lastLocation;
+		DocumentLocation lastLocation;
 
 		static bool HasOverloads (Solution solution, object item)
 		{

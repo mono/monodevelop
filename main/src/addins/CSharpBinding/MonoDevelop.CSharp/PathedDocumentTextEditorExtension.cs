@@ -355,7 +355,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		static PathEntry GetRegionEntry (ParsedDocument unit, TextLocation loc)
+		static PathEntry GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
 		{
 			PathEntry entry;
 			if (!unit.UserRegions.Any ())

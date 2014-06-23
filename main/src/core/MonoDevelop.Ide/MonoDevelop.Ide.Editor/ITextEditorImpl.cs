@@ -44,7 +44,7 @@ namespace MonoDevelop.Ide.Editor
 		ITextEditorOptions Options { get; }
 		IReadonlyTextDocument Document { get; set; }
 	
-		TextLocation CaretLocation { get; set; }
+		DocumentLocation CaretLocation { get; set; }
 		int CaretOffset { get; set; }
 
 		bool IsSomethingSelected { get; }
@@ -91,9 +91,9 @@ namespace MonoDevelop.Ide.Editor
 
 		double LineHeight { get; }
 
-		TextLocation PointToLocation (double xp, double yp, bool endAtEol = false);
+		DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false);
 
-		Cairo.Point LocationToPoint (TextLocation currentSmartTagBegin);
+		Cairo.Point LocationToPoint (DocumentLocation currentSmartTagBegin);
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
 		void RemoveMarker (ITextLineMarker lineMarker);

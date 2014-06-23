@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.Editor
 
 	public class InsertionPoint 
 	{
-		public TextLocation Location {
+		public DocumentLocation Location {
 			get;
 			set;
 		}
@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Editor
 		public NewLineInsertion LineBefore { get; set; }
 		public NewLineInsertion LineAfter { get; set; }
 
-		public InsertionPoint (TextLocation location, NewLineInsertion lineBefore, NewLineInsertion lineAfter)
+		public InsertionPoint (DocumentLocation location, NewLineInsertion lineBefore, NewLineInsertion lineAfter)
 		{
 			this.Location = location;
 			this.LineBefore = lineBefore;

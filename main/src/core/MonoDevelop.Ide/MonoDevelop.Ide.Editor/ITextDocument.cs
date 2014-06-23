@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Editor
 
 		int LocationToOffset (int line, int column);
 
-		TextLocation OffsetToLocation (int offset);
+		DocumentLocation OffsetToLocation (int offset);
 
 		IDocumentLine GetLine (int lineNumber);
 
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			return document.GetTextBetween (new TextLocation (startLine, startColumn), new TextLocation (endLine, endColumn));
+			return document.GetTextBetween (new DocumentLocation (startLine, startColumn), new DocumentLocation (endLine, endColumn));
 		}
 
 		public static string GetLineIndent (this IReadonlyTextDocument document, int lineNumber)
@@ -242,7 +242,7 @@ namespace MonoDevelop.Ide.Editor
 			return document.OffsetToLocation (offset).Line;
 		}
 
-		public static int LocationToOffset (this IReadonlyTextDocument document, TextLocation location)
+		public static int LocationToOffset (this IReadonlyTextDocument document, DocumentLocation location)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
@@ -262,7 +262,7 @@ namespace MonoDevelop.Ide.Editor
 			return document.GetTextAt (startOffset, endOffset - startOffset);
 		}
 
-		public static string GetTextBetween (this IReadonlyTextDocument document, TextLocation start, TextLocation end)
+		public static string GetTextBetween (this IReadonlyTextDocument document, DocumentLocation start, DocumentLocation end)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
