@@ -2791,26 +2791,6 @@ namespace MonoDevelop.SourceEditor
 			);
 		}
 
-		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsStartingIn (int offset, int length)
-		{
-			return TextEditor.Document.GetStartFoldings (offset, length).Select (
-				f => new MonoDevelop.Ide.Editor.FoldSegment (f.Offset, f.Length, f.IsFolded) {
-					CollapsedText = f.Description,
-					FoldingType = (MonoDevelop.Ide.Editor.FoldingType)f.FoldingType
-				}
-			);
-		}
-
-		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsEndingIn (int offset, int length)
-		{
-			return TextEditor.Document.GetEndFoldings (offset, length).Select (
-				f => new MonoDevelop.Ide.Editor.FoldSegment (f.Offset, f.Length, f.IsFolded) {
-					CollapsedText = f.Description,
-					FoldingType = (MonoDevelop.Ide.Editor.FoldingType)f.FoldingType
-				}
-			);
-		}
-
 		ISyntaxMode ITextEditorImpl.SyntaxMode {
 			get;
 			set;

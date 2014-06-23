@@ -130,7 +130,5 @@ namespace MonoDevelop.Ide.Editor
 
 		IEnumerable<IFoldSegment> GetFoldingsContaining (int offset);
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
-		IEnumerable<IFoldSegment> GetFoldingsStartingIn (int offset, int length);
-		IEnumerable<IFoldSegment> GetFoldingsEndingIn (int offset, int length);
 	}
 }

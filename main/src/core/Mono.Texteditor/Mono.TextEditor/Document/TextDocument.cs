@@ -1185,6 +1185,11 @@ namespace Mono.TextEditor
 			return foldSegmentTree.GetSegmentsOverlapping (line.Offset, line.Length).Cast<FoldSegment> ();
 		}
 
+		public IEnumerable<FoldSegment> GetFoldingContaining (int offset, int length)
+		{
+			return foldSegmentTree.GetSegmentsOverlapping (offset, length).Cast<FoldSegment> ();
+		}
+
 		public IEnumerable<FoldSegment> GetStartFoldings (int lineNumber)
 		{
 			return GetStartFoldings (this.GetLine (lineNumber));
@@ -1195,6 +1200,11 @@ namespace Mono.TextEditor
 			if (line == null)
 				return new FoldSegment[0];
 			return GetFoldingContaining (line).Where (fold => fold.StartLine == line);
+		}
+
+		public IEnumerable<FoldSegment> GetStartFoldings (int offset, int length)
+		{
+			return GetFoldingContaining (offset, length).Where (fold => offset <= fold.StartLine.Offset && fold.StartLine.Offset < offset + length);
 		}
 
 		public IEnumerable<FoldSegment> GetEndFoldings (int lineNumber)
@@ -1209,7 +1219,12 @@ namespace Mono.TextEditor
 					yield return segment;
 			}
 		}
-		
+
+		public IEnumerable<FoldSegment> GetEndFoldings (int offset, int length)
+		{
+			return GetFoldingContaining (offset, length).Where (fold => offset <= fold.EndLine.Offset && fold.EndLine.Offset < offset + length);
+		}
+
 		public int GetLineCount (FoldSegment segment)
 		{
 			return segment.EndLine.LineNumber - segment.StartLine.LineNumber;

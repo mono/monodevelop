@@ -551,20 +551,6 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.GetFoldingsIn (segment.Offset, segment.Length);
 		}
 
-		public IEnumerable<IFoldSegment> GetFoldingsStartingIn (ISegment segment)
-		{
-			if (segment == null)
-				throw new ArgumentNullException ("segment");
-			return textEditorImpl.GetFoldingsStartingIn (segment.Offset, segment.Length);
-		}
-
-		public IEnumerable<IFoldSegment> GetFoldingsEndingIn (ISegment segment)
-		{
-			if (segment == null)
-				throw new ArgumentNullException ("segment");
-			return textEditorImpl.GetFoldingsEndingIn (segment.Offset, segment.Length);
-		}
-
 		/// <summary>
 		/// Gets a character at the specified position in the document.
 		/// </summary>
