@@ -34,11 +34,21 @@ namespace MonoDevelop.Ide.Editor
 			get;
 			set;
 		}
+
+		string CollapsedText {
+			get;
+			set;
+		}
 	}
 
 	public class FoldSegment : AbstractSegment, IFoldSegment
 	{
 		public bool IsFolded {
+			get;
+			set;
+		}
+
+		public string CollapsedText {
 			get;
 			set;
 		}

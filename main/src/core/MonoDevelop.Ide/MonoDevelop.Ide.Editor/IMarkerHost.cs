@@ -28,9 +28,16 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
+	public enum LinkRequest
+	{
+		SameView,
+		RequestNewView
+	}
+
 	public interface IMarkerHost
 	{
 		ITextSegmentMarker CreateUsageMarker (Usage usage);
+		ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink);
 
 		IUrlTextLineMarker CreateUrlTextMarker (IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol);
 		ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker ();
