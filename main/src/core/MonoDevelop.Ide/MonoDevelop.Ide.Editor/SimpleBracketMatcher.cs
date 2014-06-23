@@ -38,7 +38,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (offset < 0 || offset >= document.Length)
 				return -1;
-			char ch = document [offset];
+			char ch = document.GetCharAt (offset);
 			int bracket = openBrackets.IndexOf (ch);
 			int result;
 			if (bracket >= 0) {
@@ -216,7 +216,7 @@ namespace MonoDevelop.Ide.Editor
 				offset = GetLastSourceCodePosition (document, offset);
 
 			while (offset >= 0 && offset < document.Length) {
-				char ch = document[offset];
+				char ch = document.GetCharAt (offset);
 
 				// check block comments
 				if (!isInLineComment && curStringQuote < 0) {

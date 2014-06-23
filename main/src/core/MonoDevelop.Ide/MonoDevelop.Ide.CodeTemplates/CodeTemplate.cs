@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		static int FindPrevWordStart (TextEditor editor, int offset)
 		{
-			while (--offset >= 0 && !Char.IsWhiteSpace (editor[offset])) 
+			while (--offset >= 0 && !Char.IsWhiteSpace (editor.GetCharAt (offset))) 
 				;
 			return ++offset;
 		}
@@ -401,11 +401,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 
 			if (data.IsSomethingSelected) {
 				int start = data.SelectionRange.Offset;
-				while (Char.IsWhiteSpace (data[start])) {
+				while (Char.IsWhiteSpace (data.GetCharAt (start))) {
 					start++;
 				}
 				int end = data.SelectionRange.EndOffset;
-				while (Char.IsWhiteSpace (data[end - 1])) {
+				while (Char.IsWhiteSpace (data.GetCharAt (end - 1))) {
 					end--;
 				}
 				context.LineIndent = data.GetLineIndent (data.OffsetToLineNumber (start));

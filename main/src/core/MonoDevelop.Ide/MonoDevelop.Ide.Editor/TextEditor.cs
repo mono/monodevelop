@@ -549,12 +549,9 @@ namespace MonoDevelop.Ide.Editor
 		/// <returns>The character at the specified position.</returns>
 		/// <remarks>This is the same as Text[offset], but is more efficient because
 		///  it doesn't require creating a String object.</remarks>
-		public char this[int offset] { get { return ReadOnlyTextDocument[offset]; } } 
-
-		[Obsolete("Use this[int offset]")]
 		public char GetCharAt (int offset)
 		{
-			return ReadOnlyTextDocument[offset]; 
+			return ReadOnlyTextDocument.GetCharAt (offset); 
 		}
 
 		public string GetTextAt (int offset, int length)

@@ -179,7 +179,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			int offset = textEditor.CaretOffset;
 			int start = offset;
 			while (start >= 0 && start < textEditor.Length) { // caret offset may be behind the text
-				char ch = textEditor[start];
+				char ch = textEditor.GetCharAt (start);
 				if (ch == '$')
 					break;
 				if (!char.IsLetterOrDigit (ch) && ch != '_')
@@ -189,7 +189,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			int end = offset;
 			while (end < textEditor.Length) {
-				char ch = textEditor[end];
+				char ch = textEditor.GetCharAt (end);
 				if (ch == '$')
 					break;
 				if (!char.IsLetterOrDigit (ch) && ch != '_')

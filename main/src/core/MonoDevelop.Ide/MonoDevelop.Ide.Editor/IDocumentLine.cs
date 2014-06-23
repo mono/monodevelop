@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Editor
 			int offset = line.Offset;
 			int max = Math.Min (offset + line.LengthIncludingDelimiter, doc.Length);
 			for (int i = offset; i < max; i++) {
-				char ch = doc[i];
+				char ch = doc.GetCharAt (i);
 				if (ch != ' ' && ch != '\t')
 					break;
 				result.Append (ch);

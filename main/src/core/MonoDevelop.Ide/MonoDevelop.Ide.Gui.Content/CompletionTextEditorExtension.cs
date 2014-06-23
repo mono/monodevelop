@@ -326,7 +326,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			cpos = wlen = 0;
 			int pos = Editor.CaretOffset - 1;
 			while (pos >= 0) {
-				char c = Editor[pos];
+				char c = Editor.GetCharAt (pos);
 				if (!char.IsLetterOrDigit (c) && c != '_')
 					break;
 				pos--;
@@ -339,7 +339,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			int len = Editor.Length;
 			
 			while (pos < len) {
-				char c = Editor[pos];
+				char c = Editor.GetCharAt (pos);
 				if (!char.IsLetterOrDigit (c) && c != '_')
 					break;
 				pos++;
@@ -395,7 +395,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			
 			int pos = completionContext.TriggerOffset;
 			if (pos > 0) {
-				char ch = Editor[pos - 1];
+				char ch = Editor.GetCharAt (pos - 1);
 				int triggerWordLength = completionContext.TriggerWordLength;
 				ICompletionDataList completionList = HandleCodeCompletion (completionContext, ch, ref triggerWordLength);
 				if (completionList != null)
@@ -412,7 +412,7 @@ namespace MonoDevelop.Ide.Gui.Content
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
-			var cp = HandleParameterCompletion (completionContext, Editor[pos - 1]);
+			var cp = HandleParameterCompletion (completionContext, Editor.GetCharAt (pos - 1));
 			if (cp != null)
 				return cp;
 			return null;
