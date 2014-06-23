@@ -191,6 +191,9 @@
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextPasteHandlerWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\SelectionSurroundingProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\IndentationTrackerWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\WavedLineMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\GrayOutMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

@@ -381,7 +381,6 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 
-
 		class ContextActionRunner
 		{
 			CodeAction act;
@@ -406,87 +405,6 @@ namespace MonoDevelop.CodeActions
 				act.BatchRun (document, loc);
 			}
 		}
-
-//		class SmartTagMarker : TextSegmentMarker, IActionTextLineMarker
-//		{
-//			CodeActionEditorExtension codeActionEditorExtension;
-//			internal List<CodeAction> fixes;
-//			TextLocation loc;
-//
-//			public SmartTagMarker (int offset, CodeActionEditorExtension codeActionEditorExtension, List<CodeAction> fixes, MonoDevelop.Core.Text.TextLocation loc) : base (offset, 0)
-//			{
-//				this.codeActionEditorExtension = codeActionEditorExtension;
-//				this.fixes = fixes;
-//				this.loc = loc;
-//			}
-//
-//			public SmartTagMarker (int offset) : base (offset, 0)
-//			{
-//			}
-//			const double tagMarkerWidth = 8;
-//			const double tagMarkerHeight = 2;
-//			public override void Draw (ITextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
-//			{
-//				var line = editor.GetLine (loc.Line);
-//				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
-//
-//				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
-//
-//				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
-//					cr.SetSourceRGBA (0.8, 0.8, 1, 0.9);
-//				} else {
-//					cr.SetSourceRGBA (0.2, 0.2, 1, 0.9);
-//				}
-//				cr.Stroke ();
-//			}
-//
-//			#region IActionTextLineMarker implementation
-//
-//			bool IActionTextLineMarker.MousePressed (TextEditor editor, MarginMouseEventArgs args)
-//			{
-//				return false;
-//			}
-//
-//			void IActionTextLineMarker.MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
-//			{
-//				if (args.Button != 0)
-//					return;
-//				var line = editor.GetLine (loc.Line);
-//				if (line == null)
-//					return;
-//				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
-//				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
-//				if (args.X - x >= 0 * editor.Options.Zoom && 
-//				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
-//				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom) {
-//					result.Cursor = null;
-//					Popup ();
-//				} else {
-//					codeActionEditorExtension.CancelSmartTagPopupTimeout ();
-//				}
-//			}
-//
-//			public void Popup ()
-//			{
-//				codeActionEditorExtension.smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-//					codeActionEditorExtension.PopupQuickFixMenu (null, menu => {
-//						codeActionEditorExtension.codeActionMenu = menu;
-//						menu.MotionNotifyEvent += (o, args) => {
-//							if (args.Event.Window == codeActionEditorExtension.Editor.Parent.TextArea.GdkWindow) {
-//								codeActionEditorExtension.StartMenuCloseTimer ();
-//							} else {
-//								codeActionEditorExtension.CancelMenuCloseTimer ();
-//							}
-//						};
-//					});
-//					codeActionEditorExtension.smartTagPopupTimeoutId = 0;
-//					return false;
-//				});
-//			}
-//
-//
-//			#endregion
-//		}
 
 		IGenericTextSegmentMarker currentSmartTag;
 		MonoDevelop.Ide.Editor.DocumentLocation currentSmartTagBegin;

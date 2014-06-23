@@ -31,19 +31,17 @@ namespace MonoDevelop.Ide.Editor
 {
 	public abstract class TextMarkerMouseEventArgs : EventArgs
 	{
-		public double X {
+		public abstract double X {
 			get;
-			private set;
 		}
 
-		public double Y {
+		public abstract double Y {
 			get;
-			private set;
 		}
 
-		public object OverwriteCursor { get; set; }
+		public abstract object OverwriteCursor { get; set; }
 
-		public string TooltipMarkup { get; set; }
+		public abstract string TooltipMarkup { get; set; }
 
 		public abstract bool TriggersContextMenu ();
 	}
