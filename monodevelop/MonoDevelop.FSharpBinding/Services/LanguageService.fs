@@ -264,6 +264,20 @@ module internal MonoDevelop =
         let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
         project.FileName.ToString(), files, args, framework
                 
+    let getCheckerArgs(project: Project, filename: string) =
+        let ext = Path.GetExtension(filename)
+
+        let config =
+            match MonoDevelop.Ide.IdeApp.Workspace with
+            | ws when ws <> null && ws.ActiveConfiguration <> null -> ws.ActiveConfiguration
+            | _ -> MonoDevelop.Projects.ConfigurationSelector.Default
+
+        match project with
+        | :? DotNetProject as dnp when (ext <> ".fsx" && ext <> ".fsscript") ->
+            getCheckerArgsFromProject(dnp, config)
+
+        | _ ->
+            filename, [|filename|], [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
 
 /// Provides functionality for working with the F# interactive checker running in background
 module MDLanguageService =
