@@ -56,7 +56,6 @@ namespace MonoDevelop.Gettext
 		ListStore foundInStore;
 		Catalog catalog;
 		string  poFileName;
-		ITextEditorOptions options = new TextEditorOptions ();
 		TextEditor texteditorOriginal = DocumentFactory.CreateNewEditor ();
 		TextEditor texteditorPlural = DocumentFactory.CreateNewEditor ();
 		
@@ -240,20 +239,19 @@ namespace MonoDevelop.Gettext
 			widgets.Add (this);
 			
 			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
-			options.ShowLineNumberMargin = false;
-			options.ShowFoldMargin = false;
-			options.ShowIconMargin = false;
-			options.ColorScheme = IdeApp.Preferences.ColorScheme;
-			options.FontName = PropertyService.Get<string> ("FontName");
-			
+
 			this.scrolledwindowOriginal.Child = this.texteditorOriginal.GetGtkWidget ();
 			this.scrolledwindowPlural.Child = this.texteditorPlural.GetGtkWidget ();
 			this.scrolledwindowOriginal.Child.Show ();
 			this.scrolledwindowPlural.Child.Show ();
 			scrolledwindowOriginal.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
 			scrolledwindowPlural.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
-			this.texteditorOriginal.Options = options;
-			this.texteditorPlural.Options = options;
+			this.texteditorOriginal.Options.ShowLineNumberMargin = false;
+			this.texteditorOriginal.Options.ShowFoldMargin = false;
+			this.texteditorOriginal.Options.ShowIconMargin = false;
+			this.texteditorPlural.Options.ShowLineNumberMargin = false;
+			this.texteditorPlural.Options.ShowFoldMargin = false;
+			this.texteditorPlural.Options.ShowIconMargin = false;
 			this.texteditorOriginal.IsReadOnly = true;
 			this.texteditorPlural.IsReadOnly = true;
 		}
@@ -485,7 +483,6 @@ namespace MonoDevelop.Gettext
 			ScrolledWindow window = new ScrolledWindow ();
 			var textView = DocumentFactory.CreateNewEditor ();
 			window.Child = textView.GetGtkWidget ();
-			textView.Options = options;
 			textView.TextChanged += delegate {
 				if (this.isUpdating)
 					return;
