@@ -1,5 +1,5 @@
 ﻿//
-// ITextPasteHandler.cs
+// ISelectionSurroundingProvider.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,41 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core.Text;
+using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
 	/// <summary>
-	/// The text paste handler can do formattings to a text that is about to be pasted
-	/// into the text document.
+	/// A selection surrounding provider handles a special handling how the text editor behaves when the user
+	/// types a key with a selection. The selection can be surrounded instead of beeing replaced.
 	/// </summary>
-	public interface ITextPasteHandler
+	public abstract class SelectionSurroundingProvider	
 	{
 		/// <summary>
-		/// Formats plain text that is inserted at a specified offset.
+		/// Gets the selection surroundings for a given unicode key.
 		/// </summary>
 		/// <returns>
-		/// The text that will get inserted at that position.
+		/// true, if the key is valid for a surrounding action.
 		/// </returns>
-		/// <param name="offset">The offset where the text will be inserted.</param>
-		/// <param name="text">The text to be inserted.</param>
-		/// <param name="copyData">Additional data in case the text was copied from a Mono.TextEditor.</param>
-		string FormatPlainText(int offset, string text, byte[] copyData);
+		/// <param name='unicodeKey'>
+		/// The key to handle.
+		/// </param>
+		/// <param name='start'>
+		/// The start of the surrounding
+		/// </param>
+		/// <param name='end'>
+		/// The end of the surrounding
+		/// </param>
+		public abstract bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end);
 
-		/// <summary>
-		/// Gets the copy data for a specific segment inside the document. This can contain meta data about the text pasted.
-		/// For example 'text pasted from string'.
-		/// </summary>
-		/// <param name = "offset">The copy offset.</param>
-		/// <param name = "length">The length of the copied text.</param>
-		byte[] GetCopyData(int offset, int length);
-
-		/// <summary>
-		/// This is called after text was pasted. This is useful for creating an additional undo step for the paste command.
-		/// </summary>
-		/// <param name="offset">The offset the text was pasted at.</param>
-		/// <param name="length">The length of the text pasted.</param>
-		void PostFomatPastedText (int offset, int length);
+		public abstract void HandleSpecialSelectionKey (uint unicodeKey);
 	}
 }
 

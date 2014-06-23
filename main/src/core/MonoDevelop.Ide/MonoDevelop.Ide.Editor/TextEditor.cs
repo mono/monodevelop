@@ -688,17 +688,17 @@ namespace MonoDevelop.Ide.Editor
 			CenterTo (LocationToOffset (loc));
 		}
 
-		void IInternalEditorExtensions.SetIndentationTracker (IIndentationTracker indentationTracker)
+		void IInternalEditorExtensions.SetIndentationTracker (IndentationTracker indentationTracker)
 		{
 			textEditorImpl.SetIndentationTracker (indentationTracker);
 		}
 
-		void IInternalEditorExtensions.SetSelectionSurroundingProvider (ISelectionSurroundingProvider surroundingProvider)
+		void IInternalEditorExtensions.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
 			textEditorImpl.SetSelectionSurroundingProvider (surroundingProvider);
 		}
 
-		void IInternalEditorExtensions.SetTextPasteHandler (ITextPasteHandler textPasteHandler)
+		void IInternalEditorExtensions.SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
 			textEditorImpl.SetTextPasteHandler (textPasteHandler);
 		}

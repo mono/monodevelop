@@ -2430,13 +2430,13 @@
     <Compile Include="MonoDevelop.Ide.Editor\TemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IMarkerHost.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Extension\IIndentationTracker.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Extension\ISelectionSurroundingProvider.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Extension\ITextPasteHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractUsagesExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IInternalEditorExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SimpleBracketMatcher.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditorViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\IndentationTracker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\SelectionSurroundingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\TextPasteHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

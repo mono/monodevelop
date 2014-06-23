@@ -30,11 +30,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// <summary>
 	/// The indentation tracker is for giving the editor information about virtual line indentations.
 	/// </summary>
-	public interface IIndentationTracker
+	public abstract class IndentationTracker
 	{
 		/// <summary>
 		/// Gets the indentation string for a given line.
 		/// </summary>
-		string GetIndentationString (int lineNumber);
+		public abstract string GetIndentationString (int lineNumber);
 	}
 }

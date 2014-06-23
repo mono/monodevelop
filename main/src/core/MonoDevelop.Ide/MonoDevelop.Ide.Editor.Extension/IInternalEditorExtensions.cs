@@ -34,8 +34,8 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// </summary>
 	public interface IInternalEditorExtensions
 	{
-		void SetIndentationTracker (IIndentationTracker indentationTracker);
-		void SetSelectionSurroundingProvider (ISelectionSurroundingProvider surroundingProvider);
-		void SetTextPasteHandler (ITextPasteHandler textPasteHandler);
+		void SetIndentationTracker (IndentationTracker indentationTracker);
+		void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider);
+		void SetTextPasteHandler (TextPasteHandler textPasteHandler);
 	}
 }
