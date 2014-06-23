@@ -104,13 +104,14 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 						Assert.Fail ("unknown insertion point:" + ch);
 						break;
 					}
-					loc.Add (new InsertionPoint (data.Document.OffsetToLocation (data.Document.TextLength), insertBefore, insertAfter));
+					var vv = data.OffsetToLocation (data.Length);
+					loc.Add (new InsertionPoint (new DocumentLocation (vv.Line, vv.Column), insertBefore, insertAfter));
 				} else {
-					data.Insert (data.Document.TextLength, ch.ToString ());
+					data.Insert (data.Length, ch.ToString ());
 				}
 			}
 			
-			var parsedFile = TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", data.Document.Text);
+			var parsedFile = TypeSystemService.ParseFile (project, "program.cs", "text/x-csharp", data.Text);
 
 			var foundPoints = CodeGenerationService.GetInsertionPoints (doc.Editor, parsedFile, parsedFile.TopLevelTypeDefinitions.First ());
 			Assert.AreEqual (loc.Count, foundPoints.Count, "point count doesn't match");

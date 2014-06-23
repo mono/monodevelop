@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -94,7 +95,7 @@ namespace MonoDevelop.CSharpBinding
 
 			public CodeCompletionContext CurrentCodeCompletionContext {
 				get {
-					return CreateCodeCompletionContext (doc.Editor.Caret.Offset);
+					return CreateCodeCompletionContext (doc.Editor.CaretOffset);
 				}
 			}
 
@@ -119,13 +120,13 @@ namespace MonoDevelop.CSharpBinding
 
 			public int CaretOffset {
 				get {
-					return doc.Editor.Caret.Offset;
+					return doc.Editor.CaretOffset;
 				}
 			}
 
 			public int TextLength {
 				get {
-					return doc.Editor.Document.TextLength;
+					return doc.Editor.Length;
 				}
 			}
 

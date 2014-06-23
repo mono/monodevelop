@@ -27,7 +27,6 @@ using System;
 using NUnit.Framework;
 
 using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +40,7 @@ using UnitTests;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.CSharpBinding.Tests;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
-			content.Data.Options.IndentStyle = IndentStyle.Auto;
+			content.Data.Options.IndentStyle = Mono.TextEditor.IndentStyle.Auto;
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
 			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
@@ -243,7 +243,7 @@ class Foo
 }
 ", out content);
 			ext.ReindentOnTab ();
-			MiscActions.InsertNewLine (content.Data);
+			ext.document.Editor.Actions.NewLine ();
 			ext.KeyPress ((Gdk.Key)'\n', '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;
@@ -274,7 +274,7 @@ class Foo
 
 			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
 			ext.document.Editor.Options.IndentStyle = IndentStyle.Auto;
-			MiscActions.InsertNewLine (content.Data);
+			ext.document.Editor.Actions.NewLine ();
 			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;
@@ -292,7 +292,7 @@ class Foo
 
 			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
 			ext.document.Editor.Options.IndentStyle = IndentStyle.Virtual;
-			MiscActions.InsertNewLine (content.Data);
+			ext.document.Editor.Actions.NewLine ();
 			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;

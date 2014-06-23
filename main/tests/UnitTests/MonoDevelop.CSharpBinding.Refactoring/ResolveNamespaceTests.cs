@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 		List<MonoDevelop.Refactoring.ResolveCommandHandler.PossibleNamespace> GetResult (string input)
 		{
 			var doc = Setup (input);
-			var location = doc.Editor.Caret.Location;
+			var location = doc.Editor.CaretLocation;
 			ResolveResult resolveResult;
 			AstNode node;
 			doc.TryResolveAt (location, out resolveResult, out node);

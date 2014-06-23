@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNet.Tests
 			tww.ViewContent = sev;
 
 			var doc = new TestDocument (tww);
-			doc.Editor.Document.FileName = sev.ContentName;
+			doc.Editor.FileName = sev.ContentName;
 			var parser = new AspNetParser ();
 			var parsedDoc = (AspNetParsedDocument) parser.Parse (false, sev.ContentName, new StringReader (parsedText), project);
 			doc.HiddenParsedDocument = parsedDoc;

@@ -126,8 +126,8 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 
 		public override ParsedDocument Parse (bool storeAst, string fileName, System.IO.TextReader content, Project project = null)
 		{
-			Doc.Editor.Document.FileName = fileName;
-			OpenDocuments.Add (Doc.Editor.Document);
+			Doc.Editor.FileName = fileName;
+			OpenDocuments.Add (Doc.Editor);
 			return base.Parse (storeAst, fileName, content, project);
 		}
 	}
@@ -150,7 +150,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 			if (!cSharpContext)
 				ctx.TriggerOffset = sev.CursorPosition;
 			else
-				ctx.TriggerOffset = hiddenInfo.UnderlyingDocument.Editor.Caret.Offset;
+				ctx.TriggerOffset = hiddenInfo.UnderlyingDocument.Editor.CaretOffset;
 
 			int line, column;
 			sev.GetLineColumnFromPosition (ctx.TriggerOffset, out line, out column);
