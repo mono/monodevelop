@@ -101,7 +101,7 @@ namespace MonoDevelop.Refactoring
 							while (position < textFile.Length - keyword.Length) {
 								if (textFile.GetTextAt (position, keyword.Length) == keyword) {
 									position += keyword.Length;
-									while (position < textFile.Length && textFile[position] == ' ' || textFile[position] == '\t')
+									while (position < textFile.Length && textFile.GetCharAt (position) == ' ' || textFile.GetCharAt (position) == '\t')
 										position++;
 									break;
 								}
