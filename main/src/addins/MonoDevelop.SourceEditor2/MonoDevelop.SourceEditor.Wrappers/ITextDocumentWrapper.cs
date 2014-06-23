@@ -265,10 +265,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		char MonoDevelop.Core.Text.ITextSource.this [int offset] {
-			get {
-				return document.GetCharAt (offset);
-			}
+		char MonoDevelop.Core.Text.ITextSource.GetCharAt (int offset)
+		{
+			return document.GetCharAt (offset);
 		}
 
 

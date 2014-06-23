@@ -2910,6 +2910,11 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.ScrollTo (offset); 
 		}
 
+		void ITextEditorImpl.CenterTo (int offset)
+		{
+			TextEditor.CenterTo (offset); 
+		}
+
 
 		#region IEditorActionHost implementation
 
