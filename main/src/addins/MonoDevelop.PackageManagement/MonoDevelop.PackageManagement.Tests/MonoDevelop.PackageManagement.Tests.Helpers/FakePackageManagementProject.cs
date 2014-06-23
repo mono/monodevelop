@@ -359,6 +359,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			return PackageReferences;
 		}
+
+		public bool AnyUnrestoredPackages ()
+		{
+			throw new NotImplementedException ();
+		}
 	}
 }
 

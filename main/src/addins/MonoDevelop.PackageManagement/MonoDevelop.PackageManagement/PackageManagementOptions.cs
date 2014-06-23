@@ -110,5 +110,10 @@ namespace ICSharpCode.PackageManagement
 			var defaultRecentPackages = new List<RecentPackageInfo>();
 			recentPackages = properties.Get<List<RecentPackageInfo>>(RecentPackagesPropertyName, defaultRecentPackages);
 		}
+
+		public string GetCustomPackagesDirectory ()
+		{
+			return registeredPackageSourceSettings.Settings.GetRepositoryPath ();
+		}
 	}
 }

@@ -242,5 +242,16 @@ namespace ICSharpCode.PackageManagement
 		{
 			return projectManager.GetPackageReferences ();
 		}
+
+		public bool AnyUnrestoredPackages ()
+		{
+			return GetPackageReferences ()
+				.Any (packageReference => !IsPackageInstalled (packageReference));
+		}
+
+		bool IsPackageInstalled (PackageReference packageReference)
+		{
+			return projectManager.LocalRepository.Exists (packageReference.Id, packageReference.Version);
+		}
 	}
 }

@@ -42,7 +42,7 @@ namespace ICSharpCode.PackageManagement
 			: this(
 				new SharpDevelopPackageRepositoryFactory(),
 				new SharpDevelopProjectSystemFactory(),
-				new PackageManagementOptions())
+				PackageManagementServices.Options)
 		{
 		}
 		
