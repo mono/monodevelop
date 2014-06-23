@@ -319,6 +319,18 @@ namespace MonoDevelop.Core.Text
 			this.offset = offset;
 			this.length = length;
 		}
+
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TextSegment"/> struct.
+		/// </summary>
+		protected AbstractSegment (ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			this.offset = segment.Offset;
+			this.length = segment.Length;
+		}
 	}
 
 
