@@ -613,9 +613,14 @@ namespace MonoDevelop.Ide.Editor
 			return ReadWriteTextDocument.CreateDocumentSnapshot ();
 		}
 
+		TextEditorViewContent viewContent;
 		internal IViewContent GetViewContent ()
 		{
-			return textEditorImpl;
+			if (viewContent == null) {
+				viewContent = new TextEditorViewContent (this, textEditorImpl);
+			}
+
+			return viewContent;
 		}
 
 		public string GetVirtualIndentationString (int lineNumber)

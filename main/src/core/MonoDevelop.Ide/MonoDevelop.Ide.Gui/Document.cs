@@ -64,7 +64,6 @@ namespace MonoDevelop.Ide.Gui
 		TextEditorExtension editorExtension;
 		ParsedDocument parsedDocument;
 		IProjectContent singleFileContext;
-		IServiceProvider provider = null;
 
 		const int ParseDelay = 600;
 
@@ -307,12 +306,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public TextEditor Editor {
 			get {
-				if (provider == null) {
-					provider = GetContent <IServiceProvider> ();
-					if (provider == null)
-						return null;
-				}
-				return (TextEditor)provider.GetService (typeof(TextEditor));
+				return GetContent <TextEditor> ();
 			}
 		}
 
@@ -573,7 +567,6 @@ namespace MonoDevelop.Ide.Gui
 
 			parsedDocument = null;
 			singleFileContext = null;
-			provider = null;
 			views = null;
 			viewsRO = null;
 		}
