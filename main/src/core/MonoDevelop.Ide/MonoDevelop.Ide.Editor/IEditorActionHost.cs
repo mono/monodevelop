@@ -55,5 +55,7 @@ namespace MonoDevelop.Ide.Editor
 		void ClipboardPaste ();
 
 		void SelectAll ();
+
+		void NewLine ();
 	}
 }
