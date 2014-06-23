@@ -148,7 +148,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		{
 			if (offset < 0 || offset >= TextLength)
 				return '\0';
-			return docInfo.UnderlyingDocument.Editor[offset];
+			return docInfo.UnderlyingDocument.Editor.GetCharAt (offset);
 		}
 
 		public void Replace (int offset, int count, string text)
