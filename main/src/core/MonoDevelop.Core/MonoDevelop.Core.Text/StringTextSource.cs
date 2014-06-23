@@ -107,10 +107,9 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <inheritdoc/>
-		public char this [int offset] {
-			get {
-				return text [offset];
-			}
+		public char GetCharAt (int offset)
+		{
+			return text [offset];
 		}
 
 		/// <inheritdoc/>

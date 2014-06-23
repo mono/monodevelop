@@ -73,7 +73,7 @@ namespace MonoDevelop.Core.Text
 		/// <returns>The character at the specified position.</returns>
 		/// <remarks>This is the same as Text[offset], but is more efficient because
 		///  it doesn't require creating a String object.</remarks>
-		char this[int offset] { get; }
+		char GetCharAt(int offset);
 
 		/// <summary>
 		/// Retrieves the text for a portion of the document.
