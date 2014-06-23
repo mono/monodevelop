@@ -1156,6 +1156,8 @@ namespace MonoDevelop.Ide
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Build failed."), ex);
 				result.AddError ("Build failed. See the build log for details.");
+				if (result.SourceTarget == null)
+					result.SourceTarget = entry;
 			} finally {
 				tt.Trace ("Done building");
 			}

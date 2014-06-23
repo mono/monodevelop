@@ -288,7 +288,7 @@ namespace MonoDevelop.Projects
 		
 		public void CreateDefaultConfigurations ()
 		{
-			foreach (SolutionEntityItem item in Items) {
+			foreach (SolutionEntityItem item in Items.Where (it => it.SupportsBuild ())) {
 				foreach (ItemConfiguration conf in item.Configurations) {
 					SolutionConfiguration sc = Configurations [conf.Id];
 					if (sc == null) {
@@ -308,7 +308,7 @@ namespace MonoDevelop.Projects
 		public SolutionConfiguration AddConfiguration (string name, bool createConfigForItems)
 		{
 			SolutionConfiguration conf = new SolutionConfiguration (name);
-			foreach (SolutionEntityItem item in Items) {
+			foreach (SolutionEntityItem item in Items.Where (it => it.SupportsBuild())) {
 				if (createConfigForItems && item.GetConfiguration (new ItemConfigurationSelector (name)) == null) {
 					SolutionItemConfiguration newc = item.CreateConfiguration (name);
 					if (item.DefaultConfiguration != null)
@@ -726,8 +726,8 @@ namespace MonoDevelop.Projects
 			if (!reloading) {
 				foreach (SolutionConfiguration conf in Configurations)
 					conf.RemoveItem (item);
-				if (item is DotNetProject)
-					RemoveReferencesToProject ((DotNetProject)item);
+				if (item is Project)
+					RemoveReferencesToProject ((Project)item);
 
 				if (StartupItem == item)
 					StartupItem = null;
@@ -739,7 +739,7 @@ namespace MonoDevelop.Projects
 			item.FileName = item.FileName;
 		}
 		
-		void RemoveReferencesToProject (DotNetProject projectToRemove)
+		void RemoveReferencesToProject (Project projectToRemove)
 		{
 			if (projectToRemove == null)
 				return;

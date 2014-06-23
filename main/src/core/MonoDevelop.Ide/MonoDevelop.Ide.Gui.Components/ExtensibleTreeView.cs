@@ -410,7 +410,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (ShowSelectionPopupButton && text_render.PointerInButton ((int)args.Event.XRoot, (int)args.Event.YRoot)) {
 				text_render.Pushed = true;
 				args.RetVal = true;
-				var menu = CreateContextMenu ();
+				var entryset = BuildEntrySet ();
+				var menu = IdeApp.CommandService.CreateMenu (entryset, this);
 				if (menu != null) {
 					menu.Hidden += HandleMenuHidden;
 					GtkWorkarounds.ShowContextMenu (menu, tree, text_render.PopupAllocation);
@@ -1778,12 +1779,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			var menu = CreateContextMenu ();
-			if (menu != null)
-				IdeApp.CommandService.ShowContextMenu (this, evt, menu, this);
+			var entryset = BuildEntrySet () ?? new CommandEntrySet ();
+
+			IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
 		}
 
-		protected Gtk.Menu CreateContextMenu ()
+		protected CommandEntrySet BuildEntrySet ()
 		{
 			ITreeNavigator tnav = GetSelectedNode ();
 			if (tnav == null)
@@ -1796,7 +1797,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
-					return IdeApp.CommandService.CreateMenu (opset, this);
+					return opset;
 				}
 				return null;
 			} else {
@@ -1813,7 +1814,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				//	opset.AddItem (ViewCommands.CollapseAllTreeNodes);
 				}
 				eset.AddItem (ViewCommands.RefreshTree);
-				return IdeApp.CommandService.CreateMenu (eset, this);
+				return eset;
 			}
 		}
 

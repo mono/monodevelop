@@ -276,7 +276,7 @@ namespace MonoDevelop.Debugger
 			var selectedRows = ExceptionValueTreeView.Selection.GetSelectedRows ();
 			ExceptionInfo ex;
 
-			if (TryGetExceptionInfo (selectedRows[0], out ex)) {
+			if (selectedRows.Length > 0 && TryGetExceptionInfo (selectedRows[0], out ex)) {
 				ShowStackTrace (ex);
 				selected = ex;
 			} else if (selected != exception) {

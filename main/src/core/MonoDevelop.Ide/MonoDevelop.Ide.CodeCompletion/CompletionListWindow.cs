@@ -553,6 +553,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (base.GdkWindow == null)
 				return;
 			EnsureDeclarationViewWindow ();
+			if (declarationviewwindow.Overloads == 0)
+				return;
 			var selectedItem = List.SelectedItem;
 			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
 			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)

@@ -52,7 +52,7 @@ namespace ICSharpCode.PackageManagement
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
-			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
+			packageRepositoryCache = new PackageRepositoryCache (options);
 			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests ();
 			userAgentGenerator.Register (packageRepositoryCache);
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
@@ -61,7 +61,7 @@ namespace ICSharpCode.PackageManagement
 			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(projectTemplatePackageSources);
 			
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
-			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
+			solution = new PackageManagementSolution (registeredPackageRepositories, projectService, packageManagementEvents);
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();

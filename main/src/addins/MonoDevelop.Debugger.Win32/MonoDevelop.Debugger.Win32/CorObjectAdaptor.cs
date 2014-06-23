@@ -80,8 +80,12 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsNull (EvaluationContext ctx, object gval)
 		{
-			CorValRef val = (CorValRef) gval;
-			return val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue) val.Val).IsNull);
+			var val = (CorValRef)gval;
+			if (val == null || ((val.Val is CorReferenceValue) && ((CorReferenceValue)val.Val).IsNull))
+				return true;
+
+			var obj = GetRealObject (ctx, val);
+			return (obj is CorReferenceValue) && ((CorReferenceValue)obj).IsNull;
 		}
 
 		public override bool IsValueType (object type)
@@ -916,7 +920,7 @@ namespace MonoDevelop.Debugger.Win32
 				foreach (PropertyInfo prop in type.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 					MethodInfo mi = null;
 					try {
-						mi = prop.CanRead ? prop.GetGetMethod () : null;
+						mi = prop.CanRead ? prop.GetGetMethod (true) : null;
 					}
 					catch {
 						// Ignore
@@ -1017,7 +1021,7 @@ namespace MonoDevelop.Debugger.Win32
 				foreach (PropertyInfo prop in type.GetProperties (bindingFlags)) {
 					MethodInfo mi = null;
 					try {
-						mi = prop.CanRead ? prop.GetGetMethod () : null;
+						mi = prop.CanRead ? prop.GetGetMethod (true) : null;
 					} catch {
 						// Ignore
 					}
@@ -1092,7 +1096,7 @@ namespace MonoDevelop.Debugger.Win32
 				if (field != null && (field.IsStatic || co != null))
 					return new FieldReference (ctx, co as CorValRef, type, field);
 
-				PropertyInfo prop = FindByName (tt.GetProperties (), p => p.Name, name, ctx.CaseSensitive);
+				PropertyInfo prop = FindByName (tt.GetProperties (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance), p => p.Name, name, ctx.CaseSensitive);
 				if (prop != null && (IsStatic (prop) || co != null)) {
 					// Optimization: if the property has a CompilerGenerated backing field, use that instead.
 					// This way we avoid overhead of invoking methods on the debugee when the value is requested.

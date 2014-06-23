@@ -38,7 +38,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 	{
 		static readonly string servicesID = (string) CommandManager.ToCommandId (MacIntegrationCommands.Services);
 
-		public MDMenu (CommandManager manager, CommandEntrySet ces)
+		public MDMenu (CommandManager manager, CommandEntrySet ces, CommandSource commandSource, object initialCommandTarget)
 		{
 			this.WeakDelegate = this;
 
@@ -59,7 +59,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 				var subset = ce as CommandEntrySet;
 				if (subset != null) {
-					AddItem (new MDSubMenuItem (manager, subset));
+					AddItem (new MDSubMenuItem (manager, subset, commandSource, initialCommandTarget));
 					continue;
 				}
 
@@ -86,7 +86,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 					continue;
 				}
 
-				AddItem (new MDMenuItem (manager, ce, acmd));
+				AddItem (new MDMenuItem (manager, ce, acmd, commandSource, initialCommandTarget));
 			}
 		}
 

@@ -33,24 +33,54 @@ namespace MonoDevelop.Components
 	/// </summary>
 	public class ContextMenuTreeView : Gtk.TreeView
 	{
-		const Gdk.ModifierType selectionModifiers = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask;
-		
 		public ContextMenuTreeView ()
 		{
 		}
-		
+
 		public ContextMenuTreeView (Gtk.TreeModel model) : base (model)
 		{
 		}
-		
+
 		public Action<Gdk.EventButton> DoPopupMenu { get; set; }
-		
+
+		Gtk.TreePath buttonPressPath;
+		bool selectOnRelease;
+
+		protected override void OnDragBegin (Gdk.DragContext context)
+		{
+			//If user starts dragging don't do any selection
+			//useful in case user press Esc to abort dragging and
+			//didn't release mouse button yet
+			selectOnRelease = false;
+			base.OnDragBegin (context);
+		}
+
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
+			selectOnRelease = false;
 			if (!evnt.TriggersContextMenu ()) {
+				//Because we are blocking selection changes with SelectFunction base.OnButtonPressEvent
+				//can be called so expanders work. Another good effect is when expander is clicked
+				//SelectFunction is not called so selectOnRelease remains false.
+				//Which means no selection operation is performed in OnButtonReleaseEvent.
+				//When Shift is pressed we don't do our magic becasue:
+				//a) it works as expected((item is still selected when dragging starts
+				//(it's by nature of Shift selecting))
+				//b) we would have to simulate Shift selecting in OnButtonReleaseEvent
+				//which would mean we have to implement all selecting logic...
+				//Also notice that our magic is requiered only when item is selected.
+				if (GetPathAtPos ((int)evnt.X, (int)evnt.Y, out buttonPressPath) &&
+				    ((evnt.State & Gdk.ModifierType.ShiftMask) == 0) &&
+				    Selection.PathIsSelected (buttonPressPath)) {
+					this.Selection.SelectFunction = (s, m, p, b) => {
+						selectOnRelease = true;
+						//Always returning false means we are blocking base.OnButtonPressEvent
+						//from doing any changes to selectiong we will do changes in OnButtonReleaseEvent
+						return false;
+					};
+				}
 				return base.OnButtonPressEvent (evnt);
 			}
-
 			//pass click to base it it can update the selection
 			//unless the node is already selected, in which case we don't want to change the selection
 			bool res = false;
@@ -65,9 +95,34 @@ namespace MonoDevelop.Components
 			
 			return res;
 		}
-		
+
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
+			this.Selection.SelectFunction = (s, m, p, b) => {
+				return true;
+			};
+			Gtk.TreePath buttonReleasePath;
+			//If OnButtonPressEvent attempted on making deselection and dragging was not started
+			//check if we are on same item as when we clicked(could be different if dragging is disabled)
+			if (selectOnRelease &&
+			    GetPathAtPos ((int)evnt.X, (int)evnt.Y, out buttonReleasePath) &&
+			    buttonPressPath.Compare (buttonReleasePath) == 0) {
+
+				//Simulate what would happen in OnButtonPressEvent if we were not blocking selection
+				//notice that item is currently 100% selected since this check was performed in OnButtonPressEvent
+				if (Selection.Mode == Gtk.SelectionMode.Multiple &&
+				    (evnt.State & Gdk.ModifierType.ControlMask) > 0) {
+					Selection.UnselectPath (buttonReleasePath);
+				} else {
+					//UnselectAll in case multiple were selected we want only our item to be selected now
+					//if it was clicked but not dragged
+					Selection.UnselectAll ();
+					Selection.SelectPath (buttonReleasePath);
+				}
+				buttonPressPath = null;
+			}
+			selectOnRelease = false;
+
 			bool res = base.OnButtonReleaseEvent (evnt);
 			
 			if (DoPopupMenu != null && evnt.IsContextMenuButton ()) {
@@ -76,7 +131,7 @@ namespace MonoDevelop.Components
 			
 			return res;
 		}
-		
+
 		protected override bool OnPopupMenu ()
 		{
 			if (DoPopupMenu != null) {
@@ -85,7 +140,7 @@ namespace MonoDevelop.Components
 			}
 			return base.OnPopupMenu ();
 		}
-		
+
 		bool IsClickedNodeSelected (int x, int y)
 		{
 			Gtk.TreePath path;
@@ -94,7 +149,7 @@ namespace MonoDevelop.Components
 
 			return false;
 		}
-		
+
 		bool MultipleNodesSelected ()
 		{
 			return Selection.GetSelectedRows ().Length > 1;

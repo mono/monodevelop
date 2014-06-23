@@ -116,7 +116,11 @@ namespace MonoDevelop.SourceEditor
 			
 			ObjectValue val;
 			if (!cachedValues.TryGetValue (expression, out val)) {
-				val = frame.GetExpressionValue (expression, true);
+				var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+				options.AllowMethodEvaluation = true;
+				options.AllowTargetInvoke = true;
+
+				val = frame.GetExpressionValue (expression, options);
 				cachedValues [expression] = val;
 			}
 			

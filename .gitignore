@@ -104,6 +104,7 @@ main/external/Makefile
 /main/src/addins/MonoDevelop.AssemblyBrowser/Makefile
 /main/src/addins/MonoDevelop.Autotools/Makefile
 /main/src/addins/MonoDevelop.CodeMetrics/Makefile
+/main/src/addins/MonoDevelop.Debugger.Gdb/Makefile
 /main/src/addins/MonoDevelop.Debugger.Soft/Makefile
 /main/src/addins/MonoDevelop.Debugger.Soft/Mono.Debugging.Soft/Makefile
 /main/src/addins/MonoDevelop.Debugger.Soft/MonoDevelop.Debugger.Soft.AspNet/Makefile
@@ -141,10 +142,15 @@ main/external/Makefile
 /main/src/addins/VersionControl/MonoDevelop.VersionControl/Makefile
 /main/src/addins/WelcomePage/Makefile
 /main/src/addins/WindowsPlatform/Makefile
+/main/src/addins/WindowsPlatform/WindowsAPICodePack/Makefile
+/main/src/addins/WindowsPlatform/WindowsAPICodePack/Core/Makefile
+/main/src/addins/WindowsPlatform/WindowsAPICodePack/Shell/Makefile
+/main/src/addins/WindowsPlatform/WindowsPlatform/Makefile
 /main/src/addins/prj2make-sharp-lib/Makefile
 /main/src/core/Makefile
 /main/src/core/Mono.Debugging/Makefile
 /main/src/core/Mono.Texteditor/Makefile
+/main/src/core/MonoDevelop.TextEditor.Tests/Makefile
 /main/src/core/MonoDevelop.Core/Makefile
 /main/src/core/MonoDevelop.Ide/Makefile
 /main/src/core/MonoDevelop.Projects.Formats.MSBuild/Makefile
@@ -156,9 +162,11 @@ main/external/Makefile
 /main/src/tools/mdtool/Makefile
 /main/src/tools/MacCrashLogger/Makefile
 /main/src/tools/mdcrashlog/Makefile
+/main/tests/Ide.Tests/Makefile
 /main/tests/Makefile
 /main/tests/MacPlatform.Tests/Makefile
 /main/tests/MonoDevelop.MacDev.Tests/Makefile
+/main/tests/TestRunner/Makefile
 /main/tests/UnitTests/Makefile
 /main/tests/UserInterfaceTests/Makefile
 /main/theme-icons/Makefile

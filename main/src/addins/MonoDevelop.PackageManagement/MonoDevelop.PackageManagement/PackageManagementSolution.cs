@@ -43,10 +43,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagementProjectService projectService,
 			IPackageManagementEvents packageManagementEvents)
 			: this(
 				registeredPackageRepositories,
-				new PackageManagementProjectService(),
+				projectService,
 				new PackageManagementProjectFactory(packageManagementEvents),
 				new SolutionPackageRepositoryFactory())
 		{

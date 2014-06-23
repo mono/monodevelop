@@ -95,14 +95,14 @@ namespace MonoDevelop.Debugger.Win32
 				CorValue[] args;
 				if (index != null) {
 					args = new CorValue[index.Length];
-					ParameterInfo[] metArgs = prop.GetGetMethod ().GetParameters ();
+					ParameterInfo[] metArgs = prop.GetGetMethod (true).GetParameters ();
 					for (int n = 0; n < index.Length; n++)
 						args[n] = ctx.Adapter.GetBoxedArg (ctx, index[n], metArgs[n].ParameterType).Val;
 				}
 				else
 					args = new CorValue[0];
 
-				MethodInfo mi = prop.GetGetMethod ();
+				MethodInfo mi = prop.GetGetMethod (true);
 				CorFunction func = module.GetFunctionFromToken (mi.MetadataToken);
 				CorValue val = null;
 				if (declaringType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
@@ -115,10 +115,10 @@ namespace MonoDevelop.Debugger.Win32
 			}
 			set {
 				CorEvaluationContext ctx = (CorEvaluationContext)Context;
-				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod ().MetadataToken);
+				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod (true).MetadataToken);
 				CorValRef val = (CorValRef) value;
 				CorValue[] args;
-				ParameterInfo[] metArgs = prop.GetSetMethod ().GetParameters ();
+				ParameterInfo[] metArgs = prop.GetSetMethod (true).GetParameters ();
 
 				if (index == null)
 					args = new CorValue[1];
@@ -152,7 +152,7 @@ namespace MonoDevelop.Debugger.Win32
 		internal static ObjectValueFlags GetFlags (PropertyInfo prop)
 		{
 			ObjectValueFlags flags = ObjectValueFlags.Property;
-			MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
+			MethodInfo mi = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
 
 			if (prop.GetSetMethod (true) == null)
 				flags |= ObjectValueFlags.ReadOnly;

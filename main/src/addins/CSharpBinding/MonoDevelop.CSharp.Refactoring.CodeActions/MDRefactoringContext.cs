@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
@@ -45,6 +46,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	public class MDRefactoringContext : RefactoringContext, IRefactoringContext
 	{
+		MonoDevelop.Projects.Project fileContainerProject;
+
 		public TextEditorData TextEditor {
 			get;
 			private set;
@@ -53,6 +56,33 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public DotNetProject Project {
 			get;
 			private set;
+		}
+
+		public MonoDevelop.Projects.Project FileContainerProject {
+			get {
+				if (fileContainerProject == null)
+					fileContainerProject = FindProjectContainingFile () ?? Project;
+				return fileContainerProject;
+			}
+		}
+
+		MonoDevelop.Projects.Project FindProjectContainingFile ()
+		{
+			var file = TextEditor.FileName;
+			if (string.IsNullOrEmpty (file) || Project == null)
+				return null;
+
+			var pf = Project.GetProjectFile (file);
+			if (pf != null && (pf.Flags & ProjectItemFlags.Hidden) != 0) {
+				// The file is hidden in this project, so it may also be part of another project.
+				// Try to find a project in which this file is not hidden
+				foreach (var p in Project.ParentSolution.GetAllProjects ()) {
+					pf = p.GetProjectFile (file);
+					if (pf != null && (pf.Flags & ProjectItemFlags.Hidden) == 0)
+						return p;
+				}
+			}
+			return null;
 		}
 
 		public bool IsInvalid {
@@ -77,9 +107,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		public override string DefaultNamespace {
 			get {
-				if (Project == null || TextEditor == null || string.IsNullOrEmpty (TextEditor.FileName))
+				var p = FileContainerProject as IDotNetFileContainer;
+				if (p == null || TextEditor == null || string.IsNullOrEmpty (TextEditor.FileName))
 					return null;
-				return Project.GetDefaultNamespace (TextEditor.FileName);
+				return p.GetDefaultNamespace (TextEditor.FileName);
 			}
 		}
 
@@ -217,7 +248,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.Project = document.Project as DotNetProject;
 			this.formattingOptions = document.GetFormattingOptions ();
 			this.location = loc;
-			var policy = document.HasProject ? Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
+			var policy = document.HasProject ? document.Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
 			Services.AddService (typeof(ICSharpCode.NRefactory.CSharp.CodeGenerationService), new CSharpCodeGenerationService());
 		}
