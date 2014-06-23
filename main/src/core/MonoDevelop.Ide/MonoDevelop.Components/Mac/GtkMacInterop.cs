@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 #if MAC
-using MonoMac.AppKit;
+using AppKit;
 using System;
 
 namespace MonoDevelop.Components.Mac

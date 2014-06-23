@@ -27,7 +27,7 @@ using System;
 using MonoDevelop.Components.Commands;
 
 #if MAC
-using MonoMac.AppKit;
+using AppKit;
 using MonoDevelop.Components.Mac;
 #endif
 
@@ -86,8 +86,8 @@ namespace MonoDevelop.Components
 				return w;
 
 			#if MAC
-			if (w is MonoMac.AppKit.NSView && t == typeof(Gtk.Widget)) {
-				var ww = GtkMacInterop.NSViewToGtkWidget ((MonoMac.AppKit.NSView)w);
+			if (w is NSView && t == typeof(Gtk.Widget)) {
+				var ww = GtkMacInterop.NSViewToGtkWidget ((NSView)w);
 				ww.Show ();
 				return ww;
 			}
