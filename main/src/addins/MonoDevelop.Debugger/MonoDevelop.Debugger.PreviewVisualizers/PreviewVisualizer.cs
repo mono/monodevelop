@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.Debugging.Client;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.Debugger
 		/// representation of the value. If the visualizer needs to get values from
 		/// the object properties, it can use the ObjectValue.GetRawValue method.
 		/// </remarks>
-		public abstract Gtk.Widget GetVisualizerWidget (ObjectValue val);
+		public abstract Control GetVisualizerWidget (ObjectValue val);
 	}
 }
 

@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 			return DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val);
 		}
 
-		public override Gtk.Widget GetVisualizerWidget (ObjectValue val)
+		public override Control GetVisualizerWidget (ObjectValue val)
 		{
 			var color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
 			var mainBox = new HBox ();

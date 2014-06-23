@@ -83,7 +83,6 @@ namespace MonoDevelop.Debugger
 
 			var widget = previewVisualizer.GetVisualizerWidget (val);
 			mainBox.Add (widget);
-			widget.Show ();
 			ContentBox.Add (mainBox);
 			ShowPopup (invokingWidget, previewButtonArea, PopupPosition.Left);
 		}

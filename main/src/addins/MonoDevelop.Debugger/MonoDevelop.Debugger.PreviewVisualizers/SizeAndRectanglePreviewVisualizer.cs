@@ -26,6 +26,7 @@
 using System;
 using Mono.Debugging.Client;
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Debugger.PreviewVisualizers
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 			return DebuggingService.HasGetConverter<Xwt.Size> (val) || DebuggingService.HasGetConverter<Xwt.Rectangle> (val);
 		}
 
-		public override Gtk.Widget GetVisualizerWidget (ObjectValue val)
+		public override Control GetVisualizerWidget (ObjectValue val)
 		{
 			var sizeConverter = DebuggingService.GetGetConverter<Xwt.Size> (val);
 			if (sizeConverter != null) {
