@@ -327,7 +327,6 @@ namespace MonoDevelop.Ide.Editor
 		public void SetSelection (TextLocation anchor, TextLocation lead)
 		{
 			SetSelection (LocationToOffset (anchor), LocationToOffset (lead));
-
 		}
 
 		public void ClearSelection ()
@@ -362,6 +361,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public void RunWhenLoaded (Action action)
 		{
+			if (action == null)
+				throw new ArgumentNullException ("action");
 			textEditorImpl.RunWhenLoaded (action);
 		}
 
@@ -377,11 +378,19 @@ namespace MonoDevelop.Ide.Editor
 
 		public void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> action)
 		{
+			if (operation == null)
+				throw new ArgumentNullException ("operation");
+			if (insertionPoints == null)
+				throw new ArgumentNullException ("insertionPoints");
+			if (action == null)
+				throw new ArgumentNullException ("action");
 			textEditorImpl.StartInsertionMode (operation, insertionPoints, action);
 		}
 
 		public void StartTextLinkMode (List<TextLink> links)
 		{
+			if (links == null)
+				throw new ArgumentNullException ("links");
 			textEditorImpl.StartTextLinkMode (links);
 		}
 
@@ -438,6 +447,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public void Remove (ISegment segment)
 		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
 			ReadWriteTextDocument.Remove (segment);
 		}
 
@@ -448,6 +459,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public void Replace (ISegment segment, string value)
 		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
 			ReadWriteTextDocument.Replace (segment.Offset, segment.Length, value);
 		}
 
@@ -468,26 +481,38 @@ namespace MonoDevelop.Ide.Editor
 
 		public void AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
 		{
+			if (line == null)
+				throw new ArgumentNullException ("line");
+			if (lineMarker == null)
+				throw new ArgumentNullException ("lineMarker");
 			textEditorImpl.AddMarker (line, lineMarker);
 		}
 
 		public void AddMarker (int lineNumber, ITextLineMarker lineMarker)
 		{
+			if (lineMarker == null)
+				throw new ArgumentNullException ("lineMarker");
 			AddMarker (GetLine (lineNumber), lineMarker);
 		}
 
 		public void RemoveMarker (ITextLineMarker lineMarker)
 		{
+			if (lineMarker == null)
+				throw new ArgumentNullException ("lineMarker");
 			textEditorImpl.RemoveMarker (lineMarker);
 		}
 
 		public IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line)
 		{
+			if (line == null)
+				throw new ArgumentNullException ("line");
 			return textEditorImpl.GetLineMarker (line);
 		}
 
 		public IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment)
 		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
 			return textEditorImpl.GetTextSegmentMarkersAt (segment);
 		}
 
@@ -498,12 +523,23 @@ namespace MonoDevelop.Ide.Editor
 
 		public void AddMarker (ITextSegmentMarker marker)
 		{
+			if (marker == null)
+				throw new ArgumentNullException ("marker");
 			textEditorImpl.AddMarker (marker);
 		}
 
 		public bool RemoveMarker (ITextSegmentMarker marker)
 		{
+			if (marker == null)
+				throw new ArgumentNullException ("marker");
 			return textEditorImpl.RemoveMarker (marker);
+		}
+
+		public void SetFoldings (IEnumerable<IFoldSegment> foldings)
+		{
+			if (foldings == null)
+				throw new ArgumentNullException ("foldings");
+			textEditorImpl.SetFoldings (foldings);
 		}
 
 		public IEnumerable<IFoldSegment> GetFoldingsFromOffset (int offset)
@@ -518,6 +554,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public IEnumerable<IFoldSegment> GetFoldingContaining (IDocumentLine line)
 		{
+			if (line == null)
+				throw new ArgumentNullException ("line");
 			return textEditorImpl.GetFoldingContaining (line);
 		}
 
@@ -528,6 +566,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public IEnumerable<IFoldSegment> GetStartFoldings (IDocumentLine line)
 		{
+			if (line == null)
+				throw new ArgumentNullException ("line");
 			return textEditorImpl.GetStartFoldings (line);
 		}
 
@@ -538,6 +578,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public IEnumerable<IFoldSegment> GetEndFoldings (IDocumentLine line)
 		{
+			if (line == null)
+				throw new ArgumentNullException ("line");
 			return textEditorImpl.GetEndFoldings (line);
 		}
 
@@ -561,6 +603,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public string GetTextAt (ISegment segment)
 		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
 			return ReadOnlyTextDocument.GetTextAt (segment);
 		}
 
@@ -659,7 +703,6 @@ namespace MonoDevelop.Ide.Editor
 
 		public class SkipChar
 		{
-
 			public int Start { get; set; }
 
 			public int Offset { get; set; }

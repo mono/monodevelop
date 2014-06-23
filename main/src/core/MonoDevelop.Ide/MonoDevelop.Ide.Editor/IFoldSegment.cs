@@ -35,5 +35,23 @@ namespace MonoDevelop.Ide.Editor
 			set;
 		}
 	}
+
+	public class FoldSegment : AbstractSegment, IFoldSegment
+	{
+		public bool IsFolded {
+			get;
+			set;
+		}
+
+		public FoldSegment (int offset, int length, bool isFolded = false) : base (offset, length)
+		{
+			this.IsFolded = isFolded;
+		}
+
+		public FoldSegment (ISegment segment, bool isFolded = false) : base (segment)
+		{
+			this.IsFolded = isFolded;
+		}
+	}
 }
 

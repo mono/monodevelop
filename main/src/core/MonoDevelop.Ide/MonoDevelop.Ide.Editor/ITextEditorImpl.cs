@@ -126,6 +126,7 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
+		void SetFoldings (IEnumerable<IFoldSegment> foldings);
 		IEnumerable<IFoldSegment> GetFoldingsFromOffset (int offset);
 		IEnumerable<IFoldSegment> GetFoldingContaining (IDocumentLine line);
 		IEnumerable<IFoldSegment> GetStartFoldings (IDocumentLine line);
