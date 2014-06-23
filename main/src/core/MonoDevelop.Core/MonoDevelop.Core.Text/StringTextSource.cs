@@ -85,7 +85,7 @@ namespace MonoDevelop.Core.Text
 		}
 
 		/// <inheritdoc/>
-		public int TextLength {
+		public int Length {
 			get { return text.Length; }
 		}
 
