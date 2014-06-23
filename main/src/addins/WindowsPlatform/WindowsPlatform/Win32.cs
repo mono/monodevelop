@@ -36,6 +36,7 @@ namespace CustomControls.OS
         public const uint FILE_ATTRIBUTES_NORMAL = 0x80;
         internal const string USER32 = "user32.dll";
         internal const string SHELL32 = "shell32.dll";
+	 internal const string SHLWAPI = "Shlwapi.dll";
 
         #region Delegates
         public delegate bool EnumWindowsCallBack(IntPtr hWnd, int lParam);
@@ -97,6 +98,9 @@ namespace CustomControls.OS
         [DllImport(Win32.SHELL32, CharSet = CharSet.Unicode)]
         public static extern IntPtr SHGetFileInfoW([In] string pszPath, uint dwFileAttributes, [In, Out] ref SHFILEINFO psfi, uint cbSizeFileInfo, uint uFlags);
         #endregion
+
+	 [DllImport (Win32.SHLWAPI, SetLastError = true, CharSet = CharSet.Unicode)]
+	 public static extern int AssocQueryStringW (AssociationFlags flags, AssociationString str, string assoc, string extra, StringBuilder outBuffer, ref int outBufferSize);
     }
 
 	[AttributeUsage(AttributeTargets.Class |
@@ -112,5 +116,47 @@ namespace CustomControls.OS
 		{
 		}
 		#endregion
+	}
+
+	[Flags]
+	public enum AssociationFlags {
+		None = 0x00000000,
+		InitNoRemapClsid = 0x00000001,
+		InitByExeName = 0x00000002,
+		OpenByExeName = 0x00000002,
+		InitDefaultToStar = 0x00000004,
+		InitDefaultToFolder = 0x00000008,
+		NoUserSettings = 0x00000010,
+		NoTruncate = 0x00000020,
+		Verify = 0x00000040,
+		RemapRunDll = 0x00000080,
+		NoFixups = 0x00000100,
+		IgnoreBaseClass = 0x00000200,
+		InitIgnoreUnknown = 0x00000400,
+		InitFixedProgid = 0x00000800,
+		IsProtocol = 0x00001000
+	}
+
+	public enum AssociationString {
+		Command = 1,
+		Executable,
+		FriendlyDocName,
+		FriendlyAppName,
+		NoOpen,
+		ShellNewValue,
+		DdeCommand,
+		DdeIfExec,
+		DdeApplication,
+		DdeTopic,
+		InfoTip,
+		QuickTip,
+		Tileinfo,
+		ContentType,
+		DefaultIcon,
+		ShellExtension,
+		DropTrget,
+		DelegateExecute,
+		SupportedUriProtocols,
+		MaxString
 	}
 }

@@ -1061,12 +1061,17 @@ namespace MonoDevelop.Projects
 		{
 			foreach (ProjectReference pref in References) {
 				if (pref.ReferenceType == ReferenceType.Package) {
-					string newRef = AssemblyContext.GetAssemblyNameForVersion (pref.Reference, pref.Package != null ? pref.Package.Name : null, this.TargetFramework);
-					if (newRef == null) {
+					// package name is only relevant if it's not a framework package
+					var pkg = pref.Package;
+					string packageName = pkg != null && !pkg.IsFrameworkPackage? pkg.Name : null;
+					// find the version of the assembly that's valid for the new framework
+					var newAsm = AssemblyContext.GetAssemblyForVersion (pref.Reference, packageName, TargetFramework);
+					// if it changed, clear assembly resolution caches and update reference
+					if (newAsm == null) {
 						pref.ResetReference ();
-					} else if (newRef != pref.Reference) {
-						pref.Reference = newRef;
-					} else if (!pref.IsValid) {
+					} else if (newAsm.FullName != pref.Reference) {
+						pref.Reference = newAsm.FullName;
+					} else if (!pref.IsValid || newAsm.Package != pref.Package) {
 						pref.ResetReference ();
 					}
 				}
@@ -1239,23 +1244,23 @@ namespace MonoDevelop.Projects
 
 		public void AddImportIfMissing (string name, string condition)
 		{
-			importsAdded.Add (name);
+			importsAdded.Add (new DotNetProjectImport (name, condition));
 		}
 
 		public void RemoveImport (string name)
 		{
-			importsRemoved.Add (name);
+			importsRemoved.Add (new DotNetProjectImport (name));
 		}
 
-		List <string> importsAdded = new List<string> ();
+		List <DotNetProjectImport> importsAdded = new List<DotNetProjectImport> ();
 
-		internal IList<string> ImportsAdded {
+		internal IList<DotNetProjectImport> ImportsAdded {
 			get { return importsAdded; }
 		}
 
-		List <string> importsRemoved = new List<string> ();
+		List <DotNetProjectImport> importsRemoved = new List<DotNetProjectImport> ();
 
-		internal IList<string> ImportsRemoved {
+		internal IList<DotNetProjectImport> ImportsRemoved {
 			get { return importsRemoved; }
 		}
 

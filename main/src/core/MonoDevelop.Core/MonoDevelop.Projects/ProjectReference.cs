@@ -466,20 +466,8 @@ namespace MonoDevelop.Projects
 
 					// No package is specified, get any of the registered assemblies, giving priority to gaced assemblies
 					// (because non-gac assemblies should have a package name set)
-					SystemAssembly best = null;
-					foreach (SystemAssembly asm in AssemblyContext.GetAssembliesFromFullName (reference)) {
-						//highest priority to framework packages
-						if (ownerProject != null && asm.Package.IsFrameworkPackage) {
-							var targetFx = ownerProject.TargetFramework;
-							var packageFxId = asm.Package.TargetFramework;
-							if (targetFx.IncludesFramework (packageFxId))
-								return cachedPackage = asm.Package;
-						}
-						if (asm.Package.IsGacPackage)
-							best = asm;
-						else if (best == null)
-							best = asm;
-					}
+					TargetFramework fx = ownerProject == null? null : ownerProject.TargetFramework;
+					var best = AssemblyContext.GetAssemblyFromFullName (reference, null, fx);
 					if (best != null)
 						return cachedPackage = best.Package;
 				}

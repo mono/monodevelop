@@ -506,6 +506,7 @@ namespace MonoDevelop.Ide
 					}
 				}
 				Items.Remove (item);
+				item.Dispose ();
 			}
 		}
 		

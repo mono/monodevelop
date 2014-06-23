@@ -709,7 +709,14 @@ namespace MonoDevelop.Components.Commands
 		{
 			if (Platform.IsMac) {
 				parent.GrabFocus ();
-				return DesktopService.ShowContextMenu (this, parent, evt.X, evt.Y, entrySet);
+				int x, y;
+				if (evt != null) {
+					x = (int)evt.X;
+					y = (int)evt.Y;
+				} else {
+					Gdk.Display.Default.GetPointer (out x, out y);
+				}
+				return DesktopService.ShowContextMenu (this, parent, x, y, entrySet, initialCommandTarget);
 			} else {
 				var menu = CreateMenu (entrySet);
 				if (menu != null)

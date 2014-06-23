@@ -51,6 +51,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool CanBuildNode (Type dataType)
 		{
+			if (typeof(SolutionFolder).IsAssignableFrom (dataType))
+				return false;
+
 			return typeof(IFolderItem).IsAssignableFrom (dataType);
 		}
 		

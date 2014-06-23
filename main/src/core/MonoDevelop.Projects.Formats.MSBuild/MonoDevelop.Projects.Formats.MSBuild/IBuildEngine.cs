@@ -26,12 +26,14 @@
 
 using System;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	public interface IBuildEngine: IDisposable
 	{
-		void Initialize (string solutionFile, CultureInfo uiCulture);
+		void SetCulture (CultureInfo uiCulture);
+		void SetGlobalProperties (IDictionary<string, string> properties);
 		IProjectBuilder LoadProject (string projectFile);
 		void UnloadProject (IProjectBuilder pb);
 	}

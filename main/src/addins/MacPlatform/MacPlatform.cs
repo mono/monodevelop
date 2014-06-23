@@ -203,10 +203,12 @@ namespace MonoDevelop.MacIntegration
 			return map;
 		}
 
-		public override bool ShowContextMenu (CommandManager commandManager, Gtk.Widget widget, double x, double y, CommandEntrySet entrySet)
+		public override bool ShowContextMenu (CommandManager commandManager, Gtk.Widget widget, double x, double y, CommandEntrySet entrySet, object initialCommandTarget = null)
 		{
 			Gtk.Application.Invoke (delegate {
-				var menu = new MDMenu (commandManager, entrySet);
+				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
+				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
+				var menu = new MDMenu (commandManager, entrySet, CommandSource.ContextMenu, initialCommandTarget);
 				var nsview = MacInterop.GtkQuartz.GetView (widget);
 				var toplevel = widget.Toplevel as Gtk.Window;
 				int trans_x, trans_y;

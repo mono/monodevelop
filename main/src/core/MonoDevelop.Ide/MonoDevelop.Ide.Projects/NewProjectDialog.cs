@@ -459,12 +459,13 @@ namespace MonoDevelop.Ide.Projects {
 			
 			try {
 				if (Directory.Exists (ProjectLocation)) {
-					var btn = MessageService.AskQuestion (GettextCatalog.GetString ("Directory {0} already exists.\nDo you want to continue the Project creation?", ProjectLocation), AlertButton.No, AlertButton.Yes);
+					var question = GettextCatalog.GetString ("Directory {0} already exists.\nDo you want to continue creating the project?", ProjectLocation);
+					var btn = MessageService.AskQuestion (question, AlertButton.No, AlertButton.Yes);
 					if (btn != AlertButton.Yes)
 						return false;
 				}
 
-				System.IO.Directory.CreateDirectory (location);
+				Directory.CreateDirectory (location);
 			} catch (IOException) {
 				MessageService.ShowError (GettextCatalog.GetString ("Could not create directory {0}. File already exists.", location));
 				return false;
