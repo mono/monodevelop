@@ -28,6 +28,14 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
+	public enum FoldingType {
+		None,
+		Region,
+		TypeDefinition,
+		TypeMember,
+		Comment
+	}
+
 	public interface IFoldSegment : ISegment
 	{
 		bool IsFolded {
@@ -36,6 +44,11 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		string CollapsedText {
+			get;
+			set;
+		}
+
+		FoldingType FoldingType {
 			get;
 			set;
 		}
@@ -49,6 +62,11 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		public string CollapsedText {
+			get;
+			set;
+		}
+
+		public FoldingType FoldingType {
 			get;
 			set;
 		}

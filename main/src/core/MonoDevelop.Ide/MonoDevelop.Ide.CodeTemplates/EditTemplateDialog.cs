@@ -71,13 +71,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			scrolledwindow1.Child = control;
 			control.ShowAll ();
 			textEditor.CaretPositionChanged += CaretPositionChanged;
-			options = new TextEditorOptions ();
-			options.ShowLineNumberMargin = false;
-			options.ShowFoldMargin = false;
-			options.ShowIconMargin = false;
-			options.ColorScheme = IdeApp.Preferences.ColorScheme;
-			textEditor.Options = options;
-			
+			textEditor.Options.ShowLineNumberMargin = false;
+			textEditor.Options.ShowFoldMargin = false;
+			textEditor.Options.ShowIconMargin = false;
+			textEditor.Options.ColorScheme = IdeApp.Preferences.ColorScheme;
+
 			var mimeTypes = new HashSet<string> ();
 			var groups    = new HashSet<string> ();
 			foreach (CodeTemplate ct in CodeTemplateService.Templates) {

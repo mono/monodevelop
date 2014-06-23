@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Editor
 		Virtual
 	}
 
-	public interface ITextEditorOptions : IDisposable
+	 public interface ITextEditorOptions : IDisposable
 	{
 		double Zoom { get; set; }
 		bool CanZoomIn { get; }

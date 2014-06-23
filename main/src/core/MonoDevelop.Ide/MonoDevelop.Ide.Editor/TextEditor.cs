@@ -88,9 +88,6 @@ namespace MonoDevelop.Ide.Editor
 			get {
 				return textEditorImpl.Options;
 			}
-			set {
-				textEditorImpl.Options = value;
-			}
 		}
 
 		public EditMode EditMode {
