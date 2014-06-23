@@ -2982,6 +2982,11 @@ namespace MonoDevelop.SourceEditor
 		{
 			ClipboardActions.Paste (TextEditor.GetTextEditorData ());
 		}
+
+		void IEditorActionHost.NewLine ()
+		{
+			MiscActions.InsertNewLine (TextEditor.GetTextEditorData ());
+		}
 		#endregion
 	
 		 
@@ -3016,6 +3021,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			return null;
 		}
+
+
+		public ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink)
+		{
+			return null;
+		}
+
 		#endregion
 	}
 } 

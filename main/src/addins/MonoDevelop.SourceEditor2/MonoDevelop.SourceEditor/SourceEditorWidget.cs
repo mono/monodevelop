@@ -456,7 +456,7 @@ namespace MonoDevelop.SourceEditor
 			if (parsedDocument.HasErrors)
 				return;
 			try {
-				List<FoldSegment > foldSegments = new List<FoldSegment> ();
+				var foldSegments = new List<Mono.TextEditor.FoldSegment> ();
 				bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
 				if (!updateSymbols) {
 					foreach (PreProcessorDefine define in parsedDocument.Defines) {
@@ -513,7 +513,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					
 					//add the region
-					FoldSegment marker = AddMarker (foldSegments, region.Name, 
+					var marker = AddMarker (foldSegments, region.Name, 
 					                                       region.Region, type);
 					
 					//and, if necessary, set its fold state
