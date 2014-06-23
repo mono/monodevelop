@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.Editor
 				previous = current;
 				result++;
 			}
-			foreach (var segment in doc.GetFoldingsFromOffset (result)) {
+			foreach (var segment in doc.GetFoldingsContaining (result)) {
 				if (segment.IsFolded)
 					result = System.Math.Max (result, segment.EndOffset);
 			}
@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.Editor
 				previous = current;
 				result--;
 			}
-			foreach (var segment in doc.GetFoldingsFromOffset (result)) {
+			foreach (var segment in doc.GetFoldingsContaining (result)) {
 				if (segment.IsFolded)
 					result = System.Math.Min (result, segment.Offset);
 			}

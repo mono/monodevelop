@@ -539,45 +539,30 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.SetFoldings (foldings);
 		}
 
-		public IEnumerable<IFoldSegment> GetFoldingsFromOffset (int offset)
+		public IEnumerable<IFoldSegment> GetFoldingsContaining (int offset)
 		{
-			return textEditorImpl.GetFoldingsFromOffset (offset);
+			return textEditorImpl.GetFoldingsContaining (offset);
 		}
 
-		public IEnumerable<IFoldSegment> GetFoldingContaining (int lineNumber)
+		public IEnumerable<IFoldSegment> GetFoldingsIn (ISegment segment)
 		{
-			return GetFoldingContaining (GetLine (lineNumber));
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return textEditorImpl.GetFoldingsIn (segment.Offset, segment.Length);
 		}
 
-		public IEnumerable<IFoldSegment> GetFoldingContaining (IDocumentLine line)
+		public IEnumerable<IFoldSegment> GetFoldingsStartingIn (ISegment segment)
 		{
-			if (line == null)
-				throw new ArgumentNullException ("line");
-			return textEditorImpl.GetFoldingContaining (line);
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return textEditorImpl.GetFoldingsStartingIn (segment.Offset, segment.Length);
 		}
 
-		public IEnumerable<IFoldSegment> GetStartFoldings (int lineNumber)
+		public IEnumerable<IFoldSegment> GetFoldingsEndingIn (ISegment segment)
 		{
-			return GetStartFoldings (GetLine (lineNumber));
-		}
-
-		public IEnumerable<IFoldSegment> GetStartFoldings (IDocumentLine line)
-		{
-			if (line == null)
-				throw new ArgumentNullException ("line");
-			return textEditorImpl.GetStartFoldings (line);
-		}
-
-		public IEnumerable<IFoldSegment> GetEndFoldings (int lineNumber)
-		{
-			return GetEndFoldings (GetLine (lineNumber));
-		}
-
-		public IEnumerable<IFoldSegment> GetEndFoldings (IDocumentLine line)
-		{
-			if (line == null)
-				throw new ArgumentNullException ("line");
-			return textEditorImpl.GetEndFoldings (line);
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return textEditorImpl.GetFoldingsEndingIn (segment.Offset, segment.Length);
 		}
 
 		/// <summary>
