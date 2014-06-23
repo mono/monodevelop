@@ -32,6 +32,7 @@ using Mono.MHex.Data;
 using MonoDevelop.Ide.Gui.Content;
 using Xwt;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.HexEditor
 {
@@ -50,7 +51,7 @@ namespace MonoDevelop.HexEditor
 		{
 			hexEditor.HexEditorStyle = new MonoDevelopHexEditorStyle (hexEditor);
 			SetOptions ();
-			MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.Changed += delegate {
+			DefaultSourceEditorOptions.Instance.Changed += delegate {
 				SetOptions ();
 			};
 			hexEditor.HexEditorData.Replaced += delegate {

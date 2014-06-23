@@ -25,13 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.TextEditor.Highlighting;
 using Mono.MHex.Rendering;
 using Xwt;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using Xwt.Drawing;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.HexEditor
 {
