@@ -65,7 +65,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-	ITextEditorImpl, IEditorActionHost, IMarkerHost
+		ITextEditorImpl, IEditorActionHost, IMarkerHost
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -2041,17 +2041,17 @@ namespace MonoDevelop.SourceEditor
 			bool toggle = true;
 
 			foreach (var segment in Document.FoldSegments) {
-				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
+				if (segment.FoldingType == Mono.TextEditor.FoldingType.TypeMember || segment.FoldingType == Mono.TextEditor.FoldingType.Comment)
 					if (segment.IsFolded)
 						toggle = false;
 			}
 
 
 			foreach (var segment in Document.FoldSegments) {
-				if (segment.FoldingType == FoldingType.TypeDefinition) {
+				if (segment.FoldingType == Mono.TextEditor.FoldingType.TypeDefinition) {
 					segment.IsFolded = false;
 				}
-				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
+				if (segment.FoldingType == Mono.TextEditor.FoldingType.TypeMember || segment.FoldingType == Mono.TextEditor.FoldingType.Comment)
 					segment.IsFolded = toggle;
 			}
 
@@ -2616,6 +2616,8 @@ namespace MonoDevelop.SourceEditor
 		TextDocumentWrapper wrapper;
 		IReadonlyTextDocument ITextEditorImpl.Document {
 			get {
+				if (wrapper == null)
+					wrapper = new TextDocumentWrapper (widget.TextEditor.Document);
 				return wrapper;
 			}
 			set {
@@ -2744,27 +2746,29 @@ namespace MonoDevelop.SourceEditor
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (MonoDevelop.Core.Text.ISegment segment)
 		{
-			throw new NotImplementedException ();
+			return TextEditor.Document.GetTextSegmentMarkersAt (new Mono.TextEditor.TextSegment (segment.Offset, segment.Length)).OfType<ITextSegmentMarker> ();
 		}
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (int offset)
 		{
-			throw new NotImplementedException ();
+			return TextEditor.Document.GetTextSegmentMarkersAt (offset).OfType<ITextSegmentMarker> ();
 		}
 
 		void ITextEditorImpl.AddMarker (ITextSegmentMarker marker)
 		{
-			throw new NotImplementedException ();
+			TextEditor.Document.AddMarker ((TextSegmentMarker)marker);
 		}
 
 		bool ITextEditorImpl.RemoveMarker (ITextSegmentMarker marker)
 		{
-			throw new NotImplementedException ();
+			return TextEditor.Document.RemoveMarker ((TextSegmentMarker)marker);
 		}
 
 		void ITextEditorImpl.SetFoldings (IEnumerable<IFoldSegment> foldings)
 		{
-			throw new NotImplementedException ();
+			TextEditor.Document.UpdateFoldSegments (
+				foldings.Select (f => new Mono.TextEditor.FoldSegment (TextEditor.Document, f.CollapsedText, f.Offset, f.Length, (Mono.TextEditor.FoldingType)f.FoldingType) { IsFolded = f.IsFolded }).ToList()
+			);
 		}
 
 		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsFromOffset (int offset)
@@ -2794,10 +2798,7 @@ namespace MonoDevelop.SourceEditor
 
 		MonoDevelop.Ide.Editor.ITextEditorOptions ITextEditorImpl.Options {
 			get {
-				throw new NotImplementedException ();
-			}
-			set {
-				throw new NotImplementedException ();
+				return new TextEditorToMonoDevelopOptionsWrapper (TextEditor.Options);
 			}
 		}
 

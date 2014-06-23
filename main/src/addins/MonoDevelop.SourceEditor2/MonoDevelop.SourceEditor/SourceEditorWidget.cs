@@ -427,7 +427,7 @@ namespace MonoDevelop.SourceEditor
 			RemoveErrorUndelinesResetTimerId ();
 		}
 		
-		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
+		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, Mono.TextEditor.FoldingType type)
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)
@@ -479,30 +479,30 @@ namespace MonoDevelop.SourceEditor
 				foreach (FoldingRegion region in parsedDocument.Foldings) {
 					if (token.IsCancellationRequested)
 						return;
-					FoldingType type = FoldingType.None;
+					var type = Mono.TextEditor.FoldingType.None;
 					bool setFolded = false;
 					bool folded = false;
 					
 					//decide whether the regions should be folded by default
 					switch (region.Type) {
 					case FoldType.Member:
-						type = FoldingType.TypeMember;
+						type = Mono.TextEditor.FoldingType.TypeMember;
 						break;
 					case FoldType.Type:
-						type = FoldingType.TypeDefinition;
+						type = Mono.TextEditor.FoldingType.TypeDefinition;
 						break;
 					case FoldType.UserRegion:
-						type = FoldingType.Region;
+						type = Mono.TextEditor.FoldingType.Region;
 						setFolded = options.DefaultRegionsFolding;
 						folded = true;
 						break;
 					case FoldType.Comment:
-						type = FoldingType.Comment;
+						type = Mono.TextEditor.FoldingType.Comment;
 						setFolded = options.DefaultCommentFolding;
 						folded = true;
 						break;
 					case FoldType.CommentInsideMember:
-						type = FoldingType.Comment;
+						type = Mono.TextEditor.FoldingType.Comment;
 						setFolded = options.DefaultCommentFolding;
 						folded = false;
 						break;

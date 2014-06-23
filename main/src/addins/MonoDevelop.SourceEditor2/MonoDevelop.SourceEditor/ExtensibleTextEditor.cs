@@ -63,6 +63,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public new ISourceEditorOptions Options {
 			get { return (ISourceEditorOptions)base.Options; }
+			set { base.Options = value; }
 		}
 		
 		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.TextDocument doc) : base(doc, options)
