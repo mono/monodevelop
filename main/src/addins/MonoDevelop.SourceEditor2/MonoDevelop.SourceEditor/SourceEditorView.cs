@@ -63,7 +63,7 @@ namespace MonoDevelop.SourceEditor
 {	
 	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
-		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
+		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
 		ITextEditorImpl, IEditorActionHost, IMarkerHost
 	{
@@ -116,7 +116,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public override Gtk.Widget Control {
+		public override Widget Control {
 			get {
 				return widget != null ? widget.Vbox : null;
 			}
@@ -1501,19 +1501,19 @@ namespace MonoDevelop.SourceEditor
 
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
-			this.Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight));
+			Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight));
 		}
 		
 		public void SetCaretTo (int line, int column, bool highlight, bool centerCaret)
 		{
-			this.Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight, centerCaret));
+			Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight, centerCaret));
 		}
 
 		public void Redo ()
 		{
 			if (MiscActions.CancelPreEditMode (TextEditor.GetTextEditorData ()))
 				return;
-			MiscActions.Redo (this.TextEditor.GetTextEditorData ());
+			MiscActions.Redo (TextEditor.GetTextEditorData ());
 		}
 		
 		public IDisposable OpenUndoGroup ()
@@ -2665,37 +2665,37 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.SetSelection (int anchorOffset, int leadOffset)
 		{
-			this.TextEditor.SetSelection (anchorOffset, leadOffset);
+			TextEditor.SetSelection (anchorOffset, leadOffset);
 		}
 
 		void ITextEditorImpl.ClearSelection ()
 		{
-			this.TextEditor.ClearSelection ();
+			TextEditor.ClearSelection ();
 		}
 
 		void ITextEditorImpl.CenterToCaret ()
 		{
-			this.TextEditor.CenterToCaret ();
+			TextEditor.CenterToCaret ();
 		}
 
 		void ITextEditorImpl.StartCaretPulseAnimation ()
 		{
-			this.TextEditor.StartCaretPulseAnimation ();
+			TextEditor.StartCaretPulseAnimation ();
 		}
 
 		int ITextEditorImpl.EnsureCaretIsNotVirtual ()
 		{
-			return this.TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
+			return TextEditor.GetTextEditorData ().EnsureCaretIsNotVirtual ();
 		}
 
 		void ITextEditorImpl.FixVirtualIndentation ()
 		{
-			this.TextEditor.GetTextEditorData ().FixVirtualIndentation ();
+			TextEditor.GetTextEditorData ().FixVirtualIndentation ();
 		}
 
 		Widget ITextEditorImpl.GetGtkWidget ()
 		{
-			return this.Control;
+			return Control;
 		}
 
 		string ITextEditorImpl.FormatString (int offset, string code)
@@ -2746,7 +2746,7 @@ namespace MonoDevelop.SourceEditor
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (MonoDevelop.Core.Text.ISegment segment)
 		{
-			return TextEditor.Document.GetTextSegmentMarkersAt (new Mono.TextEditor.TextSegment (segment.Offset, segment.Length)).OfType<ITextSegmentMarker> ();
+			return TextEditor.Document.GetTextSegmentMarkersAt (new TextSegment (segment.Offset, segment.Length)).OfType<ITextSegmentMarker> ();
 		}
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (int offset)
@@ -2771,24 +2771,44 @@ namespace MonoDevelop.SourceEditor
 			);
 		}
 
-		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsFromOffset (int offset)
+		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsContaining (int offset)
 		{
-			throw new NotImplementedException ();
+			return TextEditor.Document.GetFoldingsFromOffset (offset).Select (
+				f => new MonoDevelop.Ide.Editor.FoldSegment (f.Offset, f.Length, f.IsFolded) {
+					CollapsedText = f.Description,
+					FoldingType = (MonoDevelop.Ide.Editor.FoldingType)f.FoldingType
+				}
+			);
 		}
 
-		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingContaining (IDocumentLine line)
+		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsIn (int offset, int length)
 		{
-			throw new NotImplementedException ();
+			return TextEditor.Document.GetFoldingContaining (offset, length).Select (
+				f => new MonoDevelop.Ide.Editor.FoldSegment (f.Offset, f.Length, f.IsFolded) {
+					CollapsedText = f.Description,
+					FoldingType = (MonoDevelop.Ide.Editor.FoldingType)f.FoldingType
+				}
+			);
 		}
 
-		IEnumerable<IFoldSegment> ITextEditorImpl.GetStartFoldings (IDocumentLine line)
+		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsStartingIn (int offset, int length)
 		{
-			throw new NotImplementedException ();
+			return TextEditor.Document.GetStartFoldings (offset, length).Select (
+				f => new MonoDevelop.Ide.Editor.FoldSegment (f.Offset, f.Length, f.IsFolded) {
+					CollapsedText = f.Description,
+					FoldingType = (MonoDevelop.Ide.Editor.FoldingType)f.FoldingType
+				}
+			);
 		}
 
-		IEnumerable<IFoldSegment> ITextEditorImpl.GetEndFoldings (IDocumentLine line)
+		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsEndingIn (int offset, int length)
 		{
-			throw new NotImplementedException ();
+			return TextEditor.Document.GetEndFoldings (offset, length).Select (
+				f => new MonoDevelop.Ide.Editor.FoldSegment (f.Offset, f.Length, f.IsFolded) {
+					CollapsedText = f.Description,
+					FoldingType = (MonoDevelop.Ide.Editor.FoldingType)f.FoldingType
+				}
+			);
 		}
 
 		ISyntaxMode ITextEditorImpl.SyntaxMode {
@@ -2889,12 +2909,12 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		void IInternalEditorExtensions.SetIndentationTracker (MonoDevelop.Ide.Editor.Extension.IndentationTracker indentationTracker)
+		void IInternalEditorExtensions.SetIndentationTracker (IndentationTracker indentationTracker)
 		{
 			TextEditor.GetTextEditorData ().IndentationTracker = new IndentationTrackerWrapper (wrapper, indentationTracker);
 		}
 
-		void IInternalEditorExtensions.SetSelectionSurroundingProvider (MonoDevelop.Ide.Editor.Extension.SelectionSurroundingProvider surroundingProvider)
+		void IInternalEditorExtensions.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
 			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = new SelectionSurroundingProviderWrapper (surroundingProvider);
 		}
