@@ -30,7 +30,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	class CSharpSelectionSurroundingProvider : ISelectionSurroundingProvider
+	class CSharpSelectionSurroundingProvider : SelectionSurroundingProvider
 	{
 		readonly MonoDevelop.Ide.Gui.Document document;
 		TextEditor textEditorData { get { return document.Editor; } }
@@ -40,9 +40,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			this.document = document;
 		}
 
-		#region ISelectionSurroundingProvider implementation
+		#region SelectionSurroundingProvider implementation
 
-		bool ISelectionSurroundingProvider.GetSelectionSurroundings (uint unicodeKey, out string start, out string end)
+		public override bool GetSelectionSurroundings (uint unicodeKey, out string start, out string end)
 		{
 			switch ((char)unicodeKey) {
 			case '"':
@@ -78,10 +78,10 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 
-		void ISelectionSurroundingProvider.HandleSpecialSelectionKey (uint unicodeKey)
+		public override void HandleSpecialSelectionKey (uint unicodeKey)
 		{
 			string start, end;
-			((ISelectionSurroundingProvider)this).GetSelectionSurroundings (unicodeKey, out start, out end);
+			((SelectionSurroundingProvider)this).GetSelectionSurroundings (unicodeKey, out start, out end);
 
 			if (textEditorData.SelectionMode == SelectionMode.Block) {
 				var selection = textEditorData.SelectionRegion;

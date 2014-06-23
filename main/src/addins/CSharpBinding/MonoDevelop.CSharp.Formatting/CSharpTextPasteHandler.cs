@@ -31,23 +31,25 @@ using ICSharpCode.NRefactory.Utils;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class TextPasteHandler : ICSharpCode.NRefactory.CSharp.TextPasteIndentEngine, ITextPasteHandler
+	class CSharpTextPasteHandler : TextPasteHandler
 	{
+		readonly ICSharpCode.NRefactory.Editor.ITextPasteHandler engine;
 		readonly CSharpTextEditorIndentation indent;
 
-		public TextPasteHandler (CSharpTextEditorIndentation indent, ICSharpCode.NRefactory.CSharp.IStateMachineIndentEngine decoratedEngine, ICSharpCode.NRefactory.CSharp.TextEditorOptions textEditorOptions, ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions formattingOptions) : base (decoratedEngine, textEditorOptions, formattingOptions)
+		public CSharpTextPasteHandler (CSharpTextEditorIndentation indent, ICSharpCode.NRefactory.CSharp.IStateMachineIndentEngine decoratedEngine, ICSharpCode.NRefactory.CSharp.TextEditorOptions textEditorOptions, ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions formattingOptions)
 		{
+			this.engine = new ICSharpCode.NRefactory.CSharp.TextPasteIndentEngine (decoratedEngine, textEditorOptions, formattingOptions);
 			this.indent = indent;
 		}
 
-		string ITextPasteHandler.FormatPlainText (int offset, string text, byte[] copyData)
+		public override string FormatPlainText (int offset, string text, byte[] copyData)
 		{
-			return ((ICSharpCode.NRefactory.Editor.ITextPasteHandler)this).FormatPlainText (offset, text, copyData);
+			return engine.FormatPlainText (offset, text, copyData);
 		}
 
-		byte[] ITextPasteHandler.GetCopyData (int offset, int length)
+		public override byte[] GetCopyData (int offset, int length)
 		{
-			return ((ICSharpCode.NRefactory.Editor.ITextPasteHandler)this).GetCopyData (new Segment (offset, length));
+			return engine.GetCopyData (new Segment (offset, length));
 		}
 
 		class Segment : ICSharpCode.NRefactory.Editor.ISegment
@@ -78,7 +80,8 @@ namespace MonoDevelop.CSharp.Formatting
 				return string.Format ("[Script.Segment: Offset={0}, Length={1}, EndOffset={2}]", Offset, Length, EndOffset);
 			}
 		}
-		public void PostFomatPastedText (int insertionOffset, int insertedChars)
+	
+		public override void PostFomatPastedText (int insertionOffset, int insertedChars)
 		{
 			if (indent.textEditorData.Options.IndentStyle == IndentStyle.None ||
 				indent.textEditorData.Options.IndentStyle == IndentStyle.Auto)

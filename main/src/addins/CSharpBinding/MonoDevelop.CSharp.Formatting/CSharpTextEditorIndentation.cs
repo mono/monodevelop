@@ -169,7 +169,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (textEditorData.Options.IndentStyle == IndentStyle.Auto || textEditorData.Options.IndentStyle == IndentStyle.None) {
 				((IInternalEditorExtensions)textEditorData).SetTextPasteHandler (null);
 			} else {
-				((IInternalEditorExtensions)textEditorData).SetTextPasteHandler (new TextPasteHandler (this, stateTracker, options, policy));
+				((IInternalEditorExtensions)textEditorData).SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, options, policy));
 			}
 		}
 

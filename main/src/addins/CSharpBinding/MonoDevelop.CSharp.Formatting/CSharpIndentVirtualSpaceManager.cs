@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class IndentVirtualSpaceManager : IIndentationTracker
+	class IndentVirtualSpaceManager : IndentationTracker
 	{
 		readonly TextEditor data;
 		readonly CacheIndentEngine stateTracker;
@@ -43,8 +43,8 @@ namespace MonoDevelop.CSharp.Formatting
 			this.stateTracker = stateTracker;
 		}
 
-		#region IIndentationTracker implementation
-		string IIndentationTracker.GetIndentationString (int lineNumber)
+		#region IndentationTracker implementation
+		public override string GetIndentationString (int lineNumber)
 		{
 			var line = data.GetLine (lineNumber);
 			if (line == null)
