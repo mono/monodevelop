@@ -40,13 +40,14 @@ using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
 using ICSharpCode.Decompiler.Disassembler;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.IO;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -119,16 +120,16 @@ namespace MonoDevelop.AssemblyBrowser
 			return (ModuleDefinition)nav.DataItem;
 		}
 
-		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
+		public static List<ReferenceSegment> Decompile (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
 		{
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (false, codePolicy);
 			return Decompile (data, module, currentType, setData, settings);
 		}
 
 
-		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
+		public static List<ReferenceSegment> Decompile (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
 		{
 			try {
 
@@ -146,7 +147,7 @@ namespace MonoDevelop.AssemblyBrowser
 				
 				astBuilder.RunTransformations (o => false);
 				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
-				var output = new ColoredCSharpFormatter (data.Document);
+				var output = new ColoredCSharpFormatter (data);
 				astBuilder.GenerateCode (output);
 				output.SetDocumentData ();
 				return output.ReferencedSegments;
@@ -169,7 +170,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
@@ -189,29 +190,29 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append ("</a></u></span>");
 		}
 		
-		public static List<ReferenceSegment> Disassemble (TextEditorData data, Action<ReflectionDisassembler> setData)
+		public static List<ReferenceSegment> Disassemble (TextEditor data, Action<ReflectionDisassembler> setData)
 		{
 			var source = new CancellationTokenSource ();
-			var output = new ColoredCSharpFormatter (data.Document);
+			var output = new ColoredCSharpFormatter (data);
 			var disassembler = new ReflectionDisassembler (output, true, source.Token);
 			setData (disassembler);
 			output.SetDocumentData ();
 			return output.ReferencedSegments;
 		}
 		
-		internal static bool HandleSourceCodeEntity (ITreeNavigator navigator, TextEditorData data)
+		internal static bool HandleSourceCodeEntity (ITreeNavigator navigator, TextEditor data)
 		{
 			if (IsFromAssembly (navigator))
 				return false;
 			
 			var method = (IUnresolvedEntity)navigator.DataItem;
-			data.Text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (method.Region.FileName);
-			data.Caret.Location = method.Region.Begin;
-			data.CenterToCaret ();
+			var source = StringTextSource.ReadFrom (method.Region.FileName);
+			data.Text = source.Text;
+			data.CaretLocation = new TextLocation (method.Region.BeginLine, method.Region.BeginColumn);
 			return true;
 		}
 		
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditorData data, ITreeNavigator navigator)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			if (HandleSourceCodeEntity (navigator, data)) 
@@ -227,7 +228,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var method = (IUnresolvedMethod)navigator.DataItem;
 			var resolved = Resolve (navigator, method);
 			if (GetMainAssembly (navigator) == null) {
-				return Mono.TextEditor.Utils.TextFileUtility.ReadAllText (method.Region.FileName);
+				return StringTextSource.ReadFrom (method.Region.FileName).Text;
 			}
 			StringBuilder result = new StringBuilder ();
 			result.Append ("<big>");

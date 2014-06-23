@@ -28,9 +28,10 @@ using ICSharpCode.NRefactory;
 using System;
 using System.Text;
 using ICSharpCode.Decompiler;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -80,13 +81,13 @@ namespace MonoDevelop.AssemblyBrowser
 	class ColoredCSharpFormatter : ICSharpCode.Decompiler.ITextOutput
 	{
 		public StringBuilder sb = new StringBuilder();
-		TextDocument doc;
+		TextEditor doc;
 		bool write_indent;
 		int indent;
-		public List<FoldSegment>      FoldSegments       = new List<FoldSegment>();
+		public List<IFoldSegment>     FoldSegments       = new List<IFoldSegment>();
 		public List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
 		
-		public ColoredCSharpFormatter (TextDocument doc)
+		public ColoredCSharpFormatter (TextEditor doc)
 		{
 			this.doc = doc;
 		}
@@ -94,7 +95,7 @@ namespace MonoDevelop.AssemblyBrowser
 		public void SetDocumentData ()
 		{
 			doc.Text = sb.ToString ();
-			doc.UpdateFoldSegments (FoldSegments, false);
+			doc.SetFoldings (FoldSegments);
 		}
 		
 		#region ITextOutput implementation
@@ -105,9 +106,9 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 		
-		public TextLocation Location {
+		public ICSharpCode.NRefactory.TextLocation Location {
 			get {
-				return new TextLocation (currentLine, 1);
+				return new ICSharpCode.NRefactory.TextLocation (currentLine, 1);
 			}
 		}
 		
@@ -193,7 +194,9 @@ namespace MonoDevelop.AssemblyBrowser
 		public void MarkFoldEnd ()
 		{
 			var curFold = foldSegmentStarts.Pop ();
-			FoldSegments.Add (new FoldSegment (doc, curFold.Item2 ,curFold.Item1, sb.Length - curFold.Item1, FoldingType.None) {
+			FoldSegments.Add (new FoldSegment (curFold.Item1, sb.Length - curFold.Item1) {
+				// FoldingType.None
+				CollapsedText = curFold.Item2,
 				IsFolded = curFold.Item3
 			});
 		}

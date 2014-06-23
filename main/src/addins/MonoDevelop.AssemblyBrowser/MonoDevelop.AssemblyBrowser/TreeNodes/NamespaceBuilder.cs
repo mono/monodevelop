@@ -31,9 +31,9 @@ using System.Text;
 using System.Linq;
 
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -98,7 +98,7 @@ namespace MonoDevelop.AssemblyBrowser
 		
 		#region IAssemblyBrowserNodeBuilder
 
-		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 		//	bool publicOnly = Widget.PublicApiOnly;
 			Namespace ns = (Namespace)navigator.DataItem;
@@ -107,7 +107,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return null;
 		}
 		
-		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			return Disassemble (data, navigator);
 		}
