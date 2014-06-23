@@ -145,7 +145,7 @@ namespace MonoDevelop.CSharp.Completion
 			pos = -1;
 			
 			for (int i = start; i < Editor.Length; i++) {
-				char ch = Editor[i];
+				char ch = Editor.GetCharAt (i);
 				if (ch == '(') {
 					pos = i + 1;
 					return true;
@@ -345,7 +345,7 @@ namespace MonoDevelop.CSharp.Completion
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
 			int offset = Editor.CaretOffset;
 			for (int i = 0; i < skipChars; i++) {
-				Editor.AddSkipChar (offset, Editor[offset]);
+				Editor.AddSkipChar (offset, Editor.GetCharAt (offset));
 				offset++;
 			}
 			

@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			// Search opening bracket of member
 			int pos = callingMember != null && !callingMember.BodyRegion.Begin.IsEmpty ? editor.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
-			while (pos < editor.Length && editor[pos] != '{') {
+			while (pos < editor.Length && editor.GetCharAt (pos) != '{') {
 				pos++;
 			}
 			

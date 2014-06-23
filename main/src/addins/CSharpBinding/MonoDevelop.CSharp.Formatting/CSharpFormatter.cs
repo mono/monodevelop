@@ -61,13 +61,13 @@ namespace MonoDevelop.CSharp.Formatting
 
 				tracker.Update (lineSegment.Offset);
 				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
-					tracker.Push (data[i]);
+					tracker.Push (data.GetCharAt (i));
 				}
 
 				string curIndent = lineSegment.GetIndentation (data);
 
 				int nlwsp = curIndent.Length;
-				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data[lineSegment.Offset + nlwsp] == '*')) {
+				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					string newIndent = tracker.ThisLineIndent;
 					if (newIndent != curIndent) 

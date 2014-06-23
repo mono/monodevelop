@@ -76,13 +76,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var startOffset = seg.Offset;
 			var endOffset   = seg.EndOffset;
 			while (startOffset < endOffset) {
-				char ch = context.TextEditor[startOffset];
+				char ch = context.TextEditor.GetCharAt (startOffset);
 				if (!char.IsWhiteSpace (ch))
 					break;
 				startOffset++;
 			}
 			while (startOffset < endOffset && endOffset > 0) {
-				char ch = context.TextEditor[endOffset - 1];
+				char ch = context.TextEditor.GetCharAt (endOffset - 1);
 				if (!char.IsWhiteSpace (ch))
 					break;
 				endOffset--;

@@ -93,7 +93,7 @@ namespace MonoDevelop.CSharp.Formatting
 				string curIndent = curLine.GetIndentation (indent.textEditorData);
 				int nlwsp = curIndent.Length;
 
-				if (!indent.stateTracker.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && indent.textEditorData[curLineOffset + nlwsp] == '*')) {
+				if (!indent.stateTracker.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && indent.textEditorData.GetCharAt (curLineOffset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					indent.SafeUpdateIndentEngine (curLineOffset + curLine.Length);
 					string newIndent = indent.stateTracker.ThisLineIndent;

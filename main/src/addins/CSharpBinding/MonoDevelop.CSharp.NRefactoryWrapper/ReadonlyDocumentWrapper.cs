@@ -220,7 +220,7 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		char ITextSource.GetCharAt (int offset)
 		{
-			return document [offset];
+			return document.GetCharAt (offset);
 		}
 
 		string ITextSource.GetText (int offset, int length)

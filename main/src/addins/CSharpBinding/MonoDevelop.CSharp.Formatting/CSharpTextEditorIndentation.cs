@@ -213,7 +213,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (o < 0 || o + 1 > textEditorData.Length || e.RemovalLength != 1/* || textEditorData.Document.IsInUndo*/) {
 				return;
 			}
-			if (textEditorData[o] != '"')
+			if (textEditorData.GetCharAt (o) != '"')
 				return;
 			SafeUpdateIndentEngine (o + 1);
 			wasInVerbatimString = stateTracker.IsInsideVerbatimString;
@@ -251,9 +251,9 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var endOffset = offset;
 			while (endOffset < textEditorData.Length) {
-				char ch = textEditorData[endOffset];
+				char ch = textEditorData.GetCharAt (endOffset);
 				if (ch == '\\') {
-					if (endOffset + 1 < textEditorData.Length && NewLine.IsNewLine (textEditorData[endOffset + 1]))
+					if (endOffset + 1 < textEditorData.Length && NewLine.IsNewLine (textEditorData.GetCharAt (endOffset + 1)))
 						return;
 
 					endOffset += 2;
@@ -276,8 +276,8 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			var endOffset = offset;
 			while (endOffset < textEditorData.Length) {
-				char ch = textEditorData[endOffset];
-				if (ch == '"' && (endOffset + 1 < textEditorData.Length && textEditorData[endOffset + 1] == '"')) {
+				char ch = textEditorData.GetCharAt (endOffset);
+				if (ch == '"' && (endOffset + 1 < textEditorData.Length && textEditorData.GetCharAt (endOffset + 1) == '"')) {
 					endOffset += 2;
 					continue;
 				}
@@ -337,7 +337,7 @@ namespace MonoDevelop.CSharp.Formatting
 		internal void ReindentOnTab ()
 		{
 			int cursor = textEditorData.CaretOffset;
-			if (stateTracker.IsInsideVerbatimString && cursor > 0 && cursor < textEditorData.Length && textEditorData[cursor - 1] == '"')
+			if (stateTracker.IsInsideVerbatimString && cursor > 0 && cursor < textEditorData.Length && textEditorData.GetCharAt (cursor - 1) == '"')
 				SafeUpdateIndentEngine (cursor + 1);
 			if (stateTracker.IsInsideVerbatimString) {
 				// insert normal tab inside @" ... "
@@ -427,7 +427,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (keyChar == '@') {
 					var retval = base.KeyPress (key, keyChar, modifier);
 					int cursor = textEditorData.CaretOffset;
-					if (cursor < textEditorData.Length && textEditorData[cursor] == '"')
+					if (cursor < textEditorData.Length && textEditorData.GetCharAt (cursor) == '"')
 						ConvertNormalToVerbatimString (textEditorData, cursor + 1);
 					return retval;
 				}
@@ -533,7 +533,7 @@ namespace MonoDevelop.CSharp.Formatting
 		static bool IsSemicolonalreadyPlaced (IReadonlyTextDocument data, int caretOffset)
 		{
 			for (int pos2 = caretOffset - 1; pos2-- > 0;) {
-				var ch2 = data[pos2];
+				var ch2 = data.GetCharAt (pos2);
 				if (ch2 == ';') {
 					return true;
 				}
@@ -551,10 +551,10 @@ namespace MonoDevelop.CSharp.Formatting
 			int max = curLine.EndOffset;
 
 			int end = caretOffset;
-			while (end > 1 && char.IsWhiteSpace (data[end]))
+			while (end > 1 && char.IsWhiteSpace (data.GetCharAt (end)))
 				end--;
 			int end2 = end;
-			while (end2 > 1 && char.IsLetter (data[end2 - 1]))
+			while (end2 > 1 && char.IsLetter (data.GetCharAt (end2 - 1)))
 				end2--;
 			if (end != end2) {
 				string token = data.GetTextBetween (end2, end + 1);
@@ -573,7 +573,7 @@ namespace MonoDevelop.CSharp.Formatting
 						return true;
 					}
 				}
-				char ch = data[pos];
+				char ch = data.GetCharAt (pos);
 				switch (ch) {
 				case '}':
 					if (firstChar && !IsSemicolonalreadyPlaced (data, caretOffset))
@@ -581,9 +581,9 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				case '/':
 					if (isInBlockComment) {
-						isInBlockComment &= pos <= 0 || data[pos - 1] != '*';
+						isInBlockComment &= pos <= 0 || data.GetCharAt (pos - 1) != '*';
 					} else if (!isInString && !isInChar && pos + 1 < max) {
-						char nextChar = data[pos + 1];
+						char nextChar = data.GetCharAt (pos + 1);
 						if (nextChar == '/') {
 							outOffset = lastNonWsOffset;
 							return true;
@@ -599,7 +599,7 @@ namespace MonoDevelop.CSharp.Formatting
 						pos++;
 					break;
 				case '@':
-					if (!(isInString || isInChar || isInLineComment || isInBlockComment) && pos + 1 < max && data[pos + 1] == '"') {
+					if (!(isInString || isInChar || isInLineComment || isInBlockComment) && pos + 1 < max && data.GetCharAt (pos + 1) == '"') {
 						isInString = true;
 						isVerbatimString = true;
 						pos++;
@@ -607,7 +607,7 @@ namespace MonoDevelop.CSharp.Formatting
 					break;
 				case '"':
 					if (!(isInChar || isInLineComment || isInBlockComment)) {
-						if (isInString && isVerbatimString && pos + 1 < max && data[pos + 1] == '"') {
+						if (isInString && isVerbatimString && pos + 1 < max && data.GetCharAt (pos + 1) == '"') {
 							pos++;
 						} else {
 							isInString = !isInString;
@@ -802,7 +802,7 @@ namespace MonoDevelop.CSharp.Formatting
 			var curTracker = stateTracker.Clone ();
 			try {
 				for (int max = cursor; max < line.EndOffset; max++) {
-					curTracker.Push (textEditorData[max]);
+					curTracker.Push (textEditorData.GetCharAt (max));
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception during indentation", e);
@@ -812,7 +812,7 @@ namespace MonoDevelop.CSharp.Formatting
 			string curIndent = line.GetIndentation (textEditorData);
 			int nlwsp = curIndent.Length;
 			int offset = cursor > pos + nlwsp ? cursor - (pos + nlwsp) : 0;
-			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && textEditorData[line.Offset + nlwsp] == '*')) {
+			if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && textEditorData.GetCharAt (line.Offset + nlwsp) == '*')) {
 				// Possibly replace the indent
 				string newIndent = curTracker.ThisLineIndent;
 				int newIndentLength = newIndent.Length;

@@ -55,7 +55,7 @@ namespace MonoDevelop.CSharp.Formatting
 			try {
 				stateTracker.Update (Math.Min (data.Length, offset + line.Length));
 				int nlwsp = curIndent.Length;
-				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data[offset + nlwsp] == '*'))
+				if (!stateTracker.LineBeganInsideMultiLineComment || (nlwsp < line.LengthIncludingDelimiter && data.GetCharAt (offset + nlwsp) == '*'))
 					return stateTracker.ThisLineIndent;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting at line " + lineNumber, e); 
