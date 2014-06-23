@@ -215,7 +215,10 @@ namespace MonoDevelop.AspNet.Projects
 				
 				if (isXsp) {
 					console = new XspBrowserLauncherConsole (console, delegate (string port) {
-						browserExcTarget.desktopApp.Launch(String.Format("{0}:{1}", url, port));
+						if (browserExcTarget != null)
+							browserExcTarget.DesktopApp.Launch (String.Format("{0}:{1}", url, port));
+						else
+							BrowserLauncher.LaunchDefaultBrowser (String.Format("{0}:{1}", url, port));
 					});
 				}
 			
@@ -224,8 +227,12 @@ namespace MonoDevelop.AspNet.Projects
 				var op = context.ExecutionHandler.Execute (cmd, console);
 				operationMonitor.AddOperation (op); //handles cancellation
 				
-				if (!isXsp)
-					browserExcTarget.desktopApp.Launch(url);
+				if (!isXsp) {
+					if (browserExcTarget != null)
+						browserExcTarget.DesktopApp.Launch (url);
+					else
+						BrowserLauncher.LaunchDefaultBrowser (url);
+				}
 				
 				op.WaitForCompleted ();
 				
@@ -795,7 +802,7 @@ namespace MonoDevelop.AspNet.Projects
 			public BrowserExecutionTarget (string id, string displayName, DesktopApplication app){
 				this.name = displayName;
 				this.id = id;
-				this.desktopApp = app;
+				this.DesktopApp = app;
 			}
 
 			public override string Name {
@@ -806,13 +813,19 @@ namespace MonoDevelop.AspNet.Projects
 				get { return id; }
 			}
 
-			public DesktopApplication desktopApp { get; private set; }
+			public DesktopApplication DesktopApp { get; private set; }
 		}
 
-		public override IEnumerable<ExecutionTarget> GetExecutionTargets (ConfigurationSelector configuration)
+		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
 		{
-			foreach ( var browser in MonoDevelop.Ide.DesktopService.GetApplications("test.html"))
-				yield return new BrowserExecutionTarget(browser.Id,browser.DisplayName,browser);
+			var apps = new List<ExecutionTarget> ();
+			foreach (var browser in MonoDevelop.Ide.DesktopService.GetApplications ("test.html")) {
+				if (browser.IsDefault)
+					apps.Insert (0, new BrowserExecutionTarget (browser.Id,browser.DisplayName,browser));
+				else
+					apps.Add (new BrowserExecutionTarget (browser.Id,browser.DisplayName,browser));
+			}
+			return apps;
 		}
 	}
 }
