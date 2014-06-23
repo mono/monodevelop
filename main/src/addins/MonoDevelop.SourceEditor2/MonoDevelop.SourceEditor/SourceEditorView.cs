@@ -65,7 +65,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, Mono.TextEditor.ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-		ITextEditorImpl, IEditorActionHost, IMarkerHost
+	ITextEditorImpl, IEditorActionHost, IMarkerHost
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -2040,14 +2040,14 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool toggle = true;
 
-			foreach (FoldSegment segment in Document.FoldSegments) {
+			foreach (var segment in Document.FoldSegments) {
 				if (segment.FoldingType == FoldingType.TypeMember || segment.FoldingType == FoldingType.Comment)
 					if (segment.IsFolded)
 						toggle = false;
 			}
 
 
-			foreach (FoldSegment segment in Document.FoldSegments) {
+			foreach (var segment in Document.FoldSegments) {
 				if (segment.FoldingType == FoldingType.TypeDefinition) {
 					segment.IsFolded = false;
 				}
@@ -2758,6 +2758,11 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		bool ITextEditorImpl.RemoveMarker (ITextSegmentMarker marker)
+		{
+			throw new NotImplementedException ();
+		}
+
+		void ITextEditorImpl.SetFoldings (IEnumerable<IFoldSegment> foldings)
 		{
 			throw new NotImplementedException ();
 		}

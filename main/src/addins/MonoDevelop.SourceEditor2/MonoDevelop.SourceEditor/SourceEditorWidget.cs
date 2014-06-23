@@ -427,7 +427,7 @@ namespace MonoDevelop.SourceEditor
 			RemoveErrorUndelinesResetTimerId ();
 		}
 		
-		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
+		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)
@@ -436,7 +436,7 @@ namespace MonoDevelop.SourceEditor
 			int startOffset = document.LocationToOffset (region.BeginLine, region.BeginColumn);
 			int endOffset   = document.LocationToOffset (region.EndLine, region.EndColumn );
 			
-			FoldSegment result = new FoldSegment (document, text, startOffset, endOffset - startOffset, type);
+			var result = new Mono.TextEditor.FoldSegment (document, text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
 			return result;
