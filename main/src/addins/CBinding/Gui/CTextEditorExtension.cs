@@ -109,13 +109,13 @@ namespace CBinding
 			bool isInBlockComment = false;
 			int depth = -1;
 			while (offset >= 0 && offset < editor.Length) {
-				char ch = editor[offset];
+				char ch = editor.GetCharAt (offset);
 				switch (ch) {
 					case '/':
 						if (isInBlockComment) 
-							isInBlockComment = editor[offset + direction] != '*';
-					if (!isInString && !isInChar && offset - direction < editor.Length) 
-							isInBlockComment = offset > 0 && editor[offset - direction] == '*';
+							isInBlockComment = editor.GetCharAt (offset + direction) != '*';
+						if (!isInString && !isInChar && offset - direction < editor.Length) 
+							isInBlockComment = offset > 0 && editor.GetCharAt (offset - direction) == '*';
 						break;
 					case '"':
 						if (!isInChar && !isInBlockComment) 
@@ -739,7 +739,7 @@ namespace CBinding
 			int accumulator = 0;
 			
 			for (;
-			     1 < i && char.IsLetterOrDigit (Editor[i]);
+				1 < i && char.IsLetterOrDigit (Editor.GetCharAt (i));
 			     --i, ++accumulator);
 			completionContext.TriggerOffset = i-1;
 			return accumulator+1;
