@@ -30,13 +30,15 @@ type FSharpProjectNodeCommandHandler() =
 
         let projectFile = movingNode.Project.FileName.ToString()
 
-        ///partially apply the default namespace of msbuild to xs
-        let xd = xs "http://schemas.microsoft.com/developer/msbuild/2003"
+        let descendantsNamed name ancestor = 
+            ///partially apply the default namespace of msbuild to xs
+            let xd = xs "http://schemas.microsoft.com/developer/msbuild/2003"
+            descendants (xd name) ancestor
 
         // If the "Compile" element contains a "Link" element then it is a linked file,
         // so use that value for comparison when finding the node.
         let nodeName (node:XElement) = 
-           let link = node.Descendants(xd "Link") |> firstOrNone
+           let link = node |> descendantsNamed "Link" |> firstOrNone
            match link with
            | Some l -> l.Value
            | None   -> node |> attributeValue "Include"
@@ -46,8 +48,11 @@ type FSharpProjectNodeCommandHandler() =
         let xdoc = XElement.Load(file)
         file.Close()
 
-        //get all the compile nodes from the project file
-        let compileNodes = xdoc |> descendants (xd "Compile")
+        //get movable nodes from the project file
+        let movableNodes = (descendantsNamed "Compile" xdoc).
+                             Concat(descendantsNamed "EmbeddedResource" xdoc).
+                             Concat(descendantsNamed "Content" xdoc).
+                             Concat(descendantsNamed "None" xdoc)
 
         let findByIncludeFile name seq = 
             seq |> where (fun elem -> nodeName elem = name )
@@ -55,8 +60,8 @@ type FSharpProjectNodeCommandHandler() =
         
         let getFullName (pf:ProjectFile) = pf.ProjectVirtualPath.ToString().Replace("/", "\\")
 
-        let movingElement = compileNodes |> findByIncludeFile (getFullName movingNode)
-        let moveToElement = compileNodes |> findByIncludeFile (getFullName moveToNode)
+        let movingElement = movableNodes |> findByIncludeFile (getFullName movingNode)
+        let moveToElement = movableNodes |> findByIncludeFile (getFullName moveToNode)
 
         let addFunction (moveTo:XElement) (position:DropPosition) =
             match position with
@@ -68,7 +73,7 @@ type FSharpProjectNodeCommandHandler() =
         | Some(moving), Some(moveTo), (DropPosition.Before | DropPosition.After) ->
             moving.Remove()
             //if the moving node contains a DependentUpon node as a child remove the DependentUpon nodes
-            moving.Descendants( xd "DependentUpon") |> Seq.iter (fun node -> node.Remove())
+            moving |> descendantsNamed "DependentUpon" |> Seq.iter (fun node -> node.Remove())
             //get the add function using the position
             let add = addFunction moveTo position
             add(moving)
