@@ -253,7 +253,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		int MonoDevelop.Core.Text.ITextSource.TextLength {
+		int MonoDevelop.Core.Text.ITextSource.Length {
 			get {
 				return document.TextLength;
 			}
