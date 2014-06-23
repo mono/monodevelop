@@ -100,7 +100,7 @@ namespace MonoDevelop.CodeIssues
 			return appliedActions;
 		}
 
-		static IList<CodeIssue> GetIssues (IReadonlyTextDocument data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
+		static IList<CodeIssue> GetIssues (ITextDocument data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
 		{
 			var issues = new List<CodeIssue> ();
 			
