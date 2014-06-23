@@ -99,6 +99,7 @@ namespace MonoDevelop.Ide.Editor
 		void RemoveMarker (ITextLineMarker lineMarker);
 
 		void ScrollTo (int offset);
+		void CenterTo (int offset);
 
 		void AddSkipChar (int offset, char ch);
 

@@ -632,6 +632,16 @@ namespace MonoDevelop.Ide.Editor
 			ScrollTo (LocationToOffset (loc));
 		}
 
+		public void CenterTo (int offset)
+		{
+			textEditorImpl.CenterTo (offset);
+		}
+
+		public void CenterTo (TextLocation loc)
+		{
+			CenterTo (LocationToOffset (loc));
+		}
+
 		void IInternalEditorExtensions.SetIndentationTracker (IIndentationTracker indentationTracker)
 		{
 			textEditorImpl.SetIndentationTracker (indentationTracker);
