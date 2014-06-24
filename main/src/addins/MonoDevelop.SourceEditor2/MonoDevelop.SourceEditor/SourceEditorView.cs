@@ -2635,6 +2635,14 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		event EventHandler ITextEditorImpl.BeginMouseHover {
+			add {
+				TextEditor.BeginHover += value;
+			}
+			remove {
+				TextEditor.BeginHover -= value;
+			}
+		}
 
 		public event EventHandler CaretPositionChanged;
 
@@ -3021,8 +3029,6 @@ namespace MonoDevelop.SourceEditor
 				return new GenericUnderlineMarker (new TextSegment (offset, length), effect);
 			case TextSegmentMarkerEffect.GrayOut:
 				return new GrayOutMarker (new TextSegment (offset, length));
-			case TextSegmentMarkerEffect.SmartTag:
-				return new SmartTagMarker (offset);
 			default:
 				throw new ArgumentOutOfRangeException ();
 			}
@@ -3031,6 +3037,11 @@ namespace MonoDevelop.SourceEditor
 		public ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink)
 		{
 			return null;
+		}
+
+		ISmartTagMarker IMarkerHost.CreateSmartTagMarker (int offset, MonoDevelop.Ide.Editor.DocumentLocation realLocation)
+		{
+			return new SmartTagMarker (offset, realLocation);
 		}
 
 		#endregion

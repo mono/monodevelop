@@ -75,6 +75,11 @@ namespace MonoDevelop.Ide.Editor
 			remove { ReadWriteTextDocument.TextChanged -= value; }
 		}
 
+		public event EventHandler BeginMouseHover {
+			add { textEditorImpl.BeginMouseHover += value; }
+			remove { textEditorImpl.BeginMouseHover -= value; }
+		}
+
 		public ISyntaxMode SyntaxMode {
 			get {
 				return textEditorImpl.SyntaxMode;

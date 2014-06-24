@@ -59,12 +59,7 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// The text is grayed out.
 		/// </summary>
-		GrayOut,
-
-		/// <summary>
-		/// The start of the region is marked with a smart tag
-		/// </summary>
-		SmartTag
+		GrayOut
 	}
 
 	public interface IGenericTextSegmentMarker : ITextSegmentMarker
@@ -72,6 +67,13 @@ namespace MonoDevelop.Ide.Editor
 		TextSegmentMarkerEffect Effect { get; }
 
 		Cairo.Color Color { get; set; }
+	}
+
+	public interface ISmartTagMarker : ITextSegmentMarker
+	{
+		bool IsInsideSmartTag (double x, double y);
+
+		bool IsInsideWindow (Gtk.MotionNotifyEventArgs args);
 	}
 }
 

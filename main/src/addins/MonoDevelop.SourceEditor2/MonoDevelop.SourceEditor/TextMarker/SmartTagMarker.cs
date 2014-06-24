@@ -30,20 +30,23 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	class SmartTagMarker : TextSegmentMarker, IActionTextLineMarker, IGenericTextSegmentMarker
+	class SmartTagMarker : TextSegmentMarker, IActionTextLineMarker, ISmartTagMarker
 	{
 		const double tagMarkerWidth = 8;
 		const double tagMarkerHeight = 2;
+		MonoDevelop.Ide.Editor.DocumentLocation loc;
+		Mono.TextEditor.TextEditor editor;
 
-		public SmartTagMarker (int offset) : base (offset, 0)
+		public SmartTagMarker (int offset, MonoDevelop.Ide.Editor.DocumentLocation realLocation) : base (offset, 0)
 		{
+			this.loc = realLocation;
 		}
 
 		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
 		{
-			var line = editor.GetLineByOffset (Offset);
-			int col = Offset - line.Offset;
-			var x = editor.ColumnToX (line, col) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
+			this.editor = editor;
+			var line = editor.GetLine (loc.Line);
+			var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
 
 			cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
 
@@ -94,6 +97,7 @@ namespace MonoDevelop.SourceEditor
 				return args.TriggersContextMenu ();
 			}
 		}
+
 		bool IActionTextLineMarker.MousePressed (Mono.TextEditor.TextEditor editor, MarginMouseEventArgs args)
 		{
 			var handler = MousePressed;
@@ -113,21 +117,25 @@ namespace MonoDevelop.SourceEditor
 
 		#endregion
 
+		bool ISmartTagMarker.IsInsideSmartTag (double x, double y)
+		{
+			var lin2 = editor.GetLine (loc.Line);
+			var x2 = editor.ColumnToX (lin2, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
+			var y2 = editor.LineToY (loc.Line + 1) - editor.VAdjustment.Value;
+			return x - x2 >= 0 * editor.Options.Zoom && 
+				x - x2 < tagMarkerWidth * editor.Options.Zoom && 
+				y - y2 < (editor.LineHeight / 2) * editor.Options.Zoom;
+		}
+
+		bool ISmartTagMarker.IsInsideWindow (Gtk.MotionNotifyEventArgs args)
+		{
+			return args.Event.Window == editor.TextArea.GdkWindow;
+		}
+
 		public event EventHandler<TextMarkerMouseEventArgs> MousePressed;
 		public event EventHandler<TextMarkerMouseEventArgs> MouseHover;
 
 		object ITextSegmentMarker.Tag {
-			get;
-			set;
-		}
-
-		TextSegmentMarkerEffect IGenericTextSegmentMarker.Effect {
-			get {
-				return TextSegmentMarkerEffect.SmartTag;
-			}
-		}
-
-		Cairo.Color IGenericTextSegmentMarker.Color {
 			get;
 			set;
 		}

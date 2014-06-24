@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Editor
 		ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink);
 
 		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length);
+		ISmartTagMarker CreateSmartTagMarker (int offset, DocumentLocation realLocation);
 
 		#endregion
 //

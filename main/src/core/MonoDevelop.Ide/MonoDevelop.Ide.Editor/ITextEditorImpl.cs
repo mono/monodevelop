@@ -60,6 +60,8 @@ namespace MonoDevelop.Ide.Editor
 
 		event EventHandler CaretPositionChanged;
 
+		event EventHandler BeginMouseHover;
+
 		void ClearSelection ();
 
 		void CenterToCaret ();
