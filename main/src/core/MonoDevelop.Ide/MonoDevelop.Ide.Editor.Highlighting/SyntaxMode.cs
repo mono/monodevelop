@@ -193,7 +193,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public virtual SpanParser CreateSpanParser (IDocumentLine line, CloneableStack<Span> spanStack)
 		{
-			return new SpanParser (this, spanStack ?? line.StartSpan.Clone ());
+			return new SpanParser (this, spanStack /*?? line.StartSpan.Clone ()*/);
 		}
 
 		public virtual ChunkParser CreateChunkParser (SpanParser spanParser, ColorScheme style, IDocumentLine line)

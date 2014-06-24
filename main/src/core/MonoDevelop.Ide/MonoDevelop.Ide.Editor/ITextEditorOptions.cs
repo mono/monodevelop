@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -66,7 +67,7 @@ namespace MonoDevelop.Ide.Editor
 		Virtual
 	}
 
-	 public interface ITextEditorOptions : IDisposable
+	public interface ITextEditorOptions : IDisposable
 	{
 		double Zoom { get; set; }
 		bool CanZoomIn { get; }
@@ -623,6 +624,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 		}
+
 		public virtual void CopyFrom (TextEditorOptions other)
 		{
 			zoom = other.zoom;
@@ -664,5 +666,15 @@ namespace MonoDevelop.Ide.Editor
 		public event EventHandler Changed;
 	}
 
+
+	public static class TextEditorOptionsExtension
+	{
+		public static ColorScheme GetColorStyle (this ITextEditorOptions options)
+		{
+			if (options == null)
+				throw new ArgumentNullException ("options");
+			return SyntaxModeService.GetColorStyle (options.ColorScheme);
+		}
+	}
 }
 

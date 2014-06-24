@@ -260,59 +260,59 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			
 			public void InnerRun ()
 			{
-				bool doUpdate = false;
-				int startLine = doc.OffsetToLineNumber (startOffset);
-				if (startLine < 0 || mode.Document == null)
-					return;
-				try {
-					var lineSegment = doc.GetLine (startLine);
-					if (lineSegment == null)
-						return;
-					var span = lineSegment.StartSpan;
-					if (span == null)
-						return;
-
-					var spanStack = span.Clone ();
-
-					SyntaxMode.SpanParser parser = mode.CreateSpanParser(null, spanStack);
-
-					foreach (var line in doc.GetLinesStartingAt (startLine)) {
-						if (line == null)
-							return;
-
-						if (line.Offset > endOffset) {
-							span = line.StartSpan;
-							if (span == null)
-								return;
-
-							bool equal = span.Equals(spanStack);
-
-							doUpdate |= !equal;
-
-							if (equal)
-
-								break;
-
-						}
-
-						line.StartSpan = spanStack.Clone();
-
-						parser.ParseSpans(line.Offset, line.LengthIncludingDelimiter);
-
-						while (spanStack.Count > 0 && !EndsWithContinuation(spanStack.Peek(), line))
-
-							parser.PopSpan();
-
-					}
-
-				} catch (Exception e) {
-					Console.WriteLine ("Syntax highlighting exception:" + e);
-				}
-				if (doUpdate) {
-					Gtk.Application.Invoke (delegate {
-						doc.RequestRedraw ();
-					});
-				}
+//				bool doUpdate = false;
+//				int startLine = doc.OffsetToLineNumber (startOffset);
+//				if (startLine < 0 || mode.Document == null)
+//					return;
+//				try {
+//					var lineSegment = doc.GetLine (startLine);
+//					if (lineSegment == null)
+//						return;
+//					var span = lineSegment.StartSpan;
+//					if (span == null)
+//						return;
+//
+//					var spanStack = span.Clone ();
+//
+//					SyntaxMode.SpanParser parser = mode.CreateSpanParser(null, spanStack);
+//
+//					foreach (var line in doc.GetLinesStartingAt (startLine)) {
+//						if (line == null)
+//							return;
+//
+//						if (line.Offset > endOffset) {
+//							span = line.StartSpan;
+//							if (span == null)
+//								return;
+//
+//							bool equal = span.Equals(spanStack);
+//
+//							doUpdate |= !equal;
+//
+//							if (equal)
+//
+//								break;
+//
+//						}
+//
+//						line.StartSpan = spanStack.Clone();
+//
+//						parser.ParseSpans(line.Offset, line.LengthIncludingDelimiter);
+//
+//						while (spanStack.Count > 0 && !EndsWithContinuation(spanStack.Peek(), line))
+//
+//							parser.PopSpan();
+//
+//					}
+//
+//				} catch (Exception e) {
+//					Console.WriteLine ("Syntax highlighting exception:" + e);
+//				}
+//				if (doUpdate) {
+//					Gtk.Application.Invoke (delegate {
+//						doc.RequestRedraw ();
+//					});
+//				}
 				IsFinished = true;
 				ManualResetEvent.Set ();
 			}

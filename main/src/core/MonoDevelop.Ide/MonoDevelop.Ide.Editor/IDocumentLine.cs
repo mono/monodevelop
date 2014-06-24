@@ -85,8 +85,6 @@ namespace MonoDevelop.Ide.Editor
 		/// Gets whether the line was deleted.
 		/// </summary>
 		bool IsDeleted { get; }
-
-		CloneableStack<Span> StartSpan { get; set; }
 	}
 
 	public static class DocumentLineExt
