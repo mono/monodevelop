@@ -51,9 +51,11 @@ namespace GitHub.Repository.Commands
 
 		public Octokit.Repository ORepository {
 
-			get{ 
+			get{
+				Console.WriteLine ("Tesdsdsdsdsdsdsd: "+ this.Repository.Url);
 				var obj = new OctokitHelper ();
-				return obj.GetCurrentRepository (this.Repository.Url);
+				Octokit.Repository repo = obj.GetCurrentRepository (this.Repository.Url);
+				return repo;
 			}
 		}
 

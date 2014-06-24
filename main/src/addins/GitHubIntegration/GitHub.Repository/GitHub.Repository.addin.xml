@@ -26,7 +26,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
-		<Condition id="ItemType" value="IFileItem|IFolderItem">
+		<Condition id="ItemType" value="Solution">
 			<ItemSet id = "GitHubRepository" _label = "GitHub" autohide="true">
 				<CommandItem id="GitHub.Repository.Commands.ViewProperties"/>
 				<SeparatorItem/>

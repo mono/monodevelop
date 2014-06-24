@@ -56,7 +56,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <EmbeddedResource Include="GitHub.Repository.addin.xml">
-      <LogicalName>VersionControl.addin.xml</LogicalName>
+      <LogicalName>GitHub.Repository.addin.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Gui\icons\light\pad-unit-test-16.png">
       <LogicalName>pad-unit-test-light-16.png</LogicalName>

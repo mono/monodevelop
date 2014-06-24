@@ -8,7 +8,6 @@ using Mono.Addins.Description;
 
 [assembly:AddinName ("GitHub Repository integration support")]
 [assembly:AddinDescription ("A MonoDevelop addin for authenticating with GitHub")]
-[assembly:AddinFlags (AddinFlags.Hidden)]
 
 [assembly:AddinDependency ("Core", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
