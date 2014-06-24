@@ -113,7 +113,7 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 ";
 		void HeadBodyCompletion (bool ctrlSpace)
 		{
-			var provider = WebFormsTesting.CreateProvider (pageStart + "<", ".aspx", ctrlSpace);
+			var provider = WebFormsTesting.CreateProvider (pageStart + "<$", ".aspx", ctrlSpace);
 			Assert.IsNotNull (provider);
 			Assert.IsNotNull (provider.Find ("head"));
 			Assert.IsNotNull (provider.Find ("body"));
