@@ -25,16 +25,15 @@
 // THE SOFTWARE.
 
 using System;
-using System.Drawing;
 using System.Linq;
 using System.Collections.Generic;
+
 using Foundation;
 using AppKit;
 using CoreGraphics;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 using MonoDevelop.Components;
@@ -48,7 +47,7 @@ namespace MonoDevelop.MacIntegration
 			using (var alert = new NSAlert ()) {
 				alert.Window.Title = data.Title ?? BrandingService.ApplicationName;
 
-				bool stockIcon = false;
+				bool stockIcon;
 				if (data.Message.Icon == MonoDevelop.Ide.Gui.Stock.Error || data.Message.Icon == Gtk.Stock.DialogError) {
 					alert.AlertStyle = NSAlertStyle.Critical;
 					stockIcon = true;
@@ -112,7 +111,7 @@ namespace MonoDevelop.MacIntegration
 					
 					for (int i = data.Options.Count - 1; i >= 0; i--) {
 						var option = data.Options[i];
-						var button = new NSButton () {
+						var button = new NSButton {
 							Title = option.Text,
 							Tag = i,
 							State = option.Value? NSCellStateValue.On : NSCellStateValue.Off,
@@ -135,8 +134,8 @@ namespace MonoDevelop.MacIntegration
 				
 				// Hack up a slightly wider than normal alert dialog. I don't know how to do this in a nicer way
 				// as the min size constraints are apparently ignored.
-				var frame = ((NSPanel) alert.Window).Frame;
-				((NSPanel) alert.Window).SetFrame (new CGRect (frame.X, frame.Y, NMath.Max (frame.Width, 600), frame.Height), true);
+				var frame = alert.Window.Frame;
+				alert.Window.SetFrame (new CGRect (frame.X, frame.Y, NMath.Max (frame.Width, 600), frame.Height), true);
 				alert.Layout ();
 				
 				bool completed = false;

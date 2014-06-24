@@ -34,7 +34,6 @@ using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 	
@@ -105,7 +104,7 @@ namespace MonoDevelop.MacIntegration
 
 				if (data.Exception != null) {
 					var scrollSize = new CGSize (400, 130);
-					float spacing = 4;
+					const float spacing = 4;
 					
 					string title = GettextCatalog.GetString ("View details");
 					string altTitle = GettextCatalog.GetString ("Hide details");
@@ -171,7 +170,7 @@ namespace MonoDevelop.MacIntegration
 						bf.Y += change;
 						button.Frame = bf;
 						label.SizeToFit ();
-						var panel = (NSPanel) alert.Window;
+						var panel = alert.Window;
 						var pf = panel.Frame;
 						pf.Height += change;
 						pf.Y -= change;

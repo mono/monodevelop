@@ -28,9 +28,7 @@
 //
 
 using System;
-using System.Drawing;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -144,7 +142,7 @@ namespace MonoDevelop.MacIntegration
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
 			var ext = Path.GetExtension (uri);
-			string mime = null;
+			string mime;
 			if (ext != null && mimemap.Value.TryGetValue (ext, out mime))
 				return mime;
 			return null;
@@ -212,17 +210,17 @@ namespace MonoDevelop.MacIntegration
 				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
 				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
 				var menu = new MDMenu (commandManager, entrySet, CommandSource.ContextMenu, initialCommandTarget);
-				var nsview = MacInterop.GtkQuartz.GetView (widget);
+				var nsview = GtkQuartz.GetView (widget);
 				var toplevel = widget.Toplevel as Gtk.Window;
 				int trans_x, trans_y;
 				widget.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
 
-				var pt = nsview.ConvertPointFromBase (new PointF ((float)trans_x, (float)trans_y));
+				var pt = nsview.ConvertPointFromBase (new CGPoint ((float)trans_x, (float)trans_y));
 
 				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
 					pt,
 					0, 0,
-					MacInterop.GtkQuartz.GetWindow (toplevel).WindowNumber,
+					GtkQuartz.GetWindow (toplevel).WindowNumber,
 					null, 0, 0, 0);
 
 				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
@@ -407,7 +405,7 @@ namespace MonoDevelop.MacIntegration
 			NSBundle.MainBundle.InfoDictionary ["CFBundleIdentifier"] = new NSString ("com.xamarin.monodevelop");
 
 			FilePath exePath = System.Reflection.Assembly.GetExecutingAssembly ().Location;
-			string iconFile = null;
+			string iconFile;
 			iconFile = BrandingService.GetString ("ApplicationIcon");
 			if (iconFile != null) {
 				iconFile = BrandingService.GetFile (iconFile);
@@ -622,13 +620,13 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
-		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor_id)
+		public override Gdk.Rectangle GetUsableMonitorGeometry (Gdk.Screen screen, int monitor)
 		{
-			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor_id);
+			Gdk.Rectangle ygeometry = screen.GetMonitorGeometry (monitor);
 			Gdk.Rectangle xgeometry = screen.GetMonitorGeometry (0);
-			NSScreen monitor = NSScreen.Screens[monitor_id];
-			var visible = monitor.VisibleFrame;
-			var frame = monitor.Frame;
+			NSScreen nss = NSScreen.Screens[monitor];
+			var visible = nss.VisibleFrame;
+			var frame = nss.Frame;
 			
 			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
 			// coordinates.
@@ -681,7 +679,7 @@ namespace MonoDevelop.MacIntegration
 
 		internal static int GetTitleBarHeight ()
 		{
-			var frame = new RectangleF (0, 0, 100, 100);
+			var frame = new CGRect (0, 0, 100, 100);
 			var rect = NSWindow.ContentRectFor (frame, NSWindowStyle.Titled);
 			return (int)(frame.Height - rect.Height);
 		}
@@ -726,7 +724,7 @@ namespace MonoDevelop.MacIntegration
 			w.StyleMask |= NSWindowStyle.TexturedBackground;
 
 			var result = new MainToolbar () {
-				Background = MonoDevelop.Components.CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
+				Background = CairoExtensions.LoadImage (typeof (MacPlatformService).Assembly, resource),
 				TitleBarHeight = GetTitleBarHeight ()
 			};
 			return result;
@@ -763,7 +761,8 @@ namespace MonoDevelop.MacIntegration
 		{
 			var toplevels = GtkQuartz.GetToplevels ();
 
-			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) && !t.Key.DebugDescription.StartsWith("<NSStatusBarWindow"));
+			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal)
+				&& !t.Key.DebugDescription.StartsWith ("<NSStatusBarWindow", StringComparison.Ordinal));
 		}
 	}
 }

@@ -25,19 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using System.Linq;
-using System.Collections.Generic;
 using Foundation;
 using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Extensions;
-using MonoDevelop.Components.Extensions;
-using MonoDevelop.MacInterop;
 using MonoDevelop.Projects.Text;
-using System.Text;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -54,7 +47,7 @@ namespace MonoDevelop.MacIntegration
 			Cell.UsesItemFromMenu = false;
 			
 			if (showAutoDetected) {
-				autoDetectedItem = new NSMenuItem () {
+				autoDetectedItem = new NSMenuItem {
 					Title = GettextCatalog.GetString ("Auto Detected"),
 					Tag = -1,
 					Target = this,
@@ -62,7 +55,7 @@ namespace MonoDevelop.MacIntegration
 				};
 			}
 			
-			addRemoveItem = new NSMenuItem () {
+			addRemoveItem = new NSMenuItem {
 				Title = GettextCatalog.GetString ("Add or Remove..."),
 				Tag = -20,
 				Target = this,
@@ -112,8 +105,8 @@ namespace MonoDevelop.MacIntegration
 			}
 			
 			int i = 1;
-			foreach (var e in MonoDevelop.Projects.Text.TextEncoding.ConversionEncodings) {
-				Menu.AddItem (new NSMenuItem () {
+			foreach (var e in TextEncoding.ConversionEncodings) {
+				Menu.AddItem (new NSMenuItem {
 					Title = string.Format ("{0} ({1})", e.Name, e.Id),
 					Tag = i++,
 					Target = this,
@@ -132,7 +125,7 @@ namespace MonoDevelop.MacIntegration
 			
 			var selection = SelectedEncodingId;
 			var dlg = new SelectEncodingPanel ();
-			if (dlg.RunModalSheet (this.Window) != 0) {
+			if (dlg.RunModalSheet (Window) != 0) {
 				Populate (true);
 				SelectedEncodingId = selection;
 			}

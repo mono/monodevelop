@@ -25,11 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using AppKit;
-using MonoDevelop.Components.Commands;
-using Foundation;
 using System.Diagnostics;
+using System.Linq;
+
+using AppKit;
+using CoreGraphics;
+using Foundation;
+
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.MacIntegration.MacMenu
@@ -98,7 +101,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 				KeyEquivalent = f35,
 			};
 			var f35Event = NSEvent.KeyEvent (
-				NSEventType.KeyDown, System.Drawing.PointF.Empty, NSEventModifierMask.CommandKeyMask, 0, 0,
+				NSEventType.KeyDown, CGPoint.Empty, NSEventModifierMask.CommandKeyMask, 0, 0,
 				NSGraphicsContext.CurrentContext, f35, f35, false, 0);
 			AddItem (blink);
 			PerformKeyEquivalent (f35Event);
