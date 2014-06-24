@@ -1,5 +1,5 @@
 ﻿//
-// OctokitHelper.cs
+// GitHubService.cs
 //
 // Author:
 //       Praveena <>
@@ -24,35 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using GitHub.Auth;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MonoDevelop.VersionControl.Git;
+using MonoDevelop.Ide;
+using GitHub.Repository.UserInterface;
+
 
 namespace GitHub.Repository.Core
 {
-	public class OctokitHelper
+	public static class GitHubUtils
 	{
-
-		public IReadOnlyList<Octokit.Repository> GetAllRepositories()
+		public static void ViewProperties (Octokit.Repository repo)
 		{
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
-			return repositories.Result;
+			var dlg = new GitHubPropertyDialog (repo);
+			try {
+				if (MessageService.RunCustomDialog (dlg) != (int) Gtk.ResponseType.Ok)
+					return;
+					
+			} finally {
+				dlg.Destroy ();
+			}
 		}
-
-
-		public Octokit.Repository GetCurrentRepository(string gitHubUrl)
-		{
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
-			foreach (var item in repositories.Result) {
-				if (item.CloneUrl == gitHubUrl) {
-					return item ;
-				} 
-			} 
-			return null;
-		}
-
-
-			
 	}
 }
 

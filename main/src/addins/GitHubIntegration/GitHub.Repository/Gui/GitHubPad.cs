@@ -36,13 +36,14 @@ using GitHub.Repository;
 
 namespace GitHub.Repository.Gui
 {
-	public class GitHubPad : AbstractPadContent, ICommandDelegator
+	public class GitHubPad : AbstractPadContent //, ICommandDelegator
 	{
 		pg.PropertyGrid grid;
 		InvisibleFrame frame;
 		bool customWidget;
 		IPadWindow container;
 		DockToolbarProvider toolbarProvider = new DockToolbarProvider ();
+		Gtk.Notebook gNoteBook = new Gtk.Notebook();
 
 		internal object CommandRouteOrigin { get; set; }
 
@@ -81,20 +82,20 @@ namespace GitHub.Repository.Gui
 
 		#endregion
 
-		#region ICommandDelegatorRouter implementation
-
-		object ICommandDelegator.GetDelegatedCommandTarget ()
-		{
-			// Route the save command to the object for which we are inspecting the properties,
-			// so pressing the Save shortcut when doing changes in the property pad will save
-			// the document we are changing
-			if (IdeApp.CommandService.CurrentCommand == IdeApp.CommandService.GetCommand (FileCommands.Save))
-				return CommandRouteOrigin;
-			else
-				return null;
-		}
-
-		#endregion
+//		#region ICommandDelegatorRouter implementation
+//
+//		object ICommandDelegator.GetDelegatedCommandTarget ()
+//		{
+//			// Route the save command to the object for which we are inspecting the properties,
+//			// so pressing the Save shortcut when doing changes in the property pad will save
+//			// the document we are changing
+//			if (IdeApp.CommandService.CurrentCommand == IdeApp.CommandService.GetCommand (FileCommands.Save))
+//				return CommandRouteOrigin;
+//			else
+//				return null;
+//		}
+//
+//		#endregion
 	
 	}
 

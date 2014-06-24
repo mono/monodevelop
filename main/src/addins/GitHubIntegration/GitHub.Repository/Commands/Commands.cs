@@ -1,5 +1,5 @@
 ﻿//
-// OctokitHelper.cs
+// Commands.cs
 //
 // Author:
 //       Praveena <>
@@ -24,35 +24,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using GitHub.Auth;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
+using MonoDevelop.Projects;
+using System.Linq;
+using MonoDevelop.Ide.ProgressMonitoring;
+using System.Threading;
+using MonoDevelop.VersionControl.Git;
+using MonoDevelop.VersionControl;
+using GitHub.Repository.Core;
 
-namespace GitHub.Repository.Core
+namespace GitHub.Repository.Commands
 {
-	public class OctokitHelper
+	class GitHubCommandHandler: CommandHandler
 	{
-
-		public IReadOnlyList<Octokit.Repository> GetAllRepositories()
-		{
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
-			return repositories.Result;
+		public GitRepository Repository {
+			get {
+				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
+				if (wob == null)
+					wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
+				if (wob != null)
+					return VersionControlService.GetRepository (wob) as GitRepository;
+				return null;
+			}
 		}
 
+		public Octokit.Repository ORepository {
 
-		public Octokit.Repository GetCurrentRepository(string gitHubUrl)
-		{
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
-			foreach (var item in repositories.Result) {
-				if (item.CloneUrl == gitHubUrl) {
-					return item ;
-				} 
-			} 
-			return null;
+			get{ 
+				var obj = new OctokitHelper ();
+				return obj.GetCurrentRepository (this.Repository.Url);
+			}
 		}
 
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = Repository != null;
+		}
+	}
 
-			
+
+	class GitHubPropertyHandler: GitHubCommandHandler
+	{
+		protected override void Run ()
+		{
+			GitHubUtils.ViewProperties (ORepository);
+		}
 	}
 }
 

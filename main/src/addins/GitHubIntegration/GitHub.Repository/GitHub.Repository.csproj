@@ -39,12 +39,19 @@
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="Gui\GitHubPad.cs" />
     <Compile Include="Core\OctokitHelper.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="User Interface\GitHubPropertyDialog.cs" />
+    <Compile Include="Commands\Commands.cs" />
+    <Compile Include="gtk-gui\GitHub.Repository.UserInterface.GitHubPropertyDialog.cs" />
+    <Compile Include="Core\GitHubUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -54,8 +61,8 @@
     <EmbeddedResource Include="Gui\icons\light\pad-unit-test-16.png">
       <LogicalName>pad-unit-test-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-16%402x.png">
-      <LogicalName>pad-unit-test-light-16@2x.png</LogicalName>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +85,14 @@
     <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
+      <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
+      <Name>MonoDevelop.VersionControl.Git</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
+      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
+      <Name>MonoDevelop.VersionControl</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
