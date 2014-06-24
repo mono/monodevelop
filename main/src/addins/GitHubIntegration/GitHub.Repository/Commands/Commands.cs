@@ -52,6 +52,8 @@ namespace GitHub.Repository.Commands
 		public Octokit.Repository ORepository {
 
 			get{
+				string ss = this.Repository.Url;
+				string se = this.Repository.GetCurrentRemote ();
 				Console.WriteLine ("Tesdsdsdsdsdsdsd: "+ this.Repository.Url);
 				var obj = new OctokitHelper ();
 				Octokit.Repository repo = obj.GetCurrentRepository (this.Repository.Url);
@@ -61,7 +63,7 @@ namespace GitHub.Repository.Commands
 
 		protected override void Update (CommandInfo info)
 		{
-			info.Visible = Repository != null;
+			info.Enabled = Repository != null;
 		}
 	}
 
