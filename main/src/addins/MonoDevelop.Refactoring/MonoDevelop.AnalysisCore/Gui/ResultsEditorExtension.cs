@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -163,7 +164,25 @@ namespace MonoDevelop.AnalysisCore.Gui
 				ext.tasks.Clear ();
 				GLib.Idle.Add (IdleHandler);
 			}
-			
+
+			static Cairo.Color GetColor (TextEditor editor, Result result)
+			{
+				switch (result.Level) {
+				case Severity.None:
+					return editor.Options.GetColorStyle ().PlainText.Background;
+				case Severity.Error:
+					return editor.Options.GetColorStyle ().UnderlineError.Color;
+				case Severity.Warning:
+					return editor.Options.GetColorStyle ().UnderlineWarning.Color;
+				case Severity.Suggestion:
+					return editor.Options.GetColorStyle ().UnderlineSuggestion.Color;
+				case Severity.Hint:
+					return editor.Options.GetColorStyle ().UnderlineHint.Color;
+				default:
+					throw new System.ArgumentOutOfRangeException ();
+				}
+			}
+
 			//this runs as a glib idle handler so it can add/remove text editor markers
 			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
 			bool IdleHandler ()
@@ -204,7 +223,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 //							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
 //							editor.Parent.QueueDraw ();
 						} else {
-							var marker = editor.MarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.WavedLine, TextSegment.FromBounds (start, end));
+							var effect = currentResult.InspectionMark == IssueMarker.DottedLine ? TextSegmentMarkerEffect.DottedLine : TextSegmentMarkerEffect.WavedLine;
+							var marker = editor.MarkerHost.CreateGenericTextSegmentMarker (effect, TextSegment.FromBounds (start, end));
+							marker.Color = GetColor (editor, currentResult);
 							marker.IsVisible = currentResult.Underline;
 							marker.Tag = currentResult;
 							editor.AddMarker (marker);
