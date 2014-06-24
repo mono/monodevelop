@@ -18,6 +18,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Execute" command="..\..\..\..\..\build\bin\MonoDevelop.exe" workingdir="..\..\..\..\..\build\bin">
+          <EnvironmentVariables>
+            <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
+          </EnvironmentVariables>
+        </Command>
+      </CustomCommands>
+    </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -42,7 +51,7 @@
       <HintPath>..\..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Octokit">
-      <HintPath>..\..\GitHub.Auth\packages\Octokit.0.3.4\lib\netcore45\Octokit.dll</HintPath>
+      <HintPath>..\..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues\Octokit.dll</HintPath>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -66,6 +75,8 @@
     <Compile Include="Handlers\IssuesViewHandler.cs" />
     <Compile Include="Handlers\IGitHubIssuesViewHandler.cs" />
     <Compile Include="Views\IssueNode.cs" />
+    <Compile Include="Views\IssueColumn.cs" />
+    <Compile Include="Views\IssueProperties.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
