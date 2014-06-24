@@ -199,7 +199,7 @@
 
 	<ItemSet id = "Run" _label = "_Run">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
-		<ItemSet id = "RunWith" _label = "Run With">
+		<ItemSet id = "RunWith" _label = "Run With" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
 		</ItemSet>
 		<SeparatorItem id = "StopSection" />

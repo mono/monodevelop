@@ -602,6 +602,9 @@ namespace MonoDevelop.CSharp.Completion
 			if (ctx == null)
 				return null;
 
+			if (completionChar != '(' && completionChar != ',')
+				return null;
+
 			try {
 				var engine = new CSharpParameterCompletionEngine (
 					TextEditorData.Document,
