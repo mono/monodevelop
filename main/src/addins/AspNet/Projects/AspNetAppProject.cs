@@ -43,6 +43,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
@@ -183,7 +184,8 @@ namespace MonoDevelop.AspNet.Projects
 			
 			var cfg = GetConfiguration (configuration);
 			var cmd = CreateExecutionCommand (configuration, cfg);
-			
+			var browserExcTarget = (BrowserExecutionTarget) context.ExecutionTarget;
+
 			IConsole console = null;
 			var operationMonitor = new AggregatedOperationMonitor (monitor);
 
@@ -213,7 +215,10 @@ namespace MonoDevelop.AspNet.Projects
 				
 				if (isXsp) {
 					console = new XspBrowserLauncherConsole (console, delegate (string port) {
-						BrowserLauncher.LaunchDefaultBrowser (String.Format("{0}:{1}", url, port));
+						if (browserExcTarget != null)
+							browserExcTarget.DesktopApp.Launch (String.Format("{0}:{1}", url, port));
+						else
+							BrowserLauncher.LaunchDefaultBrowser (String.Format("{0}:{1}", url, port));
 					});
 				}
 			
@@ -222,8 +227,12 @@ namespace MonoDevelop.AspNet.Projects
 				var op = context.ExecutionHandler.Execute (cmd, console);
 				operationMonitor.AddOperation (op); //handles cancellation
 				
-				if (!isXsp)
-					BrowserLauncher.LaunchDefaultBrowser (url);
+				if (!isXsp) {
+					if (browserExcTarget != null)
+						browserExcTarget.DesktopApp.Launch (url);
+					else
+						BrowserLauncher.LaunchDefaultBrowser (url);
+				}
 				
 				op.WaitForCompleted ();
 				
@@ -696,6 +705,38 @@ namespace MonoDevelop.AspNet.Projects
 			get {
 				return References.Any (r => r.Reference.StartsWith ("System.Web.Mvc", StringComparison.Ordinal));
 			}
+		}
+
+		class BrowserExecutionTarget : ExecutionTarget
+		{
+			string name, id;
+			public BrowserExecutionTarget (string id, string displayName, DesktopApplication app){
+				this.name = displayName;
+				this.id = id;
+				this.DesktopApp = app;
+			}
+
+			public override string Name {
+				get { return name; }
+			}
+
+			public override string Id {
+				get { return id; }
+			}
+
+			public DesktopApplication DesktopApp { get; private set; }
+		}
+
+		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
+		{
+			var apps = new List<ExecutionTarget> ();
+			foreach (var browser in MonoDevelop.Ide.DesktopService.GetApplications ("test.html")) {
+				if (browser.IsDefault)
+					apps.Insert (0, new BrowserExecutionTarget (browser.Id,browser.DisplayName,browser));
+				else
+					apps.Add (new BrowserExecutionTarget (browser.Id,browser.DisplayName,browser));
+			}
+			return apps;
 		}
 	}
 }
