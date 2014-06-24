@@ -141,16 +141,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (itemFont != null)
 				itemFont.Dispose ();
 			itemFont = FontService.GetFontDescription ("Editor").Copy ();
-			var provider = CompletionWidget as IServiceContainer;
-			if (provider != null) {
-				var editor = (TextEditor)provider.GetService (typeof(TextEditor));
-				if (editor != null) {
-					var newSize = (itemFont.Size * editor.Options.Zoom);
-					if (newSize > 0) {
-						itemFont.Size = (int)newSize;
-						layout.FontDescription = itemFont;
-					}
-				}
+			var newSize = (itemFont.Size * DefaultSourceEditorOptions.Instance.Zoom);
+			if (newSize > 0) {
+				itemFont.Size = (int)newSize;
+				layout.FontDescription = itemFont;
 			}
 		}
 
