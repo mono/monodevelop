@@ -135,5 +135,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (expectedPath, path);
 		}
+
+		[Test]
+		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPathAndPathContainsDotDots_OverriddenPathReturnedWithoutDotDots ()
+		{
+			CreateOptions ();
+			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
+			options.PackagesDirectory = "Packages";
+			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\projects\MySolution\..\..\Team\MyPackages");
+			CreateSolutionPackageRepositoryPath (solution);
+			string expectedPath = @"d:\Team\MyPackages".ToNativePath ();
+
+			string path = repositoryPath.PackageRepositoryPath;
+
+			Assert.AreEqual (expectedPath, path);
+		}
 	}
 }
