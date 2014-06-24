@@ -242,9 +242,7 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				unstableTypeSystemSegmentTree = newTree;
 			}
-			document.Editor.TextChanged += delegate(object sender2, MonoDevelop.Core.Text.TextChangeEventArgs e2) {
-				newTree.UpdateOnTextReplace (sender2, new DocumentChangeEventArgs (e2.Offset, e2.RemovedText.Text, e2.InsertedText.Text));
-			};
+			newTree.InstallListener (Document.Editor);
 
 			this.Unit = newDocument.GetAst<SyntaxTree> ();
 			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
@@ -1421,6 +1419,28 @@ namespace MonoDevelop.CSharp.Completion
 				
 				foreach (var nested in type.NestedTypes)
 					AddType (document, result, nested);
+			}
+
+			ITextDocument ownerDocument;
+			public void InstallListener (ITextDocument doc)
+			{
+				if (ownerDocument != null)
+					throw new InvalidOperationException ("Segment tree already installed");
+				ownerDocument = doc;
+				doc.TextChanged += UpdateOnTextChanged;
+			}
+
+			public new void RemoveListener ()
+			{
+				if (ownerDocument == null)
+					throw new InvalidOperationException ("Segment tree is not installed");
+				ownerDocument.TextChanged -= UpdateOnTextChanged;
+				ownerDocument = null;
+			}
+
+			void UpdateOnTextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
+			{
+				UpdateOnTextReplace (sender, new DocumentChangeEventArgs (e.Offset, e.RemovedText.Text, e.InsertedText.Text));
 			}
 		}
 		
