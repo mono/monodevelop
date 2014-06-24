@@ -112,10 +112,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public Cairo.Color Color {
-			get;
-			set;
-		}
 	}
 }
 

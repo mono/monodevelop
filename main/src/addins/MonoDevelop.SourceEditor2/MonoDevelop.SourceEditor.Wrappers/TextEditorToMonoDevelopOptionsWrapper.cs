@@ -65,11 +65,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			options.ZoomReset ();
 		}
 
-		ColorScheme ITextEditorOptions.GetColorStyle ()
-		{
-			throw new NotImplementedException ();
-		}
-
 		double ITextEditorOptions.Zoom {
 			get {
 				return options.Zoom;

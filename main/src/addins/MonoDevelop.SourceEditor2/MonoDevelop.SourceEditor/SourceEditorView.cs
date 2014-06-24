@@ -58,6 +58,7 @@ using Mono.TextEditor.Utils;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {	

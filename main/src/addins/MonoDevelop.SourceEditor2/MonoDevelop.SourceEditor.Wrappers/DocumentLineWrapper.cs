@@ -93,11 +93,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return false;
 			}
 		}
-
-		MonoDevelop.Ide.Editor.CloneableStack<MonoDevelop.Ide.Editor.Span> MonoDevelop.Ide.Editor.IDocumentLine.StartSpan {
-			get;
-			set;
-		}
 		#endregion
 
 		#region ISegment implementation
