@@ -32,7 +32,7 @@ using System.Collections.ObjectModel;
 using System.Xml;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public class Rule
 	{
@@ -277,8 +277,8 @@ namespace MonoDevelop.Ide.Editor
 			case Span.AltNode:
 				spanList.Add (Span.Read (reader));
 				return true;
-			case MonoDevelop.Ide.Editor.Keywords.Node:
-				Keywords keywords = MonoDevelop.Ide.Editor.Keywords.Read (reader, IgnoreCase);
+			case MonoDevelop.Ide.Editor.Highlighting.Keywords.Node:
+				var keywords = MonoDevelop.Ide.Editor.Highlighting.Keywords.Read (reader, IgnoreCase);
 				this.keywords.Add (keywords);
 				UpdateKeywordTable (keywords);
 				return true;

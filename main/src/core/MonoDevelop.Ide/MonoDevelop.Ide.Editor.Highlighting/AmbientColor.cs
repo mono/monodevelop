@@ -32,7 +32,7 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Reflection;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public class AmbientColor
 	{

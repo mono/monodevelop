@@ -26,8 +26,9 @@
 
 using System;
 using Mono.Addins;
+using MonoDevelop.Ide.Editor.Highlighting;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public static class TemplateExtensionNodeLoader
 	{

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {

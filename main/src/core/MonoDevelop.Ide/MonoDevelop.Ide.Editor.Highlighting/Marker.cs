@@ -29,7 +29,7 @@
 using System;
 using System.Xml;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public class Marker
 	{

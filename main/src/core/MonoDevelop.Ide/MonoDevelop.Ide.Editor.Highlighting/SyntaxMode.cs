@@ -35,7 +35,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public class SyntaxMode : Rule, ISyntaxMode
 	{

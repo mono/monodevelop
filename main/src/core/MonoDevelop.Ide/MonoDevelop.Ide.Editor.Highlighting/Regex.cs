@@ -1,7 +1,7 @@
 
 using System;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public class Regex
 	{

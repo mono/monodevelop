@@ -53,6 +53,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using System.Text;
 using System.Collections.ObjectModel;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Gui
 {

@@ -28,6 +28,7 @@ using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {

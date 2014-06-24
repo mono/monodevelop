@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using MonoDevelop.Components;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public class ChunkStyle
 	{

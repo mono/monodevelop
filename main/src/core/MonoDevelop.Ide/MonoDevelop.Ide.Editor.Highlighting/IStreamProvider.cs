@@ -29,7 +29,7 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public interface IStreamProvider
 	{

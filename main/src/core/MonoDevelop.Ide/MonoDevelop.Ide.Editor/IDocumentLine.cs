@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core.Text;
 using System.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {

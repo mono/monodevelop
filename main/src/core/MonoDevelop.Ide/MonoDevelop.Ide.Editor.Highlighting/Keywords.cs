@@ -31,7 +31,7 @@ using System.Collections.ObjectModel;
 using System.Xml;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public class Keywords
 	{

@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
 using System.Linq;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

@@ -29,6 +29,7 @@ using MonoDevelop.Ide.Gui;
 using System.IO;
 using MonoDevelop.Projects;
 using System.ComponentModel;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {

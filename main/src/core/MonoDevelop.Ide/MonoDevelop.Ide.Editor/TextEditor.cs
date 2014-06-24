@@ -30,6 +30,7 @@ using System.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor.Extension;
 using System.IO;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {

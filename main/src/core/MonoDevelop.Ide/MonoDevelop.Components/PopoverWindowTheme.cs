@@ -29,6 +29,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using Gdk;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Components
 {

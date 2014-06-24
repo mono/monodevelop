@@ -35,6 +35,7 @@ using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

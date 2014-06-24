@@ -26,6 +26,7 @@
 using System;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.FindInFiles
 {

@@ -32,7 +32,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using MonoDevelop.Ide.TextEditing;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public abstract class SemanticRule
 	{

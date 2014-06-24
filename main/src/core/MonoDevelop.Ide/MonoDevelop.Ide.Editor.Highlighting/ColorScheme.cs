@@ -34,7 +34,7 @@ using System.Text;
 using System.Xml;
 using MonoDevelop.Components;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public class ColorScheme
 	{

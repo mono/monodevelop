@@ -36,7 +36,7 @@ using System.Xml.Schema;
 using System.Linq;
 using Mono.Addins;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public static class SyntaxModeService
 	{
@@ -44,7 +44,6 @@ namespace MonoDevelop.Ide.Editor
 		static Dictionary<string, ColorScheme> styles      = new Dictionary<string, ColorScheme> ();
 		static Dictionary<string, IStreamProvider> syntaxModeLookup = new Dictionary<string, IStreamProvider> ();
 		static Dictionary<string, IStreamProvider> styleLookup      = new Dictionary<string, IStreamProvider> ();
-
 
 		public static string[] Styles {
 			get {
@@ -534,7 +533,9 @@ namespace MonoDevelop.Ide.Editor
 		static SyntaxModeService ()
 		{
 			StartUpdateThread ();
-			LoadStylesAndModes (typeof(SyntaxModeService).Assembly);
+			var textEditorAssembly = Assembly.Load ("Mono.TextEditor");
+			if (textEditorAssembly != null)
+				LoadStylesAndModes (textEditorAssembly);
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "Comment", new HighlightUrlSemanticRule ("Comment(Line)"));
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "XmlDocumentation", new HighlightUrlSemanticRule ("Comment(Doc)"));
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "String", new HighlightUrlSemanticRule ("String"));

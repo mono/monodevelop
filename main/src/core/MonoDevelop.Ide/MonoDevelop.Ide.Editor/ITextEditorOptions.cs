@@ -115,7 +115,6 @@ namespace MonoDevelop.Ide.Editor
 		IncludeWhitespaces IncludeWhitespaces { get; set; }
 
 		bool GenerateFormattingUndoStep { get; set; }
-		ColorScheme GetColorStyle ();
 
 		event EventHandler Changed;
 	}
@@ -624,12 +623,6 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 		}
-
-		public virtual ColorScheme GetColorStyle ()
-		{
-			return SyntaxModeService.GetColorStyle (ColorScheme);
-		}
-
 		public virtual void CopyFrom (TextEditorOptions other)
 		{
 			zoom = other.zoom;

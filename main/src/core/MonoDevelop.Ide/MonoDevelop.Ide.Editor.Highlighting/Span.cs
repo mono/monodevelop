@@ -31,7 +31,7 @@ using System.Diagnostics;
 using System.Xml;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	[Flags]
 	public enum SpanBeginFlags
