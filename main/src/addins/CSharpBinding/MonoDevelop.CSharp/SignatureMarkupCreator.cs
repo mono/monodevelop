@@ -41,6 +41,7 @@ using ICSharpCode.NRefactory.Semantics;
 using System.ComponentModel;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.CSharp
 {
