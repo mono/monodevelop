@@ -66,7 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="GitHub.Auth.addin.xml">
-      <LogicalName>VersionControl.addin.xml</LogicalName>
+      <LogicalName>GitHub.Auth.addin.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
