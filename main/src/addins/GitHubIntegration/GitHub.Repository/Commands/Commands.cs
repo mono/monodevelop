@@ -40,7 +40,7 @@ namespace GitHub.Repository.Commands
 	{
 		public GitRepository Repository {
 			get {
-				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolutionItem;
+				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolution;
 				if (wob == null)
 					wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem;
 				if (wob != null)
