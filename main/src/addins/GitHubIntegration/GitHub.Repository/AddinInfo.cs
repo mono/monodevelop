@@ -13,3 +13,4 @@ using Mono.Addins.Description;
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("GitHub.Auth", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("VersionControl", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("VersionControl.Git", MonoDevelop.BuildInfo.Version)]
