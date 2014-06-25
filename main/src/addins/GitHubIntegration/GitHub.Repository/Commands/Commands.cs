@@ -54,7 +54,7 @@ namespace GitHub.Repository.Commands
 
 			get{
 				string locationUri = this.Repository.LocationDescription;
-				string Url = getURLofGitHubRepository (locationUri);
+				string Url = getRepositoryURL (locationUri);
 
 				var obj = new OctokitHelper ();
 				Octokit.Repository repo = obj.GetCurrentRepository (Url);
@@ -62,9 +62,9 @@ namespace GitHub.Repository.Commands
 			}
 		}
 
-		private string getURLofGitHubRepository(string locationDescription){
+		private string getRepositoryURL(string locationDescription){
 
-			string pathToConfig = locationDescription + "//.git//config";
+			string pathToConfig = Path.Combine (locationDescription, ".git", "config");
 			using (StreamReader sr = File.OpenText(pathToConfig))
 			{
 				string s = String.Empty;
@@ -73,15 +73,11 @@ namespace GitHub.Repository.Commands
 					if (s.Trim ().Contains ("[remote")) {
 						break;
 					}
-
 				}
-
 				s = sr.ReadLine ();
 				string[] words = s.Split ('=');
 				return words [1].Trim ();
-
 			}
-
 		}
 
 		protected override void Update (CommandInfo info)
