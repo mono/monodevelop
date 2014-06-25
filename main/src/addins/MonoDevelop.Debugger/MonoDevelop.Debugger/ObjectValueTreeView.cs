@@ -263,6 +263,12 @@ namespace MonoDevelop.Debugger
 			
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
+			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
+		}
+
+		void HandlePreviewWindowClosed (object sender, EventArgs e)
+		{
+			SetPreviewButtonIcon (PreviewButtonIcons.Hidden);
 		}
 
 		void HandleCompletionWindowClosed (object sender, EventArgs e)
@@ -273,6 +279,7 @@ namespace MonoDevelop.Debugger
 		protected override void OnDestroyed ()
 		{
 			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
+			PreviewWindowManager.WindowClosed -= HandlePreviewWindowClosed;
 			crtExp.Edited -= OnExpEdited;
 			crtExp.EditingStarted -= OnExpEditing;
 			crtExp.EditingCanceled -= OnEditingCancelled;
@@ -1166,10 +1173,11 @@ namespace MonoDevelop.Debugger
 				}
 			});
 		}
-		
+
 		TreeIter lastPinIter;
 
-		enum PreviewButtonIcons{
+		enum PreviewButtonIcons
+		{
 			Hidden,
 			RowHover,
 			Hover,
@@ -1179,12 +1187,11 @@ namespace MonoDevelop.Debugger
 		PreviewButtonIcons currentIcon;
 		TreeIter currentHoverIter = TreeIter.Zero;
 
-		bool blockPreviewButtonIcon;
-
 		void SetPreviewButtonIcon (PreviewButtonIcons icon, TreeIter it = default(TreeIter))
 		{
-			if (blockPreviewButtonIcon)
+			if (PreviewWindowManager.IsVisible && icon != PreviewButtonIcons.Active) {
 				return;
+			}
 			if (currentIcon != icon || !currentHoverIter.Equals (it)) {
 				if (!currentHoverIter.Equals (TreeIter.Zero)) {
 					store.SetValue (currentHoverIter, PreviewIconColumn, null);
@@ -1337,7 +1344,7 @@ namespace MonoDevelop.Debugger
 			return changed || base.OnKeyPressEvent (evnt);
 		}
 
-		Gdk.Rectangle GetCellRendererArea(TreePath path, TreeViewColumn col, CellRenderer cr)
+		Gdk.Rectangle GetCellRendererArea (TreePath path, TreeViewColumn col, CellRenderer cr)
 		{
 			var rect = this.GetCellArea (path, col);
 			int x, width;
@@ -1364,11 +1371,14 @@ namespace MonoDevelop.Debugger
 				TreeIter it;
 				store.GetIter (out it, path);
 				if (cr == crpViewer) {
-					var val = (ObjectValue) store.GetValue (it, ObjectColumn);
+					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					DebuggingService.ShowValueVisualizer (val);
 				} else if (cr == crpPreviewButton) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
-					DebuggingService.ShowPreviewVisualizer (val, this, GetCellRendererArea (path, col, cr));
+					if (DebuggingService.HasPreviewVisualizer (val)) {
+						DebuggingService.ShowPreviewVisualizer (val, this, GetCellRendererArea (path, col, cr));
+						SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+					}
 				} else if (!editing) {
 					if (cr == crpButton) {
 						RefreshRow (it);

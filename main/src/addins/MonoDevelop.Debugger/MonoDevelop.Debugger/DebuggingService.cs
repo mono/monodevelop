@@ -251,10 +251,9 @@ namespace MonoDevelop.Debugger
 			MessageService.ShowCustomDialog (dlg);
 		}
 
-		public static void ShowPreviewVisualizer (ObjectValue val, Gtk.Widget widget, Gdk.Rectangle previewButtonArea)
+		public static void ShowPreviewVisualizer (ObjectValue val, MonoDevelop.Components.Control widget, Gdk.Rectangle previewButtonArea)
 		{
-			var dlg = new PreviewVisualizerWindow ();
-			dlg.Show (val, widget, previewButtonArea);
+			PreviewWindowManager.Show (val, widget, previewButtonArea);
 		}
 		
 		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
