@@ -212,13 +212,9 @@ namespace MonoDevelop.Refactoring.Rename
 				
 				var links = new List<TextLink> ();
 				var link = new TextLink ("name");
-				int baseOffset = Int32.MaxValue;
-				foreach (var r in col) {
-					baseOffset = Math.Min (baseOffset, r.Offset);
-				}
 				foreach (MemberReference r in col) {
-					var segment = new TextSegment (r.Offset - baseOffset, r.Length);
-					if (segment.Offset <= data.CaretOffset - baseOffset && data.CaretOffset - baseOffset <= segment.EndOffset) {
+					var segment = new TextSegment (r.Offset, r.Length);
+					if (segment.Offset <= data.CaretOffset && data.CaretOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment); 
 					} else {
 						link.AddLink (segment);
