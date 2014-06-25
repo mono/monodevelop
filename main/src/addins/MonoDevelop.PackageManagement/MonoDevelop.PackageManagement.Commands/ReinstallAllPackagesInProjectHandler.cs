@@ -75,7 +75,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 		void ShowStatusBarError (Exception ex)
 		{
-			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage ();
+			ProgressMonitorStatusMessage message = ProgressMonitorStatusMessageFactory.CreateRetargetingPackagesInProjectMessage ();
 			PackageManagementServices.BackgroundPackageActionRunner.ShowError (message, ex);
 		}
 
