@@ -390,11 +390,11 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.StartInsertionMode (operation, insertionPoints, action);
 		}
 
-		public void StartTextLinkMode (List<TextLink> links)
+		public void StartTextLinkMode (List<TextLink> links, Action<TextLinkModeEventArgs> modeExitedAction = null)
 		{
 			if (links == null)
 				throw new ArgumentNullException ("links");
-			textEditorImpl.StartTextLinkMode (links);
+			textEditorImpl.StartTextLinkMode (links, modeExitedAction);
 		}
 
 		public void RequestRedraw ()

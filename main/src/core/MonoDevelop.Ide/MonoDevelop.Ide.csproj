@@ -2439,6 +2439,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\IStreamProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SimpleReadonlyDocument.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

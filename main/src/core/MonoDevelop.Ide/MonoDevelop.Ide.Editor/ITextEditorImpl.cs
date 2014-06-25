@@ -86,9 +86,9 @@ namespace MonoDevelop.Ide.Editor
 
 		string FormatString (int offset, string code);
 
-		void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> action);
+		void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> modeExitedAction);
 
-		void StartTextLinkMode (List<TextLink> links);
+		void StartTextLinkMode (List<TextLink> links, Action<TextLinkModeEventArgs> modeExitedAction);
 
 		void RequestRedraw ();
 
