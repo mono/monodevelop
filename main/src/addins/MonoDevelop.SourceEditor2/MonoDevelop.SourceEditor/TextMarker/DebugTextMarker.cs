@@ -30,6 +30,7 @@ using System;
 using System.Linq;
 using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.Debugger
 {
@@ -250,7 +251,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	class CurrentDebugLineTextMarker : DebugTextMarker
+	class CurrentDebugLineTextMarker : DebugTextMarker, MonoDevelop.Ide.Editor.ICurrentDebugLineTextMarker
 	{
 		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
 		{
@@ -274,6 +275,12 @@ namespace MonoDevelop.Debugger
 			DrawArrow (cr, x, y, size);
 			FillGradient (cr, color1, color2, x, y, size);
 			DrawBorder (cr, border, x, y, size);
+		}
+
+		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
+			get {
+				return new DocumentLineWrapper (base.LineSegment);
+			}
 		}
 	}
 

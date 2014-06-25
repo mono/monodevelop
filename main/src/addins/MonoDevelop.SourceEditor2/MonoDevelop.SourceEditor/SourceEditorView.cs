@@ -3023,7 +3023,7 @@ namespace MonoDevelop.SourceEditor
 
 		ICurrentDebugLineTextMarker IMarkerHost.CreateCurrentDebugLineTextMarker ()
 		{
-			return null;
+			return new CurrentDebugLineTextMarker (TextEditor);
 		}
 
 		ITextLineMarker IMarkerHost.CreateAsmLineMarker ()
