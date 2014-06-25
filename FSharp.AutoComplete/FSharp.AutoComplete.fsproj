@@ -89,7 +89,7 @@
       <Name>FSharp.CompilerBinding</Name>
     </ProjectReference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.54\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.55\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the
