@@ -34,20 +34,20 @@ using System.Threading;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
 	class HighlightUsagesExtension : AbstractUsagesExtension<ResolveResult>
 	{
-		//CSharpSyntaxMode syntaxMode;
+		CSharpSyntaxMode syntaxMode;
 
 		public override void Initialize ()
 		{
 			base.Initialize ();
-
-			//TextEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
-			//syntaxMode = new CSharpSyntaxMode (Document);
-			//TextEditorData.Document.SyntaxMode = syntaxMode;
+			((IInternalEditorExtensions)document.Editor).SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Document));
+			syntaxMode = new CSharpSyntaxMode (Document);
+			document.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
 		}
 
 		public override void Dispose ()

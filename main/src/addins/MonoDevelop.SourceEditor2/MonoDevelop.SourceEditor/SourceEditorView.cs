@@ -2419,6 +2419,15 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.SelectionMode = TextEditor.SelectionMode == Mono.TextEditor.SelectionMode.Normal ? Mono.TextEditor.SelectionMode.Block : Mono.TextEditor.SelectionMode.Normal;
 			TextEditor.QueueDraw ();
 		}
+
+
+		public override object GetContent (Type type)
+		{
+			if (type.Equals (typeof(TextEditorData)))
+				return TextEditor.GetTextEditorData ();
+			return base.GetContent (type);
+		}
+
 		
 		#region widget command handlers
 		[CommandHandler (SearchCommands.EmacsFindNext)]
