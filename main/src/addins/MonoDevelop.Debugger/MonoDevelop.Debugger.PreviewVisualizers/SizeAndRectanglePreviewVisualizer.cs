@@ -27,6 +27,7 @@ using System;
 using Mono.Debugging.Client;
 using Gtk;
 using MonoDevelop.Components;
+using Xwt;
 
 namespace MonoDevelop.Debugger.PreviewVisualizers
 {
@@ -56,45 +57,119 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 
 	class SizeAndRectanglePreviewVisualizerWidget : Gtk.DrawingArea
 	{
-		bool drawLocation;
-		Xwt.Rectangle rectangle;
+		bool sizeCalculated;
+
+		bool drawDot;
+		const int Padding = 7;
+		const int TextPadding = 4;
+		const int MaxRectangleDrawSize = 250;
+		Cairo.Rectangle square;
+		string pointString;
+		Cairo.PointD pointTextPosition;
+		string widthString;
+		Cairo.PointD widthTextPosition;
+		string heightString;
+		Cairo.PointD heightTextPosition;
+		Size requisition = new Size ();
+		Rectangle rectangle;
+
+		SizeAndRectanglePreviewVisualizerWidget (Rectangle rectangle, bool drawPosition)
+		{
+			this.drawDot = drawPosition;
+			this.rectangle = rectangle;
+			Show ();
+		}
 
 		public SizeAndRectanglePreviewVisualizerWidget (Xwt.Size size)
+			: this (new Rectangle (Point.Zero, size), false)
 		{
-			rectangle = new Xwt.Rectangle (Xwt.Point.Zero, size);
-			drawLocation = false;
 		}
 
 		public SizeAndRectanglePreviewVisualizerWidget (Xwt.Rectangle rectangle)
+			: this (rectangle, true)
 		{
-			this.rectangle = rectangle;
-			drawLocation = true;
+		}
+
+		const string valuesFormat = "0,0.0####";
+
+		void CaclulateSize ()
+		{
+			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
+				widthString = rectangle.Width.ToString (valuesFormat);
+				var widthExtents = ctx.TextExtents (widthString);
+				heightString = rectangle.Height.ToString (valuesFormat);
+				var heightExtents = ctx.TextExtents (heightString);
+				pointString = "(" + rectangle.X.ToString (valuesFormat) + ", " + rectangle.Y.ToString (valuesFormat) + ")";
+				var pointExtents = ctx.TextExtents (pointString);
+				if (rectangle.Width > MaxRectangleDrawSize || rectangle.Height > MaxRectangleDrawSize) {
+					double ratio;
+					if (rectangle.Width > rectangle.Height) {
+						ratio = rectangle.Width / MaxRectangleDrawSize;
+					} else {
+						ratio = rectangle.Height / MaxRectangleDrawSize;
+					}
+					square = new Cairo.Rectangle (Padding, Padding + widthExtents.Height + TextPadding, rectangle.Width / ratio, rectangle.Height / ratio);
+				} else {
+					square = new Cairo.Rectangle (Padding, Padding + widthExtents.Height + TextPadding, rectangle.Width, rectangle.Height);
+				}
+				requisition.Width = (int)Math.Max (widthExtents.Width, square.Width);
+				if (drawDot && (pointExtents.Width > requisition.Width))
+					requisition.Width = (int)pointExtents.Width;
+				requisition.Width += (int)heightExtents.Height + TextPadding;
+
+				requisition.Height = (int)Math.Max (heightExtents.Width, square.Height);
+				requisition.Height += (int)widthExtents.Height + TextPadding;
+				if (drawDot) {
+					requisition.Height += (int)pointExtents.Height + TextPadding;
+				}
+
+				requisition.Width += Padding * 2;
+				requisition.Height += Padding * 2;
+
+				widthTextPosition = new Cairo.PointD (requisition.Width / 2 - widthExtents.Width / 2, square.Y - TextPadding);
+				heightTextPosition = new Cairo.PointD (Math.Max (square.X + square.Width + TextPadding, widthTextPosition.X + widthExtents.Width + TextPadding),
+					requisition.Height / 2 - heightExtents.Width / 2);
+				if (drawDot) {
+					pointTextPosition = new Cairo.PointD (TextPadding,
+						Math.Max (square.Y + square.Height, heightExtents.Width + heightTextPosition.Y));
+					pointTextPosition.Y += TextPadding + pointExtents.Height;
+					heightTextPosition.X = Math.Max (heightTextPosition.X, pointTextPosition.X + pointExtents.Width + TextPadding);
+				}
+			}
+			sizeCalculated = true;
+			QueueResize ();
+			PreviewWindowManager.RepositionWindow ();
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
+			if (!sizeCalculated)
+				CaclulateSize ();
 			using (var ctx = Gdk.CairoHelper.Create (GdkWindow)) {
 				ctx.SetSourceRGB (219 / 256.0, 229 / 256.0, 242 / 256.0);
-				ctx.Rectangle (10, 10, rectangle.Width, rectangle.Height);
+				ctx.Rectangle (square);
 				ctx.FillPreserve ();
 				ctx.SetSourceRGB (74 / 256.0, 144 / 256.0, 226 / 256.0);
 				ctx.Antialias = Cairo.Antialias.None;
 				ctx.LineWidth = 1;
 				ctx.Stroke ();
 				ctx.Antialias = Cairo.Antialias.Default;
-
-				if (drawLocation) {
-					ctx.Arc (10, rectangle.Height + 10, 4, 0, 2 * Math.PI);
+				if (drawDot) {
+					ctx.Arc (square.X, square.Y + square.Height, 4, 0, 2 * Math.PI);
 					ctx.Fill ();
 				}
 
-				//TODO: Write width and height text(rectangle dot point)
-//				ctx.MoveTo (20, 20);
-//				ctx.SetSourceRGB (0, 0, 0);
-//				ctx.SelectFontFace ("sans-serif", Cairo.FontSlant.Normal, Cairo.FontWeight.Normal);
-//				ctx.SetFontSize (10);
-//				ctx.Rotate (Math.PI / 2);
-//				ctx.ShowText ("500.0");
+				ctx.SetSourceRGB (0, 0, 0);
+
+				ctx.MoveTo (widthTextPosition);
+				ctx.ShowText (widthString);
+				if (drawDot) {
+					ctx.MoveTo (pointTextPosition);
+					ctx.ShowText (pointString);
+				}
+				ctx.MoveTo (heightTextPosition);
+				ctx.Rotate (Math.PI / 2);
+				ctx.ShowText (heightString);
 			}
 			return true;
 		}
@@ -102,8 +177,8 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			requisition = new Requisition () {
-				Height = (int)rectangle.Height + 20,
-				Width = (int)rectangle.Width + 20
+				Width = (int)this.requisition.Width,
+				Height = (int)this.requisition.Height
 			};
 		}
 	}
