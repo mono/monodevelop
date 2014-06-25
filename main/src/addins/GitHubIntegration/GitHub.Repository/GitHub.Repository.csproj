@@ -52,6 +52,7 @@
     <Compile Include="Commands\Commands.cs" />
     <Compile Include="gtk-gui\GitHub.Repository.UserInterface.GitHubPropertyDialog.cs" />
     <Compile Include="Core\GitHubUtils.cs" />
+    <Compile Include="Gui\GitHubRepoNodeBuilder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

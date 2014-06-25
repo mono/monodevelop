@@ -3,16 +3,17 @@
 		<Import assembly="Octokit.dll" />
 	</Runtime>
 
+
+	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/GitHubPad">
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+	</ExtensionPoint>
+
 	<Extension path = "/MonoDevelop/Ide/Pads">
 
-		<Pad id = "GitHub.Repository.Gui.GitHubPad"
-			class = "GitHub.Repository.Gui.GitHubPad"
-			_label="My GitHub"
-			icon = "nunit-run"
-			defaultLayout="*"
-			defaultPlacement="Rright"
-			defaultStatus="AutoHide"
-			/>
+		<SolutionPad id = "GitHub.Repository.Gui.GitHubPad" class = "GitHub.Repository.Gui.GitHubPad" _label="My GitHub" icon = "nunit-run" defaultStatus="AutoHide" defaultLayout="*" defaultPlacement="Rright" defaultStatus="AutoHide">
+			<PadOption id = "GitHub.Repository.Gui.GitHubPad.ViewAllRepos" _label = "View Repositories" defaultValue = "False" />
+			<NodeBuilder id = "GitHubRepoNode" class = "GitHub.Repository.Gui.GitHubRepoNodeBuilder"/>
+		</SolutionPad>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">

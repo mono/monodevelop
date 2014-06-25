@@ -33,10 +33,11 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using pg = MonoDevelop.Components.PropertyGrid;
 using GitHub.Repository;
+using MonoDevelop.Ide.Gui.Pads;
 
 namespace GitHub.Repository.Gui
 {
-	public class GitHubPad : AbstractPadContent //, ICommandDelegator
+	public class GitHubPad : TreeViewPad
 	{
 		pg.PropertyGrid grid;
 		InvisibleFrame frame;

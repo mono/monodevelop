@@ -1,5 +1,5 @@
 ﻿//
-// OctokitHelper.cs
+// EmptyClass.cs
 //
 // Author:
 //       Praveena <>
@@ -23,38 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
-using GitHub.Auth;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace GitHub.Repository.Core
-{
-	public class OctokitHelper
-	{
-
-		public IReadOnlyList<Octokit.Repository> GetAllRepositories()
-		{
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
-			return repositories.Result;
-		}
-
-
-		public Octokit.Repository GetCurrentRepository(string gitHubUrl)
-		{
-			Octokit.Repository repo = null;
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
-			foreach (var item in repositories.Result) {
-				if (item.CloneUrl == gitHubUrl) {
-					repo = item ;
-					break;
-				} 
-			} 
-			return repo;
-		}
-
-
-			
-	}
-}
+//using System;
+//using MonoDevelop.Ide.Gui.Components;
+//
+//namespace GitHub.Repository.Gui
+//{
+//	public class GitHubRepoNodeBuilder : TypeNodeBuilder
+//	{
+//		public GitHubRepoNodeBuilder ()
+//		{
+//		}
+//	}
+//}
 

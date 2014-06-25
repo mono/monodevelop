@@ -33,6 +33,7 @@ using System.Threading;
 using MonoDevelop.VersionControl.Git;
 using MonoDevelop.VersionControl;
 using GitHub.Repository.Core;
+using System.IO;
 
 namespace GitHub.Repository.Commands
 {
@@ -52,13 +53,35 @@ namespace GitHub.Repository.Commands
 		public Octokit.Repository ORepository {
 
 			get{
-				string ss = this.Repository.Url;
-				string se = this.Repository.GetCurrentRemote ();
-				Console.WriteLine ("Tesdsdsdsdsdsdsd: "+ this.Repository.Url);
+				string locationUri = this.Repository.LocationDescription;
+				string Url = getURLofGitHubRepository (locationUri);
+
 				var obj = new OctokitHelper ();
-				Octokit.Repository repo = obj.GetCurrentRepository (this.Repository.Url);
+				Octokit.Repository repo = obj.GetCurrentRepository (Url);
 				return repo;
 			}
+		}
+
+		private string getURLofGitHubRepository(string locationDescription){
+
+			string pathToConfig = locationDescription + "//.git//config";
+			using (StreamReader sr = File.OpenText(pathToConfig))
+			{
+				string s = String.Empty;
+				while ((s = sr.ReadLine()) != null)
+				{
+					if (s.Trim ().Contains ("[remote")) {
+						break;
+					}
+
+				}
+
+				s = sr.ReadLine ();
+				string[] words = s.Split ('=');
+				return words [1].Trim ();
+
+			}
+
 		}
 
 		protected override void Update (CommandInfo info)

@@ -37,6 +37,7 @@ namespace GitHub.Repository.UserInterface
 
 		public GitHubPropertyDialog (Octokit.Repository repo)
 		{
+			this.repo = repo;
 			this.Build ();
 		}
 	}
