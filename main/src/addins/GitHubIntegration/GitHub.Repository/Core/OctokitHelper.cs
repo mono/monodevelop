@@ -55,13 +55,13 @@ namespace GitHub.Repository.Core
 
 
 		//in progress
-		public bool GistAFile()
-		{
-			Octokit.Gist gist = new Octokit.Gist ();
-			Octokit.GistFile file = new Octokit.GistFile ();
-			gist.Files.Add (file);
-			GitHubService.Client.Gist.Create (gist).Result;
-		}
+//		public bool GistAFile()
+//		{
+//			Octokit.Gist gist = new Octokit.Gist ();
+//			Octokit.GistFile file = new Octokit.GistFile ();
+//			//gist.Files.Add (file);
+//			//GitHubService.Client.Gist.Create (gist).Result;
+//		}
 			
 	}
 }

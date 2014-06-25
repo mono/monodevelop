@@ -1,5 +1,5 @@
 ﻿//
-// GitHubPropertyDialog.cs
+// GitHubRepoPropertiesDescriptor.cs
 //
 // Author:
 //       Praveena <>
@@ -24,20 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.VersionControl.Git;
-using System.Linq;
-using System.Collections.Generic;
+using System.ComponentModel;
+using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using GitHub.Repository.Descriptors;
+using MonoDevelop.Ide;
 
-namespace GitHub.Repository.UserInterface
+namespace GitHub.Repository.Descriptors
 {
-	partial class GitHubPropertyDialog : Gtk.Dialog
+	public class GitHubRepoPropertiesDescriptor : GitHubCustomDescriptor
 	{
-		public GitHubPropertyDialog (Octokit.Repository repo)
+		private Octokit.Repository prop;
+		public GitHubRepoPropertiesDescriptor (Octokit.Repository model)
 		{
-			this.gitHubPropertyGrid.SetCurrentObject (new GitHubRepoPropertiesDescriptor (repo),null);
-			this.Build ();
+			this.prop = model;
+		}
+			
+		[LocalizedCategory ("Misc")]
+		[LocalizedDisplayName ("Name")]
+		[LocalizedDescription ("Name of the Repo.")]
+		public string Name {
+			get { return prop.Name; }
 		}
 	}
 }

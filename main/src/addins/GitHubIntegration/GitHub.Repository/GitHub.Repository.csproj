@@ -41,6 +41,7 @@
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -53,6 +54,8 @@
     <Compile Include="gtk-gui\GitHub.Repository.UserInterface.GitHubPropertyDialog.cs" />
     <Compile Include="Core\GitHubUtils.cs" />
     <Compile Include="Gui\GitHubRepoNodeBuilder.cs" />
+    <Compile Include="Descriptors\GitHubRepoPropertiesDescriptor.cs" />
+    <Compile Include="Descriptors\CustomDescriptor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -103,6 +106,7 @@
     <Folder Include="Core\" />
     <Folder Include="Gui\icons\light\" />
     <Folder Include="Commands\" />
+    <Folder Include="Descriptors\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
