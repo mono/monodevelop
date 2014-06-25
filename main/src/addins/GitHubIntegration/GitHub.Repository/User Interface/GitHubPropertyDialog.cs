@@ -24,19 +24,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.VersionControl.Git;
-using System.Linq;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using GitHub.Repository.Descriptors;
+using GitHub.Repository.Providers;
+
 
 namespace GitHub.Repository.UserInterface
 {
 	partial class GitHubPropertyDialog : Gtk.Dialog
 	{
+		private Object repository;
+
 		public GitHubPropertyDialog (Octokit.Repository repo)
 		{
-			this.gitHubPropertyGrid.SetCurrentObject (new GitHubRepoPropertiesDescriptor (repo),null);
+			this.repository = (Object)repo;
+			List<Object> providers = new List<Object>();
+			providers.Add (new GitHubRepoPropertiesProvider());
+
+			if (providers.Count >0) {
+				this.gitHubPropertyGrid.SetCurrentObject (this.repository, providers.ToArray());
+			}
 			this.Build ();
 		}
 	}

@@ -1,5 +1,5 @@
 ﻿//
-// GitHubRepoPropertiesDescriptor.cs
+// IGitHubProvider.cs
 //
 // Author:
 //       Praveena <>
@@ -24,28 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.ComponentModel;
-using MonoDevelop.Projects;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
 
-namespace GitHub.Repository.Descriptors
+namespace GitHub.Repository.Providers
 {
-	public class GitHubRepoPropertiesDescriptor : GitHubCustomDescriptor
+	public interface IGitHubProvider
 	{
-		Octokit.Repository prop;
-
-		public GitHubRepoPropertiesDescriptor (Octokit.Repository repo)
-		{
-			this.prop = repo;
-		}
-			
-		[LocalizedCategory ("Misc")]
-		[LocalizedDisplayName ("Name")]
-		[LocalizedDescription ("Name of the Repo.")]
-		public string Name {
-			get { return prop.Name; }
-		}
+		bool SupportsObject (object obj);
+		object CreateProvider (object obj);
 	}
 }
 
