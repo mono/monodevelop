@@ -194,6 +194,7 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\WavedLineMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\GrayOutMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UrlTextLineMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

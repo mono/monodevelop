@@ -33,7 +33,7 @@ using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.Debugger
 {
-	public abstract class DebugTextMarker : MarginMarker
+	abstract class DebugTextMarker : MarginMarker
 	{
 		protected DebugTextMarker (TextEditor editor)
 		{
@@ -159,7 +159,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	public class BreakpointTextMarker : DebugTextMarker
+	class BreakpointTextMarker : DebugTextMarker
 	{
 		public BreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -192,7 +192,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	public class DisabledBreakpointTextMarker : DebugTextMarker
+	class DisabledBreakpointTextMarker : DebugTextMarker
 	{
 		public DisabledBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -219,7 +219,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	public class InvalidBreakpointTextMarker : DebugTextMarker
+	class InvalidBreakpointTextMarker : DebugTextMarker
 	{
 		public InvalidBreakpointTextMarker (TextEditor editor, bool tracepoint) : base (editor)
 		{
@@ -250,7 +250,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	public class CurrentDebugLineTextMarker : DebugTextMarker
+	class CurrentDebugLineTextMarker : DebugTextMarker
 	{
 		public CurrentDebugLineTextMarker (TextEditor editor) : base (editor)
 		{
@@ -277,7 +277,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	public class DebugStackLineTextMarker : DebugTextMarker
+	class DebugStackLineTextMarker : DebugTextMarker
 	{
 		public DebugStackLineTextMarker (TextEditor editor) : base (editor)
 		{

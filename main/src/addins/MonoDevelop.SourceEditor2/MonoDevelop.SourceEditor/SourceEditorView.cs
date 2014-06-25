@@ -3018,7 +3018,7 @@ namespace MonoDevelop.SourceEditor
 
 		IUrlTextLineMarker IMarkerHost.CreateUrlTextMarker (IDocumentLine line, string value, MonoDevelop.Ide.Editor.UrlType url, string syntax, int startCol, int endCol)
 		{
-			return null;
+			return new UrlTextLineMarker (TextEditor.Document, line, value, (Mono.TextEditor.UrlType)url, syntax, startCol, endCol);
 		}
 
 		ICurrentDebugLineTextMarker IMarkerHost.CreateCurrentDebugLineTextMarker ()
@@ -3053,7 +3053,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			return new SmartTagMarker (offset, realLocation);
 		}
-
 		#endregion
 	}
 } 
