@@ -2723,12 +2723,81 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.StartInsertionMode (string operation, IList<MonoDevelop.Ide.Editor.InsertionPoint> insertionPoints, Action<MonoDevelop.Ide.Editor.InsertionCursorEventArgs> action)
 		{
-			throw new NotImplementedException ();
+			var mode = new InsertionCursorEditMode (TextEditor, insertionPoints.Select (ip => new Mono.TextEditor.InsertionPoint ( 
+				new Mono.TextEditor.DocumentLocation (ip.Location.Line, ip.Location.Column),
+				(Mono.TextEditor.NewLineInsertion)ip.LineBefore,
+				(Mono.TextEditor.NewLineInsertion)ip.LineAfter
+			)).ToList ());
+			if (mode.InsertionPoints.Count == 0) {
+				return;
+			}
+			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
+			helpWindow.TitleText = operation;
+			mode.HelpWindow = helpWindow;
+			
+//			switch (defaultPosition) {
+//			case InsertPosition.Start:
+//				mode.CurIndex = 0;
+//				break;
+//			case InsertPosition.End:
+//				mode.CurIndex = mode.InsertionPoints.Count - 1;
+//				break;
+//			case InsertPosition.Before:
+//				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
+//					if (mode.InsertionPoints [i].Location < loc)
+//						mode.CurIndex = i;
+//				}
+//				break;
+//			case InsertPosition.After:
+//				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
+//					if (mode.InsertionPoints [i].Location > loc) {
+//						mode.CurIndex = i;
+//						break;
+//					}
+//				}
+//				break;
+//			}
+			mode.StartMode ();
+			mode.Exited += delegate(object s, Mono.TextEditor.InsertionCursorEventArgs iCArgs) {
+				action (new MonoDevelop.Ide.Editor.InsertionCursorEventArgs (iCArgs.Success, 
+					new MonoDevelop.Ide.Editor.InsertionPoint (
+						new MonoDevelop.Ide.Editor.DocumentLocation (iCArgs.InsertionPoint.Location.Line, iCArgs.InsertionPoint.Location.Column),
+						(MonoDevelop.Ide.Editor.NewLineInsertion)iCArgs.InsertionPoint.LineBefore,
+						(MonoDevelop.Ide.Editor.NewLineInsertion)iCArgs.InsertionPoint.LineAfter
+					)
+				));
+			};
 		}
 
-		void ITextEditorImpl.StartTextLinkMode (List<MonoDevelop.Ide.Editor.TextLink> links)
+		void ITextEditorImpl.StartTextLinkMode (List<MonoDevelop.Ide.Editor.TextLink> links, Action<TextLinkModeEventArgs> modeExitedAction)
 		{
-			throw new NotImplementedException ();
+			var convertedLinks = new List<Mono.TextEditor.TextLink> ();
+			foreach (var link in links) {
+				var convertedLink = new Mono.TextEditor.TextLink (link.Name);
+				convertedLink.IsEditable = link.IsEditable;
+				convertedLink.IsIdentifier = link.IsIdentifier;
+				if (link.GetStringFunc != null) {
+					convertedLink.GetStringFunc = delegate(Func<string, string> arg) {
+						return new ListDataProviderWrapper (link.GetStringFunc (arg));
+					};
+				}
+				foreach (var segment in link.Links) {
+					convertedLink.AddLink (new Mono.TextEditor.TextSegment (segment.Offset, segment.Length)); 
+				}
+				convertedLinks.Add (convertedLink); 
+			}
+
+			var tle = new TextLinkEditMode (TextEditor, 0, convertedLinks);
+			tle.SetCaretPosition = false;
+			if (tle.ShouldStartTextLinkMode) {
+				tle.OldMode = TextEditor.CurrentMode;
+				if (modeExitedAction != null) {
+					tle.Cancel += (sender, e) => modeExitedAction (new TextLinkModeEventArgs (false));
+					tle.Exited += (sender, e) => modeExitedAction (new TextLinkModeEventArgs (true));
+				}
+				tle.StartMode ();
+				TextEditor.CurrentMode = tle;
+			}
 		}
 
 		void ITextEditorImpl.RequestRedraw ()
