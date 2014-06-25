@@ -171,6 +171,13 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		protected virtual void OnChanged (EventArgs e)
+		{
+			var handler = this.changed;
+			if (handler != null)
+				handler (this, e);
+		}
+		
 		void HandleDefaultsChanged (object sender, EventArgs e)
 		{
 			if (changed != null)
@@ -210,34 +217,40 @@ namespace MonoDevelop.SourceEditor
 			return DefaultSourceEditorOptions.Instance.GetColorStyle ();
 		}
 
+		bool? highlightCaretLine;
 		public bool HighlightCaretLine {
-			get { return DefaultSourceEditorOptions.Instance.HighlightCaretLine; }
-			set { throw new NotSupportedException (); }
+			get { return highlightCaretLine.GetValueOrDefault (DefaultSourceEditorOptions.Instance.HighlightCaretLine); }
+			set { highlightCaretLine = value; OnChanged (EventArgs.Empty); }
 		}
 
+		bool? highlightMatchingBracket;
 		public bool HighlightMatchingBracket {
-			get { return DefaultSourceEditorOptions.Instance.HighlightMatchingBracket; }
-			set { throw new NotSupportedException (); }
+			get { return highlightMatchingBracket.GetValueOrDefault (DefaultSourceEditorOptions.Instance.HighlightMatchingBracket); }
+			set { highlightMatchingBracket = value; OnChanged (EventArgs.Empty); }
 		}
 
+		bool? showFoldMargin;
 		public bool ShowFoldMargin {
-			get { return DefaultSourceEditorOptions.Instance.ShowFoldMargin; }
-			set { throw new NotSupportedException (); }
+			get { return showFoldMargin.GetValueOrDefault (DefaultSourceEditorOptions.Instance.ShowFoldMargin); }
+			set { showFoldMargin = value; OnChanged (EventArgs.Empty); }
 		}
 
+		bool? showIconMargin;
 		public bool ShowIconMargin {
-			get { return DefaultSourceEditorOptions.Instance.ShowIconMargin; }
-			set { throw new NotSupportedException (); }
+			get { return showIconMargin.GetValueOrDefault (DefaultSourceEditorOptions.Instance.ShowIconMargin); }
+			set { showIconMargin = value; OnChanged (EventArgs.Empty); }
 		}
 
+		bool? showLineNumberMargin;
 		public bool ShowLineNumberMargin {
-			get { return DefaultSourceEditorOptions.Instance.ShowLineNumberMargin; }
-			set { throw new NotSupportedException (); }
+			get { return showLineNumberMargin.GetValueOrDefault (DefaultSourceEditorOptions.Instance.ShowLineNumberMargin); }
+			set { showLineNumberMargin = value; OnChanged (EventArgs.Empty); }
 		}
 
+		bool? showRuler;
 		public bool ShowRuler {
-			get { return DefaultSourceEditorOptions.Instance.ShowRuler; }
-			set { throw new NotSupportedException (); }
+			get { return showRuler.GetValueOrDefault (DefaultSourceEditorOptions.Instance.ShowRuler); }
+			set { showRuler = value; OnChanged (EventArgs.Empty); }
 		}
 
 		public bool EnableAnimations {

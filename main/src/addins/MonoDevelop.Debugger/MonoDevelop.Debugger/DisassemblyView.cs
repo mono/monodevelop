@@ -407,14 +407,4 @@ namespace MonoDevelop.Debugger
 
 		#endregion
 	}
-	/*
-	class AsmLineMarker: TextLineMarker
-	{
-		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
-		{
-			ChunkStyle st = new ChunkStyle (baseStyle);
-			st.Foreground = new Cairo.Color (125, 125, 125);
-			return st;
-		}
-	}*/
 }

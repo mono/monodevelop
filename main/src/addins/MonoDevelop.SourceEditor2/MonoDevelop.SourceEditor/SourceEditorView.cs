@@ -3046,7 +3046,7 @@ namespace MonoDevelop.SourceEditor
 
 		public ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink)
 		{
-			return null;
+			return new LinkMarker (offset, length, activateLink);
 		}
 
 		ISmartTagMarker IMarkerHost.CreateSmartTagMarker (int offset, MonoDevelop.Ide.Editor.DocumentLocation realLocation)

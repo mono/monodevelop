@@ -196,6 +196,7 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UrlTextLineMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\AsmLineMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\LinkMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

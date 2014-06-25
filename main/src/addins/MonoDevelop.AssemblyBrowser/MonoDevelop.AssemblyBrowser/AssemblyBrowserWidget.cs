@@ -1039,7 +1039,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			return result.ToString ();
 		}
-		
+	 
 		List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
 		List<ITextSegmentMarker> underlineMarkers = new List<ITextSegmentMarker> ();
 		
@@ -1061,10 +1061,10 @@ namespace MonoDevelop.AssemblyBrowser
 				if (line == null)
 					continue;
 				// FIXME: ILSpy sometimes gives reference segments for punctuation. See http://bugzilla.xamarin.com/show_bug.cgi?id=2918
-				string text = inspectEditor.GetTextAt (seg.Offset, seg.EndOffset);
+				string text = inspectEditor.GetTextAt (seg.Offset, seg.Length);
 				if (text != null && text.Length == 1 && !(char.IsLetter (text [0]) || text [0] == '…'))
 					continue;
-				var marker = inspectEditor.MarkerHost.CreateLinkMarker (1 + seg.Offset - line.Offset, 1 + seg.EndOffset - line.Offset, delegate (LinkRequest request) {
+				var marker = inspectEditor.MarkerHost.CreateLinkMarker (seg.Offset, seg.Length, delegate (LinkRequest request) {
 					var link = GetLink (seg);
 					if (link == null)
 						return;
