@@ -2123,7 +2123,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Components\TypeNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\TreeViewItem.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\TreeNodeNavigator.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Components\TreeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\TreeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\TransactedTreeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\INavigable.cs" />
@@ -2746,14 +2745,30 @@
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\Gtk\ExtensibleTreeGtkBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\Gtk\GtkNodePosition.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\Gtk\GtkTreeNodeNavigator.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\Mac\CompositeCell.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\Mac\ImageTableCell.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\Mac\MacExtensibleTreeViewBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\Mac\MacTreeNodeNavigator.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\Mac\TreeSource.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\ExtensibleTreeViewBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\IExtensibleTreeViewFrontend.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\NodeCommandTargetChain.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\NodePositionDictionary.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\SelectionGroup.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\TransactedNodeStore.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\TreeNode.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Components\ZoomableCellRendererPixbuf.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Util.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\ObjcHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDServicesMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDSubMenuItem.cs" />
-    <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
-    <Compile Include="MonoDevelop.Components\Mac\ObjcHelper.cs" />
-    <Compile Include="MonoDevelop.Components\Mac\Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

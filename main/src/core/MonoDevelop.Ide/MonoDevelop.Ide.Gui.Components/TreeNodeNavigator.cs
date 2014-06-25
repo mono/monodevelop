@@ -26,380 +26,432 @@
 //
 
 using System;
+using MonoDevelop.Core;
+using System.Collections;
 
-namespace MonoDevelop.Ide.Gui.Components
+namespace MonoDevelop.Ide.Gui.Components.Internal
 {
-	public partial class ExtensibleTreeView
+	internal abstract class TreeNodeNavigator: ITreeNavigator, ITreeBuilder
 	{
-		class TreeNodeNavigator: ITreeNavigator
+		NodePosition[] currentNodePositions;
+		int currentNodePositionIndex;
+
+		protected IExtensibleTreeViewFrontend Frontend { get; private set; }
+
+		public TreeNodeNavigator (IExtensibleTreeViewFrontend frontend)
 		{
-			protected ExtensibleTreeView pad;
-			protected Gtk.TreeView tree;
-			protected Gtk.TreeStore store;
-			Gtk.TreeIter currentNavIter;
-			object dataItem;
-			
-			public TreeNodeNavigator (ExtensibleTreeView pad): this (pad, Gtk.TreeIter.Zero)
-			{
-			}
-			
-			public TreeNodeNavigator (ExtensibleTreeView pad, Gtk.TreeIter iter)
-			{
-				this.pad = pad;
-				tree = pad.Tree;
-				store = pad.Store;
-				MoveToIter (iter);
-			}
-			
-			protected Gtk.TreeIter currentIter {
-				get { return currentNavIter; }
-			}
-			
-			public ITreeNavigator Clone ()
-			{
-				return new TreeNodeNavigator (pad, currentIter);
-			}
-			
-			void AssertIsValid ()
-			{
-				if (!pad.sorting && !currentIter.Equals (Gtk.TreeIter.Zero) && !store.IterIsValid (currentIter)) {
-					if (dataItem == null || !MoveToObject (dataItem))
-						throw new InvalidOperationException ("Tree iterator has been invalidated.");
-				}
-			}
-			
-			protected void InitIter (Gtk.TreeIter it, object dataObject)
-			{
-				currentNavIter = it;
-				dataItem = dataObject;
-			}
-	
-			
-			public object DataItem {
-				get {
-					return dataItem;
-				}
-			}
-			
-			public TypeNodeBuilder TypeNodeBuilder {
-				get {
-					return pad.GetTypeNodeBuilder (CurrentPosition._iter);
-				}
-			}
-			
-			internal NodeBuilder[] NodeBuilderChain {
-				get {
-					AssertIsValid ();
-					NodeBuilder[] chain = (NodeBuilder[]) GetStoreValue (ExtensibleTreeView.BuilderChainColumn);
-					if (chain != null)
-						return chain;
-					else
-						return new NodeBuilder [0];
-				}
-			}
-			
-			public bool Selected {
-				get {
-					AssertIsValid ();
-					return tree.Selection.IterIsSelected (currentIter);
-				}
-				set {
-					AssertIsValid ();
-					if (value != Selected) {
-						ExpandToNode ();
-						try {
-							tree.Selection.SelectIter (currentIter);
-							tree.SetCursor (store.GetPath (currentIter), pad.CompleteColumn, false);
-						} catch (Exception) {}
-	//						tree.ScrollToCell (store.GetPath (currentIter), null, false, 0, 0);
-					}
-				}
-			}
-			
-			public NodePosition CurrentPosition {
-				get {
-					AssertIsValid ();
-					NodePosition pos = new NodePosition ();
-					pos._iter = currentIter;
-					return pos;
-				}
-			}
-			
-			public bool MoveToPosition (NodePosition position)
-			{
-				MoveToIter ((Gtk.TreeIter) position._iter);
-				return true;
-			}
-			
-			internal void MoveToIter (Gtk.TreeIter iter)
-			{
-				currentNavIter = iter;
-				if (!iter.Equals (Gtk.TreeIter.Zero))
-					dataItem = GetStoreValue (ExtensibleTreeView.DataItemColumn);
-				else
-					dataItem = null;
-			}
+			this.Frontend = frontend;
+		}
 
-			public void ScrollToNode ()
-			{
-				tree.ScrollToCell (store.GetPath (currentIter), pad.CompleteColumn, true, 0, 0);
-			}
+		protected void OnPositionChanged ()
+		{
+			currentNodePositions = null;
+		}
+		
+		public abstract ITreeNavigator Clone ();
 
-			public bool MoveToRoot ()
-			{
-				AssertIsValid ();
-				Gtk.TreeIter it;
-				if (!store.GetIterFirst (out it))
-					return false;
-				
-				MoveToIter (it);
-				return true;
-			}
-		
-			public bool MoveToObject (object dataObject)
-			{
-				Gtk.TreeIter iter;
-				if (!pad.GetFirstNode (dataObject, out iter)) return false;
-				MoveToIter (iter);
-				return true;
-			}
-		
-			public bool MoveToNextObject ()
-			{
-				object dataItem = DataItem;
-				if (dataItem == null)
-					return false;
-				if (currentIter.Equals (Gtk.TreeIter.Zero))
-					return false;
-				Gtk.TreeIter it = currentIter;
-				if (!pad.GetNextNode (dataItem, ref it))
-					return false;
-				
-				MoveToIter (it);
-				return true;
-			}
-		
-			public bool MoveToParent ()
-			{
-				AssertIsValid ();
-				Gtk.TreeIter it;
-				if (store.IterParent (out it, currentIter)) {
-					MoveToIter (it);
-					return true;
-				} else
-					return false;
-			}
-			
-			public bool MoveToParent (Type dataType)
-			{
-				AssertIsValid ();
-				Gtk.TreeIter newIter = currentIter;
-				while (store.IterParent (out newIter, newIter)) {
-					object data = store.GetValue (newIter, ExtensibleTreeView.DataItemColumn);
-					if (dataType.IsInstanceOfType (data)) {
-						MoveToIter (newIter);
-						return true;
-					}
-				}
-				return false;
-			}
-			
-			public bool MoveToFirstChild ()
-			{
-				EnsureFilled ();
-				Gtk.TreeIter it;
-				if (!store.IterChildren (out it, currentIter))
-					return false;
-				
-				MoveToIter (it);
-				return true;
-			}
-			
-			public bool MoveNext ()
-			{
-				AssertIsValid ();
-				Gtk.TreeIter it = currentIter;
-				if (!store.IterNext (ref it))
-					return false;
-				MoveToIter (it);
-				return true;
-			}
-			
-			public bool HasChild (string name, Type dataType)
-			{
-				if (MoveToChild (name, dataType)) {
-					MoveToParent ();
-					return true;
-				} else
-					return false;
-			}
-			
-			public bool HasChildren ()
-			{
-				EnsureFilled ();
-				Gtk.TreeIter it;
-				return store.IterChildren (out it, currentIter);
-			}
-		
-			public bool FindChild (object dataObject)
-			{
-				return FindChild (dataObject, false);
-			}
-			
-			public bool FindChild (object dataObject, bool recursive)
-			{
-				AssertIsValid ();
-				object it;
-				
-				if (!pad.NodeHash.TryGetValue (dataObject, out it))
-					return false;
-				else if (it is Gtk.TreeIter) {
-					if (IsChildIter (currentIter, (Gtk.TreeIter)it, recursive)) {
-						MoveToIter ((Gtk.TreeIter)it);
-						return true;
-					} else
-						return false;
-				} else {
-					foreach (Gtk.TreeIter cit in (Gtk.TreeIter[])it) {
-						if (IsChildIter (currentIter, cit, recursive)) {
-							MoveToIter ((Gtk.TreeIter)cit);
-							return true;
-						}
-					}
-					return false;
-				}
-			}
-			
-			bool IsChildIter (Gtk.TreeIter pit, Gtk.TreeIter cit, bool recursive)
-			{
-				Gtk.TreePath pitPath = tree.Model.GetPath (pit);
-				Gtk.TreePath citPath = tree.Model.GetPath (cit);
+		public abstract object DataItem { get; }
 
-				if (!citPath.Up ())
-					return false;
-
-				if (citPath.Equals(pitPath))
-					return true;
-
-				return recursive && pitPath.IsAncestor (citPath);
-			}
-			
-			public bool MoveToChild (string name, Type dataType)
-			{
-				EnsureFilled ();
-				Gtk.TreeIter oldIter = currentIter;
-	
-				if (!MoveToFirstChild ()) {
-					MoveToIter (oldIter);
-					return false;
-				}
-	
-				do {
-					if (name == NodeName)
-						return true;
-				} while (MoveNext ());
-	
-				MoveToIter (oldIter);
-				return false;
-			}
-			
-			public bool Expanded {
-				get {
-					AssertIsValid ();
-					return tree.GetRowExpanded (store.GetPath (currentIter));
-				}
-				set {
-					AssertIsValid ();
-					if (value && !Expanded) {
-						Gtk.TreePath path = store.GetPath (currentIter);
-						tree.ExpandRow (path, false);
-					}
-					else if (!value && Expanded) {
-						Gtk.TreePath path = store.GetPath (currentIter);
-						tree.CollapseRow (path);
-					}
-				}
-			}
-	
-			public ITreeOptions Options {
-				get { return pad.globalOptions; }
-			}
-			
-			public NodeState SaveState ()
-			{
-				AssertIsValid ();
-				return NodeState.SaveState (pad, this);
-			}
-			
-			public void RestoreState (NodeState state)
-			{
-				AssertIsValid ();
-				NodeState.RestoreState (pad, this, state);
-			}
-		
-			public void Refresh ()
-			{
-				ITreeBuilder builder = new TreeBuilder (pad, currentIter);
-				builder.UpdateAll ();
-			}
-			
-			public void ExpandToNode ()
-			{
-				Gtk.TreeIter it;
-				AssertIsValid ();
-				if (store.IterParent (out it, currentIter)) {
-					Gtk.TreePath path = store.GetPath (it);
-					tree.ExpandToPath (path);
-				}
-			}
-			
-			public string NodeName {
-				get {
-					object data = DataItem;
-					NodeBuilder[] chain = BuilderChain;
-					if (chain != null && chain.Length > 0) return ((TypeNodeBuilder)chain[0]).GetNodeName (this, data);
-					else return GetStoreValue (ExtensibleTreeView.TextColumn) as string;
-				}
-			}
-			
-			public NodeBuilder[] BuilderChain {
-				get {
-					AssertIsValid ();
-					return (NodeBuilder[]) GetStoreValue (ExtensibleTreeView.BuilderChainColumn);
-				}
-			}
-			
-			public object GetParentDataItem (Type type, bool includeCurrent)
-			{
-				if (includeCurrent && type.IsInstanceOfType (DataItem))
-					return DataItem;
-	
-				Gtk.TreeIter it = currentIter;
-				while (store.IterParent (out it, it)) {
-					object data = store.GetValue (it, ExtensibleTreeView.DataItemColumn);
-					if (type.IsInstanceOfType (data))
-						return data;
-				}
+		public TypeNodeBuilder TypeNodeBuilder {
+			get {
+				NodeBuilder[] chain = NodeBuilderChain;
+				if (chain != null && chain.Length > 0)
+					return chain[0] as TypeNodeBuilder;
 				return null;
 			}
+		}
+
+		protected virtual void AssertIsValid ()
+		{
+		}
 		
-			public virtual void EnsureFilled ()
-			{
-				AssertIsValid ();
-				if (!(bool) GetStoreValue (ExtensibleTreeView.FilledColumn))
-					new TreeBuilder (pad, currentIter).FillNode ();
-			}
-			
-			public bool Filled {
-				get {
-					AssertIsValid ();
-					return (bool) GetStoreValue (ExtensibleTreeView.FilledColumn);
+		public abstract bool Selected { get; set; }
+		
+		public abstract NodePosition CurrentPosition { get; }
+
+		public abstract bool MoveToPosition (NodePosition position);
+
+		public void ScrollToNode ()
+		{
+			Frontend.Backend.ScrollToCell (CurrentPosition);
+		}
+
+		public abstract bool MoveToRoot ();
+	
+		public bool MoveToObject (object dataObject)
+		{
+			var positions = Frontend.NodeHash.GetNodePositions (dataObject);
+			if (positions.Length == 0)
+				return false;
+			MoveToPosition (positions [0]);
+			currentNodePositionIndex = 0;
+			currentNodePositions = positions;
+			return true;
+		}
+	
+		public bool MoveToNextObject ()
+		{
+			if (currentNodePositions != null) {
+				if (++currentNodePositionIndex < currentNodePositions.Length) {
+					var pos = currentNodePositions;
+					if (MoveToPosition (pos [currentNodePositionIndex])) {
+						currentNodePositions = pos;
+						return true;
+					}
+				}
+			} else {
+				var positions = Frontend.NodeHash.GetNodePositions (DataItem);
+				int i = Array.IndexOf (positions, CurrentPosition) + 1;
+				if (i < positions.Length && MoveToPosition (positions [i])) {
+					currentNodePositionIndex = i;
+					currentNodePositions = positions;
+					return true;
 				}
 			}
+			currentNodePositions = null;
+			return false;
+		}
+	
+		public abstract bool MoveToParent ();
 
-			object GetStoreValue (int column)
-			{
-				return store.GetValue (currentIter, column);
+		public virtual bool MoveToParent (Type dataType)
+		{
+			AssertIsValid ();
+			var oldPos = CurrentPosition;
+			while (MoveToParent ()) {
+				if (dataType.IsInstanceOfType (DataItem))
+					return true;
+			}
+			MoveToPosition (oldPos);
+			return false;
+		}
+
+		public abstract bool MoveToFirstChild ();
+
+		public abstract bool MoveNext ();
+
+		public bool HasChild (string name, Type dataType = null)
+		{
+			if (MoveToChild (name, dataType)) {
+				MoveToParent ();
+				return true;
+			} else
+				return false;
+		}
+
+		public abstract bool HasChildren ();
+	
+		public bool FindChild (object dataObject)
+		{
+			return FindChild (dataObject, false);
+		}
+		
+		public bool FindChild (object dataObject, bool recursive)
+		{
+			AssertIsValid ();
+
+			NodePosition[] poss = Frontend.NodeHash.GetNodePositions (dataObject);
+			if (poss.Length == 0)
+				return false;
+
+			foreach (NodePosition pos in poss) {
+				if (Frontend.Backend.IsChildPosition (CurrentPosition, pos, recursive)) {
+					MoveToPosition (pos);
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public bool MoveToChild (string name, Type dataType = null)
+		{
+			EnsureFilled ();
+			var oldPos = CurrentPosition;
+
+			if (!MoveToFirstChild ()) {
+				MoveToPosition (oldPos);
+				return false;
+			}
+
+			do {
+				if (name == NodeName && (dataType == null || (dataType.IsInstanceOfType (DataItem))))
+					return true;
+			} while (MoveNext ());
+
+			MoveToPosition (oldPos);
+			return false;
+		}
+
+		public abstract bool Expanded { get; set; }
+
+		public ITreeOptions Options {
+			get { return Frontend.GlobalOptions; }
+		}
+		
+		public NodeState SaveState ()
+		{
+			return NodeState.SaveState (this);
+		}
+		
+		public void RestoreState (NodeState state)
+		{
+			NodeState.RestoreState (this, state);
+		}
+	
+		public void Refresh ()
+		{
+			UpdateAll ();
+		}
+		
+		public abstract void ExpandToNode ();
+
+		public string NodeName {
+			get {
+				NodeBuilder[] chain = NodeBuilderChain;
+				if (chain != null && chain.Length > 0)
+					return ((TypeNodeBuilder)chain [0]).GetNodeName (this, DataItem);
+				else
+					return StoredNodeName;
+			}
+		}
+
+		/// <summary>
+		/// Returns the name stored in the tree node
+		/// </summary>
+		protected abstract string StoredNodeName { get; }
+
+		public abstract NodeBuilder[] NodeBuilderChain { get; }
+
+		public abstract object GetParentDataItem (Type type, bool includeCurrent);
+	
+		public void EnsureFilled ()
+		{
+			if (!Filled) {
+				try {
+					Frontend.BeginTreeUpdate ();
+					FillNode ();
+				} finally {
+					Frontend.EndTreeUpdate ();
+				}
+			}
+		}
+
+		public abstract void FillNode ();
+
+		public abstract bool Filled { get; }
+
+
+		public void UpdateAll ()
+		{
+			try {
+				Frontend.BeginTreeUpdate ();
+				Update ();
+				UpdateChildren ();
+			} finally {
+				Frontend.EndTreeUpdate ();
+			}
+		}
+
+		public void Update ()
+		{
+			try {
+				Frontend.BeginTreeUpdate ();
+				var data = DataItem;
+				var chain = NodeBuilderChain;
+				NodeAttributes ats = Frontend.GetAttributes (this, chain, data);
+				var nodeInfo = Frontend.GetNodeInfo (this, chain, data);
+				OnUpdate (ats, nodeInfo);
+			} finally {
+				Frontend.EndTreeUpdate ();
+			}
+		}
+
+		public void Update (NodeInfo nodeInfo)
+		{
+			try {
+				Frontend.BeginTreeUpdate ();
+				var data = DataItem;
+				var chain = NodeBuilderChain;
+				NodeAttributes ats = Frontend.GetAttributes (this, chain, data);
+				OnUpdate (ats, nodeInfo);
+			} finally {
+				Frontend.EndTreeUpdate ();
+			}
+		}
+
+		protected abstract void OnUpdate (NodeAttributes ats, NodeInfo nodeInfo);
+
+		public void ResetState ()
+		{
+			try {
+				Frontend.BeginTreeUpdate ();
+				Update ();
+
+				if (!Frontend.HasChildNodes (this, NodeBuilderChain, DataItem))
+					FillNode ();
+				else
+					ResetChildren ();
+			} finally {
+				Frontend.EndTreeUpdate ();
+			}
+		}
+
+		public abstract void ResetChildren ();
+
+		public void UpdateChildren ()
+		{
+			try {
+				Frontend.BeginTreeUpdate ();
+				object data = DataItem;
+				NodeBuilder[] chain = NodeBuilderChain;
+
+				if (!Filled) {
+					if (!Frontend.HasChildNodes (this, chain, data))
+						FillNode ();
+					return;
+				}
+
+				NodeState ns = SaveState ();
+				RestoreState (ns);
+			} finally {
+				Frontend.EndTreeUpdate ();
+			}
+		}
+
+		public void Remove ()
+		{
+			try {
+				Frontend.BeginTreeUpdate ();
+				Remove (false);
+			} finally {
+				Frontend.EndTreeUpdate ();
+			}
+		}
+
+		public abstract void Remove (bool moveToParent);
+
+		public void AddRoot (object dataObject)
+		{
+			AddChild (dataObject, true, true);
+		}
+
+		public void AddChild (object dataObject)
+		{
+			AddChild (dataObject, false);
+		}
+
+		public void AddChild (object dataObject, bool moveToChild)
+		{
+			AddChild (dataObject, false, moveToChild);
+		}
+
+		public void AddChild (object dataObject, NodeBuilder[] chain, NodeInfo ninfo, bool filled, bool moveToChild)
+		{
+			AddChild (dataObject, chain, ninfo, filled, false, moveToChild);
+		}
+
+		void AddChild (object dataObject, bool isRoot, bool moveToChild)
+		{
+			NodeBuilder[] chain = Frontend.GetBuilderChain (dataObject.GetType ());
+			if (chain == null) return;
+
+			var ni = Frontend.GetNodeInfo (this, chain, dataObject);
+			var filled = !Frontend.HasChildNodes (this, chain, dataObject);
+			AddChild (dataObject, chain, ni, filled, isRoot, moveToChild);
+		}
+
+		void AddChild (object dataObject, NodeBuilder[] chain, NodeInfo ni, bool filled, bool isRoot, bool moveToChild)
+		{
+			if (dataObject == null) throw new ArgumentNullException ("dataObject");
+
+			if (!isRoot && !Filled)
+				return;
+
+			var oldIter = CurrentPosition;
+			NodeAttributes ats = Frontend.GetAttributes (this, chain, dataObject);
+			if ((ats & NodeAttributes.Hidden) != 0)
+				return;
+
+			try {
+				Frontend.BeginTreeUpdate ();
+				OnAddChild (dataObject, chain, ats, ni, filled, isRoot);
+
+				Frontend.RegisterNode (CurrentPosition, dataObject, chain, true);
+				Frontend.NotifyInserted (this, dataObject);
+
+				if (!moveToChild)
+					MoveToPosition (oldIter);
+			} finally {
+				Frontend.EndTreeUpdate ();
+			}
+		}
+
+		public void AddChildren (IEnumerable dataObjects)
+		{
+			NodeBuilder[] chain = null;
+			Type oldType = null;
+			var oldIter = CurrentPosition;
+			int items = 0;
+			try {
+				Frontend.BeginTreeUpdate ();
+				PrepareBulkChildrenAdd ();
+				foreach (object dataObject in dataObjects) {
+					items++;
+					if (chain == null || dataObject.GetType () != oldType) {
+						oldType = dataObject.GetType ();
+						chain = Frontend.GetBuilderChain (oldType);
+						if (chain == null)
+							continue;
+					}
+
+					NodeAttributes ats = Frontend.GetAttributes (this, chain, dataObject);
+					if ((ats & NodeAttributes.Hidden) != 0)
+						continue;
+
+					var ni = Frontend.GetNodeInfo (this, chain, dataObject);
+					var filled = !Frontend.HasChildNodes (this, chain, dataObject);
+					OnAddChild (dataObject, chain, ats, ni, filled, false);
+
+					Frontend.RegisterNode (CurrentPosition, dataObject, chain, true);
+					Frontend.NotifyInserted (this, dataObject);
+
+					MoveToPosition (oldIter);
+				}
+			} finally {
+				FinishBulkChildrenAdd ();
+				Frontend.EndTreeUpdate ();
+			}
+		}
+
+		protected abstract void OnAddChild (object dataObject, NodeBuilder[] chain, NodeAttributes ats, NodeInfo nodeInfo, bool filled, bool isRoot);
+
+		protected virtual void PrepareBulkChildrenAdd ()
+		{
+		}
+
+		protected virtual void FinishBulkChildrenAdd ()
+		{
+		}
+
+		protected void CreateChildren (object dataObject)
+		{
+			var chain = NodeBuilderChain;
+			var pos = CurrentPosition;
+			foreach (NodeBuilder builder in chain) {
+				try {
+					builder.PrepareChildNodes (dataObject);
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
+				}
+				MoveToPosition (pos);
+			}
+			foreach (NodeBuilder builder in chain) {
+				try {
+					builder.BuildChildNodes (this, dataObject);
+				} catch (Exception ex) {
+					LoggingService.LogError (ex.ToString ());
+				}
+				MoveToPosition (pos);
 			}
 		}
 	}

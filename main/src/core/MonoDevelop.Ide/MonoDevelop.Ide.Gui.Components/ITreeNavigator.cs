@@ -53,8 +53,9 @@ namespace MonoDevelop.Ide.Gui.Components
 		bool MoveToParent (Type type);
 		bool MoveToRoot ();
 		bool MoveToFirstChild ();
-		bool MoveToChild (string name, Type dataType);
-		bool HasChild (string name, Type dataType);
+
+		bool MoveToChild (string name, Type dataType = null);
+		bool HasChild (string name, Type dataType = null);
 		bool HasChildren ();
 		bool MoveNext ();
 		
@@ -75,9 +76,15 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		ITreeNavigator Clone ();
 	}
-	
-	public struct NodePosition {
-		internal Gtk.TreeIter _iter;
+
+	/// <summary>
+	/// A position in the tree. This class is immutable.
+	/// </summary>
+	public class NodePosition {
 		internal object _node;
+
+		public virtual bool IsValid {
+			get { return true; }
+		}
 	}
 }

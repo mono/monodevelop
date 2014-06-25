@@ -58,8 +58,8 @@ namespace MonoDevelop.Ide.Gui.Pads
 		
 		public TreeViewPad ()
 		{
-			treeView.Tree.CursorChanged += new EventHandler (OnSelectionChanged);
-			treeView.Tree.EnableAutoTooltips ();
+			treeView.SelectionChanged += new EventHandler (OnSelectionChanged);
+			treeView.EnableAutoTooltips ();
 		}
 		
 		public override void Initialize (IPadWindow container)

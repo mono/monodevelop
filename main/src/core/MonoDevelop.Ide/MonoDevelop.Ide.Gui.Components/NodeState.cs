@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Serialization;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Components.Internal;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -114,21 +115,21 @@ namespace MonoDevelop.Ide.Gui.Components
 			return result;
 		}
 		
-		internal static NodeState SaveState (ExtensibleTreeView pad, ITreeNavigator nav)
+		internal static NodeState SaveState (ITreeNavigator nav)
 		{
-			NodeState state = SaveStateRec (pad, nav);
+			NodeState state = SaveStateRec (nav);
 			if (state == null) 
 				return new NodeState ();
 			else return state;
 		}
 		
-		static NodeState SaveStateRec (ExtensibleTreeView pad, ITreeNavigator nav)
+		static NodeState SaveStateRec (ITreeNavigator nav)
 		{
 			List<NodeState> childrenState = null;
 
 			if (nav.Filled && nav.MoveToFirstChild ()) {
 				do {
-					NodeState cs = SaveStateRec (pad, nav);
+					NodeState cs = SaveStateRec (nav);
 					if (cs != null) {
 						cs.NodeName = nav.NodeName;
 						if (childrenState == null) 
@@ -159,18 +160,24 @@ namespace MonoDevelop.Ide.Gui.Components
 			                      this.ChildrenState != null ? this.ChildrenState.Count.ToString () : "null");
 		}
 		 
-		internal static void RestoreState (ExtensibleTreeView pad, ITreeNavigator nav, NodeState es)
+		internal static void RestoreState (ITreeNavigator nav, NodeState es)
 		{
 			if (es == null) 
 				return;
 
-			pad.ResetState (nav);
+			if (nav is TreeNodeNavigator)
+				((TreeNodeNavigator)nav).ResetState ();
+			else if (nav is TransactedTreeBuilder)
+				((TransactedTreeBuilder)nav).ResetState ();
+			else
+				throw new NotSupportedException ();
+
 			nav.Expanded = es.Expanded;
 			
 			if (es.ChildrenState != null) {
 				foreach (NodeState ces in es.ChildrenState) {
 					if (nav.MoveToChild (ces.NodeName, null)) {
-						RestoreState (pad, nav, ces);
+						RestoreState (nav, ces);
 						nav.MoveToParent ();
 					}
 				}
