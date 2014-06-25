@@ -32,7 +32,7 @@ using Mono.TextEditor;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.SourceEditor.Wrappers;
 
-namespace MonoDevelop.Debugger
+namespace MonoDevelop.SourceEditor
 {
 	abstract class DebugTextMarker : MarginMarker
 	{

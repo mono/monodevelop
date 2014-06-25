@@ -3028,7 +3028,7 @@ namespace MonoDevelop.SourceEditor
 
 		ITextLineMarker IMarkerHost.CreateAsmLineMarker ()
 		{
-			return null;
+			return new AsmLineMarker ();
 		}
 
 		IGenericTextSegmentMarker IMarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length)
