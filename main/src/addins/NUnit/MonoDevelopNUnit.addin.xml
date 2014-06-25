@@ -12,7 +12,23 @@
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/TestProviders" name = "Test providers">
 		<Description>Test providers. Specified classes must implement ITestProvider.</Description>
-		<ExtensionNode name ="Class" />
+		<ExtensionNode name = "TestProvider" type = "MonoDevelop.NUnit.TestProviderNode">
+			<ExtensionNode name = "TestDiscoverer" type = "MonoDevelop.NUnit.TestDiscovererNode">
+				<ExtensionNode name = "TestExecutor" type = "MonoDevelop.NUnit.TestExecutorNode"/>
+			</ExtensionNode>
+		</ExtensionNode>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/NUnit/TestDiscoverers" name = "Test discoverers">
+		<Description>Test discoverers. Specified classes must implement ITestDiscoverer.</Description>
+		<ExtensionNode name = "TestDiscoverer" type = "MonoDevelop.NUnit.TestDiscovererNode">
+			<ExtensionNode name = "TestExecutor" type = "MonoDevelop.NUnit.TestExecutorNode"/>
+		</ExtensionNode>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/NUnit/TestExecutors" name = "Test executors">
+		<Description>Test executors. Specified classes must implement ITestExecutor.</Description>
+		<ExtensionNode name = "TestExecutor" type = "MonoDevelop.NUnit.TestExecutorNode"/>
 	</ExtensionPoint>
 
 	<ExtensionPoint path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
@@ -181,9 +197,18 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
-		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
+		<TestProvider id="Workspace" class="MonoDevelop.NUnit.WorkspaceTestProvider" />
+		<TestProvider id=".NET" class="MonoDevelop.NUnit.DotNetTestProvider" />
+		<TestProvider id="NUnit" class="MonoDevelop.NUnit.NUnitTestProvider" />
 	</Extension>
-
+	<!--
+	<Extension path = "/MonoDevelop/NUnit/TestDiscoverers">
+		<TestDiscoverer id = "Dumb" provider = "DotNet" class="Dumb.DumbDiscoverer">
+			<TestExecutor class = "Dumb.DumbExecutor" />
+			<TestExecutor class = "Executor 2" />
+		</TestDiscoverer>
+	</Extension>
+	-->
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "nunit-pad-icon" resource = "pad-unit-test-light-16.png" size="Menu" />
 		<StockIcon stockid = "nunit-results-pad-icon" resource = "pad-unit-test-results-light-16.png" size="Menu" />

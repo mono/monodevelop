@@ -1,5 +1,5 @@
 //
-// SystemTestProvider.cs
+// WorkspaceTestProvider.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -29,31 +29,20 @@
 using System;
 using MonoDevelop.Projects;
 using NUnit.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.NUnit
 {
-	public class SystemTestProvider: ITestProvider
+	public class WorkspaceTestProvider: ITestProvider
 	{
-		public UnitTest CreateUnitTest (IWorkspaceObject entry)
+		public IEnumerable<UnitTest> CreateUnitTests (IWorkspaceObject entry)
 		{
-			UnitTest test = null;
-			
 			if (entry is SolutionFolder)
-				test = SolutionFolderTestGroup.CreateTest ((SolutionFolder)entry);
+				yield return SolutionFolderTestGroup.CreateTest ((SolutionFolder)entry);
 			if (entry is Solution)
-				test = SolutionFolderTestGroup.CreateTest (((Solution)entry).RootFolder);
-			if (entry is Workspace)
-				test = WorkspaceTestGroup.CreateTest ((Workspace)entry);
-			if (entry is DotNetProject)
-				test = NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
-			if (entry is NUnitAssemblyGroupProject)
-				test = ((NUnitAssemblyGroupProject)entry).RootTest;
-			
-			UnitTestGroup grp = test as UnitTestGroup;
-			if (grp != null && !grp.HasTests)
-				return null;
-			
-			return test;
+				yield return SolutionFolderTestGroup.CreateTest (((Solution)entry).RootFolder);
+			if (entry is WorkspaceTestProvider)
+				yield return WorkspaceTestGroup.CreateTest ((Workspace)entry);
 		}
 		
 		public Type[] GetOptionTypes ()

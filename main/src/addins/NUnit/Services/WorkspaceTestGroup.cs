@@ -82,9 +82,9 @@ namespace MonoDevelop.NUnit
 		{
 			NUnitService testService = NUnitService.Instance;
 			foreach (WorkspaceItem e in workspace.Items) {
-				UnitTest t = testService.BuildTest (e);
-				if (t != null)
-					Tests.Add (t);
+				foreach (var test in testService.BuildTests (e)) {
+					Tests.Add (test);
+				}
 			}
 		}
 	}

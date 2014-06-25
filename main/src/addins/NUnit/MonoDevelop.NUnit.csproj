@@ -111,6 +111,10 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="templates\NUnitAssemblyGroup.xpt.xml">
@@ -215,7 +219,6 @@
     <Compile Include="Services\SolutionFolderTestGroup.cs" />
     <Compile Include="Services\ITestProvider.cs" />
     <Compile Include="Services\NUnitService.cs" />
-    <Compile Include="Services\SystemTestProvider.cs" />
     <Compile Include="Services\ITestProgressMonitor.cs" />
     <Compile Include="Services\TestContext.cs" />
     <Compile Include="Services\UnitTestCollection.cs" />
@@ -243,6 +246,16 @@
     <Compile Include="Gui\AbstractUnitTestEditorExtension.cs" />
     <Compile Include="Services\AbstractResultsStore.cs" />
     <Compile Include="Services\BinaryResultsStore.cs" />
+    <Compile Include="Services\NUnitTestProvider.cs" />
+    <Compile Include="Services\TestCase.cs" />
+    <Compile Include="Services\ITestDiscoverer.cs" />
+    <Compile Include="Services\ITestExecutor.cs" />
+    <Compile Include="Services\ExtensibleTestProvider.cs" />
+    <Compile Include="Services\UnitTestTree.cs" />
+    <Compile Include="Services\DotNetTestProvider.cs" />
+    <Compile Include="Services\ProjectTestDiscoverer.cs" />
+    <Compile Include="Services\ExtensionRegistry.cs" />
+    <Compile Include="Services\WorkspaceTestProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

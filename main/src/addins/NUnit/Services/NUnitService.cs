@@ -29,6 +29,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 using MonoDevelop.Core;
@@ -45,7 +46,9 @@ namespace MonoDevelop.NUnit
 	{
 		static NUnitService instance;
 		
-		ArrayList providers = new ArrayList ();
+		Dictionary<string, ITestProvider> providers = new Dictionary<string, ITestProvider> ();
+		ExtensionRegistry registry = new ExtensionRegistry ();
+
 		UnitTest[] rootTests;
 		
 		private NUnitService ()
@@ -58,7 +61,9 @@ namespace MonoDevelop.NUnit
 			IdeApp.Workspace.ItemRemovedFromSolution += OnWorkspaceChanged;
 			IdeApp.Workspace.ActiveConfigurationChanged += OnWorkspaceChanged;
 
-			Mono.Addins.AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestProviders", OnExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestDiscoverers", OnExtensionChange);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/NUnit/TestExecutors", OnExtensionChange);
 		}
 		
 		public static NUnitService Instance {
@@ -70,33 +75,105 @@ namespace MonoDevelop.NUnit
 				return instance;
 			}
 		}
-		
-		void OnExtensionChange (object s, ExtensionNodeEventArgs args)
+
+		void RegisterTestProvider (TestProviderNode node)
 		{
-			if (args.Change == ExtensionChange.Add) {
-				ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
-				ITestProvider provider = args.ExtensionObject as ITestProvider;
-				providers.Add (provider);
-				
-				Type[] types = provider.GetOptionTypes ();
-				if (types != null) {
-					foreach (Type t in types) {
-						if (!typeof(ICloneable).IsAssignableFrom (t)) {
-							LoggingService.LogError ("Option types must implement ICloneable: " + t);
-							continue;
-						}
-						ps.DataContext.IncludeType (t);
-					}
+			var provider = (ITestProvider)node.GetInstance ();
+			providers.Add (node.Id, provider);
+
+			var extensibleProvider = provider as IExtensibleTestProvider;
+			if (extensibleProvider != null) {
+				extensibleProvider.Id = node.Id;
+				extensibleProvider.Registry = registry;
+				// if provider contains discoverers register them now
+				foreach (var child in node.ChildNodes) {
+					RegisterTestDiscoverer ((TestDiscovererNode)child, node.Id);
 				}
 			}
-			else {
-				ITestProvider provider = args.ExtensionObject as ITestProvider;
-				providers.Remove (provider);
-				
-				// The types returned by provider.GetOptionTypes should probably be unregistered
-				// from the DataContext, but DataContext does not allow unregisterig.
-				// This is not a big issue anyway.
+
+			ProjectService ps = MonoDevelop.Projects.Services.ProjectService;
+			Type[] types = provider.GetOptionTypes ();
+			if (types != null) {
+				foreach (Type t in types) {
+					if (!typeof(ICloneable).IsAssignableFrom (t)) {
+						LoggingService.LogError ("Option types must implement ICloneable: " + t);
+						continue;
+					}
+					ps.DataContext.IncludeType (t);
+				}
 			}
+		}
+
+		void UnregisterTestProvider (TestProviderNode node)
+		{
+			providers.Remove (node.Id);
+
+			// unregister only discoverers that were registered as child nodes
+			foreach (var child in node.ChildNodes) {
+				UnregisterTestDiscoverer ((TestDiscovererNode)child, node.Id);
+			}
+
+			// The types returned by provider.GetOptionTypes should probably be unregistered
+			// from the DataContext, but DataContext does not allow unregisterig.
+			// This is not a big issue anyway.
+		}
+
+		void RegisterTestDiscoverer (TestDiscovererNode node, string providerId = null)
+		{
+			registry.RegisterTestDiscoverer (providerId ?? node.ProviderId, node.Id, node.Type);
+
+			// if discoverer contains executors register them now
+			foreach (var child in node.ChildNodes) {
+				RegisterTestExecutor ((TestExecutorNode)child, providerId ?? node.ProviderId, node.Id);
+			}
+		}
+
+		void UnregisterTestDiscoverer (TestDiscovererNode node, string providerId = null)
+		{
+			registry.UnregisterTestDiscoverer (providerId ?? node.ProviderId, node.Id);
+
+			// unregister only executors that were registered as child nodes
+			foreach (var child in node.ChildNodes) {
+				UnregisterTestExecutor ((TestExecutorNode)child, providerId ?? node.ProviderId, node.Id);
+			}
+		}
+
+		void RegisterTestExecutor (TestExecutorNode node, string providerId = null, string discovererId = null)
+		{
+			registry.RegisterTestExecutor (providerId ?? node.ProviderId, discovererId ?? node.DiscovererId, node.Id, node.Type);
+		}
+
+		void UnregisterTestExecutor (TestExecutorNode node, string providerId = null, string discovererId = null)
+		{
+			registry.UnregisterTestExecutor (providerId ?? node.ProviderId, discovererId ?? node.DiscovererId, node.Id);
+		}
+
+		void OnExtensionChange (object sender, ExtensionNodeEventArgs args)
+		{
+			var node = args.ExtensionNode;
+			if (node is TestExecutorNode) {
+				if (args.Change == ExtensionChange.Add) {
+					RegisterTestExecutor ((TestExecutorNode)node);
+				} else {
+					UnregisterTestExecutor ((TestExecutorNode)node);
+				}
+			} else if (node is TestDiscovererNode) {
+				if (args.Change == ExtensionChange.Add) {
+					RegisterTestDiscoverer ((TestDiscovererNode)node);
+				} else {
+					UnregisterTestDiscoverer ((TestDiscovererNode)node);
+				}
+			} else {
+				if (args.Change == ExtensionChange.Add) {
+					RegisterTestProvider ((TestProviderNode)node);
+				} else {
+					UnregisterTestProvider ((TestProviderNode)node);
+				}
+			}
+
+			// rebuild the tree if extensions were changed after the initialization
+			if (rootTests != null)
+				RebuildTests ();
 		}
 		
 		public IAsyncOperation RunTest (UnitTest test, IExecutionHandler context)
@@ -272,26 +349,29 @@ namespace MonoDevelop.NUnit
 
 			List<UnitTest> list = new List<UnitTest> ();
 			foreach (WorkspaceItem it in IdeApp.Workspace.Items) {
-				UnitTest t = BuildTest (it);
-				if (t != null)
-					list.Add (t);
+				list.AddRange (BuildTests (it));
 			}
 
 			rootTests = list.ToArray ();
 			NotifyTestSuiteChanged ();
 		}
 		
-		public UnitTest BuildTest (IWorkspaceObject entry)
+		public List<UnitTest> BuildTests (IWorkspaceObject entry)
 		{
-			foreach (ITestProvider p in providers) {
-				try {
-					UnitTest t = p.CreateUnitTest (entry);
-					if (t != null)
-						return t;
-				} catch {
+			var tests = new List<UnitTest>();
+			foreach (var pair in providers) {
+				var provider = pair.Value;
+				foreach (var test in provider.CreateUnitTests(entry)) {
+					// add to list only if it's not null or if it's a test group that has at least one child
+					if (test != null) {
+						var testGroup = test as UnitTestGroup;
+						if (testGroup == null || testGroup.HasTests) {
+							tests.Add(test);
+						}
+					}
 				}
 			}
-			return null;
+			return tests;
 		}
 		
 		public UnitTest[] RootTests {

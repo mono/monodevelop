@@ -220,6 +220,38 @@ namespace MonoDevelop.NUnit
 			Inconclusive += res.Inconclusive;
 			Skipped += res.Skipped;
 		}
+
+		public static explicit operator UnitTestResult(TestCaseResult testCaseResult)
+		{
+			UnitTestResult unitTestResult = new UnitTestResult();
+			unitTestResult.ConsoleOutput = testCaseResult.Output;
+
+			switch (testCaseResult.Status) {
+			case TestCaseResultStatus.Success:
+				unitTestResult.Status = ResultStatus.Success;
+				unitTestResult.Passed = 1;
+				break;
+			case TestCaseResultStatus.Failure:
+				unitTestResult.Status = ResultStatus.Failure;
+				unitTestResult.Message = testCaseResult.Message;
+				unitTestResult.StackTrace = testCaseResult.StackTrace;
+				unitTestResult.Failures = 1;
+				break;
+			case TestCaseResultStatus.Ignored:
+				unitTestResult.Status = ResultStatus.Ignored;
+				unitTestResult.Ignored = 1;
+				break;
+			case TestCaseResultStatus.Inconclusive:
+				unitTestResult.Status = ResultStatus.Inconclusive;
+				unitTestResult.Inconclusive = 1;
+				break;
+			default:
+				unitTestResult.Skipped = 1;
+				break;
+			}
+
+			return unitTestResult;
+		}
 	}
 }
 

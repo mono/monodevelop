@@ -30,12 +30,13 @@
 using System;
 using MonoDevelop.Projects;
 using NUnit.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.NUnit
 {
 	public interface ITestProvider
 	{
-		UnitTest CreateUnitTest (IWorkspaceObject entry);
+		IEnumerable<UnitTest> CreateUnitTests (IWorkspaceObject entry);
 		Type[] GetOptionTypes ();
 	}
 }
