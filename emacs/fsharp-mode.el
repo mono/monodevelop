@@ -141,8 +141,13 @@ and whether it is in a project directory.")
   (modify-syntax-entry ?\n "> b" fsharp-mode-syntax-table)
 
   ; quote and underscore are part of symbols
+  ; so are # and ! as they can form part of types/preprocessor
+  ; directives and also keywords
   (modify-syntax-entry ?' "_" fsharp-mode-syntax-table)
   (modify-syntax-entry ?_ "_" fsharp-mode-syntax-table)
+  (modify-syntax-entry ?# "_" fsharp-mode-syntax-table)
+  (modify-syntax-entry ?! "_" fsharp-mode-syntax-table)
+
   ; ISO-latin accented letters and EUC kanjis are part of words
   (let ((i 160))
     (while (< i 256)

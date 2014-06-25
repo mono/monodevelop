@@ -107,31 +107,40 @@
 
 (defconst fsharp-font-lock-keywords
   (list
-   (cons (concat "\\(\\<"
-                 (mapconcat 'identity
-                            '(
-                              ;; F# keywords
-                              "abstract" "and" "as" "assert" "base" "begin"
-                              "class" "default" "delegate" "do" "done" "downcast"
-                              "downto" "elif" "else" "end" "exception" "extern"
-                              "false" "finally" "for" "fun" "function" "global"
-                              "if" "in" "inherit" "inline" "interface" "internal"
-                              "lazy" "let" "match" "member" "module" "mutable"
-                              "namespace" "new" "null" "of" "open" "or" "override"
-                              "private" "public" "rec" "return" "sig" "static"
-                              "struct" "then" "to" "true" "try" "type" "upcast"
-                              "use" "val" "void" "when" "while" "with" "yield"
+   ;; Preprocessor directives
+   (cons (regexp-opt
+          '(;; Preprocessor directives
+            "#if" "#else" "#endif"
 
-                              ;; F# reserved words for future use
-                              "atomic" "break" "checked" "component" "const"
-                              "constraint" "constructor" "continue" "eager"
-                              "fixed" "fori" "functor" "include" "measure"
-                              "method" "mixin" "object" "parallel" "params"
-                              "process" "protected" "pure" "recursive" "sealed"
-                              "tailcall" "trait" "virtual" "volatile"
-                              )
-                            "\\>\\|\\<")
-                 "\\>\\)")
+            ;; F# keywords
+            "abstract" "and" "as" "assert" "base" "begin"
+            "class" "default" "delegate" "do" "done"
+            "downcast" "downto" "elif" "else" "end"
+            "exception" "extern" "false" "finally" "for" "fun"
+            "function" "global" "if" "in" "inherit" "inline"
+            "interface" "internal" "lazy" "let" "let!"
+            "match" "member" "module" "mutable" "namespace"
+            "new" "not" "null" "of" "open" "or" "override"
+            "private" "public" "rec" "return" "return!"
+            "select" "static" "struct" "then" "to" "true"
+            "try" "type" "upcast" "use" "use!"  "val" "void"
+            "when" "while" "with" "yield" "yield!"
+
+            ;; "Reserved because they are reserved in OCaml"
+            "asr" "land" "lor" "lsl" "lsr" "lxor" "mod" "sig"
+
+            ;; F# reserved words for future use
+            "atomic" "break" "checked" "component" "const"
+            "constraint" "constructor" "continue" "eager"
+            "event" "external" "fixed" "functor" "include"
+            "method" "mixin" "object" "parallel" "process"
+            "protected" "pure" "sealed" "tailcall" "trait"
+            "virtual" "volatile"
+
+            ;; Workflows not yet handled by fsautocomplete
+            ;; but async always present
+            "async"
+            ) 'symbols)
          'font-lock-keyword-face)
 
 ;blocking
