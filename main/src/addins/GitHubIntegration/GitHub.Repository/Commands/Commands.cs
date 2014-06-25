@@ -70,7 +70,7 @@ namespace GitHub.Repository.Commands
 				string s = String.Empty;
 				while ((s = sr.ReadLine()) != null)
 				{
-					if (s.Trim ().Contains ("[remote")) {
+					if (s.Trim ().StartsWith ("[remote")) {
 						break;
 					}
 				}
