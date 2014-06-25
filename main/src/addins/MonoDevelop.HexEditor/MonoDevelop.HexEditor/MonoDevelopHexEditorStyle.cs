@@ -31,6 +31,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt.Drawing;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.HexEditor
 {
