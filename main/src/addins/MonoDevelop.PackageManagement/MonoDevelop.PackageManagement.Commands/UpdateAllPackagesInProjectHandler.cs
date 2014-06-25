@@ -42,19 +42,19 @@ namespace MonoDevelop.PackageManagement.Commands
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
 				var updateAllPackages = new UpdateAllPackagesInProject (project);
 				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions);
+				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions, project);
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);
 			}
 		}
 
-		ProgressMonitorStatusMessage CreateProgressMessage (List<UpdatePackageAction> updateActions)
+		ProgressMonitorStatusMessage CreateProgressMessage (List<UpdatePackageAction> updateActions, IPackageManagementProject project)
 		{
 			if (updateActions.Count == 1) {
-				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (updateActions.First ().PackageId);
+				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (updateActions.First ().PackageId, project);
 			}
-			return ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count);
+			return ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count, project);
 		}
 
 		void ShowStatusBarError (Exception ex)

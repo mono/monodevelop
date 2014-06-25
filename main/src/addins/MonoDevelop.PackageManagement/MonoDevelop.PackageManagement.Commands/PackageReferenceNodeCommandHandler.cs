@@ -84,15 +84,16 @@ namespace MonoDevelop.PackageManagement.Commands
 		public void UpdatePackage ()
 		{
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
 
 			try {
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
 				UpdatePackageAction action = project.CreateUpdatePackageAction ();
 				action.PackageId = packageReferenceNode.Id;
 
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 			} catch (Exception ex) {
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
 			}
 		}

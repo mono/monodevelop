@@ -1,5 +1,5 @@
 ﻿//
-// UpdateAllPackagesInSolutionCommandHandler.cs
+// UpdatedPackagesMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -28,36 +28,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.PackageManagement
 {
-	public class UpdateAllPackagesInSolutionHandler : PackagesCommandHandler
+	public class UpdatedPackagesMonitor : IDisposable
 	{
-		protected override void Run ()
+		List<IPackageManagementProject> projects;
+		bool packagesUpdated;
+
+		public UpdatedPackagesMonitor (IPackageManagementProject project)
+			: this (new IPackageManagementProject [] { project })
 		{
-			try {
-				UpdateAllPackagesInSolution updateAllPackages = CreateUpdateAllPackagesInSolution ();
-				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage (updateAllPackages.Projects);
-				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
-			} catch (Exception ex) {
-				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage ();
-				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+		}
+
+		public UpdatedPackagesMonitor (IEnumerable<IPackageManagementProject> projects)
+		{
+			this.projects = projects.ToList ();
+			RegisterProjectEvents ();
+		}
+
+		void RegisterProjectEvents ()
+		{
+			foreach (IPackageManagementProject project in projects) {
+				project.PackageReferenceAdded += PackageReferenceAdded;
 			}
 		}
 
-		UpdateAllPackagesInSolution CreateUpdateAllPackagesInSolution ()
+		void PackageReferenceAdded (object sender, PackageOperationEventArgs e)
 		{
-			return new UpdateAllPackagesInSolution (
-				PackageManagementServices.Solution,
-				PackageManagementServices.PackageRepositoryCache.CreateAggregateRepository ());
+			packagesUpdated = true;
 		}
 
-		protected override void Update (CommandInfo info)
+		public void Dispose ()
 		{
-			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
+			foreach (IPackageManagementProject project in projects) {
+				project.PackageReferenceAdded -= PackageReferenceAdded;
+			}
+		}
+
+		public bool AnyPackagesUpdated ()
+		{
+			return packagesUpdated;
 		}
 	}
 }

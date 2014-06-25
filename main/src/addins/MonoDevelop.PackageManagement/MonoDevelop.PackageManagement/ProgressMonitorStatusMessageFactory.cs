@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
@@ -71,6 +73,15 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInSolutionMessage (IEnumerable<IPackageManagementProject> projects)
+		{
+			ProgressMonitorStatusMessage message = CreateUpdatingPackagesInSolutionMessage ();
+			return new UpdatePackagesProgressMonitorStatusMessage (
+				projects,
+				GetString ("Packages are up to date."),
+				message);
+		}
+
 		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage (int count)
 		{
 			return new ProgressMonitorStatusMessage (
@@ -79,6 +90,15 @@ namespace MonoDevelop.PackageManagement
 				GetString ("Could not update packages. Please see Package Console for details."),
 				GetString ("{0} packages updated with warnings. Please see Package Console for details.", count)
 			);
+		}
+
+		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage (int count, IPackageManagementProject project)
+		{
+			ProgressMonitorStatusMessage message = CreateUpdatingPackagesInProjectMessage (count);
+			return new UpdatePackagesProgressMonitorStatusMessage (
+				project,
+				GetString ("Packages are up to date."),
+				message);
 		}
 
 		public static ProgressMonitorStatusMessage CreateUpdatingPackagesInProjectMessage ()
@@ -99,6 +119,15 @@ namespace MonoDevelop.PackageManagement
 				GetString ("Could not update {0}. Please see Package Console for details.", packageId),
 				GetString ("{0} updated with warnings. Please see Package Console for details.", packageId)
 			);
+		}
+
+		public static ProgressMonitorStatusMessage CreateUpdatingSinglePackageMessage (string packageId, IPackageManagementProject project)
+		{
+			ProgressMonitorStatusMessage message = CreateUpdatingSinglePackageMessage (packageId);
+			return new UpdatePackagesProgressMonitorStatusMessage (
+				project,
+				GetString ("{0} is up to date.", packageId),
+				message);
 		}
 
 		public static ProgressMonitorStatusMessage CreateRemoveSinglePackageMessage (string packageId)
