@@ -41,11 +41,11 @@ namespace MonoDevelop.Components.Docking
 {
 	class DockContainer: Container
 	{
-		DockLayout layout;
-		DockFrame frame;
-		
+		GtkDockLayout layout;
+		GtkDockFrame frame;
+
 		List<TabStrip> notebooks = new List<TabStrip> ();
-		List<DockItem> items = new List<DockItem> ();
+		List<DockItemBackend> items = new List<DockItemBackend> ();
 
 		List<SplitterWidget> splitters = new List<SplitterWidget> ();
 
@@ -54,7 +54,7 @@ namespace MonoDevelop.Components.Docking
 		PlaceholderWindow placeholderWindow;
 		PadTitleWindow padTitleWindow;
 		
-		public DockContainer (DockFrame frame)
+		public DockContainer (GtkDockFrame frame)
 		{
 			GtkWorkarounds.FixContainerLeak (this);
 			
@@ -62,7 +62,7 @@ namespace MonoDevelop.Components.Docking
 			this.frame = frame;
 		}
 
-		internal DockGroupItem FindDockGroupItem (string id)
+		internal GtkDockGroupItem FindDockGroupItem (string id)
 		{
 			if (layout == null)
 				return null;
@@ -70,11 +70,11 @@ namespace MonoDevelop.Components.Docking
 				return layout.FindDockGroupItem (id);
 		}
 		
-		public List<DockItem> Items {
+		public List<DockItemBackend> Items {
 			get { return items; }
 		}
 
-		public DockLayout Layout {
+		public GtkDockLayout Layout {
 			get { return layout; }
 			set { layout = value; }
 		}
@@ -84,16 +84,16 @@ namespace MonoDevelop.Components.Docking
 			layout = null;
 		}
 
-		public void LoadLayout (DockLayout dl)
+		public void LoadLayout (GtkDockLayout dl)
 		{
 			HidePlaceholder ();
 
 			// Sticky items currently selected in notebooks will remain
 			// selected after switching the layout
-			List<DockItem> sickyOnTop = new List<DockItem> ();
-			foreach (DockItem it in items) {
+			var sickyOnTop = new List<DockItemBackend> ();
+			foreach (DockItemBackend it in items) {
 				if ((it.Behavior & DockItemBehavior.Sticky) != 0) {
-					DockGroupItem gitem = FindDockGroupItem (it.Id);
+					GtkDockGroupItem gitem = FindDockGroupItem (it.Id);
 					if (gitem != null && gitem.ParentGroup.IsSelectedPage (it))
 						sickyOnTop.Add (it);
 				}
@@ -103,18 +103,10 @@ namespace MonoDevelop.Components.Docking
 				layout.StoreAllocation ();
 			layout = dl;
 			layout.RestoreAllocation ();
-			
-			// Make sure items not present in this layout are hidden
-			foreach (DockItem it in items) {
-				if ((it.Behavior & DockItemBehavior.Sticky) != 0)
-					it.Visible = it.StickyVisible;
-				if (layout.FindDockGroupItem (it.Id) == null)
-					it.HideWidget ();
-			}
-			
+
 			RelayoutWidgets ();
 
-			foreach (DockItem it in sickyOnTop)
+			foreach (var it in sickyOnTop)
 				it.Present (false);
 		}
 		
@@ -154,7 +146,7 @@ namespace MonoDevelop.Components.Docking
 
 		int usedSplitters;
 
-		internal void AllocateSplitter (DockGroup grp, int index, Gdk.Rectangle a)
+		internal void AllocateSplitter (GtkDockGroup grp, int index, Gdk.Rectangle a)
 		{
 			var s = splitters[usedSplitters++];
 			if (a.Height > a.Width) {
@@ -174,7 +166,7 @@ namespace MonoDevelop.Components.Docking
 			List<Widget> widgets = new List<Widget> ();
 			foreach (Widget w in notebooks)
 				widgets.Add (w);
-			foreach (DockItem it in items) {
+			foreach (var it in items) {
 				if (it.HasWidget && it.Widget.Parent == this) {
 					widgets.Add (it.Widget);
 					if (it.TitleTab.Parent == this)
@@ -233,11 +225,11 @@ namespace MonoDevelop.Components.Docking
 			
 			// Create the needed notebooks and place the widgets in there
 			
-			List<DockGroup> tabbedGroups = new List<DockGroup> ();
+			List<GtkDockGroup> tabbedGroups = new List<GtkDockGroup> ();
 			GetTabbedGroups (layout, tabbedGroups);
 			
 			for (int n=0; n<tabbedGroups.Count; n++) {
-				DockGroup grp = tabbedGroups [n];
+				GtkDockGroup grp = tabbedGroups [n];
 				TabStrip ts;
 				if (n < notebooks.Count) {
 					ts = notebooks [n];
@@ -248,7 +240,7 @@ namespace MonoDevelop.Components.Docking
 					notebooks.Add (ts);
 					ts.Parent = this;
 				}
-				frame.UpdateRegionStyle (grp);
+				frame.Frontend.UpdateRegionStyle (grp.Group);
 				ts.VisualStyle = grp.VisualStyle;
 				grp.UpdateNotebook (ts);
 			}
@@ -277,10 +269,6 @@ namespace MonoDevelop.Components.Docking
 			for (int n=reqSpliters; n < splitters.Count; n++)
 				splitters[n].Hide ();
 
-			// Add widgets to the container
-			
-			layout.LayoutWidgets ();
-
 			// Create and add the required splitters
 
 			for (int n=0; n < reqSpliters; n++) {
@@ -298,10 +286,10 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		void GetTabbedGroups (DockGroup grp, List<DockGroup> tabbedGroups)
+		void GetTabbedGroups (GtkDockGroup grp, List<GtkDockGroup> tabbedGroups)
 		{
 			if (grp.Type == DockGroupType.Tabbed) {
-				if (grp.VisibleObjects.Count > 1)
+				if (grp.Objects.Count > 1)
 					tabbedGroups.Add (grp);
 				else
 					grp.ResetNotebook ();
@@ -309,22 +297,22 @@ namespace MonoDevelop.Components.Docking
 			else {
 				// Make sure it doesn't have a notebook bound to it
 				grp.ResetNotebook ();
-				foreach (DockObject ob in grp.Objects) {
-					if (ob is DockGroup)
-						GetTabbedGroups ((DockGroup) ob, tabbedGroups);
+				foreach (GtkDockObject ob in grp.Objects) {
+					if (ob is GtkDockGroup)
+						GetTabbedGroups ((GtkDockGroup) ob, tabbedGroups);
 				}
 			}
 		}
 
-		int CountRequiredSplitters (DockGroup grp)
+		int CountRequiredSplitters (GtkDockGroup grp)
 		{
 			if (grp.Type == DockGroupType.Tabbed)
 				return 0;
 			else {
-				int num = grp.VisibleObjects.Count - 1;
+				int num = grp.Objects.Count - 1;
 				if (num < 0)
 					return 0;
-				foreach (var c in grp.VisibleObjects.OfType<DockGroup> ())
+				foreach (var c in grp.Objects.OfType<GtkDockGroup> ())
 					num += CountRequiredSplitters (c);
 				return num;
 			}
@@ -376,13 +364,13 @@ namespace MonoDevelop.Components.Docking
 			base.OnUnrealized ();
 		}
 		
-		internal void ShowPlaceholder (DockItem draggedItem)
+		internal void ShowPlaceholder (DockItemBackend draggedItem)
 		{
 			padTitleWindow = new PadTitleWindow (frame, draggedItem);
 			placeholderWindow = new PlaceholderWindow (frame);
 		}
 		
-		internal bool UpdatePlaceholder (DockItem item, Gdk.Size size, bool allowDocking)
+		internal bool UpdatePlaceholder (DockItemBackend item, Gdk.Size size, bool allowDocking)
 		{
 			if (placeholderWindow == null)
 				return false;
@@ -425,27 +413,23 @@ namespace MonoDevelop.Components.Docking
 			return false;
 		}
 		
-		internal void DockInPlaceholder (DockItem item)
+		internal void DockInPlaceholder (DockItemBackend item)
 		{
 			if (placeholderWindow == null || !placeholderWindow.Visible)
 				return;
 			
 			if (placeholderWindow.AllowDocking && placeholderWindow.DockDelegate != null) {
 				item.Status = DockItemStatus.Dockable;
-				DockGroupItem dummyItem = new DockGroupItem (frame, new DockItem (frame, "__dummy"));
-				DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
-				gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
 				placeholderWindow.DockDelegate (item);
-				dummyItem.ParentGroup.Remove (dummyItem);
 				RelayoutWidgets ();
 			} else {
 				int px, py;
 				GetPointer (out px, out py);
-				DockGroupItem gi = FindDockGroupItem (item.Id);
+				GtkDockGroupItem gi = FindDockGroupItem (item.Id);
 				int pw, ph;
 				placeholderWindow.GetPosition (out px, out py);
 				placeholderWindow.GetSize (out pw, out ph);
-				gi.FloatRect = new Rectangle (px, py, pw, ph);
+				gi.SetFloatRect (new Xwt.Rectangle (px, py, pw, ph));
 				item.Status = DockItemStatus.Floating;
 			}
 		}
@@ -471,7 +455,7 @@ namespace MonoDevelop.Components.Docking
 			int dragPos;
 			int dragSize;
 
-			DockGroup dockGroup;
+			GtkDockGroup dockGroup;
 			int dockIndex;
 	
 			public SplitterWidget ()
@@ -480,7 +464,7 @@ namespace MonoDevelop.Components.Docking
 				this.AboveChild = true;
 			}
 
-			public void Init (DockGroup grp, int index)
+			public void Init (GtkDockGroup grp, int index)
 			{
 				dockGroup = grp;
 				dockIndex = index;
@@ -520,7 +504,7 @@ namespace MonoDevelop.Components.Docking
 			{
 				dragging = true;
 				dragPos = (dockGroup.Type == DockGroupType.Horizontal) ? (int)ev.XRoot : (int)ev.YRoot;
-				DockObject obj = dockGroup.VisibleObjects [dockIndex];
+				GtkDockObject obj = dockGroup.Objects [dockIndex];
 				dragSize = (dockGroup.Type == DockGroupType.Horizontal) ? obj.Allocation.Width : obj.Allocation.Height;
 				return base.OnButtonPressEvent (ev);
 			}

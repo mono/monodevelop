@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+>>>>>><?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -2893,25 +2893,17 @@
     <Compile Include="MonoDevelop.Components.Theming\ThemeContext.cs" />
     <Compile Include="MonoDevelop.Components.Theming\ThemeEngine.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Components.FolderListSelector.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\AutoHideBox.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\DockBar.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\DockBarItem.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\DockContainer.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockFrame.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\DockFrameTopLevel.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockGroup.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockGroupItem.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockGroupType.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockItem.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockItemBehavior.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\DockItemContainer.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockItemStatus.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockItemToolbar.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockLayout.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockObject.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockPosition.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\PlaceholderWindow.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\TabStrip.cs" />
     <Compile Include="MonoDevelop.Components\MenuButtonEntry.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\IOptionsPanel.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\MultiMessageDialog.cs" />
@@ -3231,7 +3223,6 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageColumn.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\IWelcomePageProvider.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageTipOfTheDaySection.cs" />
-    <Compile Include="MonoDevelop.Components.Docking\DockItemTitleTab.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageFirstRun.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusBar.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\StatusBarContextBase.cs" />
@@ -3485,6 +3476,26 @@
     <Compile Include="MonoDevelop.Components.AutoTest.Results\ObjectResult.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\PropertyMetadata.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\ObjectProperties.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\AutoHideBox.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\CrossfadeIcon.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\DockBar.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\DockBarItem.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\DockContainer.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\DockFrameTopLevel.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\DockItemBackend.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\DockItemContainer.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\DockItemTitleTab.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\GtkDockFrame.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\GtkDockGroup.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\GtkDockGroupItem.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\GtkDockItemToolbar.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\GtkDockLayout.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\GtkDockObject.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\PlaceholderWindow.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Gtk\TabStrip.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\DockPositionType.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\IDockFrameBackend.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\IDockItemBackend.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

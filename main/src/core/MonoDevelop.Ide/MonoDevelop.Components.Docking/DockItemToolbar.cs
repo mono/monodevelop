@@ -25,169 +25,80 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
 
 namespace MonoDevelop.Components.Docking
 {
 	public class DockItemToolbar
 	{
 		DockItem parentItem;
-		Gtk.Widget frame;
-		Box box;
-		PositionType position;
+		DockPositionType position;
 		bool empty = true;
-		CustomFrame topFrame;
-		
-		internal DockItemToolbar (DockItem parentItem, PositionType position)
+
+		internal DockItemToolbar (DockItem parentItem, DockPositionType position)
 		{
 			this.parentItem = parentItem;
-
-			topFrame = new CustomFrame ();
-			topFrame.SetPadding (3,3,3,3);
-
-/*			switch (position) {
-				case PositionType.Top:
-					frame.SetMargins (0, 0, 1, 1); 
-					frame.SetPadding (0, 2, 2, 0); 
-					break;
-				case PositionType.Bottom:
-					frame.SetMargins (0, 1, 1, 1);
-					frame.SetPadding (2, 2, 2, 0); 
-					break;
-				case PositionType.Left:
-					frame.SetMargins (0, 1, 1, 0);
-					frame.SetPadding (0, 0, 2, 2); 
-					break;
-				case PositionType.Right:
-					frame.SetMargins (0, 1, 0, 1);
-					frame.SetPadding (0, 0, 2, 2); 
-					break;
-			}*/
-
 			this.position = position;
-			if (position == PositionType.Top || position == PositionType.Bottom)
-				box = new HBox (false, 3);
-			else
-				box = new VBox (false, 3);
-			box.Show ();
-//			frame = box;
-			frame = topFrame;
-			topFrame.Add (box);
-
-//			topFrame.GradientBackround = true;
 		}
 
 		internal void SetStyle (DockVisualStyle style)
 		{
-			topFrame.BackgroundColor = style.PadBackgroundColor.Value;
 		}
 
 		public DockItem DockItem {
 			get { return parentItem; }
 		}
 		
-		internal Widget Container {
-			get { return frame; }
-		}
-		
-		public PositionType Position {
+		public DockPositionType Position {
 			get { return this.position; }
 		}
 		
-		public void Add (Widget widget)
+		public void Add (Control widget)
 		{
 			Add (widget, false);
 		}
 		
-		public void Add (Widget widget, bool fill)
+		public void Add (Control widget, bool fill)
 		{
 			Add (widget, fill, -1);
 		}
 		
-		public void Add (Widget widget, bool fill, int padding)
+		public void Add (Control widget, bool fill, int padding)
 		{
 			Add (widget, fill, padding, -1);
 		}
 		
-		void Add (Widget widget, bool fill, int padding, int index)
+		void Add (Control widget, bool fill, int padding, int index)
 		{
-			int defaultPadding = 3;
-			
-			if (widget is Button) {
-				((Button)widget).Relief = ReliefStyle.None;
-				((Button)widget).FocusOnClick = false;
-				defaultPadding = 0;
-			}
-			else if (widget is Entry) {
-				((Entry)widget).HasFrame = false;
-			}
-			else if (widget is ComboBox) {
-				((ComboBox)widget).HasFrame = false;
-			}
-			else if (widget is VSeparator)
-				((VSeparator)widget).HeightRequest = 10;
-			
-			if (padding == -1)
-				padding = defaultPadding;
-			
-			box.PackStart (widget, fill, fill, (uint)padding);
-			if (empty) {
-				empty = false;
-				frame.Show ();
-			}
-			if (index != -1) {
-				Box.BoxChild bc = (Box.BoxChild) box [widget];
-				bc.Position = index;
-			}
 		}
 		
-		public void Insert (Widget w, int index)
+		public void Insert (Control w, int index)
 		{
 			Add (w, false, 0, index);
 		}
 		
-		public void Remove (Widget widget)
+		public void Remove (Control widget)
 		{
-			box.Remove (widget);
 		}
 		
 		public bool Visible {
 			get {
-				return empty || frame.Visible;
+				return empty;
 			}
 			set {
-				frame.Visible = value;
 			}
 		}
 		
 		public bool Sensitive {
-			get { return frame.Sensitive; }
-			set { frame.Sensitive = value; }
+			get { return true; }
+			set { ; }
 		}
 		
 		public void ShowAll ()
 		{
-			frame.ShowAll ();
 		}
 		
-		public Widget[] Children {
-			get { return box.Children; }
-		}
-	}
-	
-	public class DockToolButton: Gtk.Button
-	{
-		public DockToolButton (string stockId)
-		{
-			Image = new Gtk.Image (stockId, IconSize.Menu);
-			Image.Show ();
-		}
-		
-		public DockToolButton (string stockId, string label)
-		{
-			Label = label;
-			Image = new Gtk.Image (stockId, IconSize.Menu);
-			Image.Show ();
+		public Control[] Children {
+			get { return new Control[0]; }
 		}
 	}
 }

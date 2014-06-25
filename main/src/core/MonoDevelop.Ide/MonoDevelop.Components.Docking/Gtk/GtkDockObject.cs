@@ -1,4 +1,4 @@
-﻿//
+//
 // DockObject.cs
 //
 // Author:
@@ -36,10 +36,11 @@ using System.Globalization;
 
 namespace MonoDevelop.Components.Docking
 {
-	internal abstract class DockObject
+	internal abstract class GtkDockObject
 	{
-		DockGroup parentGroup;
-		DockFrame frame;
+		GtkDockGroup parentGroup;
+		GtkDockFrame frame;
+		Gdk.Rectangle rect;
 
 		// The current size in pixels of this item
 		double size = -1;
@@ -47,17 +48,30 @@ namespace MonoDevelop.Components.Docking
 		// The current size in pixels of this item, but as an integer.
 		// In general it is the same value as size, but it may change a bit due to rounding.
 		int allocSize = -1;
-
+		
 		double defaultHorSize = -1;
 		double defaultVerSize = -1;
 		double prefSize = 0;
+		
+		// Those are the last known coordinates of the item. They are stored in StoreAllocation
+		// and restored to rect in RestoreAllocation. This is needed for example when a layout
+		// is cloned. It is convenient to have allocation information in the cloned layout, even
+		// if the layout has never been displayed (e.g., to decide the autohide dock location)
+		int ax=-1, ay=-1;
 
-		public DockObject (DockFrame frame)
+		DockObject frontend;
+		
+		public GtkDockObject (GtkDockFrame frame, DockObject frontend)
 		{
 			this.frame = frame;
+			this.frontend = frontend;
 		}
 
-		internal DockGroup ParentGroup {
+		public DockObject Frontend {
+			get { return frontend; }
+		}
+		
+		internal GtkDockGroup ParentGroup {
 			get {
 				return parentGroup;
 			}
@@ -76,7 +90,11 @@ namespace MonoDevelop.Components.Docking
 				size = value;
 			}
 		}
-
+		
+		public bool HasAllocatedSize {
+			get { return allocSize != -1; }
+		}
+		
 		public double DefaultSize {
 			get {
 				if (defaultHorSize < 0)
@@ -99,17 +117,56 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public DockVisualStyle VisualStyle { get; set; }
-
+		public DockVisualStyle VisualStyle {
+			get { return frontend.VisualStyle; }
+		}
+		
 		internal void ResetDefaultSize ()
 		{
 			defaultHorSize = -1;
 			defaultVerSize = -1;
 		}
 
+		public int MinSize {
+			get {
+				int w,h;
+				GetMinSize (out w, out h);
+				if (parentGroup != null) {
+					if (parentGroup.Type == DockGroupType.Horizontal)
+						return w;
+					else if (parentGroup.Type == DockGroupType.Vertical)
+						return h;
+				}
+				return w;
+			}
+		}
+		
 		public abstract bool Expand { get; }
+		
+		public virtual void SizeAllocate (Gdk.Rectangle rect)
+		{
+			this.rect = rect;
+		}
 
-		public DockFrame Frame {
+		internal Gdk.Rectangle Allocation {
+			get {
+				return rect;
+			}
+			set {
+				rect = value; 
+			}
+		}
+
+		public int AllocSize {
+			get {
+				return allocSize;
+			}
+			set {
+				allocSize = value;
+			}
+		}
+		
+		public MonoDevelop.Components.Docking.GtkDockFrame Frame {
 			get {
 				return frame;
 			}
@@ -135,73 +192,56 @@ namespace MonoDevelop.Components.Docking
 			defaultHorSize = (double) width;
 			defaultVerSize = (double) height;
 		}
-
+		
 		internal virtual void GetDefaultSize (out int width, out int height)
 		{
 			width = -1;
 			height = -1;
 		}
 
-		internal abstract bool Visible { get; }
-
-		internal virtual void Write (XmlWriter writer)
+		internal virtual void GetMinSize (out int width, out int height)
 		{
-			writer.WriteAttributeString ("size", size.ToString (CultureInfo.InvariantCulture));
-			writer.WriteAttributeString ("prefSize", prefSize.ToString (CultureInfo.InvariantCulture));
-			writer.WriteAttributeString ("defaultHorSize", defaultHorSize.ToString (CultureInfo.InvariantCulture));
-			writer.WriteAttributeString ("defaultVerSize", defaultVerSize.ToString (CultureInfo.InvariantCulture));
+			width = 0;
+			height = 0;
 		}
-
-		internal virtual void Read (XmlReader reader)
+			
+		internal abstract void QueueResize ();
+		
+		internal abstract bool GetDockTarget (DockItemBackend item, int px, int py, out DockDelegate dockDelegate, out Gdk.Rectangle rect);
+		
+		internal abstract Gtk.Requisition SizeRequest ();
+		
+		internal abstract void Dump (int ind);
+		
+		internal virtual void RestoreAllocation ()
 		{
-			size = double.Parse (reader.GetAttribute ("size"), CultureInfo.InvariantCulture);
-			prefSize = double.Parse (reader.GetAttribute ("prefSize"), CultureInfo.InvariantCulture);
-			defaultHorSize = double.Parse (reader.GetAttribute ("defaultHorSize"), CultureInfo.InvariantCulture);
-			defaultVerSize = double.Parse (reader.GetAttribute ("defaultVerSize"), CultureInfo.InvariantCulture);
+			if (parentGroup != null) {
+				int x = ax != -1 ? ax : 0;
+				int y = ay != -1 ? ay : 0;
+				if (parentGroup.Type == DockGroupType.Horizontal)
+					rect = new Gdk.Rectangle (x, y, (int)size, parentGroup.Allocation.Height);
+				else if (parentGroup.Type == DockGroupType.Vertical)
+					rect = new Gdk.Rectangle (x, y, parentGroup.Allocation.Width, (int)size);
+			}
 		}
-
-		public virtual void CopyFrom (DockObject ob)
+		
+		internal virtual void StoreAllocation ()
 		{
-			parentGroup = null;
-			size = ob.size;
-			frame = ob.frame;
-			allocSize = ob.allocSize;
-			defaultHorSize = ob.defaultHorSize;
-			defaultVerSize = ob.defaultVerSize;
-			prefSize = ob.prefSize;
+			if (parentGroup == null || parentGroup.Type == DockGroupType.Horizontal)
+				size = prefSize = (int) rect.Width;
+			else if (parentGroup.Type == DockGroupType.Vertical)
+				size = prefSize = (int) rect.Height;
+			ax = Allocation.X;
+			ay = Allocation.Y;
 		}
-
-		public DockObject Clone ()
-		{
-			DockObject ob = (DockObject) this.MemberwiseClone ();
-			ob.CopyFrom (this);
-			return ob;
-		}
-
-		public virtual void CopySizeFrom (DockObject obj)
-		{
-			size = obj.size;
-			allocSize = obj.allocSize;
-			defaultHorSize = obj.defaultHorSize;
-			defaultVerSize = obj.defaultVerSize;
-			prefSize = obj.prefSize;
-		}
-
-		public virtual bool IsNextToMargin (DockPositionType margin, bool visibleOnly)
+		
+		public virtual bool IsNextToMargin (Gtk.PositionType margin, bool visibleOnly)
 		{
 			if (ParentGroup == null)
 				return true;
 			if (!ParentGroup.IsNextToMargin (margin, visibleOnly))
 				return false;
 			return ParentGroup.IsChildNextToMargin (margin, this, visibleOnly);
-		}
-
-		internal virtual void StoreAllocation ()
-		{
-		}
-
-		internal virtual void RestoreAllocation ()
-		{
 		}
 	}
 }

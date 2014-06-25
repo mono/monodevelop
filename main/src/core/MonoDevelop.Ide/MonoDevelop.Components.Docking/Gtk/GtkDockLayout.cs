@@ -36,57 +36,33 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockLayout: DockGroup
+	class GtkDockLayout: GtkDockGroup
 	{
-		string name;
 		int layoutWidth = 1024;
 		int layoutHeight = 768;
 		
-		public DockLayout (DockFrame frame): base (frame, DockGroupType.Horizontal)
+		public GtkDockLayout (GtkDockFrame frame, DockLayout la): base (frame, la)
 		{
 		}
 		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
-		}
-		
-		internal override void Write (XmlWriter writer)
+		public override void SizeAllocate (Gdk.Rectangle rect)
 		{
-			writer.WriteStartElement ("layout");
-			writer.WriteAttributeString ("name", name);
-			writer.WriteAttributeString ("width", layoutWidth.ToString ());
-			writer.WriteAttributeString ("height", layoutHeight.ToString ());
-			base.Write (writer);
-			writer.WriteEndElement ();
-		}
-		
-		internal override void Read (XmlReader reader)
-		{
-			name = reader.GetAttribute ("name");
-			string s = reader.GetAttribute ("width");
-			if (s != null)
-				layoutWidth = int.Parse (s);
-			s = reader.GetAttribute ("height");
-			if (s != null)
-				layoutHeight = int.Parse (s);
-			base.Read (reader);
-		}
-		
-		public static DockLayout Read (DockFrame frame, XmlReader reader)
-		{
-			DockLayout layout = new DockLayout (frame);
-			layout.Read (reader);
-			return layout;
+			Size = rect.Width;
+			base.SizeAllocate (rect);
 		}
 
-		public void StoreAllocation ()
+		internal override void StoreAllocation ()
 		{
-			throw new NotImplementedException ();
+			base.StoreAllocation ();
+			layoutWidth = Allocation.Width;
+			layoutHeight = Allocation.Height;
 		}
+		
+		internal override void RestoreAllocation ()
+		{
+			Allocation = new Gdk.Rectangle (0, 0, layoutWidth, layoutHeight);
+			base.RestoreAllocation ();
+		}
+
 	}
 }

@@ -37,176 +37,47 @@ using Gtk;
 using Gdk;
 using Xwt.Motion;
 using MonoDevelop.Core;
+using MonoDevelop.Components.Docking.Internal;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockFrame: HBox, IAnimatable
+	public class DockFrame: Control
 	{
-		internal const double ItemDockCenterArea = 0.4;
-		internal const int GroupDockSeparatorSize = 40;
-		
-		internal bool ShadedSeparators = true;
-		
-		DockContainer container;
-		
-		int handleSize = 1;
-		int handlePadding = 0;
 		int defaultItemWidth = 300;
 		int defaultItemHeight = 250;
 		uint autoShowDelay = 400;
 		uint autoHideDelay = 500;
 		
 		SortedDictionary<string,DockLayout> layouts = new SortedDictionary<string,DockLayout> ();
-		List<DockFrameTopLevel> topLevels = new List<DockFrameTopLevel> ();
 		string currentLayout;
-		int compactGuiLevel = 3;
-		
-		DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
-		VBox mainBox;
+
+		DockLayout layout;
+		List<DockItem> items = new List<DockItem> ();
+		IDockFrameBackend backend;
+
 		DockVisualStyle defaultStyle;
-		Gtk.Widget overlayWidget;
 
 		public DockFrame ()
 		{
-			GtkWorkarounds.FixContainerLeak (this);
-
-			dockBarTop = new DockBar (this, Gtk.PositionType.Top);
-			dockBarBottom = new DockBar (this, Gtk.PositionType.Bottom);
-			dockBarLeft = new DockBar (this, Gtk.PositionType.Left);
-			dockBarRight = new DockBar (this, Gtk.PositionType.Right);
-			
-			container = new DockContainer (this);
-			HBox hbox = new HBox ();
-			hbox.PackStart (dockBarLeft, false, false, 0);
-			hbox.PackStart (container, true, true, 0);
-			hbox.PackStart (dockBarRight, false, false, 0);
-			mainBox = new VBox ();
-			mainBox.PackStart (dockBarTop, false, false, 0);
-			mainBox.PackStart (hbox, true, true, 0);
-			mainBox.PackStart (dockBarBottom, false, false, 0);
-			Add (mainBox);
-			mainBox.ShowAll ();
-			mainBox.NoShowAll = true;
-			CompactGuiLevel = 2;
-			UpdateDockbarsVisibility ();
-
 			DefaultVisualStyle = new DockVisualStyle ();
 		}
 
-		public bool DockbarsVisible {
-			get {
-				return !OverlayWidgetVisible;
-			}
+		protected override object CreateNativeWidget ()
+		{
+			backend = new GtkDockFrame (this);
+			return (Gtk.Widget)backend;
 		}
-
-		internal bool UseWindowsForTopLevelFrames {
-			get { return Platform.IsMac; }
-		}
-		
-		/// <summary>
-		/// Compactness level of the gui, from 1 (not compact) to 5 (very compact).
-		/// </summary>
-		public int CompactGuiLevel {
-			get { return compactGuiLevel; }
-			set {
-				compactGuiLevel = value;
-/*				switch (compactGuiLevel) {
-					case 1: handleSize = 6; break;
-					case 2: 
-					case 3: handleSize = IsWindows ? 4 : 6; break;
-					case 4:
-					case 5: handleSize = 3; break;
-				}
-*/				handlePadding = 0;
-				dockBarTop.OnCompactLevelChanged ();
-				dockBarBottom.OnCompactLevelChanged ();
-				dockBarLeft.OnCompactLevelChanged ();
-				dockBarRight.OnCompactLevelChanged ();
-				container.RelayoutWidgets ();
-			}
-		}
-
-		internal bool OverlayWidgetVisible { get; set; }
 
 		public void AddOverlayWidget (Widget widget, bool animate = false)
 		{
-			RemoveOverlayWidget (false);
-
-			this.overlayWidget = widget;
-			widget.Parent = this;
-			OverlayWidgetVisible = true;
-			MinimizeAllAutohidden ();
-			if (animate) {
-				currentOverlayPosition = Math.Max (0, Allocation.Y + Allocation.Height);
-				this.Animate (
-					"ShowOverlayWidget", 
-					ShowOverlayWidgetAnimation,
-					easing: Easing.CubicOut);
-			} else {
-				currentOverlayPosition = Math.Max (0, Allocation.Y);
-				QueueResize ();
-			}
-
-			UpdateDockbarsVisibility ();
 		}
 
 		public void RemoveOverlayWidget (bool animate = false)
 		{
-			this.AbortAnimation ("ShowOverlayWidget");
-			this.AbortAnimation ("HideOverlayWidget");
-			OverlayWidgetVisible = false;
-
-			if (overlayWidget != null) {
-				if (animate) {
-					currentOverlayPosition = Allocation.Y;
-					this.Animate (
-						"HideOverlayWidget", 
-						HideOverlayWidgetAnimation,
-						finished: (a,b) => { 
-							if (overlayWidget != null) {
-								overlayWidget.Unparent ();
-								overlayWidget = null;
-							}
-						},
-						easing: Easing.SinOut);
-				} else {
-					overlayWidget.Unparent ();
-					overlayWidget = null;
-					QueueResize ();
-				}
-			}
-
-			UpdateDockbarsVisibility ();
 		}
 
-		int currentOverlayPosition;
-
-		void UpdateDockbarsVisibility ()
-		{
-			dockBarTop.UpdateVisibility ();
-			dockBarBottom.UpdateVisibility ();
-			dockBarLeft.UpdateVisibility ();
-			dockBarRight.UpdateVisibility ();
-		}
-
-		void ShowOverlayWidgetAnimation (double value)
-		{
-			currentOverlayPosition = Allocation.Y + (int)((double)Allocation.Height * (1f - value));
-			overlayWidget.SizeAllocate (new Rectangle (Allocation.X, currentOverlayPosition, Allocation.Width, Allocation.Height));
-		}
-
-		void HideOverlayWidgetAnimation (double value)
-		{
-			currentOverlayPosition = Allocation.Y + (int)((double)Allocation.Height * value);
-			overlayWidget.SizeAllocate (new Rectangle (Allocation.X, currentOverlayPosition, Allocation.Width, Allocation.Height));
-		}
-
-		void IAnimatable.BatchBegin ()
-		{
-		}
-
-		void IAnimatable.BatchCommit ()
-		{
+		internal IDockFrameBackend Backend {
+			get { return backend; }
 		}
 
 		// Registered region styles. We are using a list instead of a dictionary because
@@ -336,7 +207,7 @@ namespace MonoDevelop.Components.Docking
 				int i = pos.IndexOf ('/');
 				if (i == -1) continue;
 				string id = pos.Substring (0,i).Trim ();
-				DockGroup g = container.Layout.FindGroupContaining (id);
+				DockGroup g = layout.FindGroupContaining (id);
 				if (g != null) {
 					DockPosition dpos;
 					try {
@@ -412,49 +283,12 @@ namespace MonoDevelop.Components.Docking
 			return obj != null && (obj.ParentGroup == ancestorToFind || ObjectHasAncestor (obj.ParentGroup, ancestorToFind));
 		}
 		
-		public DockBar ExtractDockBar (PositionType pos)
+		internal DockGroupItem FindDockGroupItem (string id)
 		{
-			DockBar db = new DockBar (this, pos);
-			switch (pos) {
-				case PositionType.Left: db.OriginalBar = dockBarLeft; dockBarLeft = db; break;
-				case PositionType.Top: db.OriginalBar = dockBarTop; dockBarTop = db; break;
-				case PositionType.Right: db.OriginalBar = dockBarRight; dockBarRight = db; break;
-				case PositionType.Bottom: db.OriginalBar = dockBarBottom; dockBarBottom = db; break;
-			}
-			return db;
-		}
-		
-		internal DockBar GetDockBar (PositionType pos)
-		{
-			switch (pos) {
-				case Gtk.PositionType.Top: return dockBarTop;
-				case Gtk.PositionType.Bottom: return dockBarBottom;
-				case Gtk.PositionType.Left: return dockBarLeft;
-				case Gtk.PositionType.Right: return dockBarRight;
-			}
-			return null;
-		}
-		
-		internal DockContainer Container {
-			get { return container; }
-		}
-
-		public int HandleSize {
-			get {
-				return handleSize;
-			}
-			set {
-				handleSize = value;
-			}
-		}
-		
-		public int HandlePadding {
-			get {
-				return handlePadding;
-			}
-			set {
-				handlePadding = value;
-			}
+			if (layout == null)
+				return null;
+			else
+				return layout.FindDockGroupItem (id);
 		}
 
 		public int DefaultItemWidth {
@@ -475,17 +309,9 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		internal int TotalHandleSize {
-			get { return handleSize + handlePadding*2; }
-		}
-
-		internal int TotalSensitiveHandleSize {
-			get { return 6; }
-		}
-		
 		public DockItem AddItem (string id)
 		{
-			foreach (DockItem dit in container.Items) {
+			foreach (DockItem dit in items) {
 				if (dit.Id == id) {
 					if (dit.IsPositionMarker) {
 						dit.IsPositionMarker = false;
@@ -496,22 +322,23 @@ namespace MonoDevelop.Components.Docking
 			}
 			
 			DockItem it = new DockItem (this, id);
-			container.Items.Add (it);
+			it.Init (backend.CreateItemBackend (it));
+			items.Add (it);
 			return it;
 		}
 		
 		public void RemoveItem (DockItem it)
 		{
-			if (container.Layout != null)
-				container.Layout.RemoveItemRec (it);
+			if (layout != null)
+				layout.RemoveItemRec (it);
 			foreach (DockGroup grp in layouts.Values)
 				grp.RemoveItemRec (it);
-			container.Items.Remove (it);
+			items.Remove (it);
 		}
 		
 		public DockItem GetItem (string id)
 		{
-			foreach (DockItem it in container.Items) {
+			foreach (DockItem it in items) {
 				if (it.Id == id) {
 					if (!it.IsPositionMarker)
 					    return it;
@@ -524,7 +351,7 @@ namespace MonoDevelop.Components.Docking
 		
 		public IEnumerable<DockItem> GetItems ()
 		{
-			return container.Items;
+			return items;
 		}
 		
 		bool LoadLayout (string layoutName)
@@ -533,28 +360,19 @@ namespace MonoDevelop.Components.Docking
 			if (!layouts.TryGetValue (layoutName, out dl))
 				return false;
 
-			var focus = GetActiveWidget ();
+			layout = dl;
 
-			container.LoadLayout (dl);
-
-			// Keep the currently focused widget when switching layouts
-			if (focus != null && focus.IsRealized && focus.Visible)
-				DockItem.SetFocus (focus);
-
-			return true;
-		}
-
-		Gtk.Widget GetActiveWidget ()
-		{
-			Gtk.Widget widget = this;
-			while (widget is Gtk.Container) {
-				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
-				if (child != null)
-					widget = child;
-				else
-					break;
+			// Make sure items not present in this layout are hidden
+			foreach (var it in items) {
+				if ((it.Behavior & DockItemBehavior.Sticky) != 0)
+					it.Visible = it.StickyVisible;
+				if (dl.FindDockGroupItem (it.Id) == null)
+					it.HideWidget ();
 			}
-			return widget;
+
+			dl.RestoreAllocation ();
+			backend.LoadLayout (dl);
+			return true;
 		}
 
 		public void CreateLayout (string name)
@@ -570,11 +388,11 @@ namespace MonoDevelop.Components.Docking
 		public void CreateLayout (string name, bool copyCurrent)
 		{
 			DockLayout dl;
-			if (container.Layout == null || !copyCurrent) {
+			if (layout == null || !copyCurrent) {
 				dl = GetDefaultLayout ();
 			} else {
-				container.StoreAllocation ();
-				dl = (DockLayout) container.Layout.Clone ();
+				layout.StoreAllocation ();
+				dl = (DockLayout) layout.Clone ();
 			}
 			dl.Name = name;
 			layouts [name] = dl;
@@ -636,8 +454,8 @@ namespace MonoDevelop.Components.Docking
 		
 		public void SaveLayouts (XmlWriter writer)
 		{
-			if (container.Layout != null)
-				container.Layout.StoreAllocation ();
+			if (layout != null)
+				layout.StoreAllocation ();
 			writer.WriteStartElement ("layouts");
 			foreach (DockLayout la in layouts.Values)
 				la.Write (writer);
@@ -654,7 +472,6 @@ namespace MonoDevelop.Components.Docking
 		public void LoadLayouts (XmlReader reader)
 		{
 			layouts.Clear ();
-			container.Clear ();
 			currentLayout = null;
 			
 			reader.MoveToContent ();
@@ -674,38 +491,21 @@ namespace MonoDevelop.Components.Docking
 				reader.MoveToContent ();
 			}
 			reader.ReadEndElement ();
-			container.RelayoutWidgets ();
 		}
 
 		internal void UpdateTitle (DockItem item)
 		{
-			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
-			if (gitem == null)
-				return;
-			
-			gitem.ParentGroup.UpdateTitle (item);
-			dockBarTop.UpdateTitle (item);
-			dockBarBottom.UpdateTitle (item);
-			dockBarLeft.UpdateTitle (item);
-			dockBarRight.UpdateTitle (item);
+			backend.UpdateTitle (item);
 		}
 		
 		internal void UpdateStyle (DockItem item)
 		{
-			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
-			if (gitem == null)
-				return;
-			
-			gitem.ParentGroup.UpdateStyle (item);
-			dockBarTop.UpdateStyle (item);
-			dockBarBottom.UpdateStyle (item);
-			dockBarLeft.UpdateStyle (item);
-			dockBarRight.UpdateStyle (item);
+			backend.UpdateStyle (item);
 		}
 		
 		internal void Present (DockItem item, bool giveFocus)
 		{
-			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
+			DockGroupItem gitem = FindDockGroupItem (item.Id);
 			if (gitem == null)
 				return;
 			
@@ -714,7 +514,7 @@ namespace MonoDevelop.Components.Docking
 		
 		internal bool GetVisible (DockItem item)
 		{
-			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
+			DockGroupItem gitem = FindDockGroupItem (item.Id);
 			if (gitem == null)
 				return false;
 			return gitem.VisibleFlag;
@@ -734,31 +534,30 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void SetVisible (DockItem item, bool visible)
 		{
-			if (container.Layout == null)
+			if (layout == null)
 				return;
-			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
+			DockGroupItem gitem = FindDockGroupItem (item.Id);
 			
 			if (gitem == null) {
 				if (visible) {
 					// The item is not present in the layout. Add it now.
 					if (!string.IsNullOrEmpty (item.DefaultLocation))
-						gitem = AddDefaultItem (container.Layout, item);
+						gitem = AddDefaultItem (layout, item);
 						
 					if (gitem == null) {
 						// No default position
 						gitem = new DockGroupItem (this, item);
-						container.Layout.AddObject (gitem);
+						layout.AddObject (gitem);
 					}
 				} else
 					return; // Already invisible
 			}
 			gitem.SetVisible (visible);
-			container.RelayoutWidgets ();
 		}
 		
 		internal DockItemStatus GetStatus (DockItem item)
 		{
-			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
+			DockGroupItem gitem = FindDockGroupItem (item.Id);
 			if (gitem == null)
 				return DockItemStatus.Dockable;
 			return gitem.Status;
@@ -766,14 +565,18 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void SetStatus (DockItem item, DockItemStatus status)
 		{
-			DockGroupItem gitem = container.FindDockGroupItem (item.Id);
+			DockGroupItem gitem = FindDockGroupItem (item.Id);
 			if (gitem == null) {
 				item.DefaultStatus = status;
 				return;
 			}
 			gitem.StoreAllocation ();
 			gitem.Status = status;
-			container.RelayoutWidgets ();
+		}
+
+		internal Xwt.Rectangle GetAllocation ()
+		{
+			return backend.GetAllocation ();
 		}
 
 		internal void SetDockLocation (DockItem item, string placement)
@@ -781,8 +584,8 @@ namespace MonoDevelop.Components.Docking
 			bool vis = item.Visible;
 			DockItemStatus stat = item.Status;
 			item.ResetMode ();
-			container.Layout.RemoveItemRec (item);
-			AddItemAtLocation (container.Layout, item, placement, vis, stat);
+			layout.RemoveItemRec (item);
+			AddItemAtLocation (layout, item, placement, vis, stat);
 		}
 		
 		DockLayout GetDefaultLayout ()
@@ -792,7 +595,7 @@ namespace MonoDevelop.Components.Docking
 			// Add items which don't have relative defaut positions
 			
 			List<DockItem> todock = new List<DockItem> ();
-			foreach (DockItem item in container.Items) {
+			foreach (DockItem item in items) {
 				if (string.IsNullOrEmpty (item.DefaultLocation)) {
 					DockGroupItem dgt = new DockGroupItem (this, item);
 					dgt.SetVisible (item.DefaultVisible);
@@ -854,242 +657,13 @@ namespace MonoDevelop.Components.Docking
 			}
 			return null;
 		}
-		
-		internal void AddTopLevel (DockFrameTopLevel w, int x, int y, int width, int height)
-		{
-			w.X = x;
-			w.Y = y;
 
-			if (UseWindowsForTopLevelFrames) {
-				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
-				win.SkipTaskbarHint = true;
-				win.Decorated = false;
-				win.TypeHint = Gdk.WindowTypeHint.Toolbar;
-				w.ContainerWindow = win;
-				w.Size = new Size (width, height);
-				win.Add (w);
-				w.Show ();
-				var p = this.GetScreenCoordinates (new Gdk.Point (x, y));
-				win.Opacity = 0.0;
-				win.Move (p.X, p.Y);
-				win.Resize (width, height);
-				win.Show ();
-				Ide.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
-				win.AcceptFocus = true;
-				win.Opacity = 1.0;
-
-				/* When we use real windows for frames, it's possible for pads to be over other
-				 * windows. For some reason simply presenting or raising those dialogs doesn't
-				 * seem to work, so we hide/show them in order to force them above the pad. */
-				var toplevels = Gtk.Window.ListToplevels ().Where (t => t.IsRealized && t.Visible && t.TypeHint == WindowTypeHint.Dialog); // && t.TransientFor != null);
-				foreach (var t in toplevels) {
-					t.Hide ();
-					t.Show ();
-				}
-			} else {
-				w.Parent = this;
-				w.Size = new Size (width, height);
-				Requisition r = w.SizeRequest ();
-				w.Allocation = new Gdk.Rectangle (Allocation.X + x, Allocation.Y + y, r.Width, r.Height);
-				topLevels.Add (w);
-			}
-		}
-		
-		internal void RemoveTopLevel (DockFrameTopLevel w)
-		{
-			w.Unparent ();
-			topLevels.Remove (w);
-			QueueResize ();
-		}
-		
-		public Gdk.Rectangle GetCoordinates (Gtk.Widget w)
-		{
-			int px, py;
-			if (!w.TranslateCoordinates (this, 0, 0, out px, out py))
-				return new Gdk.Rectangle (0,0,0,0);
-
-			Gdk.Rectangle rect = w.Allocation;
-			rect.X = px - Allocation.X;
-			rect.Y = py - Allocation.Y;
-			return rect;
-		}
-		
-		internal void ShowPlaceholder (DockItem draggedItem)
-		{
-			container.ShowPlaceholder (draggedItem);
-		}
-		
-		internal void DockInPlaceholder (DockItem item)
-		{
-			container.DockInPlaceholder (item);
-		}
-		
-		internal void HidePlaceholder ()
-		{
-			container.HidePlaceholder ();
-		}
-		
-		internal void UpdatePlaceholder (DockItem item, Gdk.Size size, bool allowDocking)
-		{
-			container.UpdatePlaceholder (item, size, allowDocking);
-		}
-		
-		internal DockBarItem BarDock (Gtk.PositionType pos, DockItem item, int size)
-		{
-			return GetDockBar (pos).AddItem (item, size);
-		}
-		
-		internal AutoHideBox AutoShow (DockItem item, DockBar bar, int size)
-		{
-			AutoHideBox aframe = new AutoHideBox (this, item, bar.Position, size);
-			Gdk.Size sTop = GetBarFrameSize (dockBarTop);
-			Gdk.Size sBot = GetBarFrameSize (dockBarBottom);
-			Gdk.Size sLeft = GetBarFrameSize (dockBarLeft);
-			Gdk.Size sRgt = GetBarFrameSize (dockBarRight);
-
-			int x,y,w,h;
-			if (bar == dockBarLeft || bar == dockBarRight) {
-				h = Allocation.Height - sTop.Height - sBot.Height;
-				w = size;
-				y = sTop.Height;
-				if (bar == dockBarLeft)
-					x = sLeft.Width;
-				else
-					x = Allocation.Width - size - sRgt.Width;
-			} else {
-				w = Allocation.Width - sLeft.Width - sRgt.Width;
-				h = size;
-				x = sLeft.Width;
-				if (bar == dockBarTop)
-					y = sTop.Height;
-				else
-					y = Allocation.Height - size - sBot.Height;
-			}
-
-			AddTopLevel (aframe, x, y, w, h);
-			aframe.AnimateShow ();
-
-			return aframe;
-		}
-		
-		internal void UpdateSize (DockBar bar, AutoHideBox aframe)
-		{
-			Gdk.Size sTop = GetBarFrameSize (dockBarTop);
-			Gdk.Size sBot = GetBarFrameSize (dockBarBottom);
-			Gdk.Size sLeft = GetBarFrameSize (dockBarLeft);
-			Gdk.Size sRgt = GetBarFrameSize (dockBarRight);
-			
-			if (bar == dockBarLeft || bar == dockBarRight) {
-				aframe.HeightRequest = Allocation.Height - sTop.Height - sBot.Height;
-				if (bar == dockBarRight)
-					aframe.X = Allocation.Width - aframe.Allocation.Width - sRgt.Width;
-			} else {
-				aframe.WidthRequest = Allocation.Width - sLeft.Width - sRgt.Width;
-				if (bar == dockBarBottom)
-					aframe.Y = Allocation.Height - aframe.Allocation.Height - sBot.Height;
-			}
-		}
-		
-		Gdk.Size GetBarFrameSize (DockBar bar)
-		{
-			if (bar.OriginalBar != null)
-				bar = bar.OriginalBar;
-			if (!bar.Visible)
-				return new Gdk.Size (0,0);
-			Gtk.Requisition req = bar.SizeRequest ();
-			return new Gdk.Size (req.Width, req.Height);
-		}
-		
-		internal void AutoHide (DockItem item, AutoHideBox widget, bool animate)
-		{
-			if (animate) {
-				widget.Hidden += delegate {
-					if (!widget.Disposed)
-						AutoHide (item, widget, false);
-				};
-				widget.AnimateHide ();
-			}
-			else {
-				// The widget may already be removed from the parent
-				// so 'parent' can be null
-				Gtk.Container parent = (Gtk.Container) item.Widget.Parent;
-				if (parent != null) {
-					//removing the widget from its parent causes it to unrealize without unmapping
-					//so make sure it's unmapped
-					if (item.Widget.IsMapped) {
-						item.Widget.Unmap ();
-					}
-					parent.Remove (item.Widget);
-				}
-				parent = (Gtk.Container) item.TitleTab.Parent;
-				if (parent != null) {
-					//removing the widget from its parent causes it to unrealize without unmapping
-					//so make sure it's unmapped
-					if (item.TitleTab.IsMapped) {
-						item.TitleTab.Unmap ();
-					}
-					parent.Remove (item.TitleTab);
-				}
-				if (widget.ContainerWindow != null) {
-					widget.ContainerWindow.Destroy ();
-				} else
-					RemoveTopLevel (widget);
-
-				widget.Disposed = true;
-				widget.Destroy ();
-			}
-		}
-
-		protected override void OnSizeRequested (ref Requisition requisition)
-		{
-			if (overlayWidget != null)
-				overlayWidget.SizeRequest ();
-			base.OnSizeRequested (ref requisition);
-		}
-		
-		protected override void OnSizeAllocated (Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
-			
-			foreach (DockFrameTopLevel tl in topLevels) {
-				Requisition r = tl.SizeRequest ();
-				tl.SizeAllocate (new Gdk.Rectangle (allocation.X + tl.X, allocation.Y + tl.Y, r.Width, r.Height));
-			}
-			if (overlayWidget != null)
-				overlayWidget.SizeAllocate (new Rectangle (Allocation.X, currentOverlayPosition, allocation.Width, allocation.Height));
-		}
-		
-		protected override void ForAll (bool include_internals, Callback callback)
-		{
-			base.ForAll (include_internals, callback);
-			List<DockFrameTopLevel> clone = new List<DockFrameTopLevel> (topLevels);
-			foreach (DockFrameTopLevel child in clone)
-				callback (child);
-			if (overlayWidget != null)
-				callback (overlayWidget);
-		}
-		
-		protected override bool OnButtonPressEvent (EventButton evnt)
-		{
-			MinimizeAllAutohidden ();
-			return base.OnButtonPressEvent (evnt);
-		}
-
-		void MinimizeAllAutohidden ()
+		internal void MinimizeAllAutohidden ()
 		{
 			foreach (var it in GetItems ()) {
 				if (it.Visible && it.Status == DockItemStatus.AutoHide)
 					it.Minimize ();
 			}
-		}
-
-		static internal bool IsWindows {
-			get { return System.IO.Path.DirectorySeparatorChar == '\\'; }
-		}
-
-		internal static Cairo.Color ToCairoColor (Gdk.Color color)
-		{
-			return new Cairo.Color (color.Red / (double) ushort.MaxValue, color.Green / (double) ushort.MaxValue, color.Blue / (double) ushort.MaxValue);
 		}
 	}
 
@@ -1099,7 +673,6 @@ namespace MonoDevelop.Components.Docking
 		public const string Browser = "Browser";
 	}
 	
-	
-	internal delegate void DockDelegate (DockItem item);
+	//	internal delegate void DockDelegate (DockItem item);
 	
 }

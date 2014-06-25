@@ -41,9 +41,9 @@ namespace MonoDevelop.Components.Docking
 		int x, y;
 		int width, height;
 		bool repositionRequested;
-		DockFrame frame;
+		GtkDockFrame frame;
 
-		public DockFrameTopLevel (DockFrame frame)
+		public DockFrameTopLevel (GtkDockFrame frame)
 		{
 			this.frame = frame;
 		}

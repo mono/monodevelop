@@ -126,13 +126,13 @@ namespace MonoDevelop.Ide
 			CustomFrame dfr = new CustomFrame (0, 0, 1, 0);
 			dfr.ShowAll ();
 			DefaultWorkbench wb = (DefaultWorkbench)IdeApp.Workbench.RootWindow;
-			var dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
+			/*			var dockBar = wb.DockFrame.ExtractDockBar (PositionType.Bottom);
 			dockBar.AlignToEnd = true;
 			dockBar.ShowBorder = false;
 			dockBar.NoShowAll = true;
 			dfr.Add (dockBar);
 			mainBox.PackStart (dfr, false, false, 0);
-
+*/
 			// Resize grip
 
 			resizeGrip.WidthRequest = ResizeGripWidth;

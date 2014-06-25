@@ -39,12 +39,12 @@ namespace MonoDevelop.Components.Docking
 	{
 		Gtk.PositionType position;
 		Box box;
-		DockFrame frame;
+		GtkDockFrame frame;
 		Label filler;
 		bool alwaysVisible;
 		bool showBorder = true;
 
-		internal DockBar (DockFrame frame, Gtk.PositionType position)
+		internal DockBar (GtkDockFrame frame, Gtk.PositionType position)
 		{
 			VisibleWindow = false;
 			this.frame = frame;
@@ -97,7 +97,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		internal DockFrame Frame {
+		internal GtkDockFrame Frame {
 			get {
 				return frame;
 			}
@@ -117,7 +117,7 @@ namespace MonoDevelop.Components.Docking
 			get { return DateTime.Now >= hoverActivationDelay; }
 		}
 		
-		internal DockBarItem AddItem (DockItem item, int size)
+		internal DockBarItem AddItem (DockItemBackend item, int size)
 		{
 			DisableHoverActivation ();
 			DockBarItem it = new DockBarItem (this, item, size);
@@ -147,7 +147,7 @@ namespace MonoDevelop.Components.Docking
 			if (Frame.OverlayWidgetVisible) {
 				Visible = false;
 			} else {
-				filler.Visible = (Frame.CompactGuiLevel < 3);
+				filler.Visible = false;
 				int visibleCount = 0;
 				foreach (Gtk.Widget w in box.Children) {
 					if (w.Visible)
@@ -166,7 +166,7 @@ namespace MonoDevelop.Components.Docking
 			UpdateVisibility ();
 		}
 
-		internal void UpdateTitle (DockItem item)
+		internal void UpdateTitle (DockItemBackend item)
 		{
 			foreach (Widget w in box.Children) {
 				DockBarItem it = w as DockBarItem;
@@ -177,7 +177,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		internal void UpdateStyle (DockItem item)
+		internal void UpdateStyle (DockItemBackend item)
 		{
 		}
 

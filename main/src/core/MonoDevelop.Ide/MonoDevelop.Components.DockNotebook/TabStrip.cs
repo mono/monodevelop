@@ -344,7 +344,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		class PadTitleWindow: Gtk.Window
 		{
-			public PadTitleWindow (DockFrame frame, DockItem draggedItem) : base (Gtk.WindowType.Popup)
+			public PadTitleWindow (GtkDockFrame frame, DockItemBackend draggedItem) : base (Gtk.WindowType.Popup)
 			{
 				SkipTaskbarHint = true;
 				Decorated = false;

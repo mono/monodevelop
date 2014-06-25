@@ -816,12 +816,7 @@ namespace MonoDevelop.Ide.Gui
 
 			// Create the docking widget and add it to the window.
 			dock = new DockFrame ();
-			
-			dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
-			IdeApp.Preferences.WorkbenchCompactness.Changed += delegate {
-				dock.CompactGuiLevel = ((int)IdeApp.Preferences.WorkbenchCompactness.Value) + 1;
-			};
-			
+
 			/* Side bar is experimental. Disabled for now
 			HBox hbox = new HBox ();
 			VBox sideBox = new VBox ();
@@ -861,7 +856,6 @@ namespace MonoDevelop.Ide.Gui
 			documentDockItem = dock.AddItem ("Documents");
 			documentDockItem.Behavior = DockItemBehavior.Locked;
 			documentDockItem.Expand = true;
-			documentDockItem.DrawFrame = false;
 			documentDockItem.Label = GettextCatalog.GetString ("Documents");
 			documentDockItem.Content = new DockNotebookContainer (tabControl, true);
 

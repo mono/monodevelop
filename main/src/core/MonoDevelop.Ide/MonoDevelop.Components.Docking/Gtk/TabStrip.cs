@@ -45,7 +45,7 @@ namespace MonoDevelop.Components.Docking
 		Label bottomFiller = new Label ();
 		DockVisualStyle visualStyle;
 
-		public TabStrip (DockFrame frame)
+		public TabStrip (GtkDockFrame frame)
 		{
 			VBox vbox = new VBox ();
 			box = new TabStripBox () { TabStrip = this };
@@ -112,7 +112,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public void UpdateStyle (DockItem item)
+		public void UpdateStyle (DockItemBackend item)
 		{
 			QueueResize ();
 		}
@@ -174,7 +174,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			CurrentTab = Array.IndexOf (box.Children, s);
 			DockItemTitleTab t = (DockItemTitleTab) s;
-			DockItem.SetFocus (t.Page);
+			DockItemBackend.SetFocus (t.Page);
 			QueueDraw ();
 			args.RetVal = true;
 		}

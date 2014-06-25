@@ -48,7 +48,7 @@ namespace MonoDevelop.Components.Docking
 		int origPos;
 		bool horiz;
 		bool startPos;
-		DockFrame frame;
+		GtkDockFrame frame;
 		bool animating;
 		int targetSize;
 		int targetPos;
@@ -59,7 +59,7 @@ namespace MonoDevelop.Components.Docking
 		
 		int gripSize = 8;
 		
-		public AutoHideBox (DockFrame frame, DockItem item, Gtk.PositionType pos, int size): base (frame)
+		public AutoHideBox (GtkDockFrame frame, DockItemBackend item, Gtk.PositionType pos, int size) : base (frame)
 		{
 			this.position = pos;
 			this.frame = frame;

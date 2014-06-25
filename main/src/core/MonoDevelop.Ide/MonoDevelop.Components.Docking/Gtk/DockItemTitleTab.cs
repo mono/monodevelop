@@ -45,11 +45,11 @@ namespace MonoDevelop.Components.Docking
 		int labelWidth;
 		DockVisualStyle visualStyle;
 		Gtk.Widget tabIcon;
-		DockFrame frame;
+		GtkDockFrame frame;
 		string label;
 		ImageButton btnDock;
 		ImageButton btnClose;
-		DockItem item;
+		DockItemBackend item;
 		bool allowPlaceholderDocking;
 		bool mouseOver;
 
@@ -77,7 +77,7 @@ namespace MonoDevelop.Components.Docking
 			pixDock = Xwt.Drawing.Image.FromResource ("pad-dock-9.png");
 		}
 		
-		public DockItemTitleTab (DockItem item, DockFrame frame)
+		public DockItemTitleTab (DockItemBackend item, GtkDockFrame frame)
 		{
 			this.item = item;
 			this.frame = frame;
@@ -183,7 +183,7 @@ namespace MonoDevelop.Components.Docking
 //			btnClose.WidthRequest = btnClose.HeightRequest = 17;
 			btnClose.WidthRequest = btnDock.SizeRequest ().Width;
 			btnClose.Clicked += delegate {
-				item.Visible = false;
+				item.Frontend.Visible = false;
 			};
 			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
 
@@ -445,7 +445,7 @@ namespace MonoDevelop.Components.Docking
 
 			} else {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
-				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor.Value : frame.DefaultVisualStyle.InactivePadBackgroundColor.Value;
+				gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor.Value : frame.Frontend.DefaultVisualStyle.InactivePadBackgroundColor.Value;
 				evnt.Window.DrawRectangle (gc, true, alloc);
 				gc.Dispose ();
 				evnt.Window.DrawLine (bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);

@@ -38,79 +38,11 @@ using Animations = Xwt.Motion.AnimationExtensions;
 
 namespace MonoDevelop.Components.Docking
 {	
-	class CrossfadeIcon: Gtk.Image, IAnimatable
-	{
-		// This class should be subclassed from Gtk.Misc, but there is no reasonable way to do that due to there being no bindings to gtk_widget_set_has_window
-
-		Xwt.Drawing.Image primary, secondary;
-
-		double secondaryOpacity;
-
-		public CrossfadeIcon (Xwt.Drawing.Image primary, Xwt.Drawing.Image secondary)
-		{
-			if (primary == null)
-				throw new ArgumentNullException ("primary");
-			if (secondary == null)
-				throw new ArgumentNullException ("secondary");
-
-			this.primary = primary;
-			this.secondary = secondary;
-		}
-
-		void IAnimatable.BatchBegin () { }
-		void IAnimatable.BatchCommit () { QueueDraw (); }
-
-		public void ShowPrimary ()
-		{
-			AnimateCrossfade (false);
-		}
-
-		public void ShowSecondary ()
-		{
-			AnimateCrossfade (true);
-		}
-
-		void AnimateCrossfade (bool toSecondary)
-		{
-			this.Animate ("CrossfadeIconSwap",
-			              x => secondaryOpacity = x,
-			              secondaryOpacity,
-			              toSecondary ? 1.0f : 0.0f);
-		}
-
-		protected override void OnSizeRequested (ref Requisition requisition)
-		{
-			base.OnSizeRequested (ref requisition);
-
-			requisition.Width = (int) primary.Width;
-			requisition.Height = (int) primary.Height;
-		}
-
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			using (Cairo.Context context = Gdk.CairoHelper.Create (evnt.Window)) {
-				if (secondaryOpacity < 1.0f)
-					RenderIcon (context, primary, 1.0f - (float)Math.Pow (secondaryOpacity, 3.0f));
-
-				if (secondaryOpacity > 0.0f)
-					RenderIcon (context, secondary, secondaryOpacity);
-			}
-
-			return false;
-		}
-
-		void RenderIcon (Cairo.Context context, Xwt.Drawing.Image surface, double opacity)
-		{
-			context.DrawImage (this, surface.WithAlpha (opacity),
-			                          Allocation.X + (Allocation.Width - surface.Width) / 2,
-			                          Allocation.Y + (Allocation.Height - surface.Height) / 2);
-		}
-	}
 
 	class DockBarItem: EventBox, IAnimatable
 	{
 		DockBar bar;
-		DockItem it;
+		DockItemBackend it;
 		Box box;
 		Label label;
 		Alignment mainBox;
@@ -124,7 +56,7 @@ namespace MonoDevelop.Components.Docking
 		CrossfadeIcon crossfade;
 		double hoverProgress;
 
-		public DockBarItem (DockBar bar, DockItem it, int size)
+		public DockBarItem (DockBar bar, DockItemBackend it, int size)
 		{
 			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 			this.size = size;
@@ -252,7 +184,7 @@ namespace MonoDevelop.Components.Docking
 			QueueDraw ();
 		}
 		
-		public MonoDevelop.Components.Docking.DockItem DockItem {
+		public DockItemBackend DockItem {
 			get {
 				return it;
 			}
@@ -293,7 +225,7 @@ namespace MonoDevelop.Components.Docking
 			if (autoShowFrame == null && !bar.Frame.OverlayWidgetVisible) {
 				if (hiddenFrame != null)
 					bar.Frame.AutoHide (it, hiddenFrame, false);
-				autoShowFrame = bar.Frame.AutoShow (it, bar, size);
+				autoShowFrame = bar.Frame.AutoShow (it.Frontend, bar, size);
 				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
 				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 				autoShowFrame.KeyPressEvent += OnFrameKeyPress;

@@ -50,7 +50,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 		
-		public PlaceholderWindow (DockFrame frame): base (Gtk.WindowType.Popup)
+		public PlaceholderWindow (GtkDockFrame frame): base (Gtk.WindowType.Popup)
 		{
 			SkipTaskbarHint = true;
 			Decorated = false;
@@ -168,7 +168,7 @@ namespace MonoDevelop.Components.Docking
 
 	class PadTitleWindow: Gtk.Window
 	{
-		public PadTitleWindow (DockFrame frame, DockItem draggedItem): base (Gtk.WindowType.Popup)
+		public PadTitleWindow (GtkDockFrame frame, DockItemBackend draggedItem): base (Gtk.WindowType.Popup)
 		{
 			SkipTaskbarHint = true;
 			Decorated = false;

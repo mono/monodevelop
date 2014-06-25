@@ -265,7 +265,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		public DockItemToolbar GetToolbar (Gtk.PositionType position)
 		{
-			return Item.GetToolbar (position);
+			DockPositionType p = (DockPositionType)(int)position;
+			return Item.GetToolbar (p);
 		}
 		
 		public void Activate (bool giveFocus)
