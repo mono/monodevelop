@@ -14,10 +14,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -41,7 +41,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide; 
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Desktop;
@@ -62,9 +62,9 @@ namespace MonoDevelop.MacIntegration
 
 		static bool initedGlobal;
 		bool setupFail, initedApp;
-		
+
 		Lazy<Dictionary<string, string>> mimemap;
-		
+
 		//this is a BCD value of the form "xxyz", where x = major, y = minor, z = bugfix
 		//eg. 0x1071 = 10.7.1
 		int systemVersion;
@@ -79,7 +79,7 @@ namespace MonoDevelop.MacIntegration
 			initedGlobal = true;
 
 			timer.BeginTiming ();
-			
+
 			systemVersion = Carbon.Gestalt ("sysv");
 
 			ObjCRuntime.Dlfcn.dlopen ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib", 0);
@@ -101,12 +101,12 @@ namespace MonoDevelop.MacIntegration
 			//: || Gtk.Global.CheckVersion (major, minor, micro + 1) == null
 			//
 			if (Gtk.Global.CheckVersion (major, minor, micro) != null) {
-				
+
 				LoggingService.LogFatalError (
 					"GTK+ version is incompatible with required version {0}.{1}.{2}.",
 					major, minor, micro
 				);
-				
+
 				var downloadButton = new AlertButton ("Download Mono Framework", null);
 				if (downloadButton == MessageService.GenericAlert (
 					Stock.Error,
@@ -120,7 +120,7 @@ namespace MonoDevelop.MacIntegration
 				{
 					OpenUrl (monoDownloadUrl);
 				}
-				
+
 				Environment.Exit (1);
 			}
 		}
@@ -152,14 +152,14 @@ namespace MonoDevelop.MacIntegration
 		{
 			OpenUrl (url);
 		}
-		
+
 		internal static void OpenUrl (string url)
 		{
 			Gtk.Application.Invoke (delegate {
 				NSWorkspace.SharedWorkspace.OpenUrl (new NSUrl (url));
 			});
 		}
-		
+
 		public override void OpenFile (string filename)
 		{
 			Gtk.Application.Invoke (delegate {
@@ -170,11 +170,11 @@ namespace MonoDevelop.MacIntegration
 		public override string DefaultMonospaceFont {
 			get { return "Menlo 12"; }
 		}
-		
+
 		public override string Name {
 			get { return "OSX"; }
 		}
-		
+
 		Dictionary<string, string> LoadMimeMapAsync ()
 		{
 			var map = new Dictionary<string, string> ();
@@ -183,7 +183,7 @@ namespace MonoDevelop.MacIntegration
 				LoggingService.LogError ("Apache mime database is missing");
 				return map;
 			}
-			
+
 			mimeTimer.BeginTiming ();
 			try {
 				using (var file = File.OpenRead ("/etc/apache2/mime.types")) {
@@ -193,7 +193,7 @@ namespace MonoDevelop.MacIntegration
 						while ((line = reader.ReadLine ()) != null) {
 							Match m = mime.Match (line);
 							if (m.Success)
-								map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value; 
+								map ["." + m.Groups [2].Captures [0].Value] = m.Groups [1].Captures [0].Value;
 						}
 					}
 				}
@@ -204,31 +204,6 @@ namespace MonoDevelop.MacIntegration
 			return map;
 		}
 
-		public override bool ShowContextMenu (CommandManager commandManager, Gtk.Widget widget, double x, double y, CommandEntrySet entrySet, object initialCommandTarget = null)
-		{
-			Gtk.Application.Invoke (delegate {
-				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
-				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-				var menu = new MDMenu (commandManager, entrySet, CommandSource.ContextMenu, initialCommandTarget);
-				var nsview = GtkQuartz.GetView (widget);
-				var toplevel = widget.Toplevel as Gtk.Window;
-				int trans_x, trans_y;
-				widget.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
-
-				var pt = nsview.ConvertPointFromBase (new CGPoint ((float)trans_x, (float)trans_y));
-
-				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
-					pt,
-					0, 0,
-					GtkQuartz.GetWindow (toplevel).WindowNumber,
-					null, 0, 0, 0);
-
-				NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
-			});
-
-			return true;
-		}
-		
 		public override bool SetGlobalMenu (CommandManager commandManager, string commandMenuAddinPath, string appMenuAddinPath)
 		{
 			if (setupFail)
@@ -282,7 +257,7 @@ namespace MonoDevelop.MacIntegration
 				}
 			}
 		}
-		
+
 		void InitApp (CommandManager commandManager)
 		{
 			if (initedApp)
@@ -296,9 +271,9 @@ namespace MonoDevelop.MacIntegration
 			commandManager.GetCommand (HelpCommands.About).Text = GettextCatalog.GetString ("About {0}", BrandingService.ApplicationName);
 			commandManager.GetCommand (MacIntegrationCommands.HideWindow).Text = GettextCatalog.GetString ("Hide {0}", BrandingService.ApplicationName);
 			commandManager.GetCommand (ToolCommands.AddinManager).Text = GettextCatalog.GetString ("Add-in Manager...");
-			
+
 			initedApp = true;
-			
+
 			IdeApp.Workbench.RootWindow.DeleteEvent += HandleDeleteEvent;
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Lion) {
@@ -336,7 +311,7 @@ namespace MonoDevelop.MacIntegration
 					e.UserCancelled = true;
 					e.Handled = true;
 				};
-				
+
 				ApplicationEvents.Reopen += delegate (object sender, ApplicationEventArgs e) {
 					if (IdeApp.Workbench != null && IdeApp.Workbench.RootWindow != null) {
 						IdeApp.Workbench.RootWindow.Deiconify ();
@@ -434,7 +409,7 @@ namespace MonoDevelop.MacIntegration
 			} while ((path = path.ParentDirectory).IsNotNull);
 			return null;
 		}
-		
+
 		[GLib.ConnectBefore]
 		static void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
@@ -517,15 +492,15 @@ namespace MonoDevelop.MacIntegration
 
 			return scaled;
 		}
-		
+
 		protected override Xwt.Drawing.Image OnGetIconForFile (string filename)
 		{
 			//this only works on MacOS 10.6.0 and greater
 			if (systemVersion < 0x1060)
 				return base.OnGetIconForFile (filename);
-			
+
 			NSImage icon = null;
-			
+
 			if (Path.IsPathRooted (filename) && File.Exists (filename)) {
 				icon = NSWorkspace.SharedWorkspace.IconForFile (filename);
 			} else {
@@ -533,20 +508,20 @@ namespace MonoDevelop.MacIntegration
 				if (!string.IsNullOrEmpty (extension))
 					icon = NSWorkspace.SharedWorkspace.IconForFileType (extension);
 			}
-			
+
 			if (icon == null) {
 				return base.OnGetIconForFile (filename);
 			}
-			
+
 			int w, h;
 			if (!Gtk.Icon.SizeLookup (Gtk.IconSize.Menu, out w, out h)) {
 				w = h = 22;
 			}
-				
+
 			var res = GetPixbufFromNSImage (icon, w, h);
 			return res != null ? res.ToXwtImage () : base.OnGetIconForFile (filename);
 		}
-		
+
 		public override IProcessAsyncOperation StartConsoleProcess (string command, string arguments, string workingDirectory,
 		                                                            IDictionary<string, string> environmentVariables,
 		                                                            string title, bool pauseWhenFinished)
@@ -554,7 +529,7 @@ namespace MonoDevelop.MacIntegration
 			return new MacExternalConsoleProcess (command, arguments, workingDirectory, environmentVariables,
 			                                   title, pauseWhenFinished);
 		}
-		
+
 		public override bool CanOpenTerminal {
 			get {
 				return true;
@@ -568,7 +543,7 @@ namespace MonoDevelop.MacIntegration
 				null, null, directory, environmentVariables, title, false, out tabId, out windowId
 			);
 		}
-		
+
 		public override IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
 			//FIXME: we should disambiguate dupliacte apps in different locations and display both
@@ -579,15 +554,15 @@ namespace MonoDevelop.MacIntegration
 			//FIXME: bundle path is wrong because of how MD is built into an app
 			//var thisPath = NSBundle.MainBundle.BundleUrl.Path;
 			//checkUniquePath.Add (thisPath);
-			
+
 			checkUniqueName.Add ("MonoDevelop");
 			checkUniqueName.Add (BrandingService.ApplicationName);
-			
+
 			string def = MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrl (filename,
 				MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All);
-			
+
 			var apps = new List<DesktopApplication> ();
-			
+
 			foreach (var app in MonoDevelop.MacInterop.CoreFoundation.GetApplicationUrls (filename,
 				MonoDevelop.MacInterop.CoreFoundation.LSRolesMask.All)) {
 				if (string.IsNullOrEmpty (app) || !checkUniquePath.Add (app))
@@ -596,23 +571,23 @@ namespace MonoDevelop.MacIntegration
 				if (checkUniqueName.Add (name))
 					apps.Add (new MacDesktopApplication (app, name, def != null && def == app));
 			}
-			
+
 			apps.Sort ((DesktopApplication a, DesktopApplication b) => {
 				int r = a.IsDefault.CompareTo (b.IsDefault);
 				if (r != 0)
 					return -r;
 				return a.DisplayName.CompareTo (b.DisplayName);
 			});
-			
+
 			return apps;
 		}
-		
+
 		class MacDesktopApplication : DesktopApplication
 		{
 			public MacDesktopApplication (string app, string name, bool isDefault) : base (app, name, isDefault)
 			{
 			}
-			
+
 			public override void Launch (params string[] files)
 			{
 				foreach (var file in files)
@@ -627,12 +602,12 @@ namespace MonoDevelop.MacIntegration
 			NSScreen nss = NSScreen.Screens[monitor];
 			var visible = nss.VisibleFrame;
 			var frame = nss.Frame;
-			
+
 			// Note: Frame and VisibleFrame rectangles are relative to monitor 0, but we need absolute
 			// coordinates.
 			visible.X += xgeometry.X;
 			frame.X += xgeometry.X;
-			
+
 			// VisibleFrame.Y is the height of the Dock if it is at the bottom of the screen, so in order
 			// to get the menu height, we just figure out the difference between the visibleFrame height
 			// and the actual frame height, then subtract the Dock height.
@@ -640,25 +615,25 @@ namespace MonoDevelop.MacIntegration
 			// We need to swap the Y offset with the menu height because our callers expect the Y offset
 			// to be from the top of the screen, not from the bottom of the screen.
 			nfloat x, y, width, height;
-			
+
 			if (visible.Height <= frame.Height) {
 				var dockHeight = visible.Y - frame.Y;
 				var menubarHeight = (frame.Height - visible.Height) - dockHeight;
-				
+
 				height = frame.Height - menubarHeight - dockHeight;
 				y = ygeometry.Y + menubarHeight;
 			} else {
 				height = frame.Height;
 				y = ygeometry.Y;
 			}
-			
+
 			// Takes care of the possibility of the Dock being positioned on the left or right edge of the screen.
 			width = NMath.Min (visible.Width, frame.Width);
 			x = NMath.Max (visible.X, frame.X);
-			
+
 			return new Gdk.Rectangle ((int) x, (int) y, (int) width, (int) height);
 		}
-		
+
 		public override void GrabDesktopFocus (Gtk.Window window)
 		{
 			window.Present ();
@@ -697,7 +672,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = false;
-			
+
 			var resource = "maintoolbarbg.png";
 			NSImage img = LoadImage (resource);
 			w.BackgroundColor = NSColor.FromPatternImage (img);
@@ -716,7 +691,7 @@ namespace MonoDevelop.MacIntegration
 		{
 			NSWindow w = GtkQuartz.GetWindow (window);
 			w.IsOpaque = false;
-			
+
 			var resource = "maintoolbarbg.png";
 			NSImage img = LoadImage (resource);
 			var c = NSColor.FromPatternImage (img);

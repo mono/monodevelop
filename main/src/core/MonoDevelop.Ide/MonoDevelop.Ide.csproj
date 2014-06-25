@@ -2746,6 +2746,14 @@
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDServicesMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDSubMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\ObjcHelper.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
