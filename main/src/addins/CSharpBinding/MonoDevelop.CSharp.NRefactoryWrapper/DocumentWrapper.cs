@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		IDocument IDocument.CreateDocumentSnapshot ()
 		{
-			throw new NotImplementedException ();
+			return this;
 		}
 
 		ICSharpCode.NRefactory.Editor.IDocumentLine IDocument.GetLineByNumber (int lineNumber)
@@ -208,12 +208,12 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		System.IO.TextReader ITextSource.CreateReader ()
 		{
-			throw new NotImplementedException ();
+			return document.CreateReader ();
 		}
 
 		System.IO.TextReader ITextSource.CreateReader (int offset, int length)
 		{
-			throw new NotImplementedException ();
+			return document.CreateReader (offset, length);
 		}
 
 		char ITextSource.GetCharAt (int offset)
@@ -233,12 +233,12 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		void ITextSource.WriteTextTo (System.IO.TextWriter writer)
 		{
-			throw new NotImplementedException ();
+			document.WriteTextTo (writer);
 		}
 
 		void ITextSource.WriteTextTo (System.IO.TextWriter writer, int offset, int length)
 		{
-			throw new NotImplementedException ();
+			document.WriteTextTo (writer, offset, length);
 		}
 
 		int ITextSource.IndexOf (char c, int startIndex, int count)
@@ -268,7 +268,7 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		ITextSourceVersion ITextSource.Version {
 			get {
-				throw new NotImplementedException ();
+				return new TextSourceVersionWrapper (document.Version);
 			}
 		}
 
