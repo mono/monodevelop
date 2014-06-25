@@ -25,16 +25,15 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using AppKit;
-using System.Linq;
+
+using CoreGraphics;
 
 namespace MonoDevelop.MacIntegration
 {
 	class MDLabel : NSTextField
 	{
-		public MDLabel (string text): base (new RectangleF (0, 6, 100, 20))
+		public MDLabel (string text): base (new CGRect (0f, 6f, 100f, 20f))
 		{
 			StringValue = text;
 			DrawsBackground = false;
@@ -51,7 +50,7 @@ namespace MonoDevelop.MacIntegration
 	
 	class MDBox : LayoutBox, IMDLayout
 	{
-		bool ownsView = false;
+		bool ownsView;
 		
 		public MDBox (LayoutDirection direction, float spacing, float padding) : this (null, direction, spacing, padding)
 		{
@@ -66,13 +65,13 @@ namespace MonoDevelop.MacIntegration
 		public void Layout ()
 		{
 			var request = BeginLayout ();
-			EndLayout (request, PointF.Empty, request.Size);
+			EndLayout (request, CGPoint.Empty, request.Size);
 		}
 		
-		public void Layout (SizeF allocation)
+		public void Layout (CGSize allocation)
 		{
 			var request = BeginLayout ();
-			EndLayout (request, PointF.Empty, allocation);
+			EndLayout (request, CGPoint.Empty, allocation);
 		}
 		
 		public void Add (NSView view)
@@ -85,11 +84,11 @@ namespace MonoDevelop.MacIntegration
 			Add (new MDAlignment (view, autosize));
 		}
 		
-		public override void EndLayout (LayoutRequest request, PointF origin, SizeF allocation)
+		public override void EndLayout (LayoutRequest request, CGPoint origin, CGSize allocation)
 		{
 			if (ownsView) {
-				View.Frame = new RectangleF (origin, allocation);
-				base.EndLayout (request, PointF.Empty, allocation);
+				View.Frame = new CGRect (origin, allocation);
+				base.EndLayout (request, CGPoint.Empty, allocation);
 			} else {
 				base.EndLayout (request, origin, allocation);
 			}
@@ -112,12 +111,12 @@ namespace MonoDevelop.MacIntegration
 		{
 		}
 		
-		public MDAlignment (NSView view, bool autosize) : base ()
+		public MDAlignment (NSView view, bool autosize)
 		{
 			this.View = view;
 			if (autosize) {
 				if (!(view is NSControl))
-					throw new ArgumentException ("Only NSControls can be autosized", "");
+					throw new ArgumentException ("Only NSControls can be autosized", "view");
 				Autosize ();
 			} else {
 				var size = view.Frame.Size;
@@ -128,7 +127,7 @@ namespace MonoDevelop.MacIntegration
 		
 		public override LayoutRequest BeginLayout ()
 		{
-			this.Visible = !View.Hidden;
+			Visible = !View.Hidden;
 			return base.BeginLayout ();
 		}
 		
@@ -142,7 +141,7 @@ namespace MonoDevelop.MacIntegration
 			MinWidth = (float)size.Width;
 		}
 		
-		protected override void OnLayoutEnded (RectangleF frame)
+		protected override void OnLayoutEnded (CGRect frame)
 		{
 			View.Frame = frame;
 		}

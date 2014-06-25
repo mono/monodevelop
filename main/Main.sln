@@ -269,7 +269,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.Xml"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.CSharp.Refactoring", "external\nrefactory\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory.CSharp.Refactoring.csproj", "{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiUnit_NET_4_0", "external\guiunit\src\framework\GuiUnit_NET_4_0.csproj", "{E13A0A7B-4DE6-43ED-A139-41052D065A9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiUnit_NET_4_5", "external\guiunit\src\framework\GuiUnit_NET_4_5.csproj", "{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mindscape.Raygun4Net", "external\raygun4net\Mindscape.Raygun4Net\Mindscape.Raygun4Net.csproj", "{495E53B3-F3AF-4C4F-BAAF-865EFAA2F4A9}"
 EndProject
@@ -1694,22 +1694,22 @@ Global
 		{DE40756E-57F6-4AF2-B155-55E3A88CCED8}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{DE40756E-57F6-4AF2-B155-55E3A88CCED8}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{DE40756E-57F6-4AF2-B155-55E3A88CCED8}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
-		{E13A0A7B-4DE6-43ED-A139-41052D065A9B}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
+		{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
 		{E17829B5-8EAC-4714-8798-EB8ED3540191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E17829B5-8EAC-4714-8798-EB8ED3540191}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
 		{E17829B5-8EAC-4714-8798-EB8ED3540191}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU

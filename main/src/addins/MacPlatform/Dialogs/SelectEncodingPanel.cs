@@ -26,13 +26,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+
+using AppKit;
+using CoreGraphics;
+using Foundation;
+
 using MonoDevelop.Core;
 using MonoDevelop.Projects.Text;
-using AppKit;
-using Foundation;
-using CoreGraphics;
 
 namespace MonoDevelop.MacIntegration
 {
@@ -46,12 +47,12 @@ namespace MonoDevelop.MacIntegration
 		
 		public SelectEncodingPanel () : base ()	
 		{
-			var size = new SizeF (600, 400);
-			float padding = 12;
+			var size = new CGSize (600, 400);
+			const float padding = 12;
 			this.SetContentSize (size);
 			
-			var view = new NSView (new RectangleF (0, 0, size.Width, size.Height));
-			var okButton = new NSButton () {
+			var view = new NSView (new CGRect (0, 0, size.Width, size.Height));
+			var okButton = new NSButton {
 				Title = GettextCatalog.GetString ("OK"),
 				Bordered = true,
 				BezelStyle = NSBezelStyle.Rounded,
@@ -62,7 +63,7 @@ namespace MonoDevelop.MacIntegration
 			};
 			this.DefaultButtonCell = okButton.Cell;
 			
-			var cancelButton = new NSButton () {
+			var cancelButton = new NSButton {
 				Title = GettextCatalog.GetString ("Cancel"),
 				Bordered = true,
 				BezelStyle = NSBezelStyle.Rounded,
@@ -104,7 +105,7 @@ namespace MonoDevelop.MacIntegration
 			};
 			view.AddSubview (allScroll);
 			
-			float center = (size.Width + padding) / 2;
+			nfloat center = (size.Width + padding) / 2;
 			
 			var selectedLabel = CreateLabel (GettextCatalog.GetString ("Encodings shown in menu:"));
 			var selectedLabelSize = selectedLabel.Frame.Size;
@@ -165,16 +166,16 @@ namespace MonoDevelop.MacIntegration
 			downButton.Activated += MoveDown;
 			view.AddSubview (downButton);
 			
-			var allColumn = new NSTableColumn () {
-				DataCell = new NSTextFieldCell () { Wraps = true },
+			var allColumn = new NSTableColumn {
+				DataCell = new NSTextFieldCell { Wraps = true },
 				Width = tableWidth
 			};
 			allTable.AddColumn (allColumn);
 			allTable.DataSource = allSource = new EncodingSource (TextEncoding.SupportedEncodings);
 			allTable.Delegate = new EncodingAllDelegate (this);
 			
-			var selectedColumn = new NSTableColumn () {
-				DataCell = new NSTextFieldCell () { Wraps = true },
+			var selectedColumn = new NSTableColumn {
+				DataCell = new NSTextFieldCell { Wraps = true },
 				Width = tableWidth
 			};
 			selectedTable.AddColumn (selectedColumn);
@@ -196,7 +197,7 @@ namespace MonoDevelop.MacIntegration
 				rot.RotateByDegrees (degrees);
 				rot.Translate (-original.Size.Width / 2, -original.Size.Height / 2);
 				rot.Concat ();
-				original.Draw (PointF.Empty, RectangleF.Empty, NSCompositingOperation.Copy, 1);
+				original.Draw (CGPoint.Empty, CGRect.Empty, NSCompositingOperation.Copy, 1);
 			} finally {
 				copy.UnlockFocus ();
 			}
@@ -206,11 +207,11 @@ namespace MonoDevelop.MacIntegration
 		void Add (object sender, EventArgs e)
 		{
 			int fromIndex = (int)allTable.SelectedRow;
-			var encoding = allSource.encodings[fromIndex];
+			var encoding = allSource.Encodings[fromIndex];
 			var toIndex = (int)(selectedTable.SelectedRow + 1);
 			if (toIndex <= 0)
-				toIndex = selectedSource.encodings.Count;
-			selectedSource.encodings.Insert (toIndex, encoding);
+				toIndex = selectedSource.Encodings.Count;
+			selectedSource.Encodings.Insert (toIndex, encoding);
 			selectedTable.ReloadData ();
 			selectedTable.SelectRows (new NSIndexSet ((uint)(toIndex)), false);
 			UpdateButtons ();
@@ -219,9 +220,9 @@ namespace MonoDevelop.MacIntegration
 		void Remove (object sender, EventArgs e)
 		{
 			var index = (int)selectedTable.SelectedRow;
-			selectedSource.encodings.RemoveAt (index);
+			selectedSource.Encodings.RemoveAt (index);
 			selectedTable.ReloadData ();
-			if (index >= selectedSource.encodings.Count)
+			if (index >= selectedSource.Encodings.Count)
 				index--;
 			selectedTable.SelectRows (new NSIndexSet ((uint)(index)), false);
 			UpdateButtons ();
@@ -230,9 +231,9 @@ namespace MonoDevelop.MacIntegration
 		void MoveUp (object sender, EventArgs e)
 		{
 			var index = (int)selectedTable.SelectedRow;
-			var selected = selectedSource.encodings[index];
-			selectedSource.encodings[index] = selectedSource.encodings[index - 1];
-			selectedSource.encodings[index - 1] = selected;
+			var selected = selectedSource.Encodings[index];
+			selectedSource.Encodings[index] = selectedSource.Encodings[index - 1];
+			selectedSource.Encodings[index - 1] = selected;
 			selectedTable.ReloadData ();
 			selectedTable.SelectRows (new NSIndexSet ((uint)(index - 1)), false);
 			UpdateButtons ();
@@ -241,9 +242,9 @@ namespace MonoDevelop.MacIntegration
 		void MoveDown (object sender, EventArgs e)
 		{
 			var index = (int)selectedTable.SelectedRow;
-			var selected = selectedSource.encodings[index];
-			selectedSource.encodings[index] = selectedSource.encodings[index + 1];
-			selectedSource.encodings[index + 1] = selected;
+			var selected = selectedSource.Encodings[index];
+			selectedSource.Encodings[index] = selectedSource.Encodings[index + 1];
+			selectedSource.Encodings[index + 1] = selected;
 			selectedTable.ReloadData ();
 			selectedTable.SelectRows (new NSIndexSet ((uint)(index + 1)), false);
 			UpdateButtons ();
@@ -252,18 +253,18 @@ namespace MonoDevelop.MacIntegration
 		void UpdateButtons ()
 		{
 			var allIndex = (int)allTable.SelectedRow;
-			var allEncoding = allIndex >= 0? allSource.encodings[allIndex] : null;
-			addButton.Enabled = allEncoding != null && !selectedSource.encodings.Any (e => e.Id == allEncoding.Id);
+			var allEncoding = allIndex >= 0? allSource.Encodings[allIndex] : null;
+			addButton.Enabled = allEncoding != null && selectedSource.Encodings.All (e => e.Id != allEncoding.Id);
 			
 			var selectedIndex = (int)selectedTable.SelectedRow;
-			removeButton.Enabled = selectedIndex >= 0 && selectedSource.encodings.Count > 0;
+			removeButton.Enabled = selectedIndex >= 0 && selectedSource.Encodings.Count > 0;
 			upButton.Enabled = selectedIndex > 0;
-			downButton.Enabled = selectedIndex >= 0 && selectedIndex < selectedSource.encodings.Count - 1;
+			downButton.Enabled = selectedIndex >= 0 && selectedIndex < selectedSource.Encodings.Count - 1;
 		}
 		
 		static NSTextField CreateLabel (string text)
 		{
-			var label = new NSTextField () {
+			var label = new NSTextField {
 				StringValue = text,
 				DrawsBackground = false,
 				Bordered = false,
@@ -276,11 +277,11 @@ namespace MonoDevelop.MacIntegration
 		
 		public int RunModal ()
 		{
-			this.DidResignKey += StopSharedAppModal;
+			DidResignKey += StopSharedAppModal;
 			try {
 				return SaveIfOk ((int)NSApplication.SharedApplication.RunModalForWindow (this));
 			} finally {
-				this.DidResignKey -= StopSharedAppModal;
+				DidResignKey -= StopSharedAppModal;
 			}
 		}
 		
@@ -295,20 +296,20 @@ namespace MonoDevelop.MacIntegration
 		{
 			var sel = new ObjCRuntime.Selector ("sheetSel");
 			NSApplication.SharedApplication.BeginSheet (this, parent, this, sel, IntPtr.Zero);
-			this.DidResignKey += StopSharedAppModal;
+			DidResignKey += StopSharedAppModal;
 			try {
 				sheet = true;
 				return SaveIfOk ((int)NSApplication.SharedApplication.RunModalForWindow (this));
 			} finally {
 				sheet = false;
-				this.DidResignKey -= StopSharedAppModal;
+				DidResignKey -= StopSharedAppModal;
 			}
 		}
 		
 		int SaveIfOk (int ret)
 		{
 			if (ret != 0)
-				TextEncoding.ConversionEncodings = selectedSource.encodings.ToArray ();
+				TextEncoding.ConversionEncodings = selectedSource.Encodings.ToArray ();
 			return ret;
 		}
 
@@ -330,28 +331,28 @@ namespace MonoDevelop.MacIntegration
 		
 		class EncodingSource : NSTableViewDataSource
 		{
-			public List<TextEncoding> encodings;
+			public readonly List<TextEncoding> Encodings;
 			
 			public EncodingSource (IEnumerable<TextEncoding> encodings)
 			{
-				this.encodings = new List<TextEncoding> (encodings);
+				this.Encodings = new List<TextEncoding> (encodings);
 			}
 			
 			public override nint GetRowCount (NSTableView tableView)
 			{
-				return encodings.Count;
+				return Encodings.Count;
 			}
 			
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, nint row)
 			{
-				var encoding = encodings[(int)row];
+				var encoding = Encodings[(int)row];
 				return new NSString (string.Format ("{0} ({1})", encoding.Name, encoding.Id));
 			}
 		}
 		
 		class EncodingAllDelegate : NSTableViewDelegate
 		{
-			SelectEncodingPanel parent;
+			readonly SelectEncodingPanel parent;
 			
 			public EncodingAllDelegate (SelectEncodingPanel parent)
 			{
@@ -366,7 +367,7 @@ namespace MonoDevelop.MacIntegration
 		
 		class EncodingSelectedDelegate : NSTableViewDelegate
 		{
-			SelectEncodingPanel parent;
+			readonly SelectEncodingPanel parent;
 			
 			public EncodingSelectedDelegate (SelectEncodingPanel parent)
 			{

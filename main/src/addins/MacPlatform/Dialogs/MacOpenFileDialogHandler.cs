@@ -25,19 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using System.Linq;
 using System.Collections.Generic;
-using Foundation;
+using System.Linq;
+using System.Text;
+
 using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
-using MonoDevelop.Components.Extensions;
-using MonoDevelop.MacInterop;
 using MonoDevelop.Ide.Gui;
-using System.Text;
+using MonoDevelop.MacInterop;
+
 
 namespace MonoDevelop.MacIntegration
 {
@@ -54,7 +53,7 @@ namespace MonoDevelop.MacIntegration
 				if (data.Action == Gtk.FileChooserAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
-					panel = new NSOpenPanel () {
+					panel = new NSOpenPanel {
 						CanChooseDirectories = directoryMode,
 						CanChooseFiles = !directoryMode,
 					};
@@ -69,7 +68,7 @@ namespace MonoDevelop.MacIntegration
 				var box = new MDBox (LayoutDirection.Vertical, 2, 2);
 				
 				List<FileViewer> currentViewers = null;
-				List<MDAlignment> labels = new List<MDAlignment> ();
+				var labels = new List<MDAlignment> ();
 				
 				if (!directoryMode) {
 					var filterPopup = MacSelectFileDialogHandler.CreateFileFilterPopup (data, panel);
@@ -99,7 +98,7 @@ namespace MonoDevelop.MacIntegration
 					
 					if (data.ShowViewerSelector && panel is NSOpenPanel) {
 						currentViewers = new List<FileViewer> ();
-						viewerSelector = new NSPopUpButton () {
+						viewerSelector = new NSPopUpButton {
 							Enabled = false,
 						};
 						
@@ -117,7 +116,7 @@ namespace MonoDevelop.MacIntegration
 						};
 						
 						if (IdeApp.Workspace.IsOpen) {
-							closeSolutionButton = new NSButton () {
+							closeSolutionButton = new NSButton {
 								Title = GettextCatalog.GetString ("Close current workspace"),
 								Hidden = true,
 								State = NSCellStateValue.On,
@@ -146,7 +145,7 @@ namespace MonoDevelop.MacIntegration
 					panel.AccessoryView = box.View;
 				}
 				
-				panel.SelectionDidChange += delegate(object sender, EventArgs e) {
+				panel.SelectionDidChange += delegate {
 					var selection = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 					bool slnViewerSelected = false;
 					if (viewerSelector != null) {
@@ -221,7 +220,7 @@ namespace MonoDevelop.MacIntegration
 			int i = 0;
 			
 			if (IdeApp.Services.ProjectService.IsWorkspaceItemFile (filename) || IdeApp.Services.ProjectService.IsSolutionItemFile (filename)) {
-				button.Menu.AddItem (new NSMenuItem () { Title = GettextCatalog.GetString ("Solution Workbench") });
+				button.Menu.AddItem (new NSMenuItem { Title = GettextCatalog.GetString ("Solution Workbench") });
 				currentViewers.Add (null);
 				
 				if (closeSolutionButton != null)
@@ -233,7 +232,7 @@ namespace MonoDevelop.MacIntegration
 			
 			foreach (var vw in DisplayBindingService.GetFileViewers (filename, null)) {
 				if (!vw.IsExternal) {
-					button.Menu.AddItem (new NSMenuItem () { Title = vw.Title });
+					button.Menu.AddItem (new NSMenuItem { Title = vw.Title });
 					currentViewers.Add (vw);
 					
 					if (vw.CanUseAsDefault && selected == -1)
