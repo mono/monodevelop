@@ -1617,6 +1617,12 @@ namespace Mono.TextEditor
 #pragma warning restore 618
 			}
 
+			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+				if (layout.Layout != null)
+					marker.DrawBackground (textEditor, cr, metrics, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+			}
+
+
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
 			
@@ -1803,7 +1809,7 @@ namespace Mono.TextEditor
 
 			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+					marker.Draw (textEditor, cr, metrics, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
 			}
 			position += System.Math.Floor (layout.LastLineWidth);
 
