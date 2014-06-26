@@ -44,14 +44,15 @@ type FSharpAutoCompleteWrapper() =
     p.WaitForExit()
     s + t
 
-let installNuGetPkg s =
+let installNuGetPkg s v =
   let p = new System.Diagnostics.Process()
 
   p.StartInfo.FileName  <- "mono"
   p.StartInfo.Arguments <-
       IO.Path.Combine(__SOURCE_DIRECTORY__,
                       "../../../lib/nuget/NuGet.exe")
-      + " install -ExcludeVersion "
+      + " install -ExcludeVersion -Version "
+      + v + " "
       + s
   p.StartInfo.UseShellExecute <- false
   p.Start () |> ignore
