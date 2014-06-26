@@ -131,7 +131,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						);
 					return;
 				}
-				editor.StartInsertionMode (operation, insertionPoints, delegate(InsertionCursorEventArgs iCArgs) {
+				editor.StartInsertionMode (new InsertionModeOptions (operation, insertionPoints, delegate(InsertionCursorEventArgs iCArgs) {
 					if (!iCArgs.Success) {
 						tcs.SetResult (false);
 						return;
@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
 					iCArgs.InsertionPoint.Insert (editor, generatedCode.Code);
 					tcs.SetResult (true);
-				});
+				}));
 //				var mode = new InsertionCursorEditMode (
 //					editor.Parent,
 //					insertionPoints);

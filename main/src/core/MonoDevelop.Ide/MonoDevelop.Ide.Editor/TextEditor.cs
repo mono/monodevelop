@@ -425,15 +425,11 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.FormatString (offset, code);
 		}
 
-		public void StartInsertionMode (string operation, IList<InsertionPoint> insertionPoints, Action<InsertionCursorEventArgs> action)
+		public void StartInsertionMode (InsertionModeOptions insertionModeOptions)
 		{
-			if (operation == null)
-				throw new ArgumentNullException ("operation");
-			if (insertionPoints == null)
-				throw new ArgumentNullException ("insertionPoints");
-			if (action == null)
-				throw new ArgumentNullException ("action");
-			textEditorImpl.StartInsertionMode (operation, insertionPoints, action);
+			if (insertionModeOptions == null)
+				throw new ArgumentNullException ("insertionModeOptions");
+			textEditorImpl.StartInsertionMode (insertionModeOptions);
 		}
 
 		public void StartTextLinkMode (List<TextLink> links, Action<TextLinkModeEventArgs> modeExitedAction = null)

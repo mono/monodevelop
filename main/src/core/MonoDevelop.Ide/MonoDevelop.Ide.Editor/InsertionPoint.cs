@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Editor
 		BlankLine
 	}
 
-	public class InsertionPoint 
+	public sealed class InsertionPoint 
 	{
 		public DocumentLocation Location {
 			get;
@@ -97,4 +97,3 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 }
-
