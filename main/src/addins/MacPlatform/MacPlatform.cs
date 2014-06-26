@@ -65,10 +65,6 @@ namespace MonoDevelop.MacIntegration
 
 		Lazy<Dictionary<string, string>> mimemap;
 
-		//this is a BCD value of the form "xxyz", where x = major, y = minor, z = bugfix
-		//eg. 0x1071 = 10.7.1
-		int systemVersion;
-
 		public MacPlatformService ()
 		{
 			if (IntPtr.Size == 8)
@@ -79,8 +75,6 @@ namespace MonoDevelop.MacIntegration
 			initedGlobal = true;
 
 			timer.BeginTiming ();
-
-			systemVersion = Carbon.Gestalt ("sysv");
 
 			var dir = Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location);
 
@@ -499,7 +493,7 @@ namespace MonoDevelop.MacIntegration
 		protected override Xwt.Drawing.Image OnGetIconForFile (string filename)
 		{
 			//this only works on MacOS 10.6.0 and greater
-			if (systemVersion < 0x1060)
+			if (MacSystemInformation.OsVersion < MacSystemInformation.SnowLeopard)
 				return base.OnGetIconForFile (filename);
 
 			NSImage icon = null;
