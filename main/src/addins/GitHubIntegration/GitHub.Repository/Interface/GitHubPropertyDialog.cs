@@ -29,23 +29,23 @@ using MonoDevelop.Core;
 using GitHub.Repository.Descriptors;
 using GitHub.Repository.Providers;
 
-
 namespace GitHub.Repository.UserInterface
 {
-	partial class GitHubPropertyDialog : Gtk.Dialog
+	public partial class GitHubPropertyDialog : Gtk.Dialog
 	{
 		private Object repository;
 
 		public GitHubPropertyDialog (Octokit.Repository repo)
 		{
+			this.Build ();
 			this.repository = (Object)repo;
 			List<Object> providers = new List<Object>();
-			providers.Add (new GitHubRepoPropertiesProvider());
+			providers.Add (new GitHubRepoPropertiesProvider().CreateProvider(this.repository));
 
 			if (providers.Count >0) {
 				this.gitHubPropertyGrid.SetCurrentObject (this.repository, providers.ToArray());
 			}
-			this.Build ();
+
 		}
 	}
 }

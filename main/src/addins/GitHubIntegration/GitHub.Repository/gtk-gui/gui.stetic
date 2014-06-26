@@ -6,44 +6,32 @@
   </configuration>
   <import>
     <widget-library name="../../../../../build/bin/MonoDevelop.Ide.dll" />
-    <widget-library name="../../../../../build/AddIns/GitHubIntegration/GitHub.Auth.dll" />
-    <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Git.dll" />
     <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.dll" />
+    <widget-library name="../../../../../build/AddIns/VersionControl/MonoDevelop.VersionControl.Git.dll" />
+    <widget-library name="../../../../../build/AddIns/GitHubIntegration/GitHub.Auth.dll" />
     <widget-library name="../../../../../build/AddIns/GitHubIntegration/GitHub.Repository.dll" internal="true" />
   </import>
-  <widget class="Gtk.Dialog" id="GitHub.Repository.UserInterface.GitHubPropertyDialog" design-size="815 442">
+  <widget class="Gtk.Dialog" id="GitHub.Repository.UserInterface.GitHubPropertyDialog" design-size="716 442">
     <property name="MemberName" />
-    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">GitHub Properties</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">1</property>
     <property name="HelpButton">False</property>
     <child internal-child="VBox">
-      <widget class="Gtk.VBox" id="gitHubVirtualBoxForProperties">
+      <widget class="Gtk.VBox" id="dialog1_VBox">
         <property name="MemberName" />
         <property name="BorderWidth">2</property>
         <child>
-          <widget class="Gtk.ScrolledWindow" id="GitHubGtkScrolledWindowForProperties">
+          <widget class="MonoDevelop.Components.PropertyGrid.PropertyGrid" id="gitHubPropertyGrid">
             <property name="MemberName" />
-            <property name="ShadowType">In</property>
-            <child>
-              <widget class="Gtk.Viewport" id="GtkViewport">
-                <property name="MemberName" />
-                <property name="ShadowType">None</property>
-                <child>
-                  <widget class="MonoDevelop.Components.PropertyGrid.PropertyGrid" id="gitHubPropertyGrid">
-                    <property name="MemberName" />
-                    <property name="ShowScrollbars">True</property>
-                    <property name="ShowToolbar">True</property>
-                    <property name="ShowHelp">False</property>
-                  </widget>
-                </child>
-              </widget>
-            </child>
+            <property name="ShowToolbar">False</property>
+            <property name="ShowHelp">False</property>
           </widget>
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
           </packing>
         </child>
       </widget>

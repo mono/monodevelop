@@ -39,7 +39,7 @@ namespace GitHub.Repository.Descriptors
 		{
 			this.prop = repo;
 		}
-			
+
 		[LocalizedCategory ("Misc")]
 		[LocalizedDisplayName ("Name")]
 		[LocalizedDescription ("Name of the Repo.")]

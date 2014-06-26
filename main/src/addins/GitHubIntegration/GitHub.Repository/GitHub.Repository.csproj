@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6238156E-6BC6-4227-BF9B-09502B6DED1F}</ProjectGuid>
+    <ProjectGuid>{404AB2A5-A1DF-4A95-9600-B81D3D55FBA8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>GitHub.Repository</RootNamespace>
     <AssemblyName>GitHub.Repository</AssemblyName>
@@ -31,87 +31,86 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="Octokit">
       <HintPath>..\..\..\..\packages\Octokit.0.3.4\lib\net45\Octokit.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
-    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="AddinInfo.cs" />
-    <Compile Include="Gui\GitHubPad.cs" />
-    <Compile Include="Core\OctokitHelper.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="User Interface\GitHubPropertyDialog.cs" />
-    <Compile Include="Commands\Commands.cs" />
+    <Compile Include="Interface\GitHubPropertyDialog.cs" />
     <Compile Include="gtk-gui\GitHub.Repository.UserInterface.GitHubPropertyDialog.cs" />
-    <Compile Include="Core\GitHubUtils.cs" />
+    <Compile Include="Gui\GitHubPad.cs" />
     <Compile Include="Gui\GitHubRepoNodeBuilder.cs" />
-    <Compile Include="Descriptors\GitHubRepoPropertiesDescriptor.cs" />
-    <Compile Include="Descriptors\CustomDescriptor.cs" />
-    <Compile Include="Providers\IGitHubProvider.cs" />
+    <Compile Include="Descriptor\GitHubCustomDescriptor.cs" />
+    <Compile Include="Descriptor\GitHubRepoPropertiesDescriptor.cs" />
+    <Compile Include="Core\GitHubUtils.cs" />
+    <Compile Include="Core\OctokitHelper.cs" />
+    <Compile Include="Commands\Commands.cs" />
+    <Compile Include="AddinInfo.cs" />
     <Compile Include="Providers\GitHubRepoPropertiesProvider.cs" />
+    <Compile Include="Providers\IGitHubProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <EmbeddedResource Include="GitHub.Repository.addin.xml">
-      <LogicalName>GitHub.Repository.addin.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\icons\light\pad-unit-test-16.png">
-      <LogicalName>pad-unit-test-light-16.png</LogicalName>
-    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Gui\icons\light\pad-unit-test-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commands\" />
+    <Folder Include="Core\" />
+    <Folder Include="Descriptor\" />
+    <Folder Include="Gui\" />
+    <Folder Include="Providers\" />
+    <Folder Include="Interface\" />
+    <Folder Include="Gui\icons\" />
+    <Folder Include="Gui\icons\light\" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GitHub.Repository.addin.xml">
+      <LogicalName>GitHub.Repository.addin.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
       <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
       <Name>Mono.Addins</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
-      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
-      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
       <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\GitHub.Auth\GitHub.Auth.csproj">
-      <Project>{46EEB116-B156-4216-A2CE-795F62646793}</Project>
-      <Name>GitHub.Auth</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
-      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
-      <Name>Xwt</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
-      <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
-      <Name>MonoDevelop.VersionControl.Git</Name>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
       <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
       <Name>MonoDevelop.VersionControl</Name>
+      <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="User Interface\" />
-    <Folder Include="Gui\" />
-    <Folder Include="Gui\icons\" />
-    <Folder Include="Core\" />
-    <Folder Include="Gui\icons\light\" />
-    <Folder Include="Commands\" />
-    <Folder Include="Descriptors\" />
-    <Folder Include="Providers\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\..\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
+      <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
+      <Name>MonoDevelop.VersionControl.Git</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GitHub.Auth\GitHub.Auth.csproj">
+      <Project>{46EEB116-B156-4216-A2CE-795F62646793}</Project>
+      <Name>GitHub.Auth</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
 </Project>
