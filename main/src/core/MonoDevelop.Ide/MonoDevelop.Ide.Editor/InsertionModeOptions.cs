@@ -51,7 +51,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		/// <summary>
-		/// That's the action that is started after the exit mode ended.
+		/// That's the action that is started after the insertion mode ended.
 		/// </summary>
 		public Action<InsertionCursorEventArgs> ModeExitedAction {
 			get;

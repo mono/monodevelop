@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Editor
 
 		void StartInsertionMode (InsertionModeOptions insertionModeOptions);
 
-		void StartTextLinkMode (List<TextLink> links, Action<TextLinkModeEventArgs> modeExitedAction);
+		void StartTextLinkMode (TextLinkModeOptions textLinkModeOptions);
 
 		void RequestRedraw ();
 
