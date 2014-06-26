@@ -111,37 +111,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				);
 				return tcs.Task;
 			}
-
-//			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
-//			helpWindow.TitleText = operation;
-//			mode.HelpWindow = helpWindow;
-//			
-//			switch (defaultPosition) {
-//			case InsertPosition.Start:
-//				mode.CurIndex = 0;
-//				break;
-//			case InsertPosition.End:
-//				mode.CurIndex = mode.InsertionPoints.Count - 1;
-//				break;
-//			case InsertPosition.Before:
-//				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
-//					if (mode.InsertionPoints [i].Location < loc)
-//						mode.CurIndex = i;
-//				}
-//				break;
-//			case InsertPosition.After:
-//				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
-//					if (mode.InsertionPoints [i].Location > loc) {
-//						mode.CurIndex = i;
-//						break;
-//					}
-//				}
-//				break;
-//			}
-			operationsRunning++;
-			editor.StartInsertionMode (operation, insertionPoints, iCArgs => {
+			var options = new InsertionModeOptions (operation, insertionPoints, iCArgs => {
 				if (iCArgs.Success) {
-					if (iCArgs.InsertionPoint.LineAfter == NewLineInsertion.None && 
+					if (iCArgs.InsertionPoint.LineAfter == NewLineInsertion.None &&
 					    iCArgs.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count () > 1) {
 						iCArgs.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
 					}
@@ -157,6 +129,31 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				}
 				DisposeOnClose (); 
 			});
+
+			switch (defaultPosition) {
+			case InsertPosition.Start:
+				options.FirstSelectedInsertionPoint = 0;
+				break;
+			case InsertPosition.End:
+				options.FirstSelectedInsertionPoint = options.InsertionPoints.Count - 1;
+				break;
+			case InsertPosition.Before:
+				for (int i = 0; i < options.InsertionPoints.Count; i++) {
+					if (options.InsertionPoints [i].Location < loc)
+						options.FirstSelectedInsertionPoint = i;
+				}
+				break;
+			case InsertPosition.After:
+				for (int i = 0; i < options.InsertionPoints.Count; i++) {
+					if (options.InsertionPoints [i].Location > loc) {
+						options.FirstSelectedInsertionPoint = i;
+						break;
+					}
+				}
+				break;
+			}
+			operationsRunning++;
+			editor.StartInsertionMode (options);
 			return tcs.Task;
 		}
 
@@ -209,14 +206,9 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 					return;
 				}
 
-//				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
-//				helpWindow.TitleText = operation;
-//				mode.HelpWindow = helpWindow;
-//				
-//				mode.CurIndex = 0;
 				operationsRunning++;
 
-				editor.StartInsertionMode (operation, insertionPoints, iCArgs => {
+				editor.StartInsertionMode (new InsertionModeOptions (operation, insertionPoints, iCArgs => {
 					if (iCArgs.Success) {
 						if (iCArgs.InsertionPoint.LineAfter == NewLineInsertion.None && 
 							iCArgs.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
@@ -234,7 +226,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 						Rollback ();
 					}
 					DisposeOnClose (); 
-				});
+				}));
 			});
 		
 			return tcs.Task;
