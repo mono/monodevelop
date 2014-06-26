@@ -483,43 +483,30 @@ namespace MonoDevelop.Ide.Editor
 				if (controlLeftRightMode != value) {
 					controlLeftRightMode = value;
 					PropertyService.Set ("ControlLeftRightMode", value);
-					SetWordFindStrategy ();
 					OnChanged (EventArgs.Empty);
 				}
 			}
 		}
 
-		IWordFindStrategy wordFindStrategy = null;
-		public override IWordFindStrategy WordFindStrategy {
+		WordFindStrategy wordFindStrategy = WordFindStrategy.MonoDevelop;
+		public override WordFindStrategy WordFindStrategy {
 			get {
-				if (wordFindStrategy == null)
-					SetWordFindStrategy ();
-				return this.wordFindStrategy;
+				if (useViModes) {
+					return WordFindStrategy.Vim;
+				}
+				switch (ControlLeftRightMode) {
+				case ControlLeftRightMode.Emacs:
+					return WordFindStrategy.Emacs;
+				case ControlLeftRightMode.SharpDevelop:
+					return WordFindStrategy.SharpDevelop;
+				}
+				return WordFindStrategy.MonoDevelop;
 			}
 			set {
 				throw new System.NotImplementedException ();
 			}
 		}
 
-		void SetWordFindStrategy ()
-		{
-			if (useViModes) {
-				this.wordFindStrategy = new ViWordFindStrategy ();
-				return;
-			}
-
-			switch (ControlLeftRightMode) {
-			case ControlLeftRightMode.MonoDevelop:
-				this.wordFindStrategy = new EmacsWordFindStrategy (true);
-				break;
-			case ControlLeftRightMode.Emacs:
-				this.wordFindStrategy = new EmacsWordFindStrategy (false);
-				break;
-			case ControlLeftRightMode.SharpDevelop:
-				this.wordFindStrategy = new SharpDevelopWordFindStrategy ();
-				break;
-			}
-		}
 
 		public override bool AllowTabsAfterNonTabs {
 			set {

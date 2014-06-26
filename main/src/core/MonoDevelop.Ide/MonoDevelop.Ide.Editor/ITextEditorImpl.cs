@@ -41,11 +41,15 @@ namespace MonoDevelop.Ide.Editor
 	public interface ITextEditorImpl : IViewContent, IInternalEditorExtensions, IDisposable
 	{
 		EditMode EditMode { get; }
+
 		ISyntaxMode SyntaxMode { get; set; }
+
 		ITextEditorOptions Options { get; }
+
 		IReadonlyTextDocument Document { get; set; }
 	
 		DocumentLocation CaretLocation { get; set; }
+
 		int CaretOffset { get; set; }
 
 		bool IsSomethingSelected { get; }
@@ -53,6 +57,7 @@ namespace MonoDevelop.Ide.Editor
 		SelectionMode SelectionMode { get; }
 
 		ISegment SelectionRange { get; set; }
+
 		DocumentRegion SelectionRegion { get; set; }
 
 		void SetSelection (int anchorOffset, int leadOffset);
@@ -78,6 +83,7 @@ namespace MonoDevelop.Ide.Editor
 		IMarkerHost MarkerHost { get; }
 
 		event EventHandler BeginUndo;
+
 		event EventHandler EndUndo;
 
 		Gtk.Widget GetGtkWidget ();
@@ -99,9 +105,11 @@ namespace MonoDevelop.Ide.Editor
 		Cairo.Point LocationToPoint (DocumentLocation currentSmartTagBegin);
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
+
 		void RemoveMarker (ITextLineMarker lineMarker);
 
 		void ScrollTo (int offset);
+
 		void CenterTo (int offset);
 
 		void AddSkipChar (int offset, char ch);
@@ -113,6 +121,7 @@ namespace MonoDevelop.Ide.Editor
 		#region Text segment markers
 
 		IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment);
+
 		IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (int offset);
 
 		/// <summary>
@@ -132,14 +141,18 @@ namespace MonoDevelop.Ide.Editor
 		void SetFoldings (IEnumerable<IFoldSegment> foldings);
 
 		IEnumerable<IFoldSegment> GetFoldingsContaining (int offset);
+
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
 
 		#region Internal use only API (do not mirror in TextEditor)
 		void ClearTooltipProviders ();
+
 		void AddTooltipProvider (TooltipProvider provider);
+
 		void RemoveTooltipProvider (TooltipProvider provider);
 
 		Xwt.Point GetEditorWindowOrigin ();
+
 		Xwt.Rectangle GetEditorAllocation ();
 		#endregion
 	}

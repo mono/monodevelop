@@ -2385,14 +2385,9 @@
     <Compile Include="MonoDevelop.Components\HelperMethods.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SelectionMode.cs" />
     <Compile Include="MonoDevelop.Components\GtkGestures.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\FileSettingsStore.cs">
-      <DependentUpon>EmacsWordFindStrategy.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MonoDevelop.Ide.Editor\CloneableStack.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\FileSettingsStore.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IEditorActionHost.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InsertionCursorEventArgs.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\EmacsWordFindStrategy.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\SharpDevelopWordFindStrategy.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IFoldSegment.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextLineMarker.cs" />
@@ -2404,7 +2399,6 @@
     <Compile Include="MonoDevelop.Ide.Editor\DocumentRegion.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextMarkerMouseEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DefaultSourceEditorOptions.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\ViWordFindStrategy.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Diff.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorImpl.cs" />
@@ -2440,6 +2434,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SimpleReadonlyDocument.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\CloneableStack.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

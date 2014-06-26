@@ -69,17 +69,9 @@ namespace MonoDevelop.Ide.Editor
 
 	public interface ITextEditorOptions : IDisposable
 	{
-		double Zoom { get; set; }
-		bool CanZoomIn { get; }
-		bool CanZoomOut { get; }
-		bool CanResetZoom { get; }
-		void ZoomIn ();
-		void ZoomOut ();
-		void ZoomReset ();
-
 		string IndentationString { get; }
 
-		IWordFindStrategy WordFindStrategy { get; set; }
+		WordFindStrategy WordFindStrategy { get; set; }
 
 		bool AllowTabsAfterNonTabs { get; set; }
 		bool HighlightMatchingBracket { get; set; }
@@ -103,16 +95,17 @@ namespace MonoDevelop.Ide.Editor
 		bool DrawIndentationMarkers { get; set; }
 
 		bool WrapLines { get; set; }
+
 		string FontName { get;  set; }
-		Pango.FontDescription Font { get;  }
 
 		string GutterFontName { get; set; }
-		Pango.FontDescription GutterFont { get; }
 
 		string ColorScheme { get; set;  }
+
 		string DefaultEolMarker { get; set; }
 
 		ShowWhitespaces ShowWhitespaces { get; set; }
+
 		IncludeWhitespaces IncludeWhitespaces { get; set; }
 
 		bool GenerateFormattingUndoStep { get; set; }
@@ -155,7 +148,7 @@ namespace MonoDevelop.Ide.Editor
 		Pango.FontDescription font, gutterFont;
 
 		double zoom = 1d;
-		IWordFindStrategy wordFindStrategy = new EmacsWordFindStrategy (true);
+		WordFindStrategy wordFindStrategy = WordFindStrategy.MonoDevelop;
 
 		#region Zoom
 
@@ -252,7 +245,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public virtual IWordFindStrategy WordFindStrategy {
+		public virtual WordFindStrategy WordFindStrategy {
 			get {
 				return wordFindStrategy;
 			}

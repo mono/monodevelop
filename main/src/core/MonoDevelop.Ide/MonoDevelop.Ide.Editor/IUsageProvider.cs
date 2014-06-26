@@ -32,7 +32,7 @@ using MonoDevelop.Ide.FindInFiles;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class Usage : AbstractSegment
+	public sealed class Usage : AbstractSegment
 	{
 		public readonly ReferenceUsageType UsageType;
 

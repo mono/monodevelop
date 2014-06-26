@@ -63,8 +63,11 @@ namespace MonoDevelop.Ide.Editor
 		new bool IsReadOnly { get; set; }
 
 		new string FileName { get; set; }
+
 		new string MimeType { get; set; }
+
 		new bool UseBOM { get; set; }
+
 		new Encoding Encoding { get; set; }
 
 		void Insert (int offset, string text);
@@ -78,6 +81,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		void Undo ();
+
 		void Redo ();
 
 		IDisposable OpenUndoGroup();

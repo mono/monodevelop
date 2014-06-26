@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Ide.Editor;
+using Mono.TextEditor.Vi;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -50,60 +51,34 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		void ITextEditorOptions.ZoomIn ()
-		{
-			options.ZoomIn ();
-		}
-
-		void ITextEditorOptions.ZoomOut ()
-		{
-			options.ZoomOut ();
-		}
-
-		void ITextEditorOptions.ZoomReset ()
-		{
-			options.ZoomReset ();
-		}
-
-		double ITextEditorOptions.Zoom {
-			get {
-				return options.Zoom;
-			}
-			set {
-				options.Zoom = value;
-			}
-		}
-
-		bool ITextEditorOptions.CanZoomIn {
-			get {
-				return options.CanZoomIn;
-			}
-		}
-
-		bool ITextEditorOptions.CanZoomOut {
-			get {
-				return options.CanZoomOut;
-			}
-		}
-
-		bool ITextEditorOptions.CanResetZoom {
-			get {
-				return options.CanResetZoom;
-			}
-		}
-
 		string ITextEditorOptions.IndentationString {
 			get {
 				return options.IndentationString;
 			}
 		}
-
-		IWordFindStrategy ITextEditorOptions.WordFindStrategy {
+		MonoDevelop.Ide.Editor.WordFindStrategy wordFindStrategy = MonoDevelop.Ide.Editor.WordFindStrategy.MonoDevelop;
+		MonoDevelop.Ide.Editor.WordFindStrategy ITextEditorOptions.WordFindStrategy {
 			get {
-				return null;
+				return wordFindStrategy;
 			}
 			set {
-				throw new NotImplementedException ();
+				wordFindStrategy = value;
+				switch (value) {
+				case MonoDevelop.Ide.Editor.WordFindStrategy.MonoDevelop:
+					options.WordFindStrategy = new Mono.TextEditor.EmacsWordFindStrategy (false);
+					break;
+				case MonoDevelop.Ide.Editor.WordFindStrategy.Emacs:
+					options.WordFindStrategy = new Mono.TextEditor.EmacsWordFindStrategy (true);
+					break;
+				case MonoDevelop.Ide.Editor.WordFindStrategy.SharpDevelop:
+					options.WordFindStrategy = new Mono.TextEditor.SharpDevelopWordFindStrategy ();
+					break;
+				case MonoDevelop.Ide.Editor.WordFindStrategy.Vim:
+					options.WordFindStrategy = new ViWordFindStrategy ();
+					break;
+				default:
+					throw new ArgumentOutOfRangeException ();
+				}
 			}
 		}
 
@@ -281,11 +256,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		Pango.FontDescription ITextEditorOptions.Font {
-			get {
-				return options.Font;
-			}
-		}
 	
 		string ITextEditorOptions.GutterFontName {
 			get {
@@ -293,12 +263,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 			set {
 				options.GutterFontName = value;
-			}
-		}
-
-		Pango.FontDescription ITextEditorOptions.GutterFont {
-			get {
-				return options.GutterFont;
 			}
 		}
 
