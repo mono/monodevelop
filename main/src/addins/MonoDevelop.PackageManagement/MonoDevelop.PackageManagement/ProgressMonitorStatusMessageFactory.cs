@@ -79,6 +79,7 @@ namespace MonoDevelop.PackageManagement
 			return new UpdatePackagesProgressMonitorStatusMessage (
 				projects,
 				GetString ("Packages are up to date."),
+				GetString ("No updates found but warnings were reported. Please see Package Console for details."),
 				message);
 		}
 
@@ -98,6 +99,7 @@ namespace MonoDevelop.PackageManagement
 			return new UpdatePackagesProgressMonitorStatusMessage (
 				project,
 				GetString ("Packages are up to date."),
+				GetString ("No updates found but warnings were reported. Please see Package Console for details."),
 				message);
 		}
 
@@ -127,6 +129,7 @@ namespace MonoDevelop.PackageManagement
 			return new UpdatePackagesProgressMonitorStatusMessage (
 				project,
 				GetString ("{0} is up to date.", packageId),
+				GetString ("No update found but warnings were reported. Please see Package Console for details."),
 				message);
 		}
 

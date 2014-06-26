@@ -34,14 +34,17 @@ namespace MonoDevelop.PackageManagement
 	{
 		UpdatedPackagesMonitor monitor;
 		string packagesUpToDateMessage;
+		string packagesUpToDateWarningMessage;
 
 		public UpdatePackagesProgressMonitorStatusMessage (
 			IPackageManagementProject project,
 			string packagesUpToDateMessage,
+			string packagesUpToDateWarningMessage,
 			ProgressMonitorStatusMessage message)
 			: this (
 				new IPackageManagementProject [] { project },
 				packagesUpToDateMessage,
+				packagesUpToDateWarningMessage,
 				message)
 		{
 		}
@@ -49,10 +52,12 @@ namespace MonoDevelop.PackageManagement
 		public UpdatePackagesProgressMonitorStatusMessage (
 			IEnumerable<IPackageManagementProject> projects,
 			string packagesUpToDateMessage,
+			string packagesUpToDateWarningMessage,
 			ProgressMonitorStatusMessage message)
 			: base (message.Status, message.Success, message.Error, message.Warning)
 		{
 			this.packagesUpToDateMessage = packagesUpToDateMessage;
+			this.packagesUpToDateWarningMessage = packagesUpToDateWarningMessage;
 			monitor = new UpdatedPackagesMonitor (projects);
 		}
 
@@ -76,7 +81,12 @@ namespace MonoDevelop.PackageManagement
 		protected override string GetWarningMessage ()
 		{
 			Dispose ();
-			return base.GetWarningMessage ();
+
+			if (AnyPackagesUpdated ()) {
+				return base.GetWarningMessage ();
+			}
+
+			return packagesUpToDateWarningMessage;
 		}
 
 		bool AnyPackagesUpdated ()
