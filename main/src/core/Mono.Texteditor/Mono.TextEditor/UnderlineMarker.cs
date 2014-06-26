@@ -57,12 +57,13 @@ namespace Mono.TextEditor
 		public int EndCol { get; set; }
 		public bool Wave { get; set; }
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			var startOffset = metrics.TextStartOffset;
 			int endOffset = metrics.TextEndOffset;
 			double startXPos = metrics.TextRenderStartPosition;
 			double endXPos = metrics.TextRenderEndPosition;
+			double y = metrics.LineYRenderStartPosition;
 			var layout = metrics.Layout.Layout;
 
 			int markerStart = LineSegment.Offset + System.Math.Max (StartCol - 1, 0);

@@ -90,6 +90,8 @@ namespace Mono.TextEditor
 		public double LineHeight { get; internal set; }
 
 		public double WholeLineWidth { get; internal set; }
+
+		public double LineYRenderStartPosition { get; internal set; }
 	}
 
 	public class EndOfLineMetrics
@@ -137,10 +139,10 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public virtual void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 #pragma warning disable 618
-			Draw (editor, cr, metrics.Layout.Layout, false, metrics.TextStartOffset, metrics.TextEndOffset, y, metrics.TextRenderStartPosition, metrics.TextRenderEndPosition);
+			Draw (editor, cr, metrics.Layout.Layout, false, metrics.TextStartOffset, metrics.TextEndOffset, metrics.LineYRenderStartPosition, metrics.TextRenderStartPosition, metrics.TextRenderEndPosition);
 #pragma warning restore 618
 		}
 		

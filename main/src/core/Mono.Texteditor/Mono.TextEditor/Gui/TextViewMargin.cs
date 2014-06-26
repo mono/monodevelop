@@ -1596,7 +1596,9 @@ namespace Mono.TextEditor
 				TextRenderEndPosition = xPos + width,
 
 				LineHeight = _lineHeight,
-				WholeLineWidth = textEditor.Allocation.Width - xPos
+				WholeLineWidth = textEditor.Allocation.Width - xPos,
+
+				LineYRenderStartPosition = y
 			};
 
 			foreach (TextLineMarker marker in line.Markers) {
@@ -1619,7 +1621,7 @@ namespace Mono.TextEditor
 
 			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.DrawBackground (textEditor, cr, metrics, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
 			}
 
 
@@ -1804,12 +1806,12 @@ namespace Mono.TextEditor
 			}
 			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, y, metrics);
+					marker.Draw (textEditor, cr, metrics);
 			}
 
 			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, metrics, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+					marker.Draw (textEditor, cr, metrics, offset, offset + length);
 			}
 			position += System.Math.Floor (layout.LastLineWidth);
 

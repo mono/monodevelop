@@ -53,11 +53,11 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual void Draw (TextEditor editor, Cairo.Context cr, LineMetrics layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public virtual void Draw (TextEditor editor, Context cr, LineMetrics layout, int startOffset, int endOffset)
 		{
 		}
 
-		public virtual void DrawBackground (TextEditor textEditor, Cairo.Context cr, LineMetrics metrics, bool b, int offset, int i, double y, double xPos, double d)
+		public virtual void DrawBackground (TextEditor editor, Context cr, LineMetrics layout, int startOffset, int endOffset)
 		{
 		}
 		
@@ -92,14 +92,16 @@ namespace Mono.TextEditor
 		public Cairo.Color Color { get; set; }
 		public bool Wave { get; set; }
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			int markerStart = Segment.Offset;
 			int markerEnd = Segment.EndOffset;
 			if (markerEnd < startOffset || markerStart > endOffset) 
 				return; 
 			var layout = metrics.Layout.Layout;
-			
+			double startXPos = metrics.TextRenderStartPosition;
+			double endXPos = metrics.TextRenderEndPosition;
+			double y = metrics.LineYRenderStartPosition;
 			if (editor.IsSomethingSelected) {
 				var range = editor.SelectionRange;
 				if (range.Contains (markerStart)) {

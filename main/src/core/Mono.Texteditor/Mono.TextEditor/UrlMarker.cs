@@ -100,12 +100,13 @@ namespace Mono.TextEditor
 			line = null;
 		}
 		
-		public override void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			var startOffset = metrics.TextStartOffset;
 			int endOffset = metrics.TextEndOffset;
 			double startXPos = metrics.TextRenderStartPosition;
 			double endXPos = metrics.TextRenderEndPosition;
+			double y = metrics.LineYRenderStartPosition;
 			var layout = metrics.Layout.Layout;
 			int markerStart = line.Offset + startColumn;
 			int markerEnd = line.Offset + endColumn;
