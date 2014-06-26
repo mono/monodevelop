@@ -60,7 +60,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			return null;
 		}
 
-		protected override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+
+		public override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 //			//create a message string from all the results
 //			var results = (IList<Result>)item.Item;
