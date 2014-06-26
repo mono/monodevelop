@@ -40,12 +40,12 @@ namespace Mono.TextEditor
 			this.color = color;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			if (metrics.SelectionStart > 0)
 				return true;
 			cr.SetSourceColor (color);
-			cr.Rectangle (metrics.TextRenderStartPosition, y, metrics.TextRenderEndPosition - metrics.TextRenderStartPosition, editor.LineHeight);
+			cr.Rectangle (metrics.TextRenderStartPosition, metrics.LineYRenderStartPosition, metrics.TextRenderEndPosition - metrics.TextRenderStartPosition, editor.LineHeight);
 			cr.Fill ();
 			return true;
 		}

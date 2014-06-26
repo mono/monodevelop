@@ -53,11 +53,11 @@ namespace Mono.TextEditor
 		{
 		}
 		
-		public virtual void Draw (TextEditor editor, Context cr, LineMetrics layout, int startOffset, int endOffset)
+		public virtual void Draw (TextEditor editor, Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 		}
 
-		public virtual void DrawBackground (TextEditor editor, Context cr, LineMetrics layout, int startOffset, int endOffset)
+		public virtual void DrawBackground (TextEditor editor, Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 		}
 		

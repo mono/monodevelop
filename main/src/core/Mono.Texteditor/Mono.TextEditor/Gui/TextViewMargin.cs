@@ -1605,7 +1605,7 @@ namespace Mono.TextEditor
 				if (!marker.IsVisible)
 					continue;
 
-				if (marker.DrawBackground (textEditor, cr, y, metrics)) {
+				if (marker.DrawBackground (textEditor, cr, metrics)) {
 					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
 				}
 
@@ -2846,10 +2846,11 @@ namespace Mono.TextEditor
 				var metrics = new EndOfLineMetrics {
 					LineSegment = line,
 					TextRenderEndPosition = TextStartPosition + position,
-					LineHeight = _lineHeight
+					LineHeight = _lineHeight,
+					LineYRenderStartPosition = y
 				};
 				foreach (var marker in line.Markers) {
-					marker.DrawAfterEol (textEditor, cr, y, metrics);
+					marker.DrawAfterEol (textEditor, cr, metrics);
 				}
 			}
 

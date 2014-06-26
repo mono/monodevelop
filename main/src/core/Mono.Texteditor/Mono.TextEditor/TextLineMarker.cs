@@ -99,6 +99,7 @@ namespace Mono.TextEditor
 		public DocumentLine LineSegment { get; internal set; }
 		public double TextRenderEndPosition { get; internal set; }
 		public double LineHeight { get; internal set; }
+		public double LineYRenderStartPosition { get; internal set; }
 	}
 
 	public class TextLineMarker
@@ -159,7 +160,7 @@ namespace Mono.TextEditor
 		/// <param name="cr">The cairo context.</param>
 		/// <param name="y">The y coordinate.</param>
 		/// <param name="metrics">The line metrics.</param>
-		public virtual bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public virtual bool DrawBackground (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			return false;
 		}
@@ -167,7 +168,7 @@ namespace Mono.TextEditor
 		/// <summary>
 		/// Is used to draw in the area after the visible text.
 		/// </summary>
-		public virtual void DrawAfterEol (TextEditor textEditor, Cairo.Context cr, double y, EndOfLineMetrics lineHeight)
+		public virtual void DrawAfterEol (TextEditor textEditor, Cairo.Context cr, EndOfLineMetrics metrics)
 		{
 		}
 	}
