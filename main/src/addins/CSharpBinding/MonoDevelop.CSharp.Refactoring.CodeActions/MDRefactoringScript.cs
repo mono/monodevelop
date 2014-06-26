@@ -98,18 +98,20 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		public override Task<Script> InsertWithCursor (string operation, InsertPosition defaultPosition, IList<AstNode> nodes)
 		{
 			var tcs = new TaskCompletionSource<Script> ();
-//			var editor = context.TextEditor;
-//			var loc = context.TextEditor.CaretLocation;
-//			var declaringType = context.ParsedDocument.GetInnermostTypeDefinition (loc);
-//			var mode = new InsertionCursorEditMode (
-//				editor.Parent,
-//				MonoDevelop.Ide.TypeSystem.CodeGenerationService.GetInsertionPoints (context.TextEditor, context.ParsedDocument, declaringType));
-//			if (mode.InsertionPoints.Count == 0) {
-//				MessageService.ShowError (
-//					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
-//				);
-//				return tcs.Task;
-//			}
+			var editor = context.TextEditor as TextEditor;
+			if (editor == null)
+				return tcs.Task;
+			var loc = editor.CaretLocation;
+			var declaringType = context.ParsedDocument.GetInnermostTypeDefinition (loc);
+
+			var insertionPoints = MonoDevelop.Ide.TypeSystem.CodeGenerationService.GetInsertionPoints (context.TextEditor, context.ParsedDocument, declaringType);
+			if (insertionPoints.Count == 0) {
+				MessageService.ShowError (
+					GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+				);
+				return tcs.Task;
+			}
+
 //			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
 //			helpWindow.TitleText = operation;
 //			mode.HelpWindow = helpWindow;
@@ -136,26 +138,25 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 //				}
 //				break;
 //			}
-//			operationsRunning++;
-//			mode.StartMode ();
-//			mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
-//				if (iCArgs.Success) {
-//					if (iCArgs.InsertionPoint.LineAfter == NewLineInsertion.None && 
-//					    iCArgs.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count () > 1) {
-//						iCArgs.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
-//					}
-//					foreach (var node in nodes.Reverse ()) {
-//						var output = OutputNode (MonoDevelop.Ide.TypeSystem.CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
-//						var offset = context.TextEditor.LocationToOffset (iCArgs.InsertionPoint.Location);
-//						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
-//						output.RegisterTrackedSegments (this, delta + offset);
-//					}
-//					tcs.SetResult (this);
-//				} else {
-//					Rollback ();
-//				}
-//				DisposeOnClose (); 
-//			};
+			operationsRunning++;
+			editor.StartInsertionMode (operation, insertionPoints, iCArgs => {
+				if (iCArgs.Success) {
+					if (iCArgs.InsertionPoint.LineAfter == NewLineInsertion.None && 
+					    iCArgs.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count () > 1) {
+						iCArgs.InsertionPoint.LineAfter = NewLineInsertion.BlankLine;
+					}
+					foreach (var node in nodes.Reverse ()) {
+						var output = OutputNode (MonoDevelop.Ide.TypeSystem.CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
+						var offset = context.TextEditor.LocationToOffset (iCArgs.InsertionPoint.Location);
+						var delta = iCArgs.InsertionPoint.Insert (editor, output.Text);
+						output.RegisterTrackedSegments (this, delta + offset);
+					}
+					tcs.SetResult (this);
+				} else {
+					Rollback ();
+				}
+				DisposeOnClose (); 
+			});
 			return tcs.Task;
 		}
 
