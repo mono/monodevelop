@@ -52,10 +52,6 @@ namespace MonoDevelop.SourceEditor
 {
 	class LanguageItemTooltipProvider: TooltipProvider, IDisposable
 	{
-		public LanguageItemTooltipProvider ()
-		{
-		}
-
 		class ToolTipData
 		{
 			public SyntaxTree Unit;
@@ -132,7 +128,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#endregion
-		protected override Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
@@ -166,10 +162,8 @@ namespace MonoDevelop.SourceEditor
 			var hoverNode = titem.Node.GetNodeAt (editor.OffsetToLocation (offset)) ?? titem.Node;
 			var p1 = editor.LocationToPoint (hoverNode.StartLocation);
 			var p2 = editor.LocationToPoint (hoverNode.EndLocation);
-			var positionWidget = editor.GetGtkWidget ();
-			var caret = new Gdk.Rectangle ((int)p1.X - positionWidget.Allocation.X, (int)p2.Y - positionWidget.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
-
-			tipWindow.ShowPopup (positionWidget, caret, PopupPosition.Top);
+			var caret = new Gdk.Rectangle ((int)(p1.X), (int)(p2.Y), (int)(p2.X - p1.X), (int)editor.LineHeight);
+			tipWindow.ShowPopup (editor.GetGtkWidget (), caret, PopupPosition.Top);
 			tipWindow.EnterNotifyEvent += delegate {
 //				editor.HideTooltip (false);
 			};
@@ -353,6 +347,7 @@ namespace MonoDevelop.SourceEditor
 		
 			return null;
 		}
+
 		class ErrorVisitor : DepthFirstAstVisitor
 		{
 			readonly CSharpAstResolver resolver;
@@ -394,8 +389,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		
-		protected override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (TooltipInformationWindow)tipWindow;
 			requiredWidth = win.Allocation.Width;

@@ -125,8 +125,8 @@ namespace MonoDevelop.CSharp.Completion
 			var links = new List<TextLink> ();
 			var link = new TextLink ("name");
 			
-			link.AddLink (new TextSegment (0, this.DisplayText.Length));
-			link.AddLink (new TextSegment (pos - initialOffset + pos2, this.DisplayText.Length));
+			link.AddLink (new TextSegment (initialOffset, this.DisplayText.Length));
+			link.AddLink (new TextSegment (initialOffset + pos + pos2, this.DisplayText.Length));
 			links.Add (link);
 			editor.StartTextLinkMode (links);
 			
