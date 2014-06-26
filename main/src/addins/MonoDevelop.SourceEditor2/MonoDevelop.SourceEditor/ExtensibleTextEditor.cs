@@ -116,21 +116,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public ExtensionContext ExtensionContext {
-			get {
-				return extensionContext;
-			}
-			set {
-				if (extensionContext != null) {
-					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-					ClearTooltipProviders ();
-				}
-				extensionContext = value;
-				if (extensionContext != null)
-					extensionContext.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-			}
-		}
-		
+
 		static bool? testNewViMode = null;
 		static bool TestNewViMode {
 			get {
@@ -175,7 +161,6 @@ namespace MonoDevelop.SourceEditor
 			UnregisterAdjustments ();
 			resolveResult = null;
 			Extension = null;
-			ExtensionContext = null;
 			view = null;
 			base.OnDestroyed ();
 			if (Options != null) {
@@ -183,23 +168,7 @@ namespace MonoDevelop.SourceEditor
 				base.Options = null;
 			}
 		}
-		
-		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
-		{
-			TooltipProvider provider;
-			try {
-				provider = (TooltipProvider) a.ExtensionObject;
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't create tooltip provider:"+ a.ExtensionNode, e);
-				return;
-			}
-			if (a.Change == ExtensionChange.Add) {
-				AddTooltipProvider (provider);
-			} else {
-				RemoveTooltipProvider (provider);
-			}
-		}
-		
+
 		public void FireOptionsChange ()
 		{
 			this.OptionsChanged (null, null);
@@ -571,7 +540,7 @@ namespace MonoDevelop.SourceEditor
 			ParameterInformationWindowManager.HideWindow (null, view);
 			HideTooltip ();
 			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
-			var ctx = ExtensionContext ?? AddinManager.AddinEngine;
+			var ctx = view.WorkbenchWindow.ExtensionContext ?? AddinManager.AddinEngine;
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
 			var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));

@@ -29,23 +29,22 @@
 using System;
 using System.Collections.Generic;
 
-using Mono.TextEditor;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Debugger;
 using MonoDevelop.Components;
 using Mono.Debugging.Client;
-using TextEditor = Mono.TextEditor.TextEditor;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class DebugValueTooltipProvider: TooltipProvider, IDisposable
+	class DebugValueTooltipProvider: TooltipProvider, IDisposable
 	{
 		Dictionary<string,ObjectValue> cachedValues = new Dictionary<string,ObjectValue> ();
 		DebugValueWindow tooltip;
@@ -78,14 +77,14 @@ namespace MonoDevelop.SourceEditor
 
 		#region ITooltipProvider implementation
 
-		static string GetIdentifierName (TextEditorData editor, Identifier id, out int startOffset)
+		static string GetIdentifierName (TextEditor editor, Identifier id, out int startOffset)
 		{
 			startOffset = editor.LocationToOffset (id.StartLocation.Line, id.StartLocation.Column);
 
 			return editor.GetTextBetween (id.StartLocation, id.EndLocation);
 		}
 
-		public static string ResolveExpression (TextEditorData editor, ResolveResult result, AstNode node, out int startOffset)
+		public static string ResolveExpression (TextEditor editor, ResolveResult result, AstNode node, out int startOffset)
 		{
 			//Console.WriteLine ("result is a {0}", result.GetType ().Name);
 			startOffset = -1;
@@ -218,7 +217,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
-			if (offset >= editor.Document.TextLength)
+			if (offset >= editor.Length)
 				return null;
 
 			if (!DebuggingService.IsDebugging || DebuggingService.IsRunning)
@@ -228,7 +227,9 @@ namespace MonoDevelop.SourceEditor
 			if (frame == null)
 				return null;
 
-			var ed = (ExtensibleTextEditor) editor;
+			var ed = CompileErrorTooltipProvider.GetExtensibleTextEditor (editor);
+			if (ed == null)
+				return null;
 			string expression = null;
 			int startOffset;
 
@@ -247,7 +248,7 @@ namespace MonoDevelop.SourceEditor
 				if (!TryResolveAt (doc, loc, out result, out node))
 					return null;
 
-				expression = ResolveExpression (editor.GetTextEditorData (), result, node, out startOffset);
+				expression = ResolveExpression (editor, result, node, out startOffset);
 			}
 			
 			if (string.IsNullOrEmpty (expression))
@@ -269,7 +270,7 @@ namespace MonoDevelop.SourceEditor
 			
 		public override Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
-			var location = editor.OffsetToLocation (item.ItemSegment.Offset);
+			var location = editor.OffsetToLocation (item.Offset);
 			var point = editor.LocationToPoint (location);
 			int lineHeight = (int) editor.LineHeight;
 			int y = point.Y;
@@ -279,8 +280,8 @@ namespace MonoDevelop.SourceEditor
 				y += lineHeight;
 
 			var caret = new Gdk.Rectangle (mouseX, y, 1, lineHeight);
-			tooltip = new DebugValueWindow (editor, offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
-			tooltip.ShowPopup (editor, caret, PopupPosition.TopLeft);
+			tooltip = new DebugValueWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
+			tooltip.ShowPopup (editor.GetGtkWidget (), caret, PopupPosition.TopLeft);
 
 			return tooltip;
 		}

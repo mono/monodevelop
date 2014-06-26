@@ -144,6 +144,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
+		event EventHandler ITextDocument.FileNameChanged {
+			add {
+				document.FileNameChanged += value;
+			}
+			remove {
+				document.FileNameChanged -= value;
+			}
+		}
+
 		string ITextDocument.MimeType {
 			get {
 				return document.MimeType;

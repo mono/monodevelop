@@ -514,7 +514,6 @@ namespace MonoDevelop.SourceEditor
 		void HandleWorkbenchWindowChanged (object sender, EventArgs e)
 		{
 			if (WorkbenchWindow != null) {
-				widget.TextEditor.ExtensionContext = WorkbenchWindow.ExtensionContext;
 				WorkbenchWindow.ActiveViewContentChanged += HandleActiveViewContentChanged;
 				WorkbenchWindowChanged -= HandleWorkbenchWindowChanged;
 			}
@@ -3008,6 +3007,41 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.CenterTo (offset); 
 		}
 
+		void ITextEditorImpl.ClearTooltipProviders ()
+		{
+			TextEditor.ClearTooltipProviders ();
+		}
+
+		void ITextEditorImpl.AddTooltipProvider (MonoDevelop.Ide.Editor.TooltipProvider provider)
+		{
+			TextEditor.AddTooltipProvider (new TooltipProviderWrapper (provider));
+		}
+
+		void ITextEditorImpl.RemoveTooltipProvider (MonoDevelop.Ide.Editor.TooltipProvider provider)
+		{
+			foreach (var p in GetTextEditorData ().TooltipProviders) {
+				var wrapper = p as TooltipProviderWrapper;
+				if (wrapper == null)
+					continue;
+				if (wrapper.OriginalProvider == provider) {
+					TextEditor.RemoveTooltipProvider (p);
+					return;
+				}
+			}
+		}
+
+		Xwt.Point ITextEditorImpl.GetEditorWindowOrigin ()
+		{
+			int ox, oy;
+			TextEditor.GdkWindow.GetOrigin (out ox, out oy); 
+			return new Xwt.Point (ox, oy);
+		}
+
+		Xwt.Rectangle ITextEditorImpl.GetEditorAllocation ()
+		{
+			var alloc = TextEditor.Allocation;
+			return new Xwt.Rectangle (alloc.X, alloc.Y, alloc.Width, alloc.Height);
+		}
 
 		#region IEditorActionHost implementation
 

@@ -198,6 +198,7 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\AsmLineMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\LinkMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ListDataProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TooltipProviderWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
