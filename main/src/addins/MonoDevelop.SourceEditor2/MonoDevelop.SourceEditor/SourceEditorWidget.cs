@@ -1753,11 +1753,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
 
-			base.Draw (editor, cr, y, metrics);
+			base.Draw (editor, cr, metrics);
 		}
 	}
 }

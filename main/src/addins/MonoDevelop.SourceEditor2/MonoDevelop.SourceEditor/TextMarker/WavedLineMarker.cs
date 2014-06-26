@@ -26,6 +26,7 @@
 using System;
 using Mono.TextEditor;
 using MonoDevelop.Debugger;
+using Pango;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.SourceEditor
 			this.effect = effect;
 		}
 
-		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics layout, int startOffset, int endOffset)
 		{
 			if (DebuggingService.IsDebugging)
 				return;
@@ -47,12 +48,15 @@ namespace MonoDevelop.SourceEditor
 			
 			double drawFrom;
 			double drawTo;
-				
+			double y = layout.LineYRenderStartPosition;
+			double startXPos = layout.TextRenderStartPosition;
+			double endXPos = layout.TextRenderEndPosition;
+
 			if (markerStart < startOffset && endOffset < markerEnd) {
 				drawTo = endXPos;
 				var line = editor.GetLineByOffset (startOffset);
 				int offset = line.GetIndentation (editor.Document).Length;
-				drawFrom = startXPos + (layout.IndexToPos (offset).X  / Pango.Scale.PangoScale);
+				drawFrom = startXPos + (layout.Layout.Layout.IndexToPos (offset).X  / Pango.Scale.PangoScale);
 			} else {
 				int start;
 				if (startOffset < markerStart) {
@@ -65,9 +69,9 @@ namespace MonoDevelop.SourceEditor
 				int end = endOffset < markerEnd ? endOffset : markerEnd;
 				int x_pos;
 
-				x_pos = layout.IndexToPos (start - startOffset).X;
+				x_pos = layout.Layout.Layout.IndexToPos (start - startOffset).X;
 				drawFrom = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
-				x_pos = layout.IndexToPos (end - startOffset).X;
+				x_pos = layout.Layout.Layout.IndexToPos (end - startOffset).X;
 	
 				drawTo = startXPos + (int)(x_pos / Pango.Scale.PangoScale);
 			}

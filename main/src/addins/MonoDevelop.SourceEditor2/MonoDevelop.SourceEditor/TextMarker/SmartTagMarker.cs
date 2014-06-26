@@ -42,13 +42,13 @@ namespace MonoDevelop.SourceEditor
 			this.loc = realLocation;
 		}
 
-		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			this.editor = editor;
 			var line = editor.GetLine (loc.Line);
 			var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
 
-			cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
+			cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (metrics.LineYRenderStartPosition) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
 
 			if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
 				cr.SetSourceRGBA (0.8, 0.8, 1, 0.9);

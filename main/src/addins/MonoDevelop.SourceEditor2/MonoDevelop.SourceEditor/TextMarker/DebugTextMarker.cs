@@ -59,13 +59,13 @@ namespace MonoDevelop.SourceEditor
 			return margin is IconMargin;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			// check, if a message bubble is active in that line.
 			if (LineSegment != null && LineSegment.Markers.Any (m => m != this && (m is IExtendingTextLineMarker)))
 				return false;
 
-			return base.DrawBackground (editor, cr, y, metrics);
+			return base.DrawBackground (editor, cr, metrics);
 		}
 
 		public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)

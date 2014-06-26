@@ -36,7 +36,7 @@ namespace MonoDevelop.SourceEditor
 		{
 		}
 
-		public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
+		public override void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
 		{
 			// nothing (is drawn using chunk marker)
 		}
