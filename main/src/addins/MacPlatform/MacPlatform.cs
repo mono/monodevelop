@@ -82,7 +82,10 @@ namespace MonoDevelop.MacIntegration
 
 			systemVersion = Carbon.Gestalt ("sysv");
 
-			ObjCRuntime.Dlfcn.dlopen ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib", 0);
+			var dir = Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location);
+
+			if (ObjCRuntime.Dlfcn.dlopen (Path.Combine (dir, "libxammac.dylib"), 0) == IntPtr.Zero)
+				LoggingService.LogFatalError ("Unable to load libxammac");
 
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 

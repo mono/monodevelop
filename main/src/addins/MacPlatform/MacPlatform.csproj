@@ -22,7 +22,7 @@
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\MacPlatform.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\bin\MacPlatform.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,7 +34,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\MacPlatform.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\bin\MacPlatform.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -148,4 +148,10 @@
     <Folder Include="MacInterop\AppleEvents\" />
     <Folder Include="MacMenu\" />
   </ItemGroup>
+  <ItemGroup>
+    <LibXammac Include = "/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib" />
+  </ItemGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(LibXammac)" DestinationFiles="$(OutputPath)\libxammac.dylib" SkipUnchangedFiles="true" />
+  </Target>
 </Project>
