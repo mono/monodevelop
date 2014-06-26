@@ -21,8 +21,9 @@ namespace GitHub.Issues.UserInterface
 
 		private Gtk.Button updateIssueListButton;
 
-		private IReadOnlyList<Octokit.Issue> issues;
+		private List<IssueNode> issues;
 
+		// Smart ListStore property
 		public Gtk.ListStore ListStore
 		{
 			get {
@@ -34,21 +35,38 @@ namespace GitHub.Issues.UserInterface
 			}
 		}
 
+		// Creates the main window contents that are seen, basically the UI of the screen
 		public IssuesWidget (IReadOnlyList<Octokit.Issue> issues)
 		{
 			this.Build ();
 
-			this.issues = issues;
+			// Wrap the Octokit Issues into my issues which are easier to read with reflection
+			// because I can handle conditional property reads from within my properties masked
+			// behind a single property which is not easy with reflection (if possible at all.)
+			// Look at Assignee for example. I can do the check internally in my property.
+			this.issues = new List<IssueNode>();
 
-			this.issueTable = this.createIssueTable (this.issues, false);
+			foreach (Octokit.Issue issue in issues) {
+				this.issues.Add (new IssueNode (issue));
+			}
+
+			// Create the tree view to hold the issues
+			this.issueTable = this.createIssueTable (this.issues);
+			// Create the tree view to hold column selections
 			this.columnListView = this.createColumnListView ();
+			// Create the button
 			this.updateIssueListButton = this.createUpdateIssueListButton ();
 
 			// Set sizing
 			columnListView.SetSizeRequest (100, 500);
 			issueTable.SetSizeRequest (950, 500);
 
-			// Add controls to the widget
+			// Set up the layout
+			// 2 columns on screen with first column having 2 rows
+			// |      |      |
+			// |______|      |
+			// |      |      |
+			// Something like this
 			Gtk.VBox mainContainer = new Gtk.VBox ();
 			Gtk.HBox tablesContainer = new Gtk.HBox ();
 			Gtk.VBox columnsSelectionContainer = new Gtk.VBox ();
@@ -59,110 +77,150 @@ namespace GitHub.Issues.UserInterface
 			tablesContainer.Add (columnsSelectionContainer);
 			tablesContainer.Add (issueTable);
 
+			// Add the layout to the main container
 			mainContainer.Add (tablesContainer);
 
+			// Add main container to screen/widget
 			this.Add (mainContainer);
 
+			// Display our UI
 			this.ShowAll ();
 		}
 
-		private Gtk.Button createUpdateIssueListButton ()
-		{
-			Gtk.Button button = new Gtk.Button ();
-			button.Label = "Update Issues";
-			button.Clicked += this.updateIssueListButtonClicked;
+		#region Event Handlers
 
-			return button;
-		}
-
+		// Called when the button to update columns is clicked
 		private void updateIssueListButtonClicked(object sender, EventArgs e)
 		{
-			this.populateIssuesTableAndSetUpSortAndFilter ();
+			// Clear the existing columns
+			this.deleteColumnsFromTreeView (this.issueTable, this.treeColumns);
 
-			this.issueTable.Model = this.sort;
+			// Find and save the selected columns
+			this.columns = this.getIssueColumnsFromSelectedColumns (this.getSelectedColumns (this.columnListView));
+
+			// Reconfigure the issue tree view to show the selected columns
+			this.treeColumns = this.createAndAppendColumnsToTreeView (this.issueTable, this.columns);
 		}
 
-		private Gtk.TreeView createIssueTable(IReadOnlyList<Octokit.Issue> issues, bool populate)
+		#endregion
+
+		#region Creation of UI Components
+
+		// Creates the main issue view tree view, sets up columns, handlers, sorting, filtering and populates the data
+		private Gtk.TreeView createIssueTable(List<IssueNode> issues)
 		{
 			// Setting up the table
 			Gtk.TreeView treeView = new Gtk.TreeView ();
 
-			this.treeColumns = this.createAndConfigureColumns (treeView);
+			// Fill up the table and create sort and filter models
+			this.issueListStore = this.createIssuesListStore (this.getAllPossibleColumns ());
 
-			// Populate the table
-			if (populate) {
-				this.populateIssuesTableAndSetUpSortAndFilter ();
+			// Set up the columns in the TreeView for issues
+			// Needs to be set up before creating the filter and sort based
+			// on this store. Getting a StackOverflowException otherwise
+			this.populateIssuesTable (issues, this.issueListStore);
 
-				treeView.Model = this.sort;
-			}
+			// Set up the filtering and sorting models based on data
+			this.filter = new Gtk.TreeModelFilter (this.issueListStore, null);
+			this.sort = new Gtk.TreeModelSort (this.filter);
+
+			// Set up sorting and filtering methods
+			this.SetColumnSortHandlers (this.treeColumns, this.sort);
+			this.SetFilteringHandlers (this.treeColumns, this.filter);
+
+			// Now since we have the data loaded into the store and we know which
+			// columns we want to display (all by default) we add those columns mappings
+			// to the control itself so that it can display them from the list store
+			// 
+			// Also need to save the output of this method for later in case we need to
+			// remove those column mappings (it needs those exact instances... stupid.)
+			this.treeColumns = this.createAndAppendColumnsToTreeView (treeView, this.columns);
+
+			// Assign the store so that it can read the issue rows and display them
+			treeView.Model = this.sort;
 
 			return treeView;
 		}
 
-		private void populateIssuesTableAndSetUpSortAndFilter()
-		{
-			this.issueListStore = this.createListStore ();
-
-			foreach (Octokit.Issue issue in issues) {
-				this.addRowBasedOnIssue (this.issueListStore, issue);
-			}
-
-			this.filter = new Gtk.TreeModelFilter (this.issueListStore, null);
-			this.sort = new Gtk.TreeModelSort (this.filter);
-
-			// Add sorting and filtering functionality
-			this.SetColumnSortHandlers (this.treeColumns, this.sort);
-
-			this.SetFilteringHandlers (this.treeColumns, this.filter);
-		}
-
+		// Creates and returns an instance of the list view which allows the users to select columns they'd like to see
 		private Gtk.TreeView createColumnListView()
 		{
 			// Set up the control panel for column selection
-			this.columnListStore = new Gtk.ListStore (typeof(String));
+			this.columnListStore = new Gtk.ListStore (typeof(String), typeof(String));
 
-			this.CreateAndAddColumnSelectionsToTable (this.columnListStore, typeof(IssueProperties));
+			// Add all properties into the list store that appear in IssueNode class
+			// The property names won't show, the Description attribute value will be displayed instead
+			this.populatePropertiesIntoListStore (this.columnListStore, typeof(IssueNode));
 
+			// Create the list instance 
 			Gtk.TreeView columnListView = new Gtk.TreeView ();
-			this.createColumnListWidget (columnListView);
+			this.initializeColumnListControl (columnListView);
+
 			columnListView.Model = this.columnListStore;
 
+			// Allow multiselect with CTRL or SHIFT held down
 			columnListView.Selection.Mode = Gtk.SelectionMode.Extended;
 
 			return columnListView;
 		}
 
-		private void createColumnListWidget(Gtk.TreeView columnListView)
+		// Creates a button which triggers update of visible columns in the issue
+		// tree view
+		private Gtk.Button createUpdateIssueListButton ()
 		{
-			columnListView.AppendColumn (new Gtk.TreeViewColumn ("Column Title", new Gtk.CellRendererText (), "text", 0));
+			Gtk.Button button = new Gtk.Button ();
+			button.Label = "Update Issues";
+
+			// Method which handles the udpate of visible columns
+			button.Clicked += this.updateIssueListButtonClicked;
+
+			return button;
 		}
 
+		#endregion
+
+		#region Sorting and Filtering functions
+
+		// Allows us to sort the columns based on the string provided for each column in the column selection tree view
 		private void SetFilteringHandlers (List<Gtk.TreeViewColumn> columns, Gtk.TreeModelFilter sort)
 		{
+			// TODO: Set up filtering functionality to read the values from the selected columns text boxes (needs implemented)
 		}
 
+		// Allows us to sort the columns by click on the column headers. It simply toggles the sorting from
+		// ascending to descending and it only allows for sorting to be applied on a single columns at a
+		// time
 		private void SetColumnSortHandlers (List<Gtk.TreeViewColumn> columns, Gtk.TreeModelSort sort)
 		{
+			// We want to enable sorting for all column mappings in the tree view control supplied
 			foreach (Gtk.TreeViewColumn column in columns) {
+				// When its clicked we either set up the sorting (if currently on a different column)
+				// or toggle if already on this column
 				column.Clicked += (object sender, EventArgs e) => 
 				{
 					int colId = -1;
 					Gtk.SortType currentSort = Gtk.SortType.Descending;
 
+					// Get the column id of the current column which is sorted and the sort type of that sort
 					bool sorted = sort.GetSortColumnId(out colId, out currentSort);
 
+					// If no sorting is applied at the minute
 					if (sorted == false)
 					{
+						// Set up myself as sort column
 						sort.SetSortColumnId(column.SortColumnId, currentSort);
 					}
 					else
 					{
+						// If sorting is currently on myself
 						if (colId == column.SortColumnId)
 						{
+							// Toggle the sorting type
 							sort.ChangeSortColumn();
 						}
 						else
 						{
+							// If someone else is sorted, set up the sorting on myself with Descending (look above - currentSort)
 							sort.SetSortColumnId(column.SortColumnId, currentSort);
 						}
 					}
@@ -170,86 +228,76 @@ namespace GitHub.Issues.UserInterface
 			}
 		}
 
-		private void addRowBasedOnIssue(Gtk.ListStore listStore, Octokit.Issue issue)
+		#endregion
+
+		#region ListStore Management Methods
+
+		// Takes an IssueNode class and creates a row that is then put into the list store
+		// IssueNode is used as a wrapper for Octokit.Issue to avoid problems where conditional
+		// information fetches are required. This way we can mask it with a single property.
+		private void addIssueRowIntoListStore(Gtk.ListStore listStore, IssueNode issue)
 		{
-			object[] values = new object[this.columns.Count];
+			List<Object> values = new List<Object> ();
 
 			foreach (IssueColumn column in this.columns) {
-				try {
-					values [column.OrderFromLeftIndex] = issue.GetType ().GetProperty (column.PropertyName).GetValue (issue).ToString();
-				}
-				catch (NullReferenceException) {
-					values [column.OrderFromLeftIndex] = "Not Available";
-				}
+				values.Add(typeof(IssueNode).GetProperty (column.PropertyName).GetValue (issue).ToString());
 			}
 
-			listStore.AppendValues (values);
+			listStore.AppendValues (values.ToArray());
 		}
 
-		private void CreateAndAddColumnSelectionsToTable(Gtk.ListStore list, Type enumType)
-		{
-			foreach (string enumValue in Enum.GetNames (enumType))
-			{
-				// Create a checkbox, store it in an array so that we can quickly go through them and get a list of columns to populate
-				// Add the checkbox to the table.
-				// Have a VBox of checkboxes which can be collapsed.
-				// Or have a multiselect list? To look into it
-				list.AppendValues (enumValue);
-			}
-		}
-
-		private Gtk.ListStore createListStore()
+		// Creates a list store for the issues
+		private Gtk.ListStore createIssuesListStore(List<KeyValuePair<String, Int32>> allColumns)
 		{
 			this.columns.Clear ();
-
-			if (this.columnListView != null && this.columnListView.Selection != null) {
-				int columnCount = this.columnListView.Selection.CountSelectedRows ();
-				Gtk.TreeModel selectedRows = null;
-
-				// Get the paths to reach all the selected rows
-				Gtk.TreePath[] selectedRowPaths = this.columnListView.Selection.GetSelectedRows (out selectedRows);
-
-				// Here we will store string representations of the selected column names
-				List<String> selectedColumns = new List<String> ();
-
-				// Find what columns where selected  in the list
-				foreach (Gtk.TreePath path in selectedRowPaths) {
-					Gtk.TreeIter iterator;
-					selectedRows.GetIter (out iterator, path);
-					selectedColumns.Add((String)selectedRows.GetValue (iterator, 0)); // Get column name
-				}
-
-				// Need to get the property names of the columns based on enum from the string list
-				int i = 0;
-
-				foreach (String column in selectedColumns) {
-					IssueProperties enumValue = (IssueProperties)Enum.Parse (typeof(IssueProperties), column);
-					DescriptionAttribute descriptionAttribute = (DescriptionAttribute)Attribute.GetCustomAttribute (typeof(IssueProperties).GetField (column), typeof(DescriptionAttribute));
-					this.columns.Add (new IssueColumn (typeof(String), column, descriptionAttribute.Description, i++));
-				}
-
-				// Set up the types of the columns in the list store
-				Type[] columnTypes = new Type[this.columns.Count];
-
-				for (i = 0; i < this.columns.Count; i++) {
-					columnTypes [i] = this.columns [i].Type;
-				}
-
-				return new Gtk.ListStore (columnTypes);
+			
+			// Need to get the property names of the columns based on enum from the string list
+			// Each Key is the column name, each Value is the index of the column - used later to specify
+			// what we want to see from the ListStore
+			foreach (KeyValuePair<String, Int32> column in allColumns) {
+				// Get the property name where to read the data from
+				DescriptionAttribute descriptionAttribute = (DescriptionAttribute)Attribute.GetCustomAttribute (typeof(IssueNode).GetProperty (column.Key), typeof(DescriptionAttribute));
+				// Create a IssueColumn based on the information we know
+				this.columns.Add (new IssueColumn (typeof(String), descriptionAttribute.Description, column.Key, column.Value));
 			}
 
-			return null;
+			// Need create the list store now
+			List<Type> columnTypes = new List<Type> ();
+
+			foreach (IssueColumn column in this.columns) {
+				columnTypes.Add (column.Type);
+			}
+
+			return new Gtk.ListStore (columnTypes.ToArray());
 		}
 
-		private List<Gtk.TreeViewColumn> createAndConfigureColumns(Gtk.TreeView treeView)
+		#endregion
+
+		#region TreeView Column Management Methods
+
+		// Remove all the columns in the list from the given tree view
+		// Used for things like clearing all columns when user updates the 
+		// columns he/she wants to see
+		private void deleteColumnsFromTreeView(Gtk.TreeView treeView, List<Gtk.TreeViewColumn> columnsToRemove)
+		{
+			foreach (Gtk.TreeViewColumn column in columnsToRemove) {
+				treeView.RemoveColumn (column);
+			}
+		}
+
+		// Usually called when the columns on the treeview have been cleared already
+		// Simply recreates the columns, adds them to the treeview with accurate references to
+		// the columns from the list store (column.ListStoreColumnIndex - this is what allows
+		// us to hide certain columns and only show selected ones)
+		private List<Gtk.TreeViewColumn> createAndAppendColumnsToTreeView(Gtk.TreeView treeView, List<IssueColumn> columnsToAdd)
 		{
 			List<Gtk.TreeViewColumn> columns = new List<Gtk.TreeViewColumn> ();
-			
-			foreach (IssueColumn column in this.columns) {
-				columns.Add (treeView.AppendColumn (column.Title, new Gtk.CellRendererText (), "text", column.OrderFromLeftIndex));
-				columns [columns.Count - 1].SortColumnId = column.OrderFromLeftIndex;
+
+			foreach (IssueColumn column in columnsToAdd) {
+				columns.Add (treeView.AppendColumn (column.Title, new Gtk.CellRendererText (), "text", column.ListStoreColumnIndex));
+				columns [columns.Count - 1].SortColumnId = column.ListStoreColumnIndex;
 			}
-			
+
 			foreach (Gtk.TreeViewColumn column in columns) {
 				column.Resizable = true;
 				column.Reorderable = true;
@@ -258,5 +306,104 @@ namespace GitHub.Issues.UserInterface
 
 			return columns;
 		}
+
+		// Initializes the columns for the list control which contains the columns available for selection
+		private void initializeColumnListControl(Gtk.TreeView columnListView)
+		{
+			// Only show column 0 from the list store since it contains the user friendly description, leave out the second one (property name - used for back end)
+			columnListView.AppendColumn (new Gtk.TreeViewColumn ("Column Title", new Gtk.CellRendererText (), "text", 0));
+		}
+
+		// Once we know the property names and the column indexes in the store, we can create the IssueColumn classes which we
+		// use to populate the list store with issues. It is purely here for handiness so that we have the information in a
+		// single instance instead of having to call the same thing all over the place.
+		private List<IssueColumn> getIssueColumnsFromSelectedColumns(List<KeyValuePair<String, Int32>> selectedColumns)
+		{
+			List<IssueColumn> issueColumns = new List<IssueColumn> ();
+
+			foreach (KeyValuePair<String, Int32> column in selectedColumns) {
+				String columnTitle = ((DescriptionAttribute)Attribute.GetCustomAttribute (typeof(IssueNode).GetProperty (column.Key), typeof(DescriptionAttribute))).Description;
+				issueColumns.Add(new IssueColumn(typeof(String), columnTitle, column.Key, column.Value));
+			}
+
+			return issueColumns;
+		}
+
+		// Expects a tree view which contains the multiple selections of the columns that we want
+		// to see in the issue table for example. It checks what is selected and extracts the names
+		// along with the indices of the selections and composes them into a list for later use.
+		private List<KeyValuePair<String, Int32>> getSelectedColumns(Gtk.TreeView columnsTreeView)
+		{
+			if (columnsTreeView != null && columnsTreeView.Selection != null) {
+				int columnCount = columnsTreeView.Selection.CountSelectedRows ();
+				Gtk.TreeModel selectedRows = null;
+
+				// Get the paths to reach all the selected rows
+				Gtk.TreePath[] selectedRowPaths = columnsTreeView.Selection.GetSelectedRows (out selectedRows);
+
+				// Here we will store string representations of the selected column names
+				List<KeyValuePair<String, Int32>> selectedColumns = new List<KeyValuePair<String, Int32>> ();
+
+				// Find what columns where selected  in the list
+				foreach (Gtk.TreePath path in selectedRowPaths) {
+					Gtk.TreeIter iterator;
+					selectedRows.GetIter (out iterator, path);
+
+					// Get column property (not show - not the user friendly name) and the row index
+					selectedColumns.Add (new KeyValuePair<string, int> ((String)selectedRows.GetValue (iterator, 1), path.Indices [0]));
+				}
+
+				return selectedColumns;
+			}
+
+			return new List<KeyValuePair<String, Int32>>();
+		}
+
+		#endregion
+
+		#region Tree View Data Management Methods - Reading for Trees, Adding Rows etc.
+
+		// Populates the list store with each value of the given enum type. Mainly used to
+		// populate all column types from the properties into the list store which is then used
+		// to display them in a table so the user can then select the columns they'd like
+		// to see
+		private void populatePropertiesIntoListStore(Gtk.ListStore list, Type classType)
+		{
+			foreach (System.Reflection.PropertyInfo property in classType.GetProperties())
+			{
+				// Use the reflection magic to extract the information that we need ie. Property to read for value and Description to use as column name (user friendliness)
+				String propertyName = property.Name;
+				String description = ((DescriptionAttribute)Attribute.GetCustomAttribute (classType.GetProperty (propertyName), typeof(DescriptionAttribute))).Description;
+
+				// Add to list store
+				list.AppendValues (description, propertyName);
+			}
+		}
+
+		// Gets all possible column types and returns them in a list along with their respective indexes in the list store
+		private List<KeyValuePair<String, Int32>> getAllPossibleColumns()
+		{
+			List<KeyValuePair<String, Int32>> columns = new List<KeyValuePair<string, int>> ();
+
+			int columnCount = 0;
+
+			// Add all properties as columns
+			foreach (System.Reflection.PropertyInfo property in typeof(IssueNode).GetProperties()) {
+				columns.Add (new KeyValuePair<string, int> (property.Name, columnCount++));
+			}
+
+			return columns;
+		}
+
+		// Adds all issues as rows into the given table
+		private void populateIssuesTable(List<IssueNode> issues, Gtk.ListStore issueListStore)
+		{
+			// Add all issues as rows into the list store
+			foreach (IssueNode issue in issues) {
+				this.addIssueRowIntoListStore (issueListStore, issue);
+			}
+		}
+
+		#endregion
 	}
 }

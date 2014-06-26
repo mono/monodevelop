@@ -76,7 +76,6 @@
     <Compile Include="Handlers\IGitHubIssuesViewHandler.cs" />
     <Compile Include="Views\IssueNode.cs" />
     <Compile Include="Views\IssueColumn.cs" />
-    <Compile Include="Views\IssueProperties.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

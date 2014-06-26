@@ -10,14 +10,14 @@ namespace GitHub.Issues
 
 		public String PropertyName { get; set; }
 
-		public int OrderFromLeftIndex { get; set; }
+		public int ListStoreColumnIndex { get; set; }
 
-		public IssueColumn (Type type, String title, String propertyName, int orderFromLeftIndex)
+		public IssueColumn (Type type, String title, String propertyName, int listStoreColumnIndex)
 		{
 			this.Type = type;
 			this.Title = title;
 			this.PropertyName = propertyName;
-			this.OrderFromLeftIndex = orderFromLeftIndex;
+			this.ListStoreColumnIndex = listStoreColumnIndex;
 		}
 	}
 }
