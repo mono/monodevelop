@@ -106,10 +106,6 @@ namespace MonoDevelop.Ide.Editor
 
 		void AddSkipChar (int offset, char ch);
 
-		void ClearTooltipProviders ();
-		void AddTooltipProvider (TooltipProvider provider);
-		void RemoveTooltipProvider (TooltipProvider provider);
-
 		string GetVirtualIndentationString (int lineNumber);
 
 		IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line);
@@ -137,5 +133,14 @@ namespace MonoDevelop.Ide.Editor
 
 		IEnumerable<IFoldSegment> GetFoldingsContaining (int offset);
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
+
+		#region Internal use only API (do not mirror in TextEditor)
+		void ClearTooltipProviders ();
+		void AddTooltipProvider (TooltipProvider provider);
+		void RemoveTooltipProvider (TooltipProvider provider);
+
+		Xwt.Point GetEditorWindowOrigin ();
+		Xwt.Rectangle GetEditorAllocation ();
+		#endregion
 	}
 }

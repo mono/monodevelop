@@ -14,3 +14,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("MonoDevelop.DesignerSupport")]
 [assembly: InternalsVisibleTo("Ide.Tests")]
 [assembly: InternalsVisibleTo("UnitTests")]
+[assembly: InternalsVisibleTo("MonoDevelop.SourceEditor2")]

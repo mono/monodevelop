@@ -68,6 +68,8 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		internal ITextEditorImpl TextEditorImpl { get { return textEditorImpl; } }
+
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{
 			TooltipProvider provider;

@@ -29,28 +29,22 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class TooltipItem
+	public sealed class TooltipItem : AbstractSegment
 	{
-		public ISegment ItemSegment { get; set; }
 		public object Item { get; set; }
 
-		public TooltipItem (object item)
+		public TooltipItem (object item, ISegment itemSegment) : base (itemSegment)
 		{
-			this.Item = item;
+			Item = item;
 		}
 
-		public TooltipItem (object item, ISegment itemSegment)
+		public TooltipItem (object item, int offset, int length) : base (offset, length)
 		{
-			this.ItemSegment = itemSegment;
-			this.Item = item;
-		}
-
-		public TooltipItem (object item, int offset, int length)
-		{
-			this.ItemSegment = new TextSegment (offset, length);
-			this.Item = item;
+			Item = item;
 		}
 	}
+
+	// TODO: Improve tooltip API - that really looks messy
 	public abstract class TooltipProvider
 	{
 		public abstract TooltipItem GetItem (TextEditor editor, int offset);
@@ -60,36 +54,41 @@ namespace MonoDevelop.Ide.Editor
 			return false;
 		}
 
-		protected virtual void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public virtual void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			requiredWidth = tipWindow.SizeRequest ().Width;
 			xalign = 0.5;
 		}
 
-		protected virtual Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public virtual Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			return null;
 		}
 
+		protected Xwt.Rectangle GetAllocation (TextEditor editor)
+		{
+			return editor.TextEditorImpl.GetEditorAllocation ();
+		}
+
 		public virtual Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
 		{
-			Gtk.Window tipWindow = CreateTooltipWindow (editor, offset, modifierState, item);
+			var tipWindow = CreateTooltipWindow (editor, offset, modifierState, item);
 			if (tipWindow == null)
 				return null;
 
-			int ox = 0, oy = 0;
-			var widget = editor.GetGtkWidget ();
-			if (widget != null)
-				widget.GdkWindow.GetOrigin (out ox, out oy);
-			
+
+			var origin = editor.TextEditorImpl.GetEditorWindowOrigin ();
+
 			int w;
 			double xalign;
 			GetRequiredPosition (editor, tipWindow, out w, out xalign);
 			w += 10;
 
-			int x = mouseX + ox + widget.Allocation.X;
-			int y = mouseY + oy + widget.Allocation.Y;
-			Gdk.Rectangle geometry = widget.Screen.GetUsableMonitorGeometry (widget.Screen.GetMonitorAtPoint (x, y));
+			var allocation = GetAllocation (editor);
+			int x = (int)(mouseX + origin.X + allocation.X);
+			int y = (int)(mouseY + origin.Y + allocation.Y);
+			var widget = editor.GetGtkWidget ();
+			var geometry = widget.Screen.GetUsableMonitorGeometry (widget.Screen.GetMonitorAtPoint (x, y));
 			
 			x -= (int) ((double) w * xalign);
 			y += 10;
