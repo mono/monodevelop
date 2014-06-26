@@ -2746,10 +2746,10 @@ namespace MonoDevelop.SourceEditor
 			};
 		}
 
-		void ITextEditorImpl.StartTextLinkMode (List<MonoDevelop.Ide.Editor.TextLink> links, Action<TextLinkModeEventArgs> modeExitedAction)
+		void ITextEditorImpl.StartTextLinkMode (TextLinkModeOptions textLinkModeOptions)
 		{
 			var convertedLinks = new List<Mono.TextEditor.TextLink> ();
-			foreach (var link in links) {
+			foreach (var link in textLinkModeOptions.Links) {
 				var convertedLink = new Mono.TextEditor.TextLink (link.Name);
 				convertedLink.IsEditable = link.IsEditable;
 				convertedLink.IsIdentifier = link.IsIdentifier;
@@ -2768,9 +2768,9 @@ namespace MonoDevelop.SourceEditor
 			tle.SetCaretPosition = false;
 			if (tle.ShouldStartTextLinkMode) {
 				tle.OldMode = TextEditor.CurrentMode;
-				if (modeExitedAction != null) {
-					tle.Cancel += (sender, e) => modeExitedAction (new TextLinkModeEventArgs (false));
-					tle.Exited += (sender, e) => modeExitedAction (new TextLinkModeEventArgs (true));
+				if (textLinkModeOptions.ModeExitedAction != null) {
+					tle.Cancel += (sender, e) => textLinkModeOptions.ModeExitedAction (new TextLinkModeEventArgs (false));
+					tle.Exited += (sender, e) => textLinkModeOptions.ModeExitedAction (new TextLinkModeEventArgs (true));
 				}
 				tle.StartMode ();
 				TextEditor.CurrentMode = tle;
