@@ -2720,9 +2720,9 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetTextEditorData ().FormatString (offset, code);
 		}
 
-		void ITextEditorImpl.StartInsertionMode (string operation, IList<MonoDevelop.Ide.Editor.InsertionPoint> insertionPoints, Action<MonoDevelop.Ide.Editor.InsertionCursorEventArgs> action)
+		void ITextEditorImpl.StartInsertionMode (InsertionModeOptions insertionModeOptions)
 		{
-			var mode = new InsertionCursorEditMode (TextEditor, insertionPoints.Select (ip => new Mono.TextEditor.InsertionPoint ( 
+			var mode = new InsertionCursorEditMode (TextEditor, insertionModeOptions.InsertionPoints.Select (ip => new Mono.TextEditor.InsertionPoint ( 
 				new Mono.TextEditor.DocumentLocation (ip.Location.Line, ip.Location.Column),
 				(Mono.TextEditor.NewLineInsertion)ip.LineBefore,
 				(Mono.TextEditor.NewLineInsertion)ip.LineAfter
@@ -2731,34 +2731,12 @@ namespace MonoDevelop.SourceEditor
 				return;
 			}
 			var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow ();
-			helpWindow.TitleText = operation;
+			helpWindow.TitleText = insertionModeOptions.Operation;
 			mode.HelpWindow = helpWindow;
-			
-//			switch (defaultPosition) {
-//			case InsertPosition.Start:
-//				mode.CurIndex = 0;
-//				break;
-//			case InsertPosition.End:
-//				mode.CurIndex = mode.InsertionPoints.Count - 1;
-//				break;
-//			case InsertPosition.Before:
-//				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
-//					if (mode.InsertionPoints [i].Location < loc)
-//						mode.CurIndex = i;
-//				}
-//				break;
-//			case InsertPosition.After:
-//				for (int i = 0; i < mode.InsertionPoints.Count; i++) {
-//					if (mode.InsertionPoints [i].Location > loc) {
-//						mode.CurIndex = i;
-//						break;
-//					}
-//				}
-//				break;
-//			}
+			mode.CurIndex = insertionModeOptions.FirstSelectedInsertionPoint;
 			mode.StartMode ();
 			mode.Exited += delegate(object s, Mono.TextEditor.InsertionCursorEventArgs iCArgs) {
-				action (new MonoDevelop.Ide.Editor.InsertionCursorEventArgs (iCArgs.Success, 
+				insertionModeOptions.ModeExitedAction (new MonoDevelop.Ide.Editor.InsertionCursorEventArgs (iCArgs.Success, 
 					new MonoDevelop.Ide.Editor.InsertionPoint (
 						new MonoDevelop.Ide.Editor.DocumentLocation (iCArgs.InsertionPoint.Location.Line, iCArgs.InsertionPoint.Location.Column),
 						(MonoDevelop.Ide.Editor.NewLineInsertion)iCArgs.InsertionPoint.LineBefore,
