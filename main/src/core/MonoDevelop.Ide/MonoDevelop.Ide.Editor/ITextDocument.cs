@@ -101,6 +101,8 @@ namespace MonoDevelop.Ide.Editor
 		/// that listen to the Changing and Changed events.
 		/// </remarks>
 		event EventHandler<TextChangeEventArgs> TextChanged;
+
+		event EventHandler FileNameChanged;
 	
 		/// <summary>
 		/// Creates an immutable snapshot of this document.

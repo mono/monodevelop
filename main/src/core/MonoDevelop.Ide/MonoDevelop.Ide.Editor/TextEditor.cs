@@ -31,6 +31,9 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor.Extension;
 using System.IO;
 using MonoDevelop.Ide.Editor.Highlighting;
+using Mono.Addins;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Extensions;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -43,6 +46,41 @@ namespace MonoDevelop.Ide.Editor
 		public ITextSourceVersion Version {
 			get {
 				return ReadOnlyTextDocument.Version;
+			}
+		}
+
+		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
+
+		ExtensionContext extensionContext;
+
+		internal ExtensionContext ExtensionContext {
+			get {
+				return extensionContext;
+			}
+			set {
+				if (extensionContext != null) {
+					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+					textEditorImpl.ClearTooltipProviders ();
+				}
+				extensionContext = value;
+				if (extensionContext != null)
+					extensionContext.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+			}
+		}
+
+		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
+		{
+			TooltipProvider provider;
+			try {
+				provider = (TooltipProvider) a.ExtensionObject;
+			} catch (Exception e) {
+				LoggingService.LogError ("Can't create tooltip provider:"+ a.ExtensionNode, e);
+				return;
+			}
+			if (a.Change == ExtensionChange.Add) {
+				textEditorImpl.AddTooltipProvider (provider);
+			} else {
+				textEditorImpl.RemoveTooltipProvider (provider);
 			}
 		}
 
@@ -270,29 +308,27 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		string fileName;
 		/// <summary>
 		/// Gets the name of the file the document is stored in.
 		/// Could also be a non-existent dummy file name or null if no name has been set.
 		/// </summary>
 		public string FileName {
 			get {
-				return fileName;
+				return ReadOnlyTextDocument.FileName;
 			}
 			set {
-				fileName = value;
-				OnFileNameChanged (EventArgs.Empty);
+				ReadWriteTextDocument.FileName = value;
 			}
 		}
 
-		protected virtual void OnFileNameChanged (EventArgs e)
-		{
-			var handler = FileNameChanged;
-			if (handler != null)
-				handler (this, e);
+		public event EventHandler FileNameChanged {
+			add {
+				ReadWriteTextDocument.FileNameChanged += value;
+			}
+			remove {
+				ReadWriteTextDocument.FileNameChanged -= value;
+			}
 		}
-
-		public event EventHandler FileNameChanged;
 
 		public int Length {
 			get {
@@ -300,11 +336,19 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public TextEditor (ITextEditorImpl textEditorImpl)
+		internal TextEditor (ITextEditorImpl textEditorImpl)
 		{
 			if (textEditorImpl == null)
 				throw new ArgumentNullException ("textEditorImpl");
 			this.textEditorImpl = textEditorImpl;
+
+			fileTypeCondition.SetFileName (FileName);
+			ExtensionContext = AddinManager.CreateExtensionContext ();
+			ExtensionContext.RegisterCondition ("FileType", fileTypeCondition);
+
+			FileNameChanged += delegate {
+				fileTypeCondition.SetFileName (FileName);
+			};
 		}
 	
 		public void Undo ()

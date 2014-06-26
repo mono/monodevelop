@@ -106,6 +106,10 @@ namespace MonoDevelop.Ide.Editor
 
 		void AddSkipChar (int offset, char ch);
 
+		void ClearTooltipProviders ();
+		void AddTooltipProvider (TooltipProvider provider);
+		void RemoveTooltipProvider (TooltipProvider provider);
+
 		string GetVirtualIndentationString (int lineNumber);
 
 		IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line);

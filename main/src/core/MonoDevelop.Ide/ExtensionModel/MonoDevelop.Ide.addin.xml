@@ -184,6 +184,14 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/TooltipProviders" name = "Tooltip providers">
+		<Description>Tooltip providers. Classes must implement ITooltipProvider.</Description>
+		<ExtensionNode name="Class" />
+		<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
+			<Description>Type of the file being edited.</Description>
+		</ConditionType>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
