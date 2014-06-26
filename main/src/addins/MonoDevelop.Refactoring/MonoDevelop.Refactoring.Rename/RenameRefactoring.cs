@@ -222,7 +222,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 				
 				links.Add (link);
-				data.StartTextLinkMode (links);
+				data.StartTextLinkMode (new TextLinkModeOptions (links));
 //				if (editor.CurrentMode is TextLinkEditMode)
 //					((TextLinkEditMode)editor.CurrentMode).ExitTextLinkMode ();
 //				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
