@@ -128,7 +128,7 @@ namespace MonoDevelop.CSharp.Completion
 			link.AddLink (new TextSegment (initialOffset, this.DisplayText.Length));
 			link.AddLink (new TextSegment (initialOffset + pos + pos2, this.DisplayText.Length));
 			links.Add (link);
-			editor.StartTextLinkMode (links);
+			editor.StartTextLinkMode (new TextLinkModeOptions (links));
 			
 /*			var tle = new TextLinkEditMode (editor.Parent, initialOffset, links);
 			tle.TextLinkMode = TextLinkMode.EditIdentifier;

@@ -245,13 +245,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			if (editor == null)
 				return tcs.Task;
 			operationsRunning++;
-			editor.StartTextLinkMode (links, args => {
+			editor.StartTextLinkMode (new TextLinkModeOptions (links, args => {
 				if (args.Success) {
 					DisposeOnClose ();
 				} else {
 					Rollback ();
 				}
-			});
+			}));
 			if (IdeApp.Workbench.ActiveDocument != null)
 				IdeApp.Workbench.ActiveDocument.ReparseDocument ();
 			return tcs.Task;
