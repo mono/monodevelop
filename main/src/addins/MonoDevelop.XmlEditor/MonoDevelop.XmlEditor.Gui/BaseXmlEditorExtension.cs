@@ -166,7 +166,12 @@ namespace MonoDevelop.XmlEditor.Gui
 		public override string CompletionLanguage {
 			get { return "Xml"; }
 		}
-		
+
+		protected FilePath FileName {
+			get {
+				return Editor.FileName;
+			}
+		}
 		protected XDocType DocType {
 			get { return docType; }
 			set {
