@@ -172,6 +172,32 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.SearchTerms = string.Format ("{0} version:{1}", packageId, versions).TrimEnd ();
 		}
 
+		void AddAggregateRepositoryWithOneFailingRepository ()
+		{
+			AddAggregateRepository (new ExceptionThrowingPackageRepository (), new FakePackageRepository ());
+		}
+
+		void AddAggregateRepository (params IPackageRepository[] repositories)
+		{
+			var repository = new MonoDevelopAggregateRepository (repositories);
+			registeredPackageRepositories.ActivePackageSource = registeredPackageRepositories.PackageSources [0];
+			registeredPackageRepositories.GetActiveRepositoryAction = () => {
+				return repository;
+			};
+		}
+
+		void AddAggregateRepositoryWithJustFailingRepositories ()
+		{
+			AddAggregateRepository (new ExceptionThrowingPackageRepository (), new ExceptionThrowingPackageRepository ());
+		}
+
+		void AddAggregateRepositoryWithTwoFailingRepositories (Exception exception1, Exception exception2)
+		{
+			AddAggregateRepository (
+				new ExceptionThrowingPackageRepository (exception1),
+				new ExceptionThrowingPackageRepository (exception2));
+		}
+
 		[Test]
 		public void ReadPackages_RepositoryHasThreePackagesWithSameIdButDifferentVersions_HasLatestPackageVersionOnly ()
 		{
@@ -910,6 +936,66 @@ namespace MonoDevelop.PackageManagement.Tests
 				package5, package7, package6, package4, package1
 			};
 			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
+
+		[Test]
+		public void ReadPackages_ActivePackageSourceIsAggregatePackageRepositoryWithOneFailingRepository_HasErrorIsTrueAndErrorMessageHasWarning ()
+		{
+			CreateRegisteredPackageRepositories ();
+			AddAggregateRepositoryWithOneFailingRepository ();
+			CreateViewModel (registeredPackageRepositories);
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			Assert.IsTrue (viewModel.HasError);
+			Assert.That (viewModel.ErrorMessage, Contains.Substring ("Some package sources could not be reached."));
+		}
+
+		[Test]
+		public void ReadPackages_ActivePackageSourceIsAggregatePackageRepositoryWithAllRepositoriesFailing_HasErrorIsTrueAndErrorMessageHasWarning ()
+		{
+			CreateRegisteredPackageRepositories ();
+			AddAggregateRepositoryWithJustFailingRepositories ();
+			CreateViewModel (registeredPackageRepositories);
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			Assert.IsTrue (viewModel.HasError);
+			Assert.That (viewModel.ErrorMessage, Contains.Substring ("All package sources could not be reached."));
+		}
+
+		[Test]
+		public void ReadPackages_ActivePackageSourceIsAggregatePackageRepositoryWithAllRepositoriesFailing_RepositoryErrorIsDisplayed ()
+		{
+			CreateRegisteredPackageRepositories ();
+			var exception1 = new Exception ("Error1");
+			var exception2 = new Exception ("Error2");
+			AddAggregateRepositoryWithTwoFailingRepositories (exception1, exception2);
+			CreateViewModel (registeredPackageRepositories);
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			Assert.IsTrue (viewModel.HasError);
+			Assert.That (viewModel.ErrorMessage, Contains.Substring ("Error1"));
+			Assert.That (viewModel.ErrorMessage, Contains.Substring ("Error2"));
+		}
+
+		[Test]
+		public void ReadPackages_ActivePackageSourceIsAggregatePackageRepositoryWithOneFailingRepository_RepositoryErrorIsDisplayed ()
+		{
+			CreateRegisteredPackageRepositories ();
+			var repository = new ExceptionThrowingPackageRepository (new Exception ("Error1"));
+			AddAggregateRepository (new FakePackageRepository (), repository);
+			CreateViewModel (registeredPackageRepositories);
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			Assert.IsTrue (viewModel.HasError);
+			Assert.That (viewModel.ErrorMessage, Contains.Substring ("Error1"));
 		}
 	}
 }

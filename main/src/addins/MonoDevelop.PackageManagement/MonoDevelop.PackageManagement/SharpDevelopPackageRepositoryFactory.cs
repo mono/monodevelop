@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -51,7 +52,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public IPackageRepository CreateAggregateRepository(IEnumerable<IPackageRepository> repositories)
 		{
-			return new AggregateRepository(repositories);
+			return new MonoDevelopAggregateRepository (repositories);
 		}
 	}
 }

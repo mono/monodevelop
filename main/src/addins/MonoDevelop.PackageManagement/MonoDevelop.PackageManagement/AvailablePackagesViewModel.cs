@@ -32,6 +32,7 @@ using System.Linq;
 
 using MonoDevelop.PackageManagement;
 using NuGet;
+using MonoDevelop.Core;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -150,6 +151,31 @@ namespace ICSharpCode.PackageManagement
 			PackageViewModel viewModel = base.CreatePackageViewModel (package, search);
 			viewModel.ShowVersionInsteadOfDownloadCount = search.IsPackageVersionSearch;
 			return viewModel;
+		}
+
+		protected override string GetWarningMessage ()
+		{
+			var aggregateRepository = repository as MonoDevelopAggregateRepository;
+			if (aggregateRepository != null) {
+				if (aggregateRepository.AllFailed ()) {
+					return GetAllPackageSourcesCouldNotBeReachedErrorMessage (aggregateRepository);
+				} else if (aggregateRepository.AnyFailures ()) {
+					return GetSomePackageSourcesCouldNotBeReachedErrorMessage (aggregateRepository);
+				}
+			}
+			return String.Empty;
+		}
+
+		string GetAllPackageSourcesCouldNotBeReachedErrorMessage (MonoDevelopAggregateRepository repository)
+		{
+			string message = GettextCatalog.GetString ("All package sources could not be reached.");
+			return new AggregateExceptionErrorMessage (message, repository.GetAggregateException ()).ToString ();
+		}
+
+		string GetSomePackageSourcesCouldNotBeReachedErrorMessage (MonoDevelopAggregateRepository repository)
+		{
+			string message = GettextCatalog.GetString ("Some package sources could not be reached.");
+			return new AggregateExceptionErrorMessage (message, repository.GetAggregateException ()).ToString ();
 		}
 	}
 }

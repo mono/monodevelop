@@ -170,6 +170,7 @@ namespace ICSharpCode.PackageManagement
 				// Ignore.
 				return;
 			} else {
+				SaveAnyWarnings ();
 				UpdatePackagesForSelectedPage(task.Result);
 			}
 			base.OnPropertyChanged(null);
@@ -191,6 +192,20 @@ namespace ICSharpCode.PackageManagement
 		{
 			var errorMessage = new AggregateExceptionErrorMessage(ex);
 			return errorMessage.ToString();
+		}
+
+		void SaveAnyWarnings ()
+		{
+			string warning = GetWarningMessage ();
+			if (!String.IsNullOrEmpty (warning)) {
+				HasError = true;
+				ErrorMessage = warning;
+			}
+		}
+
+		protected virtual string GetWarningMessage ()
+		{
+			return String.Empty;
 		}
 
 		void UpdatePackagesForSelectedPage(PackagesForSelectedPageResult result)
