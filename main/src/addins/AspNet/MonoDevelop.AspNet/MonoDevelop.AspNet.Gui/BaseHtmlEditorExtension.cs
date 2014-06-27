@@ -91,7 +91,7 @@ namespace MonoDevelop.AspNet.Gui
 			return new XmlFreeState (new HtmlTagState (true), new HtmlClosingTagState (true));
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			

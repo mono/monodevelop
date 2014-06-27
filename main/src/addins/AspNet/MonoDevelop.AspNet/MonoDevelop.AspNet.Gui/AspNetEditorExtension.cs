@@ -96,7 +96,7 @@ namespace MonoDevelop.AspNet.Gui
 			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
 			if (documentBuilder != null) {
-				documentInfo = new DocumentInfo (document.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ());
+				documentInfo = new DocumentInfo (Document.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ());
 				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
 				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
 			}
@@ -241,11 +241,11 @@ namespace MonoDevelop.AspNet.Gui
 			return base.CodeCompletionCommand (completionContext);
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			defaultCompletionWidget = CompletionWidget;
-			defaultDocument = document;
+			defaultDocument = Document;
 			defaultDocument.Editor.CaretPositionChanged += delegate {
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
@@ -295,7 +295,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (documentBuilder == null || !isAspExprState)
 				return base.KeyPress (key, keyChar, modifier);
 			InitializeCodeCompletion ('\0');
-			document = localDocumentInfo.HiddenDocument;
+			Document = localDocumentInfo.HiddenDocument;
 			CompletionWidget = documentBuilder.CreateCompletionWidget (defaultDocument, localDocumentInfo);
 			bool result;
 			try {
@@ -304,7 +304,7 @@ namespace MonoDevelop.AspNet.Gui
 					RunParameterCompletionCommand ();
 				}
 			} finally {
-				document = defaultDocument;
+				Document = defaultDocument;
 				CompletionWidget = defaultCompletionWidget;
 			}
 			return result;
