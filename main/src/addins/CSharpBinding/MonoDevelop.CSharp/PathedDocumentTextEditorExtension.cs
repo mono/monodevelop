@@ -37,14 +37,15 @@ using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp
 {
-	class PathedDocumentTextEditorExtension : TextEditorExtension, IPathedDocument
+	class PathedDocumentTextEditorExtension : AbstractEditorExtension, IPathedDocument
 	{
 		public override void Dispose ()
 		{
-			document.Editor.CaretPositionChanged -= UpdatePath;
+			Editor.CaretPositionChanged -= UpdatePath;
 			if (ext != null) {
 				ext.TypeSegmentTreeUpdated -= HandleTypeSegmentTreeUpdated;
 				ext = null;
@@ -58,12 +59,12 @@ namespace MonoDevelop.CSharp
 		bool isPathSet;
 		CSharpCompletionTextEditorExtension ext;
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			isPathSet = false;
 			UpdatePath (null, null);
-			Document.Editor.CaretPositionChanged += UpdatePath;
+			Editor.CaretPositionChanged += UpdatePath;
 			ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
 			ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
 		}
@@ -396,7 +397,7 @@ namespace MonoDevelop.CSharp
 			var parsedDocument = Document.ParsedDocument;
 			if (parsedDocument == null || parsedDocument.ParsedFile == null)
 				return;
-			amb = new AstAmbience (document.GetFormattingOptions ());
+			amb = new AstAmbience (Document.GetFormattingOptions ());
 			
 			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)

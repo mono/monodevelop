@@ -83,20 +83,20 @@ namespace MonoDevelop.CSharp.Formatting
 	
 		public override void PostFomatPastedText (int insertionOffset, int insertedChars)
 		{
-			if (indent.textEditorData.Options.IndentStyle == IndentStyle.None ||
-				indent.textEditorData.Options.IndentStyle == IndentStyle.Auto)
+			if (indent.Editor.Options.IndentStyle == IndentStyle.None ||
+				indent.Editor.Options.IndentStyle == IndentStyle.Auto)
 				return;
 
 			// Just correct the start line of the paste operation - the text is already indented.
-			var curLine = indent.textEditorData.GetLineByOffset (insertionOffset);
+			var curLine = indent.Editor.GetLineByOffset (insertionOffset);
 			var curLineOffset = curLine.Offset;
 			indent.SafeUpdateIndentEngine (curLineOffset);
 			if (!indent.stateTracker.IsInsideOrdinaryCommentOrString) {
 				int pos = curLineOffset;
-				string curIndent = curLine.GetIndentation (indent.textEditorData);
+				string curIndent = curLine.GetIndentation (indent.Editor);
 				int nlwsp = curIndent.Length;
 
-				if (!indent.stateTracker.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && indent.textEditorData.GetCharAt (curLineOffset + nlwsp) == '*')) {
+				if (!indent.stateTracker.LineBeganInsideMultiLineComment || (nlwsp < curLine.LengthIncludingDelimiter && indent.Editor.GetCharAt (curLineOffset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					indent.SafeUpdateIndentEngine (curLineOffset + curLine.Length);
 					string newIndent = indent.stateTracker.ThisLineIndent;
@@ -105,12 +105,12 @@ namespace MonoDevelop.CSharp.Formatting
 							if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
 								CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 						}
-						indent.textEditorData.Replace (pos, nlwsp, newIndent);
+						indent.Editor.Replace (pos, nlwsp, newIndent);
 						//						textEditorData.Document.CommitLineUpdate (textEditorData.CaretLine);
 					}
 				}
 			}
-			indent.textEditorData.FixVirtualIndentation ();
+			indent.Editor.FixVirtualIndentation ();
 		}
 
 	}
