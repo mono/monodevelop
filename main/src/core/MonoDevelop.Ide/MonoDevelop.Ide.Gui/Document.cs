@@ -62,7 +62,6 @@ namespace MonoDevelop.Ide.Gui
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
 		IWorkbenchWindow window;
-		TextEditorExtension editorExtension;
 		ParsedDocument parsedDocument;
 		IProjectContent singleFileContext;
 
@@ -75,10 +74,6 @@ namespace MonoDevelop.Ide.Gui
 		internal DateTime LastTimeActive {
 			get;
 			set;
-		}
-		
-		public TextEditorExtension EditorExtension {
-			get { return this.editorExtension; }
 		}
  		
 		public T GetContent<T> () where T : class
@@ -99,15 +94,9 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			//no, so look through the TexteditorExtensions as well
-			TextEditorExtension nextExtension = editorExtension;
-			while (nextExtension != null) {
-				if (typeof(T).IsAssignableFrom (nextExtension.GetType ()))
-					return nextExtension as T;
-				nextExtension = nextExtension.Next as TextEditorExtension;
-			}
-
 			if (Editor != null)
 				return Editor.GetContent<T> ();
+
 			return null;
 		}
 		
@@ -127,13 +116,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 			
 			//no, so look through the TexteditorExtensions as well
-			TextEditorExtension nextExtension = editorExtension;
-			while (nextExtension != null) {
-				if (typeof(T).IsAssignableFrom (nextExtension.GetType ()))
-					yield return nextExtension as T;
-				nextExtension = nextExtension.Next as TextEditorExtension;
+			if (Editor != null) {
+				foreach (var ext in Editor.GetContents<T> ())
+					yield return ext;
 			}
 		}
+
+
 		static Document ()
 		{
 			if (IdeApp.Workbench != null) {
@@ -554,7 +543,9 @@ namespace MonoDevelop.Ide.Gui
 
 		internal void DisposeDocument ()
 		{
-			DetachExtensionChain ();
+			if (Editor != null) {
+				Editor.Dispose ();
+			}
 			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
@@ -622,55 +613,10 @@ namespace MonoDevelop.Ide.Gui
 
 		void InitializeExtensionChain ()
 		{
-			DetachExtensionChain ();
-			var editor = GetContent<IExtensibleTextEditor> ();
-
-			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			editorExtension = null;
-			TextEditorExtension last = null;
-			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			Editor.InitializeExtensionChain (this);
-			foreach (TextEditorExtensionNode extNode in extensions) {
-				if (!extNode.Supports (FileName, mimetypeChain))
-					continue;
-				TextEditorExtension ext;
-				try {
-					var instance = extNode.CreateInstance ();
-					ext = instance as TextEditorExtension;
-					if (ext == null)
-						continue;
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type +")", e); 
-					continue;
-				}
-				if (ext.ExtendsEditor (this, editor)) {
-					if (last != null) {
-						ext.Next = last.Next;
-						last.Next = ext;
-						last = ext;
-					} else {
-						editorExtension = last = ext;
-						last.Next = editor.AttachExtension (editorExtension);
-					}
-					ext.Initialize (this);
-				}
-			}
 		}
 
-		void DetachExtensionChain ()
-		{
-			while (editorExtension != null) {
-				try {
-					editorExtension.Dispose ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
-				}
-				editorExtension = editorExtension.Next as TextEditorExtension;
-			}
-			editorExtension = null;
-		}
-
-		void InitializeEditor (IExtensibleTextEditor editor)
+		void InitializeEditor ()
 		{
 			Editor.TextChanged += (o, a) => {
 				if (parsedDocument != null)
@@ -699,9 +645,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void OnDocumentAttached ()
 		{
-			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
-			if (editor != null) {
-				InitializeEditor (editor);
+			if (Editor != null) {
+				InitializeEditor ();
 				RunWhenLoaded (delegate { ListenToProjectLoad (Project); });
 			}
 			
@@ -732,7 +677,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (Window.ViewContent.Project == project)
 				return;
-			DetachExtensionChain ();
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
 			if (pr != null) {
 				// Unsubscribe project events
@@ -885,8 +829,8 @@ namespace MonoDevelop.Ide.Gui
 		internal object ExtendedCommandTargetChain {
 			get {
 				// Only go through the text editor chain, if the text editor is selected as subview
-				if (Window != null && Window.ActiveViewContent == Window.ViewContent)
-					return editorExtension;
+				if (Window != null && Window.ActiveViewContent == Window.ViewContent && Editor != null)
+					return Editor.ExtendedCommandTargetChain;
 				return null;
 			}
 		}

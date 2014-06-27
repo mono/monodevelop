@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Editor
 {
 	public class TextEditor : ITextDocument, IInternalEditorExtensions, IDisposable
 	{
+
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
 		ITextDocument ReadWriteTextDocument { get { return (ITextDocument)textEditorImpl.Document; } }
@@ -375,6 +376,22 @@ namespace MonoDevelop.Ide.Editor
 		public void SetSelection (DocumentLocation anchor, DocumentLocation lead)
 		{
 			SetSelection (LocationToOffset (anchor), LocationToOffset (lead));
+		}
+
+		public void SetCaretLocation (DocumentLocation location, bool usePulseAnimation = false)
+		{
+			CaretLocation = location;
+			ScrollTo (CaretLocation);
+			if (usePulseAnimation)
+				StartCaretPulseAnimation ();
+		}
+
+		public void SetCaretLocation (int line, int col, bool usePulseAnimation = false)
+		{
+			CaretLocation = new DocumentLocation (line, col);
+			ScrollTo (CaretLocation);
+			if (usePulseAnimation)
+				StartCaretPulseAnimation ();
 		}
 
 		public void ClearSelection ()
@@ -761,13 +778,19 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 	
+		#region Editor extensions
+		internal object ExtendedCommandTargetChain {
+			get {
+				return textEditorImpl.EditorExtension;
+			}
+		}
+
 		internal void InitializeExtensionChain (Document document)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			AbstractEditorExtension editorExtension = null;
 			AbstractEditorExtension last = null;
 			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			foreach (TextEditorExtensionNode extNode in extensions) {
@@ -783,17 +806,16 @@ namespace MonoDevelop.Ide.Editor
 					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type +")", e); 
 					continue;
 				}
-				if (ext.ExtendsEditor (document)) {
+				if (ext.IsExtendingEditor (document)) {
 					if (last != null) {
 						last.Next = ext;
 						last = ext;
 					} else {
-						editorExtension = last = ext;
+						textEditorImpl.EditorExtension = last = ext;
 					}
 					ext.Initialize (document);
 				}
 			}
-			textEditorImpl.EditorExtension = editorExtension;
 		}
 
 		void DetachExtensionChain ()
@@ -824,5 +846,20 @@ namespace MonoDevelop.Ide.Editor
 			}
 			return null;
 		}
+
+		public IEnumerable<T> GetContents<T> () where T : class
+		{
+			T result = textEditorImpl as T;
+			if (result != null)
+				yield return result;
+			var ext = textEditorImpl.EditorExtension;
+			while (ext != null) {
+				result = ext as T;
+				if (result != null)
+					yield return result;
+				ext = ext.Next;
+			}
+		}
+		#endregion
 	}
 }

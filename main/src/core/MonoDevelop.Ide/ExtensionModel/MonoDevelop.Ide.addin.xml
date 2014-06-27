@@ -258,9 +258,9 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class id="InitialStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
-		<Class id="MidStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
-		<Class id="FinalStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
+		<Class id="InitialStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
+		<Class id="MidStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
+		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">

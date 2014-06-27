@@ -29,6 +29,7 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -36,15 +37,15 @@ namespace MonoDevelop.Ide.Editor.Extension
 	{
 		public Document Document {
 			get;
-			private set;
+			protected set;
 		}
 
 		public TextEditor Editor {
 			get;
-			private set;
+			protected set;
 		}
 
-		protected internal AbstractEditorExtension Next {
+		internal AbstractEditorExtension Next {
 			get;
 			set;
 		}
@@ -64,23 +65,20 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 		}
 
-		protected internal virtual bool ExtendsEditor (Document document)
+		protected virtual bool ExtendsEditor (Document document)
 		{
 			return true;
 		}
 
-		protected FilePath FileName {
-			get {
-				return Editor.FileName;
-			}
+		internal bool IsExtendingEditor (Document document)
+		{
+			return ExtendsEditor (document);
 		}
 		
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
 		public virtual bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			CheckInitialized ();
-			
 			return Next == null || Next.KeyPress (key, keyChar, modifier);
 		}
 
@@ -97,6 +95,23 @@ namespace MonoDevelop.Ide.Editor.Extension
 		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return Next;
+		}
+
+		protected Ambience GetAmbience ()
+		{
+			CheckInitialized ();
+
+			IViewContent view = Document.Window.ViewContent;
+			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
+			return AmbienceService.GetAmbienceForFile (file);
+		}
+	}
+
+	class TextEditorExtensionMarker : AbstractEditorExtension
+	{
+		protected override bool ExtendsEditor (Document document)
+		{
+			return false;
 		}
 	}
 }

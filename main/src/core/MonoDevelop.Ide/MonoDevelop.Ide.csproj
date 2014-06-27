@@ -1693,9 +1693,7 @@
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksView.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\UserTasksView.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\LayoutComboBox.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\IExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\UnknownEntryNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\TextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\NavigationCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ISolutionItemFeature.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderService.cs" />
