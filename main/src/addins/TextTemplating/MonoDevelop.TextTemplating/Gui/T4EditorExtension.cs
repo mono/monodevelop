@@ -32,6 +32,7 @@ using MonoDevelop.DesignerSupport;
 using MonoDevelop.TextTemplating.Parser;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.TextTemplating.Gui
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		{
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Document.DocumentParsed += HandleDocumentDocumentParsed;
