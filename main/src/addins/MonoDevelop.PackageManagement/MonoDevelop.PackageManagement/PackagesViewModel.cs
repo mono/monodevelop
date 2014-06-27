@@ -124,13 +124,19 @@ namespace ICSharpCode.PackageManagement
 		void StartReadPackagesTask(bool clearPackages = true)
 		{
 			IsReadingPackages = true;
-			HasError = false;
+			ClearError ();
 			if (clearPackages) {
 				ClearPackages ();
 			}
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
 			task.Start();
+		}
+
+		void ClearError ()
+		{
+			HasError = false;
+			ErrorMessage = String.Empty;
 		}
 		
 		protected virtual void UpdateRepositoryBeforeReadPackagesTaskStarts()

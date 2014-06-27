@@ -532,6 +532,7 @@ namespace MonoDevelop.PackageManagement
 
 		void PackageSearchEntryChanged (object sender, EventArgs e)
 		{
+			ClearErrorMessage ();
 			ClearPackages ();
 			UpdateAddPackagesButton ();
 			SearchAfterDelay ();

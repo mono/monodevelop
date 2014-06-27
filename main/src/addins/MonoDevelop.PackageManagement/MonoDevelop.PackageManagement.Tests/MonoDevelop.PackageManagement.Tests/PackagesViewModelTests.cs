@@ -1537,5 +1537,24 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.CheckedPackageViewModels);
 			Assert.IsFalse (oldPackageVersionViewModel.IsChecked);
 		}
+
+		[Test]
+		public void ReadPackages_ReadPackagesCalledAgainAfterFirstOneFailed_ErrorIsCleared ()
+		{
+			CreateViewModel ();
+			viewModel.ReadPackages ();
+			var ex = new Exception ("Test");
+			var aggregateEx = new AggregateException (ex);
+			taskFactory.FirstFakeTaskCreated.Exception = aggregateEx;
+			taskFactory.FirstFakeTaskCreated.IsFaulted = true;
+			CompleteReadPackagesTask ();
+			bool hasErrorAfterFirstRead = viewModel.HasError;
+
+			viewModel.ReadPackages ();
+
+			Assert.IsTrue (hasErrorAfterFirstRead);
+			Assert.IsFalse (viewModel.HasError);
+			Assert.AreEqual (String.Empty, viewModel.ErrorMessage);
+		}
 	}
 }
