@@ -32,10 +32,11 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.DocFood
 {
-	class DocFoodTextEditorExtension : TextEditorExtension
+	class DocFoodTextEditorExtension : AbstractEditorExtension
 	{
 		TextEditor textEditorData {
 			get {
