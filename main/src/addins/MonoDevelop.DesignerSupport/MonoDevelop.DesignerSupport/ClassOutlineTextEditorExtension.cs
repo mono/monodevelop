@@ -39,6 +39,7 @@ using MonoDevelop.Components.Docking;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -55,7 +56,7 @@ namespace MonoDevelop.DesignerSupport
 	/// </remarks>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineNodeComparer"/>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSettings"/>
-	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
+	public class ClassOutlineTextEditorExtension : AbstractEditorExtension, IOutlinedDocument
 	{
 		ParsedDocument lastCU = null;
 
@@ -71,13 +72,13 @@ namespace MonoDevelop.DesignerSupport
 		bool disposed;
 		bool outlineReady;
 
-		public override bool ExtendsEditor (Document doc, IEditableTextBuffer editor)
+		protected override bool ExtendsEditor (Document doc)
 		{
 			var binding = LanguageBindingService.GetBindingPerFileName (doc.Name);
 			return binding != null && binding is IDotNetLanguageBinding;
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			if (Document != null)
@@ -327,7 +328,7 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			foreach (var unresolvedCls in parsedDocument.TopLevelTypeDefinitions) {
-				var cls = document.Compilation.MainAssembly.GetTypeDefinition (unresolvedCls.FullTypeName);
+				var cls = Document.Compilation.MainAssembly.GetTypeDefinition (unresolvedCls.FullTypeName);
 				if (cls == null)
 					continue;
 				TreeIter childIter;

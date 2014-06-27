@@ -28,6 +28,7 @@
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -36,7 +37,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 	// are chained in the command route, the designer service will find this
 	// IPropertyPadProvider when the text editor has the focus.
 	
-	public class PropertyPadTextEditorExtension: TextEditorExtension, IPropertyPadProvider
+	public class PropertyPadTextEditorExtension: AbstractEditorExtension, IPropertyPadProvider
 	{
 		public object GetActiveComponent ()
 		{
