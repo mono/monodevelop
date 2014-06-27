@@ -599,7 +599,7 @@ namespace MonoDevelop.SourceEditor
 			ParameterInformationWindowManager.HideWindow (null, view);
 			HideTooltip ();
 			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
-			var ctx = ExtensionContext ?? AddinManager.AddinEngine;
+			var ctx = view.WorkbenchWindow.ExtensionContext ?? AddinManager.AddinEngine;
 
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
 

@@ -118,10 +118,10 @@ namespace MonoDevelop.Refactoring
 									continue;
 								var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (derivedMember.Region.FileName);
 								var start = tf.LocationToOffset (derivedMember.Region.Begin); 
-								tf.SearchRequest.SearchPattern = derivedMember.Name;
+								/*tf.SearchRequest.SearchPattern = derivedMember.Name;
 								var sr = tf.SearchForward (start); 
 								if (sr != null)
-									start = sr.Offset;
+									start = sr.Offset;*/
 
 								monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region, start, derivedMember.Name.Length));
 							}

@@ -31,6 +31,7 @@ using Gtk;
 using Gdk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Components
 {

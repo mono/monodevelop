@@ -45,21 +45,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		public string FileName { get; set; }
 
 		#region Ambient Colors
+
 		[ColorDescription("Background(Read Only)",VSSetting="color=Plain Text/Background")]
 		public AmbientColor BackgroundReadOnly { get; private set; }
-		
+
 		[ColorDescription("Search result background")]
 		public AmbientColor SearchResult { get; private set; }
-		
+
 		[ColorDescription("Search result background (highlighted)")]
 		public AmbientColor SearchResultMain { get; private set; }
 
 		[ColorDescription("Fold Square", VSSetting="color=outlining.verticalrule/Foreground")]
 		public AmbientColor FoldLineColor { get; private set; }
-		
+
 		[ColorDescription("Fold Cross", VSSetting="color=outlining.square/Foreground,secondcolor=outlining.square/Background")]
 		public AmbientColor FoldCross { get; private set; }
-		
+
 		[ColorDescription("Indentation Guide")] // not defined
 		public AmbientColor IndentationGuide { get; private set; }
 
@@ -80,7 +81,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Tooltip Pager Triangle")]
 		public AmbientColor TooltipPagerTriangle { get; private set; }
-		
+
 		[ColorDescription("Tooltip Pager Text")]
 		public AmbientColor TooltipPagerText { get; private set; }
 
@@ -92,7 +93,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Underline(Error)", VSSetting="color=Syntax Error/Foreground")]
 		public AmbientColor UnderlineError { get; private set; }
-		
+
 		[ColorDescription("Underline(Warning)", VSSetting="color=Warning/Foreground")]
 		public AmbientColor UnderlineWarning { get; private set; }
 
@@ -110,37 +111,37 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Brace Matching(Rectangle)", VSSetting="color=Brace Matching (Rectangle)/Background,secondcolor=Brace Matching (Rectangle)/Foreground")]
 		public AmbientColor BraceMatchingRectangle { get; private set; }
-		
+
 		[ColorDescription("Usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background,bordercolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor UsagesRectangle { get; private set; }
 
 		[ColorDescription("Changing usages(Rectangle)", VSSetting="color=MarkerFormatDefinition/HighlightedReference/Background,secondcolor=MarkerFormatDefinition/HighlightedReference/Background,bordercolor=MarkerFormatDefinition/HighlightedReference/Background")]
 		public AmbientColor ChangingUsagesRectangle { get; private set; }
 
-		[ColorDescription("Breakpoint Marker")]
+		[ColorDescription("Breakpoint Marker", VSSetting = "color=Breakpoint (Enabled)/Background")]
 		public AmbientColor BreakpointMarker { get; private set; }
 
-		[ColorDescription("Breakpoint Marker(Invalid)")]
-		public AmbientColor InvalidBreakpointMarker { get; private set; }
+		[ColorDescription("Breakpoint Marker(Invalid)", VSSetting = "color=Breakpoint (Disabled)/Background")]
+		public AmbientColor BreakpointMarkerInvalid { get; private set; }
 
 		[ColorDescription("Breakpoint Marker(Disabled)")]
 		public AmbientColor BreakpointMarkerDisabled { get; private set; }
 
-		[ColorDescription("Debugger Current Line Marker")]
+		[ColorDescription("Debugger Current Line Marker", VSSetting = "color=Current Statement/Background")]
 		public AmbientColor DebuggerCurrentLineMarker { get; private set; }
 
 		[ColorDescription("Debugger Stack Line Marker")]
 		public AmbientColor DebuggerStackLineMarker { get; private set; }
-		
+
 		[ColorDescription("Primary Link", VSSetting = "color=Refactoring Dependent Field/Background" )]
 		public AmbientColor PrimaryTemplate { get; private set; }
-		
+
 		[ColorDescription("Primary Link(Highlighted)", VSSetting = "color=Refactoring Current Field/Background")]
 		public AmbientColor PrimaryTemplateHighlighted { get; private set; }
 
 		[ColorDescription("Secondary Link")] // not defined
 		public AmbientColor SecondaryTemplate { get; private set; }
-		
+
 		[ColorDescription("Secondary Link(Highlighted)")] // not defined
 		public AmbientColor SecondaryTemplateHighlighted { get; private set; }
 
@@ -161,7 +162,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Completion Border(Inactive)")]
 		public AmbientColor CompletionInactiveBorder { get; private set; }
-		
+
 		[ColorDescription("Message Bubble Error Marker")]
 		public AmbientColor MessageBubbleErrorMarker { get; private set; }
 
@@ -198,17 +199,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription("Message Bubble Warning IconMargin")]
 		public AmbientColor MessageBubbleWarningIconMargin { get; private set; }
 
-		[ColorDescription("Code Analysis Status All Good")]
-		public AmbientColor AnalysisStatusAllGoodIcon { get; private set; }
-
-		[ColorDescription("Code Analysis Status Suggestions")]
-		public AmbientColor AnalysisStatusSuggestionsIcon { get; private set; }
-
-		[ColorDescription("Code Analysis Status Warnings")]
-		public AmbientColor AnalysisStatusWarningsIcon { get; private set; }
-
-		[ColorDescription("Code Analysis Status Errors")]
-		public AmbientColor AnalysisStatusErrorsIcon { get; private set; }
 		#endregion
 
 		#region Text Colors
@@ -242,13 +232,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Comment(Doc)", VSSetting = "XML Doc Comment")]
 		public ChunkStyle CommentsForDocumentation { get; private set; }
-		
+
 		[ColorDescription("Comment(DocTag)", VSSetting = "XML Doc Tag")]
 		public ChunkStyle CommentsForDocumentationTags { get; private set; }
-		
+
 		[ColorDescription("Comment Tag", VSSetting = "Comment")]
 		public ChunkStyle CommentTags { get; private set; }
-		
+
 		[ColorDescription("Excluded Code", VSSetting = "Excluded Code")]
 		public ChunkStyle ExcludedCode { get; private set; }
 
@@ -281,13 +271,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Xml Attribute", VSSetting = "XML Attribute")]
 		public ChunkStyle XmlAttribute { get; private set; }
-		
+
 		[ColorDescription("Xml Attribute Quotes", VSSetting = "XML Attribute Quotes")]
 		public ChunkStyle XmlAttributeQuotes { get; private set; }
-		
+
 		[ColorDescription("Xml Attribute Value", VSSetting = "XML Attribute Value")]
 		public ChunkStyle XmlAttributeValue { get; private set; }
-		
+
 		[ColorDescription("Xml Comment", VSSetting = "XML Comment")]
 		public ChunkStyle XmlComment { get; private set; }
 
@@ -332,31 +322,31 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Keyword(Exception)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordException { get; private set; }
-		
+
 		[ColorDescription("Keyword(Modifiers)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordModifiers { get; private set; }
-		
+
 		[ColorDescription("Keyword(Constants)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordConstants { get; private set; }
-		
+
 		[ColorDescription("Keyword(Void)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordVoid { get; private set; }
-		
+
 		[ColorDescription("Keyword(Namespace)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordNamespace { get; private set; }
-		
+
 		[ColorDescription("Keyword(Property)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordProperty { get; private set; }
-		
+
 		[ColorDescription("Keyword(Declaration)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordDeclaration { get; private set; }
-		
+
 		[ColorDescription("Keyword(Parameter)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordParameter { get; private set; }
-		
+
 		[ColorDescription("Keyword(Operator Declaration)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordOperatorDeclaration { get; private set; }
-		
+
 		[ColorDescription("Keyword(Other)", VSSetting = "Keyword")]
 		public ChunkStyle KeywordOther { get; private set; }
 
@@ -365,13 +355,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("User Types(Enums)", VSSetting = "User Types(Enums)")]
 		public ChunkStyle UserTypesEnums { get; private set; }
-		
+
 		[ColorDescription("User Types(Interfaces)", VSSetting = "User Types(Interfaces)")]
 		public ChunkStyle UserTypesInterfaces { get; private set; }
-		
+
 		[ColorDescription("User Types(Delegates)", VSSetting = "User Types(Delegates)")]
 		public ChunkStyle UserTypesDelegatess { get; private set; }
-		
+
 		[ColorDescription("User Types(Value types)", VSSetting = "User Types(Value types)")]
 		public ChunkStyle UserTypesValueTypes { get; private set; }
 
@@ -380,22 +370,22 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("User Field Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserFieldUsage { get; private set; }
-		
+
 		[ColorDescription("User Field Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserFieldDeclaration { get; private set; }
-		
+
 		[ColorDescription("User Property Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserPropertyUsage { get; private set; }
-		
+
 		[ColorDescription("User Property Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserPropertyDeclaration { get; private set; }
-		
+
 		[ColorDescription("User Event Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserEventUsage { get; private set; }
-		
+
 		[ColorDescription("User Event Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserEventDeclaration { get; private set; }
-		
+
 		[ColorDescription("User Method Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserMethodUsage { get; private set; }
 
@@ -404,13 +394,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("User Parameter Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserParameterUsage { get; private set; }
-		
+
 		[ColorDescription("User Parameter Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserParameterDeclaration { get; private set; }
 
 		[ColorDescription("User Variable Usage", VSSetting = "Identifier")]
 		public ChunkStyle UserVariableUsage { get; private set; }
-		
+
 		[ColorDescription("User Variable Declaration", VSSetting = "Identifier")]
 		public ChunkStyle UserVariableDeclaration { get; private set; }
 
@@ -423,15 +413,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		[ColorDescription("Breakpoint Text", VSSetting = "Breakpoint (Enabled)")]
 		public ChunkStyle BreakpointText { get; private set; }
 
-		[ColorDescription("Breakpoint Text(Invalid)", VSSetting = "Breakpoint (Disabled)")]
-		public ChunkStyle BreakpointTextInvalid { get; private set; }
-
 		[ColorDescription("Debugger Current Statement", VSSetting = "Current Statement")]
 		public ChunkStyle DebuggerCurrentLine { get; private set; }
 
 		[ColorDescription("Debugger Stack Line")] // not defined
 		public ChunkStyle DebuggerStackLine { get; private set; }
-
 
 		[ColorDescription("Diff Line(Added)")] //not defined
 		public ChunkStyle DiffLineAdded { get; private set; }
@@ -444,13 +430,13 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Diff Header")] //not defined
 		public ChunkStyle DiffHeader { get; private set; }
-		
+
 		[ColorDescription("Diff Header(Separator)")] //not defined
 		public ChunkStyle DiffHeaderSeparator { get; private set; }
-		
+
 		[ColorDescription("Diff Header(Old)")] //not defined
 		public ChunkStyle DiffHeaderOld { get; private set; }
-		
+
 		[ColorDescription("Diff Header(New)")] //not defined
 		public ChunkStyle DiffHeaderNew { get; private set; }
 
@@ -459,68 +445,66 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		[ColorDescription("Html Attribute Name", VSSetting="HTML Attribute")]
 		public ChunkStyle HtmlAttributeName { get; private set; }
-		
+
 		[ColorDescription("Html Attribute Value", VSSetting="HTML Attribute Value")]
 		public ChunkStyle HtmlAttributeValue { get; private set; }
-		
+
 		[ColorDescription("Html Comment", VSSetting="HTML Comment")]
 		public ChunkStyle HtmlComment { get; private set; }
-		
+
 		[ColorDescription("Html Element Name", VSSetting="HTML Element Name")]
 		public ChunkStyle HtmlElementName { get; private set; }
-		
+
 		[ColorDescription("Html Entity", VSSetting="HTML Entity")]
 		public ChunkStyle HtmlEntity { get; private set; }
-		
+
 		[ColorDescription("Html Operator", VSSetting="HTML Operator")]
 		public ChunkStyle HtmlOperator { get; private set; }
-		
+
 		[ColorDescription("Html Server-Side Script", VSSetting="HTML Server-Side Script")]
 		public ChunkStyle HtmlServerSideScript { get; private set; }
-		
+
 		[ColorDescription("Html Tag Delimiter", VSSetting="HTML Tag Delimiter")]
 		public ChunkStyle HtmlTagDelimiter { get; private set; }
-		
+
 		[ColorDescription("Razor Code", VSSetting="Razor Code")]
 		public ChunkStyle RazorCode { get; private set; }
-
 
 		[ColorDescription("Css Comment", VSSetting="CSS Comment")]
 		public ChunkStyle CssComment { get; private set; }
 
 		[ColorDescription("Css Property Name", VSSetting="CSS Property Name")]
 		public ChunkStyle CssPropertyName { get; private set; }
-		
+
 		[ColorDescription("Css Property Value", VSSetting="CSS Property Value")]
 		public ChunkStyle CssPropertyValue { get; private set; }
-		
+
 		[ColorDescription("Css Selector", VSSetting="CSS Selector")]
 		public ChunkStyle CssSelector { get; private set; }
-		
+
 		[ColorDescription("Css String Value", VSSetting="CSS String Value")]
 		public ChunkStyle CssStringValue { get; private set; }
-		
+
 		[ColorDescription("Css Keyword", VSSetting="CSS Keyword")]
 		public ChunkStyle CssKeyword { get; private set; }
 
 		[ColorDescription("Script Comment", VSSetting="Script Comment")]
 		public ChunkStyle ScriptComment { get; private set; }
-		
+
 		[ColorDescription("Script Identifier", VSSetting="Script Identifier")]
 		public ChunkStyle ScriptIdentifier { get; private set; }
-		
+
 		[ColorDescription("Script Keyword", VSSetting="Script Keyword")]
 		public ChunkStyle ScriptKeyword { get; private set; }
-		
+
 		[ColorDescription("Script Number", VSSetting="Script Number")]
 		public ChunkStyle ScriptNumber { get; private set; }
-		
+
 		[ColorDescription("Script Operator", VSSetting="Script Operator")]
 		public ChunkStyle ScriptOperator { get; private set; }
 
 		[ColorDescription("Script String", VSSetting="Script String")]
 		public ChunkStyle ScriptString { get; private set; }
-
 
 		#endregion
 
@@ -577,7 +561,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			result.CopyValues (this);
 			return result;
 		}
-		
+
 		static Cairo.Color ParseColor (string value)
 		{
 			if (value.Length == 9 && value.StartsWith ("#", StringComparison.Ordinal)) {
@@ -596,6 +580,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (palette.TryGetValue (value, out result))
 				return result;
 			return ParseColor (value);
+		}
+
+		public ChunkStyle GetChunkStyle (Chunk chunk)
+		{
+			return GetChunkStyle (chunk.Style);
 		}
 
 		public ChunkStyle GetChunkStyle (string color)
@@ -624,7 +613,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			var reader = System.Runtime.Serialization.Json.JsonReaderWriterFactory.CreateJsonReader (stream, new System.Xml.XmlDictionaryReaderQuotas ());
 
 			var root = XElement.Load(reader);
-			
+
 			// The fields we'd like to extract
 			result.Name = root.XPathSelectElement("name").Value;
 
@@ -886,7 +875,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					var split = color.Value.Attribute.VSSetting.Split ('?');
 					foreach (var s in split) {
 						if (s == vsc.Name) {
-						/*	if (vsc.Foreground == "0x02000000" && vsc.Background == "0x02000000") {
+							/*	if (vsc.Foreground == "0x02000000" && vsc.Background == "0x02000000") {
 								color.Value.Info.SetValue (result, result.PlainText, null);
 								found = true;
 								continue;
@@ -916,7 +905,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 			result.TooltipPagerBottom = new AmbientColor ();
 			result.TooltipPagerBottom.Colors.Add (Tuple.Create ("color", result.TooltipText.Background));
-			
+
 			result.TooltipPagerTriangle = new AmbientColor ();
 			result.TooltipPagerTriangle.Colors.Add (Tuple.Create ("color", AlphaBlend (result.PlainText.Foreground, result.PlainText.Background, 0.8)));
 

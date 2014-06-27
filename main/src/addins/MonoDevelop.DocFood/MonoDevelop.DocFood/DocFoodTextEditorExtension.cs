@@ -190,7 +190,7 @@ namespace MonoDevelop.DocFood
 			}
 
 			foreach (var member in type.NestedTypes) {
-				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
+				if (member.Region.Begin > new TextLocation (textEditorData.CaretLine, textEditorData.CaretColumn) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.CaretLine, member.Region.BeginLine)) {
 					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
 					result = member.Resolve (ctx).GetDefinition ();
 				}

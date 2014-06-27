@@ -59,6 +59,8 @@ using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.CSharp.NRefactoryWrapper;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -1335,14 +1337,14 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region IDebuggerExpressionResolver implementation
 
-		static string GetIdentifierName (TextEditorData editor, Identifier id, out int startOffset)
+		static string GetIdentifierName (IReadonlyTextDocument editor, Identifier id, out int startOffset)
 		{
 			startOffset = editor.LocationToOffset (id.StartLocation.Line, id.StartLocation.Column);
 
 			return editor.GetTextBetween (id.StartLocation, id.EndLocation);
 		}
 
-		internal static string ResolveExpression (TextEditorData editor, ResolveResult result, AstNode node, out int startOffset)
+		internal static string ResolveExpression (IReadonlyTextDocument editor, ResolveResult result, AstNode node, out int startOffset)
 		{
 			//Console.WriteLine ("result is a {0}", result.GetType ().Name);
 			startOffset = -1;
@@ -1444,7 +1446,7 @@ namespace MonoDevelop.CSharp.Completion
 			return editor.GetTextBetween (node.StartLocation, node.EndLocation);
 		}
 
-		static bool TryResolveAt (Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
+		static bool TryResolveAt (Document doc, MonoDevelop.Ide.Editor.DocumentLocation loc, out ResolveResult result, out AstNode node)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -1473,7 +1475,7 @@ namespace MonoDevelop.CSharp.Completion
 			return true;
 		}
 
-		string IDebuggerExpressionResolver.ResolveExpression (TextEditorData editor, Document doc, int offset, out int startOffset)
+		string IDebuggerExpressionResolver.ResolveExpression (IReadonlyTextDocument editor, Document doc, int offset, out int startOffset)
 		{
 			ResolveResult result;
 			AstNode node;

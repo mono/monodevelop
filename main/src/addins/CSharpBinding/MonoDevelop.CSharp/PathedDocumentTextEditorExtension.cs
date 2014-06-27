@@ -50,10 +50,6 @@ namespace MonoDevelop.CSharp
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 
-			if (caret != null) {
-				caret.PositionChanged -= UpdatePath;
-				caret = null;
-			}
 			if (ext != null) {
 				ext.TypeSegmentTreeUpdated -= HandleTypeSegmentTreeUpdated;
 				ext = null;

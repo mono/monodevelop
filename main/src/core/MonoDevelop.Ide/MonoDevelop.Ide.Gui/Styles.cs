@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Gui
 		public static int ProgressBarInnerPadding { get { return (int)(4 * PixelScale); } }
 		public static int ProgressBarOuterPadding { get { return (int)(4 * PixelScale); } }
 
-		static readonly double PixelScale = Mono.TextEditor.GtkWorkarounds.GetPixelScale ();
+		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
 
 		// Toolbar
 

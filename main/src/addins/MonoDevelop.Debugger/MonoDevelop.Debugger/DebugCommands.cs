@@ -612,11 +612,11 @@ namespace MonoDevelop.Debugger
 			var doc = IdeApp.Workbench.ActiveDocument;
 
 			if (DebuggingService.IsPaused) {
-				DebuggingService.RunToCursor (doc.FileName, doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+				DebuggingService.RunToCursor (doc.FileName, doc.Editor.CaretLine, doc.Editor.CaretColumn);
 				return;
 			}
 
-			var bp = new RunToCursorBreakpoint (doc.FileName, doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+			var bp = new RunToCursorBreakpoint (doc.FileName, doc.Editor.CaretLine, doc.Editor.CaretColumn);
 			DebuggingService.Breakpoints.Add (bp);
 			DebugHandler.BuildAndDebug ();
 		}
@@ -754,7 +754,7 @@ namespace MonoDevelop.Debugger
 			var doc = IdeApp.Workbench.ActiveDocument;
 
 			try {
-				DebuggingService.SetNextStatement (doc.FileName, doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+				DebuggingService.SetNextStatement (doc.FileName, doc.Editor.CaretLine, doc.Editor.CaretColumn);
 			} catch (NotSupportedException) {
 				MessageService.ShowError ("Unable to set the next statement to this location.");
 			}

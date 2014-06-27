@@ -199,7 +199,7 @@ namespace MonoDevelop.SourceEditor
 				}
 				
 				if (data.Node is ThisReferenceExpression && result is ThisResolveResult) {
-					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var resolver = file.GetResolver (doc.Compilation, doc.Editor.CaretLocation);
 					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
 					sig.BreakLineAfterReturnType = false;
 					

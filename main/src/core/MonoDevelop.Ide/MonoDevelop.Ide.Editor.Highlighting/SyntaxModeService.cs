@@ -35,6 +35,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
@@ -534,8 +535,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		{
 			StartUpdateThread ();
 			var textEditorAssembly = Assembly.Load ("Mono.TextEditor");
-			if (textEditorAssembly != null)
+			if (textEditorAssembly != null) {
 				LoadStylesAndModes (textEditorAssembly);
+			} else {
+				LoggingService.LogError ("Can't lookup Mono.TextEditor assembly. Default styles won't be loaded.");
+			}
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "Comment", new HighlightUrlSemanticRule ("Comment(Line)"));
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "XmlDocumentation", new HighlightUrlSemanticRule ("Comment(Doc)"));
 			SyntaxModeService.AddSemanticRule ("text/x-csharp", "String", new HighlightUrlSemanticRule ("String"));

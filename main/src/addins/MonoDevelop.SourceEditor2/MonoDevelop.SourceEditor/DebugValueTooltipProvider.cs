@@ -106,15 +106,15 @@ namespace MonoDevelop.SourceEditor
 					return null;
 
 				var resolver = doc.GetContent<IDebuggerExpressionResolver> ();
-				var data = editor.GetTextEditorData ();
+				var data = doc.GetContent<SourceEditorView> ();
 
 				if (resolver != null) {
-					expression = resolver.ResolveExpression (data, doc, offset, out startOffset);
+					expression = resolver.ResolveExpression (doc.Editor, doc, offset, out startOffset);
 				} else {
-					int endOffset = data.FindCurrentWordEnd (offset);
-					startOffset = data.FindCurrentWordStart (offset);
+					int endOffset = data.GetTextEditorData ().FindCurrentWordEnd (offset);
+					startOffset = data.GetTextEditorData ().FindCurrentWordStart (offset);
 
-					expression = data.GetTextAt (startOffset, endOffset - startOffset);
+					expression = doc.Editor.GetTextAt (startOffset, endOffset - startOffset);
 				}
 			}
 			

@@ -223,7 +223,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal void SetDefaultScheme ()
 		{
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 			foreColor = scheme.PlainText.Foreground;
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());

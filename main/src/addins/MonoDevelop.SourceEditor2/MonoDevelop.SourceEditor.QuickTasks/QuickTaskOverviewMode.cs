@@ -658,7 +658,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			Severity severity = Severity.None;
 
 			foreach (var usage in AllUsages) {
-				double y = GetYPosition (usage.Location.Line);
+				double y = GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
 				HslColor color;
