@@ -46,6 +46,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.XmlEditor.Gui
 
 		#region Setup and teardown
 
-		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
+		protected override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc)
 		{
 			//can only attach if there is not already an attached BaseXmlEditorExtension
 			return doc.GetContent<BaseXmlEditorExtension> () == null;
@@ -72,7 +73,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			return new XmlFreeState ();
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Parser parser = new Parser (CreateRootState (), false);
@@ -81,15 +82,17 @@ namespace MonoDevelop.XmlEditor.Gui
 				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			};
-			
+			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 			if (Document.ParsedDocument != null) {
 				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			}
-		}
+		} 
 
 		public override void Dispose ()
 		{
+			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
+
 			if (tracker != null) {
 				tracker = null;
 				base.Dispose ();
@@ -548,8 +551,8 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		PathEntry[] currentPath;
 		bool pathUpdateQueued = false;
-		
-		public override void CursorPositionChanged ()
+
+		void HandleCaretPositionChanged (object sender, EventArgs e)
 		{
 			if (pathUpdateQueued)
 				return;
@@ -559,7 +562,6 @@ namespace MonoDevelop.XmlEditor.Gui
 				UpdatePath ();
 				return false;
 			});
-				
 		}
 
 		public void SelectPath (int depth)

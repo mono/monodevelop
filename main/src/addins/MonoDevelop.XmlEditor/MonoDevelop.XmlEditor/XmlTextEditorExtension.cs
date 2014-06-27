@@ -56,12 +56,12 @@ namespace MonoDevelop.XmlEditor
 		InferredXmlCompletionProvider inferredCompletionData;
 		bool inferenceQueued;
 
-		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
+		protected override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc)
 		{
-			return IsFileNameHandled (doc.Name) && base.ExtendsEditor (doc, editor);
+			return IsFileNameHandled (doc.Name) && base.ExtendsEditor (doc);
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			XmlEditorOptions.XmlFileAssociationChanged += HandleXmlFileAssociationChanged;
@@ -78,7 +78,7 @@ namespace MonoDevelop.XmlEditor
 
 		void HandleXmlFileAssociationChanged (object sender, XmlFileAssociationChangedEventArgs e)
 		{
-			var filename = document.FileName;
+			var filename = Document.FileName;
 			if (filename != null && filename.ToString ().EndsWith (e.Extension, StringComparison.Ordinal))
 				SetDefaultSchema ();
 		}
@@ -376,7 +376,7 @@ namespace MonoDevelop.XmlEditor
 		
 		void SetDefaultSchema ()
 		{
-			var filename = document.FileName;
+			var filename = Document.FileName;
 			if (filename == null)
 				return;
 			
