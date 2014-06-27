@@ -34,7 +34,7 @@ namespace MonoDevelop.SourceEditor
 	{
 		internal static ExtensibleTextEditor GetExtensibleTextEditor (TextEditor editor)
 		{
-			var view = editor.TextEditorImpl as SourceEditorView;
+			var view = editor.GetContent<SourceEditorView> ();
 			if (view == null)
 				return null;
 			return view.TextEditor;

@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {

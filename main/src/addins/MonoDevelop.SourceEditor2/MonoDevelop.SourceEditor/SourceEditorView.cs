@@ -66,7 +66,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-		ITextEditorImpl, IEditorActionHost, IMarkerHost
+	ITextEditorImpl, IEditorActionHost, IMarkerHost
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -3020,6 +3020,17 @@ namespace MonoDevelop.SourceEditor
 			var alloc = TextEditor.Allocation;
 			return new Xwt.Rectangle (alloc.X, alloc.Y, alloc.Width, alloc.Height);
 		}
+
+
+		AbstractEditorExtension ITextEditorImpl.EditorExtension {
+			get {
+				return TextEditor.EditorExtension;
+			}
+			set {
+				TextEditor.EditorExtension = value;
+			}
+		}
+
 
 		#region IEditorActionHost implementation
 

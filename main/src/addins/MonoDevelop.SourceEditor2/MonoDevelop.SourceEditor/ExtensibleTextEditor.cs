@@ -45,6 +45,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -57,6 +58,11 @@ namespace MonoDevelop.SourceEditor
 		Adjustment cachedHAdjustment, cachedVAdjustment;
 		
 		public ITextEditorExtension Extension {
+			get;
+			set;
+		}
+
+		public AbstractEditorExtension EditorExtension {
 			get;
 			set;
 		}
@@ -84,16 +90,7 @@ namespace MonoDevelop.SourceEditor
 		void Initialize (SourceEditorView view)
 		{
 			this.view = view;
-			Caret.PositionChanged += delegate {
-				if (Extension != null) {
-					try {
-						Extension.CursorPositionChanged ();
-					} catch (Exception ex) {
-						ReportExtensionError (ex);
-					}
-				}
-			};
-			
+
 			Document.TextReplaced += HandleSkipCharsOnReplace;
 			
 			UpdateEditMode ();
@@ -208,7 +205,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			isInKeyStroke = true;
 			try {
-				return Extension.KeyPress (key, (char)ch, state);
+				return EditorExtension.KeyPress (key, (char)ch, state);
 			} catch (Exception ex) {
 				ReportExtensionError (ex);
 			} finally {
@@ -274,7 +271,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			bool result = true;
 			if (key == Gdk.Key.Escape) {
-				bool b = Extension != null ? ExtensionKeyPress (key, ch, state) : base.OnIMProcessedKeyPressEvent (key, ch, state);
+				bool b = EditorExtension != null ? ExtensionKeyPress (key, ch, state) : base.OnIMProcessedKeyPressEvent (key, ch, state);
 				if (b) {
 					view.SourceEditorWidget.RemoveSearchWidget ();
 					return true;
@@ -367,7 +364,7 @@ namespace MonoDevelop.SourceEditor
 				Caret.IsInInsertMode = false;
 				skipChars.Remove (skipChar);
 			}
-			if (Extension != null) {
+			if (EditorExtension != null) {
 				if (!DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
 					using (var undo = Document.OpenUndoGroup ()) {
 						if (ExtensionKeyPress (key, ch, state))

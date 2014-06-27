@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Ide.Editor;
 using Mono.TextEditor;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -135,7 +136,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		string ITextDocument.FileName {
+		FilePath ITextDocument.FileName {
 			get {
 				return document.FileName;
 			}
@@ -217,7 +218,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		string IReadonlyTextDocument.FileName {
+		FilePath IReadonlyTextDocument.FileName {
 			get {
 				return document.FileName;
 			}
