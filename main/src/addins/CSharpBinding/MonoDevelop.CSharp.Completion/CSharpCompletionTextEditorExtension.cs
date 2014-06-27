@@ -54,6 +54,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using Mono.TextEditor;
 using MonoDevelop.CSharp.NRefactoryWrapper;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -78,12 +79,7 @@ namespace MonoDevelop.CSharp.Completion
 				unit = value;
 			}
 		}
-		
-		public new MonoDevelop.Ide.Gui.Document Document {
-			get {
-				return base.document;
-			}
-		}
+
 
 		public ICompilation UnresolvedFileCompilation {
 			get;
@@ -97,19 +93,19 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public ParsedDocument ParsedDocument {
 			get {
-				return document.ParsedDocument;
+				return Document.ParsedDocument;
 			}
 		}
 		
 		public ICompilation Compilation {
 			get {
-				return document.Compilation;
+				return Document.Compilation;
 			}
 		}
 		
 		public MonoDevelop.Projects.Project Project {
 			get {
-				return document.Project;
+				return Document.Project;
 			}
 		}
 		
@@ -153,15 +149,15 @@ namespace MonoDevelop.CSharp.Completion
 			Initialize (doc);
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-			var parsedDocument = document.ParsedDocument;
+			var parsedDocument = Document.ParsedDocument;
 			if (parsedDocument != null) {
 				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
 				this.UnresolvedFileCompilation = Document.Compilation;
 				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-				document.Editor.CaretPositionChanged += HandlePositionChanged;
+				Editor.CaretPositionChanged += HandlePositionChanged;
 			}
 			
 			Document.DocumentParsed += HandleDocumentParsed; 
@@ -279,7 +275,7 @@ namespace MonoDevelop.CSharp.Completion
 			//	var timer = Counters.ResolveTime.BeginTiming ();
 			try {
 				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
-					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (document.Editor.GetCharAt (completionContext.TriggerOffset - 2)))
+					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (Editor.GetCharAt (completionContext.TriggerOffset - 2)))
 						return null;
 					triggerWordLength = 1;
 				}
@@ -312,7 +308,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		ICompletionContextProvider CreateContextProvider ()
 		{
-			return new CompletionContextProvider (document, validTypeSystemSegmentTree, unstableTypeSystemSegmentTree);
+			return new CompletionContextProvider (Document, validTypeSystemSegmentTree, unstableTypeSystemSegmentTree);
 		}
 
 		CSharpTypeResolveContext CreateTypeResolveContext ()
@@ -448,7 +444,7 @@ namespace MonoDevelop.CSharp.Completion
 				ctx
 				);
 			List<string> list;
-			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, document.Editor.CaretOffset, out list);
+			int cparam = engine.GetCurrentParameterIndex (provider.StartOffset, Editor.CaretOffset, out list);
 			if (cparam > provider.GetParameterCount (currentOverload) && !provider.AllowParameterList (currentOverload) || !HasAllUsedParameters (provider, list, currentOverload)) {
 				// Look for an overload which has more parameters
 				int bestOverload = -1;
@@ -626,7 +622,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		List<string> GetUsedNamespaces ()
 		{
-			var scope = CSharpUnresolvedFile.GetUsingScope (document.Editor.CaretLocation);
+			var scope = CSharpUnresolvedFile.GetUsingScope (Editor.CaretLocation);
 			var result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);
@@ -657,7 +653,7 @@ namespace MonoDevelop.CSharp.Completion
 				Document.GetProjectContext (),
 				ctx
 			);
-			engine.SetOffset (document.Editor.CaretOffset);
+			engine.SetOffset (Editor.CaretOffset);
 			return engine.GetParameterCompletionCommandOffset (out cpos);
 		}
 
@@ -675,7 +671,7 @@ namespace MonoDevelop.CSharp.Completion
 				ctx
 			);
 			List<string> list;
-			return engine.GetCurrentParameterIndex (startOffset, document.Editor.CaretOffset, out list);
+			return engine.GetCurrentParameterIndex (startOffset, Editor.CaretOffset, out list);
 		}
 		/*
 		internal int GetCurrentParameterIndex (ICompletionWidget widget, int offset, int memberStart)
@@ -1054,7 +1050,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 			{
-				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.document.Editor.CaretLocation);
+				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Editor.CaretLocation);
 				return new NewOverrideCompletionData (ext, declarationBegin, type, m.CreateResolved (ctx));
 			}
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
@@ -1068,7 +1064,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData ()
 			{
-				var project = ext.document.Project;
+				var project = ext.Document.Project;
 				if (project == null)
 					yield break;
 				var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
@@ -1177,7 +1173,7 @@ namespace MonoDevelop.CSharp.Completion
 				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 				{
 					Initialize ();
-					var doc = ext.document;
+					var doc = ext.Document;
 					using (var undo = doc.Editor.OpenUndoGroup ()) {
 						string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
 						if (text != GetCurrentWord (window)) {

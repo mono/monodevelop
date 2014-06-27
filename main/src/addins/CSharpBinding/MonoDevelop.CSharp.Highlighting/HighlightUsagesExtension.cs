@@ -42,21 +42,21 @@ namespace MonoDevelop.CSharp.Highlighting
 	{
 		CSharpSyntaxMode syntaxMode;
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-			((IInternalEditorExtensions)document.Editor).SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Document));
+			((IInternalEditorExtensions)Editor).SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Document));
 			syntaxMode = new CSharpSyntaxMode (Document);
-			document.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
+			Document.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
-//			if (syntaxMode != null) {
-//				TextEditorData.Document.SyntaxMode = null;
-//				syntaxMode.Dispose ();
-//				syntaxMode = null;
-//			}
+			if (syntaxMode != null) {
+				Editor.SyntaxMode = null;
+				syntaxMode.Dispose ();
+				syntaxMode = null;
+			}
 			base.Dispose ();
 		}
 

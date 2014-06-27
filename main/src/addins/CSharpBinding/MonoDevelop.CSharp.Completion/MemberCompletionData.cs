@@ -47,6 +47,7 @@ using MonoDevelop.CSharp.Formatting;
 using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Completion
 {
