@@ -337,10 +337,31 @@ namespace MonoDevelop.PackageManagement.Tests
 			packageSourcesHelper.Options.ProjectService.RaiseSolutionLoadedEvent ();
 			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
 
-			//System.Diagnostics.Debugger.Break ();
 			registeredRepositories.UpdatePackageSources (updatedPackageSources);
 
 			Assert.AreEqual (expectedPackageSource, registeredRepositories.ActivePackageSource);
+		}
+
+		[Test]
+		public void UpdatePackageSources_PackageSourcesUpdatedInPreferencesWhenAggregatePackageSourceIsActive_ActiveRepositoryIsRecreated ()
+		{
+			CreateRegisteredPackageRepositories ();
+			packageSourcesHelper.AddTwoPackageSources ("One", "Two");
+			var updatedPackageSources = new PackageSource [] {
+				new PackageSource ("One"),
+				new PackageSource ("Two")
+			};
+			AddPackageSourcesToSettings ("One", "Two");
+			SetActivePackageSourceInSettings (RegisteredPackageSourceSettings.AggregatePackageSource);
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			IPackageRepository firstAggregateRepository = registeredRepositories.ActiveRepository;
+			fakeRepositoryCache.FakeAggregateRepository = new FakePackageRepository ();
+
+			registeredRepositories.UpdatePackageSources (updatedPackageSources);
+			IPackageRepository secondAggregateRepository = registeredRepositories.ActiveRepository;
+
+			Assert.AreNotSame (firstAggregateRepository, secondAggregateRepository);
+			Assert.AreSame (secondAggregateRepository, fakeRepositoryCache.FakeAggregateRepository);
 		}
 	}
 }

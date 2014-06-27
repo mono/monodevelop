@@ -120,6 +120,7 @@ namespace ICSharpCode.PackageManagement
 				}
 
 				UpdateActivePackageSource ();
+				UpdateActivePackageRepository ();
 			} catch (Exception) {
 				PackageSources.AddRange (packageSourcesBackup);
 				UpdateActivePackageSource ();
@@ -145,6 +146,18 @@ namespace ICSharpCode.PackageManagement
 				if (matchedPackageSource == null) {
 					ActivePackageSource = null;
 				}
+			}
+		}
+
+		void UpdateActivePackageRepository ()
+		{
+			if (activePackageSource == null)
+				return;
+
+			if (activePackageSource.IsAggregate ()) {
+				// Force recreation of AggregateRepository to reset any
+				// failing package repositories.
+				activePackageRepository = null;
 			}
 		}
 	}
