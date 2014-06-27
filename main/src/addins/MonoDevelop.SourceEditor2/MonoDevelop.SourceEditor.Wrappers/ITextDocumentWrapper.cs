@@ -204,12 +204,14 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		IDocumentLine IReadonlyTextDocument.GetLine (int lineNumber)
 		{
-			return new DocumentLineWrapper (document.GetLine (lineNumber));
+			var line = document.GetLine (lineNumber);
+			return line != null ? new DocumentLineWrapper (line) : null;
 		}
 
 		IDocumentLine IReadonlyTextDocument.GetLineByOffset (int offset)
 		{
-			return new DocumentLineWrapper (document.GetLineByOffset (offset));
+			var line = document.GetLineByOffset (offset);
+			return line != null ? new DocumentLineWrapper (line) : null;
 		}
 
 		bool IReadonlyTextDocument.IsReadOnly {

@@ -57,16 +57,38 @@ namespace MonoDevelop.SourceEditor
 		ExtensionContext extensionContext;
 		Adjustment cachedHAdjustment, cachedVAdjustment;
 		
-		public ITextEditorExtension Extension {
-			get;
-			set;
-		}
+		AbstractEditorExtension editorExtension;
+		bool needToAddLastExtension;
 
 		public AbstractEditorExtension EditorExtension {
-			get;
-			set;
+			get {
+				return editorExtension;
+			}
+			set {
+				editorExtension = value;
+				needToAddLastExtension = true;
+			}
 		}
-		
+
+		class LastEditorExtension : AbstractEditorExtension
+		{
+			readonly ExtensibleTextEditor ext;
+			public LastEditorExtension (ExtensibleTextEditor ext)
+			{
+				if (ext == null)
+					throw new ArgumentNullException ("ext");
+				this.ext = ext;
+			}
+			
+			public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+			{
+				ext.SimulateKeyPress (key, (uint)keyChar, modifier);
+				if (key == Gdk.Key.Escape)
+					return true;
+				return false;
+			}
+		}
+
 		public new ISourceEditorOptions Options {
 			get { return (ISourceEditorOptions)base.Options; }
 			set { base.Options = value; }
@@ -157,7 +179,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			UnregisterAdjustments ();
 			resolveResult = null;
-			Extension = null;
+			EditorExtension = null;
 			view = null;
 			base.OnDestroyed ();
 			if (Options != null) {
@@ -205,6 +227,13 @@ namespace MonoDevelop.SourceEditor
 		{
 			isInKeyStroke = true;
 			try {
+				if (needToAddLastExtension) {
+					var ext = EditorExtension;
+					while (ext.Next != null)
+						ext = ext.Next;
+					ext.Next = new LastEditorExtension (this);
+					needToAddLastExtension = false;
+				}
 				return EditorExtension.KeyPress (key, (char)ch, state);
 			} catch (Exception ex) {
 				ReportExtensionError (ex);

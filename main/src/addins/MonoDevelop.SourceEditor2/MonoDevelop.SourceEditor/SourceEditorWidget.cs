@@ -51,7 +51,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	class SourceEditorWidget : ITextEditorExtension, IQuickTaskProvider
+	class SourceEditorWidget : IQuickTaskProvider, IServiceProvider
 	{
 		SourceEditorView view;
 		DecoratedScrolledWindow mainsw;
@@ -119,36 +119,6 @@ namespace MonoDevelop.SourceEditor
 			if (secondsw != null)
 				secondsw.AddUsageProvider (provider);
 		}
-		
-		#region ITextEditorExtension
-		
-		ITextEditorExtension ITextEditorExtension.Next {
-			get {
-				return null;
-			}
-		}
-		
-		object ITextEditorExtension.GetExtensionCommandTarget ()
-		{
-			return null;
-		}
-
-		void ITextEditorExtension.TextChanged (int startIndex, int endIndex)
-		{
-		}
-
-		void ITextEditorExtension.CursorPositionChanged ()
-		{
-		}
-
-		bool ITextEditorExtension.KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
-		{
-			this.TextEditor.SimulateKeyPress (key, (uint)keyChar, modifier);
-			if (key == Gdk.Key.Escape)
-				return true;
-			return false;
-		}
-		#endregion
 		
 		public bool HasMessageBar {
 			get { return messageBar != null; }
@@ -732,7 +702,7 @@ namespace MonoDevelop.SourceEditor
 				 if (!textEditor.TextArea.HasFocus)
 					OnLostFocus ();
 			};
-			splittedTextEditor.Extension = textEditor.Extension;
+			splittedTextEditor.EditorExtension = textEditor.EditorExtension;
 			if (textEditor.GetTextEditorData ().HasIndentationTracker)
 				splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
 			splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
@@ -1708,6 +1678,12 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
+		#region IServiceProvider implementation
+		object IServiceProvider.GetService (Type serviceType)
+		{
+			return view.GetContent (serviceType);
+		}
+		#endregion
 	}
 
 	class ErrorMarker : UnderlineMarker

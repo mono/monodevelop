@@ -62,7 +62,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IExtensibleTextEditor, IBookmarkBuffer, IClipboardHandler, 
+	public class SourceEditorView : AbstractViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
@@ -1431,35 +1431,7 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 		}
-		
-		#region IExtensibleTextEditor
-		public ITextEditorExtension Extension {
-			get;
-			set;
-		}
-		
-		ITextEditorExtension IExtensibleTextEditor.AttachExtension (ITextEditorExtension extension)
-		{
-			Extension = extension;
-			widget.TextEditor.Extension = extension;
-			return widget;
-		}
-		
-//		protected override void OnMoveCursor (MovementStep step, int count, bool extend_selection)
-//		{
-//			base.OnMoveCursor (step, count, extend_selection);
-//			if (extension != null)
-//				extension.CursorPositionChanged ();
-//		}
-		
-//		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
-//		{
-//			if (extension != null)
-//				return extension.KeyPress (evnt.Key, evnt.State);
-//			return this.KeyPress (evnt.Key, evnt.State); 
-//		}		
-		#endregion
-		
+
 		#region IEditableTextBuffer
 		public bool EnableUndo {
 			get {
@@ -2424,6 +2396,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (type.Equals (typeof(TextEditorData)))
 				return TextEditor.GetTextEditorData ();
+			var ext = TextEditor.EditorExtension;
+			while (ext != null) {
+				if (type.IsInstanceOfType (ext))
+					return ext;
+				ext = ext.Next;
+			}
 			return base.GetContent (type);
 		}
 

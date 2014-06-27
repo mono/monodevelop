@@ -36,6 +36,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		public DocumentLineWrapper (Mono.TextEditor.DocumentLine line)
 		{
+			if (line == null)
+				throw new ArgumentNullException ("line");
 			this.Line = line;
 		}
 
@@ -78,13 +80,15 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.IDocumentLine.PreviousLine {
 			get {
-				return new DocumentLineWrapper (Line.PreviousLine);
+				var prev = Line.PreviousLine;
+				return prev != null ? new DocumentLineWrapper (prev) : null;
 			}
 		}
 
 		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.IDocumentLine.NextLine {
 			get {
-				return new DocumentLineWrapper (Line.NextLine);
+				var next = Line.NextLine;
+				return next != null ? new DocumentLineWrapper (next) : null;
 			}
 		}
 
