@@ -59,13 +59,15 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		IDocumentLine IDocumentLine.PreviousLine {
 			get {
-				return new DocumentLineWrapper (documentLine.PreviousLine);
+				var line = documentLine.PreviousLine;
+				return line != null ? new DocumentLineWrapper (line) : null;
 			}
 		}
 
 		IDocumentLine IDocumentLine.NextLine {
 			get {
-				return new DocumentLineWrapper (documentLine.NextLine);
+				var line = documentLine.NextLine;
+				return line != null ? new DocumentLineWrapper (line) : null;
 			}
 		}
 

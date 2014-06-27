@@ -85,12 +85,14 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		ICSharpCode.NRefactory.Editor.IDocumentLine IDocument.GetLineByNumber (int lineNumber)
 		{
-			return new DocumentLineWrapper (document.GetLine (lineNumber));
+			var line = document.GetLine (lineNumber);
+			return line != null ? new DocumentLineWrapper (line) : null;
 		}
 
 		ICSharpCode.NRefactory.Editor.IDocumentLine IDocument.GetLineByOffset (int offset)
 		{
-			return new DocumentLineWrapper (document.GetLineByOffset (offset));
+			var line = document.GetLineByOffset (offset);
+			return line != null ? new DocumentLineWrapper (line) : null;
 		}
 
 		int IDocument.GetOffset (int line, int column)

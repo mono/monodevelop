@@ -78,14 +78,10 @@ namespace MonoDevelop.CSharp.Formatting
 		static CSharpTextEditorIndentation ()
 		{
 			CompletionWindowManager.WordCompleted += delegate(object sender, CodeCompletionContextEventArgs e) {
-				var editor = e.Widget as IExtensibleTextEditor;
+				var editor = e.Widget as IServiceProvider;
 				if (editor == null)
 					return;
-				var textEditorExtension = editor.Extension;
-				while (textEditorExtension != null && !(textEditorExtension is CSharpTextEditorIndentation)) {
-					textEditorExtension = textEditorExtension.Next;
-				}
-				var extension = textEditorExtension as CSharpTextEditorIndentation;
+				var extension = editor.GetService (typeof(CSharpTextEditorIndentation)) as CSharpTextEditorIndentation;
 				if (extension == null)
 					return;
 				extension.SafeUpdateIndentEngine (extension.Editor.CaretOffset);
@@ -361,7 +357,6 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			bool skipFormatting = StateTracker.IsInsideOrdinaryCommentOrString ||
 			                      StateTracker.IsInsidePreprocessorDirective;
-
 			cursorPositionBeforeKeyPress = Editor.CaretOffset;
 			bool isSomethingSelected = Editor.IsSomethingSelected;
 			if (key == Gdk.Key.BackSpace && Editor.CaretOffset == lastInsertedSemicolon) {

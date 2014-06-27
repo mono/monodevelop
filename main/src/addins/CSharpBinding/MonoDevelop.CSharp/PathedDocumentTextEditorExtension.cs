@@ -245,7 +245,7 @@ namespace MonoDevelop.CSharp
 			public void ActivateItem (int n)
 			{
 				var node = memberList [n];
-				var extEditor = ext.Document.GetContent<IExtensibleTextEditor> ();
+				var extEditor = ext.Document.GetContent<TextEditor> ();
 				if (extEditor != null) {
 					int line, col;
 					if (node is OperatorDeclaration) { 
@@ -258,7 +258,7 @@ namespace MonoDevelop.CSharp
 						line = node.StartLocation.Line;
 						col = node.StartLocation.Column;
 					}
-					extEditor.SetCaretTo (line, col);
+					extEditor.SetCaretLocation (line, col, true);
 				}
 			}
 
@@ -314,9 +314,10 @@ namespace MonoDevelop.CSharp
 			public void ActivateItem (int n)
 			{
 				var reg = Document.ParsedDocument.UserRegions.ElementAt (n);
-				var extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
-				if (extEditor != null)
-					extEditor.SetCaretTo (Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn);
+				var extEditor = Document.Editor;
+				if (extEditor != null) {
+					extEditor.SetCaretLocation(Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn, true);
+				}
 			}
 
 			public int IconCount {
