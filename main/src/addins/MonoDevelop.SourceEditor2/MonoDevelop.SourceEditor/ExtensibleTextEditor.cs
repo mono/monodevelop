@@ -57,10 +57,10 @@ namespace MonoDevelop.SourceEditor
 		ExtensionContext extensionContext;
 		Adjustment cachedHAdjustment, cachedVAdjustment;
 		
-		AbstractEditorExtension editorExtension;
+		TextEditorExtension editorExtension;
 		bool needToAddLastExtension;
 
-		public AbstractEditorExtension EditorExtension {
+		public TextEditorExtension EditorExtension {
 			get {
 				return editorExtension;
 			}
@@ -70,7 +70,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		class LastEditorExtension : AbstractEditorExtension
+		class LastEditorExtension : TextEditorExtension
 		{
 			readonly ExtensibleTextEditor ext;
 			public LastEditorExtension (ExtensibleTextEditor ext)

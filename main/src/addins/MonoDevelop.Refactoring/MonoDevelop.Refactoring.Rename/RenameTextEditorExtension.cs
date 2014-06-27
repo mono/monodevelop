@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Refactoring.Rename
 {
-	public class RenameTextEditorExtension : AbstractEditorExtension
+	public class RenameTextEditorExtension : TextEditorExtension
 	{
 		[CommandUpdateHandler(EditCommands.Rename)]
 		public void RenameCommand_Update(CommandInfo ci)

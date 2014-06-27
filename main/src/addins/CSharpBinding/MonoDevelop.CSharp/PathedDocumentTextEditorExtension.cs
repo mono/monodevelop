@@ -42,7 +42,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp
 {
-	class PathedDocumentTextEditorExtension : AbstractEditorExtension, IPathedDocument
+	class PathedDocumentTextEditorExtension : TextEditorExtension, IPathedDocument
 	{
 		public override void Dispose ()
 		{

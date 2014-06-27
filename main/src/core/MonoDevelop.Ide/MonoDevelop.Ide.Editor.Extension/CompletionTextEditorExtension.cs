@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
-	public class CompletionTextEditorExtension : AbstractEditorExtension
+	public class CompletionTextEditorExtension : TextEditorExtension
 	{
 		CodeCompletionContext currentCompletionContext;
 

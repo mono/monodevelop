@@ -40,7 +40,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
-	public class ResultsEditorExtension : AbstractEditorExtension, IQuickTaskProvider
+	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;
 		

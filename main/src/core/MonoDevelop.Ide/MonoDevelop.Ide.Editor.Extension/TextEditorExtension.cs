@@ -33,7 +33,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
-	public abstract class AbstractEditorExtension : ICommandRouter, IDisposable
+	public abstract class TextEditorExtension : ICommandRouter, IDisposable
 	{
 		public Document Document {
 			get;
@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			protected set;
 		}
 
-		internal AbstractEditorExtension Next {
+		internal TextEditorExtension Next {
 			get;
 			set;
 		}
@@ -107,7 +107,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 	}
 
-	class TextEditorExtensionMarker : AbstractEditorExtension
+	class TextEditorExtensionMarker : TextEditorExtension
 	{
 		protected override bool ExtendsEditor (Document document)
 		{

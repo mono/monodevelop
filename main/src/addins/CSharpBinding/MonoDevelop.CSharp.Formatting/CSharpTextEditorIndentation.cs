@@ -48,7 +48,7 @@ using MonoDevelop.CSharp.NRefactoryWrapper;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	class CSharpTextEditorIndentation : AbstractEditorExtension
+	class CSharpTextEditorIndentation : TextEditorExtension
 	{
 		internal CacheIndentEngine stateTracker;
 		int cursorPositionBeforeKeyPress;

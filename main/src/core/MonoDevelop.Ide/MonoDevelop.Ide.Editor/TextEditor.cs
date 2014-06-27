@@ -791,15 +791,15 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException ("document");
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			AbstractEditorExtension last = null;
+			TextEditorExtension last = null;
 			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			foreach (TextEditorExtensionNode extNode in extensions) {
 				if (!extNode.Supports (FileName, mimetypeChain))
 					continue;
-				AbstractEditorExtension ext;
+				TextEditorExtension ext;
 				try {
 					var instance = extNode.CreateInstance ();
-					ext = instance as AbstractEditorExtension;
+					ext = instance as TextEditorExtension;
 					if (ext == null)
 						continue;
 				} catch (Exception e) {

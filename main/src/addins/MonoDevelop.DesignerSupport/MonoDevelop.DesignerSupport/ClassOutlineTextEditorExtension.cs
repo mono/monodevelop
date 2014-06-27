@@ -56,7 +56,7 @@ namespace MonoDevelop.DesignerSupport
 	/// </remarks>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineNodeComparer"/>
 	/// <seealso cref="MonoDevelop.DesignerSupport.ClassOutlineSettings"/>
-	public class ClassOutlineTextEditorExtension : AbstractEditorExtension, IOutlinedDocument
+	public class ClassOutlineTextEditorExtension : TextEditorExtension, IOutlinedDocument
 	{
 		ParsedDocument lastCU = null;
 

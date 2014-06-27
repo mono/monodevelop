@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// <summary>
 	/// Provides a base class for implementing highlighting of usages inside the text editor.
 	/// </summary>
-	public abstract class AbstractUsagesExtension<T> : AbstractEditorExtension, IUsageProvider
+	public abstract class AbstractUsagesExtension<T> : TextEditorExtension, IUsageProvider
 	{
 		[SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
 		protected static readonly List<MemberReference> EmptyList = new List<MemberReference> ();

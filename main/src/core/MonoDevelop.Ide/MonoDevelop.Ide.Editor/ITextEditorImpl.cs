@@ -146,7 +146,7 @@ namespace MonoDevelop.Ide.Editor
 
 		#region Internal use only API (do not mirror in TextEditor)
 
-		AbstractEditorExtension EditorExtension {
+		TextEditorExtension EditorExtension {
 			get;
 			set;
 		}

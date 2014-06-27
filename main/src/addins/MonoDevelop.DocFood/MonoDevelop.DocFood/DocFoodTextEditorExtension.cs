@@ -37,7 +37,7 @@ using System.Linq;
 
 namespace MonoDevelop.DocFood
 {
-	class DocFoodTextEditorExtension : AbstractEditorExtension
+	class DocFoodTextEditorExtension : TextEditorExtension
 	{
 		TextEditor textEditorData {
 			get {

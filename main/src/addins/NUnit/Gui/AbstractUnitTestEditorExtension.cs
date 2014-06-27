@@ -37,7 +37,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.NUnit
 {
-	public abstract class AbstractUnitTestTextEditorExtension : AbstractEditorExtension
+	public abstract class AbstractUnitTestTextEditorExtension : TextEditorExtension
 	{
 		protected override void Initialize ()
 		{

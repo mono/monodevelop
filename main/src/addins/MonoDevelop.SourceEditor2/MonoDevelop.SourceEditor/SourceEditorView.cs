@@ -3017,7 +3017,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
-		AbstractEditorExtension ITextEditorImpl.EditorExtension {
+		TextEditorExtension ITextEditorImpl.EditorExtension {
 			get {
 				return TextEditor.EditorExtension;
 			}

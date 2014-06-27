@@ -760,7 +760,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	class ExceptionCaughtTextEditorExtension: AbstractEditorExtension
+	class ExceptionCaughtTextEditorExtension: TextEditorExtension
 	{
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{

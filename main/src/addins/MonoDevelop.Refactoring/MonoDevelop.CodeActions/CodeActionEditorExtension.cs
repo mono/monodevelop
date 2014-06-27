@@ -45,7 +45,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CodeActions
 {
-	class CodeActionEditorExtension : AbstractEditorExtension 
+	class CodeActionEditorExtension : TextEditorExtension 
 	{
 		uint quickFixTimeout;
 

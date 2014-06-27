@@ -37,7 +37,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 	// are chained in the command route, the designer service will find this
 	// IPropertyPadProvider when the text editor has the focus.
 	
-	public class PropertyPadTextEditorExtension: AbstractEditorExtension, IPropertyPadProvider
+	public class PropertyPadTextEditorExtension: TextEditorExtension, IPropertyPadProvider
 	{
 		public object GetActiveComponent ()
 		{
