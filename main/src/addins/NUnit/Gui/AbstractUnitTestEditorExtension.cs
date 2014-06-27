@@ -33,12 +33,13 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.NUnit
 {
-	public abstract class AbstractUnitTestTextEditorExtension : TextEditorExtension
+	public abstract class AbstractUnitTestTextEditorExtension : AbstractEditorExtension
 	{
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Document.DocumentParsed += HandleDocumentParsed; 
@@ -49,7 +50,7 @@ namespace MonoDevelop.NUnit
 
 		void HandleTestSessionCompleted (object sender, EventArgs e)
 		{
-			if (document.Editor == null)
+			if (Editor == null)
 				return;
 //			document.Editor.Parent.TextArea.RedrawMargin (document.Editor.Parent.TextArea.ActionMargin);
 		}
