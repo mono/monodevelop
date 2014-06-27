@@ -36,9 +36,9 @@ using MonoDevelop.Ide.CodeTemplates;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.Ide.Gui.Content
+namespace MonoDevelop.Ide.Editor.Extension
 {
-	public class CompletionTextEditorExtension: TextEditorExtension
+	public class CompletionTextEditorExtension : AbstractEditorExtension
 	{
 		CodeCompletionContext currentCompletionContext;
 
@@ -458,14 +458,14 @@ namespace MonoDevelop.Ide.Gui.Content
 //			CompletionWindowManager.HideWindow ();
 //		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			CompletionWindowManager.WindowClosed += HandleWindowClosed;
 			CompletionWidget = Document.GetContent <ICompletionWidget> ();
 			if (CompletionWidget != null)
 				CompletionWidget.CompletionContextChanged += OnCompletionContextChanged;
-			document.Editor.CaretPositionChanged += HandlePositionChanged;
+			Editor.CaretPositionChanged += HandlePositionChanged;
 //			document.Editor.Paste += HandlePaste;
 //			if (document.Editor.Parent != null)
 //				document.Editor.Parent.TextArea.FocusOutEvent += HandleFocusOutEvent;
@@ -492,7 +492,7 @@ namespace MonoDevelop.Ide.Gui.Content
 //				if (document.Editor.Parent != null)
 //					document.Editor.Parent.TextArea.FocusOutEvent -= HandleFocusOutEvent;
 //				document.Editor.Paste -= HandlePaste;
-				document.Editor.CaretPositionChanged -= HandlePositionChanged;
+				Editor.CaretPositionChanged -= HandlePositionChanged;
 				CompletionWindowManager.WindowClosed -= HandleWindowClosed;
 				if (CompletionWidget != null)
 					CompletionWidget.CompletionContextChanged -= OnCompletionContextChanged;

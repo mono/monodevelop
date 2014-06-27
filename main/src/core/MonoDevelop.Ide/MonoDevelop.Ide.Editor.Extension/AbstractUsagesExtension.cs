@@ -40,12 +40,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 	/// <summary>
 	/// Provides a base class for implementing highlighting of usages inside the text editor.
 	/// </summary>
-	public abstract class AbstractUsagesExtension<T> : TextEditorExtension, IUsageProvider
+	public abstract class AbstractUsagesExtension<T> : AbstractEditorExtension, IUsageProvider
 	{
 		[SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
 		protected static readonly List<MemberReference> EmptyList = new List<MemberReference> ();
-
-		protected TextEditor TextEditorData;
 
 		CancellationTokenSource tooltipCancelSrc = new CancellationTokenSource ();
 		List<ITextSegmentMarker> markers = new List<ITextSegmentMarker> ();
@@ -58,14 +56,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		uint popupTimer;
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
-			base.Initialize ();
-
-			TextEditorData = Document.Editor;
-			TextEditorData.CaretPositionChanged += HandleTextEditorDataCaretPositionChanged;
-			TextEditorData.TextChanged += HandleTextEditorDataDocumentTextReplaced;
-			TextEditorData.SelectionChanged += HandleTextEditorDataSelectionChanged;
+			Editor.CaretPositionChanged += HandleTextEditorDataCaretPositionChanged;
+			Editor.TextChanged += HandleTextEditorDataDocumentTextReplaced;
+			Editor.SelectionChanged += HandleTextEditorDataSelectionChanged;
 		}
 
 		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
@@ -82,9 +77,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			CancelTooltip ();
 
-			TextEditorData.SelectionChanged -= HandleTextEditorDataSelectionChanged;
-			TextEditorData.CaretPositionChanged -= HandleTextEditorDataCaretPositionChanged;
-			TextEditorData.TextChanged -= HandleTextEditorDataDocumentTextReplaced;
+			Editor.SelectionChanged -= HandleTextEditorDataSelectionChanged;
+			Editor.CaretPositionChanged -= HandleTextEditorDataCaretPositionChanged;
+			Editor.TextChanged -= HandleTextEditorDataDocumentTextReplaced;
 			base.Dispose ();
 			RemoveTimer ();
 		}
@@ -158,11 +153,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			if (!DefaultSourceEditorOptions.Instance.EnableHighlightUsages)
 				return;
-			if (!TextEditorData.IsSomethingSelected && markers.Any (m => m.Contains (TextEditorData.CaretOffset)))
+			if (!Editor.IsSomethingSelected && markers.Any (m => m.Contains (Editor.CaretOffset)))
 				return;
 			RemoveMarkers ();
 			RemoveTimer ();
-			if (!TextEditorData.IsSomethingSelected)
+			if (!Editor.IsSomethingSelected)
 				popupTimer = GLib.Timeout.Add (1000, DelayedTooltipShow);
 		}
 
@@ -187,7 +182,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return;
 			// TextEditorData.Parent.TextViewMargin.AlphaBlendSearchResults = false;
 			foreach (var marker in markers) {
-				TextEditorData.RemoveMarker (marker);
+				Editor.RemoveMarker (marker);
 			}
 			markers.Clear ();
 		}
@@ -197,26 +192,22 @@ namespace MonoDevelop.Ide.Editor.Extension
 			RemoveMarkers ();
 			var lineNumbers = new HashSet<int> ();
 			usages.Clear ();
-			var editor = TextEditorData;
+			var editor = Editor;
 			if (editor != null /*&& editor.TextViewMargin != null*/) {
 				if (references != null) {
-					bool alphaBlend = false;
 					foreach (var r in references) {
 						if (r == null)
 							continue;
-						var start = TextEditorData.LocationToOffset (r.Region.BeginLine, r.Region.BeginColumn);
-						var end   = TextEditorData.LocationToOffset (r.Region.EndLine, r.Region.EndColumn);
+						var start = editor.LocationToOffset (r.Region.BeginLine, r.Region.BeginColumn);
+						var end   = editor.LocationToOffset (r.Region.EndLine, r.Region.EndColumn);
 						var usage = new Usage (TextSegment.FromBounds (start, end), r.ReferenceUsageType);
 						usages.Add (usage);
-						var marker = TextEditorData.MarkerHost.CreateUsageMarker (usage);
+						var marker = editor.MarkerHost.CreateUsageMarker (usage);
 						markers.Add (marker);
 						lineNumbers.Add (r.Region.BeginLine);
-						TextEditorData.AddMarker (marker);
+						editor.AddMarker (marker);
 					}
 				}
-				/*	foreach (int line in lineNumbers)
-					TextEditorData.CommitLineUpdate (line);
-				UsagesSegments.Sort ((x, y) => x.TextSegment.Offset.CompareTo (y.TextSegment.Offset));*/
 			}
 			OnUsagesUpdated (EventArgs.Empty);
 		}

@@ -75,7 +75,6 @@ namespace MonoDevelop.Ide.Editor
 			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
-
 		public static TextEditor CreateNewEditor ()
 		{
 			return new TextEditor (currentFactory.CreateNewEditor ());

@@ -33,6 +33,7 @@ using Gtk;
 using Gdk;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

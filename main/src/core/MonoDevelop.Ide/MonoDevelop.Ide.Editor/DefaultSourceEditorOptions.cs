@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor
 {

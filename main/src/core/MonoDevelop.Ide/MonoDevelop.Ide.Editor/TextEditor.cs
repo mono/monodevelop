@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -67,8 +68,6 @@ namespace MonoDevelop.Ide.Editor
 					extensionContext.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
 			}
 		}
-
-		internal ITextEditorImpl TextEditorImpl { get { return textEditorImpl; } }
 
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{
@@ -314,7 +313,7 @@ namespace MonoDevelop.Ide.Editor
 		/// Gets the name of the file the document is stored in.
 		/// Could also be a non-existent dummy file name or null if no name has been set.
 		/// </summary>
-		public string FileName {
+		public FilePath FileName {
 			get {
 				return ReadOnlyTextDocument.FileName;
 			}
@@ -756,9 +755,74 @@ namespace MonoDevelop.Ide.Editor
 
 		public void Dispose ()
 		{
+			DetachExtensionChain ();
 			textEditorImpl.Dispose ();
 		}
 
 		#endregion
+	
+		internal void InitializeExtensionChain (Document document)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			DetachExtensionChain ();
+			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
+			AbstractEditorExtension editorExtension = null;
+			AbstractEditorExtension last = null;
+			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
+			foreach (TextEditorExtensionNode extNode in extensions) {
+				if (!extNode.Supports (FileName, mimetypeChain))
+					continue;
+				AbstractEditorExtension ext;
+				try {
+					var instance = extNode.CreateInstance ();
+					ext = instance as AbstractEditorExtension;
+					if (ext == null)
+						continue;
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type +")", e); 
+					continue;
+				}
+				if (ext.ExtendsEditor (document)) {
+					if (last != null) {
+						last.Next = ext;
+						last = ext;
+					} else {
+						editorExtension = last = ext;
+					}
+					ext.Initialize (document);
+				}
+			}
+			textEditorImpl.EditorExtension = editorExtension;
+		}
+
+		void DetachExtensionChain ()
+		{
+			var editorExtension = textEditorImpl.EditorExtension;
+			while (editorExtension != null) {
+				try {
+					editorExtension.Dispose ();
+				} catch (Exception ex) {
+					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
+				}
+				editorExtension = editorExtension.Next;
+			}
+			textEditorImpl.EditorExtension = null;
+		}
+
+		public T GetContent<T> () where T : class
+		{
+			T result = textEditorImpl as T;
+			if (result != null)
+				return result;
+			var ext = textEditorImpl.EditorExtension;
+			while (ext != null) {
+				result = ext as T;
+				if (result != null)
+					return result;
+				ext = ext.Next;
+			}
+			return null;
+		}
 	}
 }

@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {

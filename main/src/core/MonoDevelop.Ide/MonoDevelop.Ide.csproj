@@ -1720,7 +1720,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\FileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PartialTypeFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ParentProjectFileTemplateCondition.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\CompletionTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ToolbarComboBox.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISplittable.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IFoldable.cs" />
@@ -2437,6 +2436,8 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\CloneableStack.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InsertionModeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\CompletionTextEditorExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

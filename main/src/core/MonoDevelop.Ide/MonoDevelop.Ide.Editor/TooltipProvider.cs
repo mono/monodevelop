@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Editor
 
 		protected Xwt.Rectangle GetAllocation (TextEditor editor)
 		{
-			return editor.TextEditorImpl.GetEditorAllocation ();
+			return editor.GetContent<ITextEditorImpl> ().GetEditorAllocation ();
 		}
 
 		public virtual Gtk.Window ShowTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, int mouseX, int mouseY, TooltipItem item)
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Editor
 				return null;
 
 
-			var origin = editor.TextEditorImpl.GetEditorWindowOrigin ();
+			var origin = editor.GetContent<ITextEditorImpl> ().GetEditorWindowOrigin ();
 
 			int w;
 			double xalign;

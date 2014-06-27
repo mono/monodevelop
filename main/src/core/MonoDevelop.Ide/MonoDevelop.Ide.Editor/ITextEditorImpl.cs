@@ -145,6 +145,12 @@ namespace MonoDevelop.Ide.Editor
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
 
 		#region Internal use only API (do not mirror in TextEditor)
+
+		AbstractEditorExtension EditorExtension {
+			get;
+			set;
+		}
+
 		void ClearTooltipProviders ();
 
 		void AddTooltipProvider (TooltipProvider provider);
@@ -155,5 +161,6 @@ namespace MonoDevelop.Ide.Editor
 
 		Xwt.Rectangle GetEditorAllocation ();
 		#endregion
+
 	}
 }

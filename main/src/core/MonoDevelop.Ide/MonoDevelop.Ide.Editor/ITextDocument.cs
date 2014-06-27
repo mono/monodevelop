@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -35,7 +36,7 @@ namespace MonoDevelop.Ide.Editor
 	{
 		bool IsReadOnly { get; }
 
-		string FileName { get; }
+		FilePath FileName { get; }
 
 		string MimeType { get; }
 
@@ -62,7 +63,7 @@ namespace MonoDevelop.Ide.Editor
 
 		new bool IsReadOnly { get; set; }
 
-		new string FileName { get; set; }
+		new FilePath FileName { get; set; }
 
 		new string MimeType { get; set; }
 
