@@ -39,6 +39,7 @@ using MonoDevelop.Components;
 using Gtk;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace CBinding.Parser
 {
@@ -113,9 +114,10 @@ namespace CBinding.Parser
 		public void ActivateItem (int n)
 		{
 			var member = memberList[n];
-			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
-			if (extEditor != null)
-				extEditor.SetCaretTo (Math.Max (1, member.Region.BeginLine), Math.Max (1, member.Region.BeginColumn));
+			var extEditor = Document.Editor;
+			if (extEditor != null) {
+				extEditor.SetCaretLocation (Math.Max (1, member.Region.BeginLine), Math.Max (1, member.Region.BeginColumn), true);
+			}
 		}
 		
 		public int IconCount {

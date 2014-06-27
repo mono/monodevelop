@@ -37,6 +37,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components;
 
 using Gtk;
+using MonoDevelop.Ide.Editor;
 
 namespace CBinding.Parser
 {
@@ -77,9 +78,11 @@ namespace CBinding.Parser
 		public void ActivateItem (int n)
 		{
 			var reg = Document.ParsedDocument.UserRegions.ElementAt (n);
-			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
-			if (extEditor != null)
-				extEditor.SetCaretTo (Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn);
+			var extEditor = Document.Editor;
+			if (extEditor != null) {
+				extEditor.CaretLocation = new DocumentLocation (Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn);
+				extEditor.StartCaretPulseAnimation ();
+			}
 		}
 		
 		public int IconCount
