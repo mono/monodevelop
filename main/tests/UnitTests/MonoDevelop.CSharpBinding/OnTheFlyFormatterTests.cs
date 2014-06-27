@@ -243,7 +243,7 @@ class Foo
 }
 ", out content);
 			ext.ReindentOnTab ();
-			ext.document.Editor.Actions.NewLine ();
+			ext.Editor.Actions.NewLine ();
 			ext.KeyPress ((Gdk.Key)'\n', '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;
@@ -273,8 +273,8 @@ class Foo
 			TestViewContent content;
 
 			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
-			ext.document.Editor.Options.IndentStyle = IndentStyle.Auto;
-			ext.document.Editor.Actions.NewLine ();
+			ext.Editor.Options.IndentStyle = IndentStyle.Auto;
+			ext.Editor.Actions.NewLine ();
 			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;
@@ -291,8 +291,8 @@ class Foo
 			TestViewContent content;
 
 			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
-			ext.document.Editor.Options.IndentStyle = IndentStyle.Virtual;
-			ext.document.Editor.Actions.NewLine ();
+			ext.Editor.Options.IndentStyle = IndentStyle.Virtual;
+			ext.Editor.Actions.NewLine ();
 			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;
@@ -336,7 +336,7 @@ namespace FormatSelectionTest
 	}
 }", out content);
 
-			OnTheFlyFormatter.Format (ext.document, ext.document.Editor.SelectionRange.Offset, ext.document.Editor.SelectionRange.EndOffset); 
+			OnTheFlyFormatter.Format (ext.Document, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
 
 
 			Assert.AreEqual (@"
@@ -348,7 +348,7 @@ namespace FormatSelectionTest
 		{
 		}
 	}
-}", ext.document.Editor.Text);
+}", ext.Editor.Text);
 		}
 
 	}

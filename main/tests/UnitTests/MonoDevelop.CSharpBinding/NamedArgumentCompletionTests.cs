@@ -44,6 +44,7 @@ using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharpBinding
 {
