@@ -2705,7 +2705,7 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.GetTextEditorData ().FixVirtualIndentation ();
 		}
 
-		Control ITextEditorImpl.GetControl ()
+		object ITextEditorImpl.CreateNativeControl ()
 		{
 			return Control;
 		}

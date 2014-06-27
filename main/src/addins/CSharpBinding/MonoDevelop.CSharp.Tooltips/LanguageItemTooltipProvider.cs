@@ -163,7 +163,7 @@ namespace MonoDevelop.SourceEditor
 			var p1 = editor.LocationToPoint (hoverNode.StartLocation);
 			var p2 = editor.LocationToPoint (hoverNode.EndLocation);
 			var caret = new Gdk.Rectangle ((int)(p1.X), (int)(p2.Y), (int)(p2.X - p1.X), (int)editor.LineHeight);
-			tipWindow.ShowPopup (editor.GetControl (), caret, PopupPosition.Top);
+			tipWindow.ShowPopup (editor, caret, PopupPosition.Top);
 			tipWindow.EnterNotifyEvent += delegate {
 //				editor.HideTooltip (false);
 			};

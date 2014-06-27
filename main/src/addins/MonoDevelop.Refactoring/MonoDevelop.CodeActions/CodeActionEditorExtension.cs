@@ -262,10 +262,9 @@ namespace MonoDevelop.CodeActions
 			menu.Hidden += delegate {
 				// document.Editor.SuppressTooltips = false;
 			};
-			var container = Editor;
 
-			var p = container.LocationToPoint (currentSmartTagBegin);
-			Gtk.Widget widget = container.GetControl ();
+			var p = Editor.LocationToPoint (currentSmartTagBegin);
+			Gtk.Widget widget = Editor;
 			var rect = new Gdk.Rectangle (
 				(int)p.X + widget.Allocation.X , 
 				(int)p.Y + (int)Editor.LineHeight + widget.Allocation.Y, 0, 0);

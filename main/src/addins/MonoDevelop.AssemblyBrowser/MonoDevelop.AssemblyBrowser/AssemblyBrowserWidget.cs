@@ -229,7 +229,7 @@ namespace MonoDevelop.AssemblyBrowser
 			this.inspectEditor.IsReadOnly = true;
 //			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
 //			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
-			documentationScrolledWindow.Add (inspectEditor.GetControl ());
+			documentationScrolledWindow.Add (inspectEditor);
 
 			this.hpaned1.ExposeEvent += HPaneExpose;
 			hpaned1 = hpaned1.ReplaceWithWidget (new HPanedThin (), true);

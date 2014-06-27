@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Editor
 
 		event EventHandler EndUndo;
 
-		Control GetControl ();
+		object CreateNativeControl ();
 
 		void RunWhenLoaded (Action action);
 

@@ -39,7 +39,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class TextEditor : ITextDocument, IInternalEditorExtensions, IDisposable
+	public class TextEditor : Control, ITextDocument, IInternalEditorExtensions, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
@@ -419,11 +419,6 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.FixVirtualIndentation ();
 		}
 
-		public Control GetControl ()
-		{
-			return textEditorImpl.GetControl ();
-		}
-
 		public void RunWhenLoaded (Action action)
 		{
 			if (action == null)
@@ -768,15 +763,20 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.AddSkipChar (offset, ch);
 		}
 
-		#region IDisposable implementation
-
-		public void Dispose ()
+		protected override void Dispose (bool disposing)
 		{
-			DetachExtensionChain ();
-			textEditorImpl.Dispose ();
+			if (disposing) {
+				DetachExtensionChain ();
+				textEditorImpl.Dispose ();
+			}
+			base.Dispose (disposing);
 		}
 
-		#endregion
+		protected override object CreateNativeWidget ()
+		{
+			return textEditorImpl.CreateNativeControl ();
+		}
+
 	
 		#region Editor extensions
 		internal object ExtendedCommandTargetChain {

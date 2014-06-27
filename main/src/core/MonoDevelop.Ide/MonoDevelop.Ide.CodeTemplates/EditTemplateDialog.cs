@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			checkbuttonExpansion.Active = (template.CodeTemplateType & CodeTemplateType.Expansion) == CodeTemplateType.Expansion;
 			checkbuttonSurroundWith.Active = (template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith;
 			
-			Gtk.Widget control = textEditor.GetControl ();
+			Gtk.Widget control = textEditor;
 			scrolledwindow1.Child = control;
 			control.ShowAll ();
 			textEditor.CaretPositionChanged += CaretPositionChanged;

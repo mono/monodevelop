@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Editor
 			var allocation = GetAllocation (editor);
 			int x = (int)(mouseX + origin.X + allocation.X);
 			int y = (int)(mouseY + origin.Y + allocation.Y);
-			var widget = editor.GetControl ().GetNativeWidget<Gtk.Widget> ();
+			Gtk.Widget widget = editor;
 			var geometry = widget.Screen.GetUsableMonitorGeometry (widget.Screen.GetMonitorAtPoint (x, y));
 			
 			x -= (int) ((double) w * xalign);

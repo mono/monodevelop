@@ -478,7 +478,7 @@ namespace TestSpace {
 			texteditor.Options.ShowLineNumberMargin = false;
 			texteditor.IsReadOnly = true;
 			texteditor.MimeType = CSharpFormatter.MimeType;
-			scrolledwindow.Child = texteditor.GetControl ();
+			scrolledwindow.Child = texteditor;
 			ShowAll ();
 			
 			#region Indent options

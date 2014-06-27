@@ -87,7 +87,7 @@ namespace Example {
 			texteditor.Options.ShowLineNumberMargin = false;
 			texteditor.IsReadOnly = true;
 			texteditor.MimeType = CSharpFormatter.MimeType;
-			scrolledwindow1.Child = texteditor.GetControl ();
+			scrolledwindow1.Child = texteditor;
 			ShowAll ();
 		}
 

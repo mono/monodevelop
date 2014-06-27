@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public CodeTemplatePanelWidget (OptionsDialog parent)
 		{
 			this.Build();
-			Gtk.Widget control = textEditor.GetControl ();
+			Gtk.Widget control = textEditor;
 			scrolledwindow1.Add (control);
 			control.ShowAll ();
 			
