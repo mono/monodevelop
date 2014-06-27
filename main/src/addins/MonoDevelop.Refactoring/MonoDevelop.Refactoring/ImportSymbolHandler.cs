@@ -45,6 +45,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Refactoring
 {
