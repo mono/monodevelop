@@ -37,7 +37,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageRepositoryCache repositoryCache;
 		PackageManagementOptions options;
-		RegisteredPackageSources registeredPackageSources;
 		PackageSource activePackageSource;
 		IPackageRepository activePackageRepository;
 		
@@ -47,7 +46,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			this.repositoryCache = repositoryCache;
 			this.options = options;
-			registeredPackageSources = options.PackageSources;
 		}
 		
 		public IRecentPackageRepository RecentPackageRepository {
@@ -69,7 +67,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool HasMultiplePackageSources {
-			get { return registeredPackageSources.HasMultipleEnabledPackageSources; }
+			get { return PackageSources.HasMultipleEnabledPackageSources; }
 		}
 		
 		public PackageSource ActivePackageSource {
