@@ -51,6 +51,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		
 		public override bool CanBuildNode (Type dataType)
 		{
+			if (typeof(SolutionFolder).IsAssignableFrom (dataType))
+				return false;
+
 			return typeof(IFolderItem).IsAssignableFrom (dataType);
 		}
 		
@@ -263,13 +266,12 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			foreach (FileEventInfo e in args) {
 				Project project = GetProjectForFile (e.FileName);
-				if (project == null) return;
-				
+
 				ITreeBuilder tb = Context.GetTreeBuilder ();
 				
 				if (e.IsDirectory) {
 					if (tb.MoveToObject (new ProjectFolder (e.FileName, project))) {
-						if (tb.Options ["ShowAllFiles"] && !ProjectFolderCommandHandler.PathExistsInProject (project, e.FileName)) {
+						if (tb.Options ["ShowAllFiles"] && (project == null || !ProjectFolderCommandHandler.PathExistsInProject (project, e.FileName))) {
 							tb.Remove ();
 							return;
 						}

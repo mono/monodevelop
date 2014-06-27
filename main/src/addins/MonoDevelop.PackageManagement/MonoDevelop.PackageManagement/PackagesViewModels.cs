@@ -40,8 +40,8 @@ namespace ICSharpCode.PackageManagement
 			ITaskFactory taskFactory)
 		{
 			var packageViewModelFactory = new PackageViewModelFactory(solution, packageManagementEvents, actionRunner);
-			var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
-			var installedPackageViewModelFactory = new InstalledPackageViewModelFactory(packageViewModelFactory);
+			//var updatedPackageViewModelFactory = new UpdatedPackageViewModelFactory(packageViewModelFactory);
+			//var installedPackageViewModelFactory = new InstalledPackageViewModelFactory(packageViewModelFactory);
 
 			IRecentPackageRepository recentPackageRepository = PackageManagementServices.RecentPackageRepository;
 			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, recentPackageRepository, packageViewModelFactory, taskFactory);

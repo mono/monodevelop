@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Serialization;
 using MonoDevelop.Core;
 using Mono.Debugging.Client;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Debugger
 {
@@ -270,8 +271,10 @@ namespace MonoDevelop.Debugger
 					batchChanged.Add (watch);
 				return;
 			}
-			if (WatchChanged != null)
-				WatchChanged (this, new PinnedWatchEventArgs (watch));
+			DispatchService.GuiDispatch (() => {
+				if (WatchChanged != null)
+					WatchChanged (this, new PinnedWatchEventArgs (watch));
+			});
 		}
 		
 		void OnChanged ()

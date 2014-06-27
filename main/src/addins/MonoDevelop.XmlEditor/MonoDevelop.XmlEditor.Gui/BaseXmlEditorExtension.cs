@@ -47,6 +47,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.XmlEditor.Gui
 {
@@ -59,6 +60,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		Gtk.TreeStore outlineTreeStore;
+		List<DotNetProject> ownerProjects;
 
 		#region Setup and teardown
 
@@ -76,6 +78,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		protected override void Initialize ()
 		{
 			base.Initialize ();
+			UpdateOwnerProjects ();
 			Parser parser = new Parser (CreateRootState (), false);
 			tracker = new DocumentStateTracker<Parser> (parser, Editor);
 			Document.DocumentParsed += delegate {
@@ -87,7 +90,40 @@ namespace MonoDevelop.XmlEditor.Gui
 				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			}
-		} 
+
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.FileAddedToProject += HandleProjectChanged;
+				IdeApp.Workspace.FileRemovedFromProject += HandleProjectChanged;
+			}
+		}
+
+		void HandleProjectChanged (object sender, ProjectFileEventArgs e)
+		{
+			UpdateOwnerProjects ();
+		}
+
+		void UpdateOwnerProjects ()
+		{
+			if (IdeApp.Workspace == null) {
+				ownerProjects = new List<DotNetProject> ();
+				return;
+			}
+			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
+			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
+				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
+				var dnp = Document.Project as DotNetProject;
+				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
+					// If the project for the document is not a DotNetProject but there is a project containing this file
+					// in the current solution, then use that project
+					var pp = Document.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == Document.Project.ParentSolution) : null;
+					if (pp != null)
+						Document.AttachToProject (pp);
+				}
+			}
+			if (Document.Project == null && ownerProjects.Count > 0)
+				Document.AttachToProject (ownerProjects[0]);
+			UpdatePath ();
+		}
 
 		public override void Dispose ()
 		{
@@ -96,6 +132,10 @@ namespace MonoDevelop.XmlEditor.Gui
 			if (tracker != null) {
 				tracker = null;
 				base.Dispose ();
+			}
+			if (IdeApp.Workspace != null) {
+				IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
+				IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 			}
 		}
 
@@ -261,14 +301,6 @@ namespace MonoDevelop.XmlEditor.Gui
 				return null;
 			}
 			
-			//element completion
-			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState) {
-				CompletionDataList list = new CompletionDataList ();
-				GetElementCompletions (list);
-				AddCloseTag (list, Tracker.Engine.Nodes);
-				return list.Count > 0? list : null;
-			}
-			
 			//entity completion
 			if (currentChar == '&' && (tracker.Engine.CurrentState is XmlFreeState ||
 			                           tracker.Engine.CurrentState is XmlAttributeValueState))
@@ -303,13 +335,34 @@ namespace MonoDevelop.XmlEditor.Gui
 				}
 				return null;
 			}
+
+			//attribute value completion
+			//determine whether to trigger completion within attribute values quotes
+			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
+			    //trigger on the opening quote
+			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
+			    //or trigger on first letter of value, if unforced
+			    || (forced || Tracker.Engine.CurrentStateLength == 2))) {
+				var att = (XAttribute)Tracker.Engine.Nodes.Peek ();
+
+				if (att.IsNamed) {
+					var attributedOb = Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
+					if (attributedOb == null)
+						return null;
+
+					//if triggered by first letter of value or forced, grab those letters
+					triggerWordLength = Tracker.Engine.CurrentStateLength - 1;
+
+					return GetAttributeValueCompletions (attributedOb, att);
+				}
+			}
 			
 			//attribute name completion
 			if ((forced && Tracker.Engine.Nodes.Peek () is IAttributedXObject && !tracker.Engine.Nodes.Peek ().IsEnded)
-			     || (Tracker.Engine.CurrentState is XmlNameState 
-			 	 && Tracker.Engine.CurrentState.Parent is XmlAttributeState
-			         && Tracker.Engine.CurrentStateLength == 1)
-			) {
+			     || ((Tracker.Engine.CurrentState is XmlNameState
+			    && Tracker.Engine.CurrentState.Parent is XmlAttributeState) ||
+			    Tracker.Engine.CurrentState is XmlTagState)
+			    && (Tracker.Engine.CurrentStateLength == 1 || forced)) {
 				IAttributedXObject attributedOb = (Tracker.Engine.Nodes.Peek () as IAttributedXObject) ?? 
 					Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
 				if (attributedOb == null)
@@ -333,46 +386,20 @@ namespace MonoDevelop.XmlEditor.Gui
 				}
 			}
 			
-			//attribute value completion
-			//determine whether to trigger completion within attribute values quotes
-			if ((Tracker.Engine.CurrentState is XmlAttributeValueState)
-			    //trigger on the opening quote
-			    && ((Tracker.Engine.CurrentStateLength == 1 && (currentChar == '\'' || currentChar == '"'))
-			        //or trigger on first letter of value, if unforced
-			        || (!forced && Tracker.Engine.CurrentStateLength == 1))
-			    )
-			{
-				var att = (XAttribute) Tracker.Engine.Nodes.Peek ();
-				
-				if (att.IsNamed) {
-					var attributedOb = Tracker.Engine.Nodes.Peek (1) as IAttributedXObject;
-					if (attributedOb == null)
-						return null;
-					
-					char next = ' ';
-					if (completionContext.TriggerOffset < buf.Length)
-						next = buf.GetCharAt (completionContext.TriggerOffset);
-					
-					char compareChar = (Tracker.Engine.CurrentStateLength == 1)? currentChar : previousChar;
-					
-					if ((compareChar == '"' || compareChar == '\'') 
-					    && (next == compareChar || char.IsWhiteSpace (next))
-					) {
-						//if triggered by first letter of value, grab that letter
-						if (Tracker.Engine.CurrentStateLength == 2)
-							triggerWordLength = 1;
-						
-						return GetAttributeValueCompletions (attributedOb, att);
-					}
-				}
-				
-			}
-			
 //			if (Tracker.Engine.CurrentState is XmlFreeState) {
 //				if (line < 3) {
 //				cp.Add ("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
 //			}
-			
+
+			//element completion
+			if (currentChar == '<' && tracker.Engine.CurrentState is XmlFreeState ||
+				(tracker.Engine.CurrentState is XmlNameState && forced)) {
+				CompletionDataList list = new CompletionDataList ();
+				GetElementCompletions (list);
+				AddCloseTag (list, Tracker.Engine.Nodes);
+				return list.Count > 0? list : null;
+			}
+
 			if (forced && Tracker.Engine.CurrentState is XmlFreeState) {
 				CompletionDataList list = new CompletionDataList ();
 				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (Document.Name, list);
@@ -586,7 +613,6 @@ namespace MonoDevelop.XmlEditor.Gui
 			
 			//locate the node
 			List<XObject> path = new List<XObject> (treeParser.Nodes);
-			
 			//note: list is backwards, and we want ignore the root XDocument
 			XObject ob = path [path.Count - (depth + 2)];
 			XNode node = ob as XNode;
@@ -648,19 +674,77 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		public Gtk.Widget CreatePathWidget (int index)
 		{
-			Menu menu = new Menu ();
-			MenuItem mi = new MenuItem (GettextCatalog.GetString ("Select"));
-			mi.Activated += delegate {
-				SelectPath (index);
-			};
-			menu.Add (mi);
-			mi = new MenuItem (GettextCatalog.GetString ("Select contents"));
-			mi.Activated += delegate {
-				SelectPathContents (index);
-			};
-			menu.Add (mi);
-			menu.ShowAll ();
-			return menu;
+			if (ownerProjects.Count > 1 && index == 0) {
+				var window = new DropDownBoxListWindow (new DataProvider (this));
+				window.FixedRowHeight = 22;
+				window.MaxVisibleRows = 14;
+				window.SelectItem (currentPath [index].Tag);
+				return window;
+			} else {
+				if (ownerProjects.Count > 1)
+					index--;
+				Menu menu = new Menu ();
+				MenuItem mi = new MenuItem (GettextCatalog.GetString ("Select"));
+				mi.Activated += delegate {
+					SelectPath (index);
+				};
+				menu.Add (mi);
+				mi = new MenuItem (GettextCatalog.GetString ("Select contents"));
+				mi.Activated += delegate {
+					SelectPathContents (index);
+				};
+				menu.Add (mi);
+				menu.ShowAll ();
+				return menu;
+			}
+		}
+
+
+		class DataProvider : DropDownBoxListWindow.IListDataProvider
+		{
+
+			readonly BaseXmlEditorExtension ext;
+
+			public DataProvider (BaseXmlEditorExtension ext)
+			{
+				if (ext == null)
+					throw new ArgumentNullException ("ext");
+				this.ext = ext;
+			}
+
+			#region IListDataProvider implementation
+
+			public void Reset ()
+			{
+			}
+
+			public string GetMarkup (int n)
+			{
+				return GLib.Markup.EscapeText (ext.ownerProjects [n].Name);
+			}
+
+			public Xwt.Drawing.Image GetIcon (int n)
+			{
+				return ImageService.GetIcon (ext.ownerProjects [n].StockIcon, IconSize.Menu);
+			}
+
+			public object GetTag (int n)
+			{
+				return ext.ownerProjects [n];
+			}
+
+			public void ActivateItem (int n)
+			{
+				ext.Document.AttachToProject (ext.ownerProjects [n]);
+			}
+
+			public int IconCount {
+				get {
+					return ext.ownerProjects.Count;
+				}
+			}
+
+			#endregion
 		}
 		
 		protected void OnPathChanged (PathEntry[] oldPath)
@@ -743,18 +827,21 @@ namespace MonoDevelop.XmlEditor.Gui
 		{
 			List<XObject> l = GetCurrentPath ();
 
-			if (l == null)
-				return;
 			
 			//build the list
-			PathEntry[] path = new PathEntry[l.Count];
-			for (int i = 0; i < l.Count; i++) {
-				if (l[i].FriendlyPathRepresentation == null) System.Console.WriteLine(l[i].GetType ());
-				path[i] = new PathEntry (GLib.Markup.EscapeText (l[i].FriendlyPathRepresentation ?? "<>"));
+			var path = new List<PathEntry> ();
+			if (ownerProjects.Count > 1) {
+				// Current project if there is more than one
+				path.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
+			}
+			if (l != null) {
+				for (int i = 0; i < l.Count; i++) {
+					path.Add (new PathEntry (GLib.Markup.EscapeText (l [i].FriendlyPathRepresentation ?? "<>")));
+				}
 			}
 			
 			PathEntry[] oldPath = currentPath;
-			currentPath = path;
+			currentPath = path.ToArray ();
 			
 			OnPathChanged (oldPath);
 		}

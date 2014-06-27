@@ -25,6 +25,7 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
+
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 
@@ -64,9 +65,24 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 
-		public Xwt.Drawing.Image Icon {
+		public Xwt.Drawing.Image FileIcon {
 			get;
 			set;
+		}
+
+		public Xwt.Drawing.Image ProjectIcon {
+			get;
+			set;
+		}
+
+		private List<Project> projects;
+		public List<Project> Projects {
+			get {
+				if (projects == null) {
+					projects = new List<Project> (IdeApp.Workspace.GetProjectsContainingFile (FileName));
+				}
+				return projects;
+			}
 		}
 		#endregion
 

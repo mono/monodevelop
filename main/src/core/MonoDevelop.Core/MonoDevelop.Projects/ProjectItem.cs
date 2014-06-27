@@ -43,6 +43,8 @@ namespace MonoDevelop.Projects
 		}
 		
 		internal string Condition { get; set; }
+
+		public ProjectItemFlags Flags { get; set; }
 	}
 	
 	public class UnknownProjectItem: ProjectItem
@@ -57,5 +59,21 @@ namespace MonoDevelop.Projects
 			this.ItemName = name;
 			this.Include = include;
 		}
+	}
+
+	[Flags]
+	public enum ProjectItemFlags
+	{
+		None = 0,
+
+		/// <summary>
+		/// The item is for internal use and will not be shown to the user
+		/// </summary>
+		Hidden = 1,
+
+		/// <summary>
+		/// The item will not be saved to the project file
+		/// </summary>
+		DontPersist = 2
 	}
 }

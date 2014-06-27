@@ -243,7 +243,16 @@ namespace MonoDevelop.Projects
 					e.FileName = item.FileName;
 					newItem = e;
 				}
-				
+
+				if (!Items.Contains (item)) {
+					// The old item is gone, which probably means it has already been reloaded (BXC20615), or maybe removed.
+					// In this case, there isn't anything else we can do
+					newItem.Dispose ();
+
+					// Find the replacement if it exists
+					return Items.OfType<SolutionEntityItem> ().FirstOrDefault (it => it.FileName == item.FileName);
+				}
+
 				// Replace in the file list
 				Items.Replace (item, newItem);
 				
@@ -331,7 +340,7 @@ namespace MonoDevelop.Projects
 			Items.Add (item);
 			
 			SolutionEntityItem eitem = item as SolutionEntityItem;
-			if (eitem != null && createSolutionConfigurations) {
+			if (eitem != null && createSolutionConfigurations && eitem.SupportsBuild ()) {
 				// Create new solution configurations for item configurations
 				foreach (ItemConfiguration iconf in eitem.Configurations) {
 					bool found = false;
@@ -477,7 +486,7 @@ namespace MonoDevelop.Projects
 			foreach (SolutionItem item in Items) {
 				if (item is SolutionFolder)
 					((SolutionFolder)item).GetAllBuildableEntries (list, configuration, includeExternalReferences);
-				else if ((item is SolutionEntityItem) && conf.BuildEnabledForItem ((SolutionEntityItem) item))
+				else if ((item is SolutionEntityItem) && conf.BuildEnabledForItem ((SolutionEntityItem) item) && item.SupportsBuild ())
 					GetAllBuildableReferences (list, item, configuration, includeExternalReferences);
 			}
 		}
@@ -492,7 +501,8 @@ namespace MonoDevelop.Projects
 					GetAllBuildableReferences (list, it, configuration, includeExternalReferences);
 			}
 		}
-		
+
+		[Obsolete("Use GetProjectsContainingFile() (plural) instead")]
 		public Project GetProjectContainingFile (string fileName) 
 		{
 			ReadOnlyCollection<Project> projects = GetAllProjects ();
@@ -502,6 +512,31 @@ namespace MonoDevelop.Projects
 				}
 			}
 			return null;
+		}
+
+		public IEnumerable<Project> GetProjectsContainingFile (string fileName)
+		{
+			ReadOnlyCollection<Project> projects = GetAllProjects ();
+
+			Project mainProject = null;
+			var projectsWithLinks = new List<Project>();
+			foreach (Project projectEntry in projects) {
+				if (projectEntry.FileName == fileName || projectEntry.IsFileInProject(fileName)) {
+					var projectPath = Path.GetDirectoryName (projectEntry.FileName);
+					if (fileName.StartsWith (projectPath)) {
+						mainProject = projectEntry;
+					} else {
+						projectsWithLinks.Add (projectEntry);
+					}
+				}
+			}
+
+			if (mainProject != null) {
+				yield return mainProject;
+			}
+			foreach (var project in projectsWithLinks) {
+				yield return project;
+			}
 		}
 		
 		public SolutionEntityItem FindSolutionItem (string fileName)
@@ -1006,6 +1041,11 @@ namespace MonoDevelop.Projects
 
 		public void Dispose ()
 		{
+		}
+
+		public object GetService (Type t)
+		{
+			return null;
 		}
 	}
 	

@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Navigation
 		{
 			IdeApp.Workspace.LastWorkspaceItemClosed += delegate {
 				history.Clear ();
+				closedHistory.Clear ();
 				OnHistoryChanged ();
 			};
 

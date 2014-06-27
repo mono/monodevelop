@@ -699,10 +699,10 @@ namespace Mono.TextEditor
 				var curRect = new Gdk.Rectangle ((int)caretX, (int)caretY, (int)this.charWidth, (int)LineHeight - 1);
 				if (curRect != caretRectangle) {
 					caretRectangle = curRect;
-					textEditor.TextArea.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
-					               (int)(caretRectangle.Y + (-textEditor.VAdjustment.Value + caretVAdjustmentValue)),
-				                    caretRectangle.Width + (int)textEditor.Options.Zoom,
-					               caretRectangle.Height + 1);
+//					textEditor.TextArea.QueueDrawArea (caretRectangle.X - (int)textEditor.Options.Zoom,
+//					               (int)(caretRectangle.Y + (-textEditor.VAdjustment.Value + caretVAdjustmentValue)),
+//				                    caretRectangle.Width + (int)textEditor.Options.Zoom,
+//					               caretRectangle.Height + 1);
 					caretVAdjustmentValue = textEditor.VAdjustment.Value;
 				}
 
@@ -1578,10 +1578,6 @@ namespace Mono.TextEditor
 				}
 			}
 
-
-			bool drawBg = true;
-			bool drawText = true;
-
 			var metrics  = new LineMetrics {
 				LineSegment = line,
 				Layout = layout,
@@ -1608,15 +1604,6 @@ namespace Mono.TextEditor
 				if (marker.DrawBackground (textEditor, cr, metrics)) {
 					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
 				}
-
-#pragma warning disable 618
-				var bgMarker = marker as IBackgroundMarker;
-				if (bgMarker != null) {
-					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
-					drawText &= bgMarker.DrawBackground (textEditor, cr, metrics.Layout, metrics.SelectionStart, metrics.SelectionEnd, metrics.TextStartOffset, metrics.TextEndOffset, y, metrics.TextRenderStartPosition, metrics.TextRenderEndPosition, ref drawBg);
-					continue;
-				}
-#pragma warning restore 618
 			}
 
 			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
@@ -2006,7 +1993,7 @@ namespace Mono.TextEditor
 				}
 				mouseSelectionMode = MouseSelectionMode.SingleChar;
 
-				if (textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset <= offset && offset < textEditor.SelectionRange.EndOffset && clickLocation != textEditor.Caret.Location) {
+				if (textEditor.IsSomethingSelected && IsInsideSelection (clickLocation) && clickLocation != textEditor.Caret.Location) {
 					inDrag = true;
 				} else {
 					if ((args.ModifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
@@ -2058,6 +2045,19 @@ namespace Mono.TextEditor
 				if (autoScroll)
 					textEditor.Caret.ActivateAutoScrollWithoutMove ();
 			}
+		}
+
+		bool IsInsideSelection (DocumentLocation clickLocation)
+		{
+			var selection = textEditor.MainSelection;
+			if (selection.SelectionMode == SelectionMode.Block) {
+				int minColumn = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
+				int maxColumn = System.Math.Max (selection.Anchor.Column, selection.Lead.Column);
+
+				return selection.MinLine <= clickLocation.Line && clickLocation.Line <= selection.MaxLine &&
+					minColumn <= clickLocation.Column && clickLocation.Column <= maxColumn;
+			}
+			return selection.Start <= clickLocation && clickLocation < selection.End;
 		}
 
 		protected internal override void MouseReleased (MarginMouseEventArgs args)
@@ -2644,6 +2644,8 @@ namespace Mono.TextEditor
 
 			// Check if line is beyond the document length
 			if (line == null) {
+				DrawScrollShadow (cr, x, y, _lineHeight);
+
 				var marker = Document.GetExtendingTextMarker (lineNr);
 				if (marker != null)
 					marker.Draw (textEditor, cr, lineNr, lineArea);
@@ -2855,17 +2857,22 @@ namespace Mono.TextEditor
 			}
 
 			lastLineRenderWidth = position;
+			DrawScrollShadow (cr, x, y, _lineHeight);
+			if (wrapper != null && wrapper.IsUncached)
+				wrapper.Dispose ();
+		}
+
+		void DrawScrollShadow (Cairo.Context cr, double x, double y, double _lineHeight)
+		{
 			if (textEditor.HAdjustment.Value > 0) {
 				cr.LineWidth = textEditor.Options.Zoom;
 				for (int i = 0; i < verticalShadowAlphaTable.Length; i++) {
-					cr.SetSourceRGBA (0, 0, 0, 1 - verticalShadowAlphaTable[i]);
+					cr.SetSourceRGBA (0, 0, 0, 1 - verticalShadowAlphaTable [i]);
 					cr.MoveTo (x + i * cr.LineWidth + 0.5, y);
 					cr.LineTo (x + i * cr.LineWidth + 0.5, y + 1 + _lineHeight);
 					cr.Stroke ();
 				}
 			}
-			if (wrapper != null && wrapper.IsUncached)
-				wrapper.Dispose ();
 		}
 
 		static double[] verticalShadowAlphaTable = new [] { 0.71, 0.84, 0.95 };

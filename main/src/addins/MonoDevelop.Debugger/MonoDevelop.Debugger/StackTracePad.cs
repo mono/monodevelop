@@ -64,6 +64,8 @@ namespace MonoDevelop.Debugger
 		IPadWindow window;
 		bool needsUpdate;
 
+		static Xwt.Drawing.Image pointerImage = Xwt.Drawing.Image.FromResource ("stack-pointer-light-16.png");
+
 		public StackTracePad ()
 		{
 			this.ShadowType = ShadowType.None;
@@ -78,7 +80,7 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.SelectAll);
 			menuSet.AddItem (EditCommands.Copy);
 			
-			store = new ListStore (typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (Pango.Style), typeof (object), typeof (int), typeof (bool));
+			store = new ListStore (typeof (bool), typeof (string), typeof (string), typeof (string), typeof (string), typeof (string), typeof (Pango.Style), typeof (object), typeof (int), typeof (bool));
 
 			tree = new PadTreeView (store);
 			tree.RulesHint = true;
@@ -93,7 +95,8 @@ namespace MonoDevelop.Debugger
 			var col = new TreeViewColumn ();
 			var crp = new CellRendererImage ();
 			col.PackStart (crp, false);
-			col.AddAttribute (crp, "stock_id", IconColumn);
+			crp.Image = pointerImage;
+			col.AddAttribute (crp, "visible", IconColumn);
 			tree.AppendColumn (col);
 			
 			col = new TreeViewColumn ();
@@ -135,9 +138,17 @@ namespace MonoDevelop.Debugger
 			ShowAll ();
 			UpdateDisplay ();
 			
-			DebuggingService.CallStackChanged += DispatchService.GuiDispatch (new EventHandler (OnClassStackChanged));
-			DebuggingService.CurrentFrameChanged += DispatchService.GuiDispatch (new EventHandler (OnFrameChanged));
+			DebuggingService.CallStackChanged += OnClassStackChanged;
+			DebuggingService.CurrentFrameChanged += OnFrameChanged;
+			DebuggingService.StoppedEvent += OnDebuggingServiceStopped;
+
 			tree.RowActivated += OnRowActivated;
+		}
+
+		void OnDebuggingServiceStopped(object sender, EventArgs e)
+		{
+			if (store != null)
+				store.Clear();
 		}
 
 		static bool Search (TreeModel model, int column, string key, TreeIter iter)
@@ -197,11 +208,7 @@ namespace MonoDevelop.Debugger
 			var backtrace = DebuggingService.CurrentCallStack;
 
 			for (int i = 0; i < backtrace.FrameCount; i++) {
-				string icon;
-				if (i == DebuggingService.CurrentFrameIndex)
-					icon = Gtk.Stock.GoForward;
-				else
-					icon = null;
+				bool icon = i == DebuggingService.CurrentFrameIndex;
 
 				StackFrame frame = backtrace.GetFrame (i);
 				if (frame.IsDebuggerHidden)
@@ -284,9 +291,9 @@ namespace MonoDevelop.Debugger
 				int frame = (int) store.GetValue (iter, FrameIndexColumn);
 
 				if (frame == DebuggingService.CurrentFrameIndex)
-					store.SetValue (iter, IconColumn, Gtk.Stock.GoForward);
+					store.SetValue (iter, IconColumn, true);
 				else
-					store.SetValue (iter, IconColumn, null);
+					store.SetValue (iter, IconColumn, false);
 			} while (store.IterNext (ref iter));
 		}
 
@@ -340,6 +347,7 @@ namespace MonoDevelop.Debugger
 			var options = DebuggingService.DebuggerSession.Options.EvaluationOptions.Clone ();
 			options.AllowMethodEvaluation = true;
 			options.AllowToStringCalls = true;
+			options.AllowTargetInvoke = true;
 
 			do {
 				if ((bool) store.GetValue (iter, CanRefreshColumn)) {
@@ -392,6 +400,14 @@ namespace MonoDevelop.Debugger
 			clipboard.Text = txt.ToString ();
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
 			clipboard.Text = txt.ToString ();
-		}		
+		}
+
+		protected override void OnDestroyed ()
+		{
+			DebuggingService.CallStackChanged -= OnClassStackChanged;
+			DebuggingService.CurrentFrameChanged -= OnFrameChanged;
+			DebuggingService.StoppedEvent -= OnDebuggingServiceStopped;
+			base.OnDestroyed ();
+		}
 	}
 }

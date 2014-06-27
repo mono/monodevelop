@@ -717,24 +717,6 @@ namespace Mono.TextEditor
 			}
 			list.Add (item);
 		}
-		
-		/// <summary>Map raw GTK key input to work around platform bugs and decompose accelerator keys</summary>
-		/// <param name='evt'>The raw key event</param>
-		/// <param name='key'>The decomposed accelerator key</param>
-		/// <param name='mod'>The decomposed accelerator modifiers</param>
-		/// <param name='keyval'>The fully mapped keyval</param>
-		[Obsolete ("Use MapKeys")]
-		public static void MapRawKeys (Gdk.EventKey evt, out Gdk.Key key, out Gdk.ModifierType mod, out uint keyval)
-		{
-			Gdk.Key mappedKey;
-			Gdk.ModifierType mappedMod;
-			KeyboardShortcut[] accels;
-			MapKeys (evt, out mappedKey, out mappedMod, out accels);
-			
-			keyval = (uint) mappedKey;
-			key = accels[0].Key;
-			mod = accels[0].Modifier;
-		}
 
 		[System.Runtime.InteropServices.DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gdk_win32_drawable_get_handle (IntPtr drawable);
@@ -1093,22 +1075,22 @@ namespace Mono.TextEditor
 		
 		static bool supportsHiResIcons = true;
 
-		[DllImport (PangoUtil.LIBQUARTZ)]
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtk_icon_source_set_scale (IntPtr source, double scale);
 		
-		[DllImport (PangoUtil.LIBQUARTZ)]
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtk_icon_source_set_scale_wildcarded (IntPtr source, bool setting);
 		
-		[DllImport (PangoUtil.LIBGTK)]
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
 		static extern double gtk_widget_get_scale_factor (IntPtr widget);
 		
-		[DllImport (PangoUtil.LIBGDK)]
+		[DllImport (PangoUtil.LIBGDK, CallingConvention = CallingConvention.Cdecl)]
 		static extern double gdk_screen_get_monitor_scale_factor (IntPtr widget, int monitor);
 
-		[DllImport (PangoUtil.LIBGOBJECT)]
+		[DllImport (PangoUtil.LIBGOBJECT, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr g_object_get_data (IntPtr source, string name);
 		
-		[DllImport (PangoUtil.LIBGTK)]
+		[DllImport (PangoUtil.LIBGTK, CallingConvention = CallingConvention.Cdecl)]
 		static extern IntPtr gtk_icon_set_render_icon_scaled (IntPtr handle, IntPtr style, int direction, int state, int size, IntPtr widget, IntPtr intPtr, ref double scale);
 
 		public static bool SetSourceScale (Gtk.IconSource source, double scale)
@@ -1189,6 +1171,19 @@ namespace Mono.TextEditor
 			}
 			supportsHiResIcons = false;
 			return 1;
+		}
+
+		public static double GetScaleFactor ()
+		{
+			return GetScaleFactor (Gdk.Screen.Default, 0);
+		}
+
+		public static double GetPixelScale ()
+		{
+			if (Platform.IsWindows)
+				return GetScaleFactor ();
+			else
+				return 1d;
 		}
 		
 		public static Gdk.Pixbuf RenderIcon (this Gtk.IconSet iconset, Gtk.Style style, Gtk.TextDirection direction, Gtk.StateType state, Gtk.IconSize size, Gtk.Widget widget, string detail, double scale)

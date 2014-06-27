@@ -12,24 +12,20 @@ namespace MonoDevelop.VersionControl
 		public static void Commit (Repository vc, ChangeSet changeSet)
 		{
 			try {
-				if (vc.GetVersionInfo (changeSet.BaseLocalPath).CanCommit) {
-					if (!VersionControlService.NotifyPrepareCommit (vc, changeSet))
-						return;
+				VersionControlService.NotifyPrepareCommit (vc, changeSet);
 
-					CommitDialog dlg = new CommitDialog (changeSet);
-					try {
-						if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
-							if (VersionControlService.NotifyBeforeCommit (vc, changeSet)) {
-								new CommitWorker (vc, changeSet, dlg).Start();
-								return;
-							}
+				CommitDialog dlg = new CommitDialog (changeSet);
+				try {
+					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+						VersionControlService.NotifyBeforeCommit (vc, changeSet);
+							new CommitWorker (vc, changeSet, dlg).Start();
+							return;
 						}
-						dlg.EndCommit (false);
-					} finally {
-						dlg.Destroy ();
-					}
-					VersionControlService.NotifyAfterCommit (vc, changeSet, false);
+					dlg.EndCommit (false);
+				} finally {
+					dlg.Destroy ();
 				}
+				VersionControlService.NotifyAfterCommit (vc, changeSet, false);
 			}
 			catch (Exception ex) {
 					MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
@@ -77,23 +73,15 @@ namespace MonoDevelop.VersionControl
 			protected override void Finished ()
 			{
 				dlg.EndCommit (success);
-				dlg.Dispose ();
-				VersionControlService.NotifyAfterCommit (vc, changeSet, success);
-				ArrayList dirs = new ArrayList ();
-				ArrayList files = new ArrayList ();
-				foreach (ChangeSetItem it in changeSet.Items)
-					if (it.IsDirectory) dirs.Add (it.LocalPath);
-					else files.Add (it.LocalPath);
-				
+				dlg.Destroy ();
 				FileUpdateEventArgs args = new FileUpdateEventArgs ();
-				
-				foreach (FilePath path in dirs)
-					args.Add (new FileUpdateEventInfo (vc, path, true));
-				foreach (FilePath path in files)
-					args.Add (new FileUpdateEventInfo (vc, path, false));
-				
+				foreach (ChangeSetItem it in changeSet.Items)
+					args.Add (new FileUpdateEventInfo (vc, it.LocalPath, it.IsDirectory));
+
 				if (args.Count > 0)
 					VersionControlService.NotifyFileStatusChanged (args);
+
+				VersionControlService.NotifyAfterCommit (vc, changeSet, success);
 			}
 		}
 	}

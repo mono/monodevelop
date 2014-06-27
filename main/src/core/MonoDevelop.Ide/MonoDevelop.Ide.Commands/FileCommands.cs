@@ -99,7 +99,7 @@ namespace MonoDevelop.Ide.Commands
 				IdeApp.Workspace.OpenWorkspaceItem (file, dlg.CloseCurrentWorkspace);
 			}
 			else
-				IdeApp.Workbench.OpenDocument (file, dlg.Encoding);
+				IdeApp.Workbench.OpenDocument (file, null, dlg.Encoding, OpenDocumentOptions.DefaultInternal);
 		}
 		
 	}

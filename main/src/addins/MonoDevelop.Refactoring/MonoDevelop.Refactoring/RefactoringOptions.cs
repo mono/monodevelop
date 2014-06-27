@@ -40,12 +40,13 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.Refactoring
 {
 	public class RefactoringOptions
 	{
-		readonly CSharpAstResolver resolver;
+		readonly Task<CSharpAstResolver> resolver;
 
 		public Document Document {
 			get;
@@ -79,7 +80,7 @@ namespace MonoDevelop.Refactoring
 				return new TextLocation (Document.Editor.CaretLine, Document.Editor.CaretColumn);
 			}
 		}
-		public readonly SyntaxTree Unit;
+		//public readonly SyntaxTree Unit;
 
 		public RefactoringOptions ()
 		{
@@ -92,8 +93,8 @@ namespace MonoDevelop.Refactoring
 				var sharedResolver = doc.GetSharedResolver ();
 				if (sharedResolver == null)
 					return;
-				resolver = sharedResolver.Result;
-				Unit = resolver != null ? resolver.RootNode as SyntaxTree : null;
+				resolver = sharedResolver;
+				//Unit = resolver != null ? resolver.RootNode as SyntaxTree : null;
 			}
 		}
 
@@ -188,7 +189,11 @@ namespace MonoDevelop.Refactoring
 		
 		public ResolveResult Resolve (AstNode node)
 		{
-			return resolver.Resolve (node);
+			if (!resolver.IsCompleted)
+				resolver.Wait (2000);
+			if (!resolver.IsCompleted)
+				return null;
+			return resolver.Result.Resolve (node);
 		}
 		
 		public AstType CreateShortType (IType fullType)

@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Parser
 
 			if (project != null) {
 				var projectFile = project.Files.GetFile (fileName);
-				if (projectFile != null && projectFile.BuildAction != BuildAction.Compile)
+				if (projectFile != null && !TypeSystemParserNode.IsCompileBuildAction (projectFile.BuildAction))
 					result.Flags |= ParsedDocumentFlags.NonSerializable;
 			}
 
@@ -84,7 +84,8 @@ namespace MonoDevelop.CSharp.Parser
 			result.ParsedFile = pf;
 			result.Add (GetSemanticTags (unit));
 
-			result.CreateRefactoringContext = (doc, token) => MDRefactoringContext.Create (doc, doc.Editor.CaretLocation, token);
+
+			result.CreateRefactoringContext = (doc, token) => MDRefactoringContext.Create (doc, doc.Editor.CaretLocation, token).Result;
 			result.CreateRefactoringContextWithEditor = (data, resolver, token) => new MDRefactoringContext ((DotNetProject)project, data, result, (CSharpAstResolver)resolver, TextLocation.Empty, token);
 
 			if (storeAst) {

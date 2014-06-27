@@ -1,0 +1,4 @@
+
+SUBDIRS = \
+	Core \
+	Shell

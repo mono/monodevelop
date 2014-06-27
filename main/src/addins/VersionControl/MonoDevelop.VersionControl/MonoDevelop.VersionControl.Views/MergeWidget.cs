@@ -116,19 +116,29 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		// todo: move to version control backend
+		const string conflictStart = "<<<<<<<";
+		const string conflictDivider = "=======";
+		const string conflictEnd = ">>>>>>>";
+
 		static IEnumerable<Conflict> Conflicts (TextDocument doc)
 		{
-			int mergeStart = 0;
-			while ((mergeStart = doc.IndexOf ("<<<<<<<", mergeStart, doc.TextLength - mergeStart, StringComparison.Ordinal)) >= 0) {
-				DocumentLine start = doc.GetLineByOffset (mergeStart);
-				if (start.Offset != mergeStart)
-					continue;
-				int dividerOffset = doc.IndexOf ("=======", mergeStart, doc.TextLength - mergeStart, StringComparison.Ordinal);
-				DocumentLine divider = doc.GetLineByOffset (dividerOffset);
+			var startLines = new List<DocumentLine> ();
+			var dividerLines = new List<DocumentLine> ();
+			var endLines = new List<DocumentLine> ();
+			foreach (var line in doc.Lines) {
+				int len = Math.Min (7, line.Length); 
+				if (doc.IndexOf (conflictStart, line.Offset, len, StringComparison.Ordinal) >= 0)
+					startLines.Add (line);
+				else if (doc.IndexOf (conflictDivider, line.Offset, len, StringComparison.Ordinal) >= 0)
+					dividerLines.Add (line);
+				else if (doc.IndexOf (conflictEnd, line.Offset, len, StringComparison.Ordinal) >= 0)
+					endLines.Add (line);
+			}
 
-				int endOffset = doc.IndexOf (">>>>>>>", dividerOffset, doc.TextLength - dividerOffset, StringComparison.Ordinal);
-				DocumentLine end = doc.GetLineByOffset (endOffset);
-				mergeStart = dividerOffset + 1;
+			for (int i = 0; i < startLines.Count; ++i) {
+				var start = startLines [i];
+				var divider = dividerLines [i];
+				var end = endLines [i];
 
 				yield return new Conflict (new TextSegment (start.EndOffsetIncludingDelimiter, divider.Offset - start.EndOffsetIncludingDelimiter),
 					new TextSegment (divider.EndOffsetIncludingDelimiter, end.Offset - divider.EndOffsetIncludingDelimiter),

@@ -126,6 +126,7 @@ namespace MonoDevelop.Components.MainToolbar
 				// There is no startup project, just use all solution configurations in this case
 				var p = new TargetPartition ();
 				p.SolutionConfigurations.AddRange (sol.GetConfigurations ());
+				partitions.Add (p);
 			}
 
 			// There can be several configurations with the same prefix and different platform but which build the same projects.
@@ -185,7 +186,8 @@ namespace MonoDevelop.Components.MainToolbar
 					if (first != null)
 						return first;
 				} else if (!(target is DummyExecutionTarget)) {
-					return target;
+					if (target.Enabled)
+						return target;
 				}
 			}
 

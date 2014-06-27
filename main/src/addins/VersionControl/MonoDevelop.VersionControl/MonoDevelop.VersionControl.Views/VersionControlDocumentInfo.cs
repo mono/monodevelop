@@ -50,7 +50,8 @@ namespace MonoDevelop.VersionControl.Views
 			get;
 			set;
 		}
-		
+
+		[Obsolete ("Use Item.VersionInfo instead of this.")]
 		public VersionInfo VersionInfo {
 			get;
 			set;
@@ -89,23 +90,30 @@ namespace MonoDevelop.VersionControl.Views
 					DispatchService.GuiDispatch (delegate {
 						OnUpdated (EventArgs.Empty);
 					});
-					isUpdated = true;
+					mre.Set ();
 				}
 			});
 		}
-		
+
 		object updateLock = new object ();
-		bool isUpdated = false;
-		
+		ManualResetEvent mre = new ManualResetEvent (false);
+
+		// Runs an action in the GUI thread.
 		public void RunAfterUpdate (Action act) 
 		{
-			if (isUpdated) {
+			if (mre == null) {
 				act ();
 				return;
 			}
-			while (!isUpdated)
-				Thread.Sleep (10);
-			act ();
+
+			ThreadPool.QueueUserWorkItem (delegate {
+				mre.WaitOne ();
+				mre.Dispose ();
+				mre = null;
+				DispatchService.GuiDispatch (delegate {
+					act ();
+				});
+			});
 		}
 		
 		protected virtual void OnUpdated (EventArgs e)

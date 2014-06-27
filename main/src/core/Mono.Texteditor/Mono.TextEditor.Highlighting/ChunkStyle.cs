@@ -54,48 +54,9 @@ namespace Mono.TextEditor.Highlighting
 			}
 		}
 
-		[Obsolete("Will be removed - use FontWeight")]
-		public TextWeight Weight { 
-			get { 
-				TextWeight weight = TextWeight.None;
-				if (FontWeight == FontWeight.Bold)
-					weight |= TextWeight.Bold;
-				if (FontStyle == FontStyle.Italic)
-					weight |= TextWeight.Italic;
-				return weight;
-			} 
-			set {
-				if (value.HasFlag (TextWeight.Bold)) {
-					FontWeight = FontWeight.Bold;
-				} else {
-					FontWeight = FontWeight.Normal;
-				}
-
-				if (value.HasFlag (TextWeight.Italic)) {
-					FontStyle = FontStyle.Italic;
-				} else {
-					FontStyle = FontStyle.Normal;
-				}
-			}
-		}
-
 		public FontWeight FontWeight { get; set; }
 
 		public FontStyle FontStyle { get; set; }
-
-		[Obsolete("Will be removed - use FontWeight")]
-		public bool Bold {
-			get {
-				return FontWeight == FontWeight.Bold;
-			}
-		}
-		
-		[Obsolete("Will be removed - use FontStyle")]
-		public bool Italic {
-			get {
-				return FontStyle == FontStyle.Italic;
-			}
-		}
 		
 		public bool Underline {
 			get; set;

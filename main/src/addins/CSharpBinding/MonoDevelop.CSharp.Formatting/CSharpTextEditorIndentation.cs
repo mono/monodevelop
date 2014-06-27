@@ -131,6 +131,7 @@ namespace MonoDevelop.CSharp.Formatting
 				IdeApp.Workspace.ActiveConfigurationChanged += HandleTextOptionsChanged;
 		}
 
+		bool indentationDisabled;
 
 		void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
@@ -156,7 +157,8 @@ namespace MonoDevelop.CSharp.Formatting
 				((IInternalEditorExtensions)Editor).SetIndentationTracker (new IndentVirtualSpaceManager (Editor, stateTracker));
 			}
 
-			if (Editor.Options.IndentStyle == IndentStyle.Auto || Editor.Options.IndentStyle == IndentStyle.None) {
+			indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
+			if (indentationDisabled) {
 				((IInternalEditorExtensions)Editor).SetTextPasteHandler (null);
 			} else {
 				((IInternalEditorExtensions)Editor).SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, options, policy));
@@ -368,7 +370,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (keyChar == ';' && Editor.EditMode == EditMode.Edit && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get (
 				    "SmartSemicolonPlacement",
 				    false
-			    )) {
+			    ) && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 				bool retval = base.KeyPress (key, keyChar, modifier);
 				var curLine = Editor.GetLine (Editor.CaretLine);
 				string text = Editor.GetTextAt (curLine);
@@ -424,7 +426,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 
 			//do the smart indent
-			if (Editor.Options.IndentStyle == IndentStyle.Smart || Editor.Options.IndentStyle == IndentStyle.Virtual) {
+			if (!indentationDisabled) {
 				bool retval;
 				//capture some of the current state
 				int oldBufLen = Editor.Length;
@@ -465,7 +467,8 @@ namespace MonoDevelop.CSharp.Formatting
 					//inserted rather than just updating the stack due to moving around
 
 					SafeUpdateIndentEngine (Editor.CaretOffset);
-					automaticReindent = (stateTracker.NeedsReindent && lastCharInserted != '\0');
+					// Automatically reindent in text link mode will cause the mode exiting, therefore we need to prevent that.
+					automaticReindent = (stateTracker.NeedsReindent && lastCharInserted != '\0') && !(textEditorData.CurrentMode is TextLinkEditMode);
 					if (key == Gdk.Key.Return && (reIndent || automaticReindent)) {
 						if (Editor.Options.IndentStyle == IndentStyle.Virtual) {
 							if (Editor.GetLine (Editor.CaretLine).Length == 0)
@@ -476,12 +479,14 @@ namespace MonoDevelop.CSharp.Formatting
 					}
 				}
 
-				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent) {
-					using (var undo = Editor.OpenUndoGroup ()) {
+				const string reindentChars = ";){}";
+				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent && reindentChars.Contains (keyChar)) {
+					using (var undo = textEditorData.OpenUndoGroup ()) {
 						DoReSmartIndent ();
 					}
 				}
-				if (!skipFormatting) {
+
+				if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
 					if (keyChar == ';' || keyChar == '}') {
 						using (var undo = Editor.OpenUndoGroup ()) {
 							if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
@@ -508,7 +513,7 @@ namespace MonoDevelop.CSharp.Formatting
 			//and calls HandleCodeCompletion etc to handles completion
 			var result = base.KeyPress (key, keyChar, modifier);
 
-			if (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter) {
+			if (!indentationDisabled && (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter)) {
 				DoReSmartIndent ();
 			}
 

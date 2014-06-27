@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Templates
 {
 	public abstract class ProjectTemplatePackageInstaller
 	{
-		public abstract void Run(IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects);
+		public abstract void Run (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects);
 	}
 }
 

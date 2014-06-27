@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SolutionConfigurationEntry ce = null;
 			bool noMapping = conf == null || (ce = conf.GetEntryForItem (p)) == null;
 			bool missingConfig = false;
-			if (noMapping || !ce.Build || (missingConfig = p.Configurations [ce.ItemConfiguration] == null)) {
+			if (p.SupportsBuild () && (noMapping || !ce.Build || (missingConfig = p.Configurations [ce.ItemConfiguration] == null))) {
 				var ticon = Context.GetComposedIcon (nodeInfo.Icon, "project-no-build");
 				if (ticon == null)
 					ticon = Context.CacheComposedIcon (nodeInfo.Icon, "project-no-build", nodeInfo.Icon.WithAlpha (0.5));
@@ -366,6 +366,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.ProjectOperations.ShowOptions (project);
 		}
 		
+		[CommandUpdateHandler (ProjectCommands.SetAsStartupProject)]
+		public void UpdateSetAsStartupProject (CommandInfo ci)
+		{
+			Project project = (Project) CurrentNode.DataItem;
+			ci.Visible = project.CanExecute (new ExecutionContext (Runtime.ProcessService.DefaultExecutionHandler, null, IdeApp.Workspace.ActiveExecutionTarget), IdeApp.Workspace.ActiveConfiguration);
+		}
+
 		[CommandHandler (ProjectCommands.SetAsStartupProject)]
 		public void SetAsStartupProject ()
 		{

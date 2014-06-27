@@ -6,7 +6,7 @@ using Mono.Addins.Description;
 [assembly:Addin ("ChangeLogAddIn", 
         Namespace = "MonoDevelop",
         Version = MonoDevelop.BuildInfo.Version,
-        Flags = AddinFlags.Hidden,
+        EnabledByDefault = false,
         Category = "Version Control")]
 
 [assembly:AddinName ("ChangeLog Add-in")]

@@ -56,6 +56,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		
 		static DataContext dataContext;
 		
+		static IMSBuildGlobalPropertyProvider[] globalPropertyProviders;
 		static Dictionary<string,RemoteBuildEngine> builders = new Dictionary<string, RemoteBuildEngine> ();
 		static GenericItemTypeNode genericItemTypeNode = new GenericItemTypeNode ();
 
@@ -91,6 +92,21 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				ShutDown = true;
 				CleanProjectBuilders ();
 			};
+
+			const string gppPath = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders";
+			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (gppPath);
+			foreach (var gpp in globalPropertyProviders) {
+				gpp.GlobalPropertiesChanged += HandleGlobalPropertyProviderChanged;
+			}
+		}
+
+		static void HandleGlobalPropertyProviderChanged (object sender, EventArgs e)
+		{
+			lock (builders) {
+				var gpp = (IMSBuildGlobalPropertyProvider) sender;
+				foreach (var builder in builders.Values)
+					builder.SetGlobalProperties (gpp.GetGlobalProperties ());
+			}
 		}
 
 		static void HandlePropertyChanged (object sender, PropertyChangedEventArgs e)
@@ -486,7 +502,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			return true;
 		}
 		
-		public static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
+		internal static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
 		{
 			lock (builders) {
 				//attempt to use 12.0 builder first if available
@@ -534,12 +550,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				try {
 					p = runtime.ExecuteAssembly (pinfo);
 					p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-					string sref = p.StandardError.ReadLine ();
+					string responseKey = "[MonoDevelop]";
+					string sref;
+					while (true) {
+						sref = p.StandardError.ReadLine ();
+						if (sref.StartsWith (responseKey, StringComparison.Ordinal)) {
+							sref = sref.Substring (responseKey.Length);
+							break;
+						}
+					}
 					byte[] data = Convert.FromBase64String (sref);
 					MemoryStream ms = new MemoryStream (data);
 					BinaryFormatter bf = new BinaryFormatter ();
 					var engine = (IBuildEngine)bf.Deserialize (ms);
-					engine.Initialize (solutionFile, GettextCatalog.UICulture);
+					engine.SetCulture (GettextCatalog.UICulture);
+					engine.SetGlobalProperties (GetCoreGlobalProperties (solutionFile));
+					foreach (var gpp in globalPropertyProviders)
+						builder.SetGlobalProperties (gpp.GetGlobalProperties ());
 					builder = new RemoteBuildEngine (p, engine);
 				} catch {
 					if (p != null) {
@@ -554,6 +581,29 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				builder.ReferenceCount = 1;
 				return new RemoteProjectBuilder (file, builder);
 			}
+		}
+
+		static IDictionary<string,string> GetCoreGlobalProperties (string slnFile)
+		{
+			var dictionary = new Dictionary<string,string> ();
+
+			//this causes build targets to behave how they should inside an IDE, instead of in a command-line process
+			dictionary.Add ("BuildingInsideVisualStudio", "true");
+
+			//we don't have host compilers in MD, and this is set to true by some of the MS targets
+			//which causes it to always run the CoreCompile task if BuildingInsideVisualStudio is also
+			//true, because the VS in-process compiler would take care of the deps tracking
+			dictionary.Add ("UseHostCompilerIfAvailable", "false" );
+
+			if (string.IsNullOrEmpty (slnFile))
+				return dictionary;
+
+			dictionary.Add ("SolutionPath", Path.GetFullPath (slnFile));
+			dictionary.Add ("SolutionName", Path.GetFileNameWithoutExtension (slnFile));
+			dictionary.Add ("SolutionFilename", Path.GetFileName (slnFile));
+			dictionary.Add ("SolutionDir", Path.GetDirectoryName (slnFile) + Path.DirectorySeparatorChar);
+
+			return dictionary;;
 		}
 		
 		static string GetExeLocation (TargetRuntime runtime, string toolsVersion)

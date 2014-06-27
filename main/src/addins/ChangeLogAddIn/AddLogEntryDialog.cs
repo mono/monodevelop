@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.ChangeLogAddIn
 {
@@ -46,8 +47,7 @@ namespace MonoDevelop.ChangeLogAddIn
 		{
 			Build ();
 			
-			Pango.FontDescription font = Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont);
-			textview.ModifyFont (font);
+			textview.ModifyFont (FontService.MonospaceFont);
 			textview.WrapMode = WrapMode.None;
 			textview.AcceptsTab = true;
 			Pango.TabArray tabs = new Pango.TabArray (1, true);
@@ -56,7 +56,6 @@ namespace MonoDevelop.ChangeLogAddIn
 			textview.SizeRequested += delegate {
 				textview.WidthRequest = GetStringWidth (String.Empty.PadRight (80));
 			};
-			font.Dispose ();
 			
 			store = new ListStore (typeof(ChangeLogEntry), typeof(Xwt.Drawing.Image), typeof(string));
 			fileList.Model = store;

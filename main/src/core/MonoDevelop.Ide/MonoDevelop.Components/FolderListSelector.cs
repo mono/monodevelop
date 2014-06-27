@@ -46,6 +46,7 @@ namespace MonoDevelop.Components
 			dirList.Selection.Changed += delegate {
 				UpdateStatus ();
 			};
+			UpdateStatus ();
 		}
 		
 		public List<string> Directories {
@@ -132,7 +133,7 @@ namespace MonoDevelop.Components
 			TreeIter it;
 			dirList.Selection.GetSelected (out it);
 			string dir = (string) store.GetValue (it, 0);
-			int i = directories.IndexOf (dir);
+			int i = store.GetPath (it).Indices [0];
 			string prevDir = directories [i - 1];
 			TreeIter pi;
 			store.IterNthChild (out pi, i - 1);

@@ -51,6 +51,7 @@ app: monostub
 	@echo "Copying MonoDevelop into app bundle"
 	@echo ""
 	cp -pR ../AddIns $(MAC_APP_LIB_DIR)
+	cp -pR ../../external/fsharpbinding/monodevelop/bin/mac-linux/Debug $(MAC_APP_LIB_DIR)/AddIns/fsharpbinding
 	cp -pR ../data $(MAC_APP_LIB_DIR)
 	cp -pR ../bin $(MAC_APP_LIB_DIR)
 	cp -pR ../locale $(MAC_APP_DIR)/Contents/MacOS/share

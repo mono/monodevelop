@@ -27,38 +27,22 @@ using System;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using NUnit.Framework;
-using System.IO;
 using System.Text;
+using UnitTests;
 
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
 	public class ProjectTemplateTests : TestBase
 	{
-		string TempDir {
-			get; set;
-		}
-
-		public override void Setup ()
-		{
-			base.Setup ();
-			var currentDir = Path.GetDirectoryName (typeof(ProjectTemplateTests).Assembly.Location);
-			TempDir = Path.GetFullPath (Path.Combine (currentDir, "TempDirForTests"));
-		}
-
-		public override void Teardown ()
-		{
-			base.Teardown ();
-			try { Directory.Delete (TempDir, true); } catch { }
-		}
-
 		[Test]
 		[Ignore]
 		public void CreateGtkSharpProjectTemplate ()
 		{
-			// This test is a placeholder to remind us that Gtk# project creationg is untested because
-			// we cannot reliably start/shutdown XS as part of the test suite. We hit may differnt kinds
-			// of race condition once we initialize the ide services.
+			// This test is a placeholder to remind us that Gtk# project creation is untested.
+			//
+			// The GTK# template uses stetic which depends on the IdeApp being initialized, but we cannot
+			// reliably start/shutdown XS as part of the test suite.
 		}
 
 		[Test]
@@ -68,18 +52,23 @@ namespace MonoDevelop.Ide
 			foreach (var template in ProjectTemplate.ProjectTemplates) {
 				if (template.Name.Contains ("Gtk#"))
 					continue;
-
 				try {
-					try { Directory.Delete (TempDir, true); } catch { }
+					var dir = Util.CreateTmpDir (template.Id);
 					var cinfo = new ProjectCreateInformation {
-						ProjectBasePath = TempDir,
-						ProjectName =  "ProjectName",
-						SolutionName =  "SolutionName",
-						SolutionPath = TempDir
+						ProjectBasePath = dir,
+						ProjectName = "ProjectName",
+						SolutionName = "SolutionName",
+						SolutionPath = dir
 					};
 					template.CreateWorkspaceItem (cinfo);
-				} catch {
-					builder.AppendFormat ("Could not create a project from the template '{0} / {1}'", template.Category, template.Name);
+				} catch (Exception ex) {
+					builder.AppendFormat (
+						"Could not create a project from the template '{0} / {1}': {2}",
+						template.Category, template.Name, ex
+					);
+					builder.AppendLine ();
+					builder.AppendLine ();
+					builder.AppendLine (ex.ToString ());
 					builder.AppendLine ();
 				}
 			}

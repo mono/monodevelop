@@ -41,9 +41,11 @@ namespace MonoDevelop.CSharp
 	{
 		protected override void Run ()
 		{
-			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-			CSharpParser parser = new CSharpParser ();
-			var unit = parser.Parse (doc.Editor);
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return;
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
 			var node = unit.GetNodeAt (doc.Editor.CaretLocation);
@@ -71,15 +73,17 @@ namespace MonoDevelop.CSharp
 
 		protected override void Run ()
 		{
-			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
-			CSharpParser parser = new CSharpParser ();
-			var unit = parser.Parse (doc.Editor);
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return;
+			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
 			var node = unit.GetNodeAt (doc.Editor.CaretLine, doc.Editor.CaretColumn);
 			if (node == null)
 				return;
-			Stack<AstNode > nodeStack = new Stack<AstNode> ();
+			var nodeStack = new Stack<AstNode> ();
 			nodeStack.Push (node);
 			if (doc.Editor.IsSomethingSelected) {
 				while (node != null && IsSelected (doc.Editor, node.StartLocation, node.EndLocation)) {

@@ -1,5 +1,5 @@
 //
-// TextEditor.cs
+// TextArea.cs
 //
 // Author:
 //   Mike Krüger <mkrueger@novell.com>
@@ -202,8 +202,8 @@ namespace Mono.TextEditor
 			HideTooltip (false);
 			double value = this.textEditorData.HAdjustment.Value;
 			if (value != System.Math.Round (value)) {
-				this.textEditorData.HAdjustment.Value = System.Math.Round (value);
-				return;
+				value = System.Math.Round (value);
+				this.textEditorData.HAdjustment.Value = value;
 			}
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			QueueDrawArea ((int)this.textViewMargin.XOffset, 0, this.Allocation.Width - (int)this.textViewMargin.XOffset, this.Allocation.Height);
@@ -226,8 +226,8 @@ namespace Mono.TextEditor
 			textViewMargin.HideCodeSegmentPreviewWindow ();
 			double value = this.textEditorData.VAdjustment.Value;
 			if (value != System.Math.Round (value)) {
-				this.textEditorData.VAdjustment.Value = System.Math.Round (value);
-				return;
+				value = System.Math.Round (value);
+				this.textEditorData.VAdjustment.Value = value;
 			}
 			if (isMouseTrapped)
 				FireMotionEvent (mx + textViewMargin.XOffset, my, lastState);
@@ -800,24 +800,6 @@ namespace Mono.TextEditor
 			longestLine = null;
 
 			base.OnDestroyed ();
-		}
-		
-		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
-		public void ClearTooltipProviders ()
-		{
-			textEditorData.ClearTooltipProviders ();
-		}
-		
-		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
-		public void AddTooltipProvider (TooltipProvider provider)
-		{
-			textEditorData.AddTooltipProvider (provider);
-		}
-		
-		[Obsolete("This method has been moved to TextEditorData. Will be removed in future versions.")]
-		public void RemoveTooltipProvider (TooltipProvider provider)
-		{
-			textEditorData.RemoveTooltipProvider (provider);
 		}
 
 		public void RedrawMargin (Margin margin)
@@ -1718,7 +1700,7 @@ namespace Mono.TextEditor
 			if (this.textEditorData.VAdjustment != null) {
 				double maxY = textEditorData.HeightTree.TotalHeight;
 				//				if (maxY > allocation.Height)
-				maxY += allocation.Height - LineHeight;
+				maxY += allocation.Height / 2 - LineHeight;
 
 				foreach (var containerChild in editor.containerChildren.Concat (containerChildren)) {
 					maxY = System.Math.Max (maxY, containerChild.Y + containerChild.Child.SizeRequest().Height);
@@ -1865,9 +1847,6 @@ namespace Mono.TextEditor
 				foreach (Animation animation in actors) {
 					animation.Drawer.Draw (cr);
 				}
-				
-				if (HasFocus)
-					textViewMargin.DrawCaret (e.Window, e.Area);
 				
 				OnPainted (new PaintEventArgs (cr, cairoArea));
 			}
@@ -2647,11 +2626,6 @@ namespace Mono.TextEditor
 		#endregion
 	
 		#region Tooltips
-		[Obsolete("This property has been moved to TextEditorData.  Will be removed in future versions.")]
-		public IEnumerable<TooltipProvider> TooltipProviders {
-			get { return textEditorData.TooltipProviders; }
-		}
-
 		// Tooltip fields
 		const int TooltipTimeout = 650;
 		TooltipItem tipItem;
@@ -2803,6 +2777,7 @@ namespace Mono.TextEditor
 				}
 				tipWindow.Destroy ();
 				tipWindow = null;
+				tipItem = null;
 			}
 		}
 		
@@ -2838,16 +2813,9 @@ namespace Mono.TextEditor
 		
 		void OnTextSet (object sender, EventArgs e)
 		{
-			DocumentLine longest = longestLine;
-			foreach (DocumentLine line in Document.Lines) {
-				if (longest == null || line.Length > longest.Length)
-					longest = line;
-			}
-			if (longest != longestLine) {
-				var layoutWrapper = textViewMargin.GetLayout (longest);
-				int width = (int)(layoutWrapper.Width);
-				if (layoutWrapper.IsUncached)
-					layoutWrapper.Dispose ();
+			DocumentLine longest = Document.longestLineAtTextSet;
+			if (longest != longestLine && longest != null) {
+				int width = (int)(longest.Length * textViewMargin.CharWidth);
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;
 					this.longestLine = longest;

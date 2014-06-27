@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
 {
@@ -49,8 +50,9 @@ namespace MonoDevelop.Projects
 			this.loadError = loadError;
 		}
 
-		public override string ProjectType {
-			get { return ""; }
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "";
 		}
 
 		public override FilePath FileName {
@@ -84,6 +86,12 @@ namespace MonoDevelop.Projects
 					return GettextCatalog.GetString ("Unknown entry");
 			}
 			set { }
+		}
+
+		internal protected override bool OnGetSupportsTarget (string target)
+		{
+			// We can't do anything with unsupported projects, other than display them in the solution pad
+			return false;
 		}
 
 		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)

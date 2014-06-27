@@ -398,7 +398,7 @@ namespace MonoDevelop.Components.PropertyGrid
 					Pango.CairoHelper.ShowLayout (ctx, layout);
 
 					var img = r.Expanded ? discloseUp : discloseDown;
-					ctx.DrawImage (this, img, Allocation.Width - img.Width - CategoryTopBottomPadding, y + (rh - img.Height) / 2);
+					ctx.DrawImage (this, img, Allocation.Width - img.Width - CategoryTopBottomPadding, y + Math.Round ((rh - img.Height) / 2));
 
 					y += rh;
 					lastCategory = r;

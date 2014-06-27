@@ -78,6 +78,7 @@ namespace MonoDevelop.SourceEditor
 		int lastDebugLine = -1;
 		BreakpointStore breakpoints;
 		EventHandler currentFrameChanged;
+		EventHandler executionLocationChanged;
 		EventHandler<BreakpointEventArgs> breakpointAdded;
 		EventHandler<BreakpointEventArgs> breakpointRemoved;
 		EventHandler<BreakpointEventArgs> breakpointStatusChanged;
@@ -193,6 +194,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			Counters.LoadedEditors++;
 			currentFrameChanged = (EventHandler)DispatchService.GuiDispatch (new EventHandler (OnCurrentFrameChanged));
+			executionLocationChanged = (EventHandler)DispatchService.GuiDispatch (new EventHandler (OnExecutionLocationChanged));
 			breakpointAdded = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointAdded));
 			breakpointRemoved = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointRemoved));
 			breakpointStatusChanged = (EventHandler<BreakpointEventArgs>)DispatchService.GuiDispatch (new EventHandler<BreakpointEventArgs> (OnBreakpointStatusChanged));
@@ -245,6 +247,7 @@ namespace MonoDevelop.SourceEditor
 
 			breakpoints = DebuggingService.Breakpoints;
 			DebuggingService.DebugSessionStarted += OnDebugSessionStarted;
+			DebuggingService.ExecutionLocationChanged += executionLocationChanged;
 			DebuggingService.CurrentFrameChanged += currentFrameChanged;
 			DebuggingService.StoppedEvent += currentFrameChanged;
 			DebuggingService.ResumedEvent += currentFrameChanged;
@@ -1024,6 +1027,7 @@ namespace MonoDevelop.SourceEditor
 			TextEditorService.FileExtensionAdded -= HandleFileExtensionAdded;
 			TextEditorService.FileExtensionRemoved -= HandleFileExtensionRemoved;
 
+			DebuggingService.ExecutionLocationChanged -= executionLocationChanged;
 			DebuggingService.DebugSessionStarted -= OnDebugSessionStarted;
 			DebuggingService.CurrentFrameChanged -= currentFrameChanged;
 			DebuggingService.StoppedEvent -= currentFrameChanged;
@@ -1045,7 +1049,8 @@ namespace MonoDevelop.SourceEditor
 			
 			debugStackLineMarker = null;
 			currentDebugLineMarker = null;
-			
+
+			executionLocationChanged = null;
 			currentFrameChanged = null;
 			breakpointAdded = null;
 			breakpointRemoved = null;
@@ -1116,17 +1121,23 @@ namespace MonoDevelop.SourceEditor
 			if (!DebuggingService.IsDebugging)
 				UpdatePinnedWatches ();
 		}
+
+		void OnExecutionLocationChanged (object s, EventArgs args)
+		{
+			UpdateExecutionLocation ();
+		}
 		
 		void UpdateExecutionLocation ()
 		{
-			if (DebuggingService.IsDebugging && !DebuggingService.IsRunning) {
-				var frame = CheckFrameIsInFile (DebuggingService.CurrentFrame)
+			if (DebuggingService.IsPaused) {
+				var location = CheckLocationIsInFile (DebuggingService.NextStatementLocation)
+					?? CheckFrameIsInFile (DebuggingService.CurrentFrame)
 					?? CheckFrameIsInFile (DebuggingService.GetCurrentVisibleFrame ());
-				if (frame != null) {
-					if (lastDebugLine == frame.SourceLocation.Line)
+				if (location != null) {
+					if (lastDebugLine == location.Line)
 						return;
 					RemoveDebugMarkers ();
-					lastDebugLine = frame.SourceLocation.Line;
+					lastDebugLine = location.Line;
 					var segment = widget.TextEditor.Document.GetLine (lastDebugLine);
 					if (segment != null) {
 						if (DebuggingService.CurrentFrameIndex == 0) {
@@ -1148,15 +1159,20 @@ namespace MonoDevelop.SourceEditor
 				widget.TextEditor.QueueDraw ();
 			}
 		}
-		
-		StackFrame CheckFrameIsInFile (StackFrame frame)
+
+		SourceLocation CheckLocationIsInFile (SourceLocation location)
 		{
-			if (!string.IsNullOrEmpty (ContentName) && frame != null && !string.IsNullOrEmpty (frame.SourceLocation.FileName)
-				&& ((FilePath)frame.SourceLocation.FileName).FullPath == ((FilePath)ContentName).FullPath)
-				return frame;
+			if (!string.IsNullOrEmpty (ContentName) && location != null && !string.IsNullOrEmpty (location.FileName)
+				&& ((FilePath)location.FileName).FullPath == ((FilePath)ContentName).FullPath)
+				return location;
 			return null;
 		}
 		
+		SourceLocation CheckFrameIsInFile (StackFrame frame)
+		{
+			return frame != null ? CheckLocationIsInFile (frame.SourceLocation) : null;
+		}
+
 		void RemoveDebugMarkers ()
 		{
 			if (currentLineSegment != null) {
@@ -1574,8 +1590,9 @@ namespace MonoDevelop.SourceEditor
 				return widget.TextEditor.Document.Text;
 			}
 			set {
-				IsDirty = true;
-				widget.TextEditor.Document.Text = value;
+				this.IsDirty = true;
+				var document = this.widget.TextEditor.Document;
+				document.Replace (0, document.TextLength, value);
 			}
 		}
 		

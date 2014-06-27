@@ -120,8 +120,6 @@ namespace Stetic.Metacity {
 			Dispose();
 		}
 
-		[Obsolete]
-		protected Preview(GLib.GType gtype) : base(gtype) {}
 		public Preview(IntPtr raw) : base(raw) {}
 
 		[DllImport(LIBMETACITY)]

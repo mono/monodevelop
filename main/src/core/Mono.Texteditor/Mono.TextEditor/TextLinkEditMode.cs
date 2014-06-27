@@ -341,9 +341,8 @@ namespace Mono.TextEditor
 			wasReplaced = true;
 			int offset = e.Offset - baseOffset;
 			int delta = e.ChangeDelta;
-			if (!IsInUpdate && !links.Where (link => link.Links.Where (segment => segment.Contains (offset)
-				|| segment.EndOffset == offset).
-				Any ()).Any ()) {
+			if (!IsInUpdate && !links.Any (link => link.Links.Any (segment => segment.Contains (offset)
+				|| segment.EndOffset == offset))) {
 				SetCaretPosition = false;
 				ExitTextLinkMode ();
 				return;

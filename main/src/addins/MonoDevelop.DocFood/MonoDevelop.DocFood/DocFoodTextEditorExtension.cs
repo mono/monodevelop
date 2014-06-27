@@ -1,6 +1,6 @@
 // 
 // TextEditorExtension.cs
-//  
+//  =
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -33,6 +33,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Linq;
 
 namespace MonoDevelop.DocFood
 {
@@ -180,11 +181,18 @@ namespace MonoDevelop.DocFood
 				return null;
 			}
 			
-			IMember result = null;
+			IEntity result = null;
 			foreach (var member in type.Members) {
 				if (member.Region.Begin > new TextLocation (textEditorData.CaretLine, textEditorData.CaretColumn) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.CaretLine, member.Region.BeginLine)) {
 					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
 					result = member.CreateResolved (ctx);
+				}
+			}
+
+			foreach (var member in type.NestedTypes) {
+				if (member.Region.Begin > new TextLocation (textEditorData.Caret.Line, textEditorData.Caret.Column) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.Caret.Line, member.Region.BeginLine)) {
+					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
+					result = member.Resolve (ctx).GetDefinition ();
 				}
 			}
 			return result;

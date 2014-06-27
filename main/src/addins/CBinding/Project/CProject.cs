@@ -176,11 +176,12 @@ namespace CBinding
 				}
 			}			
 		}
-		
-		public override string ProjectType {
-			get { return "Native"; }
+
+		public override IEnumerable<string> GetProjectTypes ()
+		{
+			yield return "Native";
 		}
-		
+
 		public override string[] SupportedLanguages {
 			get { return new string[] { "C", "CPP", "Objective C", "Objective C++" }; }
 		}

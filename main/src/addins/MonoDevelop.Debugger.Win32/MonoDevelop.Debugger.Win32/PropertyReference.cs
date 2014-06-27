@@ -29,6 +29,7 @@ using System.Reflection;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using Microsoft.Samples.Debugging.CorDebug;
+using Microsoft.Samples.Debugging.CorDebug.NativeApi;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -53,7 +54,12 @@ namespace MonoDevelop.Debugger.Win32
 		{
 			this.prop = prop;
 			this.declaringType = declaringType;
-			this.module = declaringType.Class.Module;
+			if (declaringType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
+			    declaringType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+				this.module = ((CorType)((CorEvaluationContext)ctx).Adapter.GetType (ctx, "System.Object")).Class.Module;
+			} else {
+				this.module = declaringType.Class.Module;
+			}
 			this.index = index;
 			if (!prop.GetGetMethod (true).IsStatic)
 				this.thisobj = thisobj;
@@ -89,24 +95,30 @@ namespace MonoDevelop.Debugger.Win32
 				CorValue[] args;
 				if (index != null) {
 					args = new CorValue[index.Length];
-					ParameterInfo[] metArgs = prop.GetGetMethod ().GetParameters ();
+					ParameterInfo[] metArgs = prop.GetGetMethod (true).GetParameters ();
 					for (int n = 0; n < index.Length; n++)
 						args[n] = ctx.Adapter.GetBoxedArg (ctx, index[n], metArgs[n].ParameterType).Val;
 				}
 				else
 					args = new CorValue[0];
 
-				MethodInfo mi = prop.GetGetMethod ();
+				MethodInfo mi = prop.GetGetMethod (true);
 				CorFunction func = module.GetFunctionFromToken (mi.MetadataToken);
-				CorValue val = ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
+				CorValue val = null;
+				if (declaringType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
+				    declaringType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+					val = ctx.RuntimeInvoke (func, new CorType[0], thisobj != null ? thisobj.Val : null, args);
+				} else {
+					val = ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
+				}
 				return cachedValue = new CorValRef (val, loader);
 			}
 			set {
 				CorEvaluationContext ctx = (CorEvaluationContext)Context;
-				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod ().MetadataToken);
+				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod (true).MetadataToken);
 				CorValRef val = (CorValRef) value;
 				CorValue[] args;
-				ParameterInfo[] metArgs = prop.GetSetMethod ().GetParameters ();
+				ParameterInfo[] metArgs = prop.GetSetMethod (true).GetParameters ();
 
 				if (index == null)
 					args = new CorValue[1];
@@ -140,7 +152,7 @@ namespace MonoDevelop.Debugger.Win32
 		internal static ObjectValueFlags GetFlags (PropertyInfo prop)
 		{
 			ObjectValueFlags flags = ObjectValueFlags.Property;
-			MethodInfo mi = prop.GetGetMethod () ?? prop.GetSetMethod ();
+			MethodInfo mi = prop.GetGetMethod (true) ?? prop.GetSetMethod (true);
 
 			if (prop.GetSetMethod (true) == null)
 				flags |= ObjectValueFlags.ReadOnly;

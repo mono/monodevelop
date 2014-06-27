@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 
 using Gtk;
 
@@ -37,12 +38,13 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
 {
 	class ExceptionCaughtDialog : Dialog
 	{
-		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-icon.png");
+		static readonly Xwt.Drawing.Image WarningIconPixbuf = Xwt.Drawing.Image.FromResource ("exception-light-48.png");
 		protected ObjectValueTreeView ExceptionValueTreeView { get; private set; }
 		protected TreeView StackTraceTreeView { get; private set; }
 		protected CheckButton OnlyShowMyCodeCheckbox { get; private set; }
@@ -274,7 +276,7 @@ namespace MonoDevelop.Debugger
 			var selectedRows = ExceptionValueTreeView.Selection.GetSelectedRows ();
 			ExceptionInfo ex;
 
-			if (TryGetExceptionInfo (selectedRows[0], out ex)) {
+			if (selectedRows.Length > 0 && TryGetExceptionInfo (selectedRows[0], out ex)) {
 				ShowStackTrace (ex);
 				selected = ex;
 			} else if (selected != exception) {
@@ -293,8 +295,12 @@ namespace MonoDevelop.Debugger
 
 			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
 
-			if (frame != null && !string.IsNullOrEmpty (frame.File))
-				IdeApp.Workbench.OpenDocument (frame.File, frame.Line, frame.Column);
+			if (frame != null && !string.IsNullOrEmpty (frame.File) && File.Exists (frame.File)) {
+				try {
+					IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column);
+				} catch (FileNotFoundException) {
+				}
+			}
 		}
 
 		static bool IsUserCode (ExceptionStackFrame frame)
@@ -409,7 +415,7 @@ namespace MonoDevelop.Debugger
 
 	class StackFrameCellRenderer : CellRenderer
 	{
-		static readonly Pango.FontDescription LineNumberFont = Pango.FontDescription.FromString ("Menlo 9");
+		static readonly Pango.FontDescription LineNumberFont = FontService.MonospaceFont.CopyModified (0.9d);
 		const int RoundedRectangleRadius = 2;
 		const int RoundedRectangleHeight = 14;
 		const int RoundedRectangleWidth = 28;

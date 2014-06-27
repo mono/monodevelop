@@ -80,6 +80,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		TreeNodeNavigator workNode;
 		TreeNodeNavigator compareNode1;
 		TreeNodeNavigator compareNode2;
+
 		internal bool sorting;
 
 		object[] copyObjects;
@@ -401,7 +402,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (ShowSelectionPopupButton && text_render.PointerInButton ((int)args.Event.XRoot, (int)args.Event.YRoot)) {
 				text_render.Pushed = true;
 				args.RetVal = true;
-				var menu = CreateContextMenu ();
+				var entryset = BuildEntrySet ();
+				var menu = IdeApp.CommandService.CreateMenu (entryset, this);
 				if (menu != null) {
 					menu.Hidden += HandleMenuHidden;
 					GtkWorkarounds.ShowContextMenu (menu, tree, text_render.PopupAllocation);
@@ -1453,6 +1455,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				return string.Compare (tb1.GetNodeName (compareNode1, o1), tb2.GetNodeName (compareNode2, o2), true);
 			} finally {
 				sorting = false;
+				compareNode1.MoveToIter (Gtk.TreeIter.Zero);
+				compareNode2.MoveToIter (Gtk.TreeIter.Zero);
 			}
 		}
 
@@ -1647,6 +1651,8 @@ namespace MonoDevelop.Ide.Gui.Components
 				sb.Insert (0, name);
 			} while (workNode.MoveToParent ());
 
+			workNode.MoveToIter (Gtk.TreeIter.Zero);
+
 			return sb.ToString ();
 		}
 
@@ -1765,12 +1771,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		void ShowPopup (Gdk.EventButton evt)
 		{
-			var menu = CreateContextMenu ();
-			if (menu != null)
-				IdeApp.CommandService.ShowContextMenu (this, evt, menu, this);
+			var entryset = BuildEntrySet () ?? new CommandEntrySet ();
+
+			IdeApp.CommandService.ShowContextMenu (this, evt, entryset, this);
 		}
 
-		protected Gtk.Menu CreateContextMenu ()
+		protected CommandEntrySet BuildEntrySet ()
 		{
 			ITreeNavigator tnav = GetSelectedNode ();
 			if (tnav == null)
@@ -1783,7 +1789,7 @@ namespace MonoDevelop.Ide.Gui.Components
 					opset.AddItem (ViewCommands.TreeDisplayOptionList);
 					opset.AddItem (Command.Separator);
 					opset.AddItem (ViewCommands.ResetTreeDisplayOptions);
-					return IdeApp.CommandService.CreateMenu (opset, this);
+					return opset;
 				}
 				return null;
 			} else {
@@ -1800,7 +1806,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				//	opset.AddItem (ViewCommands.CollapseAllTreeNodes);
 				}
 				eset.AddItem (ViewCommands.RefreshTree);
-				return IdeApp.CommandService.CreateMenu (eset, this);
+				return eset;
 			}
 		}
 
@@ -2567,13 +2573,13 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		Xwt.Drawing.Image GetResized (Xwt.Drawing.Image value)
 		{
-			if (zoom == 1)
-				return value;
-
 			//this can happen during solution deserialization if the project is unrecognized
 			//because a line is added into the treeview with no icon
-			if (value == null)
+			if (value == null || value == CellRendererImage.NullImage)
 				return null;
+
+			if (zoom == 1)
+				return value;
 
 			Xwt.Drawing.Image resized;
 			if (resizedCache.TryGetValue (value, out resized))
@@ -2591,12 +2597,12 @@ namespace MonoDevelop.Ide.Gui.Components
 		public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
 			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-			if (overlayBottomLeft != null || overlayBottomRight != null)
+			/*			if (overlayBottomLeft != null || overlayBottomRight != null)
 				height += overlayOverflow;
 			if (overlayTopLeft != null || overlayTopRight != null)
 				height += overlayOverflow;
 			if (overlayBottomRight != null || overlayTopRight != null)
-				width += overlayOverflow;
+				width += overlayOverflow;*/
 		}
 
 		const int overlayOverflow = 2;
@@ -2610,14 +2616,17 @@ namespace MonoDevelop.Ide.Gui.Components
 				Xwt.Drawing.Image image;
 				GetImageInfo (cell_area, out image, out x, out y);
 
+				if (image == null)
+					return;
+
 				using (var ctx = Gdk.CairoHelper.Create (window)) {
-					if (overlayBottomLeft != null)
+					if (overlayBottomLeft != null && overlayBottomLeft != NullImage)
 						ctx.DrawImage (widget, overlayBottomLeft, x - overlayOverflow, y + image.Height - overlayBottomLeft.Height + overlayOverflow);
-					if (overlayBottomRight != null)
+					if (overlayBottomRight != null && overlayBottomRight != NullImage)
 						ctx.DrawImage (widget, overlayBottomRight, x + image.Width - overlayBottomRight.Width + overlayOverflow, y + image.Height - overlayBottomRight.Height + overlayOverflow);
-					if (overlayTopLeft != null)
+					if (overlayTopLeft != null && overlayTopLeft != NullImage)
 						ctx.DrawImage (widget, overlayTopLeft, x - overlayOverflow, y - overlayOverflow);
-					if (overlayTopRight != null)
+					if (overlayTopRight != null && overlayTopRight != NullImage)
 						ctx.DrawImage (widget, overlayTopRight, x + image.Width - overlayTopRight.Width + overlayOverflow, y - overlayOverflow);
 				}
 			}

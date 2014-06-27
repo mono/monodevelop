@@ -14,6 +14,7 @@
     <property name="MemberName" />
     <property name="Visible">False</property>
     <property name="Events">ButtonPressMask</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Export Solution</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="BorderWidth">6</property>
@@ -240,6 +241,7 @@
     <property name="MemberName" />
     <property name="WidthRequest">930</property>
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title">New Solution</property>
     <property name="TypeHint">Dialog</property>
     <property name="WindowPosition">Center</property>
@@ -6261,6 +6263,7 @@ All solutions</property>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.ConfirmProjectDeleteDialog" design-size="512 387">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">Delete Project</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Modal">True</property>
@@ -10699,6 +10702,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
   </widget>
   <widget class="Gtk.Dialog" id="MonoDevelop.Ide.Projects.NewPolicySetDialog" design-size="429 200">
     <property name="MemberName" />
+    <property name="GeneratePublic">False</property>
     <property name="Title" translatable="yes">New Policy</property>
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>

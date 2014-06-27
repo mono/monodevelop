@@ -75,18 +75,6 @@ namespace MonoDevelop.Ide
 			});
 		}
 		
-		[Obsolete ("Default format cannot be customized globally")]
-		public string DefaultProjectFileFormat {
-			get { return Services.ProjectService.DefaultFileFormatId; }
-			set { throw new InvalidOperationException (); }
-		}
-
-		[Obsolete ("Default format does not change")]
-		public event EventHandler<PropertyChangedEventArgs> DefaultProjectFileFormatChanged {
-			add { /* nop */ }
-			remove { /* nop */ }
-		}
-		
 		public bool LoadPrevSolutionOnStartup {
 			get { return PropertyService.Get ("SharpDevelop.LoadPrevProjectOnStartup", false); }
 			set { PropertyService.Set ("SharpDevelop.LoadPrevProjectOnStartup", value); }

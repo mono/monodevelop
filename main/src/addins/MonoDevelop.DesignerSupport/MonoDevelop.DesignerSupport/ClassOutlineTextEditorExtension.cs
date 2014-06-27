@@ -270,7 +270,7 @@ namespace MonoDevelop.DesignerSupport
 			outlineTreeView = null;
 			settings = null;
 			foreach (var tw in toolbarWidgets)
-				w.Destroy ();
+				tw.Destroy ();
 			toolbarWidgets = null;
 			comparer = null;
 		}

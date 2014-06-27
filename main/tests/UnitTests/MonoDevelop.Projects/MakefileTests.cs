@@ -32,12 +32,34 @@ using System.IO;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Core;
+using NUnit.Framework;
+using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
 	[TestFixture()]
 	public class MakefileTests: TestBase
 	{
+		bool disableWhenDone;
+
+		[TestFixtureSetUp]
+		public void SetUp ()
+		{
+			var ad = AddinManager.Registry.GetAddin ("MonoDevelop.Autotools");
+			disableWhenDone = ad != null && ad.Enabled;
+			if (ad != null)
+				ad.Enabled = true;
+		}
+
+		[TestFixtureTearDown]
+		public void Teardown ()
+		{
+			if (disableWhenDone) {
+				var ad = AddinManager.Registry.GetAddin ("MonoDevelop.Autotools");
+				ad.Enabled = false;
+			}
+		}
+
 		[Test()]
 		[Platform (Exclude = "Win")]
 		public void MakefileSynchronization ()

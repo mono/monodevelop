@@ -67,7 +67,15 @@ namespace MonoDevelop.SourceEditor
 			if (!autoSaveEnabled)
 				return false;
 			try {
-				return File.Exists (GetAutoSaveFileName (fileName));
+				var autoSaveFilename = GetAutoSaveFileName (fileName);
+				bool autoSaveExists = File.Exists (autoSaveFilename);
+				if (autoSaveExists) {
+					if (File.GetLastWriteTimeUtc (autoSaveFilename) < File.GetLastWriteTimeUtc (fileName)) {
+						File.Delete (autoSaveFilename);
+						return false;
+					}
+				}
+				return autoSaveExists;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error in auto save - disableing.", e);
 				DisableAutoSave ();

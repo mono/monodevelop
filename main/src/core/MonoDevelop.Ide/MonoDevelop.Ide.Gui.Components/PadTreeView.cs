@@ -62,7 +62,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				changer.Dispose ();
 				changer = null;
 			}
-			base.Dispose ();
+			base.OnDestroyed ();
 		}
 		
 		// Workaround for Bug 1698 - Error list scroll position doesn't reset when list changes, hides items

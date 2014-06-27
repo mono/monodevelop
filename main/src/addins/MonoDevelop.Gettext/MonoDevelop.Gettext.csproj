@@ -194,6 +194,12 @@
     <EmbeddedResource Include="icons\light\warning-16%402x.png">
       <LogicalName>warning-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-language-16.png">
+      <LogicalName>prefs-language-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-language-16%402x.png">
+      <LogicalName>prefs-language-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

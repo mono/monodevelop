@@ -7,13 +7,13 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using System.Text;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.VersionControl.Views
 {
 	class CellRendererDiff: Gtk.CellRendererText
 	{
 		Pango.Layout layout;
-		Pango.FontDescription font;
 		bool diffMode;
 		int width, height, lineHeight;
 		string[] lines;		
@@ -32,7 +32,6 @@ namespace MonoDevelop.VersionControl.Views
 		
 		public CellRendererDiff()
 		{
-			font = Pango.FontDescription.FromString (DesktopService.DefaultMonospaceFont);
 		}
 		
 		void DisposeLayout ()
@@ -48,10 +47,6 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			isDisposed = true;
 			DisposeLayout ();
-			if (font != null) {
-				font.Dispose ();
-				font = null;
-			}
 			base.OnDestroyed ();
 		}
 		
@@ -103,7 +98,7 @@ namespace MonoDevelop.VersionControl.Views
 			Pango.Layout layout = new Pango.Layout (container.PangoContext);
 			layout.SingleParagraphMode = false;
 			if (diffMode) {
-				layout.FontDescription = font;
+				layout.FontDescription = FontService.MonospaceFont;
 				layout.SetText (text);
 			}
 			else

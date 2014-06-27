@@ -26,6 +26,7 @@
 using System;
 using Xwt.Drawing;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components
 {
@@ -36,6 +37,12 @@ namespace MonoDevelop.Components
 		Image imageClosed;
 		IconId icon;
 		Gtk.IconSize stockSize = Gtk.IconSize.Menu;
+
+		/// <summary>
+		/// Image to be used to represent "no image". This is necessary since GLib.Value can't hold
+		/// null values for object that are not of subclasses of GLib.Object
+		/// </summary>
+		public static readonly Xwt.Drawing.Image NullImage = ImageService.GetIcon ("md-empty");
 
 		public CellRendererImage ()
 		{
@@ -122,42 +129,52 @@ namespace MonoDevelop.Components
 
 		protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 		{
-			var img = GetImate ();
+			var img = GetImage ();
 			if (img == null)
 				return;
 
 			using (var ctx = Gdk.CairoHelper.Create (window)) {
-				var x = Xpad + cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2);
-				var y = Ypad + cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
+				var x = cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2);
+				var y = cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
 				ctx.DrawImage (widget, img, x, y);
 			}
 		}
 
 		protected void GetImageInfo (Gdk.Rectangle cell_area, out Image img, out int x, out int y)
 		{
-			img = GetImate ();
-			x = (int)(Xpad + cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2));
-			y = (int)(Ypad + cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2));
+			img = GetImage ();
+			if (img == null) {
+				x = (int)(cell_area.X + cell_area.Width / 2);
+				y = (int)(cell_area.Y + cell_area.Height / 2);
+			} else {
+				x = (int)(cell_area.X + cell_area.Width / 2 - (int)(img.Width / 2));
+				y = (int)(cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2));
+			}
 		}
 
 		public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
-			var img = GetImate ();
+			var img = GetImage ();
 			if (img != null) {
 				width = (int)img.Width;
 				height = (int)img.Height;
 			} else
 				width = height = 0;
 
+			width += (int)Xpad * 2;
+			height += (int)Ypad * 2;
 			x_offset = y_offset = 0;
 		}
 
-		Xwt.Drawing.Image GetImate ()
+		Image GetImage ()
 		{
+			Image img;
 			if (icon.IsNull)
-				return IsExpanded ? (imageOpen ?? image) : (imageClosed ?? image);
+				img = IsExpanded ? (imageOpen ?? image) : (imageClosed ?? image);
 			else
-				return Ide.ImageService.GetIcon (icon, stockSize);
+				img = ImageService.GetIcon (icon, stockSize);
+
+			return img != NullImage ? img : null;
 		}
 	}
 }

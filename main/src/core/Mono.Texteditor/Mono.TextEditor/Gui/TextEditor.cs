@@ -277,7 +277,7 @@ namespace Mono.TextEditor
 		void SetChildrenPositions (Rectangle allocation)
 		{
 			foreach (EditorContainerChild child in containerChildren.ToArray ()) {
-				if (child.Child == textArea)
+				if (child.Child == textArea || child.Child is Mono.TextEditor.Vi.ViStatusArea)
 					continue;
 				ResizeChild (allocation, child);
 			}

@@ -84,14 +84,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		/// <param name='revision'>
 		/// Revision.
 		/// </param>
-		[Obsolete ("Use the overload with rootPath parameter")]
-		public abstract string GetTextAtRevision (string repositoryPath, Revision revision);
+		public abstract string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath);
 
-		public virtual string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
-		{
-			return GetTextAtRevision (repositoryPath, revision);
-		}
-		
 		internal protected virtual VersionControlOperation GetSupportedOperations (Repository repo, VersionInfo vinfo, VersionControlOperation defaultValue)
 		{
 			if (vinfo.IsVersioned && File.Exists (vinfo.LocalPath) && !Directory.Exists (vinfo.LocalPath) && vinfo.HasLocalChange (VersionStatus.ScheduledDelete))
@@ -154,11 +148,6 @@ namespace MonoDevelop.VersionControl.Subversion
 			List<VersionInfo> list = new List<VersionInfo> ();
 			list.AddRange (Status (repo, sourcepath, SvnRevision.Head, recursive, true, getRemoteStatus));
 			return list.ToArray ();
-		}
-
-		public virtual IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision)
-		{
-			return Status (repo, path, revision, false, false, false);
 		}
 
 		public abstract IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus);
@@ -263,6 +252,8 @@ namespace MonoDevelop.VersionControl.Subversion
 		{
 			return new Annotation[0];
 		}
+
+		public abstract bool HasNeedLock (FilePath file);
 	}
 	
 

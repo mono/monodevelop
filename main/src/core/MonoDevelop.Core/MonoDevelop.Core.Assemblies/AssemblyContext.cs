@@ -132,8 +132,14 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return packages; 
 		}
-		
+
+		[Obsolete ("Cannot de-duplicate framework assemblies")]
 		public IEnumerable<SystemPackage> GetPackages (TargetFramework fx)
+		{
+			return GetPackagesInternal (fx);
+		}
+
+		IEnumerable<SystemPackage> GetPackagesInternal (TargetFramework fx)
 		{
 			foreach (SystemPackage pkg in packages) {
 				if (pkg.IsFrameworkPackage) {
@@ -192,31 +198,39 @@ namespace MonoDevelop.Core.Assemblies
 					foreach (SystemAssembly asm in pkg.Assemblies)
 						yield return asm;
 				}
-			} else {
-				foreach (SystemPackage pkg in GetPackages (fx)) {
-					foreach (SystemAssembly asm in pkg.Assemblies)
+				yield break;
+			}
+
+			var fxGroups = new Dictionary<string, List<SystemAssembly>> ();
+
+			foreach (SystemPackage pkg in GetPackagesInternal (fx)) {
+				if (pkg.IsFrameworkPackage) {
+					foreach (var asm in pkg.Assemblies) {
+						List<SystemAssembly> list;
+						if (!fxGroups.TryGetValue (asm.FullName, out list))
+							fxGroups [asm.FullName] = list = new List<SystemAssembly> ();
+						list.Add (asm);
+					}
+				} else {
+					foreach (var asm in pkg.Assemblies)
 						yield return asm;
 				}
+			}
+
+			foreach (var g in fxGroups) {
+				var a = BestFrameworkAssembly (g.Value);
+				if (a != null)
+					yield return a;
 			}
 		}
 		
 		public SystemAssembly GetAssemblyFromFullName (string fullname, string package, TargetFramework fx)
 		{
 			if (package == null) {
-				SystemAssembly found = null;
-				SystemAssembly gacFound = null;
-				foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
-					if (asm.Package.IsFrameworkPackage && fx != null) {
-						if (fx.IncludesFramework (asm.Package.TargetFramework))
-							return asm;
-						else
-							continue;
-					}
-					found = asm;
-					if (asm.Package.IsGacPackage)
-						gacFound = asm;
-				}
-				return gacFound ?? found;
+				var asms = GetAssembliesFromFullNameInternal (fullname).ToList ();
+				return BestFrameworkAssembly (asms, fx)
+					?? asms.FirstOrDefault (a => a.Package.IsGacPackage)
+					?? asms.FirstOrDefault ();
 			}
 			
 			foreach (SystemAssembly asm in GetAssembliesFromFullNameInternal (fullname)) {
@@ -270,10 +284,10 @@ namespace MonoDevelop.Core.Assemblies
 		
 		public static string NormalizeAsmName (string name)
 		{
-			int i = name.ToLower ().IndexOf (", publickeytoken=null");
+			int i = name.ToLower ().IndexOf (", publickeytoken=null", StringComparison.Ordinal);
 			if (i != -1)
 				name = name.Substring (0, i).Trim ();
-			i = name.ToLower ().IndexOf (", processorarchitecture=");
+			i = name.ToLower ().IndexOf (", processorarchitecture=", StringComparison.Ordinal);
 			if (i != -1)
 				name = name.Substring (0, i).Trim ();
 			return name;
@@ -304,19 +318,54 @@ namespace MonoDevelop.Core.Assemblies
 				return best;
 			}
 			
+
+			var asms = FindNewerAssembliesSameName (fullname).ToList ();
+
+			if (fx != null) {
+				var fxAsm = BestFrameworkAssembly (asms, fx);
+				if (fxAsm != null)
+					return fxAsm.FullName;
+			}
+
 			string bestMatch = null;
-			foreach (SystemAssembly asm in FindNewerAssembliesSameName (fullname)) {
-				if (asm.Package.IsFrameworkPackage) {
-					if (fx.IncludesFramework (asm.Package.TargetFramework))
-						if (package == null || asm.Package.Name == package)
-							return asm.FullName;
-				} else if (fx.CanReferenceAssembliesTargetingFramework (asm.Package.TargetFramework)) {
+			foreach (SystemAssembly asm in asms) {
+				if (fx.CanReferenceAssembliesTargetingFramework (asm.Package.TargetFramework)) {
 					if (package != null && asm.Package.Name == package)
 						return asm.FullName;
 					bestMatch = asm.FullName;
 				}
 			}
 			return bestMatch;
+		}
+
+		static SystemAssembly BestFrameworkAssembly (IEnumerable<SystemAssembly> assemblies, TargetFramework fx)
+		{
+			if (fx == null)
+				return null;
+			return BestFrameworkAssembly (
+				assemblies
+				.Where (a => a.Package != null && a.Package.IsFrameworkPackage && fx.IncludesFramework (a.Package.TargetFramework))
+				.ToList ()
+			);
+		}
+
+		static SystemAssembly BestFrameworkAssembly (List<SystemAssembly> list)
+		{
+			if (list.Count == 0)
+				return null;
+
+			if (list.Count == 1)
+				return list [0];
+
+			SystemAssembly best = list [0];
+
+			for (int i = 1; i < list.Count; i++) {
+				var a = list[i];
+				var f = Runtime.SystemAssemblyService.GetTargetFramework (a.Package.TargetFramework);
+				if (f.IncludesFramework (best.Package.TargetFramework))
+					best = a;
+			}
+			return best;
 		}
 		
 		IEnumerable<SystemAssembly> FindNewerAssembliesSameName (string fullname)
@@ -419,7 +468,7 @@ namespace MonoDevelop.Core.Assemblies
 			if (asm == null)
 				return null;
 			
-			var fxAsms = asm.AllSameName ().Where (a => a.Package.IsFrameworkPackage);
+			var fxAsms = asm.AllSameName ().Where (a => a.Package.IsFrameworkPackage).ToList ();
 			
 			//if the asm is not a framework asm, we don't upgrade it automatically
 			if (!fxAsms.Any ()) {
@@ -430,22 +479,19 @@ namespace MonoDevelop.Core.Assemblies
 					return null;
 			}
 			
-			foreach (var fxAsm in fxAsms) {
-				if (fx.IncludesFramework (fxAsm.Package.TargetFramework))
-					return fxAsm;
-			}
+			var bestFx = BestFrameworkAssembly (fxAsms, fx);
+			if (bestFx != null)
+				return bestFx;
 
 			// We have to find the assembly with the same name in the target fx
-			string fname = Path.GetFileName ((string) fxAsms.First ().Location);
-			
-			foreach (var pair in assemblyFullNameToAsm) {
-				foreach (var fxAsm in pair.Value.AllSameName ()) {
-					var rpack = fxAsm.Package;
-					if (rpack.IsFrameworkPackage && fx.IncludesFramework (rpack.TargetFramework) && Path.GetFileName (fxAsm.Location) == fname)
-						return fxAsm;
-				}
-			}
-			return null;
+			string fname = Path.GetFileName (fxAsms.First ().Location);
+
+			var possible = packages.Where (p => p.IsFrameworkPackage && fx.IncludesFramework (p.TargetFramework))
+				.SelectMany (p => p.Assemblies)
+				.Where (a => Path.GetFileName (a.Location) == fname)
+				.ToList ();
+
+			return BestFrameworkAssembly (possible);
 		}
 		
 		public string GetAssemblyFullName (string assemblyName, TargetFramework fx)

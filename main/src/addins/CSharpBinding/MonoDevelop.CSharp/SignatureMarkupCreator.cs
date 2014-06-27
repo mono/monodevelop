@@ -1347,7 +1347,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case "virtual":
 				result.SignatureMarkup = Highlight ("virtual", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("virtual", colorStyle.KeywordModifiers) + " keyword is used to modify a method or property declaration, in which case the method or the property is called a virtual member.";
+				result.SummaryMarkup = "The " + Highlight ("virtual", colorStyle.KeywordModifiers) + " keyword is used to modify a method, property, indexer, or event declaration and allow for it to be overridden in a derived class.";
 				break;
 			case "volatile":
 				result.SignatureMarkup = Highlight ("volatile", colorStyle.KeywordModifiers) + keywordSign;

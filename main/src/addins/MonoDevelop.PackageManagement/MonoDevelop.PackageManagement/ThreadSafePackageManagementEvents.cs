@@ -28,25 +28,38 @@
 
 using System;
 using System.Collections.Generic;
-using NuGet;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using NuGet;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class ThreadSafePackageManagementEvents : IThreadSafePackageManagementEvents
 	{
+		static Action<MessageHandler> defaultGuiSyncDispatcher = DispatchService.GuiSyncDispatch;
+
+		Action<MessageHandler> guiSyncDispatcher;
 		IPackageManagementEvents unsafeEvents;
-		
-		public ThreadSafePackageManagementEvents(IPackageManagementEvents unsafeEvents)
+
+		public ThreadSafePackageManagementEvents (IPackageManagementEvents unsafeEvents)
+			: this (unsafeEvents, defaultGuiSyncDispatcher)
+		{
+		}
+
+		public ThreadSafePackageManagementEvents (
+			IPackageManagementEvents unsafeEvents,
+			Action<MessageHandler> guiSyncDispatcher)
 		{
 			this.unsafeEvents = unsafeEvents;
+			this.guiSyncDispatcher = guiSyncDispatcher;
 			
 			RegisterEventHandlers();
 		}
-		
+
 		void RegisterEventHandlers()
 		{
 			unsafeEvents.PackageOperationsStarting += RaisePackageOperationStartingEventIfHasSubscribers;
+			unsafeEvents.PackageOperationsFinished += RaisePackageOperationFinishedEventIfHasSubscribers;
 			unsafeEvents.PackageOperationError += RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled += RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled += RaiseParentPackageUninstalledEventIfHasSubscribers;
@@ -62,6 +75,7 @@ namespace ICSharpCode.PackageManagement
 		void UnregisterEventHandlers()
 		{
 			unsafeEvents.PackageOperationsStarting -= RaisePackageOperationStartingEventIfHasSubscribers;
+			unsafeEvents.PackageOperationsFinished -= RaisePackageOperationFinishedEventIfHasSubscribers;
 			unsafeEvents.PackageOperationError -= RaisePackageOperationErrorEventIfHasSubscribers;
 			unsafeEvents.ParentPackageInstalled -= RaiseParentPackageInstalledEventIfHasSubscribers;
 			unsafeEvents.ParentPackageUninstalled -= RaiseParentPackageUninstalledEventIfHasSubscribers;
@@ -72,7 +86,7 @@ namespace ICSharpCode.PackageManagement
 		void RaisePackageOperationStartingEventIfHasSubscribers(object sender, EventArgs e)
 		{
 			if (PackageOperationsStarting != null) {
-				DispatchService.GuiSyncDispatch (() => RaisePackageOperationStartingEvent (sender, e));
+				guiSyncDispatcher (() => RaisePackageOperationStartingEvent (sender, e));
 			}
 		}
 		
@@ -82,18 +96,32 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public event EventHandler PackageOperationsStarting;
-		
+
+		void RaisePackageOperationFinishedEventIfHasSubscribers(object sender, EventArgs e)
+		{
+			if (PackageOperationsFinished != null) {
+				guiSyncDispatcher (() => RaisePackageOperationFinishedEvent (sender, e));
+			}
+		}
+
+		void RaisePackageOperationFinishedEvent(object sender, EventArgs e)
+		{
+			PackageOperationsFinished(sender, e);
+		}
+
+		public event EventHandler PackageOperationsFinished;
+
 		void RaisePackageOperationErrorEventIfHasSubscribers(object sender, PackageOperationExceptionEventArgs e)
 		{
 			if (PackageOperationError != null) {
-				DispatchService.GuiSyncDispatch (() => RaisePackageOperationErrorEvent(sender, e));
+				guiSyncDispatcher (() => RaisePackageOperationErrorEvent(sender, e));
 			}
 		}
 		
 		void RaisePackageOperationErrorEvent(object sender, PackageOperationExceptionEventArgs e)
 		{
 			if (PackageOperationError != null) {
-				DispatchService.GuiSyncDispatch (() => PackageOperationError(sender, e));
+				guiSyncDispatcher (() => PackageOperationError(sender, e));
 			}
 		}
 		
@@ -102,7 +130,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackageInstalledEventIfHasSubscribers(object sender, ParentPackageOperationEventArgs e)
 		{
 			if (ParentPackageInstalled != null) {
-				DispatchService.GuiSyncDispatch (() => RaiseParentPackageInstalledEvent(sender, e));
+				guiSyncDispatcher (() => RaiseParentPackageInstalledEvent(sender, e));
 			}
 		}
 		
@@ -116,7 +144,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackageUninstalledEventIfHasSubscribers(object sender, ParentPackageOperationEventArgs e)
 		{
 			if (ParentPackageUninstalled != null) {
-				DispatchService.GuiSyncDispatch (() => RaiseParentPackageUninstalledEvent(sender, e));
+				guiSyncDispatcher (() => RaiseParentPackageUninstalledEvent(sender, e));
 			}
 		}
 		
@@ -147,6 +175,11 @@ namespace ICSharpCode.PackageManagement
 			unsafeEvents.OnPackageOperationsStarting();
 		}
 		
+		public void OnPackageOperationsFinished()
+		{
+			unsafeEvents.OnPackageOperationsFinished();
+		}
+
 		public void OnPackageOperationError(Exception ex)
 		{
 			unsafeEvents.OnPackageOperationError(ex);
@@ -187,7 +220,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseResolveFileConflictEventIfHasSubscribers (object sender, ResolveFileConflictEventArgs e)
 		{
 			if (ResolveFileConflict != null) {
-				DispatchService.GuiSyncDispatch (() => ResolveFileConflict (sender, e));
+				guiSyncDispatcher (() => ResolveFileConflict (sender, e));
 			}
 		}
 		
@@ -201,7 +234,7 @@ namespace ICSharpCode.PackageManagement
 		void RaiseParentPackagesUpdatedEventIfHasSubscribers(object sender, ParentPackagesOperationEventArgs e)
 		{
 			if (ParentPackagesUpdated != null) {
-				DispatchService.GuiSyncDispatch (() => RaiseParentPackagesUpdatedEvent(sender, e));
+				guiSyncDispatcher (() => RaiseParentPackagesUpdatedEvent(sender, e));
 			}
 		}
 		
@@ -218,6 +251,16 @@ namespace ICSharpCode.PackageManagement
 		public void OnPackagesRestored()
 		{
 			unsafeEvents.OnPackagesRestored ();
+		}
+
+		public event EventHandler<FileEventArgs> FileChanged {
+			add { unsafeEvents.FileChanged += value; }
+			remove { unsafeEvents.FileChanged -= value; }
+		}
+
+		public void OnFileChanged (string path)
+		{
+			unsafeEvents.OnFileChanged (path);
 		}
 	}
 }

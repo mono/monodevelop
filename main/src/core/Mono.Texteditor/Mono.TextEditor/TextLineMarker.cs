@@ -134,17 +134,9 @@ namespace Mono.TextEditor
 		public TextLineMarker ()
 		{
 		}
-
-		[Obsolete("Use Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics) instead.")]
-		public virtual void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
-		{
-		}
 		
 		public virtual void Draw (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
-#pragma warning disable 618
-			Draw (editor, cr, metrics.Layout.Layout, false, metrics.TextStartOffset, metrics.TextEndOffset, metrics.LineYRenderStartPosition, metrics.TextRenderStartPosition, metrics.TextRenderEndPosition);
-#pragma warning restore 618
 		}
 		
 		public virtual ChunkStyle GetStyle (ChunkStyle baseStyle)

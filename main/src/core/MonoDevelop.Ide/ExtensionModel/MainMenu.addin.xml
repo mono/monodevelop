@@ -10,6 +10,11 @@
 	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/TargetSelectorCommands" name = "Target selector commands">
+	<Description>Commands to be shown in the target selector in the main toolbar</Description>
+	<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet"/>
+</ExtensionPoint>
+
 <Extension path = "/MonoDevelop/Ide/MainMenu">
 	<ItemSet id = "File" _label = "_File">
 		<ItemSet id = "New" _label = "_New">
@@ -194,7 +199,7 @@
 
 	<ItemSet id = "Run" _label = "_Run">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Run" />
-		<ItemSet id = "RunWith" _label = "Run With">
+		<ItemSet id = "RunWith" _label = "Run With" autohide = "true">
 			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.RunWithList" />
 		</ItemSet>
 		<SeparatorItem id = "StopSection" />
@@ -268,6 +273,9 @@
 		<SeparatorItem id = "QuitSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.Exit" />
 	</Condition>
+</Extension>
+
+<Extension path="/MonoDevelop/Ide/TargetSelectorCommands">
 </Extension>
 
 </ExtensionModel>

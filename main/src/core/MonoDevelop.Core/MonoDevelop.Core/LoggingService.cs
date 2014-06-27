@@ -126,11 +126,6 @@ namespace MonoDevelop.Core
 			set { PropertyService.Set (ReportUsageKey, value); }
 		}
 
-		[Obsolete ("Use CreateLogFile")]
-		public static DateTime LogTimestamp {
-			get { return timestamp; }
-		}
-
 		/// <summary>
 		/// Creates a session log file with the given identifier.
 		/// </summary>
@@ -203,13 +198,14 @@ namespace MonoDevelop.Core
 
 		internal static void ReportUnhandledException (Exception ex, bool willShutDown, bool silently, string tag)
 		{
-			var tags = new List<string> { tag };
-
-			if (reporting)
-				return;
-
-			reporting = true;
 			try {
+				var tags = new List<string> { tag };
+
+				if (reporting)
+					return;
+
+				reporting = true;
+
 				var oldReportCrashes = ReportCrashes;
 
 				if (UnhandledErrorOccured != null && !silently)
@@ -226,7 +222,12 @@ namespace MonoDevelop.Core
 #if ENABLE_RAYGUN
 				if (raygunClient != null) {
 					ThreadPool.QueueUserWorkItem (delegate {
-						raygunClient.Send (ex, tags, customData, Runtime.Version.ToString ());
+						try {
+							raygunClient.Send (ex, tags, customData, Runtime.Version.ToString ());
+						} catch {
+							// If we get here then things have gone really wrong - we can't log anything or
+							// attempt to report anything. Drop any exception that ends up here.
+						}
 					});
 				}
 #endif
@@ -236,6 +237,10 @@ namespace MonoDevelop.Core
 					PropertyService.SaveProperties ();
 				}
 
+			} catch {
+				// I don't know if we can/should try to log this. I'm going to guess that we don't want to
+				// and can't safely call any LoggingService.Log methods anyway in case we'd recurse, though
+				// the 'reporting' boolean should take care of that.
 			} finally {
 				reporting = false;
 			}
@@ -276,19 +281,22 @@ namespace MonoDevelop.Core
 			}
 		}
 
+		static MonoDevelop.Core.ProgressMonitoring.LogTextWriter stderr;
+		static MonoDevelop.Core.ProgressMonitoring.LogTextWriter stdout;
+		static TextWriter writer;
 		static void RedirectOutputToFileWindows ()
 		{
-			var writer = CreateLogFile ("Ide");
+			writer = CreateLogFile ("Ide");
 			if (writer == Console.Out)
 				return;
 
-			var stderr = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
+			stderr = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
 			stderr.ChainWriter (Console.Error);
 			stderr.ChainWriter (writer);
 			defaultError = Console.Error;
 			Console.SetError (stderr);
 
-			var stdout = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
+			stdout = new MonoDevelop.Core.ProgressMonitoring.LogTextWriter ();
 			stdout.ChainWriter (Console.Out);
 			stdout.ChainWriter (writer);
 			defaultOut = Console.Out;

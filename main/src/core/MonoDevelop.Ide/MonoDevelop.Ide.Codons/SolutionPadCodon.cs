@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Codons
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
 		{
-			string codonpath = Path + "/" + this.Id;
+			string codonpath = Path;
 			if (args.PathChanged (codonpath)) {
 				BuildChildren ();
 				pad.TreeView.UpdateBuilders (builders, options);

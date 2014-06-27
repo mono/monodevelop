@@ -86,13 +86,11 @@ namespace MonoDevelop.VersionControl
 		{
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected override void OnDeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteFiles (FilePath[] path, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 		}
 
-		[Obsolete ("Use the overload with keepLocal parameter")]
-		protected override void OnDeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor)
+		protected override void OnDeleteDirectories (FilePath[] path, bool force, IProgressMonitor monitor, bool keepLocal)
 		{
 		}
 

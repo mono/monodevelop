@@ -35,7 +35,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	public class LocalLogger: Logger
 	{
 		IEventSource eventSource;
-		readonly List<MSBuildResult> results = new List<MSBuildResult> ();
+		readonly List<MSBuildTargetResult> results = new List<MSBuildTargetResult> ();
 		readonly string projectFile;
 		
 		public LocalLogger (string projectFile)
@@ -43,7 +43,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			this.projectFile = projectFile;
 		}
 		
-		public List<MSBuildResult> BuildResult {
+		public List<MSBuildTargetResult> BuildResult {
 			get { return results; }
 		}
 		
@@ -63,7 +63,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void EventSourceWarningRaised (object sender, BuildWarningEventArgs e)
 		{
 			//NOTE: as of Mono 3.2.7, e.ProjectFile does not exist, so we use our projectFile variable instead
-			results.Add (new MSBuildResult (
+			results.Add (new MSBuildTargetResult (
 				projectFile, true, e.Subcategory, e.Code, e.File,
 				e.LineNumber, e.ColumnNumber, e.ColumnNumber, e.EndLineNumber,
 				e.Message, e.HelpKeyword)
@@ -73,7 +73,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void EventSourceErrorRaised (object sender, BuildErrorEventArgs e)
 		{
 			//NOTE: as of Mono 3.2.7, e.ProjectFile does not exist, so we use our projectFile variable instead
-			results.Add (new MSBuildResult (
+			results.Add (new MSBuildTargetResult (
 				projectFile, false, e.Subcategory, e.Code, e.File,
 				e.LineNumber, e.ColumnNumber, e.ColumnNumber, e.EndLineNumber,
 				e.Message, e.HelpKeyword)

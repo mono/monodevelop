@@ -367,9 +367,8 @@ namespace Mono.TextEditor.Highlighting
 					if ((span.BeginFlags & SpanBeginFlags.FirstNonWs) == SpanBeginFlags.FirstNonWs)
 						mismatch = CurText.Take (i).Any (ch => !char.IsWhiteSpace (ch));
 					if ((span.BeginFlags & SpanBeginFlags.NewWord) == SpanBeginFlags.NewWord) {
-						if (i - 1 > 0 && i - 1 < CurText.Length) {
-							mismatch = !char.IsWhiteSpace (CurText[i - 1]);
-						}
+						if (textOffset - 1 > 0 && textOffset - 1 < CurText.Length)
+							mismatch = !char.IsWhiteSpace (CurText [textOffset - 1]);
 					}
 					if (mismatch)
 						continue;

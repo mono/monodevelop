@@ -43,6 +43,7 @@ namespace MonoDevelop.PackageManagement
 	public partial class AddPackagesDialog
 	{
 		IBackgroundPackageActionRunner backgroundActionRunner;
+		IRecentPackageRepository recentPackageRepository;
 		ManagePackagesViewModel parentViewModel;
 		PackagesViewModel viewModel;
 		List<PackageSource> packageSources;
@@ -61,18 +62,24 @@ namespace MonoDevelop.PackageManagement
 		ImageLoader imageLoader = new ImageLoader ();
 
 		public AddPackagesDialog (ManagePackagesViewModel parentViewModel, string initialSearch = null)
-			: this (parentViewModel, initialSearch, PackageManagementServices.BackgroundPackageActionRunner)
+			: this (
+				parentViewModel,
+				initialSearch,
+				PackageManagementServices.BackgroundPackageActionRunner,
+				PackageManagementServices.RecentPackageRepository)
 		{
 		}
 
 		public AddPackagesDialog (
 			ManagePackagesViewModel parentViewModel,
 			string initialSearch,
-			IBackgroundPackageActionRunner backgroundActionRunner)
+			IBackgroundPackageActionRunner backgroundActionRunner,
+			IRecentPackageRepository recentPackageRepository)
 		{
 			this.parentViewModel = parentViewModel;
 			this.viewModel = parentViewModel.AvailablePackagesViewModel;
 			this.backgroundActionRunner = backgroundActionRunner;
+			this.recentPackageRepository = recentPackageRepository;
 
 			Build ();
 
@@ -268,7 +275,7 @@ namespace MonoDevelop.PackageManagement
 			this.packageVersionLabel.Text = packageViewModel.Version.ToString ();
 			this.packageAuthor.Text = packageViewModel.GetAuthors ();
 			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
-			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
+			this.packageDownloads.Text = packageViewModel.GetDownloadCountOrVersionDisplayText ();
 			this.packageDescription.Text = packageViewModel.Description;
 			this.packageId.Text = packageViewModel.Id;
 			this.packageId.Visible = packageViewModel.HasNoGalleryUrl;
@@ -455,9 +462,18 @@ namespace MonoDevelop.PackageManagement
 		void InstallPackages (List<IPackageAction> packageActions)
 		{
 			if (packageActions.Count > 0) {
+				AddRecentPackages (packageActions);
+
 				ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (packageActions);
 				backgroundActionRunner.Run (progressMessage, packageActions);
 				Close ();
+			}
+		}
+
+		void AddRecentPackages (List<IPackageAction> packageActions)
+		{
+			foreach (InstallPackageAction action in packageActions.OfType<InstallPackageAction> ()) {
+				recentPackageRepository.AddPackage (action.Package);
 			}
 		}
 

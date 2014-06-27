@@ -104,6 +104,8 @@ namespace MonoDevelop.Ide.WelcomePage
 					foreach (var child in OnLoadNews (news).Take (limit))
 						AddNewsItem (box, child);
 				}
+				box.PackStart (new Label(), true, false, 4);
+
 			} catch (Exception ex) {
 				LoggingService.LogWarning ("Error loading news feed.", ex);
 			}

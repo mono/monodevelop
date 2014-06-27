@@ -95,13 +95,13 @@ namespace MonoDevelop.PackageManagement
 			ProgressMonitorStatusMessage progressMessage,
 			NuGetPackageRestoreCommandLine commandLine)
 		{
-			var aggregatedMonitor = (AggregatedProgressMonitor)progressMonitor;
+			var aggregatedMonitor = (PackageManagementProgressMonitor)progressMonitor;
 
 			Runtime.ProcessService.StartConsoleProcess(
 				commandLine.Command,
 				commandLine.Arguments,
 				commandLine.WorkingDirectory,
-				aggregatedMonitor.MasterMonitor as IConsole,
+				aggregatedMonitor.Console,
 				(sender, e) => {
 					using (progressMonitor) {
 						OnPackageRestoreCompleted ((IAsyncOperation)sender, progressMonitor, progressMessage);
@@ -117,8 +117,19 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (operation.Success) {
 				RefreshProjectReferences ();
+				ForceCreationOfSharedRepositoriesConfigFile ();
 			}
 			ReportOutcome (operation, progressMonitor, progressMessage);
+		}
+
+		/// <summary>
+		/// Creating package managers for all the projects will force the 
+		/// repositories.config file to be created.
+		/// </summary>
+		void ForceCreationOfSharedRepositoriesConfigFile ()
+		{
+			var repository = PackageManagementServices.RegisteredPackageRepositories.CreateAggregateRepository ();
+			solution.GetProjects (repository).ToList ();
 		}
 
 		void RefreshProjectReferences ()

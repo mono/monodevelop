@@ -510,18 +510,24 @@ namespace MonoDevelop.MacInterop
 
 		public static unsafe Tuple<string, string> FindInternetUserNameAndPassword (Uri uri)
 		{
+			var protocol = GetSecProtocolType (uri.Scheme);
+			return FindInternetUserNameAndPassword (uri, protocol);
+		}
+
+		public static unsafe Tuple<string, string> FindInternetUserNameAndPassword (Uri uri, SecProtocolType protocol)
+		{
 			var pathStr = string.Join (string.Empty, uri.Segments);
 			byte[] path = pathStr.Length > 0 ? Encoding.UTF8.GetBytes (pathStr.Substring (1)) : new byte[0]; // don't include the leading '/'
 			byte[] host = Encoding.UTF8.GetBytes (uri.Host);
 			var auth = GetSecAuthenticationType (uri.Query);
-			var protocol = GetSecProtocolType (uri.Scheme);
-			IntPtr passwordData = IntPtr.Zero;
+			IntPtr passwordData;
 			IntPtr item = IntPtr.Zero;
 			uint passwordLength = 0;
 
-			var result = SecKeychainFindInternetPassword (CurrentKeychain, (uint) host.Length, host, 0, null,
-			                                              0, null, (uint) path.Length, path, (ushort) uri.Port,
-			                                              protocol, auth, out passwordLength, out passwordData, ref item);
+			var result = SecKeychainFindInternetPassword (
+				CurrentKeychain, (uint) host.Length, host, 0, null,
+				0, null, (uint) path.Length, path, (ushort) uri.Port,
+				protocol, auth, out passwordLength, out passwordData, ref item);
 
 			if (result != OSStatus.Ok)
 				return null;
@@ -631,7 +637,7 @@ namespace MonoDevelop.MacInterop
 		Any                  = 0
 	}
 
-	enum SecProtocolType : int
+	public enum SecProtocolType : int
 	{
 		FTP                  = 1718906912,
 		FTPAccount           = 1718906977,

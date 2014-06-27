@@ -37,6 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 using StockIcons = MonoDevelop.Ide.Gui.Stock;
 using Xwt.Motion;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -113,6 +114,26 @@ namespace MonoDevelop.Components.MainToolbar
 
 		public int MaxWidth { get; set; }
 
+		void messageBoxToolTip (object o, QueryTooltipArgs e)
+		{
+			if (theme.IsEllipsized && (e.X < messageBox.Allocation.Width)) {
+				var label = new Label ();
+				if (renderArg.CurrentTextIsMarkup) {
+					label.Markup = renderArg.CurrentText;
+				} else {
+					label.Text = renderArg.CurrentText;
+				}
+
+				label.Wrap = true;
+				label.WidthRequest = messageBox.Allocation.Width;
+				
+				e.Tooltip.Custom = label;
+				e.RetVal = true;
+			} else {
+				e.RetVal = false;
+			}
+		}
+
 		public StatusArea ()
 		{
 			theme = new StatusAreaTheme ();
@@ -160,6 +181,9 @@ namespace MonoDevelop.Components.MainToolbar
 			contentBox.PackEnd (statusIconBox, false, false, 0);
 			contentBox.PackEnd (statusIconSeparator = new StatusAreaSeparator (), false, false, 0);
 			contentBox.PackEnd (buildResultWidget = CreateBuildResultsWidget (Orientation.Horizontal), false, false, 0);
+
+			HasTooltip = true;
+			QueryTooltip += messageBoxToolTip;
 
 			mainAlign = new Alignment (0, 0.5f, 1, 0);
 			mainAlign.LeftPadding = 12;
@@ -294,20 +318,29 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			TaskEventHandler updateHandler = delegate {
 				int ec=0, wc=0;
+
 				foreach (Task t in TaskService.Errors) {
 					if (t.Severity == TaskSeverity.Error)
 						ec++;
 					else if (t.Severity == TaskSeverity.Warning)
 						wc++;
 				}
-				errors.Visible = ec > 0;
-				errors.Text = ec.ToString ();
-				errorImage.Visible = ec > 0;
 
-				warnings.Visible = wc > 0;
-				warnings.Text = wc.ToString ();
-				warningImage.Visible = wc > 0;
+
+				using (var font = FontService.SansFont.CopyModified (0.8d)) {
+					errors.Visible = ec > 0;
+					errors.ModifyFont (font);
+					errors.Text = ec.ToString ();
+					errorImage.Visible = ec > 0;
+
+					warnings.Visible = wc > 0;
+					warnings.ModifyFont (font);
+					warnings.Text = wc.ToString ();
+					warningImage.Visible = wc > 0;
+				}
+
 				ebox.Visible = ec > 0 || wc > 0;
+
 				UpdateSeparators ();
 			};
 			

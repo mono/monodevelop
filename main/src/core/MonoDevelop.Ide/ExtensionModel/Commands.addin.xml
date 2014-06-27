@@ -380,7 +380,7 @@
 			_label = "_Save" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.SaveAll"
 			defaultHandler = "MonoDevelop.Ide.Commands.SaveAllHandler"
-			icon = "md-save-all-icon"
+			icon = "md-save-all"
 			shortcut = "Control|Shift|S"
 			macShortcut = "Meta|Shift|S"
 			_description = "Save all open files"
@@ -495,7 +495,7 @@
 	        _label = "Require Specific Version" />
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CloseAllButThisHandler"
-			_label = "C_lose all but this"
+			_label = "C_lose Others"
 			_description = "Closes all opened files except for the active file"/>
 	<Command id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName"
 	         defaultHandler = "MonoDevelop.Ide.Commands.CopyPathNameHandler"

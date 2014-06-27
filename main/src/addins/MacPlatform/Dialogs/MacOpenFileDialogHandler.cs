@@ -188,7 +188,8 @@ namespace MonoDevelop.MacIntegration
 				if (viewerSelector != null ) {
 					if (closeSolutionButton != null)
 						data.CloseCurrentWorkspace = closeSolutionButton.State != NSCellStateValue.Off;
-					data.SelectedViewer = currentViewers[viewerSelector.IndexOfSelectedItem];
+					data.SelectedViewer = viewerSelector.IndexOfSelectedItem >= 0 ?
+						currentViewers[viewerSelector.IndexOfSelectedItem] : null;
 				}
 				
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);

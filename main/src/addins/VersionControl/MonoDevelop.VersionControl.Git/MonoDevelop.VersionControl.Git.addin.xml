@@ -11,7 +11,7 @@
 	<Extension path = "/MonoDevelop/Ide/Commands/VersionControl">
 		<Command id = "MonoDevelop.VersionControl.Git.Commands.Push"
 			_label = "Push Changes..."
-			icon = "vcs-push"
+			icon = "vc-push"
 			defaultHandler = "MonoDevelop.VersionControl.Git.PushCommandHandler"
 			description = "Push changes to a remote repository."/>
 		<Command id = "MonoDevelop.VersionControl.Git.Commands.SwitchToBranch"
@@ -79,7 +79,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/VersionControl">
-		<Section id = "Git" _label = "Git" class = "MonoDevelop.VersionControl.Git.GitOptionsPanel" />
+		<Section id = "Git" _label = "Git" class = "MonoDevelop.VersionControl.Git.GitOptionsPanel" icon="md-prefs-git" />
 	</Extension>
 
 <!--	<Extension path = "/MonoDevelop/Ide/ProjectFeatures">

@@ -216,15 +216,30 @@ namespace MonoDevelop.SourceEditor
 				if (!QuickTaskStrip.MergeScrollBarAndQuickTasks)
 					return;
 				if (QuickTaskStrip.EnableFancyFeatures) {
-					MonoDevelop.Components.GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Never);
+					GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Never);
+					SetSuppressScrollbar (true);
+				} else {
+					GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Automatic);
+					SetSuppressScrollbar (false);
+				}
+				QueueResize ();
+			}
+
+			bool suppressScrollbar;
+
+			void SetSuppressScrollbar (bool value)
+			{
+				if (suppressScrollbar == value)
+					return;
+				suppressScrollbar = value;
+
+				if (suppressScrollbar) {
 					scrolledWindow.VScrollbar.SizeRequested += SuppressSize;
 					scrolledWindow.VScrollbar.ExposeEvent += SuppressExpose;
 				} else {
-					MonoDevelop.Components.GtkWorkarounds.SetOverlayScrollbarPolicy (scrolledWindow, PolicyType.Automatic, PolicyType.Automatic);
 					scrolledWindow.VScrollbar.SizeRequested -= SuppressSize;
 					scrolledWindow.VScrollbar.ExposeEvent -= SuppressExpose;
 				}
-				QueueResize ();
 			}
 
 			[GLib.ConnectBefore]
@@ -267,6 +282,7 @@ namespace MonoDevelop.SourceEditor
 				if (scrolledWindow.Child != null)
 					RemoveEvents ();
 
+				SetSuppressScrollbar (false);
 				QuickTaskStrip.EnableFancyFeatures.Changed -= FancyFeaturesChanged;
 				scrolledWindow.ButtonPressEvent -= PrepareEvent;
 				base.OnDestroyed ();

@@ -121,9 +121,15 @@ namespace MonoDevelop.Projects
 		/// <value>
 		/// The type of the project.
 		/// </value>
-		public abstract string ProjectType {
-			get;
+		[Obsolete ("Use GetProjectTypes")]
+		public virtual string ProjectType {
+			get { return GetProjectTypes ().First (); }
 		}
+
+		/// <summary>
+		/// Gets the project type and its base types.
+		/// </summary>
+		public abstract IEnumerable<string> GetProjectTypes ();
 
 		/// <summary>
 		/// Gets or sets the icon of the project.
@@ -626,7 +632,7 @@ namespace MonoDevelop.Projects
 		{
 			ProjectConfiguration config = GetConfiguration (configuration) as ProjectConfiguration;
 			if (config == null) {
-				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", config.Id, Name), null);
+				monitor.ReportError (GettextCatalog.GetString ("Configuration '{0}' not found in project '{1}'", configuration, Name), null);
 				return;
 			}
 			

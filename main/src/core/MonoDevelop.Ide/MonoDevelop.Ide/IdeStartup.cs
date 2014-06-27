@@ -348,6 +348,9 @@ namespace MonoDevelop.Ide
 				var gtkrc = "gtkrc";
 				if (Platform.IsWindows) {
 					gtkrc += ".win32";
+					var osv = Environment.OSVersion.Version;
+					if (osv.Major == 6 && osv.Minor < 1)
+						gtkrc += "-vista";
 				} else if (Platform.IsMac) {
 					gtkrc += ".mac";
 				}
@@ -458,11 +461,11 @@ namespace MonoDevelop.Ide
 						continue;
 					file += c;
 				}
-				GLib.Idle.Add (delegate(){ return openFile (file); });
+				GLib.Idle.Add (() => OpenFile (file));
 			}
 		}
 
-		bool openFile (string file) 
+		static bool OpenFile (string file) 
 		{
 			if (string.IsNullOrEmpty (file))
 				return false;
@@ -485,7 +488,7 @@ namespace MonoDevelop.Ide
 					MonoDevelop.Projects.Services.ProjectService.IsSolutionItemFile (file)) {
 						IdeApp.Workspace.OpenWorkspaceItem (file);
 				} else {
-						IdeApp.Workbench.OpenDocument (file, line, column);
+					IdeApp.Workbench.OpenDocument (file, null, line, column, OpenDocumentOptions.DefaultInternal);
 				}
 			} catch {
 			}

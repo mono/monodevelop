@@ -86,11 +86,16 @@ namespace MonoDevelop.PackageManagement
 		void ISearchDataSource.Activate (int item)
 		{
 			var runner = new AddPackagesDialogRunner ();
-			runner.Run (searchPattern.Pattern);
+			runner.Run (searchPattern.UnparsedPattern);
 		}
 
 		int ISearchDataSource.ItemCount {
-			get { return 1; }
+			get {
+				if (IsProjectSelected ()) {
+					return 1;
+				}
+				return 0;
+			}
 		}
 	}
 }

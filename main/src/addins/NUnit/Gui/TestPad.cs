@@ -78,7 +78,7 @@ namespace MonoDevelop.NUnit
 		
 		ArrayList testNavigationHistory = new ArrayList ();
 
-		Button buttonRunAll, buttonRun, buttonStop;
+		Button buttonRunAll, buttonStop;
 		
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string menuPath)
 		{
@@ -480,7 +480,6 @@ namespace MonoDevelop.NUnit
 				return null;
 			NUnitService.ResetResult (test.RootTest);
 			
-			this.buttonRun.Sensitive = false;
 			this.buttonRunAll.Sensitive = false;
 			this.buttonStop.Sensitive = true;
 
@@ -506,7 +505,6 @@ namespace MonoDevelop.NUnit
 			if (op.Success)
 				RefreshDetails ();
 			runningTestOperation = null;
-			this.buttonRun.Sensitive = true;
 			this.buttonRunAll.Sensitive = true;
 			this.buttonStop.Sensitive = false;
 

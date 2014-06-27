@@ -659,9 +659,15 @@ namespace MonoDevelop.Ide
 					return;
 				}
 			}
-			
+
 			documentList.ActiveItem = activeItem;
-			documentList.NextItem (true);
+
+			ModifierType modifiers;
+			if (Gtk.Global.GetCurrentEventState (out modifiers) && modifiers.HasFlag (ModifierType.ShiftMask))
+				documentList.PrevItem (true);
+			else
+				documentList.NextItem (true);
+
 			documentList.RequestClose += delegate(object sender, DocumentList.RequestActionEventArgs e) {
 				try {
 					if (e.SelectItem) {

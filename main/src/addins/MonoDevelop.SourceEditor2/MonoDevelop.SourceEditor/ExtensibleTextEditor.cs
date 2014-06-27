@@ -93,10 +93,33 @@ namespace MonoDevelop.SourceEditor
 			get { return (ISourceEditorOptions)base.Options; }
 			set { base.Options = value; }
 		}
+
+		static ExtensibleTextEditor ()
+		{
+			var icon = Xwt.Drawing.Image.FromResource ("gutter-bookmark-light-15.png");
+
+			BookmarkMarker.DrawBookmarkFunc = delegate(TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
+				if (!lineSegment.IsBookmarked)
+					return;
+				cr.DrawImage (
+					editor, 
+					icon, 
+					Math.Floor (x + (width - icon.Width) / 2), 
+					Math.Floor (y + (height - icon.Height) / 2)
+				);
+			};
+
+		}
 		
 		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.TextDocument doc) : base(doc, options)
 		{
 			Initialize (view);
+		}
+
+		void HandleParseOperationFinished (object sender, EventArgs e)
+		{
+			resolveResult = null;
+			resolveRegion = DomRegion.Empty;
 		}
 		
 		public ExtensibleTextEditor (SourceEditorView view)
@@ -114,7 +137,8 @@ namespace MonoDevelop.SourceEditor
 			this.view = view;
 
 			Document.TextReplaced += HandleSkipCharsOnReplace;
-			
+			TypeSystemService.ParseOperationFinished += HandleParseOperationFinished;
+
 			UpdateEditMode ();
 			this.DoPopupMenu = ShowPopup;
 		}
@@ -158,8 +182,8 @@ namespace MonoDevelop.SourceEditor
 			} else {
 		//		if (!(CurrentMode is SimpleEditMode)){
 					SimpleEditMode simpleMode = new SimpleEditMode ();
-					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
-					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
+					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
+					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
 					CurrentMode = simpleMode;
 		//		}
 			}
@@ -177,6 +201,7 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
+			TypeSystemService.ParseOperationFinished -= HandleParseOperationFinished;
 			UnregisterAdjustments ();
 			resolveResult = null;
 			EditorExtension = null;
@@ -312,6 +337,7 @@ namespace MonoDevelop.SourceEditor
 				return true;
 
 			bool inStringOrComment = false;
+			bool isString = false;
 			DocumentLine line = Document.GetLine (Caret.Line);
 			if (line == null)
 				return true;
@@ -320,12 +346,19 @@ namespace MonoDevelop.SourceEditor
 			var sm = Document.SyntaxMode as SyntaxMode;
 			if (sm != null)
 				Mono.TextEditor.Highlighting.SyntaxModeService.ScanSpans (Document, sm, sm, stack, line.Offset, Caret.Offset);
-			string spanColor = null;
+
 			foreach (Span span in stack) {
 				if (string.IsNullOrEmpty (span.Color))
 					continue;
-				if (span.Color.StartsWith ("String", StringComparison.Ordinal) || span.Color.StartsWith ("Comment", StringComparison.Ordinal)) {
-					spanColor = span.Color;
+				if (span.Color.StartsWith ("String", StringComparison.Ordinal) ||
+				    span.Color.StartsWith ("Comment", StringComparison.Ordinal) ||
+				    span.Color.StartsWith ("Xml Attribute Value", StringComparison.Ordinal)) {
+					//Treat "Xml Attribute Value" as "String" so quotes in SkipChars works in Xml
+					if (span.Color.StartsWith ("Comment", StringComparison.Ordinal)) {
+						isString = false;
+					} else {
+						isString = true;
+					}
 					inStringOrComment = true;
 					break;
 				}
@@ -347,7 +380,7 @@ namespace MonoDevelop.SourceEditor
 				char charBefore = Document.GetCharAt (Caret.Offset - 1);
 				if (ch == '"') {
 					if (!inStringOrComment && charBefore == '"' || 
-					    inStringOrComment && spanColor == "String" && charBefore == '\\' ) {
+						isString && charBefore == '\\' ) {
 						skipChar = null;
 						braceIndex = -1;
 					}
@@ -566,21 +599,27 @@ namespace MonoDevelop.SourceEditor
 			ParameterInformationWindowManager.HideWindow (null, view);
 			HideTooltip ();
 			const string menuPath = "/MonoDevelop/SourceEditor2/ContextMenu/Editor";
-			var ctx = view.WorkbenchWindow.ExtensionContext ?? AddinManager.AddinEngine;
+			var ctx = ExtensionContext ?? AddinManager.AddinEngine;
+
 			CommandEntrySet cset = IdeApp.CommandService.CreateCommandEntrySet (ctx, menuPath);
-			Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
-			var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
-			if (imMenu != null) {
-				menu.Append (new SeparatorMenuItem ());
-				menu.Append (imMenu);
-			}
-			
-			menu.Hidden += HandleMenuHidden; 
-			if (evt != null) {
-				GtkWorkarounds.ShowContextMenu (menu, this, evt);
+
+			if (Platform.IsMac) {
+				IdeApp.CommandService.ShowContextMenu (this, evt, cset, this);
 			} else {
-				var pt = LocationToPoint (this.Caret.Location);
-				GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
+				Gtk.Menu menu = IdeApp.CommandService.CreateMenu (cset);
+				var imMenu = CreateInputMethodMenuItem (GettextCatalog.GetString ("_Input Methods"));
+				if (imMenu != null) {
+					menu.Append (new SeparatorMenuItem ());
+					menu.Append (imMenu);
+				}
+
+				menu.Hidden += HandleMenuHidden;
+				if (evt != null) {
+					GtkWorkarounds.ShowContextMenu (menu, this, evt);
+				} else {
+					var pt = LocationToPoint (this.Caret.Location);
+					GtkWorkarounds.ShowContextMenu (menu, this, new Gdk.Rectangle (pt.X, pt.Y, 1, (int)LineHeight));
+				}
 			}
 		}
 

@@ -233,7 +233,7 @@ namespace MonoDevelop.Core
 		{
 			Debug.Assert (properties != null);
 			var prefsPath = UserProfile.Current.ConfigDir.Combine (FileName);
-			FileService.EnsureDirectoryExists (prefsPath.ParentDirectory);
+			Directory.CreateDirectory (prefsPath.ParentDirectory);
 			properties.Save (prefsPath);
 		}
 		

@@ -164,12 +164,6 @@ namespace MonoDevelop.Core.Assemblies
 			return profile == pattern;
 		}
 
-		[Obsolete ("Use CanReferenceAssembliesTargetingFramework() instead")]
-		public bool IsCompatibleWithFramework (TargetFrameworkMoniker fxId)
-		{
-			return CanReferenceAssembliesTargetingFramework (fxId);
-		}
-
 		public bool CanReferenceAssembliesTargetingFramework (TargetFrameworkMoniker fxId)
 		{
 			var fx = Runtime.SystemAssemblyService.GetTargetFramework (fxId);
@@ -269,11 +263,6 @@ namespace MonoDevelop.Core.Assemblies
 			set;
 		}
 		
-		internal AssemblyInfo[] AssembliesExpanded {
-			get;
-			set;
-		}
-		
 		public override string ToString ()
 		{
 			return string.Format ("[TargetFramework: Hidden={0}, Name={1}, Id={2}, ClrVersion={3}]",
@@ -341,9 +330,8 @@ namespace MonoDevelop.Core.Assemblies
 				
 				if (reader.MoveToAttribute ("IncludeFramework") && reader.ReadAttributeValue ()) {
 					string include = reader.ReadContentAsString ();
-					if (!string.IsNullOrEmpty (include)) {
-						fx.IncludedFrameworks.Add (new TargetFrameworkMoniker (fx.Id.Identifier, include));
-					}
+					if (!string.IsNullOrEmpty (include))
+						fx.includesFramework = include;
 				}
 				
 				//this is a Mono-specific extension
@@ -380,7 +368,7 @@ namespace MonoDevelop.Core.Assemblies
 
 					// HACK: we were using EnumerateFiles but it's broken in some Mono releases
 					// https://bugzilla.xamarin.com/show_bug.cgi?id=2975
-					var files = System.IO.Directory.GetFiles (dir, "*.dll");
+					var files = Directory.GetFiles (dir, "*.dll");
 					foreach (var f in files) {
 						try {
 							var an = SystemAssemblyService.GetAssemblyNameObj (dir.Combine (f));

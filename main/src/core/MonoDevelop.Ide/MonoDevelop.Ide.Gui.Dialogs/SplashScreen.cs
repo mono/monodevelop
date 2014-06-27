@@ -54,6 +54,10 @@ namespace MonoDevelop.Ide.Gui.Dialogs {
 				bitmap.Dispose ();
 				bitmap = null;
 			}
+			if (monitor != null) {
+				monitor.Dispose ();
+				monitor = null;
+			}
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evt)

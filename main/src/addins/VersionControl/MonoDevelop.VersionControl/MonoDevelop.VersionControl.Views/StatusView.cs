@@ -33,10 +33,11 @@ namespace MonoDevelop.VersionControl.Views
 		Gtk.Button buttonRevert;
 
 		FileTreeView filelist;
-		TreeViewColumn colCommit, colRemote;
+		TreeViewColumn colCommit, colRemote, colFile;
 		TreeStore filestore;
 		ScrolledWindow scroller;
 		CellRendererDiff diffRenderer;
+		CellRendererToggle cellToggle;
 
 		Box commitBox;
 		TextView commitText;
@@ -162,7 +163,7 @@ namespace MonoDevelop.VersionControl.Views
 			filelist.RowActivated += OnRowActivated;
 			filelist.DiffLineActivated += OnDiffLineActivated;
 
-			CellRendererToggle cellToggle = new CellRendererToggle();
+			cellToggle = new CellRendererToggle();
 			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
 			var crc = new CellRendererImage ();
 			crc.StockId = "vc-comment";
@@ -187,7 +188,7 @@ namespace MonoDevelop.VersionControl.Views
 			colStatus.AddAttribute (crt, "text", ColStatus);
 			colStatus.AddAttribute (crt, "foreground", ColStatusColor);
 
-			TreeViewColumn colFile = new TreeViewColumn ();
+			colFile = new TreeViewColumn ();
 			colFile.Title = GettextCatalog.GetString ("File");
 			colFile.Spacing = 2;
 			crp = new CellRendererImage ();
@@ -311,7 +312,8 @@ namespace MonoDevelop.VersionControl.Views
 			toolbar.Add (buttonRevert);
 
 			showRemoteStatus.Clicked += new EventHandler(OnShowRemoteStatusClicked);
-			toolbar.Add (showRemoteStatus);
+			if (vc.SupportsRemoteStatus)
+				toolbar.Add (showRemoteStatus);
 
 			var btnCreatePatch = new Gtk.Button () {
 				Image = new Xwt.ImageView (Xwt.Drawing.Image.FromResource ("diff-light-16.png")).ToGtkWidget (),
@@ -391,14 +393,31 @@ namespace MonoDevelop.VersionControl.Views
 				colCommit.Destroy ();
 				colCommit = null;
 			}
-
 			if (colRemote != null) {
 				colRemote.Destroy ();
 				colRemote = null;
 			}
+			if (colFile != null) {
+				colFile.Destroy ();
+				colFile = null;
+			}
 			if (filestore != null) {
 				filestore.Dispose ();
 				filestore = null;
+			}
+			if (filelist != null) {
+				filelist.DoPopupMenu = null;
+				filelist.RowActivated -= OnRowActivated;
+				filelist.DiffLineActivated -= OnDiffLineActivated;
+				filelist.TestExpandRow -= OnTestExpandRow;
+				filelist.Selection.Changed -= OnCursorChanged;
+				filelist.Destroy ();
+				filelist = null;
+			}
+			if (cellToggle != null) {
+				cellToggle.Toggled -= OnCommitToggledHandler;
+				cellToggle.Destroy ();
+				cellToggle = null;
 			}
 			if (this.diffRenderer != null) {
 				this.diffRenderer.Destroy ();
@@ -409,6 +428,8 @@ namespace MonoDevelop.VersionControl.Views
 				widget.Destroy ();
 				widget = null;
 			}
+			localDiff.Clear ();
+			remoteDiff.Clear ();
 			base.Dispose ();
 		}
 
@@ -500,8 +521,7 @@ namespace MonoDevelop.VersionControl.Views
 				colRemote.Visible = remoteStatus;
 
 				try {
-					if (vc.GetVersionInfo (filepath).CanCommit)
-						buttonCommit.Sensitive = true;
+					buttonCommit.Sensitive = statuses.Any (v => v.CanCommit);
 				} catch (Exception ex) {
 					LoggingService.LogError (ex.ToString ());
 					buttonCommit.Sensitive = true;
@@ -736,9 +756,7 @@ namespace MonoDevelop.VersionControl.Views
 					return;
 			}
 
-			VersionControlService.FileStatusChanged -= OnFileStatusChanged;
 			CommitCommand.Commit (vc, changeSet.Clone ());
-			VersionControlService.FileStatusChanged += OnFileStatusChanged;
 		}
 
 
@@ -750,8 +768,7 @@ namespace MonoDevelop.VersionControl.Views
 				TreeIter iter;
 				filestore.IterChildren (out iter, args.Iter);
 				string fileName = (string) filestore.GetValue (args.Iter, ColFullPath);
-				bool remoteDiff = (bool) filestore.GetValue (args.Iter, ColStatusRemoteDiff);
-				FillDiffInfo (iter, fileName, GetDiffData (remoteDiff));
+				FillDiffInfo (iter, fileName, GetDiffData (remoteStatus));
 			}
 		}
 
@@ -1028,7 +1045,7 @@ namespace MonoDevelop.VersionControl.Views
 					// the value. Do not capture the TreeIter as it may invalidate
 					// before the diff data has asyncronously loaded.
 					GC.KeepAlive (info.Diff.Value);
-					Gtk.Application.Invoke (delegate { if (!disposed) FillDifs (GetDiffData (this.remoteStatus)); });
+					Gtk.Application.Invoke (delegate { if (!disposed) FillDifs (); });
 				});
 			} else if (info.Exception != null) {
 				text = new [] { GettextCatalog.GetString ("Could not get diff information. ") + info.Exception.Message };
@@ -1043,7 +1060,7 @@ namespace MonoDevelop.VersionControl.Views
 			filestore.SetValue (iter, ColPath, text);
 		}
 
-		void FillDifs (List<DiffData> ddata)
+		void FillDifs ()
 		{
 			if (disposed)
 				return;
@@ -1057,10 +1074,9 @@ namespace MonoDevelop.VersionControl.Views
 				bool filled = (bool) filestore.GetValue (it, ColFilled);
 				if (filled) {
 					string fileName = (string) filestore.GetValue (it, ColFullPath);
-					bool remoteDiff = (bool) filestore.GetValue (it, ColStatusRemoteDiff);
 					TreeIter citer;
 					filestore.IterChildren (out citer, it);
-					FillDiffInfo (citer, fileName, GetDiffData (remoteDiff));
+					FillDiffInfo (citer, fileName, GetDiffData (remoteStatus));
 				}
 			}
 			while (filestore.IterNext (ref it));

@@ -69,11 +69,7 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 		
-		public DiffWidget (VersionControlDocumentInfo info) : this (info, false)
-		{
-		}
-		
-		public DiffWidget (VersionControlDocumentInfo info, bool viewOnly)
+		public DiffWidget (VersionControlDocumentInfo info, bool viewOnly = false)
 		{
 			this.info = info;
 			this.Build ();

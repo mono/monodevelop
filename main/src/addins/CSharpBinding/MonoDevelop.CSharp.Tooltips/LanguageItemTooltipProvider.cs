@@ -198,6 +198,14 @@ namespace MonoDevelop.SourceEditor
 					return sig.GetAliasedTypeTooltip ((AliasTypeResolveResult)result);
 				}
 				
+				if (data.Node is ThisReferenceExpression && result is ThisResolveResult) {
+					var resolver = file.GetResolver (doc.Compilation, doc.Editor.Caret.Location);
+					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());
+					sig.BreakLineAfterReturnType = false;
+					
+					return sig.GetKeywordTooltip ("this", data.Node);
+				}
+				
 				if (data.Node is TypeOfExpression) {
 					var resolver = file.GetResolver (doc.Compilation, doc.Editor.CaretLocation);
 					var sig = new SignatureMarkupCreator (resolver, doc.GetFormattingPolicy ().CreateOptions ());

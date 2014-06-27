@@ -58,6 +58,7 @@
       <HintPath>..\..\..\external\nuget-binary\NuGet.Core.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -125,7 +126,6 @@
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceService.cs" />
     <Compile Include="MonoDevelop.PackageManagement\LicenseAcceptanceViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MachinePackageCache.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\ManagePackagesUserPrompts.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewTitle.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCredentialProvider.cs" />
@@ -311,19 +311,55 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\PackageCellViewCheckBox.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackagesForSelectedPageQuery.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ISolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectProxy.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SolutionProxy.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IDotNetProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectProxy.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ISettingsProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\SettingsProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageSearchCriteria.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\WildcardVersionSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\PackageSourceIcon.png">
-      <LogicalName>PackageSourceIcon.png</LogicalName>
+    <EmbeddedResource Include="icons\light\package-source-32.png">
+      <LogicalName>package-source-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\package-source-32%402x.png">
+      <LogicalName>package-source-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-16.png">
+      <LogicalName>prefs-package-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-16%402x.png">
+      <LogicalName>prefs-package-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-source-16.png">
+      <LogicalName>prefs-package-source-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\prefs-package-source-16%402x.png">
+      <LogicalName>prefs-package-source-light-16@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="icons\packageicon.png">
-      <LogicalName>packageicon.png</LogicalName>
+    <EmbeddedResource Include="icons\dark\reference-48.png">
+      <LogicalName>reference-dark-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\dark\reference-48%402x.png">
+      <LogicalName>reference-dark-48@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\reference-48.png">
+      <LogicalName>reference-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\reference-48%402x.png">
+      <LogicalName>reference-light-48@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

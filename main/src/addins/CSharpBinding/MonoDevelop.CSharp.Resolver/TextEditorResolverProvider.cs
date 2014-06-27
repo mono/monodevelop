@@ -111,7 +111,18 @@ namespace MonoDevelop.CSharp.Resolver
 			var resolver = new CSharpAstResolver (doc.Compilation, unit, parsedFile);
 			resolver.ApplyNavigator (new NodeListResolveVisitorNavigator (node), CancellationToken.None);
 			var state = resolver.GetResolverStateBefore (node, CancellationToken.None);
-			return state.LookupSimpleNameOrTypeName (expression, new List<IType> (), NameLookupMode.Expression);
+
+			var list = new List<IType> ();
+			int indexOf = expression.IndexOf ('`');
+			if (indexOf != -1) {
+				var intType = new PrimitiveType ("int").ToTypeReference ().Resolve (doc.Compilation);
+				var num = expression.Substring (indexOf + 1);
+				int number = int.Parse (num);
+				for (int i = 0; i < number; i++)
+					list.Add (intType);
+				expression = expression.Remove (indexOf);
+			}
+			return state.LookupSimpleNameOrTypeName (expression, list, NameLookupMode.Expression);
 		}
 		
 		

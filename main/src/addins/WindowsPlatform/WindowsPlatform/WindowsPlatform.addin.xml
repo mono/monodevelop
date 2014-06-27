@@ -1,0 +1,26 @@
+<ExtensionModel>
+
+	<Extension path = "/MonoDevelop/Core/PlatformService">
+		<Class class = "MonoDevelop.Platform.WindowsPlatform"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/InitCompleteHandlers">
+		<Class class="MonoDevelop.Platform.JumpList" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/WebCredentialProviders">
+		<Class class = "MonoDevelop.Platform.Windows.WindowsProxyCredentialProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/PasswordProvider">
+		<Class class = "MonoDevelop.Platform.Windows.WindowsSecureStoragePasswordProvider" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Components/DialogHandlers">
+		<Condition id="Platform" value="windows" minVersion="6.0">
+			<Class class = "MonoDevelop.Platform.SelectFileDialogHandler"/>
+			<Class class = "MonoDevelop.Platform.AddFileDialogHandler"/>
+			<Class class = "MonoDevelop.Platform.OpenFileDialogHandler"/>
+		</Condition>
+	</Extension>
+</ExtensionModel>

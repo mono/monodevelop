@@ -154,6 +154,20 @@ configure_packages ()
 		else
 			enable_tests=" "
 		fi
+
+		prefixarg="--prefix=$prefix"
+		builddir=`pwd`/$path/build
+
+		for p in $ops ; do
+			arg=`echo $p | cut -d '=' -f 1`
+			if [ $arg == "--addins-dir" ] ; then
+				builddir=`pwd`/$path/`echo $p | cut -d '=' -f 2`
+			fi
+			if [ $p == "--no-prefix" ] ; then
+				prefixarg=""
+			fi
+		done
+
 		title="Configuring package: $path"
 		nc=`echo $title | wc -m`
 		echo $title
@@ -164,14 +178,16 @@ configure_packages ()
 			sct="./autogen.sh $enable_tests"
 		elif test -a $path/configure; then
 			sct=./configure
+		elif test -a $path/configure.sh; then
+			sct=./configure.sh
 		else
 			echo Configuration script not found in directory: $p
 			exit 1
 		fi
 		pushd $path > /dev/null
-		PKG_CONFIG_PATH=$localconf:$PKG_CONFIG_PATH $sct --prefix=$prefix $ops || handle_config_error
+		PKG_CONFIG_PATH=$localconf:$PKG_CONFIG_PATH $sct $prefixarg $ops || handle_config_error
 		popd > /dev/null
-		create_local_config $path
+		create_local_config $path $builddir
 		packages="$packages $path"
 	done
 	rm -f local-config/main.addins
@@ -189,14 +205,14 @@ create_local_config ()
 
 	# Copy the .pc file to local-config, and set the base lib directory
 	mkdir -p local-config
-	builddir=`pwd`/$path/build
+	builddir=$2
 	for f in `ls $1/*.pc.in 2>/dev/null`; do
 		pcfile=`echo $f | sed s,.*/,, | sed s/\.in$//`
 		sed -e s,libdir=.*,libdir=$builddir, -e s/@VERSION@/$ver/g $f> local-config/$pcfile
 	done
 	
 	# Generate the .addins file for the package
-	addins=local-config/`echo $path | sed s,/,_,`.addins
+	addins=local-config/`echo $path | sed s,/,_,g`.addins
 	echo "<Addins>" > $addins
 	echo "  <Directory include-subdirs=\"true\">$builddir</Directory>" >> $addins
 	echo "</Addins>" >> $addins
@@ -255,11 +271,14 @@ if [ x$select == xyes -o ! -a profiles/$profile ]; then
 fi
 
 if test `uname` = "Darwin"; then
+	# if building on bots or in default environment, fix up paths to use system Mono
 	if test "x$BUILD_REVISION" != "x" -o "x$DYLD_FALLBACK_LIBRARY_PATH" = "x"; then
-		export DYLD_FALLBACK_LIBRARY_PATH="/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib"
+		export DYLD_FALLBACK_LIBRARY_PATH="/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib"
 		export PATH="/Library/Frameworks/Mono.framework/Versions/Current/bin:$PATH"
 		export ACLOCAL_FLAGS="-I /Library/Frameworks/Mono.framework/Versions/Current/share/aclocal"
 	fi
+	# add in libsvn's directory as a fallback path. user-set paths will override it
+	export DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:/Library/Developer/CommandLineTools/usr/lib"
 fi
 
 configure_packages

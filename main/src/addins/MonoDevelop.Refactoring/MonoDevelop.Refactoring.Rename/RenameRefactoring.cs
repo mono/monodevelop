@@ -279,7 +279,7 @@ namespace MonoDevelop.Refactoring.Rename
 				if (properties.RenameFile && options.SelectedItem is IType) {
 					var cls = ((IType)options.SelectedItem).GetDefinition ();
 					int currentPart = 1;
-					HashSet<string> alreadyRenamed = new HashSet<string> ();
+					var alreadyRenamed = new HashSet<string> ();
 					foreach (var part in cls.Parts) {
 						if (alreadyRenamed.Contains (part.Region.FileName))
 							continue;
@@ -287,13 +287,16 @@ namespace MonoDevelop.Refactoring.Rename
 							
 						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.Region.FileName);
 						string newFileName;
-						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper ()))
+						var newName = properties.NewName;
+						if (string.IsNullOrEmpty (oldFileName) || string.IsNullOrEmpty (newName))
 							continue;
-						int idx = oldFileName.IndexOf (cls.Name);
+						if (oldFileName.ToUpper () == newName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + newName.ToUpper (), StringComparison.Ordinal))
+							continue;
+						int idx = oldFileName.IndexOf (cls.Name, StringComparison.Ordinal);
 						if (idx >= 0) {
-							newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + cls.Name.Length);
+							newFileName = oldFileName.Substring (0, idx) + newName + oldFileName.Substring (idx + cls.Name.Length);
 						} else {
-							newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
+							newFileName = currentPart != 1 ? newName + currentPart : newName;
 							currentPart++;
 						}
 							

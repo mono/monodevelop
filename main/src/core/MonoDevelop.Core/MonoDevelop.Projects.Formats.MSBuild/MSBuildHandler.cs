@@ -151,5 +151,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			customSlnData = item;
 		}
+
+		/// <summary>
+		/// Gets a service instance of a given type
+		/// </summary>
+		/// <returns>
+		/// The service.
+		/// </returns>
+		/// <param name='t'>
+		/// Type of the service
+		/// </param>
+		/// <remarks>
+		/// This method looks for an imlpementation of a service of the given type.
+		/// </remarks>
+		public virtual object GetService (Type t)
+		{
+			return null;
+		}
 	}
 }

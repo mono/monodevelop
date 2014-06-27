@@ -25,10 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
+using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Projects;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
@@ -40,19 +43,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		{
 			packageManagementEvents = PackageManagementServices.PackageManagementEvents;
 
-			packageManagementEvents.ParentPackageInstalled += ParentPackageInstalled;
-			packageManagementEvents.ParentPackageUninstalled += ParentPackageUninstalled;
 			packageManagementEvents.PackagesRestored += PackagesRestored;
-		}
+			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
+			packageManagementEvents.PackageOperationError += PackageOperationError;
 
-		void ParentPackageInstalled (object sender, ParentPackageOperationEventArgs e)
-		{
-			RefreshChildNodes (e.Project);
-		}
-
-		void ParentPackageUninstalled (object sender, ParentPackageOperationEventArgs e)
-		{
-			RefreshChildNodes (e.Project);
+			FileService.FileChanged += FileChanged;
 		}
 
 		void PackagesRestored (object sender, EventArgs e)
@@ -60,11 +55,21 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			RefreshAllChildNodes ();
 		}
 
+		void PackageOperationsStarting (object sender, EventArgs e)
+		{
+			RefreshAllChildNodes ();
+		}
+
+		void PackageOperationError (object sender, EventArgs e)
+		{
+			RefreshAllChildNodes ();
+		}
+
 		void RefreshAllChildNodes ()
 		{
 			DispatchService.GuiDispatch (() => {
-				foreach (DotNetProject project in PackageManagementServices.Solution.GetDotNetProjects ()) {
-					RefreshChildNodes (project);
+				foreach (IDotNetProject project in PackageManagementServices.Solution.GetDotNetProjects ()) {
+					RefreshChildNodes (project.DotNetProject);
 				}
 			});
 		}
@@ -84,9 +89,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public override void Dispose ()
 		{
-			packageManagementEvents.ParentPackageInstalled -= ParentPackageInstalled;
-			packageManagementEvents.ParentPackageUninstalled -= ParentPackageUninstalled;
+			FileService.FileChanged -= FileChanged;
+
 			packageManagementEvents.PackagesRestored -= PackagesRestored;
+			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
+			packageManagementEvents.PackageOperationError -= PackageOperationError;
 		}
 
 		public override bool CanBuildNode (Type dataType)
@@ -102,7 +109,15 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		bool ProjectHasPackages (object dataObject)
 		{
 			var project = (DotNetProject) dataObject;
-			return project.HasPackages ();
+			return project.HasPackages () || ProjectHasPendingPackages (project);
+		}
+
+		bool ProjectHasPendingPackages (DotNetProject project)
+		{
+			return PackageManagementServices
+				.BackgroundPackageActionRunner
+				.PendingInstallActionsForProject (project)
+				.Any ();
 		}
 
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
@@ -111,6 +126,27 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (ProjectHasPackages (project)) {
 				treeBuilder.AddChild (new ProjectPackagesFolderNode (project));
 			}
+		}
+
+		void FileChanged (object sender, FileEventArgs e)
+		{
+			if (IsPackagesConfigFileChanged (e)) {
+				RefreshAllChildNodes ();
+			}
+		}
+
+		bool IsPackagesConfigFileChanged (FileEventArgs fileEventArgs)
+		{
+			return fileEventArgs.Any (file => IsPackagesConfigFileName (file.FileName));
+		}
+
+		bool IsPackagesConfigFileName (FilePath filePath)
+		{
+			if (filePath == null) {
+				return false;
+			}
+
+			return Constants.PackageReferenceFile.Equals (filePath.FileName, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

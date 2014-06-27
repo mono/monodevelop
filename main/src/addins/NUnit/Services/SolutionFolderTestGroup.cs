@@ -45,7 +45,7 @@ namespace MonoDevelop.NUnit
 		{
 			string storeId = c.ItemId;
 			string resultsPath = MonoDevelop.NUnit.RootTest.GetTestResultsDirectory (c.BaseDirectory);
-			ResultsStore = new XmlResultsStore (resultsPath, storeId);
+			ResultsStore = new BinaryResultsStore (resultsPath, storeId);
 			
 			combine = c;
 			combine.ItemAdded += OnEntryChanged;

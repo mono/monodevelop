@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 					bool matched = false;
 					foreach (IExecutionMode mode in mset.ExecutionModes) {
 						foreach (SolutionConfiguration sc in sol.Configurations) {
-							if (it.CanExecute (new ExecutionContext (mode, null), sc.Selector)) {
+							if (it.CanExecute (new ExecutionContext (mode, null, IdeApp.Workspace.ActiveExecutionTarget), sc.Selector)) {
 								startupItems.Add (it);
 								matched = true;
 								break;

@@ -320,12 +320,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, NodeInfo nodeInfo)
 			{
 				store.SetValue (it, ExtensibleTreeView.TextColumn, nodeInfo.Label);
-				if (nodeInfo.Icon != null) store.SetValue (it, ExtensibleTreeView.OpenIconColumn, nodeInfo.Icon);
-				if (nodeInfo.ClosedIcon != null) store.SetValue (it, ExtensibleTreeView.ClosedIconColumn, nodeInfo.ClosedIcon);
-				if (nodeInfo.OverlayBottomLeft != null) store.SetValue (it, ExtensibleTreeView.OverlayBottomLeftColumn, nodeInfo.OverlayBottomLeft);
-				if (nodeInfo.OverlayBottomRight != null) store.SetValue (it, ExtensibleTreeView.OverlayBottomRightColumn, nodeInfo.OverlayBottomRight);
-				if (nodeInfo.OverlayTopLeft != null) store.SetValue (it, ExtensibleTreeView.OverlayTopLeftColumn, nodeInfo.OverlayTopLeft);
-				if (nodeInfo.OverlayTopRight != null) store.SetValue (it, ExtensibleTreeView.OverlayTopRightColumn, nodeInfo.OverlayTopRight);
+				store.SetValue (it, ExtensibleTreeView.OpenIconColumn, nodeInfo.Icon ?? CellRendererImage.NullImage);
+				store.SetValue (it, ExtensibleTreeView.ClosedIconColumn, nodeInfo.ClosedIcon ?? CellRendererImage.NullImage);
+				store.SetValue (it, ExtensibleTreeView.OverlayBottomLeftColumn, nodeInfo.OverlayBottomLeft ?? CellRendererImage.NullImage);
+				store.SetValue (it, ExtensibleTreeView.OverlayBottomRightColumn, nodeInfo.OverlayBottomRight ?? CellRendererImage.NullImage);
+				store.SetValue (it, ExtensibleTreeView.OverlayTopLeftColumn, nodeInfo.OverlayTopLeft ?? CellRendererImage.NullImage);
+				store.SetValue (it, ExtensibleTreeView.OverlayTopRightColumn, nodeInfo.OverlayTopRight ?? CellRendererImage.NullImage);
 				pad.Tree.QueueDraw ();
 			}
 

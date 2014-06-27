@@ -88,7 +88,7 @@ namespace MonoDevelop.AspNet.Gui
 		
 		protected override RootState CreateRootState ()
 		{
-			return new XmlFreeState (new HtmlTagState (true), new HtmlClosingTagState (true));
+			return new XmlFreeState (new HtmlTagState (), new HtmlClosingTagState (true));
 		}
 		
 		protected override void Initialize ()

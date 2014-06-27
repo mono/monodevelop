@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using Mono.Addins;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.Commands
 {
@@ -201,18 +202,6 @@ namespace MonoDevelop.Components.Commands
 			ExtensionContext ctx, string addinPath)
 		{
 			ShowContextMenu (parent, evt, CreateCommandEntrySet (ctx, addinPath));
-		}
-		
-		[Obsolete("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (string addinPath)
-		{
-			ShowContextMenu (CreateCommandEntrySet (addinPath));
-		}
-		
-		[Obsolete("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (ExtensionContext ctx, string addinPath)
-		{
-			ShowContextMenu (CreateCommandEntrySet (ctx, addinPath));
 		}
 		
 		/// <summary>
@@ -699,25 +688,6 @@ namespace MonoDevelop.Components.Commands
 			return menu;
 		}
 		
-		[Obsolete("Unused. To be removed")]
-		public void InsertOptions (Gtk.Menu menu, CommandEntrySet entrySet, int index)
-		{
-			CommandTargetRoute route = new CommandTargetRoute ();
-			foreach (CommandEntry entry in entrySet) {
-				Gtk.MenuItem item = entry.CreateMenuItem (this);
-				CustomItem ci = item.Child as CustomItem;
-				if (ci != null)
-					ci.SetMenuStyle (menu);
-				int n = menu.Children.Length;
-				menu.Insert (item, index);
-				if (item is ICommandUserItem)
-					((ICommandUserItem)item).Update (route);
-				else
-					item.Show ();
-				index += menu.Children.Length - n;
-			}
-		}
-		
 		/// <summary>
 		/// Shows a context menu.
 		/// </summary>
@@ -733,12 +703,26 @@ namespace MonoDevelop.Components.Commands
 		/// <param name='initialCommandTarget'>
 		/// Initial command route target. The command handler will start looking for command handlers in this object.
 		/// </param>
-		public void ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
+		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
-			var menu = CreateMenu (entrySet);
-			if (menu != null)
-				ShowContextMenu (parent, evt, menu, initialCommandTarget);
+			if (Platform.IsMac) {
+				parent.GrabFocus ();
+				int x, y;
+				if (evt != null) {
+					x = (int)evt.X;
+					y = (int)evt.Y;
+				} else {
+					Gdk.Display.Default.GetPointer (out x, out y);
+				}
+				return DesktopService.ShowContextMenu (this, parent, x, y, entrySet, initialCommandTarget);
+			} else {
+				var menu = CreateMenu (entrySet);
+				if (menu != null)
+					ShowContextMenu (parent, evt, menu, initialCommandTarget);
+
+				return true;
+			}
 		}
 		
 		/// <summary>
@@ -764,39 +748,6 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			GtkWorkarounds.ShowContextMenu (menu, parent, evt);
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget, Gdk.EventButton evt)
-		{
-			if (menu is CommandMenu) {
-				((CommandMenu)menu).InitialCommandTarget = initialCommandTarget;
-			}
-			ShowContextMenu (null, evt, menu, initialCommandTarget);
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (CommandEntrySet entrySet)
-		{
-			ShowContextMenu (entrySet, null);
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (CommandEntrySet entrySet, object initialTarget)
-		{
-			ShowContextMenu (CreateMenu (entrySet, initialTarget));
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (Gtk.Menu menu)
-		{
-			ShowContextMenu (menu, null, (Gdk.EventButton) null);
-		}
-		
-		[Obsolete ("Use ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, ...)")]
-		public void ShowContextMenu (Gtk.Menu menu, object initialCommandTarget)
-		{
-			ShowContextMenu (menu, initialCommandTarget, null);
 		}
 		
 		/// <summary>

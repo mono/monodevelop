@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Gui.Dialogs;
 
 using Gtk;
 using MonoDevelop.Projects;
+using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.Projects.OptionPanels
 {
@@ -67,6 +68,8 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 			if (project is DotNetProject) {
 				projectDefaultNamespaceEntry.Text = ((DotNetProject)project).DefaultNamespace;
+			} else if (project is SharedAssetsProject) {
+				projectDefaultNamespaceEntry.Text = ((SharedAssetsProject)project).DefaultNamespace;
 			} else {
 				defaultNamespaceLabel.Visible = false;
 				projectDefaultNamespaceEntry.Visible = false;
@@ -88,6 +91,9 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			project.Description = projectDescriptionTextView.Buffer.Text;
 			if (project is DotNetProject) {
 				((DotNetProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
+			}
+			else if (project is SharedAssetsProject) {
+				((SharedAssetsProject)project).DefaultNamespace = projectDefaultNamespaceEntry.Text;
 			}
 
 			if (checkSolutionVersion.Active)

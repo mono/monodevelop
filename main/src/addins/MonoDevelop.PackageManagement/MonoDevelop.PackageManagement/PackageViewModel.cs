@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Runtime.Versioning;
 using MonoDevelop.PackageManagement;
 using NuGet;
 
@@ -49,6 +50,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageActionRunner actionRunner;
 		IPackageViewModelParent parent;
 		string summary;
+		List<PackageDependency> dependencies;
 		
 		public PackageViewModel(
 			IPackageViewModelParent parent,
@@ -135,12 +137,20 @@ namespace ICSharpCode.PackageManagement
 			return selectedProjects.IsPackageInstalled(package);
 		}
 		
-		public IEnumerable<PackageDependencySet> Dependencies {
-			get { return package.DependencySets; }
+		public IEnumerable<PackageDependency> Dependencies {
+			get {
+				if (dependencies == null) {
+					FrameworkName targetFramework = selectedProjects.GetTargetFramework ();
+					dependencies = package
+						.GetCompatiblePackageDependencies (targetFramework)
+						.ToList ();
+				}
+				return dependencies;
+			}
 		}
 		
 		public bool HasDependencies {
-			get { return package.HasDependencies; }
+			get { return Dependencies.Any (); }
 		}
 		
 		public bool HasNoDependencies {
@@ -539,7 +549,16 @@ namespace ICSharpCode.PackageManagement
 			return String.Empty;
 		}
 		
-		public string GetDownloadCountDisplayText()
+		public string GetDownloadCountOrVersionDisplayText ()
+		{
+			if (ShowVersionInsteadOfDownloadCount) {
+				return Version.ToString ();
+			}
+
+			return GetDownloadCountDisplayText ();
+		}
+
+		public string GetDownloadCountDisplayText ()
 		{
 			if (HasDownloadCount) {
 				return DownloadCount.ToString ("N0");
@@ -550,10 +569,8 @@ namespace ICSharpCode.PackageManagement
 		public string GetPackageDependenciesDisplayText ()
 		{
 			var displayText = new StringBuilder ();
-			foreach (PackageDependencySet dependencySet in Dependencies) {
-				foreach (PackageDependency dependency in dependencySet.Dependencies) {
-					displayText.AppendLine (dependency.ToString ());
-				}
+			foreach (PackageDependency dependency in Dependencies) {
+				displayText.AppendLine (dependency.ToString ());
 			}
 			return displayText.ToString ();
 		}
@@ -574,5 +591,6 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		public bool IsChecked { get; set; }
+		public bool ShowVersionInsteadOfDownloadCount { get; set; }
 	}
 }

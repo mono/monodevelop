@@ -29,17 +29,23 @@ using MonoDevelop.Projects.Policies;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public partial class NewPolicySetDialog : Gtk.Dialog
+	partial class NewPolicySetDialog : Gtk.Dialog
 	{
 		List<PolicySet> sets;
 		
 		public NewPolicySetDialog (List<PolicySet> sets)
 		{
 			this.Build ();
+
 			this.sets = sets;
 			foreach (var ps in sets)
 				comboSets.AppendText (ps.Name);
 			comboSets.Active = 0;
+
+			buttonOk.Sensitive = false;
+			entryName.Changed += delegate {
+				buttonOk.Sensitive = !string.IsNullOrWhiteSpace (entryName.Text);
+			};
 		}
 		
 		public string PolicyName {

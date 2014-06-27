@@ -30,6 +30,7 @@ using System;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
+	[Flags]
 	public enum DragOperation {
 		None = 0,
 		Copy = 1,

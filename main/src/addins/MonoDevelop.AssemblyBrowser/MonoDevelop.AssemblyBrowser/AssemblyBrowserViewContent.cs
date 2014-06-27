@@ -35,6 +35,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Projects;
 using System.Linq;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -123,8 +124,13 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 			if (member == null)
 				return;
-			var url = AssemblyBrowserWidget.GetIdString (member); 
-			widget.Open (url);
+			var url = AssemblyBrowserWidget.GetIdString (member);
+			try {
+				widget.Open (url);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while navigating to " + url, e);
+				MessageService.ShowException (e, GettextCatalog.GetString ("{0} could not be opened", url), GettextCatalog.GetString ("Error while opening assembly"));
+			}
 		}
 		
 		#endregion 
@@ -172,7 +178,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 	class AssemblyBrowserNavigationPoint : NavigationPoint
 	{
-		Document DoShow ()
+		static Document DoShow ()
 		{
 			foreach (var view in Ide.IdeApp.Workbench.Documents) {
 				if (view.GetContent<AssemblyBrowserViewContent> () != null) {
@@ -189,11 +195,6 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 
 		#region implemented abstract members of NavigationPoint
-
-		public override void Show ()
-		{
-			DoShow ();
-		}
 
 		public override Document ShowDocument ()
 		{
