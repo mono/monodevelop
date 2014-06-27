@@ -49,6 +49,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace CBinding
 {
@@ -81,7 +82,6 @@ namespace CBinding
 			new KeyValuePair<string, GetMembersForExtension>(".", GetInstanceMembers)
 		};
 		
-		protected TextEditor textEditorData{ get; set; }
 
 		public override string CompletionLanguage {
 			get {
@@ -658,7 +658,7 @@ namespace CBinding
 			if (tag is ParsedDocument) {
 				provider = new CompilationUnitDataProvider (Document);
 			} else {
-				provider = new DataProvider (Document, tag, GetAmbience ());
+				provider = new DataProvider (Document, tag, new NetAmbience ());
 			}
 			
 			DropDownBoxListWindow window = new DropDownBoxListWindow (provider);
@@ -719,13 +719,25 @@ namespace CBinding
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));*/
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-			textEditorData = Document.Editor;
 			UpdatePath (null, null);
-			textEditorData.CaretPositionChanged += UpdatePath;
-			Document.DocumentParsed += delegate { UpdatePath (null, null); };
+			Editor.CaretPositionChanged += UpdatePath;
+			Document.DocumentParsed += HandleDocumentParsed;
+		}
+
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			UpdatePath (null, null);
+		}
+
+		public override void Dispose ()
+		{
+			Editor.CaretPositionChanged -= UpdatePath;
+			Document.DocumentParsed -= HandleDocumentParsed;
+
+			base.Dispose ();
 		}
 		
 		/// <summary>
