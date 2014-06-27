@@ -79,7 +79,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				return "Razor";
 			}
 		}
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 
@@ -221,10 +222,10 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			prevNode = n;
 
 			var state = Tracker.Engine.CurrentState;
-			int off = document.Editor.CaretOffset;
+			int off = Editor.CaretOffset;
 
-			char previousChar = off > 0 ? document.Editor.GetCharAt (off - 1) : ' ';
-			char beforePrevious = off > 1 ? document.Editor.GetCharAt (off - 2) : ' ';
+			char previousChar = off > 0 ? Editor.GetCharAt (off - 1) : ' ';
+			char beforePrevious = off > 1 ? Editor.GetCharAt (off - 2) : ' ';
 
 			// Determine completion context here, before calling base method to set the context correctly
 
@@ -265,14 +266,16 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected void SwitchToHidden ()
 		{
 			isInCSharpContext = true;
-			document = HiddenDoc;
+			Document = HiddenDoc;
+			Editor = Document.Editor;
 			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultDocument, hiddenInfo);
 		}
 
 		protected void SwitchToReal ()
 		{
 			isInCSharpContext = false;
-			document = defaultDocument;
+			Document = defaultDocument;
+			Editor = Document.Editor;
 			CompletionWidget = defaultCompletionWidget;
 		}
 
