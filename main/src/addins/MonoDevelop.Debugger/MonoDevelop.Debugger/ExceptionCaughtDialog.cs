@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Debugger
 {
@@ -753,7 +754,7 @@ namespace MonoDevelop.Debugger
 		}
 	}
 
-	class ExceptionCaughtTextEditorExtension: TextEditorExtension
+	class ExceptionCaughtTextEditorExtension: AbstractEditorExtension
 	{
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
