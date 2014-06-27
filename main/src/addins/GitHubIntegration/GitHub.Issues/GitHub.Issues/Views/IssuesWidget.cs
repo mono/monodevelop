@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Octokit;
 using System.ComponentModel;
+using System.Collections;
 
 namespace GitHub.Issues.UserInterface
 {
@@ -96,10 +97,39 @@ namespace GitHub.Issues.UserInterface
 			this.deleteColumnsFromTreeView (this.issueTable, this.treeColumns);
 
 			// Find and save the selected columns
-			this.columns = this.getIssueColumnsFromSelectedColumns (this.getSelectedColumns (this.columnListView));
+			this.columns = this.getIssueColumnsFromSelectedColumns (this.getSelectedColumns (this.columnListStore));
 
 			// Reconfigure the issue tree view to show the selected columns
 			this.treeColumns = this.createAndAppendColumnsToTreeView (this.issueTable, this.columns);
+
+			// TODO: Set up filtering for the given columns
+		}
+
+		// When a toggle is clicked on the toggle cell renderer, this method handles setting the new value of the toggle
+		private void toggleRenderedToggledHandlerColumnList(object sender, Gtk.ToggledArgs args)
+		{
+			Gtk.TreeIter iterator;
+
+			// Try and find the clicked item in the column list store
+			if (this.columnListStore.GetIter(out iterator, new Gtk.TreePath(args.Path)))
+			{
+				// Get the current value and set the value to the opposite
+				bool oldToggleValue = (bool)this.columnListStore.GetValue (iterator, 2);
+				this.columnListStore.SetValue (iterator, 2, !oldToggleValue);
+			}
+		}
+
+		// Handles the text box updates in the column list store. For filter specification for example
+		private void textRendererEditedHandlerColumnList(object sender, Gtk.EditedArgs args)
+		{
+			Gtk.TreeIter iterator;
+
+			// Try and find the edited item in the column list store
+			if (this.columnListStore.GetIter(out iterator, new Gtk.TreePath(args.Path)))
+			{
+				// Update the new filter text
+				this.columnListStore.SetValue (iterator, 3, args.NewText);
+			}
 		}
 
 		#endregion
@@ -146,7 +176,7 @@ namespace GitHub.Issues.UserInterface
 		private Gtk.TreeView createColumnListView()
 		{
 			// Set up the control panel for column selection
-			this.columnListStore = new Gtk.ListStore (typeof(String), typeof(String));
+			this.columnListStore = new Gtk.ListStore (typeof(String), typeof(String), typeof(Boolean), typeof(String));
 
 			// Add all properties into the list store that appear in IssueNode class
 			// The property names won't show, the Description attribute value will be displayed instead
@@ -159,7 +189,7 @@ namespace GitHub.Issues.UserInterface
 			columnListView.Model = this.columnListStore;
 
 			// Allow multiselect with CTRL or SHIFT held down
-			columnListView.Selection.Mode = Gtk.SelectionMode.Extended;
+			// columnListView.Selection.Mode = Gtk.SelectionMode.Extended;
 
 			return columnListView;
 		}
@@ -184,7 +214,14 @@ namespace GitHub.Issues.UserInterface
 		// Allows us to sort the columns based on the string provided for each column in the column selection tree view
 		private void SetFilteringHandlers (List<Gtk.TreeViewColumn> columns, Gtk.TreeModelFilter sort)
 		{
-			// TODO: Set up filtering functionality to read the values from the selected columns text boxes (needs implemented)
+			// Set the visibility function for filtering
+			sort.VisibleFunc = this.treeFilterVisibilityFunctionForIssues;
+		}
+
+		// Filtering function which checks if the row should be show or not by comparing against the filter
+		private bool treeFilterVisibilityFunctionForIssues(Gtk.TreeModel treeModel, Gtk.TreeIter iterator)
+		{
+			// TODO: Write comparison code against the current filtering values specified
 		}
 
 		// Allows us to sort the columns by click on the column headers. It simply toggles the sorting from
@@ -311,7 +348,18 @@ namespace GitHub.Issues.UserInterface
 		private void initializeColumnListControl(Gtk.TreeView columnListView)
 		{
 			// Only show column 0 from the list store since it contains the user friendly description, leave out the second one (property name - used for back end)
+			Gtk.CellRendererToggle displayToggle = new Gtk.CellRendererToggle ();
+			displayToggle.Mode = Gtk.CellRendererMode.Activatable;
+			displayToggle.Toggled += this.toggleRenderedToggledHandlerColumnList;
+
+			Gtk.CellRendererText filterTextBox = new Gtk.CellRendererText ();
+			filterTextBox.Mode = Gtk.CellRendererMode.Activatable;
+			filterTextBox.Editable = true;
+			filterTextBox.Edited += this.textRendererEditedHandlerColumnList;
+
+			columnListView.AppendColumn (new Gtk.TreeViewColumn ("Display", displayToggle, "active", 2));
 			columnListView.AppendColumn (new Gtk.TreeViewColumn ("Column Title", new Gtk.CellRendererText (), "text", 0));
+			columnListView.AppendColumn (new Gtk.TreeViewColumn ("Filter", filterTextBox, "text", 3));
 		}
 
 		// Once we know the property names and the column indexes in the store, we can create the IssueColumn classes which we
@@ -329,28 +377,35 @@ namespace GitHub.Issues.UserInterface
 			return issueColumns;
 		}
 
+		#endregion
+
+		#region Tree View Data Management Methods - Reading for Trees, Adding Rows etc.
+
 		// Expects a tree view which contains the multiple selections of the columns that we want
 		// to see in the issue table for example. It checks what is selected and extracts the names
 		// along with the indices of the selections and composes them into a list for later use.
-		private List<KeyValuePair<String, Int32>> getSelectedColumns(Gtk.TreeView columnsTreeView)
+		private List<KeyValuePair<String, Int32>> getSelectedColumns(Gtk.ListStore columnsListStore)
 		{
-			if (columnsTreeView != null && columnsTreeView.Selection != null) {
-				int columnCount = columnsTreeView.Selection.CountSelectedRows ();
-				Gtk.TreeModel selectedRows = null;
-
-				// Get the paths to reach all the selected rows
-				Gtk.TreePath[] selectedRowPaths = columnsTreeView.Selection.GetSelectedRows (out selectedRows);
+			if (columnsListStore != null) {
+				IEnumerator rowEnumerator = columnListStore.GetEnumerator ();
 
 				// Here we will store string representations of the selected column names
 				List<KeyValuePair<String, Int32>> selectedColumns = new List<KeyValuePair<String, Int32>> ();
 
-				// Find what columns where selected  in the list
-				foreach (Gtk.TreePath path in selectedRowPaths) {
-					Gtk.TreeIter iterator;
-					selectedRows.GetIter (out iterator, path);
+				int currentRowCount = 0;
+
+				while (rowEnumerator.MoveNext ()) {
+					// 0 - Title, 1 - Property, 2 - Display?
+					Array currentRow = (Array)rowEnumerator.Current;
 
 					// Get column property (not show - not the user friendly name) and the row index
-					selectedColumns.Add (new KeyValuePair<string, int> ((String)selectedRows.GetValue (iterator, 1), path.Indices [0]));
+					if ((bool)currentRow.GetValue(2) == true)
+					{
+						selectedColumns.Add (new KeyValuePair<string, int> ((String)currentRow.GetValue(1), currentRowCount));
+					}
+
+					// Keep track of column indexes - used for correct mapping to columns in store
+					currentRowCount++;
 				}
 
 				return selectedColumns;
@@ -358,11 +413,7 @@ namespace GitHub.Issues.UserInterface
 
 			return new List<KeyValuePair<String, Int32>>();
 		}
-
-		#endregion
-
-		#region Tree View Data Management Methods - Reading for Trees, Adding Rows etc.
-
+			
 		// Populates the list store with each value of the given enum type. Mainly used to
 		// populate all column types from the properties into the list store which is then used
 		// to display them in a table so the user can then select the columns they'd like
@@ -376,7 +427,9 @@ namespace GitHub.Issues.UserInterface
 				String description = ((DescriptionAttribute)Attribute.GetCustomAttribute (classType.GetProperty (propertyName), typeof(DescriptionAttribute))).Description;
 
 				// Add to list store
-				list.AppendValues (description, propertyName);
+				list.AppendValues (description, propertyName, true, string.Empty);
+				// True because we assume that the user wants to see that column by default
+				// string.Empty because we assume that the user doesn't want any filter on by default
 			}
 		}
 
