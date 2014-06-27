@@ -215,10 +215,8 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null || doc.ParsedDocument == null)
 				return;
-			ITextEditorExtension ext = doc.EditorExtension;
-			while (ext != null && !(ext is CompletionTextEditorExtension))
-				ext = ext.Next;
-			if (ext == null)
+			var completionExt = doc.GetContent<CompletionTextEditorExtension> ();
+			if (completionExt == null)
 				return;
 		
 			var dom = doc.Compilation;
@@ -241,7 +239,7 @@ namespace MonoDevelop.Refactoring
 			completionList.IsSorted = true;
 			typeList.ForEach (cd => completionList.Add (cd));
 			
-			((CompletionTextEditorExtension)ext).ShowCompletion (completionList);
+			completionExt.ShowCompletion (completionList);
 		}
 	}
 }
