@@ -28,10 +28,11 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Refactoring.Rename
 {
-	public class RenameTextEditorExtension : TextEditorExtension
+	public class RenameTextEditorExtension : AbstractEditorExtension
 	{
 		[CommandUpdateHandler(EditCommands.Rename)]
 		public void RenameCommand_Update(CommandInfo ci)

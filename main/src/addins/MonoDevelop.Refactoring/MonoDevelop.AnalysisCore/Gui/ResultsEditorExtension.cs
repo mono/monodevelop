@@ -36,14 +36,15 @@ using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
-	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
+	public class ResultsEditorExtension : AbstractEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 
