@@ -54,6 +54,7 @@
 		<Type class="MonoDevelop.Debugger.Converters.GdkColorConverter" />
 		<Type class="MonoDevelop.Debugger.Converters.SizesConverters" />
 		<Type class="MonoDevelop.Debugger.Converters.RectanglesConverters" />
+		<Type class="MonoDevelop.Debugger.Converters.ImageConverter" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Debugging/InlineVisualizers">
@@ -63,6 +64,7 @@
 	<Extension path="/MonoDevelop/Debugging/PreviewVisualizers">
 		<Type class="MonoDevelop.Debugger.PreviewVisualizers.SizeAndRectanglePreviewVisualizer" />
 		<Type class="MonoDevelop.Debugger.PreviewVisualizers.ColorPreviewVisualizer" />
+		<Type class="MonoDevelop.Debugger.PreviewVisualizers.ImagePreviewVisualizer" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">

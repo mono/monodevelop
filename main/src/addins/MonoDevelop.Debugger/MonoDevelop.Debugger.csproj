@@ -162,6 +162,8 @@
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\SizeAndRectanglePreviewVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Converters\RectanglesConverters.cs" />
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\PreviewWindowManager.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\ImagePreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\ImageConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">
