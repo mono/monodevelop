@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -86,7 +87,7 @@ namespace MonoDevelop.Ide.Editor
 
 		event EventHandler EndUndo;
 
-		Gtk.Widget GetGtkWidget ();
+		Control GetControl ();
 
 		void RunWhenLoaded (Action action);
 

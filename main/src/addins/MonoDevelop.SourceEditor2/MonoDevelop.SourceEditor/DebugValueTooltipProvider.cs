@@ -152,7 +152,7 @@ namespace MonoDevelop.SourceEditor
 
 			var caret = new Gdk.Rectangle (mouseX, y, 1, lineHeight);
 			tooltip = new DebugValueWindow (CompileErrorTooltipProvider.GetExtensibleTextEditor (editor), offset, DebuggingService.CurrentFrame, (ObjectValue) item.Item, null);
-			tooltip.ShowPopup (editor.GetGtkWidget (), caret, PopupPosition.TopLeft);
+			tooltip.ShowPopup (editor.GetControl (), caret, PopupPosition.TopLeft);
 
 			return tooltip;
 		}

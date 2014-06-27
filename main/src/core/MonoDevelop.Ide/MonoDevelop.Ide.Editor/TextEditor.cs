@@ -35,12 +35,12 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
 using System.Linq;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor
 {
 	public class TextEditor : ITextDocument, IInternalEditorExtensions, IDisposable
 	{
-
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
 		ITextDocument ReadWriteTextDocument { get { return (ITextDocument)textEditorImpl.Document; } }
@@ -419,9 +419,9 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.FixVirtualIndentation ();
 		}
 
-		public Gtk.Widget GetGtkWidget ()
+		public Control GetControl ()
 		{
-			return textEditorImpl.GetGtkWidget ();
+			return textEditorImpl.GetControl ();
 		}
 
 		public void RunWhenLoaded (Action action)

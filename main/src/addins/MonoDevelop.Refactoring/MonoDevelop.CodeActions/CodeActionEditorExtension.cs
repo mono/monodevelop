@@ -258,14 +258,14 @@ namespace MonoDevelop.CodeActions
 			if (menuAction != null)
 				menuAction (menu);
 			menu.ShowAll ();
-			menu.SelectFirst (true);
+			menu.SelectFirst (true);	
 			menu.Hidden += delegate {
 				// document.Editor.SuppressTooltips = false;
 			};
 			var container = Editor;
 
 			var p = container.LocationToPoint (currentSmartTagBegin);
-			var widget = container.GetGtkWidget ();
+			Gtk.Widget widget = container.GetControl ();
 			var rect = new Gdk.Rectangle (
 				(int)p.X + widget.Allocation.X , 
 				(int)p.Y + (int)Editor.LineHeight + widget.Allocation.Y, 0, 0);

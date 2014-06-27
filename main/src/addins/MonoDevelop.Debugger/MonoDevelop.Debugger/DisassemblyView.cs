@@ -68,7 +68,7 @@ namespace MonoDevelop.Debugger
 
 			editor.Options.ShowLineNumberMargin = false;
 			
-			sw.Add (editor.GetGtkWidget ());
+			sw.Add (editor.GetControl ());
 			sw.HscrollbarPolicy = Gtk.PolicyType.Automatic;
 			sw.VscrollbarPolicy = Gtk.PolicyType.Automatic;
 			sw.ShowAll ();
@@ -251,7 +251,8 @@ namespace MonoDevelop.Debugger
 				return;
 			
 			var loc = editor.PointToLocation (0, 0);
-			var loc2 = editor.PointToLocation (0, editor.GetGtkWidget ().Allocation.Height);
+			Gtk.Widget widget = editor.GetControl ();
+			var loc2 = editor.PointToLocation (0, widget.Allocation.Height);
 			//bool moveCaret = editor.Caret.Line >= loc.Line && editor.Caret.Line <= loc2.Line;
 			
 			if (firstLine != int.MinValue && loc.Line < FillMarginLines) {

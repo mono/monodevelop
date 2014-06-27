@@ -240,8 +240,8 @@ namespace MonoDevelop.Gettext
 			
 			checkbuttonWhiteSpaces.Toggled += CheckbuttonWhiteSpacesToggled;
 
-			this.scrolledwindowOriginal.Child = this.texteditorOriginal.GetGtkWidget ();
-			this.scrolledwindowPlural.Child = this.texteditorPlural.GetGtkWidget ();
+			this.scrolledwindowOriginal.Child = this.texteditorOriginal.GetControl ();
+			this.scrolledwindowPlural.Child = this.texteditorPlural.GetControl ();
 			this.scrolledwindowOriginal.Child.Show ();
 			this.scrolledwindowPlural.Child.Show ();
 			scrolledwindowOriginal.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
@@ -482,7 +482,7 @@ namespace MonoDevelop.Gettext
 		{
 			ScrolledWindow window = new ScrolledWindow ();
 			var textView = DocumentFactory.CreateNewEditor ();
-			window.Child = textView.GetGtkWidget ();
+			window.Child = textView.GetControl ();
 			textView.TextChanged += delegate {
 				if (this.isUpdating)
 					return;
