@@ -19,6 +19,25 @@ namespace GitHub.Issues
 		public String UpdatedAt { get { return this.issue.UpdatedAt.ToString (); } }
 		[Description("State")]
 		public String State { get { return this.issue.State.ToString (); } }
+		[Description("Labels")]
+		public String Labels
+		{
+			get {
+				String labels = "";
+
+				foreach (Octokit.Label label in this.issue.Labels) {
+					labels += label.Name + ", ";
+				}
+
+				labels = labels.Trim ();
+
+				if (labels.Length > 0) {
+					labels = labels.Remove (labels.Length - 1);
+				}
+
+				return labels;
+			}
+		}
 
 		public IssueNode (Octokit.Issue issue)
 		{

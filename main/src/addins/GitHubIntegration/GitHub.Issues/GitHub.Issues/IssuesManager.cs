@@ -29,11 +29,13 @@ namespace GitHub.Issues
 				return issues;
 			}
 			catch (Exception e) {
-				if (e.InnerException != null) {
+				// Need to compare manually otherwise it escapes into another catch which catches "Exception" :(
+				if (e.InnerException != null && e.InnerException.GetType() == typeof(Octokit.ApiException)) {
 					MessageService.ShowError (e.InnerException.Message);
 				} 
 				else {
-					MessageService.ShowError (e.Message);
+					// Done to preserve the stack trace
+					throw new Exception ("", e);
 				}
 			}
 
