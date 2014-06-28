@@ -35,21 +35,24 @@ namespace MonoDevelop.JavaScript
 		string text;
 		string description;
 		string completionString;
+		string[] parameters;
 
 		public CompletionData (JSVariableDeclaration statement)
 		{
-			image = Stock.Method;
+			image = Stock.Field;
 			text = statement.Name;
 			completionString = text;
 			description = string.Empty; // TODO
+			parameters = null;
 		}
 
 		public CompletionData (JSFunctionStatement statement)
 		{
 			image = Stock.Method;
-			text = statement.FunctionSignature;
+			text = statement.Name;
 			completionString = text;
 			description = string.Empty; // TODO
+			parameters = statement.Parameters;
 		}
 
 		public override IconId Icon {
@@ -66,6 +69,10 @@ namespace MonoDevelop.JavaScript
 
 		public override string CompletionText {
 			get { return completionString; }
+		}
+
+		public string[] Parameters {
+			get { return parameters; }
 		}
 	}
 }

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Linq;
 
 namespace MonoDevelop.JavaScript
 {
@@ -42,6 +43,11 @@ namespace MonoDevelop.JavaScript
 			set;
 		}
 
+		public string[] Parameters {
+			get;
+			set;
+		}
+
 		public JSFunctionType FunctionType {
 			get;
 			set;
@@ -52,13 +58,15 @@ namespace MonoDevelop.JavaScript
 		{
 			FunctionSignature = functionStatement.BuildFunctionSignature ();
 			FunctionType = JSFunctionType.FunctionStatement;
+			Parameters = functionStatement.ArgumentNames.ToArray();
 		}
 
-		public JSFunctionStatement (Jurassic.Compiler.FunctionExpression functionStatement, JSFunctionType functionType = JSFunctionType.FunctionExpression)
+		public JSFunctionStatement (Jurassic.Compiler.FunctionExpression functionStatement)
 			: base (functionStatement.FunctionName, functionStatement.SourceSpan)
 		{
 			FunctionSignature = functionStatement.BuildFunctionSignature ();
-			FunctionType = functionType;
+			FunctionType = JSFunctionType.FunctionStatement;
+			Parameters = functionStatement.ArgumentNames.ToArray();
 		}
 	}
 }

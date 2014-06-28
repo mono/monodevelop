@@ -737,7 +737,7 @@ namespace Jurassic.Compiler
 		/// <param name="c"> The character to test. </param>
 		/// <returns> <c>true</c> if the character is is valid as the first character of an identifier;
 		/// <c>false</c> otherwise. </returns>
-		static bool IsIdentifierStartChar (int c)
+		public static bool IsIdentifierStartChar (int c)
 		{
 			UnicodeCategory cat = char.GetUnicodeCategory ((char)c);
 			return c == '$' || c == '_' || c == '\\' ||

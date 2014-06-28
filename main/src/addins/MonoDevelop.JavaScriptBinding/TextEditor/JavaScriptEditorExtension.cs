@@ -180,21 +180,18 @@ namespace MonoDevelop.JavaScript
 
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
-			if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
-				if (completionContext.TriggerOffset > 1 &&
-				    char.IsLetterOrDigit (document.Editor.GetCharAt (completionContext.TriggerOffset - 2)))
-					return null;
-				triggerWordLength = 1;
-			} else
+			if (IdeApp.ProjectOperations.CurrentSelectedProject == null)
 				return null;
 
-			if (Ide.IdeApp.ProjectOperations.CurrentSelectedProject == null)
+			if (!Jurassic.Compiler.Lexer.IsIdentifierStartChar (completionChar))
+				return null;
+
+			if (!isCodeCompletionPossible (completionContext))
 				return null;
 
 			var wrapper = TypeSystemService.GetProjectContentWrapper (IdeApp.ProjectOperations.CurrentSelectedProject).GetExtensionObject<JSUpdateableProjectContent> ();
 			List<JavaScriptDocumentCache> parsedDocuments = wrapper.DocumentsCache;
-			
-			// TODO: Find the current scope.
+
 			var dataList = new CompletionDataList ();
 			foreach (JavaScriptDocumentCache parsedDocumentAstNodes in parsedDocuments) {
 				if (parsedDocumentAstNodes != null && parsedDocumentAstNodes.SimpleAst != null)
@@ -364,6 +361,31 @@ namespace MonoDevelop.JavaScript
 			}
 
 			return completionList;
+		}
+
+		bool isCodeCompletionPossible (CodeCompletionContext completionContext)
+		{
+			if (completionContext.TriggerOffset == 0)
+				return true;
+
+			if (completionContext.TriggerOffset >= Editor.Document.TextLength)
+				completionContext.TriggerOffset = Editor.Document.TextLength - 1;
+
+			// Check if inside a string
+			int currentWordStartOffset = Editor.FindCurrentWordStart (completionContext.TriggerOffset);
+			char currentWordStart = Editor.GetCharAt (currentWordStartOffset);
+			if (currentWordStart.Equals ('\'') || currentWordStart.Equals ('"'))
+				return false;
+
+			// Check if previous word is a keyword, like var, function
+			int previousWordOffset = Editor.FindPrevWordOffset (Editor.FindCurrentWordStart (completionContext.TriggerOffset));
+
+			int previousWordEnd = Editor.FindCurrentWordEnd (previousWordOffset);
+			string previousWord = Editor.GetTextBetween (previousWordOffset, previousWordEnd);
+
+			// Right now I'm only checking var/function because that's what ReSharper seems to be doing.
+			// We can gradually add other keywords, like if, do, etc.
+			return Jurassic.Compiler.KeywordToken.CodeCompletionRestrictedKeywords.FirstOrDefault (i => i.Text == previousWord) == null;
 		}
 
 		#endregion

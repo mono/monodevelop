@@ -178,6 +178,11 @@ namespace Jurassic.Compiler
 			Volatile,
 		};
 
+		public static readonly Token[] CodeCompletionRestrictedKeywords = {
+			Function,
+			Var,
+		};
+
 		// The actual lookup tables are the result of combining two of the lists above.
 		static Dictionary<string, Token> ecmaScript5LookupTable;
 		static Dictionary<string, Token> ecmaScript3LookupTable;
