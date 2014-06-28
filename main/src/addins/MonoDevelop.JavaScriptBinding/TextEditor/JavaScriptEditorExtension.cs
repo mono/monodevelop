@@ -42,7 +42,6 @@ namespace MonoDevelop.JavaScript
 {
 	class JavaScriptEditorExtension : CompletionTextEditorExtension, IOutlinedDocument
 	{
-
 		#region Variables
 
 		bool disposed;
@@ -190,14 +189,7 @@ namespace MonoDevelop.JavaScript
 				return null;
 
 			var wrapper = TypeSystemService.GetProjectContentWrapper (IdeApp.ProjectOperations.CurrentSelectedProject).GetExtensionObject<JSUpdateableProjectContent> ();
-			List<JavaScriptDocumentCache> parsedDocuments = wrapper.DocumentsCache;
-
-			var dataList = new CompletionDataList ();
-			foreach (JavaScriptDocumentCache parsedDocumentAstNodes in parsedDocuments) {
-				if (parsedDocumentAstNodes != null && parsedDocumentAstNodes.SimpleAst != null)
-					dataList.AddRange (buildCodeCompletionList (parsedDocumentAstNodes.SimpleAst.AstNodes));
-			}
-			return dataList;
+			return wrapper.CodeCompletionCache;
 		}
 
 		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
@@ -334,35 +326,6 @@ namespace MonoDevelop.JavaScript
 			}
 		}
 
-		CompletionDataList buildCodeCompletionList (IEnumerable<JSStatement> nodes)
-		{
-			// TODO: Store all functions, variables in project, similar C Binding
-			if (nodes == null)
-				return new CompletionDataList ();
-
-			var completionList = new CompletionDataList ();
-
-			foreach (JSStatement node in nodes) {
-				var variableDeclaration = node as JSVariableDeclaration;
-				if (variableDeclaration != null) {
-					completionList.Add (new CompletionData (variableDeclaration));
-					completionList.AddRange (buildCodeCompletionList (variableDeclaration.ChildNodes));
-					continue;
-				}
-
-				var functionStatement = node as JSFunctionStatement;
-				if (functionStatement != null) {
-					completionList.Add (new CompletionData (functionStatement));
-					completionList.AddRange (buildCodeCompletionList (functionStatement.ChildNodes));
-					continue;
-				}
-
-				completionList.AddRange (buildCodeCompletionList (node.ChildNodes));
-			}
-
-			return completionList;
-		}
-
 		bool isCodeCompletionPossible (CodeCompletionContext completionContext)
 		{
 			if (completionContext.TriggerOffset == 0)
@@ -389,6 +352,5 @@ namespace MonoDevelop.JavaScript
 		}
 
 		#endregion
-
 	}
 }

@@ -8,6 +8,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MonoDevelop.JavaScript</RootNamespace>
     <AssemblyName>MonoDevelop.JavaScript</AssemblyName>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -156,6 +158,7 @@
     <Compile Include="DomainObjects\Cache\SimpleJSAst.cs" />
     <Compile Include="Factories\SimpleJSAstFactory.cs" />
     <Compile Include="Parser\JSUpdateableProjectContent.cs" />
+    <Compile Include="Completion\CodeCompletionUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Formatting\MonoJSPolicy.xml" />

@@ -112,7 +112,7 @@ namespace MonoDevelop.JavaScript
 			var scope = scriptEngine.CreateGlobalScope ();
 			var compilerOptions = new Jurassic.Compiler.CompilerOptions ();
 			var parser = new Jurassic.Compiler.Parser (scriptEngine, lexar, scope, compilerOptions, Jurassic.Compiler.CodeContext.Global);
-			SimpleAst = new SimpleJSAst();
+			SimpleAst = new SimpleJSAst ();
 
 			Jurassic.Compiler.Statement parserResult = null;
 			try {

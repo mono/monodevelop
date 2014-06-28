@@ -1,5 +1,5 @@
 ﻿//
-// JSUpdateableProjectContent.cs
+// CodeCompletionUtility.cs
 //
 // Author:
 //       Harsimran Bath <harsimranbath@gmail.com>
@@ -24,44 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.JavaScript
 {
-	[Serializable]
-	public class JSUpdateableProjectContent : TypeSystemService.IUpdateableProjectContent
+	public static class CodeCompletionUtility
 	{
-		public CompletionDataList CodeCompletionCache;
-
-		public List<JavaScriptDocumentCache> DocumentsCache {
-			get;
-			set;
-		}
-
-		public JSUpdateableProjectContent()
+		public static void UpdateCodeCompletion (List<JSStatement> astNodes, ref CompletionDataList dataList)
 		{
-			DocumentsCache = new List<JavaScriptDocumentCache> ();
-			CodeCompletionCache = new CompletionDataList ();
-		}
+			if (astNodes == null)
+				return;
 
-		public void AddOrUpdateFiles (IEnumerable<ParsedDocument> docs)
-		{
-			foreach (var doc in docs.OfType<JavaScriptParsedDocument> ()) {
-				DocumentsCache.Add (new JavaScriptDocumentCache{
-					FileName = doc.FileName,
-					SimpleAst = doc.SimpleAst
-				});
-				CodeCompletionUtility.UpdateCodeCompletion (doc.SimpleAst.AstNodes, ref CodeCompletionCache);
+			foreach (JSStatement node in astNodes) {
+				var variableDeclaration = node as JSVariableDeclaration;
+				if (variableDeclaration != null) {
+					if (!dataList.Exists (i => i.DisplayText == variableDeclaration.Name) && !string.IsNullOrWhiteSpace (variableDeclaration.Name))
+						dataList.Add (new CompletionData (variableDeclaration));
+
+					UpdateCodeCompletion (node.ChildNodes, ref dataList);
+
+					continue;
+				}
+
+				var functionStatement = node as JSFunctionStatement;
+				if (functionStatement != null) {
+					if (!dataList.Exists (i => i.DisplayText == functionStatement.Name) && !string.IsNullOrWhiteSpace (functionStatement.Name))
+						dataList.Add (new CompletionData (functionStatement));
+
+					UpdateCodeCompletion (node.ChildNodes, ref dataList);
+
+					continue;
+				}
+
+				UpdateCodeCompletion (node.ChildNodes, ref dataList);
 			}
-		}
-
-		public void RemoveFiles (IEnumerable<string> filenames)
-		{
-			foreach (var fileName in filenames)
-				DocumentsCache.RemoveAll (i=>i.FileName == fileName);			
 		}
 	}
 }
