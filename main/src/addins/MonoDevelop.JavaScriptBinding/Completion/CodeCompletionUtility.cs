@@ -34,6 +34,9 @@ namespace MonoDevelop.JavaScript
 	{
 		public static void UpdateCodeCompletion (List<JSStatement> astNodes, ref CompletionDataList dataList)
 		{
+			if (dataList == null)
+				dataList = new CompletionDataList ();
+
 			if (astNodes == null)
 				return;
 
@@ -59,6 +62,17 @@ namespace MonoDevelop.JavaScript
 				}
 
 				UpdateCodeCompletion (node.ChildNodes, ref dataList);
+			}
+		}
+
+		public static void AddDefaultKeywords(ref CompletionDataList dataList)
+		{
+			if (dataList == null)
+				dataList = new CompletionDataList ();
+
+			foreach(var token in Jurassic.Compiler.KeywordToken.Keywords)
+			{
+				dataList.Add (new CompletionData(token.Text, string.Empty));
 			}
 		}
 	}

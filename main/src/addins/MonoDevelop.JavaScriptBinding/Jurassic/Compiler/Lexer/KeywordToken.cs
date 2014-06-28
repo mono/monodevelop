@@ -95,7 +95,7 @@ namespace Jurassic.Compiler
 		public readonly static KeywordToken Volatile = new KeywordToken ("volatile");
 
 		// Base keywords.
-		static readonly Token[] keywords = {
+		public static readonly Token[] Keywords = {
 			Break,
 			Case,
 			Catch,
@@ -243,8 +243,8 @@ namespace Jurassic.Compiler
 		/// <returns> A lookup table. </returns>
 		static Dictionary<string, Token> InitializeLookupTable (Token[] additionalKeywords)
 		{
-			var result = new Dictionary<string, Token> (keywords.Length + additionalKeywords.Length);
-			foreach (var token in keywords)
+			var result = new Dictionary<string, Token> (Keywords.Length + additionalKeywords.Length);
+			foreach (var token in Keywords)
 				result.Add (token.Text, token);
 			foreach (var token in additionalKeywords)
 				result.Add (token.Text, token);

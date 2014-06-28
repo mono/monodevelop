@@ -45,6 +45,8 @@ namespace MonoDevelop.JavaScript
 		{
 			DocumentsCache = new List<JavaScriptDocumentCache> ();
 			CodeCompletionCache = new CompletionDataList ();
+
+			CodeCompletionUtility.AddDefaultKeywords (ref CodeCompletionCache);
 		}
 
 		public void AddOrUpdateFiles (IEnumerable<ParsedDocument> docs)

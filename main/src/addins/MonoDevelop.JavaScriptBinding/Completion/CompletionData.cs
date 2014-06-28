@@ -55,6 +55,15 @@ namespace MonoDevelop.JavaScript
 			parameters = statement.Parameters;
 		}
 
+		public CompletionData (string name, string description)
+		{
+			image = Stock.Literal;
+			text = name;
+			completionString = text;
+			this.description = description; // TODO
+			parameters = null;
+		}
+
 		public override IconId Icon {
 			get { return image; }
 		}
