@@ -33,44 +33,44 @@ namespace MonoDevelop.JavaScript.Formatting
 {
 	public class JSBeautifyOptions
 	{
-		public int? IndentSize { get; set; }
+		public int IndentSize { get; set; }
 
-		public char? IndentChar { get; set; }
+		public char IndentChar { get; set; }
 
-		public int? IndentLevel { get; set; }
+		public int IndentLevel { get; set; }
 
-		public bool? PreserveNewlines { get; set; }
+		public bool PreserveNewlines { get; set; }
 	}
 
 	public class JSBeautify
 	{
 		StringBuilder output;
-		string indent_string;
-		int indent_level;
-		string token_text;
+		string indentString;
+		int indentLevel;
+		string tokenText;
 		Stack<string> modes;
-		string current_mode;
-		int opt_indent_size;
-		char opt_indent_char;
-		int opt_indent_level;
-		bool opt_preserve_newlines;
-		bool if_line_flag;
-		bool do_block_just_closed;
+		string currentMode;
+		int optIndentSize;
+		char optIndentChar;
+		int optIndentLevel;
+		bool optPreserveNewlines;
+		bool ifLineFlag;
+		bool doBlockJustClosed;
 		string input;
 
-		void trim_output ()
+		void trimOutput ()
 		{
-			while ((output.Length > 0) && ((output [output.Length - 1] == ' ') || (output [output.Length - 1].ToString () == indent_string))) {
+			while ((output.Length > 0) && ((output [output.Length - 1] == ' ') || (output [output.Length - 1].ToString () == indentString))) {
 				output.Remove (output.Length - 1, 1);
 			}
 		}
 
-		void print_newline (bool? ignore_repeated)
+		void printNewline (bool? ignore_repeated)
 		{
 			ignore_repeated = ignore_repeated ?? true;
 
-			if_line_flag = false;
-			trim_output ();
+			ifLineFlag = false;
+			trimOutput ();
 
 			if (output.Length == 0)
 				return;
@@ -79,63 +79,63 @@ namespace MonoDevelop.JavaScript.Formatting
 				output.Append (Environment.NewLine);
 			}
 
-			for (var i = 0; i < indent_level; i++) {
-				output.Append (indent_string);
+			for (var i = 0; i < indentLevel; i++) {
+				output.Append (indentString);
 			}
 		}
 
-		void print_space ()
+		void printSpace ()
 		{
 			var last_output = " ";
 			if (output.Length > 0)
 				last_output = output [output.Length - 1].ToString ();
-			if ((last_output != " ") && (last_output != "\n") && (last_output != indent_string)) {
+			if ((last_output != " ") && (last_output != "\n") && (last_output != indentString)) {
 				output.Append (' ');
 			}
 		}
 
-		void print_token ()
+		void printToken ()
 		{
-			output.Append (token_text);
+			output.Append (tokenText);
 		}
 
 		void indent ()
 		{
-			indent_level++;
+			indentLevel++;
 		}
 
-		void unindent ()
+		void unIndent ()
 		{
-			if (indent_level > 0)
-				indent_level--;
+			if (indentLevel > 0)
+				indentLevel--;
 		}
 
-		void remove_indent ()
+		void removeIndent ()
 		{
-			if ((output.Length > 0) && (output [output.Length - 1].ToString () == indent_string)) {
+			if ((output.Length > 0) && (output [output.Length - 1].ToString () == indentString)) {
 				output.Remove (output.Length - 1, 1);
 			}
 		}
 
-		void set_mode (string mode)
+		void setMode (string mode)
 		{
-			modes.Push (current_mode);
-			current_mode = mode;
+			modes.Push (currentMode);
+			currentMode = mode;
 		}
 
-		void restore_mode ()
+		void restoreMode ()
 		{
-			do_block_just_closed = (current_mode == "DO_BLOCK");
-			current_mode = modes.Pop ();
+			doBlockJustClosed = (currentMode == "DO_BLOCK");
+			currentMode = modes.Pop ();
 		}
 
-		bool in_array (object what, ArrayList arr)
+		bool inArray (object what, ArrayList arr)
 		{
 			return arr.Contains (what);
 
 		}
 
-		bool is_ternary_op ()
+		bool isTernaryOperator ()
 		{
 			int level = 0;
 			int colon_count = 0;
@@ -175,64 +175,64 @@ namespace MonoDevelop.JavaScript.Formatting
 
 		string whitespace;
 		string wordchar;
-		int parser_pos;
-		string last_type;
-		string last_text;
+		int parserPosition;
+		string lastType;
+		string lastText;
 		string digits;
 		string[] punct;
 		string prefix;
 
-		string[] get_next_token (ref int parser_pos)
+		string[] getNextToken (ref int parserPosition)
 		{
-			var n_newlines = 0;
+			var nNewlines = 0;
 
-			if (parser_pos >= input.Length) {
+			if (parserPosition >= input.Length) {
 				return new string[] { "", "TK_EOF" };
 			}
 
-			string c = input [parser_pos].ToString ();
-			parser_pos++;
+			string c = input [parserPosition].ToString ();
+			parserPosition++;
 
 			while (whitespace.Contains (c)) {
-				if (parser_pos >= input.Length) {
+				if (parserPosition >= input.Length) {
 					return new string[] { "", "TK_EOF" };
 				}
 
 				if (c == "\n")
-					n_newlines++;
+					nNewlines++;
 
-				c = input [parser_pos].ToString ();
-				parser_pos++;
+				c = input [parserPosition].ToString ();
+				parserPosition++;
 			}
 
-			var wanted_newline = false;
+			var wantedNewline = false;
 
-			if (opt_preserve_newlines) {
-				if (n_newlines > 1) {
+			if (optPreserveNewlines) {
+				if (nNewlines > 1) {
 					for (var i = 0; i < 2; i++) {
-						print_newline (i == 0);
+						printNewline (i == 0);
 					}
 				}
-				wanted_newline = (n_newlines == 1);
+				wantedNewline = (nNewlines == 1);
 
 			}
 
 			if (wordchar.Contains (c)) {
-				if (parser_pos < input.Length) {
-					while (wordchar.Contains (input [parser_pos].ToString ())) {
-						c += input [parser_pos];
-						parser_pos++;
-						if (parser_pos == input.Length)
+				if (parserPosition < input.Length) {
+					while (wordchar.Contains (input [parserPosition].ToString ())) {
+						c += input [parserPosition];
+						parserPosition++;
+						if (parserPosition == input.Length)
 							break;
 					}
 				}
 
 
-				if ((parser_pos != input.Length) && (Regex.IsMatch (c, "^[0-9]+[Ee]$")) && ((input [parser_pos] == '-') || (input [parser_pos] == '+'))) {
-					var sign = input [parser_pos];
-					parser_pos++;
+				if ((parserPosition != input.Length) && (Regex.IsMatch (c, "^[0-9]+[Ee]$")) && ((input [parserPosition] == '-') || (input [parserPosition] == '+'))) {
+					var sign = input [parserPosition];
+					parserPosition++;
 
-					var t = get_next_token (ref parser_pos);
+					var t = getNextToken (ref parserPosition);
 					c += sign + t [0];
 					return new string[] { c, "TK_WORD" };
 				}
@@ -241,8 +241,8 @@ namespace MonoDevelop.JavaScript.Formatting
 					return new string[] { c, "TK_OPERATOR" };
 				}
 
-				if (wanted_newline && last_type != "TK_OPERATOR" && !if_line_flag) {
-					print_newline (null);
+				if (wantedNewline && lastType != "TK_OPERATOR" && !ifLineFlag) {
+					printNewline (null);
 				}
 				return new string[] { c, "TK_WORD" };
 
@@ -269,35 +269,35 @@ namespace MonoDevelop.JavaScript.Formatting
 
 			if (c == "/") {
 				var comment = "";
-				if (input [parser_pos] == '*') {
-					parser_pos++;
-					if (parser_pos < input.Length) {
-						while (!((input [parser_pos] == '*') && (input [parser_pos + 1] > '\0') && (input [parser_pos + 1] == '/') && (parser_pos < input.Length))) {
-							comment += input [parser_pos];
-							parser_pos++;
-							if (parser_pos >= input.Length) {
+				if (input [parserPosition] == '*') {
+					parserPosition++;
+					if (parserPosition < input.Length) {
+						while (!((input [parserPosition] == '*') && (input [parserPosition + 1] > '\0') && (input [parserPosition + 1] == '/') && (parserPosition < input.Length))) {
+							comment += input [parserPosition];
+							parserPosition++;
+							if (parserPosition >= input.Length) {
 								break;
 							}
 						}
 					}
 
-					parser_pos += 2;
+					parserPosition += 2;
 					return new string[] { "/*" + comment + "*/", "TK_BLOCK_COMMENT" };
 				}   
 
-				if (input [parser_pos] == '/') {
+				if (input [parserPosition] == '/') {
 					comment = c;
-					while ((input [parser_pos] != '\x0d') && (input [parser_pos] != '\x0a')) {
-						comment += input [parser_pos];
-						parser_pos++;
-						if (parser_pos >= input.Length) {
+					while ((input [parserPosition] != '\x0d') && (input [parserPosition] != '\x0a')) {
+						comment += input [parserPosition];
+						parserPosition++;
+						if (parserPosition >= input.Length) {
 							break;
 						}
 					}
 
-					parser_pos++;
-					if (wanted_newline) {
-						print_newline (null);
+					parserPosition++;
+					if (wantedNewline) {
+						printNewline (null);
 					}
 					return new string[] { comment, "TK_COMMENT" };
 
@@ -305,72 +305,72 @@ namespace MonoDevelop.JavaScript.Formatting
 			}
 
 			if ((c == "'") || (c == "\"") || ((c == "/")
-			    && ((last_type == "TK_WORD" && last_text == "return") || ((last_type == "TK_START_EXPR") || (last_type == "TK_START_BLOCK") || (last_type == "TK_END_BLOCK")
-			    || (last_type == "TK_OPERATOR") || (last_type == "TK_EOF") || (last_type == "TK_SEMICOLON"))))) {
+			    && ((lastType == "TK_WORD" && lastText == "return") || ((lastType == "TK_START_EXPR") || (lastType == "TK_START_BLOCK") || (lastType == "TK_END_BLOCK")
+			    || (lastType == "TK_OPERATOR") || (lastType == "TK_EOF") || (lastType == "TK_SEMICOLON"))))) {
 				var sep = c;
 				var esc = false;
-				var resulting_string = c;
+				var resultingString = c;
 
-				if (parser_pos < input.Length) {
+				if (parserPosition < input.Length) {
 					if (sep == "/") {
-						var in_char_class = false;
-						while ((esc) || (in_char_class) || (input [parser_pos].ToString () != sep)) {
-							resulting_string += input [parser_pos];
+						var inCharClass = false;
+						while ((esc) || (inCharClass) || (input [parserPosition].ToString () != sep)) {
+							resultingString += input [parserPosition];
 							if (!esc) {
-								esc = input [parser_pos] == '\\';
-								if (input [parser_pos] == '[') {
-									in_char_class = true;
-								} else if (input [parser_pos] == ']') {
-									in_char_class = false;
+								esc = input [parserPosition] == '\\';
+								if (input [parserPosition] == '[') {
+									inCharClass = true;
+								} else if (input [parserPosition] == ']') {
+									inCharClass = false;
 								}
 							} else {
 								esc = false;
 							}
-							parser_pos++;
-							if (parser_pos >= input.Length) {
-								return new string[] { resulting_string, "TK_STRING" };
+							parserPosition++;
+							if (parserPosition >= input.Length) {
+								return new string[] { resultingString, "TK_STRING" };
 							}
 						} 
 					} else {
-						while ((esc) || (input [parser_pos].ToString () != sep)) {
-							resulting_string += input [parser_pos];
+						while ((esc) || (input [parserPosition].ToString () != sep)) {
+							resultingString += input [parserPosition];
 							if (!esc) {
-								esc = input [parser_pos] == '\\';
+								esc = input [parserPosition] == '\\';
 							} else {
 								esc = false;
 							}
-							parser_pos++;
-							if (parser_pos >= input.Length) {
-								return new string[] { resulting_string, "TK_STRING" };
+							parserPosition++;
+							if (parserPosition >= input.Length) {
+								return new string[] { resultingString, "TK_STRING" };
 							}
 						}
 					}
 				}
 
-				parser_pos += 1;
+				parserPosition += 1;
 
-				resulting_string += sep;
+				resultingString += sep;
 
 				if (sep == "/") {
 					// regexps may have modifiers /regexp/MOD , so fetch those, too
-					while ((parser_pos < input.Length) && (wordchar.Contains (input [parser_pos].ToString ()))) {
-						resulting_string += input [parser_pos];
-						parser_pos += 1;
+					while ((parserPosition < input.Length) && (wordchar.Contains (input [parserPosition].ToString ()))) {
+						resultingString += input [parserPosition];
+						parserPosition += 1;
 					}
 				}
-				return new string []  { resulting_string, "TK_STRING" };
+				return new string []  { resultingString, "TK_STRING" };
 
 
 			}
 
 			if (c == "#") {
 				var sharp = "#";
-				if ((parser_pos < input.Length) && (digits.Contains (input [parser_pos].ToString ()))) {
+				if ((parserPosition < input.Length) && (digits.Contains (input [parserPosition].ToString ()))) {
 					do {
-						c = input [parser_pos].ToString ();
+						c = input [parserPosition].ToString ();
 						sharp += c;
-						parser_pos += 1;
-					} while ((parser_pos < input.Length) && (c != "#") && (c != "="));
+						parserPosition += 1;
+					} while ((parserPosition < input.Length) && (c != "#") && (c != "="));
 					if (c == "#") {
 						return new string[] { sharp, "TK_WORD" };
 						;
@@ -382,25 +382,25 @@ namespace MonoDevelop.JavaScript.Formatting
 			}
 
 
-			if ((c == "<") && (input.Substring (parser_pos - 1, 3) == "<!--")) {
-				parser_pos += 3;
+			if ((c == "<") && (input.Substring (parserPosition - 1, 3) == "<!--")) {
+				parserPosition += 3;
 				return new string[] { "<!--", "TK_COMMENT" };
 				;
 			}
 
-			if ((c == "-") && (input.Substring (parser_pos - 1, 2) == "-->")) {
-				parser_pos += 2;
-				if (wanted_newline) {
-					print_newline (null);
+			if ((c == "-") && (input.Substring (parserPosition - 1, 2) == "-->")) {
+				parserPosition += 2;
+				if (wantedNewline) {
+					printNewline (null);
 				}
 				return new string[] { "-->", "TK_COMMENT" };
 			}
 
 			if (punct.Contains (c.ToString ())) {
-				while ((parser_pos < input.Length) && (punct.Contains (c + input [parser_pos].ToString ()))) {
-					c += input [parser_pos];
-					parser_pos += 1;
-					if (parser_pos >= input.Length) {
+				while ((parserPosition < input.Length) && (punct.Contains (c + input [parserPosition].ToString ()))) {
+					c += input [parserPosition];
+					parserPosition += 1;
+					if (parserPosition >= input.Length) {
 						break;
 					}
 				}
@@ -413,59 +413,59 @@ namespace MonoDevelop.JavaScript.Formatting
 
 		}
 
-		string last_word;
-		bool var_line;
-		bool var_line_tainted;
-		string[] line_starters;
-		bool in_case;
-		string token_type;
+		string lastWord;
+		bool varLine;
+		bool varLineTainted;
+		string[] lineStarters;
+		bool inCase;
+		string tokenType;
 
 		public string GetResult ()
 		{
-			if (add_script_tags) {
+			if (addScriptTags) {
 				output.AppendLine ().AppendLine ("</script>");
 			}
 
 			return output.ToString ();
 		}
 
-		bool add_script_tags;
+		bool addScriptTags;
 
-		public JSBeautify (string js_source_text, JSBeautifyOptions options)
+		public JSBeautify (string jsSourceText, JSBeautifyOptions options)
 		{
-			opt_indent_size = options.IndentSize ?? 4;
-			opt_indent_char = options.IndentChar ?? ' ';
-			opt_indent_level = options.IndentLevel ?? 0;
-			opt_preserve_newlines = options.PreserveNewlines ?? true;
+			optIndentSize = options.IndentSize;
+			optIndentChar = options.IndentChar;;
+			optIndentLevel = options.IndentLevel;
+			optPreserveNewlines = options.PreserveNewlines;
 			output = new StringBuilder ();
 			modes = new Stack<string> ();
 
+			indentString = "";
 
-
-			indent_string = "";
-
-			while (opt_indent_size > 0) {
-				indent_string += opt_indent_char;
-				opt_indent_size -= 1;
+			while (optIndentSize > 0) {
+				indentString += optIndentChar;
+				optIndentSize -= 1;
 			}
 
-			indent_level = opt_indent_level;
+			for (var i = 0; i < indentLevel; i++) {
+				output.Append (indentString);
+			}
 
+			indentLevel = optIndentLevel;
 
-
-			input = js_source_text.Replace ("<script type=\"text/javascript\">", "").Replace ("</script>", "");
-			if (input.Length != js_source_text.Length) {
+			input = jsSourceText.Replace ("<script type=\"text/javascript\">", "").Replace ("</script>", "");
+			if (input.Length != jsSourceText.Length) {
 				output.AppendLine ("<script type=\"text/javascript\">");
-				add_script_tags = true;
+				addScriptTags = true;
 			}
 
-			last_word = ""; // last 'TK_WORD' passed
-			last_type = "TK_START_EXPR"; // last token type
-			last_text = ""; // last token text
+			lastWord = ""; // last 'TK_WORD' passed
+			lastType = "TK_START_EXPR"; // last token type
+			lastText = ""; // last token text
 
-			do_block_just_closed = false;
-			var_line = false;         // currently drawing var .... ;
-			var_line_tainted = false; // false: var a = 5; true: var a = 5, b = 6
+			doBlockJustClosed = false;
+			varLine = false;         // currently drawing var .... ;
+			varLineTainted = false; // false: var a = 5; true: var a = 5, b = 6
 
 			whitespace = "\n\r\t ";
 			wordchar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$";
@@ -475,321 +475,321 @@ namespace MonoDevelop.JavaScript.Formatting
 			punct = "+ - * / % & ++ -- = += -= *= /= %= == === != !== > < >= <= >> << >>> >>>= >>= <<= && &= | || ! !! , : ? ^ ^= |= ::".Split (' ');
 
 			// words which should always start on new line.
-			line_starters = "continue,try,throw,return,var,if,switch,case,default,for,while,break,function".Split (',');
+			lineStarters = "continue,try,throw,return,var,if,switch,case,default,for,while,break,function".Split (',');
 
 			// states showing if we are currently in expression (i.e. "if" case) - 'EXPRESSION', or in usual block (like, procedure), 'BLOCK'.
 			// some formatting depends on that.
-			current_mode = "BLOCK";
-			modes.Push (current_mode);
+			currentMode = "BLOCK";
+			modes.Push (currentMode);
 
-			parser_pos = 0;
-			in_case = false;
+			parserPosition = 0;
+			inCase = false;
 
 			while (true) {
-				var t = get_next_token (ref parser_pos);
-				token_text = t [0];
-				token_type = t [1];
-				if (token_type == "TK_EOF") {
+				var t = getNextToken (ref parserPosition);
+				tokenText = t [0];
+				tokenType = t [1];
+				if (tokenType == "TK_EOF") {
 					break;
 				}
 
-				switch (token_type) {
+				switch (tokenType) {
 
 				case "TK_START_EXPR":
-					var_line = false;
-					set_mode ("EXPRESSION");
-					if ((last_text == ";") || (last_type == "TK_START_BLOCK")) {
-						print_newline (null);
-					} else if ((last_type == "TK_END_EXPR") || (last_type == "TK_START_EXPR")) {
+					varLine = false;
+					setMode ("EXPRESSION");
+					if ((lastText == ";") || (lastType == "TK_START_BLOCK")) {
+						printNewline (null);
+					} else if ((lastType == "TK_END_EXPR") || (lastType == "TK_START_EXPR")) {
 						// do nothing on (( and )( and ][ and ]( ..
-					} else if ((last_type != "TK_WORD") && (last_type != "TK_OPERATOR")) {
-						print_space ();
-					} else if (line_starters.Contains (last_word)) {
-						print_space ();
+					} else if ((lastType != "TK_WORD") && (lastType != "TK_OPERATOR")) {
+						printSpace ();
+					} else if (lineStarters.Contains (lastWord)) {
+						printSpace ();
 					}
-					print_token ();
+					printToken ();
 					break;
 
 				case "TK_END_EXPR":
-					print_token ();
-					restore_mode ();
+					printToken ();
+					restoreMode ();
 					break;
 
 				case "TK_START_BLOCK":
 
-					if (last_word == "do") {
-						set_mode ("DO_BLOCK");
+					if (lastWord == "do") {
+						setMode ("DO_BLOCK");
 					} else {
-						set_mode ("BLOCK");
+						setMode ("BLOCK");
 					}
-					if ((last_type != "TK_OPERATOR") && (last_type != "TK_START_EXPR")) {
-						if (last_type == "TK_START_BLOCK") {
-							print_newline (null);
+					if ((lastType != "TK_OPERATOR") && (lastType != "TK_START_EXPR")) {
+						if (lastType == "TK_START_BLOCK") {
+							printNewline (null);
 						} else {
-							print_space ();
+							printSpace ();
 						}
 					}
-					print_token ();
+					printToken ();
 					indent ();
 					break;
 
 				case "TK_END_BLOCK":
-					if (last_type == "TK_START_BLOCK") {
+					if (lastType == "TK_START_BLOCK") {
 						// nothing
-						trim_output ();
-						unindent ();
+						trimOutput ();
+						unIndent ();
 					} else {
-						unindent ();
-						print_newline (null);
+						unIndent ();
+						printNewline (null);
 					}
-					print_token ();
-					restore_mode ();
+					printToken ();
+					restoreMode ();
 					break;
 
 				case "TK_WORD":
 
-					if (do_block_just_closed) {
+					if (doBlockJustClosed) {
 						// do {} ## while ()
-						print_space ();
-						print_token ();
-						print_space ();
-						do_block_just_closed = false;
+						printSpace ();
+						printToken ();
+						printSpace ();
+						doBlockJustClosed = false;
 						break;
 					}
 
-					if ((token_text == "case") || (token_text == "default")) {
-						if (last_text == ":") {
+					if ((tokenText == "case") || (tokenText == "default")) {
+						if (lastText == ":") {
 							// switch cases following one another
-							remove_indent ();
+							removeIndent ();
 						} else {
 							// case statement starts in the same line where switch
-							unindent ();
-							print_newline (null);
+							unIndent ();
+							printNewline (null);
 							indent ();
 						}
-						print_token ();
-						in_case = true;
+						printToken ();
+						inCase = true;
 						break;
 					}
 
 					prefix = "NONE";
 
-					if (last_type == "TK_END_BLOCK") {
-						if (!(new string[] { "else", "catch", "finally" }).Contains (token_text.ToLower ())) {
+					if (lastType == "TK_END_BLOCK") {
+						if (!(new string[] { "else", "catch", "finally" }).Contains (tokenText.ToLower ())) {
 							prefix = "NEWLINE";
 						} else {
 							prefix = "SPACE";
-							print_space ();
+							printSpace ();
 						}
-					} else if ((last_type == "TK_SEMICOLON") && ((current_mode == "BLOCK") || (current_mode == "DO_BLOCK"))) {
+					} else if ((lastType == "TK_SEMICOLON") && ((currentMode == "BLOCK") || (currentMode == "DO_BLOCK"))) {
 						prefix = "NEWLINE";
-					} else if ((last_type == "TK_SEMICOLON") && (current_mode == "EXPRESSION")) {
+					} else if ((lastType == "TK_SEMICOLON") && (currentMode == "EXPRESSION")) {
 						prefix = "SPACE";
-					} else if (last_type == "TK_STRING") {
+					} else if (lastType == "TK_STRING") {
 						prefix = "NEWLINE";
-					} else if (last_type == "TK_WORD") {
+					} else if (lastType == "TK_WORD") {
 						prefix = "SPACE";
-					} else if (last_type == "TK_START_BLOCK") {
+					} else if (lastType == "TK_START_BLOCK") {
 						prefix = "NEWLINE";
-					} else if (last_type == "TK_END_EXPR") {
-						print_space ();
+					} else if (lastType == "TK_END_EXPR") {
+						printSpace ();
 						prefix = "NEWLINE";
 					}
 
-					if ((last_type != "TK_END_BLOCK") && ((new string[] {
+					if ((lastType != "TK_END_BLOCK") && ((new string[] {
 						"else",
 						"catch",
 						"finally"
-					}).Contains (token_text.ToLower ()))) {
-						print_newline (null);
-					} else if ((line_starters.Contains (token_text)) || (prefix == "NEWLINE")) {
-						if (last_text == "else") {
+					}).Contains (tokenText.ToLower ()))) {
+						printNewline (null);
+					} else if ((lineStarters.Contains (tokenText)) || (prefix == "NEWLINE")) {
+						if (lastText == "else") {
 							// no need to force newline on else break
-							print_space ();
-						} else if (((last_type == "TK_START_EXPR") || (last_text == "=") || (last_text == ",")) && (token_text == "function")) {
+							printSpace ();
+						} else if (((lastType == "TK_START_EXPR") || (lastText == "=") || (lastText == ",")) && (tokenText == "function")) {
 							// no need to force newline on "function": (function
 							// DONOTHING
-						} else if ((last_type == "TK_WORD") && ((last_text == "return") || (last_text == "throw"))) {
+						} else if ((lastType == "TK_WORD") && ((lastText == "return") || (lastText == "throw"))) {
 							// no newline between "return nnn"
-							print_space ();
-						} else if (last_type != "TK_END_EXPR") {
-							if (((last_type != "TK_START_EXPR") || (token_text != "var")) && (last_text != ":")) {
+							printSpace ();
+						} else if (lastType != "TK_END_EXPR") {
+							if (((lastType != "TK_START_EXPR") || (tokenText != "var")) && (lastText != ":")) {
 								// no need to force newline on "var": for (var x = 0...)
-								if ((token_text == "if") && (last_type == "TK_WORD") && (last_word == "else")) {
+								if ((tokenText == "if") && (lastType == "TK_WORD") && (lastWord == "else")) {
 									// no newline for } else if {
-									print_space ();
+									printSpace ();
 								} else {
-									print_newline (null);
+									printNewline (null);
 								}
 							}
 						} else {
-							if ((line_starters.Contains (token_text)) && (last_text != ")")) {
-								print_newline (null);
+							if ((lineStarters.Contains (tokenText)) && (lastText != ")")) {
+								printNewline (null);
 							}
 						}
 					} else if (prefix == "SPACE") {
-						print_space ();
+						printSpace ();
 					}
-					print_token ();
-					last_word = token_text;
+					printToken ();
+					lastWord = tokenText;
 
-					if (token_text == "var") {
-						var_line = true;
-						var_line_tainted = false;
+					if (tokenText == "var") {
+						varLine = true;
+						varLineTainted = false;
 					}
 
-					if (token_text == "if" || token_text == "else") {
-						if_line_flag = true;
+					if (tokenText == "if" || tokenText == "else") {
+						ifLineFlag = true;
 					}
 
 					break;
 
 				case "TK_SEMICOLON":
 
-					print_token ();
-					var_line = false;
+					printToken ();
+					varLine = false;
 					break;
 
 				case "TK_STRING":
 
-					if ((last_type == "TK_START_BLOCK") || (last_type == "TK_END_BLOCK") || (last_type == "TK_SEMICOLON")) {
-						print_newline (null);
-					} else if (last_type == "TK_WORD") {
-						print_space ();
+					if ((lastType == "TK_START_BLOCK") || (lastType == "TK_END_BLOCK") || (lastType == "TK_SEMICOLON")) {
+						printNewline (null);
+					} else if (lastType == "TK_WORD") {
+						printSpace ();
 					}
-					print_token ();
+					printToken ();
 					break;
 
 				case "TK_OPERATOR":
 
-					var start_delim = true;
-					var end_delim = true;
-					if (var_line && (token_text != ",")) {
-						var_line_tainted = true;
-						if (token_text == ":") {
-							var_line = false;
+					var startDelim = true;
+					var endDelim = true;
+					if (varLine && (tokenText != ",")) {
+						varLineTainted = true;
+						if (tokenText == ":") {
+							varLine = false;
 						}
 					}
-					if (var_line && (token_text == ",") && (current_mode == "EXPRESSION")) {
+					if (varLine && (tokenText == ",") && (currentMode == "EXPRESSION")) {
 						// do not break on comma, for(var a = 1, b = 2)
-						var_line_tainted = false;
+						varLineTainted = false;
 					}
 
-					if (token_text == ":" && in_case) {
-						print_token (); // colon really asks for separate treatment
-						print_newline (null);
-						in_case = false; 
+					if (tokenText == ":" && inCase) {
+						printToken (); // colon really asks for separate treatment
+						printNewline (null);
+						inCase = false; 
 						break;
 					}
 
-					if (token_text == "::") {
+					if (tokenText == "::") {
 						// no spaces around exotic namespacing syntax operator
-						print_token ();
+						printToken ();
 						break;
 					}
 
-					if (token_text == ",") {
-						if (var_line) {
-							if (var_line_tainted) {
-								print_token ();
-								print_newline (null);
-								var_line_tainted = false;
+					if (tokenText == ",") {
+						if (varLine) {
+							if (varLineTainted) {
+								printToken ();
+								printNewline (null);
+								varLineTainted = false;
 							} else {
-								print_token ();
-								print_space ();
+								printToken ();
+								printSpace ();
 							}
-						} else if (last_type == "TK_END_BLOCK") {
-							print_token ();
-							print_newline (null);
+						} else if (lastType == "TK_END_BLOCK") {
+							printToken ();
+							printNewline (null);
 						} else {
-							if (current_mode == "BLOCK") {
-								print_token ();
-								print_newline (null);
+							if (currentMode == "BLOCK") {
+								printToken ();
+								printNewline (null);
 							} else {
 								// EXPR od DO_BLOCK
-								print_token ();
-								print_space ();
+								printToken ();
+								printSpace ();
 							}
 						}
 						break;
-					} else if ((token_text == "--") || (token_text == "++")) { // unary operators special case
-						if (last_text == ";") {
-							if (current_mode == "BLOCK") {
+					} else if ((tokenText == "--") || (tokenText == "++")) { // unary operators special case
+						if (lastText == ";") {
+							if (currentMode == "BLOCK") {
 								// { foo; --i }
-								print_newline (null);
-								start_delim = true;
-								end_delim = false;
+								printNewline (null);
+								startDelim = true;
+								endDelim = false;
 							} else {
 								// space for (;; ++i)
-								start_delim = true;
-								end_delim = false;
+								startDelim = true;
+								endDelim = false;
 							}
 						} else {
-							if (last_text == "{") {
+							if (lastText == "{") {
 								// {--i
-								print_newline (null);
+								printNewline (null);
 							}
-							start_delim = false;
-							end_delim = false;
+							startDelim = false;
+							endDelim = false;
 						}
-					} else if (((token_text == "!") || (token_text == "+") || (token_text == "-")) && ((last_text == "return") || (last_text == "case"))) {
-						start_delim = true;
-						end_delim = false;
-					} else if (((token_text == "!") || (token_text == "+") || (token_text == "-")) && (last_type == "TK_START_EXPR")) {
+					} else if (((tokenText == "!") || (tokenText == "+") || (tokenText == "-")) && ((lastText == "return") || (lastText == "case"))) {
+						startDelim = true;
+						endDelim = false;
+					} else if (((tokenText == "!") || (tokenText == "+") || (tokenText == "-")) && (lastType == "TK_START_EXPR")) {
 						// special case handling: if (!a)
-						start_delim = false;
-						end_delim = false;
-					} else if (last_type == "TK_OPERATOR") {
-						start_delim = false;
-						end_delim = false;
-					} else if (last_type == "TK_END_EXPR") {
-						start_delim = true;
-						end_delim = true;
-					} else if (token_text == ".") {
+						startDelim = false;
+						endDelim = false;
+					} else if (lastType == "TK_OPERATOR") {
+						startDelim = false;
+						endDelim = false;
+					} else if (lastType == "TK_END_EXPR") {
+						startDelim = true;
+						endDelim = true;
+					} else if (tokenText == ".") {
 						// decimal digits or object.property
-						start_delim = false;
-						end_delim = false;
+						startDelim = false;
+						endDelim = false;
 
-					} else if (token_text == ":") {
-						if (is_ternary_op ()) {
-							start_delim = true;
+					} else if (tokenText == ":") {
+						if (isTernaryOperator ()) {
+							startDelim = true;
 						} else {
-							start_delim = false;
+							startDelim = false;
 						}
 					}
-					if (start_delim) {
-						print_space ();
+					if (startDelim) {
+						printSpace ();
 					}
 
-					print_token ();
+					printToken ();
 
-					if (end_delim) {
-						print_space ();
+					if (endDelim) {
+						printSpace ();
 					}
 					break;
 
 				case "TK_BLOCK_COMMENT":
 
-					print_newline (null);
-					print_token ();
-					print_newline (null);
+					printNewline (null);
+					printToken ();
+					printNewline (null);
 					break;
 
 				case "TK_COMMENT":
 
 					// print_newline();
-					print_space ();
-					print_token ();
-					print_newline (null);
+					printSpace ();
+					printToken ();
+					printNewline (null);
 					break;
 
 				case "TK_UNKNOWN":
-					print_token ();
+					printToken ();
 					break;
 				}
 
-				last_type = token_type;
-				last_text = token_text;
+				lastType = tokenType;
+				lastText = tokenText;
 			}
 
 

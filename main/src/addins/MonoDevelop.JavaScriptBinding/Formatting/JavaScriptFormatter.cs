@@ -50,33 +50,35 @@ namespace MonoDevelop.JavaScript.Formatting
 
 		public override void OnTheFlyFormat (Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
-			string allText = doc.Editor.Text;
+			// TODO: JSBeautify only supports full document formattinh at the moment. The Indent Level has issues.
+			if (startOffset != 0 || doc.Editor.GetLineByOffset (endOffset).NextLine != null)
+				return;
 
-			var jsBeautifier = new JSBeautify (allText, new JSBeautifyOptions {
-				IndentSize = 4,
+			string textToFormat = doc.Editor.GetTextBetween (startOffset, endOffset);
+			DocumentLine currentLine = doc.Editor.GetLineByOffset (startOffset);
+			int indentLevel = 0;
+			const int defaultIndentSize = 4;
+
+			if(currentLine != null && currentLine.PreviousLine != null) {
+				string indentString = doc.Editor.GetIndentationString (currentLine.PreviousLine.Offset);
+				if(indentString.Length % defaultIndentSize == 0) {
+					indentLevel = indentString.Length / defaultIndentSize;
+				}
+			}
+
+			var options = new JSBeautifyOptions {
+				IndentSize = defaultIndentSize,
 				IndentChar = ' ',
-				IndentLevel = 0,
-				PreserveNewlines = true,
-
-			});
+				IndentLevel = indentLevel,
+				PreserveNewlines = true
+			};
+			var jsBeautifier = new JSBeautify (textToFormat, options);
 
 			string formattedText = jsBeautifier.GetResult ();
-			string offsetText = formattedText.Substring (startOffset, endOffset - startOffset);
 
 			using (var undo = doc.Editor.OpenUndoGroup (OperationType.Format)) {
 				try {
-					//changes.ApplyChanges (formatStartOffset + startDelta, Math.Max (0, formatLength - startDelta - 1), delegate (int replaceOffset, int replaceLength, string insertText) {
-					//	int translatedOffset = realTextDelta + replaceOffset;
-					//	data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
-					//	data.Editor.Replace (translatedOffset, replaceLength, insertText);
-					//}, (replaceOffset, replaceLength, insertText) => {
-					//	int translatedOffset = realTextDelta + replaceOffset;
-					//	if (translatedOffset < 0 || translatedOffset + replaceLength > data.Editor.Length || replaceLength < 0)
-					//		return true;
-					//	return data.Editor.GetTextAt (translatedOffset, replaceLength) == insertText;
-					//});
-					// doc.Editor.Text = doc.Editor.Text.Replace (oldText, formattedText);
-					doc.Editor.Replace (startOffset, endOffset - startOffset, offsetText);
+					doc.Editor.Replace (startOffset, endOffset - startOffset, formattedText);
 					doc.Editor.Document.CommitDocumentUpdate ();
 				} catch (Exception e) {
 					LoggingService.LogError ("Error in on the JS fly formatter", e);
