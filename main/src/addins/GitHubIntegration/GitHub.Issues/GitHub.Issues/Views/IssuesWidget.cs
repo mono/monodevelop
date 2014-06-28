@@ -11,6 +11,7 @@ namespace GitHub.Issues.UserInterface
 	{
 		private List<IssueColumn> columns = new List<IssueColumn> ();
 		private List<Gtk.TreeViewColumn> treeColumns = new List<Gtk.TreeViewColumn> ();
+		private List<KeyValuePair<String, Int32>> filters = new List<KeyValuePair<string, int>>();
 
 		private Gtk.ListStore issueListStore;
 		private Gtk.ListStore columnListStore;
@@ -59,8 +60,9 @@ namespace GitHub.Issues.UserInterface
 			this.updateIssueListButton = this.createUpdateIssueListButton ();
 
 			// Set sizing
-			columnListView.SetSizeRequest (100, 500);
-			issueTable.SetSizeRequest (950, 500);
+			// this.columnListView.SetSizeRequest (100, 600);
+			//this.issueTable.SetSizeRequest (950, 600);
+			//this.updateIssueListButton.SetSizeRequest (100, 50);
 
 			// Set up the layout
 			// 2 columns on screen with first column having 2 rows
@@ -68,18 +70,23 @@ namespace GitHub.Issues.UserInterface
 			// |______|      |
 			// |      |      |
 			// Something like this
-			Gtk.VBox mainContainer = new Gtk.VBox ();
+
+			bool expand = false;
+			bool fill = false;
+			uint padding = 0;
+
+			Gtk.VBox mainContainer = new Gtk.VBox (false, 10);
 			Gtk.HBox tablesContainer = new Gtk.HBox ();
 			Gtk.VBox columnsSelectionContainer = new Gtk.VBox ();
 
-			columnsSelectionContainer.Add (columnListView);
-			columnsSelectionContainer.Add (updateIssueListButton);
+			columnsSelectionContainer.PackStart (columnListView, true, true, padding);
+			columnsSelectionContainer.PackStart (updateIssueListButton, expand, fill, padding);
 
-			tablesContainer.Add (columnsSelectionContainer);
-			tablesContainer.Add (issueTable);
+			tablesContainer.PackStart (columnsSelectionContainer, expand, fill, padding);
+			tablesContainer.PackStart (issueTable, true, true, 10);
 
 			// Add the layout to the main container
-			mainContainer.Add (tablesContainer);
+			mainContainer.PackStart (tablesContainer, true, true, padding);
 
 			// Add main container to screen/widget
 			this.Add (mainContainer);
@@ -102,7 +109,11 @@ namespace GitHub.Issues.UserInterface
 			// Reconfigure the issue tree view to show the selected columns
 			this.treeColumns = this.createAndAppendColumnsToTreeView (this.issueTable, this.columns);
 
-			// TODO: Set up filtering for the given columns
+			// Retrieve the filter values which can be used to search the issue list store
+			this.filters = this.getFiltersForColumns (this.columnListStore);
+
+			// Update the table with the new filter values (regardless if updated or not)
+			this.filter.Refilter ();
 		}
 
 		// When a toggle is clicked on the toggle cell renderer, this method handles setting the new value of the toggle
@@ -199,7 +210,7 @@ namespace GitHub.Issues.UserInterface
 		private Gtk.Button createUpdateIssueListButton ()
 		{
 			Gtk.Button button = new Gtk.Button ();
-			button.Label = "Update Issues";
+			button.Label = "Update";
 
 			// Method which handles the udpate of visible columns
 			button.Clicked += this.updateIssueListButtonClicked;
@@ -221,7 +232,20 @@ namespace GitHub.Issues.UserInterface
 		// Filtering function which checks if the row should be show or not by comparing against the filter
 		private bool treeFilterVisibilityFunctionForIssues(Gtk.TreeModel treeModel, Gtk.TreeIter iterator)
 		{
-			// TODO: Write comparison code against the current filtering values specified
+			// Need to compare all values of all columns against the filters (we also accept filters against columns which are not shown)
+			foreach (KeyValuePair<String, Int32> filter in this.filters) {
+				// First we need to know what is show in that given column of that given row
+				String columnValue = (String)this.issueListStore.GetValue (iterator, filter.Value);
+
+				// Check if the value should be shown after comparing to the filter
+				// If the check fails don't show the row at all and stop comparing against other columns
+				if (!columnValue.StartsWith (filter.Key.Trim ())) {
+					return false;
+				}
+			}
+				
+			// It hasn't failed by now so the row is okay to show
+			return true;
 		}
 
 		// Allows us to sort the columns by click on the column headers. It simply toggles the sorting from
@@ -356,10 +380,21 @@ namespace GitHub.Issues.UserInterface
 			filterTextBox.Mode = Gtk.CellRendererMode.Activatable;
 			filterTextBox.Editable = true;
 			filterTextBox.Edited += this.textRendererEditedHandlerColumnList;
+			filterTextBox.SingleParagraphMode = true;
 
-			columnListView.AppendColumn (new Gtk.TreeViewColumn ("Display", displayToggle, "active", 2));
-			columnListView.AppendColumn (new Gtk.TreeViewColumn ("Column Title", new Gtk.CellRendererText (), "text", 0));
-			columnListView.AppendColumn (new Gtk.TreeViewColumn ("Filter", filterTextBox, "text", 3));
+			Gtk.TreeViewColumn displayColumn = new Gtk.TreeViewColumn ("Display", displayToggle, "active", 2);
+			Gtk.TreeViewColumn titleColumn = new Gtk.TreeViewColumn ("Column Title", new Gtk.CellRendererText (), "text", 0);
+			Gtk.TreeViewColumn filterColumn = new Gtk.TreeViewColumn ("Filter", filterTextBox, "text", 3);
+
+			// Give it some extra room at the start when the filters are all empty
+			filterColumn.MinWidth = 150;
+
+			// To prevent it from overwhelming the issues table
+			filterColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
+
+			columnListView.AppendColumn (displayColumn);
+			columnListView.AppendColumn (titleColumn);
+			columnListView.AppendColumn (filterColumn);
 		}
 
 		// Once we know the property names and the column indexes in the store, we can create the IssueColumn classes which we
@@ -387,7 +422,7 @@ namespace GitHub.Issues.UserInterface
 		private List<KeyValuePair<String, Int32>> getSelectedColumns(Gtk.ListStore columnsListStore)
 		{
 			if (columnsListStore != null) {
-				IEnumerator rowEnumerator = columnListStore.GetEnumerator ();
+				IEnumerator rowEnumerator = columnsListStore.GetEnumerator ();
 
 				// Here we will store string representations of the selected column names
 				List<KeyValuePair<String, Int32>> selectedColumns = new List<KeyValuePair<String, Int32>> ();
@@ -395,10 +430,10 @@ namespace GitHub.Issues.UserInterface
 				int currentRowCount = 0;
 
 				while (rowEnumerator.MoveNext ()) {
-					// 0 - Title, 1 - Property, 2 - Display?
+					// 0 - Title, 1 - Property, 2 - Display?, 3 - Filter Value
 					Array currentRow = (Array)rowEnumerator.Current;
 
-					// Get column property (not show - not the user friendly name) and the row index
+					// Get column property (not title - not the user friendly name) and the row index
 					if ((bool)currentRow.GetValue(2) == true)
 					{
 						selectedColumns.Add (new KeyValuePair<string, int> ((String)currentRow.GetValue(1), currentRowCount));
@@ -412,6 +447,33 @@ namespace GitHub.Issues.UserInterface
 			}
 
 			return new List<KeyValuePair<String, Int32>>();
+		}
+
+		// Finds the column filter values from the table which can then be used to filter the issues from the tree view
+		private List<KeyValuePair<String, Int32>> getFiltersForColumns(Gtk.ListStore columnsListStore)
+		{
+			if (columnsListStore != null) {
+				IEnumerator rowEnumerator = columnsListStore.GetEnumerator ();
+
+				List<KeyValuePair<String, Int32>> columnsIndexesAndFilterValues = new List<KeyValuePair<String, Int32>> ();
+
+				int currentRowCount = 0;
+
+				while (rowEnumerator.MoveNext ()) {
+					// 0 - Title, 1 - Property, 2 - Display?, 3 - Filter Value
+					Array currentRow = (Array)rowEnumerator.Current;
+
+					// Get column filter value and the row index
+					columnsIndexesAndFilterValues.Add (new KeyValuePair<string, int> ((String)currentRow.GetValue(3), currentRowCount));
+
+					// Keep track of column indexes - used for correct mapping to columns in store
+					currentRowCount++;
+				}
+
+				return columnsIndexesAndFilterValues;
+			}
+
+			return new List<KeyValuePair<string, int>> ();
 		}
 			
 		// Populates the list store with each value of the given enum type. Mainly used to

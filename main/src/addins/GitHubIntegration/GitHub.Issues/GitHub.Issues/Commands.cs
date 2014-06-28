@@ -16,13 +16,10 @@ namespace GitHub.Issues
 	{
 		protected override void Run ()
 		{
-			IWorkbenchWindow window = IdeApp.Workbench.ActiveDocument.Window;
-			// window.SwitchView (window.FindView<IIssuesView> ());
-
 			IssuesManager manager = new IssuesManager ();
 			IReadOnlyList<Octokit.Issue> issues = manager.GetAllIssues ();
 
-			window.AttachViewContent (new IssuesView ("Issues View", issues));
+			IdeApp.Workbench.OpenDocument (new IssuesView ("Issues View", issues), true);
 		}
 	}
 }
