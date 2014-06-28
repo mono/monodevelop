@@ -8,19 +8,21 @@
     <RootNamespace>GitHub.Issues</RootNamespace>
     <AssemblyName>GitHub.Issues</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues</OutputPath>
+    <OutputPath>..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <CustomCommands>
       <CustomCommands>
-        <Command type="Execute" command="..\..\..\..\..\build\bin\MonoDevelop.exe" workingdir="..\..\..\..\..\build\bin">
+        <Command type="Execute" command="..\..\..\..\build\bin\MonoDevelop.exe" workingdir="..\..\..\..\build\bin">
           <EnvironmentVariables>
             <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
           </EnvironmentVariables>
@@ -31,7 +33,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues</OutputPath>
+    <OutputPath>..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -39,19 +41,19 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="MonoDevelop.Core">
-      <HintPath>..\..\..\..\..\build\bin\MonoDevelop.Core.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
-      <HintPath>..\..\..\..\..\build\bin\MonoDevelop.Ide.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Addins">
-      <HintPath>..\..\..\..\..\build\bin\Mono.Addins.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\Mono.Addins.dll</HintPath>
     </Reference>
     <Reference Include="GitHub.Auth">
-      <HintPath>..\..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Auth.dll</HintPath>
+      <HintPath>..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Auth.dll</HintPath>
     </Reference>
     <Reference Include="Octokit">
-      <HintPath>..\..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues\Octokit.dll</HintPath>
+      <HintPath>..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues\Octokit.dll</HintPath>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
@@ -59,13 +61,13 @@
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="ICSharpCode.NRefactory">
-      <HintPath>..\..\..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <HintPath>..\..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.VersionControl">
-      <HintPath>..\..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.dll</HintPath>
+      <HintPath>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.VersionControl.Git">
-      <HintPath>..\..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.dll</HintPath>
+      <HintPath>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -87,7 +89,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <EmbeddedResource Include="GitHub.Issues.addin.xml">
-      <LogicalName>VersionControl.addin.xml</LogicalName>
+      <LogicalName>GitHub.Issues.addin.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
