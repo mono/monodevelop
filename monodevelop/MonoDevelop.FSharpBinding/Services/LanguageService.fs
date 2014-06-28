@@ -280,7 +280,12 @@ module internal MonoDevelop =
             filename, [|filename|], [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
 
 /// Provides functionality for working with the F# interactive checker running in background
+open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
 module MDLanguageService =
+  do 
+      let originalFs = Shim.FileSystem
+      let fs = new FileSystem(originalFs)
+      Shim.FileSystem <- fs
 
   /// Single instance of the language service.
   let Instance =

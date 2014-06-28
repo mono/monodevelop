@@ -290,6 +290,7 @@
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
     <Compile Include="Services\TooltipHelpers.fs" />
+    <Compile Include="Services\FileService.fs" />
     <Compile Include="Services\LanguageService.fs" />
     <Compile Include="Services\CompilerService.fs" />
     <Compile Include="Services\InteractiveSession.fs" />
