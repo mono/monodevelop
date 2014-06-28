@@ -4,6 +4,7 @@ using Octokit;
 using System.Collections.Generic;
 using Gtk;
 using System.Threading.Tasks;
+using MonoDevelop.Ide;
 
 namespace GitHub.Issues
 {
@@ -18,8 +19,25 @@ namespace GitHub.Issues
 
 		public IReadOnlyList<Octokit.Issue> GetAllIssues()
 		{
-			Task<IReadOnlyList<Octokit.Issue>> task = gitHubClient.Issue.GetForRepository ("Kalnor", "testRepo");
-			return task.Result;
+			try {
+				// Find the current repository and its information
+				GitHubUtilities utilities = new GitHubUtilities ();
+				Octokit.Repository currentRepository = utilities.ORepository;
+
+				Task<IReadOnlyList<Octokit.Issue>> task = gitHubClient.Issue.GetForRepository (currentRepository.Owner.Login, currentRepository.Name);
+				IReadOnlyList<Octokit.Issue> issues = task.Result;
+				return issues;
+			}
+			catch (Exception e) {
+				if (e.InnerException != null) {
+					MessageService.ShowError (e.InnerException.Message);
+				} 
+				else {
+					MessageService.ShowError (e.Message);
+				}
+			}
+
+			return null;
 		}
 	}
 }

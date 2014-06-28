@@ -61,6 +61,12 @@
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>..\..\..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
+    <Reference Include="MonoDevelop.VersionControl">
+      <HintPath>..\..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.VersionControl.Git">
+      <HintPath>..\..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -76,6 +82,7 @@
     <Compile Include="Handlers\IGitHubIssuesViewHandler.cs" />
     <Compile Include="Views\IssueNode.cs" />
     <Compile Include="Views\IssueColumn.cs" />
+    <Compile Include="GitHubUtilities.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

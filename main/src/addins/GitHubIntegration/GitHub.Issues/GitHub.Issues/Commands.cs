@@ -19,7 +19,8 @@ namespace GitHub.Issues
 			IssuesManager manager = new IssuesManager ();
 			IReadOnlyList<Octokit.Issue> issues = manager.GetAllIssues ();
 
-			IdeApp.Workbench.OpenDocument (new IssuesView ("Issues View", issues), true);
+			if (issues != null)
+				IdeApp.Workbench.OpenDocument (new IssuesView ("Issues View", issues), true);
 		}
 	}
 }
