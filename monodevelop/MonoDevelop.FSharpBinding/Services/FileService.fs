@@ -11,17 +11,14 @@ open FSharp.CompilerBinding
 type Version = int
 
 module FileSystemImpl = 
-    let files = new System.Collections.Generic.Dictionary<string, int * System.DateTime>()
     let inline getOpenDoc filename = 
        IdeApp.Workbench.Documents |> Seq.tryFind(fun d -> d.Editor.Document.FileName = filename)
 
     let inline getOpenDocContent (filename: string) =
-     //   dumpDocs ()
         match getOpenDoc filename with
-        | Some f -> 
-           let bytes = System.Text.Encoding.UTF8.GetBytes (f.Editor.Document.Text);
-           Some bytes //let m = new System.IO.MemoryStream(bytes)
-           //Some (m :> Stream) 
+        | Some d -> 
+           let bytes = System.Text.Encoding.UTF8.GetBytes (d.Editor.Document.Text);
+           Some bytes 
         | _ -> None
 
     let inline getOrElse f o = 
@@ -31,7 +28,8 @@ module FileSystemImpl =
 
 open FileSystemImpl
 type FileSystem (defaultFileSystem : IFileSystem) =
-    let mutable cnt = 1
+    let timestamps = new System.Collections.Generic.Dictionary<string, int * System.DateTime>()
+
     interface IFileSystem with
         member x.FileStreamReadShim fileName = 
             getOpenDocContent fileName
@@ -46,10 +44,12 @@ type FileSystem (defaultFileSystem : IFileSystem) =
             let r = maybe {
                let! doc = FileSystemImpl.getOpenDoc fileName
                if doc.IsDirty then
-                 let! parsedDoc = Option.ofNull doc.ParsedDocument
-                 let! parsedFile = Option.ofNull parsedDoc.ParsedFile
-                 let! date = Option.ofNullable parsedFile.LastWriteTime
-                 return date.ToLocalTime()
+                 let key, newhash = fileName, doc.Editor.Text.GetHashCode()
+                 return match timestamps.TryGetValue (key) with
+                        | true, (hash, date) when hash = newhash -> date
+                        | _       -> let d = System.DateTime.Now
+                                     timestamps.[key] <- (newhash,d)
+                                     d
                else return! None
              }
             getOrElse (fun () -> defaultFileSystem.GetLastWriteTimeShim fileName) r
