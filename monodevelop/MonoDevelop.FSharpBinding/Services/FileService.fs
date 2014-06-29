@@ -7,21 +7,16 @@ open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Core
 open MonoDevelop.Ide.TypeSystem
-
+open FSharp.CompilerBinding
 type Version = int
 
 module FileSystemImpl = 
     let files = new System.Collections.Generic.Dictionary<string, int * System.DateTime>()
     let inline getOpenDoc filename = 
        IdeApp.Workbench.Documents |> Seq.tryFind(fun d -> d.Editor.Document.FileName = filename)
-    let dumpText lines = 
-       System.IO.File.AppendAllLines("""d:\dump.txt""", lines)
-    let dumpDocs () = 
-       IdeApp.Workbench.Documents
-       |> Seq.map(fun d -> sprintf "Filename: %s " d.Editor.Document.FileName)
-       |> dumpText
+
     let inline getOpenDocContent (filename: string) =
-        dumpDocs ()
+     //   dumpDocs ()
         match getOpenDoc filename with
         | Some f -> 
            let bytes = System.Text.Encoding.UTF8.GetBytes (f.Editor.Document.Text);
@@ -36,8 +31,7 @@ module FileSystemImpl =
 
 open FileSystemImpl
 type FileSystem (defaultFileSystem : IFileSystem) =
-
-    
+    let mutable cnt = 1
     interface IFileSystem with
         member x.FileStreamReadShim fileName = 
             getOpenDocContent fileName
@@ -45,12 +39,20 @@ type FileSystem (defaultFileSystem : IFileSystem) =
             |> getOrElse (fun () -> defaultFileSystem.FileStreamReadShim fileName)
         
         member x.ReadAllBytesShim fileName =
-            getOpenDocContent fileName |> getOrElse (fun () -> defaultFileSystem.ReadAllBytesShim fileName)
+            getOpenDocContent fileName 
+            |> getOrElse (fun () -> defaultFileSystem.ReadAllBytesShim fileName)
         
         member x.GetLastWriteTimeShim fileName =
-            match FileSystemImpl.getOpenDoc fileName with 
-            | Some d -> System.DateTime.Now
-            | _ -> defaultFileSystem.GetLastWriteTimeShim fileName
+            let r = maybe {
+               let! doc = FileSystemImpl.getOpenDoc fileName
+               if doc.IsDirty then
+                 let! parsedDoc = Option.ofNull doc.ParsedDocument
+                 let! parsedFile = Option.ofNull parsedDoc.ParsedFile
+                 let! date = Option.ofNullable parsedFile.LastWriteTime
+                 return date.ToLocalTime()
+               else return! None
+             }
+            getOrElse (fun () -> defaultFileSystem.GetLastWriteTimeShim fileName) r
         
         member x.GetTempPathShim() = defaultFileSystem.GetTempPathShim()
         member x.FileStreamCreateShim fileName = defaultFileSystem.FileStreamCreateShim fileName
