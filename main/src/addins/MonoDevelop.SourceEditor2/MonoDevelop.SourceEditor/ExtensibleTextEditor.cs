@@ -682,9 +682,10 @@ namespace MonoDevelop.SourceEditor
 				var result = template.InsertTemplateContents (editor, context);
 
 				var links = result.TextLinks.Select (l => new TextLink (l.Name) {
-					Links = l.Links.Select (s => new TextSegment (s.Offset, s.Length)).ToList ()
+					Links = l.Links.Select (s => new TextSegment (s.Offset, s.Length)).ToList (),
+					IsEditable = l.IsEditable,
+					IsIdentifier = l.IsIdentifier
 				}).ToList ();
-
 				var tle = new TextLinkEditMode (this, result.InsertPosition, links);
 				tle.TextLinkMode = TextLinkMode.General;
 				if (tle.ShouldStartTextLinkMode) {
