@@ -64,7 +64,7 @@ namespace MonoDevelop.SourceEditor
 			content.CursorPosition = Math.Max (0, endPos);
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();

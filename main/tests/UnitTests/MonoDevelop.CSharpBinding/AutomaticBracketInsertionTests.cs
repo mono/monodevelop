@@ -51,11 +51,14 @@ namespace MonoDevelop.CSharpBinding
 	{
 		class TestCompletionWidget : ICompletionWidget 
 		{
-			Document doc;
+			MonoDevelop.Ide.Editor.TextEditor editor;
 
-			public TestCompletionWidget (Document doc)
+			EditContext doc;
+
+			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, EditContext document)
 			{
-				this.doc = doc;
+				this.editor = editor;
+				this.doc = document;
 			}
 
 			public string CompletedWord {
@@ -70,17 +73,17 @@ namespace MonoDevelop.CSharpBinding
 
 			public string GetText (int startOffset, int endOffset)
 			{
-				return doc.Editor.GetTextBetween (startOffset, endOffset);
+				return editor.GetTextBetween (startOffset, endOffset);
 			}
 
 			public char GetChar (int offset)
 			{
-				return  doc.Editor.GetCharAt (offset);
+				return  editor.GetCharAt (offset);
 			}
 
 			public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 			{
-				var line = doc.Editor.GetLineByOffset (triggerOffset); 
+				var line = editor.GetLineByOffset (triggerOffset); 
 				return new CodeCompletionContext {
 					TriggerOffset = triggerOffset,
 					TriggerLine = line.LineNumber,
@@ -94,7 +97,7 @@ namespace MonoDevelop.CSharpBinding
 
 			public CodeCompletionContext CurrentCodeCompletionContext {
 				get {
-					return CreateCodeCompletionContext (doc.Editor.CaretOffset);
+					return CreateCodeCompletionContext (editor.CaretOffset);
 				}
 			}
 
@@ -119,13 +122,13 @@ namespace MonoDevelop.CSharpBinding
 
 			public int CaretOffset {
 				get {
-					return doc.Editor.CaretOffset;
+					return editor.CaretOffset;
 				}
 			}
 
 			public int TextLength {
 				get {
-					return doc.Editor.Length;
+					return editor.Length;
 				}
 			}
 
@@ -164,7 +167,7 @@ namespace MonoDevelop.CSharpBinding
 
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();
@@ -178,7 +181,7 @@ namespace MonoDevelop.CSharpBinding
 
 			ListWindow.ClearHistory ();
 			var listWindow = new CompletionListWindow ();
-			var widget = new TestCompletionWidget (ext.Document);
+			var widget = new TestCompletionWidget (ext.Editor, ext.Document);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
 

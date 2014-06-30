@@ -104,7 +104,7 @@ namespace MonoDevelop.AspNet.Tests
 		{
 			public AspNetTestingEditorExtension (Document doc)
 			{
-				Initialize (doc);
+				Initialize (doc.Editor, doc);
 			}
 
 			public CodeCompletionContext GetCodeCompletionContext (TestViewContent sev)

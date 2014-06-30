@@ -62,7 +62,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 
 
 			var compExt = new UnitTestTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();

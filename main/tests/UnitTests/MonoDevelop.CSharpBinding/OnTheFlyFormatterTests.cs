@@ -95,12 +95,12 @@ namespace MonoDevelop.CSharpBinding
 			content.CursorPosition = cursorPosition;
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 			
 			var ext = new CSharpTextEditorIndentation ();
 			CSharpTextEditorIndentation.OnTheFlyFormatting = true;
-			ext.Initialize (doc);
+			ext.Initialize (doc.Editor, doc);
 			content.Contents.Add (ext);
 			
 			doc.UpdateParseDocument ();
@@ -336,7 +336,7 @@ namespace FormatSelectionTest
 	}
 }", out content);
 
-			OnTheFlyFormatter.Format (ext.Document, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
+			OnTheFlyFormatter.Format (ext.Editor, ext.Document, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
 
 
 			Assert.AreEqual (@"

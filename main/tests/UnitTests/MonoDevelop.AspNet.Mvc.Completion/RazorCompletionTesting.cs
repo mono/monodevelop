@@ -137,7 +137,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 		public RazorTestingEditorExtension (Document doc, RazorCSharpParsedDocument parsedDoc, bool cSharpContext)
 		{
 			razorDocument = parsedDoc;
-			Initialize (doc);
+			Initialize (doc.Editor, doc);
 			if (cSharpContext) {
 				InitializeCodeCompletion ();
 				SwitchToHidden ();

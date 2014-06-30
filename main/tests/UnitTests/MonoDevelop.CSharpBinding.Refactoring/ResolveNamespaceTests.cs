@@ -74,7 +74,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			content.CursorPosition = Math.Max (0, endPos);
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 			doc.UpdateParseDocument ();
 			return doc;
@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			ResolveResult resolveResult;
 			AstNode node;
 			doc.TryResolveAt (location, out resolveResult, out node);
-			return ResolveCommandHandler.GetPossibleNamespaces (doc, node, ref resolveResult);
+			return ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc, node, ref resolveResult);
 		}
 
 		[Test]
