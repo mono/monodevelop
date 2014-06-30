@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 {
 	public interface ICodeTemplateHandler
 	{
-		void InsertTemplate (CodeTemplate template, TextEditor document);
+		void InsertTemplate (CodeTemplate template, TextEditor editor, EditContext context);
 	}
 	
 	public class CodeTemplateCompletionData : CompletionData

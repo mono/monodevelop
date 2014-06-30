@@ -668,7 +668,7 @@ namespace MonoDevelop.SourceEditor
 			string word = GetWordBeforeCaret ();
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplates (Document.MimeType)) {
 				if (template.Shortcut == word) {
-					InsertTemplate (template, view.WorkbenchWindow.Document);
+					InsertTemplate (template, view.WorkbenchWindow.Document.Editor, view.WorkbenchWindow.Document);
 					return true;
 				}
 			}
@@ -676,10 +676,10 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 
-		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Gui.Document document)
+		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.EditContext context)
 		{
-			using (var undo = Document.OpenUndoGroup ()) {
-				var result = template.InsertTemplateContents (document);
+			using (var undo = editor.OpenUndoGroup ()) {
+				var result = template.InsertTemplateContents (editor, context);
 
 				var links = result.TextLinks.Select (l => new TextLink (l.Name) {
 					Links = l.Links.Select (s => new TextSegment (s.Offset, s.Length)).ToList ()

@@ -38,6 +38,7 @@ using ICSharpCode.NRefactory.Editor;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using System.Linq;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -379,7 +380,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			var handler = context.GetContent<ICodeTemplateHandler> ();
 			if (handler != null) {
-				handler.InsertTemplate (this, editor);
+				handler.InsertTemplate (this, editor, context);
 			} else {
 				InsertTemplateContents (editor, context);
 			}	
@@ -388,18 +389,18 @@ namespace MonoDevelop.Ide.CodeTemplates
 		/// <summary>
 		/// Don't use this unless you're implementing ICodeTemplateWidget. Use Insert instead.
 		/// </summary>
-		public TemplateResult InsertTemplateContents (TextEditor editor, EditContext document)
+		public TemplateResult InsertTemplateContents (TextEditor editor, EditContext context)
 		{
 			var data = editor;
 			
 			int offset = data.CaretOffset;
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
 			
-			var context = new TemplateContext {
+			var templateCtx = new TemplateContext {
 				Template = this,
-				EditContext = document,
+				EditContext = context,
 				Editor = editor,
-				ParsedDocument = document.ParsedDocument != null ? document.ParsedDocument.ParsedFile : null,
+				ParsedDocument = context.ParsedDocument != null ? context.ParsedDocument.ParsedFile : null,
 				InsertPosition = data.CaretLocation,
 				LineIndent = data.GetLineIndent (data.CaretLocation.Line),
 				TemplateCode = Code
@@ -414,8 +415,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 				while (Char.IsWhiteSpace (data.GetCharAt (end - 1))) {
 					end--;
 				}
-				context.LineIndent = data.GetLineIndent (data.OffsetToLineNumber (start));
-				context.SelectedText = RemoveIndent (data.GetTextBetween (start, end), context.LineIndent);
+				templateCtx.LineIndent = data.GetLineIndent (data.OffsetToLineNumber (start));
+				templateCtx.SelectedText = RemoveIndent (data.GetTextBetween (start, end), templateCtx.LineIndent);
 				data.Remove (start, end - start);
 				offset = start;
 			} else {
@@ -424,7 +425,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 					offset = DeleteWordBeforeCaret (data);
 			}
 			
-			TemplateResult template = FillVariables (context);
+			TemplateResult template = FillVariables (templateCtx);
 			template.InsertPosition = offset;
 			editor.Insert (offset, template.Code);
 			
@@ -441,7 +442,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (prettyPrinter != null) {
 				int endOffset = template.InsertPosition + template.Code.Length;
 				var oldVersion = data.Version;
-				prettyPrinter.OnTheFlyFormat (editor, document, template.InsertPosition, endOffset);
+				prettyPrinter.OnTheFlyFormat (editor, context, template.InsertPosition, endOffset);
 				foreach (var textLink in template.TextLinks) {
 					for (int i = 0; i < textLink.Links.Count; i++) {
 						var segment = textLink.Links [i];
@@ -453,6 +454,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			return template;
 		}
 
+		public TemplateResult InsertTemplateContents (Document document)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			return InsertTemplateContents (document.Editor, document);
+		}
 #region I/O
 		public const string Node        = "CodeTemplate";
 		const string HeaderNode          = "Header";

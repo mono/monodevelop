@@ -2331,10 +2331,10 @@ namespace MonoDevelop.SourceEditor
 				return null;
 			return editor.GetTextEditorData ();
 		}
-		
-		public void InsertTemplate (CodeTemplate template, Document doc)
+
+		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, EditContext context)
 		{
-			TextEditor.InsertTemplate (template, doc);
+			TextEditor.InsertTemplate (template, editor, context);
 		}
 		
 		[CommandHandler (TextEditorCommands.GotoMatchingBrace)]
