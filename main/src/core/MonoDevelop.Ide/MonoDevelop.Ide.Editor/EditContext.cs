@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
@@ -87,5 +86,16 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		public abstract void AttachToProject (Project project);
+
+		public abstract void ReparseDocument ();
+
+		public event EventHandler Saved;
+
+		protected virtual void OnSaved (EventArgs e)
+		{
+			var handler = Saved;
+			if (handler != null)
+				handler (this, e);
+		}
 	}
 }

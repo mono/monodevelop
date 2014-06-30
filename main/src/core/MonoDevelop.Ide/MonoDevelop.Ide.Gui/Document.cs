@@ -494,12 +494,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
 		}
-		
-		void OnSaved (EventArgs args)
+
+		protected override void OnSaved (EventArgs e)
 		{
 			IdeApp.Workbench.SaveFileStatus ();
-			if (Saved != null)
-				Saved (this, args);
+			base.OnSaved (e);
 		}
 
 		public void CancelParseTimeout ()
@@ -828,7 +827,7 @@ namespace MonoDevelop.Ide.Gui
 		/// This method kicks off an async document parser and should be used instead of 
 		/// <see cref="UpdateParseDocument"/> unless you need the parsed document immediately.
 		/// </summary>
-		public void ReparseDocument ()
+		public override void ReparseDocument ()
 		{
 			StartReparseThread ();
 		}
@@ -849,7 +848,6 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		public event EventHandler Closed;
-		public event EventHandler Saved;
 		public event EventHandler ViewChanged;
 		
 

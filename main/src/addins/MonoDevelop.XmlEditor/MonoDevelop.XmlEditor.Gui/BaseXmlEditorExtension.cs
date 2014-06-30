@@ -64,10 +64,10 @@ namespace MonoDevelop.XmlEditor.Gui
 
 		#region Setup and teardown
 
-		protected override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc)
+		public override bool IsValidInContext (EditContext context)
 		{
 			//can only attach if there is not already an attached BaseXmlEditorExtension
-			return doc.GetContent<BaseXmlEditorExtension> () == null;
+			return context.GetContent<BaseXmlEditorExtension> () == null;
 		}
 		
 		protected virtual RootState CreateRootState ()
@@ -108,7 +108,7 @@ namespace MonoDevelop.XmlEditor.Gui
 				ownerProjects = new List<DotNetProject> ();
 				return;
 			}
-			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
+			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
 				var dnp = Document.Project as DotNetProject;
@@ -228,7 +228,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart) {
+			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
 				var newLine = Editor.CaretLine + 1;
 				var ret = base.KeyPress (key, keyChar, modifier);
 				if (key == Gdk.Key.Return && Editor.CaretLine == newLine) {

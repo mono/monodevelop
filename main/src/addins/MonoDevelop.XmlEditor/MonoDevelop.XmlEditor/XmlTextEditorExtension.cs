@@ -56,9 +56,9 @@ namespace MonoDevelop.XmlEditor
 		InferredXmlCompletionProvider inferredCompletionData;
 		bool inferenceQueued;
 
-		protected override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc)
+		public override bool IsValidInContext (EditContext context)
 		{
-			return IsFileNameHandled (doc.Name) && base.ExtendsEditor (doc);
+			return IsFileNameHandled (context.Name) && base.IsValidInContext (context);
 		}
 		
 		protected override void Initialize ()
@@ -70,15 +70,15 @@ namespace MonoDevelop.XmlEditor
 			SetDefaultSchema ();
 			
 			//var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (string.IsNullOrEmpty (Document.Editor.MimeType)) {
-				Document.Editor.MimeType = ApplicationXmlMimeType;
+			if (string.IsNullOrEmpty (Editor.MimeType)) {
+				Editor.MimeType = ApplicationXmlMimeType;
 				Document.ReparseDocument ();
 			}
 		}
 
 		void HandleXmlFileAssociationChanged (object sender, XmlFileAssociationChangedEventArgs e)
 		{
-			var filename = Document.FileName;
+			var filename = Document.Name;
 			if (filename != null && filename.ToString ().EndsWith (e.Extension, StringComparison.Ordinal))
 				SetDefaultSchema ();
 		}
@@ -376,7 +376,7 @@ namespace MonoDevelop.XmlEditor
 		
 		void SetDefaultSchema ()
 		{
-			var filename = Document.FileName;
+			var filename = Document.Name;
 			if (filename == null)
 				return;
 			
@@ -458,7 +458,7 @@ namespace MonoDevelop.XmlEditor
 		{
 			bool result;
 			
-			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
+			if (Editor.Options.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
 				result = base.KeyPress (key, keyChar, modifier);
 				SmartIndentLine (Editor.CaretLine);
 				return result;
@@ -533,7 +533,7 @@ namespace MonoDevelop.XmlEditor
 						return;
 					monitor.BeginTask (GettextCatalog.GetString ("Creating schema..."), 0);
 					try {
-						string schema = XmlEditorService.CreateSchema (Document, xml);
+						string schema = XmlEditorService.CreateSchema (Editor, xml);
 						string fileName = XmlEditorService.GenerateFileName (FileName, "{0}.xsd");
 						IdeApp.Workbench.NewDocument (fileName, "application/xml", schema);
 						monitor.ReportSuccess (GettextCatalog.GetString ("Schema created."));
@@ -641,7 +641,7 @@ namespace MonoDevelop.XmlEditor
 					string newFileName = XmlEditorService.GenerateFileName (FileName, "-transformed{0}.xml");
 					
 					monitor.BeginTask (GettextCatalog.GetString ("Executing transform..."), 1);
-					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter(Document)) {
+					using (XmlTextWriter output = XmlEditorService.CreateXmlTextWriter(Editor)) {
 						xslt.Transform (doc, null, output);
 						IdeApp.Workbench.NewDocument (
 						    newFileName, "application/xml", output.ToString ());

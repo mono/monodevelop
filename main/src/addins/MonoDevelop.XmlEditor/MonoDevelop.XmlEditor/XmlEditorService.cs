@@ -42,6 +42,7 @@ using System.Xml.Xsl;
 using MonoDevelop.Components;
 using Gtk;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.XmlEditor
 {
@@ -115,12 +116,12 @@ namespace MonoDevelop.XmlEditor
 		/// Creates a XmlTextWriter using the current text editor
 		/// properties for indentation.
 		/// </summary>
-		public static XmlTextWriter CreateXmlTextWriter (Document doc, TextWriter textWriter)
+		public static XmlTextWriter CreateXmlTextWriter (TextEditor doc, TextWriter textWriter)
 		{
 			XmlTextWriter xmlWriter = new XmlTextWriter(textWriter);
 			xmlWriter.Formatting = Formatting.Indented;
-			if (doc.Editor.Options.TabsToSpaces) {
-				xmlWriter.Indentation = doc.Editor.Options.TabSize;
+			if (doc.Options.TabsToSpaces) {
+				xmlWriter.Indentation = doc.Options.TabSize;
 				xmlWriter.IndentChar = ' ';
 			} else {
 				xmlWriter.Indentation = 1;
@@ -129,7 +130,7 @@ namespace MonoDevelop.XmlEditor
 			return xmlWriter;
 		}
 		
-		public static XmlTextWriter CreateXmlTextWriter (Document doc)
+		public static XmlTextWriter CreateXmlTextWriter (TextEditor doc)
 		{
 			return CreateXmlTextWriter (doc, new EncodedStringWriter (System.Text.Encoding.UTF8));
 		}
@@ -163,7 +164,7 @@ namespace MonoDevelop.XmlEditor
 			return UTF8Encoding.UTF8.GetString (outputBytes, preambleLength, outputBytes.Length - preambleLength);
 		}
 		
-		public static string CreateSchema (Document doc, string xml)
+		public static string CreateSchema (TextEditor doc, string xml)
 		{
 			using (System.Data.DataSet dataSet = new System.Data.DataSet()) {
 				dataSet.ReadXml(new StringReader (xml), System.Data.XmlReadMode.InferSchema);
