@@ -36,18 +36,29 @@ namespace MonoDevelop.Debugger.Converters
 
 		public override bool CanGetValue (ObjectValue val)
 		{
-			return val.TypeName == "Gdk.Pixbuf";
+			return val.TypeName == "Gdk.Pixbuf" ||
+			val.TypeName.EndsWith ("UIKit.UIImage");
 		}
 
 		public override Image GetValue (ObjectValue val)
 		{
 			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 			ops.AllowTargetInvoke = true;
-			var pix = (RawValue)val.GetRawValue (ops);
-			var arrayObject = (RawValueArray)pix.CallMethod ("SaveToBuffer", "png");
-			var bytes = (byte[])(arrayObject).GetValues (0, arrayObject.Length);
-			var ms = new MemoryStream (bytes, false);
-			return Image.FromStream (ms);
+			var rawVal = (RawValue)val.GetRawValue (ops);
+			if (val.TypeName == "Gdk.Pixbuf") {
+				var arrayObject = (RawValueArray)rawVal.CallMethod ("SaveToBuffer", "png");
+				var bytes = (byte[])(arrayObject).GetValues (0, arrayObject.Length);
+				var ms = new MemoryStream (bytes, false);
+				return Image.FromStream (ms);
+			} else if (val.TypeName.EndsWith ("UIKit.UIImage")) {
+				RawValue nsData = (RawValue)rawVal.CallMethod ("AsPNG");
+				var arrayObject = (RawValueArray)nsData.CallMethod ("ToArray");
+				var bytes = (byte[])(arrayObject).GetValues (0, arrayObject.Length);
+				var ms = new MemoryStream (bytes, false);
+				return Image.FromStream (ms);
+			} else {
+				throw new NotSupportedException ();
+			}
 		}
 
 		#endregion

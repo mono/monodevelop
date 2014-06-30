@@ -42,8 +42,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		{
 			var image = DebuggingService.GetGetConverter<Xwt.Drawing.Image> (val).GetValue (val);
 			image = image.WithBoxSize (250);
-			var pixBuf = image.ToPixbuf ();
-			var imageView = new Gtk.Image (pixBuf);
+			var imageView = new ImageView (image);
 			imageView.Show ();
 			return imageView;
 		}
