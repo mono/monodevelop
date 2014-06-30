@@ -148,7 +148,18 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void SearchTextChanged (object sender, EventArgs e)
 		{
-			//var searchText = searchEntry.Text;
+			var searchText = searchEntry.Text;
+			if (searchText == string.Empty)
+				this.treeviewColors.DataSource = this.colorStore;
+			else {
+				var searchStore = CreateStoreByQuery (searchText);
+				this.treeviewColors.DataSource = searchStore;
+			}
+		}
+
+		ITreeDataSource CreateStoreByQuery (string searchText)
+		{
+			return new TreeStore ();
 		}
 
 		void CanUndoRedoChanged (object sender, EventArgs e)
@@ -163,7 +174,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 
 			history.Undo ();
-			ApplyNewScheme ();
+			var pos = treeviewColors.SelectedRow;
+			if (pos == null) {
+				ApplyNewScheme (GroupNames.Other);
+				return;
+			}
+
+			var navigator = colorStore.GetNavigatorAt (pos);
+			var groupName = GetGroupNameFromNode (navigator);
+			ApplyNewScheme (groupName);
 		}
 
 		void Redo (object sender, EventArgs e)
@@ -172,7 +191,15 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				return;
 
 			history.Redo ();
-			ApplyNewScheme ();
+			var pos = treeviewColors.SelectedRow;
+			if (pos == null) {
+				ApplyNewScheme (GroupNames.Other);
+				return;
+			}
+
+			var navigator = colorStore.GetNavigatorAt (pos);
+			var groupName = GetGroupNameFromNode (navigator);
+			ApplyNewScheme (groupName);
 		}
 
 		void TreeviewColorsSelectionChanged (object sender, EventArgs e)
@@ -282,18 +309,58 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (handleUIEvents)
 				history.AddCommand (new ChangeChunkStyleCommand (oldStyle, newStyle, navigator));
 
-			ApplyNewScheme ();
+			var groupName = GetGroupNameFromNode (navigator);
+			ApplyNewScheme (groupName);
 		}
 
-		void ApplyNewScheme ()
+		string GetGroupNameFromNode (TreeNavigator navigator)
+		{
+			var property = navigator.GetValue (propertyField);
+			if (property != null)
+				return property.Attribute.GroupName;
+
+			var name = navigator.GetValue (nameField);
+			if (name != null)
+				return name;
+
+			return GroupNames.Other;
+		}
+
+		void ApplyNewScheme (string groupName)
 		{
 			var newscheme = colorScheme.Clone ();
 			WriteDataToScheme (newscheme);
 
 			this.textEditor.TextViewMargin.PurgeLayoutCache ();
-			this.textEditor.Document.MimeType = "text/x-csharp";
+			SetCodeExample (groupName);
 			this.textEditor.GetTextEditorData ().ColorStyle = newscheme;
 			this.textEditor.QueueDraw ();
+		}
+
+		void SetCodeExample (string groupName)
+		{
+			switch (groupName) {
+			case GroupNames.XML:
+				this.textEditor.Text = CodeSamples.XML;
+				this.textEditor.Document.MimeType = "application/xml";
+				break;
+			case GroupNames.HTML:
+				this.textEditor.Text = CodeSamples.Web;
+				this.textEditor.Document.MimeType = "text/html";
+				break;
+			case GroupNames.CSS:
+				this.textEditor.Text = CodeSamples.CSS;
+				this.textEditor.Document.MimeType = "text/css";
+				break;
+			case GroupNames.Script:
+				this.textEditor.Text = CodeSamples.Javascript;
+				this.textEditor.Document.MimeType = "text/javascript";
+				break;
+			default:
+				this.textEditor.Text = CodeSamples.CSharp;
+				this.textEditor.Document.MimeType = "text/x-csharp";
+				break;
+			}
 		}
 
 		void ChangeAmbientColor (TreeNavigator navigator, AmbientColor oldStyle)
@@ -305,7 +372,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (handleUIEvents)
 				history.AddCommand (new ChangeAmbientColorCommand (oldStyle, newStyle, navigator));
 
-			ApplyNewScheme ();
+			var groupName = GetGroupNameFromNode (navigator);
+			ApplyNewScheme (groupName);
 		}
 
 		Cairo.Color GetColorFromButton (LabeledColorButton button)
@@ -378,17 +446,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.entryName.Text = scheme.Name;
 			this.entryDescription.Text = scheme.Description;
 			this.textEditor.Document.MimeType = "text/x-csharp";
+			this.textEditor.Text = CodeSamples.CSharp;
 			this.textEditor.GetTextEditorData ().ColorStyle = scheme;
-			this.textEditor.Text = @"using System;
 
-// This is an example
-class Example
-{
-	public static void Main (string[] args)
-	{
-		Console.WriteLine (""Hello World"");
-	}
-}";
 			foreach (var data in ColorScheme.TextColors) {
 				var parent = GetGroupParentNode (data.Attribute.GroupName);
 				var navigator = parent.AddChild ();
