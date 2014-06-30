@@ -38,6 +38,7 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.GtkCore.Dialogs;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.GtkCore.GuiBuilder
 {
@@ -240,11 +241,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 	
 	class OpenDocumentFileProvider: ITextFileProvider
 	{
-		public IEditableTextFile GetEditableTextFile (FilePath filePath)
+		public ITextDocument GetEditableTextFile (FilePath filePath)
 		{
 			foreach (Document doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
-					IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
+					var ef = doc.Editor;
 					if (ef != null) return ef;
 				}
 			}

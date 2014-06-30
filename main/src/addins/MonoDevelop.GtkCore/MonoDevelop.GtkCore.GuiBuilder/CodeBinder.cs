@@ -213,7 +213,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 
 			Document doc = IdeApp.Workbench.OpenDocument (cls.Region.FileName, true);
 			
-			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
+			var editor = doc.Editor;
 			if (editor != null) {
 				var resolvedCls = cls.Resolve (project).GetDefinition ();
 				CodeGenerationService.AddNewMember (resolvedCls, cls, GetFieldCode (cls, obj, name));

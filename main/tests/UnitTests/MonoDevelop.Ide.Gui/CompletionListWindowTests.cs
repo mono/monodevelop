@@ -92,6 +92,9 @@ namespace MonoDevelop.Ide.Gui
 				get {
 					return sb.Length;
 				}
+				set {
+					throw new NotSupportedException ();
+				}
 			}
 			
 			public int TextLength {

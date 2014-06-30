@@ -1970,7 +1970,12 @@ namespace MonoDevelop.Ide
 			return new BackgroundProgressMonitor (GettextCatalog.GetString ("Code completion database generation"), "md-parser");
 		}
 	}
-	
+
+	public interface ITextFileProvider
+	{
+		ITextDocument GetEditableTextFile (FilePath filePath);
+	}
+
 	public class TextFileProvider : ITextFileProvider
 	{
 		static TextFileProvider instance = new TextFileProvider ();
@@ -2056,23 +2061,18 @@ namespace MonoDevelop.Ide
 			#endregion
 		}
 		
-		public IEditableTextFile GetEditableTextFile (FilePath filePath)
+		public ITextDocument GetEditableTextFile (FilePath filePath)
 		{
 			if (IdeApp.IsInitialized) {
 				foreach (var doc in IdeApp.Workbench.Documents) {
 					if (doc.FileName == filePath) {
-						IEditableTextFile ef = doc.GetContent<IEditableTextFile> ();
+						var ef = doc.Editor;
 						if (ef != null) return ef;
 					}
 				}
 			}
-			
-			TextFile file = TextFile.ReadFile (filePath);
-			var data = DocumentFactory.CreateNewEditor ();
-			data.FileName = filePath;
-			data.Text = file.Text;
-			
-			return new ProviderProxy (data, file.SourceEncoding, file.HadBOM);
+
+			return DocumentFactory.CreateNewDocument (StringTextSource.ReadFrom (filePath), filePath);
 		}
 
 		/// <summary>

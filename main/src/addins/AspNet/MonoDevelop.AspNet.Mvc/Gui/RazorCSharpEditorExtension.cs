@@ -500,7 +500,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 					return list;
 				}
 			} else if (currentChar == '>' && Tracker.Engine.CurrentState is RazorCodeFragmentState)
-				return ClosingTagCompletion (EditableBuffer, currentLocation);
+				return ClosingTagCompletion (Editor, currentLocation);
 
 			return base.HandleCodeCompletion (completionContext, forced, ref triggerWordLength);
 		}

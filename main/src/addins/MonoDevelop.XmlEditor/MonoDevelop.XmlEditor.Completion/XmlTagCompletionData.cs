@@ -68,18 +68,15 @@ namespace MonoDevelop.XmlEditor.Completion
 		
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
-			IEditableTextBuffer buf = window.CompletionWidget as IEditableTextBuffer;
+			var buf = window.CompletionWidget;
 			if (buf != null) {
 				//completion context gets nulled from window as soon as we alter the buffer
 				var codeCompletionContext = window.CodeCompletionContext;
 
-				using (var undo = buf.OpenUndoGroup ()) {
-					buf.InsertText (buf.CursorPosition, element);
+				buf.Replace (buf.CaretOffset, 0, element);
 					
-					// Move caret into the middle of the tags
-					buf.CursorPosition = codeCompletionContext.TriggerOffset + cursorOffset;
-					buf.Select (buf.CursorPosition, buf.CursorPosition);
-				}
+				// Move caret into the middle of the tags
+				buf.CaretOffset = codeCompletionContext.TriggerOffset + cursorOffset;
 			}
 		}
 	}

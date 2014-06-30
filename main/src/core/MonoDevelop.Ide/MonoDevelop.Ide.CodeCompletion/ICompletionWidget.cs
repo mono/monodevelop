@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get;
 		}
 
-		int CaretOffset { get;}
+		int CaretOffset { get; set; }
 		int TextLength { get; }
 		int SelectedLength { get; }
 		string GetText (int startOffset, int endOffset);

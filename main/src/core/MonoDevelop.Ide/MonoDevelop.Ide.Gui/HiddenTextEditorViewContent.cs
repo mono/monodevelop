@@ -32,7 +32,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class HiddenTextEditorViewContent : MonoDevelop.Ide.Gui.AbstractViewContent, IEditableTextBuffer, IServiceProvider
+	public class HiddenTextEditorViewContent : MonoDevelop.Ide.Gui.AbstractViewContent, IServiceProvider
 	{
 		readonly TextEditor editor;
 

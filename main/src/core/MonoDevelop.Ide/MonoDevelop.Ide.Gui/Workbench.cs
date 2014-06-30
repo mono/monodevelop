@@ -456,17 +456,18 @@ namespace MonoDevelop.Ide.Gui
 								doc.SetProject (info.Project); 
 							}
 
-							IEditableTextBuffer ipos = (IEditableTextBuffer) vcFound.GetContent (typeof(IEditableTextBuffer));
+							var ipos = (TextEditor) vcFound.GetContent (typeof(TextEditor));
 							if (info.Line >= 1 && ipos != null) {
 								doc.DisableAutoScroll ();
-								doc.RunWhenLoaded (() =>
-									ipos.SetCaretTo (
+								doc.RunWhenLoaded (() => {
+									ipos.SetCaretLocation (
 										info.Line,
 										info.Column >= 1 ? info.Column : 1,
-										info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine),
-										info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine)
-									)
-								);
+										info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine)
+									);
+									if (info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine))
+										ipos.CenterToCaret ();
+								});
 							}
 							
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
@@ -1303,7 +1304,7 @@ namespace MonoDevelop.Ide.Gui
 			DisplayBindingService.AttachSubWindows (newContent.WorkbenchWindow, binding);
 			newContent.WorkbenchWindow.DocumentType = binding.Name;
 			
-			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
+			var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));
 			if (fileInfo.Line > 0 && ipos != null) {
 				FileSettingsStore.Remove (fileName);
 				ipos.RunWhenLoaded (JumpToLine); 
@@ -1314,8 +1315,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void JumpToLine ()
 		{
-			IEditableTextBuffer ipos = (IEditableTextBuffer) newContent.GetContent (typeof(IEditableTextBuffer));
-			ipos.SetCaretTo (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
+			var ipos = (TextEditor) newContent.GetContent (typeof(TextEditor));
+			ipos.SetCaretLocation (Math.Max(1, fileInfo.Line), Math.Max(1, fileInfo.Column), fileInfo.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine));
 		}
 	}
 	

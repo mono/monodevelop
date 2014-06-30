@@ -33,6 +33,7 @@ using MonoDevelop.TextTemplating.Parser;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.TextTemplating.Gui
 {
@@ -81,11 +82,11 @@ namespace MonoDevelop.TextTemplating.Gui
 			}
 		}
 		
-		protected IEditableTextBuffer EditableBuffer {
+		protected TextEditor EditableBuffer {
 			get {
 				if (EditContext == null)
 					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return EditContext.GetContent<IEditableTextBuffer> ();
+				return EditContext.GetContent<TextEditor> ();
 			}
 		}
 		

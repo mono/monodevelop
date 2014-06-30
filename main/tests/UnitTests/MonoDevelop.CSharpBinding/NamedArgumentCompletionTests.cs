@@ -126,6 +126,9 @@ namespace MonoDevelop.CSharpBinding
 				get {
 					return editor.CaretOffset;
 				}
+				set {
+					editor.CaretOffset = value;
+				}
 			}
 
 			public int TextLength {

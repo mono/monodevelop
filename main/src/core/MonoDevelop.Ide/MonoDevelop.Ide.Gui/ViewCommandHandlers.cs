@@ -241,33 +241,33 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (EditCommands.UppercaseSelection)]
 		public void OnUppercaseSelection ()
 		{
-			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			var buffer = GetContent <TextEditor> ();
 			if (buffer == null)
 				return;
 			
 			string selectedText = buffer.SelectedText;
 			if (string.IsNullOrEmpty (selectedText)) {
-				int pos = buffer.CursorPosition;
-				string ch = buffer.GetText (pos, pos + 1);
+				int pos = buffer.CaretOffset;
+				string ch = buffer.GetTextAt (pos, pos + 1);
 				string upper = ch.ToUpper ();
 				if (upper == ch) {
-					buffer.CursorPosition = pos + 1;
+					buffer.CaretOffset = pos + 1;
 					return;
 				}
 				using (var undo = buffer.OpenUndoGroup ()) {
-					buffer.DeleteText (pos, 1);
-					buffer.InsertText (pos, upper);
-					buffer.CursorPosition = pos + 1;
+					buffer.Remove (pos, 1);
+					buffer.Insert (pos, upper);
+					buffer.CaretOffset = pos + 1;
 				}
 			} else {
 				string newText = selectedText.ToUpper ();
 				if (newText == selectedText)
 					return;
-				int startPos = buffer.SelectionStartPosition;
+				int startPos = buffer.SelectionRange.Offset;
 				using (var undo = buffer.OpenUndoGroup ()) {
-					buffer.DeleteText (startPos, selectedText.Length);
-					buffer.InsertText (startPos, newText);
-					buffer.Select (startPos, startPos + newText.Length);
+					buffer.Remove (startPos, selectedText.Length);
+					buffer.Insert (startPos, newText);
+					buffer.SetSelection (startPos, startPos + newText.Length);
 				}
 			}
 		}
@@ -275,40 +275,40 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.UppercaseSelection)]
 		protected void OnUppercaseSelection (CommandInfo info)
 		{
-			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			var buffer = GetContent <TextEditor> ();
 			info.Enabled = buffer != null;
 		}
 		
 		[CommandHandler (EditCommands.LowercaseSelection)]
 		public void OnLowercaseSelection ()
 		{
-			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			var buffer = GetContent <TextEditor> ();
 			if (buffer == null)
 				return;
 			
 			string selectedText = buffer.SelectedText;
 			if (string.IsNullOrEmpty (selectedText)) {
-				int pos = buffer.CursorPosition;
-				string ch = buffer.GetText (pos, pos + 1);
+				int pos = buffer.CaretOffset;
+				string ch = buffer.GetTextAt (pos, pos + 1);
 				string lower = ch.ToLower ();
 				if (lower == ch) {
-					buffer.CursorPosition = pos + 1;
+					buffer.CaretOffset = pos + 1;
 					return;
 				};
 				using (var undo = buffer.OpenUndoGroup ()) {
-					buffer.DeleteText (pos, 1);
-					buffer.InsertText (pos, lower);
-					buffer.CursorPosition = pos + 1;
+					buffer.Remove (pos, 1);
+					buffer.Insert (pos, lower);
+					buffer.CaretOffset = pos + 1;
 				}
 			} else {
 				string newText = selectedText.ToLower ();
 				if (newText == selectedText)
 					return;
-				int startPos = buffer.SelectionStartPosition;
+				int startPos = buffer.SelectionRange.Offset;
 				using (var undo = buffer.OpenUndoGroup ()) {
-					buffer.DeleteText (startPos, selectedText.Length);
-					buffer.InsertText (startPos, newText);
-					buffer.Select (startPos, startPos + newText.Length);
+					buffer.Remove (startPos, selectedText.Length);
+					buffer.Insert (startPos, newText);
+					buffer.SetSelection (startPos, startPos + newText.Length);
 				}
 			}
 		}
@@ -316,7 +316,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.LowercaseSelection)]
 		protected void OnLowercaseSelection (CommandInfo info)
 		{
-			IEditableTextBuffer buffer = GetContent <IEditableTextBuffer> ();
+			var buffer = GetContent <TextEditor> ();
 			info.Enabled = buffer != null;
 		}
 		
@@ -490,7 +490,7 @@ namespace MonoDevelop.Ide.Gui
 		[CommandUpdateHandler (EditCommands.RemoveTrailingWhiteSpaces)]
 		protected void OnRemoveTrailingWhiteSpaces (CommandInfo info)
 		{
-			info.Enabled = GetContent <IEditableTextBuffer> () != null;
+			info.Enabled = GetContent <TextEditor> () != null;
 		}
 		
 		#region Folding

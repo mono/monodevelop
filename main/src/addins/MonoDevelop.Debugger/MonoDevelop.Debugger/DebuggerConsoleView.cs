@@ -319,6 +319,9 @@ namespace MonoDevelop.Debugger
 
 		int Position {
 			get { return Cursor.Offset - TokenBegin.Offset; }
+			set { 
+				throw new NotSupportedException ();
+			}
 		}
 
 		#region ICompletionWidget implementation
@@ -357,6 +360,9 @@ namespace MonoDevelop.Debugger
 		int ICompletionWidget.CaretOffset {
 			get {
 				return Position;
+			}
+			set {
+				Position = value;
 			}
 		}
 

@@ -265,6 +265,9 @@ namespace MonoDevelop.CSharp.Completion
 				get {
 					return localInfo.HiddenDocument.Editor.CaretOffset;
 				}
+				set {
+					localInfo.HiddenDocument.Editor.CaretOffset = value;
+				}
 			}
 			
 			public int TextLength {

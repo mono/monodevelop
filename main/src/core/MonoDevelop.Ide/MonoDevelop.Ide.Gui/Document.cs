@@ -94,10 +94,6 @@ namespace MonoDevelop.Ide.Gui
 					return ret;
 			}
 
-			//no, so look through the TexteditorExtensions as well
-			if (Editor != null)
-				return Editor.GetContent<T> ();
-
 			return null;
 		}
 		
@@ -114,12 +110,6 @@ namespace MonoDevelop.Ide.Gui
 				ret = (T) Window.ViewContent.GetContent (typeof(T));
 				if (ret != null)
 					yield return ret;
-			}
-			
-			//no, so look through the TexteditorExtensions as well
-			if (Editor != null) {
-				foreach (var ext in Editor.GetContents<T> ())
-					yield return ext;
 			}
 		}
 

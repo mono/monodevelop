@@ -658,8 +658,8 @@ namespace MonoDevelop.XmlEditor
 		
 		string GetFileContent (string fileName)
 		{
-			MonoDevelop.Projects.Text.IEditableTextFile tf =
-				MonoDevelop.Ide.TextFileProvider.Instance.GetEditableTextFile (fileName);
+			var tf =
+				MonoDevelop.Ide.TextFileProvider.Instance.GetReadOnlyTextEditorData (fileName);
  			if (tf != null)
 				return tf.Text;
 			System.IO.StreamReader reader = new System.IO.StreamReader (fileName, true);

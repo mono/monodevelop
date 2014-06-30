@@ -786,11 +786,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (doc == null)
 					return null;
 				
-				var buf = doc.GetContent<IEditableTextBuffer> ();
+				var buf = doc.Editor;
 				if (buf != null) {
 					doc.DisableAutoScroll ();
 					buf.RunWhenLoaded (() => {
-						buf.SetCaretTo (Math.Max (Line, 1), Math.Max (Column, 1));
+						buf.SetCaretLocation (Math.Max (Line, 1), Math.Max (Column, 1));
 					});
 				}
 				

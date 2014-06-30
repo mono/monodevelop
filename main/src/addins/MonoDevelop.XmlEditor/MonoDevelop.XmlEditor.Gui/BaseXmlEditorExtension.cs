@@ -178,14 +178,6 @@ namespace MonoDevelop.XmlEditor.Gui
 			}
 		}
 		
-		protected IEditableTextBuffer EditableBuffer {
-			get {
-				if (EditContext == null)
-					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return EditContext.GetContent<IEditableTextBuffer> ();
-			}
-		}
-		
 		protected DocumentStateTracker<Parser> Tracker {
 			get { return tracker; }
 		}
@@ -279,7 +271,7 @@ namespace MonoDevelop.XmlEditor.Gui
 		protected virtual ICompletionDataList HandleCodeCompletion (
 		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
 		{
-			IEditableTextBuffer buf = this.EditableBuffer;
+			var buf = this.Editor;
 
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
 			TextLocation currentLocation = new TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
@@ -297,7 +289,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			// Auto insert '>' when '/' is typed inside tag state (for quick tag closing)
 			//FIXME: avoid doing this when the next non-whitespace char is ">" or ignore the next ">" typed
 			if (XmlEditorOptions.AutoInsertFragments && tracker.Engine.CurrentState is XmlTagState && currentChar == '/') {
-				buf.InsertText (buf.CursorPosition, ">");
+				buf.InsertAtCaret (">");
 				return null;
 			}
 			
@@ -409,7 +401,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			return null;
 		}
 
-		protected virtual ICompletionDataList ClosingTagCompletion (IEditableTextBuffer buf, TextLocation currentLocation)
+		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, TextLocation currentLocation)
 		{
 			//get name of current node in document that's being ended
 			XElement el = tracker.Engine.Nodes.Peek () as XElement;
@@ -424,8 +416,8 @@ namespace MonoDevelop.XmlEditor.Gui
 					//							this.Editor.Document.EndAtomicUndo ();
 
 					using (var undo = buf.OpenUndoGroup ()) {
-						buf.InsertText (buf.CursorPosition, tag);
-						buf.CursorPosition -= tag.Length;
+						buf.Insert (buf.CaretOffset, tag);
+						buf.CaretOffset -= tag.Length;
 					}
 
 					//						if (wasInAtomicUndo)

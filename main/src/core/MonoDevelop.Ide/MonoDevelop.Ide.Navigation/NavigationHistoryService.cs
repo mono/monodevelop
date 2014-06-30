@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.Navigation
 					return point;
 			}
 			
-			IEditableTextBuffer editBuf = doc.GetContent<IEditableTextBuffer> ();
+			var editBuf = doc.Editor;
 			if (editBuf != null) {
 				point = new TextFileNavigationPoint (doc, editBuf);
 				if (point != null)

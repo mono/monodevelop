@@ -403,8 +403,8 @@ namespace MonoDevelop.AspNet
 		
 		static XmlTextReader GetConfigReader (string configFile)
 		{
-			IEditableTextFile textFile = 
-				MonoDevelop.Ide.TextFileProvider.Instance.GetEditableTextFile (configFile);
+			var textFile = 
+				MonoDevelop.Ide.TextFileProvider.Instance.GetReadOnlyTextEditorData (configFile);
 			if (textFile != null)
 				return new XmlTextReader (textFile.Text, XmlNodeType.Document, null);
 			else

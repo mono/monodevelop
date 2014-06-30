@@ -42,9 +42,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 		public System.Collections.Generic.IEnumerable<ItemToolboxNode> GetDynamicItems (IToolboxConsumer consumer)
 		{
-			var editor = consumer as IEditableTextBuffer;
+			var editor = consumer as IReadonlyTextDocument;
 			if (editor != null) {
-				foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (editor.Name)) {
+				foreach (CodeTemplate ct in CodeTemplateService.GetCodeTemplatesForFile (editor.FileName)) {
 					if (ct.CodeTemplateContext != CodeTemplateContext.Standard)
 						continue;
 					yield return new TemplateToolboxNode (ct) {

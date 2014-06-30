@@ -1595,6 +1595,9 @@ namespace MonoDevelop.Debugger
 			get {
 				return editEntry.Position;
 			}
+			set {
+				editEntry.Position = value;
+			}
 		}
 		
 		char ICompletionWidget.GetChar (int offset)

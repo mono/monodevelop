@@ -2947,18 +2947,22 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (lineNumber, 1);
 		}
 
-
 		void IInternalEditorExtensions.SetIndentationTracker (IndentationTracker indentationTracker)
 		{
-			TextEditor.GetTextEditorData ().IndentationTracker = new IndentationTrackerWrapper (wrapper, indentationTracker);
+			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker != null ? new IndentationTrackerWrapper (wrapper, indentationTracker) : null;
 		}
 
 		void IInternalEditorExtensions.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
-			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = new SelectionSurroundingProviderWrapper (surroundingProvider);
+			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = surroundingProvider != null ? new SelectionSurroundingProviderWrapper (surroundingProvider) : null;
 		}
+		
 		void IInternalEditorExtensions.SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
+			if (textPasteHandler == null) {
+				TextEditor.GetTextEditorData ().TextPasteHandler = null;
+				return;
+			}
 			var data = TextEditor.GetTextEditorData ();
 			if (data.TextPasteHandler != null)
 				((TextPasteHandlerWrapper)data.TextPasteHandler).Dispose ();

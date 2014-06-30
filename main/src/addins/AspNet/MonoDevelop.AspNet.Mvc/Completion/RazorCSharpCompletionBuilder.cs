@@ -215,6 +215,9 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 			get	{
 				return docInfo.UnderlyingDocument.Editor.CaretOffset;
 			}
+			set {
+				docInfo.UnderlyingDocument.Editor.CaretOffset = value;
+			}
 		}
 
 		public int TextLength

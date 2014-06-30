@@ -370,7 +370,6 @@
     <Compile Include="MonoDevelop.Projects.Policies\PolicyDictionary.cs" />
     <Compile Include="MonoDevelop.Projects.Text\IEditableTextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\ITextFile.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\ITextFileProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextEncoding.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFileReader.cs" />
@@ -474,7 +473,7 @@
     <Compile Include="MonoDevelop.Core.Text\TextChangeEventArgs.cs" />
     <Compile Include="MonoDevelop.Core.Text\StringTextSource.cs" />
     <Compile Include="MonoDevelop.Core.Text\TextFileUtility.cs" />
-    <Compile Include="MonoDevelop.Core.Text\ITextSourceVersion.cs" />   
+    <Compile Include="MonoDevelop.Core.Text\ITextSourceVersion.cs" />
     <Compile Include="MonoDevelop.Core.Execution\IDebugConsole.cs" />
     <Compile Include="MonoDevelop.Projects\IDotNetFileContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildGlobalPropertyProvider.cs" />
