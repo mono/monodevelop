@@ -119,7 +119,7 @@ namespace MonoDevelop.AnalysisCore
 			if (ca != null) {
 				var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
 
-				var context = doc.ParsedDocument.CreateRefactoringContext != null ? doc.ParsedDocument.CreateRefactoringContext (doc, default(CancellationToken)) : null;
+				var context = doc.ParsedDocument.CreateRefactoringContext != null ? doc.ParsedDocument.CreateRefactoringContext (doc.Editor, doc, default(CancellationToken)) : null;
 				using (var script = context.CreateScript ()) {
 					ca.Run (context, script);
 				}
@@ -219,25 +219,25 @@ namespace MonoDevelop.AnalysisCore
 
 						if (inspector.CanSuppressWithAttribute) {
 							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with attribute"), new System.Action(delegate {
-								inspector.SuppressWithAttribute (doc, ir.Region); 
+								inspector.SuppressWithAttribute (doc.Editor, doc, ir.Region); 
 							}));
 						}
 
 						if (inspector.CanDisableWithPragma) {
 							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Suppress with #pragma"), new System.Action(delegate {
-								inspector.DisableWithPragma (doc, ir.Region); 
+								inspector.DisableWithPragma (doc.Editor, doc, ir.Region); 
 							}));
 						}
 
 						if (inspector.CanDisableOnce) {
 							declSet.CommandInfos.Add (GettextCatalog.GetString ("_Disable Once"), new System.Action(delegate {
-								inspector.DisableOnce (doc, ir.Region); 
+								inspector.DisableOnce (doc.Editor, doc, ir.Region); 
 							}));
 						}
 
 						if (inspector.CanDisableAndRestore) {
 							declSet.CommandInfos.Add (GettextCatalog.GetString ("Disable _and Restore"), new System.Action(delegate {
-								inspector.DisableAndRestore (doc, ir.Region); 
+								inspector.DisableAndRestore (doc.Editor, doc, ir.Region); 
 							}));
 						}
 					}
@@ -249,15 +249,22 @@ namespace MonoDevelop.AnalysisCore
 			}
 		}
 		
-		public static IEnumerable<IAnalysisFixAction> GetActions (Document doc, FixableResult result)
+		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.EditContext doc, FixableResult result)
 		{
 			foreach (var fix in result.Fixes)
 				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))
-					foreach (var action in handler.GetFixes (doc, fix))
+					foreach (var action in handler.GetFixes (editor, doc, fix))
 						yield return action;
 
 		}
-		
+
+		public static IEnumerable<IAnalysisFixAction> GetActions (Document doc, FixableResult result)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			return GetActions (doc.Editor, doc, result);
+		}
+
 		static string GetIcon (Severity severity)
 		{
 			switch (severity) {

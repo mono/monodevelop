@@ -57,6 +57,12 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
+		public virtual bool IsProjectContextInUpdate {
+			get {
+				return false;
+			}
+		}
+
 		public virtual T GetContent<T> () where T : class
 		{
 			var t = this as T;

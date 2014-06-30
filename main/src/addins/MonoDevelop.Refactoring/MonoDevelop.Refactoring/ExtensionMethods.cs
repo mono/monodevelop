@@ -56,7 +56,7 @@ namespace MonoDevelop.Refactoring
 		/// resolve navigator.
 		/// Note: The shared resolver is fully resolved.
 		/// </summary>
-		public static Task<CSharpAstResolver> GetSharedResolver (this Document document)
+		public static Task<CSharpAstResolver> GetSharedResolver (this EditContext document)
 		{
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument == null || document.IsProjectContextInUpdate || document.Project != null && !(document.Project is DotNetProject))

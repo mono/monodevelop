@@ -59,15 +59,21 @@ namespace MonoDevelop.Refactoring
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			var editor = doc.Editor;
+			return ResolveAt (doc.Editor, doc, out resolveResult, out node, token);
+		}
+
+		public static bool ResolveAt (TextEditor editor, EditContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
 			if (editor == null || editor.MimeType != "text/x-csharp") {
 				node = null;
 				resolveResult = null;
 				return false;
 			}
-			if (!InternalResolveAt (doc, out resolveResult, out node)) {
-				var location = RefactoringService.GetCorrectResolveLocation (doc, editor.CaretLocation);
-				resolveResult = GetHeuristicResult (doc, location, ref node);
+			if (!InternalResolveAt (editor, doc, out resolveResult, out node)) {
+				var location = RefactoringService.GetCorrectResolveLocation (editor, doc, editor.CaretLocation);
+				resolveResult = GetHeuristicResult (editor, doc, location, ref node);
 				if (resolveResult == null)
 					return false;
 			}
@@ -77,7 +83,7 @@ namespace MonoDevelop.Refactoring
 			return true;
 		}
 
-		static bool InternalResolveAt (Document doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
+		static bool InternalResolveAt (TextEditor editor, EditContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
 			var parsedDocument = doc.ParsedDocument;
 			resolveResult = null;
@@ -89,7 +95,7 @@ namespace MonoDevelop.Refactoring
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.CaretLocation);
+				var location = RefactoringService.GetCorrectResolveLocation (editor, doc, editor.CaretLocation);
 				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, location, out node, token);
 				if (resolveResult == null || node is Statement)
 					return false;
@@ -115,13 +121,13 @@ namespace MonoDevelop.Refactoring
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
 			
-			var possibleNamespaces = GetPossibleNamespaces (doc, node, ref resolveResult);
+			var possibleNamespaces = GetPossibleNamespaces (doc.Editor, doc, node, ref resolveResult);
 
 			foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
 				var reference = t.Reference;
 				var info = resolveMenu.CommandInfos.Add (
 					t.GetImportText (),
-					new System.Action (new AddImport (doc, resolveResult, null, reference, true, node).Run)
+					new System.Action (new AddImport (doc.Editor, doc, resolveResult, null, reference, true, node).Run)
 					);
 				info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
 			
@@ -135,7 +141,7 @@ namespace MonoDevelop.Refactoring
 					var reference = t.Reference;
 					var info = resolveMenu.CommandInfos.Add (
 						t.GetImportText (),
-						new System.Action (new AddImport (doc, resolveResult, ns, reference, true, node).Run)
+						new System.Action (new AddImport (doc.Editor, doc, resolveResult, ns, reference, true, node).Run)
 						);
 					info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
 				}
@@ -148,7 +154,7 @@ namespace MonoDevelop.Refactoring
 				foreach (var t in possibleNamespaces) {
 					string ns = t.Namespace;
 					var reference = t.Reference;
-					resolveMenu.CommandInfos.Add (t.GetInsertNamespaceText (doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc, resolveResult, ns, reference, false, node).Run));
+					resolveMenu.CommandInfos.Add (t.GetInsertNamespaceText (doc.Editor.GetTextBetween (node.StartLocation, node.EndLocation)), new System.Action (new AddImport (doc.Editor, doc, resolveResult, ns, reference, false, node).Run));
 				}
 			}
 			
@@ -156,19 +162,18 @@ namespace MonoDevelop.Refactoring
 				ainfo.Insert (0, resolveMenu);
 		}
 
-		static string CreateStub (Document doc, int offset)
+		static string CreateStub (TextEditor editor, EditContext doc, int offset)
 		{
 			if (offset <= 0)
 				return "";
-			string text = doc.Editor.GetTextAt (0, Math.Min (doc.Editor.Length, offset));
+			string text = editor.GetTextAt (0, Math.Min (editor.Length, offset));
 			var stub = new StringBuilder (text);
 			CSharpCompletionEngine.AppendMissingClosingBrackets (stub, false);
 			return stub.ToString ();
 		}
 
-		static ResolveResult GetHeuristicResult (Document doc, DocumentLocation location, ref AstNode node)
+		static ResolveResult GetHeuristicResult (TextEditor editor, EditContext doc, DocumentLocation location, ref AstNode node)
 		{
-			var editor = doc.Editor;
 			if (editor == null)
 				return null;
 			int offset = editor.CaretOffset;
@@ -201,7 +206,7 @@ namespace MonoDevelop.Refactoring
 					wasWhitespaceAfterLetter |= isWhiteSpace;
 			}
 
-			var unit = SyntaxTree.Parse (CreateStub (doc, offset), doc.FileName);
+			var unit = SyntaxTree.Parse (CreateStub (editor, doc, offset), doc.Name);
 
 			return ResolveAtLocation.Resolve (
 				doc.Compilation, 
@@ -211,17 +216,17 @@ namespace MonoDevelop.Refactoring
 				out node);
 		}
 
-		public static List<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ref ResolveResult resolveResult)
+		public static List<PossibleNamespace> GetPossibleNamespaces (TextEditor editor, EditContext doc, AstNode node, ref ResolveResult resolveResult)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
 			if (node == null)
 				throw new ArgumentNullException ("node");
-			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.CaretLocation);
+			var location = RefactoringService.GetCorrectResolveLocation (editor, doc, editor.CaretLocation);
 
 			if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
-				resolveResult = GetHeuristicResult (doc, location, ref node) ?? resolveResult;
-			var foundNamespaces = GetPossibleNamespaces (doc, node, resolveResult, location);
+				resolveResult = GetHeuristicResult (editor, doc, location, ref node) ?? resolveResult;
+			var foundNamespaces = GetPossibleNamespaces (editor, doc, node, resolveResult, location);
 			
 			if (!(resolveResult is AmbiguousTypeResolveResult)) {
 				var usedNamespaces = RefactoringOptions.GetUsedNamespaces (doc, location);
@@ -308,7 +313,7 @@ namespace MonoDevelop.Refactoring
 			return !string.IsNullOrEmpty (result);
 		}
 
-		static bool CanReference (Document doc, MonoDevelop.Projects.ProjectReference projectReference)
+		static bool CanReference (EditContext doc, MonoDevelop.Projects.ProjectReference projectReference)
 		{
 			var project = doc.Project as DotNetProject;
 			if (project == null || projectReference == null || project.ParentSolution == null)
@@ -325,7 +330,7 @@ namespace MonoDevelop.Refactoring
 
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (Document doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
+		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (TextEditor editor, EditContext doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
@@ -517,15 +522,17 @@ namespace MonoDevelop.Refactoring
 
 		internal class AddImport
 		{
-			readonly Document doc;
+			readonly TextEditor editor;
+			readonly EditContext doc;
 			readonly ResolveResult resolveResult;
 			readonly string ns;
 			readonly bool addUsing;
 			readonly AstNode node;
 			readonly MonoDevelop.Projects.ProjectReference reference;
 
-			public AddImport (Document doc, ResolveResult resolveResult, string ns, MonoDevelop.Projects.ProjectReference reference, bool addUsing, AstNode node)
+			public AddImport (TextEditor editor, EditContext doc, ResolveResult resolveResult, string ns, MonoDevelop.Projects.ProjectReference reference, bool addUsing, AstNode node)
 			{
+				this.editor = editor;
 				this.doc = doc;
 				this.resolveResult = resolveResult;
 				this.ns = ns;
@@ -536,7 +543,7 @@ namespace MonoDevelop.Refactoring
 			
 			public void Run ()
 			{
-				var loc = doc.Editor.CaretLocation;
+				var loc = editor.CaretLocation;
 
 				if (reference != null) {
 					var project = doc.Project;
@@ -549,18 +556,18 @@ namespace MonoDevelop.Refactoring
 
 				if (!addUsing) {
 //					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
-					int offset = doc.Editor.LocationToOffset (node.StartLocation);
-					doc.Editor.Insert (offset, ns + ".");
+					int offset = editor.LocationToOffset (node.StartLocation);
+					editor.Insert (offset, ns + ".");
 					//doc.Editor.Document.CommitLineUpdate (loc.Line);
 					return;
 				}
 
-				var generator = doc.CreateCodeGenerator ();
+				var generator = doc.CreateCodeGenerator (editor);
 
 				if (resolveResult is NamespaceResolveResult) {
-					generator.AddLocalNamespaceImport (doc, ns, loc);
+					generator.AddLocalNamespaceImport (editor, doc, ns, loc);
 				} else {
-					generator.AddGlobalNamespaceImport (doc, ns);
+					generator.AddGlobalNamespaceImport (editor, doc, ns);
 				}
 			}
 		}

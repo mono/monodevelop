@@ -178,8 +178,22 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public abstract string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly);
 
-		public abstract void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName);
-		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation);
+		public abstract void AddGlobalNamespaceImport (TextEditor editor, EditContext context, string nsName);
+		public abstract void AddLocalNamespaceImport (TextEditor editor, EditContext context, string nsName, TextLocation caretLocation);
+
+		public void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			AddGlobalNamespaceImport (doc.Editor, doc, nsName);
+		}
+
+		public void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			AddLocalNamespaceImport (doc.Editor, doc, nsName, caretLocation);
+		}
 
 		public abstract string GetShortTypeString (TextEditor editor, EditContext doc, IType type);
 

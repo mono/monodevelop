@@ -762,7 +762,7 @@ namespace MonoDevelop.Ide.Gui
 		static IUnresolvedAssembly SystemCore { get { return systemCore.Value; } }
 		static IUnresolvedAssembly System { get { return system.Value; } }
 
-		public bool IsProjectContextInUpdate {
+		public override bool IsProjectContextInUpdate {
 			get {
 				if (currentWrapper == null)
 					return false;

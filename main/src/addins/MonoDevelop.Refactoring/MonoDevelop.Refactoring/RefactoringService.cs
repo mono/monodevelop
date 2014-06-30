@@ -40,6 +40,7 @@ using MonoDevelop.CodeIssues;
 using MonoDevelop.Ide.TypeSystem;
 using System.Diagnostics;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -161,7 +162,7 @@ namespace MonoDevelop.Refactoring
 		
 		public static void AcceptChanges (IProgressMonitor monitor, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
 		{
-			var rctx = new RefactoringOptions (null);
+			var rctx = new RefactoringOptions (null, null);
 			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
 			var fileNames = new HashSet<FilePath> ();
@@ -199,7 +200,13 @@ namespace MonoDevelop.Refactoring
 
 		public static Task<IEnumerable<CodeAction>> GetValidActions (Document doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			var editor = doc.Editor;
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			return GetValidActions (doc.Editor, doc, loc, cancellationToken);
+		}
+
+		public static Task<IEnumerable<CodeAction>> GetValidActions (TextEditor editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		{
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
 			return Task.Factory.StartNew (delegate {
 				var result = new List<CodeAction> ();
@@ -208,14 +215,14 @@ namespace MonoDevelop.Refactoring
 				try {
 					var parsedDocument = doc.ParsedDocument;
 					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
-						var ctx = parsedDocument.CreateRefactoringContext (doc, cancellationToken);
+						var ctx = parsedDocument.CreateRefactoringContext (editor, doc, cancellationToken);
 						if (ctx != null) {
 							foreach (var provider in contextActions.Where (fix =>
 								fix.MimeType == editor.MimeType &&
 								disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
 							{
 								try {
-									result.AddRange (provider.GetActions (doc, ctx, loc, cancellationToken));
+									result.AddRange (provider.GetActions (editor, doc, ctx, loc, cancellationToken));
 								} catch (Exception ex) {
 									LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
 								}
@@ -231,10 +238,10 @@ namespace MonoDevelop.Refactoring
 			}, cancellationToken);
 		}
 
-		public static void QueueQuickFixAnalysis (Document doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
+		public static void QueueQuickFixAnalysis (TextEditor editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
 		{
 			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
-			var issues = ext != null ? ext.GetResultsAtOffset (doc.Editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
+			var issues = ext != null ? ext.GetResultsAtOffset (editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
 
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
@@ -245,13 +252,13 @@ namespace MonoDevelop.Refactoring
 						var fresult = r as FixableResult;
 						if (fresult == null)
 							continue;
-						foreach (var action in FixOperationsHandler.GetActions (doc, fresult)) {
+						foreach (var action in FixOperationsHandler.GetActions (editor, doc, fresult)) {
 							result.Add (new AnalysisContextActionProvider.AnalysisCodeAction (action, r) {
 								DocumentRegion = action.DocumentRegion
 							});
 						}
 					}
-					result.AddRange (GetValidActions (doc, loc).Result);
+					result.AddRange (GetValidActions (editor, doc, loc).Result);
 					callback (result);
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error in analysis service", ex);
@@ -295,11 +302,10 @@ namespace MonoDevelop.Refactoring
 			return appliedFixes;
 		}
 
-		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (Document doc, MonoDevelop.Ide.Editor.DocumentLocation location)
+		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (TextEditor editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
 			if (doc == null)
 				return location;
-			var editor = doc.Editor;
 			if (editor == null || location.Column == 1)
 				return location;
 
@@ -310,7 +316,7 @@ namespace MonoDevelop.Refactoring
 			if (line == null || location.Column > line.LengthIncludingDelimiter)
 				return location;
 			int offset = editor.LocationToOffset (location);
-			if (offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1)))
+			if (offset > 0 && !char.IsLetterOrDigit (editor.GetCharAt (offset)) && char.IsLetterOrDigit (editor.GetCharAt (offset - 1)))
 				return new MonoDevelop.Ide.Editor.DocumentLocation (location.Line, location.Column - 1);
 			return location;
 		}

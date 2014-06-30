@@ -66,7 +66,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			CancelTask ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			while (markers.Count > 0)
-				Document.Editor.RemoveMarker (markers.Dequeue ());
+				Editor.RemoveMarker (markers.Dequeue ());
 			tasks.Clear ();
 			disposed = true;
 		}

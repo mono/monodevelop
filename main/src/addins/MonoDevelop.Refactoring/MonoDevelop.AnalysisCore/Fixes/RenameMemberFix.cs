@@ -58,18 +58,17 @@ namespace MonoDevelop.AnalysisCore.Fixes
 	{
 		//FIXME: why is this invalid on the parseddocuments loaded when the doc is first loaded?
 		//maybe the item's type's SourceProject is null?
-		public IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
+		public IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, EditContext doc, object fix)
 		{
 			var renameFix = (RenameMemberFix)fix;
 			var refactoring = new RenameRefactoring ();
-			var options = new RefactoringOptions (doc) {
+			var options = new RefactoringOptions (editor, doc) {
 				SelectedItem = renameFix.Item,
 			};
 			
 			if (renameFix.Item == null) {
 				ResolveResult resolveResult;
-				
-				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Document, out resolveResult);
+				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Editor, options.Document, out resolveResult);
 			}
 			
 			if (!refactoring.IsValid (options))

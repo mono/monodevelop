@@ -70,7 +70,7 @@ namespace MonoDevelop.CodeIssues
 		
 			var codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
 			var context = input.ParsedDocument.CreateRefactoringContext != null ?
-				input.ParsedDocument.CreateRefactoringContext (input, cancellationToken) : null;
+				input.ParsedDocument.CreateRefactoringContext (editor, input, cancellationToken) : null;
 			Parallel.ForEach (codeIssueProvider, (parentProvider) => {
 				try {
 					#if PROFILE
@@ -85,7 +85,7 @@ namespace MonoDevelop.CodeIssues
 							var fixes = r.Actions == null ? new List<GenericFix> () : new List<GenericFix> (r.Actions.Where (a => a != null).Select (a => {
 								Action batchAction = null;
 								if (a.SupportsBatchRunning)
-									batchAction = () => a.BatchRun (input, loc);
+									batchAction = () => a.BatchRun (editor, input, loc);
 								return new GenericFix (
 									a.Title,
 									() => {

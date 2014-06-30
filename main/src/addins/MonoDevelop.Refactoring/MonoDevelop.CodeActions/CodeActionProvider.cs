@@ -28,6 +28,7 @@ using ICSharpCode.NRefactory;
 using System.Threading;
 using System.Collections.Generic;
 using System;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeActions
 {
@@ -69,6 +70,6 @@ namespace MonoDevelop.CodeActions
 		/// <summary>
 		/// Gets all the code actions in document at given location.
 		/// </summary>
-		public abstract IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken);
+		public abstract IEnumerable<CodeAction> GetActions (TextEditor editor, EditContext doc, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken);
 	}
 }

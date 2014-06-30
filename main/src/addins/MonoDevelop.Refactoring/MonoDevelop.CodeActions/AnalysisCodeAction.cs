@@ -32,6 +32,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeActions
 {
@@ -54,7 +55,7 @@ namespace MonoDevelop.CodeActions
 			Description = result.Message;
 		}
 		
-		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
+		public override System.Collections.Generic.IEnumerable<CodeAction> GetActions (TextEditor editor, EditContext doc, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
 		{
 			yield return new AnalysisCodeAction (Action, Result) {
 				DocumentRegion = Action.DocumentRegion
@@ -91,7 +92,7 @@ namespace MonoDevelop.CodeActions
 				}
 			}
 			
-			public override void BatchRun (MonoDevelop.Ide.Gui.Document document, TextLocation loc)
+			public override void BatchRun (TextEditor editor, EditContext context, TextLocation loc)
 			{
 				Action.BatchFix ();
 			}

@@ -48,11 +48,16 @@ namespace MonoDevelop.Refactoring
 	{
 		readonly Task<CSharpAstResolver> resolver;
 
-		public Document Document {
+		public TextEditor Editor {
 			get;
 			private set;
 		}
-		
+
+		public EditContext Document {
+			get;
+			private set;
+		}
+
 		public object SelectedItem {
 			get;
 			set;
@@ -71,13 +76,13 @@ namespace MonoDevelop.Refactoring
 		
 		public string MimeType {
 			get {
-				return DesktopService.GetMimeTypeForUri (Document.FileName);
+				return DesktopService.GetMimeTypeForUri (Document.Name);
 			}
 		}
 		
 		public TextLocation Location {
 			get {
-				return new TextLocation (Document.Editor.CaretLine, Document.Editor.CaretColumn);
+				return new TextLocation (Editor.CaretLine, Editor.CaretColumn);
 			}
 		}
 		//public readonly SyntaxTree Unit;
@@ -86,9 +91,14 @@ namespace MonoDevelop.Refactoring
 		{
 		}
 
-		public RefactoringOptions (Document doc)
+		public RefactoringOptions (Document doc) : this(doc.Editor, doc)
+		{
+		}
+
+		public RefactoringOptions (TextEditor editor, EditContext doc)
 		{
 			this.Document = doc;
+			this.Editor = editor;
 			if (doc != null && doc.ParsedDocument != null) {
 				var sharedResolver = doc.GetSharedResolver ();
 				if (sharedResolver == null)
@@ -100,14 +110,14 @@ namespace MonoDevelop.Refactoring
 
 		public TextEditor GetTextEditorData ()
 		{
-			return Document.Editor;
+			return Editor;
 		}
 		
-		public static string GetWhitespaces (Document document, int insertionOffset)
+		public static string GetWhitespaces (TextEditor editor, int insertionOffset)
 		{
 			StringBuilder result = new StringBuilder ();
-			for (int i = insertionOffset; i < document.Editor.Length; i++) {
-				char ch = document.Editor.GetCharAt (i);
+			for (int i = insertionOffset; i < editor.Length; i++) {
+				char ch = editor.GetCharAt (i);
 				if (ch == ' ' || ch == '\t') {
 					result.Append (ch);
 				} else {
@@ -122,7 +132,7 @@ namespace MonoDevelop.Refactoring
 			using (var stringWriter = new System.IO.StringWriter ()) {
 				var formatter = new TextWriterTokenWriter (stringWriter);
 //				formatter.Indentation = indentLevel;
-				stringWriter.NewLine = Document.Editor.EolMarker;
+				stringWriter.NewLine = Editor.EolMarker;
 				
 				var visitor = new CSharpOutputVisitor (formatter, FormattingOptionsFactory.CreateMono ());
 				node.AcceptVisitor (visitor);
@@ -132,25 +142,25 @@ namespace MonoDevelop.Refactoring
 		
 		public CodeGenerator CreateCodeGenerator ()
 		{
-			var result = CodeGenerator.CreateGenerator (Document);
+			var result = CodeGenerator.CreateGenerator (Editor, Document);
 			if (result == null)
-				LoggingService.LogError ("Generator can't be generated for : " + Document.Editor.MimeType);
+				LoggingService.LogError ("Generator can't be generated for : " + Editor.MimeType);
 			return result;
 		}
 		
-		public static string GetIndent (Document document, IEntity member)
+		public static string GetIndent (TextEditor editor, IEntity member)
 		{
-			return GetWhitespaces (document, document.Editor.LocationToOffset (member.Region.BeginLine, 1));
+			return GetWhitespaces (editor, editor.LocationToOffset (member.Region.BeginLine, 1));
 		}
 		
 		public string GetWhitespaces (int insertionOffset)
 		{
-			return GetWhitespaces (Document, insertionOffset);
+			return GetWhitespaces (Editor, insertionOffset);
 		}
 		
 		public string GetIndent (IEntity member)
 		{
-			return GetIndent (Document, member);
+			return GetIndent (Editor, member);
 		}
 //		
 //		public IReturnType ShortenTypeName (IReturnType fullyQualifiedTypeName)
@@ -168,7 +178,7 @@ namespace MonoDevelop.Refactoring
 			return GetUsedNamespaces (Document, Location);
 		}
 		
-		public static List<string> GetUsedNamespaces (Document doc, TextLocation loc)
+		public static List<string> GetUsedNamespaces (EditContext doc, TextLocation loc)
 		{
 			var result = new List<string> ();
 			var pf = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
@@ -200,7 +210,7 @@ namespace MonoDevelop.Refactoring
 		{
 			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
-			var csResolver = parsedFile.GetResolver (Document.Compilation, Document.Editor.CaretLocation);
+			var csResolver = parsedFile.GetResolver (Document.Compilation, Editor.CaretLocation);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);

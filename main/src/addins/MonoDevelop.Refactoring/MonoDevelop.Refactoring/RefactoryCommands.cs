@@ -45,6 +45,7 @@ using MonoDevelop.Ide.Gui.Components;
 using System.Threading;
 using MonoDevelop.Core.Text;
 using MonoDevelop.AnalysisCore;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -77,17 +78,24 @@ namespace MonoDevelop.Refactoring
 				del ();
 		}
 		
-		public static ResolveResult GetResolveResult (MonoDevelop.Ide.Gui.Document doc)
+		public static ResolveResult GetResolveResult (TextEditor editor, EditContext doc)
 		{
 			ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
 			if (textEditorResolver != null)
-				return textEditorResolver.GetLanguageItem (doc.Editor.IsSomethingSelected ? doc.Editor.SelectionRange.Offset : doc.Editor.CaretOffset);
+				return textEditorResolver.GetLanguageItem (editor.IsSomethingSelected ? editor.SelectionRange.Offset : editor.CaretOffset);
 			return null;
 		}
-		
+
 		public static object GetItem (MonoDevelop.Ide.Gui.Document doc, out ResolveResult resolveResult)
 		{
-			resolveResult = GetResolveResult (doc);
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			return GetItem (doc.Editor, doc, out resolveResult);
+		}
+
+		public static object GetItem (TextEditor editor, EditContext doc, out ResolveResult resolveResult)
+		{
+			resolveResult = GetResolveResult (editor, doc);
 			if (resolveResult is LocalResolveResult) 
 				return ((LocalResolveResult)resolveResult).Variable;
 			if (resolveResult is MemberResolveResult)
@@ -296,7 +304,7 @@ namespace MonoDevelop.Refactoring
 				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
 			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
-				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
+				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc.Editor, doc, CancellationToken.None);
 
 				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
 					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))

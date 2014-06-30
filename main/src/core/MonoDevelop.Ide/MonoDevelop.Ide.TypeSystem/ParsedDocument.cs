@@ -250,7 +250,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 
-		public Func<MonoDevelop.Ide.Gui.Document, CancellationToken, IRefactoringContext> CreateRefactoringContext;
+		public Func<ITextDocument, EditContext, CancellationToken, IRefactoringContext> CreateRefactoringContext;
 		public Func<ITextDocument, object, CancellationToken, IRefactoringContext> CreateRefactoringContextWithEditor;
 	}
 	
