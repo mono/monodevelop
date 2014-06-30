@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide.Editor
 
 		Gtk.Widget IBaseViewContent.Control {
 			get {
-				return textEditorImpl.Control;
+				return textEditor;
 			}
 		}
 
