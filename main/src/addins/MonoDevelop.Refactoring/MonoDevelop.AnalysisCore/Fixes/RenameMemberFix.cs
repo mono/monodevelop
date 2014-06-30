@@ -68,7 +68,7 @@ namespace MonoDevelop.AnalysisCore.Fixes
 			
 			if (renameFix.Item == null) {
 				ResolveResult resolveResult;
-				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Editor, options.Document, out resolveResult);
+				options.SelectedItem = CurrentRefactoryOperationsHandler.GetItem (options.Editor, options.EditContext, out resolveResult);
 			}
 			
 			if (!refactoring.IsValid (options))

@@ -57,8 +57,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		CSharpFormattingPolicy Policy {
 			get {
-				if (Document != null && Document.Project != null && Document.Project.Policies != null) {
-					return Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
+				if (EditContext != null && EditContext.Project != null && EditContext.Project.Policies != null) {
+					return EditContext.Project.Policies.Get<CSharpFormattingPolicy> (types);
 				}
 				return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 			}
@@ -66,8 +66,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 		TextStylePolicy TextStylePolicy {
 			get {
-				if (Document != null && Document.Project != null && Document.Project.Policies != null) {
-					return Document.Project.Policies.Get<TextStylePolicy> (types);
+				if (EditContext != null && EditContext.Project != null && EditContext.Project.Policies != null) {
+					return EditContext.Project.Policies.Get<TextStylePolicy> (types);
 				}
 				return MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
 			}
@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 
 			if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-				OnTheFlyFormatter.Format (Editor, Document, location);
+				OnTheFlyFormatter.Format (Editor, EditContext, location);
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace MonoDevelop.CSharp.Formatting
 			try {
 				var csharpIndentEngine = new CSharpIndentEngine (new DocumentWrapper (Editor), options, policy);
 				//csharpIndentEngine.EnableCustomIndentLevels = true;
-				foreach (var symbol in MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode.GetDefinedSymbols (Document.Project)) {
+				foreach (var symbol in MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode.GetDefinedSymbols (EditContext.Project)) {
 					csharpIndentEngine.DefineSymbol (symbol);
 				}
 				indentEngine = csharpIndentEngine;
@@ -388,7 +388,7 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				using (var undo = Editor.OpenUndoGroup ()) {
 					if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-						OnTheFlyFormatter.FormatStatmentAt (Editor, Document, Editor.CaretLocation);
+						OnTheFlyFormatter.FormatStatmentAt (Editor, EditContext, Editor.CaretLocation);
 					}
 				}
 				return retval;
@@ -490,7 +490,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (keyChar == ';' || keyChar == '}') {
 						using (var undo = Editor.OpenUndoGroup ()) {
 							if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-								OnTheFlyFormatter.FormatStatmentAt (Editor, Document, Editor.CaretLocation);
+								OnTheFlyFormatter.FormatStatmentAt (Editor, EditContext, Editor.CaretLocation);
 							}
 						}
 					}

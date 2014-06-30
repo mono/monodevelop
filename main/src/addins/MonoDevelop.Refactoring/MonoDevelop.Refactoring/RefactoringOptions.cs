@@ -53,7 +53,7 @@ namespace MonoDevelop.Refactoring
 			private set;
 		}
 
-		public EditContext Document {
+		public EditContext EditContext {
 			get;
 			private set;
 		}
@@ -76,7 +76,7 @@ namespace MonoDevelop.Refactoring
 		
 		public string MimeType {
 			get {
-				return DesktopService.GetMimeTypeForUri (Document.Name);
+				return DesktopService.GetMimeTypeForUri (EditContext.Name);
 			}
 		}
 		
@@ -97,7 +97,7 @@ namespace MonoDevelop.Refactoring
 
 		public RefactoringOptions (TextEditor editor, EditContext doc)
 		{
-			this.Document = doc;
+			this.EditContext = doc;
 			this.Editor = editor;
 			if (doc != null && doc.ParsedDocument != null) {
 				var sharedResolver = doc.GetSharedResolver ();
@@ -142,7 +142,7 @@ namespace MonoDevelop.Refactoring
 		
 		public CodeGenerator CreateCodeGenerator ()
 		{
-			var result = CodeGenerator.CreateGenerator (Editor, Document);
+			var result = CodeGenerator.CreateGenerator (Editor, EditContext);
 			if (result == null)
 				LoggingService.LogError ("Generator can't be generated for : " + Editor.MimeType);
 			return result;
@@ -175,7 +175,7 @@ namespace MonoDevelop.Refactoring
 		
 		public List<string> GetUsedNamespaces ()
 		{
-			return GetUsedNamespaces (Document, Location);
+			return GetUsedNamespaces (EditContext, Location);
 		}
 		
 		public static List<string> GetUsedNamespaces (EditContext doc, TextLocation loc)
@@ -208,9 +208,9 @@ namespace MonoDevelop.Refactoring
 		
 		public AstType CreateShortType (IType fullType)
 		{
-			var parsedFile = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
+			var parsedFile = EditContext.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
-			var csResolver = parsedFile.GetResolver (Document.Compilation, Editor.CaretLocation);
+			var csResolver = parsedFile.GetResolver (EditContext.Compilation, Editor.CaretLocation);
 			
 			var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 			return builder.ConvertType (fullType);

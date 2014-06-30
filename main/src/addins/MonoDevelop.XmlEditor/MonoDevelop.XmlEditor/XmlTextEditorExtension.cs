@@ -72,13 +72,13 @@ namespace MonoDevelop.XmlEditor
 			//var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (string.IsNullOrEmpty (Editor.MimeType)) {
 				Editor.MimeType = ApplicationXmlMimeType;
-				Document.ReparseDocument ();
+				EditContext.ReparseDocument ();
 			}
 		}
 
 		void HandleXmlFileAssociationChanged (object sender, XmlFileAssociationChangedEventArgs e)
 		{
-			var filename = Document.Name;
+			var filename = EditContext.Name;
 			if (filename != null && filename.ToString ().EndsWith (e.Extension, StringComparison.Ordinal))
 				SetDefaultSchema ();
 		}
@@ -376,7 +376,7 @@ namespace MonoDevelop.XmlEditor
 		
 		void SetDefaultSchema ()
 		{
-			var filename = Document.Name;
+			var filename = EditContext.Name;
 			if (filename == null)
 				return;
 			

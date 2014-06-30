@@ -82,8 +82,8 @@ namespace MonoDevelop.DesignerSupport
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			if (Document != null)
-				Document.DocumentParsed += UpdateDocumentOutline;
+			if (EditContext != null)
+				EditContext.DocumentParsed += UpdateDocumentOutline;
 		}
 
 		public override void Dispose ()
@@ -91,8 +91,8 @@ namespace MonoDevelop.DesignerSupport
 			if (disposed)
 				return;
 			disposed = true;
-			if (Document != null)
-				Document.DocumentParsed -= UpdateDocumentOutline;
+			if (EditContext != null)
+				EditContext.DocumentParsed -= UpdateDocumentOutline;
 			RemoveRefillOutlineStoreTimeout ();
 			lastCU = null;
 			settings = null;
@@ -142,7 +142,7 @@ namespace MonoDevelop.DesignerSupport
 				JumpToDeclaration (true);
 			};
 
-			this.lastCU = Document.ParsedDocument;
+			this.lastCU = EditContext.ParsedDocument;
 
 			outlineTreeView.Realized += delegate { RefillOutlineStore (); };
 			UpdateSorting ();
@@ -287,7 +287,7 @@ namespace MonoDevelop.DesignerSupport
 		uint refillOutlineStoreId;
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			lastCU = Document.ParsedDocument;
+			lastCU = EditContext.ParsedDocument;
 			//limit update rate to 3s
 			if (!refreshingOutline) {
 				refreshingOutline = true;
@@ -329,7 +329,7 @@ namespace MonoDevelop.DesignerSupport
 				return;
 			
 			foreach (var unresolvedCls in parsedDocument.TopLevelTypeDefinitions) {
-				var cls = Document.Compilation.MainAssembly.GetTypeDefinition (unresolvedCls.FullTypeName);
+				var cls = EditContext.Compilation.MainAssembly.GetTypeDefinition (unresolvedCls.FullTypeName);
 				if (cls == null)
 					continue;
 				TreeIter childIter;

@@ -203,7 +203,7 @@ namespace MonoDevelop.Refactoring.Rename
 				var col = ReferenceFinder.FindReferences (options.SelectedItem, true);
 				if (col == null)
 					return;
-				var data = options.Document != null ? options.GetTextEditorData () : IdeApp.Workbench.ActiveDocument.Editor;
+				var data = options.EditContext != null ? options.GetTextEditorData () : IdeApp.Workbench.ActiveDocument.Editor;
 //				var editor = data.Parent;
 //				if (editor == null) {
 //					MessageService.ShowCustomDialog (new RenameItemDialog (options, this));

@@ -42,7 +42,7 @@ namespace MonoDevelop.NUnit
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			Document.DocumentParsed += HandleDocumentParsed; 
+			EditContext.DocumentParsed += HandleDocumentParsed; 
 			if (IdeApp.Workbench == null)
 				return;
 			NUnitService.Instance.TestSessionCompleted += HandleTestSessionCompleted;
@@ -59,7 +59,7 @@ namespace MonoDevelop.NUnit
 		{
 			NUnitService.Instance.TestSessionCompleted -= HandleTestSessionCompleted;
 			RemoveHandler ();
-			Document.DocumentParsed -= HandleDocumentParsed; 
+			EditContext.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
 		}
 

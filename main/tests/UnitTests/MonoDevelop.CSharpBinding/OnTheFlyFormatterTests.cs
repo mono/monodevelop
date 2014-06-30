@@ -336,7 +336,7 @@ namespace FormatSelectionTest
 	}
 }", out content);
 
-			OnTheFlyFormatter.Format (ext.Editor, ext.Document, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
+			OnTheFlyFormatter.Format (ext.Editor, ext.EditContext, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
 
 
 			Assert.AreEqual (@"

@@ -81,13 +81,13 @@ namespace MonoDevelop.XmlEditor.Gui
 			UpdateOwnerProjects ();
 			Parser parser = new Parser (CreateRootState (), false);
 			tracker = new DocumentStateTracker<Parser> (parser, Editor);
-			Document.DocumentParsed += delegate {
-				lastCU = Document.ParsedDocument;
+			EditContext.DocumentParsed += delegate {
+				lastCU = EditContext.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			};
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
-			if (Document.ParsedDocument != null) {
-				lastCU = Document.ParsedDocument;
+			if (EditContext.ParsedDocument != null) {
+				lastCU = EditContext.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			}
 
@@ -108,20 +108,20 @@ namespace MonoDevelop.XmlEditor.Gui
 				ownerProjects = new List<DotNetProject> ();
 				return;
 			}
-			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.Name)));
+			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (EditContext.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
-				var dnp = Document.Project as DotNetProject;
+				var dnp = EditContext.Project as DotNetProject;
 				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
 					// If the project for the document is not a DotNetProject but there is a project containing this file
 					// in the current solution, then use that project
-					var pp = Document.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == Document.Project.ParentSolution) : null;
+					var pp = EditContext.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == EditContext.Project.ParentSolution) : null;
 					if (pp != null)
-						Document.AttachToProject (pp);
+						EditContext.AttachToProject (pp);
 				}
 			}
-			if (Document.Project == null && ownerProjects.Count > 0)
-				Document.AttachToProject (ownerProjects[0]);
+			if (EditContext.Project == null && ownerProjects.Count > 0)
+				EditContext.AttachToProject (ownerProjects[0]);
 			UpdatePath ();
 		}
 
@@ -172,17 +172,17 @@ namespace MonoDevelop.XmlEditor.Gui
 		
 		protected ITextBuffer Buffer {
 			get {
-				if (Document == null)
+				if (EditContext == null)
 					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return Document.GetContent<ITextBuffer> ();
+				return EditContext.GetContent<ITextBuffer> ();
 			}
 		}
 		
 		protected IEditableTextBuffer EditableBuffer {
 			get {
-				if (Document == null)
+				if (EditContext == null)
 					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return Document.GetContent<IEditableTextBuffer> ();
+				return EditContext.GetContent<IEditableTextBuffer> ();
 			}
 		}
 		
@@ -402,7 +402,7 @@ namespace MonoDevelop.XmlEditor.Gui
 
 			if (forced && Tracker.Engine.CurrentState is XmlFreeState) {
 				CompletionDataList list = new CompletionDataList ();
-				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (Document.Name, list);
+				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (EditContext.Name, list);
 				return list.Count > 0? list : null;
 			}
 			
@@ -735,7 +735,7 @@ namespace MonoDevelop.XmlEditor.Gui
 
 			public void ActivateItem (int n)
 			{
-				ext.Document.AttachToProject (ext.ownerProjects [n]);
+				ext.EditContext.AttachToProject (ext.ownerProjects [n]);
 			}
 
 			public int IconCount {
@@ -832,7 +832,7 @@ namespace MonoDevelop.XmlEditor.Gui
 			var path = new List<PathEntry> ();
 			if (ownerProjects.Count > 1) {
 				// Current project if there is more than one
-				path.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
+				path.Add (new PathEntry (ImageService.GetIcon (EditContext.Project.StockIcon), GLib.Markup.EscapeText (EditContext.Project.Name)) { Tag = EditContext.Project });
 			}
 			if (l != null) {
 				for (int i = 0; i < l.Count; i++) {

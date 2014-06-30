@@ -89,6 +89,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public abstract void ReparseDocument ();
 
+		// TODO: IMO that needs to be handled differently (this is atm only used in the ASP.NET binding)
+		// Maybe using the file service. Files can be changed/saved w/o beeing opened.
 		public event EventHandler Saved;
 
 		protected virtual void OnSaved (EventArgs e)

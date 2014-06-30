@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 {
 	public abstract class TextEditorExtension : ICommandRouter, IDisposable
 	{
-		public EditContext Document {
+		public EditContext EditContext {
 			get;
 			protected set;
 		}
@@ -56,9 +56,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 				throw new ArgumentNullException ("editor");
 			if (context == null)
 				throw new ArgumentNullException ("context");
-			if (Document != null)
+			if (EditContext != null)
 				throw new InvalidOperationException ("Extension is already initialized.");
-			Document = context;
+			EditContext = context;
 			Editor = editor;
 			Initialize ();
 		}
@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		void CheckInitialized ()
 		{
-			if (Document == null)
+			if (EditContext == null)
 				throw new InvalidOperationException ("Editor extension not yet initialized");
 		}
 
@@ -97,13 +97,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 		protected Ambience GetAmbience ()
 		{
 			CheckInitialized ();
-			return AmbienceService.GetAmbienceForFile (Document.Name);
+			return AmbienceService.GetAmbienceForFile (EditContext.Name);
 		}
 	}
 
 	class TextEditorExtensionMarker : TextEditorExtension
 	{
-		public override bool IsValidInContext (EditContext document)
+		public override bool IsValidInContext (EditContext context)
 		{
 			return false;
 		}

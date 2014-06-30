@@ -62,7 +62,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (disposed) 
 				return;
 			enabled = false;
-			Document.DocumentParsed -= OnDocumentParsed;
+			EditContext.DocumentParsed -= OnDocumentParsed;
 			CancelTask ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			while (markers.Count > 0)
@@ -90,8 +90,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (enabled)
 				return;
 			enabled = true;
-			Document.DocumentParsed += OnDocumentParsed;
-			if (Document.ParsedDocument != null)
+			EditContext.DocumentParsed += OnDocumentParsed;
+			if (EditContext.ParsedDocument != null)
 				OnDocumentParsed (null, null);
 		}
 
@@ -113,7 +113,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!enabled)
 				return;
 			enabled = false;
-			Document.DocumentParsed -= OnDocumentParsed;
+			EditContext.DocumentParsed -= OnDocumentParsed;
 			CancelTask ();
 			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
 		}
@@ -125,14 +125,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			if (!AnalysisOptions.EnableFancyFeatures)
 				return;
-			var doc = Document.ParsedDocument;
+			var doc = EditContext.ParsedDocument;
 			if (doc == null)
 				return;
 			lock (this) {
 				CancelTask ();
 				src = new CancellationTokenSource ();
 				var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
-				var task = AnalysisService.QueueAnalysis (Document, treeType, src.Token);
+				var task = AnalysisService.QueueAnalysis (EditContext, treeType, src.Token);
 				oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update (), src.Token);
 			}
 		}

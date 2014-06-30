@@ -40,10 +40,10 @@ namespace MonoDevelop.CSharp
 	{
 		public override IList<UnitTestLocation> GatherUnitTests ()
 		{
-			var resolver = Document.GetSharedResolver ();
+			var resolver = EditContext.GetSharedResolver ();
 			if (resolver == null || resolver.Result == null)
 				return null;
-			var parsedDocument = Document.ParsedDocument;
+			var parsedDocument = EditContext.ParsedDocument;
 			if (parsedDocument == null)
 				return null;
 			var syntaxTree = parsedDocument.GetAst<SyntaxTree> ();

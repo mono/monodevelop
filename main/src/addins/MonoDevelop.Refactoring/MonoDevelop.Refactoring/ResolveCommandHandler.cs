@@ -523,7 +523,7 @@ namespace MonoDevelop.Refactoring
 		internal class AddImport
 		{
 			readonly TextEditor editor;
-			readonly EditContext doc;
+			readonly EditContext editContext;
 			readonly ResolveResult resolveResult;
 			readonly string ns;
 			readonly bool addUsing;
@@ -533,7 +533,7 @@ namespace MonoDevelop.Refactoring
 			public AddImport (TextEditor editor, EditContext doc, ResolveResult resolveResult, string ns, MonoDevelop.Projects.ProjectReference reference, bool addUsing, AstNode node)
 			{
 				this.editor = editor;
-				this.doc = doc;
+				this.editContext = doc;
 				this.resolveResult = resolveResult;
 				this.ns = ns;
 				this.reference = reference;
@@ -546,7 +546,7 @@ namespace MonoDevelop.Refactoring
 				var loc = editor.CaretLocation;
 
 				if (reference != null) {
-					var project = doc.Project;
+					var project = editContext.Project;
 					project.Items.Add (reference);
 					IdeApp.ProjectOperations.Save (project);
 				}
@@ -562,12 +562,12 @@ namespace MonoDevelop.Refactoring
 					return;
 				}
 
-				var generator = doc.CreateCodeGenerator (editor);
+				var generator = editContext.CreateCodeGenerator (editor);
 
 				if (resolveResult is NamespaceResolveResult) {
-					generator.AddLocalNamespaceImport (editor, doc, ns, loc);
+					generator.AddLocalNamespaceImport (editor, editContext, ns, loc);
 				} else {
-					generator.AddGlobalNamespaceImport (editor, doc, ns);
+					generator.AddGlobalNamespaceImport (editor, editContext, ns);
 				}
 			}
 		}

@@ -62,7 +62,7 @@ namespace MonoDevelop.AspNet.Gui
 		DocumentInfo documentInfo;
 
 		ICompletionWidget defaultCompletionWidget;
-		EditContext defaultDocument;
+		EditContext defaultEditContext;
 		TextEditor defaultEditor;
 		
 		bool HasDoc { get { return aspDoc != null; } } 
@@ -81,7 +81,7 @@ namespace MonoDevelop.AspNet.Gui
 			base.OnParsedDocumentUpdated ();
 			aspDoc = CU as AspNetParsedDocument;
 			
-			var newProj = base.Document.Project as AspNetAppProject;
+			var newProj = base.EditContext.Project as AspNetAppProject;
 			if (newProj == null)
 				return;
 				//throw new InvalidOperationException ("Document has no project");
@@ -97,7 +97,7 @@ namespace MonoDevelop.AspNet.Gui
 			documentBuilder = HasDoc ? LanguageCompletionBuilderService.GetBuilder (aspDoc.Info.Language) : null;
 			
 			if (documentBuilder != null) {
-				documentInfo = new DocumentInfo (Document.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ());
+				documentInfo = new DocumentInfo (EditContext.Compilation, aspDoc, refman.GetUsings (), refman.GetDoms ());
 				documentInfo.ParsedDocument = documentBuilder.BuildDocument (documentInfo, Editor);
 				documentInfo.CodeBesideClass = CreateCodeBesideClass (documentInfo, refman);
 			}
@@ -217,7 +217,7 @@ namespace MonoDevelop.AspNet.Gui
 			localDocumentInfo = documentBuilder.BuildLocalDocument (documentInfo, Editor, sourceText, textAfterCaret, true);
 			
 			var viewContent = new MonoDevelop.Ide.Gui.HiddenTextEditorViewContent ();
-			viewContent.Project = Document.Project;
+			viewContent.Project = EditContext.Project;
 			viewContent.ContentName = localDocumentInfo.ParsedLocalDocument.FileName;
 			
 			viewContent.Text = localDocumentInfo.LocalDocument;
@@ -237,7 +237,7 @@ namespace MonoDevelop.AspNet.Gui
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
 				InitializeCodeCompletion ('\0');
-				return documentBuilder.HandlePopupCompletion (defaultEditor, defaultDocument, documentInfo, localDocumentInfo);
+				return documentBuilder.HandlePopupCompletion (defaultEditor, defaultEditContext, documentInfo, localDocumentInfo);
 			}
 			return base.CodeCompletionCommand (completionContext);
 		}
@@ -246,12 +246,12 @@ namespace MonoDevelop.AspNet.Gui
 		{
 			base.Initialize ();
 			defaultCompletionWidget = CompletionWidget;
-			defaultDocument = Document;
+			defaultEditContext = EditContext;
 			defaultEditor = Editor;
 			defaultEditor.CaretPositionChanged += delegate {
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
-			defaultDocument.Saved += AsyncUpdateDesignerFile;
+			defaultEditContext.Saved += AsyncUpdateDesignerFile;
 		}
 
 		void AsyncUpdateDesignerFile (object sender, EventArgs e)
@@ -287,7 +287,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (localDocumentInfo == null)
 				return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
 			localDocumentInfo.HiddenDocument.Editor.InsertAtCaret (completionChar.ToString ());
-			return documentBuilder.HandleCompletion (defaultEditor, defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
+			return documentBuilder.HandleCompletion (defaultEditor, defaultEditContext, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
 		}
 
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
@@ -297,7 +297,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (documentBuilder == null || !isAspExprState)
 				return base.KeyPress (key, keyChar, modifier);
 			InitializeCodeCompletion ('\0');
-			Document = localDocumentInfo.HiddenDocument;
+			EditContext = localDocumentInfo.HiddenDocument;
 			Editor = localDocumentInfo.HiddenDocument.Editor;
 			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo.HiddenDocument.Editor, localDocumentInfo.HiddenDocument, localDocumentInfo);
 			bool result;
@@ -307,7 +307,7 @@ namespace MonoDevelop.AspNet.Gui
 					RunParameterCompletionCommand ();
 				}
 			} finally {
-				Document = defaultDocument;
+				EditContext = defaultEditContext;
 				Editor = defaultEditor;
 				CompletionWidget = defaultCompletionWidget;
 			}
@@ -526,7 +526,7 @@ namespace MonoDevelop.AspNet.Gui
 					AddAspAttributeValueCompletionData (list, ob.Name, att.Name, id);
 				}
 			} else if (ob is AspNetDirective) {
-				return DirectiveCompletion.GetAttributeValues (project, Document.Name, ob.Name.FullName, att.Name.FullName);
+				return DirectiveCompletion.GetAttributeValues (project, EditContext.Name, ob.Name.FullName, att.Name.FullName);
 			}
 			return list.Count > 0? list : null;
 		}

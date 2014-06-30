@@ -116,16 +116,16 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 
 	class RazorCompletionWidget : ICompletionWidget
 	{
-		EditContext realDocument;
+		EditContext realEditContext;
 
-		MonoDevelop.Ide.Editor.TextEditor editor;
+		MonoDevelop.Ide.Editor.TextEditor realEditor;
 
 		UnderlyingDocumentInfo docInfo;
 
 		public RazorCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo)
 		{
-			this.editor = editor;
-			this.realDocument = context;
+			this.realEditor = editor;
+			this.realEditContext = context;
 			this.docInfo = docInfo;
 		}
 
@@ -165,8 +165,8 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 
 		public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 		{
-			var savedCtx = realDocument.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (
-				editor.CaretOffset + triggerOffset - docInfo.CaretPosition);
+			var savedCtx = realEditContext.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (
+				realEditor.CaretOffset + triggerOffset - docInfo.CaretPosition);
 			var result = new CodeCompletionContext ();
 			result.TriggerOffset = triggerOffset;
 			var loc = docInfo.UnderlyingDocument.Editor.OffsetToLocation (triggerOffset);
@@ -206,7 +206,7 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 			translatedCtx.TriggerLine = loc.Line;
 			translatedCtx.TriggerLineOffset = loc.Column - 1;
 			translatedCtx.TriggerWordLength = ctx.TriggerWordLength;
-				realDocument.GetContent<ICompletionWidget> ().SetCompletionText (
+				realEditContext.GetContent<ICompletionWidget> ().SetCompletionText (
 				translatedCtx, partial_word, complete_word, wordOffset);
 		}
 

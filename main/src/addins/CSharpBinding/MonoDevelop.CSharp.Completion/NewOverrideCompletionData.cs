@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			var editor = ext.Editor;
-			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.Document);
+			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.EditContext);
 			bool isExplicit = false;
 			if (member.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
 				foreach (var m in type.Members) {
