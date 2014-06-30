@@ -785,10 +785,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		internal void InitializeExtensionChain (Document document)
+		internal void InitializeExtensionChain (EditContext editContext, TextEditor editor)
 		{
-			if (document == null)
-				throw new ArgumentNullException ("document");
+			if (editContext == null)
+				throw new ArgumentNullException ("editContext");
+			if (editor == null)
+				throw new ArgumentNullException ("editor");
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			TextEditorExtension last = null;
@@ -806,14 +808,14 @@ namespace MonoDevelop.Ide.Editor
 					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type +")", e); 
 					continue;
 				}
-				if (ext.IsExtendingEditor (document)) {
+				if (ext.IsValidInContext (editContext)) {
 					if (last != null) {
 						last.Next = ext;
 						last = ext;
 					} else {
 						textEditorImpl.EditorExtension = last = ext;
 					}
-					ext.Initialize (document);
+					ext.Initialize (editContext, editor);
 				}
 			}
 		}

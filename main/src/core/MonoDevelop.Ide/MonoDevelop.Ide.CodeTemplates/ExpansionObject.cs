@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public ICompilation Compilation {
 			get {
-				return Document.Compilation;
+				return EditContext.Compilation;
 			}
 		}
 		
@@ -77,7 +77,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public MonoDevelop.Ide.Gui.Document Document {
+		public EditContext EditContext {
+			get;
+			set;
+		}
+
+		public TextEditor Editor {
 			get;
 			set;
 		}
@@ -95,11 +100,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (CurrentContext.ParsedDocument == null)
 				return null;
 			IUnresolvedTypeDefinition type = null;
-			var provider = CurrentContext.Document.GetContent<ITextEditorMemberPositionProvider>();
+			var provider = CurrentContext.EditContext.GetContent<ITextEditorMemberPositionProvider>();
 			if (provider == null) {
 				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			} else {
-				type = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
+				type = provider.GetTypeAt (CurrentContext.Editor.LocationToOffset (CurrentContext.InsertPosition));
 			}
 			
 			if (type == null)
@@ -112,11 +117,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (CurrentContext.ParsedDocument == null)
 				return null;
 			IUnresolvedTypeDefinition type = null;
-			var provider = CurrentContext.Document.GetContent<ITextEditorMemberPositionProvider>();
+			var provider = CurrentContext.EditContext.GetContent<ITextEditorMemberPositionProvider>();
 			if (provider == null) {
 				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			} else {
-				type = provider.GetTypeAt (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition));
+				type = provider.GetTypeAt (CurrentContext.Editor.LocationToOffset (CurrentContext.InsertPosition));
 			}
 			
 			if (type == null)
@@ -131,9 +136,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			string var = callback (varName);
 			
-			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
+			ITextEditorResolver textEditorResolver = CurrentContext.EditContext.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.LocationToOffset (CurrentContext.InsertPosition), var);
+				var result = textEditorResolver.GetLanguageItem (CurrentContext.Editor.LocationToOffset (CurrentContext.InsertPosition), var);
 				if (result.Type.IsReferenceType.HasValue && !result.Type.IsReferenceType.Value)
 					return "Length";
 			}
@@ -163,15 +168,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return "var";
 			
 			string var = callback (varName);
-			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
+			ITextEditorResolver textEditorResolver = CurrentContext.EditContext.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.CaretOffset, var);
+				var result = textEditorResolver.GetLanguageItem (CurrentContext.Editor.CaretOffset, var);
 				if (result != null) {
 					var componentType = GetElementType (result.Type);
 					if (componentType.Kind != TypeKind.Unknown) {
-						var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
+						var generator = CodeGenerator.CreateGenerator (CurrentContext.Editor, CurrentContext.EditContext);
 						if (generator != null)
-							return generator.GetShortTypeString (CurrentContext.Document, componentType);
+							return generator.GetShortTypeString (CurrentContext.Editor, CurrentContext.EditContext, componentType);
 					}
 				}
 			}
@@ -182,11 +187,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public IListDataProvider<string> GetCollections ()
 		{
 			var result = new List<CodeTemplateVariableValue> ();
-			var ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
+			var ext = CurrentContext.EditContext.GetContent <CompletionTextEditorExtension> ();
 			if (ext != null) {
 				if (list == null)
 					list = ext.CodeCompletionCommand (
-						CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
+						CurrentContext.EditContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
 				
 				foreach (object o in list) {
 					var data = o as IEntityCompletionData;
@@ -252,19 +257,19 @@ namespace MonoDevelop.Ide.CodeTemplates
 				name = name.Substring (0, idx);
 			}
 
-			var type = new GetClassTypeReference (ns, name, 0).Resolve (new SimpleTypeResolveContext (CurrentContext.Document.Compilation.MainAssembly));
+			var type = new GetClassTypeReference (ns, name, 0).Resolve (new SimpleTypeResolveContext (CurrentContext.EditContext.Compilation.MainAssembly));
 			bool stripAttribute = false;
 			if (type == null || type.Kind == TypeKind.Unknown) {
 				type = new GetClassTypeReference (ns, name + "Attribute", 0).Resolve (
-					new SimpleTypeResolveContext (CurrentContext.Document.Compilation.MainAssembly)
+					new SimpleTypeResolveContext (CurrentContext.EditContext.Compilation.MainAssembly)
 				);	
 				stripAttribute = true;
 			}
 			if (type == null || type.Kind == TypeKind.Unknown)
 				return fullTypeName.Replace ("#", ".");
-			var generator = CodeGenerator.CreateGenerator (CurrentContext.Document);
+			var generator = CodeGenerator.CreateGenerator (CurrentContext.Editor, CurrentContext.EditContext);
 			if (generator != null) {
-				var result = generator.GetShortTypeString (CurrentContext.Document, type) + member;
+				var result = generator.GetShortTypeString (CurrentContext.Editor, CurrentContext.EditContext, type) + member;
 				if (stripAttribute && result.EndsWith ("Attribute", StringComparison.Ordinal))
 				    result = result.Substring (0, result.Length - "Attribute".Length);
 				return result;

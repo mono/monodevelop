@@ -213,7 +213,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var result = new TemplateResult ();
 			var sb = new StringBuilder ();
 			int lastOffset = 0;
-			string code = context.Document.Editor.FormatString (context.InsertPosition, context.TemplateCode);
+			string code = context.Editor.FormatString (context.InsertPosition, context.TemplateCode);
 			result.TextLinks = new List<TextLink> ();
 			foreach (System.Text.RegularExpressions.Match match in variableRegEx.Matches (code)) {
 				string name = match.Groups [1].Value;
@@ -369,30 +369,36 @@ namespace MonoDevelop.Ide.CodeTemplates
 			}
 			return result.ToString ();
 		}
-		
+
 		public void Insert (MonoDevelop.Ide.Gui.Document document)
 		{
-			var handler = document.GetContent<ICodeTemplateHandler> ();
+			Insert (document.Editor, document);
+		}
+
+		public void Insert (TextEditor editor, EditContext context)
+		{
+			var handler = context.GetContent<ICodeTemplateHandler> ();
 			if (handler != null) {
-				handler.InsertTemplate (this, document);
+				handler.InsertTemplate (this, editor);
 			} else {
-				InsertTemplateContents (document);
+				InsertTemplateContents (editor, context);
 			}	
 		}
 		
 		/// <summary>
 		/// Don't use this unless you're implementing ICodeTemplateWidget. Use Insert instead.
 		/// </summary>
-		public TemplateResult InsertTemplateContents (MonoDevelop.Ide.Gui.Document document)
+		public TemplateResult InsertTemplateContents (TextEditor editor, EditContext document)
 		{
-			var data = document.Editor;
+			var data = editor;
 			
 			int offset = data.CaretOffset;
 //			string leadingWhiteSpace = GetLeadingWhiteSpace (editor, editor.CursorLine);
 			
 			var context = new TemplateContext {
 				Template = this,
-				Document = document,
+				EditContext = document,
+				Editor = editor,
 				ParsedDocument = document.ParsedDocument != null ? document.ParsedDocument.ParsedFile : null,
 				InsertPosition = data.CaretLocation,
 				LineIndent = data.GetLineIndent (data.CaretLocation.Line),
@@ -420,7 +426,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			TemplateResult template = FillVariables (context);
 			template.InsertPosition = offset;
-			document.Editor.Insert (offset, template.Code);
+			editor.Insert (offset, template.Code);
 			
 			int newoffset;
 			if (template.CaretEndOffset >= 0) {
@@ -429,13 +435,13 @@ namespace MonoDevelop.Ide.CodeTemplates
 				newoffset = offset + template.Code.Length; 
 			}
 
-			document.Editor.CaretLocation = document.Editor.OffsetToLocation (newoffset) ;
+			editor.CaretLocation = editor.OffsetToLocation (newoffset) ;
 
 			var prettyPrinter = CodeFormatterService.GetFormatter (data.MimeType);
 			if (prettyPrinter != null) {
 				int endOffset = template.InsertPosition + template.Code.Length;
 				var oldVersion = data.Version;
-				prettyPrinter.OnTheFlyFormat (document, template.InsertPosition, endOffset);
+				prettyPrinter.OnTheFlyFormat (editor, document, template.InsertPosition, endOffset);
 				foreach (var textLink in template.TextLinks) {
 					for (int i = 0; i < textLink.Links.Count; i++) {
 						var segment = textLink.Links [i];

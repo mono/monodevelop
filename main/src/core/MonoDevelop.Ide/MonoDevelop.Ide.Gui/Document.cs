@@ -57,7 +57,8 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class Document : ICSharpCode.NRefactory.AbstractAnnotatable
+
+	public class Document : EditContext
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
@@ -76,7 +77,7 @@ namespace MonoDevelop.Ide.Gui
 			set;
 		}
  		
-		public T GetContent<T> () where T : class
+		public override T GetContent<T> ()
 		{
 			if (window == null)
 				return null;
@@ -159,7 +160,7 @@ namespace MonoDevelop.Ide.Gui
 				dom = e.ITypeResolveContext;
 		}*/
 
-		public FilePath FileName {
+		public override FilePath FileName {
 			get {
 				if (Window == null || !Window.ViewContent.IsFile)
 					return null;
@@ -180,7 +181,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return Window != null ? Window.ViewContent.Project != null : false; }
 		}
 		
-		public Project Project {
+		public override Project Project {
 			get { return Window != null ? Window.ViewContent.Project : null; }
 /*			set { 
 				Window.ViewContent.Project = value; 
@@ -213,19 +214,19 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public  IProjectContent ProjectContent {
+		public override IProjectContent ProjectContent {
 			get {
 				return Project != null ? TypeSystemService.GetProjectContext (Project) : GetProjectContext ();
 			}
 		}
 		
-		public virtual ICompilation Compilation {
+		public override ICompilation Compilation {
 			get {
 				return Project != null ? TypeSystemService.GetCompilation (Project) : GetProjectContext ().CreateCompilation ();
 			}
 		}
 		
-		public virtual ParsedDocument ParsedDocument {
+		public override ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;
 			}
@@ -616,7 +617,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void InitializeExtensionChain ()
 		{
-			Editor.InitializeExtensionChain (this);
+			Editor.InitializeExtensionChain (this, Editor);
 
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
@@ -850,19 +851,11 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project = null;
 		}
 		
-		void OnDocumentParsed (EventArgs e)
-		{
-			EventHandler handler = this.DocumentParsed;
-			if (handler != null)
-				handler (this, e);
-		}
-		
 		public event EventHandler Closed;
 		public event EventHandler Saved;
 		public event EventHandler ViewChanged;
 		
-		public event EventHandler DocumentParsed;
-		
+
 		public string[] CommentTags {
 			get {
 				if (IsFile)

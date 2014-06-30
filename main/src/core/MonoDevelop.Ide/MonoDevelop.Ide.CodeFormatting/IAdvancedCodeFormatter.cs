@@ -27,10 +27,8 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Policies;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -41,8 +39,19 @@ namespace MonoDevelop.Ide.CodeFormatting
 		
 		void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor textEditorData, int line);
 		
-		void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset);
-		
+		void OnTheFlyFormat (TextEditor editor, EditContext context, int startOffset, int endOffset);
+	}
+
+	public static class AdvancedCodeFormatterExtensions
+	{
+		public static void OnTheFlyFormat (this IAdvancedCodeFormatter formatter, Document document, int startOffset, int endOffset)
+		{
+			if (formatter == null)
+				throw new ArgumentNullException ("formatter");
+			formatter.OnTheFlyFormat (document.Editor, document, startOffset, endOffset);
+		}
+
+
 	}
 	
 	public abstract class AbstractAdvancedFormatter : AbstractCodeFormatter, IAdvancedCodeFormatter
@@ -50,11 +59,16 @@ namespace MonoDevelop.Ide.CodeFormatting
 		public virtual bool SupportsOnTheFlyFormatting { get { return false; } }
 		public virtual bool SupportsCorrectingIndent { get { return false; } }
 		
-		public virtual void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
+		public virtual void OnTheFlyFormat (TextEditor editor, EditContext context, int startOffset, int endOffset)
 		{
 			throw new NotSupportedException ();
 		}
-		
+
+		public void OnTheFlyFormat (Document doc, int startOffset, int endOffset)
+		{
+			OnTheFlyFormat (doc.Editor, doc, startOffset, endOffset);
+		}
+
 		public virtual void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain,
 			TextEditor data, int line)
 		{

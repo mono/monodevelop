@@ -74,10 +74,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public void ShowCompletion (ICompletionDataList completionList)
 		{
-			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Document.Editor.CaretOffset);
+			currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset);
 			int cpos, wlen;
 			if (!GetCompletionCommandOffset (out cpos, out wlen)) {
-				cpos = Document.Editor.CaretOffset;
+				cpos = Editor.CaretOffset;
 				wlen = 0;
 			}
 			currentCompletionContext.TriggerOffset = cpos;
@@ -128,7 +128,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return res;
 			
 			// don't complete on block selection
-			if (/*!EnableCodeCompletion ||*/ Document.Editor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block)
+			if (/*!EnableCodeCompletion ||*/ Editor.SelectionMode == MonoDevelop.Ide.Editor.SelectionMode.Block)
 				return res;
 			
 			// Handle code completion
@@ -164,7 +164,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		
 		protected void ShowCompletion (ICompletionDataList completionList, int triggerWordLength, char keyChar)
 		{
-			if (Document.Editor.SelectionMode == SelectionMode.Block)
+			if (Editor.SelectionMode == SelectionMode.Block)
 				return;
 			if (CompletionWidget != null && currentCompletionContext == null) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
@@ -211,7 +211,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandHandler (TextEditorCommands.ShowCompletionWindow)]
 		public virtual void RunCompletionCommand ()
 		{
-			if (Document.Editor.SelectionMode == SelectionMode.Block)
+			if (Editor.SelectionMode == SelectionMode.Block)
 				return;
 			
 			if (CompletionWindowManager.IsVisible) {
@@ -245,7 +245,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			
 			var ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
 			ctx.TriggerWordLength = wlen;
-			completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (ctx) : ShowCodeTemplatesCommand (ctx);
+			completionList = Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (ctx) : ShowCodeTemplatesCommand (ctx);
 			if (completionList == null) {
 				return;
 			}
@@ -270,10 +270,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			try {
 				var ctx = CompletionWidget.CreateCodeCompletionContext (cpos);
 				ctx.TriggerWordLength = wlen;
-				completionList = Document.Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (ctx) : ShowCodeTemplatesCommand (ctx);
+				completionList = Editor.IsSomethingSelected ? ShowCodeSurroundingsCommand (ctx) : ShowCodeTemplatesCommand (ctx);
 
 				info.Bypass = completionList == null;
-				info.Text = Document.Editor.IsSomethingSelected ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
+				info.Text = Editor.IsSomethingSelected ? GettextCatalog.GetString ("_Surround With...") : GettextCatalog.GetString ("I_nsert Template...");
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while update show code templates window", e);
 				info.Bypass = true;
@@ -284,7 +284,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		[CommandHandler (TextEditorCommands.ShowParameterCompletionWindow)]
 		public virtual void RunParameterCompletionCommand ()
 		{
-			if (Document.Editor.SelectionMode == SelectionMode.Block || CompletionWidget == null)
+			if (Editor.SelectionMode == SelectionMode.Block || CompletionWidget == null)
 				return;
 			ParameterDataProvider cp = null;
 			int cpos;
@@ -367,7 +367,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
 				if ((template.CodeTemplateType & CodeTemplateType.SurroundsWith) == CodeTemplateType.SurroundsWith)  {
 					if (ctx == template.CodeTemplateContext)
-						list.Add (new CodeTemplateCompletionData (Document, template));
+						list.Add (new CodeTemplateCompletionData (this, template));
 				}
 			}
 			return list;
@@ -381,7 +381,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			list.CompletionSelectionMode = CompletionSelectionMode.OwnTextField;
 			foreach (CodeTemplate template in CodeTemplateService.GetCodeTemplatesForFile (Document.FileName)) {
 				if (template.CodeTemplateType != CodeTemplateType.SurroundsWith)  {
-					list.Add (new CodeTemplateCompletionData (Document, template));
+					list.Add (new CodeTemplateCompletionData (this, template));
 				}
 			}
 			return list;

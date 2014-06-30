@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 
 			if (formatter.SupportsOnTheFlyFormatting) {
 				using (var undo = doc.Editor.OpenUndoGroup ()) {
-					formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
+					formatter.OnTheFlyFormat (doc.Editor, doc, 0, doc.Editor.Length);
 				}
 			} else {
 				doc.Editor.Text = formatter.FormatText (doc.Project.Policies, doc.Editor.Text); 
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				var version = editor.Version;
 
 				if (formatter.SupportsOnTheFlyFormatting) {
-					formatter.OnTheFlyFormat (doc, selection.Offset, selection.EndOffset);
+					formatter.OnTheFlyFormat (doc.Editor, doc, selection.Offset, selection.EndOffset);
 				} else {
 					var pol = doc.Project != null ? doc.Project.Policies : null;
 					try {

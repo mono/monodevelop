@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 {
 	public abstract class TextEditorExtension : ICommandRouter, IDisposable
 	{
-		public Document Document {
+		public EditContext Document {
 			get;
 			protected set;
 		}
@@ -50,14 +50,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 			set;
 		}
 
-		protected internal void Initialize (Document document)
+		protected internal void Initialize (EditContext document, TextEditor editor)
 		{
+			if (editor == null)
+				throw new ArgumentNullException ("editor");
+			if (document == null)
+				throw new ArgumentNullException ("document");
 			if (Document != null)
 				throw new InvalidOperationException ("Extension is already initialized.");
 			Document = document;
-			Editor = document.Editor;
-			if (Editor == null)
-				throw new InvalidOperationException ("Document contains no editor.");
+			Editor = editor;
 			Initialize ();
 		}
 
@@ -65,14 +67,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 		}
 
-		protected virtual bool ExtendsEditor (Document document)
+		public virtual bool IsValidInContext (EditContext document)
 		{
 			return true;
-		}
-
-		internal bool IsExtendingEditor (Document document)
-		{
-			return ExtendsEditor (document);
 		}
 		
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
@@ -100,16 +97,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 		protected Ambience GetAmbience ()
 		{
 			CheckInitialized ();
-
-			IViewContent view = Document.Window.ViewContent;
-			string file = view.IsUntitled ? view.UntitledName : view.ContentName;
-			return AmbienceService.GetAmbienceForFile (file);
+			return AmbienceService.GetAmbienceForFile (Document.FileName);
 		}
 	}
 
 	class TextEditorExtensionMarker : TextEditorExtension
 	{
-		protected override bool ExtendsEditor (Document document)
+		public override bool IsValidInContext (EditContext document)
 		{
 			return false;
 		}

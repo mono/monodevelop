@@ -72,20 +72,25 @@ namespace MonoDevelop.Ide.TypeSystem
 			set;
 		}
 
-		public static CodeGenerator CreateGenerator (Ide.Gui.Document doc)
+		public static CodeGenerator CreateGenerator (TextEditor editor, EditContext editContext)
 		{
 			MimeTypeExtensionNode node;
-			if (!generators.TryGetValue (doc.Editor.MimeType, out node))
+			if (!generators.TryGetValue (editor.MimeType, out node))
 				return null;
 
 			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = doc.Editor.Options.TabsToSpaces;
-			result.EolMarker = doc.Editor.EolMarker;
-			result.TabSize = doc.Editor.Options.TabSize;
-			result.Compilation = doc.Compilation;
+			result.UseSpaceIndent = editor.Options.TabsToSpaces;
+			result.EolMarker = editor.EolMarker;
+			result.TabSize = editor.Options.TabSize;
+			result.Compilation = editContext.Compilation;
 			return result;
 		}
-		
+
+		public static CodeGenerator CreateGenerator (Ide.Gui.Document doc)
+		{
+			return CreateGenerator (doc.Editor, doc);
+		}
+
 		public static CodeGenerator CreateGenerator (ITextDocument editor, ICompilation compilation)
 		{
 			MimeTypeExtensionNode node;
@@ -176,7 +181,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public abstract void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName);
 		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation);
 
-		public abstract string GetShortTypeString (MonoDevelop.Ide.Gui.Document doc, IType type);
+		public abstract string GetShortTypeString (TextEditor editor, EditContext doc, IType type);
 
 		public abstract void CompleteStatement (MonoDevelop.Ide.Gui.Document doc);
 	}
