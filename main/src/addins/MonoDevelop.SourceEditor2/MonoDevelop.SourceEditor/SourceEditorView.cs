@@ -66,7 +66,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-	ITextEditorImpl, IEditorActionHost, IMarkerHost
+	ITextEditorImpl, IEditorActionHost, IMarkerHost, IUndoHandler
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;

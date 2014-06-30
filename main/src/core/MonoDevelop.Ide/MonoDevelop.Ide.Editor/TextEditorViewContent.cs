@@ -190,6 +190,14 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (type.Equals (typeof(TextEditor)))
 				return textEditor;
+			if (textEditorImpl.GetType ().IsInstanceOfType (type))
+				return textEditorImpl;
+			var ext = textEditorImpl.EditorExtension;
+			while (ext != null) {
+				if (ext.GetType ().IsInstanceOfType (type))
+					return ext;
+				ext = ext.Next;
+			}
 			return textEditorImpl.GetContent (type);
 		}
 

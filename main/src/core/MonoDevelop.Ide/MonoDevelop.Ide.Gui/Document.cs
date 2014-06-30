@@ -836,7 +836,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				// Only go through the text editor chain, if the text editor is selected as subview
 				if (Window != null && Window.ActiveViewContent == Window.ViewContent && Editor != null)
-					return Editor.ExtendedCommandTargetChain;
+					return Editor.CommandRouter;
 				return null;
 			}
 		}

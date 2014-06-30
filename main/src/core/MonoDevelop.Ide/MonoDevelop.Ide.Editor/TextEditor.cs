@@ -39,7 +39,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class TextEditor : Control, ITextDocument, IInternalEditorExtensions, IDisposable
+	public sealed class TextEditor : Control, ITextDocument, IInternalEditorExtensions, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
@@ -343,7 +343,7 @@ namespace MonoDevelop.Ide.Editor
 			if (textEditorImpl == null)
 				throw new ArgumentNullException ("textEditorImpl");
 			this.textEditorImpl = textEditorImpl;
-
+			commandRouter = new InternalCommandRouter (this);
 			fileTypeCondition.SetFileName (FileName);
 			ExtensionContext = AddinManager.CreateExtensionContext ();
 			ExtensionContext.RegisterCondition ("FileType", fileTypeCondition);
@@ -779,9 +779,29 @@ namespace MonoDevelop.Ide.Editor
 
 	
 		#region Editor extensions
-		internal object ExtendedCommandTargetChain {
+		InternalCommandRouter commandRouter;
+		class InternalCommandRouter : MonoDevelop.Components.Commands.IMultiCastCommandRouter
+		{
+			readonly TextEditor editor;
+
+			public InternalCommandRouter (TextEditor editor)
+			{
+				this.editor = editor;
+			}
+			
+			#region IMultiCastCommandRouter implementation
+
+			System.Collections.IEnumerable MonoDevelop.Components.Commands.IMultiCastCommandRouter.GetCommandTargets ()
+			{
+				yield return editor.textEditorImpl;
+				yield return editor.textEditorImpl.EditorExtension;
+			}
+			#endregion
+		}
+
+		internal object CommandRouter {
 			get {
-				return textEditorImpl.EditorExtension;
+				return commandRouter;
 			}
 		}
 
