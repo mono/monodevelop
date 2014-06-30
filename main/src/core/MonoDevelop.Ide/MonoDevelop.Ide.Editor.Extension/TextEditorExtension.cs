@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		protected Ambience GetAmbience ()
 		{
 			CheckInitialized ();
-			return AmbienceService.GetAmbienceForFile (Document.FileName);
+			return AmbienceService.GetAmbienceForFile (Document.Name);
 		}
 	}
 

@@ -33,7 +33,7 @@ namespace MonoDevelop.Ide.Editor
 {
 	public abstract class EditContext : ICSharpCode.NRefactory.AbstractAnnotatable
 	{
-		public abstract FilePath FileName {
+		public abstract string Name {
 			get;
 		}
 

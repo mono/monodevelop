@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.Gui
 				dom = e.ITypeResolveContext;
 		}*/
 
-		public override FilePath FileName {
+		public FilePath FileName {
 			get {
 				if (Window == null || !Window.ViewContent.IsFile)
 					return null;
@@ -294,7 +294,7 @@ namespace MonoDevelop.Ide.Gui
 				return new DocumentView (this, content);
 		}
 
-		public string Name {
+		public override string Name {
 			get {
 				IViewContent view = Window.ViewContent;
 				return view.IsUntitled ? view.UntitledName : view.ContentName;
