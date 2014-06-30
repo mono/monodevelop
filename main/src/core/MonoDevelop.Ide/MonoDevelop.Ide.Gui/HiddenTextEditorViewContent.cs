@@ -213,6 +213,5 @@ namespace MonoDevelop.Ide.Gui
 		#endregion
 
 		public event EventHandler CaretPositionSet;
-		public event EventHandler<TextChangedEventArgs> TextChanged;
 	}
 }

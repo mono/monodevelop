@@ -368,7 +368,6 @@
     <Compile Include="MonoDevelop.Projects.Policies\PolicyContainer.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\ScopedPolicy.cs" />
     <Compile Include="MonoDevelop.Projects.Policies\PolicyDictionary.cs" />
-    <Compile Include="MonoDevelop.Projects.Text\IEditableTextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\ITextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextFile.cs" />
     <Compile Include="MonoDevelop.Projects.Text\TextEncoding.cs" />

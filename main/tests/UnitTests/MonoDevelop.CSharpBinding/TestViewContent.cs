@@ -230,6 +230,5 @@ namespace MonoDevelop.CSharpBinding.Tests
 		}
 		#endregion
 		public event EventHandler CaretPositionSet;
-		public event EventHandler<TextChangedEventArgs> TextChanged;
 	}
 }

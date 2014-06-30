@@ -1988,79 +1988,7 @@ namespace MonoDevelop.Ide
 		TextFileProvider ()
 		{
 		}
-		
-		class ProviderProxy : IEditableTextFile
-		{
-			TextEditor data;
-			string encoding;
-			bool bom;
-			
-			public ProviderProxy (TextEditor data, string encoding, bool bom)
-			{
-				this.data = data;
-				this.encoding = encoding;
-				this.bom = bom;
-			}
-			void Save ()
-			{
-				TextFile.WriteFile (Name, Text, encoding, bom);
-			}
-			
-			#region IEditableTextFile implementation
-			public FilePath Name { get { return data.FileName; } }
 
-			public int Length { get { return data.Length; } }
-		
-			public string GetText (int startPosition, int endPosition)
-			{
-				return data.GetTextBetween (startPosition, endPosition);
-			}
-			
-			public char GetCharAt (int position)
-			{
-				return data.GetCharAt (position);
-			}
-			
-			public int GetPositionFromLineColumn (int line, int column)
-			{
-				return data.LocationToOffset (line, column);
-			}
-			
-			public void GetLineColumnFromPosition (int position, out int line, out int column)
-			{
-				var loc = data.OffsetToLocation (position);
-				line = loc.Line;
-				column = loc.Column;
-			}
-			
-			public int InsertText (int position, string text)
-			{
-				text = data.FormatString (position, text);
-				data.Insert (position, text);
-				Save ();
-				
-				return text.Length;
-			}
-			
-			public void DeleteText (int position, int length)
-			{
-				data.Remove (position, length);
-				Save ();
-			}
-			
-			public string Text {
-				get {
-					return data.Text;
-				}
-				set {
-					data.Text = value;
-					Save ();
-				}
-			}
-			
-			#endregion
-		}
-		
 		public ITextDocument GetEditableTextFile (FilePath filePath)
 		{
 			if (IdeApp.IsInitialized) {
