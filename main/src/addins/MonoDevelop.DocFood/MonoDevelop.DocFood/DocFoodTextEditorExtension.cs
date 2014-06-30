@@ -39,22 +39,16 @@ namespace MonoDevelop.DocFood
 {
 	class DocFoodTextEditorExtension : TextEditorExtension
 	{
-		TextEditor textEditorData {
-			get {
-				return Document.Editor;
-			}
-		}
-		
 		string GenerateDocumentation (IEntity member, string indent)
 		{
-			string doc = DocumentBufferHandler.GenerateDocumentation (textEditorData, member, indent);
+			string doc = DocumentBufferHandler.GenerateDocumentation (Editor, member, indent);
 			int trimStart = (Math.Min (doc.Length - 1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 		
 		string GenerateEmptyDocumentation (IEntity member, string indent)
 		{
-			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (textEditorData, member, indent);
+			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (Editor, member, indent);
 			int trimStart = (Math.Min (doc.Length - 1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
@@ -64,8 +58,8 @@ namespace MonoDevelop.DocFood
 			if (keyChar != '/')
 				return base.KeyPress (key, keyChar, modifier);
 			
-			var line = textEditorData.GetLine (textEditorData.CaretLine);
-			string text = textEditorData.GetTextAt (line.Offset, line.Length);
+			var line = Editor.GetLine (Editor.CaretLine);
+			string text = Editor.GetTextAt (line.Offset, line.Length);
 			
 			if (!text.EndsWith ("//", StringComparison.Ordinal))
 				return base.KeyPress (key, keyChar, modifier);
@@ -74,44 +68,44 @@ namespace MonoDevelop.DocFood
 			var l = line.PreviousLine;
 			while (l != null && l.Length == 0)
 				l = l.PreviousLine;
-			if (l != null && textEditorData.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
+			if (l != null && Editor.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
 				return base.KeyPress (key, keyChar, modifier);
 
 			l = line.NextLine;
 			while (l != null && l.Length == 0)
 				l = l.NextLine;
-			if (l != null && textEditorData.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
+			if (l != null && Editor.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
 				return base.KeyPress (key, keyChar, modifier);
 
 			var member = GetMemberToDocument ();
 			if (member == null)
 				return base.KeyPress (key, keyChar, modifier);
 			
-			string documentation = GenerateDocumentation (member, textEditorData.GetLineIndent (line));
+			string documentation = GenerateDocumentation (member, Editor.GetLineIndent (line));
 			if (string.IsNullOrEmpty (documentation))
 				return base.KeyPress (key, keyChar, modifier);
 			
-			string documentationEmpty = GenerateEmptyDocumentation (member, textEditorData.GetLineIndent (line));
+			string documentationEmpty = GenerateEmptyDocumentation (member, Editor.GetLineIndent (line));
 			
-			int offset = textEditorData.CaretOffset;
+			int offset = Editor.CaretOffset;
 			
 			int insertedLength;
 			
 			// Insert key (3rd undo step)
-			textEditorData.Insert (offset, "/");
+			Editor.Insert (offset, "/");
 			
-			using (var undo = textEditorData.OpenUndoGroup ()) {
+			using (var undo = Editor.OpenUndoGroup ()) {
 				insertedLength = documentationEmpty.Length;
-				textEditorData.Replace (offset, 1, documentationEmpty);
+				Editor.Replace (offset, 1, documentationEmpty);
 				// important to set the caret position here for the undo step
-				textEditorData.CaretOffset = offset + insertedLength;
+				Editor.CaretOffset = offset + insertedLength;
 			}
 			
-			using (var undo = textEditorData.OpenUndoGroup ()) {
+			using (var undo = Editor.OpenUndoGroup ()) {
 				insertedLength = documentation.Length;
-				textEditorData.Replace (offset, insertedLength, documentation);
+				Editor.Replace (offset, insertedLength, documentation);
 				if (SelectSummary (offset, insertedLength, documentation) == false)
-					textEditorData.CaretOffset = offset + insertedLength;
+					Editor.CaretOffset = offset + insertedLength;
 			}
 			return false;
 		}
@@ -148,18 +142,18 @@ namespace MonoDevelop.DocFood
 			start = documentation.IndexOf (summaryText, start, StringComparison.Ordinal);
 			if (start < 0)
 				return false;
-			textEditorData.CaretOffset = offset + start;
-			textEditorData.SetSelection (offset + start, offset + start + summaryText.Length);
+			Editor.CaretOffset = offset + start;
+			Editor.SetSelection (offset + start, offset + start + summaryText.Length);
 			return true;
 		}
 
 		bool IsEmptyBetweenLines (int start, int end)
 		{
 			for (int i = start + 1; i < end - 1; i++) {
-				var lineSegment = textEditorData.GetLine (i);
+				var lineSegment = Editor.GetLine (i);
 				if (lineSegment == null)
 					break;
-				if (lineSegment.Length != textEditorData.GetLineIndent (lineSegment).Length)
+				if (lineSegment.Length != Editor.GetLineIndent (lineSegment).Length)
 					return false;
 				
 			}
@@ -168,12 +162,12 @@ namespace MonoDevelop.DocFood
 		
 		IEntity GetMemberToDocument ()
 		{
-			var parsedDocument = Document.UpdateParseDocument ();
+			var parsedDocument = Document.ParsedDocument;
 			
-			var type = parsedDocument.GetInnermostTypeDefinition (textEditorData.CaretLocation);
+			var type = parsedDocument.GetInnermostTypeDefinition (Editor.CaretLocation);
 			if (type == null) {
 				foreach (var t in parsedDocument.TopLevelTypeDefinitions) {
-					if (t.Region.BeginLine > textEditorData.CaretLine) {
+					if (t.Region.BeginLine > Editor.CaretLine) {
 						var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, t.Region.Begin);
 						return t.Resolve (ctx).GetDefinition ();
 					}
@@ -183,14 +177,14 @@ namespace MonoDevelop.DocFood
 			
 			IEntity result = null;
 			foreach (var member in type.Members) {
-				if (member.Region.Begin > new TextLocation (textEditorData.CaretLine, textEditorData.CaretColumn) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.CaretLine, member.Region.BeginLine)) {
+				if (member.Region.Begin > new TextLocation (Editor.CaretLine, Editor.CaretColumn) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (Editor.CaretLine, member.Region.BeginLine)) {
 					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
 					result = member.CreateResolved (ctx);
 				}
 			}
 
 			foreach (var member in type.NestedTypes) {
-				if (member.Region.Begin > new TextLocation (textEditorData.CaretLine, textEditorData.CaretColumn) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (textEditorData.CaretLine, member.Region.BeginLine)) {
+				if (member.Region.Begin > new TextLocation (Editor.CaretLine, Editor.CaretColumn) && (result == null || member.Region.Begin < result.Region.Begin) && IsEmptyBetweenLines (Editor.CaretLine, member.Region.BeginLine)) {
 					var ctx = (parsedDocument.ParsedFile as CSharpUnresolvedFile).GetTypeResolveContext (Document.Compilation, member.Region.Begin);
 					result = member.Resolve (ctx).GetDefinition ();
 				}
