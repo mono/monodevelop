@@ -50,8 +50,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Debugging/DebugValueConverters">
-		<Type class="MonoDevelop.Debugger.Converters.SystemDrawingColorConverter" />
-		<Type class="MonoDevelop.Debugger.Converters.GdkColorConverter" />
+		<Type class="MonoDevelop.Debugger.Converters.ColorsConverters" />
 		<Type class="MonoDevelop.Debugger.Converters.SizesConverters" />
 		<Type class="MonoDevelop.Debugger.Converters.RectanglesConverters" />
 		<Type class="MonoDevelop.Debugger.Converters.ImageConverter" />

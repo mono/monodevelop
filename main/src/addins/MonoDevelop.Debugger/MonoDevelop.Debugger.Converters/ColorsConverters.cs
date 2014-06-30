@@ -29,46 +29,49 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Debugger.Converters
 {
-	class SystemDrawingColorConverter : DebugValueConverter<Color>
+	class ColorsConverters : DebugValueConverter<Color>
 	{
 		#region ColorConverter implementation
 
 		public override bool CanGetValue (ObjectValue val)
 		{
-			return val.TypeName == "System.Drawing.Color";
+			return val.TypeName == "System.Drawing.Color" ||
+			val.TypeName == "Gdk.Color" ||
+			val.TypeName.EndsWith ("UIKit.UIColor") ||
+			val.TypeName.EndsWith ("CoreGraphics.CGColor");
 		}
 
 		public override Color GetValue (ObjectValue val)
 		{
 			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 			ops.AllowTargetInvoke = true;
-			var r = (byte)val.GetChild ("R", ops).GetRawValue (ops);
-			var g = (byte)val.GetChild ("G", ops).GetRawValue (ops);
-			var b = (byte)val.GetChild ("B", ops).GetRawValue (ops);
-			var a = (byte)val.GetChild ("A", ops).GetRawValue (ops);
-			return Color.FromBytes (r, g, b, a);
-		}
-
-		#endregion
-	}
-
-	class GdkColorConverter : DebugValueConverter<Color>
-	{
-		#region ColorConverter implementation
-
-		public override bool CanGetValue (ObjectValue val)
-		{
-			return val.TypeName == "Gdk.Color";
-		}
-
-		public override Color GetValue (ObjectValue val)
-		{
-			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-			ops.AllowTargetInvoke = true;
-			return new Color (
-				((ushort)val.GetChild ("Red", ops).GetRawValue (ops) / 65535.0),
-				((ushort)val.GetChild ("Green", ops).GetRawValue (ops) / 65535.0),
-				((ushort)val.GetChild ("Blue", ops).GetRawValue (ops) / 65535.0));
+			if (val.TypeName == "System.Drawing.Color") {
+				return Color.FromBytes (
+					(byte)val.GetChild ("R", ops).GetRawValue (ops),
+					(byte)val.GetChild ("G", ops).GetRawValue (ops),
+					(byte)val.GetChild ("B", ops).GetRawValue (ops),
+					(byte)val.GetChild ("A", ops).GetRawValue (ops));
+			} else if (val.TypeName == "Gdk.Color") {
+				return new Color (
+					((ushort)val.GetChild ("Red", ops).GetRawValue (ops) / 65535.0),
+					((ushort)val.GetChild ("Green", ops).GetRawValue (ops) / 65535.0),
+					((ushort)val.GetChild ("Blue", ops).GetRawValue (ops) / 65535.0));
+			} else if (val.TypeName.EndsWith ("UIKit.UIColor")) {
+				var arrayObject = (RawValueArray)val.GetChild ("CGColor", ops).GetChild ("Components").GetRawValue (ops);
+				var components = (float[])(arrayObject).GetValues (0, arrayObject.Length);
+				if (components.Length == 4)
+					return new Color (components [0], components [1], components [2], components [3]);
+				else
+					return new Color (components [0], components [0], components [0], components [1]);
+			} else if (val.TypeName.EndsWith ("CoreGraphics.CGColor")) {
+				var arrayObject = (RawValueArray)val.GetChild ("Components").GetRawValue (ops);
+				var components = (float[])(arrayObject).GetValues (0, arrayObject.Length);
+				if (components.Length == 4)
+					return new Color (components [0], components [1], components [2], components [3]);
+				else
+					return new Color (components [0], components [0], components [0], components [1]);
+			}
+			throw new NotSupportedException ();
 		}
 
 		#endregion
