@@ -37,8 +37,6 @@ type FSharpReferenceFinder() =
         | _ -> None
 
     override x.FindReferences(project, projectContent, files, progressMonitor, symbols) =
-      // Debugging: Set a breakpoint here if you need to debug.  
-      //
       // If the breakpoint is not triggered by a 'Find References' action,
       // then it probably means the inferred set of files to search for a symbol has not been correctly determined
       // by MD/XS.  The logic of 'what to search' used by XS is quite convoluted and depends on properties of
@@ -50,15 +48,11 @@ type FSharpReferenceFinder() =
           | SymbolWithRegion(region) & SymbolWithFSharpInfo(fsSymbol) ->
             
             // Get the active document, but only to 
-            //   (a) save it
-            //   (b) determine if this is a script
-            //   (c) find the active project confifuration. 
+            //   (a) determine if this is a script
+            //   (b) find the active project confifuration. 
             // TODO: we should instead enumerate the items in 'files'?
             let activeDoc = IdeApp.Workbench.ActiveDocument
             let activeDocFileName = activeDoc.FileName.FileName
-
-            // Save the active document if dirty: FSharp.Compiler.Service 'GetUsesOfSymbol' currently reads files from disk.
-            if activeDoc.IsDirty then activeDoc.Save()
 
             // Get the source, but only in order to infer the project options for a script.
             let activeDocSource = activeDoc.Editor.Text
