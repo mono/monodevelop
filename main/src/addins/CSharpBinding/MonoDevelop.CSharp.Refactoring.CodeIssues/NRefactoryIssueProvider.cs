@@ -171,48 +171,48 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		const string analysisDisableTag = "Analysis ";
 
-		public override void DisableOnce (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
+		public override void DisableOnce (TextEditor editor, EditContext context, DocumentRegion loc)
 		{
-			document.Editor.Insert (
-				document.Editor.LocationToOffset (loc.BeginLine, 1), 
-				document.Editor.GetVirtualIndentationString (loc.BeginLine) + "// " + analysisDisableTag + "disable once " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
+			editor.Insert (
+				editor.LocationToOffset (loc.BeginLine, 1), 
+				editor.GetVirtualIndentationString (loc.BeginLine) + "// " + analysisDisableTag + "disable once " + attr.AnalysisDisableKeyword + editor.EolMarker
 			); 
 		}
 
-		public override void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
+		public override void DisableAndRestore (TextEditor editor, EditContext context, DocumentRegion loc)
 		{
-			using (document.Editor.OpenUndoGroup ()) {
-				document.Editor.Insert (
-					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
-					document.Editor.GetVirtualIndentationString (loc.EndLine) + "// " + analysisDisableTag + "restore " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
+			using (editor.OpenUndoGroup ()) {
+				editor.Insert (
+					editor.LocationToOffset (loc.EndLine + 1, 1),
+					editor.GetVirtualIndentationString (loc.EndLine) + "// " + analysisDisableTag + "restore " + attr.AnalysisDisableKeyword + editor.EolMarker
 				); 
-				document.Editor.Insert (
-					document.Editor.LocationToOffset (loc.BeginLine, 1),
-					document.Editor.GetVirtualIndentationString (loc.BeginLine) + "// " + analysisDisableTag + "disable " + attr.AnalysisDisableKeyword + document.Editor.EolMarker
+				editor.Insert (
+					editor.LocationToOffset (loc.BeginLine, 1),
+					editor.GetVirtualIndentationString (loc.BeginLine) + "// " + analysisDisableTag + "disable " + attr.AnalysisDisableKeyword + editor.EolMarker
 				); 
 			}
 		}
 
-		public override void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
+		public override void DisableWithPragma (TextEditor editor, EditContext context, DocumentRegion loc)
 		{
-			using (document.Editor.OpenUndoGroup ()) {
-				document.Editor.Insert (
-					document.Editor.LocationToOffset (loc.EndLine + 1, 1),
-					document.Editor.GetVirtualIndentationString (loc.EndLine) + "#pragma warning restore " + attr.PragmaWarning + document.Editor.EolMarker
+			using (editor.OpenUndoGroup ()) {
+				editor.Insert (
+					editor.LocationToOffset (loc.EndLine + 1, 1),
+					editor.GetVirtualIndentationString (loc.EndLine) + "#pragma warning restore " + attr.PragmaWarning + editor.EolMarker
 				); 
-				document.Editor.Insert (
-					document.Editor.LocationToOffset (loc.BeginLine, 1),
-					document.Editor.GetVirtualIndentationString (loc.BeginLine) + "#pragma warning disable " + attr.PragmaWarning + document.Editor.EolMarker
+				editor.Insert (
+					editor.LocationToOffset (loc.BeginLine, 1),
+					editor.GetVirtualIndentationString (loc.BeginLine) + "#pragma warning disable " + attr.PragmaWarning + editor.EolMarker
 				); 
 			}
 		}
 
-		public override void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, DocumentRegion loc)
+		public override void SuppressWithAttribute (TextEditor editor, EditContext context, DocumentRegion loc)
 		{
-			var member = document.ParsedDocument.GetMember (loc.End);
-			document.Editor.Insert (
-				document.Editor.LocationToOffset (member.Region.BeginLine, 1),
-				document.Editor.GetVirtualIndentationString (loc.BeginLine) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)
+			var member = context.ParsedDocument.GetMember (loc.End);
+			editor.Insert (
+				editor.LocationToOffset (member.Region.BeginLine, 1),
+				editor.GetVirtualIndentationString (loc.BeginLine) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)
 			); 
 		}
 	}

@@ -252,11 +252,10 @@ namespace MonoDevelop.CSharp.Refactoring
 			return true;
 		}
 		
-		public IEnumerable<MemberReference> FindInDocument (MonoDevelop.Ide.Gui.Document doc, CancellationToken token = default (CancellationToken))
+		public IEnumerable<MemberReference> FindInDocument (TextEditor editor, EditContext doc, CancellationToken token = default (CancellationToken))
 		{
 			if (string.IsNullOrEmpty (memberName))
 				return Enumerable.Empty<MemberReference> ();
-			var editor = doc.Editor;
 			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return Enumerable.Empty<MemberReference> ();
@@ -296,7 +295,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var compilation = project != null ? TypeSystemService.GetCompilation (project) : content.CreateCompilation ();
 			List<MemberReference> refs = new List<MemberReference> ();
 			foreach (var opendoc in openDocuments) {
-				foreach (var newRef in FindInDocument (opendoc.Item2)) {
+				foreach (var newRef in FindInDocument (opendoc.Item2.Editor, opendoc.Item2)) {
 					if (newRef == null || refs.Any (r => r.FileName == newRef.FileName && r.Region == newRef.Region))
 						continue;
 					refs.Add (newRef);

@@ -302,16 +302,17 @@ namespace MonoDevelop.Refactoring
 			return appliedFixes;
 		}
 
-		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (TextEditor editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation location)
+		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (IReadonlyTextDocument editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
 			if (doc == null)
 				return location;
 			if (editor == null || location.Column == 1)
 				return location;
 
-			if (editor.IsSomethingSelected)
-				return editor.SelectionRegion.Begin;
-
+			if (editor is TextEditor) {
+				if (((TextEditor)editor).IsSomethingSelected)
+					return ((TextEditor)editor).SelectionRegion.Begin;
+			}
 			var line = editor.GetLine (location.Line);
 			if (line == null || location.Column > line.LengthIncludingDelimiter)
 				return location;
@@ -319,6 +320,13 @@ namespace MonoDevelop.Refactoring
 			if (offset > 0 && !char.IsLetterOrDigit (editor.GetCharAt (offset)) && char.IsLetterOrDigit (editor.GetCharAt (offset - 1)))
 				return new MonoDevelop.Ide.Editor.DocumentLocation (location.Line, location.Column - 1);
 			return location;
+		}
+
+		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (Document doc, MonoDevelop.Ide.Editor.DocumentLocation location)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			return GetCorrectResolveLocation (doc.Editor, doc, location);
 		}
 
 		static readonly CodeAnalysisBatchRunner runner = new CodeAnalysisBatchRunner();

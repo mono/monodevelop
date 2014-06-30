@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -64,10 +65,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 		
-		public override void BatchRun (Document document, TextLocation loc)
+		public override void BatchRun (TextEditor editor, EditContext document, TextLocation loc)
 		{
-			base.BatchRun (document, loc);
-			var context = MDRefactoringContext.Create (document, loc).Result;
+			base.BatchRun (editor, document, loc);
+			var context = MDRefactoringContext.Create (editor, document, loc).Result;
 			if (context == null)
 				return;
 			using (var script = context.StartScript ()) {

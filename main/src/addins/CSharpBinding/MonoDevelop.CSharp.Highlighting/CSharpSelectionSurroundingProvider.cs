@@ -32,12 +32,13 @@ namespace MonoDevelop.CSharp.Highlighting
 {
 	class CSharpSelectionSurroundingProvider : SelectionSurroundingProvider
 	{
-		readonly MonoDevelop.Ide.Gui.Document document;
-		TextEditor textEditorData { get { return document.Editor; } }
+		readonly EditContext context;
+		readonly TextEditor editor;
 
-		public CSharpSelectionSurroundingProvider (MonoDevelop.Ide.Gui.Document document)
+		public CSharpSelectionSurroundingProvider (MonoDevelop.Ide.Editor.TextEditor editor, EditContext context)
 		{
-			this.document = document;
+			this.editor = editor;
+			this.context = context;
 		}
 
 		#region SelectionSurroundingProvider implementation
@@ -46,7 +47,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			switch ((char)unicodeKey) {
 			case '"':
-				start = textEditorData.SelectionRegion.BeginLine != textEditorData.SelectionRegion.EndLine ? "@\"" : "\"";
+				start = editor.SelectionRegion.BeginLine != editor.SelectionRegion.EndLine ? "@\"" : "\"";
 				end = "\"";
 				return true;
 			case '\'':
@@ -83,8 +84,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			string start, end;
 			((SelectionSurroundingProvider)this).GetSelectionSurroundings (unicodeKey, out start, out end);
 
-			if (textEditorData.SelectionMode == SelectionMode.Block) {
-				var selection = textEditorData.SelectionRegion;
+			if (editor.SelectionMode == SelectionMode.Block) {
+				var selection = editor.SelectionRegion;
 				int startCol = System.Math.Min (selection.Begin.Column, selection.End.Column) - 1;
 				int endCol = System.Math.Max (selection.Begin.Column, selection.End.Column);
 
@@ -93,12 +94,12 @@ namespace MonoDevelop.CSharp.Highlighting
 
 
 				for (int lineNumber = minLine; lineNumber <= maxLine; lineNumber++) {
-					var lineSegment = textEditorData.GetLine (lineNumber);
+					var lineSegment = editor.GetLine (lineNumber);
 
 					if (lineSegment.Offset + startCol < lineSegment.EndOffset)
-						textEditorData.Insert (lineSegment.Offset + startCol, start);
+						editor.Insert (lineSegment.Offset + startCol, start);
 					if (lineSegment.Offset + endCol < lineSegment.EndOffset)
-						textEditorData.Insert (lineSegment.Offset + endCol, end);
+						editor.Insert (lineSegment.Offset + endCol, end);
 				}
 
 //				textEditorData.MainSelection = new Selection (
@@ -106,17 +107,17 @@ namespace MonoDevelop.CSharp.Highlighting
 //					new DocumentLocation (selection.Lead.Line, endCol == selection.Anchor.Column ? startCol + 1 + start.Length : endCol + start.Length),
 //					Mono.TextEditor.SelectionMode.Block);
 			} else {
-				var selectionRange = textEditorData.SelectionRange;
+				var selectionRange = editor.SelectionRange;
 				int anchorOffset = selectionRange.Offset;
 				int leadOffset = selectionRange.EndOffset;
 
-				textEditorData.Insert (anchorOffset, start);
-				textEditorData.Insert (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
+				editor.Insert (anchorOffset, start);
+				editor.Insert (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
 				//	textEditorData.SetSelection (anchorOffset + start.Length, leadOffset + start.Length);
 				if (CSharpTextEditorIndentation.OnTheFlyFormatting) {
-					var l1 = textEditorData.GetLineByOffset (anchorOffset);
-					var l2 = textEditorData.GetLineByOffset (leadOffset);
-					OnTheFlyFormatter.Format (document, l1.Offset, l2.EndOffsetIncludingDelimiter);
+					var l1 = editor.GetLineByOffset (anchorOffset);
+					var l2 = editor.GetLineByOffset (leadOffset);
+					OnTheFlyFormatter.Format (editor, context, l1.Offset, l2.EndOffsetIncludingDelimiter);
 				}
 			}
 		}

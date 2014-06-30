@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp
 
 		void UpdateOwnerProjects ()
 		{
-			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
+			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
 				var dnp = Document.Project as DotNetProject;
@@ -327,13 +327,16 @@ namespace MonoDevelop.CSharp
 
 		class CompilationUnitDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
-			Document Document {
+			TextEditor editor;
+
+			EditContext Document {
 				get;
 				set;
 			}
 
-			public CompilationUnitDataProvider (Document document)
+			public CompilationUnitDataProvider (TextEditor editor, EditContext document)
 			{
+				this.editor = editor;
 				this.Document = document;
 			}
 
@@ -367,7 +370,7 @@ namespace MonoDevelop.CSharp
 			public void ActivateItem (int n)
 			{
 				var reg = Document.ParsedDocument.UserRegions.ElementAt (n);
-				var extEditor = Document.Editor;
+				var extEditor = editor;
 				if (extEditor != null) {
 					extEditor.SetCaretLocation(Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn, true);
 				}
@@ -391,7 +394,7 @@ namespace MonoDevelop.CSharp
 			if (path == null || index < 0 || index >= path.Length)
 				return null;
 			var tag = path [index].Tag;
-			var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Document) : new DataProvider (this, tag));
+			var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Editor, Document) : new DataProvider (this, tag));
 			window.FixedRowHeight = 22;
 			window.MaxVisibleRows = 14;
 			window.SelectItem (path [index].Tag);
@@ -458,9 +461,9 @@ namespace MonoDevelop.CSharp
 			if (unit == null)
 				return;
 
-			var loc = Document.Editor.CaretLocation;
+			var loc = Editor.CaretLocation;
 			var compExt = Document.GetContent<CSharpCompletionTextEditorExtension> ();
-			var caretOffset = Document.Editor.CaretOffset;
+			var caretOffset = Editor.CaretOffset;
 			var segType = compExt.GetTypeAt (caretOffset);
 			if (segType != null)
 				loc = segType.Region.Begin;
@@ -473,7 +476,7 @@ namespace MonoDevelop.CSharp
 			if (segMember != null) {
 				loc = segMember.Region.Begin;
 			} else {
-				loc = Document.Editor.CaretLocation;
+				loc = Editor.CaretLocation;
 			}
 
 			var curMember = unit.GetNodeAt<EntityDeclaration> (loc);

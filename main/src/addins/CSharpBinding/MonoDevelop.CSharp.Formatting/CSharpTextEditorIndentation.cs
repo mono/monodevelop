@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 
 			if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-				OnTheFlyFormatter.Format (Document, location);
+				OnTheFlyFormatter.Format (Editor, Document, location);
 			}
 		}
 
@@ -388,7 +388,7 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 				using (var undo = Editor.OpenUndoGroup ()) {
 					if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-						OnTheFlyFormatter.FormatStatmentAt (Document, Editor.CaretLocation);
+						OnTheFlyFormatter.FormatStatmentAt (Editor, Document, Editor.CaretLocation);
 					}
 				}
 				return retval;
@@ -490,7 +490,7 @@ namespace MonoDevelop.CSharp.Formatting
 					if (keyChar == ';' || keyChar == '}') {
 						using (var undo = Editor.OpenUndoGroup ()) {
 							if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
-								OnTheFlyFormatter.FormatStatmentAt (Document, Editor.CaretLocation);
+								OnTheFlyFormatter.FormatStatmentAt (Editor, Document, Editor.CaretLocation);
 							}
 						}
 					}

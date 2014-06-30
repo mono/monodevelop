@@ -63,6 +63,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public virtual bool IsCompileableInProject {
+			get {
+				return true;
+			}
+		}
+
 		public virtual T GetContent<T> () where T : class
 		{
 			var t = this as T;
@@ -79,5 +85,7 @@ namespace MonoDevelop.Ide.Editor
 			if (handler != null)
 				handler (this, e);
 		}
+
+		public abstract void AttachToProject (Project project);
 	}
 }

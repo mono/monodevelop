@@ -32,6 +32,7 @@ using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory;
 using System.Threading;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -53,7 +54,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			MimeType = "text/x-csharp";
 		}
 
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (Document document, object _context, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (TextEditor editor, EditContext document, object _context, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 				yield break;

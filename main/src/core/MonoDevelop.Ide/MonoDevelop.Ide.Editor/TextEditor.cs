@@ -815,7 +815,7 @@ namespace MonoDevelop.Ide.Editor
 					} else {
 						textEditorImpl.EditorExtension = last = ext;
 					}
-					ext.Initialize (editContext, editor);
+					ext.Initialize (editor, editContext);
 				}
 			}
 		}

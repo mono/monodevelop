@@ -76,7 +76,7 @@ namespace MonoDevelop.CodeGeneration
 			column.Expand = true;
 
 			treeView.AppendColumn (column);
-			Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
+			Ambience ambience = AmbienceService.GetAmbienceForFile (options.EditContext.Name);
 			foreach (object obj in GetValidMembers ()) {
 				var member = obj as IEntity;
 				if (member != null) {
@@ -141,7 +141,7 @@ namespace MonoDevelop.CodeGeneration
 			} while (store.IterNext (ref iter));
 
 			var output = new StringBuilder ();
-			string indent = RefactoringOptions.GetIndent (options.Document, (IEntity)options.EnclosingMember ?? options.EnclosingType) + "\t";
+			string indent = RefactoringOptions.GetIndent (options.Editor, (IEntity)options.EnclosingMember ?? options.EnclosingType) + "\t";
 			foreach (string nodeText in GenerateCode (includedMembers)) {
 				if (output.Length > 0) {
 					output.AppendLine ();
@@ -151,7 +151,7 @@ namespace MonoDevelop.CodeGeneration
 			}
 
 			if (output.Length > 0) {
-				var data = options.Document.Editor;
+				var data = options.Editor;
 				data.InsertAtCaret (output.ToString ().TrimStart ());
 			}
 		}

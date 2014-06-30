@@ -77,9 +77,9 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<object> GetValidMembers ()
 			{
-				if (Options == null || Options.EnclosingType == null || Options.EnclosingMember == null || Options.Document == null)
+				if (Options == null || Options.EnclosingType == null || Options.EnclosingMember == null || Options.EditContext == null)
 					yield break;
-				var editor = Options.Document.Editor;
+				var editor = Options.Editor;
 				if (editor == null)
 					yield break;
 				
@@ -133,7 +133,7 @@ namespace MonoDevelop.CodeGeneration
 					format.Append ("}");
 				}
 				
-				var consoleType = typeof (Console).ToTypeReference ().Resolve (Options.Document.Compilation.TypeResolveContext);
+				var consoleType = typeof (Console).ToTypeReference ().Resolve (Options.EditContext.Compilation.TypeResolveContext);
 				var invocationExpression = new InvocationExpression (new MemberReferenceExpression (new TypeReferenceExpression (Options.CreateShortType (consoleType)), "WriteLine"));
 				invocationExpression.Arguments.Add (new PrimitiveExpression (format.ToString ()));
 				foreach (var member in includedMembers) {

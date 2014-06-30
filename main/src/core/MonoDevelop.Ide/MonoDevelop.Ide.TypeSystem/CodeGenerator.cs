@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			AddLocalNamespaceImport (doc.Editor, doc, nsName, caretLocation);
 		}
 
-		public abstract string GetShortTypeString (TextEditor editor, EditContext doc, IType type);
+		public abstract string GetShortTypeString (TextEditor editor, EditContext context, IType type);
 
 		public abstract void CompleteStatement (MonoDevelop.Ide.Gui.Document doc);
 	}

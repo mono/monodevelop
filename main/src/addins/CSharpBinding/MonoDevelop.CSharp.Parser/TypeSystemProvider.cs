@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Parser
 {
@@ -85,7 +86,14 @@ namespace MonoDevelop.CSharp.Parser
 			result.Add (GetSemanticTags (unit));
 
 
-			result.CreateRefactoringContext = (doc, token) => MDRefactoringContext.Create (doc, doc.Editor.CaretLocation, token).Result;
+			result.CreateRefactoringContext = (editor, doc, token) => {
+				TextLocation caretLocation;
+				var textEditor = editor as TextEditor;
+				if (textEditor != null) {
+					caretLocation = textEditor.CaretLocation;
+				}
+				return MDRefactoringContext.Create (editor, doc, caretLocation, token).Result;
+			};
 			result.CreateRefactoringContextWithEditor = (data, resolver, token) => new MDRefactoringContext ((DotNetProject)project, data, result, (CSharpAstResolver)resolver, TextLocation.Empty, token);
 
 			if (storeAst) {

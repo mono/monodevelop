@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp
 //			}
 //		}
 		
-		internal static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this MonoDevelop.Ide.Gui.Document doc)
+		internal static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this EditContext doc)
 		{
 			var policyParent = doc.Project != null ? doc.Project.Policies : null;
 			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharp
 			return codePolicy;
 		}
 
-		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
+		public static CSharpFormattingOptions GetFormattingOptions (this EditContext doc)
 		{
 			return GetFormattingPolicy (doc).CreateOptions ();
 		}
@@ -111,7 +111,7 @@ namespace MonoDevelop.CSharp
 			return codePolicy.CreateOptions ();
 		}
 		
-		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
+		public static bool TryResolveAt (this EditContext doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");

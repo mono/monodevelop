@@ -170,7 +170,7 @@ namespace MonoDevelop.CodeGeneration
 					string name;
 					if (!HasProtocolAttribute (t, out name))
 						continue;
-					var protocolType = Options.Document.Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
+					var protocolType = Options.EditContext.Compilation.FindType (new FullTypeName (new TopLevelTypeName (t.Namespace, name)));
 					if (protocolType == null)
 						break;
 					foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
@@ -202,7 +202,7 @@ namespace MonoDevelop.CodeGeneration
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
 
-				var ctx = MDRefactoringContext.Create (Options.Document, Options.Document.Editor.CaretLocation).Result;
+				var ctx = MDRefactoringContext.Create (Options.Editor, Options.EditContext, Options.Editor.CaretLocation).Result;
 				if (ctx == null)
 					yield break;
 				var builder = ctx.CreateTypeSystemAstBuilder ();

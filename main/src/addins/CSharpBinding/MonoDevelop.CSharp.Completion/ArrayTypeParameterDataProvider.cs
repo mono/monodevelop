@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Completion
 			var tooltipInfo = new TooltipInformation ();
 			var file = ext.CSharpUnresolvedFile;
 			var compilation = ext.UnresolvedFileCompilation;
-			var textEditorData = ext.TextEditorData;
+			var textEditorData = ext.Editor;
 			var formattingPolicy = ext.FormattingPolicy;
 			var resolver = file.GetResolver (compilation, textEditorData.CaretLocation);
 			var sig = new SignatureMarkupCreator (resolver, formattingPolicy.CreateOptions ());

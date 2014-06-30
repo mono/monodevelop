@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Completion
 					}
 				}
 			}
-			this.editor        = ext.TextEditorData;
+			this.editor        = ext.Editor;
 			this.parameterList = parameterList;
 			this.callingMember = callingMember;
 			this.Icon          = "md-newmethod";

@@ -204,7 +204,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return new DocumentLineWrapper (TextEditor.GetLineByOffset (offset));
 		}
 
-		readonly Document document;
+		readonly EditContext document;
 		TextLocation location;
 
 		public override TextLocation Location {
@@ -216,7 +216,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		internal void SetLocation (TextLocation loc)
 		{
 			if (document != null)
-				location = RefactoringService.GetCorrectResolveLocation (document, loc);
+				location = RefactoringService.GetCorrectResolveLocation (TextEditor, document, loc);
 			else
 				location = loc;
 		}
@@ -239,7 +239,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return StartScript ();
 		}
 
-		internal static Task<MDRefactoringContext> Create (Document document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		internal static Task<MDRefactoringContext> Create (ITextDocument editor, EditContext document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var shared = document.GetSharedResolver ();
 			if (shared == null) {
@@ -252,16 +252,16 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				var sharedResolver = t.Result;
 				if (sharedResolver == null)
 					return null;
-				return new MDRefactoringContext (document, sharedResolver, loc, cancellationToken);
+				return new MDRefactoringContext (editor, document, sharedResolver, loc, cancellationToken);
 			}, TaskContinuationOptions.ExecuteSynchronously);
 		}
 
-		internal MDRefactoringContext (Document document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
+		internal MDRefactoringContext (ITextDocument editor, EditContext document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
 			this.document = document;
-			this.TextEditor = document.Editor;
+			this.TextEditor = editor;
 			this.ParsedDocument = document.ParsedDocument;
 			this.Project = document.Project as DotNetProject;
 			this.formattingOptions = document.GetFormattingOptions ();

@@ -31,6 +31,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -173,9 +174,9 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		public static void ShowIfValid (Document document, MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
+		public static void ShowIfValid (TextEditor editor, EditContext context, MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
 		{
-			var options = CodeGenerationOptions.CreateCodeGenerationOptions (document);
+			var options = CodeGenerationOptions.CreateCodeGenerationOptions (editor, context);
 			
 			var validGenerators = new List<ICodeGenerator> ();
 			foreach (var generator in CodeGenerationService.CodeGenerators) {

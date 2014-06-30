@@ -126,7 +126,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension ext, ICompilation compilation, CSharpUnresolvedFile file, IParameterizedMember entity, int currentParameter, bool smartWrap)
 		{
-			return CreateTooltipInformation (compilation, file, ext.TextEditorData, ext.FormattingPolicy, entity, currentParameter, smartWrap);
+			return CreateTooltipInformation (compilation, file, ext.Editor, ext.FormattingPolicy, entity, currentParameter, smartWrap);
 		}
 
 		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditor textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)

@@ -63,7 +63,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		TextEditor Editor {
 			get {
-				return editorCompletion.TextEditorData;
+				return editorCompletion.Editor;
 			}
 		}
 
@@ -385,7 +385,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		TypeSystemAstBuilder GetBuilder (ICompilation compilation)
 		{
-			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (editorCompletion.UnresolvedFileCompilation, editorCompletion.Document.Editor.CaretLocation) as CSharpTypeResolveContext;
+			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (editorCompletion.UnresolvedFileCompilation, editorCompletion.Editor.CaretLocation) as CSharpTypeResolveContext;
 			var state = new CSharpResolver (ctx);
 			var builder = new TypeSystemAstBuilder (state);
 			builder.AddAnnotations = true;
@@ -675,7 +675,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension editorCompletion, CSharpResolver resolver, IEntity entity, bool smartWrap)
 		{
-			return CreateTooltipInformation (editorCompletion.UnresolvedFileCompilation, editorCompletion.CSharpUnresolvedFile, resolver, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, entity, smartWrap);
+			return CreateTooltipInformation (editorCompletion.UnresolvedFileCompilation, editorCompletion.CSharpUnresolvedFile, resolver, editorCompletion.Editor, editorCompletion.FormattingPolicy, entity, smartWrap);
 		}
 
 		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditor textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
@@ -747,7 +747,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
-			return CreateTooltipInformation (compilation, file, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, Entity, smartWrap);
+			return CreateTooltipInformation (compilation, file, editorCompletion.Editor, editorCompletion.FormattingPolicy, Entity, smartWrap);
 		}
 		#region IOverloadedCompletionData implementation 
 	

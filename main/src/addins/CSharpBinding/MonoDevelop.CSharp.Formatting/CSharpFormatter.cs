@@ -78,9 +78,9 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		public override void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
+		public override void OnTheFlyFormat (TextEditor editor, EditContext context, int startOffset, int endOffset)
 		{
-			OnTheFlyFormatter.Format (doc, startOffset, endOffset);
+			OnTheFlyFormatter.Format (editor, context, startOffset, endOffset);
 		}
 
 

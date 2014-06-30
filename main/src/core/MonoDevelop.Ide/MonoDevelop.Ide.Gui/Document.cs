@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.Gui
 			}*/
 		}
 
-		public bool IsCompileableInProject {
+		public override bool IsCompileableInProject {
 			get {
 				var project = Project;
 				if (project == null)
@@ -674,7 +674,7 @@ namespace MonoDevelop.Ide.Gui
 			e.RunWhenLoaded (action);
 		}
 
-		public void AttachToProject (Project project)
+		public override void AttachToProject (Project project)
 		{
 			SetProject (project);
 		}

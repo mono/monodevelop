@@ -50,6 +50,7 @@ using ICSharpCode.NRefactory;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.Refactoring;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -69,7 +70,8 @@ namespace MonoDevelop.CSharp.Highlighting
 	
 	class CSharpSyntaxMode : SyntaxMode, MonoDevelop.Ide.Editor.IQuickTaskProvider, IDisposable
 	{
-		readonly internal Document guiDocument;
+		readonly internal EditContext guiDocument;
+		readonly internal MonoDevelop.Ide.Editor.TextEditor editor;
 
 		CSharpAstResolver resolver;
 		CancellationTokenSource src;
@@ -434,8 +436,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 
-		public CSharpSyntaxMode (Document document)
+		public CSharpSyntaxMode (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.EditContext document)
 		{
+			this.editor = editor;
 			this.guiDocument = document;
 			guiDocument.DocumentParsed += HandleDocumentParsed;
 			SemanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
@@ -726,19 +729,19 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				HashSet<string> symbols;
 
-				public ConditinalExpressionEvaluator (MonoDevelop.Ide.Gui.Document guiDocument, TextDocument doc, IEnumerable<string> defines)
+				public ConditinalExpressionEvaluator (MonoDevelop.Ide.Editor.TextEditor editor, EditContext guiDocument, TextDocument doc, IEnumerable<string> defines)
 				{
 					this.symbols = new HashSet<string> (symbols);
 					var project = guiDocument.Project;
 					
 					if (project == null) {
-						var ideDocument = IdeApp.Workbench.GetDocument (doc.FileName);
+						var ideDocument = IdeApp.Workbench.GetDocument (guiDocument.Name);
 						if (ideDocument != null)
 							project = ideDocument.Project;
 					}
 					
 					if (project == null)
-						project = IdeApp.Workspace.GetProjectContainingFile (doc.FileName);
+						project = IdeApp.Workspace.GetProjectContainingFile (editor.FileName);
 					
 					if (project != null) {
 						foreach (var ss in GetDefinedSymbols (project)) {
@@ -871,7 +874,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				AstNode expr = new CSharpParser ().ParseExpression (parameter);
 				bool result = false;
 				if (expr != null && !expr.IsNull) {
-					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (guiDocument, doc, Defines), null);
+					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (editor, guiDocument, doc, Defines), null);
 					if (o is bool)
 						result = (bool)o;
 				}
@@ -913,7 +916,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				AstNode expr= new CSharpParser ().ParseExpression (parameter);
 				bool result;
 				if (expr != null && !expr.IsNull) {
-					var visitResult = expr.AcceptVisitor (new ConditinalExpressionEvaluator (guiDocument, doc, Defines), null);
+					var visitResult = expr.AcceptVisitor (new ConditinalExpressionEvaluator (editor, guiDocument, doc, Defines), null);
 					result = visitResult != null ? (bool)visitResult : false;
 				} else {
 					result = false;
@@ -1024,10 +1027,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			
 	//		Span preprocessorSpan;
 	//		Rule preprocessorRule;
-			readonly internal Document guiDocument;
+			readonly internal MonoDevelop.Ide.Editor.TextEditor editor;
+			readonly internal EditContext guiDocument;
 
 			public CSharpSpanParser (CSharpSyntaxMode mode, CloneableStack<Span> spanStack) : base (mode, spanStack)
 			{
+				editor = mode.editor;
 				guiDocument = mode.guiDocument;
 //				foreach (Span span in mode.Spans) {
 //					if (span.Rule == "text.preprocessor") {
