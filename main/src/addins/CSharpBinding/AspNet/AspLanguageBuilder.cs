@@ -47,7 +47,6 @@ namespace MonoDevelop.CSharp.Completion
 {
 	class AspLanguageBuilder : ILanguageCompletionBuilder
 	{
-	
 		public bool SupportsLanguage (string language)
 		{
 			return language == "C#";
@@ -127,46 +126,46 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		public ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo)
+		public ICompletionDataList HandlePopupCompletion (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo)
 		{
 			CodeCompletionContext codeCompletionContext;
-			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
+			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out codeCompletionContext)) {
 				return completion.CodeCompletionCommand (codeCompletionContext);
 			}
 		}
 		
-		public ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
+		public ICompletionDataList HandleCompletion (TextEditor realEditor, EditContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
 		{
 			CodeCompletionContext ccc;
-			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
+			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out ccc)) {
 				return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
 			}
 		}
 		
-		public ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
+		public ParameterDataProvider HandleParameterCompletion (TextEditor realEditor, EditContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
-			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
+			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out ccc)) {
 				return completion.HandleParameterCompletion (completionContext, completionChar);
 			}
 		}
 		
-		public bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
+		public bool GetParameterCompletionCommandOffset (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
 		{
 			CodeCompletionContext codeCompletionContext;
-			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
+			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out codeCompletionContext)) {
 				return completion.GetParameterCompletionCommandOffset (out cpos);
 			}
 		}
 
-		public ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo)
+		public ICompletionWidget CreateCompletionWidget (TextEditor realEditor, EditContext realContext, LocalDocumentInfo localInfo)
 		{
-			return new AspCompletionWidget (realDocument, localInfo);
+			return new AspCompletionWidget (realEditor, localInfo);
 		}
 		
-		CSharpCompletionTextEditorExtension CreateCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
+		CSharpCompletionTextEditorExtension CreateCompletion (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
 		{
-			var doc = DocumentFactory.CreateNewDocument (new StringTextSource (localInfo.LocalDocument), realDocument.FileName + ".cs"); 
+			var doc = DocumentFactory.CreateNewDocument (new StringTextSource (localInfo.LocalDocument), realEditor.FileName + ".cs"); 
 			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);
 			
 			codeCompletionContext = new CodeCompletionContext () {
@@ -176,16 +175,16 @@ namespace MonoDevelop.CSharp.Completion
 			};
 			
 			return new CSharpCompletionTextEditorExtension (localInfo.HiddenDocument) {
-				CompletionWidget = CreateCompletionWidget (realDocument, localInfo)
+				CompletionWidget = CreateCompletionWidget (realEditor, realContext, localInfo)
 			};
 		}
 		
 		class AspCompletionWidget : ICompletionWidget
 		{
-			MonoDevelop.Ide.Gui.Document realDocument;
+			TextEditor realDocument;
 			LocalDocumentInfo localInfo;
 			
-			public AspCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo)
+			public AspCompletionWidget (TextEditor realDocument, LocalDocumentInfo localInfo)
 			{
 				this.realDocument = realDocument;
 				this.localInfo = localInfo;
@@ -194,7 +193,7 @@ namespace MonoDevelop.CSharp.Completion
 			#region ICompletionWidget implementation
 			public CodeCompletionContext CurrentCodeCompletionContext {
 				get {
-					int delta = realDocument.Editor.CaretOffset - localInfo.OriginalCaretPosition;
+					int delta = realDocument.CaretOffset - localInfo.OriginalCaretPosition;
 					return CreateCodeCompletionContext (localInfo.CaretPosition + delta);
 				}
 			}
@@ -223,7 +222,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 			{
-				var savedCtx = realDocument.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (realDocument.Editor.CaretOffset + triggerOffset - localInfo.CaretPosition);
+				var savedCtx = realDocument.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (realDocument.CaretOffset + triggerOffset - localInfo.CaretPosition);
 				CodeCompletionContext result = new CodeCompletionContext ();
 				result.TriggerOffset = triggerOffset;
 				var loc = localInfo.HiddenDocument.Editor.OffsetToLocation (triggerOffset);

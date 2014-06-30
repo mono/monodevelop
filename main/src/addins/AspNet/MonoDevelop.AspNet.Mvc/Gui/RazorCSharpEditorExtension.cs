@@ -44,6 +44,7 @@ using System.Web.Razor.Generator;
 using System.Text.RegularExpressions;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Mvc.Gui
 {
@@ -57,7 +58,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		static readonly Regex DocTypeRegex = new Regex (@"(?:PUBLIC|public)\s+""(?<fpi>[^""]*)""\s+""(?<uri>[^""]*)""");
 
 		ICompletionWidget defaultCompletionWidget;
-		Document defaultDocument;
+		MonoDevelop.Ide.Editor.TextEditor defaultEditor;
+		EditContext defaultDocument;
 
 		RazorSyntaxMode syntaxMode;
 
@@ -86,26 +88,27 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 			defaultCompletionWidget = CompletionWidget;
 			defaultDocument = Document;
+			defaultEditor = Editor;
 			completionBuilder = RazorCompletionBuilderService.GetBuilder ("C#");
 
-			defaultDocument.Editor.TextChanging += UnderlyingDocument_TextReplacing;
-			defaultDocument.Editor.CaretPositionChanged += delegate
+			defaultEditor.TextChanging += UnderlyingDocument_TextReplacing;
+			defaultEditor.CaretPositionChanged += delegate
 			{
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
 //			syntaxMode = new RazorSyntaxMode (Document);
-//			defaultDocument.Editor.SyntaxMode = syntaxMode;
+//			defaultEditor.SyntaxMode = syntaxMode;
 
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				defaultDocument.Editor.SyntaxMode = null;
+				defaultEditor.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
-			defaultDocument.Editor.TextChanging -= UnderlyingDocument_TextReplacing;
+			defaultEditor.TextChanging -= UnderlyingDocument_TextReplacing;
 			base.Dispose ();
 		}
 
@@ -267,15 +270,15 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		{
 			isInCSharpContext = true;
 			Document = HiddenDoc;
-			Editor = Document.Editor;
-			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultDocument, hiddenInfo);
+			Editor = HiddenDoc.Editor;
+			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultEditor, defaultDocument, hiddenInfo);
 		}
 
 		protected void SwitchToReal ()
 		{
 			isInCSharpContext = false;
 			Document = defaultDocument;
-			Editor = Document.Editor;
+			Editor = defaultEditor;
 			CompletionWidget = defaultCompletionWidget;
 		}
 
@@ -288,7 +291,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected void InitializeCodeCompletion ()
 		{
 			EnsureUnderlyingDocumentSet ();
-			hiddenInfo.OriginalCaretPosition = defaultDocument.Editor.CaretOffset;
+			hiddenInfo.OriginalCaretPosition = defaultEditor.CaretOffset;
 			hiddenInfo.CaretPosition = CalculateCaretPosition ();
 			HiddenDoc.Editor.CaretOffset = hiddenInfo.CaretPosition;
 		}
@@ -328,7 +331,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 		int CalculateCaretPosition ()
 		{
-			return CalculateCaretPosition (defaultDocument.Editor.CaretOffset);
+			return CalculateCaretPosition (defaultEditor.CaretOffset);
 		}
 
 		int CalculateCaretPosition (int currentOffset)
@@ -408,8 +411,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 //			if (!EnableCodeCompletion)
 //				return null;
 
-			char previousChar = defaultDocument.Editor.CaretOffset > 1 ? defaultDocument.Editor.GetCharAt (
-				defaultDocument.Editor.CaretOffset - 2) : ' ';
+			char previousChar = defaultEditor.CaretOffset > 1 ? defaultEditor.GetCharAt (
+				defaultEditor.CaretOffset - 2) : ' ';
 
 			// Don't show completion window when directive's name is being typed
 			var directive = Tracker.Engine.Nodes.Peek () as RazorDirective;
@@ -417,7 +420,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				return null;
 
 			if (hiddenInfo != null && isInCSharpContext) {
-				var list = (CompletionDataList) completionBuilder.HandleCompletion (defaultDocument, completionContext,
+				var list = (CompletionDataList) completionBuilder.HandleCompletion (defaultEditor, defaultDocument, completionContext,
 					hiddenInfo, completionChar, ref triggerWordLength);
 
 				if (list != null) {
@@ -521,7 +524,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			if (hiddenInfo != null && (isInCSharpContext || Tracker.Engine.CurrentState is RazorState)
 				&& !(Tracker.Engine.Nodes.Peek () is XElement)) {
 				InitializeCodeCompletion ();
-				return completionBuilder.HandlePopupCompletion (defaultDocument, hiddenInfo);
+				return completionBuilder.HandlePopupCompletion (defaultEditor, defaultDocument, hiddenInfo);
 			}
 
 			return base.CodeCompletionCommand (completionContext);
@@ -530,7 +533,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
 			if (hiddenInfo != null && isInCSharpContext)
-				return completionBuilder.GetParameterCompletionCommandOffset (defaultDocument, hiddenInfo, out cpos);
+				return completionBuilder.GetParameterCompletionCommandOffset (defaultEditor, defaultDocument, hiddenInfo, out cpos);
 
 			return base.GetParameterCompletionCommandOffset (out cpos);
 		}
@@ -538,7 +541,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
-				return completionBuilder.GetCurrentParameterIndex (defaultDocument, hiddenInfo, startOffset);
+				return completionBuilder.GetCurrentParameterIndex (defaultEditor, defaultDocument, hiddenInfo, startOffset);
 			}
 
 			return base.GetCurrentParameterIndex (startOffset);
@@ -548,7 +551,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			char completionChar)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
-				return completionBuilder.HandleParameterCompletion (defaultDocument, completionContext,
+				return completionBuilder.HandleParameterCompletion (defaultEditor, defaultDocument, completionContext,
 					hiddenInfo, completionChar);
 			}
 
@@ -597,7 +600,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				if (el == null) {
 					var startLoc = node.Region.Begin;
 					var endLoc = node.Region.End;
-					var doc = defaultDocument.Editor;
+					var doc = defaultEditor;
 
 					var blocksBetween = blocks.Where (n => n.Start.AbsoluteIndex >= doc.LocationToOffset (startLoc.Line, startLoc.Column)
 						&& n.Start.AbsoluteIndex <= doc.LocationToOffset (endLoc.Line, endLoc.Column));

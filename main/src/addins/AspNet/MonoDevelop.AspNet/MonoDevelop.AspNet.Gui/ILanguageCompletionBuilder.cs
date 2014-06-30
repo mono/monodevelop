@@ -168,14 +168,14 @@ namespace MonoDevelop.AspNet.Gui
 		
 		ParsedDocument BuildDocument (DocumentInfo info, TextEditor textEditorData);
 		
-		ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo);
+		ICompletionWidget CreateCompletionWidget (TextEditor realEditor, EditContext realContext, LocalDocumentInfo localInfo);
 		
 		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditor textEditorData, string expressionText, string textAfterCaret, bool isExpression);
 		
-		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo);
-		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
-		ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
-		bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
+		ICompletionDataList HandlePopupCompletion (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo);
+		ICompletionDataList HandleCompletion (TextEditor realEditor, EditContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
+		ParameterDataProvider HandleParameterCompletion (TextEditor realEditor, EditContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
+		bool GetParameterCompletionCommandOffset (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
 	}
 	
 	public static class LanguageCompletionBuilderService

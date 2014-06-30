@@ -62,7 +62,8 @@ namespace MonoDevelop.AspNet.Gui
 		DocumentInfo documentInfo;
 
 		ICompletionWidget defaultCompletionWidget;
-		MonoDevelop.Ide.Gui.Document defaultDocument;
+		EditContext defaultDocument;
+		TextEditor defaultEditor;
 		
 		bool HasDoc { get { return aspDoc != null; } } 
 		
@@ -200,14 +201,14 @@ namespace MonoDevelop.AspNet.Gui
 		
 		public void InitializeCodeCompletion (char ch)
 		{
-			int caretOffset = Document.Editor.CaretOffset;
+			int caretOffset = Editor.CaretOffset;
 			int start = caretOffset - Tracker.Engine.CurrentStateLength;
-			if (Document.Editor.GetCharAt (start) == '=') 
+			if (Editor.GetCharAt (start) == '=') 
 				start++;
-			string sourceText = Document.Editor.GetTextBetween (start, caretOffset);
+			string sourceText = Editor.GetTextBetween (start, caretOffset);
 			if (ch != '\0')
 				sourceText += ch;
-			string textAfterCaret = Document.Editor.GetTextBetween (caretOffset, Math.Min (Document.Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
+			string textAfterCaret = Editor.GetTextBetween (caretOffset, Math.Min (Editor.Length, Math.Max (caretOffset, Tracker.Engine.Position + Tracker.Engine.CurrentStateLength - 2)));
 
 			if (documentBuilder == null){
 				localDocumentInfo = null;
@@ -236,7 +237,7 @@ namespace MonoDevelop.AspNet.Gui
 			// TODO: Detect <script> state here !!!
 			if (documentBuilder != null && Tracker.Engine.CurrentState is AspNetExpressionState) {
 				InitializeCodeCompletion ('\0');
-				return documentBuilder.HandlePopupCompletion (defaultDocument, documentInfo, localDocumentInfo);
+				return documentBuilder.HandlePopupCompletion (defaultEditor, defaultDocument, documentInfo, localDocumentInfo);
 			}
 			return base.CodeCompletionCommand (completionContext);
 		}
@@ -246,7 +247,8 @@ namespace MonoDevelop.AspNet.Gui
 			base.Initialize ();
 			defaultCompletionWidget = CompletionWidget;
 			defaultDocument = Document;
-			defaultDocument.Editor.CaretPositionChanged += delegate {
+			defaultEditor = Editor;
+			defaultEditor.CaretPositionChanged += delegate {
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
 			defaultDocument.Saved += AsyncUpdateDesignerFile;
@@ -285,7 +287,7 @@ namespace MonoDevelop.AspNet.Gui
 			if (localDocumentInfo == null)
 				return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
 			localDocumentInfo.HiddenDocument.Editor.InsertAtCaret (completionChar.ToString ());
-			return documentBuilder.HandleCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
+			return documentBuilder.HandleCompletion (defaultEditor, defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
 		}
 
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
@@ -296,7 +298,8 @@ namespace MonoDevelop.AspNet.Gui
 				return base.KeyPress (key, keyChar, modifier);
 			InitializeCodeCompletion ('\0');
 			Document = localDocumentInfo.HiddenDocument;
-			CompletionWidget = documentBuilder.CreateCompletionWidget (defaultDocument, localDocumentInfo);
+			Editor = localDocumentInfo.HiddenDocument.Editor;
+			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo.HiddenDocument.Editor, localDocumentInfo.HiddenDocument, localDocumentInfo);
 			bool result;
 			try {
 				result = base.KeyPress (key, keyChar, modifier);
@@ -305,6 +308,7 @@ namespace MonoDevelop.AspNet.Gui
 				}
 			} finally {
 				Document = defaultDocument;
+				Editor = defaultEditor;
 				CompletionWidget = defaultCompletionWidget;
 			}
 			return result;
@@ -522,7 +526,7 @@ namespace MonoDevelop.AspNet.Gui
 					AddAspAttributeValueCompletionData (list, ob.Name, att.Name, id);
 				}
 			} else if (ob is AspNetDirective) {
-				return DirectiveCompletion.GetAttributeValues (project, Document.FileName, ob.Name.FullName, att.Name.FullName);
+				return DirectiveCompletion.GetAttributeValues (project, Document.Name, ob.Name.FullName, att.Name.FullName);
 			}
 			return list.Count > 0? list : null;
 		}

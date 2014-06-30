@@ -33,6 +33,7 @@ using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.Mvc.Completion
 {
@@ -41,14 +42,14 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 	public interface IRazorCompletionBuilder
 	{
 		bool SupportsLanguage (string language);
-		ICompletionWidget CreateCompletionWidget (Document document, UnderlyingDocumentInfo docInfo);
-		ICompletionDataList HandlePopupCompletion (Document realDocument, UnderlyingDocumentInfo docInfo);
-		ICompletionDataList HandleCompletion (Document realDocument, CodeCompletionContext completionContext,
+		ICompletionWidget CreateCompletionWidget (TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo);
+		ICompletionDataList HandlePopupCompletion (TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo);
+		ICompletionDataList HandleCompletion (TextEditor editor, EditContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength);
-		ParameterDataProvider HandleParameterCompletion (Document realDocument, CodeCompletionContext completionContext,
+		ParameterDataProvider HandleParameterCompletion (TextEditor editor, EditContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar);
-		bool GetParameterCompletionCommandOffset (Document realDocument, UnderlyingDocumentInfo docInfo, out int cpos);
-		int GetCurrentParameterIndex (Document realDocument, UnderlyingDocumentInfo docInfo, int startOffset);
+		bool GetParameterCompletionCommandOffset (TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo, out int cpos);
+		int GetCurrentParameterIndex (TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo, int startOffset);
 	}
 
 	public class UnderlyingDocument : Document
