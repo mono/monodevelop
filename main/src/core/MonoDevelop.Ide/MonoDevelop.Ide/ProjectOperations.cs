@@ -1414,6 +1414,7 @@ namespace MonoDevelop.Ide
 			AddAction action = AddAction.Copy;
 			bool applyToAll = true;
 			bool dialogShown = false;
+			bool supportsLinking = !(project is MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject);
 			
 			IProgressMonitor monitor = null;
 			
@@ -1479,6 +1480,8 @@ namespace MonoDevelop.Ide
 					
 					if (!dialogShown || !applyToAll) {
 						addExternalDialog = new AddExternalFileDialog (file);
+						if (!supportsLinking)
+							addExternalDialog.DisableLinkOption ();
 						if (files.Length > 1) {
 							addExternalDialog.ApplyToAll = applyToAll;
 							addExternalDialog.ShowApplyAll = true;
