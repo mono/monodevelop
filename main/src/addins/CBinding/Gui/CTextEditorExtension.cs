@@ -162,7 +162,7 @@ namespace CBinding
 			int lineCursorIndex = Math.Min (lineText.Length, Editor.CaretColumn);
 			
 			// Smart Indentation
-			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart)
+			if (Editor.Options.IndentStyle == IndentStyle.Smart)
 			{
 				if (keyChar == '}') {
 					// Only indent if the brace is preceeded by whitespace.
@@ -202,7 +202,7 @@ namespace CBinding
 									nextChar = lineText[lineCursorIndex];
 	
 								if(finalChar == '{')
-									indent = Document.Editor.Options.IndentationString;
+									indent = Editor.Options.IndentationString;
 							}
 	
 							// If the next character is an closing brace, indent it appropriately.
@@ -362,7 +362,7 @@ namespace CBinding
 			
 			LanguageItem container = null;
 			
-			string currentFileName = Document.FileName;
+			string currentFileName = Document.Name;
 			bool in_project = false;
 				
 			foreach (LanguageItem li in info.Containers ()) {
@@ -445,7 +445,7 @@ namespace CBinding
 			
 			string container = null;
 			
-			string currentFileName = Document.FileName;
+			string currentFileName = Document.Name;
 			bool in_project = false;
 			
 			// Find the typename of the instance
@@ -545,7 +545,7 @@ namespace CBinding
 			foreach (Macro m in info.Macros)
 				list.Add (new CompletionData (m));
 			
-			string currentFileName = Document.FileName;
+			string currentFileName = Document.Name;
 			
 			if (info.IncludedFiles.ContainsKey (currentFileName)) {
 				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFileName]) {
@@ -593,7 +593,7 @@ namespace CBinding
 			if (string.IsNullOrEmpty (functionName))
 				return null;
 			
-			return new ParameterDataProvider (nameStart, Document, info, functionName);
+			return new ParameterDataProvider (nameStart, Editor, info, functionName);
 		}
 		
 		private bool AllWhiteSpace (string lineText)
@@ -629,7 +629,7 @@ namespace CBinding
 		{
 			var cp = this.Document.Project as CProject;
 			if (cp != null) {
-				string match = cp.MatchingFile (this.Document.FileName);
+				string match = cp.MatchingFile (this.Document.Name);
 				if (match != null)
 					MonoDevelop.Ide.IdeApp.Workbench.OpenDocument (match, true);
 			}
@@ -639,7 +639,7 @@ namespace CBinding
 		protected void Update (CommandInfo info)
 		{
 			var cp = this.Document.Project as CProject;
-			info.Visible = info.Visible = cp != null && cp.MatchingFile (this.Document.FileName) != null;
+			info.Visible = info.Visible = cp != null && cp.MatchingFile (this.Document.Name) != null;
 		}
 		
 		#region IPathedDocument implementation
@@ -656,9 +656,9 @@ namespace CBinding
 			object tag = path[index].Tag;
 			DropDownBoxListWindow.IListDataProvider provider = null;
 			if (tag is ParsedDocument) {
-				provider = new CompilationUnitDataProvider (Document);
+				provider = new CompilationUnitDataProvider (Editor, Document);
 			} else {
-				provider = new DataProvider (Document, tag, new NetAmbience ());
+				provider = new DataProvider (Editor, Document, tag, new NetAmbience ());
 			}
 			
 			DropDownBoxListWindow window = new DropDownBoxListWindow (provider);

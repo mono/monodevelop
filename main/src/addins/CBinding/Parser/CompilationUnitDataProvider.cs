@@ -44,11 +44,14 @@ namespace CBinding.Parser
 	// Yoinked from C# binding
 	public class CompilationUnitDataProvider : DropDownBoxListWindow.IListDataProvider
 	{
-		Document Document { get; set; }
+		TextEditor editor;
+
+		EditContext EditContext { get; set; }
 		
-		public CompilationUnitDataProvider (Document document)
+		public CompilationUnitDataProvider (TextEditor editor, EditContext editContext)
 		{
-			this.Document = document;
+			this.editor = editor;
+			this.EditContext = editContext;
 		}
 		
 		#region IListDataProvider implementation
@@ -56,7 +59,7 @@ namespace CBinding.Parser
 		
 		public string GetMarkup (int n)
 		{
-			return GLib.Markup.EscapeText (Document.ParsedDocument.UserRegions.ElementAt (n).Name);
+			return GLib.Markup.EscapeText (EditContext.ParsedDocument.UserRegions.ElementAt (n).Name);
 		}
 		
 		internal static Xwt.Drawing.Image Pixbuf
@@ -71,14 +74,14 @@ namespace CBinding.Parser
 		
 		public object GetTag (int n)
 		{
-			return Document.ParsedDocument.UserRegions.ElementAt (n);
+			return EditContext.ParsedDocument.UserRegions.ElementAt (n);
 		}
 		
 		
 		public void ActivateItem (int n)
 		{
-			var reg = Document.ParsedDocument.UserRegions.ElementAt (n);
-			var extEditor = Document.Editor;
+			var reg = EditContext.ParsedDocument.UserRegions.ElementAt (n);
+			var extEditor = editor;
 			if (extEditor != null) {
 				extEditor.CaretLocation = new DocumentLocation (Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn);
 				extEditor.StartCaretPulseAnimation ();
@@ -88,9 +91,9 @@ namespace CBinding.Parser
 		public int IconCount
 		{
 			get {
-				if (Document.ParsedDocument == null)
+				if (EditContext.ParsedDocument == null)
 					return 0;
-				return Document.ParsedDocument.UserRegions.Count ();
+				return EditContext.ParsedDocument.UserRegions.Count ();
 			}
 		}
 		

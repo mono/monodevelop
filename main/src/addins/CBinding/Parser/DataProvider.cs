@@ -49,15 +49,18 @@ namespace CBinding.Parser
 		object tag;
 		Ambience amb;
 		List<IUnresolvedEntity> memberList = new List<IUnresolvedEntity> ();
+
+		TextEditor editor;
 		
-		Document Document {
+		EditContext EditContext {
 			get;
 			set;
 		}
 		
-		public DataProvider (Document doc, object tag, Ambience amb)
+		public DataProvider (TextEditor editor, EditContext editContext, object tag, Ambience amb)
 		{
-			this.Document = doc;
+			this.editor = editor;
+			this.EditContext = editContext;
 			this.tag = tag;
 			this.amb = amb;
 			Reset ();
@@ -83,7 +86,7 @@ namespace CBinding.Parser
 		
 		string GetString (Ambience amb, IUnresolvedEntity x)
 		{
-			var ctx = new SimpleTypeResolveContext (Document.Compilation.MainAssembly);
+			var ctx = new SimpleTypeResolveContext (EditContext.Compilation.MainAssembly);
 			IEntity rx = null;
 			if (x is IUnresolvedMember)
 				rx = ((IUnresolvedMember)x).CreateResolved (ctx);
@@ -114,7 +117,7 @@ namespace CBinding.Parser
 		public void ActivateItem (int n)
 		{
 			var member = memberList[n];
-			var extEditor = Document.Editor;
+			var extEditor = editor;
 			if (extEditor != null) {
 				extEditor.SetCaretLocation (Math.Max (1, member.Region.BeginLine), Math.Max (1, member.Region.BeginColumn), true);
 			}
