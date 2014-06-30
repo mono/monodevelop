@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Gui;
 using MonoDevelop.Refactoring;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,10 +41,11 @@ using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.CodeActions;
 using System.Diagnostics;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.AnalysisCore.Gui;
 
 namespace MonoDevelop.CodeIssues
 {
-	public static class CodeAnalysisRunner
+	static class CodeAnalysisRunner
 	{
 		static IEnumerable<BaseCodeIssueProvider> EnumerateProvider (CodeIssueProvider p)
 		{
@@ -54,15 +54,16 @@ namespace MonoDevelop.CodeIssues
 			return new BaseCodeIssueProvider[] { p };
 		}
 
-		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
+		internal static IEnumerable<Result> Check (AnalysisDocument doc, CancellationToken cancellationToken)
 		{
+			var input = doc.EditContext;
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
 				return Enumerable.Empty<Result> ();
 
 			#if PROFILE
 			var runList = new List<Tuple<long, string>> ();
 			#endif
-			var editor = input.Editor;
+			var editor = doc.Editor;
 			if (editor == null)
 				return Enumerable.Empty<Result> ();
 			var loc = editor.CaretLocation;

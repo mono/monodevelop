@@ -40,6 +40,18 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
+	class AnalysisDocument
+	{
+		public TextEditor Editor { get; private set; }
+		public EditContext EditContext { get; private set; }
+
+		public AnalysisDocument (TextEditor editor, EditContext editContext)
+		{
+			this.Editor = editor;
+			this.EditContext = editContext;
+		}
+	}
+
 	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;
@@ -131,8 +143,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			lock (this) {
 				CancelTask ();
 				src = new CancellationTokenSource ();
-				var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
-				var task = AnalysisService.QueueAnalysis (EditContext, treeType, src.Token);
+				var treeType = new RuleTreeType ("AnalysisDocument", Path.GetExtension (doc.FileName));
+				var task = AnalysisService.QueueAnalysis (new AnalysisDocument (Editor, EditContext), treeType, src.Token);
 				oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update (), src.Token);
 			}
 		}

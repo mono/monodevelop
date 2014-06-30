@@ -29,14 +29,15 @@ using System.Collections.Generic;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide.Gui;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.AnalysisCore.Gui;
 
 namespace MonoDevelop.AnalysisCore.Rules
 {
-	public static class Adapters
+	static class Adapters
 	{
-		public static IUnresolvedFile GetCompilationUnit (Document input)
+		public static IUnresolvedFile GetCompilationUnit (AnalysisDocument input)
 		{
-			return input.ParsedDocument.ParsedFile;
+			return input.EditContext.ParsedDocument.ParsedFile;
 		}
 	}
 }

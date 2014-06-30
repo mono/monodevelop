@@ -129,7 +129,7 @@ namespace MonoDevelop.AnalysisCore
 
 		}
 		
-		public static bool GetFixes (out Document document, out IList<FixableResult> results)
+		public static bool GetFixes (out MonoDevelop.Ide.Gui.Document document, out IList<FixableResult> results)
 		{
 			results = null;
 			document = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
@@ -164,7 +164,7 @@ namespace MonoDevelop.AnalysisCore
 			return string.Compare (r1.Message, r2.Message, StringComparison.Ordinal);
 		}
 		
-		public static void PopulateInfos (CommandArrayInfo infos, Document doc, IEnumerable<FixableResult> results)
+		public static void PopulateInfos (CommandArrayInfo infos, MonoDevelop.Ide.Gui.Document doc, IEnumerable<FixableResult> results)
 		{
 			//FIXME: ellipsize long messages
 			int mnemonic = 1;
@@ -258,7 +258,7 @@ namespace MonoDevelop.AnalysisCore
 
 		}
 
-		public static IEnumerable<IAnalysisFixAction> GetActions (Document doc, FixableResult result)
+		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Gui.Document doc, FixableResult result)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");

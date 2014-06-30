@@ -731,7 +731,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 				public ConditinalExpressionEvaluator (MonoDevelop.Ide.Editor.TextEditor editor, EditContext guiDocument, TextDocument doc, IEnumerable<string> defines)
 				{
-					this.symbols = new HashSet<string> (symbols);
+					this.symbols = new HashSet<string> (defines);
 					var project = guiDocument.Project;
 					
 					if (project == null) {
