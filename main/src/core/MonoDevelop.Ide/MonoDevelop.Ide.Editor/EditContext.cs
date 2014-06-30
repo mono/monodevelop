@@ -37,6 +37,10 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
+		public virtual bool HasProject {
+			get { return Project != null; }
+		}
+
 		public abstract Project Project {
 			get;
 		}

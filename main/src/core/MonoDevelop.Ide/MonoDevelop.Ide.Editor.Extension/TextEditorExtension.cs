@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 		}
 
-		public virtual bool IsValidInContext (EditContext document)
+		public virtual bool IsValidInContext (EditContext context)
 		{
 			return true;
 		}

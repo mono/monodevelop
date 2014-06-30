@@ -40,6 +40,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DesignerSupport
 {
@@ -72,9 +73,9 @@ namespace MonoDevelop.DesignerSupport
 		bool disposed;
 		bool outlineReady;
 
-		protected override bool ExtendsEditor (Document doc)
+		public override bool IsValidInContext (EditContext context)
 		{
-			var binding = LanguageBindingService.GetBindingPerFileName (doc.Name);
+			var binding = LanguageBindingService.GetBindingPerFileName (context.Name);
 			return binding != null && binding is IDotNetLanguageBinding;
 		}
 

@@ -44,7 +44,7 @@ namespace MonoDevelop.DesignerSupport.Projects
 			// Return the ProjectFile object of the file being edited
 			
 			if (Document.HasProject) {
-				string file = Document.FileName;
+				string file = Document.Name;
 				return Document.Project.Files.GetFile (file);
 			}
 			else

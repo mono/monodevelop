@@ -176,10 +176,7 @@ namespace MonoDevelop.Ide.Gui
 			get { return !Window.ViewContent.IsViewOnly && (Window.ViewContent.ContentName == null || Window.ViewContent.IsDirty); }
 			set { Window.ViewContent.IsDirty = value; }
 		}
-		
-		public bool HasProject {
-			get { return Window != null ? Window.ViewContent.Project != null : false; }
-		}
+
 		
 		public override Project Project {
 			get { return Window != null ? Window.ViewContent.Project : null; }
