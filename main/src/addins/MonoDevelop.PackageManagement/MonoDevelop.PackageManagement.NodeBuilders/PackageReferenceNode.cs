@@ -90,16 +90,16 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public string GetLabel ()
 		{
-			if (!Installed || IsReinstallNeeded) {
-				return "<span color='#c99c00'>" + Id + "</span>";
+			if (UpdatedVersion != null) {
+				return GetIdText () + GetUpdatedVersionLabelText ();
 			}
-			return GetLabelText ();
+			return GetIdText ();
 		}
 
-		string GetLabelText ()
+		string GetIdText ()
 		{
-			if (UpdatedVersion != null) {
-				return Id + GetUpdatedVersionLabelText ();
+			if (!Installed || IsReinstallNeeded) {
+				return "<span color='#c99c00'>" + Id + "</span>";
 			}
 			return Id;
 		}

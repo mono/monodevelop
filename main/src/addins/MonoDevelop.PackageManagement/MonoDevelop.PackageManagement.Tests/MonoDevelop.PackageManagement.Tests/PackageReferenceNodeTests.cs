@@ -39,9 +39,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		PackageReferenceNode node;
 		PackageReference packageReference;
 
-		void CreatePackageReferenceNode (bool installed = true, bool installPending = false)
+		void CreatePackageReferenceNode (
+			bool installed = true,
+			bool installPending = false,
+			PackageName updatedPackage = null)
 		{
-			node = new PackageReferenceNode (packageReference, installed, installPending);
+			node = new PackageReferenceNode (packageReference, installed, installPending, updatedPackage);
 		}
 
 		void CreatePackageReference (
@@ -134,6 +137,21 @@ namespace MonoDevelop.PackageManagement.Tests
 			IconId icon = node.GetIconId ();
 
 			Assert.AreEqual (Stock.Reference, icon);
+		}
+
+		[Test]
+		public void GetLabel_PackageReferenceNeedsReinstallationButHasUpdate_ReturnsPackageIdInsideErrorColouredSpanAndUpdatedPackageVersionInGreySpan ()
+		{
+			CreatePackageReference (
+				packageId: "MyPackage",
+				requireReinstallation: true);
+			CreatePackageReferenceNode (
+				installed: true,
+				updatedPackage: new PackageName ("MyPackage", new SemanticVersion ("1.2.3.4")));
+
+			string label = node.GetLabel ();
+
+			Assert.AreEqual ("<span color='#c99c00'>MyPackage</span> <span color='grey'>(1.2.3.4 available)</span>", label);
 		}
 	}
 }

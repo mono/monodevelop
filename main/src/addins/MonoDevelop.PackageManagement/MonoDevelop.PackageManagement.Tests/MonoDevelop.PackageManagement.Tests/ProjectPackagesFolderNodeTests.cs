@@ -187,6 +187,22 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("1.2", referenceNode.UpdatedVersion.ToString ());
 			Assert.AreEqual ("MyPackage <span color='grey'>(1.2 available)</span>", referenceNode.GetLabel ());
 		}
+
+		[Test]
+		public void GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackagesButPackageNotRestored_ReturnsOneNodeWithUpdatedVersionInformationInLabel ()
+		{
+			CreateNode ();
+			PackageReference packageReference = AddPackageReferenceToProject ("MyPackage", "1.0");
+			AddUpdatedPackageForProject ("MyPackage", "1.2");
+
+			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();
+
+			PackageReferenceNode referenceNode = nodes.FirstOrDefault ();
+			Assert.AreEqual (1, nodes.Count);
+			Assert.AreEqual ("1.2", referenceNode.UpdatedVersion.ToString ());
+			Assert.AreEqual ("<span color='#c99c00'>MyPackage</span> <span color='grey'>(1.2 available)</span>", referenceNode.GetLabel ());
+			Assert.AreEqual (Stock.ReferenceWarning, referenceNode.GetIconId ());
+		}
 	}
 }
 
