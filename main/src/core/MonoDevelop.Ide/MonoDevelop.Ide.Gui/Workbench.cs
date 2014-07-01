@@ -489,7 +489,6 @@ namespace MonoDevelop.Ide.Gui
 								doc.Window.SwitchView (vcIndex);
 								doc.Window.SelectWindow ();
 								NavigationHistoryService.LogActiveDocument ();
-								Present ();
 							}
 							return doc;
 						}
