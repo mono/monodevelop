@@ -32,7 +32,7 @@ namespace MonoDevelop.Ide.Editor
 	/// The TextEditor object needs to be available through IBaseViewContent.GetContent therefore we need to insert a 
 	/// decorator in between.
 	/// </summary>
-	class TextEditorViewContent : IViewContent
+	class TextEditorViewContent : IViewContent, MonoDevelop.Components.Commands.ICommandRouter
     {
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
@@ -239,6 +239,15 @@ namespace MonoDevelop.Ide.Editor
 		void IDisposable.Dispose ()
 		{
 			textEditorImpl.Dispose ();
+		}
+
+		#endregion
+
+		#region ICommandRouter implementation
+
+		object MonoDevelop.Components.Commands.ICommandRouter.GetNextCommandTarget ()
+		{
+			return textEditorImpl;
 		}
 
 		#endregion
