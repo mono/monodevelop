@@ -623,12 +623,12 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.SideBySideModeHandler"
 			_label = "2 Columns"
 			shortcut = "Control|Shift|2"
-			macShortcut = "Meta|Shift|2"/>
+			macShortcut = "Alt|Meta|2"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.SingleMode"
 			defaultHandler = "MonoDevelop.Ide.Commands.SingleModeHandler"
 			_label = "1 Column"
 			shortcut = "Control|Shift|1"
-			macShortcut = "Meta|Shift|1"/>
+			macShortcut = "Alt|Meta|1"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.NextNotebook"
 			defaultHandler = "MonoDevelop.Ide.Commands.NextNotebookHandler"
 			_label = "Move to Next Notebook"
