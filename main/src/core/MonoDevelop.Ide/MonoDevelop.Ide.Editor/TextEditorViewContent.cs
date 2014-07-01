@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide.Editor
 
 		object IBaseViewContent.GetContent (Type type)
 		{
-			if (type.Equals (typeof(TextEditor)))
+			if (type.IsAssignableFrom (typeof(TextEditor)))
 				return textEditor;
 			if (textEditorImpl.GetType ().IsInstanceOfType (type))
 				return textEditorImpl;

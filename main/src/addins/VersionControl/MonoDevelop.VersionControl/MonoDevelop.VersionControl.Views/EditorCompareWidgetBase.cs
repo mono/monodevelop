@@ -613,9 +613,10 @@ namespace MonoDevelop.VersionControl.Views
 			dict[data.Document] = data;
 			
 			var editor = info.Document.GetContent <MonoDevelop.Ide.Editor.IReadonlyTextDocument> ();
-			if (editor != null)
+			if (editor != null) {
 				data.Document.Text = editor.Text;
-			data.Document.ReadOnly = editor.IsReadOnly;
+				data.Document.ReadOnly = editor.IsReadOnly;
+			}
 			
 			CreateDiff ();
 			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
