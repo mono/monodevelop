@@ -125,7 +125,6 @@
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor\LanguageItemWindow.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorDisplayBinding.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorWidget.cs" />
