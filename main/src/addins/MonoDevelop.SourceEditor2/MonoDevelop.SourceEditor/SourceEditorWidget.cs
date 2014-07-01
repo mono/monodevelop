@@ -1412,7 +1412,7 @@ namespace MonoDevelop.SourceEditor
 		#region commenting and indentation
 		internal void OnUpdateToggleComment (MonoDevelop.Components.Commands.CommandInfo info)
 		{
-			var mode = Document.SyntaxMode as MonoDevelop.Ide.Editor.Highlighting.SyntaxMode;
+			var mode = Document.SyntaxMode as SyntaxMode;
 			if (mode == null) {
 				info.Visible = false;
 				return;
@@ -1431,7 +1431,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void ToggleCodeCommentWithBlockComments ()
 		{
-			var mode = Document.SyntaxMode as MonoDevelop.Ide.Editor.Highlighting.SyntaxMode;
+			var mode = Document.SyntaxMode as SyntaxMode;
 			if (mode == null)
 				return;
 
@@ -1477,7 +1477,7 @@ namespace MonoDevelop.SourceEditor
 
 		bool TryGetLineCommentTag (out string commentTag)
 		{
-			var mode = Document.SyntaxMode as MonoDevelop.Ide.Editor.Highlighting.SyntaxMode;
+			var mode = Document.SyntaxMode as SyntaxMode;
 			List<string> lineComments;
 			if (mode == null || !mode.Properties.TryGetValue ("LineComment", out lineComments) || lineComments.Count == 0) {
 				commentTag = null;
