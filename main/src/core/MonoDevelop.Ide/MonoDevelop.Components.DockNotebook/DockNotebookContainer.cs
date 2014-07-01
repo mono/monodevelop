@@ -220,9 +220,8 @@ namespace MonoDevelop.Components.DockNotebook
 				var box = new HPanedThin { GrabAreaSize = 6 };
 				var new_container = new DockNotebookContainer (tabControl);
 
-				box.Add1 (container);
-				box.Add2 (new_container);
-				box.Position = Allocation.Width / 2;
+				box.Pack1 (container, true, true);
+				box.Pack2 (new_container, true, true);
 				Child = box;
 			});
 		}
@@ -233,8 +232,8 @@ namespace MonoDevelop.Components.DockNotebook
 				var box = new HPanedThin () { GrabAreaSize = 6 };
 				var new_container = new DockNotebookContainer (tabControl);
 
-				box.Add1 (new_container);
-				box.Add2 (container);
+				box.Pack1 (new_container, true, true);
+				box.Pack2 (container, true, true);
 				box.Position = Allocation.Width / 2;
 				Child = box;
 			});
