@@ -182,15 +182,15 @@ namespace MonoDevelop.AnalysisCore.Gui
 			{
 				switch (result.Level) {
 				case Severity.None:
-					return MonoDevelop.Ide.Editor.TextEditorOptions.DefaultOptions.GetColorStyle ().PlainText.Background;
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().PlainText.Background;
 				case Severity.Error:
-					return MonoDevelop.Ide.Editor.TextEditorOptions.DefaultOptions.GetColorStyle ().UnderlineError.Color;
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
 				case Severity.Warning:
-					return MonoDevelop.Ide.Editor.TextEditorOptions.DefaultOptions.GetColorStyle ().UnderlineWarning.Color;
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
 				case Severity.Suggestion:
-					return MonoDevelop.Ide.Editor.TextEditorOptions.DefaultOptions.GetColorStyle ().UnderlineSuggestion.Color;
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
 				case Severity.Hint:
-					return MonoDevelop.Ide.Editor.TextEditorOptions.DefaultOptions.GetColorStyle ().UnderlineHint.Color;
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.Color;
 				default:
 					throw new System.ArgumentOutOfRangeException ();
 				}

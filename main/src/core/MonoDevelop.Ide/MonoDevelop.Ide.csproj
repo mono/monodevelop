@@ -2193,7 +2193,9 @@
     <Compile Include="MonoDevelop.Ide.Extensions\IOpenFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IAddFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\TextEditorExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DockItemToolbarLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DockItemToolbarLoader.cs">
+      <DependentUpon>DisplayBindingService.cs</DependentUpon>
+    </Compile>
     <Compile Include="MonoDevelop.Ide.Gui.Components\LogView.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchContext.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\LayoutExtensionNode.cs" />
@@ -2594,7 +2596,6 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageRecentProjectsList.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageLinksList.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProjectLoadProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\CommonTextEditorOptions.cs" />
     <Compile Include="MonoDevelop.Components\FileFilterSet.cs" />
     <Compile Include="MonoDevelop.Ide\IdeVersionInfo.cs" />
     <Compile Include="MonoDevelop.Components\ContextMenuTreeView.cs" />
