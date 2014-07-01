@@ -8,6 +8,7 @@
     <Import assembly="FSharpBinding.dll" />
     <Import assembly="FSharpBinding.Gui.dll" />
     <Import file="FSharp.Compiler.Service.dll" />
+    <Import assembly="FantomasLib.dll" />
 
   <!--INSTALL_DEBUG
     <Import file = "FSharp.CompilerBinding.dll.mdb" />
@@ -214,6 +215,16 @@
 
   <Extension path = "/MonoDevelop/Ide/CodeFormatters">
     <Formatter mimeType="text/x-fsharp" class="MonoDevelop.FSharp.FSharpFormatter" />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
+    <Policies resource="FSharpStylePolicy.xml" />
+  </Extension>
+   
+  <Policies resource="FSharpFormattingPolicy.xml" />
+
+  <Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
+    <Panel id = "FSharpFormatting" _label = "F# Formatting" mimeType="text/x-fsharp" class = "MonoDevelop.FSharp.FSharpFormattingPolicyPanel" />
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/TextEditorExtensions">

@@ -309,7 +309,12 @@
     <Compile Include="FSharpTooltipProvider.fs" />
     <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="FSharpReferenceFinderExtension.fs" />
+    <Compile Include="FSharpFormattingPolicy.fs" />
     <Compile Include="FSharpFormatter.fs" />
+    <Compile Include="FSharpFormattingPanelWidget.fs" />
+    <Compile Include="FSharpFormattingPolicyPanel.fs" />
+    <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
+    <EmbeddedResource Include="FSharpStylePolicy.xml" />
     <EmbeddedResource Include="FSharpBinding.addin.xml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -343,6 +348,7 @@
     <Reference Include="System.Xaml" />
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="Mono.Posix" />
     <Reference Include="Mono.Addins">
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT\bin\Mono.Addins.dll</HintPath>
@@ -412,6 +418,9 @@
     </Reference>
     <Reference Include="Mono.Cecil.Rocks">
       <HintPath>packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="FantomasLib">
+      <HintPath>packages\Fantomas.1.4.0\lib\FantomasLib.dll</HintPath>      
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
