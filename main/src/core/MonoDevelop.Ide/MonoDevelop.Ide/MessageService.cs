@@ -126,9 +126,9 @@ namespace MonoDevelop.Ide
 	//all methods are synchronously invoked on the GUI thread, except those which take GTK# objects as arguments
 	public static class MessageService
 	{
-		static Gtk.Window rootWindow;
+		static Window rootWindow;
 		
-		public static Gtk.Window RootWindow {
+		public static Window RootWindow {
 			get {
 				return rootWindow; 
 			}
@@ -160,22 +160,22 @@ namespace MonoDevelop.Ide
 			return ShowException (RootWindow, e, message, title, buttons);
 		}
 
-		public static void ShowException (Gtk.Window parent, Exception e)
+		public static void ShowException (Window parent, Exception e)
 		{
-			ShowException (RootWindow, e, e.Message);
+			ShowException (parent, e, e.Message);
 		}
 		
-		public static void ShowException (Gtk.Window parent, Exception e, string message)
+		public static void ShowException (Window parent, Exception e, string message)
 		{
 			ShowException (parent, e, message, null);
 		}
 		
-		public static void ShowException (Gtk.Window parent, Exception e, string message, string title)
+		public static void ShowException (Window parent, Exception e, string message, string title)
 		{
 			ShowException (parent, e, message, title, null);
 		}
 
-		public static AlertButton ShowException (Gtk.Window parent, Exception e, string message, string title, params AlertButton[] buttons)
+		public static AlertButton ShowException (Window parent, Exception e, string message, string title, params AlertButton[] buttons)
 		{
 			if (!IdeApp.IsInitialized)
 				throw new Exception ("IdeApp has not been initialized. Propagating the exception.", e); 
@@ -188,7 +188,7 @@ namespace MonoDevelop.Ide
 		{
 			ShowError (RootWindow, primaryText);
 		}
-		public static void ShowError (Gtk.Window parent, string primaryText)
+		public static void ShowError (Window parent, string primaryText)
 		{
 			ShowError (parent, primaryText, null);
 		}
@@ -196,7 +196,7 @@ namespace MonoDevelop.Ide
 		{
 			ShowError (RootWindow, primaryText, secondaryText);
 		}
-		public static void ShowError (Gtk.Window parent, string primaryText, string secondaryText)
+		public static void ShowError (Window parent, string primaryText, string secondaryText)
 		{
 			GenericAlert (MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, AlertButton.Ok);
 		}
@@ -207,7 +207,7 @@ namespace MonoDevelop.Ide
 		{
 			ShowWarning (RootWindow, primaryText);
 		}
-		public static void ShowWarning (Gtk.Window parent, string primaryText)
+		public static void ShowWarning (Window parent, string primaryText)
 		{
 			ShowWarning (parent, primaryText, null);
 		}
@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide
 		{
 			ShowWarning (RootWindow, primaryText, secondaryText);
 		}
-		public static void ShowWarning (Gtk.Window parent, string primaryText, string secondaryText)
+		public static void ShowWarning (Window parent, string primaryText, string secondaryText)
 		{
 			GenericAlert (MonoDevelop.Ide.Gui.Stock.Warning, primaryText, secondaryText, AlertButton.Ok);
 		}
@@ -226,7 +226,7 @@ namespace MonoDevelop.Ide
 		{
 			ShowMessage (RootWindow, primaryText);
 		}
-		public static void ShowMessage (Gtk.Window parent, string primaryText)
+		public static void ShowMessage (Window parent, string primaryText)
 		{
 			ShowMessage (parent, primaryText, null);
 		}
@@ -234,7 +234,7 @@ namespace MonoDevelop.Ide
 		{
 			ShowMessage (RootWindow, primaryText, secondaryText);
 		}
-		public static void ShowMessage (Gtk.Window parent, string primaryText, string secondaryText)
+		public static void ShowMessage (Window parent, string primaryText, string secondaryText)
 		{
 			GenericAlert (MonoDevelop.Ide.Gui.Stock.Information, primaryText, secondaryText, AlertButton.Ok);
 		}
@@ -296,12 +296,12 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Places, runs and destroys a transient dialog.
 		/// </summary>
-		public static int ShowCustomDialog (Gtk.Dialog dialog)
+		public static int ShowCustomDialog (Dialog dialog)
 		{
 			return ShowCustomDialog (dialog, null);
 		}
 		
-		public static int ShowCustomDialog (Gtk.Dialog dialog, Window parent)
+		public static int ShowCustomDialog (Dialog dialog, Window parent)
 		{
 			try {
 				return RunCustomDialog (dialog, parent);
@@ -311,7 +311,7 @@ namespace MonoDevelop.Ide
 			}
 		}
 		
-		public static int RunCustomDialog (Gtk.Dialog dialog)
+		public static int RunCustomDialog (Dialog dialog)
 		{
 			return RunCustomDialog (dialog, null);
 		}
@@ -319,7 +319,7 @@ namespace MonoDevelop.Ide
 		/// <summary>
 		/// Places and runs a transient dialog. Does not destroy it, so values can be retrieved from its widgets.
 		/// </summary>
-		public static int RunCustomDialog (Gtk.Dialog dialog, Window parent)
+		public static int RunCustomDialog (Dialog dialog, Window parent)
 		{
 			if (parent == null) {
 				if (dialog.TransientFor != null)
@@ -332,7 +332,6 @@ namespace MonoDevelop.Ide
 			if (dialog.Title == null)
 				dialog.Title = BrandingService.ApplicationName;
 			PlaceDialog (dialog, parent);
-			OnPopupDialog (EventArgs.Empty);
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 		
@@ -351,7 +350,7 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static Window GetDefaultModalParent ()
 		{
-			foreach (Gtk.Window w in Gtk.Window.ListToplevels ())
+			foreach (Window w in Window.ListToplevels ())
 				if (w.Visible && w.HasToplevelFocus && w.Modal)
 					return w;
 			return RootWindow;
@@ -441,21 +440,20 @@ namespace MonoDevelop.Ide
 		}
 		
 		//The real GTK# code is wrapped in a GuiSyncObject to make calls synchronous on the GUI thread
-		private class InternalMessageService : GuiSyncObject
+		class InternalMessageService : GuiSyncObject
 		{
-			public AlertButton ShowException (Gtk.Window parent, string title, string message, Exception e, params AlertButton[] buttons)
+			public AlertButton ShowException (Window parent, string title, string message, Exception e, params AlertButton[] buttons)
 			{
 				if ((buttons == null || buttons.Length == 0) && (e is UserException) && ((UserException)e).AlreadyReportedToUser)
 					return AlertButton.Ok;
 
-				var exceptionDialog = new ExceptionDialog () {
-					Buttons = buttons ?? new AlertButton[] { AlertButton.Ok },
+				var exceptionDialog = new ExceptionDialog {
+					Buttons = buttons ?? new [] { AlertButton.Ok },
 					Title = title ?? GettextCatalog.GetString ("An error has occurred"),
 					Message = message,
 					Exception = e,
 					TransientFor = parent,
 				};
-				OnPopupDialog (EventArgs.Empty);
 				exceptionDialog.Run ();
 				return exceptionDialog.ResultButton;
 			}
@@ -463,7 +461,6 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (MessageDescription message)
 			{
 				var dialog = new AlertDialog (message);
-				OnPopupDialog (EventArgs.Empty);
 				return dialog.Run ();
 			}
 			
@@ -475,24 +472,12 @@ namespace MonoDevelop.Ide
 					Value = initialValue,
 					IsPassword = isPassword,
 				};
-				OnPopupDialog (EventArgs.Empty);
 				if (dialog.Run ())
 					return dialog.Value;
 				return null;
 			}
 		}
 		#endregion
-
-
-		static void OnPopupDialog (EventArgs e)
-		{
-			var handler = PopupDialog;
-			if (handler != null)
-				handler (null, e);
-		}
-
-		public static event EventHandler PopupDialog;
-
 	}
 	
 	public class MessageDescription

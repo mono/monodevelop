@@ -762,9 +762,6 @@
     <EmbeddedResource Include="branding\AboutImage.png">
       <LogicalName>AboutImage.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\SplashScreen.png">
-      <LogicalName>SplashScreen.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\popup-close-16.png">
       <LogicalName>popup-close-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -2007,7 +2004,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewLayoutDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AboutMonoDevelopTabPage.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\VersionInformationTabPage.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SplashScreen.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\TipOfTheDay.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddinLoadErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildPanel.cs" />
