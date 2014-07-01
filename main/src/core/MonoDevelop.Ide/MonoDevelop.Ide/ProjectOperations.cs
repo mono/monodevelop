@@ -707,6 +707,11 @@ namespace MonoDevelop.Ide
 			dlg.DefaultFilter = dlg.AddFilter (GettextCatalog.GetString ("Project Files"), "*.*proj");
 			
 			if (dlg.Run ()) {
+				if (!Services.ProjectService.IsSolutionItemFile (dlg.SelectedFile)) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("The file '{0}' is not a known project file format.", dlg.SelectedFile));
+					return res;
+				}
+
 				try {
 					res = AddSolutionItem (parentFolder, dlg.SelectedFile);
 				} catch (Exception ex) {
