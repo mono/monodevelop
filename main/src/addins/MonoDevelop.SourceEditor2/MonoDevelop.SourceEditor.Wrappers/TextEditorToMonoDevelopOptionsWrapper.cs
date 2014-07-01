@@ -82,24 +82,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		bool ITextEditorOptions.AllowTabsAfterNonTabs {
-			get {
-				return options.AllowTabsAfterNonTabs;
-			}
-			set {
-				options.AllowTabsAfterNonTabs = value;
-			}
-		}
-
-		bool ITextEditorOptions.HighlightMatchingBracket {
-			get {
-				return options.HighlightMatchingBracket;
-			}
-			set {
-				options.HighlightMatchingBracket = value;
-			}
-		}
-
 		bool ITextEditorOptions.TabsToSpaces {
 			get {
 				return options.TabsToSpaces;
@@ -207,37 +189,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				options.EnableSyntaxHighlighting = value;
 			}
 		}
-
-		bool ITextEditorOptions.EnableAnimations {
-			get {
-				return options.EnableAnimations;
-			}
-		}
-
-		bool ITextEditorOptions.EnableSelectionWrappingKeys {
-			get {
-				return options.EnableSelectionWrappingKeys;
-			}
-		}
-
-		bool ITextEditorOptions.EnableQuickDiff {
-			get {
-				return options.EnableQuickDiff;
-			}
-			set {
-				options.EnableQuickDiff = value;
-			}
-		}
-
-		bool ITextEditorOptions.DrawIndentationMarkers {
-			get {
-				return options.DrawIndentationMarkers;
-			}
-			set {
-				options.DrawIndentationMarkers = value;
-			}
-		}
-
+		
 		bool ITextEditorOptions.WrapLines {
 			get {
 				return options.WrapLines;
@@ -283,7 +235,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				options.DefaultEolMarker = value;
 			}
 		}
-
+/*
 		ShowWhitespaces ITextEditorOptions.ShowWhitespaces {
 			get {
 				return (ShowWhitespaces)options.ShowWhitespaces;
@@ -300,7 +252,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			set {
 				options.IncludeWhitespaces = (Mono.TextEditor.IncludeWhitespaces)value;
 			}
-		}
+		}*/
 
 		bool ITextEditorOptions.GenerateFormattingUndoStep {
 			get {

@@ -133,7 +133,7 @@ namespace MonoDevelop.Ide.Editor
 			base.TabsToSpaces          = currentPolicy.TabsToSpaces; // PropertyService.Get ("TabsToSpaces", false);
 			base.IndentationSize       = currentPolicy.TabWidth; //PropertyService.Get ("TabIndent", 4);
 			base.RulerColumn           = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
-			base.AllowTabsAfterNonTabs = !currentPolicy.NoTabsAfterNonTabs; //PropertyService.Get ("AllowTabsAfterNonTabs", true);
+			allowTabsAfterNonTabs = !currentPolicy.NoTabsAfterNonTabs; //PropertyService.Get ("AllowTabsAfterNonTabs", true);
 			base.RemoveTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
 		}
 
@@ -178,7 +178,7 @@ namespace MonoDevelop.Ide.Editor
 					base.EnableSyntaxHighlighting = (bool)args.NewValue;
 					break;
 				case "HighlightMatchingBracket":
-					base.HighlightMatchingBracket = (bool)args.NewValue;
+					HighlightMatchingBracket = (bool)args.NewValue;
 					break;
 				case "ShowRuler":
 					base.ShowRuler = (bool)args.NewValue;
@@ -208,13 +208,13 @@ namespace MonoDevelop.Ide.Editor
 					this.ControlLeftRightMode = (ControlLeftRightMode)args.NewValue;
 					break;
 				case "EnableAnimations":
-					base.EnableAnimations = (bool)args.NewValue;
+					EnableAnimations = (bool)args.NewValue;
 					break;
 				case "DrawIndentationMarkers":
-					base.DrawIndentationMarkers = (bool)args.NewValue;
+					DrawIndentationMarkers = (bool)args.NewValue;
 					break;
 				case "EnableQuickDiff":
-					base.EnableQuickDiff = (bool)args.NewValue;
+					EnableQuickDiff = (bool)args.NewValue;
 					break;
 				case "GenerateFormattingUndoStep":
 					base.GenerateFormattingUndoStep = (bool)args.NewValue;
@@ -238,7 +238,7 @@ namespace MonoDevelop.Ide.Editor
 			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", false);
 			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", false);
 			base.EnableSyntaxHighlighting = PropertyService.Get ("EnableSyntaxHighlighting", true);
-			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
+			HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
 			base.ShowRuler = PropertyService.Get ("ShowRuler", false);
 			base.FontName = PropertyService.Get ("FontName", "Mono 10");
 			base.GutterFontName = PropertyService.Get ("GutterFontName", "");
@@ -249,15 +249,15 @@ namespace MonoDevelop.Ide.Editor
 			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", true);
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
-			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
+			EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
-			base.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
+			DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
 			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
 			base.GenerateFormattingUndoStep = PropertyService.Get ("GenerateFormattingUndoStep", false);
-			base.ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", ShowWhitespaces.Never);
-			base.IncludeWhitespaces = PropertyService.Get ("IncludeWhitespaces", IncludeWhitespaces.All);
+			//ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", ShowWhitespaces.Never);
+			//IncludeWhitespaces = PropertyService.Get ("IncludeWhitespaces", IncludeWhitespaces.All);
 			base.WrapLines = PropertyService.Get ("WrapLines", false);
-			base.EnableQuickDiff = PropertyService.Get ("EnableQuickDiff", false);
+			EnableQuickDiff = PropertyService.Get ("EnableQuickDiff", false);
 		}
 
 		#region new options
@@ -508,16 +508,20 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-
-		public override bool AllowTabsAfterNonTabs {
+		bool allowTabsAfterNonTabs = true;
+		public bool AllowTabsAfterNonTabs {
+			get {
+				return allowTabsAfterNonTabs;
+			}
 			set {
-				if (value != AllowTabsAfterNonTabs) {
+				if (allowTabsAfterNonTabs != value) {
 					PropertyService.Set ("AllowTabsAfterNonTabs", value);
-					base.AllowTabsAfterNonTabs = value;
+					allowTabsAfterNonTabs = value;
+					OnChanged (EventArgs.Empty);
 				}
 			}
 		}
-
+		
 		public override bool TabsToSpaces {
 			set {
 				PropertyService.Set ("TabsToSpaces", value);
@@ -577,10 +581,17 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public override bool HighlightMatchingBracket {
+		bool highlightMatchingBracket;
+		public bool HighlightMatchingBracket {
+			get {
+				return highlightMatchingBracket;
+			}
 			set {
-				PropertyService.Set ("HighlightMatchingBracket", value);
-				base.HighlightMatchingBracket = value;
+				if (value != highlightMatchingBracket) {
+					PropertyService.Set ("HighlightMatchingBracket", value);
+					highlightMatchingBracket = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
@@ -598,33 +609,34 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public override bool EnableAnimations {
+		bool enableAnimations = true;
+		public bool EnableAnimations {
+			get { 
+				return enableAnimations; 
+			}
 			set {
-				PropertyService.Set ("EnableAnimations", value);
-				base.EnableAnimations = value;
+				if (enableAnimations != value) {
+					PropertyService.Set ("EnableAnimations", value);
+					enableAnimations = value; 
+					OnChanged (EventArgs.Empty);
+				}
+			}
+		}
+		
+		bool drawIndentationMarkers = false;
+		public bool DrawIndentationMarkers {
+			get {
+				return drawIndentationMarkers;
+			}
+			set {
+				if (drawIndentationMarkers != value) {
+					PropertyService.Set ("DrawIndentationMarkers", value);
+					drawIndentationMarkers = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 
-		public override bool DrawIndentationMarkers {
-			set {
-				PropertyService.Set ("DrawIndentationMarkers", value);
-				base.DrawIndentationMarkers = value;
-			}
-		}
-
-		public override ShowWhitespaces ShowWhitespaces {
-			set {
-				PropertyService.Set ("ShowWhitespaces", value);
-				base.ShowWhitespaces = value;
-			}
-		}
-
-		public override IncludeWhitespaces IncludeWhitespaces {
-			set {
-				PropertyService.Set ("IncludeWhitespaces", value);
-				base.IncludeWhitespaces = value;
-			}
-		}
 
 		public override bool WrapLines {
 			set {
@@ -633,10 +645,17 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public override bool EnableQuickDiff {
+		bool enableQuickDiff = true;
+		public bool EnableQuickDiff {
+			get {
+				return enableQuickDiff;
+			}
 			set {
-				PropertyService.Set ("EnableQuickDiff", value);
-				base.EnableQuickDiff = value;
+				if (enableQuickDiff != value) {
+					PropertyService.Set ("EnableQuickDiff", value);
+					enableQuickDiff = value;
+					OnChanged (EventArgs.Empty);
+				}
 			}
 		}
 

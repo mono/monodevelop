@@ -28,21 +28,6 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public enum ShowWhitespaces {
-		Never,
-		Selection,
-		Always
-	}
-
-	[Flags]
-	public enum IncludeWhitespaces {
-		None        = 0,
-		Space       = 1,
-		Tab         = 2,
-		LineEndings = 4,
-		All         = Space | Tab | LineEndings
-	}
-
 	public enum IndentStyle
 	{
 		/// <summary>
@@ -73,8 +58,6 @@ namespace MonoDevelop.Ide.Editor
 
 		WordFindStrategy WordFindStrategy { get; set; }
 
-		bool AllowTabsAfterNonTabs { get; set; }
-		bool HighlightMatchingBracket { get; set; }
 		bool TabsToSpaces { get; set; }
 		int IndentationSize { get; set; }
 		int TabSize { get; set; }
@@ -87,12 +70,6 @@ namespace MonoDevelop.Ide.Editor
 		IndentStyle IndentStyle { get; set; }
 		bool OverrideDocumentEolMarker { get; set; }
 		bool EnableSyntaxHighlighting { get; set; }
-		bool EnableAnimations { get; }
-		bool EnableSelectionWrappingKeys { get; }
-
-		bool EnableQuickDiff { get; set; }
-
-		bool DrawIndentationMarkers { get; set; }
 
 		bool WrapLines { get; set; }
 
@@ -103,10 +80,6 @@ namespace MonoDevelop.Ide.Editor
 		string ColorScheme { get; set;  }
 
 		string DefaultEolMarker { get; set; }
-
-		ShowWhitespaces ShowWhitespaces { get; set; }
-
-		IncludeWhitespaces IncludeWhitespaces { get; set; }
 
 		bool GenerateFormattingUndoStep { get; set; }
 
@@ -139,10 +112,8 @@ namespace MonoDevelop.Ide.Editor
 		bool showRuler = false;
 
 		bool enableSyntaxHighlighting = true;
-		bool highlightMatchingBracket = true;
 		bool highlightCaretLine = false;
 		bool removeTrailingWhitespaces = true;
-		bool allowTabsAfterNonTabs = true;
 		string fontName = DEFAULT_FONT;
 		string colorStyle = "Default";
 		Pango.FontDescription font, gutterFont;
@@ -252,30 +223,6 @@ namespace MonoDevelop.Ide.Editor
 			set {
 				if (wordFindStrategy != value) {
 					wordFindStrategy = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		public virtual bool AllowTabsAfterNonTabs {
-			get {
-				return allowTabsAfterNonTabs;
-			}
-			set {
-				if (allowTabsAfterNonTabs != value) {
-					allowTabsAfterNonTabs = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		public virtual bool HighlightMatchingBracket {
-			get {
-				return highlightMatchingBracket;
-			}
-			set {
-				if (value != HighlightMatchingBracket) {
-					highlightMatchingBracket = value;
 					OnChanged (EventArgs.Empty);
 				}
 			}
@@ -513,58 +460,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		bool enableAnimations = true;
-		public virtual bool EnableAnimations {
-			get { 
-				return enableAnimations; 
-			}
-			set {
-				if (enableAnimations != value) {
-					enableAnimations = value; 
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		bool drawIndentationMarkers = false;
-		public virtual bool DrawIndentationMarkers {
-			get {
-				return drawIndentationMarkers;
-			}
-			set {
-				if (drawIndentationMarkers != value) {
-					drawIndentationMarkers = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		ShowWhitespaces showWhitespaces = ShowWhitespaces.Never;
-		public virtual ShowWhitespaces ShowWhitespaces {
-			get {
-				return showWhitespaces;
-			}
-			set {
-				if (showWhitespaces != value) {
-					showWhitespaces = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		IncludeWhitespaces includeWhitespaces = IncludeWhitespaces.All;
-		public virtual IncludeWhitespaces IncludeWhitespaces {
-			get {
-				return includeWhitespaces;
-			}
-			set {
-				if (includeWhitespaces != value) {
-					includeWhitespaces = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
 		bool wrapLines = false;
 		public virtual bool WrapLines {
 			get {
@@ -574,32 +469,6 @@ namespace MonoDevelop.Ide.Editor
 			set {
 				if (wrapLines != value) {
 					wrapLines = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		bool enableQuickDiff = true;
-		public virtual bool EnableQuickDiff {
-			get {
-				return enableQuickDiff;
-			}
-			set {
-				if (enableQuickDiff != value) {
-					enableQuickDiff = value;
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		bool enableSelectionWrappingKeys = true;
-		public virtual bool EnableSelectionWrappingKeys {
-			get {
-				return enableSelectionWrappingKeys;
-			}
-			set {
-				if (enableSelectionWrappingKeys != value) {
-					enableSelectionWrappingKeys = value;
 					OnChanged (EventArgs.Empty);
 				}
 			}
@@ -616,34 +485,6 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 				}
 			}
-		}
-
-		public virtual void CopyFrom (TextEditorOptions other)
-		{
-			zoom = other.zoom;
-			highlightMatchingBracket = other.highlightMatchingBracket;
-			tabsToSpaces = other.tabsToSpaces;
-			indentationSize = other.indentationSize;
-			tabSize = other.tabSize;
-			showIconMargin = other.showIconMargin;
-			showLineNumberMargin = other.showLineNumberMargin;
-			showFoldMargin = other.showFoldMargin;
-			highlightCaretLine = other.highlightCaretLine;
-			rulerColumn = other.rulerColumn;
-			showRuler = other.showRuler;
-			indentStyle = other.indentStyle;
-			fontName = other.fontName;
-			enableSyntaxHighlighting = other.enableSyntaxHighlighting;
-			colorStyle = other.colorStyle;
-			overrideDocumentEolMarker = other.overrideDocumentEolMarker;
-			defaultEolMarker = other.defaultEolMarker;
-			enableAnimations = other.enableAnimations;
-			drawIndentationMarkers = other.drawIndentationMarkers;
-			showWhitespaces = other.showWhitespaces;
-			includeWhitespaces = other.includeWhitespaces;
-			generateFormattingUndoStep = other.generateFormattingUndoStep;
-			DisposeFont ();
-			OnChanged (EventArgs.Empty);
 		}
 
 		public virtual void Dispose ()
