@@ -119,6 +119,8 @@ namespace MonoDevelop.SourceEditor
 
 		bool ISmartTagMarker.IsInsideSmartTag (double x, double y)
 		{
+			if (editor == null)
+				return false;
 			var lin2 = editor.GetLine (loc.Line);
 			var x2 = editor.ColumnToX (lin2, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
 			var y2 = editor.LineToY (loc.Line + 1) - editor.VAdjustment.Value;
@@ -129,6 +131,8 @@ namespace MonoDevelop.SourceEditor
 
 		bool ISmartTagMarker.IsInsideWindow (Gtk.MotionNotifyEventArgs args)
 		{
+			if (editor == null)
+				return false;
 			return args.Event.Window == editor.TextArea.GdkWindow;
 		}
 

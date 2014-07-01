@@ -990,13 +990,16 @@ namespace MonoDevelop.SourceEditor
 
 		public override void Dispose ()
 		{
+			if (isDisposed)
+				return;
+			isDisposed = true;
+			
 			ClearExtensions ();
 			FileRegistry.Remove (this);
 			RemoveAutoSaveTimer ();
 			
 			StoreSettings ();
 			
-			isDisposed = true;
 			Counters.LoadedEditors--;
 			
 		/*	if (messageBubbleHighlightPopupWindow != null)
@@ -1789,6 +1792,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				TextEditor.Caret.Offset = value;
+				TextEditor.ScrollToCaret ();
 			}
 		}
 		
@@ -2867,6 +2871,7 @@ namespace MonoDevelop.SourceEditor
 			}
 			set {
 				TextEditor.Caret.Location = new Mono.TextEditor.DocumentLocation (value.Line, value.Column);
+				TextEditor.ScrollToCaret ();
 			}
 		}
 
