@@ -47,6 +47,8 @@ namespace MonoDevelop.Platform
 {
 	public class OpenFileDialogHandler : IOpenFileDialogHandler
 	{
+		static int[] encodings;
+
 		public bool Run (OpenFileDialogData data)
 		{
 			var parent = data.TransientFor ?? MessageService.RootWindow;
@@ -171,37 +173,40 @@ namespace MonoDevelop.Platform
 			int i = 0;
 
 			if (showAutoDetected) {
-				combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Auto Detected")));
+				combo.Items.Add (new EncodingComboItem (-1, GettextCatalog.GetString ("Auto Detected")));
 				combo.SelectedIndex = 0;
 				i = 1;
 			}
 
-			var encodings = TextEncoding.ConversionEncodings;
-			foreach (var e in encodings) {
-				var mdEnc = TextEncoding.SupportedEncodings.FirstOrDefault (t => t.CodePage == e.CodePage);
-				string name = mdEnc != null
-					? mdEnc.Name + " (" + mdEnc.Id + ")"
-					: e.Name + " (" + e.Id + ")"; 
-				var item = new EncodingComboItem (Encoding.GetEncoding (e.CodePage), name);
-				combo.Items.Add (item);
-				if (e.Equals (selectedEncoding))
+			encodings = SelectedEncodings.ConversionEncodings;
+			if (encodings == null || encodings.Length == 0)
+				encodings = SelectedEncodings.DefaultEncodings;
+
+			int j = 1;
+			foreach (var e in TextEncoding.ConversionEncodings) {
+				combo.Items.Add (new EncodingComboItem (j++, string.Format ("{0} ({1})", e.Name, e.Id)));
+				if (selectedEncoding != null && e.CodePage == selectedEncoding.WindowsCodePage)
 					combo.SelectedIndex = i;
 				i++;
 			}
 			if (combo.SelectedIndex == -1)
 				combo.SelectedIndex = 0;
-			combo.Items.Add (new EncodingComboItem (null, GettextCatalog.GetString ("Add or Remove...")));
+			combo.Items.Add (new EncodingComboItem (-1, GettextCatalog.GetString ("Add or Remove...")));
 		}
 
 		class EncodingComboItem : CommonFileDialogComboBoxItem
 		{
-			public EncodingComboItem (Encoding encoding, string label) : base (label)
+			int tag;
+
+			public EncodingComboItem (int tag, string label) : base (label)
 			{
-				Encoding = encoding;
+				this.tag = tag;
 			}
 
 			public Encoding Encoding {
-				get; private set;
+				get {
+					return tag <= 0 ? null : Encoding.GetEncoding (encodings [tag - 1]);
+				}
 			}
 		}
 
