@@ -44,12 +44,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		#region IIndentationTracker implementation
 		string Mono.TextEditor.IIndentationTracker.GetIndentationString (int offset)
 		{
-			return indentationTracker.GetIndentationString (offset);
+			return indentationTracker.GetIndentationString (document.OffsetToLineNumber (offset));
 		}
 
 		string Mono.TextEditor.IIndentationTracker.GetIndentationString (int lineNumber, int column)
 		{
-			return indentationTracker.GetIndentationString (document.LocationToOffset (lineNumber, column));
+			return indentationTracker.GetIndentationString (lineNumber);
 		}
 
 		int Mono.TextEditor.IIndentationTracker.GetVirtualIndentationColumn (int offset)

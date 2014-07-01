@@ -34,20 +34,9 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor
 {
-	public enum ControlLeftRightMode {
-		MonoDevelop,
-		Emacs,
-		SharpDevelop
-		
-	}
 	
-	public enum LineEndingConversion {
-		Ask,
-		LeaveAsIs,
-		ConvertAlways
-	}
 	
-	public class DefaultSourceEditorOptions : TextEditorOptions, ISourceEditorOptions
+	public class DefaultSourceEditorOptions : TextEditorOptions, Mono.TextEditor.ITextEditorOptions
 	{
 		static DefaultSourceEditorOptions instance;
 		//static TextStylePolicy defaultPolicy;
@@ -81,18 +70,14 @@ namespace MonoDevelop.SourceEditor
 		
 		DefaultSourceEditorOptions (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
 		{
-			LoadAllPrefs ();
 			UpdateStylePolicy (currentPolicy);
-			PropertyService.PropertyChanged += UpdatePreferences;
-			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
-			FontService.RegisterFontChangedCallback ("Editor(Gutter)", UpdateFont);
-			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
-			
+			MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.Changed += delegate(object sender, EventArgs e) {
+				OnChanged (e);
+			};
 		}
 		
 		public override void Dispose()
 		{
-			PropertyService.PropertyChanged -= UpdatePreferences;
 			FontService.RemoveCallback (UpdateFont);
 		}
 		
@@ -107,137 +92,13 @@ namespace MonoDevelop.SourceEditor
 		void UpdateStylePolicy (MonoDevelop.Ide.Gui.Content.TextStylePolicy currentPolicy)
 		{
 			this.defaultEolMarker = TextStylePolicy.GetEolMarker (currentPolicy.EolMarker);
-			
 			base.TabsToSpaces          = currentPolicy.TabsToSpaces; // PropertyService.Get ("TabsToSpaces", false);
 			base.IndentationSize       = currentPolicy.TabWidth; //PropertyService.Get ("TabIndent", 4);
 			base.RulerColumn           = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
 			base.AllowTabsAfterNonTabs = !currentPolicy.NoTabsAfterNonTabs; //PropertyService.Get ("AllowTabsAfterNonTabs", true);
 			base.RemoveTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
 		}
-		
-		// Need to be picky about only updating individual properties when they change.
-		// The old approach called LoadAllPrefs on any prefs event, which sometimes caused 
-		// massive change event storms.
-		void UpdatePreferences (object sender, PropertyChangedEventArgs args)
-		{
-			try {
-				switch (args.Key) {
-				case "TabIsReindent": 
-					this.TabIsReindent = (bool)args.NewValue;
-					break;
-				case "EnableSemanticHighlighting":
-					this.EnableSemanticHighlighting = (bool)args.NewValue;
-					break;
-				case "AutoInsertMatchingBracket":
-					this.AutoInsertMatchingBracket = (bool)args.NewValue;
-					break;
-				case "UnderlineErrors":
-					this.UnderlineErrors = (bool)args.NewValue;
-					break;
-				case "IndentStyle":
-					if (args.NewValue == null) {
-						LoggingService.LogWarning ("tried to set indent style == null");
-					} else if (!(args.NewValue is IndentStyle)) {
-						LoggingService.LogWarning ("tried to set indent style to " + args.NewValue + " which isn't from type IndentStyle instead it is from:" + args.NewValue.GetType ());
-						this.IndentStyle = (IndentStyle)Enum.Parse (typeof(IndentStyle), args.NewValue.ToString ());
-					} else 
-						this.IndentStyle = (IndentStyle)args.NewValue;
-					break;
-				case "ShowLineNumberMargin":
-					base.ShowLineNumberMargin = (bool)args.NewValue;
-					break;
-				case "ShowFoldMargin":
-					base.ShowFoldMargin = (bool)args.NewValue;
-					break;
-				case "HighlightCaretLine":
-					base.HighlightCaretLine = (bool)args.NewValue;
-					break;
-				case "EnableSyntaxHighlighting":
-					base.EnableSyntaxHighlighting = (bool)args.NewValue;
-					break;
-				case "HighlightMatchingBracket":
-					base.HighlightMatchingBracket = (bool)args.NewValue;
-					break;
-				case "ShowRuler":
-					base.ShowRuler = (bool)args.NewValue;
-					break;
-				case "FontName":
-					base.FontName = (string)args.NewValue;
-					break;
-				case "GutterFontName":
-					base.GutterFontName = (string)args.NewValue;
-					break;
-				case "ColorScheme":
-					base.ColorScheme = (string)args.NewValue;
-					break;
-				case "DefaultRegionsFolding":
-					this.DefaultRegionsFolding = (bool)args.NewValue;
-					break;
-				case "DefaultCommentFolding":
-					this.DefaultCommentFolding = (bool)args.NewValue;
-					break;
-				case "UseViModes":
-					this.UseViModes = (bool)args.NewValue;
-					break;
-				case "OnTheFlyFormatting":
-					this.OnTheFlyFormatting = (bool)args.NewValue;
-					break;
-				case "ControlLeftRightMode":
-					this.ControlLeftRightMode = (ControlLeftRightMode)args.NewValue;
-					break;
-				case "EnableAnimations":
-					base.EnableAnimations = (bool)args.NewValue;
-					break;
-				case "DrawIndentationMarkers":
-					base.DrawIndentationMarkers = (bool)args.NewValue;
-					break;
-				case "EnableQuickDiff":
-					base.EnableQuickDiff = (bool)args.NewValue;
-					break;
-				case "GenerateFormattingUndoStep":
-					base.GenerateFormattingUndoStep = (bool)args.NewValue;
-					break;
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("SourceEditorOptions error with property value for '" + (args.Key ?? "") + "'", ex);
-			}
-		}
-		
-		void LoadAllPrefs ()
-		{
-			this.tabIsReindent = PropertyService.Get ("TabIsReindent", false);
-			this.enableSemanticHighlighting = PropertyService.Get ("EnableSemanticHighlighting", true);
-			//			this.autoInsertTemplates        = PropertyService.Get ("AutoInsertTemplates", false);
-			this.autoInsertMatchingBracket = PropertyService.Get ("AutoInsertMatchingBracket", false);
-			this.smartSemicolonPlacement = PropertyService.Get ("SmartSemicolonPlacement", false);
-			this.underlineErrors = PropertyService.Get ("UnderlineErrors", true);
-			this.indentStyle = PropertyService.Get ("IndentStyle", IndentStyle.Smart);
-			base.ShowLineNumberMargin = PropertyService.Get ("ShowLineNumberMargin", true);
-			base.ShowFoldMargin = PropertyService.Get ("ShowFoldMargin", false);
-			base.HighlightCaretLine = PropertyService.Get ("HighlightCaretLine", false);
-			base.EnableSyntaxHighlighting = PropertyService.Get ("EnableSyntaxHighlighting", true);
-			base.HighlightMatchingBracket = PropertyService.Get ("HighlightMatchingBracket", true);
-			base.ShowRuler = PropertyService.Get ("ShowRuler", false);
-			base.FontName = PropertyService.Get ("FontName", "Mono 10");
-			base.GutterFontName = PropertyService.Get ("GutterFontName", "");
-			base.ColorScheme = PropertyService.Get ("ColorScheme", "Default");
-			this.defaultRegionsFolding = PropertyService.Get ("DefaultRegionsFolding", false);
-			this.defaultCommentFolding = PropertyService.Get ("DefaultCommentFolding", true);
-			this.useViModes = PropertyService.Get ("UseViModes", false);
-			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", true);
-			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
-			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
-			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
-			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
-			base.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
-			this.lineEndingConversion = PropertyService.Get ("LineEndingConversion", LineEndingConversion.Ask);
-			base.GenerateFormattingUndoStep = PropertyService.Get ("GenerateFormattingUndoStep", false);
-			base.ShowWhitespaces = PropertyService.Get ("ShowWhitespaces", Mono.TextEditor.ShowWhitespaces.Never);
-			base.IncludeWhitespaces = PropertyService.Get ("IncludeWhitespaces", Mono.TextEditor.IncludeWhitespaces.All);
-			base.WrapLines = PropertyService.Get ("WrapLines", false);
-			base.EnableQuickDiff = PropertyService.Get ("EnableQuickDiff", false);
-		}
-		
+
 		#region new options
 		
 		public bool EnableAutoCodeCompletion {
@@ -245,202 +106,114 @@ namespace MonoDevelop.SourceEditor
 			set { CompletionTextEditorExtension.EnableAutoCodeCompletion.Set (value); }
 		}
 		
-		bool defaultRegionsFolding;
 		public bool DefaultRegionsFolding {
 			get {
-				return defaultRegionsFolding;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 			}
 			set {
-				if (value != this.defaultRegionsFolding) {
-					this.defaultRegionsFolding = value;
-					PropertyService.Set ("DefaultRegionsFolding", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = value;
 			}
 		}
 		
-		bool defaultCommentFolding;
 		public bool DefaultCommentFolding {
 			get {
-				return defaultCommentFolding;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
 			}
 			set {
-				if (value != this.defaultCommentFolding) {
-					this.defaultCommentFolding = value;
-					PropertyService.Set ("DefaultCommentFolding", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DefaultCommentFolding = value;
 			}
 		}
 		
-		bool enableSemanticHighlighting;
 		public bool EnableSemanticHighlighting {
 			get {
-				return enableSemanticHighlighting;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting;
 			}
 			set {
-				if (value != this.enableSemanticHighlighting) {
-					this.enableSemanticHighlighting = value;
-					PropertyService.Set ("EnableSemanticHighlighting", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = value;
 			}
 		}
-		/*
-		bool autoInsertTemplates;
-		public bool AutoInsertTemplates {
-			get {
-				return autoInsertTemplates;
-			}
-			set {
-				if (value != this.autoInsertTemplates) {
-					this.autoInsertTemplates = value;
-					PropertyService.Set ("AutoInsertTemplates", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}*/
 		
-		bool tabIsReindent;
 		public bool TabIsReindent {
 			get {
-				return tabIsReindent;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.TabIsReindent;
 			}
 			set {
-				if (value != this.tabIsReindent) {
-					this.tabIsReindent = value;
-					PropertyService.Set ("TabIsReindent", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.TabIsReindent = value;
 			}
 		}
 		
-		bool autoInsertMatchingBracket;
 		public bool AutoInsertMatchingBracket {
 			get {
-				return autoInsertMatchingBracket;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
 			}
 			set {
-				if (value != this.autoInsertMatchingBracket) {
-					this.autoInsertMatchingBracket = value;
-					PropertyService.Set ("AutoInsertMatchingBracket", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = value;
 			}
 		}
 		
-		bool smartSemicolonPlacement;
 		public bool SmartSemicolonPlacement {
 			get {
-				return smartSemicolonPlacement;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement;
 			}
 			set {
-				if (value != this.smartSemicolonPlacement) {
-					this.smartSemicolonPlacement= value;
-					PropertyService.Set ("SmartSemicolonPlacement", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement = value;
 			}
 		}
 
-		bool underlineErrors;
 		public bool UnderlineErrors {
 			get {
-				return underlineErrors; 
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UnderlineErrors; 
 			}
 			set {
-				if (value != this.underlineErrors) {
-					this.underlineErrors = value;
-					PropertyService.Set ("UnderlineErrors", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UnderlineErrors = value;
 			}
 		}
 		
-		IndentStyle indentStyle;
 		public override IndentStyle IndentStyle {
 			get {
-				return indentStyle;
+				return (IndentStyle)MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.IndentStyle;
 			}
 			set {
-				if (value != this.indentStyle) {
-					this.indentStyle = value;
-					PropertyService.Set ("IndentStyle", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.IndentStyle = (MonoDevelop.Ide.Editor.IndentStyle)value;
 			}
 		}
 		
-		EditorFontType editorFontType;
-		public EditorFontType EditorFontType {
-			get {
-				return editorFontType;
-			}
-			set {
-				if (value != this.editorFontType) {
-					this.editorFontType = value;
-					PropertyService.Set ("EditorFontType", value);
-					OnChanged (EventArgs.Empty);
-				}
-			}
-		}
-		
-		bool enableHighlightUsages;
 		public bool EnableHighlightUsages {
 			get {
-				return enableHighlightUsages;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages;
 			}
 			set {
-				if (value != this.enableHighlightUsages) {
-					this.enableHighlightUsages = value;
-					PropertyService.Set ("EnableHighlightUsages", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages = value;
 			}
 		}
 		
-		LineEndingConversion lineEndingConversion;
-		public LineEndingConversion LineEndingConversion {
+		MonoDevelop.Ide.Editor.LineEndingConversion lineEndingConversion;
+		public MonoDevelop.Ide.Editor.LineEndingConversion LineEndingConversion {
 			get {
-				return lineEndingConversion;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.LineEndingConversion;
 			}
 			set {
-				if (value != this.lineEndingConversion) {
-					this.lineEndingConversion = value;
-					PropertyService.Set ("LineEndingConversion", value);
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.LineEndingConversion = value;
 			}
 		}
 		
 
 		#endregion
-		
-		bool useViModes = false;
 		public bool UseViModes {
 			get {
-				return useViModes;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes;
 			}
 			set {
-				if (useViModes == value)
-					return;
-				useViModes = value;
-				PropertyService.Set ("UseViModes", value);
-				OnChanged (EventArgs.Empty);
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes = value;
 			}
 		}
 		
-		bool onTheFlyFormatting = false;
 		public bool OnTheFlyFormatting {
 			get {
-				return onTheFlyFormatting;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			}
 			set {
-				if (onTheFlyFormatting == value)
-					return;
-				onTheFlyFormatting = value;
-				PropertyService.Set ("OnTheFlyFormatting", value);
-				OnChanged (EventArgs.Empty);
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = value;
 			}
 		}
 		
@@ -450,21 +223,12 @@ namespace MonoDevelop.SourceEditor
 			get { return defaultEolMarker; }
 		}
 
-		ControlLeftRightMode controlLeftRightMode = Platform.IsWindows
-			? ControlLeftRightMode.SharpDevelop
-			: ControlLeftRightMode.MonoDevelop;
-		
-		public ControlLeftRightMode ControlLeftRightMode {
+		public MonoDevelop.Ide.Editor.ControlLeftRightMode ControlLeftRightMode {
 			get {
-				return controlLeftRightMode;
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ControlLeftRightMode;
 			}
 			set {
-				if (controlLeftRightMode != value) {
-					controlLeftRightMode = value;
-					PropertyService.Set ("ControlLeftRightMode", value);
-					SetWordFindStrategy ();
-					OnChanged (EventArgs.Empty);
-				}
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ControlLeftRightMode = value;
 			}
 		}
 		
@@ -482,158 +246,139 @@ namespace MonoDevelop.SourceEditor
 		
 		void SetWordFindStrategy ()
 		{
-			if (useViModes) {
+			if (UseViModes) {
 				this.wordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
 				return;
 			}
 			
 			switch (ControlLeftRightMode) {
-			case ControlLeftRightMode.MonoDevelop:
+			case MonoDevelop.Ide.Editor.ControlLeftRightMode.MonoDevelop:
 				this.wordFindStrategy = new EmacsWordFindStrategy (true);
 				break;
-			case ControlLeftRightMode.Emacs:
+			case MonoDevelop.Ide.Editor.ControlLeftRightMode.Emacs:
 				this.wordFindStrategy = new EmacsWordFindStrategy (false);
 				break;
-			case ControlLeftRightMode.SharpDevelop:
+			case MonoDevelop.Ide.Editor.ControlLeftRightMode.SharpDevelop:
 				this.wordFindStrategy = new SharpDevelopWordFindStrategy ();
 				break;
 			}
 		}
-
-		public override bool AllowTabsAfterNonTabs {
-			set {
-				if (value != AllowTabsAfterNonTabs) {
-					PropertyService.Set ("AllowTabsAfterNonTabs", value);
-					base.AllowTabsAfterNonTabs = value;
-				}
-			}
-		}
-				
-		public override bool TabsToSpaces {
-			set {
-				PropertyService.Set ("TabsToSpaces", value);
-				base.TabsToSpaces = value;
-			}
-		}
-		
-		public override int IndentationSize {
-			set {
-				PropertyService.Set ("TabIndent", value);
-				base.IndentationSize = value;
-			}
-		}
-		
-		public override int TabSize {
-			get {
-				return IndentationSize;
-			}
-			set {
-				IndentationSize = value;
-			}
-		}
-		
-		public override bool RemoveTrailingWhitespaces {
-			set {
-				PropertyService.Set ("RemoveTrailingWhitespaces", value);
-				base.RemoveTrailingWhitespaces = value;
-			}
-		}
-
 		
 		public override bool ShowLineNumberMargin {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
+			}
 			set {
-				PropertyService.Set ("ShowLineNumberMargin", value);
-				base.ShowLineNumberMargin = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin = value;
 			}
 		}
 		
 		public override bool ShowFoldMargin {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowFoldMargin;
+			}
 			set {
-				PropertyService.Set ("ShowFoldMargin", value);
-				base.ShowFoldMargin = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowFoldMargin = value;
 			}
 		}
 		
 		public override bool HighlightCaretLine {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.HighlightCaretLine;
+			}
 			set {
-				PropertyService.Set ("HighlightCaretLine", value);
-				base.HighlightCaretLine = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.HighlightCaretLine = value;
 			}
 		}
 		
 		public override bool EnableSyntaxHighlighting {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting;
+			}
 			set {
-				PropertyService.Set ("EnableSyntaxHighlighting", value);
-				base.EnableSyntaxHighlighting = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting = value;
 			}
 		}
 		
 		public override bool HighlightMatchingBracket {
-			set {
-				PropertyService.Set ("HighlightMatchingBracket", value);
-				base.HighlightMatchingBracket = value;
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
 			}
-		}
-		
-		public override int RulerColumn {
 			set {
-				PropertyService.Set ("RulerColumn", value);
-				base.RulerColumn = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.HighlightMatchingBracket = value;
 			}
 		}
 		
 		public override bool ShowRuler {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowRuler;
+			}
 			set {
-				PropertyService.Set ("ShowRuler", value);
-				base.ShowRuler = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowRuler = value;
 			}
 		}
 		
 		public override bool EnableAnimations {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableAnimations;
+			}
 			set {
-				PropertyService.Set ("EnableAnimations", value);
-				base.EnableAnimations = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableAnimations = value;
 			}
 		}
 		
 		public override bool DrawIndentationMarkers {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DrawIndentationMarkers;
+			}
 			set {
-				PropertyService.Set ("DrawIndentationMarkers", value);
-				base.DrawIndentationMarkers = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = value;
 			}
 		}
 
+		PropertyWrapper<ShowWhitespaces> showWhitespaces = new PropertyWrapper<ShowWhitespaces> ("ShowWhitespaces", ShowWhitespaces.Never);
 		public override ShowWhitespaces ShowWhitespaces {
+			get {
+				return showWhitespaces;
+			}
 			set {
-				PropertyService.Set ("ShowWhitespaces", value);
-				base.ShowWhitespaces = value;
+				if (showWhitespaces.Set (value))
+					OnChanged (EventArgs.Empty);
 			}
 		}
 
+		PropertyWrapper<IncludeWhitespaces> includeWhitespaces = new PropertyWrapper<IncludeWhitespaces> ("IncludeWhitespaces", IncludeWhitespaces.All);
 		public override IncludeWhitespaces IncludeWhitespaces {
+			get {
+				return includeWhitespaces;
+			}
 			set {
-				PropertyService.Set ("IncludeWhitespaces", value);
-				base.IncludeWhitespaces = value;
+				if (includeWhitespaces.Set (value))
+					OnChanged (EventArgs.Empty);
 			}
 		}
 
 		public override bool WrapLines {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.WrapLines;
+			}
 			set {
-				PropertyService.Set ("WrapLines", value);
-				base.WrapLines = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.WrapLines = value;
 			}
 		}
 
 		public override bool EnableQuickDiff {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableQuickDiff;
+			}
 			set {
-				PropertyService.Set ("EnableQuickDiff", value);
-				base.EnableQuickDiff = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableQuickDiff = value;
 			}
 		}
 
 		public override string FontName {
 			get {
-				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor"));
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.FontName;
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
@@ -642,7 +387,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public override string GutterFontName {
 			get {
-				return FontService.FilterFontName (FontService.GetUnderlyingFontName ("Editor(Gutter)"));
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.GutterFontName;
 			}
 			set {
 				throw new InvalidOperationException ("Set font through font service");
@@ -650,17 +395,20 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		public override string ColorScheme {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ColorScheme;
+			}
 			set {
-				string newColorScheme = !String.IsNullOrEmpty (value) ? value : "Default";
-				PropertyService.Set ("ColorScheme", newColorScheme);
-				base.ColorScheme =  newColorScheme;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ColorScheme = value;
 			}
 		}
 
 		public override bool GenerateFormattingUndoStep {
+			get {
+				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep;
+			}
 			set {
-				PropertyService.Set ("GenerateFormattingUndoStep", value);
-				base.GenerateFormattingUndoStep = value;
+				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep = value;
 			}
 		}
 

@@ -34,7 +34,6 @@ using Mono.TextEditor;
 
 namespace MonoDevelop.SourceEditor
 {
-
 	internal class StyledSourceEditorOptions : ISourceEditorOptions
 	{
 		PolicyContainer policyContainer;
@@ -330,10 +329,6 @@ namespace MonoDevelop.SourceEditor
 			get { return DefaultSourceEditorOptions.Instance.DefaultRegionsFolding; }
 		}
 
-		public EditorFontType EditorFontType {
-			get { return DefaultSourceEditorOptions.Instance.EditorFontType; }
-		}
-
 		public bool EnableAutoCodeCompletion {
 			get { return DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion; }
 		}
@@ -345,8 +340,9 @@ namespace MonoDevelop.SourceEditor
 		public IndentStyle IndentStyle {
 			get {
 				if ((DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Smart ||
-					DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Auto) && CurrentPolicy.RemoveTrailingWhitespace)
+				    DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Auto) && CurrentPolicy.RemoveTrailingWhitespace) {
 					return IndentStyle.Virtual;
+				}
 				return DefaultSourceEditorOptions.Instance.IndentStyle;
 			}
 			set {

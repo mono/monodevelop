@@ -62,7 +62,7 @@ namespace MonoDevelop.SourceEditor
 		bool TabIsReindent {get; }
 		bool AutoInsertMatchingBracket {get; }
 		bool UnderlineErrors {get; }
-		EditorFontType EditorFontType {get; }
+		//EditorFontType EditorFontType {get; }
 		bool UseViModes {get; }
 	}
 }

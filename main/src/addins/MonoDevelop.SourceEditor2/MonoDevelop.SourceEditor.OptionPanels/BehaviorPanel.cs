@@ -79,7 +79,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement = smartSemicolonPlaceCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.IndentStyle = (IndentStyle)indentationCombobox.Active;
 			DefaultSourceEditorOptions.Instance.TabIsReindent = tabAsReindentCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.ControlLeftRightMode = (ControlLeftRightMode)controlLeftRightCombobox.Active;
+			DefaultSourceEditorOptions.Instance.ControlLeftRightMode = (MonoDevelop.Ide.Editor.ControlLeftRightMode)controlLeftRightCombobox.Active;
 			DefaultSourceEditorOptions.Instance.UseViModes = useViModesCheck.Active;
 			DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = checkbuttonOnTheFlyFormatting.Active;
 			DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep = checkbuttonGenerateFormattingUndoStep.Active;
