@@ -93,7 +93,7 @@ namespace MonoDevelop.MeeGo
 		}
 	}
 	
-	class MeeGoSoftDebuggerStartInfo : RemoteDebuggerStartInfo
+	class MeeGoSoftDebuggerStartInfo : RemoteSoftDebuggerStartInfo
 	{
 		public MeeGoExecutionCommand ExecutionCommand { get; private set; }
 		public MeeGoDevice Device { get; private set; }
