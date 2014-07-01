@@ -354,30 +354,65 @@ namespace MonoDevelop.Components.DockNotebook
 		}
 
 		PlaceholderWindow placeholderWindow;
+		bool mouseHasLeft;
 
 		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
 		{
-			if (draggingTab) {
-				if (placeholderWindow == null) {
-					var tab = notebook.CurrentTab;
-					placeholderWindow = new PlaceholderWindow (tab);
-
-					int x, y;
-					Gdk.Display.Default.GetPointer (out x, out y);
-					placeholderWindow.MovePosition (x, y);
-					placeholderWindow.Show ();
-
-					placeholderWindow.Destroyed += delegate {
-						placeholderWindow = null;
-					};
-				}
-				draggingTab = false;
-			}
+			if (draggingTab && placeholderWindow == null && !mouseHasLeft)
+				mouseHasLeft = true;
 			return base.OnLeaveNotifyEvent (evnt);
+		}
+
+		void CreatePlaceholderWindow ()
+		{
+			var tab = notebook.CurrentTab;
+			placeholderWindow = new PlaceholderWindow (tab);
+
+			int x, y;
+			Gdk.Display.Default.GetPointer (out x, out y);
+			placeholderWindow.MovePosition (x, y);
+			placeholderWindow.Show ();
+
+			placeholderWindow.Destroyed += delegate {
+				placeholderWindow = null;
+				buttonPressedOnTab = false;
+			};
+		}
+
+		Gdk.Rectangle GetScreenRect ()
+		{
+			int ox, oy;
+			ParentWindow.GetOrigin (out ox, out oy);
+			var alloc = notebook.Allocation;
+			alloc.X += ox;
+			alloc.Y += oy;
+			return alloc;
+		}
+
+		protected override bool OnGrabBrokenEvent (EventGrabBroken evnt)
+		{
+			if (placeholderWindow != null)
+				placeholderWindow.Destroy ();
+			return base.OnGrabBrokenEvent (evnt);
 		}
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
+			if (draggingTab && mouseHasLeft) {
+				var sr = GetScreenRect ();
+				sr.Height = BarHeight;
+				sr.Inflate (30, 30);
+
+				int x, y;
+				Gdk.Display.Default.GetPointer (out x, out y);
+
+				if (x < sr.Left || x > sr.Right || y < sr.Top || y > sr.Bottom) {
+					draggingTab = false;
+					mouseHasLeft = false;
+					CreatePlaceholderWindow ();
+				}
+			}
+
 			string newTooltip = null;
 			if (placeholderWindow != null) {
 				int x, y;
@@ -402,6 +437,7 @@ namespace MonoDevelop.Components.DockNotebook
 				}
 				if (!overCloseButton && !draggingTab && buttonPressedOnTab) {
 					draggingTab = true;
+					mouseHasLeft = false;
 					dragXProgress = 1.0f;
 					int x = (int)evnt.X;
 					dragOffset = x - t.Allocation.X;
