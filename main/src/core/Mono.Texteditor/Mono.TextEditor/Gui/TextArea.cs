@@ -1477,8 +1477,10 @@ namespace Mono.TextEditor
 			} else {
 				double caretX = ColumnToX (Document.GetLine (p.Line), p.Column);
 				double textWith = Allocation.Width - textViewMargin.XOffset;
-				if (this.textEditorData.HAdjustment.Value > caretX) {
-					this.textEditorData.HAdjustment.Value = caretX;
+				if (caretX < this.textEditorData.HAdjustment.Upper) {
+					this.textEditorData.HAdjustment.Value = 0;
+				} else if (this.textEditorData.HAdjustment.Value > caretX) {
+					this.textEditorData.HAdjustment.Value = System.Math.Max (0, caretX - this.textEditorData.HAdjustment.Upper / 2);
 				} else if (this.textEditorData.HAdjustment.Value + textWith < caretX + TextViewMargin.CharWidth) {
 					double adjustment = System.Math.Max (0, caretX - textWith + TextViewMargin.CharWidth);
 					this.textEditorData.HAdjustment.Value = adjustment;
