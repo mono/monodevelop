@@ -146,11 +146,12 @@ namespace MonoDevelop.Components.DockNotebook
 				var container = hoverNotebook.Container;
 				var alloc = hoverNotebook.Allocation;
 				var targetTabCount = hoverNotebook.TabCount;
+				var overTabStrip = y <= oy + hoverNotebook.BarHeight;
 
 				if (hoverNotebook.Tabs.Contains (frame))
 					targetTabCount--; // Current is going to be removed, so it doesn't count
 
-				if (targetTabCount > 0 && x <= ox + alloc.Width / 3) {
+				if (targetTabCount > 0 && x <= ox + alloc.Width / 3 && !overTabStrip) {
 					if (container.AllowLeftInsert) {
 						Relocate (
 							ox,
@@ -168,7 +169,7 @@ namespace MonoDevelop.Components.DockNotebook
 					}
 				}
 
-				if (targetTabCount > 0 && x >= ox + alloc.Width - alloc.Width / 3) {
+				if (targetTabCount > 0 && x >= ox + alloc.Width - alloc.Width / 3 && !overTabStrip) {
 					if (container.AllowRightInsert) {
 						Relocate (
 							ox + alloc.Width / 2,
