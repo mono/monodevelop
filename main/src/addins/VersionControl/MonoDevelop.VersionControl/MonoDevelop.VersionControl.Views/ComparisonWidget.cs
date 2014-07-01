@@ -69,8 +69,8 @@ namespace MonoDevelop.VersionControl.Views
 		protected override void CreateComponents ()
 		{
 			this.editors = new [] {
-				new TextEditor (new TextDocument ()/*, new CommonTextEditorOptions ()*/),
-				new TextEditor (new TextDocument ()/*, new CommonTextEditorOptions ()*/),
+				new TextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
+				new TextEditor (new TextDocument (), CommonTextEditorOptions.Instance),
 			};
 
 			if (!viewOnly) {
