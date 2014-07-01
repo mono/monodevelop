@@ -429,7 +429,22 @@ namespace MonoDevelop.Ide.Gui
 			return OpenDocument (openFileInfo);
 		}
 
-
+		static void ScrollToRequestedCaretLocation (Document doc, FileOpenInformation info)
+		{
+			var ipos = doc.Editor;
+			if (info.Line >= 1 && ipos != null) {
+				doc.DisableAutoScroll ();
+				doc.RunWhenLoaded (() => {
+					ipos.SetCaretLocation (
+						info.Line,
+						info.Column >= 1 ? info.Column : 1,
+						info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine)
+					);
+					if (info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine))
+						ipos.CenterToCaret ();
+				});
+			}
+		}
 		public Document OpenDocument (FileOpenInformation info)
 		{
 			if (string.IsNullOrEmpty (info.FileName))
@@ -455,20 +470,7 @@ namespace MonoDevelop.Ide.Gui
 							if (info.Project != null && doc.Project != info.Project) {
 								doc.SetProject (info.Project); 
 							}
-
-							var ipos = (TextEditor) vcFound.GetContent (typeof(TextEditor));
-							if (info.Line >= 1 && ipos != null) {
-								doc.DisableAutoScroll ();
-								doc.RunWhenLoaded (() => {
-									ipos.SetCaretLocation (
-										info.Line,
-										info.Column >= 1 ? info.Column : 1,
-										info.Options.HasFlag (OpenDocumentOptions.HighlightCaretLine)
-									);
-									if (info.Options.HasFlag (OpenDocumentOptions.CenterCaretLine))
-										ipos.CenterToCaret ();
-								});
-							}
+							ScrollToRequestedCaretLocation (doc, info);
 							
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
@@ -496,6 +498,9 @@ namespace MonoDevelop.Ide.Gui
 				if (info.NewContent != null) {
 					Counters.OpenDocumentTimer.Trace ("Wrapping document");
 					Document doc = WrapDocument (info.NewContent.WorkbenchWindow);
+					
+					ScrollToRequestedCaretLocation (doc, info);
+					
 					if (doc != null && info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 						Present ();
 						doc.RunWhenLoaded (() => {
