@@ -26,6 +26,7 @@
 
 using System.Net;
 using MonoDevelop.Debugger.Soft;
+using Mono.Debugging.Soft;
 using Mono.Debugging.Client;
 using MonoDevelop.Core.Execution;
 using System.IO;
@@ -43,7 +44,7 @@ namespace MonoDevelop.MeeGo
 			StartListening (dsi);
 		}
 		
-		protected override string GetConnectingMessage (RemoteDebuggerStartInfo dsi)
+		protected override string GetConnectingMessage (DebuggerStartInfo dsi)
 		{
 			return string.Format ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
 		}
@@ -93,13 +94,13 @@ namespace MonoDevelop.MeeGo
 		}
 	}
 	
-	class MeeGoSoftDebuggerStartInfo : RemoteSoftDebuggerStartInfo
+	class MeeGoSoftDebuggerStartInfo : SoftDebuggerStartInfo
 	{
 		public MeeGoExecutionCommand ExecutionCommand { get; private set; }
 		public MeeGoDevice Device { get; private set; }
 		
 		public MeeGoSoftDebuggerStartInfo (IPAddress address, int debugPort, MeeGoExecutionCommand cmd, MeeGoDevice device)
-			: base (cmd.Name, address, debugPort)
+			: base (new SoftDebuggerListenArgs (cmd.Name, address, debugPort))
 		{
 			ExecutionCommand = cmd;
 			Device = device;
