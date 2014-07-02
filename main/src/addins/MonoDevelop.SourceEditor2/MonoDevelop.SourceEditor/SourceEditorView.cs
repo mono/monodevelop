@@ -267,6 +267,8 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Options.Changed += HandleWidgetTextEditorOptionsChanged;
 			IdeApp.Preferences.DefaultHideMessageBubblesChanged += HandleIdeAppPreferencesDefaultHideMessageBubblesChanged;
 			Document.AddAnnotation (this);
+			if (document != null)
+				Document.MimeType = document.MimeType;
 			FileRegistry.Add (this);
 		}
 
@@ -3041,6 +3043,10 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		string ITextEditorImpl.GetPangoMarkup (int offset, int length)
+		{
+			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false);
+		}
 
 		#region IEditorActionHost implementation
 

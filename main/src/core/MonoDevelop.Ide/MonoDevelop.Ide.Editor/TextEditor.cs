@@ -883,5 +883,17 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		#endregion
+
+		public string GetPangoMarkup (int offset, int length)
+		{
+			return textEditorImpl.GetPangoMarkup (offset, length);
+		}
+
+		public string GetPangoMarkup (ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length);
+		}
 	}
 }

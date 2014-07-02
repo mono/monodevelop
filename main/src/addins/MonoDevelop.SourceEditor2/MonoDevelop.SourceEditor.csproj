@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.SourceEditor</RootNamespace>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
+    <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -25,7 +26,6 @@
         <Command type="Execute" command="mono --debug ../../../build/bin/MonoDevelop.exe" workingdir="" />
       </CustomCommands>
     </CustomCommands>
-    <AssemblyName>MonoDevelop.SourceEditor2</AssemblyName>
     <ConsolePause>False</ConsolePause>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
@@ -37,7 +37,6 @@
     <OutputPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
     <ConsolePause>False</ConsolePause>
     <Execution>
       <Execution clr-version="Net_2_0" />

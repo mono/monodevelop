@@ -145,6 +145,8 @@ namespace MonoDevelop.Ide.Editor
 
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
 
+		string GetPangoMarkup (int offset, int length);
+
 		#region Internal use only API (do not mirror in TextEditor)
 
 		TextEditorExtension EditorExtension {

@@ -131,7 +131,7 @@ namespace MonoDevelop.Refactoring
 				bool open;
 				var data = TextFileProvider.Instance.GetTextEditorData (FileName, out hadBom, out encoding, out open);
 				data.Replace (Offset, RemovedChars, InsertedText);
-				TextFileUtility.WriteText (FileName, textEditorData.Text, encoding, hadBom);
+				data.WriteTextTo (data.FileName);
 			}
 
 			int offset = textEditorData.CaretOffset;

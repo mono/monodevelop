@@ -241,8 +241,9 @@ namespace MonoDevelop.Refactoring
 		public static void QueueQuickFixAnalysis (TextEditor editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
 		{
 			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
+			if (ext == null)
+				LoggingService.LogWarning ("[Fix analysis] Warning no results editor extension found.");
 			var issues = ext != null ? ext.GetResultsAtOffset (editor.LocationToOffset (loc), token).OrderBy (r => r.Level).ToList () : new List<Result> ();
-
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					var result = new List<CodeAction> ();
