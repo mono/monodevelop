@@ -44,9 +44,12 @@ namespace MonoDevelop.MeeGo
 			StartListening (dsi);
 		}
 		
-		protected override string GetConnectingMessage (DebuggerStartInfo dsi)
+		protected override string GetConnectingMessage (DebuggerStartInfo startInfo)
 		{
-			return string.Format ("Waiting for debugger to connect on {0}:{1}...", dsi.Address, dsi.DebugPort);
+			var dsi = (MeeGoSoftDebuggerStartInfo) startInfo;
+			var dra = (SoftDebuggerRemoteArgs) dsi.StartArgs;
+
+			return string.Format ("Waiting for debugger to connect on {0}:{1}...", dra.Address, dra.DebugPort);
 		}
 		
 		protected override void EndSession ()
@@ -59,7 +62,8 @@ namespace MonoDevelop.MeeGo
 		{
 			MeeGoUtility.Upload (dsi.Device, dsi.ExecutionCommand.Config, null, null).WaitForCompleted ();
 			var auth = MeeGoExecutionHandler.GetGdmXAuth (dsi.Device);
-			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dsi.Address, dsi.DebugPort);
+			var dra = (SoftDebuggerRemoteArgs) dsi.StartArgs;
+			string debugOptions = string.Format ("transport=dt_socket,address={0}:{1}", dra.Address, dra.DebugPort);
 			
 			process = MeeGoExecutionHandler.CreateProcess (dsi.ExecutionCommand, debugOptions, dsi.Device, auth,
 			                                               x => OnTargetOutput (false, x),
