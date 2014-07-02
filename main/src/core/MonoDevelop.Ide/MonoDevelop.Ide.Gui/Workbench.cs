@@ -933,12 +933,13 @@ namespace MonoDevelop.Ide.Gui
 					Height = window.Allocation.Height
 				};
 
-				prefs.FloatingWindows.Add (fwp);
-
 				foreach (var nb in window.Container.GetNotebooks ())
 					AddNotebookDocuments (args, fwp.Files, nb, nbId++);
 
-				fwId++;
+				if (fwp.Files.Count > 0) {
+					prefs.FloatingWindows.Add (fwp);
+					fwId++;
+				}
 			}
 
 			var mainContainer = workbench.TabControl.Container;
