@@ -129,8 +129,11 @@ display in a help buffer instead.")
   "Load the specified F# file as a project"
   (interactive
   ;; Prompt user for an fsproj, searching for a default.
-   (list (read-file-name
-          "Path to project: " nil (fsharp-mode/find-fsproj buffer-file-name) t)))
+   (let* ((proj (fsharp-mode/find-fsproj buffer-file-name))
+          (relproj (file-relative-name proj (file-name-directory buffer-file-name)))
+          (prompt (if proj (format "Path to project (default %s): " relproj)
+                    ("Path to project: "))))
+     (list (read-file-name dialog nil (fsharp-mode/find-fsproj buffer-file-name) t))))
   (when (fsharp-ac--valid-project-p file)
     (fsharp-ac--reset)
     (when (not (fsharp-ac--process-live-p))
