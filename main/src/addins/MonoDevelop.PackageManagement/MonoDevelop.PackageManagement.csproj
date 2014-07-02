@@ -345,6 +345,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageUpdatesEventMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesProgressMonitorStatusMessage.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatedPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopAggregateRepository.cs" />
   </ItemGroup>
   <ItemGroup>
