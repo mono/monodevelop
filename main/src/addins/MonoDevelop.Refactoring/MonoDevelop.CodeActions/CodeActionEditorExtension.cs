@@ -412,8 +412,6 @@ namespace MonoDevelop.CodeActions
 		ISmartTagMarker currentSmartTag;
 		MonoDevelop.Ide.Editor.DocumentLocation currentSmartTagBegin;
 
-		List<CodeAction> currentSmartTagfixes;
-
 		void CreateSmartTag (List<CodeAction> fixes, MonoDevelop.Ide.Editor.DocumentLocation loc)
 		{
 			Fixes = fixes;
@@ -461,7 +459,6 @@ namespace MonoDevelop.CodeActions
 			}
 
 			if (currentSmartTag != null && currentSmartTagBegin == smartTagLocBegin) {
-				currentSmartTagfixes = fixes;
 				return;
 			}
 			RemoveWidget ();
@@ -562,11 +559,11 @@ namespace MonoDevelop.CodeActions
 			CurrentSmartTagPopup ();
 		}
 
-		internal List<CodeAction> GetCurrentFixes ()
+		internal IEnumerable<CodeAction> GetCurrentFixes ()
 		{
 			if (currentSmartTag == null)
 				return RefactoringService.GetValidActions (Editor, EditContext, Editor.CaretLocation).Result.ToList ();
-			return currentSmartTagfixes;
+			return Fixes;
 		}
 	}
 }
