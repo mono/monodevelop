@@ -92,14 +92,6 @@ namespace MonoDevelop.Ide.Gui
 		MainToolbar toolbar;
 		MonoDevelopStatusBar bottomBar;
 
-		enum TargetList {
-			UriList = 100
-		}
-
-		Gtk.TargetEntry[] targetEntryTypes = new Gtk.TargetEntry[] {
-			new Gtk.TargetEntry ("text/uri-list", 0, (uint)TargetList.UriList)
-		};
-		
 #if DUMMY_STRINGS_FOR_TRANSLATION_DO_NOT_COMPILE
 		private void DoNotCompile ()
 		{
@@ -225,11 +217,6 @@ namespace MonoDevelop.Ide.Gui
 			
 			SetAppIcons ();
 
-			//this.WindowPosition = Gtk.WindowPosition.None;
-
-			Gtk.Drag.DestSet (this, Gtk.DestDefaults.Motion | Gtk.DestDefaults.Highlight | Gtk.DestDefaults.Drop, targetEntryTypes, Gdk.DragAction.Copy);
-			DragDataReceived += new Gtk.DragDataReceivedHandler (onDragDataRec);
-			
 			IdeApp.CommandService.SetRootWindow (this);
 		}
 		
@@ -267,29 +254,6 @@ namespace MonoDevelop.Ide.Gui
 			};
 		}
 
-		void onDragDataRec (object o, Gtk.DragDataReceivedArgs args)
-		{
-			if (args.Info != (uint) TargetList.UriList)
-				return;
-			string fullData = System.Text.Encoding.UTF8.GetString (args.SelectionData.Data);
-
-			foreach (string individualFile in fullData.Split ('\n')) {
-				string file = individualFile.Trim ();
-				if (file.StartsWith ("file://")) {
-					file = new Uri(file).LocalPath;
-
-					try {
-						if (Services.ProjectService.IsWorkspaceItemFile (file))
-							IdeApp.Workspace.OpenWorkspaceItem(file);
-						else
-							IdeApp.Workbench.OpenDocument (file);
-					} catch (Exception e) {
-						LoggingService.LogError ("unable to open file {0} exception was :\n{1}", file, e.ToString());
-					}
-				}
-			}
-		}
-		
 		public void InitializeWorkspace()
 		{
 			// FIXME: GTKize

@@ -52,6 +52,14 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public static event EventHandler ActiveNotebookChanged;
 
+		enum TargetList {
+			UriList = 100
+		}
+
+		static Gtk.TargetEntry[] targetEntryTypes = new Gtk.TargetEntry[] {
+			new Gtk.TargetEntry ("text/uri-list", 0, (uint)TargetList.UriList)
+		};
+
 		public DockNotebook ()
 		{
 			pagesCol = new ReadOnlyCollection<DockNotebookTab> (pages);
@@ -85,6 +93,16 @@ namespace MonoDevelop.Components.DockNotebook
 				}
 				menu.ShowAll ();
 				return menu;
+			};
+
+			Gtk.Drag.DestSet (this, Gtk.DestDefaults.Motion | Gtk.DestDefaults.Highlight | Gtk.DestDefaults.Drop, targetEntryTypes, Gdk.DragAction.Copy);
+			DragDataReceived += new Gtk.DragDataReceivedHandler (OnDragDataReceived);
+
+			DragMotion += delegate {
+				// Bring this window to the front. Otherwise, the drop may end being done in another window that overlaps this one
+				var window = ((Gtk.Window)Toplevel);
+				if (window is DockWindow)
+					window.Present ();
 			};
 
 			allNotebooks.Add (this);
@@ -214,6 +232,29 @@ namespace MonoDevelop.Components.DockNotebook
 			tabStrip.InitSize ();
 		}
 
+		void OnDragDataReceived (object o, Gtk.DragDataReceivedArgs args)
+		{
+			Console.WriteLine ("received");
+			if (args.Info != (uint) TargetList.UriList)
+				return;
+			string fullData = System.Text.Encoding.UTF8.GetString (args.SelectionData.Data);
+
+			foreach (string individualFile in fullData.Split ('\n')) {
+				string file = individualFile.Trim ();
+				if (file.StartsWith ("file://")) {
+					file = new Uri(file).LocalPath;
+
+					try {
+						if (Services.ProjectService.IsWorkspaceItemFile (file))
+							IdeApp.Workspace.OpenWorkspaceItem(file);
+						else
+							IdeApp.Workbench.OpenDocument (file, null, -1, -1, MonoDevelop.Ide.Gui.OpenDocumentOptions.Default, null, null, this);
+					} catch (Exception e) {
+						MonoDevelop.Core.LoggingService.LogError ("unable to open file {0} exception was :\n{1}", file, e.ToString());
+					}
+				}
+			}
+		}
 		public DockNotebookContainer Container {
 			get {
 				var container = (DockNotebookContainer)Parent;
