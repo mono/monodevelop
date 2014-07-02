@@ -40,16 +40,29 @@ namespace ICSharpCode.PackageManagement
 		PackageManagementOptions options;
 		IList<RecentPackageInfo> recentPackages;
 		IRecentPackageRepository recentPackageRepository;
+		IPackageRepository machineCache;
 		ConcurrentDictionary<string, IPackageRepository> repositories =
 			new ConcurrentDictionary<string, IPackageRepository>();
 		
 		public PackageRepositoryCache (
 			PackageManagementOptions options,
+			IPackageRepository machineCache,
 			ISharpDevelopPackageRepositoryFactory factory)
 		{
 			this.options = options;
+			this.machineCache = machineCache;
 			this.factory = factory;
 			this.recentPackages = options.RecentPackages;
+		}
+
+		public PackageRepositoryCache (
+			PackageManagementOptions options,
+			ISharpDevelopPackageRepositoryFactory factory)
+			: this (
+				options,
+				MachineCache.Default,
+				factory)
+		{
 		}
 		
 		public PackageRepositoryCache (PackageManagementOptions options)
@@ -159,6 +172,11 @@ namespace ICSharpCode.PackageManagement
 				recentPackageRepository = factory.CreateRecentPackageRepository(recentPackages, aggregateRepository);
 			}
 			return recentPackageRepository;
+		}
+
+		public IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ()
+		{
+			return new PriorityPackageRepository (machineCache, CreateAggregateRepository ());
 		}
 	}
 }

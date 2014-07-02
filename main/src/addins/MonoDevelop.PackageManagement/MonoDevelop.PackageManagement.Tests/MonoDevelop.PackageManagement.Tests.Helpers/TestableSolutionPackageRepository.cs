@@ -1,5 +1,5 @@
 ﻿//
-// FakePackageManagerFactory.cs
+// TestableSolutionPackageRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,33 +25,27 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagerFactory : IPackageManagerFactory
+	public class TestableSolutionPackageRepository : SolutionPackageRepository
 	{
-		public FakePackageManager FakePackageManager = new FakePackageManager ();
-		public IPackageRepository PackageRepositoryPassedToCreatePackageManager;
-		public IDotNetProject ProjectPassedToCreateRepository;
-		public ISolutionPackageRepository SolutionPackageRepositoryPassedToCreatePackageManager;
-
-		public ISharpDevelopPackageManager CreatePackageManager (IPackageRepository sourceRepository, IDotNetProject project)
+		public TestableSolutionPackageRepository (
+			ISolution solution,
+			ISharpDevelopPackageRepositoryFactory repositoryFactory,
+			PackageManagementOptions options)
+			: base (solution, repositoryFactory, options)
 		{
-			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
-			ProjectPassedToCreateRepository = project;
-			return FakePackageManager;
 		}
 
-		public IPackageManager CreatePackageManager (IPackageRepository sourceRepository, ISolutionPackageRepository solutionPackageRepository)
+		public TestableLocalPackageRepository LocalPackageRepository = new TestableLocalPackageRepository ();
+
+		protected override LocalPackageRepository CreateLocalPackageRepository ()
 		{
-			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
-			SolutionPackageRepositoryPassedToCreatePackageManager = solutionPackageRepository;
-			return FakePackageManager;
+			return LocalPackageRepository;
 		}
 	}
 }
-
 

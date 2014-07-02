@@ -1,5 +1,5 @@
 ﻿//
-// FakePackageManagerFactory.cs
+// TestableLocalPackageRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,32 +26,34 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PackageManagement;
+using System.Linq;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class FakePackageManagerFactory : IPackageManagerFactory
+	public class TestableLocalPackageRepository : LocalPackageRepository
 	{
-		public FakePackageManager FakePackageManager = new FakePackageManager ();
-		public IPackageRepository PackageRepositoryPassedToCreatePackageManager;
-		public IDotNetProject ProjectPassedToCreateRepository;
-		public ISolutionPackageRepository SolutionPackageRepositoryPassedToCreatePackageManager;
-
-		public ISharpDevelopPackageManager CreatePackageManager (IPackageRepository sourceRepository, IDotNetProject project)
+		public TestableLocalPackageRepository ()
+			: base (@"d:\projects\MySolution\packages".ToNativePath ())
 		{
-			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
-			ProjectPassedToCreateRepository = project;
-			return FakePackageManager;
 		}
 
-		public IPackageManager CreatePackageManager (IPackageRepository sourceRepository, ISolutionPackageRepository solutionPackageRepository)
+		public override IEnumerable<string> GetPackageLookupPaths (string packageId, SemanticVersion version)
 		{
-			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
-			SolutionPackageRepositoryPassedToCreatePackageManager = solutionPackageRepository;
-			return FakePackageManager;
+			var packageName = new PackageName (packageId, version);
+			List<string> filePaths = null;
+			if (packageLookupPaths.TryGetValue (packageName, out filePaths)) {
+				return filePaths;
+			}
+			return Enumerable.Empty<string> ();
+		}
+
+		Dictionary<PackageName, List<string>> packageLookupPaths = new Dictionary<PackageName, List<string>> ();
+
+		public void AddPackageLookupPath (PackageName packageName, params string[] filePaths)
+		{
+			packageLookupPaths.Add (packageName, filePaths.ToList ());
 		}
 	}
 }
-
 

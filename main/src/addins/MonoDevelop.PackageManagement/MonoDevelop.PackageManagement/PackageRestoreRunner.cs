@@ -33,6 +33,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -41,39 +42,46 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementSolution solution;
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
+		IProgressProvider progressProvider;
 
 		public PackageRestoreRunner()
 			: this(
 				PackageManagementServices.Solution,
 				PackageManagementServices.ProgressMonitorFactory,
-				PackageManagementServices.PackageManagementEvents)
+				PackageManagementServices.PackageManagementEvents,
+				PackageManagementServices.ProgressProvider)
 		{
 		}
 
 		public PackageRestoreRunner(
 			IPackageManagementSolution solution,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider)
 		{
 			this.solution = solution;
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
+			this.progressProvider = progressProvider;
 		}
 
 		public void Run ()
 		{
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
-			IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage);
 
-			try {
-				RestorePackages(progressMonitor, progressMessage);
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
-				progressMonitor.Log.WriteLine(ex.Message);
-				progressMonitor.ReportError (progressMessage.Error, null);
-				progressMonitor.ShowPackageConsole ();
-				progressMonitor.Dispose();
-				RestoreFailed = true;
+			using (IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage)) {
+				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (progressMonitor)) {
+					try {
+						RestorePackages (progressMonitor, progressMessage);
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+						progressMonitor.Log.WriteLine (ex.Message);
+						progressMonitor.ReportError (progressMessage.Error, null);
+						progressMonitor.ShowPackageConsole ();
+						progressMonitor.Dispose ();
+						RestoreFailed = true;
+					}
+				}
 			}
 		}
 
@@ -84,49 +92,21 @@ namespace MonoDevelop.PackageManagement
 			return progressMonitorFactory.CreateProgressMonitor (progressMessage.Status);
 		}
 
+		PackageManagementEventsMonitor CreateEventMonitor (IProgressMonitor monitor)
+		{
+			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
+		}
+
 		void RestorePackages(IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
 		{
-			var commandLine = new NuGetPackageRestoreCommandLine(solution);
+			var action = new RestorePackagesAction (solution, packageManagementEvents);
+			action.Execute ();
 
-			progressMonitor.Log.WriteLine(commandLine.ToString());
+			RefreshProjectReferences ();
+			ForceCreationOfSharedRepositoriesConfigFile ();
 
-			RestorePackages(progressMonitor, progressMessage, commandLine);
-		}
-
-		void RestorePackages(
-			IProgressMonitor progressMonitor,
-			ProgressMonitorStatusMessage progressMessage,
-			NuGetPackageRestoreCommandLine commandLine)
-		{
-			var aggregatedMonitor = (PackageManagementProgressMonitor)progressMonitor;
-
-			IProcessAsyncOperation operation = Runtime.ProcessService.StartConsoleProcess (
-				commandLine.Command,
-				commandLine.Arguments,
-				commandLine.WorkingDirectory,
-				aggregatedMonitor.Console,
-				(sender, e) => {
-					using (progressMonitor) {
-						OnPackageRestoreCompleted ((IAsyncOperation)sender, progressMonitor, progressMessage);
-					}
-				}
-			);
-
-			// Wait for console to finish just so check for updates does not run until
-			// all packages are restored.
-			operation.WaitForCompleted ();
-		}
-
-		void OnPackageRestoreCompleted (
-			IAsyncOperation operation,
-			IProgressMonitor progressMonitor,
-			ProgressMonitorStatusMessage progressMessage)
-		{
-			if (operation.Success) {
-				RefreshProjectReferences ();
-				ForceCreationOfSharedRepositoriesConfigFile ();
-			}
-			ReportOutcome (operation, progressMonitor, progressMessage);
+			progressMonitor.ReportSuccess (progressMessage.Success);
+			packageManagementEvents.OnPackagesRestored ();
 		}
 
 		/// <summary>
@@ -149,21 +129,6 @@ namespace MonoDevelop.PackageManagement
 					}
 				}
 			});
-		}
-
-		void ReportOutcome (
-			IAsyncOperation operation,
-			IProgressMonitor progressMonitor,
-			ProgressMonitorStatusMessage progressMessage)
-		{
-			if (operation.Success) {
-				progressMonitor.ReportSuccess (progressMessage.Success);
-				packageManagementEvents.OnPackagesRestored ();
-			} else {
-				progressMonitor.ReportError (progressMessage.Error, null);
-				progressMonitor.ShowPackageConsole ();
-				RestoreFailed = true;
-			}
 		}
 	}
 }

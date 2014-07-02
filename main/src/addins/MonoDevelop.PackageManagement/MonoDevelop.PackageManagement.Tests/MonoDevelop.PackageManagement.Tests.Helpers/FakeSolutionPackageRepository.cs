@@ -81,6 +81,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public IFileSystem FileSystem { get; set; }
 
 		public IPackagePathResolver PackagePathResolver { get; set; }
+
+		public bool IsRestored (PackageReference packageReference)
+		{
+			return FakeSharedRepository.FakePackages.Any (package => {
+				return (package.Id == packageReference.Id) &&
+					(package.Version == packageReference.Version);
+			});
+		}
 	}
 }
 

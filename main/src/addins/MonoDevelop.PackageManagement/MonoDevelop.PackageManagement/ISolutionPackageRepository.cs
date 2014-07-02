@@ -41,6 +41,7 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackage> GetPackagesByReverseDependencyOrder();
 		IQueryable<IPackage> GetPackages();
 		bool IsInstalled(IPackage package);
+		bool IsRestored (PackageReference packageReference);
 		
 		ISharedPackageRepository Repository { get; }
 		IFileSystem FileSystem { get; }

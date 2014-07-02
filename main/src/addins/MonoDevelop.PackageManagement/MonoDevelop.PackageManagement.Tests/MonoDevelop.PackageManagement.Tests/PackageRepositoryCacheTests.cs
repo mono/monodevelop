@@ -43,6 +43,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		OneRegisteredPackageSourceHelper packageSourcesHelper;
 		RecentPackageInfo[] recentPackagesPassedToCreateRecentPackageRepository;
 		FakePackageRepository fakeAggregateRepositoryPassedToCreateRecentPackageRepository;
+		FakePackageRepository machineCache;
 
 		void CreateCache ()
 		{
@@ -59,7 +60,8 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			nuGetPackageSource = new PackageSource ("http://nuget.org", "NuGet");
 			fakePackageRepositoryFactory = new FakePackageRepositoryFactory ();
-			cache = new PackageRepositoryCache (packageSourcesHelper.Options, fakePackageRepositoryFactory);
+			machineCache = new FakePackageRepository ();
+			cache = new PackageRepositoryCache (packageSourcesHelper.Options, machineCache, fakePackageRepositoryFactory);
 		}
 
 		FakePackageRepository AddFakePackageRepositoryForPackageSource (string source)
@@ -408,6 +410,34 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			CollectionAssert.AreEqual (expectedInitialRepositories, actualInitialRepositories);
 			CollectionAssert.AreEqual (expectedRepositories, actualRepositories);
+		}
+
+		[Test]
+		public void CreateAggregatePriorityRepository_NoAggregatePackageSources_ReturnsPriorityPackageRepositoryThatUsesMachineCache ()
+		{
+			CreateCache ();
+			machineCache.AddFakePackageWithVersion ("MyPackage", "1.0");
+
+			IPackageRepository repository = cache.CreateAggregateWithPriorityMachineCacheRepository ();
+			var priorityRepository = repository as PriorityPackageRepository;
+			bool exists = repository.Exists ("MyPackage", new SemanticVersion ("1.0"));
+
+			Assert.IsInstanceOf<PriorityPackageRepository> (repository);
+			Assert.IsTrue (exists);
+		}
+
+		[Test]
+		public void CreateAggregatePriorityRepository_NoAggregatePackageSources_ReturnsPriorityPackageRepositoryThatUsesAggregateRepository ()
+		{
+			CreatePackageSources ();
+			packageSourcesHelper.AddTwoPackageSources ("Source1", "Source2");
+			CreateCacheUsingPackageSources ();
+			fakePackageRepositoryFactory.FakeAggregateRepository.AddFakePackageWithVersion ("MyPackage", "1.0");
+
+			IPackageRepository repository = cache.CreateAggregateWithPriorityMachineCacheRepository ();
+			bool exists = repository.Exists ("MyPackage", new SemanticVersion ("1.0"));
+
+			Assert.IsTrue (exists);
 		}
 	}
 }
