@@ -69,7 +69,7 @@ namespace MonoDevelop.Debugger
 		readonly RadioButton stopOnException = new RadioButton (GettextCatalog.GetString ("When an exception is thrown"));
 
 		// Text entries
-		readonly TextEntry entryFunctionName = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.object.ToString") };
+		readonly TextEntry entryFunctionName = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.Object.ToString") };
 		readonly TextEntry entryLocationFile = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. ./monodevelop/main/src/addins/YCombinator.cs:515:16") };
 		readonly TextEntryWithCodeCompletion entryExceptionType = new TextEntryWithCodeCompletion (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.InvalidOperationException") };
 		readonly TextEntry entryConditionalExpression = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. colorName == \"Red\"") };
