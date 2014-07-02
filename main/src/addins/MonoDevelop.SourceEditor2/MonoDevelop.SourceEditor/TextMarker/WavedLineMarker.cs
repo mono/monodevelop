@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using Mono.TextEditor;
+using MonoDevelop.Components;
 using MonoDevelop.Debugger;
 using Pango;
 
