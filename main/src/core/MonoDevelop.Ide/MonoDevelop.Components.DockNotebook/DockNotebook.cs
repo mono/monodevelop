@@ -31,6 +31,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -100,9 +101,11 @@ namespace MonoDevelop.Components.DockNotebook
 
 			DragMotion += delegate {
 				// Bring this window to the front. Otherwise, the drop may end being done in another window that overlaps this one
-				var window = ((Gtk.Window)Toplevel);
-				if (window is DockWindow)
-					window.Present ();
+				if (!Platform.IsWindows) {
+					var window = ((Gtk.Window)Toplevel);
+					if (window is DockWindow)
+						window.Present ();
+				}
 			};
 
 			allNotebooks.Add (this);
