@@ -112,6 +112,9 @@
           '(;; Preprocessor directives
             "#if" "#else" "#endif"
 
+            ;; FSI directives
+            "#load" "#r" "#I" "#quit" "#time" "#help"
+
             ;; F# keywords
             "abstract" "and" "as" "assert" "base" "begin"
             "class" "default" "delegate" "do" "done"
