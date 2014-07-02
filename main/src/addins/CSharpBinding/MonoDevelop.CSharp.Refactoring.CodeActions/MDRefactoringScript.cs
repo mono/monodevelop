@@ -170,7 +170,6 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var editor = context.TextEditor as TextEditor;
 			if (editor == null)
 				return tcs.Task;
-
 			var loadedDocument = IdeApp.Workbench.OpenDocument (new FileOpenInformation (part.Region.FileName, null));
 			loadedDocument.RunWhenLoaded (delegate {
 				var loc = part.Region.Begin;
@@ -208,7 +207,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 				operationsRunning++;
 
-				editor.StartInsertionMode (new InsertionModeOptions (operation, insertionPoints, iCArgs => {
+				loadedDocument.Editor.StartInsertionMode (new InsertionModeOptions (operation, insertionPoints, iCArgs => {
 					if (iCArgs.Success) {
 						if (iCArgs.InsertionPoint.LineAfter == NewLineInsertion.None && 
 							iCArgs.InsertionPoint.LineBefore == NewLineInsertion.None && nodes.Count > 1) {
@@ -218,7 +217,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 							var output = OutputNode (MonoDevelop.Ide.TypeSystem.CodeGenerationService.CalculateBodyIndentLevel (declaringType), node);
 							var offset = loadedDocument.Editor.LocationToOffset (iCArgs.InsertionPoint.Location);
 							var text = output.Text;
-							var delta = iCArgs.InsertionPoint.Insert (editor, text);
+							var delta = iCArgs.InsertionPoint.Insert (loadedDocument.Editor, text);
 							output.RegisterTrackedSegments (script, delta + offset);
 						}
 						tcs.SetResult (script);
