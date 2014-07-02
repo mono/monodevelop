@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using MonoDevelop.Components.Extensions;
 using Mono.Addins;
 using System.Threading;
+using System.Linq;
 
 namespace MonoDevelop.Ide
 {
@@ -463,6 +464,7 @@ namespace MonoDevelop.Ide
 			public AlertButton GenericAlert (MessageDescription message)
 			{
 				var dialog = new AlertDialog (message);
+				dialog.TransientFor = Gtk.Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? MessageService.RootWindow;
 				OnPopupDialog (EventArgs.Empty);
 				return dialog.Run ();
 			}
