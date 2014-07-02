@@ -2013,14 +2013,12 @@ namespace MonoDevelop.Ide
 		{
 			if (operation == null)
 				throw new ArgumentNullException ("operation");
-			bool hadBom;
-			Encoding encoding;
 			bool isOpen;
-			var data = GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
+			var data = GetTextEditorData (filePath, out isOpen);
 			operation (data);
 			if (!isOpen) {
 				try {
-					TextFileUtility.WriteText (filePath, data.Text, encoding, hadBom);
+					data.Save ();
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while saving changes to : " + filePath, e);
 					return false;
@@ -2050,24 +2048,18 @@ namespace MonoDevelop.Ide
 
 		public ITextDocument GetTextEditorData (FilePath filePath, out bool isOpen)
 		{
-			bool hadBom;
-			Encoding encoding;
-			return GetTextEditorData (filePath, out hadBom, out encoding, out isOpen);
-		}
-
-		public ITextDocument GetTextEditorData (FilePath filePath, out bool hadBom, out Encoding encoding, out bool isOpen)
-		{
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
 					isOpen = true;
-					hadBom = false;
-					encoding = Encoding.Default;
 					return doc.Editor;
 				}
 			}
-
+			bool hadBom;
+			Encoding encoding;
 			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
 			var data = DocumentFactory.CreateNewDocument ();
+			data.UseBOM = hadBom;
+			data.Encoding = encoding;
 			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);
 			data.FileName = filePath;
 			data.Text = text;

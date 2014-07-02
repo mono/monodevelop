@@ -300,10 +300,8 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 					string filename = r.Key;
 
 					bool isOpen;
-					System.Text.Encoding encoding;
-					bool hadBom;
 
-					var data = TextFileProvider.Instance.GetTextEditorData (filename, out hadBom, out encoding, out isOpen);
+					var data = TextFileProvider.Instance.GetTextEditorData (filename, out isOpen);
 
 					var firstReference = r.First ();
 
@@ -322,7 +320,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 					if (!isOpen) {
 						script.Dispose ();
-						Mono.TextEditor.Utils.TextFileUtility.WriteText (filename, data.Text, encoding, hadBom);
+						data.Save ();
 					}
 				}
 			}

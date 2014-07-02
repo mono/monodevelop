@@ -77,10 +77,8 @@ namespace MonoDevelop.CodeIssues
 				var fileSummaries = issueSummaries.Where (summary => summary.File == file);
 				var inspectorIds = new HashSet<string> (fileSummaries.Select (summary => summary.InspectorIdString));
 				
-				bool hadBom;
-				Encoding encoding;
 				bool isOpen;
-				var data = TextFileProvider.Instance.GetTextEditorData (file.FilePath, out hadBom, out encoding, out isOpen);
+				var data = TextFileProvider.Instance.GetTextEditorData (file.FilePath, out isOpen);
 				IRefactoringContext refactoringContext;
 				var realActions = GetIssues (data, file, inspectorIds, out refactoringContext).SelectMany (issue => issue.Actions).ToList ();
 				if (realActions.Count == 0 || refactoringContext == null)
@@ -94,7 +92,7 @@ namespace MonoDevelop.CodeIssues
 				
 				if (!isOpen) {
 					// If the file is open we leave it to the user to explicitly save the file
-					TextFileUtility.WriteText (file.Name, data.Text, encoding, hadBom);
+					data.Save ();
 				}
 			});
 			return appliedActions;

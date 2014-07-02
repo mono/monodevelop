@@ -303,5 +303,12 @@ namespace MonoDevelop.Ide.Editor
 
 			return !string.IsNullOrEmpty (eol) ? eol : DefaultSourceEditorOptions.Instance.DefaultEolMarker;
 		}
+
+		public static void Save (this ITextDocument document)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			document.WriteTextTo (document.FileName); 
+		}
 	}
 }

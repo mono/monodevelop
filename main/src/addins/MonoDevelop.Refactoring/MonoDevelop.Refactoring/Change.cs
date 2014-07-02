@@ -123,19 +123,15 @@ namespace MonoDevelop.Refactoring
 				throw new InvalidOperationException ("Refactory context not available.");
 			
 			var textEditorData = this.TextEditorData;
-			bool saveEditor = false;
-			bool hadBom = true;
-			System.Text.Encoding encoding = System.Text.Encoding.UTF8;
 
 			if (textEditorData == null) {
 				bool open;
-				var data = TextFileProvider.Instance.GetTextEditorData (FileName, out hadBom, out encoding, out open);
+				var data = TextFileProvider.Instance.GetTextEditorData (FileName, out open);
 				data.Replace (Offset, RemovedChars, InsertedText);
-				data.WriteTextTo (data.FileName);
+				data.Save ();
+			} else {
+				textEditorData.Replace (Offset, RemovedChars, InsertedText);
 			}
-
-			int offset = textEditorData.CaretOffset;
-			textEditorData.Replace (Offset, RemovedChars, InsertedText);
 		}
 		
 		public override string ToString ()
