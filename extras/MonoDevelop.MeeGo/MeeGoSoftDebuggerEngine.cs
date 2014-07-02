@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Debugger;
+using MonoDevelop.Debugger.Soft;
 using MonoDevelop.Core.Execution;
 using Mono.Debugging.Client;
 using System.Net;
@@ -47,7 +48,7 @@ namespace MonoDevelop.MeeGo
 			
 			var dev = MeeGoDevice.GetChosenDevice ();
 			var startInfo = new MeeGoSoftDebuggerStartInfo (debuggerAddress, debuggerPort, cmd, dev);
-			startInfo.SetUserAssemblies (cmd.UserAssemblyPaths);
+			SoftDebuggerEngine.SetUserAssemblyNames (startInfo, cmd.UserAssemblyPaths);
 			return startInfo;
 		}
 
