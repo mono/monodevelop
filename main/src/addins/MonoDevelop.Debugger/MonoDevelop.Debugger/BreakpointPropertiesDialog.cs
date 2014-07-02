@@ -76,11 +76,97 @@ namespace MonoDevelop.Debugger
 		readonly TextEntry entryPrintExpression = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("e.g. Value of 'name' is {name}") };
 
 		// Warning icon
-		readonly ImageView warningFunction = new ImageView (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-		readonly ImageView warningLocation = new ImageView (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-		readonly ImageView warningException = new ImageView (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-		readonly ImageView warningCondition = new ImageView (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
-		readonly ImageView warningPrintExpression = new ImageView (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
+		readonly ImageViewWithTooltip warningFunction = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
+		readonly ImageViewWithTooltip warningLocation = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
+		readonly ImageViewWithTooltip warningException = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
+		readonly ImageViewWithTooltip warningCondition = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
+		readonly ImageViewWithTooltip warningPrintExpression = new ImageViewWithTooltip (ImageService.GetIcon (Ide.Gui.Stock.Warning, Gtk.IconSize.Menu));
+
+		//This class was created because normal TooltipText sometimes didn't appear seems like GTK# bug
+		class ImageViewWithTooltip : Xwt.Widget
+		{
+			string tip;
+			Xwt.Drawing.Image icon;
+			Xwt.ImageView image;
+
+			MonoDevelop.Components.TooltipPopoverWindow tooltipWindow;
+			bool mouseOver;
+
+			public ImageViewWithTooltip (Xwt.Drawing.Image icon)
+			{
+				this.icon = icon;
+				image = new Xwt.ImageView (icon);
+				this.Content = image;
+
+				MouseEntered += HandleEnterNotifyEvent;
+				MouseExited += HandleLeaveNotifyEvent;
+			}
+
+			[GLib.ConnectBefore]
+			void HandleLeaveNotifyEvent (object sender, EventArgs e)
+			{
+				mouseOver = false;
+				HideTooltip ();
+			}
+
+			[GLib.ConnectBefore]
+			void HandleEnterNotifyEvent (object sender, EventArgs e)
+			{
+				mouseOver = true;
+				ShowTooltip ();
+			}
+
+			bool ShowTooltip ()
+			{
+				if (!string.IsNullOrEmpty (tip)) {
+					HideTooltip ();
+					tooltipWindow = new MonoDevelop.Components.TooltipPopoverWindow ();
+					tooltipWindow.ShowArrow = true;
+					tooltipWindow.Text = tip;
+					var rect = this.ScreenBounds;
+					tooltipWindow.ShowPopup ((Gtk.Widget)Xwt.Toolkit.CurrentEngine.GetNativeWidget (this),
+						new Gdk.Rectangle ((int)(ParentWindow.X - rect.X), (int)(ParentWindow.Y - rect.Y), (int)rect.Width, (int)rect.Height), 
+						MonoDevelop.Components.PopupPosition.Bottom);
+				}
+				return false;
+			}
+
+			void HideTooltip ()
+			{
+				if (tooltipWindow != null) {
+					tooltipWindow.Destroy ();
+					tooltipWindow = null;
+				}
+			}
+
+			protected override void Dispose (bool disposing)
+			{
+				HideTooltip ();
+				base.Dispose (disposing);
+			}
+
+			public string ToolTip {
+				get { return tip; }
+				set {
+					tip = value;
+					if (tooltipWindow != null) {
+						if (!string.IsNullOrEmpty (tip))
+							tooltipWindow.Text = value;
+						else
+							HideTooltip ();
+					} else if (!string.IsNullOrEmpty (tip) && mouseOver)
+						ShowTooltip ();
+				}
+			}
+
+			public Xwt.Drawing.Image Image {
+				get { return icon; }
+				set {
+					icon = value;
+					image.Image = icon;
+				}
+			}
+		}
 
 		// Combobox + Pager
 		readonly SpinButton ignoreHitCount = new SpinButton ();
@@ -470,7 +556,7 @@ namespace MonoDevelop.Debugger
 
 			if (breakpointActionPrint.Active && string.IsNullOrWhiteSpace (entryPrintExpression.Text)) {
 				warningPrintExpression.Show ();
-				warningPrintExpression.TooltipText = GettextCatalog.GetString ("Trace expression not specified");
+				warningPrintExpression.ToolTip = GettextCatalog.GetString ("Trace expression not specified");
 				result = false;
 			}
 
@@ -480,13 +566,13 @@ namespace MonoDevelop.Debugger
 				if (stopOnFunction.Active) {
 					if (text.Length == 0) {
 						warningFunction.Show ();
-						warningFunction.TooltipText = GettextCatalog.GetString ("Function name not specified");
+						warningFunction.ToolTip = GettextCatalog.GetString ("Function name not specified");
 						result = false;
 					}
 
 					if (!TryParseFunction (text, out parsedFunction, out parsedParamTypes)) {
 						warningFunction.Show ();
-						warningFunction.TooltipText = GettextCatalog.GetString ("Invalid function syntax");
+						warningFunction.ToolTip = GettextCatalog.GetString ("Invalid function syntax");
 						result = false;
 					}
 				}
@@ -494,13 +580,13 @@ namespace MonoDevelop.Debugger
 				breakpointLocation.Update (entryLocationFile.Text);
 				if (!breakpointLocation.IsValid) {
 					warningLocation.Show ();
-					warningLocation.TooltipText = breakpointLocation.Warning;
+					warningLocation.ToolTip = breakpointLocation.Warning;
 					result = false;
 				}
 			} else if (stopOnException.Active) {
 				if (!classes.Contains (entryExceptionType.Text)) {
 					warningException.Show ();
-					warningException.TooltipText = GettextCatalog.GetString ("Exception not identified");
+					warningException.ToolTip = GettextCatalog.GetString ("Exception not identified");
 					result = false;
 				}
 			}
