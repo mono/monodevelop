@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Editor
 		IUrlTextLineMarker CreateUrlTextMarker (IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol);
 		ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker ();
 		ITextLineMarker CreateAsmLineMarker ();
+		IUnitTestMarker CreateUnitTestMarker (UnitTestMarkerHost host, UnitTestLocation unitTestLocation);
 		#endregion
 
 		#region Segment marker

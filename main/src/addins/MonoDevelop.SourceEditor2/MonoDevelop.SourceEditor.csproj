@@ -179,7 +179,6 @@
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\HoverCloseButton.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\DocumentLineWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextLineMarkerWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\ITextDocumentWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UsageSegmentMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\DebugTextMarker.cs" />
@@ -198,6 +197,7 @@
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\LinkMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ListDataProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TooltipProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

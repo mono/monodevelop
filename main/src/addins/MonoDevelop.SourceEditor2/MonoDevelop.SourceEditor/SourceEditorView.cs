@@ -2793,17 +2793,24 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
 		{
-			TextEditor.Document.AddMarker (((DocumentLineWrapper)line).Line, ((TextLineMarkerWrapper)lineMarker).Marker);
+			if (lineMarker is IUnitTestMarker) {
+				var actionMargin = TextEditor.ActionMargin;
+				if (actionMargin != null) {
+					actionMargin.IsVisible = true;
+				}
+			}
+
+			TextEditor.Document.AddMarker (((DocumentLineWrapper)line).Line, (TextLineMarker)lineMarker);
 		}
 
 		void ITextEditorImpl.RemoveMarker (ITextLineMarker lineMarker)
 		{
-			TextEditor.Document.RemoveMarker (((TextLineMarkerWrapper)lineMarker).Marker);
+			TextEditor.Document.RemoveMarker ((TextLineMarker)lineMarker);
 		}
 
 		IEnumerable<ITextLineMarker> ITextEditorImpl.GetLineMarker (IDocumentLine line)
 		{
-			return ((DocumentLineWrapper)line).Line.Markers.Select (m => m is ITextLineMarker ? ((ITextLineMarker)m) : new TextLineMarkerWrapper (m));
+			return ((DocumentLineWrapper)line).Line.Markers.OfType<ITextLineMarker> ();
 		}
 
 		IEnumerable<ITextSegmentMarker> ITextEditorImpl.GetTextSegmentMarkersAt (MonoDevelop.Core.Text.ISegment segment)
@@ -3125,6 +3132,12 @@ namespace MonoDevelop.SourceEditor
 		{
 			return new AsmLineMarker ();
 		}
+
+		IUnitTestMarker IMarkerHost.CreateUnitTestMarker (UnitTestMarkerHost host, UnitTestLocation unitTestLocation)
+		{
+			return new UnitTestMarker (host, unitTestLocation);
+		}
+
 
 		IGenericTextSegmentMarker IMarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length)
 		{

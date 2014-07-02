@@ -56,26 +56,24 @@ namespace MonoDevelop.Refactoring
 		/// resolve navigator.
 		/// Note: The shared resolver is fully resolved.
 		/// </summary>
-		public static Task<CSharpAstResolver> GetSharedResolver (this EditContext document)
+		public static Task<CSharpAstResolver> GetSharedResolver (this EditContext editContext)
 		{
-			var parsedDocument = document.ParsedDocument;
-			if (parsedDocument == null || document.IsProjectContextInUpdate || document.Project != null && !(document.Project is DotNetProject))
+			var parsedDocument = editContext.ParsedDocument;
+			if (parsedDocument == null || editContext.IsProjectContextInUpdate || editContext.Project != null && !(editContext.Project is DotNetProject))
 				return null;
 
 			var unit       = parsedDocument.GetAst<SyntaxTree> ();
 			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (unit == null || parsedFile == null)
 				return null;
-			var compilation = document.Compilation;
-
-			var resolverAnnotation = document.Annotation<ResolverAnnotation> ();
+			var resolverAnnotation = editContext.Annotation<ResolverAnnotation> ();
 
 			if (resolverAnnotation != null) {
 				if (resolverAnnotation.ParsedFile == parsedFile)
 					return resolverAnnotation.Task;
 				if (resolverAnnotation.SharedTokenSource != null)
 					resolverAnnotation.SharedTokenSource.Cancel ();
-				document.RemoveAnnotations<ResolverAnnotation> ();
+				editContext.RemoveAnnotations<ResolverAnnotation> ();
 			}
 
 			var tokenSource = new CancellationTokenSource ();
@@ -83,6 +81,11 @@ namespace MonoDevelop.Refactoring
 			var resolveTask = Task.Factory.StartNew (delegate {
 				try {
 					using (var timer = ResolveCounter.BeginTiming ()) {
+						var compilation = editContext.Compilation;
+						unit       = parsedDocument.GetAst<SyntaxTree> ();
+						parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
+						if (unit == null || parsedFile == null)
+							return null;
 						var result = new CSharpAstResolver (compilation, unit, parsedFile);
 						result.ApplyNavigator (new ConstantModeResolveVisitorNavigator (ResolveVisitorNavigationMode.Resolve, null), token);
 						return result;
@@ -107,7 +110,7 @@ namespace MonoDevelop.Refactoring
 				return t.Result;
 			}, TaskContinuationOptions.ExecuteSynchronously);
 
-			document.AddAnnotation (new ResolverAnnotation {
+			editContext.AddAnnotation (new ResolverAnnotation {
 				Task = wrapper,
 				ParsedFile = parsedFile,
 				SharedTokenSource = tokenSource

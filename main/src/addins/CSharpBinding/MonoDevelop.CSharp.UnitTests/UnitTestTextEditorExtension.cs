@@ -33,6 +33,7 @@ using MonoDevelop.Core;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp
 {
@@ -40,19 +41,15 @@ namespace MonoDevelop.CSharp
 	{
 		public override IList<UnitTestLocation> GatherUnitTests ()
 		{
-			var resolver = EditContext.GetSharedResolver ();
-			if (resolver == null || resolver.Result == null)
+			var resolverTask = EditContext.GetSharedResolver ();
+			if (resolverTask == null || resolverTask.Result == null)
 				return null;
 			var parsedDocument = EditContext.ParsedDocument;
 			if (parsedDocument == null)
 				return null;
-			var syntaxTree = parsedDocument.GetAst<SyntaxTree> ();
-			if (syntaxTree == null)
-				return null;
-
-			var visitor = new NUnitVisitor (resolver.Result);
+			var visitor = new NUnitVisitor (resolverTask.Result);
 			try {
-				visitor.VisitSyntaxTree (syntaxTree);
+				resolverTask.Result.RootNode.AcceptVisitor (visitor);
 			} catch (Exception ex) {
 				LoggingService.LogError ("Exception while analyzing ast for unit tests.", ex);
 				return null;
