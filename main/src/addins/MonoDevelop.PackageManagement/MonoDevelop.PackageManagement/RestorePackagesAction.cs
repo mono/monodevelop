@@ -115,6 +115,17 @@ namespace MonoDevelop.PackageManagement
 
 		IEnumerable<PackageReference> GetPackageReferences ()
 		{
+			return GetPackageReferencesForSolution ()
+				.Concat (GetPackageReferencesForAllProjects ());
+		}
+
+		IEnumerable<PackageReference> GetPackageReferencesForSolution ()
+		{
+			return SolutionPackageRepository.GetPackageReferences ();
+		}
+
+		IEnumerable<PackageReference> GetPackageReferencesForAllProjects ()
+		{
 			return solution
 				.GetProjects (repositoryCache.CreateAggregateRepository ())
 				.SelectMany (project => project.GetPackageReferences ())

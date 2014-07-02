@@ -255,6 +255,21 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("1.2.3.4", packageManagerFactory.FakePackageManager.PackagePassedToInstallPackage.Version.ToString ());
 			AssertMessageLogged ("1 package restored successfully.");
 		}
+
+		[Test]
+		public void Execute_ProjectHasOneUnrestoredSolutionLevelPackage_PackageIsInstalled ()
+		{
+			FakePackageManagementProject project = CreateSolutionWithOneProject ();
+			solution.AddPackageReference ("MyPackage", "1.0");
+			FakePackage package = AddPackageToPriorityRepository ("MyPackage", "1.0");
+			CreateAction ();
+
+			action.Execute ();
+
+			Assert.AreEqual (package, packageManagerFactory.FakePackageManager.PackagePassedToInstallPackage);
+			Assert.IsTrue (packageManagerFactory.FakePackageManager.IgnoreWalkInfoPassedToInstallPackage);
+			Assert.IsTrue (packageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToInstallPackage);
+			Assert.IsTrue (packageManagerFactory.FakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);		}
 	}
 }
 

@@ -42,7 +42,8 @@ namespace ICSharpCode.PackageManagement
 		IQueryable<IPackage> GetPackages();
 		bool IsInstalled(IPackage package);
 		bool IsRestored (PackageReference packageReference);
-		
+		IEnumerable<PackageReference> GetPackageReferences ();
+
 		ISharedPackageRepository Repository { get; }
 		IFileSystem FileSystem { get; }
 		IPackagePathResolver PackagePathResolver { get; }

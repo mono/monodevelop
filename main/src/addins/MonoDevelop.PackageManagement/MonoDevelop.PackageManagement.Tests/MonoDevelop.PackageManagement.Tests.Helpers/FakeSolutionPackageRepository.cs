@@ -89,6 +89,25 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 					(package.Version == packageReference.Version);
 			});
 		}
+
+		public List<PackageReference> PackageReferences = new List<PackageReference> ();
+
+		public void AddPackageReference (string packageId, string packageVersion)
+		{
+			var packageReference = new PackageReference (
+				packageId,
+				new SemanticVersion (packageVersion),
+				null,
+				null,
+				false,
+				false);
+			PackageReferences.Add (packageReference);
+		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			return PackageReferences;
+		}
 	}
 }
 

@@ -131,5 +131,14 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new LocalPackageRepository (packagePathResolver, fileSystem);
 		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			var sharedRepository = Repository as SharedPackageRepository;
+			if (sharedRepository != null) {
+				return sharedRepository.PackageReferenceFile.GetPackageReferences ();
+			}
+			return Enumerable.Empty <PackageReference> ();
+		}
 	}
 }

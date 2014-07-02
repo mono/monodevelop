@@ -213,6 +213,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 					(package.Version == packageVersion);
 			});
 		}
+
+		public void AddPackageReference (string packageId, string packageVersion)
+		{
+			SolutionPackageRepository.AddPackageReference (packageId, packageVersion);
+		}
 	}
 }
 
