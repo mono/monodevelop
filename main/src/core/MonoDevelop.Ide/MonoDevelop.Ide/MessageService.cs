@@ -285,28 +285,24 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static int RunCustomDialog (Dialog dialog, Window parent)
 		{
-			if (parent == null) {
-				if (dialog.TransientFor != null)
-					parent = dialog.TransientFor;
-				else
-					parent = GetDefaultParent (dialog);
+			// if dialog is modal, make sure it's parented on any existing modal dialog
+			if (dialog.Modal) {
+				parent = GetDefaultModalParent ();
 			}
+
+			//ensure the dialog has a parent
+			if (parent == null) {
+				parent = dialog.TransientFor ?? RootWindow;
+			}
+
 			dialog.TransientFor = parent;
 			dialog.DestroyWithParent = true;
+
 			if (dialog.Title == null)
 				dialog.Title = BrandingService.ApplicationName;
+
 			PlaceDialog (dialog, parent);
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
-		}
-		
-		//make sure modal children are parented on top of other modal children
-		static Window GetDefaultParent (Window child)
-		{
-			if (child.Modal) {
-				return GetDefaultModalParent ();
-			} else {
-				return RootWindow;
-			}
 		}
 		
 		/// <summary>
@@ -317,7 +313,12 @@ namespace MonoDevelop.Ide
 			foreach (Window w in Window.ListToplevels ())
 				if (w.Visible && w.HasToplevelFocus && w.Modal)
 					return w;
-			return RootWindow;
+			return GetFocusedToplevel ();
+		}
+
+		static Window GetFocusedToplevel ()
+		{
+			return Window.ListToplevels ().FirstOrDefault (w => w.HasToplevelFocus) ?? RootWindow;
 		}
 		
 		/// <summary>
@@ -325,15 +326,20 @@ namespace MonoDevelop.Ide
 		/// </summary>
 		public static void PlaceDialog (Window child, Window parent)
 		{
-			//HACK: Mac GTK automatic window placement is broken
-			if (Platform.IsMac) {
-				if (parent == null) {
-					parent = GetDefaultParent (child);
-				}
-				if (parent != null) {
-					CenterWindow (child, parent);
-				}
-			}
+			//HACK: this is a workaround for broken automatic window placement on Mac
+			if (!Platform.IsMac)
+				return;
+
+			//modal windows should always be placed o top of existing modal windows
+			if (child.Modal)
+				parent = GetDefaultModalParent ();
+
+			//else center on the focused toplevel
+			if (parent == null)
+				parent = GetFocusedToplevel ();
+
+			if (parent != null)
+				CenterWindow (child, parent);
 		}
 		
 		/// <summary>Centers a window relative to its parent.</summary>
