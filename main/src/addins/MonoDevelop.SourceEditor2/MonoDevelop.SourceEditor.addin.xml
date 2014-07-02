@@ -198,7 +198,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/EditorFactory">
-		<Class class="MonoDevelop.SourceEditor.EditorFactory" />
+		<Class id = "SourceEditor" class="MonoDevelop.SourceEditor.EditorFactory" />
 	</Extension>
 
 

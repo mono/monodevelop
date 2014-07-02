@@ -49,7 +49,8 @@ namespace MonoDevelop.Ide.Editor
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/EditorFactory", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {
 				case ExtensionChange.Add:
-					currentFactory = (ITextEditorFactory)args.ExtensionObject;
+					if (currentFactory == null)
+						currentFactory = (ITextEditorFactory)args.ExtensionObject;
 					break;
 				}
 			});
