@@ -29,23 +29,15 @@ endif
 
 .PHONY: all
 
-all: pack
+all: build
 
 build: MonoDevelop.FSharpBinding/MonoDevelop.FSharp.$(MDTAG).fsproj MonoDevelop.FSharpBinding/FSharpBinding.addin.xml
 	(cd MonoDevelop.FSharpBinding && xbuild MonoDevelop.FSharp.$(MDTAG).fsproj /p:Configuration=$(config))
-
 
 pack: build
 	-rm -fr pack/$(VERSION)/$(MDTAG)/$(config)
 	@-mkdir -p pack/$(VERSION)/$(MDTAG)/$(config)
 	$(MDTOOL) setup pack bin/$(MDTAG)/$(config)/FSharpBinding.dll -d:pack/$(VERSION)/$(MDTAG)/$(config)
-
-add-libraries:
-	mkdir /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4
-	cp -pr dependencies/AspNetMvc4/* /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4
-
-remove-libraries:
-	rm -rf /Applications/MonoDevelop.app/Contents/MacOS/lib/monodevelop/AddIns/AspNetMvc4
 
 install: pack
 	$(MDTOOL) setup install -y pack/$(VERSION)/$(MDTAG)/$(config)/MonoDevelop.FSharpBinding_$(VERSION).mpack 
