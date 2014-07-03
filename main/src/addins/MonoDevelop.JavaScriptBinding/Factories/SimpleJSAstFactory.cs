@@ -31,14 +31,14 @@ namespace MonoDevelop.JavaScript
 {
 	static class SimpleJSAstFactory
 	{
-		public static SimpleJSAst CreateFromJavaScriptParsedDocument(IEnumerable<Jurassic.Compiler.JSAstNode> jsAstNodes)
+		public static SimpleJSAst CreateFromJavaScriptParsedDocument(IEnumerable<Jurassic.Compiler.JSAstNode> jsAstNodes, string filename)
 		{
 			var simpleAst = new SimpleJSAst ();
-			simpleAst.AstNodes = mapAstNodes (jsAstNodes);
+			simpleAst.AstNodes = mapAstNodes (jsAstNodes, filename);
 			return simpleAst;
 		}
 
-		static List<JSStatement> mapAstNodes(IEnumerable<Jurassic.Compiler.JSAstNode> nodes)
+		static List<JSStatement> mapAstNodes(IEnumerable<Jurassic.Compiler.JSAstNode> nodes, string filename)
 		{
 			if (nodes == null)
 				return new List<JSStatement> ();
@@ -49,24 +49,24 @@ namespace MonoDevelop.JavaScript
 				var variableStatement = node as Jurassic.Compiler.VarStatement;
 				if (variableStatement != null) {
 					foreach (Jurassic.Compiler.VariableDeclaration variableDeclaration in variableStatement.Declarations) {
-						jsCacheNodes.Add (new JSVariableDeclaration(variableDeclaration));
+						jsCacheNodes.Add (new JSVariableDeclaration(variableDeclaration, filename));
 					}
-					jsCacheNodes.AddRange (mapAstNodes (variableStatement.ChildNodes));
+					jsCacheNodes.AddRange (mapAstNodes (variableStatement.ChildNodes, filename));
 					continue;
 				}
 
 				var functionStatement = node as Jurassic.Compiler.FunctionStatement;
 				if (functionStatement != null) {
-					var jsFunctionAst = new JSFunctionStatement (functionStatement);
-					jsFunctionAst.ChildNodes.AddRange (mapAstNodes (functionStatement.BodyRoot.ChildNodes));
+					var jsFunctionAst = new JSFunctionStatement (functionStatement, filename);
+					jsFunctionAst.ChildNodes.AddRange (mapAstNodes (functionStatement.BodyRoot.ChildNodes, filename));
 					jsCacheNodes.Add (jsFunctionAst);
 					continue;
 				}
 
 				var functionExpression = node as Jurassic.Compiler.FunctionExpression;
 				if (functionExpression != null) {
-					var jsFunctionAst = new JSFunctionStatement (functionExpression);
-					jsFunctionAst.ChildNodes.AddRange (mapAstNodes (functionExpression.BodyRoot.ChildNodes));
+					var jsFunctionAst = new JSFunctionStatement (functionExpression, filename);
+					jsFunctionAst.ChildNodes.AddRange (mapAstNodes (functionExpression.BodyRoot.ChildNodes, filename));
 					jsCacheNodes.Add (jsFunctionAst);
 					continue;
 				}
@@ -82,8 +82,8 @@ namespace MonoDevelop.JavaScript
 
 								var objFuncExpression = value as Jurassic.Compiler.FunctionExpression;
 								if (objFuncExpression != null) {
-									var jsFunctionAst = new JSFunctionStatement (objFuncExpression);
-									jsFunctionAst.ChildNodes.AddRange (mapAstNodes (objFuncExpression.BodyRoot.ChildNodes));
+									var jsFunctionAst = new JSFunctionStatement (objFuncExpression, filename);
+									jsFunctionAst.ChildNodes.AddRange (mapAstNodes (objFuncExpression.BodyRoot.ChildNodes, filename));
 									jsCacheNodes.Add (jsFunctionAst);
 									continue;
 								}
@@ -91,13 +91,13 @@ namespace MonoDevelop.JavaScript
 								var objGetSetFunc = value as Jurassic.Compiler.Parser.ObjectLiteralAccessor;
 								if (objGetSetFunc != null) {
 									if (objGetSetFunc.Getter != null) {
-										var jsFunctionAst = new JSFunctionStatement (objGetSetFunc.Getter);
-										jsFunctionAst.ChildNodes.AddRange (mapAstNodes (objGetSetFunc.Getter.BodyRoot.ChildNodes));
+										var jsFunctionAst = new JSFunctionStatement (objGetSetFunc.Getter, filename);
+										jsFunctionAst.ChildNodes.AddRange (mapAstNodes (objGetSetFunc.Getter.BodyRoot.ChildNodes, filename));
 										jsCacheNodes.Add (jsFunctionAst);
 									}
 									if (objGetSetFunc.Setter != null) {
-										var jsFunctionAst = new JSFunctionStatement (objGetSetFunc.Setter);
-										jsFunctionAst.ChildNodes.AddRange (mapAstNodes (objGetSetFunc.Setter.BodyRoot.ChildNodes));
+										var jsFunctionAst = new JSFunctionStatement (objGetSetFunc.Setter, filename);
+										jsFunctionAst.ChildNodes.AddRange (mapAstNodes (objGetSetFunc.Setter.BodyRoot.ChildNodes, filename));
 										jsCacheNodes.Add (jsFunctionAst);
 									}
 								}
@@ -108,7 +108,7 @@ namespace MonoDevelop.JavaScript
 					continue;
 				}
 
-				jsCacheNodes.AddRange (mapAstNodes (node.ChildNodes));
+				jsCacheNodes.AddRange (mapAstNodes (node.ChildNodes, filename));
 			}
 
 			return jsCacheNodes;

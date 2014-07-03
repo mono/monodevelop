@@ -29,8 +29,8 @@ namespace MonoDevelop.JavaScript
 {
 	public class JSVariableDeclaration : JSStatement
 	{
-		public JSVariableDeclaration (Jurassic.Compiler.VariableDeclaration varDeclaration)
-			: base (varDeclaration.VariableName, varDeclaration.SourceSpan)
+		public JSVariableDeclaration (Jurassic.Compiler.VariableDeclaration varDeclaration, string filename)
+			: base (varDeclaration.VariableName, varDeclaration.SourceSpan, filename)
 		{
 		}
 	}

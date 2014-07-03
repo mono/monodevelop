@@ -44,7 +44,7 @@ namespace MonoDevelop.JavaScript
 				var variableDeclaration = node as JSVariableDeclaration;
 				if (variableDeclaration != null) {
 					if (!dataList.Exists (i => i.DisplayText == variableDeclaration.Name) && !string.IsNullOrWhiteSpace (variableDeclaration.Name))
-						dataList.Add (new VariableCompletion (variableDeclaration));
+						dataList.Add (new VariableCompletion (variableDeclaration, node.Filename));
 
 					UpdateCodeCompletion (node.ChildNodes, ref dataList);
 
@@ -56,9 +56,9 @@ namespace MonoDevelop.JavaScript
 					if (!string.IsNullOrWhiteSpace (functionStatement.Name)) {
 						var existingDefinition = dataList.FirstOrDefault (i => i.DisplayText == functionStatement.Name);
 						if (existingDefinition == null)
-							dataList.Add (new FunctionCompletion (functionStatement));
+							dataList.Add (new FunctionCompletion (functionStatement, node.Filename));
 						else
-							existingDefinition.AddOverload (new FunctionCompletion (functionStatement));
+							existingDefinition.AddOverload (new FunctionCompletion (functionStatement, node.Filename));
 					}
 
 					UpdateCodeCompletion (node.ChildNodes, ref dataList);

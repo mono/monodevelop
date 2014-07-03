@@ -47,7 +47,7 @@ namespace MonoDevelop.JavaScript
 			Icon = Stock.Literal;
 			DisplayText = name;
 			CompletionText = DisplayText;
-			this.Description = description; // TODO
+			Description = description; // TODO
 		}
 
 		#endregion
@@ -61,6 +61,8 @@ namespace MonoDevelop.JavaScript
 		public override string Description { get; set; }
 
 		public override string CompletionText { get; set; }
+
+		public string FileName { get; set; }
 
 		#endregion
 
@@ -78,12 +80,13 @@ namespace MonoDevelop.JavaScript
 
 	class VariableCompletion : CompletionData
 	{
-		public VariableCompletion (JSVariableDeclaration statement)
+		public VariableCompletion (JSVariableDeclaration statement, string filename)
 		{
 			Icon = Stock.Field;
 			DisplayText = statement.Name;
 			CompletionText = DisplayText;
 			Description = string.Empty; // TODO
+			FileName = filename;
 		}
 
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
@@ -94,6 +97,9 @@ namespace MonoDevelop.JavaScript
 			var colorString = Mono.TextEditor.HelperMethods.GetColorString (blueColor);
 
 			var content = string.Format ("<span foreground=\"{0}\">var</span> {1}", colorString, DisplayText);
+
+			if (!string.IsNullOrWhiteSpace (FileName))
+				tooltip.FooterMarkup = System.IO.Path.GetFileName (FileName);
 
 			tooltip.SignatureMarkup = content;
 			return tooltip;
@@ -124,13 +130,14 @@ namespace MonoDevelop.JavaScript
 
 		#region Constructor
 
-		public FunctionCompletion (JSFunctionStatement statement)
+		public FunctionCompletion (JSFunctionStatement statement, string filename)
 		{
 			Icon = Stock.Method;
 			DisplayText = statement.Name;
 			CompletionText = DisplayText;
 			Description = string.Empty; // TODO
 			Parameters = statement.Parameters;
+			FileName = filename;
 		}
 
 		#endregion
@@ -158,6 +165,9 @@ namespace MonoDevelop.JavaScript
 				}
 			}
 			builder.Append (")");
+
+			if (!string.IsNullOrWhiteSpace (FileName))
+				tooltip.FooterMarkup = System.IO.Path.GetFileName (FileName);
 
 			tooltip.SignatureMarkup = builder.ToString ();
 			return tooltip;

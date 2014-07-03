@@ -42,6 +42,11 @@ namespace MonoDevelop.JavaScript
 			set;
 		}
 
+		public string Filename {
+			get;
+			set;
+		}
+
 		public SourceCodeSpan SourceCodePosition {
 			get;
 			set;
@@ -52,22 +57,23 @@ namespace MonoDevelop.JavaScript
 			set;
 		}
 
-		protected JSStatement (string name, SourceCodeSpan sourceCodeSpan)
-			: this (name, sourceCodeSpan, string.Empty)
+		protected JSStatement (string name, SourceCodeSpan sourceCodeSpan, string filename)
+			: this (name, sourceCodeSpan, string.Empty, filename)
 		{
 		}
 
-		protected JSStatement (string name, SourceCodeSpan sourceCodeSpan, string description)
-			: this (name, sourceCodeSpan, description, new List<JSStatement> ())
+		protected JSStatement (string name, SourceCodeSpan sourceCodeSpan, string description, string filename)
+			: this (name, sourceCodeSpan, description, new List<JSStatement> (), filename)
 		{
 		}
 
-		protected JSStatement (string name, SourceCodeSpan sourceCodeSpan, string description, List<JSStatement> childNodes)
+		protected JSStatement (string name, SourceCodeSpan sourceCodeSpan, string description, List<JSStatement> childNodes, string filename)
 		{
 			Name = name;
 			Description = description;
 			SourceCodePosition = sourceCodeSpan;
 			ChildNodes = childNodes;
+			Filename = filename;
 		}
 	}
 }

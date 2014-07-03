@@ -53,16 +53,16 @@ namespace MonoDevelop.JavaScript
 			set;
 		}
 
-		public JSFunctionStatement (Jurassic.Compiler.FunctionStatement functionStatement)
-			: base (functionStatement.FunctionName, functionStatement.SourceSpan)
+		public JSFunctionStatement (Jurassic.Compiler.FunctionStatement functionStatement, string filename)
+			: base (functionStatement.FunctionName, functionStatement.SourceSpan, filename)
 		{
 			FunctionSignature = functionStatement.BuildFunctionSignature ();
 			FunctionType = JSFunctionType.FunctionStatement;
 			Parameters = functionStatement.ArgumentNames.ToArray();
 		}
 
-		public JSFunctionStatement (Jurassic.Compiler.FunctionExpression functionStatement)
-			: base (functionStatement.FunctionName, functionStatement.SourceSpan)
+		public JSFunctionStatement (Jurassic.Compiler.FunctionExpression functionStatement, string filename)
+			: base (functionStatement.FunctionName, functionStatement.SourceSpan, filename)
 		{
 			FunctionSignature = functionStatement.BuildFunctionSignature ();
 			FunctionType = JSFunctionType.FunctionStatement;

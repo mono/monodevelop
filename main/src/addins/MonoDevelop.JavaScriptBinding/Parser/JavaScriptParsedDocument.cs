@@ -128,7 +128,7 @@ namespace MonoDevelop.JavaScript
 				AstNodes = parserResult.ChildNodes;
 				setFoldings (AstNodes);
 				setComments (parser.Comments);
-				SimpleAst = SimpleJSAstFactory.CreateFromJavaScriptParsedDocument (AstNodes);
+				SimpleAst = SimpleJSAstFactory.CreateFromJavaScriptParsedDocument (AstNodes, FileName);
 			}
 		}
 
