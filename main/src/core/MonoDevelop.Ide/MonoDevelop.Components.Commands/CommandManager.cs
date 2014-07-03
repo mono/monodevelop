@@ -760,12 +760,10 @@ namespace MonoDevelop.Components.Commands
 				parent.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
 
 				// Window coordinates in gtk are the same for cocoa, with the exception of the Y coordinate, that has to be flipped.
-				var pt = new PointF ((float)trans_x, (float)trans_y);
+				var pt = new CoreGraphics.CGPoint ((float)trans_x, (float)trans_y);
 				int w,h;
 				toplevel.GetSize (out w, out h);
 				pt.Y = h - pt.Y;
-
-				var pt = nsview.ConvertPointFromBase (new CoreGraphics.CGPoint ((float)trans_x, (float)trans_y));
 
 				var tmp_event = AppKit.NSEvent.MouseEvent (AppKit.NSEventType.LeftMouseDown,
 					pt,
