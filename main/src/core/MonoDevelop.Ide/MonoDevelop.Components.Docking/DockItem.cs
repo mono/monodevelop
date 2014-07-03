@@ -101,7 +101,6 @@ namespace MonoDevelop.Components.Docking
 			set {
 				label = value; 
 				backend.SetLabel (label);
-				frame.UpdateTitle (this);
 			}
 		}
 
@@ -152,7 +151,6 @@ namespace MonoDevelop.Components.Docking
 			if (s != currentVisualStyle) {
 				currentVisualStyle = s;
 				backend.SetStyle (s);
-				frame.UpdateStyle (this);
 			}
 		}
 
@@ -235,7 +233,6 @@ namespace MonoDevelop.Components.Docking
 			set {
 				icon = value;
 				backend.SetIcon (icon);
-				frame.UpdateTitle (this);
 			}
 		}
 

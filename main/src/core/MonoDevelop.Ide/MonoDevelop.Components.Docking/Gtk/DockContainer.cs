@@ -240,7 +240,6 @@ namespace MonoDevelop.Components.Docking
 					notebooks.Add (ts);
 					ts.Parent = this;
 				}
-				frame.Frontend.UpdateRegionStyle (grp.Group);
 				ts.VisualStyle = grp.VisualStyle;
 				grp.UpdateNotebook (ts);
 			}

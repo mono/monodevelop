@@ -48,17 +48,13 @@ namespace MonoDevelop.Components.Docking
 		
 		internal bool ShadedSeparators = true;
 
-		DockFrame frontend;
+		IDockFrameController controller;
 		DockContainer container;
 		DockLayout layout;
 
 		int handleSize = 1;
 		int handlePadding = 0;
-		int defaultItemWidth = 300;
-		int defaultItemHeight = 250;
-		uint autoShowDelay = 400;
-		uint autoHideDelay = 500;
-		
+
 		List<DockFrameTopLevel> topLevels = new List<DockFrameTopLevel> ();
 
 		DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
@@ -67,9 +63,13 @@ namespace MonoDevelop.Components.Docking
 
 		Dictionary<DockGroupItem,GtkDockGroupItem> items = new Dictionary<DockGroupItem, GtkDockGroupItem> ();
 
-		public GtkDockFrame (DockFrame frontend)
+		public GtkDockFrame ()
 		{
-			this.frontend = frontend;
+		}
+
+		public void Initialize (IDockFrameController controller)
+		{
+			this.controller = controller;
 
 			GtkWorkarounds.FixContainerLeak (this);
 
@@ -97,8 +97,8 @@ namespace MonoDevelop.Components.Docking
 			get { return Platform.IsMac; }
 		}
 
-		public DockFrame Frontend {
-			get { return frontend; }
+		public IDockFrameController Frontend {
+			get { return controller; }
 		}
 
 		void IDockFrameBackend.Refresh (DockObject obj)
@@ -127,14 +127,15 @@ namespace MonoDevelop.Components.Docking
 		
 		internal bool OverlayWidgetVisible { get; set; }
 
-		public void AddOverlayWidget (Widget widget, bool animate = false)
+		public void AddOverlayWidget (Control control, bool animate = false)
 		{
+			var widget = control.GetNativeWidget<Gtk.Widget> ();
+
 			RemoveOverlayWidget (false);
 
 			this.overlayWidget = widget;
 			widget.Parent = this;
 			OverlayWidgetVisible = true;
-			frontend.MinimizeAllAutohidden ();
 			if (animate) {
 				currentOverlayPosition = Math.Max (0, Allocation.Y + Allocation.Height);
 				this.Animate (
@@ -263,19 +264,13 @@ namespace MonoDevelop.Components.Docking
 
 		public int DefaultItemWidth {
 			get {
-				return defaultItemWidth;
-			}
-			set {
-				defaultItemWidth = value;
+				return controller.DefaultItemWidth;
 			}
 		}
 
 		public int DefaultItemHeight {
 			get {
-				return defaultItemHeight;
-			}
-			set {
-				defaultItemHeight = value;
+				return controller.DefaultItemHeight;
 			}
 		}
 		
@@ -335,23 +330,17 @@ namespace MonoDevelop.Components.Docking
 		
 		public uint AutoShowDelay {
 			get {
-				return autoShowDelay;
-			}
-			set {
-				autoShowDelay = value;
+				return controller.AutoShowDelay;
 			}
 		}
 
 		public uint AutoHideDelay {
 			get {
-				return autoHideDelay;
-			}
-			set {
-				autoHideDelay = value;
+				return controller.AutoHideDelay;
 			}
 		}
 		
-		void IDockFrameBackend.UpdateTitle (DockItem item)
+		public void UpdateTitle (DockItem item)
 		{
 			GtkDockGroupItem gitem = container.FindDockGroupItem (item.Id);
 			if (gitem == null)
@@ -364,7 +353,7 @@ namespace MonoDevelop.Components.Docking
 			dockBarRight.UpdateTitle (gitem.Item);
 		}
 		
-		void IDockFrameBackend.UpdateStyle (DockItem item)
+		public void UpdateStyle (DockItem item)
 		{
 			GtkDockGroupItem gitem = container.FindDockGroupItem (item.Id);
 			if (gitem == null)
@@ -603,8 +592,16 @@ namespace MonoDevelop.Components.Docking
 		
 		protected override bool OnButtonPressEvent (EventButton evnt)
 		{
-			frontend.MinimizeAllAutohidden ();
+			MinimizeAllAutohidden ();
 			return base.OnButtonPressEvent (evnt);
+		}
+
+		void MinimizeAllAutohidden ()
+		{
+			foreach (var it in GetItems ()) {
+				if (it.Frontend.Visible && it.Frontend.Status == DockItemStatus.AutoHide)
+					it.Frontend.Minimize ();
+			}
 		}
 
 		static internal bool IsWindows {

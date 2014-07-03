@@ -41,7 +41,7 @@ using MonoDevelop.Components.Docking.Internal;
 
 namespace MonoDevelop.Components.Docking
 {
-	public class DockFrame: Control
+	class DockFrame: Control, IDockFrameController
 	{
 		int defaultItemWidth = 300;
 		int defaultItemHeight = 250;
@@ -57,6 +57,13 @@ namespace MonoDevelop.Components.Docking
 
 		DockVisualStyle defaultStyle;
 
+		// Registered region styles. We are using a list instead of a dictionary because
+		// the registering order is important
+		List<Tuple<string,DockVisualStyle>> regionStyles = new List<Tuple<string, DockVisualStyle>> ();
+
+		// Styles specific to items
+		Dictionary<string,DockVisualStyle> stylesById = new Dictionary<string, DockVisualStyle> ();
+
 		public DockFrame ()
 		{
 			DefaultVisualStyle = new DockVisualStyle ();
@@ -64,28 +71,25 @@ namespace MonoDevelop.Components.Docking
 
 		protected override object CreateNativeWidget ()
 		{
-			backend = new GtkDockFrame (this);
+			backend = new GtkDockFrame ();
+			backend.Initialize (this);
 			return (Gtk.Widget)backend;
 		}
 
-		public void AddOverlayWidget (Widget widget, bool animate = false)
+		public void AddOverlayWidget (Control widget, bool animate = false)
 		{
+			MinimizeAllAutohidden ();
+			backend.AddOverlayWidget (widget, animate);
 		}
 
 		public void RemoveOverlayWidget (bool animate = false)
 		{
+			backend.RemoveOverlayWidget (animate);
 		}
 
 		internal IDockFrameBackend Backend {
 			get { return backend; }
 		}
-
-		// Registered region styles. We are using a list instead of a dictionary because
-		// the registering order is important
-		List<Tuple<string,DockVisualStyle>> regionStyles = new List<Tuple<string, DockVisualStyle>> ();
-
-		// Styles specific to items
-		Dictionary<string,DockVisualStyle> stylesById = new Dictionary<string, DockVisualStyle> ();
 
 		public DockVisualStyle DefaultVisualStyle {
 			get {
@@ -123,9 +127,9 @@ namespace MonoDevelop.Components.Docking
 				stylesById.Remove (itemId);
 		}
 
-		internal void UpdateRegionStyle (DockObject obj)
+		DockVisualStyle IDockFrameController.GetRegionStyleForObject (DockObject obj)
 		{
-			obj.VisualStyle = GetRegionStyleForObject (obj);
+			return GetRegionStyleForObject (obj);
 		}
 
 		/// <summary>
@@ -190,14 +194,19 @@ namespace MonoDevelop.Components.Docking
 			return mergedStyle ?? DefaultVisualStyle;
 		}
 
-		internal bool InRegion (string location, DockObject obj)
+		DockVisualStyle IDockFrameController.GetRegionStyleForPosition (DockGroup parentGroup, int childIndex, bool insertingPosition)
+		{
+			return GetRegionStyleForPosition (parentGroup, childIndex, insertingPosition);
+		}
+
+		bool InRegion (string location, DockObject obj)
 		{
 			if (obj.ParentGroup == null)
 				return false;
 			return InRegion (location, obj.ParentGroup, obj.ParentGroup.GetObjectIndex (obj), false);
 		}
 
-		internal bool InRegion (string location, DockGroup objToFindParent, int objToFindIndex, bool insertingPosition)
+		bool InRegion (string location, DockGroup objToFindParent, int objToFindIndex, bool insertingPosition)
 		{
 			// Checks if the object is in the specified region.
 			// A region is a collection with the format: "ItemId1/Position1;ItemId2/Position2..."
@@ -283,7 +292,7 @@ namespace MonoDevelop.Components.Docking
 			return obj != null && (obj.ParentGroup == ancestorToFind || ObjectHasAncestor (obj.ParentGroup, ancestorToFind));
 		}
 		
-		internal DockGroupItem FindDockGroupItem (string id)
+		DockGroupItem FindDockGroupItem (string id)
 		{
 			if (layout == null)
 				return null;
@@ -371,6 +380,7 @@ namespace MonoDevelop.Components.Docking
 			}
 
 			dl.RestoreAllocation ();
+			dl.UpdateStyle ();
 			backend.LoadLayout (dl);
 			return true;
 		}
@@ -493,25 +503,6 @@ namespace MonoDevelop.Components.Docking
 			reader.ReadEndElement ();
 		}
 
-		internal void UpdateTitle (DockItem item)
-		{
-			backend.UpdateTitle (item);
-		}
-		
-		internal void UpdateStyle (DockItem item)
-		{
-			backend.UpdateStyle (item);
-		}
-		
-		internal void Present (DockItem item, bool giveFocus)
-		{
-			DockGroupItem gitem = FindDockGroupItem (item.Id);
-			if (gitem == null)
-				return;
-			
-			gitem.ParentGroup.Present (item, giveFocus);
-		}
-		
 		internal bool GetVisible (DockItem item)
 		{
 			DockGroupItem gitem = FindDockGroupItem (item.Id);
@@ -658,7 +649,7 @@ namespace MonoDevelop.Components.Docking
 			return null;
 		}
 
-		internal void MinimizeAllAutohidden ()
+		void MinimizeAllAutohidden ()
 		{
 			foreach (var it in GetItems ()) {
 				if (it.Visible && it.Status == DockItemStatus.AutoHide)

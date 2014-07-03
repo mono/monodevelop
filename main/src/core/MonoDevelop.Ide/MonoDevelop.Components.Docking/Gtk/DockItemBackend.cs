@@ -76,6 +76,7 @@ namespace MonoDevelop.Components.Docking
 				titleTab.SetLabel (widget, icon, label);
 			if (floatingWindow != null)
 				floatingWindow.Title = GetWindowTitle ();
+			frame.UpdateTitle (parentItem);
 		}
 
 		void IDockItemBackend.SetIcon (Xwt.Drawing.Image value)
@@ -83,6 +84,7 @@ namespace MonoDevelop.Components.Docking
 			icon = value;
 			if (titleTab != null)
 				titleTab.SetLabel (widget, icon, label);
+			frame.UpdateTitle (parentItem);
 		}
 
 		void IDockItemBackend.SetContent (Control content)
@@ -112,6 +114,7 @@ namespace MonoDevelop.Components.Docking
 					titleTab.VisualStyle = s;
 				if (widget != null)
 					widget.VisualStyle = s;
+				frame.UpdateStyle (parentItem);
 			}
 		}
 

@@ -1,5 +1,5 @@
 ﻿//
-// DockFrameBackend.cs
+// IDockFrameController.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -25,45 +25,41 @@
 // THE SOFTWARE.
 using System;
 
-namespace MonoDevelop.Components.Docking.Internal
+namespace MonoDevelop.Components.Docking
 {
-	interface IDockFrameBackend
+	interface IDockFrameController
 	{
-		void Initialize (IDockFrameController controller);
+		DockVisualStyle DefaultVisualStyle { get; }
 
 		/// <summary>
-		/// Loads the layout, placing the pads at the correct locations. All pads included in the layout
-		/// are visible and docked.
+		/// Gets the style for a dock object, which will inherit values from all region/style definitions
 		/// </summary>
-		void LoadLayout (DockLayout dl);
+		DockVisualStyle GetRegionStyleForObject (DockObject obj);
 
 		/// <summary>
-		/// Refresh a section of the layout loaded with LoadLayout.
+		/// Gets the style assigned to a specific position of the layout
 		/// </summary>
-		void Refresh (DockObject obj);
+		/// <returns>
+		/// The region style for position.
+		/// </returns>
+		/// <param name='parentGroup'>
+		/// Group which contains the position
+		/// </param>
+		/// <param name='childIndex'>
+		/// Index of the position inside the group
+		/// </param>
+		/// <param name='insertingPosition'>
+		/// If true, the position will be inserted (meaning that the objects in childIndex will be shifted 1 position)
+		/// </param>
+		DockVisualStyle GetRegionStyleForPosition (DockGroup parentGroup, int childIndex, bool insertingPosition);
 
-		/// <summary>
-		/// Creates a backend for a DockItem
-		/// </summary>
-		IDockItemBackend CreateItemBackend (DockItem item);
+		int DefaultItemWidth { get; }
 
-		/// <summary>
-		/// Size and position of the frame, in screen coordinates
-		/// </summary>
-		Xwt.Rectangle GetAllocation ();
+		int DefaultItemHeight { get; }
 
-		/// <summary>
-		/// Adds a widget that covers the whole frame area (used for the welcome page)
-		/// </summary>
-		/// <param name="widget">The widget to show.</param>
-		/// <param name="animate">If set to <c>true</c>, show the overlay using an animation.</param>
-		void AddOverlayWidget (Control widget, bool animate);
+		uint AutoShowDelay { get; }
 
-		/// <summary>
-		/// Removes the overlay widget added with AddOverlayWidget.
-		/// </summary>
-		/// <param name="animate">If set to <c>true</c>, animate the removal of the widget.</param>
-		void RemoveOverlayWidget (bool animate);
+		uint AutoHideDelay { get; }
 	}
 }
 

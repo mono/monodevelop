@@ -101,6 +101,11 @@ namespace MonoDevelop.Components.Docking
 
 		public DockVisualStyle VisualStyle { get; set; }
 
+		public DockVisualStyle GetRegionStyle ()
+		{
+			return frame.GetRegionStyleForObject (this);
+		}
+
 		internal void ResetDefaultSize ()
 		{
 			defaultHorSize = -1;

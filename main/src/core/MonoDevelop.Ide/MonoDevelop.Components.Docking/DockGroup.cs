@@ -242,6 +242,8 @@ namespace MonoDevelop.Components.Docking
 
 		void MarkForRelayout ()
 		{
+			// TODO: batch updates
+			UpdateStyle ();
 			Frame.Backend.Refresh (this);
 		}
 
@@ -446,20 +448,20 @@ namespace MonoDevelop.Components.Docking
 			throw new NotImplementedException ();
 		}
 
-		public void LayoutWidgets ()
+		public void UpdateStyle ()
 		{
-			Frame.UpdateRegionStyle (this);
+			VisualStyle = Frame.GetRegionStyleForObject (this);
 
 			foreach (var ob in Objects) {
 				var it = ob as DockGroupItem;
 				if (it != null) {
 					if (it.Visible) {
-						Frame.UpdateRegionStyle (it);
+						it.VisualStyle = Frame.GetRegionStyleForObject (it);
 						it.Item.SetRegionStyle (it.VisualStyle);
 					}
 				}
 				else
-					((DockGroup)ob).LayoutWidgets ();
+					((DockGroup)ob).UpdateStyle ();
 			}
 		}
 
