@@ -70,7 +70,7 @@ type FSharpParser() =
         Error(errorType, wrapText error.Message 80, DomRegion(error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
     
     override x.Parse(storeAst : bool, fileName : string, content : System.IO.TextReader, proj : MonoDevelop.Projects.Project) = 
-        if fileName = null || proj = null || not (CompilerArguments.supportedExtension (Path.GetExtension(fileName))) then null
+        if fileName = null || not (CompilerArguments.supportedExtension (Path.GetExtension(fileName))) then null
         else 
             let fileContent = content.ReadToEnd()
             Debug.WriteLine

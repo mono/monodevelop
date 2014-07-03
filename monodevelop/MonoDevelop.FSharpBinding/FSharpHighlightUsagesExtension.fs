@@ -21,7 +21,7 @@ type HighlightUsagesExtension() as this =
     override x.GetReferences(_, token) =
         try
             let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(this.Editor.Caret.Offset, this.Editor.Document)
-            let currentFile = FilePath(this.Editor.FileName).ToString()
+            let currentFile = this.FileName.FullPath.ToString()
             let source = this.Editor.Text
             let projectContent = this.Document.ProjectContent
 
