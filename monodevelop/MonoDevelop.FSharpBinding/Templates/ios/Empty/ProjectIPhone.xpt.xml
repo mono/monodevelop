@@ -29,6 +29,7 @@
 			<Files>
 				<Directory name="Resources" />
 				<File name="Info.plist" AddStandardHeader="False" src="../Common/Info_iPhone.plist.xml" />
+				<File name="Entitlements.plist" AddStandardHeader="False" src="../Common/Entitlements.plist.xml" />
 				<File name="AppDelegate.fs" AddStandardHeader="True" src="AppDelegate.fs" />
 			</Files>
 		</Project>
