@@ -4,7 +4,6 @@
 		<Import assembly="MonoDevelop.PackageManagement.dll" />
 		<Import assembly="Microsoft.Web.XmlTransform.dll" />
 		<Import assembly="NuGet.Core.dll" />
-		<Import file="NuGet.exe" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">

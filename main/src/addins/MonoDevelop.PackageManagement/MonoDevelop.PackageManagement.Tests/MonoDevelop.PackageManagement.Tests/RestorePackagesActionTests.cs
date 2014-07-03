@@ -269,7 +269,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (package, packageManagerFactory.FakePackageManager.PackagePassedToInstallPackage);
 			Assert.IsTrue (packageManagerFactory.FakePackageManager.IgnoreWalkInfoPassedToInstallPackage);
 			Assert.IsTrue (packageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToInstallPackage);
-			Assert.IsTrue (packageManagerFactory.FakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);		}
+			Assert.IsTrue (packageManagerFactory.FakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
+		}
 	}
 }
 
