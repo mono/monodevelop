@@ -1,0 +1,394 @@
+<ExtensionModel>
+	
+	<Runtime>
+		<Import file = "Html/Schemas/xhtml1-strict.xsd" />
+		<Import file = "Html/Schemas/xhtml1-transitional.xsd" />
+		<Import file = "Html/Schemas/xhtml1-frameset.xsd" />
+
+		<Import file = "Templates/WebForms/GlobalAsax-Empty.xft.xml"/>
+		<Import file = "Templates/WebForms/GlobalAsax-CodeBehind.xft.xml"/>
+		<Import file = "Templates/WebForms/MasterPage-CodeBehind.xft.xml"/>
+		<Import file = "Templates/WebForms/MasterPage-Empty.xft.xml"/>
+		<Import file = "Templates/WebForms/NestedMasterPage.xft.xml"/>
+		<Import file = "Templates/WebForms/WebContentForm.xft.xml"/>
+		<Import file = "Templates/WebForms/WebControl-Empty.xft.xml"/>
+		<Import file = "Templates/WebForms/WebForm-CodeBehind.xft.xml"/>
+		<Import file = "Templates/WebForms/NestedMasterPage-CodeBehind.xft.xml"/>
+		<Import file = "Templates/WebForms/WebControl-CodeBehind.xft.xml"/>
+		<Import file = "Templates/WebForms/WebForm-Empty.xft.xml"/>
+		<Import file = "Templates/WebForms/WebHandler-CodeBehind.xft.xml"/>
+		<Import file = "Templates/WebForms/WebService-Empty.xft.xml"/>
+		<Import file = "Templates/WebForms/WebService-CodeBehind.xft.xml"/>
+		<Import file = "Templates/WebForms/WebHandler-Empty.xft.xml"/>
+		<Import file = "Templates/WebForms/WebContentForm-CodeBehind.xft.xml"/>
+
+		<Import file = "Templates/Mvc/Controller.xft.xml"/>
+		<Import file = "Templates/Mvc/ViewPage.xft.xml"/>
+		<Import file = "Templates/Mvc/ViewContentPage.xft.xml"/>
+		<Import file = "Templates/Mvc/UserControl.xft.xml"/>
+		<Import file = "Templates/Mvc/ViewMasterPage.xft.xml" />
+		<Import file = "Templates/Mvc/GlobalAsax.xft.xml"/>
+		<Import file = "Templates/Mvc/WebConfigApp.xft.xml"/>
+		<Import file = "Templates/Mvc/WebConfigViews.xft.xml"/>
+		<Import file = "Templates/Mvc/LayoutPage.xft.xml" />
+		<Import file = "Templates/Mvc/ViewPageRazor.xft.xml" />
+		<Import file = "Templates/Mvc/PartialViewPageRazor.xft.xml" />
+
+		<Import file = "Templates/Projects/EmptyMvcProject.xpt.xml" />
+		<Import file = "Templates/Projects/EmptyProject.xpt.xml" />
+		<Import file = "Templates/Projects/MvcProject.xpt.xml" />
+		<Import file = "Templates/Projects/MvcProjectWithUnitTest.xpt.xml" />
+		<Import file = "Templates/Projects/MvcRazorProject.xpt.xml" />
+		<Import file = "Templates/Projects/MvcRazorProjectWithUnitTest.xpt.xml"/>
+		<Import file = "Templates/Projects/WebApplication.xpt.xml"/>
+
+		<Import file = "Templates/MvcCommon/_Layout.cshtml"/>
+		<Import file = "Templates/MvcCommon/_ViewStart.cshtml"/>
+		<Import file = "Templates/MvcCommon/Error.cshtml"/>
+		<Import file = "Templates/MvcCommon/HomeController.cs"/>
+		<Import file = "Templates/MvcCommon/HomeControllerTest.cs"/>
+		<Import file = "Templates/MvcCommon/Index.cshtml"/>
+		<Import file = "Templates/MvcCommon/ViewPageRazor.cshtml"/>
+
+		<Import file = "Templates/WebConfig-Application.xft.xml"/>
+		<Import file = "Templates/WebConfig-SubDir.xft.xml"/>
+
+		<Import file = "Templates/PreprocessedRazorTemplate.xft.xml" />
+
+		<Import file = "CodeTemplates/CSharp/AddView/Aspx/Empty.tt" />
+		<Import file = "CodeTemplates/CSharp/AddView/Razor/Empty.tt" />
+		<Import file = "CodeTemplates/CSharp/AddController/Empty.tt" />
+		<Import file = "CodeTemplates/CSharp/AddController/ControllerWithEmptyReadAndWriteActions.tt" />
+
+		<Import file = "Razor/Razor-templates.xml" />
+	</Runtime>
+
+	<ExtensionPoint path = "/MonoDevelop/Html/DocTypes">
+		<ExtensionNode name = "DocType" type = "MonoDevelop.AspNet.Html.DocTypeExtensionNode" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Asp/CompletionBuilders">
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/Razor/CompletionBuilders">
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
+	<Extension path = "/MonoDevelop/Ide/ProjectTemplates">
+		<ProjectTemplate id   = "AspNet-EmptyMvcProject"
+		                 file = "Templates/Projects/EmptyMvcProject.xpt.xml" />
+		<ProjectTemplate id   = "AspNet-EmptyProject"
+		                 file = "Templates/Projects/EmptyProject.xpt.xml" />
+		<ProjectTemplate id   = "AspNet-MvcProject"
+		                 file = "Templates/Projects/MvcProject.xpt.xml" />
+		<ProjectTemplate id   = "AspNet-MvcProjectWithUnitTest"
+		                 file = "Templates/Projects/MvcProjectWithUnitTest.xpt.xml" />
+		<ProjectTemplate id   = "AspNet-MvcRazorProject"
+		                 file = "Templates/Projects/MvcRazorProject.xpt.xml" />
+		<ProjectTemplate id   = "AspNet-MvcRazorProjectWithUnitTest"
+		                 file = "Templates/Projects/MvcRazorProjectWithUnitTest.xpt.xml"/>
+		<ProjectTemplate id   = "AspNet-WebApplication"
+		                 file = "Templates/Projects/WebApplication.xpt.xml"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id   = "WebForm-Empty"
+		              file = "Templates/WebForms/WebForm-Empty.xft.xml"/>
+		<FileTemplate id   = "WebForm-CodeBehind"
+		              file = "Templates/WebForms/WebForm-CodeBehind.xft.xml"/>
+
+		<FileTemplate id   = "WebHandler-Empty"
+		              file = "Templates/WebForms/WebHandler-Empty.xft.xml"/>
+		<FileTemplate id   = "WebHandler-CodeBehind"
+		              file = "Templates/WebForms/WebHandler-CodeBehind.xft.xml"/>
+
+		<FileTemplate id   = "WebControl-Empty"
+		              file = "Templates/WebForms/WebControl-Empty.xft.xml"/>
+		<FileTemplate id   = "WebControl-CodeBehind"
+		              file = "Templates/WebForms/WebControl-CodeBehind.xft.xml"/>
+
+		<FileTemplate id   = "WebService-Empty"
+		              file = "Templates/WebForms/WebService-Empty.xft.xml"/>
+		<FileTemplate id   = "WebService-CodeBehind"
+		              file = "Templates/WebForms/WebService-CodeBehind.xft.xml"/>
+
+		<FileTemplate id   = "MasterPage-Empty"
+		              file = "Templates/WebForms/MasterPage-Empty.xft.xml" />
+		<FileTemplate id   = "MasterPage-CodeBehind"
+		              file = "Templates/WebForms/MasterPage-CodeBehind.xft.xml" />
+
+		<FileTemplate id   = "NestedMasterPage"
+		              file = "Templates/WebForms/NestedMasterPage.xft.xml" />
+		<FileTemplate id   = "NestedMasterPage-CodeBehind"
+		              file = "Templates/WebForms/NestedMasterPage-CodeBehind.xft.xml" />
+
+		<FileTemplate id   = "GlobalAsax-Empty"
+		              file = "Templates/WebForms/GlobalAsax-Empty.xft.xml" />
+		<FileTemplate id   = "GlobalAsax-CodeBehind"
+		              file = "Templates/WebForms/GlobalAsax-CodeBehind.xft.xml" />
+
+		<FileTemplate id   = "WebConfig-Application"
+		              file = "Templates/WebConfig-Application.xft.xml" />
+		<FileTemplate id   = "WebConfig-SubDir"
+		              file = "Templates/WebConfig-SubDir.xft.xml" />
+
+		<FileTemplate id   = "WebContentForm-CodeBehind"
+		              file = "Templates/WebForms/WebContentForm-CodeBehind.xft.xml" />
+		<FileTemplate id   = "WebContentForm"
+		              file = "Templates/WebForms/WebContentForm.xft.xml" />
+
+		<FileTemplate id       = "AspMvcController"
+		              file     = "Templates/Mvc/Controller.xft.xml"/>
+		<FileTemplate id       = "AspMvcViewPage"
+		              file     = "Templates/Mvc/ViewPage.xft.xml"/>
+		<FileTemplate id       = "AspMvcViewContentPage"
+		              file     = "Templates/Mvc/ViewContentPage.xft.xml"/>
+		<FileTemplate id       = "AspMvcUserControl"
+		              file     = "Templates/Mvc/UserControl.xft.xml"/>
+		<FileTemplate id       = "AspMvcViewMasterPage"
+		              file     = "Templates/Mvc/ViewMasterPage.xft.xml" />
+		<FileTemplate id       = "AspMvcGlobalAsax"
+		              file     = "Templates/Mvc/GlobalAsax.xft.xml" />
+		<FileTemplate id       = "AspMvcWebConfigApp"
+		              file     = "Templates/Mvc/WebConfigApp.xft.xml" />
+		<FileTemplate id       = "AspMvcWebConfigViews"
+		              file     = "Templates/Mvc/WebConfigViews.xft.xml" />
+		<FileTemplate id       = "AspMvcViewPageRazor"
+		              file     = "Templates/Mvc/ViewPageRazor.xft.xml" />
+		<FileTemplate id       = "AspMvcLayoutPage"
+		              file     = "Templates/Mvc/LayoutPage.xft.xml" />
+		<FileTemplate id       = "AspMvcPartialViewPageRazor"
+		              file     = "Templates/Mvc/PartialViewPageRazor.xft.xml" />
+		<FileTemplate id       = "PreprocessedRazorTemplate"
+		              file     = "Templates/PreprocessedRazorTemplate.xft.xml" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
+		<FileTemplateType name = "AspNetMasterContentFile" class = "MonoDevelop.AspNet.WebForms.MasterContentFileDescriptionTemplate"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileFilters">
+		<FileFilter id = "AspNetWebFiles"
+		            insertafter = "Xml"
+		           _label = "ASP.NET Files"
+		           extensions = "*.aspx,*.ashx,*.asmx,*.ascx,*.master,*.asax,*.cshtml" />
+		<FileFilter id = "Html"
+		            _label = "HTML Files"
+		            extensions = "*.htm,*.html"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
+		<ProjectBinding id = "AspNetApp" class = "MonoDevelop.AspNet.Projects.AspNetAppProjectBinding" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
+		<DotNetProjectSubtype
+			guid="{603C0E0B-DB56-11DC-BE95-000D561079B0}"
+			type="MonoDevelop.AspNet.Projects.AspMvc1Project"
+			useXBuild="true" />
+		<DotNetProjectSubtype
+			guid="{F85E285D-A4E0-4152-9332-AB1D724D3325}"
+			type="MonoDevelop.AspNet.Projects.AspMvc2Project"
+			useXBuild="true" />
+		<DotNetProjectSubtype
+			guid="{E53F8FEA-EAE0-44A6-8774-FFD645390401}"
+			type="MonoDevelop.AspNet.Projects.AspMvc3Project"
+			useXBuild="true" />
+		<DotNetProjectSubtype
+			guid="{E3E379DF-F4C6-4180-9B81-6769533ABE47}"
+			type="MonoDevelop.AspNet.Projects.AspMvc4Project"
+			useXBuild="true" />
+		<DotNetProjectSubtype
+			id="MonoDevelop.AspNet.Projects.AspNetAppProject"
+			guid="{349C5851-65DF-11DA-9384-00065B846F21}"
+			type="MonoDevelop.AspNet.Projects.AspNetAppProject"
+			useXBuild="true" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/TypeSystem/Parser">
+		<Parser class = "MonoDevelop.AspNet.WebForms.WebFormsParser" mimeType="application/x-aspx, application/x-ascx, application/x-master-page" />
+		<Parser class = "MonoDevelop.AspNet.Html.HtmlParser" mimeType="text/html, application/x-spark" />
+		<Parser class = "MonoDevelop.AspNet.Razor.RazorCSharpParser" mimeType="text/x-cshtml" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">
+		<DataType class = "MonoDevelop.AspNet.WebForms.WebFormsToolboxNode" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels/Run">
+		<Condition id="ItemType" value="MonoDevelop.AspNet.Projects.AspNetAppProject">
+			<Section id = "XspOptions"
+			             _label = "XSP Web Server"
+			             class = "MonoDevelop.AspNet.Execution.XspOptionsPanel"/>
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxLoaders">
+		<Class id="AspNetWebFormsToolboxLoader" class="MonoDevelop.AspNet.WebForms.WebFormsToolboxLoader"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">
+		<Class id="AspNetWebFormsToolboxProvider" class="MonoDevelop.AspNet.WebForms.WebFormsToolboxProvider"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Category _name = "ASP.NET" id = "AspNet">
+		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddAspNetDirectory"
+		         _label = "ASP.NET Directory"
+		         type="array" />
+		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddController"
+		         _label = "Controller..."
+		         _description = "Add an ASP.NET MVC controller" />
+		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddView"
+		         _label = "View..."
+		         _description = "Add an ASP.NET MVC view" />
+		</Category>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Commands/TextEditor">
+		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.GoToView"
+				_label = "Go To View"
+				defaultHandler = "MonoDevelop.AspNet.Commands.GoToViewCommandHandler"
+				description = "Go to the corresponding view file" />
+		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddViewFromController"
+				_label = "Add View..."
+				defaultHandler = "MonoDevelop.AspNet.Commands.AddViewFromControllerCommandHandler"
+				description = "Add an ASP.NET MVC view" />
+		<Command id = "MonoDevelop.AspNet.Commands.AspNetCommands.GoToController"
+				_label = "Go To Controller"
+				defaultHandler = "MonoDevelop.AspNet.Commands.GoToControllerCommandHandler"
+				description = "Go to the corresponding controller file" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<Condition id="ItemType" value="MonoDevelop.AspNet.Projects.AspNetAppProject">
+			<ItemSet id = "AspNetDirectories" _label = "ASP.NET Directory" insertafter = "MonoDevelop.Ide.Commands.ProjectCommands.NewFolder" autohide = "true">
+				<CommandItem id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddAspNetDirectory" />
+			</ItemSet>
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
+		<CommandItem id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddController" insertbefore="MonoDevelop.Ide.Commands.ProjectCommands.AddNewFiles"  disabledVisible="false"/>
+		<CommandItem id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddView" disabledVisible="false" />
+		<SeparatorItem id = "MvcAddSeparator" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder id="AspNetProjectNodeBuilderExtension" class = "MonoDevelop.AspNet.ProjectPad.AspNetProjectNodeBuilderExtension"/>
+		<NodeBuilder id="AspNetFolderNodeBuilderExtension" class = "MonoDevelop.AspNet.ProjectPad.AspNetFolderNodeBuilderExtension"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
+		<SyntaxMode mimeTypes="application/x-aspx" class="MonoDevelop.AspNet.WebForms.WebFormsSyntaxMode"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/MimeTypes">
+		<MimeType id="application/x-aspx" _description="ASP.NET page" icon="md-html-file-icon" isText="true">
+			<File pattern="*.aspx" />
+		</MimeType>
+		<MimeType id="application/x-ascx" _description="ASP.NET user control" icon="md-html-file-icon" isText="true">
+			<File pattern="*.ascx" />
+		</MimeType>
+		<MimeType id="application/x-asax" _description="ASP.NET global application class" icon="md-html-file-icon" isText="true">
+			<File pattern="*.asax" />
+		</MimeType>
+		<MimeType id="application/x-ashx" _description="ASP.NET handler" icon="md-html-file-icon" isText="true">
+			<File pattern="*.ashx" />
+		</MimeType>
+		<MimeType id="application/x-asmx" _description="ASP.NET web service" icon="md-html-file-icon" isText="true">
+			<File pattern="*.asmx" />
+		</MimeType>
+		<MimeType id="application/x-asix" _description="ASP.NET image generator" icon="md-html-file-icon" isText="true">
+			<File pattern="*.asix" />
+		</MimeType>
+		<MimeType id="application/x-master-page" _description="ASP.NET master page" icon="md-html-file-icon" isText="true">
+			<File pattern="*.master|*.Master" />
+		</MimeType>
+		<MimeType id="application/javascript" _description="Javascript source code" icon="md-html-file-icon" isText="true">
+			<File pattern="*.js" />
+		</MimeType>
+		<MimeType id="text/css" _description="CSS document" icon="md-html-file-icon" isText="true">
+			<File pattern="*.css" />
+		</MimeType>
+		<MimeType id="text/x-less" _description="LESS, CSS document" icon="md-html-file-icon" isText="true">
+			<File pattern="*.less" />
+		</MimeType>
+		<MimeType id="text/html" _description="HTML document" icon="md-html-file-icon" isText="true">
+			<File pattern="*.html|*.htm" />
+		</MimeType>
+		<MimeType id="application/x-spark" _description="Spark View template" icon="md-html-file-icon" isText="true"
+			baseType="text/html">
+			<File pattern="*.spark" />
+		</MimeType>
+		<MimeType id="application/typescript" _description="Typescript source code" icon="md-html-file-icon" isText="true">
+			<File pattern="*.ts" />
+		</MimeType>
+		<MimeType id="text/x-cshtml" _description="Razor template" icon="md-html-file-icon" isText="true">
+			<File pattern="*.cshtml" />
+		</MimeType>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions=".aspx, .ascx, .master" class = "MonoDevelop.AspNet.WebForms.WebFormsEditorExtension" />
+		<Class fileExtensions=".html, .htm, .spark" class = "MonoDevelop.AspNet.Html.HtmlEditorExtension" />
+		<Class fileExtensions=".cshtml" class = "MonoDevelop.AspNet.Razor.RazorCSharpEditorExtension" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Html/DocTypes">
+		<DocType name = "HTML 5.0"
+		         fullName = "&lt;!DOCTYPE html>"
+		         xsdFile = "Html/Schemas/xhtml1-transitional.xsd" />;
+		<DocType name = "XHTML 1.0 Strict"
+		         fullName = "&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
+&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;>"
+		         xsdFile = "Html/Schemas/xhtml1-strict.xsd" />
+		<DocType name = "XHTML 1.0 Transitional"
+		         fullName = "&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;>"
+		         xsdFile = "Html/Schemas/xhtml1-transitional.xsd" />
+		<DocType name = "XHTML 1.0 Frameset"
+		         fullName = "&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Frameset//EN&quot;
+&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd&quot;>"
+		         xsdFile = "Html/Schemas/xhtml1-frameset.xsd" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Core/ExecutionHandlers">
+		<ExecutionHandler id="AspNet" class = "MonoDevelop.AspNet.Execution.AspNetExecutionHandler"/>
+	</Extension>
+	
+	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
+		<Complete language="Html" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\" />
+		<Complete language="Razor" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<Condition id="FileType" fileExtensions=".cs">
+			<CommandItem id = "MonoDevelop.AspNet.Commands.AspNetCommands.GoToView" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
+			<CommandItem id = "MonoDevelop.AspNet.Commands.AspNetCommands.AddViewFromController" />
+			<SeparatorItem id = "MvcSeparator1" />
+		</Condition>
+		<Condition id="FileType" fileExtensions=".cshtml,.aspx">
+			<CommandItem id = "MonoDevelop.AspNet.Commands.AspNetCommands.GoToController" insertbefore="MonoDevelop.Ide.Commands.EditCommands.Cut" />
+			<SeparatorItem id = "MvcSeparator2" />
+		</Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CodeTemplates">
+		<CodeTemplate file="Razor/Razor-templates.xml" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CodeFormatters">
+		<Formatter mimeType="text/x-cshtml" class="MonoDevelop.AspNet.Razor.RazorCSharpFormatter" />
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/CustomTools">
+		<!-- NOTE: we explicitly do no call this "RazorGenerator" to avoid conflicts with http://razorgenerator.codeplex.com/ -->
+		<Tool name="RazorTemplatePreprocessor" type="MonoDevelop.AspNet.Razor.Generator.RazorTemplatePreprocessor"/>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/Ide/FileTemplateConditionTypes">
+		<FileTemplateConditionType name = "AspNetMvc" class = "MonoDevelop.AspNet.Projects.AspNetMvcFileTemplateCondition"/>
+	</Extension>
+</ExtensionModel>
