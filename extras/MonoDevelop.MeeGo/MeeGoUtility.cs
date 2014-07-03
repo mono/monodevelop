@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
  
 using System.Diagnostics;
 using Tamir.SharpSsh;

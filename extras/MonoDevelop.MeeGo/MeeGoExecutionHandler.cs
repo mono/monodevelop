@@ -180,6 +180,11 @@ namespace MonoDevelop.MeeGo
 			channel.sendSignal ("TERM");
 			channel.disconnect ();
 		}
+
+		public void Dispose ()
+		{
+			// TODO: Should we do as in Cancel here?
+		}
 	}
 	
 	class LiveSshExec : SshExec

@@ -48,10 +48,6 @@ namespace MonoDevelop.MeeGo
 			}
 		}
 		
-		public override string CommandString {
-			get { return "[meego]"; }
-		}
-		
 		public string DeviceExePath {
 			get {
 				return Config.ParentItem.Name + "/" + Config.CompiledOutputName.FileName;
