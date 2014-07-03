@@ -78,7 +78,7 @@ If you subsequently make changes to the add-in, you will need to `build-and-inst
 On Windows, you need to install ASP.NET MVC 4 from [here](http://www.microsoft.com/en-us/download/details.aspx?id=30683). 
 You can then create a project from the template, build it, and run. 
 
-On Mac and Linux the template includes a copy of the basic ASP.NET MVC 4 core DLLs.
+On Mac and Linux the template uses nuget to bring in the ASP.NET MVC 4 core DLLs.
 
 ### Can't get it to work?  
 
