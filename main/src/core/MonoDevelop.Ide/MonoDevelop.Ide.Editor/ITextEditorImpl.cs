@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Editor
 
 		DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false);
 
-		Cairo.Point LocationToPoint (DocumentLocation currentSmartTagBegin);
+		Cairo.Point LocationToPoint (int line, int column);
 
 		void AddMarker (IDocumentLine line, ITextLineMarker lineMarker);
 

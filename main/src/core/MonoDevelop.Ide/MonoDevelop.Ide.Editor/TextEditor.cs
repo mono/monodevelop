@@ -465,9 +465,14 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.PointToLocation (xp, yp, endAtEol);
 		}
 
-		public Cairo.Point LocationToPoint (DocumentLocation currentSmartTagBegin)
+		public Cairo.Point LocationToPoint (DocumentLocation location)
 		{
-			return textEditorImpl.LocationToPoint (currentSmartTagBegin);
+			return textEditorImpl.LocationToPoint (location.Line, location.Column);
+		} 
+
+		public Cairo.Point LocationToPoint (int line, int column)
+		{
+			return textEditorImpl.LocationToPoint (line, column);
 		}
 
 		public string GetLineText (int line, bool includeDelimiter = false)
