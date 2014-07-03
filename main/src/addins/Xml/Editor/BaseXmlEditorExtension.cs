@@ -75,22 +75,23 @@ namespace MonoDevelop.Xml.Editor
 		{
 			return new XmlRootState ();
 		}
-		
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
+
 			UpdateOwnerProjects ();
+
 			var parser = new XmlParser (CreateRootState (), false);
 			tracker = new DocumentStateTracker<XmlParser> (parser, Editor);
-			Document.DocumentParsed += delegate {
-				lastCU = Document.ParsedDocument;
-				OnParsedDocumentUpdated ();
-			};
+
+			Document.DocumentParsed += UpdateParsedDocument;
 			
 			if (Document.ParsedDocument != null) {
 				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			}
+
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.FileAddedToProject += HandleProjectChanged;
 				IdeApp.Workspace.FileRemovedFromProject += HandleProjectChanged;
@@ -125,12 +126,21 @@ namespace MonoDevelop.Xml.Editor
 			UpdatePath ();
 		}
 
+		void UpdateParsedDocument (object sender, EventArgs args)
+		{
+			lastCU = Document.ParsedDocument;
+			OnParsedDocumentUpdated ();
+		}
+
 		public override void Dispose ()
 		{
 			if (tracker != null) {
 				tracker = null;
 				base.Dispose ();
 			}
+
+			Document.DocumentParsed -= UpdateParsedDocument;
+
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 				IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
