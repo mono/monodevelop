@@ -39,10 +39,11 @@ namespace MonoDevelop.Ide.Editor
 		readonly ITextSource textSource;
 		readonly List<Delimiter> delimiters = new List<Delimiter> ();
 
-		SimpleReadonlyDocument (ITextSource readOnlyTextSource, string fileName)
+		SimpleReadonlyDocument (ITextSource readOnlyTextSource, string fileName, string mimeType)
 		{
 			textSource = readOnlyTextSource;
 			FileName = fileName;
+			MimeType = mimeType;
 			Initalize (readOnlyTextSource.Text);
 		}
 
@@ -52,10 +53,10 @@ namespace MonoDevelop.Ide.Editor
 		/// <returns>The readonly document async.</returns>
 		/// <param name="readOnlyTextSource">Read only text source.</param>
 		/// <param name="fileName">File name.</param>
-		public static Task<IReadonlyTextDocument> CreateReadonlyDocumentAsync (ITextSource readOnlyTextSource, string fileName = null)
+		public static Task<IReadonlyTextDocument> CreateReadonlyDocumentAsync (ITextSource readOnlyTextSource, string fileName = null, string mimeType = null)
 		{
 			return Task.Factory.StartNew (delegate {
-				return (IReadonlyTextDocument)new SimpleReadonlyDocument (readOnlyTextSource, fileName);
+				return (IReadonlyTextDocument)new SimpleReadonlyDocument (readOnlyTextSource, fileName, mimeType);
 			});
 		}
 
@@ -306,9 +307,8 @@ namespace MonoDevelop.Ide.Editor
 
 		/// <inheritdoc/>
 		public string MimeType {
-			get {
-				return DesktopService.GetMimeTypeForUri (FileName);
-			}
+			get;
+			private set;
 		}
 
 		/// <inheritdoc/>
