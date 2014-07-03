@@ -91,8 +91,10 @@ module NRefactory =
            //unresolvedTypeDef.BaseTypes <- [ for x in fsEntity.DeclaredInterfaces -> Def ]
 
            // Create an IUnresolveAssembly holding the type definition.
-           let assemblyFilename = match fsEntity.Assembly.FileName with None -> "" | Some n -> n
-           let unresolvedAssembly = DefaultUnresolvedAssembly(projectContent.AssemblyName, Location = assemblyFilename)
+           // For scripts, there is no assembly so avoid errors caused by null in XS
+           let assemblyFilename = match fsEntity.Assembly.FileName with None -> "fakeassembly.dll" | Some n -> n
+           let assemblyName = match projectContent.AssemblyName with | null -> "FakeAssembly" | x -> x
+           let unresolvedAssembly = DefaultUnresolvedAssembly(assemblyName, Location = assemblyFilename)
            unresolvedAssembly.AddTypeDefinition(unresolvedTypeDef)
 
            // We create a fake 'Compilation' for the symbol to contain the unresolvedTypeDef
@@ -124,8 +126,12 @@ module NRefactory =
            // method or function. For the operations we're implementing (Find-all references and rename refactoring)
            // it doesn't seem to matter.
            let unresolvedMember = FSharpUnresolvedMethod(unresolvedTypeDef, fsMember.DisplayName, fsSymbol, lastIdent, Region=region, Accessibility=access)
-           let assemblyFilename = match fsEntity.Assembly.FileName with None -> "" | Some n -> n
-           let unresolvedAssembly = DefaultUnresolvedAssembly(projectContent.AssemblyName, Location = assemblyFilename)
+
+           // For scripts, there is no assembly so avoid errors caused by null in XS
+           let assemblyFilename = match fsEntity.Assembly.FileName with None -> "fakeassembly.dll" | Some n -> n
+           let assemblyName = match projectContent.AssemblyName with | null -> "FakeAssembly" | x -> x
+           let unresolvedAssembly = DefaultUnresolvedAssembly(assemblyName, Location = assemblyFilename)
+
            unresolvedTypeDef.Members.Add(unresolvedMember)
            unresolvedAssembly.AddTypeDefinition(unresolvedTypeDef)
 
