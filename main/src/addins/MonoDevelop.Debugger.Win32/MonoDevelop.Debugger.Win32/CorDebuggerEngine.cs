@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Mono.Debugging.Client;
-using MonoDevelop.AspNet;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.AspNet.Execution;
 
 namespace MonoDevelop.Debugger.Win32
 {
@@ -17,7 +17,7 @@ namespace MonoDevelop.Debugger.Win32
 			DotNetExecutionCommand cmd = command as DotNetExecutionCommand;
 			if (cmd != null)
 				return (cmd.TargetRuntime == null || cmd.TargetRuntime.RuntimeId == "MS.NET");
-			AspNetExecutionCommand acmd = command as AspNetExecutionCommand;
+			var acmd = command as AspNetExecutionCommand;
 			if (acmd != null)
 				return (acmd.TargetRuntime == null || acmd.TargetRuntime.RuntimeId == "MS.NET");
 			return false;
@@ -37,7 +37,8 @@ namespace MonoDevelop.Debugger.Win32
 				}
 				return startInfo;
 			}
-			AspNetExecutionCommand acmd = command as AspNetExecutionCommand;
+
+			var acmd = command as AspNetExecutionCommand;
 			if (acmd != null) {
 				DebuggerStartInfo startInfo = new DebuggerStartInfo ();
 				string xspName = AspNetExecutionHandler.GetXspName (acmd);

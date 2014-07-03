@@ -82,11 +82,6 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.XmlEditor\MonoDevelop.XmlEditor.csproj">
-      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
-      <Name>MonoDevelop.XmlEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">
       <Project>{07CC7654-27D6-421D-A64C-0FFA40456FA2}</Project>
       <Name>CSharpBinding</Name>
@@ -100,11 +95,6 @@
     <ProjectReference Include="..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\AspNet\MonoDevelop.AspNet\MonoDevelop.AspNet.csproj">
-      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
-      <Name>MonoDevelop.AspNet</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
@@ -147,24 +137,9 @@
       <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.AspNet\MonoDevelop.Debugger.Soft.AspNet.csproj">
-      <Project>{F5390DA4-08B7-47E3-B6F3-D50683316AB4}</Project>
-      <Name>MonoDevelop.Debugger.Soft.AspNet</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\Autotools\Autotools.csproj">
       <Project>{F79A67A1-4BA2-48F8-A7DD-A72E316EF6CD}</Project>
       <Name>Autotools</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\CSharpBinding\AspNet\CSharpBinding.AspNet.csproj">
-      <Project>{F426CBB2-77FC-4E14-9E28-E667C2D1299A}</Project>
-      <Name>CSharpBinding.AspNet</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\addins\AspNet\MonoDevelop.AspNet.Mvc\MonoDevelop.AspNet.Mvc.csproj">
-      <Project>{B32AD0DD-5247-437B-A2EF-1A4676C1B072}</Project>
-      <Name>MonoDevelop.AspNet.Mvc</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\src\addins\TextTemplating\MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.csproj">
@@ -228,16 +203,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MonoDevelop.AspNet.Mvc.Completion\CompletionTests.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.Completion\RazorCompletionTesting.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCodeBlockParsingTests.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCodeFragmentsParsingTests.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorCommentParsingTests.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorDirectivesParsingTests.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorExplicitExpressionsParsingTests.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorImplicitExpressionsParsingTests.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorParsingTests.cs" />
-    <Compile Include="MonoDevelop.AspNet.Mvc.StateEngine\RazorStatementsParsingTests.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="MonoDevelop.Projects\MdsTests.cs" />
     <Compile Include="MonoDevelop.Projects\TestProjectsChecks.cs" />
@@ -271,9 +236,6 @@
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SearchPopupWindowTests.cs" />
     <Compile Include="MonoDevelop.Core\LaneStringMatcherTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\IssueGroupTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\MockGroupingProvider.cs" />
     <Compile Include="MonoDevelop.Refactoring\GroupingProviderTestBase.cs" />
@@ -283,8 +245,6 @@
     <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
-    <Compile Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
-    <Compile Include="MonoDevelop.AspNet\AspNetTesting.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\UnitTesteditorIntegrationTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\AnalysisJobQueueTests.cs" />
     <Compile Include="MonoDevelop.Refactoring\SimpleAnalysisJobTests.cs" />
@@ -294,7 +254,6 @@
     <Compile Include="MonoDevelop.SourceEditor\JSonIndentEngineTests.cs" />
     <Compile Include="MonoDevelop.Projects\SharedAssetsProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\WebProjectTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\HtmlImplicitClosingTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
@@ -303,10 +262,7 @@
     <None Include="MonoDevelop.Projects\CompletionDatabaseTests.cs" />
     <None Include="MonoDevelop.Projects\DomPersistenceTests.cs" />
     <None Include="MonoDevelop.Projects\DomCompilationUnitTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\TestParser.cs" />
     <None Include="MonoDevelop.Projects\DomTests.cs" />
-    <None Include="MonoDevelop.AspNet\AspNetCompletionTests.cs" />
-    <None Include="MonoDevelop.AspNet\AspNetTesting.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

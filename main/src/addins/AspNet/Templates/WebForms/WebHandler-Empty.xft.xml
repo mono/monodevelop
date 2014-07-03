@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<Template	Originator="Michael Hutchinson"
+			Created="2006/06/06"
+			LastModified="2006/06/06">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Web Handler</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Web Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<_Description>Creates an ASP.NET Web Handler.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.ashx">
+<![CDATA[<%@ WebHandler Language="C#" Class="${Namespace}.${EscapedIdentifier}" %>
+using System;
+using System.Web;
+
+namespace ${Namespace}
+{
+
+	public class ${EscapedIdentifier} : System.Web.IHttpHandler
+	{
+	
+		public void ProcessRequest (HttpContext context)
+		{
+		}
+	
+		public bool IsReusable {
+			get {
+				return false;
+			}
+		}
+	}
+}]]>
+		</File>
+	</TemplateFiles>
+</Template>
