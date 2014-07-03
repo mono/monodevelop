@@ -44,7 +44,7 @@ namespace MonoDevelop.JavaScript
 				var variableDeclaration = node as JSVariableDeclaration;
 				if (variableDeclaration != null) {
 					if (!dataList.Exists (i => i.DisplayText == variableDeclaration.Name) && !string.IsNullOrWhiteSpace (variableDeclaration.Name))
-						dataList.Add (new CompletionData (variableDeclaration));
+						dataList.Add (new VariableCompletion (variableDeclaration));
 
 					UpdateCodeCompletion (node.ChildNodes, ref dataList);
 
@@ -53,8 +53,13 @@ namespace MonoDevelop.JavaScript
 
 				var functionStatement = node as JSFunctionStatement;
 				if (functionStatement != null) {
-					if (!dataList.Exists (i => i.DisplayText == functionStatement.Name) && !string.IsNullOrWhiteSpace (functionStatement.Name))
-						dataList.Add (new CompletionData (functionStatement));
+					if (!string.IsNullOrWhiteSpace (functionStatement.Name)) {
+						var existingDefinition = dataList.FirstOrDefault (i => i.DisplayText == functionStatement.Name);
+						if (existingDefinition == null)
+							dataList.Add (new FunctionCompletion (functionStatement));
+						else
+							existingDefinition.AddOverload (new FunctionCompletion (functionStatement));
+					}
 
 					UpdateCodeCompletion (node.ChildNodes, ref dataList);
 
@@ -65,15 +70,29 @@ namespace MonoDevelop.JavaScript
 			}
 		}
 
-		public static void AddDefaultKeywords(ref CompletionDataList dataList)
+		public static void AddDefaultKeywords (ref CompletionDataList dataList)
 		{
 			if (dataList == null)
 				dataList = new CompletionDataList ();
 
-			foreach(var token in Jurassic.Compiler.KeywordToken.Keywords)
-			{
-				dataList.Add (new CompletionData(token.Text, string.Empty));
+			foreach (var token in Jurassic.Compiler.KeywordToken.Keywords) {
+				dataList.Add (new CompletionData (token.Text, string.Empty));
 			}
+		}
+	
+		public static CompletionDataList FilterCodeCompletion(CompletionDataList dataList, string query)
+		{
+			if (dataList == null)
+				return null;
+
+			var codeCompletion = new CompletionDataList ();
+
+			foreach (var item in dataList.OfType<CompletionData> ()) {
+				if (item.CompletionText.ToUpper ().StartsWith (query.ToUpper ()))
+					codeCompletion.Add (item);
+			}
+
+			return codeCompletion;
 		}
 	}
 }

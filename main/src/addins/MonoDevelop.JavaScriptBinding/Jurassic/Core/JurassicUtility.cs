@@ -1,5 +1,5 @@
 ﻿//
-// FunctionExtensions.cs
+// JurassicUtility.cs
 //
 // Author:
 //       Harsimran Bath <harsimranbath@gmail.com>
@@ -24,22 +24,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Collections.Generic;
 
-namespace MonoDevelop.JavaScript
+namespace Jurassic
 {
-	static class FunctionExtensions
+	public static class JurassicUtility
 	{
-		public static string BuildFunctionSignature (this Jurassic.Compiler.FunctionExpression function)
+		public static string BuildFunctionSignature (string functionName, IList<string> argumentNames)
 		{
-			return Jurassic.JurassicUtility.BuildFunctionSignature (function.FunctionName, function.ArgumentNames);
-		}
+			if (string.IsNullOrWhiteSpace (functionName))
+				functionName = "function"; // for inline functions, callbacks, delegates, etc.
 
-		public static string BuildFunctionSignature (this Jurassic.Compiler.FunctionStatement function)
-		{
-			return Jurassic.JurassicUtility.BuildFunctionSignature (function.FunctionName, function.ArgumentNames);
+			var builder = new StringBuilder (functionName);
+
+			builder.Append (" (");
+			if (argumentNames.Count > 0) {
+				for (int i = 0; i < argumentNames.Count; i++) {
+					var currentArgument = argumentNames [i];
+					if (i + 1 != argumentNames.Count) {
+						builder.Append (string.Concat (currentArgument, ", "));
+					} else {
+						builder.Append (string.Concat (currentArgument));
+					}
+				}
+			}
+			builder.Append (")");
+
+			return builder.ToString ();
 		}
 	}
 }
+
