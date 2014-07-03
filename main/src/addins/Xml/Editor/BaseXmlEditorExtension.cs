@@ -100,7 +100,8 @@ namespace MonoDevelop.Xml.Editor
 
 		void HandleProjectChanged (object sender, ProjectFileEventArgs e)
 		{
-			UpdateOwnerProjects ();
+			if (e.Any (f => f.ProjectFile.FilePath == Document.FileName))
+				UpdateOwnerProjects ();
 		}
 
 		void UpdateOwnerProjects ()
