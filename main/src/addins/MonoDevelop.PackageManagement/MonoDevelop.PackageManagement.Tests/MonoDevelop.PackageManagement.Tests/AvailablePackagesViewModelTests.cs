@@ -835,9 +835,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.ReadPackages ();
 			CompleteReadPackagesTask ();
 
-			var expectedPackages = new FakePackage[] {
-				package2, package1
-			};
 			Assert.IsTrue (viewModel.PackageViewModels [0].ShowVersionInsteadOfDownloadCount);
 			Assert.IsTrue (viewModel.PackageViewModels [1].ShowVersionInsteadOfDownloadCount);
 		}
@@ -857,9 +854,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.ReadPackages ();
 			CompleteReadPackagesTask ();
 
-			var expectedPackages = new FakePackage[] {
-				package2, package1
-			};
 			Assert.IsFalse (viewModel.PackageViewModels [0].ShowVersionInsteadOfDownloadCount);
 			Assert.IsFalse (viewModel.PackageViewModels [1].ShowVersionInsteadOfDownloadCount);
 		}

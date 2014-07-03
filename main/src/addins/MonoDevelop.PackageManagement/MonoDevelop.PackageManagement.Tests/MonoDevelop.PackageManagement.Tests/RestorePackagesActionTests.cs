@@ -135,7 +135,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			FakePackageManagementProject project = CreateSolutionWithOneProject ();
 			project.AddPackageReference ("MyPackage", "1.0");
-			FakePackage package = AddPackageToPriorityRepository ("MyPackage", "1.0");
+			AddPackageToPriorityRepository ("MyPackage", "1.0");
 			CreateAction ();
 
 			action.Execute ();
@@ -148,7 +148,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			FakePackageManagementProject project = CreateSolutionWithOneProject ();
 			project.AddPackageReference ("MyPackage", "1.0");
-			FakePackage package = AddPackageToPriorityRepository ("MyPackage", "1.0");
+			AddPackageToPriorityRepository ("MyPackage", "1.0");
 			CreateAction ();
 			CaptureMessagesLogged ();
 
@@ -163,7 +163,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			FakePackageManagementProject project = CreateSolutionWithOneProject ();
 			project.AddPackageReference ("MyPackage", "1.0");
 			FakeOperationAwarePackageRepository repository = MakePriorityRepositoryOperationAware ();
-			FakePackage package = AddPackageToPriorityRepository ("MyPackage", "1.0");
+			AddPackageToPriorityRepository ("MyPackage", "1.0");
 			CreateAction ();
 
 			action.Execute ();
@@ -259,7 +259,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		[Test]
 		public void Execute_ProjectHasOneUnrestoredSolutionLevelPackage_PackageIsInstalled ()
 		{
-			FakePackageManagementProject project = CreateSolutionWithOneProject ();
+			CreateSolutionWithOneProject ();
 			solution.AddPackageReference ("MyPackage", "1.0");
 			FakePackage package = AddPackageToPriorityRepository ("MyPackage", "1.0");
 			CreateAction ();

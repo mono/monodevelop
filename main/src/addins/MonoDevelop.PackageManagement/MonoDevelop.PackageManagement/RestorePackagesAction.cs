@@ -37,7 +37,6 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementSolution solution;
 		ISolutionPackageRepository solutionPackageRepository;
-		IPackageManagementEvents packageManagementEvents;
 		IPackageRepositoryCache repositoryCache;
 		IPackageManagerFactory packageManagerFactory;
 		ILogger logger;
@@ -67,7 +66,6 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagerFactory packageManagerFactory)
 		{
 			this.solution = solution;
-			this.packageManagementEvents = packageManagementEvents;
 			this.repositoryCache = repositoryCache;
 			this.packageManagerFactory = packageManagerFactory;
 

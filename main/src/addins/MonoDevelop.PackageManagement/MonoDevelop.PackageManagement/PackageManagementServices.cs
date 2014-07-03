@@ -49,7 +49,7 @@ namespace ICSharpCode.PackageManagement
 		static readonly IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		static readonly PackageManagementProgressProvider progressProvider;
 		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
-		static readonly PackageCompatibilityHandler packageCompatibilityHander;
+		static readonly PackageCompatibilityHandler packageCompatibilityHandler;
 		static readonly UpdatedPackagesInSolution updatedPackagesInSolution;
 
 		static PackageManagementServices()
@@ -71,7 +71,8 @@ namespace ICSharpCode.PackageManagement
 			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);
 
 			projectTargetFrameworkMonitor = new ProjectTargetFrameworkMonitor (projectService);
-			packageCompatibilityHander = new PackageCompatibilityHandler (projectTargetFrameworkMonitor);
+			packageCompatibilityHandler = new PackageCompatibilityHandler ();
+			packageCompatibilityHandler.MonitorTargetFrameworkChanges (projectTargetFrameworkMonitor);
 
 			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories, packageManagementEvents);
 

@@ -192,7 +192,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void GetPackageReferencesNodes_OnePackageReferenceWithUpdatedPackagesButPackageNotRestored_ReturnsOneNodeWithUpdatedVersionInformationInLabel ()
 		{
 			CreateNode ();
-			PackageReference packageReference = AddPackageReferenceToProject ("MyPackage", "1.0");
+			AddPackageReferenceToProject ("MyPackage", "1.0");
 			AddUpdatedPackageForProject ("MyPackage", "1.2");
 
 			List<PackageReferenceNode> nodes = packagesFolderNode.GetPackageReferencesNodes ().ToList ();

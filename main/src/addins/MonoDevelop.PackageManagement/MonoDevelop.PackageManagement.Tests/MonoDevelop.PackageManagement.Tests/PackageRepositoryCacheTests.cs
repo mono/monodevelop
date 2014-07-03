@@ -419,7 +419,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			machineCache.AddFakePackageWithVersion ("MyPackage", "1.0");
 
 			IPackageRepository repository = cache.CreateAggregateWithPriorityMachineCacheRepository ();
-			var priorityRepository = repository as PriorityPackageRepository;
 			bool exists = repository.Exists ("MyPackage", new SemanticVersion ("1.0"));
 
 			Assert.IsInstanceOf<PriorityPackageRepository> (repository);

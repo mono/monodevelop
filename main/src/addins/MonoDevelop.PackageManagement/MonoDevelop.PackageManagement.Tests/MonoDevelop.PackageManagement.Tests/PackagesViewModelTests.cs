@@ -941,7 +941,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			
 			viewModel.ReadPackages ();
 			
-			PackagesForSelectedPageResult result = taskFactory.FirstFakeTaskCreated.ExecuteTaskButNotContinueWith ();
+			taskFactory.FirstFakeTaskCreated.ExecuteTaskButNotContinueWith ();
 			
 			Assert.IsFalse (viewModel.IsPaged);
 		}
@@ -1420,7 +1420,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void CheckedPackageViewModels_OnePackageIsCheckedAndThenUnchecked_ReturnsNoCheckedPackages ()
 		{
 			CreateViewModel ();
-			FakePackage package = viewModel.AddFakePackage ("MyPackage");
+			viewModel.AddFakePackage ("MyPackage");
 			viewModel.AddFakePackage ("Z-Package");
 			viewModel.ReadPackages ();
 			CompleteReadPackagesTask ();
