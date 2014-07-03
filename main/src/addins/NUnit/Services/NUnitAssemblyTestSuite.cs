@@ -48,7 +48,7 @@ using System.Globalization;
 
 namespace MonoDevelop.NUnit
 {
-	public abstract class NUnitAssemblyTestSuite: UnitTestGroup
+	public abstract class NUnitAssemblyTestSuite: UnitTestGroup, IUnitTestSuite
 	{
 		object locker = new object ();
 		UnitTest[] oldList;

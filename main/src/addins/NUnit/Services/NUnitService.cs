@@ -283,15 +283,26 @@ namespace MonoDevelop.NUnit
 		
 		public UnitTest BuildTest (IWorkspaceObject entry)
 		{
+			var tests = new List<IUnitTestSuite> ();
+
 			foreach (ITestProvider p in providers) {
 				try {
 					UnitTest t = p.CreateUnitTest (entry);
-					if (t != null)
-						return t;
+					if (t != null) {
+						var suite = t as IUnitTestSuite;
+						if (suite != null)
+							tests.Add (suite);
+						else
+							return t;
+					}
 				} catch {
 				}
 			}
-			return null;
+
+			if (tests.Count > 0)
+				return new UnitTestSuiteGroup (tests);
+			else
+				return null;
 		}
 		
 		public UnitTest[] RootTests {
