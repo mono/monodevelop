@@ -30,6 +30,7 @@ using Mono.Debugging.Client;
 using Gdk;
 using Gtk;
 using MonoDevelop.Ide;
+using MonoDevelop.Debugger.PreviewVisualizers;
 
 namespace MonoDevelop.Debugger
 {
@@ -44,11 +45,12 @@ namespace MonoDevelop.Debugger
 		{
 			var previewVisualizer = DebuggingService.GetPreviewVisualizer (val);
 			if (previewVisualizer == null)
-				return;
+				previewVisualizer = new GenericPreviewVisualizer ();
 			Theme.SetFlatColor (new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0));
 			ShowArrow = true;
-			VBox mainBox = new VBox ();
-			HBox headerBox = new HBox ();
+			var mainBox = new VBox ();
+			var headerTable = new Table (1, 3, false);
+			headerTable.ColumnSpacing = 5;
 			var closeButton = new ImageButton () {
 				InactiveImage = ImageService.GetIcon ("md-popup-close", IconSize.Menu),
 				Image = ImageService.GetIcon ("md-popup-close-hover", IconSize.Menu)
@@ -56,17 +58,17 @@ namespace MonoDevelop.Debugger
 			closeButton.Clicked += delegate {
 				this.Destroy ();
 			};
+			var hb = new HBox ();
 			var vb = new VBox ();
+			hb.PackStart (vb, false, false, 0);
 			vb.PackStart (closeButton, false, false, 0);
-			headerBox.PackStart (vb, false, false, 0);
+			headerTable.Attach (hb, 0, 1, 0, 1);
 
 			var headerTitle = new Label ();
 			headerTitle.UseMarkup = true;
-			headerTitle.Markup = "<b>" + val.TypeName.Split ('.').LastOrDefault () + "</b>";
+			headerTitle.Markup = "<b>" + val.TypeName.Split ('.').LastOrDefault ().Replace ("<", "&lt;").Replace (">", "&gt;") + "</b>";
 
-			var vb2 = new VBox ();
-			vb2.PackStart (headerTitle, false, false, 0);
-			headerBox.PackStart (vb2, true, true, 0);
+			headerTable.Attach (headerTitle, 1, 2, 0, 1);
 
 			if (DebuggingService.HasValueVisualizers (val)) {
 				var openButton = new Button ();
@@ -75,14 +77,17 @@ namespace MonoDevelop.Debugger
 				openButton.Clicked += delegate {
 					DebuggingService.ShowValueVisualizer (val);
 				};
-				headerBox.PackEnd (openButton, false, false, 0);
+				var hbox = new HBox ();
+				hbox.PackEnd (openButton, false, false, 0);
+				headerTable.Attach (hbox, 2, 3, 0, 1);
+			} else {
+				headerTable.Attach (new Label (), 2, 3, 0, 1);
 			}
-
-			mainBox.PackStart (headerBox);
+			mainBox.PackStart (headerTable);
 			mainBox.ShowAll ();
 
 			var widget = previewVisualizer.GetVisualizerWidget (val);
-			mainBox.Add (widget);
+			mainBox.PackStart (widget);
 			ContentBox.Add (mainBox);
 			ShowPopup (invokingWidget, previewButtonArea, PopupPosition.Left);
 		}

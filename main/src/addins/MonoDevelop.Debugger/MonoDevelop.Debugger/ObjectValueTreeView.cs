@@ -463,7 +463,7 @@ namespace MonoDevelop.Debugger
 					valueCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.MaxWidth = 800;
 					crpButton.Image = ImageService.GetIcon (Stock.Refresh).WithSize (12,12);
-					crpViewer.Image = ImageService.GetIcon (Stock.ZoomIn).WithSize (12,12);
+					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12,12);
 					ColumnsAutosize ();
 				} else {
 					newFont = Style.FontDescription;
@@ -1375,10 +1375,8 @@ namespace MonoDevelop.Debugger
 					DebuggingService.ShowValueVisualizer (val);
 				} else if (cr == crpPreviewButton) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
-					if (DebuggingService.HasPreviewVisualizer (val)) {
-						DebuggingService.ShowPreviewVisualizer (val, this, GetCellRendererArea (path, col, cr));
-						SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
-					}
+					DebuggingService.ShowPreviewVisualizer (val, this, GetCellRendererArea (path, col, cr));
+					SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
 				} else if (!editing) {
 					if (cr == crpButton) {
 						RefreshRow (it);
