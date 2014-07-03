@@ -220,7 +220,7 @@ type FSharpTextEditorCompletion() =
       // Try to get typed result - with the specified timeout
       let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
       let typedParseResults =
-        MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.No, ServiceSettings.blockingTimeout, framework) 
+        MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) 
         |> Async.RunSynchronously
 
       match typedParseResults with
