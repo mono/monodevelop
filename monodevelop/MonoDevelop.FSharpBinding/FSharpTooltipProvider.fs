@@ -45,13 +45,15 @@ type FSharpTooltipProvider() =
                   framework) |> Async.RunSynchronously
         LoggingService.LogInfo "TooltipProvider: Getting tool tip"
         match tyResOpt with
-        | None -> null
+        | None -> LoggingService.LogWarning "TooltipProvider: ParseAndCheckResults not found"
+                  null
         | Some tyRes ->
         // Get tool-tip from the language service
         let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, editor.Document)
         let tip = tyRes.GetToolTip(line, col, lineStr) |> Async.RunSynchronously
         match tip with
-        | None -> null
+        | None -> LoggingService.LogWarning "TooltipProvider: TootipText not returned"
+                  null
         | Some (ToolTipText(elems),_) when elems |> List.forall (function ToolTipElementNone -> true | _ -> false) -> 
             LoggingService.LogWarning "TooltipProvider: No data found"
             null
@@ -69,7 +71,8 @@ type FSharpTooltipProvider() =
                 let tooltipItem = TooltipItem (tiptext, segment)
                 lastResult <- Some(tooltipItem)
                 tooltipItem
-      with x -> null
+      with exn -> LoggingService.LogError ("TooltipProvider: Error retrieving tooltip", exn)
+                  null
 
     override x.CreateTooltipWindow (editor, offset, modifierState, item) = 
         let doc = IdeApp.Workbench.ActiveDocument
