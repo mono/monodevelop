@@ -34,9 +34,7 @@ type HighlightUsagesExtension() as this =
             match symbolReferences with
             | Some(fsSymbolName, references) -> 
                 seq{for symbolUse in references do
-                        //We only want symbol refs from the current file as we are highlighting text
-                        if symbolUse.FileName = currentFile then 
-                            yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, source, fsSymbolName) }
+                      yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, source, fsSymbolName) }
             | _ -> Seq.empty
                             
         with exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
