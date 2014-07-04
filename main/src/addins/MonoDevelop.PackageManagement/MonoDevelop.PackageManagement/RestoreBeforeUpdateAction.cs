@@ -74,9 +74,11 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<DotNetProject> projects,
 			Action afterRestore)
 		{
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesBeforeUpdateMessage ();
+
 			var restorer = new PackageRestorer (projects);
 			DispatchService.BackgroundDispatch (() => {
-				restorer.Restore ();
+				restorer.Restore (progressMessage);
 				if (!restorer.RestoreFailed) {
 					afterRestore ();
 				}

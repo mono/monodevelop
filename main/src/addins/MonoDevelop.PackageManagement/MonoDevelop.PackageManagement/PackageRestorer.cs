@@ -65,9 +65,14 @@ namespace MonoDevelop.PackageManagement
 
 		public void Restore ()
 		{
+			Restore (ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ());
+		}
+
+		public void Restore (ProgressMonitorStatusMessage progressMessage)
+		{
 			try {
 				if (AnyMissingPackages ()) {
-					RestoreWithProgressMonitor ();
+					RestoreWithProgressMonitor (progressMessage);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -80,10 +85,10 @@ namespace MonoDevelop.PackageManagement
 			return packageReferenceFiles.Any (file => file.AnyMissingPackages ());
 		}
 
-		void RestoreWithProgressMonitor ()
+		void RestoreWithProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
 			var runner = new PackageRestoreRunner ();
-			runner.Run ();
+			runner.Run (progressMessage);
 			RestoreFailed = runner.RestoreFailed;
 		}
 	}
