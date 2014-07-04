@@ -125,6 +125,11 @@ namespace MonoDevelop.Debugger.Gdb
 				// Set inferior arguments
 				if (!string.IsNullOrEmpty (startInfo.Arguments))
 					RunCommand ("-exec-arguments", startInfo.Arguments);
+
+				if (startInfo.EnvironmentVariables != null) {
+					foreach (var v in startInfo.EnvironmentVariables)
+						RunCommand ("-gdb-set", "environment", v.Key, v.Value);
+				}
 				
 				currentProcessName = startInfo.Command + " " + startInfo.Arguments;
 				
