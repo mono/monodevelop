@@ -44,6 +44,9 @@ namespace MonoDevelop.Components.Mac
 
 		public GtkEmbed (Gtk.Widget w)
 		{
+			if (!GtkMacInterop.SupportsGtkIntoNSViewEmbedding ())
+				throw new NotSupportedException ("GTK/NSView embedding is not supported by the installed GTK");
+
 			embeddedWidget = w;
 			var s = w.SizeRequest ();
 			SetFrameSize (new CGSize (s.Width, s.Height));
