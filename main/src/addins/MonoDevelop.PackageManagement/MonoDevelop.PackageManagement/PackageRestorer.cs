@@ -40,14 +40,24 @@ namespace MonoDevelop.PackageManagement
 		List<ProjectPackageReferenceFile> packageReferenceFiles;
 
 		public PackageRestorer (Solution solution)
+			: this (solution.GetAllDotNetProjects ())
 		{
-			packageReferenceFiles = FindAllPackageReferenceFiles (solution).ToList ();
 		}
 
-		IEnumerable<ProjectPackageReferenceFile> FindAllPackageReferenceFiles (Solution solution)
+		public PackageRestorer (DotNetProject project)
+			: this (new [] { project })
 		{
-			return solution
-				.GetAllProjectsWithPackages ()
+		}
+
+		public PackageRestorer (IEnumerable<DotNetProject> projects)
+		{
+			packageReferenceFiles = FindAllPackageReferenceFiles (projects).ToList ();
+		}
+
+		IEnumerable<ProjectPackageReferenceFile> FindAllPackageReferenceFiles (IEnumerable<DotNetProject> projects)
+		{
+			return projects
+				.Where (project => project.HasPackages ())
 				.Select (project => new ProjectPackageReferenceFile (project));
 		}
 
@@ -55,9 +65,14 @@ namespace MonoDevelop.PackageManagement
 
 		public void Restore ()
 		{
+			Restore (ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ());
+		}
+
+		public void Restore (ProgressMonitorStatusMessage progressMessage)
+		{
 			try {
 				if (AnyMissingPackages ()) {
-					RestoreWithProgressMonitor ();
+					RestoreWithProgressMonitor (progressMessage);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -70,10 +85,10 @@ namespace MonoDevelop.PackageManagement
 			return packageReferenceFiles.Any (file => file.AnyMissingPackages ());
 		}
 
-		void RestoreWithProgressMonitor ()
+		void RestoreWithProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
 			var runner = new PackageRestoreRunner ();
-			runner.Run ();
+			runner.Run (progressMessage);
 			RestoreFailed = runner.RestoreFailed;
 		}
 	}

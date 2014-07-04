@@ -67,7 +67,11 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run ()
 		{
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
+			Run (ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ());
+		}
+
+		public void Run (ProgressMonitorStatusMessage progressMessage)
+		{
 
 			using (IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage)) {
 				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (progressMonitor)) {

@@ -91,9 +91,20 @@ namespace MonoDevelop.PackageManagement.Commands
 				UpdatePackageAction action = project.CreateUpdatePackageAction ();
 				action.PackageId = packageReferenceNode.Id;
 
-				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
+				RestoreBeforeUpdateAction.Restore (project, () => {
+					UpdatePackage (progressMessage, action);
+				});
 			} catch (Exception ex) {
 				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+			}
+		}
+
+		void UpdatePackage (ProgressMonitorStatusMessage progressMessage, UpdatePackageAction action)
+		{
+			try {
+				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
+			} catch (Exception ex) {
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
 			}
 		}
