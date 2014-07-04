@@ -36,7 +36,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public class ColorScheme
+	public sealed class ColorScheme
 	{
 		public string Name { get; set; }
 		public string Description { get; set; }

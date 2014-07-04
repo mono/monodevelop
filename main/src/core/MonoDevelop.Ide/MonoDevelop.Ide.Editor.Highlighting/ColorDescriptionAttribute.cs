@@ -28,7 +28,7 @@ using System;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public class ColorDescriptionAttribute : Attribute
+	public sealed class ColorDescriptionAttribute : Attribute
 	{
 		public string Name { get; private set; }
 		public string Description { get; set; }

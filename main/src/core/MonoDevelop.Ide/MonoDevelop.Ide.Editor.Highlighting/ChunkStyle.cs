@@ -32,7 +32,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
-	public class ChunkStyle
+	public sealed class ChunkStyle
 	{
 		public string Name { get; set; }
 		public Cairo.Color Foreground { get; set; }
