@@ -2754,6 +2754,9 @@
     <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
     <Compile Include="MonoDevelop.Components\Mac\ObjcHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\Util.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

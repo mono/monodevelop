@@ -92,11 +92,32 @@ namespace MonoDevelop.Components.Mac
 			return ObjCRuntime.Runtime.GetNSObject<NSView> (ptr);
 		}
 
+
+		static bool? supportsGtkIntoNSViewEmbedding;
+
+		public static bool SupportsGtkIntoNSViewEmbedding ()
+		{
+			if (supportsGtkIntoNSViewEmbedding.HasValue)
+				return supportsGtkIntoNSViewEmbedding.Value;
+
+			try {
+				supportsGtkIntoNSViewEmbedding = gdk_window_supports_nsview_embedding ();
+				return supportsGtkIntoNSViewEmbedding.Value;
+			} catch (DllNotFoundException) {
+			} catch (EntryPointNotFoundException) {
+			}
+			supportsGtkIntoNSViewEmbedding = false;
+			return false;
+		}
+
 		[DllImport (LibGtk)]
 		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
 
 		[DllImport (LibGtk)]
 		static extern IntPtr gdk_quartz_window_get_nswindow (IntPtr window);
+
+		[DllImport (LibGtk, CallingConvention = CallingConvention.Cdecl)]
+		static extern bool gdk_window_supports_nsview_embedding ();
 	}
 }
 
