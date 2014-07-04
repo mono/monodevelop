@@ -319,7 +319,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			base.RestoreAllocation ();
 			item.UpdateVisibleStatus ();
-			if (item.Visible) {
+			if (VisibleFlag) {
 				if (Status == DockItemStatus.Floating)
 					item.SetFloatMode (floatRect);
 				else if (Status == DockItemStatus.AutoHide)

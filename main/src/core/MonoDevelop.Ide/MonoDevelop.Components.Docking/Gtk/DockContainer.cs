@@ -45,7 +45,6 @@ namespace MonoDevelop.Components.Docking
 		GtkDockFrame frame;
 
 		List<TabStrip> notebooks = new List<TabStrip> ();
-		List<DockItemBackend> items = new List<DockItemBackend> ();
 
 		List<SplitterWidget> splitters = new List<SplitterWidget> ();
 
@@ -70,8 +69,8 @@ namespace MonoDevelop.Components.Docking
 				return layout.FindDockGroupItem (id);
 		}
 		
-		public List<DockItemBackend> Items {
-			get { return items; }
+		public IEnumerable<DockItemBackend> Items {
+			get { return frame.Frontend.GetItemBackends ().Cast<DockItemBackend> (); }
 		}
 
 		public GtkDockLayout Layout {
@@ -91,7 +90,7 @@ namespace MonoDevelop.Components.Docking
 			// Sticky items currently selected in notebooks will remain
 			// selected after switching the layout
 			var sickyOnTop = new List<DockItemBackend> ();
-			foreach (DockItemBackend it in items) {
+			foreach (DockItemBackend it in Items) {
 				if ((it.Behavior & DockItemBehavior.Sticky) != 0) {
 					GtkDockGroupItem gitem = FindDockGroupItem (it.Id);
 					if (gitem != null && gitem.ParentGroup.IsSelectedPage (it))
@@ -166,7 +165,7 @@ namespace MonoDevelop.Components.Docking
 			List<Widget> widgets = new List<Widget> ();
 			foreach (Widget w in notebooks)
 				widgets.Add (w);
-			foreach (var it in items) {
+			foreach (var it in Items) {
 				if (it.HasWidget && it.Widget.Parent == this) {
 					widgets.Add (it.Widget);
 					if (it.TitleTab.Parent == this)

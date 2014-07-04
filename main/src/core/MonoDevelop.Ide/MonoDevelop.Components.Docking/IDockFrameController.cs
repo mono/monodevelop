@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -59,6 +60,8 @@ namespace MonoDevelop.Components.Docking
 		void DockItem (DockItem item, IDockGroup group, IDockObject insertBeforeObject);
 
 		void DockItemRelative (DockItem item, IDockGroupItem targetPosition, DockPosition pos, string relItemId);
+
+		IEnumerable<IDockItemBackend> GetItemBackends ();
 	}
 }
 

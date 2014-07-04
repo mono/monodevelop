@@ -288,11 +288,6 @@ namespace MonoDevelop.Components.Docking
 			return null;
 		}
 		
-		public IEnumerable<DockItemBackend> GetItems ()
-		{
-			return container.Items;
-		}
-
 		public void LoadLayout (IDockLayout layout)
 		{
 			this.layout = layout;
@@ -591,7 +586,7 @@ namespace MonoDevelop.Components.Docking
 
 		void MinimizeAllAutohidden ()
 		{
-			foreach (var it in GetItems ()) {
+			foreach (var it in container.Items) {
 				if (it.Frontend.Visible && it.Frontend.Status == DockItemStatus.AutoHide)
 					it.Frontend.Minimize ();
 			}

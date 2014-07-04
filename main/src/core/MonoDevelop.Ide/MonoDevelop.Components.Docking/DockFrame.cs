@@ -701,6 +701,12 @@ namespace MonoDevelop.Components.Docking
 			}
 			return false;
 		}
+
+		IEnumerable<IDockItemBackend> IDockFrameController.GetItemBackends ()
+		{
+			foreach (var it in items)
+				yield return it.Backend;
+		}
 	}
 
 	public class DockStyle
