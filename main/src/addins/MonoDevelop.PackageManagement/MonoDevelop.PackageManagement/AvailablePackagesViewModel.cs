@@ -38,17 +38,20 @@ namespace ICSharpCode.PackageManagement
 {
 	public class AvailablePackagesViewModel : PackagesViewModel
 	{
+		ISolutionPackageRepository solutionPackageRepository;
 		IPackageRepository repository;
 		string errorMessage;
 		IRecentPackageRepository recentPackageRepository;
 		
-		public AvailablePackagesViewModel(
+		public AvailablePackagesViewModel (
+			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IRecentPackageRepository recentPackageRepository,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
+			this.solutionPackageRepository = solution.GetRepository ();
 			this.recentPackageRepository = recentPackageRepository;
 
 			IsSearchable = true;
@@ -121,18 +124,32 @@ namespace ICSharpCode.PackageManagement
 				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 		}
 
+		/// <summary>
+		/// Package prioritization:
+		/// 
+		/// Recent packages first.
+		/// Packages in solution.
+		/// Packages from active package source.
+		/// </summary>
 		protected override IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
-			List<IPackage> recentPackages = GetRecentPackages (search).ToList ();
+			List<IPackage> prioritizedPackages = GetRecentPackages (search).ToList ();
 
 			if (PackageViewModels.Count == 0) {
-				foreach (IPackage package in recentPackages) {
+				foreach (IPackage package in prioritizedPackages) {
 					yield return package;
+				}
+
+				foreach (IPackage package in solutionPackageRepository.GetPackages ()) {
+					if (!prioritizedPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
+						prioritizedPackages.Add (package);
+						yield return package;
+					}
 				}
 			}
 
 			foreach (IPackage package in packages) {
-				if (!recentPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
+				if (!prioritizedPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
 					yield return package;
 				}
 			}

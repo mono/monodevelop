@@ -44,7 +44,7 @@ namespace ICSharpCode.PackageManagement
 			//var installedPackageViewModelFactory = new InstalledPackageViewModelFactory(packageViewModelFactory);
 
 			IRecentPackageRepository recentPackageRepository = PackageManagementServices.RecentPackageRepository;
-			AvailablePackagesViewModel = new AvailablePackagesViewModel(registeredPackageRepositories, recentPackageRepository, packageViewModelFactory, taskFactory);
+			AvailablePackagesViewModel = new AvailablePackagesViewModel (solution, registeredPackageRepositories, recentPackageRepository, packageViewModelFactory, taskFactory);
 			//InstalledPackagesViewModel = new InstalledPackagesViewModel(solution, packageManagementEvents, registeredPackageRepositories, installedPackageViewModelFactory, taskFactory);
 			//UpdatedPackagesViewModel = new UpdatedPackagesViewModel(solution, registeredPackageRepositories, updatedPackageViewModelFactory, taskFactory);
 			//RecentPackagesViewModel = new RecentPackagesViewModel(packageManagementEvents, registeredPackageRepositories, packageViewModelFactory, taskFactory);
