@@ -61,8 +61,6 @@ namespace MonoDevelop.Components.Docking
 		VBox mainBox;
 		Gtk.Widget overlayWidget;
 
-		Dictionary<IDockGroupItem,GtkDockGroupItem> items = new Dictionary<IDockGroupItem, GtkDockGroupItem> ();
-
 		public GtkDockFrame ()
 		{
 		}

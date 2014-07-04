@@ -869,17 +869,6 @@ namespace MonoDevelop.Components.Docking
 			return false;
 		}
 		
-		public void ReplaceItem (GtkDockObject ob1, GtkDockObject ob2)
-		{
-			int i = dockObjects.IndexOf (ob1);
-			dockObjects [i] = ob2;
-			ob2.ParentGroup = this;
-			ob2.ResetDefaultSize ();
-			ob2.Size = ob1.Size;
-			ob2.DefaultSize = ob1.DefaultSize;
-			ob2.AllocSize = ob1.AllocSize;
-		}
-		
 		internal void Dump ()
 		{
 			Dump (0);

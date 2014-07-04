@@ -667,7 +667,14 @@ namespace MonoDevelop.Components.Docking
 
 		void IDockFrameController.DockItemRelative (DockItem item, IDockGroupItem targetPosition, DockPosition pos, string relItemId)
 		{
-			((DockGroupItem)targetPosition).ParentGroup.AddObject (item, pos, relItemId);
+			var target = (DockGroupItem)targetPosition;
+			item.Status = DockItemStatus.Dockable;
+			DockGroupItem dummyItem = new DockGroupItem (this, new DockItem (this, "__dummy"));
+			DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
+			gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
+			var newItem = target.ParentGroup.AddObject (item, pos, relItemId);
+			newItem.SetVisible (true);
+			dummyItem.ParentGroup.Remove (dummyItem);
 			DoPendingRelayout ();
 		}
 

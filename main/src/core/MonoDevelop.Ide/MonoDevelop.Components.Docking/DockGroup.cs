@@ -178,6 +178,16 @@ namespace MonoDevelop.Components.Docking
 			return item;
 		}
 
+		public void ReplaceItem (DockObject ob1, DockObject ob2)
+		{
+			int i = dockObjects.IndexOf (ob1);
+			dockObjects [i] = ob2;
+			ob2.ParentGroup = this;
+			ob2.ResetDefaultSize ();
+			ob2.Size = ob1.Size;
+			ob2.DefaultSize = ob1.DefaultSize;
+		}
+
 		internal DockGroup FindGroupContaining (string id)
 		{
 			DockGroupItem it = FindDockGroupItem (id);

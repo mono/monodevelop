@@ -417,7 +417,6 @@ namespace MonoDevelop.Components.Docking
 				return;
 			
 			if (placeholderWindow.AllowDocking && placeholderWindow.DockDelegate != null) {
-				item.Status = DockItemStatus.Dockable;
 				placeholderWindow.DockDelegate (item);
 				RelayoutWidgets ();
 			} else {
