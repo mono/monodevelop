@@ -661,7 +661,16 @@ namespace MonoDevelop.Components.Docking
 
 		void IDockFrameController.DockItem (DockItem item, IDockGroup group, IDockObject insertBeforeObject)
 		{
-			((DockGroup)group).DockTarget (item, insertBeforeObject);
+			item.Status = DockItemStatus.Dockable;
+			DockGroupItem dummyItem = new DockGroupItem (this, new DockItem (this, "__dummy"));
+			DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
+			gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
+
+			var newItem = ((DockGroup)group).DockTarget (item, insertBeforeObject);
+			newItem.SetVisible (true);
+
+			dummyItem.ParentGroup.Remove (dummyItem);
+
 			DoPendingRelayout ();
 		}
 

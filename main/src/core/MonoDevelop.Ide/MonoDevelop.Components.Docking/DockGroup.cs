@@ -468,7 +468,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public void DockTarget (DockItem item, IDockObject insertBeforeObject)
+		public DockGroupItem DockTarget (DockItem item, IDockObject insertBeforeObject)
 		{
 			int n;
 			if (insertBeforeObject != null)
@@ -480,6 +480,7 @@ namespace MonoDevelop.Components.Docking
 			dockObjects.Insert (n, gitem);
 			gitem.ParentGroup = this;
 			gitem.SetVisible (true);
+			return gitem;
 		}
 
 		internal override void RestoreAllocation ()
