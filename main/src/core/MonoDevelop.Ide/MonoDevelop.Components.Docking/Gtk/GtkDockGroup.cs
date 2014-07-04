@@ -87,7 +87,7 @@ namespace MonoDevelop.Components.Docking
 					var it = new GtkDockGroupItem (Frame, oi);
 					dockObjects.Add (it);
 					it.ParentGroup = this;
-					oi.Item.ResetMode ();
+					((DockItemBackend)oi.ItemBackend).ResetMode ();
 				}
 			}
 		}

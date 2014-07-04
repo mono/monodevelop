@@ -302,11 +302,6 @@ namespace MonoDevelop.Components.Docking
 			backend.HideWidget ();
 		}
 
-		public void ResetMode ()
-		{
-			backend.ResetMode ();
-		}
-		
 		internal void SetFloatMode (Xwt.Rectangle rect)
 		{
 			SetRegionStyle (frame.GetRegionStyleForItem (this));

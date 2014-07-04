@@ -48,7 +48,6 @@ namespace MonoDevelop.Components.Docking
 		void SetAutoHideMode (DockPositionType pos, int size);
 		int AutoHideSize { get; }
 		void Minimize ();
-		void ResetMode ();
 
 		/// <summary>
 		/// Returns the size and position of the item in screen coordinates, or Rectangle.Empty if the item is not visible.

@@ -575,7 +575,6 @@ namespace MonoDevelop.Components.Docking
 		{
 			bool vis = item.Visible;
 			DockItemStatus stat = item.Status;
-			item.ResetMode ();
 			layout.RemoveItemRec (item);
 			AddItemAtLocation (layout, item, placement, vis, stat);
 			DoPendingRelayout ();

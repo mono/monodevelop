@@ -51,6 +51,12 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
+		IDockItemBackend IDockGroupItem.ItemBackend {
+			get {
+				return item.Backend;
+			}
+		}
+
 		public string Id {
 			get { return item.Id; }
 		}
@@ -324,8 +330,6 @@ namespace MonoDevelop.Components.Docking
 					item.SetFloatMode (floatRect);
 				else if (Status == DockItemStatus.AutoHide)
 					item.SetAutoHideMode (barDocPosition, GetAutoHideSize (barDocPosition));
-				else
-					item.ResetMode ();
 			} else
 				item.HideWidget ();
 		}

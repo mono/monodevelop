@@ -30,6 +30,7 @@ namespace MonoDevelop.Components.Docking
 	interface IDockGroupItem: IDockObject
 	{
 		DockItem Item { get; }
+		IDockItemBackend ItemBackend { get; }
 		Xwt.Rectangle FloatRect { get; set; }
 	}
 }
