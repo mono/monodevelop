@@ -211,7 +211,7 @@ type FSharpTextEditorCompletion() =
               else loop depth (i-1) 
           loop 0 (offset-1)
 
-      if docText = null || offset >= docText.Length || startOffset < 0 || offset <= 0 then 
+      if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 then 
         null 
       else
       Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
