@@ -41,7 +41,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		public override Control GetVisualizerWidget (ObjectValue val)
 		{
 			string value = val.Value;
-			if (val.TypeName == "string" || val.TypeName == "char[]")
+			if (!val.IsNull && (val.TypeName == "string" || val.TypeName == "char[]"))
 				value = '"' + GetString (val) + '"';
 			if (DebuggingService.HasInlineVisualizer (val))
 				value = DebuggingService.GetInlineVisualizer (val).InlineVisualize (val);

@@ -1375,7 +1375,11 @@ namespace MonoDevelop.Debugger
 					DebuggingService.ShowValueVisualizer (val);
 				} else if (cr == crpPreviewButton) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
-					DebuggingService.ShowPreviewVisualizer (val, this, GetCellRendererArea (path, col, cr));
+					var rect = GetCellRendererArea (path, col, cr);
+					ConvertTreeToWidgetCoords (rect.X, rect.Y, out rect.X, out rect.Y);
+					rect.X += (int)Hadjustment.Value;
+					rect.Y += (int)Vadjustment.Value;
+					DebuggingService.ShowPreviewVisualizer (val, this, rect);
 					SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
 				} else if (!editing) {
 					if (cr == crpButton) {
