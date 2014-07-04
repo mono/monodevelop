@@ -334,7 +334,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				if (Color.Parse(colorStr, ref color))
 
-					colorStr = SyntaxMode.ColorToPangoMarkup(AdjustColor(baseColor, color));
+					colorStr = ColorToPangoMarkup(AdjustColor(baseColor, color));
 
 				result.Append (colorStr);
 				idx = markup.IndexOf ("foreground=\"", idx);
@@ -342,7 +342,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			result.Append (markup.Substring (offset, markup.Length - offset));
 			return result.ToString ();
 		}
-		
+		public static string ColorToPangoMarkup (Gdk.Color color)
+		{
+			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
+		}
 		void DoPopupMenu (Gdk.EventButton evt)
 		{ 
 			IdeApp.CommandService.ShowContextMenu (this.treeviewSearchResults, evt, new CommandEntrySet () {

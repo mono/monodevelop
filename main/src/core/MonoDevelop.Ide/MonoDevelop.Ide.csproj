@@ -2774,21 +2774,9 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\SelectionSurroundingProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextPasteHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentLocation.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxMode.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxModeCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxModeService.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\AmbientColor.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Chunk.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ChunkStyle.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ColorScheme.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Keywords.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Marker.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Match.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Regex.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Rule.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SemanticRule.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\Span.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ISyntaxMode.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ColorDescriptionAttribute.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateCodon.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\IStreamProvider.cs" />
@@ -2807,6 +2795,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditContext.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IUnitTestMarker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ChunkStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

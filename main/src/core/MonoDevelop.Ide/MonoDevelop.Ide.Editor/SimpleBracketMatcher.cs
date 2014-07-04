@@ -56,17 +56,12 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 
-		static List<string> GetList (TextEditor document, string name)
+		static string[] GetList (TextEditor document, string name)
 		{
-			var mode = document.SyntaxMode as SyntaxMode;
-			if (mode != null) {
-				if (mode.Properties.ContainsKey(name)) 
-					return mode.Properties[name];
-			}
-			return new List<string> ();
+			return DocumentFactory.GetSyntaxProperties (document.MimeType, name);
 		}
 
-		static int StartsWithListMember (TextEditor document, List<string> list, int offset)
+		static int StartsWithListMember (TextEditor document, IList<string> list, int offset)
 		{
 			for (int i = 0; i < list.Count; i++) {
 				string item = list[i];
@@ -86,10 +81,10 @@ namespace MonoDevelop.Ide.Editor
 
 			bool startsInLineComment = StartsInLineComment (document, offset);
 
-			List<string> lineComments       = GetList (document, "LineComment");
-			List<string> blockCommentStarts = GetList (document, "BlockCommentStart");
-			List<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
-			List<string> stringQuotes       = GetList (document, "StringQuote");
+			var lineComments       = GetList (document, "LineComment");
+			var blockCommentStarts = GetList (document, "BlockCommentStart");
+			var blockCommentEnds   = GetList (document, "BlockCommentEnd");
+			var stringQuotes       = GetList (document, "StringQuote");
 			int depth = -1;
 			while (offset >= 0 && offset < document.Length) {
 				if (curStringQuote < 0) {
@@ -147,7 +142,7 @@ namespace MonoDevelop.Ide.Editor
 
 		static bool StartsInLineComment (TextEditor document, int offset)
 		{
-			List<string> lineComments = GetList (document, "LineComment");
+			IList<string> lineComments = GetList (document, "LineComment");
 			var line = document.GetLineByOffset (offset);
 			for (int i = line.Offset ; i < offset; i++) {
 				if (StartsWithListMember (document, lineComments, i) >= 0)
@@ -163,10 +158,10 @@ namespace MonoDevelop.Ide.Editor
 			bool isInLineComment  = false;
 			int  curStringQuote   = -1;
 
-			List<string> lineComments       = GetList (document, "LineComment");
-			List<string> blockCommentStarts = GetList (document, "BlockCommentStart");
-			List<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
-			List<string> stringQuotes       = GetList (document, "StringQuote");
+			IList<string> lineComments       = GetList (document, "LineComment");
+			IList<string> blockCommentStarts = GetList (document, "BlockCommentStart");
+			IList<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
+			IList<string> stringQuotes       = GetList (document, "StringQuote");
 
 			for (int i = 0 ; i < line.Length; i++) {
 				int offset = line.Offset + i;
@@ -206,9 +201,9 @@ namespace MonoDevelop.Ide.Editor
 			bool isInLineComment  = false;
 			int  curStringQuote   = -1;
 
-			List<string> blockCommentStarts = GetList (document, "BlockCommentStart");
-			List<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
-			List<string> stringQuotes       = GetList (document, "StringQuote");
+			IList<string> blockCommentStarts = GetList (document, "BlockCommentStart");
+			IList<string> blockCommentEnds   = GetList (document, "BlockCommentEnd");
+			IList<string> stringQuotes       = GetList (document, "StringQuote");
 
 			bool startsInLineComment = StartsInLineComment (document, offset);
 			int depth = -1;

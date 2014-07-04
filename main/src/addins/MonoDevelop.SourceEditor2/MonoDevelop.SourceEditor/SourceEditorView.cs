@@ -2862,11 +2862,6 @@ namespace MonoDevelop.SourceEditor
 			);
 		}
 
-		ISyntaxMode ITextEditorImpl.SyntaxMode {
-			get;
-			set;
-		}
-
 		MonoDevelop.Ide.Editor.ITextEditorOptions ITextEditorImpl.Options {
 			get {
 				return new TextEditorToMonoDevelopOptionsWrapper (TextEditor.Options);

@@ -39,18 +39,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (initialized)
 				return;
 			initialized = true;
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/SyntaxModes", OnSyntaxModeExtensionChanged);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/Styles", OnStylesExtensionChanged);
-		}
-
-		static void OnSyntaxModeExtensionChanged (object s, ExtensionNodeEventArgs args)
-		{
-			TemplateCodon codon = (TemplateCodon)args.ExtensionNode;
-			if (args.Change == ExtensionChange.Add) {
-				SyntaxModeService.AddSyntaxMode (codon);
-			} else {
-				SyntaxModeService.RemoveSyntaxMode (codon);
-			}
 		}
 		
 		static void OnStylesExtensionChanged (object s, ExtensionNodeEventArgs args)

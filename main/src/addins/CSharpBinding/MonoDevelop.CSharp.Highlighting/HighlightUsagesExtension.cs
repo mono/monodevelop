@@ -53,7 +53,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				Editor.SyntaxMode = null;
+				EditContext.GetContent<TextEditorData> ().Document.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}

@@ -854,30 +854,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			//Document doc = IdeApp.Workbench.ActiveDocument;
 			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
-			
-			SyntaxMode mode = null;
-			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
-				mode = SyntaxModeService.GetSyntaxMode (null, mt);
-				if (mode != null)
-					break;
-			}
-			
-			if (mode == null)
-				return null;
-			
-			List<string> ctags;
-			if (mode.Properties.TryGetValue ("LineComment", out ctags) && ctags.Count > 0) {
-				return new string [] { ctags [0] };
-			}
-			List<string> tags = new List<string> ();
-			if (mode.Properties.TryGetValue ("BlockCommentStart", out ctags))
-				tags.Add (ctags [0]);
-			if (mode.Properties.TryGetValue ("BlockCommentEnd", out ctags))
-				tags.Add (ctags [0]);
-			if (tags.Count == 2)
-				return tags.ToArray ();
-			else
-				return null;
+
+			var result = DocumentFactory.GetSyntaxProperties (loadedMimeType, "LineComment");
+			if (result != null)
+				return result;
+
+			var start = DocumentFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentStart");
+			var end = DocumentFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentEnd");
+			if (start != null && end != null)
+				return new [] { start[0], end[0] };
+			return null;
 		}
 	
 //		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()

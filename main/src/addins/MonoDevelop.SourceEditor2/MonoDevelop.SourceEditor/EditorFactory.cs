@@ -27,11 +27,13 @@ using System;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.Wrappers;
 using Mono.TextEditor;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {
 	sealed class EditorFactory : ITextEditorFactory
 	{
+
 		#region ITextEditorFactory implementation
 
 		ITextDocument ITextEditorFactory.CreateNewDocument ()
@@ -70,6 +72,16 @@ namespace MonoDevelop.SourceEditor
 			return new SourceEditorView (document);
 		}
 
+		string[] ITextEditorFactory.GetSyntaxProperties (string mimeType, string name)
+		{
+			var mode = SyntaxModeService.GetSyntaxMode (null, mimeType);
+			if (mode == null)
+				return null;
+			System.Collections.Generic.List<string> value;
+			if (!mode.Properties.TryGetValue (name, out value))
+				return null;
+			return value.ToArray ();
+		}
 		#endregion
 	}
 }

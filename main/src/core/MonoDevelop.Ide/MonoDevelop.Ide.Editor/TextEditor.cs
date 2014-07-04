@@ -121,15 +121,6 @@ namespace MonoDevelop.Ide.Editor
 			remove { textEditorImpl.BeginMouseHover -= value; }
 		}
 
-		public ISyntaxMode SyntaxMode {
-			get {
-				return textEditorImpl.SyntaxMode;
-			}
-			set {
-				textEditorImpl.SyntaxMode = value;
-			}
-		}
-
 		public ITextEditorOptions Options {
 			get {
 				return textEditorImpl.Options;

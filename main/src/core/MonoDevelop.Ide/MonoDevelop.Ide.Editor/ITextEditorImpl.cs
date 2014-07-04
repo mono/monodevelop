@@ -43,8 +43,6 @@ namespace MonoDevelop.Ide.Editor
 	{
 		EditMode EditMode { get; }
 
-		ISyntaxMode SyntaxMode { get; set; }
-
 		ITextEditorOptions Options { get; }
 
 		IReadonlyTextDocument Document { get; set; }

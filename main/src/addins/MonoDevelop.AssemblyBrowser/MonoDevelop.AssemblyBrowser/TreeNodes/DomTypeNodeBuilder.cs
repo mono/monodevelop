@@ -30,7 +30,6 @@ using System;
 using System.Text;
 using System.Linq;
 using Mono.Cecil;
-
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Ide;
@@ -43,6 +42,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -62,7 +62,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		internal static OutputSettings settings;
-		static SyntaxMode mode = SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
+		static SyntaxMode mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
 
 		internal static string MarkupKeyword (string text)
 		{

@@ -582,11 +582,6 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return ParseColor (value);
 		}
 
-		public ChunkStyle GetChunkStyle (Chunk chunk)
-		{
-			return GetChunkStyle (chunk.Style);
-		}
-
 		public ChunkStyle GetChunkStyle (string color)
 		{
 			if (color == null)

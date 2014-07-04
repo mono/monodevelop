@@ -38,8 +38,35 @@ namespace MonoDevelop.Ide.Editor
 
 		ITextEditorImpl CreateNewEditor ();
 		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document);
-	}
 
+		string[] GetSyntaxProperties (string mimeType, string name);
+	}
+	/*
+			SyntaxMode mode = null;
+			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
+				mode = SyntaxModeService.GetSyntaxMode (null, mt);
+				if (!Equals (mode, null))
+					break;
+			}
+			
+			if (mode == null)
+				return null;
+			
+			List<string> ctags;
+			if (mode.Properties.TryGetValue ("LineComment", out ctags) && ctags.Count > 0) {
+				return new string [] { ctags [0] };
+			}
+			List<string> tags = new List<string> ();
+			if (mode.Properties.TryGetValue ("BlockCommentStart", out ctags))
+				tags.Add (ctags [0]);
+			if (mode.Properties.TryGetValue ("BlockCommentEnd", out ctags))
+				tags.Add (ctags [0]);
+			if (tags.Count == 2)
+				return tags.ToArray ();
+			else
+				return null;
+
+*/
 	public static class DocumentFactory
 	{
 		static ITextEditorFactory currentFactory;
@@ -84,6 +111,11 @@ namespace MonoDevelop.Ide.Editor
 		public static TextEditor CreateNewEditor (IReadonlyTextDocument document)
 		{
 			return new TextEditor (currentFactory.CreateNewEditor (document));
+		}
+
+		public static string[] GetSyntaxProperties (string mimeType, string name)
+		{
+			return currentFactory.GetSyntaxProperties (mimeType, name);
 		}
 	}
 }

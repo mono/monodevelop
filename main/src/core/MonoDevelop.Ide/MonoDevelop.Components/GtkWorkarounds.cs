@@ -972,13 +972,6 @@ namespace MonoDevelop.Components
 		[DllImport(PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
 
-		public static string MarkupLinks (string text)
-		{
-			if (GtkMinorVersion < 18)
-				return text;
-			return HighlightUrlSemanticRule.UrlRegex.Replace (text, MatchToUrl);
-		}
-
 		static string MatchToUrl (System.Text.RegularExpressions.Match m)
 		{
 			var s = m.ToString ();

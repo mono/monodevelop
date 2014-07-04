@@ -96,15 +96,15 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			{
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
-//			syntaxMode = new RazorSyntaxMode (Document);
-//			defaultEditor.SyntaxMode = syntaxMode;
+			syntaxMode = new RazorSyntaxMode (EditContext);
+			EditContext.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
 
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				defaultEditor.SyntaxMode = null;
+				EditContext.GetContent<TextEditorData> ().Document.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
