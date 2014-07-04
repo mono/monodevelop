@@ -89,7 +89,8 @@ namespace Mono.TextEditor
 
 		public DocumentLine GetLineByOffset (int offset)
 		{
-			return Get (OffsetToLineNumber (offset));
+			var lineNumber = OffsetToLineNumber (offset);
+			return lineNumber >= 0 ? Get (lineNumber) : null;
 		}
 
 		public void TextReplaced (object sender, DocumentChangeEventArgs args)
