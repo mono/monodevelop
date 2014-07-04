@@ -40,8 +40,9 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
         | None -> return None
         | Some(col,identIsland) ->
           let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
+          let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
           Debug.WriteLine("Result: Got something, returning")
-          return Some (res, (col - 10, col))
+          return sym |> Option.bind (fun sym -> Some (res, (sym.RangeAlternate.StartColumn, sym.RangeAlternate.EndColumn)))
       }
     member x.GetDeclarationLocation(line, col, lineStr) =
       async {
