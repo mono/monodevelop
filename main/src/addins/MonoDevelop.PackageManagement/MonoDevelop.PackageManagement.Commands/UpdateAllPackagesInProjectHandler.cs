@@ -29,8 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -40,6 +39,17 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			try {
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				RestoreBeforeUpdateAction.Restore (project, () => {
+					DispatchService.GuiSyncDispatch (() => Update (project));
+				});
+			} catch (Exception ex) {
+				ShowStatusBarError (ex);
+			}
+		}
+
+		void Update (IPackageManagementProject project)
+		{
+			try {
 				var updateAllPackages = new UpdateAllPackagesInProject (project);
 				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
 				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions, project);

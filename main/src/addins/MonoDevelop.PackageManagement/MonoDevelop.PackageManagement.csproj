@@ -346,6 +346,7 @@
     <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesProgressMonitorStatusMessage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatedPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreBeforeUpdateAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

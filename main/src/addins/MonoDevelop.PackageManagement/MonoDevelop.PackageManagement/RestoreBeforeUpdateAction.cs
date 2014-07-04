@@ -1,5 +1,5 @@
 ﻿//
-// PackageRestorer.cs
+// RestoreBeforeUpdateAction.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,66 +25,62 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
-using System.Collections.Generic;
-using MonoDevelop.Core;
-using NuGet;
-using MonoDevelop.PackageManagement.Commands;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageRestorer
+	public class RestoreBeforeUpdateAction
 	{
-		List<ProjectPackageReferenceFile> packageReferenceFiles;
+		IPackageManagementProjectService projectService;
+		IBackgroundPackageActionRunner backgroundRunner;
 
-		public PackageRestorer (Solution solution)
-			: this (solution.GetAllDotNetProjects ())
+		public RestoreBeforeUpdateAction ()
+			: this (
+				PackageManagementServices.ProjectService,
+				PackageManagementServices.BackgroundPackageActionRunner)
 		{
 		}
 
-		public PackageRestorer (DotNetProject project)
-			: this (new [] { project })
+		public RestoreBeforeUpdateAction (
+			IPackageManagementProjectService projectService,
+			IBackgroundPackageActionRunner backgroundRunner)
 		{
+			this.projectService = projectService;
+			this.backgroundRunner = backgroundRunner;
 		}
 
-		public PackageRestorer (IEnumerable<DotNetProject> projects)
+		public static void Restore (
+			IPackageManagementProject project,
+			Action afterRestore)
 		{
-			packageReferenceFiles = FindAllPackageReferenceFiles (projects).ToList ();
+			Restore (new [] { project }, afterRestore);
 		}
 
-		IEnumerable<ProjectPackageReferenceFile> FindAllPackageReferenceFiles (IEnumerable<DotNetProject> projects)
+		public static void Restore (
+			IEnumerable<IPackageManagementProject> projects,
+			Action afterRestore)
 		{
-			return projects
-				.Where (project => project.HasPackages ())
-				.Select (project => new ProjectPackageReferenceFile (project));
+			var runner = new RestoreBeforeUpdateAction ();
+			runner.RestoreProjectPackages (
+				projects.Select (project => project.DotNetProject),
+				afterRestore);
 		}
 
-		public bool RestoreFailed { get; private set; }
-
-		public void Restore ()
+		public void RestoreProjectPackages (
+			IEnumerable<DotNetProject> projects,
+			Action afterRestore)
 		{
-			try {
-				if (AnyMissingPackages ()) {
-					RestoreWithProgressMonitor ();
+			var restorer = new PackageRestorer (projects);
+			DispatchService.BackgroundDispatch (() => {
+				restorer.Restore ();
+				if (!restorer.RestoreFailed) {
+					afterRestore ();
 				}
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
-				RestoreFailed = true;
-			}
-		}
-
-		bool AnyMissingPackages ()
-		{
-			return packageReferenceFiles.Any (file => file.AnyMissingPackages ());
-		}
-
-		void RestoreWithProgressMonitor ()
-		{
-			var runner = new PackageRestoreRunner ();
-			runner.Run ();
-			RestoreFailed = runner.RestoreFailed;
+			});
 		}
 	}
 }
