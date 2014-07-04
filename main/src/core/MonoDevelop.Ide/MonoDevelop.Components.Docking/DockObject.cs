@@ -36,17 +36,13 @@ using System.Globalization;
 
 namespace MonoDevelop.Components.Docking
 {
-	internal abstract class DockObject
+	internal abstract class DockObject: IDockObject
 	{
 		DockGroup parentGroup;
 		DockFrame frame;
 
 		// The current size in pixels of this item
 		double size = -1;
-
-		// The current size in pixels of this item, but as an integer.
-		// In general it is the same value as size, but it may change a bit due to rounding.
-		int allocSize = -1;
 
 		double defaultHorSize = -1;
 		double defaultVerSize = -1;
@@ -55,6 +51,10 @@ namespace MonoDevelop.Components.Docking
 		public DockObject (DockFrame frame)
 		{
 			this.frame = frame;
+		}
+
+		public DockLayout ParentLayout {
+			get { return (this as DockLayout) ?? (parentGroup != null ? parentGroup.ParentLayout : null); }
 		}
 
 		internal DockGroup ParentGroup {
@@ -170,7 +170,6 @@ namespace MonoDevelop.Components.Docking
 			parentGroup = null;
 			size = ob.size;
 			frame = ob.frame;
-			allocSize = ob.allocSize;
 			defaultHorSize = ob.defaultHorSize;
 			defaultVerSize = ob.defaultVerSize;
 			prefSize = ob.prefSize;
@@ -186,7 +185,6 @@ namespace MonoDevelop.Components.Docking
 		public virtual void CopySizeFrom (DockObject obj)
 		{
 			size = obj.size;
-			allocSize = obj.allocSize;
 			defaultHorSize = obj.defaultHorSize;
 			defaultVerSize = obj.defaultVerSize;
 			prefSize = obj.prefSize;

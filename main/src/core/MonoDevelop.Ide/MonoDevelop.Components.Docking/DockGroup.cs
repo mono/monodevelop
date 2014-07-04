@@ -35,11 +35,11 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockGroup: DockObject
+	class DockGroup: DockObject, IDockGroup
 	{
 		DockGroupType type;
 		List<DockObject> dockObjects = new List<DockObject> ();
-		List<DockObject> visibleObjects;
+		List<IDockObject> visibleObjects;
 		int currentTabPage;
 
 		public DockGroup (DockFrame frame, DockGroupType type): base (frame)
@@ -244,7 +244,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			// TODO: batch updates
 			UpdateStyle ();
-			Frame.Backend.Refresh (this);
+			Frame.MarkForRelayout (this);
 		}
 
 		public void Remove (DockObject obj)
@@ -274,10 +274,14 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		internal List<DockObject> VisibleObjects {
+		IEnumerable<IDockObject> IDockGroup.VisibleObjects {
+			get { return VisibleObjects; }
+		}
+
+		internal List<IDockObject> VisibleObjects {
 			get {
 				if (visibleObjects == null) {
-					visibleObjects = new List<DockObject> ();
+					visibleObjects = new List<IDockObject> ();
 					foreach (DockObject obj in dockObjects)
 						if (obj.Visible)
 							visibleObjects.Add (obj);
@@ -296,12 +300,13 @@ namespace MonoDevelop.Components.Docking
 		{
 			visibleObjects = null;
 			bool visChanged;
-			MarkForRelayout ();
 
 			visChanged = child.Visible ? VisibleObjects.Count == 1 : VisibleObjects.Count == 0;
 
 			if (visChanged && ParentGroup != null)
 				ParentGroup.UpdateVisible (this);
+
+			MarkForRelayout ();
 		}
 
 		public override bool Expand {
@@ -318,18 +323,6 @@ namespace MonoDevelop.Components.Docking
 			width = height = 0;
 		}
 
-
-		public void ReplaceItem (DockObject ob1, DockObject ob2)
-		{
-			int i = dockObjects.IndexOf (ob1);
-			dockObjects [i] = ob2;
-			ob2.ParentGroup = this;
-			ob2.ResetDefaultSize ();
-			ob2.Size = ob1.Size;
-			ob2.DefaultSize = ob1.DefaultSize;
-			//ob2.AllocSize = ob1.AllocSize;
-			ResetVisibleGroups ();
-		}
 
 		public override void CopyFrom (DockObject other)
 		{
@@ -465,11 +458,11 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public void DockTarget (DockItem item, DockObject insertBeforeObject)
+		public void DockTarget (DockItem item, IDockObject insertBeforeObject)
 		{
 			int n;
 			if (insertBeforeObject != null)
-				n = dockObjects.IndexOf (insertBeforeObject);
+				n = dockObjects.IndexOf ((DockObject)insertBeforeObject);
 			else
 				n = dockObjects.Count;
 

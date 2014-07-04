@@ -41,7 +41,7 @@ namespace MonoDevelop.Components.Docking
 		int layoutWidth = 1024;
 		int layoutHeight = 768;
 		
-		public GtkDockLayout (GtkDockFrame frame, DockLayout la): base (frame, la)
+		public GtkDockLayout (GtkDockFrame frame, IDockLayout la): base (frame, la)
 		{
 		}
 		

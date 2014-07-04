@@ -44,11 +44,11 @@ namespace MonoDevelop.Components.Docking
 		TabStrip boundTabStrip;
 		GtkDockGroupItem tabFocus;
 		int currentTabPage;
-		DockGroup group;
+		IDockGroup group;
 		
 		enum AllocStatus { NotSet, Invalid, RestorePending, NewSizeRequest, Valid };
 		
-		internal GtkDockGroup (GtkDockFrame frame, DockGroup grp): base (frame, grp)
+		internal GtkDockGroup (GtkDockFrame frame, IDockGroup grp): base (frame, grp)
 		{
 			type = grp.Type;
 		}
@@ -62,7 +62,7 @@ namespace MonoDevelop.Components.Docking
 			}
 		}
 
-		public DockGroup Group {
+		public IDockGroup Group {
 			get { return group; }
 		}
 		
@@ -70,24 +70,24 @@ namespace MonoDevelop.Components.Docking
 			get { return dockObjects; }
 		}
 
-		public void Sync (DockGroup group)
+		public void Sync (IDockGroup group)
 		{
 			this.group = group;
+			MarkForRelayout ();
 			Type = group.Type;
 			dockObjects.Clear ();
 			foreach (var ob in group.VisibleObjects) {
-				if (ob is DockGroup) {
-					var ng = new GtkDockGroup (Frame, (DockGroup) ob);
-					ng.Sync ((DockGroup)ob);
+				if (ob is IDockGroup) {
+					var ng = new GtkDockGroup (Frame, (IDockGroup) ob);
+					ng.Sync ((IDockGroup)ob);
 					dockObjects.Add (ng);
 					ng.ParentGroup = this;
 				} else {
-					DockGroupItem gi = (DockGroupItem)ob;
-					if (gi.Status == DockItemStatus.Dockable) {
-						var it = new GtkDockGroupItem (Frame, (DockGroupItem)ob);
-						dockObjects.Add (it);
-						it.ParentGroup = this;
-					}
+					var oi = (IDockGroupItem)ob;
+					var it = new GtkDockGroupItem (Frame, oi);
+					dockObjects.Add (it);
+					it.ParentGroup = this;
+					oi.Item.ResetMode ();
 				}
 			}
 		}
@@ -753,7 +753,7 @@ namespace MonoDevelop.Components.Docking
 		
 		void DockTarget (DockItemBackend item, int n)
 		{
-			group.DockTarget (item.Frontend, n != -1 && n < dockObjects.Count ? dockObjects [n].Frontend : null);
+			Frame.Frontend.DockItem (item.Frontend, (IDockGroup)Frontend, n != -1 && n < dockObjects.Count ? dockObjects [n].Frontend : null);
 			CalcNewSizes ();
 		}
 		
@@ -773,7 +773,7 @@ namespace MonoDevelop.Components.Docking
 			else if (type == DockGroupType.Horizontal) {
 				if (px >= Allocation.Right - GtkDockFrame.GroupDockSeparatorSize) {
 					// Check if the item is allowed to be docked here
-					var s = Frame.Frontend.GetRegionStyleForObject (Objects[Objects.Count - 1].Frontend);
+					var s = Objects[Objects.Count - 1].Frontend.GetRegionStyle ();
 					if (s.SingleColumnMode.Value)
 						return false;
 					// Dock to the right of the group
@@ -785,7 +785,7 @@ namespace MonoDevelop.Components.Docking
 				}
 				else if (px <= Allocation.Left + GtkDockFrame.GroupDockSeparatorSize) {
 					// Check if the item is allowed to be docked here
-					var s = Frame.Frontend.GetRegionStyleForObject (Objects[0].Frontend);
+					var s = Objects[0].Frontend.GetRegionStyle ();
 					if (s.SingleColumnMode.Value)
 						return false;
 					// Dock to the left of the group
@@ -820,7 +820,7 @@ namespace MonoDevelop.Components.Docking
 			else if (type == DockGroupType.Vertical) {
 				if (py >= Allocation.Bottom - GtkDockFrame.GroupDockSeparatorSize) {
 					// Check if the item is allowed to be docked here
-					var s = Frame.Frontend.GetRegionStyleForObject (Objects[Objects.Count - 1].Frontend);
+					var s = Objects[Objects.Count - 1].Frontend.GetRegionStyle ();
 					if (s.SingleRowMode.Value)
 						return false;
 					// Dock to the bottom of the group
@@ -832,7 +832,7 @@ namespace MonoDevelop.Components.Docking
 				}
 				else if (py <= Allocation.Top + GtkDockFrame.GroupDockSeparatorSize) {
 					// Check if the item is allowed to be docked here
-					var s = Frame.Frontend.GetRegionStyleForObject (Objects[0].Frontend);
+					var s = Objects[0].Frontend.GetRegionStyle ();
 					if (s.SingleRowMode.Value)
 						return false;
 					// Dock to the top of the group

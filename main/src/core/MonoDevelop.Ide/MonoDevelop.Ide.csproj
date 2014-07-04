@@ -3497,6 +3497,10 @@
     <Compile Include="MonoDevelop.Components.Docking\IDockFrameBackend.cs" />
     <Compile Include="MonoDevelop.Components.Docking\IDockItemBackend.cs" />
     <Compile Include="MonoDevelop.Components.Docking\IDockFrameController.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\IDockObject.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\IDockGroup.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\IDockGroupItem.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\IDockLayout.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

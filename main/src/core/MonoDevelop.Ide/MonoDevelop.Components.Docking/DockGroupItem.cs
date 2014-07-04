@@ -33,7 +33,7 @@ using System.Xml;
 
 namespace MonoDevelop.Components.Docking
 {
-	internal class DockGroupItem: DockObject
+	internal class DockGroupItem: DockObject, IDockGroupItem
 	{
 		DockItem item;
 		bool visibleFlag;
@@ -144,28 +144,28 @@ namespace MonoDevelop.Components.Docking
 				if (status == value)
 					return;
 
-				DockItemStatus oldValue = status;
 				status = value;
-
-				if (status == DockItemStatus.Floating) {
-					if (floatRect.Equals (Xwt.Rectangle.Zero)) {
-						floatRect = item.GetAllocation ();
-					}
-					item.SetFloatMode (floatRect);
-				}
-				else if (status == DockItemStatus.AutoHide) {
-					SetBarDocPosition ();
-					item.SetAutoHideMode (barDocPosition, GetAutoHideSize (barDocPosition));
-				}
-				else
-					item.ResetMode ();
-
-				if (oldValue == DockItemStatus.Dockable || status == DockItemStatus.Dockable) {
-					// Update visibility if changing from/to dockable mode
-					if (ParentGroup != null)
-						ParentGroup.UpdateVisible (this);
-				}
+				UpdateItemStatus (false);
 			}
+		}
+
+		void UpdateItemStatus (bool showing)
+		{
+			if (status == DockItemStatus.Floating) {
+				if (!showing && floatRect.Equals (Xwt.Rectangle.Zero))
+					floatRect = item.GetAllocation ();
+				item.SetFloatMode (floatRect);
+			}
+			else if (status == DockItemStatus.AutoHide) {
+				if (!showing)
+					SetBarDocPosition ();
+				item.SetAutoHideMode (barDocPosition, GetAutoHideSize (barDocPosition));
+			}
+
+			item.UpdateVisibleStatus ();
+
+			if (ParentGroup != null)
+				ParentGroup.UpdateVisible (this);
 		}
 
 
@@ -286,8 +286,10 @@ namespace MonoDevelop.Components.Docking
 		{
 			if (visibleFlag != value) {
 				visibleFlag = value;
-				if (visibleFlag)
+				if (visibleFlag) {
+					UpdateItemStatus (true);
 					item.ShowWidget ();
+				}
 				else
 					item.HideWidget ();
 				if (ParentGroup != null)
@@ -316,13 +318,16 @@ namespace MonoDevelop.Components.Docking
 		internal override void RestoreAllocation ()
 		{
 			base.RestoreAllocation ();
-
-			if (Status == DockItemStatus.Floating)
-				item.SetFloatMode (floatRect);
-			else if (Status == DockItemStatus.AutoHide)
-				item.SetAutoHideMode (barDocPosition, GetAutoHideSize (barDocPosition));
-			else
-				item.ResetMode ();
+			item.UpdateVisibleStatus ();
+			if (item.Visible) {
+				if (Status == DockItemStatus.Floating)
+					item.SetFloatMode (floatRect);
+				else if (Status == DockItemStatus.AutoHide)
+					item.SetAutoHideMode (barDocPosition, GetAutoHideSize (barDocPosition));
+				else
+					item.ResetMode ();
+			} else
+				item.HideWidget ();
 		}
 
 		public override string ToString ()

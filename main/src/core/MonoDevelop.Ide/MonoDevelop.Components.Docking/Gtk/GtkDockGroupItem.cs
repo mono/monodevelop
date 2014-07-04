@@ -51,7 +51,7 @@ namespace MonoDevelop.Components.Docking
 			get { return item.Id; }
 		}
 		
-		public GtkDockGroupItem (GtkDockFrame frame, DockGroupItem item): base (frame, item)
+		public GtkDockGroupItem (GtkDockFrame frame, IDockGroupItem item): base (frame, item)
 		{
 			this.item = (DockItemBackend) item.Item.Backend;
 		}
@@ -120,7 +120,7 @@ namespace MonoDevelop.Components.Docking
 			if (item != this.item && rect.Contains (px, py)) {
 
 				// Check if the item is allowed to be docked here
-				var s = Frame.Frontend.GetRegionStyleForObject (Frontend);
+				var s = Frontend.GetRegionStyle ();
 
 				int xdockMargin = (int) ((double)rect.Width * (1.0 - GtkDockFrame.ItemDockCenterArea)) / 2;
 				int ydockMargin = (int) ((double)rect.Height * (1.0 - GtkDockFrame.ItemDockCenterArea)) / 2;
@@ -160,7 +160,7 @@ namespace MonoDevelop.Components.Docking
 				}
 				
 				dockDelegate = delegate (DockItemBackend dit) {
-					ParentGroup.Group.AddObject (dit.Frontend, pos, Id);
+					Frame.Frontend.DockItemRelative (dit.Frontend, (IDockGroupItem)Frontend, pos, Id);
 					dit.Frontend.Present (true);
 				};
 				return true;
@@ -175,7 +175,7 @@ namespace MonoDevelop.Components.Docking
 
 		public void SetFloatRect (Xwt.Rectangle rect)
 		{
-			((DockGroupItem)Frontend).FloatRect = rect;
+			((IDockGroupItem)Frontend).FloatRect = rect;
 		}
 		
 		public override string ToString ()

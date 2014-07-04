@@ -38,6 +38,7 @@ using Gdk;
 using Xwt.Motion;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Docking.Internal;
+using System.Linq;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -127,11 +128,6 @@ namespace MonoDevelop.Components.Docking
 				stylesById.Remove (itemId);
 		}
 
-		DockVisualStyle IDockFrameController.GetRegionStyleForObject (DockObject obj)
-		{
-			return GetRegionStyleForObject (obj);
-		}
-
 		/// <summary>
 		/// Gets the style for a dock object, which will inherit values from all region/style definitions
 		/// </summary>
@@ -194,9 +190,9 @@ namespace MonoDevelop.Components.Docking
 			return mergedStyle ?? DefaultVisualStyle;
 		}
 
-		DockVisualStyle IDockFrameController.GetRegionStyleForPosition (DockGroup parentGroup, int childIndex, bool insertingPosition)
+		DockVisualStyle IDockFrameController.GetRegionStyleForPosition (IDockGroup parentGroup, int childIndex, bool insertingPosition)
 		{
-			return GetRegionStyleForPosition (parentGroup, childIndex, insertingPosition);
+			return GetRegionStyleForPosition ((DockGroup)parentGroup, childIndex, insertingPosition);
 		}
 
 		bool InRegion (string location, DockObject obj)
@@ -343,6 +339,7 @@ namespace MonoDevelop.Components.Docking
 			foreach (DockGroup grp in layouts.Values)
 				grp.RemoveItemRec (it);
 			items.Remove (it);
+			DoPendingRelayout ();
 		}
 		
 		public DockItem GetItem (string id)
@@ -369,8 +366,6 @@ namespace MonoDevelop.Components.Docking
 			if (!layouts.TryGetValue (layoutName, out dl))
 				return false;
 
-			layout = dl;
-
 			// Make sure items not present in this layout are hidden
 			foreach (var it in items) {
 				if ((it.Behavior & DockItemBehavior.Sticky) != 0)
@@ -381,7 +376,11 @@ namespace MonoDevelop.Components.Docking
 
 			dl.RestoreAllocation ();
 			dl.UpdateStyle ();
+
+			layout = dl;
+
 			backend.LoadLayout (dl);
+
 			return true;
 		}
 
@@ -544,6 +543,7 @@ namespace MonoDevelop.Components.Docking
 					return; // Already invisible
 			}
 			gitem.SetVisible (visible);
+			DoPendingRelayout ();
 		}
 		
 		internal DockItemStatus GetStatus (DockItem item)
@@ -563,6 +563,7 @@ namespace MonoDevelop.Components.Docking
 			}
 			gitem.StoreAllocation ();
 			gitem.Status = status;
+			DoPendingRelayout ();
 		}
 
 		internal Xwt.Rectangle GetAllocation ()
@@ -577,6 +578,7 @@ namespace MonoDevelop.Components.Docking
 			item.ResetMode ();
 			layout.RemoveItemRec (item);
 			AddItemAtLocation (layout, item, placement, vis, stat);
+			DoPendingRelayout ();
 		}
 		
 		DockLayout GetDefaultLayout ()
@@ -655,6 +657,49 @@ namespace MonoDevelop.Components.Docking
 				if (it.Visible && it.Status == DockItemStatus.AutoHide)
 					it.Minimize ();
 			}
+		}
+
+		void IDockFrameController.DockItem (DockItem item, IDockGroup group, IDockObject insertBeforeObject)
+		{
+			((DockGroup)group).DockTarget (item, insertBeforeObject);
+			DoPendingRelayout ();
+		}
+
+		void IDockFrameController.DockItemRelative (DockItem item, IDockGroupItem targetPosition, DockPosition pos, string relItemId)
+		{
+			((DockGroupItem)targetPosition).ParentGroup.AddObject (item, pos, relItemId);
+			DoPendingRelayout ();
+		}
+
+		List<DockObject> objectsToRealyout = new List<DockObject> ();
+
+		internal void MarkForRelayout (DockObject ob)
+		{
+			if (ob.ParentLayout != layout)
+				return;
+
+			if (objectsToRealyout.Any (o => o == ob || IsAncestor (ob, o)))
+				return;
+			objectsToRealyout.RemoveAll (o => IsAncestor (o, ob));
+			objectsToRealyout.Add (ob);
+		}
+
+		internal void DoPendingRelayout ()
+		{
+			foreach (var ob in objectsToRealyout.ToArray ())
+				backend.Refresh (ob);
+			objectsToRealyout.Clear ();
+		}
+
+		bool IsAncestor (DockObject ob, DockObject potentialAncestor)
+		{
+			ob = ob.ParentGroup;
+			while (ob != null) {
+				if (ob == potentialAncestor)
+					return true;
+				ob = ob.ParentGroup;
+			}
+			return false;
 		}
 	}
 

@@ -59,15 +59,15 @@ namespace MonoDevelop.Components.Docking
 		// if the layout has never been displayed (e.g., to decide the autohide dock location)
 		int ax=-1, ay=-1;
 
-		DockObject frontend;
+		IDockObject frontend;
 		
-		public GtkDockObject (GtkDockFrame frame, DockObject frontend)
+		public GtkDockObject (GtkDockFrame frame, IDockObject frontend)
 		{
 			this.frame = frame;
 			this.frontend = frontend;
 		}
 
-		public DockObject Frontend {
+		public IDockObject Frontend {
 			get { return frontend; }
 		}
 		

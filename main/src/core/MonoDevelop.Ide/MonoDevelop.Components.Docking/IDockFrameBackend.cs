@@ -35,12 +35,12 @@ namespace MonoDevelop.Components.Docking.Internal
 		/// Loads the layout, placing the pads at the correct locations. All pads included in the layout
 		/// are visible and docked.
 		/// </summary>
-		void LoadLayout (DockLayout dl);
+		void LoadLayout (IDockLayout dl);
 
 		/// <summary>
 		/// Refresh a section of the layout loaded with LoadLayout.
 		/// </summary>
-		void Refresh (DockObject obj);
+		void Refresh (IDockObject obj);
 
 		/// <summary>
 		/// Creates a backend for a DockItem

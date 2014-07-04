@@ -1,5 +1,5 @@
 ﻿//
-// IDockFrameController.cs
+// IDockGroup.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,41 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Docking
 {
-	interface IDockFrameController
+	interface IDockGroup: IDockObject
 	{
-		DockVisualStyle DefaultVisualStyle { get; }
-
-		/// <summary>
-		/// Gets the style assigned to a specific position of the layout
-		/// </summary>
-		/// <returns>
-		/// The region style for position.
-		/// </returns>
-		/// <param name='parentGroup'>
-		/// Group which contains the position
-		/// </param>
-		/// <param name='childIndex'>
-		/// Index of the position inside the group
-		/// </param>
-		/// <param name='insertingPosition'>
-		/// If true, the position will be inserted (meaning that the objects in childIndex will be shifted 1 position)
-		/// </param>
-		DockVisualStyle GetRegionStyleForPosition (IDockGroup parentGroup, int childIndex, bool insertingPosition);
-
-		int DefaultItemWidth { get; }
-
-		int DefaultItemHeight { get; }
-
-		uint AutoShowDelay { get; }
-
-		uint AutoHideDelay { get; }
-
-		void DockItem (DockItem item, IDockGroup group, IDockObject insertBeforeObject);
-
-		void DockItemRelative (DockItem item, IDockGroupItem targetPosition, DockPosition pos, string relItemId);
+		DockGroupType Type { get; }
+		IEnumerable<IDockObject> VisibleObjects { get; }
 	}
 }
 

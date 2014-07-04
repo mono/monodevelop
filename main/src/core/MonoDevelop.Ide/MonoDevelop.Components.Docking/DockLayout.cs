@@ -36,7 +36,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Docking
 {
-	class DockLayout: DockGroup
+	class DockLayout: DockGroup, IDockLayout
 	{
 		string name;
 		int layoutWidth = 1024;

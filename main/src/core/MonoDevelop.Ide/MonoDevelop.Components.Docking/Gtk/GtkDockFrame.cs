@@ -50,7 +50,7 @@ namespace MonoDevelop.Components.Docking
 
 		IDockFrameController controller;
 		DockContainer container;
-		DockLayout layout;
+		IDockLayout layout;
 
 		int handleSize = 1;
 		int handlePadding = 0;
@@ -61,7 +61,7 @@ namespace MonoDevelop.Components.Docking
 		VBox mainBox;
 		Gtk.Widget overlayWidget;
 
-		Dictionary<DockGroupItem,GtkDockGroupItem> items = new Dictionary<DockGroupItem, GtkDockGroupItem> ();
+		Dictionary<IDockGroupItem,GtkDockGroupItem> items = new Dictionary<IDockGroupItem, GtkDockGroupItem> ();
 
 		public GtkDockFrame ()
 		{
@@ -101,7 +101,7 @@ namespace MonoDevelop.Components.Docking
 			get { return controller; }
 		}
 
-		void IDockFrameBackend.Refresh (DockObject obj)
+		void IDockFrameBackend.Refresh (IDockObject obj)
 		{
 			if (container.Layout != null) {
 				container.Layout.Sync (layout);
@@ -116,7 +116,8 @@ namespace MonoDevelop.Components.Docking
 
 		Xwt.Rectangle IDockFrameBackend.GetAllocation ()
 		{
-			throw new NotImplementedException ();
+			var alloc = Allocation;
+			return new Xwt.Rectangle (alloc.X, alloc.Y, alloc.Width, alloc.Height);
 		}
 
 		public bool DockbarsVisible {
@@ -209,14 +210,6 @@ namespace MonoDevelop.Components.Docking
 		{
 		}
 
-		internal GtkDockGroupItem GetGroupItem (DockGroupItem di)
-		{
-			GtkDockGroupItem item;
-			if (!items.TryGetValue (di, out item))
-				item = items[di] = new GtkDockGroupItem (this, di);
-			return item;
-		}
-
 		public DockBar ExtractDockBar (PositionType pos)
 		{
 			DockBar db = new DockBar (this, pos);
@@ -300,7 +293,7 @@ namespace MonoDevelop.Components.Docking
 			return container.Items;
 		}
 
-		public void LoadLayout (DockLayout layout)
+		public void LoadLayout (IDockLayout layout)
 		{
 			this.layout = layout;
 
