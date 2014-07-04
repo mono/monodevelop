@@ -104,7 +104,7 @@ type FSharpTooltipProvider() =
                    let positionWidget = editor.TextArea
                    let region = item.ItemSegment.GetRegion(editor.Document)
                    let p1, p2 = editor.LocationToPoint(region.Begin), editor.LocationToPoint(region.End)
-                   let caret = Gdk.Rectangle (int p1.X - positionWidget.Allocation.X, 
+                   let caret = Gdk.Rectangle (int p1.X - positionWidget.Allocation.X + (int positionWidget.ActionMargin.Width), 
                                               int p2.Y - positionWidget.Allocation.Y, 
                                               int (p2.X - p1.X), 
                                               int editor.LineHeight)
