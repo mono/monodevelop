@@ -72,7 +72,7 @@
 	
 	<Span rule="Let" stopateol = "false">
 		<Begin color="Keyword(Iteration)" flags="NewWord">let </Begin>
-		<End>=</End>
+		<End>=|(|&lt;</End>
 	</Span>
 
 <!-- 
