@@ -35,69 +35,86 @@ using Gtk;
 
 namespace MonoDevelop.Components.Mac
 {
-	public class NSViewContainer : Bin
+
+	public class NSViewContainer : Container
 	{
+		static Dictionary<NSView,NSViewContainer> containers = new Dictionary<NSView, NSViewContainer> ();
+
+		List<Widget> children = new List<Widget> ();
+		NSView nsview;
+
 		public NSViewContainer ()
 		{
 			WidgetFlags |= Gtk.WidgetFlags.NoWindow;
 		}
 
-		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		internal static NSViewContainer GetContainer (NSView v)
 		{
-			base.OnSizeAllocated (allocation);
-			if (nsviewChild != null)
-				nsviewChild.SetFrameSize (new System.Drawing.SizeF (allocation.Width, allocation.Height));
+			while (v != null) {
+				NSViewContainer c;
+				if (containers.TryGetValue (v, out c))
+					return c;
+				v = v.Superview;
+			}
+			return null;
 		}
 
-		public void AddNSChild (NSView nsview)
+		protected override void OnRealized ()
 		{
-			nsviewChild = nsview;
-			NSView.AddSubview (nsview);
+			base.OnRealized ();
+			nsview = GtkMacInterop.GetNSView (this);
+			containers [nsview] = this;
+			ConnectSubviews (nsview);
 		}
 
-		/// <summary>
-		/// Creates an NSView that embeds the provided GTK widget.
-		/// This view can be added to any NSView inside this container
-		/// </summary>
-		public NSView CreateEmbedView (Gtk.Widget widget)
+		void ConnectSubviews (NSView v)
 		{
-			widget.SizeRequest ();
-			embedView = new GtkEmbed (this, widget);
-
-			WatchForFocus (widget);
-
-			return embedView;
-		}
-
-		private void WatchForFocus (Widget widget)
-		{
-			widget.FocusInEvent += (o, args) => {
-				NSView.Window.MakeFirstResponder (embedView);
-			};
-
-			if (widget is Container) {
-				Container c = (Container)widget;
-
-				foreach (Widget w in c.Children) {
-					WatchForFocus (w);
-				}
+			if (v is GtkEmbed) {
+				((GtkEmbed)v).Connect (this);
+			} else {
+				foreach (var sv in v.Subviews)
+					ConnectSubviews (v);
 			}
 		}
 
-		/// <summary>
-		/// The root NSView for this widget
-		/// </summary>
+		public override void Destroy ()
+		{
+			base.Destroy ();
+			if (nsview != null)
+				containers.Remove (nsview);
+		}
+
+		protected override void OnAdded (Widget widget)
+		{
+			widget.Parent = this;
+			children.Add (widget);
+		}
+
+		protected override void OnRemoved (Widget widget)
+		{
+			children.Remove (widget);
+		}
+
+		protected override void ForAll (bool include_internals, Callback cb)
+		{
+			foreach (Widget w in children.ToArray ())
+				cb (w);
+		}
+
+		protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+		{
+			base.OnSizeAllocated (allocation);
+		}
+
 		public NSView NSView {
-			get { return GtkMacInterop.GetNSView (this); }
+			get {
+				if (nsview == null)
+					Realize ();
+				return nsview; 
+			}
 		}
-
-		public NSView NSChild {
-			get { return nsviewChild; }
-		}
-
-		private NSView embedView;
-		private NSView nsviewChild;
 	}
+
 }
 
 #endif

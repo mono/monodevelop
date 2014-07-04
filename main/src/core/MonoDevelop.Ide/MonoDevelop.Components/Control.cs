@@ -91,6 +91,9 @@ namespace MonoDevelop.Components
 				ww.Show ();
 				return ww;
 			}
+			if (w is Gtk.Widget && t == typeof(NSView)) {
+				return new GtkEmbed ((Gtk.Widget)w);
+			}
 			#endif
 			throw new NotSupportedException ();
 		}

@@ -23,15 +23,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using CoreGraphics;
 
 #if MAC
 
 using System;
-using System.Drawing;
 using Foundation;
 using AppKit;
 using ObjCRuntime;
 using Gtk;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Components.Mac
 {
@@ -39,23 +40,37 @@ namespace MonoDevelop.Components.Mac
 	{
 		WidgetWithNativeWindow cw;
 		NSViewContainer container;
+		Gtk.Widget embeddedWidget;
 
-		public GtkEmbed (NSViewContainer container, Gtk.Widget w)
+		public GtkEmbed (Gtk.Widget w)
+		{
+			embeddedWidget = w;
+			var s = w.SizeRequest ();
+			SetFrameSize (new CGSize (s.Width, s.Height));
+			WatchForFocus (w);
+		}
+
+		internal void Connect (NSViewContainer container)
 		{
 			this.container = container;
 			cw = new WidgetWithNativeWindow (this);
-			cw.Add (w);
+			cw.Add (embeddedWidget);
 			container.Add (cw);
 			cw.Show ();
 		}
 
-		public override CoreGraphics.CGRect Frame {
-			get {
-				return base.Frame;
-			}
-			set {
-				base.Frame = value;
-				UpdateAllocation ();
+		void WatchForFocus (Widget widget)
+		{
+			widget.FocusInEvent += (o, args) => {
+				var view = GtkMacInterop.GetNSView (widget);
+				if (view != null)
+					view.Window.MakeFirstResponder (view);
+			};
+
+			if (widget is Container) {
+				Container c = (Container)widget;
+				foreach (Widget w in c.Children)
+					WatchForFocus (w);
 			}
 		}
 
@@ -71,7 +86,7 @@ namespace MonoDevelop.Components.Mac
 				return;
 
 			var gw = GtkMacInterop.GetNSView (cw);
-			gw.Frame = new CoreGraphics.CGRect (0, 0, Frame.Width, Frame.Height);
+			gw.Frame = new CGRect (0, 0, Frame.Width, Frame.Height);
 			var rect = GetRelativeAllocation (GtkMacInterop.GetNSView (container), gw);
 
 			var allocation = new Gdk.Rectangle {
@@ -84,15 +99,42 @@ namespace MonoDevelop.Components.Mac
 			cw.SizeAllocate (allocation);
 		}
 
-		CoreGraphics.CGRect GetRelativeAllocation (NSView ancestor, NSView child)
+		CGRect GetRelativeAllocation (NSView ancestor, NSView child)
 		{
 			if (child == null)
-				return RectangleF.Empty;
+				return CGRect.Empty;
 			if (child.Superview == ancestor)
 				return child.Frame;
 			var f = GetRelativeAllocation (ancestor, child.Superview);
 			var cframe = child.Frame;
-			return new CoreGraphics.CGRect (cframe.X + f.X, cframe.Y + f.Y, cframe.Width, cframe.Height);
+			return new CGRect (cframe.X + f.X, cframe.Y + f.Y, cframe.Width, cframe.Height);
+		}
+
+		public override CGRect Frame {
+			get {
+				return base.Frame;
+			}
+			set {
+				base.Frame = value;
+				UpdateAllocation ();
+			}
+		}
+
+		public override void ViewDidMoveToSuperview ()
+		{
+			base.ViewDidMoveToSuperview ();
+			var c = NSViewContainer.GetContainer (Superview);
+			if (c != null)
+				Connect (c);
+		}
+
+		public override void RemoveFromSuperview ()
+		{
+			base.RemoveFromSuperview ();
+			if (container != null) {
+				container.Remove (cw);
+				container = null;
+			}
 		}
 	}
 }
