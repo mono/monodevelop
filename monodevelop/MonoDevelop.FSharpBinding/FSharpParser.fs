@@ -99,7 +99,7 @@ type FSharpParser() =
             | Some filePath -> 
                 let projFile, files, args, framework = MonoDevelop.getCheckerArgs (proj, filePath)
                 let results = 
-                    MDLanguageService.Instance.ParseAndCheckFileInProject(projFile, fileName, fileContent, files, args, framework, storeAst) 
+                    MDLanguageService.Instance.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, framework, storeAst) 
                     |> Async.RunSynchronously
                 match results.GetErrors() with
                 | Some errors -> 
