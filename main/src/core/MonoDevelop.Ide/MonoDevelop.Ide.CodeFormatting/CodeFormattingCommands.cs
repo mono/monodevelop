@@ -71,7 +71,6 @@ namespace MonoDevelop.Ide.CodeFormatting
 			} else {
 				doc.Editor.Text = formatter.FormatText (doc.Project.Policies, doc.Editor.Text); 
 			}
-			doc.Editor.RequestRedraw ();
 		}
 	}
 	

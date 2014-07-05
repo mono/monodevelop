@@ -17,6 +17,7 @@ namespace MonoDevelop.SourceEditor
 
 		readonly UnitTestMarkerHost host;
 		readonly UnitTestLocation unitTest;
+		readonly ExtensibleTextEditor textEditor;
 
 		UnitTestLocation IUnitTestMarker.UnitTest {
 			get {
@@ -24,8 +25,14 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public UnitTestMarker (UnitTestMarkerHost host, UnitTestLocation unitTest)
+		void IUnitTestMarker.UpdateState ()
 		{
+			textEditor.RedrawMarginLine (textEditor.ActionMargin, LineSegment.LineNumber); 
+		}
+
+		public UnitTestMarker (ExtensibleTextEditor textEditor, UnitTestMarkerHost host, UnitTestLocation unitTestLocation)
+		{
+			this.textEditor = textEditor;
 			this.host = host;
 			this.unitTest = unitTest;
 		}

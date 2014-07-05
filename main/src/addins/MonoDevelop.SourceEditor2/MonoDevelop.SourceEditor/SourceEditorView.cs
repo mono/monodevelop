@@ -2777,11 +2777,6 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		void ITextEditorImpl.RequestRedraw ()
-		{
-			TextEditor.QueueDraw ();
-		}
-
 		MonoDevelop.Ide.Editor.DocumentLocation ITextEditorImpl.PointToLocation (double xp, double yp, bool endAtEol)
 		{
 			var pt = TextEditor.PointToLocation (xp, yp);
@@ -3142,7 +3137,7 @@ namespace MonoDevelop.SourceEditor
 
 		IUnitTestMarker IMarkerHost.CreateUnitTestMarker (UnitTestMarkerHost host, UnitTestLocation unitTestLocation)
 		{
-			return new UnitTestMarker (host, unitTestLocation);
+			return new UnitTestMarker (TextEditor, host, unitTestLocation);
 		}
 
 

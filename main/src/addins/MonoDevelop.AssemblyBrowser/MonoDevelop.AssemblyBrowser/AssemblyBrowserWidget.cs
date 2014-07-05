@@ -1117,7 +1117,6 @@ namespace MonoDevelop.AssemblyBrowser
 				this.inspectEditor.Text = "Invalid combobox value: " + this.languageCombobox.Active;
 				break;
 			}
-			this.inspectEditor.RequestRedraw ();
 		}
 			
 		void CreateOutput ()

@@ -51,9 +51,8 @@ namespace MonoDevelop.NUnit
 
 		void HandleTestSessionCompleted (object sender, EventArgs e)
 		{
-			if (Editor == null)
-				return;
-			Editor.RequestRedraw (); //RedrawMargin (document.Editor.Parent.TextArea.ActionMargin);
+			foreach (var marker in currentMarker)
+				marker.UpdateState ();
 		}
 
 		public override void Dispose ()

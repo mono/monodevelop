@@ -298,13 +298,6 @@ namespace MonoDevelop.Gettext
 		
 		void CheckbuttonWhiteSpacesToggled (object sender, EventArgs e)
 		{
-			texteditorOriginal.RequestRedraw ();
-			texteditorPlural.RequestRedraw ();
-			for (int i = this.notebookTranslated.NPages - 1; i >= 0; i--) {
-				var view = GetTextView (i);
-				if (view != null)
-					view.RequestRedraw ();
-			}
 		}
 		
 		#region Options

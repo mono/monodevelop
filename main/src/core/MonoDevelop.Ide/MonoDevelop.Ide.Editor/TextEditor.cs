@@ -441,11 +441,6 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.StartTextLinkMode (textLinkModeOptions);
 		}
 
-		public void RequestRedraw ()
-		{
-			textEditorImpl.RequestRedraw ();
-		}
-
 		public void InsertAtCaret (string text)
 		{
 			Insert (CaretOffset, text);

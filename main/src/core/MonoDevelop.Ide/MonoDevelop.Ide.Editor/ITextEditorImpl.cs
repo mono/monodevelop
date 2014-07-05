@@ -95,8 +95,6 @@ namespace MonoDevelop.Ide.Editor
 
 		void StartTextLinkMode (TextLinkModeOptions textLinkModeOptions);
 
-		void RequestRedraw ();
-
 		double LineHeight { get; }
 
 		DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false);

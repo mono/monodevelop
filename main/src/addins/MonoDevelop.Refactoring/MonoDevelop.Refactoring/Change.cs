@@ -88,9 +88,6 @@ namespace MonoDevelop.Refactoring
 		
 		public static void FinishRefactoringOperation ()
 		{
-			foreach (var data in textEditorDatas) {
-				data.RequestRedraw ();
-			}
 			textEditorDatas.Clear ();
 			undoGroups.ForEach (grp => grp.Dispose ());
 			undoGroups.Clear ();

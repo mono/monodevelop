@@ -6,6 +6,8 @@ namespace MonoDevelop.Ide.Editor
 	public interface IUnitTestMarker : ITextLineMarker
 	{
 		UnitTestLocation UnitTest { get; }
+
+		void UpdateState ();
 	}
 
 	public abstract class UnitTestMarkerHost

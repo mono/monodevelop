@@ -368,7 +368,6 @@ namespace MonoDevelop.CSharp.Highlighting
 				if (actDoc != null && actDoc.Editor != null) {
 					actDoc.UpdateParseDocument ();
 					//actDoc.Editor.Parent.TextViewMargin.PurgeLayoutCache ();
-					actDoc.Editor.RequestRedraw ();
 				}
 			};
 		}

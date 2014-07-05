@@ -228,7 +228,6 @@ namespace MonoDevelop.Debugger
 						return false;
 					});
 				}
-				editor.RequestRedraw ();
 			}
 		}
 		
@@ -310,7 +309,6 @@ namespace MonoDevelop.Debugger
 				lineCount++;
 			}
 			editor.Insert (offset, sb.ToString ());
-			editor.RequestRedraw ();
 			if (offset == 0)
 				this.cachedLines.InsertRange (0, lines);
 			else
