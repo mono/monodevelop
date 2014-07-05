@@ -30,11 +30,11 @@ type FSharpResolverProvider() =
 
         LoggingService.LogInfo "ResolverProvider: Getting results of type checking"
         // Try to get typed result - with the specified timeout
-        let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.Editor.FileName)
+        let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
         let tyResOpt = 
             MDLanguageService.Instance.GetTypedParseResultWithTimeout
                  (projFile,
-                  doc.FileName.ToString(), 
+                  doc.FileName.FullPath.ToString(), 
                   docText, 
                   files, 
                   args, 

@@ -211,16 +211,16 @@ type FSharpTextEditorCompletion() =
               else loop depth (i-1) 
           loop 0 (offset-1)
 
-      if docText = null || offset >= docText.Length || startOffset < 0 || offset <= 0 then 
+      if docText = null || offset > docText.Length || startOffset < 0 || offset <= 0 then 
         null 
       else
       Debug.WriteLine("Getting Parameter Info, startOffset = {0}", startOffset)
 
 
       // Try to get typed result - with the specified timeout
-      let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.Editor.FileName)
+      let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
       let typedParseResults =
-        MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.Editor.FileName, docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) 
+        MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingFileName, ServiceSettings.blockingTimeout, framework) 
         |> Async.RunSynchronously
 
       match typedParseResults with
@@ -299,11 +299,11 @@ type FSharpTextEditorCompletion() =
     let result = CompletionDataList()
     let doc = x.Document
     try
-      let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.Editor.FileName)
+      let projFile, files, args, framework = MonoDevelop.getCheckerArgs(doc.Project, doc.FileName.FullPath.ToString())
       // Try to get typed information from LanguageService (with the specified timeout)
       let stale = if allowAnyStale then AllowStaleResults.MatchingFileName else AllowStaleResults.MatchingSource
       let typedParseResults = 
-          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.ToString(), doc.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
+          MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), doc.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
           |> Async.RunSynchronously
       match typedParseResults with
       | None       -> result.Add(FSharpTryAgainMemberCompletionData())

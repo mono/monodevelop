@@ -283,14 +283,14 @@ type LanguageService(dirtyNotify) =
   member x.ParseFileInProject(projectFilename, fileName:string, src, files, args, targetFramework) = 
     let opts = x.GetCheckerOptions(fileName, projectFilename, src, files, args, targetFramework)
     Debug.WriteLine(sprintf "Parsing: Get untyped parse result (fileName=%s)" fileName)
-    checker.ParseFileInProject(fileName, src, opts)
+    checker.ParseFileInProject(fixFileName fileName, src, opts)
 
   member internal x.TryGetStaleTypedParseResult(fileName:string, options, src, stale)  = 
     // Try to get recent results from the F# service
     let res = 
         match stale with 
-        | AllowStaleResults.MatchingFileName -> checker.TryGetRecentTypeCheckResultsForFile(fileName, options) 
-        | AllowStaleResults.MatchingSource -> checker.TryGetRecentTypeCheckResultsForFile(fileName, options, source=src) 
+        | AllowStaleResults.MatchingFileName -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options) 
+        | AllowStaleResults.MatchingSource -> checker.TryGetRecentTypeCheckResultsForFile(fixFileName fileName, options, source=src) 
         | AllowStaleResults.No -> None
     match res with 
     | Some (untyped,typed,_) when typed.HasFullTypeCheckInfo  -> Some (ParseAndCheckResults(typed, untyped))

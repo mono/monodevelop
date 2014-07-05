@@ -70,7 +70,7 @@ type FSharpParser() =
         Error(errorType, wrapText error.Message 80, DomRegion(error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
     
     override x.Parse(storeAst : bool, fileName : string, content : System.IO.TextReader, proj : MonoDevelop.Projects.Project) = 
-        if fileName = null || proj = null || not (CompilerArguments.supportedExtension (Path.GetExtension(fileName))) then null
+        if fileName = null || not (CompilerArguments.supportedExtension (Path.GetExtension(fileName))) then null
         else 
             let fileContent = content.ReadToEnd()
             Debug.WriteLine
@@ -90,14 +90,14 @@ type FSharpParser() =
                 else 
                     let doc = IdeApp.Workbench.ActiveDocument
                     if doc <> null then 
-                        let file = doc.FileName.ToString()
+                        let file = doc.FileName.FullPath.ToString()
                         if file = "" then None
                         else Some file
                     else None
             match filePathOpt with
             | None -> ()
             | Some filePath -> 
-                let projFile, files, args, framework = MonoDevelop.getCheckerArgs (proj, fileName)
+                let projFile, files, args, framework = MonoDevelop.getCheckerArgs (proj, filePath)
                 let results = 
                     MDLanguageService.Instance.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, framework, storeAst) 
                     |> Async.RunSynchronously

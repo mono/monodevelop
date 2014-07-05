@@ -52,7 +52,7 @@ type FSharpReferenceFinder() =
             //   (b) find the active project confifuration. 
             // TODO: we should instead enumerate the items in 'files'?
             let activeDoc = IdeApp.Workbench.ActiveDocument
-            let activeDocFileName = activeDoc.FileName.FileName
+            let activeDocFileName = activeDoc.FileName.FullPath.ToString()
 
             // Get the source, but only in order to infer the project options for a script.
             let activeDocSource = activeDoc.Editor.Text

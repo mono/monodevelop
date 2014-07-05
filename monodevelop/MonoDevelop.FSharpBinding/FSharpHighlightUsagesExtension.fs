@@ -21,11 +21,11 @@ type HighlightUsagesExtension() as this =
     override x.GetReferences(_, token) =
         try
             let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(this.Editor.Caret.Offset, this.Editor.Document)
-            let currentFile = FilePath(this.Editor.FileName).ToString()
+            let currentFile = this.FileName.FullPath.ToString()
             let source = this.Editor.Text
             let projectContent = this.Document.ProjectContent
 
-            let projectFilename, files, args, framework = MonoDevelop.getCheckerArgs(this.Document.Project :?> DotNetProject, currentFile)
+            let projectFilename, files, args, framework = MonoDevelop.getCheckerArgs(this.Document.Project, currentFile)
 
             let symbolReferences =
                 Async.RunSynchronously(async{return! MDLanguageService.Instance.GetUsesOfSymbolAtLocationInFile(projectFilename, currentFile, source, files, line, col, lineStr, args, framework)},
@@ -34,9 +34,7 @@ type HighlightUsagesExtension() as this =
             match symbolReferences with
             | Some(fsSymbolName, references) -> 
                 seq{for symbolUse in references do
-                        //We only want symbol refs from the current file as we are highlighting text
-                        if symbolUse.FileName = currentFile then 
-                            yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, source, fsSymbolName) }
+                      yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, source, fsSymbolName) }
             | _ -> Seq.empty
                             
         with exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
