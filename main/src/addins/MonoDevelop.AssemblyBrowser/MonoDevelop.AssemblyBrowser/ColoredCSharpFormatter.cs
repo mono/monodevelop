@@ -194,11 +194,10 @@ namespace MonoDevelop.AssemblyBrowser
 		public void MarkFoldEnd ()
 		{
 			var curFold = foldSegmentStarts.Pop ();
-			FoldSegments.Add (new FoldSegment (curFold.Item1, sb.Length - curFold.Item1) {
-				// FoldingType.None
-				CollapsedText = curFold.Item2,
-				IsFolded = curFold.Item3
-			});
+			var seg = doc.CreateFoldSegment (curFold.Item1, sb.Length - curFold.Item1, curFold.Item3);
+			seg.CollapsedText = curFold.Item2;
+		
+			FoldSegments.Add (seg);
 		}
 		#endregion
 		

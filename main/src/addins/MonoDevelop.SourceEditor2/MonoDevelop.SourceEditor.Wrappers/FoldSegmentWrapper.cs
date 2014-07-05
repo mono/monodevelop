@@ -1,5 +1,5 @@
 ﻿//
-// IFoldSegment.cs
+// FoldSegmentWrapper.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,33 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core.Text;
+using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.SourceEditor.Wrappers
 {
-	public enum FoldingType {
-		None,
-		Region,
-		TypeDefinition,
-		TypeMember,
-		Comment
-	}
-
-	public interface IFoldSegment : ISegment
+	public class FoldSegmentWrapper : Mono.TextEditor.FoldSegment, IFoldSegment
 	{
-		bool IsFolded {
-			get;
-			set;
+
+		string IFoldSegment.CollapsedText {
+			get {
+				return Description;
+			}
+			set {
+				Description = value;
+			}
 		}
 
-		string CollapsedText {
-			get;
-			set;
+		MonoDevelop.Ide.Editor.FoldingType IFoldSegment.FoldingType {
+			get {
+				return (MonoDevelop.Ide.Editor.FoldingType)base.FoldingType;
+			}
+			set {
+				base.FoldingType = (Mono.TextEditor.FoldingType)value;
+			}
 		}
 
-		FoldingType FoldingType {
-			get;
-			set;
+		public FoldSegmentWrapper (TextDocument doc, string description, int offset, int length, Mono.TextEditor.FoldingType foldingType) : base (doc, description, offset, length, foldingType)
+		{
 		}
 	}
 }

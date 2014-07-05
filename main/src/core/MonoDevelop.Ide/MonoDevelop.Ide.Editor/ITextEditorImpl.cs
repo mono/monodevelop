@@ -137,6 +137,8 @@ namespace MonoDevelop.Ide.Editor
 
 		#endregion
 
+		IFoldSegment CreateFoldSegment (int offset, int length, bool isFolded = false);
+
 		void SetFoldings (IEnumerable<IFoldSegment> foldings);
 
 		IEnumerable<IFoldSegment> GetFoldingsContaining (int offset);

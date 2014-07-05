@@ -2848,31 +2848,24 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.Document.RemoveMarker (textSegmentMarker);
 		}
 
+		IFoldSegment ITextEditorImpl.CreateFoldSegment (int offset, int length, bool isFolded = false)
+		{
+			return new FoldSegmentWrapper (TextEditor.Document, "...", offset, length, Mono.TextEditor.FoldingType.None) { IsFolded = isFolded };
+		}
+
 		void ITextEditorImpl.SetFoldings (IEnumerable<IFoldSegment> foldings)
 		{
-			TextEditor.Document.UpdateFoldSegments (
-				foldings.Select (f => new Mono.TextEditor.FoldSegment (TextEditor.Document, f.CollapsedText, f.Offset, f.Length, (Mono.TextEditor.FoldingType)f.FoldingType) { IsFolded = f.IsFolded }).ToList()
-			);
+			TextEditor.Document.UpdateFoldSegments (foldings.Cast<FoldSegment> ().ToList ());
 		}
 
 		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsContaining (int offset)
 		{
-			return TextEditor.Document.GetFoldingsFromOffset (offset).Select (
-				f => new MonoDevelop.Ide.Editor.FoldSegment (f.Offset, f.Length, f.IsFolded) {
-					CollapsedText = f.Description,
-					FoldingType = (MonoDevelop.Ide.Editor.FoldingType)f.FoldingType
-				}
-			);
+			return TextEditor.Document.GetFoldingsFromOffset (offset).Cast<IFoldSegment> ();
 		}
 
 		IEnumerable<IFoldSegment> ITextEditorImpl.GetFoldingsIn (int offset, int length)
 		{
-			return TextEditor.Document.GetFoldingContaining (offset, length).Select (
-				f => new MonoDevelop.Ide.Editor.FoldSegment (f.Offset, f.Length, f.IsFolded) {
-					CollapsedText = f.Description,
-					FoldingType = (MonoDevelop.Ide.Editor.FoldingType)f.FoldingType
-				}
-			);
+			return TextEditor.Document.GetFoldingContaining (offset, length).Cast<IFoldSegment> ();
 		}
 
 		MonoDevelop.Ide.Editor.ITextEditorOptions ITextEditorImpl.Options {

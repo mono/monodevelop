@@ -41,32 +41,7 @@ namespace MonoDevelop.Ide.Editor
 
 		string[] GetSyntaxProperties (string mimeType, string name);
 	}
-	/*
-			SyntaxMode mode = null;
-			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
-				mode = SyntaxModeService.GetSyntaxMode (null, mt);
-				if (!Equals (mode, null))
-					break;
-			}
-			
-			if (mode == null)
-				return null;
-			
-			List<string> ctags;
-			if (mode.Properties.TryGetValue ("LineComment", out ctags) && ctags.Count > 0) {
-				return new string [] { ctags [0] };
-			}
-			List<string> tags = new List<string> ();
-			if (mode.Properties.TryGetValue ("BlockCommentStart", out ctags))
-				tags.Add (ctags [0]);
-			if (mode.Properties.TryGetValue ("BlockCommentEnd", out ctags))
-				tags.Add (ctags [0]);
-			if (tags.Count == 2)
-				return tags.ToArray ();
-			else
-				return null;
 
-*/
 	public static class DocumentFactory
 	{
 		static ITextEditorFactory currentFactory;
@@ -90,16 +65,22 @@ namespace MonoDevelop.Ide.Editor
 
 		public static ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType = null)
 		{
+			if (textSource == null)
+				throw new System.ArgumentNullException ("textSource");
 			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
-		public static ITextDocument LoadDocument (string fileName, string mimeType)
+		public static ITextDocument LoadDocument (string fileName, string mimeType = null)
 		{
+			if (fileName == null)
+				throw new System.ArgumentNullException ("fileName");
 			return currentFactory.CreateNewDocument (StringTextSource.ReadFrom (fileName), fileName, mimeType); 
 		}
 
 		public static IReadonlyTextDocument CreateNewReadonlyDocument (ITextSource textSource, string fileName, string mimeType = null)
 		{
+			if (textSource == null)
+				throw new System.ArgumentNullException ("textSource");
 			return currentFactory.CreateNewDocument (textSource, fileName, mimeType); 
 		}
 
@@ -110,11 +91,17 @@ namespace MonoDevelop.Ide.Editor
 
 		public static TextEditor CreateNewEditor (IReadonlyTextDocument document)
 		{
+			if (document == null)
+				throw new System.ArgumentNullException ("document");
 			return new TextEditor (currentFactory.CreateNewEditor (document));
 		}
 
 		public static string[] GetSyntaxProperties (string mimeType, string name)
 		{
+			if (mimeType == null)
+				throw new System.ArgumentNullException ("mimeType");
+			if (name == null)
+				throw new System.ArgumentNullException ("name");
 			return currentFactory.GetSyntaxProperties (mimeType, name);
 		}
 	}

@@ -198,6 +198,7 @@
     <Compile Include="MonoDevelop.SourceEditor\ListDataProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TooltipProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\FoldSegmentWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
