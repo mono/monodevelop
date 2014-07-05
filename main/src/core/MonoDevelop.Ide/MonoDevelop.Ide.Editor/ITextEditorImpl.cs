@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Editor
 
 		string GetVirtualIndentationString (int lineNumber);
 
-		IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line);
+		IEnumerable<ITextLineMarker> GetLineMarkers (IDocumentLine line);
 
 		#region Text segment markers
 

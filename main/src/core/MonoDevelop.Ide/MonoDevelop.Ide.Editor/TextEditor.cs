@@ -554,11 +554,11 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.RemoveMarker (lineMarker);
 		}
 
-		public IEnumerable<ITextLineMarker> GetLineMarker (IDocumentLine line)
+		public IEnumerable<ITextLineMarker> GetLineMarkers (IDocumentLine line)
 		{
 			if (line == null)
 				throw new ArgumentNullException ("line");
-			return textEditorImpl.GetLineMarker (line);
+			return textEditorImpl.GetLineMarkers (line);
 		}
 
 		public IEnumerable<ITextSegmentMarker> GetTextSegmentMarkersAt (ISegment segment)

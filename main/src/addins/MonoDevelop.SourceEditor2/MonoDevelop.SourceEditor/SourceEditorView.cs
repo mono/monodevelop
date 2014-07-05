@@ -2817,7 +2817,7 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.Document.RemoveMarker (textLineMarker);
 		}
 
-		IEnumerable<ITextLineMarker> ITextEditorImpl.GetLineMarker (IDocumentLine line)
+		IEnumerable<ITextLineMarker> ITextEditorImpl.GetLineMarkers (IDocumentLine line)
 		{
 			return ((DocumentLineWrapper)line).Line.Markers.OfType<ITextLineMarker> ();
 		}
