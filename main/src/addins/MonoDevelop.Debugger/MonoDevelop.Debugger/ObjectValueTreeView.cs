@@ -1668,6 +1668,11 @@ namespace MonoDevelop.Debugger
 				return editEntry.Style;
 			}
 		}
+
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
 		#endregion 
 
 		ObjectValue[] GetValues (string[] names)

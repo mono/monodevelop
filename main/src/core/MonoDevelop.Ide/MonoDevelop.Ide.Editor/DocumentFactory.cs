@@ -29,7 +29,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public interface ITextEditorFactory
+	interface ITextEditorFactory
 	{
 		ITextDocument CreateNewDocument ();
 		ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType);

@@ -260,6 +260,11 @@ namespace MonoDevelop.Debugger
 				return entry.Style;
 			}
 		}
+
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
 		#endregion 
 	}
 }

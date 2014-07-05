@@ -2983,7 +2983,7 @@ namespace MonoDevelop.SourceEditor
 			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
 		}
 
-		void ITextEditorImpl.AddSkipChar (int offset, char ch)
+		public void AddSkipChar (int offset, char ch)
 		{
 			TextEditor.GetTextEditorData ().SetSkipChar (offset, ch);
 		}

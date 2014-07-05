@@ -148,6 +148,12 @@ namespace MonoDevelop.CSharpBinding
 					return null;
 				}
 			}
+
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+				// ignore
+			}
 			#endregion
 		}
 

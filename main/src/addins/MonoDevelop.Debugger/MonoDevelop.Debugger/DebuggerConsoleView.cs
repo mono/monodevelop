@@ -444,6 +444,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
 		#endregion
 
 		void OnCustomOutputPadFontChanged (object sender, EventArgs e)

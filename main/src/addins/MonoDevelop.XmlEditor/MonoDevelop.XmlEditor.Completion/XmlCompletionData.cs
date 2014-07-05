@@ -108,11 +108,9 @@ namespace MonoDevelop.XmlEditor.Completion
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, ModifierType modifier)
 		{
 			if (XmlEditorOptions.AutoInsertFragments && dataType == DataType.XmlAttribute) {
-				var textEditorDataProvier = window.CompletionWidget as MonoDevelop.Ide.Editor.ITextEditorImpl;
 				var textBuffer = window.CompletionWidget as ITextBuffer;
 				base.InsertCompletionText (window, ref ka, closeChar, keyChar, modifier);
-				if (textEditorDataProvier != null && textBuffer != null)
-					textEditorDataProvier.AddSkipChar (textBuffer.CursorPosition, '"');
+				window.CompletionWidget.AddSkipChar (textBuffer.CursorPosition, '"');
 				IdeApp.CommandService.DispatchCommand (TextEditorCommands.ShowCompletionWindow);
 				ka &= ~KeyActions.CloseWindow;
 			} else {

@@ -241,6 +241,10 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 			}
 		}
 
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
 		#endregion
 	}
 }

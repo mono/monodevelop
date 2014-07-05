@@ -287,6 +287,11 @@ namespace MonoDevelop.CSharp.Completion
 					return Gtk.Widget.DefaultStyle;
 				}
 			}
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+				// ignore
+			}
 			#endregion
 		}
 

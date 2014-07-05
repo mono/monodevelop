@@ -53,6 +53,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word);
 		
 		void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int completeWordOffset);
+
+		void AddSkipChar (int cursorPosition, char c);
 		
 		event EventHandler CompletionContextChanged;
 	}

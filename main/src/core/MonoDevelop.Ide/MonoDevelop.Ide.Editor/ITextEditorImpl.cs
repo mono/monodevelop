@@ -39,7 +39,7 @@ namespace MonoDevelop.Ide.Editor
 		CursorInsertion
 	}
 
-	public interface ITextEditorImpl : IViewContent, IInternalEditorExtensions, IDisposable
+	interface ITextEditorImpl : IViewContent, IInternalEditorExtensions, IDisposable
 	{
 		EditMode EditMode { get; }
 
