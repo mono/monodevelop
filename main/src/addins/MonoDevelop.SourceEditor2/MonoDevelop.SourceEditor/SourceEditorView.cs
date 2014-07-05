@@ -2979,6 +2979,12 @@ namespace MonoDevelop.SourceEditor
 			data.TextPasteHandler = new TextPasteHandlerWrapper (data, textPasteHandler);
 		}
 
+		public IList<SkipChar> SkipChars {
+			get {
+				return TextEditor.GetTextEditorData ().SkipChars.Select (sk => new SkipChar (sk.Offset, sk.Char)).ToList ();
+			}
+		}
+
 		public void AddSkipChar (int offset, char ch)
 		{
 			TextEditor.GetTextEditorData ().SetSkipChar (offset, ch);

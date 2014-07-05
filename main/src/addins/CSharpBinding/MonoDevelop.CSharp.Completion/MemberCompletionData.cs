@@ -319,9 +319,12 @@ namespace MonoDevelop.CSharp.Completion
 						}
 					}
 					if (keyChar == '(') {
-						var skipChar = Editor.SkipChars.LastOrDefault ();
-						if (skipChar != null && skipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && skipChar.Char == ')')
-							Editor.RemoveText (skipChar.Offset, 1);
+						var skipCharList = Editor.SkipChars;
+						if (skipCharList.Count > 0) {
+							var lastSkipChar = skipCharList[skipCharList.Count - 1];
+							if (lastSkipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && lastSkipChar.Char == ')')
+								Editor.RemoveText (lastSkipChar.Offset, 1);
+						}
 					}
 				}
 				ka |= KeyActions.Ignore;

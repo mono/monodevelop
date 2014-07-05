@@ -39,6 +39,44 @@ namespace MonoDevelop.Ide.Editor
 		CursorInsertion
 	}
 
+	/// <summary>
+	/// A skip char is a character in the editor at a defined position that is skipped when this
+	/// exact character is pressed at the character position. That's useful for inserting automatically generated brackets without
+	/// interfering with the typing flow.
+	/// </summary>
+	public struct SkipChar
+	{
+		/// <summary>
+		/// Gets the offset.
+		/// </summary>
+		public readonly int Offset;
+
+		/// <summary>
+		/// Gets the char.
+		/// </summary>
+		public readonly char Char;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="MonoDevelop.Ide.Editor.SkipChar"/> struct.
+		/// </summary>
+		/// <param name="offset">The offset of the char.</param>
+		/// <param name="ch">The character</param>
+		public SkipChar (int offset, char ch)
+		{
+			Offset = offset;
+			Char = ch;
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="MonoDevelop.Ide.Editor.SkipChar"/>.
+		/// </summary>
+		/// <returns>A <see cref="System.String"/> that represents the current <see cref="MonoDevelop.Ide.Editor.SkipChar"/>.</returns>
+		public override string ToString ()
+		{
+			return string.Format ("[SkipChar: Offset={0}, Char={1}]", Offset, Char);
+		}
+	}
+
 	interface ITextEditorImpl : IViewContent, IInternalEditorExtensions, IDisposable
 	{
 		EditMode EditMode { get; }
@@ -108,6 +146,10 @@ namespace MonoDevelop.Ide.Editor
 		void ScrollTo (int offset);
 
 		void CenterTo (int offset);
+
+		IList<SkipChar> SkipChars {
+			get;
+		}
 
 		void AddSkipChar (int offset, char ch);
 
