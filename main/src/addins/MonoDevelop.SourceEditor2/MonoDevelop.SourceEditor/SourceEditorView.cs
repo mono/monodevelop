@@ -2795,6 +2795,10 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
 		{
+			var textLineMarker = lineMarker as TextLineMarker;
+			if (textLineMarker == null)
+				throw new InvalidOperationException ("Tried to add an incompatible text marker. Use the MarkerHost to create compatible ones.");
+
 			if (lineMarker is IUnitTestMarker) {
 				var actionMargin = TextEditor.ActionMargin;
 				if (actionMargin != null) {
@@ -2802,12 +2806,15 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			TextEditor.Document.AddMarker (((DocumentLineWrapper)line).Line, (TextLineMarker)lineMarker);
+			TextEditor.Document.AddMarker (((DocumentLineWrapper)line).Line, textLineMarker);
 		}
 
 		void ITextEditorImpl.RemoveMarker (ITextLineMarker lineMarker)
 		{
-			TextEditor.Document.RemoveMarker ((TextLineMarker)lineMarker);
+			var textLineMarker = lineMarker as TextLineMarker;
+			if (textLineMarker == null)
+				throw new InvalidOperationException ("Tried to add an incompatible text marker.");
+			TextEditor.Document.RemoveMarker (textLineMarker);
 		}
 
 		IEnumerable<ITextLineMarker> ITextEditorImpl.GetLineMarker (IDocumentLine line)
@@ -2827,12 +2834,18 @@ namespace MonoDevelop.SourceEditor
 
 		void ITextEditorImpl.AddMarker (ITextSegmentMarker marker)
 		{
-			TextEditor.Document.AddMarker ((TextSegmentMarker)marker);
+			var textSegmentMarker = marker as TextSegmentMarker;
+			if (textSegmentMarker == null)
+				throw new InvalidOperationException ("Tried to add an incompatible text marker. Use the MarkerHost to create compatible ones.");
+			TextEditor.Document.AddMarker (textSegmentMarker);
 		}
 
 		bool ITextEditorImpl.RemoveMarker (ITextSegmentMarker marker)
 		{
-			return TextEditor.Document.RemoveMarker ((TextSegmentMarker)marker);
+			var textSegmentMarker = marker as TextSegmentMarker;
+			if (textSegmentMarker == null)
+				throw new InvalidOperationException ("Tried to remove an incompatible text marker.");
+			return TextEditor.Document.RemoveMarker (textSegmentMarker);
 		}
 
 		void ITextEditorImpl.SetFoldings (IEnumerable<IFoldSegment> foldings)
