@@ -451,12 +451,12 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.PointToLocation (xp, yp, endAtEol);
 		}
 
-		public Cairo.Point LocationToPoint (DocumentLocation location)
+		public Xwt.Point LocationToPoint (DocumentLocation location)
 		{
 			return textEditorImpl.LocationToPoint (location.Line, location.Column);
 		} 
 
-		public Cairo.Point LocationToPoint (int line, int column)
+		public Xwt.Point LocationToPoint (int line, int column)
 		{
 			return textEditorImpl.LocationToPoint (line, column);
 		}

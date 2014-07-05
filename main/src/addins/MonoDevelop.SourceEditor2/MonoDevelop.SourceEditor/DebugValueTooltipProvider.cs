@@ -144,7 +144,7 @@ namespace MonoDevelop.SourceEditor
 			var location = editor.OffsetToLocation (item.Offset);
 			var point = editor.LocationToPoint (location);
 			int lineHeight = (int) editor.LineHeight;
-			int y = point.Y;
+			int y = (int)point.Y;
 
 			// find the top of the line that the mouse is hovering over
 			while (y + lineHeight < mouseY)

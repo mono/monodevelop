@@ -2783,9 +2783,10 @@ namespace MonoDevelop.SourceEditor
 			return new MonoDevelop.Ide.Editor.DocumentLocation (pt.Line, pt.Column);
 		}
 
-		Cairo.Point ITextEditorImpl.LocationToPoint (int line, int column)
+		Xwt.Point ITextEditorImpl.LocationToPoint (int line, int column)
 		{
-			return TextEditor.LocationToPoint (line, column);
+			var p = TextEditor.LocationToPoint (line, column);
+			return new Xwt.Point (p.X, p.Y);
 		}
 
 		void ITextEditorImpl.AddMarker (IDocumentLine line, ITextLineMarker lineMarker)
