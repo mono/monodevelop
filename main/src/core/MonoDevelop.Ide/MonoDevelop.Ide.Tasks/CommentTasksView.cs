@@ -517,7 +517,7 @@ namespace MonoDevelop.Ide.Tasks
 								doc.Editor.StartCaretPulseAnimation ();
 								line = line.Substring (0, index);
 								var ls = doc.Editor.GetLine (task.Line);
-								doc.Editor.Replace (ls.Offset, ls.Length, line);
+								doc.Editor.ReplaceText (ls.Offset, ls.Length, line);
 								comments.Remove (task);
 							}
 						}); 

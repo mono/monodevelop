@@ -96,7 +96,7 @@ namespace MonoDevelop.ChangeLogAddIn
 					+ selectedFileName.Substring(changeLogFileNameDirectory.Length + 1) + ": "
 					+ eol + eol;
 				int insertPos = Math.Min (pos + 2, textBuffer.Length);
-				textBuffer.Insert (insertPos, text);
+				textBuffer.InsertText (insertPos, text);
 				
 				insertPos += text.Length;
 				textBuffer.CaretOffset = insertPos;
@@ -128,7 +128,7 @@ namespace MonoDevelop.ChangeLogAddIn
 			// the same don't insert a new header.
 			int pos = GetHeaderEndPosition(document);
 			if (pos < 0 || (pos + 2 > textBuffer.Length) || textBuffer.GetTextAt (0, pos + 2) != text)
-				textBuffer.Insert (0, text);
+				textBuffer.InsertText (0, text);
 			return true;
 		}
         

@@ -66,7 +66,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 		{
 			DisposeOnClose (true);
 			foreach (var ver in context.TextEditor.Version.GetChangesTo (startVersion)) {
-				context.TextEditor.Replace (ver.Offset, ver.RemovalLength, ver.InsertedText.Text);
+				context.TextEditor.ReplaceText (ver.Offset, ver.RemovalLength, ver.InsertedText.Text);
 			}
 		}
 

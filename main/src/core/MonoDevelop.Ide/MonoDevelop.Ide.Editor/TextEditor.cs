@@ -214,7 +214,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 			set {
 				var selection = SelectionRange;
-				Replace (selection, value);
+				ReplaceText (selection, value);
 				SelectionRange = new TextSegment (selection.Offset, value.Length);
 			}
 		}
@@ -443,7 +443,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public void InsertAtCaret (string text)
 		{
-			Insert (CaretOffset, text);
+			InsertText (CaretOffset, text);
 		}
 
 		public DocumentLocation PointToLocation (double xp, double yp, bool endAtEol = false)
@@ -482,33 +482,33 @@ namespace MonoDevelop.Ide.Editor
 			return ReadOnlyTextDocument.OffsetToLocation (offset);
 		}
 
-		public void Insert (int offset, string text)
+		public void InsertText (int offset, string text)
 		{
-			ReadWriteTextDocument.Insert (offset, text);
+			ReadWriteTextDocument.InsertText (offset, text);
 		}
 
-		public void Remove (int offset, int count)
+		public void RemoveText (int offset, int count)
 		{
-			Remove (new TextSegment (offset, count)); 
+			RemoveText (new TextSegment (offset, count)); 
 		}
 
-		public void Remove (ISegment segment)
+		public void RemoveText (ISegment segment)
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			ReadWriteTextDocument.Remove (segment);
+			ReadWriteTextDocument.RemoveText (segment);
 		}
 
-		public void Replace (int offset, int count, string value)
+		public void ReplaceText (int offset, int count, string value)
 		{
-			ReadWriteTextDocument.Replace (offset, count, value);
+			ReadWriteTextDocument.ReplaceText (offset, count, value);
 		}
 
-		public void Replace (ISegment segment, string value)
+		public void ReplaceText (ISegment segment, string value)
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			ReadWriteTextDocument.Replace (segment.Offset, segment.Length, value);
+			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
 		public IDocumentLine GetLine (int lineNumber)

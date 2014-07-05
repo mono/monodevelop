@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			buffer.Insert (offset, replacement);
 			if (document != null) {
 				Gtk.Application.Invoke (delegate {
-					document.Editor.Replace (offset, length, replacement);
+					document.Editor.ReplaceText (offset, length, replacement);
 				});
 				return;
 			}

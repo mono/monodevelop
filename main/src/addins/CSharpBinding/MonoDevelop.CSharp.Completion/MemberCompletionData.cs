@@ -321,7 +321,7 @@ namespace MonoDevelop.CSharp.Completion
 					if (keyChar == '(') {
 						var skipChar = Editor.SkipChars.LastOrDefault ();
 						if (skipChar != null && skipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && skipChar.Char == ')')
-							Editor.Remove (skipChar.Offset, 1);
+							Editor.RemoveText (skipChar.Offset, 1);
 					}
 				}
 				ka |= KeyActions.Ignore;

@@ -233,7 +233,7 @@ namespace MonoDevelop.XmlEditor.Gui
 							newCaretOffset += (indent.Length - oldIndent.Length);
 						}
 						using (var undo = Editor.OpenUndoGroup ()) {
-							Editor.Replace (seg.Offset, oldIndent.Length, indent);
+							Editor.ReplaceText (seg.Offset, oldIndent.Length, indent);
 							Editor.CaretOffset = newCaretOffset;
 						}
 					}
@@ -416,7 +416,7 @@ namespace MonoDevelop.XmlEditor.Gui
 					//							this.Editor.Document.EndAtomicUndo ();
 
 					using (var undo = buf.OpenUndoGroup ()) {
-						buf.Insert (buf.CaretOffset, tag);
+						buf.InsertText (buf.CaretOffset, tag);
 						buf.CaretOffset -= tag.Length;
 					}
 

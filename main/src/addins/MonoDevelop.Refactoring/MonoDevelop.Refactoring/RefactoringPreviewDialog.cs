@@ -149,7 +149,7 @@ namespace MonoDevelop.Refactoring
 				changedDocument.FileName = replaceChange.FileName;
 				changedDocument.Text = originalDocument.Text;
 				
-				changedDocument.Replace (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
+				changedDocument.ReplaceText (replaceChange.Offset, replaceChange.RemovedChars, replaceChange.InsertedText);
 
 				string diffString = Diff.GetDiffString (originalDocument, changedDocument);
 				

@@ -97,9 +97,9 @@ namespace MonoDevelop.CSharp.Highlighting
 					var lineSegment = editor.GetLine (lineNumber);
 
 					if (lineSegment.Offset + startCol < lineSegment.EndOffset)
-						editor.Insert (lineSegment.Offset + startCol, start);
+						editor.InsertText (lineSegment.Offset + startCol, start);
 					if (lineSegment.Offset + endCol < lineSegment.EndOffset)
-						editor.Insert (lineSegment.Offset + endCol, end);
+						editor.InsertText (lineSegment.Offset + endCol, end);
 				}
 
 //				textEditorData.MainSelection = new Selection (
@@ -111,8 +111,8 @@ namespace MonoDevelop.CSharp.Highlighting
 				int anchorOffset = selectionRange.Offset;
 				int leadOffset = selectionRange.EndOffset;
 
-				editor.Insert (anchorOffset, start);
-				editor.Insert (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
+				editor.InsertText (anchorOffset, start);
+				editor.InsertText (leadOffset >= anchorOffset ? leadOffset + start.Length : leadOffset, end);
 				//	textEditorData.SetSelection (anchorOffset + start.Length, leadOffset + start.Length);
 				if (CSharpTextEditorIndentation.OnTheFlyFormatting) {
 					var l1 = editor.GetLineByOffset (anchorOffset);

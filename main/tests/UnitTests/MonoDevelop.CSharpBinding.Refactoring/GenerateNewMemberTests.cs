@@ -107,7 +107,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 					var vv = data.OffsetToLocation (data.Length);
 					loc.Add (new InsertionPoint (new DocumentLocation (vv.Line, vv.Column), insertBefore, insertAfter));
 				} else {
-					data.Insert (data.Length, ch.ToString ());
+					data.InsertText (data.Length, ch.ToString ());
 				}
 			}
 			

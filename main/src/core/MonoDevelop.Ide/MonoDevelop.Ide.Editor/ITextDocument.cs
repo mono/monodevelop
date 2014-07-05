@@ -71,11 +71,11 @@ namespace MonoDevelop.Ide.Editor
 
 		new Encoding Encoding { get; set; }
 
-		void Insert (int offset, string text);
+		void InsertText (int offset, string text);
 
-		void Remove (int offset, int length);
+		void RemoveText (int offset, int length);
 
-		void Replace (int offset, int length, string value);
+		void ReplaceText (int offset, int length, string value);
 
 		bool IsInAtomicUndo {
 			get;
@@ -276,18 +276,18 @@ namespace MonoDevelop.Ide.Editor
 			return document.GetTextBetween (document.LocationToOffset (start), document.LocationToOffset (end));
 		}
 
-		public static void Remove (this ITextDocument document, ISegment segment)
+		public static void RemoveText (this ITextDocument document, ISegment segment)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			document.Remove (segment.Offset, segment.Length);
+			document.RemoveText (segment.Offset, segment.Length);
 		}
 
-		public static void Replace (this ITextDocument document, ISegment segment, string value)
+		public static void ReplaceText (this ITextDocument document, ISegment segment, string value)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
-			document.Replace (segment.Offset, segment.Length, value);
+			document.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
 		public static string GetEolMarker (this IReadonlyTextDocument document)

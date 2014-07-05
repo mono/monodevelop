@@ -78,13 +78,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		public static void RemoveNode (this ITextDocument editor, AstNode n)
 		{
 			var change = editor.GetRemoveNodeChange (n);
-			editor.Remove (change.Offset, change.RemovedChars);
+			editor.RemoveText (change.Offset, change.RemovedChars);
 		}
 
 		public static void Replace (this ITextDocument editor, AstNode n, AstNode replaceWith)
 		{
 			var change = editor.GetRemoveNodeChange (n);
-			editor.Replace (change.Offset, change.RemovedChars, replaceWith.ToString ());
+			editor.ReplaceText (change.Offset, change.RemovedChars, replaceWith.ToString ());
 		}
 	}
 }

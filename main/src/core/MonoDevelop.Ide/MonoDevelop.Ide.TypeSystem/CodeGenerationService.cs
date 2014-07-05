@@ -541,7 +541,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			int pos = buffer.LocationToOffset (cls.Region.BeginLine, cls.Region.BeginColumn);
 
 			code = buffer.GetLineIndent (cls.Region.BeginLine) + code;
-			buffer.Insert (pos, code);
+			buffer.InsertText (pos, code);
 			if (!isOpen) {
 				File.WriteAllText (fileName, buffer.Text);
 			}

@@ -173,7 +173,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		public override void DisableOnce (TextEditor editor, EditContext context, DocumentRegion loc)
 		{
-			editor.Insert (
+			editor.InsertText (
 				editor.LocationToOffset (loc.BeginLine, 1), 
 				editor.GetVirtualIndentationString (loc.BeginLine) + "// " + analysisDisableTag + "disable once " + attr.AnalysisDisableKeyword + editor.EolMarker
 			); 
@@ -182,11 +182,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public override void DisableAndRestore (TextEditor editor, EditContext context, DocumentRegion loc)
 		{
 			using (editor.OpenUndoGroup ()) {
-				editor.Insert (
+				editor.InsertText (
 					editor.LocationToOffset (loc.EndLine + 1, 1),
 					editor.GetVirtualIndentationString (loc.EndLine) + "// " + analysisDisableTag + "restore " + attr.AnalysisDisableKeyword + editor.EolMarker
 				); 
-				editor.Insert (
+				editor.InsertText (
 					editor.LocationToOffset (loc.BeginLine, 1),
 					editor.GetVirtualIndentationString (loc.BeginLine) + "// " + analysisDisableTag + "disable " + attr.AnalysisDisableKeyword + editor.EolMarker
 				); 
@@ -196,11 +196,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public override void DisableWithPragma (TextEditor editor, EditContext context, DocumentRegion loc)
 		{
 			using (editor.OpenUndoGroup ()) {
-				editor.Insert (
+				editor.InsertText (
 					editor.LocationToOffset (loc.EndLine + 1, 1),
 					editor.GetVirtualIndentationString (loc.EndLine) + "#pragma warning restore " + attr.PragmaWarning + editor.EolMarker
 				); 
-				editor.Insert (
+				editor.InsertText (
 					editor.LocationToOffset (loc.BeginLine, 1),
 					editor.GetVirtualIndentationString (loc.BeginLine) + "#pragma warning disable " + attr.PragmaWarning + editor.EolMarker
 				); 
@@ -210,7 +210,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		public override void SuppressWithAttribute (TextEditor editor, EditContext context, DocumentRegion loc)
 		{
 			var member = context.ParsedDocument.GetMember (loc.End);
-			editor.Insert (
+			editor.InsertText (
 				editor.LocationToOffset (member.Region.BeginLine, 1),
 				editor.GetVirtualIndentationString (loc.BeginLine) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + editor.EolMarker, attr.SuppressMessageCategory, attr.SuppressMessageCheckId)
 			); 

@@ -557,7 +557,7 @@ namespace MonoDevelop.Refactoring
 				if (!addUsing) {
 //					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 					int offset = editor.LocationToOffset (node.StartLocation);
-					editor.Insert (offset, ns + ".");
+					editor.InsertText (offset, ns + ".");
 					//doc.Editor.Document.CommitLineUpdate (loc.Line);
 					return;
 				}

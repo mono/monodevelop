@@ -101,7 +101,7 @@ namespace MonoDevelop.DocFood
 			}
 			docs.Sort ((a, b) => b.Key.CompareTo (a.Key));
 			using (var undo = data.OpenUndoGroup ()) {
-				docs.ForEach (doc => data.Insert (doc.Key, doc.Value));
+				docs.ForEach (doc => data.InsertText (doc.Key, doc.Value));
 			}
 		}
 		

@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 					try {
 						string text = formatter.FormatText (pol, editor.Text, selection.Offset, selection.EndOffset);
 						if (text != null) {
-							editor.Replace (selection.Offset, selection.Length, text);
+							editor.ReplaceText (selection.Offset, selection.Length, text);
 						}
 					} catch (Exception e) {
 						LoggingService.LogError ("Error during format.", e); 

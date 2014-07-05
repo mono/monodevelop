@@ -247,7 +247,7 @@ namespace MonoDevelop.CSharp.Formatting
 					changes.ApplyChanges (formatStartOffset + startDelta, Math.Max (0, formatLength - startDelta - 1), delegate (int replaceOffset, int replaceLength, string insertText) {
 						int translatedOffset = realTextDelta + replaceOffset;
 						//data.Editor.Document.CommitLineUpdate (data.Editor.OffsetToLineNumber (translatedOffset));
-						editor.Replace (translatedOffset, replaceLength, insertText);
+						editor.ReplaceText (translatedOffset, replaceLength, insertText);
 					}, (replaceOffset, replaceLength, insertText) => {
 						int translatedOffset = realTextDelta + replaceOffset;
 						if (translatedOffset < 0 || translatedOffset + replaceLength > editor.Length || replaceLength < 0)

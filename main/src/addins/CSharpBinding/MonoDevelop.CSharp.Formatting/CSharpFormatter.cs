@@ -71,7 +71,7 @@ namespace MonoDevelop.CSharp.Formatting
 					// Possibly replace the indent
 					string newIndent = tracker.ThisLineIndent;
 					if (newIndent != curIndent) 
-						data.Replace (lineSegment.Offset, nlwsp, newIndent);
+						data.ReplaceText (lineSegment.Offset, nlwsp, newIndent);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting", e);

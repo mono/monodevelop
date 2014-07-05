@@ -956,7 +956,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			while (lines-- > 0) {
 				text.Append (editor.EolMarker);
 			}
-			editor.Insert (offset, text.ToString ());
+			editor.InsertText (offset, text.ToString ());
 			//doc.Editor.Document.CommitUpdateAll ();
 		}
 		
@@ -1013,7 +1013,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				text.Append (editor.EolMarker);
 			}
 			
-			editor.Insert (offset, text.ToString ());
+			editor.InsertText (offset, text.ToString ());
 		}
 		
 		public override string GetShortTypeString (TextEditor editor, EditContext doc, IType type)

@@ -627,7 +627,7 @@ namespace MonoDevelop.VersionControl.Views
 			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
 			var editor = info.Document.GetContent<MonoDevelop.Ide.Editor.ITextDocument> ();
-			editor.Replace (e.Offset, e.RemovalLength, e.InsertedText.Text);
+			editor.ReplaceText (e.Offset, e.RemovalLength, e.InsertedText.Text);
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}

@@ -106,7 +106,7 @@ namespace MonoDevelop.CSharp.Completion
 				targetCaretPosition = declarationBegin + sb.Length;
 			}
 			
-			editor.Replace (declarationBegin, editor.CaretOffset - declarationBegin, sb);
+			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
 			if (selectionEndPosition > 0) {
 				editor.CaretOffset = selectionEndPosition;
 				editor.SetSelection (targetCaretPosition, selectionEndPosition);

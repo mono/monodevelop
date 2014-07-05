@@ -372,7 +372,7 @@ namespace MonoDevelop.AspNet.Parser
 			using (var undo = editor.OpenUndoGroup ()) {
 				var oldCaret = editor.CaretOffset;
 				var str = editor.GetEolMarker () + directive.ToString ();
-				editor.Insert (pos, str);
+				editor.InsertText (pos, str);
 				var inserted = str.Length;
 				if (preserveCaretPosition) {
 					editor.CaretOffset = (pos < oldCaret)? oldCaret + inserted : oldCaret;

@@ -124,10 +124,10 @@ namespace MonoDevelop.Refactoring
 			if (textEditorData == null) {
 				bool open;
 				var data = TextFileProvider.Instance.GetTextEditorData (FileName, out open);
-				data.Replace (Offset, RemovedChars, InsertedText);
+				data.ReplaceText (Offset, RemovedChars, InsertedText);
 				data.Save ();
 			} else {
-				textEditorData.Replace (Offset, RemovedChars, InsertedText);
+				textEditorData.ReplaceText (Offset, RemovedChars, InsertedText);
 			}
 		}
 		

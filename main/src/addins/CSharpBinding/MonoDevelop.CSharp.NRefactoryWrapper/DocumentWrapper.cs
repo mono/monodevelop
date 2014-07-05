@@ -113,37 +113,37 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		void IDocument.Insert (int offset, string text)
 		{
-			document.Insert (offset, text);
+			document.InsertText (offset, text);
 		}
 
 		void IDocument.Insert (int offset, ITextSource text)
 		{
-			document.Insert (offset, text.Text);
+			document.InsertText (offset, text.Text);
 		}
 
 		void IDocument.Insert (int offset, string text, AnchorMovementType defaultAnchorMovementType)
 		{
-			document.Insert (offset, text);
+			document.InsertText (offset, text);
 		}
 
 		void IDocument.Insert (int offset, ITextSource text, AnchorMovementType defaultAnchorMovementType)
 		{
-			document.Insert (offset, text.Text);
+			document.InsertText (offset, text.Text);
 		}
 
 		void IDocument.Remove (int offset, int length)
 		{
-			document.Remove (offset, length);
+			document.RemoveText (offset, length);
 		}
 
 		void IDocument.Replace (int offset, int length, string newText)
 		{
-			document.Replace (offset, length, newText);
+			document.ReplaceText (offset, length, newText);
 		}
 
 		void IDocument.Replace (int offset, int length, ITextSource newText)
 		{
-			document.Replace (offset, length, newText.Text);
+			document.ReplaceText (offset, length, newText.Text);
 		}
 
 		void IDocument.StartUndoableAction ()

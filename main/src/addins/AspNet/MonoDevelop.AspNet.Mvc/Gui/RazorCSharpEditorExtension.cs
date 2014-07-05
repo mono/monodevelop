@@ -125,13 +125,13 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				int removalLength = e.RemovalLength;
 				if (off + removalLength > HiddenDoc.Editor.Length)
 					removalLength = HiddenDoc.Editor.Length - off;
-				HiddenDoc.Editor.Remove (off, removalLength);
+				HiddenDoc.Editor.RemoveText (off, removalLength);
 			}
 			if (e.InsertionLength > 0) {
 				if (isInCSharpContext)
-					HiddenDoc.Editor.Insert (off, e.InsertedText.Text);
+					HiddenDoc.Editor.InsertText (off, e.InsertedText.Text);
 				else // Insert spaces to correctly calculate offsets until next reparse
-					HiddenDoc.Editor.Insert (off, new String (' ', e.InsertionLength));
+					HiddenDoc.Editor.InsertText (off, new String (' ', e.InsertionLength));
 			}
 			if (codeFragment != null)
 				codeFragment.EndOffset += (e.InsertionLength - e.RemovalLength);
@@ -353,7 +353,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			// If it's first line of code, create a default temp mapping, and use it until next reparse
 			if (currentMappings.Count == 0) {
 				string newLine = "\r\n#line 0 \r\n ";
-				HiddenDoc.Editor.Insert (defaultPosition, newLine);
+				HiddenDoc.Editor.InsertText (defaultPosition, newLine);
 				map = new KeyValuePair<int, GeneratedCodeMapping> (0, new GeneratedCodeMapping (currentOffset - 1, 0, 0, 0, 0));
 				currentMappings.Add (map);
 			} else {
@@ -391,8 +391,8 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 				// We start a new mapping right after the preceding one, but need to include the difference
 				// between mapping's start and the current offset
-				HiddenDoc.Editor.Insert (newOff, newLine);
-				HiddenDoc.Editor.Insert (newOff + newLine.Length, new String (' ', offDifference) + " \r\n");
+				HiddenDoc.Editor.InsertText (newOff, newLine);
+				HiddenDoc.Editor.InsertText (newOff + newLine.Length, new String (' ', offDifference) + " \r\n");
 
 				var newMap = new KeyValuePair<int, GeneratedCodeMapping> (key, new GeneratedCodeMapping (
 					startRealOff + map.Value.CodeLength, 0, 0, 0, offDifference));

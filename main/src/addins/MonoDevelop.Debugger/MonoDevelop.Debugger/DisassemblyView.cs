@@ -308,7 +308,7 @@ namespace MonoDevelop.Debugger
 				InsertAssemblerLine (sb, editorLine++, li);
 				lineCount++;
 			}
-			editor.Insert (offset, sb.ToString ());
+			editor.InsertText (offset, sb.ToString ());
 			if (offset == 0)
 				this.cachedLines.InsertRange (0, lines);
 			else

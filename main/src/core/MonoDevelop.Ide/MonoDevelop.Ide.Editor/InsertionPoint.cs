@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Editor
 				return;
 		}
 
-			editor.Insert (offset, str);
+			editor.InsertText (offset, str);
 			offset += str.Length;
 		}
 
@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Editor
 				InsertNewLine (editor, LineBefore, ref offset);
 				int result = offset - insertionOffset;
 
-				editor.Insert (offset, text);
+				editor.InsertText (offset, text);
 				offset += text.Length;
 				InsertNewLine (editor, LineAfter, ref offset);
 				return result;

@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			// insert add/remove event handler code after +=/-=
-			editor.Replace (initialOffset, editor.CaretOffset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
+			editor.ReplaceText (initialOffset, editor.CaretOffset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));
 			
 			// Search opening bracket of member
 			int pos = callingMember != null && !callingMember.BodyRegion.Begin.IsEmpty ? editor.LocationToOffset (callingMember.BodyRegion.BeginLine, callingMember.BodyRegion.BeginColumn) : initialOffset;
@@ -118,7 +118,7 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append (editor.EolMarker);
 			sb.Append (indent);
 			sb.Append ("}");
-			editor.Insert (pos, sb.ToString ());
+			editor.InsertText (pos, sb.ToString ());
 			editor.CaretOffset = cursorPos;
 			
 			// start text link mode after insert

@@ -84,13 +84,13 @@ namespace MonoDevelop.Ide.Gui
 		
 		public int InsertText (int position, string text)
 		{
-			editor.Insert (position, text);
+			editor.InsertText (position, text);
 			return text.Length;
 		}
 		
 		public void DeleteText (int position, int length)
 		{
-			editor.Replace (position, length, "");
+			editor.ReplaceText (position, length, "");
 		}
 		
 		public int Length {

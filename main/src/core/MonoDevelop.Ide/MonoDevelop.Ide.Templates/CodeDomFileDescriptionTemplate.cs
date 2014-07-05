@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Templates
 				for (int i = 1; i <= doc.LineCount; i++) {
 					var line = doc.GetLine (i);
 					if (IsBlankLine (doc, line) && line.LengthIncludingDelimiter > 0) {
-						doc.Remove (line.Offset, line.LengthIncludingDelimiter);
+						doc.RemoveText (line.Offset, line.LengthIncludingDelimiter);
 						i--;
 						continue;
 					}

@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		{
 			int offset = editor.CaretOffset;
 			int start  = FindPrevWordStart (editor, offset);
-			editor.Remove (start, offset - start);
+			editor.RemoveText (start, offset - start);
 			return start;
 		}
 		
@@ -326,7 +326,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			for (int i = 1; i < data.LineCount; i++) {
 				var line = data.GetLine (i + 1);
 				if (line.Length > 0)
-					data.Insert (line.Offset, lineIndent);
+					data.InsertText (line.Offset, lineIndent);
 			}
 		}
 		
@@ -417,7 +417,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				}
 				templateCtx.LineIndent = data.GetLineIndent (data.OffsetToLineNumber (start));
 				templateCtx.SelectedText = RemoveIndent (data.GetTextBetween (start, end), templateCtx.LineIndent);
-				data.Remove (start, end - start);
+				data.RemoveText (start, end - start);
 				offset = start;
 			} else {
 				string word = GetWordBeforeCaret (data).Trim ();
@@ -427,7 +427,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			TemplateResult template = FillVariables (templateCtx);
 			template.InsertPosition = offset;
-			editor.Insert (offset, template.Code);
+			editor.InsertText (offset, template.Code);
 			
 			int newoffset;
 			if (template.CaretEndOffset >= 0) {

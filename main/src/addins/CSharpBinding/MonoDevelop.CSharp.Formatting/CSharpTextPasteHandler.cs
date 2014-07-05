@@ -105,7 +105,7 @@ namespace MonoDevelop.CSharp.Formatting
 							if (pos < CompletionWindowManager.CodeCompletionContext.TriggerOffset)
 								CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 						}
-						indent.Editor.Replace (pos, nlwsp, newIndent);
+						indent.Editor.ReplaceText (pos, nlwsp, newIndent);
 						//						textEditorData.Document.CommitLineUpdate (textEditorData.CaretLine);
 					}
 				}

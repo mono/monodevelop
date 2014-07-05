@@ -92,18 +92,18 @@ namespace MonoDevelop.DocFood
 			int insertedLength;
 			
 			// Insert key (3rd undo step)
-			Editor.Insert (offset, "/");
+			Editor.InsertText (offset, "/");
 			using (var undo = Editor.OpenUndoGroup ()) {
 				documentationEmpty = Editor.FormatString (offset, documentationEmpty); 
 				insertedLength = documentationEmpty.Length;
-				Editor.Replace (offset, 1, documentationEmpty);
+				Editor.ReplaceText (offset, 1, documentationEmpty);
 				// important to set the caret position here for the undo step
 				Editor.CaretOffset = offset + insertedLength;
 			}
 			
 			using (var undo = Editor.OpenUndoGroup ()) {
 				documentation = Editor.FormatString (offset, documentation); 
-				Editor.Replace (offset, insertedLength, documentation);
+				Editor.ReplaceText (offset, insertedLength, documentation);
 				insertedLength = documentation.Length;
 				if (SelectSummary (offset, insertedLength, documentation) == false)
 					Editor.CaretOffset = offset + insertedLength;

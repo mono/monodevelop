@@ -170,7 +170,7 @@ namespace CBinding
 						int braceOpeningLine;
 						if(GetClosingBraceForLine(Editor, line, out braceOpeningLine) >= 0)
 						{
-							Editor.Replace (line.Offset, line.Length, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
+							Editor.ReplaceText (line.Offset, line.Length, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
 							return false;
 						}
 					}
@@ -185,7 +185,7 @@ namespace CBinding
 							if (!String.IsNullOrEmpty (Editor.SelectedText)) {
 								int cursorPos = Editor.SelectionRange.Offset;
 
-								Editor.Remove (Editor.SelectionRange);
+								Editor.RemoveText (Editor.SelectionRange);
 							
 								Editor.CaretOffset = cursorPos;
 								

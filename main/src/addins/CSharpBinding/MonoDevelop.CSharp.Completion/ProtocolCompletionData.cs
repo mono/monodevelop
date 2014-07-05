@@ -75,7 +75,7 @@ namespace MonoDevelop.CSharp.Completion
 			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
 			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
 
-			editor.Replace (declarationBegin, editor.CaretOffset - declarationBegin, sb);
+			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
 			if (selectionEndPosition > 0) {
 				targetCaretPosition += declarationBegin;
 				selectionEndPosition += declarationBegin;

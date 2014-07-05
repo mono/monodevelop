@@ -83,17 +83,17 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		void ITextDocument.Insert (int offset, string text)
+		void ITextDocument.InsertText (int offset, string text)
 		{
 			document.Insert (offset, text);
 		}
 
-		void ITextDocument.Remove (int offset, int length)
+		void ITextDocument.RemoveText (int offset, int length)
 		{
 			document.Remove (offset, length);
 		}
 
-		void ITextDocument.Replace (int offset, int length, string value)
+		void ITextDocument.ReplaceText (int offset, int length, string value)
 		{
 			document.Replace (offset, length, value);
 		}

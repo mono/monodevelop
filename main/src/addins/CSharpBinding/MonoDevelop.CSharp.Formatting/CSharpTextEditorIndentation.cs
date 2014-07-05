@@ -261,7 +261,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return;
 			var plainText = TextPasteUtils.StringLiteralPasteStrategy.Instance.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
 			var newText = TextPasteUtils.VerbatimStringStrategy.Encode (plainText);
-			textEditorData.Replace (offset, endOffset - offset, newText);
+			textEditorData.ReplaceText (offset, endOffset - offset, newText);
 		}
 
 		static void ConvertVerbatimStringToNormal (ITextDocument textEditorData, int offset)
@@ -280,7 +280,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			var plainText = TextPasteUtils.VerbatimStringStrategy.Decode (textEditorData.GetTextAt (offset, endOffset - offset));
 			var newText = TextPasteUtils.StringLiteralPasteStrategy.Instance.Encode (plainText);
-			textEditorData.Replace (offset, endOffset - offset, newText);
+			textEditorData.ReplaceText (offset, endOffset - offset, newText);
 		}
 
 		internal IStateMachineIndentEngine StateTracker { get { return stateTracker; } }
@@ -319,7 +319,7 @@ namespace MonoDevelop.CSharp.Formatting
 					string tag = endIndex - startIndex > 0 ? lineText.Substring (startIndex + 1, endIndex - startIndex - 1) : null;
 					if (!string.IsNullOrEmpty (tag) && CSharpCompletionEngine.CommentTags.Any (t => t == tag)) {
 						var caretOffset = Editor.CaretOffset;
-						Editor.Insert (caretOffset, "</" + tag + ">");
+						Editor.InsertText (caretOffset, "</" + tag + ">");
 						Editor.CaretOffset = caretOffset;
 					}
 				}
@@ -337,7 +337,7 @@ namespace MonoDevelop.CSharp.Formatting
 					Editor.SelectedText = "\t";
 				}
 				else {
-					Editor.Insert (cursor, "\t");
+					Editor.InsertText (cursor, "\t");
 				}
 				// textEditorData.Document.CommitLineUpdate (textEditorData.CaretLine);
 			}
@@ -345,7 +345,7 @@ namespace MonoDevelop.CSharp.Formatting
 				if (Editor.CaretColumn > 1) {
 					int delta = cursor - cursorPositionBeforeKeyPress;
 					if (delta < 2 && delta > 0) {
-						Editor.Remove (cursor - delta, delta);
+						Editor.RemoveText (cursor - delta, delta);
 						Editor.CaretOffset = cursor - delta;
 						// textEditorData.Document.CommitLineUpdate (textEditorData.CaretLine);
 					}
@@ -379,7 +379,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 					if (GuessSemicolonInsertionOffset (Editor, curLine, Editor.CaretOffset, out guessedOffset)) {
 						using (var undo = Editor.OpenUndoGroup ()) {
-							Editor.Remove (Editor.CaretOffset - 1, 1);
+							Editor.RemoveText (Editor.CaretOffset - 1, 1);
 							Editor.CaretOffset = guessedOffset;
 							lastInsertedSemicolon = Editor.CaretOffset + 1;
 							retval = base.KeyPress (key, keyChar, modifier);
@@ -663,10 +663,10 @@ namespace MonoDevelop.CSharp.Formatting
 						if (!foundPlus)
 							break;
 						if (sgn < 0) {
-							Editor.Remove (max, start - max);
+							Editor.RemoveText (max, start - max);
 							Editor.CaretOffset = max + 1;
 						} else {
-							Editor.Remove (start + sgn, max - start);
+							Editor.RemoveText (start + sgn, max - start);
 							Editor.CaretOffset = start;
 						}
 						break;
@@ -736,7 +736,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 					if (trimmedPreviousLine.Length > "///".Length || nextLine.StartsWith ("///", StringComparison.Ordinal)) {
 						var insertionPoint = textEditorData.CaretOffset;
-						textEditorData.Insert (insertionPoint, "/// ");
+						textEditorData.InsertText (insertionPoint, "/// ");
 						textEditorData.CaretOffset = insertionPoint + "/// ".Length;
 						return true;
 					}
@@ -756,7 +756,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 					int indentSize = line.GetIndentation (textEditorData).Length;
 					var insertedText = prevLine.GetIndentation (textEditorData) + commentPrefix;
-					textEditorData.Replace (line.Offset, indentSize, insertedText);
+					textEditorData.ReplaceText (line.Offset, indentSize, insertedText);
 					textEditorData.CaretOffset = line.Offset + insertedText.Length;
 					return true;
 				} else if (wasInStringLiteral) {
@@ -765,11 +765,11 @@ namespace MonoDevelop.CSharp.Formatting
 					if (!lexer.IsInString)
 						return false;
 					textEditorData.EnsureCaretIsNotVirtual ();
-					textEditorData.Insert (prevLine.Offset + prevLine.Length, "\" +");
+					textEditorData.InsertText (prevLine.Offset + prevLine.Length, "\" +");
 
 					int indentSize = textEditorData.CaretOffset - line.Offset;
 					var insertedText = prevLine.GetIndentation (textEditorData) + (trimmedPreviousLine.StartsWith ("\"", StringComparison.Ordinal) ? "" : "\t") + "\"";
-					textEditorData.Replace (line.Offset, indentSize, insertedText);
+					textEditorData.ReplaceText (line.Offset, indentSize, insertedText);
 					return true;
 				}
 			}
@@ -816,7 +816,7 @@ namespace MonoDevelop.CSharp.Formatting
 							CompletionWindowManager.CodeCompletionContext.TriggerOffset -= nlwsp;
 					}
 					newIndentLength = newIndent.Length;
-					Editor.Replace (pos, nlwsp, newIndent);
+					Editor.ReplaceText (pos, nlwsp, newIndent);
 					//textEditorData.CommitLineUpdate (textEditorData.CaretLine);
 					CompletionWindowManager.HideWindow ();
 				}

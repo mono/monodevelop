@@ -255,8 +255,8 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				}
 				using (var undo = buffer.OpenUndoGroup ()) {
-					buffer.Remove (pos, 1);
-					buffer.Insert (pos, upper);
+					buffer.RemoveText (pos, 1);
+					buffer.InsertText (pos, upper);
 					buffer.CaretOffset = pos + 1;
 				}
 			} else {
@@ -265,8 +265,8 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				int startPos = buffer.SelectionRange.Offset;
 				using (var undo = buffer.OpenUndoGroup ()) {
-					buffer.Remove (startPos, selectedText.Length);
-					buffer.Insert (startPos, newText);
+					buffer.RemoveText (startPos, selectedText.Length);
+					buffer.InsertText (startPos, newText);
 					buffer.SetSelection (startPos, startPos + newText.Length);
 				}
 			}
@@ -296,8 +296,8 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				};
 				using (var undo = buffer.OpenUndoGroup ()) {
-					buffer.Remove (pos, 1);
-					buffer.Insert (pos, lower);
+					buffer.RemoveText (pos, 1);
+					buffer.InsertText (pos, lower);
 					buffer.CaretOffset = pos + 1;
 				}
 			} else {
@@ -306,8 +306,8 @@ namespace MonoDevelop.Ide.Gui
 					return;
 				int startPos = buffer.SelectionRange.Offset;
 				using (var undo = buffer.OpenUndoGroup ()) {
-					buffer.Remove (startPos, selectedText.Length);
-					buffer.Insert (startPos, newText);
+					buffer.RemoveText (startPos, selectedText.Length);
+					buffer.InsertText (startPos, newText);
 					buffer.SetSelection (startPos, startPos + newText.Length);
 				}
 			}
@@ -408,7 +408,7 @@ namespace MonoDevelop.Ide.Gui
 		protected void OnDeleteLine ()
 		{
 			var line = doc.Editor.GetLine (doc.Editor.CaretLocation.Line);
-			doc.Editor.Remove (line.Offset, line.LengthIncludingDelimiter);
+			doc.Editor.RemoveText (line.Offset, line.LengthIncludingDelimiter);
 		}
 		
 		struct RemoveInfo
@@ -482,7 +482,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 			using (var undo = data.OpenUndoGroup ()) {
 				foreach (var info in removeList) {
-					data.Remove (info.Position, info.Length);
+					data.RemoveText (info.Position, info.Length);
 				}
 			}
 		}
