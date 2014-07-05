@@ -182,7 +182,7 @@ namespace MonoDevelop.JavaScript
 			if (overloads == null)
 				overloads = new List<FunctionCompletion> ();
 
-			if (overloads.FirstOrDefault (i => ((FunctionCompletion)i).Parameters.Length == jsData.Parameters.Length) == null)
+			if (overloads.FirstOrDefault (i => (i.Parameters.Length == jsData.Parameters.Length)) == null)
 				overloads.Add (jsData);
 		}
 

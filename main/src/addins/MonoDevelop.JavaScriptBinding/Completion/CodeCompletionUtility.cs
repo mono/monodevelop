@@ -43,7 +43,8 @@ namespace MonoDevelop.JavaScript
 			foreach (JSStatement node in astNodes) {
 				var variableDeclaration = node as JSVariableDeclaration;
 				if (variableDeclaration != null) {
-					if (!dataList.Exists (i => i.DisplayText == variableDeclaration.Name) && !string.IsNullOrWhiteSpace (variableDeclaration.Name))
+					if (!dataList.Exists (i => i.DisplayText == variableDeclaration.Name && i is VariableCompletion) &&
+					    !string.IsNullOrWhiteSpace (variableDeclaration.Name))
 						dataList.Add (new VariableCompletion (variableDeclaration, node.Filename));
 
 					UpdateCodeCompletion (node.ChildNodes, ref dataList);
@@ -54,11 +55,13 @@ namespace MonoDevelop.JavaScript
 				var functionStatement = node as JSFunctionStatement;
 				if (functionStatement != null) {
 					if (!string.IsNullOrWhiteSpace (functionStatement.Name)) {
-						var existingDefinition = dataList.FirstOrDefault (i => i.DisplayText == functionStatement.Name);
+						var existingDefinition = dataList.FirstOrDefault (i => i.DisplayText == functionStatement.Name &&
+						                         i is FunctionCompletion);
 						if (existingDefinition == null)
 							dataList.Add (new FunctionCompletion (functionStatement, node.Filename));
-						else
+						else {
 							existingDefinition.AddOverload (new FunctionCompletion (functionStatement, node.Filename));
+						}
 					}
 
 					UpdateCodeCompletion (node.ChildNodes, ref dataList);
@@ -79,8 +82,8 @@ namespace MonoDevelop.JavaScript
 				dataList.Add (new CompletionData (token.Text, string.Empty));
 			}
 		}
-	
-		public static CompletionDataList FilterCodeCompletion(CompletionDataList dataList, string query)
+
+		public static CompletionDataList FilterCodeCompletion (CompletionDataList dataList, string query)
 		{
 			if (dataList == null)
 				return null;
