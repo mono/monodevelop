@@ -186,10 +186,7 @@ namespace MonoDevelop.JavaScript
 				return null;
 
 			string currentWord = string.Empty;
-			if (!isCodeCompletionPossible (completionContext, out currentWord))
-				return null;
-
-			if (string.IsNullOrWhiteSpace (currentWord))
+			if (!isCodeCompletionPossible (completionContext, ref triggerWordLength))
 				return null;
 
 			var wrapper = TypeSystemService.GetProjectContentWrapper (IdeApp.ProjectOperations.CurrentSelectedProject).GetExtensionObject<JSUpdateableProjectContent> ();
@@ -330,9 +327,9 @@ namespace MonoDevelop.JavaScript
 			}
 		}
 
-		bool isCodeCompletionPossible (CodeCompletionContext completionContext, out string currentWord)
+		bool isCodeCompletionPossible (CodeCompletionContext completionContext, ref int wordLength)
 		{
-			currentWord = string.Empty;
+			string currentWord = string.Empty;
 
 			if (completionContext.TriggerOffset == 0)
 				return true;
@@ -346,6 +343,7 @@ namespace MonoDevelop.JavaScript
 			int currentWordStartOffset = Editor.FindCurrentWordStart (completionContext.TriggerOffset);
 			int currentWordEndOffset = Editor.FindCurrentWordEnd (completionContext.TriggerOffset);
 			currentWord = Editor.GetTextBetween (currentWordStartOffset, currentWordEndOffset);
+			wordLength = (currentWordEndOffset - currentWordStartOffset);
 
 			if (currentWord.StartsWith ("\\") || currentWord.StartsWith ("\""))
 				return false;

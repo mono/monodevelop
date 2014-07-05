@@ -70,8 +70,7 @@ namespace MonoDevelop.JavaScript
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
-			// TODO: We have issue where the word gets appended to an existing word.  I think it should replace the word
-			var currentWord = GetCurrentWord (window);
+			string currentWord = GetCurrentWord (window);
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
 		}
 
