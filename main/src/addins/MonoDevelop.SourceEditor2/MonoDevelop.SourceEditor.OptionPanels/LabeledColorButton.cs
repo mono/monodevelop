@@ -33,7 +33,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	{
 		Color color = Colors.AliceBlue;
 		Label label = new Label ();
-		Button colorButton = new Button () { ImagePosition=ContentPosition.Center };
+		Button colorButton = new Button () { ImagePosition = ContentPosition.Center, Style = ButtonStyle.Flat };
 		ImageBuilder builder = new ImageBuilder (40, 15);
 
 		public LabeledColorButton ()
@@ -53,7 +53,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		}
 
 		public LabeledColorButton (string labelText)
-			:this()
+			: this ()
 		{
 			this.label.Text = labelText;
 		}
@@ -61,12 +61,12 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public event EventHandler ColorSet;
 
 		public string LabelText {
-			get{ return label.Text;}
-			set{ label.Text = value;}
+			get{ return label.Text; }
+			set{ label.Text = value; }
 		}
 
 		public Color Color {
-			get{ return color;}
+			get{ return color; }
 			set {
 				color = value;
 				SetColorToButton (color);
