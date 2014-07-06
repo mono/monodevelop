@@ -56,7 +56,7 @@ type CompilerArgumentsTests() =
 
         //find the mscorlib inside the FSharp.Core ref
         let mscorlibContained =
-            let assemblyDef = Mono.Cecil.AssemblyDefinition.ReadAssembly(reference.Reference)
+            let assemblyDef = Mono.Cecil.AssemblyDefinition.ReadAssembly(reference.HintPath)
             match assemblyDef.MainModule.AssemblyReferences |> Seq.tryFind (fun name -> name.Name = "mscorlib") with
             |Some name ->
                 let resolved = assemblyDef.MainModule.AssemblyResolver.Resolve(name)
