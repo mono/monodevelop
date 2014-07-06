@@ -28,11 +28,11 @@ type CompilerArgumentsTests() =
                                                  true) 
 
         //there should be two references
-        references.Length |> should equal 2
+        references.Length |> should equal 3
 
         //The two paths for mscorlib and FSharp.Core should match
         match references |> List.map Path.GetDirectoryName with
-        | [one; two] -> one |> should equal two
+        | [one; two; three] -> one |> should equal three
         | _ -> Assert.Fail("Too many references returned")
 
     [<TestCaseAttribute("FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
@@ -52,7 +52,7 @@ type CompilerArgumentsTests() =
                                                  false) 
 
         //there should be two references
-        references.Length |> should equal 2
+        references.Length |> should equal 3
 
         //find the mscorlib inside the FSharp.Core ref
         let mscorlibContained =
