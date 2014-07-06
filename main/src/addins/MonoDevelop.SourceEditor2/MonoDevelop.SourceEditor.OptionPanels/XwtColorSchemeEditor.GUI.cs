@@ -51,14 +51,14 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		LabeledColorButton colorbuttonPrimary = new LabeledColorButton ("Primary:");
 		LabeledColorButton colorbuttonSecondary = new LabeledColorButton ("Secondary:");
 		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border:");
-		ToggleButton togglebuttonBold = new ToggleButton ("B");
-		ToggleButton togglebuttonItalic = new ToggleButton ("I");
-		Button buttonFormat = new Button ("FBP");
+		ToggleButton togglebuttonBold = new ToggleButton ("B"){Style=ButtonStyle.Flat};
+		ToggleButton togglebuttonItalic = new ToggleButton ("I"){Style=ButtonStyle.Flat};
+		Button buttonFormat = new Button ("FBP"){Style=ButtonStyle.Flat};
 		TextEntry entryName = new TextEntry ();
 		TextEntry entryDescription = new TextEntry ();
 		SearchTextEntry searchEntry = new SearchTextEntry (){ PlaceholderText = "Type here..." };
-		Button undoButton = new Button (ImageService.GetIcon (Stock.UndoIcon).WithSize (Xwt.IconSize.Small)){ Sensitive = false };
-		Button redoButton = new Button (ImageService.GetIcon (Stock.RedoIcon).WithSize (Xwt.IconSize.Small)){ Sensitive = false };
+		Button undoButton = new Button (ImageService.GetIcon (Stock.UndoIcon).WithSize (Xwt.IconSize.Small)){ Sensitive = false,Style=ButtonStyle.Flat };
+		Button redoButton = new Button (ImageService.GetIcon (Stock.RedoIcon).WithSize (Xwt.IconSize.Small)){ Sensitive = false,Style=ButtonStyle.Flat };
 
 		private void Build()
 		{
@@ -85,7 +85,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			undoButton.Clicked += Undo;
 			redoButton.Clicked += Redo;
 			commandHBox.PackStart (undoRedoButton);
-			commandHBox.PackStart (new Button ("AutoSet"));
+			commandHBox.PackStart (new Button ("AutoSet"){Style=ButtonStyle.Flat});
 			table.Add (commandHBox, 0, 0);
 
 			var adjustHBox = new HBox ();
