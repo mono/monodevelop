@@ -12,7 +12,7 @@ open MonoDevelop.Projects
 type CompilerArgumentsTests() =
     inherit TestBase()
 
-    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/3.4.0/lib/mono/4.5/mscorlib.dll")>]
+    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/mscorlib.dll")>]
     [<TestCaseAttribute("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
     [<Test>]
     member x.``Only mscorlib referenced`` (assemblyName:string) =
@@ -36,8 +36,8 @@ type CompilerArgumentsTests() =
         | _ -> Assert.Fail("Too many references returned")
 
     [<TestCaseAttribute("FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
-    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/3.4.0/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
-    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/3.4.0/lib/mono/4.5/FSharp.Core.dll")>]
+    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
+    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll")>]
     [<Test>]
     member x.``Only FSharp.Core referenced`` (assemblyName:string) =
 
