@@ -193,6 +193,8 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\LabeledColorButton.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\ColorSchemeEditorHistory.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CodeSamples.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\XwtColorSchemeEditor.GUI.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.OptionPanels\TreeStoreExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
