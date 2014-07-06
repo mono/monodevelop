@@ -64,4 +64,4 @@ type TestBase() =
         Gtk.Application.Init ()
         TypeSystemService.TrackFileChanges <- true
         DesktopService.Initialize ()
-        Services.ProjectService.DefaultTargetFramework <- Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_2_0)
+        Services.ProjectService.DefaultTargetFramework <- Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5)
