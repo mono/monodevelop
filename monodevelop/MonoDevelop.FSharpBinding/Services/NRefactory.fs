@@ -7,6 +7,7 @@ open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.TypeSystem.Implementation
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.CompilerBinding
 
 /// Utilities to produce NRefactory ISymbol, IEntity, IVariable etc. implementations based on FSharpSymbol
 /// objects returned by FSharp.Compiler.Service.
@@ -159,18 +160,7 @@ module NRefactory =
     ///
     /// symbolDeclLocOpt is used to modify the MemberReferences ReferenceUsageType in the case of highlight usages
     let createMemberReference(projectContent, symbolUse: FSharpSymbolUse, fileNameOfRef, text, lastIdentAtLoc:string) =
-         let m = symbolUse.RangeAlternate
-         let ((beginLine, beginCol), (endLine, endCol)) = ((m.StartLine, m.StartColumn), (m.EndLine, m.EndColumn))
-         
-         // We always know the text of the identifier that resolved to symbol.
-         // Trim the range of the referring text to only include this identifier.
-         // This means references like A.B.C are trimmed to "C".  This allows renaming to just
-         // rename "C". 
-         let (beginLine, beginCol) =
-             if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then 
-                 (endLine,endCol-lastIdentAtLoc.Length)
-             else
-                 (beginLine, beginCol)
+         let (beginLine, beginCol), (endLine, endCol) = Symbols.trimSymbolRegion symbolUse lastIdentAtLoc
              
          let document = TextDocument(text)
          let offset = document.LocationToOffset(beginLine, beginCol+1)
