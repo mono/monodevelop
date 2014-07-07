@@ -347,61 +347,61 @@ namespace MonoDevelop.Ide.Gui
 		[CommandHandler (TextEditorCommands.LineEnd)]
 		protected void OnLineEnd ()
 		{
-			doc.Editor.Actions.MoveCaretToLineEnd ();
+			doc.Editor.EditorActionHost.MoveCaretToLineEnd ();
 		}
 		
 		[CommandHandler (TextEditorCommands.LineStart)]
 		protected void OnLineStart ()
 		{
-			doc.Editor.Actions.MoveCaretToLineStart ();
+			doc.Editor.EditorActionHost.MoveCaretToLineStart ();
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteLeftChar)]
 		protected void OnDeleteLeftChar ()
 		{
-			doc.Editor.Actions.Backspace ();
+			doc.Editor.EditorActionHost.Backspace ();
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteRightChar)]
 		protected void OnDeleteRightChar ()
 		{
-			doc.Editor.Actions.Delete ();
+			doc.Editor.EditorActionHost.Delete ();
 		}
 		
 		[CommandHandler (TextEditorCommands.CharLeft)]
 		protected void OnCharLeft ()
 		{
-			doc.Editor.Actions.MoveCaretLeft ();
+			doc.Editor.EditorActionHost.MoveCaretLeft ();
 		}
 		
 		[CommandHandler (TextEditorCommands.CharRight)]
 		protected void OnCharRight ()
 		{
-			doc.Editor.Actions.MoveCaretRight ();
+			doc.Editor.EditorActionHost.MoveCaretRight ();
 		}
 		
 		[CommandHandler (TextEditorCommands.LineUp)]
 		protected void OnLineUp ()
 		{
-			doc.Editor.Actions.MoveCaretUp ();
+			doc.Editor.EditorActionHost.MoveCaretUp ();
 		}
 		
 		[CommandHandler (TextEditorCommands.LineDown)]
 		protected void OnLineDown ()
 		{
-			doc.Editor.Actions.MoveCaretDown ();
+			doc.Editor.EditorActionHost.MoveCaretDown ();
 		}
 		
 		[CommandHandler (TextEditorCommands.DocumentStart)]
 		protected void OnDocumentStart ()
 		{
-			doc.Editor.Actions.MoveCaretToDocumentStart ();
+			doc.Editor.EditorActionHost.MoveCaretToDocumentStart ();
 		}
 		
 		[CommandHandler (TextEditorCommands.DocumentEnd)]
 		protected void OnDocumentEnd ()
 		{
-			doc.Editor.Actions.MoveCaretToDocumentEnd ();
+			doc.Editor.EditorActionHost.MoveCaretToDocumentEnd ();
 		}
 		
 		[CommandHandler (TextEditorCommands.DeleteLine)]

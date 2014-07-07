@@ -2747,7 +2747,6 @@
     <Compile Include="MonoDevelop.Ide.Editor\SelectionMode.cs" />
     <Compile Include="MonoDevelop.Components\GtkGestures.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\FileSettingsStore.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\IEditorActionHost.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InsertionCursorEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IFoldSegment.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
@@ -2797,6 +2796,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\TextMarkerFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorImpl.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextMarkerFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\IEditorActionHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditActions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

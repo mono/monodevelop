@@ -219,7 +219,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public IEditorActionHost Actions {
+		internal IEditorActionHost EditorActionHost {
 			get {
 				return textEditorImpl.Actions;
 			}

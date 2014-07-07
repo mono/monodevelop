@@ -289,13 +289,13 @@ namespace MonoDevelop.AssemblyBrowser
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopyCommand ()
 		{
-			inspectEditor.Actions.ClipboardCopy ();
+			EditActions.ClipboardCopy (inspectEditor);
 		}
 		
 		[CommandHandler (EditCommands.SelectAll)]
 		protected void OnSelectAllCommand ()
 		{
-			inspectEditor.Actions.SelectAll ();
+			EditActions.SelectAll (inspectEditor);
 		}
 		
 		void HandleInspectEditorButtonPressEvent (object o, ButtonPressEventArgs args)

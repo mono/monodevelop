@@ -644,7 +644,7 @@ namespace MonoDevelop.Gettext
 							continue;
 						textView.ClearSelection ();
 						textView.Text = entry != null ?  entry.GetTranslation (i) : "";
-						textView.Actions.MoveCaretToDocumentEnd ();
+						EditActions.MoveCaretToDocumentEnd (textView);
 					}
 					
 					foreach (string reference in entry.References) {

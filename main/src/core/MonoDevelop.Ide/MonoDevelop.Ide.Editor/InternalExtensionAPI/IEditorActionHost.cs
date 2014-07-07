@@ -28,7 +28,7 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public interface IEditorActionHost
+	interface IEditorActionHost
 	{
 		void MoveCaretDown ();
 
