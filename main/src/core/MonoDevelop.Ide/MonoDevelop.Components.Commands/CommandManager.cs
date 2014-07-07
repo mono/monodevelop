@@ -140,31 +140,6 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		/// <summary>
-		/// Creates a set of toolbars from the provided extension path
-		/// </summary>
-		public Gtk.Toolbar[] CreateToolbarSet (string addinPath)
-		{
-			ArrayList bars = new ArrayList ();
-			
-			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
-			foreach (CommandEntry ce in cset) {
-				CommandEntrySet ces = ce as CommandEntrySet;
-				if (ces != null)
-					bars.Add (CreateToolbar (addinPath + "/" + ces.CommandId, ces));
-			}
-			return (Gtk.Toolbar[]) bars.ToArray (typeof(Gtk.Toolbar));
-		}
-		
-		/// <summary>
-		/// Creates a toolbar from the provided extension path
-		/// </summary>
-		public Gtk.Toolbar CreateToolbar (string addinPath)
-		{
-			CommandEntrySet cset = CreateCommandEntrySet (addinPath);
-			return CreateToolbar (addinPath, cset);
-		}
-		
-		/// <summary>
 		/// Creates a menu from the provided extension path
 		/// </summary>
 		public Gtk.Menu CreateMenu (string addinPath)
@@ -932,86 +907,6 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			GtkWorkarounds.ShowContextMenu (menu, parent, evt);
-		}
-		
-		/// <summary>
-		/// Creates a toolbar.
-		/// </summary>
-		/// <returns>
-		/// The toolbar.
-		/// </returns>
-		/// <param name='entrySet'>
-		/// Entry with the command definitions
-		/// </param>
-		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet)
-		{
-			return CreateToolbar ("", entrySet, null);
-		}
-		
-		/// <summary>
-		/// Creates a toolbar.
-		/// </summary>
-		/// <returns>
-		/// The toolbar.
-		/// </returns>
-		/// <param name='entrySet'>
-		/// Entry with the command definitions
-		/// </param>
-		/// <param name='initialTarget'>
-		/// Initial command route target. The command handler will start looking for command handlers in this object.
-		/// </param>
-		public Gtk.Toolbar CreateToolbar (CommandEntrySet entrySet, object initialTarget)
-		{
-			return CreateToolbar ("", entrySet, initialTarget);
-		}
-		
-		/// <summary>
-		/// Creates a toolbar.
-		/// </summary>
-		/// <returns>
-		/// The toolbar.
-		/// </returns>
-		/// <param name='id'>
-		/// Identifier of the toolbar
-		/// </param>
-		/// <param name='entrySet'>
-		/// Entry with the command definitions
-		/// </param>
-		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet)
-		{
-			return CreateToolbar (id, entrySet, null);
-		}
-		
-		/// <summary>
-		/// Creates a toolbar.
-		/// </summary>
-		/// <returns>
-		/// The toolbar.
-		/// </returns>
-		/// <param name='id'>
-		/// Identifier of the toolbar
-		/// </param>
-		/// <param name='entrySet'>
-		/// Entry with the command definitions
-		/// </param>
-		/// <param name='initialTarget'>
-		/// Initial command route target. The command handler will start looking for command handlers in this object.
-		/// </param>
-		public Gtk.Toolbar CreateToolbar (string id, CommandEntrySet entrySet, object initialTarget)
-		{
-			CommandToolbar toolbar = new CommandToolbar (this, id, entrySet.Name);
-			toolbar.InitialCommandTarget = initialTarget;
-			
-			foreach (CommandEntry entry in entrySet) {
-				Gtk.ToolItem ti = entry.CreateToolItem (this);
-				CustomItem ci = ti.Child as CustomItem;
-				if (ci != null)
-					ci.SetToolbarStyle (toolbar);
-				toolbar.Add (ti);
-			}
-			ToolbarTracker tt = new ToolbarTracker ();
-			tt.Track (toolbar);
-			return toolbar;
 		}
 		
 		/// <summary>
