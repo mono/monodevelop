@@ -35,7 +35,7 @@ type Util =
 
 type TestBase() =
     static let firstRun = ref true
-        
+    do MonoDevelop.FSharp.MDLanguageService.DisableVirtualFileSystem()
     abstract member Setup: unit -> unit
 
     [<TestFixtureSetUp>]
