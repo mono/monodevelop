@@ -92,6 +92,14 @@ namespace MonoDevelop.PackageManagement.Tests
 			return package;
 		}
 
+		AggregateRepository CreateAggregateRepositoryWithOneRepository ()
+		{
+			var repositories = new FakePackageRepository [] {
+				new FakePackageRepository ()
+			};
+			return new AggregateRepository (repositories);
+		}
+
 		[Test]
 		public void GetActiveProject_ProjectIsSelected_CreatesProjectUsingCurrentProjectSelectedInSharpDevelop ()
 		{
@@ -108,12 +116,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			fakeProjectService.CurrentProject = new FakeDotNetProject ();
+			AggregateRepository expectedRepository = CreateAggregateRepositoryWithOneRepository ();
+			fakeRegisteredPackageRepositories.CreateAggregateRepositoryAction = () => expectedRepository;
 
 			solution.GetActiveProject ();
 
 			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
-			IPackageRepository expectedRepository = fakeRegisteredPackageRepositories.FakeAggregateRepository;
-
 			Assert.AreEqual (expectedRepository, repository);
 		}
 
@@ -130,14 +138,29 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetActiveProject_RepositoryPassed_CreatesProjectUsingRepository ()
+		public void GetActiveProject_RepositoryPassed_CreatesProjectUsingFallbackRepositoryWithAggregateAsFallback ()
 		{
 			CreateSolution ();
 			var expectedRepository = new FakePackageRepository ();
+
 			solution.GetActiveProject (expectedRepository);
 
 			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
+			var fallbackRepository = repository as FallbackRepository;
+			Assert.IsNotNull (fallbackRepository);
+			Assert.AreEqual (expectedRepository, fallbackRepository.SourceRepository);
+			Assert.AreEqual (fakeRegisteredPackageRepositories.FakeAggregateRepository, fallbackRepository.DependencyResolver);
+		}
 
+		[Test]
+		public void GetActiveProject_AggregateRepositoryPassed_CreatesProjectUsingAggregateRepository ()
+		{
+			CreateSolution ();
+			AggregateRepository expectedRepository = CreateAggregateRepositoryWithOneRepository ();
+
+			solution.GetActiveProject (expectedRepository);
+
+			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 			Assert.AreEqual (expectedRepository, repository);
 		}
 
@@ -269,7 +292,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			FakeDotNetProject expectedProject = AddProjectToOpenProjects ("Test");
-			var expectedRepository = new FakePackageRepository ();
+			AggregateRepository expectedRepository = CreateAggregateRepositoryWithOneRepository ();
 
 			solution.GetProject (expectedRepository, expectedProject);
 
@@ -311,7 +334,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			AddProjectToOpenProjects ("Test");
-			var expectedRepository = new FakePackageRepository ();
+			AggregateRepository expectedRepository = CreateAggregateRepositoryWithOneRepository ();
 
 			solution.GetProject (expectedRepository, "Test");
 
@@ -523,12 +546,27 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateSolution ();
 			AddProjectToOpenProjects ("MyProject");
-			var expectedRepository = new FakePackageRepository ();
+			AggregateRepository expectedRepository = CreateAggregateRepositoryWithOneRepository ();
 			solution.GetProjects (expectedRepository).ToList ();
 
 			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
 
 			Assert.AreEqual (expectedRepository, repository);
+		}
+
+		[Test]
+		public void GetProjects_SolutionHasOneProject_FallbackRepositoryUsedToCreateProject ()
+		{
+			CreateSolution ();
+			AddProjectToOpenProjects ("MyProject");
+			var expectedRepository = new FakePackageRepository ();
+
+			solution.GetProjects (expectedRepository).ToList ();
+
+			IPackageRepository repository = fakeProjectFactory.FirstRepositoryPassedToCreateProject;
+			var fallbackRepository = repository as FallbackRepository;
+			Assert.AreEqual (expectedRepository, fallbackRepository.SourceRepository);
+			Assert.AreEqual (fakeRegisteredPackageRepositories.FakeAggregateRepository, fallbackRepository.DependencyResolver);
 		}
 
 		[Test]
@@ -637,6 +675,8 @@ namespace MonoDevelop.PackageManagement.Tests
 			fakeProjectService.CurrentProject = null;
 			FakeDotNetProject testProject1 = AddProjectToOpenProjects ("Test1");
 			FakeDotNetProject testProject2 = AddProjectToOpenProjects ("Test2");
+			AggregateRepository repository = CreateAggregateRepositoryWithOneRepository ();
+			fakeRegisteredPackageRepositories.GetActiveRepositoryAction = () => repository;
 
 			solution.GetPackages ();
 

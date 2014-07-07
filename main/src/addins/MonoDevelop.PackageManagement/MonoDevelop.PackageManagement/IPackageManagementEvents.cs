@@ -47,6 +47,7 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		event EventHandler PackagesRestored;
 		event EventHandler<FileEventArgs> FileChanged;
+		event EventHandler UpdatedPackagesAvailable;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
@@ -60,5 +61,6 @@ namespace ICSharpCode.PackageManagement
 		FileConflictResolution OnResolveFileConflict(string message);
 		void OnPackagesRestored();
 		void OnFileChanged(string path);
+		void OnUpdatedPackagesAvailable ();
 	}
 }

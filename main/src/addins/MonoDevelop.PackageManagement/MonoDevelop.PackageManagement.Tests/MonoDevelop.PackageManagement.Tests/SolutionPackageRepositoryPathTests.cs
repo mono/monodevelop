@@ -37,8 +37,9 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		SolutionPackageRepositoryPath repositoryPath;
 		FakeProject project;
-		PackageManagementOptions options;
+		TestablePackageManagementOptions options;
 		FakeSolution solution;
+		FakeSettings settings;
 
 		void CreateSolutionPackageRepositoryPath ()
 		{
@@ -63,6 +64,12 @@ namespace MonoDevelop.PackageManagement.Tests
 		void CreateOptions ()
 		{
 			options = new TestablePackageManagementOptions ();
+			settings = options.FakeSettings;
+		}
+
+		void SolutionNuGetConfigFileHasCustomPackagesPath (string fullPath)
+		{
+			settings.SetRepositoryPathSetting (fullPath.ToNativePath ());
 		}
 
 		[Test]
@@ -112,6 +119,36 @@ namespace MonoDevelop.PackageManagement.Tests
 				@"d:\projects\Test\MySolution\MyPackages\MyPackage.1.2.1.40".ToNativePath ();
 
 			Assert.AreEqual (expectedInstallPath, installPath);
+		}
+
+		[Test]
+		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPath_OverriddenPathReturned ()
+		{
+			CreateOptions ();
+			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
+			options.PackagesDirectory = "Packages";
+			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\Team\MyPackages");
+			CreateSolutionPackageRepositoryPath (solution);
+			string expectedPath = @"d:\Team\MyPackages".ToNativePath ();
+
+			string path = repositoryPath.PackageRepositoryPath;
+
+			Assert.AreEqual (expectedPath, path);
+		}
+
+		[Test]
+		public void PackageRepositoryPath_SolutionHasNuGetFileThatOverridesDefaultPackagesRepositoryPathAndPathContainsDotDots_OverriddenPathReturnedWithoutDotDots ()
+		{
+			CreateOptions ();
+			CreateSolution (@"d:\projects\MySolution\MySolution.sln");
+			options.PackagesDirectory = "Packages";
+			SolutionNuGetConfigFileHasCustomPackagesPath (@"d:\projects\MySolution\..\..\Team\MyPackages");
+			CreateSolutionPackageRepositoryPath (solution);
+			string expectedPath = @"d:\Team\MyPackages".ToNativePath ();
+
+			string path = repositoryPath.PackageRepositoryPath;
+
+			Assert.AreEqual (expectedPath, path);
 		}
 	}
 }

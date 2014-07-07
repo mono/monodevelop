@@ -30,18 +30,46 @@ namespace MonoDevelop.PackageManagement
 {
 	public class ProgressMonitorStatusMessage
 	{
+		string success;
+		string error;
+		string warning;
+
 		public ProgressMonitorStatusMessage (string status, string success, string error, string warning)
 		{
 			Status = status;
-			Success = success;
-			Error = error;
-			Warning = warning;
+			this.success = success;
+			this.error = error;
+			this.warning = warning;
 		}
 
 		public string Status { get; private set; }
-		public string Success { get; private set; }
-		public string Error { get; private set; }
-		public string Warning { get; private set; }
+
+		public string Success {
+			get { return GetSuccessMessage (); }
+		}
+
+		public string Error {
+			get { return GetErrorMessage (); }
+		}
+
+		public string Warning {
+			get { return GetWarningMessage (); }
+		}
+
+		protected virtual string GetSuccessMessage ()
+		{
+			return success;
+		}
+
+		protected virtual string GetErrorMessage ()
+		{
+			return error;
+		}
+
+		protected virtual string GetWarningMessage ()
+		{
+			return warning;
+		}
 	}
 }
 

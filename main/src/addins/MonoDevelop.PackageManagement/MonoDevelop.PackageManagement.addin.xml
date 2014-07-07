@@ -28,6 +28,10 @@
 			_description="Current package version"
 			_label="Version" />
 		<Command
+			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage"
+			_description="Retarget package"
+			_label="Re_target" />
+		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage"
 			_description="Update package"
 			_label="_Update" />
@@ -41,6 +45,11 @@
 			_description="Update all packages in the solution"
 			_label="_Update Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
+		<Command
+			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
+			_description="Retargets all packages"
+			_label="Re_target"
+			defaultHandler="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProjectHandler" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
@@ -72,6 +81,8 @@
 		<Condition id="ItemType" value="MonoDevelop.PackageManagement.NodeBuilders.ProjectPackagesFolderNode">
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.AddPackages" />
+			<CommandItem
+				id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject" />
 			<CommandItem
 				id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProject" />
 			<CommandItem
@@ -121,6 +132,7 @@
 
 	<Extension path="/MonoDevelop/PackageManagement/ContextMenu/ProjectPad/PackageReference">
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ReinstallPackage" />
 		<CommandItem id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.UpdatePackage" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
@@ -130,7 +142,7 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/StartupHandlers">
-		<Class class="MonoDevelop.PackageManagement.Commands.PackageRestoreStartupHandler" />
+		<Class class="MonoDevelop.PackageManagement.Commands.PackageManagementStartupHandler" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/SearchCategories">

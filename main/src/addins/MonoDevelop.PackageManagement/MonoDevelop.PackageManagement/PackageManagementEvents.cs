@@ -57,7 +57,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public void OnPackageOperationError(Exception ex)
 		{
-			LoggingService.LogInfo("Package operation error: " + ex.ToString());
 			if (PackageOperationError != null) {
 				PackageOperationError(this, new PackageOperationExceptionEventArgs(ex));
 			}
@@ -151,6 +150,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (FileChanged != null) {
 				FileChanged (this, new FileEventArgs (new FilePath (path), false));
+			}
+		}
+
+		public event EventHandler UpdatedPackagesAvailable;
+
+		public void OnUpdatedPackagesAvailable ()
+		{
+			if (UpdatedPackagesAvailable != null) {
+				UpdatedPackagesAvailable (this, new EventArgs ());
 			}
 		}
 	}

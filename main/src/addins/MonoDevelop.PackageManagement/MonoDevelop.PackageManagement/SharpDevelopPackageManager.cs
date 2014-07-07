@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -93,7 +94,7 @@ namespace ICSharpCode.PackageManagement
 			AddPackageReference(package, installAction.IgnoreDependencies, installAction.AllowPrereleaseVersions);
 		}
 		
-		void AddPackageReference(IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+		public void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			var monitor = new RemovedPackageReferenceMonitor(ProjectManager);
 			using (monitor) {
@@ -204,6 +205,26 @@ namespace ICSharpCode.PackageManagement
 			foreach (PackageOperation operation in operations) {
 				Execute(operation);
 			}
+		}
+
+		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
+		{
+			var installWalker = new InstallWalker (
+				LocalRepository,
+				SourceRepository,
+				ProjectManager.Project.TargetFramework,
+				ProjectManager.Logger,
+				ignoreDependencies: true,
+				allowPrereleaseVersions: false,
+				dependencyVersion: DependencyVersion.Lowest);
+
+			IList<IPackage> packagesInDependencyOrder;
+			IList<PackageOperation> operations = installWalker.ResolveOperations (
+				packages,
+				out packagesInDependencyOrder,
+				allowPrereleaseVersionsBasedOnPackage: true);
+
+			return new ReinstallPackageOperations (operations, packagesInDependencyOrder);
 		}
 	}
 }
