@@ -30,7 +30,7 @@ using ICSharpCode.NRefactory;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.FindInFiles;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Extension
 {
 	public sealed class Usage : AbstractSegment
 	{
@@ -45,14 +45,5 @@ namespace MonoDevelop.Ide.Editor
 		{
 			UsageType = usageType;
 		}
-	}
-
-	public interface IUsageProvider
-	{
-		IEnumerable<Usage> Usages {
-			get;
-		}
-
-		event EventHandler UsagesUpdated;
 	}
 }

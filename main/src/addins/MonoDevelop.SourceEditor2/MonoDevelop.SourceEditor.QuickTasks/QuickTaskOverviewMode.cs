@@ -37,6 +37,7 @@ using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
 using MonoDevelop.Ide.Editor;
 using Xwt.Drawing;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {

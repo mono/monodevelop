@@ -48,6 +48,7 @@ using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Tasks;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -111,8 +112,8 @@ namespace MonoDevelop.SourceEditor
 		}		
 
 		
-		List<IUsageProvider> usageProvider = new List<IUsageProvider> ();
-		public void AddUsageTaskProvider (IUsageProvider provider)
+		List<UsageProviderEditorExtension> usageProvider = new List<UsageProviderEditorExtension> ();
+		public void AddUsageTaskProvider (UsageProviderEditorExtension provider)
 		{
 			usageProvider.Add (provider);
 			mainsw.AddUsageProvider (provider); 
@@ -272,7 +273,7 @@ namespace MonoDevelop.SourceEditor
 			}	
 
 
-			public void AddUsageProvider (IUsageProvider p)
+			public void AddUsageProvider (UsageProviderEditorExtension p)
 			{
 				p.UsagesUpdated += (sender, e) => strip.Update (p);
 			}

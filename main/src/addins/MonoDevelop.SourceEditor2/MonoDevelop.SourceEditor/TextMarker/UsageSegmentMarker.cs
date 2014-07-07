@@ -4,6 +4,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.FindInFiles;
 using Cairo;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor
 {

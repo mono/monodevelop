@@ -36,8 +36,7 @@ using ICSharpCode.NRefactory.Refactoring;
 
 namespace MonoDevelop.Ide.Editor
 {
-	
-	public class QuickTask
+	public sealed class QuickTask
 	{
 		Lazy<string> description;
 		public string Description {
@@ -75,5 +74,4 @@ namespace MonoDevelop.Ide.Editor
 			return string.Format ("[QuickTask: Description={0}, Location={1}, Severity={2}]", Description, Location, Severity);
 		}
 	}
-	
 }

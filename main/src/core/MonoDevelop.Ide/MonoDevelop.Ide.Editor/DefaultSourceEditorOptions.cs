@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Editor
 	/// This class contains all text editor options from ITextEditorOptions and additional options
 	/// the text editor frontend may use.  
 	/// </summary>
-	public class DefaultSourceEditorOptions : ITextEditorOptions
+	public sealed class DefaultSourceEditorOptions : ITextEditorOptions
 	{
 		static DefaultSourceEditorOptions instance;
 		//static TextStylePolicy defaultPolicy;
@@ -276,7 +276,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 		
 		string defaultEolMarker = Environment.NewLine;
-		public virtual string DefaultEolMarker {
+		public string DefaultEolMarker {
 			get {
 				return defaultEolMarker;
 			}
@@ -346,7 +346,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 		
 		int indentationSize = 4;
-		public virtual int IndentationSize {
+		public int IndentationSize {
 			get {
 				return indentationSize;
 			}
@@ -413,7 +413,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 		
 		bool showIconMargin = true;
-		public virtual bool ShowIconMargin {
+		public bool ShowIconMargin {
 			get {
 				return showIconMargin;
 			}
@@ -461,7 +461,7 @@ namespace MonoDevelop.Ide.Editor
 
 		int  rulerColumn = 80;
 
-		public virtual int RulerColumn {
+		public int RulerColumn {
 			get {
 				return rulerColumn;
 			}
@@ -570,7 +570,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 		
 		bool overrideDocumentEolMarker = false;
-		public virtual bool OverrideDocumentEolMarker {
+		public bool OverrideDocumentEolMarker {
 			get {
 				return overrideDocumentEolMarker;
 			}
@@ -583,7 +583,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 		
-		public virtual void Dispose ()
+		public void Dispose ()
 		{
 			FontService.RemoveCallback (UpdateFont);
 		}

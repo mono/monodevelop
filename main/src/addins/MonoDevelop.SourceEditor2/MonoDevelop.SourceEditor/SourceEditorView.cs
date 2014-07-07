@@ -821,7 +821,7 @@ namespace MonoDevelop.SourceEditor
 					foreach (var provider in WorkbenchWindow.Document.GetContents<IQuickTaskProvider> ()) {
 						widget.AddQuickTaskProvider (provider);
 					}
-					foreach (var provider in WorkbenchWindow.Document.GetContents<IUsageProvider> ()) {
+					foreach (var provider in WorkbenchWindow.Document.GetContents<UsageProviderEditorExtension> ()) {
 						widget.AddUsageTaskProvider (provider);
 					}
 					ownerDocument = WorkbenchWindow.Document;

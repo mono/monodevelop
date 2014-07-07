@@ -2752,7 +2752,6 @@
     <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextLineMarker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IQuickTaskProvider.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\IUsageProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\QuickTask.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TooltipProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextSegmentMarker.cs" />
@@ -2799,6 +2798,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\DocumentContext.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\FoldSegmentFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IReadonlyTextDocument.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\Usage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

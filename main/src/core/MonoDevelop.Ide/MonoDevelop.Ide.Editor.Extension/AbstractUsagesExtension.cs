@@ -37,10 +37,26 @@ using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
+	public abstract class UsageProviderEditorExtension : TextEditorExtension
+	{
+		public abstract IEnumerable<Usage> Usages {
+			get;
+		}
+
+		public event EventHandler UsagesUpdated;
+
+		protected void OnUsagesUpdated (EventArgs e)
+		{
+			var handler = UsagesUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+	}
+
 	/// <summary>
 	/// Provides a base class for implementing highlighting of usages inside the text editor.
 	/// </summary>
-	public abstract class AbstractUsagesExtension<T> : TextEditorExtension, IUsageProvider
+	public abstract class AbstractUsagesExtension<T> : UsageProviderEditorExtension
 	{
 		[SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
 		protected static readonly List<MemberReference> EmptyList = new List<MemberReference> ();
@@ -213,17 +229,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 
 		#region IUsageProvider implementation
-		public event EventHandler UsagesUpdated;
-
-		void OnUsagesUpdated (EventArgs e)
-		{
-			var handler = UsagesUpdated;
-			if (handler != null)
-				handler (this, e);
-		}
 
 		readonly List<Usage> usages = new List<Usage> ();
-		IEnumerable<Usage> IUsageProvider.Usages {
+		public override IEnumerable<Usage> Usages {
 			get {
 				return usages;
 			}

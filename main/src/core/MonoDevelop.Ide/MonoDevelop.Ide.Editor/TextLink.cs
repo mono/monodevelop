@@ -30,7 +30,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public class TextLink : IListDataProvider<string>
+	public sealed class TextLink : IListDataProvider<string>
 	{
 		public ISegment PrimaryLink {
 			get {

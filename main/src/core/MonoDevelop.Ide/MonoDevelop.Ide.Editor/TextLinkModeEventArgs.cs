@@ -28,7 +28,7 @@ using System;
 namespace MonoDevelop.Ide.Editor
 {
 	[Serializable]
-	public class TextLinkModeEventArgs : EventArgs
+	public sealed class TextLinkModeEventArgs : EventArgs
 	{
 		public bool Success {
 			get;

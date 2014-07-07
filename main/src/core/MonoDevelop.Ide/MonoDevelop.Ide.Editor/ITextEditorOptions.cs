@@ -86,7 +86,6 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler Changed;
 	}
 
-
 	public static class TextEditorOptionsExtension
 	{
 		public static ColorScheme GetColorStyle (this ITextEditorOptions options)
@@ -97,4 +96,3 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 }
-
