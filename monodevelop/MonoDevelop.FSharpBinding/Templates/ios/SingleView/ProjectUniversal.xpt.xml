@@ -25,7 +25,9 @@
 				<Reference type="Gac" refto="monotouch" />
 			</References>
 			<Files>
-				<Directory name="Resources" />
+				<Directory name="Resources">
+					<RawFile name="Default-568h@2x.png" src="../Common/Default-568h.png" />
+				</Directory>
 				<File name="Info.plist" AddStandardHeader="False" src="../Common/Info_Universal.plist.xml" />
 				<File name="Entitlements.plist" AddStandardHeader="False" src="../Common/Entitlements.plist.xml" />
 				<File name="${SafeProjectName}ViewController.fs" AddStandardHeader="True" src="Universal/ViewController.fs" />
