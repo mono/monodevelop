@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<Template	Originator="Michael Hutchinson"
+			Created="2006/06/06"
+			LastModified="2006/06/18">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Web Handler with CodeBehind</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Web Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<_Description>Creates an ASP.NET Web Handler with a CodeBehind class.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.ashx">
+<![CDATA[<%@ WebHandler Language="C#" Class="${Namespace}.${EscapedIdentifier}" %>
+]]>
+		</File>
+		
+		<File name="${Name}.ashx.cs" DependsOn="${Name}.ashx" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+
+namespace ${Namespace}
+{	
+	
+	public class ${EscapedIdentifier} : System.Web.IHttpHandler
+	{
+	
+		public void ProcessRequest (HttpContext context)
+		{
+			
+		}
+	
+		public bool IsReusable {
+			get {
+				return false;
+			}
+		}
+	}
+}
+	]]>
+		</File>
+	</TemplateFiles>
+</Template>

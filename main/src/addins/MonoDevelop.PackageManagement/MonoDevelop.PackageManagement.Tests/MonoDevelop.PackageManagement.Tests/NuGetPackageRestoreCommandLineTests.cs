@@ -65,7 +65,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			string arguments = commandLine.Arguments;
 
-			string expectedArguments = "restore \"d:\\projects\\MySolution\\MySolution.sln\"";
+			string expectedArguments = "restore -NonInteractive \"d:\\projects\\MySolution\\MySolution.sln\"";
 			Assert.AreEqual (expectedArguments, arguments);
 		}
 
@@ -79,7 +79,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			string expectedCommandLine = Path.Combine (@"c:\Users\Prefix", "bin", "mono");
 			Assert.IsTrue (arguments.StartsWith ("--runtime=v4.0 "), arguments);
-			Assert.IsTrue (arguments.EndsWith ("restore \"d:\\projects\\MySolution\\MySolution.sln\""), arguments);
+			Assert.IsTrue (arguments.EndsWith ("restore -NonInteractive \"d:\\projects\\MySolution\\MySolution.sln\""), arguments);
 			Assert.AreEqual (expectedCommandLine, commandLine.Command);
 		}
 	}

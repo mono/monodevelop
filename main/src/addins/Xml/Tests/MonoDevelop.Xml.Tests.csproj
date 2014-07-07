@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8E47B77A-A649-494C-9BF2-B845E39CADE9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.Xml.Tests</AssemblyName>
+    <RootNamespace>MonoDevelop.Xml.Tests</RootNamespace>
+    <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
+    <TestRunnerArgs>run-md-tests</TestRunnerArgs>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\..\..\build\tests</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
+      <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Xml.csproj">
+      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
+      <Name>MonoDevelop.Xml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Parser\ActiveElementStartPathTestFixture.cs" />
+    <Compile Include="Parser\AttributeNameTestFixture.cs" />
+    <Compile Include="Parser\NamespaceDeclarationTestFixture.cs" />
+    <Compile Include="Parser\ParentElementPathTestFixture.cs" />
+    <Compile Include="Parser\QualifiedNameTestFixture.cs" />
+    <Compile Include="Paths\NoElementPathTestFixture.cs" />
+    <Compile Include="Paths\SingleElementPathTestFixture.cs" />
+    <Compile Include="Paths\TwoElementPathTestFixture.cs" />
+    <Compile Include="Schema\AbstractElementTestFixture.cs" />
+    <Compile Include="Schema\AttributeAnnotationTestFixture.cs" />
+    <Compile Include="Schema\AttributeGroupRefTestFixture.cs" />
+    <Compile Include="Schema\AttributeRefTestFixture.cs" />
+    <Compile Include="Schema\AttributeValueAnnotationTestFixture.cs" />
+    <Compile Include="Schema\ChildElementAttributesTestFixture.cs" />
+    <Compile Include="Schema\ChoiceTestFixture.cs" />
+    <Compile Include="Schema\ComplexContentExtensionTestFixture.cs" />
+    <Compile Include="Schema\DuplicateElementTestFixture.cs" />
+    <Compile Include="Schema\ElementAnnotationTestFixture.cs" />
+    <Compile Include="Schema\ElementRefAnnotationTestFixture.cs" />
+    <Compile Include="Schema\ElementWithAttributeSchemaTestFixture.cs" />
+    <Compile Include="Schema\EnumAttributeValueTestFixture.cs" />
+    <Compile Include="Schema\ExtensionElementTestFixture.cs" />
+    <Compile Include="Schema\GroupRefCompositorTestFixture.cs" />
+    <Compile Include="Schema\GroupRefTestFixture.cs" />
+    <Compile Include="Schema\NamespaceCompletionTestFixture.cs" />
+    <Compile Include="Schema\NestedAttributeGroupRefTestFixture.cs" />
+    <Compile Include="Schema\NestedChoiceTestFixture.cs" />
+    <Compile Include="Schema\NestedElementSchemaTestFixture.cs" />
+    <Compile Include="Schema\NestedSequenceTestFixture.cs" />
+    <Compile Include="Schema\ReferencedElementsTestFixture.cs" />
+    <Compile Include="Schema\RestrictionElementTestFixture.cs" />
+    <Compile Include="Schema\SchemaTestFixtureBase.cs" />
+    <Compile Include="Schema\SequencedChoiceTestFixture.cs" />
+    <Compile Include="Schema\SimpleContentWithAttributeTestFixture.cs" />
+    <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
+    <Compile Include="Schema\TwoElementSchemaTestFixture.cs" />
+    <Compile Include="Schema\XhtmlStrictSchemaTestFixture.cs" />
+    <Compile Include="Schema\XsdSchemaTestFixture.cs" />
+    <Compile Include="Utils\ResourceManager.cs" />
+    <Compile Include="Utils\SchemaIncludeTestFixtureHelper.cs" />
+    <Compile Include="CompletionData\XmlCompletionDataImageTestFixture.cs" />
+    <Compile Include="CompletionData\XmlCompletionDataStringTestFixture.cs" />
+    <Compile Include="Schema\MissingSchemaElementTestFixture.cs" />
+    <Compile Include="Schema\AllElementTestFixture.cs" />
+    <Compile Include="Parser\InsideAttributeValueTestFixture.cs" />
+    <Compile Include="Schema\XmlSchemaNamespaceTests.cs" />
+    <Compile Include="Schema\FindAttributeFromComplexTypeTestFixture.cs" />
+    <Compile Include="Parser\ActiveElementUnderCursorTests.cs" />
+    <Compile Include="Parser\AttributeNameUnderCursorTests.cs" />
+    <Compile Include="Parser\AttributeValueUnderCursorTests.cs" />
+    <Compile Include="Schema\SchemaAssociationTests.cs" />
+    <Compile Include="Parser\TestXmlParser.cs" />
+    <Compile Include="Parser\ParsingTests.cs" />
+    <Compile Include="Schema\Uri\GetUriTestFixture.cs" />
+    <Compile Include="Schema\Includes\AttributeGroupRefSchemaIncludeTestFixture.cs" />
+    <Compile Include="Schema\Includes\TwoElementSchemaIncludeTestFixture.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Parser\" />
+    <Folder Include="Paths\" />
+    <Folder Include="Schema\" />
+    <Folder Include="Utils\" />
+    <Folder Include="CompletionData\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\xhtml1-strict-modified.xsd">
+      <LogicalName>xhtml1-strict-modified.xsd</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\XMLSchema.xsd">
+      <LogicalName>XMLSchema.xsd</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="FileName" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>

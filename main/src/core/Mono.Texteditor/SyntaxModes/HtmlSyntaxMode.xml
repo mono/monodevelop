@@ -111,7 +111,7 @@ THE SOFTWARE.
 		</Span>
 		
 		<!-- attributes -->
-		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
+		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)" ignorecase="True">
 			<Group color = "Html Attribute Name"/>
 			<Group color = "Html Operator"/>
 		</Match>

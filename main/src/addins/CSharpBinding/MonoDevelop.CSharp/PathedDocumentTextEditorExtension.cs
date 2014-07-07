@@ -219,6 +219,17 @@ namespace MonoDevelop.CSharp
 						}
 						return sb.ToString ();
 					}
+					var delegateDecl = node as DelegateDeclaration;
+					if (delegateDecl != null) {
+						var sb = new StringBuilder ();
+						sb.Append (delegateDecl.Name);
+						var parentType = delegateDecl.Parent as TypeDeclaration;
+						while (parentType != null) {
+							sb.Insert (0, parentType.Name + ".");
+							parentType = parentType.Parent as TypeDeclaration;
+						}
+						return sb.ToString ();
+					}
 				}
 				
 				if (node is Accessor) {

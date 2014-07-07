@@ -54,6 +54,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public const string PackageSourcesSectionName = "packageSources";
 		public const string DisabledPackageSourcesSectionName = "disabledPackageSources";
+		public const string ConfigSectionName = "config";
 
 		public FakeSettings ()
 		{
@@ -217,9 +218,20 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			}
 		}
 
+		public void SetRepositoryPathSetting (string fullPath)
+		{
+			var items = new List<KeyValuePair<string, string>> ();
+			items.Add (new KeyValuePair<string, string> ("repositoryPath", fullPath));
+			Sections.Add (ConfigSectionName, items);
+		}
+
 		public string GetValue (string section, string key, bool isPath)
 		{
-			throw new NotImplementedException ();
+			if (Sections.ContainsKey (section)) {
+				var matchedSection = Sections [section];
+				return matchedSection.FirstOrDefault (item => item.Key == key).Value;
+			}
+			return null;
 		}
 
 		public IList<KeyValuePair<string, string>> GetValues (string section, bool isPath)

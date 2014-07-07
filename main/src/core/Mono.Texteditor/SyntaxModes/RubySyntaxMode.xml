@@ -48,19 +48,19 @@
 	<Match color = "String">CSharpNumber</Match>
 
 	<!-- :symbol -->
-	<Match color = "String">(^|[^\w\d:]):[\w\d]+</Match>
+	<Match color = "String" ignorecase="True">(^|[^\w\d:]):[\w\d]+</Match>
 
 	<!-- @@class_variable -->
-	<Match color = "Keyword(Modifiers)">(^|[^@\w\d])@@\w[\w\d]*</Match>
+	<Match color = "Keyword(Modifiers)" ignorecase="True">(^|[^@\w\d])@@\w[\w\d]*</Match>
 
 	<!-- @instance_variable -->
-	<Match color = "Keyword(Type)">(^|[^@\w\d])@\w[\w\d]*</Match>
+	<Match color = "Keyword(Type)" ignorecase="True">(^|[^@\w\d])@\w[\w\d]*</Match>
 	
 	<!-- $global_variable -->
-	<Match color = "Keyword(Jump)">(^|[^\$\w\d])\$\w[\w\d]*</Match>
+	<Match color = "Keyword(Jump)" ignorecase="True">(^|[^\$\w\d])\$\w[\w\d]*</Match>
 	
 	<!-- CONSTant -->
-	<Match color = "Keyword(Constants)">(^|[^\w\d])(?-i)[A-Z][\w\d]*</Match>
+	<Match color = "Keyword(Constants)" ignorecase="True">(^|[^\w\d])(?-i)[A-Z][\w\d]*</Match>
 
 	<Keywords color = "Keyword(Access)">
 		<Word>self</Word>

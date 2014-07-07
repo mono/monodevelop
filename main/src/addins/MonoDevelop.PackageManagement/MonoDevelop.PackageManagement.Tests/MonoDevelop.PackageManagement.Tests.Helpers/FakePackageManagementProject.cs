@@ -43,7 +43,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakePackageManagementProject (string name)
 		{
-			FakeUninstallPackageAction = new FakeUninstallPackageAction (this);
+			FakeUninstallPackageAction = new FakeUninstallPackageAction (this) {
+				Logger = new FakeLogger ()
+			};
+
+			FindPackageAction = packageId => {
+				return FakePackages.FirstOrDefault (package => package.Id == packageId);
+			};
 
 			this.Name = name;
 		}
@@ -226,6 +232,17 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FakePackages.Add (new FakePackage (id));
 		}
 
+		public FakePackage AddFakePackage (string id, string version)
+		{
+			return AddFakePackage (new FakePackage (id, version));
+		}
+
+		public FakePackage AddFakePackage (FakePackage package)
+		{
+			FakePackages.Add (package);
+			return package;
+		}
+
 		public void AddFakePackageToSourceRepository (string packageId)
 		{
 			FakeSourceRepository.AddFakePackage (packageId);
@@ -260,8 +277,20 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return PackageOperationsToReturnFromGetUpdatePackagesOperations;
 		}
 
-		public void RunPackageOperations (IEnumerable<PackageOperation> expectedOperations)
+		public ReinstallPackageOperations ReinstallOperations;
+		public IEnumerable<IPackage> PackagesPassedToGetReinstallPackageOperations;
+
+		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
 		{
+			PackagesPassedToGetReinstallPackageOperations = packages;
+			return ReinstallOperations;
+		}
+
+		public IEnumerable<PackageOperation> PackageOperationsRun;
+
+		public void RunPackageOperations (IEnumerable<PackageOperation> operations)
+		{
+			PackageOperationsRun = operations;
 		}
 
 		public bool HasOlderPackageInstalled (IPackage package)
@@ -278,9 +307,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceRemoved;
 		#pragma warning restore 0067
 
+		public Func<string, IPackage> FindPackageAction;
+
 		public IPackage FindPackage (string packageId)
 		{
-			throw new NotImplementedException ();
+			return FindPackageAction (packageId);
 		}
 
 		public FrameworkName TargetFramework { get; set; }
@@ -289,6 +320,49 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			get {
 				throw new NotImplementedException ();
 			}
+		}
+
+		public ReinstallPackageAction CreateReinstallPackageAction ()
+		{
+			var action = new ReinstallPackageAction (this, new PackageManagementEvents ());
+			ReinstallPackageActionsCreated.Add (action);
+			return action;
+		}
+
+		public List<ReinstallPackageAction> ReinstallPackageActionsCreated = new List<ReinstallPackageAction> ();
+
+		public List<IPackage> PackageReferencesAdded = new List<IPackage> ();
+
+		public void AddPackageReference (IPackage package)
+		{
+			PackageReferencesAdded.Add (package);
+		}
+
+		public FakeDotNetProject FakeDotNetProject = new FakeDotNetProject (@"d:\projects\MyProject\MyProject.csproj");
+
+		public IDotNetProject Project {
+			get { return FakeDotNetProject; }
+		}
+
+		FakeProjectManager projectManager = new FakeProjectManager ();
+
+		public List<PackageReference> PackageReferences {
+			get { return projectManager.PackageReferences; }
+		}
+
+		public PackageReference AddPackageReference (string packageId, string packageVersion)
+		{
+			return projectManager.AddPackageReference (packageId, packageVersion);
+		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			return PackageReferences;
+		}
+
+		public bool AnyUnrestoredPackages ()
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }
