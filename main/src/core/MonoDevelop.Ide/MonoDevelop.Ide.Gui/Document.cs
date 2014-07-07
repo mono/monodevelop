@@ -58,7 +58,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 namespace MonoDevelop.Ide.Gui
 {
 
-	public class Document : EditContext
+	public class Document : DocumentContext
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		

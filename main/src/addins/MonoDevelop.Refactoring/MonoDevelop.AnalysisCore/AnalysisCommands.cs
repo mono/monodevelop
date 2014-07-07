@@ -249,7 +249,7 @@ namespace MonoDevelop.AnalysisCore
 			}
 		}
 		
-		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.EditContext doc, FixableResult result)
+		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext doc, FixableResult result)
 		{
 			foreach (var fix in result.Fixes)
 				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))

@@ -376,7 +376,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			Insert (document.Editor, document);
 		}
 
-		public void Insert (TextEditor editor, EditContext context)
+		public void Insert (TextEditor editor, DocumentContext context)
 		{
 			var handler = context.GetContent<ICodeTemplateHandler> ();
 			if (handler != null) {
@@ -389,7 +389,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		/// <summary>
 		/// Don't use this unless you're implementing ICodeTemplateWidget. Use Insert instead.
 		/// </summary>
-		public TemplateResult InsertTemplateContents (TextEditor editor, EditContext context)
+		public TemplateResult InsertTemplateContents (TextEditor editor, DocumentContext context)
 		{
 			var data = editor;
 			

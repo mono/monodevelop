@@ -205,7 +205,7 @@ namespace MonoDevelop.Refactoring
 			return GetValidActions (doc.Editor, doc, loc, cancellationToken);
 		}
 
-		public static Task<IEnumerable<CodeAction>> GetValidActions (TextEditor editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		public static Task<IEnumerable<CodeAction>> GetValidActions (TextEditor editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
 			return Task.Factory.StartNew (delegate {
@@ -238,7 +238,7 @@ namespace MonoDevelop.Refactoring
 			}, cancellationToken);
 		}
 
-		public static void QueueQuickFixAnalysis (TextEditor editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
+		public static void QueueQuickFixAnalysis (TextEditor editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
 		{
 			var ext = doc.GetContent<MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension> ();
 			if (ext == null)
@@ -303,7 +303,7 @@ namespace MonoDevelop.Refactoring
 			return appliedFixes;
 		}
 
-		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (IReadonlyTextDocument editor, EditContext doc, MonoDevelop.Ide.Editor.DocumentLocation location)
+		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (IReadonlyTextDocument editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
 			if (doc == null)
 				return location;

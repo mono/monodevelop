@@ -1539,7 +1539,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			
-			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Editor.TextEditor editor, EditContext context)
+			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context)
 			{
 				TypeSystemSegmentTree result = new TypeSystemSegmentTree ();
 				
@@ -1549,7 +1549,7 @@ namespace MonoDevelop.CSharp.Completion
 				return result;
 			}
 			
-			static void AddType (MonoDevelop.Ide.Editor.TextEditor editor, EditContext context, TypeSystemSegmentTree result, IUnresolvedTypeDefinition type)
+			static void AddType (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context, TypeSystemSegmentTree result, IUnresolvedTypeDefinition type)
 			{
 				int offset = editor.LocationToOffset (type.Region.Begin);
 				int endOffset = type.Region.End.IsEmpty ? int.MaxValue : editor.LocationToOffset (type.Region.End);
@@ -1624,11 +1624,11 @@ namespace MonoDevelop.CSharp.Completion
 		class CompletionContextProvider : ICompletionContextProvider
 		{
 			MonoDevelop.Ide.Editor.TextEditor editor;
-			EditContext document;
+			DocumentContext document;
 			TypeSystemSegmentTree validTypeSystemSegmentTree;
 			TypeSystemSegmentTree unstableTypeSystemSegmentTree;
 
-			public CompletionContextProvider (MonoDevelop.Ide.Editor.TextEditor editor, EditContext document, TypeSystemSegmentTree validTypeSystemSegmentTree, TypeSystemSegmentTree unstableTypeSystemSegmentTree)
+			public CompletionContextProvider (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext document, TypeSystemSegmentTree validTypeSystemSegmentTree, TypeSystemSegmentTree unstableTypeSystemSegmentTree)
 			{
 				this.editor = editor;
 				this.document = document;

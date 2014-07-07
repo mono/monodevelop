@@ -385,11 +385,11 @@ namespace MonoDevelop.CodeActions
 		class ContextActionRunner
 		{
 			CodeAction act;
-			EditContext editContext;
+			DocumentContext editContext;
 			TextLocation loc;
 			TextEditor editor;
 
-			public ContextActionRunner (MonoDevelop.CodeActions.CodeAction act, TextEditor editor, EditContext editContext, ICSharpCode.NRefactory.TextLocation loc)
+			public ContextActionRunner (MonoDevelop.CodeActions.CodeAction act, TextEditor editor, DocumentContext editContext, ICSharpCode.NRefactory.TextLocation loc)
 			{
 				this.editor = editor;
 				this.act = act;

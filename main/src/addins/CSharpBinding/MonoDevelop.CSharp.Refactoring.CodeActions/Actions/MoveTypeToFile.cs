@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	class MoveTypeToFile : MonoDevelop.CodeActions.CodeActionProvider
 	{
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (TextEditor editor, EditContext context, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (TextEditor editor, DocumentContext context, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
 		{
 			var mdCtx = refactoringContext as MDRefactoringContext;
 			if (mdCtx == null)

@@ -204,7 +204,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return new DocumentLineWrapper (TextEditor.GetLineByOffset (offset));
 		}
 
-		readonly EditContext document;
+		readonly DocumentContext document;
 		TextLocation location;
 
 		public override TextLocation Location {
@@ -239,7 +239,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			return StartScript ();
 		}
 
-		internal static Task<MDRefactoringContext> Create (ITextDocument editor, EditContext document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
+		internal static Task<MDRefactoringContext> Create (ITextDocument editor, DocumentContext document, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			var shared = document.GetSharedResolver ();
 			if (shared == null) {
@@ -256,7 +256,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}, TaskContinuationOptions.ExecuteSynchronously);
 		}
 
-		internal MDRefactoringContext (ITextDocument editor, EditContext document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
+		internal MDRefactoringContext (ITextDocument editor, DocumentContext document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");

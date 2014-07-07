@@ -88,7 +88,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			public IUnresolvedTypeDefinition Part { get; set; }
 
 			public TextEditor Editor { get; set; }
-			public EditContext EditContext { get; set; }
+			public DocumentContext EditContext { get; set; }
 
 			public string GetShortType (string ns, string name, int typeArguments = 0)
 			{
@@ -916,7 +916,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return node;
 		}
 		
-		public override void AddGlobalNamespaceImport (TextEditor editor, EditContext context, string nsName)
+		public override void AddGlobalNamespaceImport (TextEditor editor, DocumentContext context, string nsName)
 		{
 			var parsedDocument = context.ParsedDocument;
 			var unit = parsedDocument.GetAst<SyntaxTree> ();
@@ -960,7 +960,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			//doc.Editor.Document.CommitUpdateAll ();
 		}
 		
-		public override void AddLocalNamespaceImport (TextEditor editor, EditContext context, string nsName, TextLocation caretLocation)
+		public override void AddLocalNamespaceImport (TextEditor editor, DocumentContext context, string nsName, TextLocation caretLocation)
 		{
 			var parsedDocument = context.ParsedDocument;
 			var unit = parsedDocument.GetAst<SyntaxTree> ();
@@ -1016,13 +1016,13 @@ namespace MonoDevelop.CSharp.Refactoring
 			editor.InsertText (offset, text.ToString ());
 		}
 		
-		public override string GetShortTypeString (TextEditor editor, EditContext doc, IType type)
+		public override string GetShortTypeString (TextEditor editor, DocumentContext doc, IType type)
 		{
 			var shortType = CreateShortType (doc.Compilation, doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile, editor.CaretLocation, type);
 			return OutputNode (editor, doc, shortType);
 		}
 		
-		static string OutputNode (TextEditor editor, EditContext context, AstNode node)
+		static string OutputNode (TextEditor editor, DocumentContext context, AstNode node)
 		{
 			using (var stringWriter = new System.IO.StringWriter ()) {
 //				formatter.Indentation = indentLevel;

@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 		
-		public override void BatchRun (TextEditor editor, EditContext document, TextLocation loc)
+		public override void BatchRun (TextEditor editor, DocumentContext document, TextLocation loc)
 		{
 			base.BatchRun (editor, document, loc);
 			var context = MDRefactoringContext.Create (editor, document, loc).Result;

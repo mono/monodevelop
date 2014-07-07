@@ -53,7 +53,7 @@ namespace MonoDevelop.Refactoring
 			private set;
 		}
 
-		public EditContext EditContext {
+		public DocumentContext EditContext {
 			get;
 			private set;
 		}
@@ -95,7 +95,7 @@ namespace MonoDevelop.Refactoring
 		{
 		}
 
-		public RefactoringOptions (TextEditor editor, EditContext doc)
+		public RefactoringOptions (TextEditor editor, DocumentContext doc)
 		{
 			this.EditContext = doc;
 			this.Editor = editor;
@@ -178,7 +178,7 @@ namespace MonoDevelop.Refactoring
 			return GetUsedNamespaces (EditContext, Location);
 		}
 		
-		public static List<string> GetUsedNamespaces (EditContext doc, TextLocation loc)
+		public static List<string> GetUsedNamespaces (DocumentContext doc, TextLocation loc)
 		{
 			var result = new List<string> ();
 			var pf = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;

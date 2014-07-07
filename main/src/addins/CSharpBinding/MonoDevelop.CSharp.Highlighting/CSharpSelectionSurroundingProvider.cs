@@ -32,10 +32,10 @@ namespace MonoDevelop.CSharp.Highlighting
 {
 	class CSharpSelectionSurroundingProvider : SelectionSurroundingProvider
 	{
-		readonly EditContext context;
+		readonly DocumentContext context;
 		readonly TextEditor editor;
 
-		public CSharpSelectionSurroundingProvider (MonoDevelop.Ide.Editor.TextEditor editor, EditContext context)
+		public CSharpSelectionSurroundingProvider (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context)
 		{
 			this.editor = editor;
 			this.context = context;

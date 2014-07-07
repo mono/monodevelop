@@ -130,7 +130,7 @@ namespace MonoDevelop.AnalysisCore.Fixes
 	public class GenericFixHandler : IFixHandler
 	{
 		#region IFixHandler implementation
-		public IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, EditContext context, object fix)
+		public IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, DocumentContext context, object fix)
 		{
 			yield return (GenericFix)fix;
 		}

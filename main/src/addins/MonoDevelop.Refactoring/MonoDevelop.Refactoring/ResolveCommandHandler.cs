@@ -62,7 +62,7 @@ namespace MonoDevelop.Refactoring
 			return ResolveAt (doc.Editor, doc, out resolveResult, out node, token);
 		}
 
-		public static bool ResolveAt (TextEditor editor, EditContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
+		public static bool ResolveAt (TextEditor editor, DocumentContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -83,7 +83,7 @@ namespace MonoDevelop.Refactoring
 			return true;
 		}
 
-		static bool InternalResolveAt (TextEditor editor, EditContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
+		static bool InternalResolveAt (TextEditor editor, DocumentContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
 			var parsedDocument = doc.ParsedDocument;
 			resolveResult = null;
@@ -162,7 +162,7 @@ namespace MonoDevelop.Refactoring
 				ainfo.Insert (0, resolveMenu);
 		}
 
-		static string CreateStub (TextEditor editor, EditContext doc, int offset)
+		static string CreateStub (TextEditor editor, DocumentContext doc, int offset)
 		{
 			if (offset <= 0)
 				return "";
@@ -172,7 +172,7 @@ namespace MonoDevelop.Refactoring
 			return stub.ToString ();
 		}
 
-		static ResolveResult GetHeuristicResult (TextEditor editor, EditContext doc, DocumentLocation location, ref AstNode node)
+		static ResolveResult GetHeuristicResult (TextEditor editor, DocumentContext doc, DocumentLocation location, ref AstNode node)
 		{
 			if (editor == null)
 				return null;
@@ -216,7 +216,7 @@ namespace MonoDevelop.Refactoring
 				out node);
 		}
 
-		public static List<PossibleNamespace> GetPossibleNamespaces (TextEditor editor, EditContext doc, AstNode node, ref ResolveResult resolveResult)
+		public static List<PossibleNamespace> GetPossibleNamespaces (TextEditor editor, DocumentContext doc, AstNode node, ref ResolveResult resolveResult)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -313,7 +313,7 @@ namespace MonoDevelop.Refactoring
 			return !string.IsNullOrEmpty (result);
 		}
 
-		static bool CanReference (EditContext doc, MonoDevelop.Projects.ProjectReference projectReference)
+		static bool CanReference (DocumentContext doc, MonoDevelop.Projects.ProjectReference projectReference)
 		{
 			var project = doc.Project as DotNetProject;
 			if (project == null || projectReference == null || project.ParentSolution == null)
@@ -330,7 +330,7 @@ namespace MonoDevelop.Refactoring
 
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (TextEditor editor, EditContext doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
+		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (TextEditor editor, DocumentContext doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
@@ -523,14 +523,14 @@ namespace MonoDevelop.Refactoring
 		internal class AddImport
 		{
 			readonly TextEditor editor;
-			readonly EditContext editContext;
+			readonly DocumentContext editContext;
 			readonly ResolveResult resolveResult;
 			readonly string ns;
 			readonly bool addUsing;
 			readonly AstNode node;
 			readonly MonoDevelop.Projects.ProjectReference reference;
 
-			public AddImport (TextEditor editor, EditContext doc, ResolveResult resolveResult, string ns, MonoDevelop.Projects.ProjectReference reference, bool addUsing, AstNode node)
+			public AddImport (TextEditor editor, DocumentContext doc, ResolveResult resolveResult, string ns, MonoDevelop.Projects.ProjectReference reference, bool addUsing, AstNode node)
 			{
 				this.editor = editor;
 				this.editContext = doc;

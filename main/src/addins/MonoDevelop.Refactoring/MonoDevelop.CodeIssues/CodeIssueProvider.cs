@@ -136,22 +136,22 @@ namespace MonoDevelop.CodeIssues
 
 		public virtual bool CanSuppressWithAttribute { get { return false; } }
 
-		public virtual void DisableOnce (TextEditor editor, EditContext context, DocumentRegion loc)
+		public virtual void DisableOnce (TextEditor editor, DocumentContext context, DocumentRegion loc)
 		{
 			throw new NotSupportedException ();
 		}
 
-		public virtual void DisableAndRestore (TextEditor editor, EditContext context,  DocumentRegion loc)
+		public virtual void DisableAndRestore (TextEditor editor, DocumentContext context,  DocumentRegion loc)
 		{
 			throw new NotSupportedException ();
 		}
 
-		public virtual void DisableWithPragma (TextEditor editor, EditContext context, DocumentRegion loc)
+		public virtual void DisableWithPragma (TextEditor editor, DocumentContext context, DocumentRegion loc)
 		{
 			throw new NotSupportedException ();
 		}
 
-		public virtual void SuppressWithAttribute (TextEditor editor, EditContext context, DocumentRegion loc)
+		public virtual void SuppressWithAttribute (TextEditor editor, DocumentContext context, DocumentRegion loc)
 		{
 			throw new NotSupportedException ();
 		}

@@ -45,7 +45,7 @@ namespace MonoDevelop.CodeGeneration
 			private set;
 		}
 
-		public EditContext EditContext {
+		public DocumentContext EditContext {
 			get;
 			private set;
 		}
@@ -157,7 +157,7 @@ namespace MonoDevelop.CodeGeneration
 			return result;
 		}
 		
-		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor editor, EditContext document)
+		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor editor, DocumentContext document)
 		{
 			var options = new CodeGenerationOptions {
 				Editor = editor,

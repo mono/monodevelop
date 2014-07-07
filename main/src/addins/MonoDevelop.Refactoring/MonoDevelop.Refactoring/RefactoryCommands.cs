@@ -78,7 +78,7 @@ namespace MonoDevelop.Refactoring
 				del ();
 		}
 		
-		public static ResolveResult GetResolveResult (TextEditor editor, EditContext doc)
+		public static ResolveResult GetResolveResult (TextEditor editor, DocumentContext doc)
 		{
 			ITextEditorResolver textEditorResolver = doc.GetContent<ITextEditorResolver> ();
 			if (textEditorResolver != null)
@@ -93,7 +93,7 @@ namespace MonoDevelop.Refactoring
 			return GetItem (doc.Editor, doc, out resolveResult);
 		}
 
-		public static object GetItem (TextEditor editor, EditContext doc, out ResolveResult resolveResult)
+		public static object GetItem (TextEditor editor, DocumentContext doc, out ResolveResult resolveResult)
 		{
 			resolveResult = GetResolveResult (editor, doc);
 			if (resolveResult is LocalResolveResult) 

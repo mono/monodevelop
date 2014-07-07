@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	
 	class CSharpSyntaxMode : SyntaxMode, MonoDevelop.Ide.Editor.IQuickTaskProvider, IDisposable
 	{
-		readonly internal EditContext editContext;
+		readonly internal DocumentContext editContext;
 		readonly internal MonoDevelop.Ide.Editor.TextEditor editor;
 
 		CSharpAstResolver resolver;
@@ -435,7 +435,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 
-		public CSharpSyntaxMode (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.EditContext editContext)
+		public CSharpSyntaxMode (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext editContext)
 		{
 			this.editor = editor;
 			this.editContext = editContext;
@@ -728,7 +728,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			{
 				HashSet<string> symbols;
 
-				public ConditinalExpressionEvaluator (MonoDevelop.Ide.Editor.TextEditor editor, EditContext guiDocument, TextDocument doc, IEnumerable<string> defines)
+				public ConditinalExpressionEvaluator (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext guiDocument, TextDocument doc, IEnumerable<string> defines)
 				{
 					this.symbols = new HashSet<string> (defines);
 					var project = guiDocument.Project;
@@ -1027,7 +1027,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	//		Span preprocessorSpan;
 	//		Rule preprocessorRule;
 			readonly internal MonoDevelop.Ide.Editor.TextEditor editor;
-			readonly internal EditContext editContext;
+			readonly internal DocumentContext editContext;
 
 			public CSharpSpanParser (CSharpSyntaxMode mode, CloneableStack<Span> spanStack) : base (mode, spanStack)
 			{

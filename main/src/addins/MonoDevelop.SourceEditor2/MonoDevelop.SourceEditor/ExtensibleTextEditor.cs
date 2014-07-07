@@ -676,7 +676,7 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 
-		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.EditContext context)
+		internal void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext context)
 		{
 			using (var undo = editor.OpenUndoGroup ()) {
 				var result = template.InsertTemplateContents (editor, context);

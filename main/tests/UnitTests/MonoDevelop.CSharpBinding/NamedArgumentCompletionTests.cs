@@ -53,11 +53,11 @@ namespace MonoDevelop.CSharpBinding
 	{
 		class TestCompletionWidget : ICompletionWidget 
 		{
-			EditContext editContext;
+			DocumentContext editContext;
 
 			MonoDevelop.Ide.Editor.TextEditor editor;
 
-			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, EditContext editContext)
+			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext editContext)
 			{
 				this.editor = editor;
 				this.editContext = editContext;

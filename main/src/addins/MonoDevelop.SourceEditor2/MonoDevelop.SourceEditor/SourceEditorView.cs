@@ -2337,7 +2337,7 @@ namespace MonoDevelop.SourceEditor
 			return editor.GetTextEditorData ();
 		}
 
-		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, EditContext context)
+		public void InsertTemplate (CodeTemplate template, MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context)
 		{
 			TextEditor.InsertTemplate (template, editor, context);
 		}

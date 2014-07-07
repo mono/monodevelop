@@ -45,29 +45,29 @@ namespace MonoDevelop.CSharp.Formatting
 {
 	static class OnTheFlyFormatter
 	{
-		public static void Format (TextEditor editor, EditContext context)
+		public static void Format (TextEditor editor, DocumentContext context)
 		{
 			Format (editor, context, 0, editor.Length);
 		}
 
-		public static void Format (TextEditor editor, EditContext context, TextLocation location)
+		public static void Format (TextEditor editor, DocumentContext context, TextLocation location)
 		{
 			Format (editor, context, location, location, false);
 		} 
 
-		public static void Format (TextEditor editor, EditContext context, TextLocation startLocation, TextLocation endLocation, bool exact = true)
+		public static void Format (TextEditor editor, DocumentContext context, TextLocation startLocation, TextLocation endLocation, bool exact = true)
 		{
 			Format (editor, context, editor.LocationToOffset (startLocation), editor.LocationToOffset (endLocation), exact);
 		}
 		
-		public static void Format (TextEditor editor, EditContext context, int startOffset, int endOffset, bool exact = true)
+		public static void Format (TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact = true)
 		{
 			var policyParent = context.Project != null ? context.Project.Policies : PolicyService.DefaultPolicies;
 			var mimeTypeChain = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
 			Format (policyParent, mimeTypeChain, editor, context, startOffset, endOffset, exact);
 		}
 
-		public static void FormatStatmentAt (TextEditor editor, EditContext context, MonoDevelop.Ide.Editor.DocumentLocation location)
+		public static void FormatStatmentAt (TextEditor editor, DocumentContext context, MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
 			var offset = editor.LocationToOffset (location);
 			var policyParent = context.Project != null ? context.Project.Policies : PolicyService.DefaultPolicies;
@@ -76,7 +76,7 @@ namespace MonoDevelop.CSharp.Formatting
 		}		
 		
 
-		static string BuildStub (TextEditor editor, EditContext context, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int endOffset, out int memberStartOffset)
+		static string BuildStub (TextEditor editor, DocumentContext context, CSharpCompletionTextEditorExtension.TypeSystemTreeSegment seg, int endOffset, out int memberStartOffset)
 		{
 			var pf = context.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (pf == null) {
@@ -141,7 +141,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return sb.ToString ();
 		}
 		
-		static FormattingChanges GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, EditContext context, string input, DomRegion formattingRegion, ref int formatStartOffset, ref int formatLength, bool formatLastStatementOnly)
+		static FormattingChanges GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, string input, DomRegion formattingRegion, ref int formatStartOffset, ref int formatLength, bool formatLastStatementOnly)
 		{
 			var stubData = DocumentFactory.CreateNewReadonlyDocument (new MonoDevelop.Core.Text.StringTextSource (input), context.Name);
 
@@ -187,7 +187,7 @@ namespace MonoDevelop.CSharp.Formatting
 			return changes;
 		}
 		
-		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, EditContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false)
+		public static void Format (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, int startOffset, int endOffset, bool exact, bool formatLastStatementOnly = false)
 		{
 			if (context.ParsedDocument == null)
 				return;

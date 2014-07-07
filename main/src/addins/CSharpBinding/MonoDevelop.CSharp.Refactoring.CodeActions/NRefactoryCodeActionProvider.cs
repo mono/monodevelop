@@ -54,7 +54,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			MimeType = "text/x-csharp";
 		}
 
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (TextEditor editor, EditContext document, object _context, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (TextEditor editor, DocumentContext document, object _context, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 				yield break;

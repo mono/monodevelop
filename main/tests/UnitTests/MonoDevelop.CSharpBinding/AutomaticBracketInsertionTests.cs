@@ -53,9 +53,9 @@ namespace MonoDevelop.CSharpBinding
 		{
 			MonoDevelop.Ide.Editor.TextEditor editor;
 
-			EditContext editContext;
+			DocumentContext editContext;
 
-			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, EditContext document)
+			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext document)
 			{
 				this.editor = editor;
 				this.editContext = document;

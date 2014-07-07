@@ -329,12 +329,12 @@ namespace MonoDevelop.CSharp
 		{
 			TextEditor editor;
 
-			EditContext EditContext {
+			DocumentContext EditContext {
 				get;
 				set;
 			}
 
-			public CompilationUnitDataProvider (TextEditor editor, EditContext editContext)
+			public CompilationUnitDataProvider (TextEditor editor, DocumentContext editContext)
 			{
 				this.editor = editor;
 				this.EditContext = editContext;
@@ -455,7 +455,7 @@ namespace MonoDevelop.CSharp
 			var parsedDocument = EditContext.ParsedDocument;
 			if (parsedDocument == null || parsedDocument.ParsedFile == null)
 				return;
-			amb = new AstAmbience (EditContext.GetFormattingOptions ());
+			amb = new AstAmbience (DocumentContext.GetFormattingOptions ());
 			
 			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)

@@ -171,7 +171,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 
 		const string analysisDisableTag = "Analysis ";
 
-		public override void DisableOnce (TextEditor editor, EditContext context, DocumentRegion loc)
+		public override void DisableOnce (TextEditor editor, DocumentContext context, DocumentRegion loc)
 		{
 			editor.InsertText (
 				editor.LocationToOffset (loc.BeginLine, 1), 
@@ -179,7 +179,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			); 
 		}
 
-		public override void DisableAndRestore (TextEditor editor, EditContext context, DocumentRegion loc)
+		public override void DisableAndRestore (TextEditor editor, DocumentContext context, DocumentRegion loc)
 		{
 			using (editor.OpenUndoGroup ()) {
 				editor.InsertText (
@@ -193,7 +193,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public override void DisableWithPragma (TextEditor editor, EditContext context, DocumentRegion loc)
+		public override void DisableWithPragma (TextEditor editor, DocumentContext context, DocumentRegion loc)
 		{
 			using (editor.OpenUndoGroup ()) {
 				editor.InsertText (
@@ -207,7 +207,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 			}
 		}
 
-		public override void SuppressWithAttribute (TextEditor editor, EditContext context, DocumentRegion loc)
+		public override void SuppressWithAttribute (TextEditor editor, DocumentContext context, DocumentRegion loc)
 		{
 			var member = context.ParsedDocument.GetMember (loc.End);
 			editor.InsertText (

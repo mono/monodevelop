@@ -1,5 +1,5 @@
 ﻿//
-// EditContext.cs
+// DocumentContext.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -30,7 +30,7 @@ using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public abstract class EditContext : ICSharpCode.NRefactory.AbstractAnnotatable
+	public abstract class DocumentContext : ICSharpCode.NRefactory.AbstractAnnotatable
 	{
 		public abstract string Name {
 			get;

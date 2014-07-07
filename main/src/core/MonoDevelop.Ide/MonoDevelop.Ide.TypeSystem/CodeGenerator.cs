@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			set;
 		}
 
-		public static CodeGenerator CreateGenerator (TextEditor editor, EditContext editContext)
+		public static CodeGenerator CreateGenerator (TextEditor editor, DocumentContext editContext)
 		{
 			MimeTypeExtensionNode node;
 			if (!generators.TryGetValue (editor.MimeType, out node))
@@ -178,8 +178,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public abstract string CreateFieldEncapsulation (IUnresolvedTypeDefinition implementingType, IField field, string propertyName, Accessibility modifiers, bool readOnly);
 
-		public abstract void AddGlobalNamespaceImport (TextEditor editor, EditContext context, string nsName);
-		public abstract void AddLocalNamespaceImport (TextEditor editor, EditContext context, string nsName, TextLocation caretLocation);
+		public abstract void AddGlobalNamespaceImport (TextEditor editor, DocumentContext context, string nsName);
+		public abstract void AddLocalNamespaceImport (TextEditor editor, DocumentContext context, string nsName, TextLocation caretLocation);
 
 		public void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
 		{
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			AddLocalNamespaceImport (doc.Editor, doc, nsName, caretLocation);
 		}
 
-		public abstract string GetShortTypeString (TextEditor editor, EditContext context, IType type);
+		public abstract string GetShortTypeString (TextEditor editor, DocumentContext context, IType type);
 
 		public abstract void CompleteStatement (MonoDevelop.Ide.Gui.Document doc);
 	}

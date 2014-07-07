@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public EditContext EditContext {
+		public DocumentContext EditContext {
 			get;
 			set;
 		}

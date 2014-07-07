@@ -43,9 +43,9 @@ namespace MonoDevelop.AnalysisCore.Gui
 	class AnalysisDocument
 	{
 		public TextEditor Editor { get; private set; }
-		public EditContext EditContext { get; private set; }
+		public DocumentContext EditContext { get; private set; }
 
-		public AnalysisDocument (TextEditor editor, EditContext editContext)
+		public AnalysisDocument (TextEditor editor, DocumentContext editContext)
 		{
 			this.Editor = editor;
 			this.EditContext = editContext;

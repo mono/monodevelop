@@ -174,7 +174,7 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		public static void ShowIfValid (TextEditor editor, EditContext context, MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
+		public static void ShowIfValid (TextEditor editor, DocumentContext context, MonoDevelop.Ide.CodeCompletion.CodeCompletionContext completionContext)
 		{
 			var options = CodeGenerationOptions.CreateCodeGenerationOptions (editor, context);
 			

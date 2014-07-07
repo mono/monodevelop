@@ -2789,7 +2789,6 @@
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\EditContext.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IUnitTestMarker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ChunkStyle.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextMarkerFactory.cs" />
@@ -2797,6 +2796,7 @@
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextMarkerFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\IEditorActionHost.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditActions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DocumentContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

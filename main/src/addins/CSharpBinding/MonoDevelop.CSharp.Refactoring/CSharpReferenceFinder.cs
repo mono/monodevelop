@@ -252,7 +252,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			return true;
 		}
 		
-		public IEnumerable<MemberReference> FindInDocument (TextEditor editor, EditContext doc, CancellationToken token = default (CancellationToken))
+		public IEnumerable<MemberReference> FindInDocument (TextEditor editor, DocumentContext doc, CancellationToken token = default (CancellationToken))
 		{
 			if (string.IsNullOrEmpty (memberName))
 				return Enumerable.Empty<MemberReference> ();

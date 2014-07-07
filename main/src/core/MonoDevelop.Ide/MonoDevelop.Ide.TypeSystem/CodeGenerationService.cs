@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return CodeGenerator.CreateGenerator (doc);
 		}
 
-		public static CodeGenerator CreateCodeGenerator (this EditContext editContext, TextEditor editor)
+		public static CodeGenerator CreateCodeGenerator (this DocumentContext editContext, TextEditor editor)
 		{
 			return CodeGenerator.CreateGenerator (editor, editContext);
 		}

@@ -70,6 +70,6 @@ namespace MonoDevelop.CodeActions
 		/// <summary>
 		/// Gets all the code actions in document at given location.
 		/// </summary>
-		public abstract IEnumerable<CodeAction> GetActions (TextEditor editor, EditContext doc, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken);
+		public abstract IEnumerable<CodeAction> GetActions (TextEditor editor, DocumentContext doc, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken);
 	}
 }

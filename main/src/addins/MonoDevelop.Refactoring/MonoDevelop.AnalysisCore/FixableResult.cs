@@ -53,7 +53,7 @@ namespace MonoDevelop.AnalysisCore
 	
 	public interface IFixHandler
 	{
-		IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, EditContext doc, object fix);
+		IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, DocumentContext doc, object fix);
 	}
 	
 	public interface IAnalysisFixAction

@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			AstNode node;
 			resolveResult = null;
-			if (!EditContext.TryResolveAt (Editor.CaretLocation, out resolveResult, out node)) {
+			if (!DocumentContext.TryResolveAt (Editor.CaretLocation, out resolveResult, out node)) {
 				return false;
 			}
 			if (node is PrimitiveType) {

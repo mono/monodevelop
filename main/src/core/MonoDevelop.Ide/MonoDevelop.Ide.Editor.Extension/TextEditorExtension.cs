@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 {
 	public abstract class TextEditorExtension : ICommandRouter, IDisposable
 	{
-		public EditContext EditContext {
+		public DocumentContext EditContext {
 			get;
 			protected set;
 		}
@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			set;
 		}
 
-		protected internal void Initialize (TextEditor editor, EditContext context)
+		protected internal void Initialize (TextEditor editor, DocumentContext context)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
@@ -67,7 +67,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 		}
 
-		public virtual bool IsValidInContext (EditContext context)
+		public virtual bool IsValidInContext (DocumentContext context)
 		{
 			return true;
 		}
@@ -103,7 +103,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 	class TextEditorExtensionMarker : TextEditorExtension
 	{
-		public override bool IsValidInContext (EditContext context)
+		public override bool IsValidInContext (DocumentContext context)
 		{
 			return false;
 		}

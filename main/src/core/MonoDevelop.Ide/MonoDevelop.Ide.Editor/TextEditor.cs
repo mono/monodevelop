@@ -798,7 +798,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		internal void InitializeExtensionChain (EditContext editContext, TextEditor editor)
+		internal void InitializeExtensionChain (DocumentContext editContext, TextEditor editor)
 		{
 			if (editContext == null)
 				throw new ArgumentNullException ("editContext");

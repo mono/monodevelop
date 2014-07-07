@@ -90,7 +90,7 @@ namespace MonoDevelop.CodeActions
 			}
 		}
 		
-		public virtual void BatchRun (TextEditor editor, EditContext context, TextLocation loc)
+		public virtual void BatchRun (TextEditor editor, DocumentContext context, TextLocation loc)
 		{
 			if (!SupportsBatchRunning) {
 				throw new InvalidOperationException ("Batch running is not supported.");
