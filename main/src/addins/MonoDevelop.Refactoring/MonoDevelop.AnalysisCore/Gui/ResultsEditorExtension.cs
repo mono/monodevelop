@@ -228,7 +228,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 						if (start >= end)
 							continue;
 						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
-							var marker = editor.MarkerHost.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect.GrayOut, TextSegment.FromBounds (start, end));
+							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, TextSegmentMarkerEffect.GrayOut, TextSegment.FromBounds (start, end));
 							marker.IsVisible = currentResult.Underline;
 							marker.Tag = currentResult;
 							editor.AddMarker (marker);
@@ -237,7 +237,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 //							editor.Parent.QueueDraw ();
 						} else {
 							var effect = currentResult.InspectionMark == IssueMarker.DottedLine ? TextSegmentMarkerEffect.DottedLine : TextSegmentMarkerEffect.WavedLine;
-							var marker = editor.MarkerHost.CreateGenericTextSegmentMarker (effect, TextSegment.FromBounds (start, end));
+							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, TextSegment.FromBounds (start, end));
 							marker.Color = GetColor (editor, currentResult);
 							marker.IsVisible = currentResult.Underline;
 							marker.Tag = currentResult;

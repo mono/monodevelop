@@ -464,7 +464,7 @@ namespace MonoDevelop.CodeActions
 			RemoveWidget ();
 			currentSmartTagBegin = smartTagLocBegin;
 			var line = Editor.GetLine (smartTagLocBegin.Line);
-			currentSmartTag = Editor.MarkerHost.CreateSmartTagMarker ((line.NextLine ?? line).Offset, smartTagLocBegin);
+			currentSmartTag = TextMarkerFactory.CreateSmartTagMarker (Editor, (line.NextLine ?? line).Offset, smartTagLocBegin);
 			currentSmartTag.MouseHover += delegate(object sender, TextMarkerMouseEventArgs args) {
 				if (currentSmartTag.IsInsideSmartTag (args.X, args.Y)) {
 					args.OverwriteCursor = null;

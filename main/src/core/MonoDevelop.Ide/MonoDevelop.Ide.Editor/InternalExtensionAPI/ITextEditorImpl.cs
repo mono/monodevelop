@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Editor
 
 		IEditorActionHost Actions { get; }
 
-		IMarkerHost MarkerHost { get; }
+		ITextMarkerFactory TextMarkerFactory { get; }
 
 		event EventHandler BeginUndo;
 

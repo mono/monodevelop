@@ -202,7 +202,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 						var end   = editor.LocationToOffset (r.Region.EndLine, r.Region.EndColumn);
 						var usage = new Usage (TextSegment.FromBounds (start, end), r.ReferenceUsageType);
 						usages.Add (usage);
-						var marker = editor.MarkerHost.CreateUsageMarker (usage);
+						var marker = TextMarkerFactory.CreateUsageMarker (editor, usage);
 						markers.Add (marker);
 						lineNumbers.Add (r.Region.BeginLine);
 						editor.AddMarker (marker);

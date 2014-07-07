@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 			sw = new Gtk.ScrolledWindow ();
 			editor = DocumentFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
-			asmMarker = editor.MarkerHost.CreateAsmLineMarker ();
+			asmMarker = TextMarkerFactory.CreateAsmLineMarker (editor);
 
 			editor.Options.ShowLineNumberMargin = false;
 			
@@ -80,7 +80,7 @@ namespace MonoDevelop.Debugger
 			
 			sw.Sensitive = false;
 			
-			currentDebugLineMarker = editor.MarkerHost.CreateCurrentDebugLineTextMarker ();
+			currentDebugLineMarker = TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor);
 			DebuggingService.StoppedEvent += OnStop;
 		}
 		

@@ -1066,7 +1066,7 @@ namespace MonoDevelop.AssemblyBrowser
 				string text = inspectEditor.GetTextAt (seg.Offset, seg.Length);
 				if (text != null && text.Length == 1 && !(char.IsLetter (text [0]) || text [0] == '…'))
 					continue;
-				var marker = inspectEditor.MarkerHost.CreateLinkMarker (seg.Offset, seg.Length, delegate (LinkRequest request) {
+				var marker = TextMarkerFactory.CreateLinkMarker (inspectEditor, seg.Offset, seg.Length, delegate (LinkRequest request) {
 					var link = GetLink (seg);
 					if (link == null)
 						return;

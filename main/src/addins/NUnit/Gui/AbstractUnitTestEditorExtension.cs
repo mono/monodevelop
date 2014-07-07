@@ -89,7 +89,7 @@ namespace MonoDevelop.NUnit
 					foreach (var foundTest in foundTests) {
 						if (token.IsCancellationRequested)
 							return;
-						var unitTestMarker = Editor.MarkerHost.CreateUnitTestMarker (new UnitTestMarkerHostImpl (this), foundTest);
+						var unitTestMarker = TextMarkerFactory.CreateUnitTestMarker (Editor, new UnitTestMarkerHostImpl (this), foundTest);
 						currentMarker.Add (unitTestMarker);
 						Editor.AddMarker (foundTest.LineNumber, unitTestMarker);
 					}

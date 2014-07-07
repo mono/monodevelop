@@ -2762,10 +2762,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\DefaultSourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Diff.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditor.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorImpl.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextDocument.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditorDisplayBinding.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\IMarkerHost.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractUsagesExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IInternalEditorExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SimpleBracketMatcher.cs" />
@@ -2796,6 +2794,9 @@
     <Compile Include="MonoDevelop.Ide.Editor\EditContext.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IUnitTestMarker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ChunkStyle.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextMarkerFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorImpl.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextMarkerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2841,6 +2842,7 @@
     <Folder Include="MonoDevelop.Ide.Editor\" />
     <Folder Include="MonoDevelop.Ide.Editor.Extension\" />
     <Folder Include="MonoDevelop.Ide.Editor.Highlighting\" />
+    <Folder Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

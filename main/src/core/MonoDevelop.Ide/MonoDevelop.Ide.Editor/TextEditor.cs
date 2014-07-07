@@ -225,9 +225,9 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public IMarkerHost MarkerHost {
+		internal ITextMarkerFactory TextMarkerFactory {
 			get {
-				return textEditorImpl.MarkerHost;
+				return textEditorImpl.TextMarkerFactory;
 			}
 		}
 
