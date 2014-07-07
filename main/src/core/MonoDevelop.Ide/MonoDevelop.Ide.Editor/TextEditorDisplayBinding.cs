@@ -95,8 +95,8 @@ namespace MonoDevelop.Ide.Editor
 
 		public IViewContent CreateContent (FilePath fileName, string mimeType, Project ownerProject)
 		{
-			var document = DocumentFactory.LoadDocument (fileName, mimeType); 
-			return DocumentFactory.CreateNewEditor (document).GetViewContent (); 
+			var document = TextEditorFactory.LoadDocument (fileName, mimeType); 
+			return TextEditorFactory.CreateNewEditor (document).GetViewContent (); 
 		}
 
 		public bool CanHandleFile (string fileName)

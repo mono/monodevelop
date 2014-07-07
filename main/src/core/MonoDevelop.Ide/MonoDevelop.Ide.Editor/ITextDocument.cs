@@ -50,9 +50,13 @@ namespace MonoDevelop.Ide.Editor
 
 		void InsertText (int offset, string text);
 
+		void InsertText (int offset, ITextSource text);
+
 		void RemoveText (int offset, int length);
 
 		void ReplaceText (int offset, int length, string value);
+
+		void ReplaceText (int offset, int length, ITextSource value);
 
 		bool IsInAtomicUndo {
 			get;

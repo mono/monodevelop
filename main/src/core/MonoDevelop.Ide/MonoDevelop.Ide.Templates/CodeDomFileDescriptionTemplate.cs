@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Templates
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			var doc = DocumentFactory.CreateNewDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = text;
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {

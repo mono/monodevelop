@@ -855,12 +855,12 @@ namespace MonoDevelop.Ide.Gui
 			//Document doc = IdeApp.Workbench.ActiveDocument;
 			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
 
-			var result = DocumentFactory.GetSyntaxProperties (loadedMimeType, "LineComment");
+			var result = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "LineComment");
 			if (result != null)
 				return result;
 
-			var start = DocumentFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentStart");
-			var end = DocumentFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentEnd");
+			var start = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentStart");
+			var end = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentEnd");
 			if (start != null && end != null)
 				return new [] { start[0], end[0] };
 			return null;

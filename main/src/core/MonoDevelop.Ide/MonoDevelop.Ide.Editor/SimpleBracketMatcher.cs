@@ -58,7 +58,7 @@ namespace MonoDevelop.Ide.Editor
 
 		static string[] GetList (TextEditor document, string name)
 		{
-			return DocumentFactory.GetSyntaxProperties (document.MimeType, name);
+			return TextEditorFactory.GetSyntaxProperties (document.MimeType, name);
 		}
 
 		static int StartsWithListMember (TextEditor document, IList<string> list, int offset)

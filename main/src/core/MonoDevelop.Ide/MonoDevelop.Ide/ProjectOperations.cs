@@ -241,7 +241,7 @@ namespace MonoDevelop.Ide
 		static MonoDevelop.Ide.FindInFiles.SearchResult GetJumpTypePartSearchResult (ICSharpCode.NRefactory.TypeSystem.IUnresolvedTypeDefinition part)
 		{
 			var provider = new MonoDevelop.Ide.FindInFiles.FileProvider (part.Region.FileName);
-			var doc = DocumentFactory.CreateNewDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = provider.ReadString ();
 			int position = doc.LocationToOffset (part.Region.BeginLine, part.Region.BeginColumn);
 			while (position + part.Name.Length < doc.Length) {
@@ -2000,7 +2000,7 @@ namespace MonoDevelop.Ide
 				}
 			}
 
-			return DocumentFactory.CreateNewDocument (StringTextSource.ReadFrom (filePath), filePath);
+			return TextEditorFactory.CreateNewDocument (StringTextSource.ReadFrom (filePath), filePath);
 		}
 
 		/// <summary>
@@ -2042,7 +2042,7 @@ namespace MonoDevelop.Ide
 					return doc.Editor;
 				}
 			}
-			var data = DocumentFactory.CreateNewReadonlyDocument (StringTextSource.ReadFrom (filePath), filePath);
+			var data = TextEditorFactory.CreateNewReadonlyDocument (StringTextSource.ReadFrom (filePath), filePath);
 			return data;
 		}
 
@@ -2057,7 +2057,7 @@ namespace MonoDevelop.Ide
 			bool hadBom;
 			Encoding encoding;
 			var text = TextFileUtility.ReadAllText (filePath, out hadBom, out encoding);
-			var data = DocumentFactory.CreateNewDocument ();
+			var data = TextEditorFactory.CreateNewDocument ();
 			data.UseBOM = hadBom;
 			data.Encoding = encoding;
 			data.MimeType = DesktopService.GetMimeTypeForUri (filePath);

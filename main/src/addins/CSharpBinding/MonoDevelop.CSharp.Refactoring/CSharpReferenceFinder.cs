@@ -316,7 +316,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (memberName != null && text.IndexOf (memberName, StringComparison.Ordinal) < 0 &&
 					(keywordName == null || text.IndexOf (keywordName, StringComparison.Ordinal) < 0))
 					continue;
-				var editor = DocumentFactory.CreateNewReadonlyDocument (new StringTextSource (text), file);
+				var editor = TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (text), file);
 				var unit = new CSharpParser ().Parse (editor);
 				if (unit == null)
 					continue;

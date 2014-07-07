@@ -623,7 +623,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (content == null)
 					return null;
 
-				doc = DocumentFactory.CreateNewEditor (DocumentFactory.CreateNewReadonlyDocument (new StringTextSource (content), result.FileName, DesktopService.GetMimeTypeForUri (result.FileName)));
+				doc = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (content), result.FileName, DesktopService.GetMimeTypeForUri (result.FileName)));
 
 				documents [result.FileName] = doc;	
 			}

@@ -115,7 +115,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		static string StripDoubleBlankLines (string content)
 		{
-			var doc = DocumentFactory.CreateNewDocument (new StringTextSource (content), "a.cs");
+			var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (content), "a.cs");
 			for (int i = 1; i + 1 <= doc.LineCount; i++) {
 				if (IsBlankLine (doc, i) && IsBlankLine (doc, i + 1)) {
 					doc.RemoveText (doc.GetLine (i).SegmentIncludingDelimiter);

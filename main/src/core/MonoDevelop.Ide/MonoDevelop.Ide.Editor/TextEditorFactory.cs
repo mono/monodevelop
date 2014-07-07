@@ -29,11 +29,11 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public static class DocumentFactory
+	public static class TextEditorFactory
 	{
 		static ITextEditorFactory currentFactory;
 
-		static DocumentFactory ()
+		static TextEditorFactory ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/SourceEditor2/EditorFactory", delegate(object sender, ExtensionNodeEventArgs args) {
 				switch (args.Change) {

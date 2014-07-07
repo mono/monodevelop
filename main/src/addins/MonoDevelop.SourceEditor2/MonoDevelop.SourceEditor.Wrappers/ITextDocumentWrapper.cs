@@ -28,6 +28,8 @@ using MonoDevelop.Ide.Editor;
 using Mono.TextEditor;
 using System.IO;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Text;
+using Atk;
 
 namespace MonoDevelop.SourceEditor.Wrappers
 {
@@ -88,6 +90,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			document.Insert (offset, text);
 		}
 
+		void ITextDocument.InsertText (int offset, MonoDevelop.Core.Text.ITextSource text)
+		{
+			document.Insert (offset, text.Text);
+		}
+
 		void ITextDocument.RemoveText (int offset, int length)
 		{
 			document.Remove (offset, length);
@@ -97,6 +104,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 		{
 			document.Replace (offset, length, value);
 		}
+
+		void ITextDocument.ReplaceText (int offset, int length, MonoDevelop.Core.Text.ITextSource value)
+		{
+			document.Replace (offset, length, value.Text);
+		}
+
 
 		void ITextDocument.Undo ()
 		{
@@ -305,6 +318,16 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			if (writer == null)
 				throw new ArgumentNullException ("writer");
 			writer.Write (document.GetTextAt (offset, length));
+		}
+
+		MonoDevelop.Core.Text.ITextSource MonoDevelop.Core.Text.ITextSource.CreateSnapshot ()
+		{
+			return new StringTextSource (document.Text);
+		}
+
+		MonoDevelop.Core.Text.ITextSource MonoDevelop.Core.Text.ITextSource.CreateSnapshot (int offset, int length)
+		{
+			return new StringTextSource (document.GetTextAt (offset, length));
 		}
 		#endregion
 	}

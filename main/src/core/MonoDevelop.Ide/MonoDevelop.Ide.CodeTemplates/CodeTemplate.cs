@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			sb.Append (code.Substring (lastOffset, code.Length - lastOffset));
 			
 			// format & indent template code
-			var data = DocumentFactory.CreateNewDocument ();
+			var data = TextEditorFactory.CreateNewDocument ();
 			data.Text = sb.ToString ();
 			data.TextChanged += delegate(object sender, MonoDevelop.Core.Text.TextChangeEventArgs e) {
 				int delta = e.InsertionLength - e.RemovalLength;
@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		string RemoveIndent (string text, string indent)
 		{
-			var doc = DocumentFactory.CreateNewDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = text;
 			var result = new StringBuilder ();
 			foreach (var line in doc.GetLines ()) {
@@ -360,7 +360,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		string Reindent (string text, string indent)
 		{
-			var doc = DocumentFactory.CreateNewDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = text;
 			var result = new StringBuilder ();
 			foreach (var line in doc.GetLines ()) {

@@ -56,8 +56,8 @@ namespace MonoDevelop.Gettext
 		ListStore foundInStore;
 		Catalog catalog;
 		string  poFileName;
-		TextEditor texteditorOriginal = DocumentFactory.CreateNewEditor ();
-		TextEditor texteditorPlural = DocumentFactory.CreateNewEditor ();
+		TextEditor texteditorOriginal = TextEditorFactory.CreateNewEditor ();
+		TextEditor texteditorPlural = TextEditorFactory.CreateNewEditor ();
 		
 		static List<POEditorWidget> widgets = new List<POEditorWidget> (); 
 		
@@ -474,7 +474,7 @@ namespace MonoDevelop.Gettext
 		void AddTextview (int index)
 		{
 			ScrolledWindow window = new ScrolledWindow ();
-			var textView = DocumentFactory.CreateNewEditor ();
+			var textView = TextEditorFactory.CreateNewEditor ();
 			window.Child = textView;
 			textView.TextChanged += delegate {
 				if (this.isUpdating)

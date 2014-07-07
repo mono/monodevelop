@@ -444,6 +444,11 @@ namespace MonoDevelop.Ide.Editor
 			ReadWriteTextDocument.InsertText (offset, text);
 		}
 
+		public void InsertText (int offset, ITextSource text)
+		{
+			ReadWriteTextDocument.InsertText (offset, text);
+		}
+
 		public void RemoveText (int offset, int count)
 		{
 			RemoveText (new TextSegment (offset, count)); 
@@ -457,6 +462,11 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		public void ReplaceText (int offset, int count, string value)
+		{
+			ReadWriteTextDocument.ReplaceText (offset, count, value);
+		}
+
+		public void ReplaceText (int offset, int count, ITextSource value)
 		{
 			ReadWriteTextDocument.ReplaceText (offset, count, value);
 		}
@@ -625,6 +635,23 @@ namespace MonoDevelop.Ide.Editor
 		public TextReader CreateReader (int offset, int length)
 		{
 			return ReadOnlyTextDocument.CreateReader (offset, length);
+		}
+
+		public ITextSource CreateSnapshot ()
+		{
+			return ReadOnlyTextDocument.CreateSnapshot ();
+		}
+
+		public ITextSource CreateSnapshot (int offset, int length)
+		{
+			return ReadOnlyTextDocument.CreateSnapshot (offset, length);
+		}
+
+		public ITextSource CreateSnapshot (ISegment segment)
+		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return ReadOnlyTextDocument.CreateSnapshot (segment.Offset, segment.Length);
 		}
 
 		public void WriteTextTo (TextWriter writer)

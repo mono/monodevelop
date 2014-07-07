@@ -165,7 +165,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		CSharpCompletionTextEditorExtension CreateCompletion (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
 		{
-			var doc = DocumentFactory.CreateNewDocument (new StringTextSource (localInfo.LocalDocument), realEditor.FileName + ".cs"); 
+			var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (localInfo.LocalDocument), realEditor.FileName + ".cs"); 
 			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);
 			
 			codeCompletionContext = new CodeCompletionContext () {

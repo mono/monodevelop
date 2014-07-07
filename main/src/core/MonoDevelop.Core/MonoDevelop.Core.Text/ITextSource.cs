@@ -102,6 +102,18 @@ namespace MonoDevelop.Core.Text
 		/// Writes the text from this document into the TextWriter.
 		/// </summary>
 		void WriteTextTo (TextWriter writer, int offset, int length);
+
+		/// <summary>
+		/// Creates an immutable snapshot of this text source.
+		/// Unlike all other methods in this interface, this method is thread-safe.
+		/// </summary>
+		ITextSource CreateSnapshot();
+
+		/// <summary>
+		/// Creates an immutable snapshot of a part of this text source.
+		/// Unlike all other methods in this interface, this method is thread-safe.
+		/// </summary>
+		ITextSource CreateSnapshot(int offset, int length);
 	}
 
 	public static class TextSourceExtension
@@ -151,6 +163,19 @@ namespace MonoDevelop.Core.Text
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
 			return source.CreateReader (segment.Offset, segment.Length);
+		}
+
+		/// <summary>
+		/// Creates an immutable snapshot of a part of this text source.
+		/// Unlike all other methods in this interface, this method is thread-safe.
+		/// </summary>
+		public static ITextSource CreateSnapshot(this ITextSource source, ISegment segment)
+		{
+			if (source == null)
+				throw new ArgumentNullException ("source");
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			return source.CreateSnapshot (segment.Offset, segment.Length);
 		}
 	}
 }

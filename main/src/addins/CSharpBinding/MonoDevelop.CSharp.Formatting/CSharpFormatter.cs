@@ -86,7 +86,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
-			var data = DocumentFactory.CreateNewDocument ();
+			var data = TextEditorFactory.CreateNewDocument ();
 			// data.Document.SuppressHighlightUpdate = true;
 			data.MimeType = mimeType;
 			data.FileName = "toformat.cs";

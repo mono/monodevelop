@@ -39,7 +39,7 @@ namespace MonoDevelop.CSharp.Formatting
 {
 	partial class CSharpFormattingProfileDialog : Dialog
 	{
-		readonly TextEditor texteditor = DocumentFactory.CreateNewEditor ();
+		readonly TextEditor texteditor = TextEditorFactory.CreateNewEditor ();
 		readonly CSharpFormattingPolicy profile;
 		TreeStore indentOptions, bacePositionOptions, newLineOptions, whiteSpaceOptions, wrappingOptions;
 		

@@ -143,13 +143,13 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		static FormattingChanges GetFormattingChanges (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, TextEditor editor, DocumentContext context, string input, DomRegion formattingRegion, ref int formatStartOffset, ref int formatLength, bool formatLastStatementOnly)
 		{
-			var stubData = DocumentFactory.CreateNewReadonlyDocument (new MonoDevelop.Core.Text.StringTextSource (input), context.Name);
+			var stubData = TextEditorFactory.CreateNewReadonlyDocument (new MonoDevelop.Core.Text.StringTextSource (input), context.Name);
 
 			var parser = context.HasProject ? new CSharpParser (TypeSystemParser.GetCompilerArguments (context.Project)) : new CSharpParser ();
 			var compilationUnit = parser.Parse (stubData);
 			bool hadErrors = parser.HasErrors;
 			if (hadErrors) {
-				var stubData2 = DocumentFactory.CreateNewReadonlyDocument (new MonoDevelop.Core.Text.StringTextSource (input + "}"), context.Name);
+				var stubData2 = TextEditorFactory.CreateNewReadonlyDocument (new MonoDevelop.Core.Text.StringTextSource (input + "}"), context.Name);
 				compilationUnit = parser.Parse (stubData2);
 				hadErrors = parser.HasErrors;
 			}

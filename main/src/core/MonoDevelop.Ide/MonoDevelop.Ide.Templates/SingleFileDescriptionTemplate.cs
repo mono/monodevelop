@@ -286,7 +286,7 @@ namespace MonoDevelop.Ide.Templates
 				ms.Write (data, 0, data.Length);
 			}
 			
-			var doc = DocumentFactory.CreateNewDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = content;
 			
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain")

@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public HiddenTextEditorViewContent ()
 		{
-			editor = DocumentFactory.CreateNewEditor ();
+			editor = TextEditorFactory.CreateNewEditor ();
 			Name = "";
 		}
 		

@@ -391,6 +391,16 @@ namespace MonoDevelop.Ide.Editor
 				return textSource.Text;
 			}
 		}
+
+		public ITextSource CreateSnapshot ()
+		{
+			return this;
+		}
+
+		public ITextSource CreateSnapshot (int offset, int length)
+		{
+			return new StringTextSource (Text.Substring (offset, length));
+		}
 		#endregion
 	}
 }

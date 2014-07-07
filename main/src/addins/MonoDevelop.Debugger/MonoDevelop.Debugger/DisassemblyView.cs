@@ -62,7 +62,7 @@ namespace MonoDevelop.Debugger
 		{
 			ContentName = GettextCatalog.GetString ("Disassembly");
 			sw = new Gtk.ScrolledWindow ();
-			editor = DocumentFactory.CreateNewEditor ();
+			editor = TextEditorFactory.CreateNewEditor ();
 			editor.IsReadOnly = true;
 			asmMarker = TextMarkerFactory.CreateAsmLineMarker (editor);
 

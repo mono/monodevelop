@@ -218,7 +218,7 @@ namespace MonoDevelop.AssemblyBrowser
 //			this.documentationLabel.Wrap = true;
 			
 
-			inspectEditor = DocumentFactory.CreateNewEditor ();
+			inspectEditor = TextEditorFactory.CreateNewEditor ();
 			inspectEditor.Options.ShowFoldMargin = false;
 			inspectEditor.Options.ShowIconMargin = false;
 			inspectEditor.Options.ShowLineNumberMargin = false;
