@@ -181,6 +181,7 @@ type FSharpTextEditorCompletion() =
   inherit CompletionTextEditorExtension()
 
   let mutable suppressParameterCompletion = false
+  let mutable lastCharDottedInto = false 
 
   override x.ExtendsEditor(doc:Document, editor:IEditableTextBuffer) =
     // Extend any text editor that edits F# files
@@ -238,11 +239,15 @@ type FSharpTextEditorCompletion() =
     with _ -> null
 
   override x.KeyPress (key, keyChar, modifier) =
+      // Avoid two dots in sucession turning inte ie '.CompareWith.' instead of '..'
+      let suppressMemberCompletion = lastCharDottedInto && keyChar = '.'
+      lastCharDottedInto <- false
+      if suppressMemberCompletion then true else
       // base.KeyPress will execute RunParameterCompletionCommand,
       // so suppress it here.  
       suppressParameterCompletion <-
          keyChar <> '(' && keyChar <> '<' && keyChar <> ','
-
+      
       let result = base.KeyPress (key, keyChar, modifier)
 
       suppressParameterCompletion <- false
@@ -305,6 +310,7 @@ type FSharpTextEditorCompletion() =
       let typedParseResults = 
           MDLanguageService.Instance.GetTypedParseResultWithTimeout(projFile, doc.FileName.FullPath.ToString(), doc.Editor.Text, files, args, stale, ServiceSettings.blockingTimeout, framework)
           |> Async.RunSynchronously
+      lastCharDottedInto <- dottedInto
       match typedParseResults with
       | None       -> result.Add(FSharpTryAgainMemberCompletionData())
       | Some tyRes ->
