@@ -94,6 +94,10 @@ namespace MonoDevelop.CSharpBinding
 		public void SwitchView (IAttachableViewContent view)
 		{
 		}
+
+		public void SwitchToSingleMode ()
+		{
+		}
 		
 		public int FindView<T> ()
 		{
