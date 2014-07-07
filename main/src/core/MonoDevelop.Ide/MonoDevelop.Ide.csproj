@@ -1,4 +1,4 @@
->>>>>><?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -3501,6 +3501,11 @@
     <Compile Include="MonoDevelop.Components.Docking\IDockGroup.cs" />
     <Compile Include="MonoDevelop.Components.Docking\IDockGroupItem.cs" />
     <Compile Include="MonoDevelop.Components.Docking\IDockLayout.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Mac\DockFrameBackend.cs" />
+    <Compile Include="MonoDevelop.Components.Docking\Mac\DockItemBackend.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -3549,6 +3554,7 @@
     <Folder Include="MonoDevelop.Ide.Editor\MessageBubbles\" />
     <Folder Include="MonoDevelop.Ide.Editor\Projection\" />
     <Folder Include="icons\mac\" />
+    <Folder Include="MonoDevelop.Components.Docking\Mac\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

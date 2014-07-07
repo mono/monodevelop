@@ -39,6 +39,7 @@ using Xwt.Motion;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Docking.Internal;
 using System.Linq;
+using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -72,9 +73,16 @@ namespace MonoDevelop.Components.Docking
 
 		protected override object CreateNativeWidget ()
 		{
+			#if MAC
+			if (GtkMacInterop.SupportsGtkIntoNSViewEmbedding ()) {
+				backend = new Mac.DockFrameBackend ();
+				backend.Initialize (this);
+				return backend;
+			}
+			#endif
 			backend = new GtkDockFrame ();
 			backend.Initialize (this);
-			return (Gtk.Widget)backend;
+			return backend;
 		}
 
 		public void AddOverlayWidget (Control widget, bool animate = false)
