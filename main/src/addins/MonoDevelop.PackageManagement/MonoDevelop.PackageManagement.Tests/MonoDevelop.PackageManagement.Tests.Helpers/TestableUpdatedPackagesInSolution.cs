@@ -1,5 +1,5 @@
 ﻿//
-// PackageRestoreStartupHandler.cs
+// TestableUpdatedPackagesInSolution.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,26 +26,36 @@
 
 using System;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
-using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement.Commands
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class PackageRestoreStartupHandler : CommandHandler
+	public class TestableUpdatedPackagesInSolution : UpdatedPackagesInSolution
 	{
-		protected override void Run ()
+		public TestableUpdatedPackagesInSolution (
+			IPackageManagementSolution solution,
+			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagementEvents packageManagementEvents)
+			: base (
+				solution,
+				registeredPackageRepositories,
+				packageManagementEvents)
 		{
-			IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
+			FileExistsAction = path => {
+				return true;
+			};
 		}
 
-		void SolutionLoaded (object sender, SolutionEventArgs e)
+		protected override void GuiDispatch (MessageHandler handler)
 		{
-			if (!PackageManagementServices.Options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled)
-				return;
+			handler.Invoke ();
+		}
 
-			var restorer = new PackageRestorer (e.Solution);
-			DispatchService.BackgroundDispatch (() => restorer.Restore ());
+		public Func<string, bool> FileExistsAction;
+
+		protected override bool FileExists (string path)
+		{
+			return FileExistsAction (path);
 		}
 	}
 }

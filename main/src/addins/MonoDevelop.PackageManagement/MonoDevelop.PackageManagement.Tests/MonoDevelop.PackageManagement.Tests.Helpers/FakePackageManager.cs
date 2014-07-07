@@ -236,5 +236,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				throw new NotImplementedException ();
 			}
 		}
+
+		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions)
+		{
+		}
 	}
 }
