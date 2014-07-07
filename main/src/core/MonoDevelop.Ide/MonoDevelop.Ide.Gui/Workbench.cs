@@ -244,6 +244,10 @@ namespace MonoDevelop.Ide.Gui
 		public IList<string> Layouts {
 			get { return workbench.Layouts; }
 		}
+
+		internal DockFrame DockFrame {
+			get { return workbench.DockFrame; }
+		}
 		
 		public ProgressMonitorManager ProgressMonitors {
 			get { return monitors; }
@@ -359,6 +363,15 @@ namespace MonoDevelop.Ide.Gui
 		public Pad ShowPad (IPadContent padContent, string id, string label, string defaultPlacement, DockItemStatus defaultStatus, IconId icon)
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
+		}
+
+		internal void ActivatePad (PadCodon padContent, bool giveFocus)
+		{
+			WelcomePage.WelcomePageService.HideWelcomePage ();
+
+			DockItem item = workbench.GetDockItem (padContent);
+			if (item != null)
+				item.Present (giveFocus);
 		}
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, bool bringToFront)")]

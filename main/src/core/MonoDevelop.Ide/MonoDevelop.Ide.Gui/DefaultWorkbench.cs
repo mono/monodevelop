@@ -50,7 +50,7 @@ namespace MonoDevelop.Ide.Gui
 	/// <summary>
 	/// This is the a Workspace with a multiple document interface.
 	/// </summary>
-	internal class DefaultWorkbench : WorkbenchWindow, ICommandRouter
+	internal class DefaultWorkbench : WorkbenchWindow, ICommandRouter, IShellView
 	{
 		readonly static string mainMenuPath    = "/MonoDevelop/Ide/MainMenu";
 		readonly static string appMenuPath    = "/MonoDevelop/Ide/AppMenu";
@@ -1307,7 +1307,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			RegisterPad (padCodon);
 
-			PadWindow window = new PadWindow (this, padCodon);
+			PadWindow window = new PadWindow (padCodon);
 			window.Icon = padCodon.Icon;
 			padWindows [padCodon] = window;
 			padCodons [window] = padCodon;

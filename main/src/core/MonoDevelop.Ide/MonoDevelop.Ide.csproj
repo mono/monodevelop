@@ -3503,6 +3503,7 @@
     <Compile Include="MonoDevelop.Components.Docking\IDockLayout.cs" />
     <Compile Include="MonoDevelop.Components.Docking\Mac\DockFrameBackend.cs" />
     <Compile Include="MonoDevelop.Components.Docking\Mac\DockItemBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\IShellView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
