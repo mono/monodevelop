@@ -8,12 +8,13 @@ open MonoTouch.Foundation
 type AppDelegate () =
     inherit UIApplicationDelegate ()
 
-    let window = new UIWindow (UIScreen.MainScreen.Bounds)
+    override val Window = null with get, set
 
     // This method is invoked when the application is ready to run.
     override this.FinishedLaunching (app, options) =
-        window.RootViewController <- new ${SafeProjectName}ViewController ()
-        window.MakeKeyAndVisible ()
+        this.Window <- new UIWindow (UIScreen.MainScreen.Bounds)
+        this.Window.RootViewController <- new ${SafeProjectName}ViewController ()
+        this.Window.MakeKeyAndVisible ()
         true
 
 module Main =
