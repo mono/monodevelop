@@ -133,6 +133,25 @@ namespace ICSharpCode.PackageManagement
 		/// </summary>
 		protected override IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
+			List<IPackage> prioritizedPackages = GetPrioritizedPackages (search).ToList ();
+
+			foreach (IPackage package in prioritizedPackages) {
+				yield return package;
+			}
+
+			foreach (IPackage package in packages) {
+				if (!prioritizedPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
+					yield return package;
+				}
+			}
+		}
+
+		IEnumerable<IPackage> GetPrioritizedPackages (PackageSearchCriteria search)
+		{
+			if (search.IsPackageVersionSearch) {
+				yield break;
+			}
+
 			List<IPackage> prioritizedPackages = GetRecentPackages (search).ToList ();
 
 			if (PackageViewModels.Count == 0) {
@@ -145,12 +164,6 @@ namespace ICSharpCode.PackageManagement
 						prioritizedPackages.Add (package);
 						yield return package;
 					}
-				}
-			}
-
-			foreach (IPackage package in packages) {
-				if (!prioritizedPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
-					yield return package;
 				}
 			}
 		}

@@ -1167,5 +1167,26 @@ namespace MonoDevelop.PackageManagement.Tests
 			};
 			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
 		}
+
+		[Test]
+		public void ReadPackages_SearchForAllPackageVersionsWhenOneSolutionPackageAvailable_SolutionPackageIsNotDisplayed ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "0.2.0.0");
+			FakePackage installedPackage = AddPackageToSolution ("A", "1.0.0.0");
+			var packages = new [] { package1, package2 };
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("A");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package2, package1
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
 	}
 }
