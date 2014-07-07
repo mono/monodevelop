@@ -348,7 +348,7 @@ namespace MonoDevelop.Components.DockNotebook
 			{
 				SkipTaskbarHint = true;
 				Decorated = false;
-				TransientFor = (Gtk.Window)frame.Toplevel;
+				TransientFor = IdeApp.Workbench.RootWindow;
 				TypeHint = WindowTypeHint.Utility;
 
 				var mainBox = new VBox ();

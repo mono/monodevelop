@@ -28,6 +28,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Docking;
 using System.Collections.Generic;
+using MonoDevelop.Components.DockNotebook;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.Ide.Gui
 
 		ICustomXmlSerializer Memento { get; set; }
 
-		void ShowView (IViewContent content, bool bringToFront);
+		void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null);
 		void CloseAllViews();
 
 		void AddPad (PadCodon content);
