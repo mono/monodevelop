@@ -143,6 +143,8 @@ namespace Mono.TextEditor
 		int GetLastSourceCodePosition (TextDocument document, int lineOffset)
 		{
 			DocumentLine line = document.GetLineByOffset (lineOffset);
+			if (line == null)
+				return lineOffset;
 			bool isInBlockComment = false;
 			bool isInLineComment  = false;
 			int  curStringQuote   = -1;

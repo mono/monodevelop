@@ -145,7 +145,6 @@ namespace MonoDevelop.VersionControl.Dialogs
 			this.buttonCommit.UseUnderline = true;
 			this.buttonCommit.Label = global::Mono.Unix.Catalog.GetString ("C_ommit");
 			this.AddActionWidget (this.buttonCommit, -5);
-			w12.Add (this.buttonCommit);
 			global::Gtk.ButtonBox.ButtonBoxChild w14 = ((global::Gtk.ButtonBox.ButtonBoxChild)(w12 [this.buttonCommit]));
 			w14.Position = 1;
 			w14.Expand = false;

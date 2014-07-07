@@ -321,6 +321,7 @@ namespace MonoDevelop.Ide.Projects {
 		{
 			if (!btn_new.Sensitive)
 				return;
+			btn_new.Sensitive = false;
 			
 			if (notebook.Page == 0) {
 				if (!CreateProject ())
@@ -353,6 +354,7 @@ namespace MonoDevelop.Ide.Projects {
 						}
 					}
 					notebook.Page++;
+					btn_new.Sensitive = true;
 					btn_new.Label = Gtk.Stock.Ok;
 					return;
 				}
@@ -459,12 +461,13 @@ namespace MonoDevelop.Ide.Projects {
 			
 			try {
 				if (Directory.Exists (ProjectLocation)) {
-					var btn = MessageService.AskQuestion (GettextCatalog.GetString ("Directory {0} already exists.\nDo you want to continue the Project creation?", ProjectLocation), AlertButton.No, AlertButton.Yes);
+					var question = GettextCatalog.GetString ("Directory {0} already exists.\nDo you want to continue creating the project?", ProjectLocation);
+					var btn = MessageService.AskQuestion (question, AlertButton.No, AlertButton.Yes);
 					if (btn != AlertButton.Yes)
 						return false;
 				}
 
-				System.IO.Directory.CreateDirectory (location);
+				Directory.CreateDirectory (location);
 			} catch (IOException) {
 				MessageService.ShowError (GettextCatalog.GetString ("Could not create directory {0}. File already exists.", location));
 				return false;

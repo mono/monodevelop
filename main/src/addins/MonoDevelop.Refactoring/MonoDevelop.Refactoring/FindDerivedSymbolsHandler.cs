@@ -84,48 +84,53 @@ namespace MonoDevelop.Refactoring
 		{
 			var assemblies = GetAllAssemblies (doc.Project);
 			assemblies.ContinueWith (delegate(Task<HashSet<IAssembly>> arg) {
-				using (var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true)) {
-					monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
-					var tg = new TypeGraph (arg.Result);
-					var node = tg.GetNode (entity.DeclaringTypeDefinition); 
-					monitor.EndTask ();
-					if (node == null)
-						return;
-					Gtk.Application.Invoke (delegate {
-							Stack<IList<TypeGraphNode>> derivedTypes = new Stack<IList<TypeGraphNode>> ();
-							derivedTypes.Push (node.DerivedTypes); 
-							HashSet<ITypeDefinition> visitedType = new HashSet<ITypeDefinition> ();
-							while (derivedTypes.Count > 0) {
-								foreach (var derived in derivedTypes.Pop ()) {
-									if (visitedType.Contains (derived.TypeDefinition))
-										continue;
-									derivedTypes.Push (tg.GetNode (derived.TypeDefinition).DerivedTypes);
-									visitedType.Add (derived.TypeDefinition);
-									var impMember = derived.TypeDefinition.Compilation.Import (entity);
-									if (impMember == null)
-										continue;
-									IMember derivedMember;
-									if (entity.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
-										derivedMember = derived.TypeDefinition.GetMembers (null, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault (
-											m => m.ImplementedInterfaceMembers.Any (im => im.Region == entity.Region)
-										);
-									} else {
-										derivedMember = InheritanceHelper.GetDerivedMember (impMember, derived.TypeDefinition);
-									}
-									if (derivedMember == null || string.IsNullOrEmpty (derivedMember.Region.FileName))
-										continue;
-									var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (derivedMember.Region.FileName);
-									var start = tf.LocationToOffset (derivedMember.Region.Begin); 
-									tf.SearchRequest.SearchPattern = derivedMember.Name;
-									var sr = tf.SearchForward (start); 
-									if (sr != null)
-										start = sr.Offset;
-
-									monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region, start, derivedMember.Name.Length));
-								}
-							}
-					});
+				var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+				monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
+				var tg = new TypeGraph (arg.Result);
+				var node = tg.GetNode (entity.DeclaringTypeDefinition); 
+				monitor.EndTask ();
+				if (node == null) {
+					monitor.Dispose ();
+					return;
 				}
+				Gtk.Application.Invoke (delegate {
+					try {
+						Stack<IList<TypeGraphNode>> derivedTypes = new Stack<IList<TypeGraphNode>> ();
+						derivedTypes.Push (node.DerivedTypes); 
+						HashSet<ITypeDefinition> visitedType = new HashSet<ITypeDefinition> ();
+						while (derivedTypes.Count > 0) {
+							foreach (var derived in derivedTypes.Pop ()) {
+								if (visitedType.Contains (derived.TypeDefinition))
+									continue;
+								derivedTypes.Push (tg.GetNode (derived.TypeDefinition).DerivedTypes);
+								visitedType.Add (derived.TypeDefinition);
+								var impMember = derived.TypeDefinition.Compilation.Import (entity);
+								if (impMember == null)
+									continue;
+								IMember derivedMember;
+								if (entity.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
+									derivedMember = derived.TypeDefinition.GetMembers (null, GetMemberOptions.IgnoreInheritedMembers).FirstOrDefault (
+										m => m.ImplementedInterfaceMembers.Any (im => im.Region == entity.Region)
+									);
+								} else {
+									derivedMember = InheritanceHelper.GetDerivedMember (impMember, derived.TypeDefinition);
+								}
+								if (derivedMember == null || string.IsNullOrEmpty (derivedMember.Region.FileName))
+									continue;
+								var tf = TextFileProvider.Instance.GetReadOnlyTextEditorData (derivedMember.Region.FileName);
+								var start = tf.LocationToOffset (derivedMember.Region.Begin); 
+								tf.SearchRequest.SearchPattern = derivedMember.Name;
+								var sr = tf.SearchForward (start); 
+								if (sr != null)
+									start = sr.Offset;
+
+								monitor.ReportResult (new MemberReference (derivedMember, derivedMember.Region, start, derivedMember.Name.Length));
+							}
+						}
+					} finally {
+						monitor.Dispose ();
+					}
+				});
 			});
 	
 		}

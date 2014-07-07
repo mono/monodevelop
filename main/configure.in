@@ -312,8 +312,6 @@ src/addins/TextTemplating/TextTransform/Makefile
 src/addins/TextTemplating/MonoDevelop.TextTemplating/Makefile
 src/addins/TextTemplating/Mono.TextTemplating.Tests/Makefile
 src/addins/AspNet/Makefile
-src/addins/AspNet/MonoDevelop.AspNet/Makefile
-src/addins/AspNet/MonoDevelop.AspNet.Mvc/Makefile
 src/addins/MonoDevelop.Autotools/Makefile
 src/addins/MonoDevelop.DesignerSupport/Makefile
 src/addins/MonoDevelop.WebReferences/Makefile
@@ -332,7 +330,7 @@ src/addins/WindowsPlatform/WindowsAPICodePack/Shell/Makefile
 src/addins/WindowsPlatform/WindowsPlatform/Makefile
 src/addins/MonoDevelop.AssemblyBrowser/Makefile
 src/addins/MonoDevelop.SourceEditor2/Makefile
-src/addins/MonoDevelop.XmlEditor/Makefile
+src/addins/Xml/Makefile
 src/addins/MonoDevelop.Refactoring/Makefile
 src/addins/MonoDevelop.Debugger/Makefile
 src/addins/MonoDevelop.Debugger.Gdb/Makefile

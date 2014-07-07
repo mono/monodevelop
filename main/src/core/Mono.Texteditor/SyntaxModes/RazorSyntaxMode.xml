@@ -67,7 +67,7 @@
 		</Span>
 
 		<!-- attributes -->
-		<Match color = "Keyword(Type)">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
+		<Match color = "Keyword(Type)" ignorecase="True">[A-Za-z0-9_]+(:[A-Za-z0-9_]+)?[\s\n\r]*=</Match>
 
 		<!-- comments -->
 		<Span tagColor = "Xml Delimiter" color = "Xml Comment" rule = "Comment">

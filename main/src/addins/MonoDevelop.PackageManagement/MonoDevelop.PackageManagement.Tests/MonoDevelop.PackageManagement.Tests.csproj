@@ -173,6 +173,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\SettingProviderTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSearchCriteriaTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\WildcardVersionSpecTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ImportAndCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

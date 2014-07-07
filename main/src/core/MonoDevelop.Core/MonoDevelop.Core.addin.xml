@@ -144,6 +144,10 @@
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildImportProviders" name = "MSBuild Import Providers">
 		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildImportProvider"/>
 	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders" name = "MSBuild Global Property Providers">
+		<ExtensionNode objectType="MonoDevelop.Projects.Formats.MSBuild.IMSBuildGlobalPropertyProvider"/>
+	</ExtensionPoint>
 	
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/MSBuildExtensions" name = "MSBuild Extensions">
 		<ExtensionNode name="Class" objectType="MonoDevelop.Projects.Formats.MSBuild.MSBuildExtension"/>

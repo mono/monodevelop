@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Template Originator  ="Michael Hutchinson"
+          Created     ="2009/02/24"
+          LastModified="2009/02/24">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Web Content Form</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Web Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<_Description>Creates an ASP.NET Web Form that is the child of a Master Page.</_Description>
+	</TemplateConfiguration>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetMasterContentFile name="${Name}.aspx" DefaultExtension=".aspx">
+			<FileText>
+<![CDATA[<%@ Page Language="C#" MasterPageFile="${AspNetMaster}" %>
+${AspNetMasterContent}
+]]>
+			</FileText>
+		</AspNetMasterContentFile>
+	</TemplateFiles>
+</Template>

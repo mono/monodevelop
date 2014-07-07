@@ -3,7 +3,6 @@ include $(top_srcdir)/xbuild.include
 SUBDIRS=UnitTests MacPlatform.Tests UserInterfaceTests TestRunner Ide.Tests
 
 MONO=mono
-HARNESS=$(top_srcdir)/external/mdtestharness/nunit-console-x86.exe -domain=multiple
 RUN_TEST=$(MDTOOL_RUN) run-md-tests
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
@@ -30,7 +29,8 @@ TEST_ASSEMBLIES_COMMON = \
 	$(TEST_DIR)/Mono.TextTemplating.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.PackageManagement.Tests.dll \
 	$(TEST_DIR)/MonoDevelop.TextEditor.Tests.dll \
-	$(TEST_DIR)/MonoDevelop.XmlEditor.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.Xml.Tests.dll \
+	$(TEST_DIR)/MonoDevelop.AspNet.Tests.dll \
 	$(EXTERNAL)/nrefactory/bin/Debug/ICSharpCode.NRefactory.Tests.dll
 
 ALL_CSPROJ = $(TEST_PROJECTS_COMMON)
@@ -49,15 +49,23 @@ test:
 	@if test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \
-				($(RUN_TEST) $$asm) || exit $?; \
+				($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \
 			fi; \
 		done; \
 	fi
 
 	@if ! test -n "$(assembly)"; then \
+		fail=0; \
 		for asm in $(TEST_ASSEMBLIES); do \
-			($(RUN_TEST) $$asm) || exit $?; \
+			echo Testing `basename $$asm`...; \
+			($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm); \
+			if [ $$? != 0 ]; then \
+				fail=1; \
+			fi; \
 		done; \
+		if [ $${fail} = 1 ]; then \
+			exit 1; \
+		fi; \
 	fi
 
 include $(top_srcdir)/Makefile.include

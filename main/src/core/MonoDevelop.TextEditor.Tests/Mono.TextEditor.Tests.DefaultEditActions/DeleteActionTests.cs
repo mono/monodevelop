@@ -32,7 +32,7 @@ namespace Mono.TextEditor.Tests.Actions
 	[TestFixture()]
 	public class DeleteActionTests : TextEditorTestBase
 	{
-		[Test()]
+		[Test]
 		public void TestBackspace ()
 		{
 			var data = Create (@"1234$567890");
@@ -40,7 +40,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Check (data, @"123$567890");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBackspaceCase1 ()
 		{
 			var data = Create (@"$1234567890");
@@ -48,7 +48,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Check (data, @"$1234567890");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestDelete ()
 		{
 			var data = Create (@"1234$567890");
@@ -56,7 +56,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Check (data, @"1234$67890");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestBackspaceDeleteCase1 ()
 		{
 			var data = Create (@"1234567890$");
@@ -64,7 +64,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Check (data, @"1234567890$");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestDeleteCaretLine ()
 		{
 			var data = Create (@"1234567890
@@ -75,7 +75,7 @@ namespace Mono.TextEditor.Tests.Actions
 1234567890", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestDeleteCaretLineWithFoldings ()
 		{
 			var data = Create (@"1234567890
@@ -88,7 +88,7 @@ namespace Mono.TextEditor.Tests.Actions
 1234567890", data.Document.Text);
 		}
 		
-		[Test()]
+		[Test]
 		public void TestDeleteCaretLineWithFoldingsCase2 ()
 		{
 			var data = Create (@"1234567890
@@ -100,9 +100,22 @@ namespace Mono.TextEditor.Tests.Actions
 			Assert.AreEqual (@"1234567890
 1234567890", data.Document.Text);
 		}
-		
 
-		[Test()]
+		[Test]
+		public void TestDeleteCaretLineWithSelection ()
+		{
+			var data = Create (@"1234567890
+1234$<-67890
+1234567890
+12345->67890
+1234567890");
+			DeleteActions.CaretLine (data);
+			Assert.AreEqual (@"1234567890
+1234567890", data.Document.Text);
+		}
+
+
+		[Test]
 		public void TestDeleteCaretLineToEnd ()
 		{
 			var data = Create (@"1234567890
@@ -114,7 +127,7 @@ namespace Mono.TextEditor.Tests.Actions
 1234567890", data.Document.Text);
 		}
 
-		[Test()]
+		[Test]
 		public void TestDeleteCaretLineToEndWithFoldings ()
 		{
 			var data = Create (@"1234567890
@@ -130,7 +143,7 @@ namespace Mono.TextEditor.Tests.Actions
 
 
 
-		[Test()]
+		[Test]
 		public void TestDeletePreviousWord ()
 		{
 			var data = Create (@"      word1 word2 word3$");
@@ -142,7 +155,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Check (data, @"      $");
 		}
 		
-		[Test()]
+		[Test]
 		public void TestDeletePreviousSubword ()
 		{
 			var data = Create (@"      SomeLongWord$");
@@ -154,7 +167,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Check (data, @"      $");
 		}
 
-		[Test()]
+		[Test]
 		public void TestDeleteNextWord ()
 		{
 			var data = Create (@"      $word1 word2 word3");
@@ -166,7 +179,7 @@ namespace Mono.TextEditor.Tests.Actions
 			Check (data, @"      $");
 		}
 
-		[Test()]
+		[Test]
 		public void TestDeleteNextSubword ()
 		{
 			var data = Create (@"      $SomeLongWord");

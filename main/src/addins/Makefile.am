@@ -5,13 +5,14 @@ SUBDIRS = \
 	GnomePlatform \
 	MonoDevelop.DesignerSupport \
 	MonoDevelop.Debugger \
+	MonoDevelop.Debugger.Gdb \
 	Deployment \
 	MonoDevelop.SourceEditor2 \
 	MonoDevelop.Refactoring \
 	VersionControl \
 	MonoDevelop.Autotools \
 	MonoDevelop.Gettext \
-	MonoDevelop.XmlEditor \
+	Xml \
 	TextTemplating \
 	AspNet \
 	CSharpBinding \
