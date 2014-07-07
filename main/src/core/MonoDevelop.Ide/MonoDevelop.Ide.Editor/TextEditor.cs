@@ -468,6 +468,13 @@ namespace MonoDevelop.Ide.Editor
 			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
+		public void ReplaceText (ISegment segment, ITextSource value)
+		{
+			if (segment == null)
+				throw new ArgumentNullException ("segment");
+			ReadWriteTextDocument.ReplaceText (segment.Offset, segment.Length, value);
+		}
+
 		public IDocumentLine GetLine (int lineNumber)
 		{
 			return ReadOnlyTextDocument.GetLine (lineNumber);

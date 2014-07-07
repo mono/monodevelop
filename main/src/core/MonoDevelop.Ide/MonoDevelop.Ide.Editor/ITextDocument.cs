@@ -108,6 +108,13 @@ namespace MonoDevelop.Ide.Editor
 			document.ReplaceText (segment.Offset, segment.Length, value);
 		}
 
+		public static void ReplaceText (this ITextDocument document, ISegment segment, ITextSource textSource)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			document.ReplaceText (segment.Offset, segment.Length, textSource);
+		}
+
 		public static void Save (this ITextDocument document)
 		{
 			if (document == null)

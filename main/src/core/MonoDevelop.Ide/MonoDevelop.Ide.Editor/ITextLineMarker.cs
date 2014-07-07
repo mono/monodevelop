@@ -65,6 +65,4 @@ namespace MonoDevelop.Ide.Editor
 	{
 
 	}
-
 }
-
