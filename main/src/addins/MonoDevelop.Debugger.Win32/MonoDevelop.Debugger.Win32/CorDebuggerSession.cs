@@ -397,18 +397,20 @@ namespace MonoDevelop.Debugger.Win32
 							return;
 					}
 				}
-				switch (bp.HitAction) {
-					case HitAction.CustomAction:
+
+				if ((bp.HitAction & HitAction.CustomAction) != HitAction.None) {
 						// If custom action returns true, execution must continue
-						if (binfo.RunCustomBreakpointAction (bp.CustomActionId))
-							return;
-						break;
-					case HitAction.PrintExpression: {
-						string exp = EvaluateTrace (e.Thread, bp.TraceExpression);
-						binfo.UpdateLastTraceValue (exp);
+					if (binfo.RunCustomBreakpointAction (bp.CustomActionId))
 						return;
-					}
 				}
+
+				if ((bp.HitAction & HitAction.PrintExpression) != HitAction.None) {
+					string exp = EvaluateTrace (e.Thread, bp.TraceExpression);
+					binfo.UpdateLastTraceValue (exp);
+				}
+
+				if ((bp.HitAction & HitAction.Break) == HitAction.None)
+					return;
 			}
 
 			if (e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
