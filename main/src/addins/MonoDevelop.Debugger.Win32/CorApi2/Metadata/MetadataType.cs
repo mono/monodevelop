@@ -35,6 +35,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
             else
             {
+                StringBuilder szTypedef = null;
                 // get info about the type
                 int size;
                 int ptkExtends;
@@ -46,15 +47,31 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                                          out pdwTypeDefFlags,
                                          out ptkExtends
                                          );
-                StringBuilder szTypedef = new StringBuilder(size);
-                importer.GetTypeDefProps(classToken,
-                                         szTypedef,
-                                         szTypedef.Capacity,
-                                         out size,
-                                         out pdwTypeDefFlags,
-                                         out ptkExtends
-                                         );
-                
+				if (size == 0) {
+					int ptkResScope = 0;
+					importer.GetTypeRefProps (classToken,
+						out ptkResScope,
+						null,
+						0,
+						out size
+					);
+					szTypedef = new StringBuilder (size);
+					importer.GetTypeRefProps (classToken,
+						out ptkResScope,
+						szTypedef,
+						size,
+						out size
+					);
+				} else {
+					szTypedef = new StringBuilder (size);
+					importer.GetTypeDefProps (classToken,
+						szTypedef,
+						szTypedef.Capacity,
+						out size,
+						out pdwTypeDefFlags,
+						out ptkExtends
+					);
+				}
                 m_name = GetNestedClassPrefix(importer,classToken,pdwTypeDefFlags) + szTypedef.ToString();
 
                 // Check whether the type is an enum
@@ -483,7 +500,6 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             throw new NotImplementedException();
         }
         
-		// TODO: Implement
         public override Type[] GetInterfaces()
         {
 			var al = new ArrayList();
@@ -498,7 +514,10 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 					m_importer.EnumInterfaceImpls (ref hEnum,(int)m_typeToken,out impl,1,out size);
 					if(size==0)
 						break;
-					al.Add (new MetadataType (m_importer, impl));
+					int classTk;
+					int intfTk;
+					m_importer.GetInterfaceImplProps (impl, out classTk, out intfTk);
+					al.Add (new MetadataType (m_importer, intfTk));
 				}
 			}
 			finally 
