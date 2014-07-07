@@ -27,7 +27,6 @@
 
 using System;
 using MonoDevelop.Core;
-using Gtk;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;

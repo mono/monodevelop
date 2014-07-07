@@ -3162,18 +3162,12 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\StatusArea.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\RoundButton.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\ButtonBar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\SearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ISearchDataSource.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\FileSearchCategory.cs" />
     <Compile Include="MonoDevelop.Components.PropertyGrid\PropertyGridTable.cs" />
     <Compile Include="MonoDevelop.Components\CompactDialog.cs" />
     <Compile Include="MonoDevelop.Components.Docking\DockVisualStyle.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\StyledProgressBar.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\SearchPopupWindow.cs" />
     <Compile Include="MonoDevelop.Components\PopoverWindow.cs" />
     <Compile Include="MonoDevelop.Components\TooltipPopoverWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Components\AnimatedIcon.cs" />
@@ -3198,7 +3192,6 @@
     <Compile Include="MonoDevelop.Components\PopoverWindowTheme.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageYoutubeFeed.cs" />
     <Compile Include="MonoDevelop.Ide\EditReferencesEventArgs.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\StatusAreaTheme.cs" />
     <Compile Include="MonoDevelop.Components\PopoverWidget.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\TextEditorService.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\FileLineExtension.cs" />
@@ -3209,7 +3202,6 @@
     <Compile Include="MonoDevelop.Ide.TextEditing\LineCountEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\FileExtension.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\FileExtensionEventArgs.cs" />
-    <Compile Include="MonoDevelop.Components.MainToolbar\StatusAreaBuildTheme.cs" />
     <Compile Include="MonoDevelop.Components\ThreadedRenderer.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\ConfigurationMerger.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\NavigateToCommand.cs" />
@@ -3504,6 +3496,14 @@
     <Compile Include="MonoDevelop.Components.Docking\Mac\DockFrameBackend.cs" />
     <Compile Include="MonoDevelop.Components.Docking\Mac\DockItemBackend.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\IShellView.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\Gtk\MainToolbar.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\Gtk\ButtonBar.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\Gtk\RoundButton.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\Gtk\SearchPopupWindow.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\Gtk\StatusArea.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\Gtk\StatusAreaBuildTheme.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\Gtk\StatusAreaTheme.cs" />
+    <Compile Include="MonoDevelop.Components.MainToolbar\Gtk\StyledProgressBar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -3553,6 +3553,8 @@
     <Folder Include="MonoDevelop.Ide.Editor\Projection\" />
     <Folder Include="icons\mac\" />
     <Folder Include="MonoDevelop.Components.Docking\Mac\" />
+    <Folder Include="MonoDevelop.Components.MainToolbar\Gtk\" />
+    <Folder Include="MonoDevelop.Components.MainToolbar\Mac\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

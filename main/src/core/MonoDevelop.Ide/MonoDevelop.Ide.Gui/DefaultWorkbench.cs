@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.Gui
 			};
 		}
 
-		public void InitializeWorkspace()
+		public void Initialize ()
 		{
 			// FIXME: GTKize
 			IdeApp.ProjectOperations.CurrentProjectChanged += (s,a) => SetWorkbenchTitle ();
@@ -259,14 +259,12 @@ namespace MonoDevelop.Ide.Gui
 			FileService.FileRemoved += CheckRemovedFile;
 			FileService.FileRenamed += CheckRenamedFile;
 			
-//			TopMenu.Selected   += new CommandHandler(OnTopMenuSelected);
-//			TopMenu.Deselected += new CommandHandler(OnTopMenuDeselected);
-			
-			if (!DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath)) {
+			if (!DesktopService.SetGlobalMenu (IdeApp.CommandService, mainMenuPath, appMenuPath))
 				CreateMenuBar ();
-			}
-			
+
 			AddinManager.ExtensionChanged += OnExtensionChanged;
+
+			InitializeLayout ();
 		}
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)
@@ -310,7 +308,17 @@ namespace MonoDevelop.Ide.Gui
 			topMenu.Destroy ();
 			topMenu = null;
 		}
-		
+
+		public void ShowCommandBar (string barId)
+		{
+			toolbar.ShowCommandBar (barId);
+		}
+
+		public void HideCommandBar (string barId)
+		{
+			toolbar.HideCommandBar (barId);
+		}
+
 		public void CloseContent (IViewContent content)
 		{
 			if (viewContentCollection.Contains(content)) {
@@ -663,7 +671,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		protected /*override*/ void OnClosing(object o, Gtk.DeleteEventArgs e)
 		{
-			if (Close()) {
+			if (IdeApp.Workbench.Close ()) {
 				Gtk.Application.Quit ();
 			} else {
 				e.RetVal = true;
@@ -671,6 +679,11 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		protected void OnClosed(EventArgs e)
+		{
+			Close ();
+		}
+
+		public void Close ()
 		{
 			//don't allow the "full view" layouts to persist - they are always derived from the "normal" layout
 			foreach (var fv in dock.Layouts)
@@ -692,46 +705,7 @@ namespace MonoDevelop.Ide.Gui
 			rootWidget.Destroy ();
 			Destroy ();
 		}
-		
-		public bool Close() 
-		{
-			if (!IdeApp.OnExit ())
-				return false;
 
-			IdeApp.Workspace.SavePreferences ();
-
-			bool showDirtyDialog = false;
-
-			foreach (IViewContent content in viewContentCollection)
-			{
-				if (content.IsDirty) {
-					showDirtyDialog = true;
-					break;
-				}
-			}
-
-			if (showDirtyDialog) {
-				using (DirtyFilesDialog dlg = new DirtyFilesDialog ()) {
-					dlg.Modal = true;
-					if (MessageService.ShowCustomDialog (dlg, this) != (int)Gtk.ResponseType.Ok)
-						return false;
-				}
-			}
-			
-			if (!IdeApp.Workspace.Close (false, false))
-				return false;
-			
-			CloseAllViews ();
-			
-			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", this.Memento);
-			IdeApp.OnExited ();
-			OnClosed (null);
-			
-			IdeApp.CommandService.Dispose ();
-			
-			return true;
-		}
-		
 		int activeWindowChangeLock = 0;
 
 		public void LockActiveWindowChangeEvent ()
@@ -788,7 +762,7 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		public void InitializeLayout ()
+		void InitializeLayout ()
 		{
 			AddinManager.AddExtensionNodeHandler (stockLayoutsPath, OnLayoutsExtensionChanged);
 			
@@ -1258,7 +1232,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal DockItem GetDockItem (PadCodon content)
+		public DockItem GetDockItem (PadCodon content)
 		{
 			if (padContentCollection.Contains (content)) {
 				DockItem item = dock.GetItem (content.PadId);

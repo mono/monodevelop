@@ -35,7 +35,6 @@ using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core.Text;
-using Gtk;
 using System.Linq;
 using MonoDevelop.Components.Commands;
 
@@ -43,12 +42,9 @@ namespace MonoDevelop.Components.MainToolbar
 {
 	class CommandSearchCategory : SearchCategory
 	{
-		Widget widget;
-
-		public CommandSearchCategory (Widget widget) : base (GettextCatalog.GetString("Commands"))
+		public CommandSearchCategory () : base (GettextCatalog.GetString("Commands"))
 		{
-			this.widget = widget;
-			this.lastResult = new WorkerResult (widget);
+			this.lastResult = new WorkerResult ();
 		}
 
 		WorkerResult lastResult;
@@ -66,7 +62,7 @@ namespace MonoDevelop.Components.MainToolbar
 				try {
 					if (searchPattern.Tag != null && !validTags.Contains (searchPattern.Tag) || searchPattern.HasLineNumber)
 						return null;
-					WorkerResult newResult = new WorkerResult (widget);
+					WorkerResult newResult = new WorkerResult ();
 					newResult.pattern = searchPattern.Pattern;
 
 					newResult.matcher = StringMatcher.GetMatcher (searchPattern.Pattern, false);
@@ -108,9 +104,9 @@ namespace MonoDevelop.Components.MainToolbar
 			public bool FullSearch;
 			public StringMatcher matcher = null;
 			
-			public WorkerResult (Widget widget)
+			public WorkerResult ()
 			{
-				results = new ResultsDataSource (widget);
+				results = new ResultsDataSource ();
 			}
 			
 			internal SearchResult CheckCommand (Command c, CommandTargetRoute route)

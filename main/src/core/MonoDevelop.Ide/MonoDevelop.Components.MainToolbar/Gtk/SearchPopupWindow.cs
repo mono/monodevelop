@@ -124,7 +124,7 @@ namespace MonoDevelop.Components.MainToolbar
 			this.AllowGrow = false;
 
 			categories.Add (new FileSearchCategory (this));
-			categories.Add (new CommandSearchCategory (this));
+			categories.Add (new CommandSearchCategory ());
 			categories.Add (new SearchInSolutionSearchCategory ());
 			foreach (var cat in AddinManager.GetExtensionObjects<SearchCategory> ("/MonoDevelop/Ide/SearchCategories")) {
 				categories.Add (cat);

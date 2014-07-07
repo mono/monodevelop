@@ -64,6 +64,7 @@ namespace MonoDevelop.Ide.Gui
 		readonly List<Document> documents = new List<Document> ();
 		readonly List<Split> splits = new List<Split> ();
 		DefaultWorkbench workbench;
+		IShellView shellView;
 		PadCollection pads;
 
 		public event EventHandler ActiveDocumentChanged;
@@ -73,22 +74,19 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal void Initialize (ProgressMonitor monitor)
 		{
-			monitor.BeginTask (GettextCatalog.GetString ("Initializing Main Window"), 4);
+			monitor.BeginTask (GettextCatalog.GetString ("Initializing Main Window"), 3);
 			try {
 				Counters.Initialization.Trace ("Creating DefaultWorkbench");
 				workbench = new DefaultWorkbench ();
+				shellView = workbench;
 				monitor.Step (1);
 				
-				Counters.Initialization.Trace ("Initializing Workspace");
-				workbench.InitializeWorkspace();
+				Counters.Initialization.Trace ("Initializing Shell");
+				shellView.Initialize ();
 				monitor.Step (1);
 				
-				Counters.Initialization.Trace ("Initializing Layout");
-				workbench.InitializeLayout ();
-				monitor.Step (1);
-				
-				((Gtk.Window)workbench).Visible = false;
-				workbench.ActiveWorkbenchWindowChanged += OnDocumentChanged;
+				workbench.Visible = false;
+				shellView.ActiveWorkbenchWindowChanged += OnDocumentChanged;
 				IdeApp.Workspace.StoringUserPreferences += OnStoringWorkspaceUserPreferences;
 				IdeApp.Workspace.LoadingUserPreferences += OnLoadingWorkspaceUserPreferences;
 				
@@ -122,10 +120,10 @@ namespace MonoDevelop.Ide.Gui
 			Counters.Initialization.Trace ("Loading memento");
 			var memento = PropertyService.Get (workbenchMemento, new Properties ());
 			Counters.Initialization.Trace ("Setting memento");
-			workbench.Memento = memento;
+			shellView.Memento = memento;
 			Counters.Initialization.Trace ("Making Visible");
 			RootWindow.Visible = true;
-			workbench.CurrentLayout = "Solution";
+			CurrentLayout = "Solution";
 			
 			// now we have an layout set notify it
 			Counters.Initialization.Trace ("Setting layout");
@@ -140,7 +138,31 @@ namespace MonoDevelop.Ide.Gui
 		
 		internal bool Close ()
 		{
-			return workbench.Close();
+			if (!IdeApp.OnExit ())
+				return false;
+
+			if (Documents.Any (d => d.IsDirty)) {
+				DirtyFilesDialog dlg = new DirtyFilesDialog ();
+				dlg.Modal = true;
+				if (MessageService.ShowCustomDialog (dlg, RootWindow) != (int)Gtk.ResponseType.Ok)
+					return false;
+			}
+
+			IdeApp.Workspace.SavePreferences ();
+
+			if (!IdeApp.Workspace.Close (false, false))
+				return false;
+
+			shellView.CloseAllViews ();
+
+			PropertyService.Set ("SharpDevelop.Workbench.WorkbenchMemento", shellView.Memento);
+			IdeApp.OnExited ();
+
+			shellView.Close ();
+
+			IdeApp.CommandService.Dispose ();
+
+			return true;
 		}
 		
 		public ReadOnlyCollection<Document> Documents {
@@ -226,15 +248,15 @@ namespace MonoDevelop.Ide.Gui
 		}
 				
 		public bool FullScreen {
-			get { return workbench.FullScreen; }
-			set { workbench.FullScreen = value; }
+			get { return shellView.FullScreen; }
+			set { shellView.FullScreen = value; }
 		}
 		
 		public string CurrentLayout {
-			get { return workbench.CurrentLayout; }
+			get { return shellView.CurrentLayout; }
 			set {
-				if (value != workbench.CurrentLayout) {
-					workbench.CurrentLayout = value;
+				if (value != shellView.CurrentLayout) {
+					shellView.CurrentLayout = value;
 					if (LayoutChanged != null)
 						LayoutChanged (this, EventArgs.Empty);
 				}
@@ -242,7 +264,7 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public IList<string> Layouts {
-			get { return workbench.Layouts; }
+			get { return shellView.Layouts; }
 		}
 
 		internal DockFrame DockFrame {
@@ -255,18 +277,19 @@ namespace MonoDevelop.Ide.Gui
 		
 		public StatusBar StatusBar {
 			get {
-				return workbench.StatusBar.MainContext;
+				return shellView.StatusBar.MainContext;
 			}
 		}
 
 		public void ShowCommandBar (string barId)
 		{
-			workbench.Toolbar.ShowCommandBar (barId);
+			shellView.ShowCommandBar (barId);
 		}
 		
 		public void HideCommandBar (string barId)
 		{
 			workbench.Toolbar.HideCommandBar (barId);
+			//			shellView.HideCommandBar (barId);
 		}
 
 		internal MonoDevelop.Components.MainToolbar.MainToolbarController Toolbar {
@@ -286,7 +309,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void DeleteLayout (string name)
 		{
-			workbench.DeleteLayout (name);
+			shellView.DeleteLayout (name);
 			if (LayoutChanged != null)
 				LayoutChanged (this, EventArgs.Empty);
 		}
@@ -335,13 +358,13 @@ namespace MonoDevelop.Ide.Gui
 
 		internal Pad ShowPad (PadCodon content)
 		{
-			workbench.ShowPad (content);
+			shellView.ShowPad (content);
 			return WrapPad (content);
 		}
 
 		internal Pad AddPad (PadCodon content)
 		{
-			workbench.AddPad (content);
+			shellView.AddPad (content);
 			return WrapPad (content);
 		}
 
@@ -369,7 +392,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			WelcomePage.WelcomePageService.HideWelcomePage ();
 
-			DockItem item = workbench.GetDockItem (padContent);
+			DockItem item = shellView.GetDockItem (padContent);
 			if (item != null)
 				item.Present (giveFocus);
 		}
@@ -573,7 +596,7 @@ namespace MonoDevelop.Ide.Gui
 		
 		public Document OpenDocument (IViewContent content, bool bringToFront)
 		{
-			workbench.ShowView (content, bringToFront);
+			shellView.ShowView (content, bringToFront);
 			if (bringToFront)
 				Present ();
 			return WrapDocument (content.WorkbenchWindow);

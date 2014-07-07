@@ -24,11 +24,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Codons;
+using MonoDevelop.Components.Docking;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Gui
 {
 	interface IShellView
 	{
+		void Initialize ();
+		void Close ();
+
+		void ShowCommandBar (string barId);
+		void HideCommandBar (string barId);
+
+		StatusBar StatusBar { get; }
+		bool FullScreen { get; set; }
+
+		ICustomXmlSerializer Memento { get; set; }
+
+		void ShowView (IViewContent content, bool bringToFront);
+		void CloseAllViews();
+
+		void AddPad (PadCodon content);
+		void ShowPad (PadCodon content);
+
+		DockItem GetDockItem (PadCodon padContent);
+		string CurrentLayout { get; set; }
+		IList<string> Layouts { get; }
+		void DeleteLayout (string name);
+
+		event EventHandler ActiveWorkbenchWindowChanged;
 	}
 }
 

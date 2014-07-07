@@ -139,7 +139,7 @@ namespace MonoDevelop.Components.MainToolbar
 			
 			public WorkerResult (Widget widget)
 			{
-				results = new ResultsDataSource (widget);
+				results = new ResultsDataSource ();
 			}
 			
 			internal SearchResult CheckFile (ProjectFile file)

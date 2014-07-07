@@ -29,8 +29,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
-using Gdk;
-using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
@@ -46,13 +44,11 @@ namespace MonoDevelop.Components.MainToolbar
 	class ResultsDataSource: List<SearchResult>, ISearchDataSource
 	{
 
-		Gtk.Widget widget;
 		SearchResult bestResult;
 		int bestRank = int.MinValue;
 
-		public ResultsDataSource (Gtk.Widget widget)
+		public ResultsDataSource ()
 		{
-			this.widget = widget;
 		}
 
 		public void SortUpToN (MonoDevelop.Components.MainToolbar.SearchCategory.DataItemComparer comparison, int n)
@@ -125,14 +121,14 @@ namespace MonoDevelop.Components.MainToolbar
 		{
 			if (isSelected)
 				return GLib.Markup.EscapeText (this [item].PlainText);
-			return this [item].GetMarkupText (widget);
+			return this [item].GetMarkupText ();
 		}
 
 		string ISearchDataSource.GetDescriptionMarkup (int item, bool isSelected)
 		{
 			if (isSelected)
 				return GLib.Markup.EscapeText (this [item].Description);
-			return this [item].GetDescriptionMarkupText (widget);
+			return this [item].GetDescriptionMarkupText ();
 		}
 
 		ISegment ISearchDataSource.GetRegion (int item)
