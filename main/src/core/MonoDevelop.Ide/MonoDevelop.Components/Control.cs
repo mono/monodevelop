@@ -35,6 +35,7 @@ namespace MonoDevelop.Components
 {
 	public class Control: IDisposable
 	{
+		object realWidget;
 		object nativeWidget;
 
 		protected Control ()
@@ -45,7 +46,8 @@ namespace MonoDevelop.Components
 		{
 			if (widget == null)
 				throw new ArgumentNullException ("widget");
-			this.nativeWidget = widget;
+
+			this.realWidget = widget;
 		}
 
 		~Control ()
@@ -55,6 +57,8 @@ namespace MonoDevelop.Components
 
 		protected virtual object CreateNativeWidget ()
 		{
+			if (realWidget != null)
+				return realWidget;
 			throw new NotSupportedException ();
 		}
 
