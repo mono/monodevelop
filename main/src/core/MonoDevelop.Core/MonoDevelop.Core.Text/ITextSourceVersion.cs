@@ -45,7 +45,7 @@ namespace MonoDevelop.Core.Text
 		/// <remarks>
 		/// Returns false when given <c>null</c>.
 		/// </remarks>
-		bool BelongsToSameDocumentAs(ITextSourceVersion other);
+		bool BelongsToSameDocumentAs (ITextSourceVersion other);
 
 		/// <summary>
 		/// Compares the age of this checkpoint to the other checkpoint.
@@ -55,7 +55,7 @@ namespace MonoDevelop.Core.Text
 		/// <returns>-1 if this version is older than <paramref name="other"/>.
 		/// 0 if <c>this</c> version instance represents the same version as <paramref name="other"/>.
 		/// 1 if this version is newer than <paramref name="other"/>.</returns>
-		int CompareAge(ITextSourceVersion other);
+		int CompareAge (ITextSourceVersion other);
 
 		/// <summary>
 		/// Gets the changes from this checkpoint to the other checkpoint.
@@ -63,12 +63,12 @@ namespace MonoDevelop.Core.Text
 		/// </summary>
 		/// <remarks>This method is thread-safe.</remarks>
 		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this checkpoint.</exception>
-		IEnumerable<TextChangeEventArgs> GetChangesTo(ITextSourceVersion other);
+		IEnumerable<TextChangeEventArgs> GetChangesTo (ITextSourceVersion other);
 
 		/// <summary>
 		/// Calculates where the offset has moved in the other buffer version.
 		/// </summary>
 		/// <exception cref="ArgumentException">Raised if 'other' belongs to a different document than this checkpoint.</exception>
-		int MoveOffsetTo(ITextSourceVersion other, int oldOffset);
+		int MoveOffsetTo (ITextSourceVersion other, int oldOffset);
 	}
 }

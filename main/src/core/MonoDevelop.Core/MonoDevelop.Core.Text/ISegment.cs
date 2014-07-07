@@ -380,10 +380,10 @@ namespace MonoDevelop.Core.Text
 		/// if they have positions in common and neither is empty. Empty spans do not overlap with any 
 		/// other span.
 		/// </summary>
-		public static bool OverlapsWith(this ISegment segment, ISegment other)
+		public static bool OverlapsWith (this ISegment segment, ISegment other)
 		{
-			int overlapStart = Math.Max(segment.Offset, other.Offset);
-			int overlapEnd = Math.Min(segment.EndOffset, other.EndOffset);
+			int overlapStart = Math.Max (segment.Offset, other.Offset);
+			int overlapEnd = Math.Min (segment.EndOffset, other.EndOffset);
 			return overlapStart < overlapEnd;
 		}
 

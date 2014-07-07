@@ -110,17 +110,6 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			document.Replace (offset, length, value.Text);
 		}
 
-
-		void ITextDocument.Undo ()
-		{
-			document.Undo ();
-		}
-
-		void ITextDocument.Redo ()
-		{
-			document.Redo ();
-		}
-
 		IDisposable ITextDocument.OpenUndoGroup ()
 		{
 			return document.OpenUndoGroup ();

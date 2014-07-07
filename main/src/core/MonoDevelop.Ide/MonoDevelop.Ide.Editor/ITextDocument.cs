@@ -62,10 +62,6 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
-		void Undo ();
-
-		void Redo ();
-
 		IDisposable OpenUndoGroup();
 
 		/// <summary>

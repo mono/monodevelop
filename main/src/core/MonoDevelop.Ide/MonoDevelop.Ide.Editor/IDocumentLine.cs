@@ -59,6 +59,7 @@ namespace MonoDevelop.Ide.Editor
 		UnicodeNewline UnicodeNewline {
 			get;
 		}
+
 		/// <summary>
 		/// Gets the length of the line terminator.
 		/// Returns 1 or 2; or 0 at the end of the document.

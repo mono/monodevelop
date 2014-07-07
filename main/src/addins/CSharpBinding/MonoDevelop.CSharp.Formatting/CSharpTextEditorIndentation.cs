@@ -362,7 +362,7 @@ namespace MonoDevelop.CSharp.Formatting
 			cursorPositionBeforeKeyPress = Editor.CaretOffset;
 			bool isSomethingSelected = Editor.IsSomethingSelected;
 			if (key == Gdk.Key.BackSpace && Editor.CaretOffset == lastInsertedSemicolon) {
-				Editor.Undo ();
+				EditActions.Undo (Editor);
 				lastInsertedSemicolon = -1;
 				return false;
 			}

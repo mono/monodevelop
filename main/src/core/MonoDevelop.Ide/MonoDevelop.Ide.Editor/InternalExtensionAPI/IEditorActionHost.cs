@@ -57,5 +57,9 @@ namespace MonoDevelop.Ide.Editor
 		void SelectAll ();
 
 		void NewLine ();
+
+		void Undo ();
+
+		void Redo ();
 	}
 }

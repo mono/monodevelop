@@ -62,7 +62,7 @@ namespace MonoDevelop.Core.Text
 		/// <summary>
 		/// Gets the whole text as string.
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage ("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
 		string Text { get; }
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace MonoDevelop.Core.Text
 		/// <returns>The character at the specified position.</returns>
 		/// <remarks>This is the same as Text[offset], but is more efficient because
 		///  it doesn't require creating a String object.</remarks>
-		char GetCharAt(int offset);
+		char GetCharAt (int offset);
 
 		/// <summary>
 		/// Retrieves the text for a portion of the document.
@@ -81,7 +81,7 @@ namespace MonoDevelop.Core.Text
 		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
 		/// <remarks>This is the same as Text.Substring, but is more efficient because
 		///  it doesn't require creating a String object for the whole document.</remarks>
-		string GetTextAt(int offset, int length);
+		string GetTextAt (int offset, int length);
 
 		/// <summary>
 		/// Creates a new TextReader to read from this text source.
@@ -107,13 +107,13 @@ namespace MonoDevelop.Core.Text
 		/// Creates an immutable snapshot of this text source.
 		/// Unlike all other methods in this interface, this method is thread-safe.
 		/// </summary>
-		ITextSource CreateSnapshot();
+		ITextSource CreateSnapshot ();
 
 		/// <summary>
 		/// Creates an immutable snapshot of a part of this text source.
 		/// Unlike all other methods in this interface, this method is thread-safe.
 		/// </summary>
-		ITextSource CreateSnapshot(int offset, int length);
+		ITextSource CreateSnapshot (int offset, int length);
 	}
 
 	public static class TextSourceExtension
@@ -122,13 +122,13 @@ namespace MonoDevelop.Core.Text
 		/// Retrieves the text for a portion of the document.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
-		public static string GetTextAt(this ITextSource source, ISegment segment)
+		public static string GetTextAt (this ITextSource source, ISegment segment)
 		{
 			if (source == null)
 				throw new ArgumentNullException ("source");
 			return source.GetTextAt (segment.Offset, segment.Length);
 		}
-	
+
 		/// <summary>
 		/// Writes the text from this document into a file.
 		/// </summary>
@@ -169,7 +169,7 @@ namespace MonoDevelop.Core.Text
 		/// Creates an immutable snapshot of a part of this text source.
 		/// Unlike all other methods in this interface, this method is thread-safe.
 		/// </summary>
-		public static ITextSource CreateSnapshot(this ITextSource source, ISegment segment)
+		public static ITextSource CreateSnapshot (this ITextSource source, ISegment segment)
 		{
 			if (source == null)
 				throw new ArgumentNullException ("source");

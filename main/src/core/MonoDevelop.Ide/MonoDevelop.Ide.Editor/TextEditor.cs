@@ -300,16 +300,6 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument.Length;
 			}
 		}
-			
-		public void Undo ()
-		{
-			ReadWriteTextDocument.Undo ();
-		}
-
-		public void Redo ()
-		{
-			ReadWriteTextDocument.Redo ();
-		}
 
 		public IDisposable OpenUndoGroup ()
 		{

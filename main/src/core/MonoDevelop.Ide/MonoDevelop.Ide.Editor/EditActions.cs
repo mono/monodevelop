@@ -106,5 +106,15 @@ namespace MonoDevelop.Ide.Editor
 		{
 			editor.EditorActionHost.NewLine ();
 		}
+
+		public static void Undo (TextEditor editor)
+		{
+			editor.EditorActionHost.Undo ();
+		}
+
+		public static void Redo (TextEditor editor)
+		{
+			editor.EditorActionHost.Redo ();
+		}
 	}
 }
