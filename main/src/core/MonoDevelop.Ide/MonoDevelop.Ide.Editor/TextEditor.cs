@@ -36,10 +36,11 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Extensions;
 using System.Linq;
 using MonoDevelop.Components;
+using System.ComponentModel;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public sealed class TextEditor : Control, ITextDocument, IInternalEditorExtensions, IDisposable
+	public sealed class TextEditor : Control, ITextDocument, IDisposable
 	{
 		readonly ITextEditorImpl textEditorImpl;
 		IReadonlyTextDocument ReadOnlyTextDocument { get { return textEditorImpl.Document; } }
@@ -52,23 +53,6 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		FileTypeCondition fileTypeCondition = new FileTypeCondition ();
-
-		ExtensionContext extensionContext;
-
-		internal ExtensionContext ExtensionContext {
-			get {
-				return extensionContext;
-			}
-			set {
-				if (extensionContext != null) {
-					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-					textEditorImpl.ClearTooltipProviders ();
-				}
-				extensionContext = value;
-				if (extensionContext != null)
-					extensionContext.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
-			}
-		}
 
 		void OnTooltipProviderChanged (object s, ExtensionNodeEventArgs a)
 		{
@@ -219,18 +203,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		internal IEditorActionHost EditorActionHost {
-			get {
-				return textEditorImpl.Actions;
-			}
-		}
-
-		internal ITextMarkerFactory TextMarkerFactory {
-			get {
-				return textEditorImpl.TextMarkerFactory;
-			}
-		}
-
 		public bool IsInAtomicUndo {
 			get {
 				return ReadWriteTextDocument.IsInAtomicUndo;
@@ -328,22 +300,7 @@ namespace MonoDevelop.Ide.Editor
 				return ReadOnlyTextDocument.Length;
 			}
 		}
-
-		internal TextEditor (ITextEditorImpl textEditorImpl)
-		{
-			if (textEditorImpl == null)
-				throw new ArgumentNullException ("textEditorImpl");
-			this.textEditorImpl = textEditorImpl;
-			commandRouter = new InternalCommandRouter (this);
-			fileTypeCondition.SetFileName (FileName);
-			ExtensionContext = AddinManager.CreateExtensionContext ();
-			ExtensionContext.RegisterCondition ("FileType", fileTypeCondition);
-
-			FileNameChanged += delegate {
-				fileTypeCondition.SetFileName (FileName);
-			};
-		}
-	
+			
 		public void Undo ()
 		{
 			ReadWriteTextDocument.Undo ();
@@ -644,16 +601,6 @@ namespace MonoDevelop.Ide.Editor
 			return ReadWriteTextDocument.CreateDocumentSnapshot ();
 		}
 
-		TextEditorViewContent viewContent;
-		internal IViewContent GetViewContent ()
-		{
-			if (viewContent == null) {
-				viewContent = new TextEditorViewContent (this, textEditorImpl);
-			}
-
-			return viewContent;
-		}
-
 		public string GetVirtualIndentationString (int lineNumber)
 		{
 			if (lineNumber < 1 || lineNumber >= LineCount)
@@ -722,21 +669,23 @@ namespace MonoDevelop.Ide.Editor
 			CenterTo (LocationToOffset (loc));
 		}
 
-		void IInternalEditorExtensions.SetIndentationTracker (IndentationTracker indentationTracker)
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public void SetIndentationTracker (IndentationTracker indentationTracker)
 		{
 			textEditorImpl.SetIndentationTracker (indentationTracker);
 		}
 
-		void IInternalEditorExtensions.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
 			textEditorImpl.SetSelectionSurroundingProvider (surroundingProvider);
 		}
 
-		void IInternalEditorExtensions.SetTextPasteHandler (TextPasteHandler textPasteHandler)
+		[EditorBrowsable(EditorBrowsableState.Advanced)]
+		public void SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
 			textEditorImpl.SetTextPasteHandler (textPasteHandler);
 		}
-
 
 		public IList<SkipChar> SkipChars {
 			get {
@@ -766,7 +715,62 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.CreateNativeControl ();
 		}
 
-	
+		#region Internal API
+		ExtensionContext extensionContext;
+
+		internal ExtensionContext ExtensionContext {
+			get {
+				return extensionContext;
+			}
+			set {
+				if (extensionContext != null) {
+					extensionContext.RemoveExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+					textEditorImpl.ClearTooltipProviders ();
+				}
+				extensionContext = value;
+				if (extensionContext != null)
+					extensionContext.AddExtensionNodeHandler ("MonoDevelop/SourceEditor2/TooltipProviders", OnTooltipProviderChanged);
+			}
+		}
+
+		internal IEditorActionHost EditorActionHost {
+			get {
+				return textEditorImpl.Actions;
+			}
+		}
+
+		internal ITextMarkerFactory TextMarkerFactory {
+			get {
+				return textEditorImpl.TextMarkerFactory;
+			}
+		}
+
+		internal TextEditor (ITextEditorImpl textEditorImpl)
+		{
+			if (textEditorImpl == null)
+				throw new ArgumentNullException ("textEditorImpl");
+			this.textEditorImpl = textEditorImpl;
+			commandRouter = new InternalCommandRouter (this);
+			fileTypeCondition.SetFileName (FileName);
+			ExtensionContext = AddinManager.CreateExtensionContext ();
+			ExtensionContext.RegisterCondition ("FileType", fileTypeCondition);
+
+			FileNameChanged += delegate {
+				fileTypeCondition.SetFileName (FileName);
+			};
+		}
+
+		TextEditorViewContent viewContent;
+		internal IViewContent GetViewContent ()
+		{
+			if (viewContent == null) {
+				viewContent = new TextEditorViewContent (this, textEditorImpl);
+			}
+
+			return viewContent;
+		}
+		#endregion
+
 		#region Editor extensions
 		InternalCommandRouter commandRouter;
 		class InternalCommandRouter : MonoDevelop.Components.Commands.IMultiCastCommandRouter

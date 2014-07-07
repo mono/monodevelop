@@ -2957,17 +2957,17 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetTextEditorData ().IndentationTracker.GetIndentationString (lineNumber, 1);
 		}
 
-		void IInternalEditorExtensions.SetIndentationTracker (IndentationTracker indentationTracker)
+		void ITextEditorImpl.SetIndentationTracker (IndentationTracker indentationTracker)
 		{
 			TextEditor.GetTextEditorData ().IndentationTracker = indentationTracker != null ? new IndentationTrackerWrapper (wrapper, indentationTracker) : null;
 		}
 
-		void IInternalEditorExtensions.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
+		void ITextEditorImpl.SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider)
 		{
 			TextEditor.GetTextEditorData ().SelectionSurroundingProvider = surroundingProvider != null ? new SelectionSurroundingProviderWrapper (surroundingProvider) : null;
 		}
 		
-		void IInternalEditorExtensions.SetTextPasteHandler (TextPasteHandler textPasteHandler)
+		void ITextEditorImpl.SetTextPasteHandler (TextPasteHandler textPasteHandler)
 		{
 			if (textPasteHandler == null) {
 				TextEditor.GetTextEditorData ().TextPasteHandler = null;

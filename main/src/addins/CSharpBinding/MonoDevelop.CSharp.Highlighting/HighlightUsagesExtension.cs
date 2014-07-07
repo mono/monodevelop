@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			((IInternalEditorExtensions)Editor).SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, EditContext));
+			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, EditContext));
 			syntaxMode = new CSharpSyntaxMode (Editor, EditContext);
 			EditContext.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
 		}

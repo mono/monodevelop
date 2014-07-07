@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 
-	interface ITextEditorImpl : IViewContent, IInternalEditorExtensions, IDisposable
+	interface ITextEditorImpl : IViewContent, IDisposable
 	{
 		EditMode EditMode { get; }
 
@@ -186,6 +186,10 @@ namespace MonoDevelop.Ide.Editor
 		IEnumerable<IFoldSegment> GetFoldingsIn (int offset, int length);
 
 		string GetPangoMarkup (int offset, int length);
+
+		void SetIndentationTracker (IndentationTracker indentationTracker);
+		void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider);
+		void SetTextPasteHandler (TextPasteHandler textPasteHandler);
 
 		#region Internal use only API (do not mirror in TextEditor)
 

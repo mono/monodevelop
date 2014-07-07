@@ -2764,7 +2764,6 @@
     <Compile Include="MonoDevelop.Ide.Editor\ITextDocument.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditorDisplayBinding.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractUsagesExtension.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Extension\IInternalEditorExtensions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SimpleBracketMatcher.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditorViewContent.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IndentationTracker.cs" />

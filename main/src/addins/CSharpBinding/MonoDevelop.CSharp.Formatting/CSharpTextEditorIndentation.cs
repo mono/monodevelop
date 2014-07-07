@@ -152,25 +152,25 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 			stateTracker = new CacheIndentEngine (indentEngine);
 			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
-				((IInternalEditorExtensions)Editor).SetIndentationTracker (null);
+				Editor.SetIndentationTracker (null);
 			} else {
-				((IInternalEditorExtensions)Editor).SetIndentationTracker (new IndentVirtualSpaceManager (Editor, stateTracker));
+				Editor.SetIndentationTracker (new IndentVirtualSpaceManager (Editor, stateTracker));
 			}
 
 			indentationDisabled = DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto || DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.None;
 			if (indentationDisabled) {
-				((IInternalEditorExtensions)Editor).SetTextPasteHandler (null);
+				Editor.SetTextPasteHandler (null);
 			} else {
-				((IInternalEditorExtensions)Editor).SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, options, policy));
+				Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, options, policy));
 			}
 		}
 
 		public override void Dispose ()
 		{
 			if (Editor != null) {
-				((IInternalEditorExtensions)Editor).SetTextPasteHandler (null);
+				Editor.SetTextPasteHandler (null);
 				Editor.Options.Changed -= HandleTextOptionsChanged;
-				((IInternalEditorExtensions)Editor).SetIndentationTracker (null);
+				Editor.SetIndentationTracker (null);
 				Editor.TextChanging -= HandleTextReplacing;
 				Editor.TextChanged -= HandleTextReplaced;
 			}
