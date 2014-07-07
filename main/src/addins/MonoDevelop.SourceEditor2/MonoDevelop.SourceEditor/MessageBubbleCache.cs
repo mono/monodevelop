@@ -63,9 +63,9 @@ namespace MonoDevelop.SourceEditor
 			editor.TextArea.BeginHover += HandleBeginHover;
 			editor.VAdjustment.ValueChanged += HandleValueChanged;
 			editor.HAdjustment.ValueChanged += HandleValueChanged;
-			fontDescription = FontService.GetFontDescription ("MessageBubbles");
-			tooltipFontDescription = FontService.GetFontDescription ("MessageBubbleTooltip");
-			errorCountFontDescription = FontService.GetFontDescription ("MessageBubbleCounter");
+			fontDescription = FontService.GetFontDescription ("Pad");
+			tooltipFontDescription = FontService.GetFontDescription ("Pad").CopyModified (weight: Pango.Weight.Bold);
+			errorCountFontDescription = FontService.GetFontDescription ("Pad").CopyModified (weight: Pango.Weight.Bold);
 		}
 
 		void HandleValueChanged (object sender, EventArgs e)
