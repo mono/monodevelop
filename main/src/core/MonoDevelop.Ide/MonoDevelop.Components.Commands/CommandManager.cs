@@ -70,7 +70,6 @@ namespace MonoDevelop.Components.Commands
 		
 		// Fields used to keep track of the application focus
 		bool appHasFocus;
-		Gtk.Window lastFocused;
 		DateTime focusCheckDelayTimeout = DateTime.MinValue;
 		
 		internal static readonly object CommandRouteTerminator = new object ();
@@ -298,10 +297,30 @@ namespace MonoDevelop.Components.Commands
 			
 			return false;
 		}
-		
+
 		public event EventHandler<KeyBindingFailedEventArgs> KeyBindingFailed;
-		
+
 		[GLib.ConnectBefore]
+		void OnWindowKeyPressedBefore(object o, Gtk.KeyPressEventArgs e)
+		{
+			if (chords == null) {
+				e.RetVal = false;
+				return;
+			}
+			OnKeyPressed (o, e);
+		}
+
+		void OnWindowKeyPressed(object o, Gtk.KeyPressEventArgs e)
+		{
+			OnKeyPressed (o, e);
+		}
+
+		[GLib.ConnectBefore]
+		void OnRootWindowKeyPressed(object o, Gtk.KeyPressEventArgs e)
+		{
+			OnKeyPressed (o, e);
+		}
+
 		void OnKeyPressed (object o, Gtk.KeyPressEventArgs e)
 		{
 			if (!IsEnabled)
@@ -389,18 +408,32 @@ namespace MonoDevelop.Components.Commands
 		public void SetRootWindow (Gtk.Window root)
 		{
 			if (rootWidget != null)
-				rootWidget.KeyPressEvent -= OnKeyPressed;
-			
+				rootWidget.KeyPressEvent -= OnRootWindowKeyPressed;
+
 			rootWidget = root;
 			rootWidget.AddAccelGroup (AccelGroup);
-			RegisterTopWindow (rootWidget);
+			RegisterTopWindow (rootWidget, true);
 		}
-		
-		void RegisterTopWindow (Gtk.Window win)
+
+		/// <summary>
+		/// Register window to pass keyboard events to CommandManager for triggering commands with keyboard shortcut.
+		/// </summary>
+		/// <param name="win">Window</param>
+		public void RegisterWindowForKeyboardShortcuts (Gtk.Window win)
+		{
+			RegisterTopWindow (win, false);
+		}
+
+		void RegisterTopWindow (Gtk.Window win, bool root)
 		{
 			if (!topLevelWindows.ContainsKey (win)) {
 				topLevelWindows.Add (win, win);
-				win.KeyPressEvent += OnKeyPressed;
+				if (root) {
+					win.KeyPressEvent += OnRootWindowKeyPressed;
+				} else {
+					win.KeyPressEvent += OnWindowKeyPressedBefore;
+					win.KeyPressEvent += OnWindowKeyPressed;
+				}
 				win.Destroyed += TopLevelDestroyed;
 			}
 		}
@@ -409,10 +442,10 @@ namespace MonoDevelop.Components.Commands
 		{
 			Gtk.Window w = (Gtk.Window) o;
 			w.Destroyed -= TopLevelDestroyed;
-			w.KeyPressEvent -= OnKeyPressed;
+			w.KeyPressEvent -= OnRootWindowKeyPressed;
+			w.KeyPressEvent -= OnWindowKeyPressed;
+			w.KeyPressEvent -= OnWindowKeyPressedBefore;
 			topLevelWindows.Remove (w);
-			if (w == lastFocused)
-				lastFocused = null;
 			RegisterUserInteraction ();
 		}
 		
@@ -420,7 +453,6 @@ namespace MonoDevelop.Components.Commands
 		{
 			disposed = true;
 			bindings.Dispose ();
-			lastFocused = null;
 		}
 		
 		/// <summary>
@@ -1543,31 +1575,25 @@ namespace MonoDevelop.Components.Commands
 		Gtk.Window GetActiveWindow (Gtk.Window win)
 		{
 			Gtk.Window[] wins = Gtk.Window.ListToplevels ();
-			
+
 			bool hasFocus = false;
-			bool lastFocusedExists = lastFocused == null;
 			Gtk.Window newFocused = null;
 			foreach (Gtk.Window w in wins) {
 				if (w.Visible) {
 					if (w.HasToplevelFocus) {
 						hasFocus = true;
-						newFocused = w;
 					}
 					if (w.IsActive && w.Type == Gtk.WindowType.Toplevel && !(w is Gtk.Dialog)) {
 						if (win == null)
 							win = w;
 					}
-					if (lastFocused == w) {
-						lastFocusedExists = true;
-					}
 				}
 			}
-			
-			lastFocused = newFocused;
-			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
+
+			UpdateAppFocusStatus (hasFocus);
 			
 			if (win != null && win.IsRealized) {
-				RegisterTopWindow (win);
+				RegisterTopWindow (win, true);
 				return win;
 			}
 			else
@@ -1728,7 +1754,7 @@ namespace MonoDevelop.Components.Commands
 				VisitCommandTargets (v, null);
 		}
 
-		void UpdateAppFocusStatus (bool hasFocus, bool lastFocusedExists)
+		void UpdateAppFocusStatus (bool hasFocus)
 		{
 			if (hasFocus != appHasFocus) {
 				// The last focused window has been destroyed. Wait a few ms since another app's window
