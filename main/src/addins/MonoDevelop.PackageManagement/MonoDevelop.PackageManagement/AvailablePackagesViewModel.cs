@@ -159,7 +159,7 @@ namespace ICSharpCode.PackageManagement
 					yield return package;
 				}
 
-				foreach (IPackage package in solutionPackageRepository.GetPackages ()) {
+				foreach (IPackage package in GetSolutionPackages (search)) {
 					if (!prioritizedPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
 						prioritizedPackages.Add (package);
 						yield return package;
@@ -170,10 +170,15 @@ namespace ICSharpCode.PackageManagement
 
 		IEnumerable<IPackage> GetRecentPackages (PackageSearchCriteria search)
 		{
-			if (search.IsPackageVersionSearch) {
-				return Enumerable.Empty<IPackage> ();
-			}
 			return recentPackageRepository.Search (search.SearchText, IncludePrerelease);
+		}
+
+		IEnumerable<IPackage> GetSolutionPackages (PackageSearchCriteria search)
+		{
+			return solutionPackageRepository
+				.GetPackages ()
+				.Find (search.SearchText)
+				.FilterByPrerelease (IncludePrerelease);
 		}
 
 		protected override PackageViewModel CreatePackageViewModel (IPackage package, PackageSearchCriteria search)
