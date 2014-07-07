@@ -5,6 +5,21 @@ open System.Diagnostics
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
+module Symbols =
+  /// We always know the text of the identifier that resolved to symbol.
+  /// Trim the range of the referring text to only include this identifier.
+  /// This means references like A.B.C are trimmed to "C".  This allows renaming to just rename "C". 
+  let trimSymbolRegion(symbolUse:FSharpSymbolUse) (lastIdentAtLoc:string) =
+    let m = symbolUse.RangeAlternate 
+    let ((beginLine, beginCol), (endLine, endCol)) = ((m.StartLine, m.StartColumn), (m.EndLine, m.EndColumn))
+             
+    let (beginLine, beginCol) =
+        if endCol >=lastIdentAtLoc.Length && (beginLine <> endLine || (endCol-beginCol) >= lastIdentAtLoc.Length) then 
+            (endLine,endCol-lastIdentAtLoc.Length)
+        else
+            (beginLine, beginCol)
+    (beginLine, beginCol), (endLine, endCol)
+
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips). Provides default
@@ -42,7 +57,8 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
           let! res = checkResults.GetToolTipTextAlternate(line, col, lineStr, identIsland, token)
           let! sym = checkResults.GetSymbolUseAtLocation(line, col, lineStr, identIsland)
           Debug.WriteLine("Result: Got something, returning")
-          return sym |> Option.bind (fun sym -> Some (res, (sym.RangeAlternate.StartColumn, sym.RangeAlternate.EndColumn)))
+          return sym |> Option.bind (fun sym -> let (_, startCol), (_, endCol) = Symbols.trimSymbolRegion sym (Seq.last identIsland)
+                                                Some (res, (startCol, endCol)))
       }
     member x.GetDeclarationLocation(line, col, lineStr) =
       async {
@@ -348,4 +364,3 @@ type LanguageService(dirtyNotify) =
     return refs }
 
   member x.InvalidateConfiguration(options) = checker.InvalidateConfiguration(options)
-
