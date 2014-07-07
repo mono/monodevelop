@@ -204,6 +204,5 @@ namespace MonoDevelop.Ide.Editor
 
 		Xwt.Rectangle GetEditorAllocation ();
 		#endregion
-
 	}
 }

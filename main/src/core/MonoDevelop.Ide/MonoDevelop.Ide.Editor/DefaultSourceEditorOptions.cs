@@ -270,45 +270,9 @@ namespace MonoDevelop.Ide.Editor
 				}
 				if (zoom != value) {
 					zoom = value;
-					DisposeFont ();
 					OnChanged (EventArgs.Empty);
 				}
 			}
-		}
-		
-		public bool CanZoomIn {
-			get {
-				return zoom < ZOOM_MAX - 0.000001d;
-			}
-		}
-
-		public bool CanZoomOut {
-			get {
-				return zoom > ZOOM_MIN + 0.000001d;
-			}
-		}
-
-		public bool CanResetZoom {
-			get {
-				return zoom != 1d;
-			}
-		}
-
-		public void ZoomIn ()
-		{
-			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
-			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow + 1);
-		}
-
-		public void ZoomOut ()
-		{
-			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
-			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow - 1);
-		}
-
-		public void ZoomReset ()
-		{
-			Zoom = 1d;
 		}
 		
 		string defaultEolMarker = Environment.NewLine;
@@ -583,43 +547,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 		
-		public const string DEFAULT_FONT = "Mono 10";
-		Pango.FontDescription font, gutterFont;
-		public Pango.FontDescription Font {
-			get {
-				if (font == null) {
-					try {
-						font = Pango.FontDescription.FromString (FontName);
-					} catch {
-						Console.WriteLine ("Could not load font: {0}", FontName);
-					}
-					if (font == null || String.IsNullOrEmpty (font.Family))
-						font = Pango.FontDescription.FromString (DEFAULT_FONT);
-					if (font != null)
-						font.Size = (int)(font.Size * Zoom);
-				}
-				return font;
-			}
-		}
-		
-		public Pango.FontDescription GutterFont {
-			get {
-				if (gutterFont == null) {
-					try {
-						if (!string.IsNullOrEmpty (GutterFontName))
-							gutterFont = Pango.FontDescription.FromString (GutterFontName);
-					} catch {
-						Console.WriteLine ("Could not load gutter font: {0}", GutterFontName);
-					}
-					if (gutterFont == null || String.IsNullOrEmpty (gutterFont.Family))
-						gutterFont = Gtk.Widget.DefaultStyle.FontDescription.Copy ();
-					if (gutterFont != null)
-						gutterFont.Size = (int)(gutterFont.Size * Zoom);
-				}
-				return gutterFont;
-			}
-		}
-
 		PropertyWrapper<string> colorScheme = new PropertyWrapper<string> ("ColorScheme", "Default");
 		public string ColorScheme {
 			get {
@@ -656,23 +583,9 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 		
-		void DisposeFont ()
-		{
-			if (font != null) {
-				font.Dispose ();
-				font = null;
-			}
-
-			if (gutterFont != null) {
-				gutterFont.Dispose ();
-				gutterFont = null;
-			}
-		}
-		
 		public virtual void Dispose ()
 		{
 			FontService.RemoveCallback (UpdateFont);
-			DisposeFont ();
 		}
 
 		protected void OnChanged (EventArgs args)
