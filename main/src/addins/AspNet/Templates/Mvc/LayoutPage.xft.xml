@@ -1,0 +1,24 @@
+﻿<?xml version="1.0"?>
+<Template originator="Piotr Dowgiallo"
+          created="2012/06/15"
+          lastModified="2012/06/15">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>ASP.NET MVC Layout Page (Razor)</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET MVC</_Category>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<_Description>Creates an MVC Razor Layout page.</_Description>
+	</TemplateConfiguration>
+
+	<Conditions>
+		<AspNetMvc razor = "true" />
+	</Conditions>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.cshtml" src="../MvcCommon/_Layout.cshtml" />
+	</TemplateFiles>
+</Template>

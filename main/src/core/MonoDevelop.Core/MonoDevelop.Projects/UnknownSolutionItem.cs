@@ -114,4 +114,12 @@ namespace MonoDevelop.Projects
 		{
 		}
 	}
+
+	public class UnloadedSolutionItem: UnknownSolutionItem
+	{
+		public UnloadedSolutionItem ()
+		{
+			UnloadedEntry = true;
+		}
+	}
 }

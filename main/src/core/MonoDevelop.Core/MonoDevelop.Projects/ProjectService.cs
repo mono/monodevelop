@@ -75,8 +75,6 @@ namespace MonoDevelop.Projects
 		
 		internal event EventHandler DataContextChanged;
 		
-		LocalDataStoreSlot extensionChainSlot;
-		
 		class ExtensionChainInfo
 		{
 			public ExtensionContext ExtensionContext;
@@ -86,7 +84,6 @@ namespace MonoDevelop.Projects
 		
 		internal ProjectService ()
 		{
-			extensionChainSlot = Thread.AllocateDataSlot ();
 			AddinManager.AddExtensionNodeHandler (FileFormatsExtensionPath, OnFormatExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (SerializableClassesExtensionPath, OnSerializableExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (ExtendedPropertiesExtensionPath, OnPropertiesExtensionChanged);
@@ -108,25 +105,27 @@ namespace MonoDevelop.Projects
 		{
 			ProjectServiceExtension chain;
 			if (target != null) {
-				ExtensionChainInfo einfo = (ExtensionChainInfo) Thread.GetData (extensionChainSlot);
-				if (einfo == null) {
-					einfo = new ExtensionChainInfo ();
-					ExtensionContext ctx = AddinManager.CreateExtensionContext ();
-					einfo.ExtensionContext = ctx;
-					einfo.ItemTypeCondition = new ItemTypeCondition (target.GetType ());
-					einfo.ProjectLanguageCondition = new ProjectLanguageCondition (target);
-					ctx.RegisterCondition ("ItemType", einfo.ItemTypeCondition);
-					ctx.RegisterCondition ("ProjectLanguage", einfo.ProjectLanguageCondition);
-					Thread.SetData (extensionChainSlot, einfo);
-				} else {
-					einfo.ItemTypeCondition.ObjType = target.GetType ();
-					einfo.ProjectLanguageCondition.TargetProject = target;
+				lock (target) {
+					ExtensionChainInfo einfo = (ExtensionChainInfo)target.ExtendedProperties [typeof(ExtensionChainInfo)];
+					if (einfo == null) {
+						einfo = new ExtensionChainInfo ();
+						ExtensionContext ctx = AddinManager.CreateExtensionContext ();
+						einfo.ExtensionContext = ctx;
+						einfo.ItemTypeCondition = new ItemTypeCondition (target.GetType ());
+						einfo.ProjectLanguageCondition = new ProjectLanguageCondition (target);
+						ctx.RegisterCondition ("ItemType", einfo.ItemTypeCondition);
+						ctx.RegisterCondition ("ProjectLanguage", einfo.ProjectLanguageCondition);
+						target.ExtendedProperties [typeof(ExtensionChainInfo)] = einfo;
+					} else {
+						einfo.ItemTypeCondition.ObjType = target.GetType ();
+						einfo.ProjectLanguageCondition.TargetProject = target;
+					}
+					ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
+					chain = CreateExtensionChain (extensions);
+				
+					// After creating the chain there is no need to keep the reference to the target
+					einfo.ProjectLanguageCondition.TargetProject = null;
 				}
-				ProjectServiceExtension[] extensions = einfo.ExtensionContext.GetExtensionObjects ("/MonoDevelop/ProjectModel/ProjectServiceExtensions", typeof(ProjectServiceExtension)).Cast<ProjectServiceExtension> ().ToArray ();
-				chain = CreateExtensionChain (extensions);
-
-				// After creating the chain there is no need to keep the reference to the target
-				einfo.ProjectLanguageCondition.TargetProject = null;
 			}
 			else {
 				if (defaultExtensionChain == null) {

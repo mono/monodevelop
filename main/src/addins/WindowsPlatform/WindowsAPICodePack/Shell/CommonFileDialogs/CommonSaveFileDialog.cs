@@ -17,7 +17,7 @@ namespace Microsoft.WindowsAPICodePack.Dialogs
     /// <permission cref="System.Security.Permissions.FileDialogPermission">
     /// to save a file. Associated enumeration: <see cref="System.Security.Permissions.SecurityAction.LinkDemand"/>.
     /// </permission>
-    public sealed class CommonSaveFileDialog : CommonFileDialog
+    public class CommonSaveFileDialog : CommonFileDialog
     {
         private NativeFileSaveDialog saveDialogCoClass;
 
