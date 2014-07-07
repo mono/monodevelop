@@ -398,7 +398,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			var templateCtx = new TemplateContext {
 				Template = this,
-				EditContext = context,
+				DocumentContext = context,
 				Editor = editor,
 				ParsedDocument = context.ParsedDocument != null ? context.ParsedDocument.ParsedFile : null,
 				InsertPosition = data.CaretLocation,

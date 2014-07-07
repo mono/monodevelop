@@ -96,13 +96,13 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// <summary>
 		/// Formats a text document directly with insert/remove operations.
 		/// </summary>
-		public void OnTheFlyFormat (TextEditor editor, DocumentContext editContext, int startOffset, int endOffset)
+		public void OnTheFlyFormat (TextEditor editor, DocumentContext documentContext, int startOffset, int endOffset)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsOnTheFlyFormatting)
 				throw new InvalidOperationException ("On the fly formatting not supported");
 			
-			adv.OnTheFlyFormat (editor, editContext, startOffset, endOffset);
+			adv.OnTheFlyFormat (editor, documentContext, startOffset, endOffset);
 		}
 
 		/// <summary>

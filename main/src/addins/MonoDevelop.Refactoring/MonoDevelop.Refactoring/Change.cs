@@ -159,8 +159,8 @@ namespace MonoDevelop.Refactoring
 		public override void PerformChange (IProgressMonitor monitor, RefactoringOptions rctx)
 		{
 			File.WriteAllText (FileName, Content);
-			rctx.EditContext.Project.AddFile (FileName);
-			IdeApp.ProjectOperations.Save (rctx.EditContext.Project);
+			rctx.DocumentContext.Project.AddFile (FileName);
+			IdeApp.ProjectOperations.Save (rctx.DocumentContext.Project);
 		}
 	}
 	

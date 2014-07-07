@@ -53,12 +53,12 @@ namespace MonoDevelop.CSharpBinding
 		{
 			MonoDevelop.Ide.Editor.TextEditor editor;
 
-			DocumentContext editContext;
+			DocumentContext documentContext;
 
 			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext document)
 			{
 				this.editor = editor;
-				this.editContext = document;
+				this.documentContext = document;
 			}
 
 			public string CompletedWord {
@@ -189,11 +189,11 @@ namespace MonoDevelop.CSharpBinding
 
 			ListWindow.ClearHistory ();
 			var listWindow = new CompletionListWindow ();
-			var widget = new TestCompletionWidget (ext.Editor, ext.EditContext);
+			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
 
-			var t = ext.EditContext.Compilation.FindType (new FullTypeName (type)); 
+			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
 			var method = member != null ? t.GetMembers (m => m.Name == member).First () : t.GetConstructors ().First ();
 			var data = new MemberCompletionData (ext, method, OutputFlags.ClassBrowserEntries);
 			data.IsDelegateExpected = isDelegateExpected;

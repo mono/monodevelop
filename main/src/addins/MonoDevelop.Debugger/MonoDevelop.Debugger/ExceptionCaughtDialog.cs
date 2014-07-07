@@ -766,7 +766,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null &&
 			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
-				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(EditContext.Name).CanonicalPath) {
+				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(DocumentContext.Name).CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
 				return true;

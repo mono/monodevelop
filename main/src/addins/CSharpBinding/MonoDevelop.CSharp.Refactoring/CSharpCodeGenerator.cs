@@ -88,19 +88,19 @@ namespace MonoDevelop.CSharp.Refactoring
 			public IUnresolvedTypeDefinition Part { get; set; }
 
 			public TextEditor Editor { get; set; }
-			public DocumentContext EditContext { get; set; }
+			public DocumentContext DocumentContext { get; set; }
 
 			public string GetShortType (string ns, string name, int typeArguments = 0)
 			{
-				if (EditContext == null || EditContext.ParsedDocument == null)
+				if (DocumentContext == null || DocumentContext.ParsedDocument == null)
 					return ns + "." + name;
-				var typeDef = new GetClassTypeReference (ns, name, typeArguments).Resolve (EditContext.Compilation.TypeResolveContext);
+				var typeDef = new GetClassTypeReference (ns, name, typeArguments).Resolve (DocumentContext.Compilation.TypeResolveContext);
 				if (typeDef == null)
 					return ns + "." + name;
-				var file = EditContext.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-				var csResolver = file.GetResolver (EditContext.Compilation, Editor.CaretLocation);
+				var file = DocumentContext.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
+				var csResolver = file.GetResolver (DocumentContext.Compilation, Editor.CaretLocation);
 				var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-				return OutputNode (Editor, EditContext, builder.ConvertType (typeDef));
+				return OutputNode (Editor, DocumentContext, builder.ConvertType (typeDef));
 			}
 		}
 		
@@ -162,7 +162,7 @@ namespace MonoDevelop.CSharp.Refactoring
 
 			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
 			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
-			options.EditContext = doc;
+			options.DocumentContext = doc;
 
 			if (member is IUnresolvedMethod)
 				return GenerateCode ((IMethod) ((IUnresolvedMethod)member).CreateResolved (ctx), options);
@@ -185,7 +185,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
-				EditContext = IdeApp.Workbench.GetDocument (part.Region.FileName)
+				DocumentContext = IdeApp.Workbench.GetDocument (part.Region.FileName)
 			};
 			if (member is IMethod)
 				return GenerateCode ((IMethod)member, options);

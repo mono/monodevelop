@@ -56,24 +56,24 @@ namespace MonoDevelop.Refactoring
 		/// resolve navigator.
 		/// Note: The shared resolver is fully resolved.
 		/// </summary>
-		public static Task<CSharpAstResolver> GetSharedResolver (this DocumentContext editContext)
+		public static Task<CSharpAstResolver> GetSharedResolver (this DocumentContext documentContext)
 		{
-			var parsedDocument = editContext.ParsedDocument;
-			if (parsedDocument == null || editContext.IsProjectContextInUpdate || editContext.Project != null && !(editContext.Project is DotNetProject))
+			var parsedDocument = documentContext.ParsedDocument;
+			if (parsedDocument == null || documentContext.IsProjectContextInUpdate || documentContext.Project != null && !(documentContext.Project is DotNetProject))
 				return null;
 
 			var unit       = parsedDocument.GetAst<SyntaxTree> ();
 			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 			if (unit == null || parsedFile == null)
 				return null;
-			var resolverAnnotation = editContext.Annotation<ResolverAnnotation> ();
+			var resolverAnnotation = documentContext.Annotation<ResolverAnnotation> ();
 
 			if (resolverAnnotation != null) {
 				if (resolverAnnotation.ParsedFile == parsedFile)
 					return resolverAnnotation.Task;
 				if (resolverAnnotation.SharedTokenSource != null)
 					resolverAnnotation.SharedTokenSource.Cancel ();
-				editContext.RemoveAnnotations<ResolverAnnotation> ();
+				documentContext.RemoveAnnotations<ResolverAnnotation> ();
 			}
 
 			var tokenSource = new CancellationTokenSource ();
@@ -81,7 +81,7 @@ namespace MonoDevelop.Refactoring
 			var resolveTask = Task.Factory.StartNew (delegate {
 				try {
 					using (var timer = ResolveCounter.BeginTiming ()) {
-						var compilation = editContext.Compilation;
+						var compilation = documentContext.Compilation;
 						unit       = parsedDocument.GetAst<SyntaxTree> ();
 						parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 						if (unit == null || parsedFile == null)
@@ -110,7 +110,7 @@ namespace MonoDevelop.Refactoring
 				return t.Result;
 			}, TaskContinuationOptions.ExecuteSynchronously);
 
-			editContext.AddAnnotation (new ResolverAnnotation {
+			documentContext.AddAnnotation (new ResolverAnnotation {
 				Task = wrapper,
 				ParsedFile = parsedFile,
 				SharedTokenSource = tokenSource

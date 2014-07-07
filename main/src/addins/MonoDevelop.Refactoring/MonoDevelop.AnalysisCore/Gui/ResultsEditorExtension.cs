@@ -43,12 +43,12 @@ namespace MonoDevelop.AnalysisCore.Gui
 	class AnalysisDocument
 	{
 		public TextEditor Editor { get; private set; }
-		public DocumentContext EditContext { get; private set; }
+		public DocumentContext DocumentContext { get; private set; }
 
-		public AnalysisDocument (TextEditor editor, DocumentContext editContext)
+		public AnalysisDocument (TextEditor editor, DocumentContext documentContext)
 		{
 			this.Editor = editor;
-			this.EditContext = editContext;
+			this.DocumentContext = documentContext;
 		}
 	}
 
@@ -74,7 +74,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (disposed) 
 				return;
 			enabled = false;
-			EditContext.DocumentParsed -= OnDocumentParsed;
+			DocumentContext.DocumentParsed -= OnDocumentParsed;
 			CancelTask ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			while (markers.Count > 0)
@@ -102,8 +102,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (enabled)
 				return;
 			enabled = true;
-			EditContext.DocumentParsed += OnDocumentParsed;
-			if (EditContext.ParsedDocument != null)
+			DocumentContext.DocumentParsed += OnDocumentParsed;
+			if (DocumentContext.ParsedDocument != null)
 				OnDocumentParsed (null, null);
 		}
 
@@ -125,7 +125,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!enabled)
 				return;
 			enabled = false;
-			EditContext.DocumentParsed -= OnDocumentParsed;
+			DocumentContext.DocumentParsed -= OnDocumentParsed;
 			CancelTask ();
 			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
 		}
@@ -137,14 +137,14 @@ namespace MonoDevelop.AnalysisCore.Gui
 		{
 			if (!AnalysisOptions.EnableFancyFeatures)
 				return;
-			var doc = EditContext.ParsedDocument;
+			var doc = DocumentContext.ParsedDocument;
 			if (doc == null)
 				return;
 			lock (this) {
 				CancelTask ();
 				src = new CancellationTokenSource ();
 				var treeType = new RuleTreeType ("AnalysisDocument", Path.GetExtension (doc.FileName));
-				var task = AnalysisService.QueueAnalysis (new AnalysisDocument (Editor, EditContext), treeType, src.Token);
+				var task = AnalysisService.QueueAnalysis (new AnalysisDocument (Editor, DocumentContext), treeType, src.Token);
 				oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update (), src.Token);
 			}
 		}

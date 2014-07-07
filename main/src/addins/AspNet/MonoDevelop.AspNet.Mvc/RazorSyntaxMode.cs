@@ -46,7 +46,7 @@ namespace MonoDevelop.AspNet.Mvc
 {
 	public class RazorSyntaxMode : SyntaxMode, IDisposable
 	{
-		public RazorSyntaxMode (EditContext doc)
+		public RazorSyntaxMode (DocumentContext doc)
 		{
 			this.guiDocument = doc;
 			guiDocument.DocumentParsed += HandleDocumentParsed; 
@@ -81,7 +81,7 @@ namespace MonoDevelop.AspNet.Mvc
 		IList<RazorSpan> currentSpans;
 		State currentState;
 		IList<Chunk> chunks;
-		EditContext guiDocument;
+		DocumentContext guiDocument;
 
 		public override IEnumerable<Chunk> GetChunks (ColorScheme style, DocumentLine line, int offset, int length)
 		{

@@ -49,7 +49,7 @@ namespace MonoDevelop.AspNet.Mvc.Formatting
 			return null;
 		}
 
-		public override void OnTheFlyFormat (TextEditor editor, EditContext context, int startOffset, int endOffset)
+		public override void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
 		{
 		}
 	}

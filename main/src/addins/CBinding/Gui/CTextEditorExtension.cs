@@ -351,7 +351,7 @@ namespace CBinding
 		
 		private CompletionDataList GetMembersOfItem (string itemFullName)
 		{
-			CProject project = EditContext.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
 				return null;
@@ -362,7 +362,7 @@ namespace CBinding
 			
 			LanguageItem container = null;
 			
-			string currentFileName = EditContext.Name;
+			string currentFileName = DocumentContext.Name;
 			bool in_project = false;
 				
 			foreach (LanguageItem li in info.Containers ()) {
@@ -434,7 +434,7 @@ namespace CBinding
 		/// </returns>
 		private CompletionDataList GetMembersOfInstance (string instanceName, bool isPointer)
 		{
-			CProject project = EditContext.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
 				return null;
@@ -445,7 +445,7 @@ namespace CBinding
 			
 			string container = null;
 			
-			string currentFileName = EditContext.Name;
+			string currentFileName = DocumentContext.Name;
 			bool in_project = false;
 			
 			// Find the typename of the instance
@@ -521,7 +521,7 @@ namespace CBinding
 
 		private ICompletionDataList GlobalComplete ()
 		{
-			CProject project = EditContext.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
 				return null;
@@ -545,7 +545,7 @@ namespace CBinding
 			foreach (Macro m in info.Macros)
 				list.Add (new CompletionData (m));
 			
-			string currentFileName = EditContext.Name;
+			string currentFileName = DocumentContext.Name;
 			
 			if (info.IncludedFiles.ContainsKey (currentFileName)) {
 				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFileName]) {
@@ -574,7 +574,7 @@ namespace CBinding
 			if (completionChar != '(')
 				return null;
 			
-			CProject project = EditContext.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
 				return null;
@@ -627,9 +627,9 @@ namespace CBinding
 		[CommandHandler (MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles)]
 		protected void Run ()
 		{
-			var cp = this.EditContext.Project as CProject;
+			var cp = this.DocumentContext.Project as CProject;
 			if (cp != null) {
-				string match = cp.MatchingFile (this.EditContext.Name);
+				string match = cp.MatchingFile (this.DocumentContext.Name);
 				if (match != null)
 					MonoDevelop.Ide.IdeApp.Workbench.OpenDocument (match, true);
 			}
@@ -638,8 +638,8 @@ namespace CBinding
 		[CommandUpdateHandler (MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles)]
 		protected void Update (CommandInfo info)
 		{
-			var cp = this.EditContext.Project as CProject;
-			info.Visible = info.Visible = cp != null && cp.MatchingFile (this.EditContext.Name) != null;
+			var cp = this.DocumentContext.Project as CProject;
+			info.Visible = info.Visible = cp != null && cp.MatchingFile (this.DocumentContext.Name) != null;
 		}
 		
 		#region IPathedDocument implementation
@@ -656,9 +656,9 @@ namespace CBinding
 			object tag = path[index].Tag;
 			DropDownBoxListWindow.IListDataProvider provider = null;
 			if (tag is ParsedDocument) {
-				provider = new CompilationUnitDataProvider (Editor, EditContext);
+				provider = new CompilationUnitDataProvider (Editor, DocumentContext);
 			} else {
-				provider = new DataProvider (Editor, EditContext, tag, new NetAmbience ());
+				provider = new DataProvider (Editor, DocumentContext, tag, new NetAmbience ());
 			}
 			
 			DropDownBoxListWindow window = new DropDownBoxListWindow (provider);
@@ -724,7 +724,7 @@ namespace CBinding
 			base.Initialize ();
 			UpdatePath (null, null);
 			Editor.CaretPositionChanged += UpdatePath;
-			EditContext.DocumentParsed += HandleDocumentParsed;
+			DocumentContext.DocumentParsed += HandleDocumentParsed;
 		}
 
 		void HandleDocumentParsed (object sender, EventArgs e)
@@ -735,7 +735,7 @@ namespace CBinding
 		public override void Dispose ()
 		{
 			Editor.CaretPositionChanged -= UpdatePath;
-			EditContext.DocumentParsed -= HandleDocumentParsed;
+			DocumentContext.DocumentParsed -= HandleDocumentParsed;
 
 			base.Dispose ();
 		}
@@ -774,7 +774,7 @@ namespace CBinding
 		
 		private LanguageItem GetLanguageItemAt (DocumentLocation location)
 		{
-			CProject project = EditContext.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			string token = GetTokenAt (location);
 			if (project != null && !string.IsNullOrEmpty (token)) {
 				ProjectInformation info = ProjectInformationManager.Instance.Get (project);

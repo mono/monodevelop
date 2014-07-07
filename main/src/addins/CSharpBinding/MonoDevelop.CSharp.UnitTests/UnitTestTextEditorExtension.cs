@@ -44,7 +44,7 @@ namespace MonoDevelop.CSharp
 			var resolverTask = DocumentContext.GetSharedResolver ();
 			if (resolverTask == null || resolverTask.Result == null)
 				return null;
-			var parsedDocument = EditContext.ParsedDocument;
+			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument == null)
 				return null;
 			var visitor = new NUnitVisitor (resolverTask.Result);

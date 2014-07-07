@@ -126,7 +126,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		public ICompletionDataList HandlePopupCompletion (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo)
+		public ICompletionDataList HandlePopupCompletion (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo)
 		{
 			CodeCompletionContext codeCompletionContext;
 			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out codeCompletionContext)) {
@@ -134,7 +134,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public ICompletionDataList HandleCompletion (TextEditor realEditor, EditContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
+		public ICompletionDataList HandleCompletion (TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
 		{
 			CodeCompletionContext ccc;
 			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out ccc)) {
@@ -142,7 +142,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public ParameterDataProvider HandleParameterCompletion (TextEditor realEditor, EditContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
+		public ParameterDataProvider HandleParameterCompletion (TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
 			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out ccc)) {
@@ -150,7 +150,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public bool GetParameterCompletionCommandOffset (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
+		public bool GetParameterCompletionCommandOffset (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
 		{
 			CodeCompletionContext codeCompletionContext;
 			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out codeCompletionContext)) {
@@ -158,12 +158,12 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public ICompletionWidget CreateCompletionWidget (TextEditor realEditor, EditContext realContext, LocalDocumentInfo localInfo)
+		public ICompletionWidget CreateCompletionWidget (TextEditor realEditor, DocumentContext realContext, LocalDocumentInfo localInfo)
 		{
 			return new AspCompletionWidget (realEditor, localInfo);
 		}
 		
-		CSharpCompletionTextEditorExtension CreateCompletion (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
+		CSharpCompletionTextEditorExtension CreateCompletion (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
 		{
 			var doc = DocumentFactory.CreateNewDocument (new StringTextSource (localInfo.LocalDocument), realEditor.FileName + ".cs"); 
 			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);

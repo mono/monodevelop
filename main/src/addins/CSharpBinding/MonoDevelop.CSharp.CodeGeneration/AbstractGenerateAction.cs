@@ -76,7 +76,7 @@ namespace MonoDevelop.CodeGeneration
 			column.Expand = true;
 
 			treeView.AppendColumn (column);
-			Ambience ambience = AmbienceService.GetAmbienceForFile (options.EditContext.Name);
+			Ambience ambience = AmbienceService.GetAmbienceForFile (options.DocumentContext.Name);
 			foreach (object obj in GetValidMembers ()) {
 				var member = obj as IEntity;
 				if (member != null) {

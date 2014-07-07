@@ -37,7 +37,7 @@ namespace MonoDevelop.AnalysisCore.Rules
 	{
 		public static IUnresolvedFile GetCompilationUnit (AnalysisDocument input)
 		{
-			return input.EditContext.ParsedDocument.ParsedFile;
+			return input.DocumentContext.ParsedDocument.ParsedFile;
 		}
 	}
 }

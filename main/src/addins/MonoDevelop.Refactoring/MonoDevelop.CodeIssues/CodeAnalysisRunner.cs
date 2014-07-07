@@ -56,7 +56,7 @@ namespace MonoDevelop.CodeIssues
 
 		internal static IEnumerable<Result> Check (AnalysisDocument doc, CancellationToken cancellationToken)
 		{
-			var input = doc.EditContext;
+			var input = doc.DocumentContext;
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject)
 				return Enumerable.Empty<Result> ();
 

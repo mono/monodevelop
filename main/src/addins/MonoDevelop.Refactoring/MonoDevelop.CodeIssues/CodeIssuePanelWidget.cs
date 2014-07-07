@@ -36,7 +36,6 @@ using MonoDevelop.Components;
 using Gdk;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.QuickTasks;
-using MonoDevelop.SourceEditor.QuickTasks;
 
 namespace MonoDevelop.CodeIssues
 {

@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public ICompilation Compilation {
 			get {
-				return EditContext.Compilation;
+				return DocumentContext.Compilation;
 			}
 		}
 		
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public DocumentContext EditContext {
+		public DocumentContext DocumentContext {
 			get;
 			set;
 		}
@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (CurrentContext.ParsedDocument == null)
 				return null;
 			IUnresolvedTypeDefinition type = null;
-			var provider = CurrentContext.EditContext.GetContent<ITextEditorMemberPositionProvider>();
+			var provider = CurrentContext.DocumentContext.GetContent<ITextEditorMemberPositionProvider>();
 			if (provider == null) {
 				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			} else {
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			if (CurrentContext.ParsedDocument == null)
 				return null;
 			IUnresolvedTypeDefinition type = null;
-			var provider = CurrentContext.EditContext.GetContent<ITextEditorMemberPositionProvider>();
+			var provider = CurrentContext.DocumentContext.GetContent<ITextEditorMemberPositionProvider>();
 			if (provider == null) {
 				type = CurrentContext.ParsedDocument.GetInnermostTypeDefinition (CurrentContext.InsertPosition.Line, CurrentContext.InsertPosition.Column);
 			} else {
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			string var = callback (varName);
 			
-			ITextEditorResolver textEditorResolver = CurrentContext.EditContext.GetContent <ITextEditorResolver> ();
+			ITextEditorResolver textEditorResolver = CurrentContext.DocumentContext.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
 				var result = textEditorResolver.GetLanguageItem (CurrentContext.Editor.LocationToOffset (CurrentContext.InsertPosition), var);
 				if (result.Type.IsReferenceType.HasValue && !result.Type.IsReferenceType.Value)
@@ -168,15 +168,15 @@ namespace MonoDevelop.Ide.CodeTemplates
 				return "var";
 			
 			string var = callback (varName);
-			ITextEditorResolver textEditorResolver = CurrentContext.EditContext.GetContent <ITextEditorResolver> ();
+			ITextEditorResolver textEditorResolver = CurrentContext.DocumentContext.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
 				var result = textEditorResolver.GetLanguageItem (CurrentContext.Editor.CaretOffset, var);
 				if (result != null) {
 					var componentType = GetElementType (result.Type);
 					if (componentType.Kind != TypeKind.Unknown) {
-						var generator = CodeGenerator.CreateGenerator (CurrentContext.Editor, CurrentContext.EditContext);
+						var generator = CodeGenerator.CreateGenerator (CurrentContext.Editor, CurrentContext.DocumentContext);
 						if (generator != null)
-							return generator.GetShortTypeString (CurrentContext.Editor, CurrentContext.EditContext, componentType);
+							return generator.GetShortTypeString (CurrentContext.Editor, CurrentContext.DocumentContext, componentType);
 					}
 				}
 			}
@@ -187,11 +187,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public IListDataProvider<string> GetCollections ()
 		{
 			var result = new List<CodeTemplateVariableValue> ();
-			var ext = CurrentContext.EditContext.GetContent <CompletionTextEditorExtension> ();
+			var ext = CurrentContext.DocumentContext.GetContent <CompletionTextEditorExtension> ();
 			if (ext != null) {
 				if (list == null)
 					list = ext.CodeCompletionCommand (
-						CurrentContext.EditContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
+						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
 				
 				foreach (object o in list) {
 					var data = o as IEntityCompletionData;
@@ -257,19 +257,19 @@ namespace MonoDevelop.Ide.CodeTemplates
 				name = name.Substring (0, idx);
 			}
 
-			var type = new GetClassTypeReference (ns, name, 0).Resolve (new SimpleTypeResolveContext (CurrentContext.EditContext.Compilation.MainAssembly));
+			var type = new GetClassTypeReference (ns, name, 0).Resolve (new SimpleTypeResolveContext (CurrentContext.DocumentContext.Compilation.MainAssembly));
 			bool stripAttribute = false;
 			if (type == null || type.Kind == TypeKind.Unknown) {
 				type = new GetClassTypeReference (ns, name + "Attribute", 0).Resolve (
-					new SimpleTypeResolveContext (CurrentContext.EditContext.Compilation.MainAssembly)
+					new SimpleTypeResolveContext (CurrentContext.DocumentContext.Compilation.MainAssembly)
 				);	
 				stripAttribute = true;
 			}
 			if (type == null || type.Kind == TypeKind.Unknown)
 				return fullTypeName.Replace ("#", ".");
-			var generator = CodeGenerator.CreateGenerator (CurrentContext.Editor, CurrentContext.EditContext);
+			var generator = CodeGenerator.CreateGenerator (CurrentContext.Editor, CurrentContext.DocumentContext);
 			if (generator != null) {
-				var result = generator.GetShortTypeString (CurrentContext.Editor, CurrentContext.EditContext, type) + member;
+				var result = generator.GetShortTypeString (CurrentContext.Editor, CurrentContext.DocumentContext, type) + member;
 				if (stripAttribute && result.EndsWith ("Attribute", StringComparison.Ordinal))
 				    result = result.Substring (0, result.Length - "Attribute".Length);
 				return result;

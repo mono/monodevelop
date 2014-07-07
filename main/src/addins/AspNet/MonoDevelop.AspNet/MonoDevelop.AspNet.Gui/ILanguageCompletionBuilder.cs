@@ -168,14 +168,14 @@ namespace MonoDevelop.AspNet.Gui
 		
 		ParsedDocument BuildDocument (DocumentInfo info, TextEditor textEditorData);
 		
-		ICompletionWidget CreateCompletionWidget (TextEditor realEditor, EditContext realContext, LocalDocumentInfo localInfo);
+		ICompletionWidget CreateCompletionWidget (TextEditor realEditor, DocumentContext realContext, LocalDocumentInfo localInfo);
 		
 		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditor textEditorData, string expressionText, string textAfterCaret, bool isExpression);
 		
-		ICompletionDataList HandlePopupCompletion (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo);
-		ICompletionDataList HandleCompletion (TextEditor realEditor, EditContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
-		ParameterDataProvider HandleParameterCompletion (TextEditor realEditor, EditContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
-		bool GetParameterCompletionCommandOffset (TextEditor realEditor, EditContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
+		ICompletionDataList HandlePopupCompletion (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo);
+		ICompletionDataList HandleCompletion (TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
+		ParameterDataProvider HandleParameterCompletion (TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
+		bool GetParameterCompletionCommandOffset (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
 	}
 	
 	public static class LanguageCompletionBuilderService

@@ -42,14 +42,14 @@ namespace MonoDevelop.AspNet.Mvc.Completion
 	public interface IRazorCompletionBuilder
 	{
 		bool SupportsLanguage (string language);
-		ICompletionWidget CreateCompletionWidget (TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo);
-		ICompletionDataList HandlePopupCompletion (TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo);
-		ICompletionDataList HandleCompletion (TextEditor editor, EditContext context, CodeCompletionContext completionContext,
+		ICompletionWidget CreateCompletionWidget (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
+		ICompletionDataList HandlePopupCompletion (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo);
+		ICompletionDataList HandleCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char currentChar, ref int triggerWordLength);
-		ParameterDataProvider HandleParameterCompletion (TextEditor editor, EditContext context, CodeCompletionContext completionContext,
+		ParameterDataProvider HandleParameterCompletion (TextEditor editor, DocumentContext context, CodeCompletionContext completionContext,
 			UnderlyingDocumentInfo docInfo, char completionChar);
-		bool GetParameterCompletionCommandOffset (TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo, out int cpos);
-		int GetCurrentParameterIndex (TextEditor editor, EditContext context, UnderlyingDocumentInfo docInfo, int startOffset);
+		bool GetParameterCompletionCommandOffset (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, out int cpos);
+		int GetCurrentParameterIndex (TextEditor editor, DocumentContext context, UnderlyingDocumentInfo docInfo, int startOffset);
 	}
 
 	public class UnderlyingDocument : Document

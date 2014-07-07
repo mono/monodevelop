@@ -49,13 +49,13 @@ namespace MonoDevelop.TextTemplating.Gui
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			EditContext.DocumentParsed += HandleDocumentDocumentParsed;
+			DocumentContext.DocumentParsed += HandleDocumentDocumentParsed;
 			HandleDocumentDocumentParsed (this, EventArgs.Empty);
 		}
 
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)
 		{
-			parsedDoc = (T4ParsedDocument)EditContext.ParsedDocument;
+			parsedDoc = (T4ParsedDocument)DocumentContext.ParsedDocument;
 			if (parsedDoc != null)
 				RefreshOutline ();
 		}
@@ -76,17 +76,17 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		protected ITextBuffer Buffer {
 			get {
-				if (EditContext == null)
+				if (DocumentContext == null)
 					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return EditContext.GetContent<ITextBuffer> ();
+				return DocumentContext.GetContent<ITextBuffer> ();
 			}
 		}
 		
 		protected TextEditor EditableBuffer {
 			get {
-				if (EditContext == null)
+				if (DocumentContext == null)
 					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return EditContext.GetContent<TextEditor> ();
+				return DocumentContext.GetContent<TextEditor> ();
 			}
 		}
 		

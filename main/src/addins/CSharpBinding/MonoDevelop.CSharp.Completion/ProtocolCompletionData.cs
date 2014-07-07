@@ -61,7 +61,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			var ext = engine.Ext;
 			var editor = ext.Editor;
-			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.EditContext);
+			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);
 			if (ext.Project != null)
 				generator.PolicyParent = ext.Project.Policies;
 			var builder = engine.MDRefactoringCtx.CreateTypeSystemAstBuilder ();

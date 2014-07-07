@@ -111,13 +111,13 @@ namespace MonoDevelop.CSharp
 			return codePolicy.CreateOptions ();
 		}
 		
-		public static bool TryResolveAt (this DocumentContext editContext, DocumentLocation loc, out ResolveResult result, out AstNode node)
+		public static bool TryResolveAt (this DocumentContext documentContext, DocumentLocation loc, out ResolveResult result, out AstNode node)
 		{
-			if (editContext == null)
-				throw new ArgumentNullException ("editContext");
+			if (documentContext == null)
+				throw new ArgumentNullException ("documentContext");
 			result = null;
 			node = null;
-			var parsedDocument = editContext.ParsedDocument;
+			var parsedDocument = documentContext.ParsedDocument;
 			if (parsedDocument == null)
 				return false;
 
@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				result = ResolveAtLocation.Resolve (new Lazy<ICompilation>(() => editContext.Compilation), parsedFile, unit, loc, out node);
+				result = ResolveAtLocation.Resolve (new Lazy<ICompilation>(() => documentContext.Compilation), parsedFile, unit, loc, out node);
 				if (result == null || node is Statement)
 					return false;
 			} catch (Exception e) {

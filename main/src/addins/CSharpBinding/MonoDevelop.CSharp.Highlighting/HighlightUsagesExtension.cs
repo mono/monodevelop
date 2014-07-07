@@ -45,15 +45,15 @@ namespace MonoDevelop.CSharp.Highlighting
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, EditContext));
-			syntaxMode = new CSharpSyntaxMode (Editor, EditContext);
-			EditContext.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
+			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
+			syntaxMode = new CSharpSyntaxMode (Editor, DocumentContext);
+			DocumentContext.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				EditContext.GetContent<TextEditorData> ().Document.SyntaxMode = null;
+				DocumentContext.GetContent<TextEditorData> ().Document.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
@@ -94,7 +94,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 
 			try {
-				return new List<MemberReference> (finder.FindInDocument (Editor, EditContext, token));
+				return new List<MemberReference> (finder.FindInDocument (Editor, DocumentContext, token));
 			} catch (Exception e) {
 				LoggingService.LogError ("Error in highlight usages extension.", e);
 			}

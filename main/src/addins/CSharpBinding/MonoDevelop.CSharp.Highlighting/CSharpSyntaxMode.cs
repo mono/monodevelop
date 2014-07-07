@@ -70,7 +70,7 @@ namespace MonoDevelop.CSharp.Highlighting
 	
 	class CSharpSyntaxMode : SyntaxMode, MonoDevelop.Ide.Editor.IQuickTaskProvider, IDisposable
 	{
-		readonly internal DocumentContext editContext;
+		readonly internal DocumentContext documentContext;
 		readonly internal MonoDevelop.Ide.Editor.TextEditor editor;
 
 		CSharpAstResolver resolver;
@@ -143,15 +143,15 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (src != null)
 				src.Cancel ();
 			resolver = null;
-			if (editContext.IsProjectContextInUpdate) {
+			if (documentContext.IsProjectContextInUpdate) {
 				return;
 			}
-			if (editContext != null && SemanticHighlightingEnabled) {
-				var parsedDocument = editContext.ParsedDocument;
+			if (documentContext != null && SemanticHighlightingEnabled) {
+				var parsedDocument = documentContext.ParsedDocument;
 				if (parsedDocument != null) {
-					if (editContext.Project != null && editContext.IsCompileableInProject) {
+					if (documentContext.Project != null && documentContext.IsCompileableInProject) {
 						src = new CancellationTokenSource ();
-						var newResolverTask = editContext.GetSharedResolver ();
+						var newResolverTask = documentContext.GetSharedResolver ();
 						var cancellationToken = src.Token;
 						System.Threading.Tasks.Task.Factory.StartNew (delegate {
 							if (newResolverTask == null)
@@ -170,7 +170,7 @@ namespace MonoDevelop.CSharp.Highlighting
 								Gtk.Application.Invoke (delegate {
 									if (cancellationToken.IsCancellationRequested)
 										return;
-									var editorData = editContext.GetContent<TextEditorData> ();
+									var editorData = documentContext.GetContent<TextEditorData> ();
 									if (editorData == null)
 										return;
 //									compilation = newResolver.Compilation;
@@ -435,14 +435,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			};
 		}
 
-		public CSharpSyntaxMode (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext editContext)
+		public CSharpSyntaxMode (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext documentContext)
 		{
 			this.editor = editor;
-			this.editContext = editContext;
-			editContext.DocumentParsed += HandleDocumentParsed;
+			this.documentContext = documentContext;
+			documentContext.DocumentParsed += HandleDocumentParsed;
 			SemanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
 			PropertyService.PropertyChanged += HandlePropertyChanged;
-			if (editContext.ParsedDocument != null)
+			if (documentContext.ParsedDocument != null)
 				HandleDocumentParsed (this, EventArgs.Empty);
 
 			bool loadRules = _rules == null;
@@ -510,7 +510,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		{
 			if (src != null)
 				src.Cancel ();
-			editContext.DocumentParsed -= HandleDocumentParsed;
+			documentContext.DocumentParsed -= HandleDocumentParsed;
 			PropertyService.PropertyChanged -= HandlePropertyChanged;
 		}
 
@@ -668,7 +668,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 			protected override void AddRealChunk (Chunk chunk)
 			{
-				var document = csharpSyntaxMode.editContext;
+				var document = csharpSyntaxMode.documentContext;
 				var parsedDocument = document != null ? document.ParsedDocument : null;
 				if (parsedDocument != null && csharpSyntaxMode.SemanticHighlightingEnabled && csharpSyntaxMode.resolver != null) {
 					int endLoc = -1;
@@ -873,7 +873,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				AstNode expr = new CSharpParser ().ParseExpression (parameter);
 				bool result = false;
 				if (expr != null && !expr.IsNull) {
-					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (editor, editContext, doc, Defines), null);
+					object o = expr.AcceptVisitor (new ConditinalExpressionEvaluator (editor, documentContext, doc, Defines), null);
 					if (o is bool)
 						result = (bool)o;
 				}
@@ -915,7 +915,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				AstNode expr= new CSharpParser ().ParseExpression (parameter);
 				bool result;
 				if (expr != null && !expr.IsNull) {
-					var visitResult = expr.AcceptVisitor (new ConditinalExpressionEvaluator (editor, editContext, doc, Defines), null);
+					var visitResult = expr.AcceptVisitor (new ConditinalExpressionEvaluator (editor, documentContext, doc, Defines), null);
 					result = visitResult != null ? (bool)visitResult : false;
 				} else {
 					result = false;
@@ -1027,12 +1027,12 @@ namespace MonoDevelop.CSharp.Highlighting
 	//		Span preprocessorSpan;
 	//		Rule preprocessorRule;
 			readonly internal MonoDevelop.Ide.Editor.TextEditor editor;
-			readonly internal DocumentContext editContext;
+			readonly internal DocumentContext documentContext;
 
 			public CSharpSpanParser (CSharpSyntaxMode mode, CloneableStack<Span> spanStack) : base (mode, spanStack)
 			{
 				editor = mode.editor;
-				editContext = mode.editContext;
+				documentContext = mode.documentContext;
 //				foreach (Span span in mode.Spans) {
 //					if (span.Rule == "text.preprocessor") {
 //						preprocessorSpan = span;

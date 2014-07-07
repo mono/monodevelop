@@ -43,9 +43,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 		{
 			// Return the ProjectFile object of the file being edited
 			
-			if (EditContext.HasProject) {
-				string file = EditContext.Name;
-				return EditContext.Project.Files.GetFile (file);
+			if (DocumentContext.HasProject) {
+				string file = DocumentContext.Name;
+				return DocumentContext.Project.Files.GetFile (file);
 			}
 			else
 				return null;
@@ -62,8 +62,8 @@ namespace MonoDevelop.DesignerSupport.Projects
 
 		public void OnChanged (object obj)
 		{
-			if (EditContext.HasProject)
-				IdeApp.ProjectOperations.Save (EditContext.Project);
+			if (DocumentContext.HasProject)
+				IdeApp.ProjectOperations.Save (DocumentContext.Project);
 		}
 	}
 }

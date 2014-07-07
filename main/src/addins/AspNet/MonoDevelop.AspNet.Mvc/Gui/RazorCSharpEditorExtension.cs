@@ -59,7 +59,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 
 		ICompletionWidget defaultCompletionWidget;
 		MonoDevelop.Ide.Editor.TextEditor defaultEditor;
-		EditContext defaultEditContext;
+		DocumentContext defaultDocumentContext;
 
 		RazorSyntaxMode syntaxMode;
 
@@ -87,7 +87,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			base.Initialize ();
 
 			defaultCompletionWidget = CompletionWidget;
-			defaultEditContext = EditContext;
+			defaultDocumentContext = DocumentContext;
 			defaultEditor = Editor;
 			completionBuilder = RazorCompletionBuilderService.GetBuilder ("C#");
 
@@ -96,15 +96,15 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			{
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
-			syntaxMode = new RazorSyntaxMode (EditContext);
-			EditContext.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
+			syntaxMode = new RazorSyntaxMode (DocumentContext);
+			DocumentContext.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
 
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				EditContext.GetContent<TextEditorData> ().Document.SyntaxMode = null;
+				DocumentContext.GetContent<TextEditorData> ().Document.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
@@ -193,7 +193,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			hiddenInfo = new UnderlyingDocumentInfo ();
 
 			var viewContent = new HiddenTextEditorViewContent ();
-			viewContent.Project = EditContext.Project;
+			viewContent.Project = DocumentContext.Project;
 			viewContent.ContentName = "Generated.cs"; // Use a name with .cs extension to get csharp ambience
 			viewContent.Text = razorDocument.PageInfo.CSharpCode;
 
@@ -269,15 +269,15 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		protected void SwitchToHidden ()
 		{
 			isInCSharpContext = true;
-			EditContext = HiddenDoc;
+			DocumentContext = HiddenDoc;
 			Editor = HiddenDoc.Editor;
-			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultEditor, defaultEditContext, hiddenInfo);
+			CompletionWidget = completionBuilder.CreateCompletionWidget (defaultEditor, defaultDocumentContext, hiddenInfo);
 		}
 
 		protected void SwitchToReal ()
 		{
 			isInCSharpContext = false;
-			EditContext = defaultEditContext;
+			DocumentContext = defaultDocumentContext;
 			Editor = defaultEditor;
 			CompletionWidget = defaultCompletionWidget;
 		}
@@ -420,7 +420,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				return null;
 
 			if (hiddenInfo != null && isInCSharpContext) {
-				var list = (CompletionDataList) completionBuilder.HandleCompletion (defaultEditor, defaultEditContext, completionContext,
+				var list = (CompletionDataList) completionBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext,
 					hiddenInfo, completionChar, ref triggerWordLength);
 
 				if (list != null) {
@@ -524,7 +524,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			if (hiddenInfo != null && (isInCSharpContext || Tracker.Engine.CurrentState is RazorState)
 				&& !(Tracker.Engine.Nodes.Peek () is XElement)) {
 				InitializeCodeCompletion ();
-				return completionBuilder.HandlePopupCompletion (defaultEditor, defaultEditContext, hiddenInfo);
+				return completionBuilder.HandlePopupCompletion (defaultEditor, defaultDocumentContext, hiddenInfo);
 			}
 
 			return base.CodeCompletionCommand (completionContext);
@@ -533,7 +533,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
 			if (hiddenInfo != null && isInCSharpContext)
-				return completionBuilder.GetParameterCompletionCommandOffset (defaultEditor, defaultEditContext, hiddenInfo, out cpos);
+				return completionBuilder.GetParameterCompletionCommandOffset (defaultEditor, defaultDocumentContext, hiddenInfo, out cpos);
 
 			return base.GetParameterCompletionCommandOffset (out cpos);
 		}
@@ -541,7 +541,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
-				return completionBuilder.GetCurrentParameterIndex (defaultEditor, defaultEditContext, hiddenInfo, startOffset);
+				return completionBuilder.GetCurrentParameterIndex (defaultEditor, defaultDocumentContext, hiddenInfo, startOffset);
 			}
 
 			return base.GetCurrentParameterIndex (startOffset);
@@ -551,7 +551,7 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 			char completionChar)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
-				return completionBuilder.HandleParameterCompletion (defaultEditor, defaultEditContext, completionContext,
+				return completionBuilder.HandleParameterCompletion (defaultEditor, defaultDocumentContext, completionContext,
 					hiddenInfo, completionChar);
 			}
 

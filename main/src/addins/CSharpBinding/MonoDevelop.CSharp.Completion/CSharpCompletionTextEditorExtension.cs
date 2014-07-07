@@ -90,19 +90,19 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public ParsedDocument ParsedDocument {
 			get {
-				return EditContext.ParsedDocument;
+				return DocumentContext.ParsedDocument;
 			}
 		}
 		
 		public ICompilation Compilation {
 			get {
-				return EditContext.Compilation;
+				return DocumentContext.Compilation;
 			}
 		}
 		
 		public MonoDevelop.Projects.Project Project {
 			get {
-				return EditContext.Project;
+				return DocumentContext.Project;
 			}
 		}
 		
@@ -111,8 +111,8 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (policy == null) {
 					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-					if (EditContext.Project != null && EditContext.Project.Policies != null) {
-						policy = base.EditContext.Project.Policies.Get<CSharpFormattingPolicy> (types);
+					if (DocumentContext.Project != null && DocumentContext.Project.Policies != null) {
+						policy = base.DocumentContext.Project.Policies.Get<CSharpFormattingPolicy> (types);
 					} else {
 						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 					}
@@ -149,15 +149,15 @@ namespace MonoDevelop.CSharp.Completion
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			var parsedDocument = EditContext.ParsedDocument;
+			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument != null) {
 				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
-				this.UnresolvedFileCompilation = EditContext.Compilation;
+				this.UnresolvedFileCompilation = DocumentContext.Compilation;
 				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 				Editor.CaretPositionChanged += HandlePositionChanged;
 			}
 			
-			EditContext.DocumentParsed += HandleDocumentParsed; 
+			DocumentContext.DocumentParsed += HandleDocumentParsed; 
 		}
 
 		CancellationTokenSource src = new CancellationTokenSource ();
@@ -172,7 +172,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			StopPositionChangedTask ();
 
-			var doc = EditContext;
+			var doc = DocumentContext;
 			if (doc == null || Editor == null)
 				return;
 			MDRefactoringContext.Create (Editor, doc, Editor.CaretLocation, src.Token).ContinueWith (t => {
@@ -183,17 +183,17 @@ namespace MonoDevelop.CSharp.Completion
 		[CommandUpdateHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
 		public void CheckShowCodeGenerationWindow (CommandInfo info)
 		{
-			info.Enabled = Editor != null && EditContext.GetContent<ICompletionWidget> () != null;
+			info.Enabled = Editor != null && DocumentContext.GetContent<ICompletionWidget> () != null;
 		}
 
 		[CommandHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
 		public void ShowCodeGenerationWindow ()
 		{
-			var completionWidget = EditContext.GetContent<ICompletionWidget> ();
+			var completionWidget = DocumentContext.GetContent<ICompletionWidget> ();
 			if (completionWidget == null)
 				return;
 			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (Editor.CaretOffset);
-			GenerateCodeWindow.ShowIfValid (Editor, EditContext, completionContext);
+			GenerateCodeWindow.ShowIfValid (Editor, DocumentContext, completionContext);
 		}
 
 		public override void Dispose ()
@@ -202,7 +202,7 @@ namespace MonoDevelop.CSharp.Completion
 			unit = null;
 			CSharpUnresolvedFile = null;
 			UnresolvedFileCompilation = null;
-			EditContext.DocumentParsed -= HandleDocumentParsed;
+			DocumentContext.DocumentParsed -= HandleDocumentParsed;
 			if (unstableTypeSystemSegmentTree != null) {
 				unstableTypeSystemSegmentTree.RemoveListener ();
 				unstableTypeSystemSegmentTree = null;
@@ -218,10 +218,10 @@ namespace MonoDevelop.CSharp.Completion
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			var newDocument = EditContext.ParsedDocument;
+			var newDocument = DocumentContext.ParsedDocument;
 			if (newDocument == null) 
 				return;
-			var newTree = TypeSystemSegmentTree.Create (Editor, EditContext);
+			var newTree = TypeSystemSegmentTree.Create (Editor, DocumentContext);
 
 			if (unstableTypeSystemSegmentTree != null)
 				unstableTypeSystemSegmentTree.RemoveListener ();
@@ -238,7 +238,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			this.Unit = newDocument.GetAst<SyntaxTree> ();
 			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
-			this.UnresolvedFileCompilation = EditContext.Compilation;
+			this.UnresolvedFileCompilation = DocumentContext.Compilation;
 			if (TypeSegmentTreeUpdated != null)
 				TypeSegmentTreeUpdated (this, EventArgs.Empty);
 		}
@@ -278,7 +278,7 @@ namespace MonoDevelop.CSharp.Completion
 				return InternalHandleCodeCompletion (completionContext, completionChar, false, ref triggerWordLength);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
-					"FileName: " + EditContext.Name + Environment.NewLine + 
+					"FileName: " + DocumentContext.Name + Environment.NewLine + 
 					"Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
 					"Line text: " + Editor.GetLineText (completionContext.TriggerLine), 
 					e);
@@ -304,7 +304,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		ICompletionContextProvider CreateContextProvider ()
 		{
-			return new CompletionContextProvider (Editor, EditContext, validTypeSystemSegmentTree, unstableTypeSystemSegmentTree);
+			return new CompletionContextProvider (Editor, DocumentContext, validTypeSystemSegmentTree, unstableTypeSystemSegmentTree);
 		}
 
 		CSharpTypeResolveContext CreateTypeResolveContext ()
@@ -355,7 +355,7 @@ namespace MonoDevelop.CSharp.Completion
 			var completionDataFactory = new CompletionDataFactory (this, new CSharpResolver (ctx));
 			if (MDRefactoringCtx == null) {
 				src.Cancel ();
-				MDRefactoringCtx = MDRefactoringContext.Create (Editor, EditContext, Editor.CaretLocation).Result;
+				MDRefactoringCtx = MDRefactoringContext.Create (Editor, DocumentContext, Editor.CaretLocation).Result;
 			}
 
 			var engine = new MonoCSharpCompletionEngine (
@@ -363,7 +363,7 @@ namespace MonoDevelop.CSharp.Completion
 				new DocumentWrapper (data),
 				CreateContextProvider (),
 				completionDataFactory,
-				EditContext.ProjectContent,
+				DocumentContext.ProjectContent,
 				ctx
 			);
 			completionDataFactory.Engine = engine;
@@ -375,8 +375,8 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				engine.EditorBrowsableBehavior = EditorBrowsableBehavior.Ignore;
 			}
-			if (EditContext.HasProject && MonoDevelop.Ide.IdeApp.IsInitialized) {
-				var configuration = EditContext.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+			if (DocumentContext.HasProject && MonoDevelop.Ide.IdeApp.IsInitialized) {
+				var configuration = DocumentContext.Project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
 				var par = configuration != null ? configuration.CompilationParameters as CSharpCompilerParameters : null;
 				if (par != null)
 					engine.LanguageVersion = MonoDevelop.CSharp.Parser.TypeSystemParser.ConvertLanguageVersion (par.LangVersion);
@@ -436,7 +436,7 @@ namespace MonoDevelop.CSharp.Completion
 				new DocumentWrapper (Editor),
 				CreateContextProvider (),
 				this,
-				EditContext.ProjectContent,
+				DocumentContext.ProjectContent,
 				ctx
 				);
 			List<string> list;
@@ -602,13 +602,13 @@ namespace MonoDevelop.CSharp.Completion
 					new DocumentWrapper (Editor),
 					CreateContextProvider (),
 					this,
-					EditContext.ProjectContent,
+					DocumentContext.ProjectContent,
 					ctx
 				);
 				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar) as ParameterDataProvider;
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
-					"FileName: " + EditContext.Name + Environment.NewLine + 
+					"FileName: " + DocumentContext.Name + Environment.NewLine + 
 					"Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
 					"Line text: " + Editor.GetLineText (completionContext.TriggerLine), 
 					e);
@@ -625,7 +625,7 @@ namespace MonoDevelop.CSharp.Completion
 			var result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);
-				var ctx = CSharpUnresolvedFile.GetResolver (EditContext.Compilation, scope.Region.Begin);
+				var ctx = CSharpUnresolvedFile.GetResolver (DocumentContext.Compilation, scope.Region.Begin);
 				foreach (var u in scope.Usings) {
 					var ns = u.ResolveNamespace (ctx);
 					if (ns == null)
@@ -649,7 +649,7 @@ namespace MonoDevelop.CSharp.Completion
 				new DocumentWrapper (Editor),
 				CreateContextProvider (),
 				this,
-				EditContext.ProjectContent,
+				DocumentContext.ProjectContent,
 				ctx
 			);
 			engine.SetOffset (Editor.CaretOffset);
@@ -666,7 +666,7 @@ namespace MonoDevelop.CSharp.Completion
 				new DocumentWrapper (Editor),
 				CreateContextProvider (),
 				this,
-				EditContext.ProjectContent,
+				DocumentContext.ProjectContent,
 				ctx
 			);
 			List<string> list;
@@ -1063,7 +1063,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData ()
 			{
-				var project = ext.EditContext.Project;
+				var project = ext.DocumentContext.Project;
 				if (project == null)
 					yield break;
 				var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
@@ -1172,7 +1172,7 @@ namespace MonoDevelop.CSharp.Completion
 				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 				{
 					Initialize ();
-					var doc = ext.EditContext;
+					var doc = ext.DocumentContext;
 					using (var undo = ext.Editor.OpenUndoGroup ()) {
 						string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
 						if (text != GetCurrentWord (window)) {

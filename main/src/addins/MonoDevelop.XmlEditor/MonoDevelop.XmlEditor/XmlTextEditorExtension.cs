@@ -56,7 +56,7 @@ namespace MonoDevelop.XmlEditor
 		InferredXmlCompletionProvider inferredCompletionData;
 		bool inferenceQueued;
 
-		public override bool IsValidInContext (EditContext context)
+		public override bool IsValidInContext (DocumentContext context)
 		{
 			return IsFileNameHandled (context.Name) && base.IsValidInContext (context);
 		}
@@ -72,13 +72,13 @@ namespace MonoDevelop.XmlEditor
 			//var view = Document.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
 			if (string.IsNullOrEmpty (Editor.MimeType)) {
 				Editor.MimeType = ApplicationXmlMimeType;
-				EditContext.ReparseDocument ();
+				DocumentContext.ReparseDocument ();
 			}
 		}
 
 		void HandleXmlFileAssociationChanged (object sender, XmlFileAssociationChangedEventArgs e)
 		{
-			var filename = EditContext.Name;
+			var filename = DocumentContext.Name;
 			if (filename != null && filename.ToString ().EndsWith (e.Extension, StringComparison.Ordinal))
 				SetDefaultSchema ();
 		}
@@ -376,7 +376,7 @@ namespace MonoDevelop.XmlEditor
 		
 		void SetDefaultSchema ()
 		{
-			var filename = EditContext.Name;
+			var filename = DocumentContext.Name;
 			if (filename == null)
 				return;
 			

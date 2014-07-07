@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			set;
 		}
 
-		public static CodeGenerator CreateGenerator (TextEditor editor, DocumentContext editContext)
+		public static CodeGenerator CreateGenerator (TextEditor editor, DocumentContext documentContext)
 		{
 			MimeTypeExtensionNode node;
 			if (!generators.TryGetValue (editor.MimeType, out node))
@@ -82,7 +82,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			result.UseSpaceIndent = editor.Options.TabsToSpaces;
 			result.EolMarker = editor.EolMarker;
 			result.TabSize = editor.Options.TabSize;
-			result.Compilation = editContext.Compilation;
+			result.Compilation = documentContext.Compilation;
 			return result;
 		}
 

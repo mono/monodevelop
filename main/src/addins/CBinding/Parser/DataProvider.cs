@@ -52,15 +52,15 @@ namespace CBinding.Parser
 
 		TextEditor editor;
 		
-		EditContext EditContext {
+		DocumentContext DocumentContext {
 			get;
 			set;
 		}
 		
-		public DataProvider (TextEditor editor, EditContext editContext, object tag, Ambience amb)
+		public DataProvider (TextEditor editor, DocumentContext documentContext, object tag, Ambience amb)
 		{
 			this.editor = editor;
-			this.EditContext = editContext;
+			this.DocumentContext = documentContext;
 			this.tag = tag;
 			this.amb = amb;
 			Reset ();
@@ -86,7 +86,7 @@ namespace CBinding.Parser
 		
 		string GetString (Ambience amb, IUnresolvedEntity x)
 		{
-			var ctx = new SimpleTypeResolveContext (EditContext.Compilation.MainAssembly);
+			var ctx = new SimpleTypeResolveContext (DocumentContext.Compilation.MainAssembly);
 			IEntity rx = null;
 			if (x is IUnresolvedMember)
 				rx = ((IUnresolvedMember)x).CreateResolved (ctx);

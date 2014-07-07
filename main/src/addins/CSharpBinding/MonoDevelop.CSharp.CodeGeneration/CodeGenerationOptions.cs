@@ -45,7 +45,7 @@ namespace MonoDevelop.CodeGeneration
 			private set;
 		}
 
-		public DocumentContext EditContext {
+		public DocumentContext DocumentContext {
 			get;
 			private set;
 		}
@@ -67,13 +67,13 @@ namespace MonoDevelop.CodeGeneration
 		
 		public string MimeType {
 			get {
-				return DesktopService.GetMimeTypeForUri (EditContext.Name);
+				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 		
 		public CSharpFormattingOptions FormattingOptions {
 			get {
-				var doc = EditContext;
+				var doc = DocumentContext;
 				var policyParent = doc.Project != null ? doc.Project.Policies : null;
 				var types = DesktopService.GetMimeTypeInheritanceChain (Editor.MimeType);
 				var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
@@ -113,7 +113,7 @@ namespace MonoDevelop.CodeGeneration
 		public CodeGenerationOptions ()
 		{
 			currentState = new Lazy<CSharpResolver> (() => {
-				var parsedDocument = EditContext.ParsedDocument;
+				var parsedDocument = DocumentContext.ParsedDocument;
 				if (parsedDocument == null)
 					return null;
 				var unit = parsedDocument.GetAst<SyntaxTree> ().Clone ();
@@ -126,7 +126,7 @@ namespace MonoDevelop.CodeGeneration
 				var expr = new IdentifierExpression ("foo");
 				resolvedNode.Add (expr);
 				
-				var ctx = file.GetTypeResolveContext (EditContext.Compilation, Editor.CaretLocation);
+				var ctx = file.GetTypeResolveContext (DocumentContext.Compilation, Editor.CaretLocation);
 				
 				var resolver = new CSharpResolver (ctx);
 				
@@ -139,9 +139,9 @@ namespace MonoDevelop.CodeGeneration
 		
 		public AstType CreateShortType (IType fullType)
 		{
-			var parsedFile = EditContext.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
+			var parsedFile = DocumentContext.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			
-			var compilation = EditContext.Compilation;
+			var compilation = DocumentContext.Compilation;
 			fullType = compilation.Import (fullType);
 			var csResolver = parsedFile.GetResolver (compilation, Editor.CaretLocation);
 			
@@ -151,7 +151,7 @@ namespace MonoDevelop.CodeGeneration
 		
 		public CodeGenerator CreateCodeGenerator ()
 		{
-			var result = CodeGenerator.CreateGenerator (Editor, EditContext);
+			var result = CodeGenerator.CreateGenerator (Editor, DocumentContext);
 			if (result == null)
 				LoggingService.LogError ("Generator can't be generated for : " + Editor.MimeType);
 			return result;
@@ -161,7 +161,7 @@ namespace MonoDevelop.CodeGeneration
 		{
 			var options = new CodeGenerationOptions {
 				Editor = editor,
-				EditContext = document
+				DocumentContext = document
 			};
 			if (document.ParsedDocument != null && document.ParsedDocument.ParsedFile != null) {
 				options.EnclosingPart = document.ParsedDocument.ParsedFile.GetInnermostTypeDefinition (editor.CaretLocation);
