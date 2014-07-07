@@ -29,19 +29,6 @@ using Mono.Addins;
 
 namespace MonoDevelop.Ide.Editor
 {
-	interface ITextEditorFactory
-	{
-		ITextDocument CreateNewDocument ();
-		ITextDocument CreateNewDocument (ITextSource textSource, string fileName, string mimeType);
-
-		IReadonlyTextDocument CreateNewReadonlyDocument (ITextSource textSource, string fileName, string mimeType);
-
-		ITextEditorImpl CreateNewEditor ();
-		ITextEditorImpl CreateNewEditor (IReadonlyTextDocument document);
-
-		string[] GetSyntaxProperties (string mimeType, string name);
-	}
-
 	public static class DocumentFactory
 	{
 		static ITextEditorFactory currentFactory;

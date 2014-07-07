@@ -539,18 +539,6 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.RemoveMarker (marker);
 		}
 
-		public IFoldSegment CreateFoldSegment (int offset, int length, bool isFolded = false)
-		{
-			return textEditorImpl.CreateFoldSegment (offset, length, isFolded);
-		}
-
-		public IFoldSegment CreateFoldSegment (ISegment segment, bool isFolded = false)
-		{
-			if (segment == null)
-				throw new System.ArgumentNullException ("segment");
-			return textEditorImpl.CreateFoldSegment (segment.Offset, segment.Length, isFolded);
-		}
-
 		public void SetFoldings (IEnumerable<IFoldSegment> foldings)
 		{
 			if (foldings == null)
@@ -768,6 +756,11 @@ namespace MonoDevelop.Ide.Editor
 			}
 
 			return viewContent;
+		}
+
+		internal IFoldSegment CreateFoldSegment (int offset, int length, bool isFolded = false)
+		{
+			return textEditorImpl.CreateFoldSegment (offset, length, isFolded);
 		}
 		#endregion
 

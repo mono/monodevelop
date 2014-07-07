@@ -2797,6 +2797,8 @@
     <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\IEditorActionHost.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\EditActions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentContext.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\FoldSegmentFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
