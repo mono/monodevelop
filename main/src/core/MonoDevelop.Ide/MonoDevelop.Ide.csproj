@@ -2644,7 +2644,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDocDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DockNotebook.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />
@@ -2748,9 +2747,17 @@
     <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebook.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\PlaceholderWindow.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\TabStrip.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\TabEventArgs.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
@@ -2796,6 +2803,7 @@
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
+    <Folder Include="MonoDevelop.Components.DockNotebook\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

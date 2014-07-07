@@ -32,6 +32,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.DockNotebook;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -278,6 +279,90 @@ namespace MonoDevelop.Ide.Commands
 		{
 			IZoomable zoom = IdeApp.Workbench.ActiveDocument.GetContent<IZoomable> ();
 			zoom.ZoomReset ();
+		}
+	}
+
+	public class SideBySideModeHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.TabCount > 1 && DockNotebook.ActiveNotebook.Container.AllowRightInsert;
+		}
+
+		protected override void Run ()
+		{
+			IdeApp.Workbench.LockActiveWindowChangeEvent ();
+			var container = DockNotebook.ActiveNotebook.Container;
+			var tab = DockNotebook.ActiveNotebook.CurrentTab;
+			var window = (SdiWorkspaceWindow)tab.Content;
+			DockNotebook.ActiveNotebook.RemoveTab (tab.Index, false);
+			container.InsertRight (window);
+			window.SelectWindow ();
+			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
+		}
+	}
+
+	public class SingleModeHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = DockNotebook.ActiveNotebook != null && DockNotebook.ActiveNotebook.Container.SplitCount > 0;
+		}
+
+		protected override void Run ()
+		{
+			IdeApp.Workbench.LockActiveWindowChangeEvent ();
+
+			SdiWorkspaceWindow window = null;
+			if (DockNotebook.ActiveNotebook != null) {
+				var tab = DockNotebook.ActiveNotebook.CurrentTab;
+				if (tab != null)
+					window = (SdiWorkspaceWindow)tab.Content;
+			}
+			DockNotebook.ActiveNotebook.Container.SetSingleMode ();
+
+			if (window != null)
+				window.SelectWindow ();
+
+			IdeApp.Workbench.UnlockActiveWindowChangeEvent ();
+		}
+	}
+
+	public class NextNotebookHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+			} else {
+				var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+				info.Enabled = window.CanMoveToNextNotebook ();
+			}
+		}
+
+		protected override void Run ()
+		{
+			var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+			window.MoveToNextNotebook ();
+		}
+	}
+
+	public class PreviousNotebookHandler : CommandHandler
+	{
+		protected override void Update (CommandInfo info)
+		{
+			if (IdeApp.Workbench.ActiveDocument == null) {
+				info.Enabled = false;
+			} else {
+				var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+				info.Enabled = window.CanMoveToPreviousNotebook ();
+			}
+		}
+
+		protected override void Run ()
+		{
+			var window = (SdiWorkspaceWindow)IdeApp.Workbench.ActiveDocument.Window;
+			window.MoveToPreviousNotebook ();
 		}
 	}
 	
