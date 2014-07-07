@@ -1650,6 +1650,16 @@ namespace MonoDevelop.Debugger.Win32
 			}
 		}
 
+		public override IEnumerable<object> GetImplementedInterfaces (EvaluationContext ctx, object type)
+		{
+			var cType = (CorType)type;
+			var typeInfo = cType.GetTypeInfo (((CorEvaluationContext)ctx).Session);
+			foreach (var iface in typeInfo.GetInterfaces ()) {
+				if (!string.IsNullOrEmpty (iface.FullName))
+					yield return GetType (ctx, iface.FullName);
+			}
+		}
+
 		// TODO: implement for session
 		public override bool IsExternalType (EvaluationContext ctx, object type)
 		{
