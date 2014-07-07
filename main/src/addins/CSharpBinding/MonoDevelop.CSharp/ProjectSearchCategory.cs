@@ -63,8 +63,7 @@ namespace MonoDevelop.CSharp
 
 		public override void Initialize (Components.PopoverWindow popupWindow)
 		{
-			widget = popupWindow;
-			lastResult = new WorkerResult (popupWindow);
+			lastResult = new WorkerResult ();
 		}
 
 		internal static Task<SymbolCache> SymbolInfoTask;
@@ -82,7 +81,7 @@ namespace MonoDevelop.CSharp
 					old.Dispose ();
             }
 			symbolInfoTokenSrc = new CancellationTokenSource();
-			lastResult = new WorkerResult (widget);
+			lastResult = new WorkerResult ();
 			SymbolInfoTask = null;
 			CancellationToken token = symbolInfoTokenSrc.Token;
 			SymbolInfoTask = Task.Run (delegate {
@@ -240,7 +239,7 @@ namespace MonoDevelop.CSharp
 				if (searchPattern.Tag != null && !(typeTags.Contains (searchPattern.Tag) || memberTags.Contains (searchPattern.Tag)) || searchPattern.HasLineNumber)
 					return null;
 				try {
-					var newResult = new WorkerResult (widget);
+					var newResult = new WorkerResult ();
 					newResult.pattern = searchPattern.Pattern;
 					newResult.IncludeFiles = true;
 					newResult.Tag = searchPattern.Tag;
@@ -256,7 +255,7 @@ namespace MonoDevelop.CSharp
 					newResult.FullSearch = toMatch.IndexOf ('.') > 0;
 					var oldLastResult = lastResult;
 					if (newResult.FullSearch && oldLastResult != null && !oldLastResult.FullSearch)
-						oldLastResult = new WorkerResult (widget);
+						oldLastResult = new WorkerResult ();
 //					var now = DateTime.Now;
 
 					AllResults (searchResultCallback, oldLastResult, newResult, allTypes, token);
@@ -358,9 +357,9 @@ namespace MonoDevelop.CSharp
 			public bool IncludeFiles, IncludeTypes, IncludeMembers;
 			public StringMatcher matcher;
 
-			public WorkerResult (Widget widget)
+			public WorkerResult ()
 			{
-				results = new ResultsDataSource (widget);
+				results = new ResultsDataSource ();
 			}
 
 			internal SearchResult CheckType (DeclaredSymbolInfo symbol)

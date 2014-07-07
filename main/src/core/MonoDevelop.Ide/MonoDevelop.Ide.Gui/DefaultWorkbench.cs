@@ -38,7 +38,7 @@ using MonoDevelop.Ide.Codons;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Components.Docking;
 
-using MonoDevelop.Components.DockToolbars;
+using GLib;
 using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Extensions;
@@ -80,7 +80,7 @@ namespace MonoDevelop.Ide.Gui
 		Rectangle normalBounds = new Rectangle(0, 0, MinimumWidth, MinimumHeight);
 		
 		Gtk.Container rootWidget;
-		DockToolbarFrame toolbarFrame;
+		CommandFrame toolbarFrame;
 		DockFrame dock;
 		SdiDragNotebook tabControl;
 		Gtk.MenuBar topMenu;
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Gui
 				var oldLayout = dock.CurrentLayout;
 				
 				InitializeLayout (value);
-				toolbarFrame.CurrentLayout = dock.CurrentLayout = value;
+				dock.CurrentLayout = value;
 				
 				DestroyFullViewLayouts (oldLayout);
 				
@@ -363,6 +363,11 @@ namespace MonoDevelop.Ide.Gui
 			}
 
 			return mimeimage;
+		}
+
+		public void ShowView (IViewContent content, bool bringToFront, DockNotebook notebook = null)
+		{
+			ShowView (content, bringToFront, null, notebook);
 		}
 
 		public virtual void ShowView (IViewContent content, bool bringToFront, IViewDisplayBinding binding = null, DockNotebook notebook = null)
@@ -589,7 +594,6 @@ namespace MonoDevelop.Ide.Gui
 				}
 				memento.WindowState = GdkWindow.State;
 				memento.FullScreen  = fullscreen;
-				memento.ToolbarStatus = toolbarFrame.GetStatus ();
 				return memento.ToProperties ();
 			}
 			set {
@@ -611,7 +615,6 @@ namespace MonoDevelop.Ide.Gui
 					}
 					//GdkWindow.State = memento.WindowState;
 					FullScreen = memento.FullScreen;
-					toolbarFrame.SetStatus (memento.ToolbarStatus);
 				}
 				Decorated = true;
 			}
@@ -836,7 +839,7 @@ namespace MonoDevelop.Ide.Gui
 			toolbarFrame.AddContent (hbox);
 			*/
 
-			toolbarFrame.AddContent (dock);
+			toolbarFrame.Add (dock);
 			
 			// Create the notebook for the various documents.
 			tabControl = new SdiDragNotebook (this);
@@ -1010,11 +1013,6 @@ namespace MonoDevelop.Ide.Gui
 			IdeApp.Workbench.ReorderDocuments (oldPlacement, newPlacement);
 		}
 		
-		public void ResetToolbars ()
-		{
-			toolbarFrame.ResetToolbarPositions ();
-		}
-		
 		bool IsInFullViewMode {
 			get {
 				return dock.CurrentLayout.EndsWith (fullViewModeTag);
@@ -1056,7 +1054,6 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (oldLayout != null && oldLayout.EndsWith (fullViewModeTag)) {
 				dock.DeleteLayout (oldLayout);
-				toolbarFrame.DeleteLayout (oldLayout);
 			}
 		}
 		
@@ -1064,19 +1061,17 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (IsInFullViewMode) {
 				var oldLayout = dock.CurrentLayout;
-				toolbarFrame.CurrentLayout = dock.CurrentLayout = CurrentLayout;
+				dock.CurrentLayout = CurrentLayout;
 				DestroyFullViewLayouts (oldLayout);
 			} else {
 				string fullViewLayout = CurrentLayout + fullViewModeTag;
 				if (!dock.HasLayout (fullViewLayout))
 					dock.CreateLayout (fullViewLayout, true);
-				toolbarFrame.CurrentLayout = dock.CurrentLayout = fullViewLayout;
+				dock.CurrentLayout = fullViewLayout;
 				foreach (DockItem it in dock.GetItems ()) {
 					if (it.Behavior != DockItemBehavior.Locked && it.Visible)
 						it.Status = DockItemStatus.AutoHide;
 				}
-				foreach (var tb in toolbarFrame.Toolbars)
-					tb.Status = new DockToolbarStatus (tb.Id, false, tb.Position);
 			}
 		}
 
