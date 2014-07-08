@@ -98,9 +98,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			// Check for directory before checking for file, since directory links may appear as files
 			if (Directory.Exists (localPath))
 				return GetDirStatus (repo, localPath, getRemoteStatus);
-			if (File.Exists (localPath))
-				return GetFileStatus (repo, localPath, getRemoteStatus);
-			return VersionInfo.CreateUnversioned (localPath, false);
+			return GetFileStatus (repo, localPath, getRemoteStatus);
 		}
 
 		private VersionInfo GetFileStatus (Repository repo, FilePath sourcefile, bool getRemoteStatus)

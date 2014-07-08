@@ -325,7 +325,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			VersionInfo srcInfo = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
-				// If the file is scheduled to add, cancel it, move the file, and schedule to add again
+				// Subversion automatically detects the rename and moves the new file accordingly.
 				if (!destIsVersioned) {
 					MakeDirVersioned (Path.GetDirectoryName (localDestPath), monitor);
 					Svn.Move (localSrcPath, localDestPath, force, monitor);
