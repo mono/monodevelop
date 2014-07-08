@@ -10,7 +10,7 @@ type FSharpIndentationTracker(doc:Document) =
     let indentSize = doc.Editor.Options.IndentationSize
 
     // Lines ending in these strings will be indented
-    let indenters = ["=";"do";"{";"[";"[|"]
+    let indenters = ["=";"do";"{";"[";"[|";"->"]
 
     let (|AddIndent|_|) (x:string) = 
         if indenters |> List.exists(x.EndsWith) then Some ()
@@ -22,12 +22,13 @@ type FSharpIndentationTracker(doc:Document) =
     let rec getIndentation lineDistance (line: DocumentLine) = 
         if line = null then "" else
         match textDoc.GetLineText(line.LineNumber).TrimEnd() with
-        | x when String.IsNullOrWhiteSpace(x) -> getIndentation (lineDistance + 1)line.PreviousLine
-        | Match i when lineDistance < 2 -> String(' ', i)
-        | AddIndent -> String(' ', line.GetIndentation(textDoc).Length + indentSize)
+        | x when String.IsNullOrWhiteSpace(x) -> getIndentation (lineDistance + 1) line.PreviousLine
+        | Match i   when lineDistance < 2 -> String(' ', i)
+        | AddIndent when lineDistance < 2 -> String(' ', line.GetIndentation(textDoc).Length + indentSize)
         | _ -> line.GetIndentation textDoc
 
     let getIndentString lineNumber column =  
+        if doc.Editor.Caret.Column <= 1 then "" else
         let line = textDoc.GetLine (lineNumber);
         getIndentation 0 line
 
@@ -35,7 +36,6 @@ type FSharpIndentationTracker(doc:Document) =
         member x.GetIndentationString (lineNumber, column) = getIndentString lineNumber column
         member x.GetIndentationString (offset) = 
             let loc = textDoc.OffsetToLocation (offset)
-            if doc.Editor.Caret.Column = 0 then "" else
             getIndentString loc.Line loc.Column
         member x.GetVirtualIndentationColumn (offset) = 
             let loc = textDoc.OffsetToLocation (offset)
