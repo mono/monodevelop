@@ -323,24 +323,14 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="pango-sharp">
-      <Private>False</Private>
-      <HintPath>../dependencies/gtk-sharp-2.0/pango-sharp.dll</HintPath>
     </Reference>
     <Reference Include="atk-sharp">
-      <Private>False</Private>
-      <HintPath>../dependencies/gtk-sharp-2.0/atk-sharp.dll</HintPath>
     </Reference>
     <Reference Include="gdk-sharp">
-      <Private>False</Private>
-      <HintPath>../dependencies/gtk-sharp-2.0/gdk-sharp.dll</HintPath>
     </Reference>
     <Reference Include="gtk-sharp">
-      <Private>False</Private>
-      <HintPath>../dependencies/gtk-sharp-2.0/gtk-sharp.dll</HintPath>
     </Reference>
     <Reference Include="glib-sharp">
-      <Private>False</Private>
-      <HintPath>../dependencies/gtk-sharp-2.0/glib-sharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
