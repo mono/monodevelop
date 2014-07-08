@@ -35,7 +35,7 @@ using MonoDevelop.SourceEditor;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
-	class HighlightUsagesExtension : AbstractUsagesExtension<ResolveResult>
+	public class HighlightUsagesExtension : AbstractUsagesExtension<ResolveResult>
 	{
 		CSharpSyntaxMode syntaxMode;
 
