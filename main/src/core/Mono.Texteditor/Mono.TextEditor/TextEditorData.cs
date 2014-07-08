@@ -138,6 +138,17 @@ namespace Mono.TextEditor
 				customTabsToSpaces = value;
 			}
 		}
+
+		bool? customShowRuler;
+		public bool ShowRuler {
+			get {
+				return customShowRuler.HasValue ? customShowRuler.Value : options.ShowRuler;
+			}
+			set {
+				customShowRuler = value;
+			}
+		}
+
 		#region Tooltip providers
 		internal List<TooltipProvider> tooltipProviders = new List<TooltipProvider> ();
 		public IEnumerable<TooltipProvider> TooltipProviders {
