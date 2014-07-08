@@ -13,20 +13,23 @@ type FSharpIndentationTracker(doc:Document) =
     let indenters = ["=";"do";"{";"[";"[|"]
 
     let (|AddIndent|_|) (x:string) = 
-        let trimmed = x.TrimEnd() 
-        if indenters |> List.exists(trimmed.EndsWith) then Some indentSize
+        if indenters |> List.exists(x.EndsWith) then Some ()
+        else None
+    let (|Match|_|) (x:string) = 
+        if x.EndsWith "with" && x.Contains("match ") then Some (x.LastIndexOf "match ")
         else None
         
-    let rec getIndentation (line: DocumentLine) = 
-         if line = null then "" else
-         match textDoc.GetLineText(line.LineNumber) with
-         | x when String.IsNullOrWhiteSpace(x) -> getIndentation line.PreviousLine
-         | AddIndent i -> String(' ', line.GetIndentation(textDoc).Length + i)
-         | _ -> line.GetIndentation textDoc
+    let rec getIndentation lineDistance (line: DocumentLine) = 
+        if line = null then "" else
+        match textDoc.GetLineText(line.LineNumber).TrimEnd() with
+        | x when String.IsNullOrWhiteSpace(x) -> getIndentation (lineDistance + 1)line.PreviousLine
+        | Match i when lineDistance < 2 -> String(' ', i)
+        | AddIndent -> String(' ', line.GetIndentation(textDoc).Length + indentSize)
+        | _ -> line.GetIndentation textDoc
 
     let getIndentString lineNumber column =  
-         let line = textDoc.GetLine (lineNumber);
-         getIndentation line
+        let line = textDoc.GetLine (lineNumber);
+        getIndentation 0 line
 
     interface IIndentationTracker with
         member x.GetIndentationString (lineNumber, column) = getIndentString lineNumber column
