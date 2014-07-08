@@ -37,5 +37,7 @@ type HighlightUsagesExtension() as this =
                       yield NRefactory.createMemberReference(projectContent, symbolUse, currentFile, source, fsSymbolName) }
             | _ -> Seq.empty
                             
-        with exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
-                    Seq.empty       
+        with
+        | :? OperationCanceledException -> Seq.empty
+        | exn -> LoggingService.LogError("Unhandled Exception in F# HighlightingUsagesExtension", exn)
+                 Seq.empty       
