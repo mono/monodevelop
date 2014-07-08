@@ -93,8 +93,9 @@ namespace MonoDevelop.Ide.Editor
 		/// <summary>
 		/// This method gets the line indentation.
 		/// </summary>
+		/// <param name = "line"></param>
 		/// <param name="doc">
-		/// The <see cref="TextDocument"/> the line belongs to.
+		/// The <see cref="IReadonlyTextDocument"/> the line belongs to.
 		/// </param>
 		/// <returns>
 		/// The indentation of the line (all whitespace chars up to the first non ws char).

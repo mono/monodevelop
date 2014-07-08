@@ -171,12 +171,25 @@ namespace MonoDevelop.Ide.Editor
 			return result;
 		}
 
-		public static IEnumerable<Hunk> Diff (this IReadonlyTextDocument document, IReadonlyTextDocument changedDocument, bool includeEol = true)
+		public static IEnumerable<DiffHunk> GetDiff (this IReadonlyTextDocument document, IReadonlyTextDocument changedDocument, bool includeEol = true)
 		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			if (changedDocument == null)
+				throw new ArgumentNullException ("changedDocument");
 			var codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;
 			return MonoDevelop.Ide.Editor.Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, includeEol),
 				GetDiffCodes (changedDocument, ref codeCounter, codeDictionary, includeEol));
+		}
+
+		public static string GetDiffAsString (this IReadonlyTextDocument document, IReadonlyTextDocument changedDocument, bool includeEol = true)
+		{
+			if (document == null)
+				throw new ArgumentNullException ("document");
+			if (changedDocument == null)
+				throw new ArgumentNullException ("changedDocument");
+			return MonoDevelop.Ide.Editor.Diff.GetDiffString (GetDiff (document, changedDocument, includeEol), document, changedDocument, document.FileName, changedDocument.FileName);
 		}
 
 		public static int OffsetToLineNumber (this IReadonlyTextDocument document, int offset)

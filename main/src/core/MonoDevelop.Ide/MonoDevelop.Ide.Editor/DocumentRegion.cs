@@ -35,6 +35,9 @@ namespace MonoDevelop.Ide.Editor
 	{
 		public static readonly DocumentRegion Empty = new DocumentRegion (0, 0, 0, 0);
 
+		/// <summary>
+		/// Gets a value indicating whether this DocumentRegion is empty.
+		/// </summary>
 		public bool IsEmpty {
 			get {
 				return beginLine < 1;

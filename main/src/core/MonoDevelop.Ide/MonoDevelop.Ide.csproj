@@ -2737,7 +2737,9 @@
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\WordFindStrategy.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InsertionPoint.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\TextLink.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextLink.cs">
+      <DependentUpon>TextLinkModeEventArgs.cs</DependentUpon>
+    </Compile>
     <Compile Include="MonoDevelop.Components\WindowTransparencyDecorator.cs" />
     <Compile Include="MonoDevelop.Components\GtkWorkarounds.cs" />
     <Compile Include="MonoDevelop.Components\PangoUtil.cs" />
@@ -2777,7 +2779,6 @@
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\SimpleReadonlyDocument.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeEventArgs.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\CloneableStack.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\InsertionModeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\CompletionTextEditorExtension.cs" />

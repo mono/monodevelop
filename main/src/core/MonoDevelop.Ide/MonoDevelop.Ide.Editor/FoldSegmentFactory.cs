@@ -30,33 +30,33 @@ namespace MonoDevelop.Ide.Editor
 {
 	public static class FoldSegmentFactory
 	{
-		public static IFoldSegment CreateFoldSegment (TextEditor editor, int offset, int length, bool isFolded = false, string collapsedText = "...", FoldingType foldingType = FoldingType.None)
+		public static IFoldSegment CreateFoldSegment (TextEditor editor, int offset, int length, bool isCollapsed = false, string collapsedText = "...", FoldingType foldingType = FoldingType.Unknown)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
-			var result =  editor.CreateFoldSegment (offset, length, isFolded);
+			var result =  editor.CreateFoldSegment (offset, length, isCollapsed);
 			result.CollapsedText = collapsedText;
 			result.FoldingType = foldingType;
 			return result;
 		}
 
-		public static IFoldSegment CreateFoldSegment (TextEditor editor, ISegment segment, bool isFolded = false, string collapsedText = "...", FoldingType foldingType = FoldingType.None)
+		public static IFoldSegment CreateFoldSegment (TextEditor editor, ISegment segment, bool isCollapsed = false, string collapsedText = "...", FoldingType foldingType = FoldingType.Unknown)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			return CreateFoldSegment (editor, segment.Offset, segment.Length, isFolded, collapsedText, foldingType);
+			return CreateFoldSegment (editor, segment.Offset, segment.Length, isCollapsed, collapsedText, foldingType);
 		}
 
-		public static IFoldSegment CreateFoldSegment (TextEditor editor, int offset, int length, string collapsedText = "...", FoldingType foldingType = FoldingType.None)
+		public static IFoldSegment CreateFoldSegment (TextEditor editor, int offset, int length, string collapsedText = "...", FoldingType foldingType = FoldingType.Unknown)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
 			return CreateFoldSegment (editor, offset, length, false, collapsedText, foldingType);
 		}
 
-		public static IFoldSegment CreateFoldSegment (TextEditor editor, ISegment segment, string collapsedText = "...", FoldingType foldingType = FoldingType.None)
+		public static IFoldSegment CreateFoldSegment (TextEditor editor, ISegment segment, string collapsedText = "...", FoldingType foldingType = FoldingType.Unknown)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
@@ -65,14 +65,14 @@ namespace MonoDevelop.Ide.Editor
 			return CreateFoldSegment (editor, segment.Offset, segment.Length, false, collapsedText, foldingType);
 		}
 
-		public static IFoldSegment CreateFoldSegment (TextEditor editor, int offset, int length, FoldingType foldingType = FoldingType.None)
+		public static IFoldSegment CreateFoldSegment (TextEditor editor, int offset, int length, FoldingType foldingType = FoldingType.Unknown)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");
 			return CreateFoldSegment (editor, offset, length, false, "...", foldingType);
 		}
 
-		public static IFoldSegment CreateFoldSegment (TextEditor editor, ISegment segment, FoldingType foldingType = FoldingType.None)
+		public static IFoldSegment CreateFoldSegment (TextEditor editor, ISegment segment, FoldingType foldingType = FoldingType.Unknown)
 		{
 			if (editor == null)
 				throw new ArgumentNullException ("editor");

@@ -99,10 +99,17 @@ using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public struct Hunk
+	/// <summary>
+	/// A DiffHunk represents a single change in a diff between two files.
+	/// </summary>
+	public struct DiffHunk
 	{
-		public static readonly Hunk Empty = new Hunk (0, 0, 0, 0);
+		public static readonly DiffHunk Empty = new DiffHunk (0, 0, 0, 0);
 
+		/// <summary>
+		/// Gets a value indicating whether this instance is empty.
+		/// </summary>
+		/// <value><c>true</c> if this instance is empty; otherwise, <c>false</c>.</value>
 		public bool IsEmpty {
 			get {
 				return InsertStart <= 0;
@@ -110,15 +117,29 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		// TODO: Add option to change this value.
-		public readonly int Context;
+		internal readonly int Context;
 
+		/// <summary>
+		/// Line number where the insertion starts.
+		/// </summary>
 		public readonly int InsertStart;
+
+		/// <summary>
+		/// Line number where the removal starts.
+		/// </summary>
 		public readonly int RemoveStart;
 
+		/// <summary>
+		/// Number of lines removed.
+		/// </summary>
 		public readonly int Removed;
+
+		/// <summary>
+		/// Number of lines inserted.
+		/// </summary>
 		public readonly int Inserted;
 
-		public Hunk (int removeStart, int insertStart, int removed, int inserted)
+		public DiffHunk (int removeStart, int insertStart, int removed, int inserted)
 		{
 			this.InsertStart = insertStart;
 			this.RemoveStart = removeStart;
@@ -127,32 +148,32 @@ namespace MonoDevelop.Ide.Editor
 			this.Context = 3;
 		}
 
-		public int DistanceTo(Hunk other)
+		public int DistanceTo(DiffHunk other)
 		{
 			return other.RemoveStart - (this.RemoveStart + this.Removed);
 		}
 
-		public bool Overlaps(Hunk other)
+		public bool Overlaps(DiffHunk other)
 		{
 			return DistanceTo (other) < this.Context * 2;
 		}
 
-		public static bool operator ==(Hunk left, Hunk right)
+		public static bool operator ==(DiffHunk left, DiffHunk right)
 		{
 			return left.InsertStart == right.InsertStart && left.RemoveStart == right.RemoveStart &&
 				left.Removed == right.Removed && left.Inserted == right.Inserted;
 		}
 	
-		public static bool operator !=(Hunk left, Hunk right)
+		public static bool operator !=(DiffHunk left, DiffHunk right)
 		{
 			return !(left == right);
 		}
 
 		public override bool Equals (object obj)
 		{
-			if (!(obj is Hunk))
+			if (!(obj is DiffHunk))
 				return false;
-			return ((Hunk)obj) == this;
+			return ((DiffHunk)obj) == this;
 		}
 		
 		public override int GetHashCode ()
@@ -168,7 +189,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 	}
 	
-	public sealed class Diff
+	sealed class Diff
 	{
 		/// <summary>
 		/// Shortest Middle Snake Return Data
@@ -197,12 +218,12 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public static IEnumerable<Hunk> CharDiff (string left, string right)
+		public static IEnumerable<DiffHunk> CharDiff (string left, string right)
 		{
 			return GetDiff (left != null ? left.ToCharArray () : new char[0], right != null ? right.ToCharArray () : new char[0]);
 		}
 
-		public static IEnumerable<Hunk> GetDiff<T> (T[] baseArray, T[] changedArray)
+		public static IEnumerable<DiffHunk> GetDiff<T> (T[] baseArray, T[] changedArray)
 		{
 			// The A-Version of the data (original data) to be compared.
 			var dataA = new DiffData<T> (baseArray);
@@ -224,7 +245,7 @@ namespace MonoDevelop.Ide.Editor
 		/// producing an edit script in forward order.
 		/// </summary>
 		/// dynamic array
-		static IEnumerable<Hunk> CreateDiffs<T> (DiffData<T> baseData, DiffData<T> changedData)
+		static IEnumerable<DiffHunk> CreateDiffs<T> (DiffData<T> baseData, DiffData<T> changedData)
 		{
 			int lineA = 0;
 			int lineB = 0;
@@ -255,7 +276,7 @@ namespace MonoDevelop.Ide.Editor
 
 					if (startA < lineA || startB < lineB) {
 						// store a new difference-item
-						yield return new Hunk (startA + 1, startB + 1, lineA - startA, lineB - startB);
+						yield return new DiffHunk (startA + 1, startB + 1, lineA - startA, lineB - startB);
 					}
 					// if
 				}
@@ -439,9 +460,9 @@ namespace MonoDevelop.Ide.Editor
 		}
 		// LCS()
 
-		static void WriteHunks (Queue<Hunk> qh, IReadonlyTextDocument baseDocument, IReadonlyTextDocument changedDocument, StringBuilder sb)
+		static void WriteHunks (Queue<DiffHunk> qh, IReadonlyTextDocument baseDocument, IReadonlyTextDocument changedDocument, StringBuilder sb)
 		{
-			Hunk item;
+			DiffHunk item;
 			int remStart;
 			int insStart;
 			int distance = 0;
@@ -473,21 +494,21 @@ namespace MonoDevelop.Ide.Editor
 
 		public static string GetDiffString (IReadonlyTextDocument baseDocument, IReadonlyTextDocument changedDocument)
 		{
-			return GetDiffString (baseDocument.Diff (changedDocument), baseDocument, changedDocument, baseDocument.FileName, changedDocument.FileName);
+			return GetDiffString (baseDocument.GetDiff (changedDocument), baseDocument, changedDocument, baseDocument.FileName, changedDocument.FileName);
 		}
 
-		public static string GetDiffString (IEnumerable<Hunk> diff, IReadonlyTextDocument baseDocument, IReadonlyTextDocument changedDocument, string baseFileName, string changedFileName)
+		public static string GetDiffString (IEnumerable<DiffHunk> diff, IReadonlyTextDocument baseDocument, IReadonlyTextDocument changedDocument, string baseFileName, string changedFileName)
 		{
 			if (diff == null)
 				return "";
 
 			StringBuilder sb = new StringBuilder ();
-			IEnumerator<Hunk> he = diff.GetEnumerator ();
+			IEnumerator<DiffHunk> he = diff.GetEnumerator ();
 			he.MoveNext ();
 
-			Queue<Hunk> qh = new Queue<Hunk> ();
-			Hunk current;
-			Hunk next;
+			Queue<DiffHunk> qh = new Queue<DiffHunk> ();
+			DiffHunk current;
+			DiffHunk next;
 
 			if (he.Current.IsEmpty)
 				return "";

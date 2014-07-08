@@ -31,6 +31,14 @@ namespace MonoDevelop.SourceEditor.Wrappers
 {
 	public class FoldSegmentWrapper : Mono.TextEditor.FoldSegment, IFoldSegment
 	{
+		bool IFoldSegment.IsCollapsed {
+			get {
+				return IsFolded;
+			}
+			set {
+				IsFolded = value;
+			}
+		}
 
 		string IFoldSegment.CollapsedText {
 			get {

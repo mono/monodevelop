@@ -91,6 +91,8 @@ namespace MonoDevelop.CSharp.Parser
 				var textEditor = editor as TextEditor;
 				if (textEditor != null) {
 					caretLocation = textEditor.CaretLocation;
+				} else {
+					caretLocation = TextLocation.Empty;
 				}
 				return MDRefactoringContext.Create (editor, doc, caretLocation, token).Result;
 			};

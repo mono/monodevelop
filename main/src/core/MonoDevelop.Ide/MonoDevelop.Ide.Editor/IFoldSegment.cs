@@ -25,29 +25,46 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core.Text;
+using System.Web.UI.WebControls;
 
 namespace MonoDevelop.Ide.Editor
 {
+	/// <summary>
+	/// Represents the origin for a fold segment
+	/// </summary>
 	public enum FoldingType {
-		None,
+		Unknown,
 		Region,
 		TypeDefinition,
 		TypeMember,
 		Comment
 	}
 
+	/// <summary>
+	/// A fold segment represents a collapsible region inside the text editor.
+	/// </summary>
 	public interface IFoldSegment : ISegment
 	{
-		bool IsFolded {
+		/// <summary>
+		/// Gets or sets a value indicating whether this fold segment is collapsed.
+		/// </summary>
+		bool IsCollapsed {
 			get;
 			set;
 		}
 
+		/// <summary>
+		/// Gets or sets the collapsed text. This is displayed when the folding is collapsed instead of the collapsed region.
+		/// </summary>
 		string CollapsedText {
 			get;
 			set;
 		}
 
+		/// <summary>
+		/// Gets or sets the type of the folding. This type gives some info about where this folding segment
+		/// originates from.
+		/// </summary>
 		FoldingType FoldingType {
 			get;
 			set;
