@@ -75,10 +75,8 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			treeviewCodeTemplates.ExpandAll ();
 			treeviewCodeTemplates.Selection.Changed += HandleChanged;
-			
-			textEditor.Options.ShowLineNumberMargin = false;
-			textEditor.Options.ShowFoldMargin = false;
-			textEditor.Options.ShowIconMargin = false;
+
+			textEditor.Options = DefaultSourceEditorOptions.PlainEditor;
 			textEditor.IsReadOnly = true;
 			this.buttonAdd.Clicked += ButtonAddClicked;
 			this.buttonEdit.Clicked += ButtonEditClicked;

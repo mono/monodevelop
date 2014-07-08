@@ -56,34 +56,32 @@ namespace MonoDevelop.Ide.Editor
 	{
 		string IndentationString { get; }
 
-		WordFindStrategy WordFindStrategy { get; set; }
+		WordFindStrategy WordFindStrategy { get; }
 
-		bool TabsToSpaces { get; set; }
-		int IndentationSize { get; set; }
-		int TabSize { get; set; }
-		bool ShowIconMargin { get; set; }
-		bool ShowLineNumberMargin { get; set; }
-		bool ShowFoldMargin { get; set; }
-		bool HighlightCaretLine { get; set; }
-		int RulerColumn { get; set; }
-		bool ShowRuler { get; set; }
-		IndentStyle IndentStyle { get; set; }
-		bool OverrideDocumentEolMarker { get; set; }
-		bool EnableSyntaxHighlighting { get; set; }
+		bool TabsToSpaces { get; }
+		int IndentationSize { get; }
+		int TabSize { get; }
+		bool ShowIconMargin { get; }
+		bool ShowLineNumberMargin { get; }
+		bool ShowFoldMargin { get; }
+		bool HighlightCaretLine { get; }
+		int RulerColumn { get; }
+		bool ShowRuler { get; }
+		IndentStyle IndentStyle { get; }
+		bool OverrideDocumentEolMarker { get; }
+		bool EnableSyntaxHighlighting { get; }
 
-		bool WrapLines { get; set; }
+		bool WrapLines { get; }
 
-		string FontName { get;  set; }
+		string FontName { get; }
 
-		string GutterFontName { get; set; }
+		string GutterFontName { get; }
 
-		string ColorScheme { get; set;  }
+		string ColorScheme { get;  }
 
-		string DefaultEolMarker { get; set; }
+		string DefaultEolMarker { get; }
 
-		bool GenerateFormattingUndoStep { get; set; }
-
-		event EventHandler Changed;
+		bool GenerateFormattingUndoStep { get; }
 	}
 
 	public static class TextEditorOptionsExtension

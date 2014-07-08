@@ -57,6 +57,11 @@ namespace MonoDevelop.Ide.Editor
 			get { return instance; }
 		}
 
+		public static ITextEditorOptions PlainEditor {
+			get;
+			private set;
+		}
+
 		static DefaultSourceEditorOptions ()
 		{
 			Init ();
@@ -71,6 +76,12 @@ namespace MonoDevelop.Ide.Editor
 			var policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> ("text/plain");
 			instance = new DefaultSourceEditorOptions (policy);
 			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
+
+			PlainEditor = new DefaultSourceEditorOptions (policy) {
+				ShowLineNumberMargin = false,
+				ShowFoldMargin = false,
+				ShowIconMargin = false
+			};
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)

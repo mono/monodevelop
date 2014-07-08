@@ -109,6 +109,19 @@ namespace MonoDevelop.Ide.Editor
 			get {
 				return textEditorImpl.Options;
 			}
+			set {
+				textEditorImpl.Options = value;
+				OnOptionsChanged (EventArgs.Empty);
+			}
+		}
+
+		public event EventHandler OptionsChanged;
+
+		void OnOptionsChanged (EventArgs e)
+		{
+			var handler = OptionsChanged;
+			if (handler != null)
+				handler (this, e);
 		}
 
 		public EditMode EditMode {

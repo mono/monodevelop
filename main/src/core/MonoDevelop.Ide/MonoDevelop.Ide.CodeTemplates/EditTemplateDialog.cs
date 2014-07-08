@@ -71,10 +71,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			scrolledwindow1.Child = control;
 			control.ShowAll ();
 			textEditor.CaretPositionChanged += CaretPositionChanged;
-			textEditor.Options.ShowLineNumberMargin = false;
-			textEditor.Options.ShowFoldMargin = false;
-			textEditor.Options.ShowIconMargin = false;
-			textEditor.Options.ColorScheme = IdeApp.Preferences.ColorScheme;
+			textEditor.Options = DefaultSourceEditorOptions.PlainEditor;
 
 			var mimeTypes = new HashSet<string> ();
 			var groups    = new HashSet<string> ();

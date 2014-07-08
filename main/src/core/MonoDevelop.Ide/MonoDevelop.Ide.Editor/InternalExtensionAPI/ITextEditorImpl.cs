@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Editor
 	{
 		EditMode EditMode { get; }
 
-		ITextEditorOptions Options { get; }
+		ITextEditorOptions Options { get; set; }
 
 		IReadonlyTextDocument Document { get; set; }
 	
