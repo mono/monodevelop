@@ -58,8 +58,40 @@ namespace Mono.TextEditor.Vi
 		Dictionary<char,ViMark> marks = new Dictionary<char, ViMark>();
 		Dictionary<char,ViMacro> macros = new Dictionary<char, ViMacro>();
 		char macros_lastplayed = '@'; // start with the illegal macro character
-		
-		/// <summary>
+		string statusText = "";
+
+    /// <summary>
+    /// Number of times to perform the next action
+    /// For example 3 is the numeric prefix when "3w" is entered
+    /// <summary>
+    string numericPrefix = "";
+    /// <summary>
+    /// Number of times to perform the next action
+    /// <summary>
+    int repeatCount
+    {
+      get
+      {
+        int n;
+        int.TryParse(numericPrefix, out n);
+        return n < 1 ? 1 : n;
+      }
+      set
+      {
+        numericPrefix = value.ToString();
+      }
+    }
+
+    /// <summary>
+    /// Whether ViEditMode is in a state where it should accept a numeric prefix
+    /// <summary>
+    bool AcceptNumericPrefix
+    {
+      get {
+        return CurState == State.Normal || CurState == State.Delete || CurState == State.Change 
+          || CurState == State.Yank || CurState == State.Indent || CurState == State.Unindent;
+      }
+    }
 		/// The macro currently being implemented. Will be set to null and checked as a flag when required.
 		/// </summary>
 		ViMacro currentMacro;
@@ -255,6 +287,8 @@ namespace Mono.TextEditor.Vi
 			motion = Motion.None;
 			commandBuffer.Length = 0;
 			Status = status;
+
+      numericPrefix = "";
 		}
 		
 		protected virtual Action<TextEditorData> GetInsertAction (Gdk.Key key, Gdk.ModifierType modifier)
@@ -262,6 +296,61 @@ namespace Mono.TextEditor.Vi
 			return ViActionMaps.GetInsertKeyAction (key, modifier) ??
 				ViActionMaps.GetDirectionKeyAction (key, modifier);
 		}
+
+    /// Run an action multiple times if it was preceded by a numeric key
+    /// Resets numeric prefixs
+    /// <summary>
+    private void RunRepeatableAction (Action<TextEditorData> action)
+    {
+      int reps = repeatCount;   //how many times to repeat command
+      for (int i = 0 ; i < reps ; i++)
+      {
+        RunAction (action);
+      }
+      numericPrefix = "";
+    }
+
+    /// <summary>
+    /// Run the first action multiple times if it was preceded by a numeric key
+    /// Run the following actions once each
+    /// <summary>
+    private void RunRepeatableActionChain (params Action<TextEditorData>[] actions)
+    {
+        List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
+        int reps = repeatCount;   //how many times to repeat command
+        for (int i = 0 ; i < reps ; i++)
+        {
+          actionList.Add(actions[0]);
+        }
+        for (int i = 1 ; i < actions.Length ; i++)
+        {
+          actionList.Add(actions[i]);
+        }
+        RunActions (actionList.ToArray());
+        numericPrefix = "";
+    }
+
+    /// <summary>
+    /// Repeat entire set of actions based on preceding numeric key
+    /// The first action indicates the movement that initiates the line action
+    /// The second action indicates the action to be taken on the line
+    /// The third action indicates the action to reset after completing the action on that line
+    /// <summary>
+    private List<Action<TextEditorData>> GenerateRepeatedActionList(
+        params Action<TextEditorData>[] actions)
+    {
+      List<Action<TextEditorData>> actionList = new List<Action<TextEditorData>>();
+
+      int reps = repeatCount;   //how many times to repeat command
+
+      for (int i = 0 ; i < reps ; i++)
+      {
+        actionList.AddRange(actions);
+      }
+
+      numericPrefix = "";
+      return actionList;
+    }
 
 		protected override void HandleKeypress (Gdk.Key key, uint unicodeKey, Gdk.ModifierType modifier)
 		{
@@ -296,6 +385,13 @@ namespace Mono.TextEditor.Vi
 			
 			Action<TextEditorData> action = null;
 			bool lineAction = false;
+
+      //handle numeric keypress
+      if (AcceptNumericPrefix && '0' <= (char)unicodeKey && (char)unicodeKey <= '9')
+      {
+        numericPrefix += (char)unicodeKey;
+        return;
+      }
 			
 			switch (CurState) {
 			case State.Unknown:
@@ -520,7 +616,7 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetCommandCharAction ((char)unicodeKey);
 				
 				if (action != null)
-					RunAction (action);
+					RunRepeatableAction (action);
 				
 				//undo/redo may leave MD with a selection mode without activating visual mode
 				CheckVisualMode ();
@@ -529,15 +625,16 @@ namespace Mono.TextEditor.Vi
 			case State.Delete:
 				if (IsInnerOrOuterMotionKey (unicodeKey, ref motion)) return;
 
-				if (motion != Motion.None) {
+        if (motion != Motion.None) {
 					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
 				}
-				else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
-				     && unicodeKey == 'd'))
+        else if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0 
+				     && unicodeKey == 'd' )
 				{
 					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
 					lineAction = true;
-				} else {
+				} 
+        else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
 					if (action == null)
 						action = ViActionMaps.GetDirectionKeyAction (key, modifier);
@@ -546,11 +643,33 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					if (lineAction)
-						RunActions (action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+          List<Action<TextEditorData>> actions;
+					if (lineAction)   //dd or dj  -- delete lines moving downward
+          {
+						actions = GenerateRepeatedActionList (
+              action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+          }
+          else if (unicodeKey == 'j')   //dj -- delete current line and line below
+          {
+            repeatCount += 1;
+            action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+						actions = GenerateRepeatedActionList (
+              action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+          }
+          else if (unicodeKey == 'k')   //dk -- delete current line and line above
+          {
+            repeatCount += 1;
+						actions = GenerateRepeatedActionList (
+                CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
+          }
 					else
-						RunActions (action, ClipboardActions.Cut);
-					Reset ("");
+          {
+						actions = GenerateRepeatedActionList (action);
+            actions.Add (ClipboardActions.Cut);
+          }
+
+          RunActions (actions.ToArray());
+					Reset ("action deleted");
 				} else {
 					Reset ("Unrecognised motion");
 				}
@@ -565,9 +684,11 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetEditObjectCharAction((char) unicodeKey, motion);
 				}
 				else if (((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask)) == 0
-				     && unicodeKey == 'y'))
+				     && (unicodeKey == 'y' || unicodeKey == 'j' || unicodeKey == 'k')))
 				{
-					action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+          if (unicodeKey == 'k') { action = CaretMoveActions.Up; } 
+          else { action = CaretMoveActions.Down; }
+          if (unicodeKey == 'j') { repeatCount += 1; } //get one extra line for yj
 					lineAction	= true;
 				} else {
 					action = ViActionMaps.GetNavCharAction ((char)unicodeKey);
@@ -578,9 +699,23 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					RunAction (action);
-					if (Data.IsSomethingSelected && !lineAction)
-						offset = Data.SelectionRange.Offset;
+          if (lineAction)
+          {
+            RunAction (CaretMoveActions.LineStart);
+            SelectionActions.StartSelection(Data);
+            for (int i = 0 ; i < repeatCount ; i++)
+            {
+              RunAction(action);
+            }
+            SelectionActions.EndSelection(Data);
+            numericPrefix = "";
+          }
+          else
+          {
+            RunRepeatableAction (action);
+          }
+          if (Data.IsSomethingSelected && !lineAction)
+            offset = Data.SelectionRange.Offset;
 					RunAction (ClipboardActions.Copy);
 					Reset (string.Empty);
 				} else {
@@ -611,10 +746,34 @@ namespace Mono.TextEditor.Vi
 				}
 				
 				if (action != null) {
-					if (lineAction)
-						RunActions (action, ClipboardActions.Cut, ViActions.NewLineAbove);
+          List<Action<TextEditorData>> actions;
+					if (lineAction)   //cd or cj  -- delete lines moving downward
+          {
+						actions = GenerateRepeatedActionList (
+              action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+            actions.Add (ViActions.NewLineAbove);
+          }
+          else if (unicodeKey == 'j')   //cj -- delete current line and line below
+          {
+            repeatCount += 1;
+            action = SelectionActions.LineActionFromMoveAction (CaretMoveActions.LineEnd);
+						actions = GenerateRepeatedActionList (
+              action, ClipboardActions.Cut, CaretMoveActions.LineFirstNonWhitespace);
+            actions.Add (ViActions.NewLineAbove);
+          }
+          else if (unicodeKey == 'k')   //ck -- delete current line and line above
+          {
+            repeatCount += 1;
+						actions = GenerateRepeatedActionList (
+                CaretMoveActions.LineFirstNonWhitespace, ClipboardActions.Cut, action);
+            actions.Add (ViActions.NewLineBelow);
+          }
 					else
-						RunActions (action, ClipboardActions.Cut);
+          {
+						actions = GenerateRepeatedActionList (action);
+            actions.Add (ClipboardActions.Cut);
+          }
+          RunActions (actions.ToArray());
 					Status = "-- INSERT --";
 					CurState = State.Insert;
 					motion = Motion.None;
@@ -739,8 +898,21 @@ namespace Mono.TextEditor.Vi
 				
 			case State.Indent:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && unicodeKey == '>'))
-				{
-					RunAction (MiscActions.IndentSelection);
+				{ //select current line to indent
+          List<Action<TextEditorData>> actions = new List<Action<TextEditorData>>();
+          RunAction (CaretMoveActions.LineFirstNonWhitespace);
+					int roffset = Data.SelectionRange.Offset;
+          actions.Add (SelectionActions.FromMoveAction(CaretMoveActions.LineEnd));
+          for (int i = 1 ; i < repeatCount ; i++)
+          {
+            actions.Add (SelectionActions.FromMoveAction (ViActions.Down));
+          }
+          actions.Add (MiscActions.IndentSelection);
+          RunActions (actions.ToArray());
+          //set cursor to start of first line indented
+          Caret.Offset = roffset;
+          RunAction (CaretMoveActions.LineFirstNonWhitespace);
+              
 					Reset ("");
 					return;
 				}
@@ -750,7 +922,20 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 				
 				if (action != null) {
-					RunActions (SelectionActions.FromMoveAction (action), MiscActions.IndentSelection);
+          List<Action<TextEditorData>> actions = new List<Action<TextEditorData>>();
+          //get away from LineBegin
+          RunAction (CaretMoveActions.LineFirstNonWhitespace);
+					int roffset = Data.SelectionRange.Offset;
+          actions.Add (ViActions.Right);
+          for (int i = 0 ; i < repeatCount ; i++)
+          {
+            actions.Add (SelectionActions.FromMoveAction (action));
+          }
+          actions.Add (MiscActions.IndentSelection);
+          RunActions (actions.ToArray());
+          //set cursor to start of first line indented
+          Caret.Offset = roffset;
+          RunAction (CaretMoveActions.LineFirstNonWhitespace);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
@@ -759,8 +944,21 @@ namespace Mono.TextEditor.Vi
 				
 			case State.Unindent:
 				if (((modifier & (Gdk.ModifierType.ControlMask)) == 0 && ((char)unicodeKey) == '<'))
-				{
-					RunAction (MiscActions.RemoveIndentSelection);
+				{ //select current line to indent
+          List<Action<TextEditorData>> actions = new List<Action<TextEditorData>>();
+          RunAction (CaretMoveActions.LineFirstNonWhitespace);
+					int roffset = Data.SelectionRange.Offset; //save caret position
+          actions.Add (SelectionActions.FromMoveAction(CaretMoveActions.LineEnd));
+          for (int i = 1 ; i < repeatCount ; i++)
+          {
+            actions.Add (SelectionActions.FromMoveAction (ViActions.Down));
+          }
+          actions.Add (MiscActions.RemoveIndentSelection);
+          RunActions (actions.ToArray());
+          //set cursor to start of first line indented
+          Caret.Offset = roffset;
+          RunAction (CaretMoveActions.LineFirstNonWhitespace);
+              
 					Reset ("");
 					return;
 				}
@@ -770,7 +968,20 @@ namespace Mono.TextEditor.Vi
 					action = ViActionMaps.GetDirectionKeyAction (key, modifier);
 				
 				if (action != null) {
-					RunActions (SelectionActions.FromMoveAction (action), MiscActions.RemoveIndentSelection);
+          List<Action<TextEditorData>> actions = new List<Action<TextEditorData>>();
+          RunAction (CaretMoveActions.LineFirstNonWhitespace);
+					int roffset = Data.SelectionRange.Offset;
+          //get away from LineBegin
+          actions.Add (ViActions.Right);
+          for (int i = 0 ; i < repeatCount ; i++)
+          {
+            actions.Add (SelectionActions.FromMoveAction (action));
+          }
+          actions.Add (MiscActions.RemoveIndentSelection);
+          RunActions (actions.ToArray());
+          //set cursor to start of first line indented
+          Caret.Offset = roffset;
+          RunAction (CaretMoveActions.LineFirstNonWhitespace);
 					Reset ("");
 				} else {
 					Reset ("Unrecognised motion");
@@ -825,12 +1036,16 @@ namespace Mono.TextEditor.Vi
 				if (k == '@') 
 					k = macros_lastplayed;
 				if (macros.ContainsKey(k)) {
+          int playCount = repeatCount;  //store repeat count in case macro changes it
 					Reset ("");
 					macros_lastplayed = k; // FIXME play nice when playing macros from inside macros?
 					ViMacro macroToPlay = macros [k];
-					foreach (ViMacro.KeySet keySet in macroToPlay.KeysPressed) {
-						HandleKeypress(keySet.Key, keySet.UnicodeKey, keySet.Modifiers); // FIXME stop on errors? essential with multipliers and nowrapscan
-					}
+          for (int i = 0 ; i < playCount ; i++)
+          {
+            foreach (ViMacro.KeySet keySet in macroToPlay.KeysPressed) {
+              HandleKeypress(keySet.Key, keySet.UnicodeKey, keySet.Modifiers); // FIXME stop on errors? essential with multipliers and nowrapscan
+            }
+          }
 					/* Once all the keys have been played back, quickly exit. */
 					return;
 				} else {
