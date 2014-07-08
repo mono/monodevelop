@@ -1200,7 +1200,7 @@ namespace Mono.TextEditor
 			int selectionStartColumn = selectionStart - lineOffset;
 			int selectionEndColumn = selectionEnd - lineOffset;
 			int rulerOffset = lineOffset + logicalRulerColumn;
-			if (textEditor.Options.ShowRuler && selectionStartColumn < logicalRulerColumn && logicalRulerColumn < selectionEndColumn && startOffset < rulerOffset && rulerOffset < endOffset) {
+			if (textEditor.GetTextEditorData ().ShowRuler && selectionStartColumn < logicalRulerColumn && logicalRulerColumn < selectionEndColumn && startOffset < rulerOffset && rulerOffset < endOffset) {
 				InternalHandleSelection (selectionStart, selectionEnd, startOffset, rulerOffset, handleNotSelected, handleSelected);
 				InternalHandleSelection (selectionStart, selectionEnd, rulerOffset, endOffset, handleNotSelected, handleSelected);
 			} else {
@@ -2422,7 +2422,7 @@ namespace Mono.TextEditor
 			cr.SetSourceColor (color);
 			var left = (int)(area.X);
 			var width = (int)area.Width + 1;
-			if (textEditor.Options.ShowRuler) {
+			if (textEditor.GetTextEditorData ().ShowRuler) {
 				var right = left + width;
 
 				var divider = (int) (System.Math.Max (left, System.Math.Min (x + TextStartPosition + rulerX, right)));
