@@ -36,6 +36,7 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -95,15 +96,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get;
 			set;
 		}
-		
-			
-		static bool inCategoryMode;
+
+		public readonly static PropertyWrapper<bool> EnableCompletionCategoryMode = PropertyService.Wrap("EnableCompletionCategoryMode", false);
+
+		void InCategoryModeChanged(object s, EventArgs ea)
+		{
+			InCategoryMode = EnableCompletionCategoryMode.Value;
+		}
+
 		public bool InCategoryMode {
-			get { return inCategoryMode; }
+			get { return EnableCompletionCategoryMode.Value; }
 			set {
-				inCategoryMode = value;
+				EnableCompletionCategoryMode.Set(value);
 				CalcVisibleRows ();
-				if (inCategoryMode)
+				if (value)
 					SelectFirstItemInCategory ();
 			}
 		}
@@ -169,6 +175,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			selectedItemInactiveColor = style.CompletionSelectedInactiveText;
 			selectionBorderColor = style.CompletionBorder.Color;
 			selectionBorderInactiveColor = style.CompletionInactiveBorder.Color;
+
+			EnableCompletionCategoryMode.Changed += InCategoryModeChanged;
+
 			this.Show ();
 		}
 
@@ -176,6 +185,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 		protected override void OnDestroyed ()
 		{
 			base.OnDestroyed ();
+
+			EnableCompletionCategoryMode.Changed -= InCategoryModeChanged;
+
 			if (layout != null) {
 				layout.Dispose ();
 				categoryLayout.Dispose ();
@@ -664,7 +676,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void SelectFirstItemInCategory ()
 		{
-			if (string.IsNullOrEmpty (CompletionString) && inCategoryMode)
+			if (string.IsNullOrEmpty (CompletionString) && EnableCompletionCategoryMode.Value)
 				selection = categories.First ().Items.First ();
 		}
 
