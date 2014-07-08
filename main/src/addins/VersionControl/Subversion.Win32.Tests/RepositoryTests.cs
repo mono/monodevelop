@@ -117,7 +117,6 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			});
 		}
 
-		[Test]
 		protected override void TestValidUrl ()
 		{
 			base.TestValidUrl ();
