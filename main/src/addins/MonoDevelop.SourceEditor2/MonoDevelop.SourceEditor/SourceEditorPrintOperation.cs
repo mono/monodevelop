@@ -28,6 +28,7 @@ using Gtk;
 using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -284,7 +285,15 @@ namespace MonoDevelop.SourceEditor
 		
 		private SourceEditorPrintSettings ()
 		{
-			Font = DefaultSourceEditorOptions.Instance.Font;
+			try {
+				Font = Pango.FontDescription.FromString (DefaultSourceEditorOptions.Instance.FontName);
+			} catch {
+				Console.WriteLine ("Could not load font: {0}", DefaultSourceEditorOptions.Instance.FontName);
+			}
+			if (Font == null || String.IsNullOrEmpty (Font.Family))
+				Font = Pango.FontDescription.FromString (TextEditorOptions.DEFAULT_FONT);
+			if (Font != null)
+				Font.Size = (int)(Font.Size * DefaultSourceEditorOptions.Instance.Zoom);
 			TabSize = DefaultSourceEditorOptions.Instance.TabSize;
 			HeaderFormat = "%F";
 			FooterFormat = GettextCatalog.GetString ("Page %N of %Q");

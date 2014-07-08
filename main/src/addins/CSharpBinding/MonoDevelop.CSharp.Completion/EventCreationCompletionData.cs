@@ -113,7 +113,7 @@ namespace MonoDevelop.CSharp.Completion
 			sb.Append ("{");
 			sb.Append (editor.EolMarker);
 			sb.Append (indent);
-			sb.Append (editor.Options.IndentationString);
+			sb.Append (editor.Options.GetIndentationString ());
 			int cursorPos = pos + sb.Length;
 			sb.Append (editor.EolMarker);
 			sb.Append (indent);

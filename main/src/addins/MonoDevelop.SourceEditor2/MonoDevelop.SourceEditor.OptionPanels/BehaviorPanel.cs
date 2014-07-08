@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -77,7 +78,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			//DefaultSourceEditorOptions.Options.AutoInsertTemplates = this.autoInsertTemplateCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = autoInsertBraceCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement = smartSemicolonPlaceCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.IndentStyle = (IndentStyle)indentationCombobox.Active;
+			DefaultSourceEditorOptions.Instance.IndentStyle = (MonoDevelop.Ide.Editor.IndentStyle)indentationCombobox.Active;
 			DefaultSourceEditorOptions.Instance.TabIsReindent = tabAsReindentCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.ControlLeftRightMode = (MonoDevelop.Ide.Editor.ControlLeftRightMode)controlLeftRightCombobox.Active;
 			DefaultSourceEditorOptions.Instance.UseViModes = useViModesCheck.Active;

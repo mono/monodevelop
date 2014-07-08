@@ -165,6 +165,17 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
+		event EventHandler ITextDocument.MimeTypeChanged {
+			add {
+				document.MimeTypeChanged += value;
+			}
+			remove {
+				document.MimeTypeChanged -= value;
+			}
+		}
+
+
+
 		bool ITextDocument.UseBOM {
 			get {
 				return document.UseBom;

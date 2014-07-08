@@ -384,7 +384,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			engine.FormattingPolicy = FormattingPolicy.CreateOptions ();
 			engine.EolMarker = data.EolMarker;
-			engine.IndentString = data.Options.IndentationString;
+			engine.IndentString = data.Options.GetIndentationString ();
 			try {
 				foreach (var cd in engine.GetCompletionData (completionContext.TriggerOffset, ctrlSpace)) {
 					list.Add (cd);

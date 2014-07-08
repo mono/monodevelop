@@ -46,7 +46,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.panel = panel;
 			this.Build ();
 			textEditor = new TextEditor ();
-			textEditor.Options = DefaultSourceEditorOptions.Instance;
+			textEditor.Options = new StyledSourceEditorOptions (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance);
 			this.scrolledwindowTextEditor.Child = textEditor;
 			textEditor.ShowAll ();
 			

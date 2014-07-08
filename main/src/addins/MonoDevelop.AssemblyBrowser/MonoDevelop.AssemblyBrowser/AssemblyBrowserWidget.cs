@@ -219,10 +219,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 
 			inspectEditor = TextEditorFactory.CreateNewEditor ();
-			inspectEditor.Options.ShowFoldMargin = false;
-			inspectEditor.Options.ShowIconMargin = false;
-			inspectEditor.Options.ShowLineNumberMargin = false;
-			inspectEditor.Options.HighlightCaretLine = true;
+			inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
 
 			//inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
 			
@@ -1103,17 +1100,17 @@ namespace MonoDevelop.AssemblyBrowser
 			inspectEditor.SetFoldings (Enumerable.Empty<IFoldSegment> ());
 			switch (this.languageCombobox.Active) {
 			case 0:
-				inspectEditor.Options.ShowFoldMargin = true;
+				inspectEditor.Options = DefaultSourceEditorOptions.Instance;
 				this.inspectEditor.MimeType = "text/x-ilasm";
 				SetReferencedSegments (builder.Disassemble (inspectEditor, nav));
 				break;
 			case 1:
-				inspectEditor.Options.ShowFoldMargin = true;
+				inspectEditor.Options = DefaultSourceEditorOptions.Instance;
 				this.inspectEditor.MimeType = "text/x-csharp";
 				SetReferencedSegments (builder.Decompile (inspectEditor, nav, PublicApiOnly));
 				break;
 			default:
-				inspectEditor.Options.ShowFoldMargin = false;
+				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
 				this.inspectEditor.Text = "Invalid combobox value: " + this.languageCombobox.Active;
 				break;
 			}

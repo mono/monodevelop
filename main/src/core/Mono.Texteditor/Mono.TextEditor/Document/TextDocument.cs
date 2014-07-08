@@ -61,11 +61,21 @@ namespace Mono.TextEditor
 					lock (this) {
 						mimeType = value;
 						SyntaxMode = SyntaxModeService.GetSyntaxMode (this, value);
+						OnMimeTypeChanged (EventArgs.Empty);
 					}
 				}
 			}
 		}
-		
+
+		public event EventHandler MimeTypeChanged;
+
+		protected virtual void OnMimeTypeChanged (EventArgs e)
+		{
+			EventHandler handler = this.MimeTypeChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+
 		string fileName;
 		public string FileName {
 			get {

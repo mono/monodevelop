@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -37,6 +39,8 @@ namespace MonoDevelop.Ide.Editor
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
 
+		MonoDevelop.Projects.Policies.PolicyContainer policyContainer;
+
 		public TextEditorViewContent (TextEditor textEditor, ITextEditorImpl textEditorImpl)
 		{
 			if (textEditor == null)
@@ -45,7 +49,48 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException ("textEditorImpl");
 			this.textEditor = textEditor;
 			this.textEditorImpl = textEditorImpl;
+			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
+			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
         }
+
+
+		void UpdateTextEditorOptions (object sender, EventArgs e)
+		{
+			UpdateStyleParent (Project, textEditor.MimeType);
+		}
+
+		void RemovePolicyChangeHandler ()
+		{
+			if (policyContainer != null)
+				policyContainer.PolicyChanged -= HandlePolicyChanged;
+		}
+
+		void UpdateStyleParent (Project styleParent, string mimeType)
+		{
+			Console.WriteLine ("update: " + Environment.StackTrace);
+			RemovePolicyChangeHandler ();
+
+			if (string.IsNullOrEmpty (mimeType))
+				mimeType = "text/plain";
+
+			var mimeTypes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
+
+			if (styleParent != null)
+				policyContainer = styleParent.Policies;
+			else
+				policyContainer = MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
+			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
+
+			policyContainer.PolicyChanged += HandlePolicyChanged;
+			textEditor.Options = DefaultSourceEditorOptions.Instance.WithTextStyle (currentPolicy);
+		}
+
+		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
+		{
+			var mimeTypes = DesktopService.GetMimeTypeInheritanceChain (textEditor.MimeType);
+			var currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
+			textEditor.Options = DefaultSourceEditorOptions.Instance.WithTextStyle (currentPolicy);
+		}
 
 		#region IViewContent implementation
 
@@ -110,12 +155,13 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.DiscardChanges ();
 		}
 
-		MonoDevelop.Projects.Project IViewContent.Project {
+		public Project Project {
 			get {
 				return textEditorImpl.Project;
 			}
 			set {
 				textEditorImpl.Project = value;
+				UpdateTextEditorOptions (null, null);
 			}
 		}
 
@@ -238,6 +284,8 @@ namespace MonoDevelop.Ide.Editor
 
 		void IDisposable.Dispose ()
 		{
+			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
+			RemovePolicyChangeHandler ();
 			textEditorImpl.Dispose ();
 		}
 

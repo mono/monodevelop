@@ -64,14 +64,7 @@ namespace MonoDevelop.SourceEditor
 		TextEditorData textEditorData;
 		
 		const uint CHILD_PADDING = 0;
-		
-//		bool shouldShowclassBrowser;
-//		bool canShowClassBrowser;
-		ISourceEditorOptions options {
-			get {
-				return textEditor.Options;
-			}
-		}
+
 		
 		bool isDisposed;
 		
@@ -437,7 +430,7 @@ namespace MonoDevelop.SourceEditor
 			if (doc == null || parsedDocument == null)
 				return;
 			UpdateErrorUndelines (parsedDocument);
-			if (!options.ShowFoldMargin)
+			if (!textEditor.Options.ShowFoldMargin)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
 			if (parsedDocument.HasErrors)
@@ -480,17 +473,17 @@ namespace MonoDevelop.SourceEditor
 						break;
 					case FoldType.UserRegion:
 						type = Mono.TextEditor.FoldingType.Region;
-						setFolded = options.DefaultRegionsFolding;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 						folded = true;
 						break;
 					case FoldType.Comment:
 						type = Mono.TextEditor.FoldingType.Comment;
-						setFolded = options.DefaultCommentFolding;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
 						folded = true;
 						break;
 					case FoldType.CommentInsideMember:
 						type = Mono.TextEditor.FoldingType.Comment;
-						setFolded = options.DefaultCommentFolding;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
 						folded = false;
 						break;
 					case FoldType.Undefined:
@@ -587,7 +580,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateErrorUndelines (ParsedDocument parsedDocument)
 		{
-			if (!options.UnderlineErrors || parsedDocument == null)
+			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null)
 				return;
 				
 			Application.Invoke (delegate {

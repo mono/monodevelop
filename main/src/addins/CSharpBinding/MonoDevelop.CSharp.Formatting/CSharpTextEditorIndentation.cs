@@ -122,7 +122,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 
 			if (Editor != null) {
-				Editor.Options.Changed += HandleTextOptionsChanged;
+				Editor.OptionsChanged += HandleTextOptionsChanged;
 				HandleTextOptionsChanged (this, EventArgs.Empty);
 				Editor.TextChanging += HandleTextReplacing;
 				Editor.TextChanged += HandleTextReplaced;
@@ -169,7 +169,7 @@ namespace MonoDevelop.CSharp.Formatting
 		{
 			if (Editor != null) {
 				Editor.SetTextPasteHandler (null);
-				Editor.Options.Changed -= HandleTextOptionsChanged;
+				Editor.OptionsChanged -= HandleTextOptionsChanged;
 				Editor.SetIndentationTracker (null);
 				Editor.TextChanging -= HandleTextReplacing;
 				Editor.TextChanged -= HandleTextReplaced;

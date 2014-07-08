@@ -52,10 +52,23 @@ namespace MonoDevelop.Ide.Editor
 		Virtual
 	}
 
+	public enum ShowWhitespaces {
+		Never,
+		Selection,
+		Always
+	}
+
+	[Flags]
+	public enum IncludeWhitespaces {
+		None        = 0,
+		Space       = 1,
+		Tab         = 2,
+		LineEndings = 4,
+		All         = Space | Tab | LineEndings
+	}
+
 	public interface ITextEditorOptions : IDisposable
 	{
-		string IndentationString { get; }
-
 		WordFindStrategy WordFindStrategy { get; }
 
 		bool TabsToSpaces { get; }
@@ -82,6 +95,10 @@ namespace MonoDevelop.Ide.Editor
 		string DefaultEolMarker { get; }
 
 		bool GenerateFormattingUndoStep { get; }
+
+		ShowWhitespaces ShowWhitespaces { get; }
+
+		IncludeWhitespaces IncludeWhitespaces { get; }
 	}
 
 	public static class TextEditorOptionsExtension
@@ -91,6 +108,16 @@ namespace MonoDevelop.Ide.Editor
 			if (options == null)
 				throw new ArgumentNullException ("options");
 			return SyntaxModeService.GetColorStyle (options.ColorScheme);
+		}
+
+		/// <summary>
+		/// Gets the indentation string for a single indent.
+		/// </summary>
+		public static string GetIndentationString (this ITextEditorOptions options)
+		{
+			if (options == null)
+				throw new ArgumentNullException ("options");
+			return options.TabsToSpaces ? new string (' ', options.IndentationSize) : "\t";
 		}
 	}
 }

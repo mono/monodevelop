@@ -273,7 +273,9 @@ class Foo
 			TestViewContent content;
 
 			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
-			ext.Editor.Options.IndentStyle = IndentStyle.Auto;
+			var options = DefaultSourceEditorOptions.Instance;
+			options.IndentStyle = IndentStyle.Auto;
+			ext.Editor.Options = options;
 			EditActions.NewLine (ext.Editor);
 			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 
@@ -291,7 +293,9 @@ class Foo
 			TestViewContent content;
 
 			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
-			ext.Editor.Options.IndentStyle = IndentStyle.Virtual;
+			var options = DefaultSourceEditorOptions.Instance;
+			options.IndentStyle = IndentStyle.Virtual;
+			ext.Editor.Options = options;
 			EditActions.NewLine (ext.Editor);
 			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 

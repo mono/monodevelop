@@ -246,12 +246,8 @@ namespace MonoDevelop.Gettext
 			this.scrolledwindowPlural.Child.Show ();
 			scrolledwindowOriginal.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
 			scrolledwindowPlural.Child.ModifyBase (Gtk.StateType.Normal, Style.Base (Gtk.StateType.Insensitive));
-			this.texteditorOriginal.Options.ShowLineNumberMargin = false;
-			this.texteditorOriginal.Options.ShowFoldMargin = false;
-			this.texteditorOriginal.Options.ShowIconMargin = false;
-			this.texteditorPlural.Options.ShowLineNumberMargin = false;
-			this.texteditorPlural.Options.ShowFoldMargin = false;
-			this.texteditorPlural.Options.ShowIconMargin = false;
+			this.texteditorOriginal.Options = DefaultSourceEditorOptions.PlainEditor;
+			this.texteditorPlural.Options = DefaultSourceEditorOptions.PlainEditor;
 			this.texteditorOriginal.IsReadOnly = true;
 			this.texteditorPlural.IsReadOnly = true;
 		}

@@ -80,7 +80,10 @@ namespace MonoDevelop.Ide.Editor
 			PlainEditor = new DefaultSourceEditorOptions (policy) {
 				ShowLineNumberMargin = false,
 				ShowFoldMargin = false,
-				ShowIconMargin = false
+				ShowIconMargin = false,
+				ShowRuler = false,
+
+				ShowWhitespaces = ShowWhitespaces.Never,
 			};
 		}
 
@@ -113,9 +116,17 @@ namespace MonoDevelop.Ide.Editor
 			rulerColumn           = currentPolicy.FileWidth; //PropertyService.Get ("RulerColumn", 80);
 			allowTabsAfterNonTabs = !currentPolicy.NoTabsAfterNonTabs; //PropertyService.Get ("AllowTabsAfterNonTabs", true);
 			removeTrailingWhitespaces = currentPolicy.RemoveTrailingWhitespace; //PropertyService.Get ("RemoveTrailingWhitespaces", true);
-			OnChanged (EventArgs.Empty);
 		}
 
+		public ITextEditorOptions WithTextStyle (MonoDevelop.Ide.Gui.Content.TextStylePolicy policy)
+		{
+			if (policy == null)
+				throw new ArgumentNullException ("policy");
+			var result = (DefaultSourceEditorOptions)MemberwiseClone ();
+			result.UpdateStylePolicy (policy);
+			result.Changed = null;
+			return result;
+		}
 
 		#region new options
 
@@ -590,6 +601,28 @@ namespace MonoDevelop.Ide.Editor
 					overrideDocumentEolMarker = value;
 					OnChanged (EventArgs.Empty);
 				}
+			}
+		}
+
+		PropertyWrapper<ShowWhitespaces> showWhitespaces = new PropertyWrapper<ShowWhitespaces> ("ShowWhitespaces", ShowWhitespaces.Never);
+		public ShowWhitespaces ShowWhitespaces {
+			get {
+				return showWhitespaces;
+			}
+			set {
+				if (showWhitespaces.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
+
+		PropertyWrapper<IncludeWhitespaces> includeWhitespaces = new PropertyWrapper<IncludeWhitespaces> ("IncludeWhitespaces", IncludeWhitespaces.All);
+		public IncludeWhitespaces IncludeWhitespaces {
+			get {
+				return includeWhitespaces;
+			}
+			set {
+				if (includeWhitespaces.Set (value))
+					OnChanged (EventArgs.Empty);
 			}
 		}
 		#endregion

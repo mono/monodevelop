@@ -471,11 +471,7 @@ namespace TestSpace {
 			comboboxCategories.Active = 0;
 			
 			var options = DefaultSourceEditorOptions.Instance;
-			texteditor.Options.FontName = options.FontName;
-			texteditor.Options.ColorScheme = options.ColorScheme;
-			texteditor.Options.ShowFoldMargin = false;
-			texteditor.Options.ShowIconMargin = false;
-			texteditor.Options.ShowLineNumberMargin = false;
+			texteditor.Options = DefaultSourceEditorOptions.PlainEditor;
 			texteditor.IsReadOnly = true;
 			texteditor.MimeType = CSharpFormatter.MimeType;
 			scrolledwindow.Child = texteditor;

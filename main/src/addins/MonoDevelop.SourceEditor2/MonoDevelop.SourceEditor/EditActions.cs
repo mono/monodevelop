@@ -72,7 +72,7 @@ namespace MonoDevelop.SourceEditor
 		
 		static void RemoveCharBeforCaret (TextEditorData data)
 		{
-			if (!data.IsSomethingSelected && ((ISourceEditorOptions)data.Options).AutoInsertMatchingBracket) {
+			if (!data.IsSomethingSelected && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket) {
 				if (data.Caret.Offset > 0) {
 					var line = data.GetLine (data.Caret.Line);
 					var stack = line.StartSpan.Clone();

@@ -202,7 +202,7 @@ namespace CBinding
 									nextChar = lineText[lineCursorIndex];
 	
 								if(finalChar == '{')
-									indent = Editor.Options.IndentationString;
+									indent = Editor.Options.GetIndentationString ();
 							}
 	
 							// If the next character is an closing brace, indent it appropriately.

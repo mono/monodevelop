@@ -76,9 +76,9 @@ namespace Mono.TextEditor
 		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
 		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
 
-		public double Zoom {
+		public virtual double Zoom {
 			get {
-				 return zoom;
+				return zoom;
 			}
 			set {
 				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
@@ -98,31 +98,31 @@ namespace Mono.TextEditor
 		
 		public bool CanZoomIn {
 			get {
-				return zoom < ZOOM_MAX - 0.000001d;
+				return Zoom < ZOOM_MAX - 0.000001d;
 			}
 		}
 		
 		public bool CanZoomOut {
 			get {
-				return zoom > ZOOM_MIN + 0.000001d;
+				return Zoom > ZOOM_MIN + 0.000001d;
 			}
 		}
 		
 		public bool CanResetZoom {
 			get {
-				return zoom != 1d;
+				return Zoom != 1d;
 			}
 		}
 		
 		public void ZoomIn ()
 		{
-			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			int oldPow = (int)System.Math.Round (System.Math.Log (Zoom) / System.Math.Log (ZOOM_FACTOR));
 			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow + 1);
 		}
 		
 		public void ZoomOut ()
 		{
-			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
+			int oldPow = (int)System.Math.Round (System.Math.Log (Zoom) / System.Math.Log (ZOOM_FACTOR));
 			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow - 1);
 		}
 		
@@ -543,7 +543,7 @@ namespace Mono.TextEditor
 		
 		public virtual void CopyFrom (TextEditorOptions other)
 		{
-			zoom = other.zoom;
+			Zoom = other.Zoom;
 			highlightMatchingBracket = other.highlightMatchingBracket;
 			tabsToSpaces = other.tabsToSpaces;
 			indentationSize = other.indentationSize;

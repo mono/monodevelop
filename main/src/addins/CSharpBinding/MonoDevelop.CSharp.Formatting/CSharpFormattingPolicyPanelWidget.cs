@@ -79,12 +79,7 @@ namespace Example {
 			policy = new CSharpFormattingPolicy ();
 			buttonEdit.Clicked += HandleButtonEditClicked;
 			
-			var options = DefaultSourceEditorOptions.Instance;
-			texteditor.Options.FontName = options.FontName;
-			texteditor.Options.ColorScheme = options.ColorScheme;
-			texteditor.Options.ShowFoldMargin = false;
-			texteditor.Options.ShowIconMargin = false;
-			texteditor.Options.ShowLineNumberMargin = false;
+			texteditor.Options = DefaultSourceEditorOptions.PlainEditor;
 			texteditor.IsReadOnly = true;
 			texteditor.MimeType = CSharpFormatter.MimeType;
 			scrolledwindow1.Child = texteditor;
@@ -93,11 +88,8 @@ namespace Example {
 
 		public void FormatSample ()
 		{
-			if (textStylePolicy != null) {
-				texteditor.Options.IndentationSize = textStylePolicy.IndentWidth;
-				texteditor.Options.TabSize = textStylePolicy.TabWidth;
-				texteditor.Options.TabsToSpaces = textStylePolicy.TabsToSpaces;
-			}
+			texteditor.Options = DefaultSourceEditorOptions.Instance.WithTextStyle (textStylePolicy);
+
 			texteditor.Text = CSharpFormatter.FormatText (policy, textStylePolicy, CSharpFormatter.MimeType, example, 0, example.Length);
 		}
 

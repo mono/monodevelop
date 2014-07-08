@@ -66,7 +66,7 @@ namespace MonoDevelop.Debugger
 			editor.IsReadOnly = true;
 			asmMarker = TextMarkerFactory.CreateAsmLineMarker (editor);
 
-			editor.Options.ShowLineNumberMargin = false;
+			editor.Options = DefaultSourceEditorOptions.PlainEditor;
 			
 			sw.Add (editor);
 			sw.HscrollbarPolicy = Gtk.PolicyType.Automatic;

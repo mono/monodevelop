@@ -62,12 +62,13 @@ using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.SourceEditor
 {	
-	public class SourceEditorView : AbstractViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
+	public partial class SourceEditorView : AbstractViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-	ITextEditorImpl, IEditorActionHost, ITextMarkerFactory, IUndoHandler
+	ITextEditorImpl, IEditorActionHost, ITextMarkerFactory, IUndoHandler, MonoDevelop.Ide.Editor.ITextEditorOptions
 	{
+	
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
 		DateTime lastSaveTimeUtc;
@@ -127,17 +128,6 @@ namespace MonoDevelop.SourceEditor
 		public int LineCount {
 			get {
 				return Document.LineCount;
-			}
-		}
-		
-		public override Project Project {
-			get {
-				return base.Project;
-			}
-			set {
-				if (value != base.Project)
-					((StyledSourceEditorOptions)SourceEditorWidget.TextEditor.Options).UpdateStyleParent (value, loadedMimeType);
-				base.Project = value;
 			}
 		}
 			
@@ -966,7 +956,7 @@ namespace MonoDevelop.SourceEditor
 			IsDirty = false;
 			Document.InformLoadComplete ();
 		}
-		
+	
 		void UpdateMimeType (string fileName)
 		{
 			// Look for a mime type for which there is a syntax mode
@@ -982,7 +972,6 @@ namespace MonoDevelop.SourceEditor
 						}
 					}
 				}
-				((StyledSourceEditorOptions)SourceEditorWidget.TextEditor.Options).UpdateStyleParent (Project, loadedMimeType);
 			}
 		}
 		
@@ -2866,7 +2855,10 @@ namespace MonoDevelop.SourceEditor
 
 		MonoDevelop.Ide.Editor.ITextEditorOptions ITextEditorImpl.Options {
 			get {
-				return new TextEditorToMonoDevelopOptionsWrapper (TextEditor.Options);
+				return this;
+			}
+			set {
+				((StyledSourceEditorOptions)TextEditor.Options).OptionsCore = value;
 			}
 		}
 

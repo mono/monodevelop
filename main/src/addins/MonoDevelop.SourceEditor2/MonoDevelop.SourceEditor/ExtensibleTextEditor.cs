@@ -46,6 +46,7 @@ using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -89,16 +90,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public new ISourceEditorOptions Options {
-			get { return (ISourceEditorOptions)base.Options; }
-			set { base.Options = value; }
-		}
-
 		static ExtensibleTextEditor ()
 		{
 			var icon = Xwt.Drawing.Image.FromResource ("gutter-bookmark-light-15.png");
 
-			BookmarkMarker.DrawBookmarkFunc = delegate(TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
+			BookmarkMarker.DrawBookmarkFunc = delegate(Mono.TextEditor.TextEditor editor, Cairo.Context cr, DocumentLine lineSegment, double x, double y, double width, double height) {
 				if (!lineSegment.IsBookmarked)
 					return;
 				cr.DrawImage (
@@ -111,7 +107,7 @@ namespace MonoDevelop.SourceEditor
 
 		}
 		
-		public ExtensibleTextEditor (SourceEditorView view, ISourceEditorOptions options, Mono.TextEditor.TextDocument doc) : base(doc, options)
+		public ExtensibleTextEditor (SourceEditorView view, Mono.TextEditor.ITextEditorOptions options, Mono.TextEditor.TextDocument doc) : base(doc, options)
 		{
 			Initialize (view);
 		}
@@ -124,7 +120,7 @@ namespace MonoDevelop.SourceEditor
 		
 		public ExtensibleTextEditor (SourceEditorView view)
 		{
-			base.Options = new StyledSourceEditorOptions (view.Project, null);
+			base.Options = new StyledSourceEditorOptions (DefaultSourceEditorOptions.Instance);
 			Initialize (view);
 		}
 		
@@ -171,7 +167,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateEditMode ()
 		{
-			if (Options.UseViModes) {
+			if (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes) {
 				if (TestNewViMode) {
 					if (!(CurrentMode is NewIdeViMode))
 					CurrentMode = new NewIdeViMode (this);
@@ -182,8 +178,8 @@ namespace MonoDevelop.SourceEditor
 			} else {
 		//		if (!(CurrentMode is SimpleEditMode)){
 					SimpleEditMode simpleMode = new SimpleEditMode ();
-					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
-					simpleMode.KeyBindings [EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
+					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.Tab)] = new TabAction (this).Action;
+					simpleMode.KeyBindings [Mono.TextEditor.EditMode.GetKeyCode (Gdk.Key.BackSpace)] = EditActions.AdvancedBackspace;
 					CurrentMode = simpleMode;
 		//		}
 			}
@@ -390,7 +386,7 @@ namespace MonoDevelop.SourceEditor
 			char insertionChar = '\0';
 			bool insertMatchingBracket = false;
 			IDisposable undoGroup = null;
-			if (skipChar == null && Options.AutoInsertMatchingBracket && braceIndex >= 0 && !IsSomethingSelected) {
+			if (skipChar == null && MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket && braceIndex >= 0 && !IsSomethingSelected) {
 				if (!inStringOrComment) {
 					char closingBrace = closingBrackets [braceIndex];
 					char openingBrace = openBrackets [braceIndex];
@@ -427,7 +423,7 @@ namespace MonoDevelop.SourceEditor
 				skipChars.Remove (skipChar);
 			}
 			if (EditorExtension != null) {
-				if (!DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
+				if (!MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep) {
 					using (var undo = Document.OpenUndoGroup ()) {
 						if (ExtensionKeyPress (key, ch, state))
 							result = base.OnIMProcessedKeyPressEvent (key, ch, state);
@@ -470,7 +466,7 @@ namespace MonoDevelop.SourceEditor
 		
 		internal string GetErrorInformationAt (int offset)
 		{
-			DocumentLocation location = Document.OffsetToLocation (offset);
+			var location = Document.OffsetToLocation (offset);
 			DocumentLine line = Document.GetLine (location.Line);
 			if (line == null)
 				return null;
@@ -681,7 +677,7 @@ namespace MonoDevelop.SourceEditor
 			using (var undo = editor.OpenUndoGroup ()) {
 				var result = template.InsertTemplateContents (editor, context);
 
-				var links = result.TextLinks.Select (l => new TextLink (l.Name) {
+				var links = result.TextLinks.Select (l => new Mono.TextEditor.TextLink (l.Name) {
 					Links = l.Links.Select (s => new TextSegment (s.Offset, s.Length)).ToList (),
 					IsEditable = l.IsEditable,
 					IsIdentifier = l.IsIdentifier

@@ -241,6 +241,11 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public event EventHandler MimeTypeChanged {
+			add { ReadWriteTextDocument.MimeTypeChanged += value; }
+			remove { ReadWriteTextDocument.MimeTypeChanged -= value; }
+		}
+
 		public string Text {
 			get {
 				return ReadOnlyTextDocument.Text;
@@ -666,11 +671,15 @@ namespace MonoDevelop.Ide.Editor
 
 		public void WriteTextTo (TextWriter writer)
 		{
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
 			ReadOnlyTextDocument.WriteTextTo (writer);
 		}
 
 		public void WriteTextTo (TextWriter writer, int offset, int length)
 		{
+			if (writer == null)
+				throw new ArgumentNullException ("writer");
 			ReadOnlyTextDocument.WriteTextTo (writer, offset, length);
 		}
 

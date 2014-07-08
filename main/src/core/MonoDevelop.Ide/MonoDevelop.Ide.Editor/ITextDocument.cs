@@ -85,7 +85,8 @@ namespace MonoDevelop.Ide.Editor
 		event EventHandler<TextChangeEventArgs> TextChanged;
 
 		event EventHandler FileNameChanged;
-	
+		event EventHandler MimeTypeChanged;
+
 		/// <summary>
 		/// Creates an immutable snapshot of this document.
 		/// </summary>

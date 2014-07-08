@@ -103,18 +103,23 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
@@ -125,7 +130,6 @@
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor\LanguageItemWindow.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\BehaviorPanel.cs" />
@@ -146,8 +150,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
@@ -185,7 +187,6 @@
     <Compile Include="MonoDevelop.SourceEditor\EditorFactory.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextSourceVersionWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextChangeEventArgsWrapper.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextEditorToMonoDevelopOptionsWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextPasteHandlerWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\SelectionSurroundingProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\IndentationTrackerWrapper.cs" />
@@ -199,6 +200,8 @@
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\TooltipProviderWrapper.cs" />
     <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor.Wrappers\FoldSegmentWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SourceEditorView_ITextEditorOptions.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

@@ -25,359 +25,293 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using MonoDevelop.Projects;
-using MonoDevelop.Projects.Policies;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide;
 using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	internal class StyledSourceEditorOptions : ISourceEditorOptions
+	class StyledSourceEditorOptions : TextEditorOptions
 	{
-		PolicyContainer policyContainer;
-		EventHandler changed;
-		IEnumerable<string> mimeTypes;
-		TextStylePolicy currentPolicy;
-		string lastMimeType;
+		MonoDevelop.Ide.Editor.ITextEditorOptions optionsCore;
 
-		public StyledSourceEditorOptions (Project styleParent, string mimeType)
-		{
-			UpdateStyleParent (styleParent, mimeType);
-		}
-
-		TextStylePolicy CurrentPolicy {
-			get { return currentPolicy; }
-		}
-
-
-		public void UpdateStyleParent (Project styleParent, string mimeType)
-		{
-			if (styleParent != null && policyContainer == styleParent.Policies && mimeType == lastMimeType)
-				return;
-			lastMimeType = mimeType;
-
-			if (policyContainer != null)
-				policyContainer.PolicyChanged -= HandlePolicyChanged;
-
-			if (string.IsNullOrEmpty (mimeType))
-				mimeType = "text/plain";
-			this.mimeTypes = DesktopService.GetMimeTypeInheritanceChain (mimeType);
-
-			if (styleParent != null)
-				policyContainer = styleParent.Policies;
-			else
-				policyContainer = MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies;
-			currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
-
-			policyContainer.PolicyChanged += HandlePolicyChanged;
-			if (changed != null)
-				this.changed (this, EventArgs.Empty);
-		}
-
-		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
-		{
-			currentPolicy = policyContainer.Get<TextStylePolicy> (mimeTypes);
-			if (changed != null)
-				this.changed (this, EventArgs.Empty);
-		}
-
-		public bool OverrideDocumentEolMarker {
-			get { return DefaultSourceEditorOptions.Instance.OverrideDocumentEolMarker; }
-			set {
-				throw new NotSupportedException ();
+		public MonoDevelop.Ide.Editor.ITextEditorOptions OptionsCore {
+			get {
+				return optionsCore;
 			}
+			set {
+				optionsCore = value;
+				OnChanged (EventArgs.Empty);
+			}
+		}
+	
+		public StyledSourceEditorOptions (MonoDevelop.Ide.Editor.ITextEditorOptions optionsCore)
+		{
+			if (optionsCore == null)
+				throw new ArgumentNullException ("optionsCore");
+			this.optionsCore = optionsCore;
 		}
 		
-		public string DefaultEolMarker {
-			get { return TextStylePolicy.GetEolMarker (CurrentPolicy.EolMarker); }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
-		public int RulerColumn {
-			get { return CurrentPolicy.FileWidth; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
-		public int TabSize {
-			get { return CurrentPolicy.TabWidth; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
-		public bool TabsToSpaces {
-			get { return CurrentPolicy.TabsToSpaces; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
-		public bool RemoveTrailingWhitespaces {
-			get { return CurrentPolicy.RemoveTrailingWhitespace; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
-		public bool AllowTabsAfterNonTabs {
-			get { return !CurrentPolicy.NoTabsAfterNonTabs; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
-		public int IndentationSize {
-			get { return CurrentPolicy.IndentWidth; }
-			set {
-				throw new NotSupportedException ();
-			}
-		}
-
-		public string IndentationString {
-			get { return this.TabsToSpaces ? new string (' ', this.TabSize) : "\t"; }
-		}
 
 		#region ITextEditorOptions implementation
-
-		public bool CanResetZoom {
-			get { return DefaultSourceEditorOptions.Instance.CanResetZoom; }
-		}
-
-		public bool CanZoomIn {
-			get { return DefaultSourceEditorOptions.Instance.CanZoomIn; }
-		}
-
-		public bool CanZoomOut {
-			get { return DefaultSourceEditorOptions.Instance.CanZoomOut; }
-		}
-
-		public event EventHandler Changed {
-			add {
-				if (changed == null)
-					DefaultSourceEditorOptions.Instance.Changed += HandleDefaultsChanged;
-				changed += value;
-			}
-			remove {
-				changed -= value;
-				if (changed == null)
-					DefaultSourceEditorOptions.Instance.Changed -= HandleDefaultsChanged;
-			}
-		}
-
-		protected virtual void OnChanged (EventArgs e)
-		{
-			var handler = this.changed;
-			if (handler != null)
-				handler (this, e);
-		}
-		
-		void HandleDefaultsChanged (object sender, EventArgs e)
-		{
-			if (changed != null)
-				changed (this, EventArgs.Empty);
-		}
-
-		public string ColorScheme {
-			get { return DefaultSourceEditorOptions.Instance.ColorScheme; }
-			set { throw new NotSupportedException (); }
-		}
-
-		public bool EnableSyntaxHighlighting {
-			get { return DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting; }
-			set { throw new NotSupportedException (); }
-		}
-
-		public Pango.FontDescription Font {
-			get { return DefaultSourceEditorOptions.Instance.Font; }
-		}
-		
-		public string FontName {
-			get { return DefaultSourceEditorOptions.Instance.FontName; }
-			set { throw new NotSupportedException (); }
-		}
-
-		public Pango.FontDescription GutterFont {
-			get { return DefaultSourceEditorOptions.Instance.GutterFont; }
-		}
-		
-		public string GutterFontName {
-			get { return DefaultSourceEditorOptions.Instance.GutterFontName; }
-			set { throw new NotSupportedException (); }
-		}
-
-		public Mono.TextEditor.Highlighting.ColorScheme GetColorStyle ()
-		{
-			return DefaultSourceEditorOptions.Instance.GetColorStyle ();
-		}
-
-		bool? highlightCaretLine;
-		public bool HighlightCaretLine {
-			get { return highlightCaretLine.GetValueOrDefault (DefaultSourceEditorOptions.Instance.HighlightCaretLine); }
-			set { highlightCaretLine = value; OnChanged (EventArgs.Empty); }
-		}
-
-		bool? highlightMatchingBracket;
-		public bool HighlightMatchingBracket {
-			get { return highlightMatchingBracket.GetValueOrDefault (DefaultSourceEditorOptions.Instance.HighlightMatchingBracket); }
-			set { highlightMatchingBracket = value; OnChanged (EventArgs.Empty); }
-		}
-
-		bool? showFoldMargin;
-		public bool ShowFoldMargin {
-			get { return showFoldMargin.GetValueOrDefault (DefaultSourceEditorOptions.Instance.ShowFoldMargin); }
-			set { showFoldMargin = value; OnChanged (EventArgs.Empty); }
-		}
-
-		bool? showIconMargin;
-		public bool ShowIconMargin {
-			get { return showIconMargin.GetValueOrDefault (DefaultSourceEditorOptions.Instance.ShowIconMargin); }
-			set { showIconMargin = value; OnChanged (EventArgs.Empty); }
-		}
-
-		bool? showLineNumberMargin;
-		public bool ShowLineNumberMargin {
-			get { return showLineNumberMargin.GetValueOrDefault (DefaultSourceEditorOptions.Instance.ShowLineNumberMargin); }
-			set { showLineNumberMargin = value; OnChanged (EventArgs.Empty); }
-		}
-
-		bool? showRuler;
-		public bool ShowRuler {
-			get { return showRuler.GetValueOrDefault (DefaultSourceEditorOptions.Instance.ShowRuler); }
-			set { showRuler = value; OnChanged (EventArgs.Empty); }
-		}
-
-		public bool EnableAnimations {
-			get { return DefaultSourceEditorOptions.Instance.EnableAnimations; }
-			set { throw new NotSupportedException (); }
-		}
-		
-		public Mono.TextEditor.IWordFindStrategy WordFindStrategy {
-			get { return DefaultSourceEditorOptions.Instance.WordFindStrategy; }
-			set { throw new NotSupportedException (); }
-		}
-
-		public double Zoom {
+		public override double Zoom {
 			get { return DefaultSourceEditorOptions.Instance.Zoom; }
 			set { DefaultSourceEditorOptions.Instance.Zoom = value; }
 		}
+	
 
-		public bool DrawIndentationMarkers {
-			get { return DefaultSourceEditorOptions.Instance.DrawIndentationMarkers; }
-			set { DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = value; }
-		}
+		static IWordFindStrategy monoDevelopWordFindStrategy = new EmacsWordFindStrategy (false);
+		static IWordFindStrategy emacsWordFindStrategy = new EmacsWordFindStrategy (true);
+		static IWordFindStrategy sharpDevelopWordFindStrategy = new SharpDevelopWordFindStrategy ();
+		static IWordFindStrategy viWordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
 
-		public ShowWhitespaces ShowWhitespaces  {
-			get { return DefaultSourceEditorOptions.Instance.ShowWhitespaces; }
-			set { DefaultSourceEditorOptions.Instance.ShowWhitespaces = value; }
-		}
-
-		public IncludeWhitespaces IncludeWhitespaces {
-			get { return DefaultSourceEditorOptions.Instance.IncludeWhitespaces; }
-			set { DefaultSourceEditorOptions.Instance.IncludeWhitespaces = value; }
-		}
-
-		public bool WrapLines {
-			get { return DefaultSourceEditorOptions.Instance.WrapLines; }
-			set { DefaultSourceEditorOptions.Instance.WrapLines = value; }
-		}
-
-		public bool EnableQuickDiff {
-			get { return DefaultSourceEditorOptions.Instance.EnableQuickDiff; }
-			set { DefaultSourceEditorOptions.Instance.EnableQuickDiff = value; }
-		}
-
-		public bool GenerateFormattingUndoStep {
-			get { return DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep; }
-			set { DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep = value; }
-		}
-
-		public void ZoomIn ()
-		{
-			DefaultSourceEditorOptions.Instance.ZoomIn ();
-		}
-
-		public void ZoomOut ()
-		{
-			DefaultSourceEditorOptions.Instance.ZoomOut ();
-		}
-
-		public void ZoomReset ()
-		{
-			DefaultSourceEditorOptions.Instance.ZoomReset ();
-		}
-
-		#endregion
-
-
-		#region ISourceEditorOptions implementation
-
-		public bool AutoInsertMatchingBracket {
-			get { return DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket; }
-		}
-
-		public bool DefaultCommentFolding {
-			get { return DefaultSourceEditorOptions.Instance.DefaultCommentFolding; }
-		}
-
-		public bool DefaultRegionsFolding {
-			get { return DefaultSourceEditorOptions.Instance.DefaultRegionsFolding; }
-		}
-
-		public bool EnableAutoCodeCompletion {
-			get { return DefaultSourceEditorOptions.Instance.EnableAutoCodeCompletion; }
-		}
-
-		public bool EnableSemanticHighlighting {
-			get { return DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting; }
-		}
-
-		public IndentStyle IndentStyle {
+		public IWordFindStrategy WordFindStrategy {
 			get {
-				if ((DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Smart ||
-				    DefaultSourceEditorOptions.Instance.IndentStyle == Mono.TextEditor.IndentStyle.Auto) && CurrentPolicy.RemoveTrailingWhitespace) {
-					return IndentStyle.Virtual;
+				switch (DefaultSourceEditorOptions.Instance.WordFindStrategy) {
+				case MonoDevelop.Ide.Editor.WordFindStrategy.MonoDevelop:
+					return monoDevelopWordFindStrategy;
+				case MonoDevelop.Ide.Editor.WordFindStrategy.Emacs:
+					return emacsWordFindStrategy;
+				case MonoDevelop.Ide.Editor.WordFindStrategy.SharpDevelop:
+					return sharpDevelopWordFindStrategy;
+				case MonoDevelop.Ide.Editor.WordFindStrategy.Vim:
+					return viWordFindStrategy;
+				default:
+					throw new ArgumentOutOfRangeException ();
 				}
-				return DefaultSourceEditorOptions.Instance.IndentStyle;
 			}
 			set {
-				throw new NotSupportedException ("Use property 'IndentStyle' instead.");
+				throw new NotImplementedException ();
 			}
 		}
 
-		public bool TabIsReindent {
-			get { return DefaultSourceEditorOptions.Instance.TabIsReindent; }
+		public override bool AllowTabsAfterNonTabs {
+			get {
+				return DefaultSourceEditorOptions.Instance.AllowTabsAfterNonTabs;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
 		}
 
-		public bool UnderlineErrors {
-			get { return DefaultSourceEditorOptions.Instance.UnderlineErrors; }
+		public override bool HighlightMatchingBracket {
+			get {
+				return DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
 		}
 
-		public bool UseViModes {
-			get { return DefaultSourceEditorOptions.Instance.UseViModes; }
+		public override bool TabsToSpaces {
+			get {
+				return optionsCore.TabsToSpaces;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
 		}
 
-		public bool EnableSelectionWrappingKeys { 
-			get { return DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket; } 
+		public override int IndentationSize {
+			get {
+				return optionsCore.IndentationSize;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
 		}
 
+		public override int TabSize {
+			get {
+				return optionsCore.TabSize;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+
+		public override bool ShowIconMargin {
+			get {
+				return optionsCore.ShowIconMargin;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool ShowLineNumberMargin {
+			get {
+				return optionsCore.ShowLineNumberMargin;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool ShowFoldMargin {
+			get {
+				return optionsCore.ShowFoldMargin;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool HighlightCaretLine {
+			get {
+				return optionsCore.HighlightCaretLine;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override int RulerColumn {
+			get {
+				return optionsCore.RulerColumn;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool ShowRuler {
+			get {
+				return optionsCore.ShowRuler;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override Mono.TextEditor.IndentStyle IndentStyle {
+			get {
+				return (Mono.TextEditor.IndentStyle)optionsCore.IndentStyle;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool OverrideDocumentEolMarker {
+			get {
+				return optionsCore.OverrideDocumentEolMarker;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool EnableSyntaxHighlighting {
+			get {
+				return optionsCore.EnableSyntaxHighlighting;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool EnableAnimations {
+			get {
+				return DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool EnableQuickDiff {
+			get {
+				return DefaultSourceEditorOptions.Instance.EnableQuickDiff;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool DrawIndentationMarkers {
+			get {
+				return DefaultSourceEditorOptions.Instance.DrawIndentationMarkers;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool WrapLines {
+			get {
+				return optionsCore.WrapLines;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override string FontName {
+			get {
+				return optionsCore.FontName;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override string GutterFontName {
+			get {
+				return optionsCore.GutterFontName;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override string ColorScheme {
+			get {
+				return optionsCore.ColorScheme;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override string DefaultEolMarker {
+			get {
+				return optionsCore.DefaultEolMarker;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override Mono.TextEditor.ShowWhitespaces ShowWhitespaces {
+			get {
+				return (Mono.TextEditor.ShowWhitespaces)optionsCore.ShowWhitespaces;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override Mono.TextEditor.IncludeWhitespaces IncludeWhitespaces {
+			get {
+				return (Mono.TextEditor.IncludeWhitespaces)optionsCore.IncludeWhitespaces;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
+
+		public override bool GenerateFormattingUndoStep {
+			get {
+				return optionsCore.GenerateFormattingUndoStep;
+			}
+			set {
+				throw new NotSupportedException ();
+			}
+		}
 
 		#endregion
 
-		public void Dispose ()
-		{
-			mimeTypes = null;
-			if (policyContainer != null)
-				policyContainer.PolicyChanged -= HandlePolicyChanged;
-			if (changed != null) {
-				DefaultSourceEditorOptions.Instance.Changed -= HandleDefaultsChanged;
-				changed = null;
-			}
-		}
+
 	}
 }
