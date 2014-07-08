@@ -187,7 +187,9 @@ type FSharpTextEditorCompletion() =
     // Extend any text editor that edits F# files
     CompilerArguments.supportedExtension(IO.Path.GetExtension(doc.FileName.ToString()))
 
-  override x.Initialize() = base.Initialize()
+  override x.Initialize() = 
+      do base.Document.Editor.IndentationTracker <- FSharpIndentationTracker(base.Document) :> Mono.TextEditor.IIndentationTracker 
+      base.Initialize()
 
   /// Provide parameter and method overload information when you type '(', '<' or ','
   override x.HandleParameterCompletion(context:CodeCompletionContext, completionChar:char) : MonoDevelop.Ide.CodeCompletion.ParameterDataProvider =
