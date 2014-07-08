@@ -15,3 +15,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Ide.Tests")]
 [assembly: InternalsVisibleTo("UnitTests")]
 [assembly: InternalsVisibleTo("MonoDevelop.SourceEditor")]
+[assembly: InternalsVisibleTo("Xamarin.OSXEditor")]
