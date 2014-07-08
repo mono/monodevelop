@@ -37,25 +37,15 @@
     <Tailcalls>true</Tailcalls>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="pango-sharp">
     </Reference>
-    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="atk-sharp">
     </Reference>
-    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="gdk-sharp">
     </Reference>
-    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="gtk-sharp">
     </Reference>
-    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="glib-sharp">
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
