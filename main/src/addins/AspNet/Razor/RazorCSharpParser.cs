@@ -135,6 +135,9 @@ namespace MonoDevelop.AspNet.Razor
 
 		bool TryAddDocument (string fileName)
 		{
+			if (string.IsNullOrEmpty (fileName))
+				return false;
+
 			var guiDoc = IdeApp.Workbench.GetDocument (fileName);
 			if (guiDoc != null && guiDoc.Editor != null) {
 				currentDocument = guiDoc.Editor.Document;
