@@ -12,7 +12,7 @@ SUBDIRS = \
 	VersionControl \
 	MonoDevelop.Autotools \
 	MonoDevelop.Gettext \
-	MonoDevelop.XmlEditor \
+	Xml \
 	TextTemplating \
 	AspNet \
 	CSharpBinding \

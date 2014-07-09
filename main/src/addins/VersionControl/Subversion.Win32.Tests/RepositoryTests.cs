@@ -68,13 +68,6 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		// Tests that fail due to SvnSharp giving wrong data.
 		[Test]
 		[Ignore ("Fix SvnSharp")]
-		public override void MovesFile ()
-		{
-			base.MovesFile ();
-		}
-
-		[Test]
-		[Ignore ("Fix SvnSharp")]
 		public override void MovesDirectory ()
 		{
 			base.MovesDirectory ();
@@ -117,7 +110,6 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			});
 		}
 
-		[Test]
 		protected override void TestValidUrl ()
 		{
 			base.TestValidUrl ();

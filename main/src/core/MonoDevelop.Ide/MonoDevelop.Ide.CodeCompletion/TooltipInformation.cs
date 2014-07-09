@@ -36,7 +36,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 	{
 		string signatureMarkup;
 		string summaryMarkup;
-		List<Tuple<string, string>> categories = new List<Tuple<string, string>> ();
+		readonly List<Tuple<string, string>> categories = new List<Tuple<string, string>> ();
+
+		public bool IsEmpty {
+			get {
+				return string.IsNullOrEmpty (SignatureMarkup) && string.IsNullOrEmpty (SummaryMarkup) && categories.Count == 0;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the signature markup. The signature is never null.
@@ -96,6 +102,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		/// </param>
 		public void AddCategory (string categoryLabel, string categoryMarkup)
 		{
+			if (categoryMarkup == null)
+				throw new ArgumentNullException ("categoryMarkup");
 			categories.Add (Tuple.Create (categoryLabel, categoryMarkup));
 		}
 	}

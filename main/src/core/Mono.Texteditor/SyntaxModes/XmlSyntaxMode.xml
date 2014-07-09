@@ -101,7 +101,7 @@
 		</Keywords>
 		
 		<!-- attributes -->
-		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)">
+		<Match expression="([A-Za-z0-9_]+[:[A-Za-z0-9_]+]?)([\s\n\r]*=)" ignorecase="True">
 			<Group color = "Xml Attribute"/>
 			<Group color = "Xml Delimiter"/>
 		</Match>

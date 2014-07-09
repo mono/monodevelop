@@ -25,22 +25,15 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using MonoDevelop.AspNet.Gui;
-using System.Text;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Mono.TextEditor;
+using MonoDevelop.AspNet.WebForms;
+using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.CSharp.Parser;
-using System.IO;
-using ICSharpCode.NRefactory.Completion;
-using MonoDevelop.AspNet.StateEngine;
-using MonoDevelop.Xml.StateEngine;
-
-
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -89,7 +82,7 @@ namespace MonoDevelop.CSharp.Completion
 				sb.AppendLine ("{");
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
 				foreach (var node in info.XExpressions) {
-					bool isBlock = node is AspNetRenderBlock;
+					bool isBlock = node is WebFormsRenderBlock;
 
 					if (node.Region.Begin.Line > data.Caret.Line || node.Region.Begin.Line == data.Caret.Line && node.Region.Begin.Column > data.Caret.Column - 5) 
 						continue;
@@ -126,7 +119,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		public ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo)
+		public ICompletionDataList HandlePopupCompletion (Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo)
 		{
 			CodeCompletionContext codeCompletionContext;
 			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
@@ -134,7 +127,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
+		public ICompletionDataList HandleCompletion (Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
 		{
 			CodeCompletionContext ccc;
 			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
@@ -142,7 +135,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
+		public ParameterDataProvider HandleParameterCompletion (Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
 			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
@@ -150,7 +143,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
+		public bool GetParameterCompletionCommandOffset (Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
 		{
 			CodeCompletionContext codeCompletionContext;
 			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
@@ -158,14 +151,14 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-		public ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo)
+		public ICompletionWidget CreateCompletionWidget (Document realDocument, LocalDocumentInfo localInfo)
 		{
 			return new AspCompletionWidget (realDocument, localInfo);
 		}
 		
-		CSharpCompletionTextEditorExtension CreateCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
+		CSharpCompletionTextEditorExtension CreateCompletion (Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
 		{
-			var doc = new Mono.TextEditor.TextDocument () {
+			var doc = new TextDocument () {
 				Text = localInfo.LocalDocument,
 			};
 			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);
@@ -183,10 +176,10 @@ namespace MonoDevelop.CSharp.Completion
 		
 		class AspCompletionWidget : ICompletionWidget
 		{
-			MonoDevelop.Ide.Gui.Document realDocument;
+			Document realDocument;
 			LocalDocumentInfo localInfo;
 			
-			public AspCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo)
+			public AspCompletionWidget (Document realDocument, LocalDocumentInfo localInfo)
 			{
 				this.realDocument = realDocument;
 				this.localInfo = localInfo;
@@ -317,7 +310,7 @@ namespace MonoDevelop.CSharp.Completion
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
 
 				foreach (var node in info.XExpressions) {
-					bool isBlock = node is AspNetRenderBlock;
+					bool isBlock = node is WebFormsRenderBlock;
 
 					var start = data.Document.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
 					var end = data.Document.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;

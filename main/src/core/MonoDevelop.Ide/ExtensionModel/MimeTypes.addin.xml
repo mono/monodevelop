@@ -73,7 +73,7 @@
 	<MimeType id="application/x-sh" _description="Shell script" isText="true">
 		<File pattern="*.sh" />
 	</MimeType>
-	<MimeType id="text/x-fsharp" _description="f# files" isText="true" icon="md-file-source">
+	<MimeType id="text/x-fsharp" _description="F# files" isText="true" icon="md-file-source">
 		<File pattern="*.fs" />
 		<File pattern="*.fsx" />
 		<File pattern="*.fsi" />

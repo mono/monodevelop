@@ -48,6 +48,11 @@ namespace MonoDevelop.Ide.Projects
 			labelKeep.Markup = GettextCatalog.GetString (labelKeep.LabelProp, dir);
 			radioKeep.Active = true;
 		}
+
+		public void DisableLinkOption ()
+		{
+			radioLink.Hide ();
+		}
 		
 		public bool ShowApplyAll {
 			get { return checkApplyAll.Visible; }

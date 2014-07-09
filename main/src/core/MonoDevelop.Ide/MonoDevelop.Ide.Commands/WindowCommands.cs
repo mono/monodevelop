@@ -233,11 +233,6 @@ namespace MonoDevelop.Ide.Commands
 			sw.Present ();
 		}
 		
-		protected override void Update (CommandInfo info)
-		{
-			info.Enabled = IdeApp.Workbench.HasToplevelFocus;
-		}
-		
 		protected override void Run ()
 		{
 			Switch (true);

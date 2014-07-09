@@ -557,7 +557,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		public int Line {
-			get; private set;
+			get; set;
 		}
 
 		public bool IsMinimized {
@@ -650,9 +650,16 @@ namespace MonoDevelop.Debugger
 			closeSelOverImage = ImageService.GetIcon ("md-popup-close-hover", IconSize.Menu);
 		}
 
+		protected override void OnLineChanged ()
+		{
+			base.OnLineChanged ();
+			dlg.Line = Line;
+		}
+
 		protected override void OnLineDeleted ()
 		{
-			dlg.Dispose ();
+			base.OnLineDeleted ();
+			Line++;
 		}
 
 		public override Widget CreateWidget ()
@@ -737,9 +744,16 @@ namespace MonoDevelop.Debugger
 			Line = line;
 		}
 
+		protected override void OnLineChanged ()
+		{
+			base.OnLineChanged ();
+			dlg.Line = Line;
+		}
+
 		protected override void OnLineDeleted ()
 		{
-			dlg.Dispose ();
+			base.OnLineDeleted ();
+			Line++;
 		}
 
 		public override Widget CreateWidget ()

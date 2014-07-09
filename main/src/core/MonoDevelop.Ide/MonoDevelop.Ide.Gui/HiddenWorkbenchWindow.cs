@@ -89,7 +89,7 @@ namespace MonoDevelop.Ide.Gui
 		public void SwitchView (MonoDevelop.Ide.Gui.IAttachableViewContent subViewContent)
 		{
 		}
-		
+
 		public int FindView<T> ()
 		{
 			return -1;

@@ -134,6 +134,9 @@ namespace MonoDevelop.Ide.Gui
 		
 		[ItemProperty (DefaultValue = 0)]
 		public int Column;
+
+		[ItemProperty (DefaultValue = 0)]
+		public int NotebookId;
 	}
 	
 	[DataItem ("Pad")]
@@ -144,6 +147,38 @@ namespace MonoDevelop.Ide.Gui
 		
 		[ItemProperty]
 		public XmlElement State;
+	}
+
+	[DataItem ("FloatingWindow")]
+	class FloatingWindowUserPrefs
+	{
+		[ItemProperty (DefaultValue = 0)]
+		public int WindowId;
+
+		[ItemProperty]
+		public int X;
+
+		[ItemProperty]
+		public int Y;
+
+		[ItemProperty]
+		public int Width;
+
+		[ItemProperty]
+		public int Height;
+
+		[ItemProperty]
+		public List<DocumentUserPrefs> Files = new List<DocumentUserPrefs> ();
+	}
+
+	[DataItem ("Notebook")]
+	class NotebookUserPrefs
+	{
+		[ItemProperty (DefaultValue = 0)]
+		public int NotebookId;
+
+		[ItemProperty]
+		public string ActiveDocument;
 	}
 	
 	[DataItem ("Workbench")]
@@ -157,7 +192,10 @@ namespace MonoDevelop.Ide.Gui
 		
 		[ItemProperty]
 		public List<DocumentUserPrefs> Files = new List<DocumentUserPrefs> ();
-		
+
+		[ItemProperty]
+		public List<FloatingWindowUserPrefs> FloatingWindows = new List<FloatingWindowUserPrefs> ();
+
 		[ItemProperty]
 		public List<PadUserPrefs> Pads = new List<PadUserPrefs> ();
 	}

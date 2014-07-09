@@ -27,24 +27,20 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using Gtk;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Fonts
 {
 	public partial class FontChooserPanelWidget : Gtk.Bin
 	{
-		TreeStore fontStore;
-		ListStore comboBoxStore;
-		
-		Gtk.CellRendererText textRenderer = new Gtk.CellRendererText ();
-		Gtk.CellRendererCombo comboRenderer = new Gtk.CellRendererCombo ();
 		Dictionary<string, string> customFonts = new Dictionary<string, string> ();
-		
+
 		
 		public void SetFont (string fontName, string fontDescription)
 		{
 			customFonts [fontName] = fontDescription;
 		}
-		
+
 		
 		public string GetFont (string fontName)
 		{
@@ -54,104 +50,58 @@ namespace MonoDevelop.Ide.Fonts
 			return FontService.GetUnderlyingFontName (fontName);
 		}
 
-		public FontChooserPanelWidget ()
-		{
-			this.Build ();
-			fontStore = new TreeStore (typeof (string), typeof (string), typeof (string));
-			treeviewFonts.Model = fontStore;
-			
-			treeviewFonts.AppendColumn (GettextCatalog.GetString ("Name"), textRenderer, "text", colDisplayName);
-			
-			comboRenderer.Edited += delegate(object o, Gtk.EditedArgs args) {
-				TreeIter iter;
-				if (!fontStore.GetIterFromString (out iter, args.Path))
-					return;
-				string fontName = (string)fontStore.GetValue (iter, colName);
-				
-				if (args.NewText == GettextCatalog.GetString ("Default")) { 
-					SetFont (fontName, FontService.GetFont (fontName).FontDescription);
-					fontStore.SetValue (iter, colValue, GettextCatalog.GetString ("Default"));
-					return;
-				}
-				var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font")) {
-					Modal = true,
-					DestroyWithParent = true,
-					TransientFor = this.Toplevel as Gtk.Window
-				};
-				try {
-					string fontValue = FontService.FilterFontName (GetFont (fontName));
-					selectionDialog.SetFontName (fontValue);
-					if (MessageService.RunCustomDialog (selectionDialog) != (int) Gtk.ResponseType.Ok) {
-						return;
-					}
-					fontValue = selectionDialog.FontName;
-					if (fontValue ==  FontService.FilterFontName (FontService.GetFont (fontName).FontDescription))
-						fontValue = FontService.GetFont (fontName).FontDescription;
-					SetFont (fontName, fontValue);
-					fontStore.SetValue (iter, colValue, selectionDialog.FontName);
-				} finally {
-					selectionDialog.Destroy ();
-				}
-			};
-			
-			comboRenderer.EditingStarted += delegate(object o, EditingStartedArgs args) {
-				TreeIter iter;
-				if (!fontStore.GetIterFromString (out iter, args.Path))
-					return;
-				string fontName = (string)fontStore.GetValue (iter, colName);
-				string fontValue = GetFont (fontName);
-				comboBoxStore.Clear ();
-				if (fontValue != FontService.GetFont (fontName).FontDescription) 
-					comboBoxStore.AppendValues (fontValue);
-				
-				comboBoxStore.AppendValues (GettextCatalog.GetString ("Default"));
-				comboBoxStore.AppendValues (GettextCatalog.GetString ("Edit..."));
-			};
-			
-			var fontCol = new TreeViewColumn ();
-			fontCol.Title = GettextCatalog.GetString ("Font");
-			
-			comboRenderer.HasEntry = false;
-			comboRenderer.Mode = CellRendererMode.Activatable;
-			comboRenderer.TextColumn = 0;
-			comboRenderer.Editable = true;
-			fontCol.PackStart (comboRenderer, true);
-			fontCol.SetCellDataFunc (comboRenderer, delegate (Gtk.TreeViewColumn tree_column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iter) {
-				string fontValue = (string)fontStore.GetValue (iter, colValue);
-				string fontName = (string)fontStore.GetValue (iter, colName);
-				var d = FontService.GetFont (fontName);
-				if (d == null || d.FontDescription != fontValue) {
-					comboRenderer.Text = fontValue;
-				} else {
-					comboRenderer.Text = GettextCatalog.GetString ("Default");
-				}
-			});
-			
-			treeviewFonts.AppendColumn (fontCol);
-			
-			comboBoxStore = new ListStore (typeof (string));
-			
-			comboRenderer.Model = comboBoxStore;
-			
-			LoadFonts ();
-		}
-		
-		const int colDisplayName = 0;
-		const int colValue       = 1;
-		const int colName        = 2;
-		
-		public void LoadFonts ()
-		{
-			foreach (var desc in FontService.FontDescriptions) {
-				fontStore.AppendValues (GettextCatalog.GetString (desc.DisplayName), FontService.GetUnderlyingFontName (desc.Name), desc.Name);
-			}
-		}
-		
 		public void Store ()
 		{
 			foreach (var val in customFonts) {
 				FontService.SetFont (val.Key, val.Value);
 			}
+		}
+
+		public FontChooserPanelWidget ()
+		{
+			this.Build ();
+
+			foreach (var desc in FontService.FontDescriptions) {
+				var fontNameLabel = new Label (GettextCatalog.GetString (desc.DisplayName));
+				fontNameLabel.Justify = Justification.Left;
+				fontNameLabel.Xalign = 0;
+				mainBox.PackStart (fontNameLabel, false, false, 0);
+				var hBox = new HBox ();
+				var setFontButton = new Button ();
+				setFontButton.Label = FontService.FilterFontName (GetFont (desc.Name));
+				setFontButton.Clicked += delegate {
+					var selectionDialog = new FontSelectionDialog (GettextCatalog.GetString ("Select Font")) {
+						Modal = true,
+						DestroyWithParent = true,
+						TransientFor = this.Toplevel as Gtk.Window
+					};
+					try {
+						string fontValue = FontService.FilterFontName (GetFont (desc.Name));
+						selectionDialog.SetFontName (fontValue);
+						if (MessageService.RunCustomDialog (selectionDialog) != (int)Gtk.ResponseType.Ok) {
+							return;
+						}
+						fontValue = selectionDialog.FontName;
+						if (fontValue == FontService.FilterFontName (FontService.GetFont (desc.Name).FontDescription))
+							fontValue = FontService.GetFont (desc.Name).FontDescription;
+						SetFont (desc.Name, fontValue);
+						setFontButton.Label = selectionDialog.FontName;
+					} finally {
+						selectionDialog.Destroy ();
+					}
+				};
+				hBox.PackStart (setFontButton, true, true, 0);
+
+				var setDefaultFontButton = new Button ();
+				setDefaultFontButton.Label = GettextCatalog.GetString ("Set To Default");
+				setDefaultFontButton.Clicked += delegate {
+					SetFont (desc.Name, FontService.GetFont (desc.Name).FontDescription);
+					setFontButton.Label = FontService.FilterFontName (GetFont (desc.Name));
+				};
+				hBox.PackStart (setDefaultFontButton, false, false, 0);
+				mainBox.PackStart (hBox, false, false, 0);
+			}
+			mainBox.ShowAll ();
 		}
 	}
 }

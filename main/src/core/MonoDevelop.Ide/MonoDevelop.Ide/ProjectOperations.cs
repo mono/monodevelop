@@ -707,6 +707,11 @@ namespace MonoDevelop.Ide
 			dlg.DefaultFilter = dlg.AddFilter (GettextCatalog.GetString ("Project Files"), "*.*proj");
 			
 			if (dlg.Run ()) {
+				if (!Services.ProjectService.IsSolutionItemFile (dlg.SelectedFile)) {
+					MessageService.ShowMessage (GettextCatalog.GetString ("The file '{0}' is not a known project file format.", dlg.SelectedFile));
+					return res;
+				}
+
 				try {
 					res = AddSolutionItem (parentFolder, dlg.SelectedFile);
 				} catch (Exception ex) {
@@ -1414,6 +1419,7 @@ namespace MonoDevelop.Ide
 			AddAction action = AddAction.Copy;
 			bool applyToAll = true;
 			bool dialogShown = false;
+			bool supportsLinking = !(project is MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject);
 			
 			IProgressMonitor monitor = null;
 			
@@ -1479,6 +1485,8 @@ namespace MonoDevelop.Ide
 					
 					if (!dialogShown || !applyToAll) {
 						addExternalDialog = new AddExternalFileDialog (file);
+						if (!supportsLinking)
+							addExternalDialog.DisableLinkOption ();
 						if (files.Length > 1) {
 							addExternalDialog.ApplyToAll = applyToAll;
 							addExternalDialog.ShowApplyAll = true;
