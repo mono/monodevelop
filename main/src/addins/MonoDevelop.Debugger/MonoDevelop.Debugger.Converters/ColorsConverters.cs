@@ -35,10 +35,11 @@ namespace MonoDevelop.Debugger.Converters
 
 		public override bool CanGetValue (ObjectValue val)
 		{
-			return val.TypeName == "System.Drawing.Color" ||
-			val.TypeName == "Gdk.Color" ||
-			val.TypeName.EndsWith ("UIKit.UIColor") ||
-			val.TypeName.EndsWith ("CoreGraphics.CGColor");
+			return val.TypeName != null && (
+			    val.TypeName == "System.Drawing.Color" ||
+			    val.TypeName == "Gdk.Color" ||
+			    val.TypeName.EndsWith ("UIKit.UIColor") ||
+			    val.TypeName.EndsWith ("CoreGraphics.CGColor"));
 		}
 
 		public override Color GetValue (ObjectValue val)

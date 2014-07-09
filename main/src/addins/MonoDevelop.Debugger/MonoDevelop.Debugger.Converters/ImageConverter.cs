@@ -36,8 +36,9 @@ namespace MonoDevelop.Debugger.Converters
 
 		public override bool CanGetValue (ObjectValue val)
 		{
-			return val.TypeName == "Gdk.Pixbuf" ||
-			val.TypeName.EndsWith ("UIKit.UIImage");
+			return val.TypeName != null && (
+			    val.TypeName == "Gdk.Pixbuf" ||
+			    val.TypeName.EndsWith ("UIKit.UIImage"));
 		}
 
 		public override Image GetValue (ObjectValue val)
