@@ -71,9 +71,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 		{
 			return true;
 		}
-		
-		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
-		// Return true if the key press should be processed by the editor.
+
+		/// <summary>
+		/// Return true if the key press should be processed by the editor.
+		/// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
+		/// </summary>
 		public virtual bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
 			return Next == null || Next.KeyPress (key, keyChar, modifier);

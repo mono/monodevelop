@@ -43,11 +43,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 	class AnalysisDocument
 	{
 		public TextEditor Editor { get; private set; }
+		public DocumentLocation CaretLocation { get; private set; }
 		public DocumentContext DocumentContext { get; private set; }
 
 		public AnalysisDocument (TextEditor editor, DocumentContext documentContext)
 		{
 			this.Editor = editor;
+			this.CaretLocation = editor.CaretLocation;
 			this.DocumentContext = documentContext;
 		}
 	}

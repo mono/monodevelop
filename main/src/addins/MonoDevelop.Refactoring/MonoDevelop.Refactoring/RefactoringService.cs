@@ -215,7 +215,7 @@ namespace MonoDevelop.Refactoring
 				try {
 					var parsedDocument = doc.ParsedDocument;
 					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
-						var ctx = parsedDocument.CreateRefactoringContext (editor, doc, cancellationToken);
+						var ctx = parsedDocument.CreateRefactoringContext (editor, editor.CaretLocation, doc, cancellationToken);
 						if (ctx != null) {
 							foreach (var provider in contextActions.Where (fix =>
 								fix.MimeType == editor.MimeType &&

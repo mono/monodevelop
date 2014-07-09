@@ -399,7 +399,7 @@ namespace MonoDevelop.CodeActions
 
 			public void Run (object sender, EventArgs e)
 			{
-				var context = documentContext.ParsedDocument.CreateRefactoringContext (editor, documentContext, CancellationToken.None);
+				var context = documentContext.ParsedDocument.CreateRefactoringContext (editor, editor.CaretLocation, documentContext, CancellationToken.None);
 				RefactoringService.ApplyFix (act, context);
 			}
 

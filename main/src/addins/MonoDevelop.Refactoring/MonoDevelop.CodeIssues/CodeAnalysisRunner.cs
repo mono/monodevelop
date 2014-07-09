@@ -66,12 +66,12 @@ namespace MonoDevelop.CodeIssues
 			var editor = doc.Editor;
 			if (editor == null)
 				return Enumerable.Empty<Result> ();
-			var loc = editor.CaretLocation;
+			var loc = doc.CaretLocation;
 			var result = new BlockingCollection<Result> ();
 		
 			var codeIssueProvider = RefactoringService.GetInspectors (editor.MimeType).ToArray ();
 			var context = input.ParsedDocument.CreateRefactoringContext != null ?
-				input.ParsedDocument.CreateRefactoringContext (editor, input, cancellationToken) : null;
+				input.ParsedDocument.CreateRefactoringContext (editor, doc.CaretLocation, input, cancellationToken) : null;
 			Parallel.ForEach (codeIssueProvider, (parentProvider) => {
 				try {
 					#if PROFILE

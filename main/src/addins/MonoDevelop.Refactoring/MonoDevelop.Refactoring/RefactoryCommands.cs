@@ -304,7 +304,7 @@ namespace MonoDevelop.Refactoring
 				refactoringInfo.lastDocument = doc.ParsedDocument;
 			}
 			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
-				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc.Editor, doc, CancellationToken.None);
+				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc.Editor, doc.Editor.CaretLocation, doc, CancellationToken.None);
 
 				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
 					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))

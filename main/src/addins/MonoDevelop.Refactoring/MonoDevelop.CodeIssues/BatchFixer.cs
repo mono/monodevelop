@@ -112,7 +112,7 @@ namespace MonoDevelop.CodeIssues
 			var compilation  = content.AddOrUpdateFiles (document.ParsedFile).CreateCompilation ();
 			var resolver = new CSharpAstResolver (compilation, document.GetAst<SyntaxTree> (), document.ParsedFile as ICSharpCode.NRefactory.CSharp.TypeSystem.CSharpUnresolvedFile);
 			
-			refactoringContext = document.CreateRefactoringContextWithEditor (data, resolver, CancellationToken.None);
+			refactoringContext = document.CreateRefactoringContextWithEditor (data, DocumentLocation.Empty, resolver, CancellationToken.None);
 			var context = refactoringContext;
 			foreach (var provider in GetInspectors (data, inspectorIds)) {
 				var severity = provider.GetSeverity ();

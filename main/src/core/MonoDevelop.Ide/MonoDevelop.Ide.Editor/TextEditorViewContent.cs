@@ -67,7 +67,6 @@ namespace MonoDevelop.Ide.Editor
 
 		void UpdateStyleParent (Project styleParent, string mimeType)
 		{
-			Console.WriteLine ("update: " + Environment.StackTrace);
 			RemovePolicyChangeHandler ();
 
 			if (string.IsNullOrEmpty (mimeType))

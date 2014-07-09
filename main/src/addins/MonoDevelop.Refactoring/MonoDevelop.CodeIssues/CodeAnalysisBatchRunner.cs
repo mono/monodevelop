@@ -133,7 +133,7 @@ namespace MonoDevelop.CodeIssues
 					LoggingService.LogError ("Error while applying navigator", e);
 				}
 			}
-			var context = document.CreateRefactoringContextWithEditor (editor, resolver, CancellationToken.None);
+			var context = document.CreateRefactoringContextWithEditor (editor, DocumentLocation.Empty, resolver, CancellationToken.None);
 
 			foreach (var provider in codeIssueProviders) {
 				if (item.CancellationToken.IsCancellationRequested)

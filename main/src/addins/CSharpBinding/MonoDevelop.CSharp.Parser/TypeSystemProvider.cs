@@ -86,17 +86,10 @@ namespace MonoDevelop.CSharp.Parser
 			result.Add (GetSemanticTags (unit));
 
 
-			result.CreateRefactoringContext = (editor, doc, token) => {
-				TextLocation caretLocation;
-				var textEditor = editor as TextEditor;
-				if (textEditor != null) {
-					caretLocation = textEditor.CaretLocation;
-				} else {
-					caretLocation = TextLocation.Empty;
-				}
+			result.CreateRefactoringContext = (editor, caretLocation, doc, token) => {
 				return MDRefactoringContext.Create (editor, doc, caretLocation, token).Result;
 			};
-			result.CreateRefactoringContextWithEditor = (data, resolver, token) => new MDRefactoringContext ((DotNetProject)project, data, result, (CSharpAstResolver)resolver, TextLocation.Empty, token);
+			result.CreateRefactoringContextWithEditor = (data, loc, resolver, token) => new MDRefactoringContext ((DotNetProject)project, data, result, (CSharpAstResolver)resolver, new TextLocation (loc.Line, loc.Column), token);
 
 			if (storeAst) {
 				result.Ast = unit;
