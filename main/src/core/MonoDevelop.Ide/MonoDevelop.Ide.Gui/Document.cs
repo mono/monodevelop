@@ -417,7 +417,6 @@ namespace MonoDevelop.Ide.Gui
 					Encoding = encoding,
 					ShowEncodingSelector = (tbuffer != null),
 				};
-				
 				if (Window.ViewContent.IsUntitled)
 					dlg.InitialFileName = Window.ViewContent.UntitledName;
 				else {
@@ -427,8 +426,11 @@ namespace MonoDevelop.Ide.Gui
 				
 				if (!dlg.Run ())
 					return;
-				
-				filename = dlg.SelectedFile;
+				if (dlg.SelectedFile.Extension == ".*") {
+					filename = dlg.SelectedFile.ChangeExtension (Path.GetExtension (dlg.InitialFileName));
+				} else {
+					filename = dlg.SelectedFile;
+				}
 				encoding = dlg.Encoding;
 			}
 		
