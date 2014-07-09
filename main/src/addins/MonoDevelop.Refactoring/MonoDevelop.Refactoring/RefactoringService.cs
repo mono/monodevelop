@@ -208,14 +208,14 @@ namespace MonoDevelop.Refactoring
 		public static Task<IEnumerable<CodeAction>> GetValidActions (TextEditor editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
-			return Task.Factory.StartNew (delegate {
+			return new Task<IEnumerable<CodeAction>> (delegate {
 				var result = new List<CodeAction> ();
 				var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
 				timer.BeginTiming ();
 				try {
 					var parsedDocument = doc.ParsedDocument;
 					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
-						var ctx = parsedDocument.CreateRefactoringContext (editor, editor.CaretLocation, doc, cancellationToken);
+						var ctx = parsedDocument.CreateRefactoringContext (editor, loc, doc, cancellationToken);
 						if (ctx != null) {
 							foreach (var provider in contextActions.Where (fix =>
 								fix.MimeType == editor.MimeType &&
@@ -235,7 +235,7 @@ namespace MonoDevelop.Refactoring
 					timer.EndTiming ();
 				}
 				return (IEnumerable<CodeAction>)result;
-			}, cancellationToken);
+			});
 		}
 
 		public static void QueueQuickFixAnalysis (TextEditor editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
@@ -310,10 +310,10 @@ namespace MonoDevelop.Refactoring
 			if (editor == null || location.Column == 1)
 				return location;
 
-			if (editor is TextEditor) {
+			/*if (editor is TextEditor) {
 				if (((TextEditor)editor).IsSomethingSelected)
 					return ((TextEditor)editor).SelectionRegion.Begin;
-			}
+			}*/
 			var line = editor.GetLine (location.Line);
 			if (line == null || location.Column > line.LengthIncludingDelimiter)
 				return location;

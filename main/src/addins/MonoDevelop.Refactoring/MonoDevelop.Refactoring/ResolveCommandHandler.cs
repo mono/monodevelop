@@ -59,10 +59,10 @@ namespace MonoDevelop.Refactoring
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			return ResolveAt (doc.Editor, doc, out resolveResult, out node, token);
+			return ResolveAt (doc.Editor, doc.Editor.CaretLocation, doc, out resolveResult, out node, token);
 		}
 
-		public static bool ResolveAt (TextEditor editor, DocumentContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
+		public static bool ResolveAt (IReadonlyTextDocument editor, DocumentLocation resolveLocation, DocumentContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -71,8 +71,8 @@ namespace MonoDevelop.Refactoring
 				resolveResult = null;
 				return false;
 			}
-			if (!InternalResolveAt (editor, doc, out resolveResult, out node)) {
-				var location = RefactoringService.GetCorrectResolveLocation (editor, doc, editor.CaretLocation);
+			if (!InternalResolveAt (editor, resolveLocation, doc, out resolveResult, out node)) {
+				var location = RefactoringService.GetCorrectResolveLocation (editor, doc, resolveLocation);
 				resolveResult = GetHeuristicResult (editor, doc, location, ref node);
 				if (resolveResult == null)
 					return false;
@@ -83,7 +83,7 @@ namespace MonoDevelop.Refactoring
 			return true;
 		}
 
-		static bool InternalResolveAt (TextEditor editor, DocumentContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
+		static bool InternalResolveAt (IReadonlyTextDocument editor, DocumentLocation resolveLocation, DocumentContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
 			var parsedDocument = doc.ParsedDocument;
 			resolveResult = null;
@@ -95,7 +95,7 @@ namespace MonoDevelop.Refactoring
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				var location = RefactoringService.GetCorrectResolveLocation (editor, doc, editor.CaretLocation);
+				var location = RefactoringService.GetCorrectResolveLocation (editor, doc, resolveLocation);
 				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, location, out node, token);
 				if (resolveResult == null || node is Statement)
 					return false;
@@ -121,7 +121,7 @@ namespace MonoDevelop.Refactoring
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
 			
-			var possibleNamespaces = GetPossibleNamespaces (doc.Editor, doc, node, ref resolveResult);
+			var possibleNamespaces = GetPossibleNamespaces (doc.Editor, doc.Editor.CaretLocation, doc, node, ref resolveResult);
 
 			foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
 				var reference = t.Reference;
@@ -162,7 +162,7 @@ namespace MonoDevelop.Refactoring
 				ainfo.Insert (0, resolveMenu);
 		}
 
-		static string CreateStub (TextEditor editor, DocumentContext doc, int offset)
+		static string CreateStub (IReadonlyTextDocument editor, DocumentContext doc, int offset)
 		{
 			if (offset <= 0)
 				return "";
@@ -172,11 +172,11 @@ namespace MonoDevelop.Refactoring
 			return stub.ToString ();
 		}
 
-		static ResolveResult GetHeuristicResult (TextEditor editor, DocumentContext doc, DocumentLocation location, ref AstNode node)
+		static ResolveResult GetHeuristicResult (IReadonlyTextDocument editor, DocumentContext doc, DocumentLocation location, ref AstNode node)
 		{
 			if (editor == null)
 				return null;
-			int offset = editor.CaretOffset;
+			int offset = editor.LocationToOffset (location);
 			bool wasLetter = false, wasWhitespaceAfterLetter = false;
 			while (offset < editor.Length) {
 				char ch = editor.GetCharAt (offset);
@@ -216,13 +216,13 @@ namespace MonoDevelop.Refactoring
 				out node);
 		}
 
-		public static List<PossibleNamespace> GetPossibleNamespaces (TextEditor editor, DocumentContext doc, AstNode node, ref ResolveResult resolveResult)
+		public static List<PossibleNamespace> GetPossibleNamespaces (IReadonlyTextDocument editor, DocumentLocation loc, DocumentContext doc, AstNode node, ref ResolveResult resolveResult)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
 			if (node == null)
 				throw new ArgumentNullException ("node");
-			var location = RefactoringService.GetCorrectResolveLocation (editor, doc, editor.CaretLocation);
+			var location = RefactoringService.GetCorrectResolveLocation (editor, doc, loc);
 
 			if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
 				resolveResult = GetHeuristicResult (editor, doc, location, ref node) ?? resolveResult;
@@ -330,7 +330,7 @@ namespace MonoDevelop.Refactoring
 
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (TextEditor editor, DocumentContext doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
+		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (IReadonlyTextDocument editor, DocumentContext doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
 		{
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)

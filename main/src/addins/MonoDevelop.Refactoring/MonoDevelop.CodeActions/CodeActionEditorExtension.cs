@@ -148,12 +148,13 @@ namespace MonoDevelop.CodeActions
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Editor.CaretLocation;
+					var snapshot = Editor.CreateDocumentSnapshot ();
 					RefactoringService.QueueQuickFixAnalysis (Editor, DocumentContext, loc, token, delegate(List<CodeAction> fixes) {
 						if (!fixes.Any ()) {
 							ICSharpCode.NRefactory.Semantics.ResolveResult resolveResult;
 							AstNode node;
-							if (ResolveCommandHandler.ResolveAt (Editor, DocumentContext, out resolveResult, out node, token)) {
-								var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (Editor, DocumentContext, node, ref resolveResult);
+							if (ResolveCommandHandler.ResolveAt (snapshot, loc, DocumentContext, out resolveResult, out node, token)) {
+								var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (snapshot, loc, DocumentContext, node, ref resolveResult);
 								if (!possibleNamespaces.Any ()) {
 									if (currentSmartTag != null)
 										Application.Invoke (delegate { RemoveWidget (); });
@@ -192,9 +193,10 @@ namespace MonoDevelop.CodeActions
 			ResolveResult resolveResult;
 			ICSharpCode.NRefactory.CSharp.AstNode node;
 			int items = 0;
-			if (ResolveCommandHandler.ResolveAt (Editor, DocumentContext, out resolveResult, out node)) {
+			if (ResolveCommandHandler.ResolveAt (Editor, Editor.CaretLocation, DocumentContext, out resolveResult, out node)) {
 				var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
 					Editor,
+					Editor.CaretLocation,
 					DocumentContext,
 					node,
 					ref resolveResult
