@@ -132,22 +132,17 @@ namespace MonoDevelop.PackageManagement
 			solution.GetProjects (repository).ToList ();
 		}
 
+		/// <summary>
+		/// Refresh all projects even though we may have only restored packages for one project since
+		/// the packages may be used in other projects.
+		/// </summary>
 		void RefreshProjectReferences ()
 		{
 			DispatchService.GuiDispatch (() => {
-				if (project != null) {
-					project.DotNetProject.RefreshReferenceStatus ();
-				} else {
-					RefreshAllProjectReferences ();
+				foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
+					projectInSolution.DotNetProject.RefreshReferenceStatus ();
 				}
 			});
-		}
-
-		void RefreshAllProjectReferences ()
-		{
-			foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
-				projectInSolution.DotNetProject.RefreshReferenceStatus ();
-			}
 		}
 	}
 }

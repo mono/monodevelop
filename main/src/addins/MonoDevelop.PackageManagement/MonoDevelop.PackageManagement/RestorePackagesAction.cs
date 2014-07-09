@@ -115,8 +115,18 @@ namespace MonoDevelop.PackageManagement
 
 		IEnumerable<PackageReference> GetPackageReferences ()
 		{
+			if (Project != null) {
+				return GetPackageReferencesForSingleProject ();
+			}
 			return GetPackageReferencesForSolution ()
 				.Concat (GetPackageReferencesForAllProjects ());
+		}
+
+		IEnumerable<PackageReference> GetPackageReferencesForSingleProject ()
+		{
+			IPackageRepository repository = repositoryCache.CreateAggregateRepository ();
+			IPackageManagementProject project = solution.GetProject (repository, Project);
+			return project.GetPackageReferences ();
 		}
 
 		IEnumerable<PackageReference> GetPackageReferencesForSolution ()
@@ -126,19 +136,10 @@ namespace MonoDevelop.PackageManagement
 
 		IEnumerable<PackageReference> GetPackageReferencesForAllProjects ()
 		{
-			return GetProjects ()
+			return solution
+				.GetProjects (repositoryCache.CreateAggregateRepository ())
 				.SelectMany (project => project.GetPackageReferences ())
 				.Distinct ();
-		}
-
-		IEnumerable<IPackageManagementProject> GetProjects ()
-		{
-			IPackageRepository repository = repositoryCache.CreateAggregateRepository ();
-			if (Project != null) {
-				IPackageManagementProject project = solution.GetProject (repository, Project);
-				return new [] { project };
-			}
-			return solution.GetProjects (repository);
 		}
 
 		bool IsPackageRestored (PackageReference packageReference)
