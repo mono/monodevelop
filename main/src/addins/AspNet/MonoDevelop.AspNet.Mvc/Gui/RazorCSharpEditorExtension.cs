@@ -97,14 +97,17 @@ namespace MonoDevelop.AspNet.Mvc.Gui
 				OnCompletionContextChanged (CompletionWidget, EventArgs.Empty);
 			};
 			syntaxMode = new RazorSyntaxMode (DocumentContext);
-			DocumentContext.GetContent<TextEditorData> ().Document.SyntaxMode = syntaxMode;
-
+			var textEditorData = DocumentContext.GetContent<TextEditorData> ();
+			if (textEditorData != null)
+				textEditorData.Document.SyntaxMode = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				DocumentContext.GetContent<TextEditorData> ().Document.SyntaxMode = null;
+				var textEditorData = DocumentContext.GetContent<TextEditorData> ();
+				if (textEditorData != null)
+					textEditorData.Document.SyntaxMode = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}
