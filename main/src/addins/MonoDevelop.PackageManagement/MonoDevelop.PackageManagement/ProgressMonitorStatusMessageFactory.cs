@@ -163,6 +163,16 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public static ProgressMonitorStatusMessage CreateRestoringPackagesInProjectMessage ()
+		{
+			return new ProgressMonitorStatusMessage (
+				GetString ("Restoring packages for project..."),
+				GetString ("Packages successfully restored."),
+				GetString ("Could not restore packages. Please see Package Console for details."),
+				GetString ("Packages restored with warnings. Please see Package Console for details.")
+			);
+		}
+
 		public static ProgressMonitorStatusMessage CreateCheckingPackageCompatibilityMessage ()
 		{
 			return new ProgressMonitorStatusMessage (

@@ -271,6 +271,28 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (packageManagerFactory.FakePackageManager.IgnoreDependenciesPassedToInstallPackage);
 			Assert.IsTrue (packageManagerFactory.FakePackageManager.AllowPrereleaseVersionsPassedToInstallPackage);
 		}
+
+		[Test]
+		public void Execute_SolutionHasTwoProjectsWithMissingPackagesButOneProjectAddedToActionForRestore_OnlyOneProjectIsRestored ()
+		{
+			CreateSolution ();
+			FakePackageManagementProject project1 = solution.AddFakeProject ("MyProject1");
+			FakePackageManagementProject project2 = solution.AddFakeProject ("MyProject2");
+			project1.AddPackageReference ("MyPackage1", "1.2.3.4");
+			project2.AddPackageReference ("MyPackage2", "1.2.3.4");
+			AddPackageToPriorityRepository ("MyPackage1", "1.2.3.4");
+			AddPackageToPriorityRepository ("MyPackage2", "1.2.3.4");
+			CreateAction ();
+			var dotNetProject = new FakeDotNetProject ();
+			dotNetProject.Name = "MyProject1";
+			solution.FakeProjectsToReturnFromGetProject.Add ("MyProject1", project1);
+			action.Project = dotNetProject;
+
+			action.Execute ();
+
+			Assert.AreEqual (1, packageManagerFactory.FakePackageManager.PackagesInstalled.Count);
+			Assert.AreEqual ("MyPackage1", packageManagerFactory.FakePackageManager.PackagePassedToInstallPackage.Id);
+		}
 	}
 }
 

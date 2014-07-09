@@ -72,6 +72,8 @@ namespace MonoDevelop.PackageManagement
 			logger = new PackageManagementLogger (packageManagementEvents);
 		}
 
+		public IDotNetProject Project { get; set; }
+
 		public void Execute ()
 		{
 			Log ("Restoring packages...");
@@ -124,10 +126,19 @@ namespace MonoDevelop.PackageManagement
 
 		IEnumerable<PackageReference> GetPackageReferencesForAllProjects ()
 		{
-			return solution
-				.GetProjects (repositoryCache.CreateAggregateRepository ())
+			return GetProjects ()
 				.SelectMany (project => project.GetPackageReferences ())
 				.Distinct ();
+		}
+
+		IEnumerable<IPackageManagementProject> GetProjects ()
+		{
+			IPackageRepository repository = repositoryCache.CreateAggregateRepository ();
+			if (Project != null) {
+				IPackageManagementProject project = solution.GetProject (repository, Project);
+				return new [] { project };
+			}
+			return solution.GetProjects (repository);
 		}
 
 		bool IsPackageRestored (PackageReference packageReference)

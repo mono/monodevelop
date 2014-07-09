@@ -43,6 +43,7 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
 		IProgressProvider progressProvider;
+		IDotNetProject project;
 
 		public PackageRestoreRunner()
 			: this(
@@ -70,9 +71,14 @@ namespace MonoDevelop.PackageManagement
 			Run (ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ());
 		}
 
+		public void Run (IDotNetProject project, ProgressMonitorStatusMessage progressMessage)
+		{
+			this.project = project;
+			Run (progressMessage);
+		}
+
 		public void Run (ProgressMonitorStatusMessage progressMessage)
 		{
-
 			using (IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage)) {
 				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (progressMonitor)) {
 					try {
@@ -101,9 +107,12 @@ namespace MonoDevelop.PackageManagement
 			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
 		}
 
-		void RestorePackages(IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
+		void RestorePackages (IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
 		{
 			var action = new RestorePackagesAction (solution, packageManagementEvents);
+			if (project != null) {
+				action.Project = project;
+			}
 			action.Execute ();
 
 			RefreshProjectReferences ();
@@ -126,13 +135,19 @@ namespace MonoDevelop.PackageManagement
 		void RefreshProjectReferences ()
 		{
 			DispatchService.GuiDispatch (() => {
-				Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-				if (solution != null) {
-					foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
-						project.RefreshReferenceStatus ();
-					}
+				if (project != null) {
+					project.DotNetProject.RefreshReferenceStatus ();
+				} else {
+					RefreshAllProjectReferences ();
 				}
 			});
+		}
+
+		void RefreshAllProjectReferences ()
+		{
+			foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
+				projectInSolution.DotNetProject.RefreshReferenceStatus ();
+			}
 		}
 	}
 }
