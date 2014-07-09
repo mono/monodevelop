@@ -67,15 +67,7 @@ namespace MonoDevelop.PackageManagement
 
 		public void Restore ()
 		{
-			Restore (CreateProgressMessage ());
-		}
-
-		ProgressMonitorStatusMessage CreateProgressMessage ()
-		{
-			if (singleProject != null) {
-				return ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
-			}
-			return ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
+			Restore (ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ());
 		}
 
 		public void Restore (ProgressMonitorStatusMessage progressMessage)

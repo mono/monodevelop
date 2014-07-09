@@ -347,6 +347,7 @@
     <Compile Include="MonoDevelop.PackageManagement\RestoreBeforeUpdateAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopAggregateRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RestorePackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesInProjectHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

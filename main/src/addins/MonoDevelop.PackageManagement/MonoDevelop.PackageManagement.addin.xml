@@ -21,7 +21,7 @@
 			id="MonoDevelop.PackageManagement.Commands.Restore"
 			_description="Restore missing packages"
 			_label="_Restore"
-			defaultHandler="MonoDevelop.PackageManagement.Commands.RestorePackagesHandler" />
+			defaultHandler="MonoDevelop.PackageManagement.Commands.RestorePackagesInProjectHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion"
 			_description="Current package version"
