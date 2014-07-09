@@ -1173,7 +1173,30 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 	}
-
+	
+	public class FileSaveInformation
+	{
+		FilePath fileName;
+		public FilePath FileName {
+			get {
+				return fileName;
+			}
+			set {
+				fileName = value.CanonicalPath;
+				if (fileName.IsNullOrEmpty)
+					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
+			}
+		}
+		
+		public Encoding Encoding { get; set; }
+		
+		public FileSaveInformation (FilePath fileName, Encoding encoding = null)
+		{
+			this.FileName = fileName;
+			this.Encoding = encoding;
+		}
+	}
+	
 	public class FileOpenInformation
 	{
 		FilePath fileName;
@@ -1206,7 +1229,7 @@ namespace MonoDevelop.Ide.Gui
 
 		}
 
-		public FileOpenInformation (FilePath filePath, Project project)
+		public FileOpenInformation (FilePath filePath, Project project = null)
 		{
 			this.FileName = filePath;
 			this.Project = project;
@@ -1278,12 +1301,8 @@ namespace MonoDevelop.Ide.Gui
 				
 				Counters.OpenDocumentTimer.Trace ("Loading file");
 				
-				IEncodedTextContent etc = (IEncodedTextContent) newContent.GetContent (typeof(IEncodedTextContent));
 				try {
-					if (fileInfo.Encoding != null && etc != null)
-						etc.Load (fileName, fileInfo.Encoding);
-					else
-						newContent.Load (fileName);
+					newContent.Load (fileInfo);
 				} catch (InvalidEncodingException iex) {
 					monitor.ReportError (GettextCatalog.GetString ("The file '{0}' could not opened. {1}", fileName, iex.Message), null);
 					return;

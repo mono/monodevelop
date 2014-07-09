@@ -96,7 +96,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
 		}
 

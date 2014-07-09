@@ -325,16 +325,16 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.UpdateSignal (args.OldSignal, args.Signal);
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
-			base.Save (fileName);
+			base.Save (fileSaveInformation);
 			
 			if (designer == null)
 				return;
 			
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (gproject.Project, window.RootWidget.Name);
 			
-			codeBinder.UpdateBindings (fileName);
+			codeBinder.UpdateBindings (fileSaveInformation.FileName);
 			if (!ErrorMode) {
 				if (designer != null)
 					designer.Save ();

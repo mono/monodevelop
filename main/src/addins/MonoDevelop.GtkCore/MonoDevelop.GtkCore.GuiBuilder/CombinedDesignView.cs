@@ -172,19 +172,19 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			base.Dispose ();
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
-			ContentName = fileName;
-			content.Load (fileName);
+			ContentName = fileOpenInformation.FileName;
+			content.Load (ContentName);
 		}
 		
 		public override Gtk.Widget Control {
 			get { return control; }
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
-			content.Save (fileName);
+			content.Save (fileSaveInformation);
 		}
 		
 		public override bool IsDirty {

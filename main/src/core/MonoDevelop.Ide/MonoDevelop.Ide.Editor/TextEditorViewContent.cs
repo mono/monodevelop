@@ -129,9 +129,14 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		void IViewContent.Load (FileOpenInformation fileOpenInformation)
+		{
+			textEditorImpl.Load (fileOpenInformation);
+		}
+		
 		void IViewContent.Load (string fileName)
 		{
-			textEditorImpl.Load (fileName);
+			textEditorImpl.Load (new FileOpenInformation (fileName));
 		}
 
 		void IViewContent.LoadNew (System.IO.Stream content, string mimeType)
@@ -139,9 +144,14 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.LoadNew (content, mimeType);
 		}
 
-		void IViewContent.Save (string fileName)
+		void IViewContent.Save (FileSaveInformation fileName)
 		{
 			textEditorImpl.Save (fileName);
+		}
+
+		void IViewContent.Save (string fileName)
+		{
+			textEditorImpl.Save (new FileSaveInformation (fileName));
 		}
 
 		void IViewContent.Save ()

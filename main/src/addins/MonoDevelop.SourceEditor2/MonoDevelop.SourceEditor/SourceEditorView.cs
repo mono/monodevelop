@@ -63,7 +63,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 namespace MonoDevelop.SourceEditor
 {	
 	public partial class SourceEditorView : AbstractViewContent, IBookmarkBuffer, IClipboardHandler, ITextFile,
-		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider, IEncodedTextContent,
+		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
 	ITextEditorImpl, IEditorActionHost, ITextMarkerFactory, IUndoHandler, MonoDevelop.Ide.Editor.ITextEditorOptions
@@ -626,9 +626,9 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
-			Save (fileName, encoding);
+			Save (fileSaveInformation.FileName, fileSaveInformation.Encoding ?? encoding);
 		}
 
 		public void Save (string fileName, Encoding encoding)
@@ -775,9 +775,9 @@ namespace MonoDevelop.SourceEditor
 			Document.InformLoadComplete ();
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
-			Load (fileName, null);
+			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding);
 		}
 
 		void RunFirstTimeFoldUpdate (string text)
@@ -826,11 +826,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			widget.UpdateParsedDocument (ownerDocument.ParsedDocument);
 		}		
-
-		void IEncodedTextContent.Load (string fileName, Encoding loadEncoding)
-		{
-			Load (fileName, loadEncoding);
-		}
 
 		public void Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{

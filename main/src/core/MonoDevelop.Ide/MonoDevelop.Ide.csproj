@@ -2050,7 +2050,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\CodeTranslationFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SelectEncodingsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FileSelectorDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\IEncodedTextContent.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskPriority.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\ErrorListPad.cs" />
     <Compile Include="gtk-gui\generated.cs" />

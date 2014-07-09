@@ -54,6 +54,7 @@ using System.Text;
 using System.Collections.ObjectModel;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -374,11 +375,11 @@ namespace MonoDevelop.Ide.Gui
 
 			Encoding encoding = null;
 			
-			IEncodedTextContent tbuffer = GetContent <IEncodedTextContent> ();
+			var tbuffer = GetContent <ITextSource> ();
 			if (tbuffer != null) {
-				encoding = tbuffer.SourceEncoding;
+				encoding = tbuffer.Encoding;
 				if (encoding == null)
-					encoding = Encoding.Default;
+					encoding = Encoding.UTF8;
 			}
 				
 			if (filename == null) {
@@ -415,16 +416,13 @@ namespace MonoDevelop.Ide.Gui
 			// save backup first
 			if ((bool)PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
 				if (tbuffer != null && encoding != null)
-					tbuffer.Save (filename + "~", encoding);
+					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding, tbuffer.UseBOM);
 				else
-					Window.ViewContent.Save (filename + "~");
+					Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
 			// do actual save
-			if (tbuffer != null && encoding != null)
-				tbuffer.Save (filename, encoding);
-			else
-				Window.ViewContent.Save (filename);
+			Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 
 			FileService.NotifyFileChanged (filename);
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);

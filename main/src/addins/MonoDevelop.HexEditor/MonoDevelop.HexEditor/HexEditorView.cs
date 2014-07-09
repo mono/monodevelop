@@ -68,15 +68,16 @@ namespace MonoDevelop.HexEditor
 			hexEditor.Repaint ();
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
-			File.WriteAllBytes (fileName, hexEditor.HexEditorData.Bytes);
-			ContentName = fileName;
+			File.WriteAllBytes (fileSaveInformation.FileName, hexEditor.HexEditorData.Bytes);
+			ContentName = fileSaveInformation.FileName;
 			this.IsDirty = false;
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
+			var fileName = fileOpenInformation.FileName;
 			using (Stream stream = File.OpenRead (fileName)) { 
 				hexEditor.HexEditorData.Buffer = ArrayBuffer.Load (stream);
 			}

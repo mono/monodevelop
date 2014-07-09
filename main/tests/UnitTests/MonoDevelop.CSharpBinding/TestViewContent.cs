@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Name = "";
 		}
 		
-		public override void Load(string fileName)
+		public override void Load(FileOpenInformation fileOpenInformation)
 		{
 		}
 		
