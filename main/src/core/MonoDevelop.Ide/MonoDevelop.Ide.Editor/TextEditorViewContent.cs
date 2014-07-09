@@ -236,11 +236,9 @@ namespace MonoDevelop.Ide.Editor
 		{
 			if (type.IsAssignableFrom (typeof(TextEditor)))
 				return textEditor;
-			if (textEditorImpl.GetType ().IsInstanceOfType (type))
-				return textEditorImpl;
 			var ext = textEditorImpl.EditorExtension;
 			while (ext != null) {
-				if (ext.GetType ().IsInstanceOfType (type))
+				if (type.IsInstanceOfType (ext))
 					return ext;
 				ext = ext.Next;
 			}

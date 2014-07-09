@@ -2407,12 +2407,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (type.Equals (typeof(TextEditorData)))
 				return TextEditor.GetTextEditorData ();
-			var ext = TextEditor.EditorExtension;
-			while (ext != null) {
-				if (type.IsInstanceOfType (ext))
-					return ext;
-				ext = ext.Next;
-			}
 			return base.GetContent (type);
 		}
 
