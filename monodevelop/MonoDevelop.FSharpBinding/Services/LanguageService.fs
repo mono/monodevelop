@@ -281,25 +281,34 @@ module internal MonoDevelop =
 
 /// Provides functionality for working with the F# interactive checker running in background
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
-module MDLanguageService =
-  do 
-      let originalFs = Shim.FileSystem
-      let fs = new FileSystem(originalFs)
-      Shim.FileSystem <- fs
+type MDLanguageService() =
+  /// Single instance of the language service. We don't want the VFS during tests, so set it to blank from tests 
+  /// before Instance is evaluated
+  static let mutable vfs = 
+      lazy (let originalFs = Shim.FileSystem
+            let fs = new FileSystem(originalFs, (fun () -> seq { yield! IdeApp.Workbench.Documents }))
+            Shim.FileSystem <- fs
+            fs :> IFileSystem)
 
-  /// Single instance of the language service.
-  let Instance =
-    new FSharp.CompilerBinding.LanguageService(
-        (fun changedfile ->
-            DispatchService.GuiDispatch(fun () -> 
-                try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
-                    let doc = IdeApp.Workbench.ActiveDocument
-                    if doc <> null && doc.FileName.FullPath.ToString() = changedfile then 
-                        Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously" changedfile)
-                        doc.ReparseDocument()
-                with exn  -> () )))
+  static let mutable instance = 
+    lazy
+        let _ = vfs.Force() 
+        new FSharp.CompilerBinding.LanguageService(
+            (fun changedfile ->
+                DispatchService.GuiDispatch(fun () -> 
+                    try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
+                        let doc = IdeApp.Workbench.ActiveDocument
+                        if doc <> null && doc.FileName.FullPath.ToString() = changedfile then 
+                            Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously" changedfile)
+                            doc.ReparseDocument()
+                    with exn  -> () )))
                 
-    
+  static member Instance with get () = instance.Force ()
+                         and  set v  = instance <- lazy v
+  // Call this before Instance is called
+  static member DisableVirtualFileSystem() = 
+        vfs <- lazy (Shim.FileSystem)
+
 /// Various utilities for working with F# language service
 module internal ServiceUtils =
   let map =           

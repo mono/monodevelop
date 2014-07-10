@@ -42,3 +42,4 @@ monodevelop/Makefile
 /monodevelop/MonoDevelop.FSharpBinding/packages
 
 monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.Tests/MonoDevelop.FSharp.Tests.fsproj
+monodevelop/MonoDevelop.FSharpBinding/MonoDevelop.FSharp.Tests/tests

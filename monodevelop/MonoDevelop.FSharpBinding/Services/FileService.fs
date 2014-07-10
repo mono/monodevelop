@@ -10,25 +10,23 @@ open MonoDevelop.Ide.TypeSystem
 open FSharp.CompilerBinding
 type Version = int
 
-module FileSystemImpl = 
-    let inline getOpenDoc filename = 
-       IdeApp.Workbench.Documents |> Seq.tryFind(fun d -> d.Editor.Document.FileName = filename)
+type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Document seq) =
+    let timestamps = new System.Collections.Generic.Dictionary<string, int * System.DateTime>()
+    let getOpenDoc filename = 
+       let docs = openDocuments()
+       docs |> Seq.tryFind(fun d -> d.FileName.FullPath.ToString() = filename)
 
-    let inline getOpenDocContent (filename: string) =
+    let getOpenDocContent (filename: string) =
         match getOpenDoc filename with
         | Some d -> 
            let bytes = System.Text.Encoding.UTF8.GetBytes (d.Editor.Document.Text);
            Some bytes 
         | _ -> None
 
-    let inline getOrElse f o = 
+    let getOrElse f o = 
         match o with
         | Some v -> v
         | _      -> f()
-
-open FileSystemImpl
-type FileSystem (defaultFileSystem : IFileSystem) =
-    let timestamps = new System.Collections.Generic.Dictionary<string, int * System.DateTime>()
 
     interface IFileSystem with
         member x.FileStreamReadShim fileName = 
@@ -42,7 +40,7 @@ type FileSystem (defaultFileSystem : IFileSystem) =
         
         member x.GetLastWriteTimeShim fileName =
             let r = maybe {
-               let! doc = FileSystemImpl.getOpenDoc fileName
+               let! doc = getOpenDoc fileName
                if doc.IsDirty then
                  let key, newhash = fileName, doc.Editor.Text.GetHashCode()
                  return match timestamps.TryGetValue (key) with
