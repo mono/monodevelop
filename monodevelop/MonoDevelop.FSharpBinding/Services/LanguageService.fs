@@ -12,14 +12,17 @@ open System.Xml
 open System.Text
 open System.Diagnostics
 open MonoDevelop.Ide
+open MonoDevelop.Core
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.CompilerBinding
 
 /// Contains settings of the F# language service
 module ServiceSettings = 
 
   /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
   let blockingTimeout = 500
+  let maximumTimeout = 10000
 
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter = 
@@ -252,17 +255,19 @@ module internal MonoDevelop =
     ///gets the projectFilename, sourceFiles, commandargs from the project and current config
     let getCheckerArgsFromProject(project:DotNetProject, config) =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
-        let projConfig = project.GetConfiguration(config) :?> MonoDevelop.Projects.DotNetProjectConfiguration
-        let fsconfig = projConfig.CompilationParameters :?> FSharpCompilerParameters
-
-        let args = CompilerArguments.generateCompilerOptions(project,
-                                                             fsconfig,
-                                                             None,
-                                                             CompilerArguments.getTargetFramework projConfig.TargetFramework.Id, 
-                                                             config, 
-                                                             false) |> Array.ofList
-        let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
-        project.FileName.ToString(), files, args, framework
+        let fileName = project.FileName.ToString()
+        maybe {let! projConfig = project.GetConfiguration(config) |> tryCast<DotNetProjectConfiguration>
+               let! fsconfig = projConfig.CompilationParameters |> tryCast<FSharpCompilerParameters> 
+               let args = CompilerArguments.generateCompilerOptions(project,
+                                                                    fsconfig,
+                                                                    None,
+                                                                    CompilerArguments.getTargetFramework projConfig.TargetFramework.Id, 
+                                                                    config, 
+                                                                    false) |> Array.ofList
+               let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
+               return fileName, files, args, framework }
+        |> Option.getOrElse (LoggingService.LogWarning ("F# project checker options could not be retrieved, falling back to default options")
+                             fileName, files, [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0)
                 
     let getCheckerArgs(project: Project, filename: string) =
         let ext = Path.GetExtension(filename)
@@ -275,9 +280,7 @@ module internal MonoDevelop =
         match project with
         | :? DotNetProject as dnp when (ext <> ".fsx" && ext <> ".fsscript") ->
             getCheckerArgsFromProject(dnp, config)
-
-        | _ ->
-            filename, [|filename|], [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
+        | _ -> filename, [|filename|], [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
 
 /// Provides functionality for working with the F# interactive checker running in background
 open Microsoft.FSharp.Compiler.AbstractIL.Internal.Library
@@ -296,10 +299,10 @@ type MDLanguageService() =
         new FSharp.CompilerBinding.LanguageService(
             (fun changedfile ->
                 DispatchService.GuiDispatch(fun () -> 
-                    try Debug.WriteLine(sprintf "Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
+                    try LoggingService.LogInfo(sprintf "F# Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
                         let doc = IdeApp.Workbench.ActiveDocument
                         if doc <> null && doc.FileName.FullPath.ToString() = changedfile then 
-                            Debug.WriteLine(sprintf "Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously" changedfile)
+                            LoggingService.LogWarning(sprintf "F# Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously" changedfile)
                             doc.ReparseDocument()
                     with exn  -> () )))
                 
