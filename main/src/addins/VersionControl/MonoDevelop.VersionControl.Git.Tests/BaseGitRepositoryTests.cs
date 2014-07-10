@@ -104,20 +104,6 @@ index e69de29..fdc74c1 100644
 		}
 
 		[Test]
-		[Ignore ("This test is failing because the file is showing up as Unversioned, not ScheduledForDelete")]
-		public override void DeletesFile ()
-		{
-			base.DeletesFile ();
-		}
-
-		[Test]
-		[Ignore ("Apparently, we have issues with this")]
-		public override void DeletesDirectory ()
-		{
-			base.DeletesDirectory ();
-		}
-
-		[Test]
 		[Ignore ("NGit sees added directories as unversioned.")]
 		public override void MovesDirectory ()
 		{

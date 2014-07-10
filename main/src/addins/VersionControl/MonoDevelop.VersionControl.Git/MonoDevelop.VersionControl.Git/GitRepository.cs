@@ -791,9 +791,11 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			foreach (var group in GroupByRepository (localPaths)) {
 				var repository = group.Key;
-				var files = group;
+				var files = repository.ToGitPath (group);
 
-				repository.Index.Remove (repository.ToGitPath (files), !keepLocal);
+				if (!keepLocal)
+					repository.Reset ("HEAD", files);
+				repository.Index.Remove (files, !keepLocal);
 			}
 		}
 
