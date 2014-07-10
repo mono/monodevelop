@@ -51,6 +51,11 @@ namespace Mono.TextEditor.Highlighting
 				return regex;
 			}
 		}
+
+		public bool IgnoreCase {
+			get;
+			private set;
+		}
 		
 		public virtual bool GetIsValid (ColorScheme style)
 		{
@@ -100,7 +105,10 @@ namespace Mono.TextEditor.Highlighting
 				var result = new Match ();
 
 				result.Pattern = "\\G" + expression;
-				result.regex   = new System.Text.RegularExpressions.Regex (result.Pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+				var ignoreCaseAttr = reader.GetAttribute ("ignorecase");
+				if (!string.IsNullOrEmpty (ignoreCaseAttr))
+					result.IgnoreCase = Boolean.Parse (ignoreCaseAttr);
+				result.regex   = new System.Text.RegularExpressions.Regex (result.Pattern, result.IgnoreCase ? RegexOptions.Compiled | RegexOptions.IgnoreCase : RegexOptions.Compiled);
 
 				XmlReadHelper.ReadList (reader, Node, delegate () {
 					switch (reader.LocalName) {

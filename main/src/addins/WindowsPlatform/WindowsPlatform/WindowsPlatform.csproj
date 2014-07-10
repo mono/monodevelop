@@ -100,6 +100,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="CustomDialogs\CustomCommonOpenFileDialog.cs" />
     <Compile Include="CustomDialogs\CustomCommonFileDialogComboBox.cs" />
+    <Compile Include="CustomDialogs\CustomCommonSaveFileDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WindowsPlatform.addin.xml">

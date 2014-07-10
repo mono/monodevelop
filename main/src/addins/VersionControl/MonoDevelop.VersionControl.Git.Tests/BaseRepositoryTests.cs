@@ -335,16 +335,41 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.MoveFile.
 		public virtual void MovesFile ()
 		{
-			string src = LocalPath + "testfile";
-			string dst = src + "2";
+			string src;
+			string dst;
+			VersionInfo srcVi;
+			VersionInfo dstVi;
 
+			// Versioned file.
 			AddFile ("testfile", null, true, true);
+			src = LocalPath + "testfile";
+			dst = src + "2";
 			Repo.MoveFile (src, dst, false, new NullProgressMonitor ());
-			VersionInfo srcVi = Repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
-			VersionInfo dstVi = Repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
-			const VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
-			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & expectedStatus);
+			srcVi = Repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
+			dstVi = Repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
+			const VersionStatus versionedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & versionedStatus);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
+
+			// Just added file.
+			AddFile ("addedfile", null, true, false);
+			src = LocalPath + "addedfile";
+			dst = src + "2";
+			Repo.MoveFile (src, dst, false, new NullProgressMonitor ());
+			srcVi = Repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
+			dstVi = Repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, srcVi.Status);
+			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
+
+			// Non versioned file.
+			AddFile ("unversionedfile", null, false, false);
+			src = LocalPath + "unversionedfile";
+			dst = src + "2";
+			Repo.MoveFile (src, dst, false, new NullProgressMonitor ());
+			srcVi = Repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
+			dstVi = Repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, srcVi.Status);
+			Assert.AreEqual (VersionStatus.Unversioned, dstVi.Status);
 		}
 
 		[Test]

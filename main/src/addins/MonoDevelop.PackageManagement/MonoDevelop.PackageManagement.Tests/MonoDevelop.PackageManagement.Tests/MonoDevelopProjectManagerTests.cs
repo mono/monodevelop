@@ -25,8 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
+using NuGet;
 using NUnit.Framework;
 
 namespace MonoDevelop.PackageManagement.Tests
@@ -35,10 +38,17 @@ namespace MonoDevelop.PackageManagement.Tests
 	public class MonoDevelopProjectManagerTests
 	{
 		TestableProjectManager projectManager;
+		FakeFileSystem fileSystem;
 
 		void CreateProjectManager ()
 		{
 			projectManager = new TestableProjectManager ();
+		}
+
+		FakeFileSystem CreateFileSystem ()
+		{
+			fileSystem = new FakeFileSystem ();
+			return fileSystem;
 		}
 
 		void AddFakePackageToProjectLocalRepository (string packageId, string version)
@@ -49,6 +59,19 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackage CreatePackage (string packageId, string version)
 		{
 			return FakePackage.CreatePackageWithVersion (packageId, version);
+		}
+
+		void SetProjectPackagesConfigFileContents (string xml)
+		{
+			fileSystem.FileExistsReturnValue = true;
+			fileSystem.FileToReturnFromOpenFile = xml;
+		}
+
+		void CreateProjectManagerWithPackageReferenceRepository ()
+		{
+			var sharedRepository = new FakeSharedPackageRepository ();
+			var repository = new PackageReferenceRepository (fileSystem, "MyProject", sharedRepository);
+			projectManager = new TestableProjectManager (repository);
 		}
 
 		[Test]
@@ -105,6 +128,24 @@ namespace MonoDevelop.PackageManagement.Tests
 			bool installed = projectManager.HasOlderPackageInstalled (package);
 
 			Assert.IsFalse (installed);
+		}
+
+		[Test]
+		public void GetPackageReferences_OnePackageReferenceInPackageReferenceRepository_ReturnsOnePackageReference ()
+		{
+			CreateFileSystem ();
+			string config = 
+@"<packages>
+	<package id='NUnit' version='1.0.1' />
+</packages>";
+			SetProjectPackagesConfigFileContents (config);
+			CreateProjectManagerWithPackageReferenceRepository ();
+
+			List<PackageReference> packageReferences = projectManager.GetPackageReferences ().ToList ();
+			PackageReference packageReference = packageReferences.FirstOrDefault ();
+
+			Assert.AreEqual ("NUnit", packageReference.Id);
+			Assert.AreEqual ("1.0.1", packageReference.Version.ToString ());
 		}
 	}
 }

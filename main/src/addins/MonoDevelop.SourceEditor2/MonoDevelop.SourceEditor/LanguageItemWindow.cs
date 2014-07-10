@@ -111,7 +111,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			if (label == null)
 				return;
-			label.FontDescription = FontService.GetFontDescription ("LanguageTooltips");
+			label.FontDescription = FontService.GetFontDescription ("Pad");
 			
 		}
 	}

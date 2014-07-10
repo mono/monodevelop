@@ -36,6 +36,7 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -95,15 +96,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get;
 			set;
 		}
-		
-			
-		static bool inCategoryMode;
+
+		public readonly static PropertyWrapper<bool> EnableCompletionCategoryMode = PropertyService.Wrap("EnableCompletionCategoryMode", false);
+
 		public bool InCategoryMode {
-			get { return inCategoryMode; }
+			get { return EnableCompletionCategoryMode; }
 			set {
-				inCategoryMode = value;
+				EnableCompletionCategoryMode.Set(value);
+
 				CalcVisibleRows ();
-				if (inCategoryMode)
+				if (value)
 					SelectFirstItemInCategory ();
 			}
 		}
@@ -664,7 +666,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		void SelectFirstItemInCategory ()
 		{
-			if (string.IsNullOrEmpty (CompletionString) && inCategoryMode)
+			if (string.IsNullOrEmpty (CompletionString) && EnableCompletionCategoryMode)
 				selection = categories.First ().Items.First ();
 		}
 

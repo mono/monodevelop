@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -36,5 +37,6 @@ namespace ICSharpCode.PackageManagement
 		IPackagePathResolver PathResolver { get; }
 		bool IsInstalled(string packageId);
 		bool HasOlderPackageInstalled(IPackage package);
+		IEnumerable<PackageReference> GetPackageReferences ();
 	}
 }

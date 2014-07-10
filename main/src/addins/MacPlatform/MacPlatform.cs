@@ -203,18 +203,22 @@ namespace MonoDevelop.MacIntegration
 			return map;
 		}
 
-		public override bool ShowContextMenu (CommandManager commandManager, Gtk.Widget widget, double x, double y, CommandEntrySet entrySet)
+		public override bool ShowContextMenu (CommandManager commandManager, Gtk.Widget widget, double x, double y, CommandEntrySet entrySet, object initialCommandTarget = null)
 		{
 			Gtk.Application.Invoke (delegate {
 				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
 				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
-				var menu = new MDMenu (commandManager, entrySet);
+				var menu = new MDMenu (commandManager, entrySet, CommandSource.ContextMenu, initialCommandTarget);
 				var nsview = MacInterop.GtkQuartz.GetView (widget);
 				var toplevel = widget.Toplevel as Gtk.Window;
 				int trans_x, trans_y;
 				widget.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
 
-				var pt = nsview.ConvertPointFromBase (new PointF ((float)trans_x, (float)trans_y));
+				// Window coordinates in gtk are the same for cocoa, with the exception of the Y coordinate, that has to be flipped.
+				var pt = new PointF ((float)trans_x, (float)trans_y);
+				int w,h;
+				toplevel.GetSize (out w, out h);
+				pt.Y = h - pt.Y;
 
 				var tmp_event = NSEvent.MouseEvent (NSEventType.LeftMouseDown,
 					pt,

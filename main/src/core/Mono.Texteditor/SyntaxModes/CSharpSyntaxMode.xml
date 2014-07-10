@@ -319,7 +319,7 @@
 	</Rule>
 	
 	<Rule name = "String">
-		<Match color ="String(Escape)">\\(['"\\abfnrtv]|x[0-9a-fA-F]{2,4}|0\d\d)</Match>
+		<Match color ="String(Escape)" ignorecase="True">\\(['"\\abfnrtv]|x[0-9a-fA-F]{2,4}|0\d\d)</Match>
 	</Rule>
 	
 	<Rule name = "VerbatimString">

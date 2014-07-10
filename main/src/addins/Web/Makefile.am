@@ -1,0 +1,2 @@
+SUBDIRS = \
+	MonoDevelop.AspNet

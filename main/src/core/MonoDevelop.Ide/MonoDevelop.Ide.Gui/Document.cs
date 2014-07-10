@@ -379,7 +379,13 @@ namespace MonoDevelop.Ide.Gui
 				// Note that the parsed document may be overwritten by a background thread to a more recent one.
 				var doc = parsedDocument;
 				if (doc != null && doc.ParsedFile != null) {
-					doc.ParsedFile.LastWriteTime = DateTime.Now;
+					string fileName = Window.ViewContent.ContentName;
+					try {
+						doc.ParsedFile.LastWriteTime = File.GetLastWriteTimeUtc (fileName);
+					} catch (Exception e) {
+						doc.ParsedFile.LastWriteTime = DateTime.UtcNow;
+						LoggingService.LogWarning ("Exception while getting the write time from " + fileName, e); 
+					}
 				}
 				TypeSystemService.TrackFileChanges = true;
 			}
@@ -411,7 +417,6 @@ namespace MonoDevelop.Ide.Gui
 					Encoding = encoding,
 					ShowEncodingSelector = (tbuffer != null),
 				};
-				
 				if (Window.ViewContent.IsUntitled)
 					dlg.InitialFileName = Window.ViewContent.UntitledName;
 				else {

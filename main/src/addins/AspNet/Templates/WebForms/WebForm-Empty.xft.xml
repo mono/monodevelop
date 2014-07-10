@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<Template	Originator="Michael Hutchinson"
+			Created="2006/06/06"
+			LastModified="2006/06/06">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Web Form</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Web Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<_Description>Creates an ASP.NET Web Form.</_Description>
+	</TemplateConfiguration>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.aspx">
+<![CDATA[<%@ Page Language="C#" %>
+<!DOCTYPE html>
+<html>
+<head runat="server">
+	<title>${Name}</title>
+	<script runat="server">
+	
+	</script>
+</head>
+<body>
+	<form id="form1" runat="server">
+	
+	</form>
+</body>
+</html>
+]]>
+		</File>
+	</TemplateFiles>
+</Template>
