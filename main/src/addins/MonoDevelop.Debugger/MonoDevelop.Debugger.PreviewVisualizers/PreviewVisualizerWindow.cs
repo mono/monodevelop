@@ -43,9 +43,6 @@ namespace MonoDevelop.Debugger
 
 		public void Show (ObjectValue val, Gtk.Widget invokingWidget, Rectangle previewButtonArea)
 		{
-			var previewVisualizer = DebuggingService.GetPreviewVisualizer (val);
-			if (previewVisualizer == null)
-				previewVisualizer = new GenericPreviewVisualizer ();
 			Theme.SetFlatColor (new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0));
 			ShowArrow = true;
 			var mainBox = new VBox ();
@@ -86,7 +83,18 @@ namespace MonoDevelop.Debugger
 			mainBox.PackStart (headerTable);
 			mainBox.ShowAll ();
 
-			var widget = previewVisualizer.GetVisualizerWidget (val);
+			var previewVisualizer = DebuggingService.GetPreviewVisualizer (val);
+			if (previewVisualizer == null)
+				previewVisualizer = new GenericPreviewVisualizer ();
+			Control widget = null;
+			try {
+				widget = previewVisualizer.GetVisualizerWidget (val);
+			} catch (Exception e) {
+				DebuggingService.DebuggerSession.LogWriter (true, "Exception during preview widget creation: " + e.Message);
+			}
+			if (widget == null) {
+				widget = new GenericPreviewVisualizer ().GetVisualizerWidget (val);
+			}
 			mainBox.PackStart (widget);
 			ContentBox.Add (mainBox);
 			ShowPopup (invokingWidget, previewButtonArea, PopupPosition.Left);
