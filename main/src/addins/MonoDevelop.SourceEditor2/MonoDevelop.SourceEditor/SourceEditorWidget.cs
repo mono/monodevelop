@@ -1040,11 +1040,10 @@ namespace MonoDevelop.SourceEditor
 				b2.Image = ImageService.GetImage (Gtk.Stock.RevertToSaved, IconSize.Button);
 				b2.Clicked += delegate {
 					try {
-						string content = AutoSave.LoadAutoSave (fileName);
-						AutoSave.RemoveAutoSaveFile (fileName);
+						var content = AutoSave.LoadAndRemoveAutoSave (fileName);
 						TextEditor.GrabFocus ();
 						view.Load (fileName);
-						view.ReplaceContent (fileName, content, view.SourceEncoding);
+						view.ReplaceContent (fileName, content.Text, view.SourceEncoding);
 						view.WorkbenchWindow.Document.ReparseDocument ();
 						view.IsDirty = true;
 					} catch (Exception ex) {

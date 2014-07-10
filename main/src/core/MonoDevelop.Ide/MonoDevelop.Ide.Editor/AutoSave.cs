@@ -30,9 +30,14 @@ using System.IO;
 using System.Threading;
 using MonoDevelop.Core;
 using Gtk;
+using MonoDevelop.Core.Text;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.Ide.Editor
 {
+	/// <summary>
+	/// This class handles the auto save mechanism for open files.
+	/// It should only be used by editor implementations.
+	/// </summary>
 	static class AutoSave
 	{
 		//FIXME: is this path a good one? wouldn't it be better to put autosaves beside the files anyway?
@@ -62,6 +67,9 @@ namespace MonoDevelop.SourceEditor
 			return newFileName;
 		}
 
+		/// <summary>
+		/// Returns true if an auto save exists for the given file name.
+		/// </summary>
 		public static bool AutoSaveExists (string fileName)
 		{
 			if (!autoSaveEnabled)
@@ -83,15 +91,14 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		static void CreateAutoSave (string fileName, string content)
+		static void CreateAutoSave (string fileName, ITextSource content)
 		{
 			if (!autoSaveEnabled)
 				return;
 			try {
 				// Directory may have removed/unmounted. Therefore this operation is not guaranteed to work.
 				string tmpFile = Path.GetTempFileName ();
-				File.WriteAllText (tmpFile, content);
-
+				content.WriteTextTo (tmpFile);
 				var autosaveFileName = GetAutoSaveFileName (fileName);
 				if (File.Exists (autosaveFileName))
 					File.Delete (autosaveFileName);
@@ -103,26 +110,20 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-#region AutoSave
+		#region AutoSave
 		class FileContent
 		{
 			public string FileName;
-			public Mono.TextEditor.TextDocument Content;
+			public ITextSource Content;
 
-			public FileContent (string fileName, Mono.TextEditor.TextDocument content)
+			public FileContent (string fileName, ITextSource content)
 			{
 				this.FileName = fileName;
 				this.Content = content;
 			}
 		}
-
-		public static bool Running {
-			get {
-				return autoSaveThreadRunning;
-			}
-		}
-
-		static AutoResetEvent resetEvent = new AutoResetEvent (false);
+			
+		static readonly AutoResetEvent resetEvent = new AutoResetEvent (false);
 		static bool autoSaveThreadRunning = false;
 		static Thread autoSaveThread;
 		static Queue<FileContent> queue = new Queue<FileContent> ();
@@ -148,28 +149,35 @@ namespace MonoDevelop.SourceEditor
 					// Don't create an auto save for unsaved files.
 					if (string.IsNullOrEmpty (content.FileName))
 						continue;
-					Application.Invoke (delegate {
-						string text;
-						try {
-							text = content.Content.Text;
-						} catch (Exception e) {
-							LoggingService.LogError ("Exception in auto save thread.", e);
-							return;
-						}
-						CreateAutoSave (content.FileName, text);
-					}
-					);
-					
+					CreateAutoSave (content.FileName, content.Content);
 				}
 			}
 		}
 
-		public static string LoadAutoSave (string fileName)
+		/// <summary>
+		/// Loads the content from an auto save file and removes the auto save file.
+		/// </summary>
+		public static ITextSource LoadAndRemoveAutoSave (string fileName)
 		{
 			string autoSaveFileName = GetAutoSaveFileName (fileName);
-			return Mono.TextEditor.Utils.TextFileUtility.ReadAllText (autoSaveFileName);
+			var result = StringTextSource.ReadFrom (autoSaveFileName);
+			AutoSave.RemoveAutoSaveFile (fileName);
+			return result;
 		}
 
+		/// <summary>
+		/// Loads the content from an auto save file.
+		/// </summary>
+		public static ITextSource LoadAutoSave (string fileName)
+		{
+			string autoSaveFileName = GetAutoSaveFileName (fileName);
+			return StringTextSource.ReadFrom (autoSaveFileName);
+		}
+
+		/// <summary>
+		/// Removes the auto save file.
+		/// </summary>
+		/// <param name="fileName">The file name for which the auto save file should be removed.</param>
 		public static void RemoveAutoSaveFile (string fileName)
 		{
 			if (!autoSaveEnabled)
@@ -187,19 +195,19 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public static void InformAutoSaveThread (Mono.TextEditor.TextDocument content)
+		internal static void InformAutoSaveThread (ITextSource content, string fileName, bool isDirty)
 		{
 			if (content == null || !autoSaveEnabled)
 				return;
-			if (content.IsDirty) {
-				queue.Enqueue (new FileContent (content.FileName, content));
+			if (isDirty) {
+				queue.Enqueue (new FileContent (fileName, content));
 				resetEvent.Set ();
 			} else {
-				RemoveAutoSaveFile (content.FileName);
+				RemoveAutoSaveFile (fileName);
 			}
 		}
 
-		public static void DisableAutoSave ()
+		static void DisableAutoSave ()
 		{
 			autoSaveThreadRunning = false;
 			if (autoSaveThread != null) {

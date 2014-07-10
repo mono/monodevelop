@@ -135,26 +135,7 @@ namespace MonoDevelop.SourceEditor
 			get { return GettextCatalog.GetString ("Source"); }
 		}
 		
-		uint autoSaveTimer = 0;
 
-		void InformAutoSave ()
-		{
-			RemoveAutoSaveTimer ();
-			autoSaveTimer = GLib.Timeout.Add (500, delegate {
-				AutoSave.InformAutoSaveThread (Document);
-				autoSaveTimer = 0;
-				return false;
-			});
-		}
-		
-		void RemoveAutoSaveTimer ()
-		{
-			if (autoSaveTimer == 0)
-				return;
-			GLib.Source.Remove (autoSaveTimer);
-			autoSaveTimer = 0;
-		}
-		
 		bool wasEdited = false;
 		uint removeMarkerTimeout;
 		Queue<MessageBubbleTextMarker> markersToRemove = new Queue<MessageBubbleTextMarker> ();
@@ -205,8 +186,6 @@ namespace MonoDevelop.SourceEditor
 
 			widget.TextEditor.Document.BeginUndo += HandleBeginUndo; 
 			widget.TextEditor.Document.EndUndo += HandleEndUndo;
-			widget.TextEditor.Document.Undone += HandleUndone;
-			widget.TextEditor.Document.Redone += HandleUndone;
 
 			widget.TextEditor.Document.TextReplacing += OnTextReplacing;
 			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
@@ -284,9 +263,6 @@ namespace MonoDevelop.SourceEditor
 				if (widget.TextEditor.Document.IsInAtomicUndo) {
 					wasEdited = true;
 				}
-				else {
-					InformAutoSave ();
-				}
 			}
 
 			int startIndex = args.Offset;
@@ -311,8 +287,6 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
 		{
-			if (wasEdited)
-				InformAutoSave ();
 			OnEndUndo (EventArgs.Empty);
 		}
 
@@ -322,10 +296,6 @@ namespace MonoDevelop.SourceEditor
 			OnBeginUndo (EventArgs.Empty);
 		}
 
-		void HandleUndone (object sender, TextDocument.UndoOperationEventArgs e)
-		{
-			AutoSave.InformAutoSaveThread (Document);
-		}
 
 		void HandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
@@ -636,9 +606,6 @@ namespace MonoDevelop.SourceEditor
 			if (widget.HasMessageBar)
 				return;
 			
-			if (!string.IsNullOrEmpty (ContentName))
-				AutoSave.RemoveAutoSaveFile (ContentName);
-
 			if (ContentName != fileName) {
 				FileService.RequestFileEdit ((FilePath) fileName);
 				writeAllowed = true;
@@ -982,8 +949,7 @@ namespace MonoDevelop.SourceEditor
 			
 			ClearExtensions ();
 			FileRegistry.Remove (this);
-			RemoveAutoSaveTimer ();
-			
+
 			StoreSettings ();
 			
 			Counters.LoadedEditors--;
@@ -1004,8 +970,6 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.Document.LineChanged -= HandleLineChanged;
 			widget.TextEditor.Document.BeginUndo -= HandleBeginUndo; 
 			widget.TextEditor.Document.EndUndo -= HandleEndUndo;
-			widget.TextEditor.Document.Undone -= HandleUndone;
-			widget.TextEditor.Document.Redone -= HandleUndone;
 			widget.TextEditor.Caret.PositionChanged -= HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed -= OnIconButtonPress;
 			widget.TextEditor.Document.TextReplacing -= OnTextReplacing;

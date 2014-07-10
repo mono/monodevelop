@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Editor
 	/// decorator in between.
 	/// </summary>
 	class TextEditorViewContent : IViewContent, MonoDevelop.Components.Commands.ICommandRouter
-    {
+	{
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
 
@@ -50,13 +50,45 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditor = textEditor;
 			this.textEditorImpl = textEditorImpl;
 			this.textEditor.MimeTypeChanged += UpdateTextEditorOptions;
+			this.textEditor.TextChanged += HandleTextChanged;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
-        }
+			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
+		}
 
+		void HandleDirtyChanged (object sender, EventArgs e)
+		{
+			InformAutoSave ();
+		}
+
+		void HandleTextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
+		{
+			InformAutoSave ();
+		}
 
 		void UpdateTextEditorOptions (object sender, EventArgs e)
 		{
 			UpdateStyleParent (Project, textEditor.MimeType);
+		}
+
+		uint autoSaveTimer = 0;
+
+		void InformAutoSave ()
+		{
+			RemoveAutoSaveTimer ();
+			autoSaveTimer = GLib.Timeout.Add (500, delegate {
+				AutoSave.InformAutoSaveThread (textEditor.CreateSnapshot (), textEditor.FileName, textEditorImpl.IsDirty);
+				autoSaveTimer = 0;
+				return false;
+			});
+		}
+
+
+		void RemoveAutoSaveTimer ()
+		{
+			if (autoSaveTimer == 0)
+				return;
+			GLib.Source.Remove (autoSaveTimer);
+			autoSaveTimer = 0;
 		}
 
 		void RemovePolicyChangeHandler ()
@@ -144,18 +176,24 @@ namespace MonoDevelop.Ide.Editor
 			textEditorImpl.LoadNew (content, mimeType);
 		}
 
-		void IViewContent.Save (FileSaveInformation fileName)
+		void IViewContent.Save (FileSaveInformation fileSaveInformation)
 		{
-			textEditorImpl.Save (fileName);
+			if (!string.IsNullOrEmpty (fileSaveInformation.FileName))
+				AutoSave.RemoveAutoSaveFile (fileSaveInformation.FileName);
+			textEditorImpl.Save (fileSaveInformation);
 		}
 
 		void IViewContent.Save (string fileName)
 		{
+			if (!string.IsNullOrEmpty (fileName))
+				AutoSave.RemoveAutoSaveFile (fileName);
 			textEditorImpl.Save (new FileSaveInformation (fileName));
 		}
 
 		void IViewContent.Save ()
 		{
+			if (!string.IsNullOrEmpty (textEditorImpl.ContentName))
+				AutoSave.RemoveAutoSaveFile (textEditorImpl.ContentName);
 			textEditorImpl.Save ();
 		}
 
@@ -293,6 +331,7 @@ namespace MonoDevelop.Ide.Editor
 		{
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();
+			RemoveAutoSaveTimer ();
 			textEditorImpl.Dispose ();
 		}
 
@@ -306,5 +345,5 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		#endregion
-    }
+	}
 }
