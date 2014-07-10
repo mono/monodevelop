@@ -96,7 +96,6 @@ namespace MonoDevelop.Platform
 		internal static void GetCommonFormProperties (SelectFileDialogData data, CommonFileDialog dialog)
 		{
 			var fileDialog = dialog as CommonOpenFileDialog;
-			Console.WriteLine (dialog.FileName);
 			if (fileDialog != null)
 				data.SelectedFiles = fileDialog.FileNames.Select (f => FilterFileName (data, f)).ToArray ();
 			else
