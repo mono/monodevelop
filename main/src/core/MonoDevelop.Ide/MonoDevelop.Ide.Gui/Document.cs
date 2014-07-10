@@ -426,11 +426,8 @@ namespace MonoDevelop.Ide.Gui
 				
 				if (!dlg.Run ())
 					return;
-				if (dlg.SelectedFile.Extension == ".*") {
-					filename = dlg.SelectedFile.ChangeExtension (Path.GetExtension (dlg.InitialFileName));
-				} else {
-					filename = dlg.SelectedFile;
-				}
+				
+				filename = dlg.SelectedFile;
 				encoding = dlg.Encoding;
 			}
 		
