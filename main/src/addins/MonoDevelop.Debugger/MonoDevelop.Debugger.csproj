@@ -165,6 +165,8 @@
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\ImagePreviewVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Converters\ImageConverter.cs" />
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\GenericPreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\LocationConverters.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\LocationPreviewVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

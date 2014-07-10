@@ -54,6 +54,7 @@
 		<Type class="MonoDevelop.Debugger.Converters.SizesConverters" />
 		<Type class="MonoDevelop.Debugger.Converters.RectanglesConverters" />
 		<Type class="MonoDevelop.Debugger.Converters.ImageConverter" />
+		<Type class="MonoDevelop.Debugger.Converters.LocationConverters" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Debugging/InlineVisualizers">
@@ -64,6 +65,7 @@
 		<Type class="MonoDevelop.Debugger.PreviewVisualizers.SizeAndRectanglePreviewVisualizer" />
 		<Type class="MonoDevelop.Debugger.PreviewVisualizers.ColorPreviewVisualizer" />
 		<Type class="MonoDevelop.Debugger.PreviewVisualizers.ImagePreviewVisualizer" />
+		<Type class="MonoDevelop.Debugger.PreviewVisualizers.LocationPreviewVisualizer" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
