@@ -182,6 +182,7 @@
 
 	<Extension path = "/MonoDevelop/NUnit/TestProviders">
 		<Class id="SystemTestProvider" class="MonoDevelop.NUnit.SystemTestProvider" />
+		<Class id="NUnitTestProvider" class="MonoDevelop.NUnit.NUnitTestProvider" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">

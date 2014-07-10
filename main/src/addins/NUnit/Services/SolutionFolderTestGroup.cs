@@ -83,8 +83,17 @@ namespace MonoDevelop.NUnit
 			NUnitService testService = NUnitService.Instance;
 			foreach (SolutionItem e in combine.Items) {
 				UnitTest t = testService.BuildTest (e);
-				if (t != null)
-					Tests.Add (t);
+				if (t != null) {
+					var group = t as UnitTestSuiteGroup;
+					// if the test is a suite group, then add it's children
+					if (group != null) {
+						foreach (var child in group.Tests) {
+							Tests.Add (child);
+						}
+					} else {
+						Tests.Add (t);
+					}
+				}
 			}
 		}
 	}

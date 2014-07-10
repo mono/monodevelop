@@ -44,11 +44,7 @@ namespace MonoDevelop.NUnit
 				test = SolutionFolderTestGroup.CreateTest (((Solution)entry).RootFolder);
 			if (entry is Workspace)
 				test = WorkspaceTestGroup.CreateTest ((Workspace)entry);
-			if (entry is DotNetProject)
-				test = NUnitProjectTestSuite.CreateTest ((DotNetProject)entry);
-			if (entry is NUnitAssemblyGroupProject)
-				test = ((NUnitAssemblyGroupProject)entry).RootTest;
-			
+
 			UnitTestGroup grp = test as UnitTestGroup;
 			if (grp != null && !grp.HasTests)
 				return null;
@@ -59,8 +55,7 @@ namespace MonoDevelop.NUnit
 		public Type[] GetOptionTypes ()
 		{
 			return new Type[] {
-				typeof(GeneralTestOptions),
-				typeof(NUnitCategoryOptions)
+				typeof(GeneralTestOptions)
 			};
 		}
 	}
