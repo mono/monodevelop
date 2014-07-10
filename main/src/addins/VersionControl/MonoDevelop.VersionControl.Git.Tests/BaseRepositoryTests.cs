@@ -400,7 +400,7 @@ namespace MonoDevelop.VersionControl.Tests
 			string addedDir = LocalPath + "test";
 			string added = addedDir + Path.DirectorySeparatorChar + "testfile";
 			AddDirectory ("test", true, false);
-			AddFile ("testfile", null, true, true);
+			AddFile ("test" + Path.DirectorySeparatorChar + "testfile", null, true, true);
 
 			Repo.DeleteDirectory (addedDir, true, new NullProgressMonitor ());
 			VersionInfo vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
