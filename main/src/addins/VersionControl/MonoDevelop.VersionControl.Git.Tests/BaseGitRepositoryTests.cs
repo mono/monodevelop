@@ -116,13 +116,6 @@ index e69de29..fdc74c1 100644
 		{
 			base.DeletesDirectory ();
 		}
-		
-		[Test]
-		[Ignore ("NGit sees added directories as unversioned on Unix.")]
-		public override void MovesFile ()
-		{
-			base.MovesFile ();
-		}
 
 		[Test]
 		[Ignore ("NGit sees added directories as unversioned.")]

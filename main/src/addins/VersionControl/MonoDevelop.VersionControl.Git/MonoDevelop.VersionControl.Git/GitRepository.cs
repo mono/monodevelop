@@ -1121,11 +1121,8 @@ namespace MonoDevelop.VersionControl.Git
 				base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
 				return;
 			}
-			base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
-			Add (localDestPath, false, monitor);
-			
-			if ((vi.Status & VersionStatus.ScheduledAdd) != 0)
-				Revert (localSrcPath, false, monitor);
+
+			RootRepository.Index.Move (localSrcPath, localDestPath);
 		}
 
 		protected override void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
