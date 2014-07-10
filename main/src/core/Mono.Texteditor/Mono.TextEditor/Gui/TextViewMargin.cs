@@ -294,11 +294,14 @@ namespace Mono.TextEditor
 			Application.Invoke (delegate {
 				this.selectedRegions = newRegions;
 				if (updateLines != null) {
+					var document = textEditor.Document;
+					if (document == null)
+						return;
 					foreach (int lineNumber in updateLines) {
 //						RemoveCachedLine (Document.GetLine (lineNumber));
-						textEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
+						document.RequestUpdate (new LineUpdate (lineNumber));
 					}
-					textEditor.Document.CommitDocumentUpdate ();
+					document.CommitDocumentUpdate ();
 				} else {
 					UpdateRegions (args.OldRegions.Concat (newRegions), args);
 				}
