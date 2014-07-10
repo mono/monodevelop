@@ -424,7 +424,10 @@ The current buffer must be an F# file that exists on disk."
     (ac-stop))
   (delete-char -1))
 
-(define-key ac-completing-map (kbd "<backspace>") 'fsharp-ac/electric-backspace)
+(define-key ac-completing-map
+  (kbd "<backspace>") 'fsharp-ac/electric-backspace)
+(define-key ac-completing-map
+  (kbd ".") 'self-insert-command)
 
 (defun fsharp-ac/complete-at-point ()
   (interactive)
