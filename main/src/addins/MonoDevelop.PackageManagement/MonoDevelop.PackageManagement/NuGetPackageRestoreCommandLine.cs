@@ -74,7 +74,7 @@ namespace ICSharpCode.PackageManagement
 		void GenerateMonoCommandLine(IPackageManagementSolution solution)
 		{
 			Arguments = String.Format(
-				"--runtime=v4.0 \"{0}\" restore \"{1}\"",
+				"--runtime=v4.0 \"{0}\" restore -NonInteractive \"{1}\"",
 				NuGetExePath.GetPath(),
 				solution.FileName);
 
@@ -83,7 +83,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void GenerateWindowsCommandLine(IPackageManagementSolution solution)
 		{
-			Arguments = String.Format("restore \"{0}\"", solution.FileName);
+			Arguments = String.Format("restore -NonInteractive \"{0}\"", solution.FileName);
 			Command = NuGetExePath.GetPath();
 		}
 		

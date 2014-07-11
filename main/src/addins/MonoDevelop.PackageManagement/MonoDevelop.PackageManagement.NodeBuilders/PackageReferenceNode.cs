@@ -25,25 +25,42 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Serialization;
-using NuGet;
 using System.Runtime.Versioning;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Serialization;
+using MonoDevelop.Ide.Gui;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	public class PackageReferenceNode
 	{
-		public PackageReferenceNode (PackageReference packageReference, bool installed, bool pending = false)
+		public PackageReferenceNode (
+			PackageReference packageReference,
+			bool installed,
+			bool pending = false,
+			IPackageName updatedPackage = null)
 		{
 			PackageReference = packageReference;
 			Installed = installed;
 			IsInstallPending = pending;
+
+			UpdatedVersion = GetUpdatedPackageVersion (updatedPackage);
+			IsReinstallNeeded = packageReference.RequireReinstallation;
+		}
+
+		SemanticVersion GetUpdatedPackageVersion (IPackageName updatedPackage)
+		{
+			if (updatedPackage != null) {
+				return updatedPackage.Version;
+			}
+			return null;
 		}
 
 		public PackageReference PackageReference { get; private set; }
 		public bool Installed { get; private set; }
 		public bool IsInstallPending { get; private set; }
+		public bool IsReinstallNeeded { get; private set; }
 
 		public string Name {
 			get { return PackageReference.Id; }
@@ -57,6 +74,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			get { return PackageReference.Version; }
 		}
 
+		public SemanticVersion UpdatedVersion { get; private set; }
+
 		public bool IsDevelopmentDependency {
 			get { return PackageReference.IsDevelopmentDependency; }
 		}
@@ -67,6 +86,39 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IVersionSpec VersionConstraint {
 			get { return PackageReference.VersionConstraint; }
+		}
+
+		public string GetLabel ()
+		{
+			if (UpdatedVersion != null) {
+				return GetIdText () + GetUpdatedVersionLabelText ();
+			}
+			return GetIdText ();
+		}
+
+		string GetIdText ()
+		{
+			if (!Installed || IsReinstallNeeded) {
+				return "<span color='#c99c00'>" + Id + "</span>";
+			}
+			return Id;
+		}
+
+		string GetUpdatedVersionLabelText ()
+		{
+			return String.Format (" <span color='grey'>({0} {1})</span>",
+				UpdatedVersion,
+				GettextCatalog.GetString ("available"));
+		}
+
+		public IconId GetIconId ()
+		{
+			if (!Installed || IsReinstallNeeded) {
+				if (!IsInstallPending) {
+					return Stock.ReferenceWarning;
+				}
+			}
+			return Stock.Reference;
 		}
 
 		public string GetPackageVersionLabel ()

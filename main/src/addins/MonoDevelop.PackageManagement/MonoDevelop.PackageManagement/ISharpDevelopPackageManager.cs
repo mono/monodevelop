@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -41,9 +42,11 @@ namespace ICSharpCode.PackageManagement
 		void UpdatePackage(IPackage package, UpdatePackageAction updateAction);
 		void UpdatePackages(UpdatePackagesAction updateAction);
 		void UpdatePackageReference(IPackage package, IUpdatePackageSettings settings);
-		
+		void AddPackageReference (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions);
+
 		IEnumerable<PackageOperation> GetInstallPackageOperations(IPackage package, InstallPackageAction installAction);
 		IEnumerable<PackageOperation> GetUpdatePackageOperations(IEnumerable<IPackage> packages, IUpdatePackageSettings settings);
+		ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages);
 		
 		void RunPackageOperations(IEnumerable<PackageOperation> operations);
 	}

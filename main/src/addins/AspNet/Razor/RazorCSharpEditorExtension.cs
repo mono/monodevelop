@@ -199,6 +199,9 @@ namespace MonoDevelop.AspNet.Razor
 				HiddenCompilation = razorDocument.PageInfo.Compilation
 			};
 
+			// completion window needs this
+			hiddenInfo.UnderlyingDocument.Editor.Parent = Editor.Parent;
+
 			currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
 			codeFragment = null;
 		}

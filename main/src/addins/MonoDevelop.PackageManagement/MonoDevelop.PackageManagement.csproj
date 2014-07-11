@@ -278,7 +278,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessageFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessage.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageRestoreStartupHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReferenceFile.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreRunner.cs" />
@@ -323,6 +322,31 @@
     <Compile Include="MonoDevelop.PackageManagement\SettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSearchCriteria.cs" />
     <Compile Include="MonoDevelop.PackageManagement\WildcardVersionSpec.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkChangedEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectModifiedEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityChecker.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageReinstaller.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallProjectPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageOperations.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\ReinstallAllPackagesInProjectHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibility.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectPackagesCompatibilityReport.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageUpdateChecker.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\FallbackRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageManagementStartupHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageUpdatesEventMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesProgressMonitorStatusMessage.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatedPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreBeforeUpdateAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

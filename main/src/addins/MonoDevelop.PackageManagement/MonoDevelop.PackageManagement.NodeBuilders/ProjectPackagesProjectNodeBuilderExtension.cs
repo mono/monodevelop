@@ -46,6 +46,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			packageManagementEvents.PackagesRestored += PackagesRestored;
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
 			packageManagementEvents.PackageOperationError += PackageOperationError;
+			packageManagementEvents.UpdatedPackagesAvailable += UpdatedPackagesAvailable;
 
 			FileService.FileChanged += FileChanged;
 		}
@@ -61,6 +62,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		}
 
 		void PackageOperationError (object sender, EventArgs e)
+		{
+			RefreshAllChildNodes ();
+		}
+
+		void UpdatedPackagesAvailable (object sender, EventArgs e)
 		{
 			RefreshAllChildNodes ();
 		}
@@ -94,6 +100,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			packageManagementEvents.PackagesRestored -= PackagesRestored;
 			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
 			packageManagementEvents.PackageOperationError -= PackageOperationError;
+			packageManagementEvents.UpdatedPackagesAvailable -= UpdatedPackagesAvailable;
 		}
 
 		public override bool CanBuildNode (Type dataType)
