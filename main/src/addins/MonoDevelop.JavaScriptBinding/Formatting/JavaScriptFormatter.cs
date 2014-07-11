@@ -50,10 +50,6 @@ namespace MonoDevelop.JavaScript.Formatting
 
 		public override void OnTheFlyFormat (Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
-			// TODO: JSBeautify only supports full document formattinh at the moment. The Indent Level has issues.
-			if (startOffset != 0 || doc.Editor.GetLineByOffset (endOffset).NextLine != null)
-				return;
-
 			string textToFormat = doc.Editor.GetTextBetween (startOffset, endOffset);
 			DocumentLine currentLine = doc.Editor.GetLineByOffset (startOffset);
 			int indentLevel = 0;
@@ -66,15 +62,18 @@ namespace MonoDevelop.JavaScript.Formatting
 				}
 			}
 
-			var options = new JSBeautifyOptions {
+//			var options = new JSBeautifyOptions {
+//				IndentSize = defaultIndentSize,
+//				IndentChar = ' ',
+//				IndentLevel = indentLevel,
+//				PreserveNewlines = true
+//			};
+			var beautifier = new JSBeautifier (new JSBeautifierOptions{
+				BraceStyle = JSBraceStyle.Expand,
 				IndentSize = defaultIndentSize,
-				IndentChar = ' ',
-				IndentLevel = indentLevel,
-				PreserveNewlines = true
-			};
-			var jsBeautifier = new JSBeautify (textToFormat, options);
-
-			string formattedText = jsBeautifier.GetResult ();
+				IndentWithTabs = true,
+			});
+			string formattedText = beautifier.Beautify (textToFormat);
 
 			using (var undo = doc.Editor.OpenUndoGroup (OperationType.Format)) {
 				try {
@@ -88,14 +87,8 @@ namespace MonoDevelop.JavaScript.Formatting
 
 		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)
 		{
-			var jsBeautifier = new JSBeautify (input, new JSBeautifyOptions {
-				IndentSize = 4,
-				IndentChar = ' ',
-				IndentLevel = 0,
-				PreserveNewlines = true,
-
-			});
-			return jsBeautifier.GetResult ();
+			var beautifier = new JSBeautifier (new JSBeautifierOptions());
+			return beautifier.Beautify (input);
 		}
 	}
 }
