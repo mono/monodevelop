@@ -1,0 +1,89 @@
+﻿<FSharpCodeTemplates version="1.0">
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>agent</Shortcut>
+      <_Description>Creates boilerplate vode for an agent</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="var">
+        <Default>myAgent</Default>
+      </Variable>
+      <Variable name="typename">
+        <Default>string</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[let $var$ =
+    new MailboxProcessor<$typename$>(fun inbox ->
+       let rec loop () = 
+           async {
+               let! msg = inbox.Receive()
+               return! loop () }
+       loop ())
+$end$]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>outlet</Shortcut>
+      <_Description>Creates an iOS outlet with attribute.</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>Name</Default>
+      </Variable>
+      <Variable name="type">
+        <Default>UIButton</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[[<Outlet>]
+member val $name$ : $type$ = null with get,set]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>uncheck</Shortcut>
+      <_Description>Create an unchecked default value</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="type">
+        <Default>notset</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[Unchecked.defaultof<$type$>]]></Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>F#</_Group>
+      <Version />
+      <MimeType>text/x-fsharp</MimeType>
+      <Shortcut>virt</Shortcut>
+      <_Description>Adds a virtual member</_Description>
+      <TemplateType>Unknown</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="funName">
+        <Default>notset</Default>
+      </Variable>
+      <Variable name="delta">
+        <Default>notset</Default>
+      </Variable>
+    </Variables>
+    <Code><![CDATA[abstract member $funName$ : int -> unit
+default this.$funName$ (delta:int) = ()]]></Code>
+  </CodeTemplate>
+
+</FSharpCodeTemplates>

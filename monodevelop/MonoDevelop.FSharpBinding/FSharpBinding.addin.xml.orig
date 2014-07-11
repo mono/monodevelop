@@ -93,6 +93,8 @@
     <Import file="Templates/ios/SingleView/ProjectIPhone.xpt.xml" />
     <Import file="Templates/ios/SingleView/ProjectUniversal.xpt.xml" />
     <Import file="Templates/ios/LibraryProject.xpt.xml" />
+    <!-- Code templates -->
+    <Import file = "Templates/FSharp-templates.xml" />
 
   </Runtime>
 
@@ -235,6 +237,10 @@
 
   <Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
     <Class class = "MonoDevelop.FSharp.FSharpProjectServiceExtension" />
+  </Extension>
+
+  <Extension path = "/MonoDevelop/Ide/CodeTemplates">
+    <CodeTemplate file="Templates/FSharp-templates.xml" />
   </Extension>
 
   <!-- F# interactive -->

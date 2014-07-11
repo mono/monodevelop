@@ -286,7 +286,9 @@
     <None Include="Templates/ios/SingleView/Universal/ViewController.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-     
+    <None Include="Templates/FSharp-templates.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
     <Compile Include="PowerPack\CodeDomGenerator.fs" />
     <Compile Include="PowerPack\CodeProvider.fs" />
