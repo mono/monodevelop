@@ -256,18 +256,22 @@ module internal MonoDevelop =
     let getCheckerArgsFromProject(project:DotNetProject, config) =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let fileName = project.FileName.ToString()
-        maybe {let! projConfig = project.GetConfiguration(config) |> tryCast<DotNetProjectConfiguration>
-               let! fsconfig = projConfig.CompilationParameters |> tryCast<FSharpCompilerParameters> 
-               let args = CompilerArguments.generateCompilerOptions(project,
-                                                                    fsconfig,
-                                                                    None,
-                                                                    CompilerArguments.getTargetFramework projConfig.TargetFramework.Id, 
-                                                                    config, 
-                                                                    false) |> Array.ofList
-               let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
-               return fileName, files, args, framework }
-        |> Option.getOrElse (LoggingService.LogWarning ("F# project checker options could not be retrieved, falling back to default options")
-                             fileName, files, [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0)
+        let arguments =
+            maybe {let! projConfig = project.GetConfiguration(config) |> tryCast<DotNetProjectConfiguration>
+                   let! fsconfig = projConfig.CompilationParameters |> tryCast<FSharpCompilerParameters>
+                   let args = CompilerArguments.generateCompilerOptions(project,
+                                                                        fsconfig,
+                                                                        None,
+                                                                        CompilerArguments.getTargetFramework projConfig.TargetFramework.Id, 
+                                                                        config, 
+                                                                        false) |> Array.ofList
+                   let framework = CompilerArguments.getTargetFramework project.TargetFramework.Id
+                   return args, framework }
+
+        match arguments with
+        | Some (args, framework) -> fileName, files, args, framework
+        | None -> LoggingService.LogWarning ("F# project checker options could not be retrieved, falling back to default options")
+                  fileName, files, [||], FSharp.CompilerBinding.FSharpTargetFramework.NET_4_0
                 
     let getCheckerArgs(project: Project, filename: string) =
         let ext = Path.GetExtension(filename)
