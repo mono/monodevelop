@@ -37,6 +37,7 @@ using Gtk;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components;
+using Jurassic.Compiler;
 
 namespace MonoDevelop.JavaScript
 {
@@ -182,14 +183,16 @@ namespace MonoDevelop.JavaScript
 			if (IdeApp.ProjectOperations.CurrentSelectedProject == null)
 				return null;
 
-			if (!Jurassic.Compiler.Lexer.IsIdentifierStartChar (completionChar))
+			if (!Lexer.IsIdentifierStartChar (completionChar))
 				return null;
 
-			string currentWord = string.Empty;
 			if (!isCodeCompletionPossible (completionContext, ref triggerWordLength))
 				return null;
 
 			var wrapper = TypeSystemService.GetProjectContentWrapper (IdeApp.ProjectOperations.CurrentSelectedProject).GetExtensionObject<JSUpdateableProjectContent> ();
+			if (wrapper == null)
+				return null;
+
 			return wrapper.CodeCompletionCache;
 		}
 
@@ -329,8 +332,6 @@ namespace MonoDevelop.JavaScript
 
 		bool isCodeCompletionPossible (CodeCompletionContext completionContext, ref int wordLength)
 		{
-			string currentWord = string.Empty;
-
 			if (completionContext.TriggerOffset == 0)
 				return true;
 
@@ -340,12 +341,19 @@ namespace MonoDevelop.JavaScript
 				completionContext.TriggerOffset -= 1;
 
 			// Check if inside a string
+			int currentOffset = completionContext.TriggerOffset;
+			char currentChar = Editor.GetCharAt (currentOffset);
+
+			while (!Lexer.IsLineTerminator ((int)Editor.GetCharAt (currentOffset)) && !Lexer.IsWhiteSpace ((int)Editor.GetCharAt (currentOffset)) && currentOffset != 0) {
+				currentChar = Editor.GetCharAt (currentOffset);
+				currentOffset--;
+			}
+
 			int currentWordStartOffset = Editor.FindCurrentWordStart (completionContext.TriggerOffset);
 			int currentWordEndOffset = Editor.FindCurrentWordEnd (completionContext.TriggerOffset);
-			currentWord = Editor.GetTextBetween (currentWordStartOffset, currentWordEndOffset);
 			wordLength = (currentWordEndOffset - currentWordStartOffset);
 
-			if (currentWord.StartsWith ("\\") || currentWord.StartsWith ("\""))
+			if (currentChar == '"' || currentChar == '\'')
 				return false;
 
 			// Check if previous word is a keyword, like var, function

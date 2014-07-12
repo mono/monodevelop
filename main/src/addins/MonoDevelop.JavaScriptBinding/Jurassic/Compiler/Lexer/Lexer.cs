@@ -714,7 +714,7 @@ namespace Jurassic.Compiler
 		/// </summary>
 		/// <param name="c"> The character to test. </param>
 		/// <returns> <c>true</c> if the character is whitespace; <c>false</c> otherwise. </returns>
-		static bool IsWhiteSpace (int c)
+		public static bool IsWhiteSpace (int c)
 		{
 			return c == 0x09 || c == 0x0B || c == 0x0C || c == 0x20 || c == 0xA0 ||
 			c == 0x1680 || c == 0x180E || (c >= 8192 && c <= 8202) || c == 0x202F ||
@@ -726,7 +726,7 @@ namespace Jurassic.Compiler
 		/// </summary>
 		/// <param name="c"> The character to test. </param>
 		/// <returns> <c>true</c> if the character is a line terminator; <c>false</c> otherwise. </returns>
-		static bool IsLineTerminator (int c)
+		public static bool IsLineTerminator (int c)
 		{
 			return c == 0x0A || c == 0x0D || c == 0x2028 || c == 0x2029;
 		}

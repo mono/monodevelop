@@ -26,7 +26,6 @@ namespace MonoDevelop.JavaScript
 
 		public JavaScriptLanguageBinding()
 		{
-			// JSTypeSystemService.Initialize ();
 		}
 
 		public bool IsSourceCodeFile (Core.FilePath fileName)

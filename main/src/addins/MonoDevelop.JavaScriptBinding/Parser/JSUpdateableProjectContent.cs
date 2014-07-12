@@ -49,9 +49,7 @@ namespace MonoDevelop.JavaScript
 			CodeCompletionCache = new CompletionDataList ();
 
 			CodeCompletionUtility.AddDefaultKeywords (ref CodeCompletionCache);
-
-			var nativeFilesParsingTask = new Task(() => CodeCompletionUtility.AddNativeVariablesAndFunctions (ref CodeCompletionCache));
-			nativeFilesParsingTask.Start ();
+			CodeCompletionUtility.AddNativeVariablesAndFunctions (ref CodeCompletionCache);
 		}
 
 		public void AddOrUpdateFiles (IEnumerable<ParsedDocument> docs)

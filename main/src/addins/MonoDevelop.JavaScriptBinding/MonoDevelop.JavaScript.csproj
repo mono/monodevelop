@@ -150,7 +150,6 @@
     <Compile Include="Jurassic\Compiler\Lexer\MultilineComment.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\Comment.cs" />
     <Compile Include="Jurassic\Compiler\Lexer\SingleLineComment.cs" />
-    <Compile Include="Services\JSTypeSystemService.cs" />
     <Compile Include="DomainObjects\Cache\JavaScriptDocumentCache.cs" />
     <Compile Include="DomainObjects\Cache\JSStatement.cs" />
     <Compile Include="DomainObjects\Cache\JSFunctionStatement.cs" />
@@ -220,7 +219,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="Services\" />
     <Folder Include="DomainObjects\" />
     <Folder Include="DomainObjects\Cache\" />
     <Folder Include="JSReferences\" />

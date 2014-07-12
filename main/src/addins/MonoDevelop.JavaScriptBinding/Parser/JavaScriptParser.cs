@@ -40,8 +40,6 @@ namespace MonoDevelop.JavaScript
 {
 	class JavaScriptParser : TypeSystemParser
 	{
-		public const string ParsedDocumentProperty = "JS.ParsedDocument";
-
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Projects.Project project = null)
 		{
 			var parseDocument = new JavaScriptParsedDocument (fileName, content);
