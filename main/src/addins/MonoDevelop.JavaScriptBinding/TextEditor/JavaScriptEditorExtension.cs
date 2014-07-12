@@ -38,6 +38,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components;
 using Jurassic.Compiler;
+using System.Diagnostics;
 
 namespace MonoDevelop.JavaScript
 {
@@ -186,14 +187,18 @@ namespace MonoDevelop.JavaScript
 			if (!Lexer.IsIdentifierStartChar (completionChar))
 				return null;
 
-			if (!isCodeCompletionPossible (completionContext, ref triggerWordLength))
+			string currentWord = string.Empty;
+			if (!isCodeCompletionPossible (completionContext, ref triggerWordLength, out currentWord))
+				return null;
+
+			if (string.IsNullOrWhiteSpace (currentWord))
 				return null;
 
 			var wrapper = TypeSystemService.GetProjectContentWrapper (IdeApp.ProjectOperations.CurrentSelectedProject).GetExtensionObject<JSUpdateableProjectContent> ();
 			if (wrapper == null)
 				return null;
 
-			return wrapper.CodeCompletionCache;
+			return CodeCompletionUtility.FilterCodeCompletion (wrapper.CodeCompletionCache, currentWord);
 		}
 
 		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
@@ -330,8 +335,9 @@ namespace MonoDevelop.JavaScript
 			}
 		}
 
-		bool isCodeCompletionPossible (CodeCompletionContext completionContext, ref int wordLength)
+		bool isCodeCompletionPossible (CodeCompletionContext completionContext, ref int wordLength, out string currentWord)
 		{
+			currentWord = string.Empty;
 			if (completionContext.TriggerOffset == 0)
 				return true;
 
@@ -351,6 +357,7 @@ namespace MonoDevelop.JavaScript
 
 			int currentWordStartOffset = Editor.FindCurrentWordStart (completionContext.TriggerOffset);
 			int currentWordEndOffset = Editor.FindCurrentWordEnd (completionContext.TriggerOffset);
+			currentWord = Editor.GetTextBetween (currentWordStartOffset, currentWordEndOffset);
 			wordLength = (currentWordEndOffset - currentWordStartOffset);
 
 			if (currentChar == '"' || currentChar == '\'')

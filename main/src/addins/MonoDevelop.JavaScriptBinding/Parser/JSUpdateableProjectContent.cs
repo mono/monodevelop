@@ -36,17 +36,17 @@ namespace MonoDevelop.JavaScript
 	[Serializable]
 	public class JSUpdateableProjectContent : TypeSystemService.IUpdateableProjectContent
 	{
-		public CompletionDataList CodeCompletionCache;
+		public JSCompletionList CodeCompletionCache;
 
 		public List<JavaScriptDocumentCache> DocumentsCache {
 			get;
 			set;
 		}
 
-		public JSUpdateableProjectContent()
+		public JSUpdateableProjectContent ()
 		{
 			DocumentsCache = new List<JavaScriptDocumentCache> ();
-			CodeCompletionCache = new CompletionDataList ();
+			CodeCompletionCache = new JSCompletionList ();
 
 			CodeCompletionUtility.AddDefaultKeywords (ref CodeCompletionCache);
 			CodeCompletionUtility.AddNativeVariablesAndFunctions (ref CodeCompletionCache);
@@ -55,18 +55,29 @@ namespace MonoDevelop.JavaScript
 		public void AddOrUpdateFiles (IEnumerable<ParsedDocument> docs)
 		{
 			foreach (var doc in docs.OfType<JavaScriptParsedDocument> ()) {
-				DocumentsCache.Add (new JavaScriptDocumentCache{
-					FileName = doc.FileName,
-					SimpleAst = doc.SimpleAst
-				});
+				var existing = DocumentsCache.FirstOrDefault (i => i.FileName == doc.FileName);
+				if (existing == null) {
+					DocumentsCache.Add (new JavaScriptDocumentCache {
+						FileName = doc.FileName,
+						SimpleAst = doc.SimpleAst
+					});
+				} else {
+					existing.SimpleAst = doc.SimpleAst;
+				}
+
+				CodeCompletionCache.RemoveAllMembersByFileName (doc.FileName);
 				CodeCompletionUtility.UpdateCodeCompletion (doc.SimpleAst.AstNodes, ref CodeCompletionCache);
 			}
 		}
 
 		public void RemoveFiles (IEnumerable<string> filenames)
 		{
-			foreach (var fileName in filenames)
-				DocumentsCache.RemoveAll (i=>i.FileName == fileName);			
+			foreach (var fileName in filenames) {
+				DocumentsCache.RemoveAll (i => i.FileName == fileName);	
+				if (CodeCompletionCache != null) {
+					CodeCompletionCache.RemoveAllMembersByFileName (fileName);
+				}
+			}
 		}
 	}
 }

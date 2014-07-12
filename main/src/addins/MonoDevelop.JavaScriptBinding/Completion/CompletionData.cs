@@ -34,6 +34,21 @@ using System.Text;
 
 namespace MonoDevelop.JavaScript
 {
+	[Serializable]
+	public class JSCompletionList : CompletionDataList
+	{
+		public JSCompletionList ()
+		{
+			this.AutoSelect = true;
+		}
+
+		public JSCompletionList (IEnumerable<ICompletionData> data) : base(data)
+		{
+			this.AutoSelect = true;
+		}
+	}
+
+	[Serializable]
 	class CompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
 	{
 		#region Constructors
@@ -77,6 +92,7 @@ namespace MonoDevelop.JavaScript
 		#endregion
 	}
 
+	[Serializable]
 	class VariableCompletion : CompletionData
 	{
 		public VariableCompletion (JSVariableDeclaration statement, string filename)
@@ -105,6 +121,7 @@ namespace MonoDevelop.JavaScript
 		}
 	}
 
+	[Serializable]
 	class FunctionCompletion : CompletionData
 	{
 		private IList<FunctionCompletion> overloads;

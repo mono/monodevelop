@@ -35,10 +35,10 @@ namespace MonoDevelop.JavaScript
 {
 	public static class CodeCompletionUtility
 	{
-		public static void UpdateCodeCompletion (List<JSStatement> astNodes, ref CompletionDataList dataList)
+		public static void UpdateCodeCompletion (List<JSStatement> astNodes, ref JSCompletionList dataList)
 		{
 			if (dataList == null)
-				dataList = new CompletionDataList ();
+				dataList = new JSCompletionList ();
 
 			if (astNodes == null)
 				return;
@@ -46,7 +46,7 @@ namespace MonoDevelop.JavaScript
 			foreach (JSStatement node in astNodes) {
 				var variableDeclaration = node as JSVariableDeclaration;
 				if (variableDeclaration != null) {
-					if (!dataList.Exists (i => i.DisplayText == variableDeclaration.Name && i is VariableCompletion) &&
+					if (!dataList.Exists (i => i.DisplayText == variableDeclaration.Name && i is VariableCompletion && (i as VariableCompletion).FileName == variableDeclaration.Filename) &&
 					    !string.IsNullOrWhiteSpace (variableDeclaration.Name))
 						dataList.Add (new VariableCompletion (variableDeclaration, node.Filename));
 
@@ -59,7 +59,7 @@ namespace MonoDevelop.JavaScript
 				if (functionStatement != null) {
 					if (!string.IsNullOrWhiteSpace (functionStatement.Name)) {
 						var existingDefinition = dataList.FirstOrDefault (i => i.DisplayText == functionStatement.Name &&
-						                         i is FunctionCompletion);
+						                         i is FunctionCompletion && (i as FunctionCompletion).FileName == functionStatement.Filename);
 						if (existingDefinition == null)
 							dataList.Add (new FunctionCompletion (functionStatement, node.Filename));
 						else {
@@ -76,20 +76,20 @@ namespace MonoDevelop.JavaScript
 			}
 		}
 
-		public static void AddDefaultKeywords (ref CompletionDataList dataList)
+		public static void AddDefaultKeywords (ref JSCompletionList dataList)
 		{
 			if (dataList == null)
-				dataList = new CompletionDataList ();
+				dataList = new JSCompletionList ();
 
 			foreach (var token in Jurassic.Compiler.KeywordToken.Keywords) {
 				dataList.Add (new CompletionData (token.Text, string.Empty));
 			}
 		}
 
-		public static void AddNativeVariablesAndFunctions (ref CompletionDataList dataList)
+		public static void AddNativeVariablesAndFunctions (ref JSCompletionList dataList)
 		{
 			if (dataList == null)
-				dataList = new CompletionDataList ();
+				dataList = new JSCompletionList ();
 
 			string currentDir = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
 			string referencesDir = Path.Combine (currentDir, "JSReferences");
@@ -104,12 +104,12 @@ namespace MonoDevelop.JavaScript
 			}
 		}
 
-		public static CompletionDataList FilterCodeCompletion (CompletionDataList dataList, string query)
+		public static JSCompletionList FilterCodeCompletion (JSCompletionList dataList, string query)
 		{
 			if (dataList == null)
 				return null;
 
-			var codeCompletion = new CompletionDataList ();
+			var codeCompletion = new JSCompletionList ();
 
 			foreach (var item in dataList.OfType<CompletionData> ()) {
 				if (item.CompletionText.ToUpper ().StartsWith (query.ToUpper ()))
@@ -117,6 +117,15 @@ namespace MonoDevelop.JavaScript
 			}
 
 			return codeCompletion;
+		}
+
+		public static void RemoveAllMembersByFileName (this JSCompletionList list, string filename)
+		{
+			for (int i = list.Count - 1; i >= 0; i--) {
+				var completionMember = list [i] as CompletionData;
+				if (completionMember != null && completionMember.FileName == filename)
+					list.RemoveAt (i);
+			}
 		}
 	}
 }
