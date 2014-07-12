@@ -92,6 +92,7 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
         | Some(colu, identIsland) ->
             return! checkResults.GetSymbolUseAtLocation(line, colu, lineStr, identIsland)
       }
+
     member x.GetSymbolAtLocation(line, col, lineStr, identIsland) =
       async {
         match infoOpt with 
@@ -99,12 +100,31 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
         | Some (checkResults, parseResults) -> 
             return! checkResults.GetSymbolUseAtLocation (line, col, lineStr, identIsland)
       }
+
     member x.GetUsesOfSymbolInFile(symbol) =
       async {
         match infoOpt with 
         | None -> return [| |]
         | Some (checkResults, parseResults) -> return! checkResults.GetUsesOfSymbolInFile(symbol)
       }
+
+    member x.GetAllUsesOfAllSymbolsInFile() =
+      async {
+          match infoOpt with
+          | None -> return None
+          | Some (checkResults, parseResults) ->
+              let! allSymbols = checkResults.GetAllUsesOfAllSymbolsInFile()
+              return Some allSymbols
+      }
+
+    member x.PartialAssemblySignature =
+      async {
+          match infoOpt with
+          | None -> return None
+          | Some (checkResults, parseResults) ->
+              return Some checkResults.PartialAssemblySignature
+      }
+
     member x.GetErrors() =
         match infoOpt with 
         | None -> None
@@ -119,6 +139,7 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
             with _ -> 
                 Debug.Assert(false, "couldn't update navigation items, ignoring")  
                 [| |]
+
     member x.ParseTree = match infoOpt with
                          | Some (check,parse) -> parse.ParseTree
                          | None -> None    
