@@ -7,7 +7,7 @@
   <!-- Template Header -->
   <TemplateConfiguration>
     <_Name>Empty JavaScript File</_Name>
-    <Icon>md-html-file-icon</Icon>
+    <Icon>md-script-file-icon</Icon>
     <_Category>Web</_Category>
     <_Description>Create an empty JavaScript file.</_Description>
   </TemplateConfiguration>

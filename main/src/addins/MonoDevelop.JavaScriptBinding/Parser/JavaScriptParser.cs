@@ -45,7 +45,7 @@ namespace MonoDevelop.JavaScript
 		public override ParsedDocument Parse (bool storeAst, string fileName, TextReader content, Projects.Project project = null)
 		{
 			var parseDocument = new JavaScriptParsedDocument (fileName, content);
-			
+			parseDocument.Flags |= ParsedDocumentFlags.NonSerializable;
 			return parseDocument;
 		}
 
