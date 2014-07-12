@@ -172,6 +172,21 @@
     <None Include="Templates\JS-CodeTemplates.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="JSReferences\system.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\xhr.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\browser.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\window.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\dom.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
@@ -208,5 +223,6 @@
     <Folder Include="Services\" />
     <Folder Include="DomainObjects\" />
     <Folder Include="DomainObjects\Cache\" />
+    <Folder Include="JSReferences\" />
   </ItemGroup>
 </Project>

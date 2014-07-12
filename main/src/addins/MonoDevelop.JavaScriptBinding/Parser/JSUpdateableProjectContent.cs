@@ -28,6 +28,8 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.JavaScript
 {
@@ -47,6 +49,9 @@ namespace MonoDevelop.JavaScript
 			CodeCompletionCache = new CompletionDataList ();
 
 			CodeCompletionUtility.AddDefaultKeywords (ref CodeCompletionCache);
+
+			var nativeFilesParsingTask = new Task(() => CodeCompletionUtility.AddNativeVariablesAndFunctions (ref CodeCompletionCache));
+			nativeFilesParsingTask.Start ();
 		}
 
 		public void AddOrUpdateFiles (IEnumerable<ParsedDocument> docs)

@@ -27,6 +27,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Ide.CodeCompletion;
+using System.IO;
+using System.Reflection;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.JavaScript
 {
@@ -80,6 +83,24 @@ namespace MonoDevelop.JavaScript
 
 			foreach (var token in Jurassic.Compiler.KeywordToken.Keywords) {
 				dataList.Add (new CompletionData (token.Text, string.Empty));
+			}
+		}
+
+		public static void AddNativeVariablesAndFunctions (ref CompletionDataList dataList)
+		{
+			if (dataList == null)
+				dataList = new CompletionDataList ();
+
+			string currentDir = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
+			string referencesDir = Path.Combine (currentDir, "JSReferences");
+
+			foreach (string file in Directory.GetFiles (referencesDir)) {
+				try {
+					var javaScriptDocument = new JavaScriptParsedDocument (file, File.ReadAllText (file));
+					UpdateCodeCompletion (javaScriptDocument.SimpleAst.AstNodes, ref dataList);
+				} catch (Exception ex) {
+					LoggingService.LogError (string.Format ("AddNativeVariablesAndFunctions() Parsing File {0} Failed", file), ex);
+				}
 			}
 		}
 

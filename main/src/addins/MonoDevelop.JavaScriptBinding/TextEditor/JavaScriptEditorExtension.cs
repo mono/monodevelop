@@ -190,7 +190,7 @@ namespace MonoDevelop.JavaScript
 				return null;
 
 			var wrapper = TypeSystemService.GetProjectContentWrapper (IdeApp.ProjectOperations.CurrentSelectedProject).GetExtensionObject<JSUpdateableProjectContent> ();
-			return wrapper.CodeCompletionCache; //CodeCompletionUtility.FilterCodeCompletion (wrapper.CodeCompletionCache, currentWord);
+			return wrapper.CodeCompletionCache;
 		}
 
 		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
