@@ -10,6 +10,7 @@
     It can be used to specify the accessibility of these program elements.</_Description>
     <_Category>General</_Category>
     <LanguageName>F#</LanguageName>
+    <DefaultFilename>Class.fsi</DefaultFilename>
   </TemplateConfiguration>
 
   <TemplateFiles>
