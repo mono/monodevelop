@@ -134,6 +134,8 @@ namespace MonoDevelop.Components.DockNotebook
 			tracker = new MouseTracker (this);
 			GtkWorkarounds.FixContainerLeak (this);
 
+			IdeApp.Workbench.RootWindow.FocusOutEvent += (o, args) => {};
+
 			this.notebook = notebook;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.ButtonPressMask;
@@ -387,13 +389,6 @@ namespace MonoDevelop.Components.DockNotebook
 			alloc.X += ox;
 			alloc.Y += oy;
 			return alloc;
-		}
-
-		protected override bool OnGrabBrokenEvent (EventGrabBroken evnt)
-		{
-			if (placeholderWindow != null)
-				placeholderWindow.Destroy ();
-			return base.OnGrabBrokenEvent (evnt);
 		}
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
