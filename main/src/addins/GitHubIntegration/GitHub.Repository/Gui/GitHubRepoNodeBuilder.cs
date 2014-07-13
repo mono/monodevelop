@@ -23,16 +23,64 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//using System;
-//using MonoDevelop.Ide.Gui.Components;
-//
-//namespace GitHub.Repository.Gui
-//{
-//	public class GitHubRepoNodeBuilder : TypeNodeBuilder
-//	{
+using System;
+using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Components.Commands;
+using GitHub.Repository.Commands;
+using GitHub.Repository.Services;
+using GitHub.Repository.Core;
+
+namespace GitHub.Repository.Gui
+{
+	public class GitHubRepoNodeBuilder : TypeNodeBuilder
+	{
 //		public GitHubRepoNodeBuilder ()
 //		{
 //		}
-//	}
-//}
+
+		public override Type CommandHandlerType {
+			get { return typeof(GitHubRepoNodeCommandHandler); }
+		}
+
+
+		public override string ContextMenuAddinPath {
+			get { return "/MonoDevelop/GitHubRepository/ContextMenu/GitHubPad"; }
+		}
+
+		public override Type NodeDataType {
+			get { return typeof(GitHubRepo); }
+		}
+
+		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
+		{
+			return ((GitHubRepo)dataObject).Name;
+		}
+
+		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
+		{
+			GitHubRepo repo = dataObject as GitHubRepo;
+			nodeInfo.Icon = repo.StatusIcon;
+			nodeInfo.Label = repo.Name;
+
+		}
+	}
+
+
+	class GitHubRepoNodeCommandHandler: NodeCommandHandler
+	{
+		[CommandHandler (GitHubRepoPadCommands.checkout)]
+		protected void Checkout ()
+		{
+			GitHubRepo test = CurrentNode.DataItem as GitHubRepo;
+		}
+
+		[CommandHandler (GitHubRepoPadCommands.viewProperties)]
+		protected void ViewGitHubRepoProperties ()
+		{
+			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
+			GitHubUtils.ViewProperties (repo.ORepository);
+		}
+
+	}
+}
 

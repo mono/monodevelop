@@ -57,6 +57,11 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="Providers\GitHubRepoPropertiesProvider.cs" />
     <Compile Include="Providers\IGitHubProvider.cs" />
+    <Compile Include="Services\GitHubRepo.cs" />
+    <Compile Include="NUnitAssemblyGroupConfigurationNodeBuilder.cs">
+      <DependentUpon>GitHub.Repository.addin.xml</DependentUpon>
+    </Compile>
+    <Compile Include="Services\GitHubRepoService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -72,6 +77,7 @@
     <Folder Include="Interface\" />
     <Folder Include="Gui\icons\" />
     <Folder Include="Gui\icons\light\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -111,6 +117,10 @@
       <Project>{46EEB116-B156-4216-A2CE-795F62646793}</Project>
       <Name>GitHub.Auth</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

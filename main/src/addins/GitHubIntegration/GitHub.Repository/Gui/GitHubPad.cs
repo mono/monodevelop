@@ -31,160 +31,115 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
-using pg = MonoDevelop.Components.PropertyGrid;
 using GitHub.Repository;
 using MonoDevelop.Ide.Gui.Pads;
+using MonoDevelop.Ide.Gui.Components;
+using Gtk;
+using MonoDevelop.Components;
+using Xwt.Drawing;
+using GitHub.Repository.Services;
 
 namespace GitHub.Repository.Gui
 {
 	public class GitHubPad : TreeViewPad
 	{
-		pg.PropertyGrid grid;
-		InvisibleFrame frame;
-		bool customWidget;
-		IPadWindow container;
-		DockToolbarProvider toolbarProvider = new DockToolbarProvider ();
-		Gtk.Notebook gNoteBook = new Gtk.Notebook();
+		ListStore detailsStore;
+		VPaned paned;
+		TreeView detailsTree;
+		VBox detailsPad;
 
-		internal object CommandRouteOrigin { get; set; }
-
-		public GitHubPad ()
+		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string menuPath)
 		{
-			grid = new pg.PropertyGrid ();
-			frame = new InvisibleFrame ();
-			frame.Add (grid);
+			base.Initialize (builders, options, menuPath);
 
-			frame.ShowAll ();
+			paned = new VPaned ();
+
+			VBox vbox = new VBox ();
+
+			DockItemToolbar topToolbar = Window.GetToolbar (PositionType.Top);
+			topToolbar.ShowAll ();
+
+			vbox.PackEnd (base.Control, true, true, 0);
+			vbox.FocusChain = new Gtk.Widget [] { base.Control };
+
+			paned.Pack1 (vbox, true, true);
+
+
+			Frame tf = new Frame ();
+			ScrolledWindow sw = new ScrolledWindow ();
+			detailsTree = new TreeView ();
+
+			detailsTree.HeadersVisible = true;
+			detailsTree.RulesHint = true;
+			detailsStore = new ListStore (typeof(object), typeof(string), typeof (string), typeof (string), typeof (string));
+
+			CellRendererText trtest = new CellRendererText ();
+			CellRendererText tr;
+
+			TreeViewColumn col5 = new TreeViewColumn ();
+			col5.Expand = false;
+			//			col5.Alignment = 0.5f;
+
+			col5.Widget = new ImageView (Xwt.Drawing.Image.FromResource ("pad-unit-test-light-16.png"));
+			col5.Widget.Show ();
+			tr = new CellRendererText ();
+			//			tr.Xalign = 0.5f;
+			col5.PackStart (tr, false);
+			col5.AddAttribute (tr, "markup", 4);
+			detailsTree.AppendColumn (col5);
+
+			detailsTree.Model = detailsStore;
+
+			sw.Add (detailsTree);
+			tf.Add (sw);
+			tf.ShowAll ();
 		}
 
-		public override void Initialize (IPadWindow container)
+
+		Octokit.Repository GetSelectedRepo ()
 		{
-			base.Initialize (container);
-			toolbarProvider.Attach (container.GetToolbar (Gtk.PositionType.Top));
-			grid.SetToolbarProvider (toolbarProvider);
-			this.container = container;
-			//DesignerSupport.Service.SetPad (this);
+			ITreeNavigator nav = TreeView.GetSelectedNode ();
+			if (nav == null)
+				return null;
+			return nav.DataItem as Octokit.Repository;
 		}
 
-		internal IPadWindow PadWindow {
-			get { return container; }
+		void OnGitHubRepoListChanged (object sender, EventArgs e)
+		{
+			if (testService.RootTests.Length > 0) {
+				TreeView.Clear ();
+				foreach (UnitTest t in testService.RootTests)
+					TreeView.AddChild (t);
+			}
+			else {
+				TreeView.Clear ();
+				ClearDetails ();
+			}
 		}
 
-		#region AbstractPadContent implementations
+		public void SelectTest (GitHubRepo t)
+		{
+			ITreeNavigator node = FindTestNode (t);
+			if (node != null) {
+				node.ExpandToNode ();
+				node.Selected = true;
+			}
+		}
+
+		ITreeNavigator FindTestNode (GitHubRepo t)
+		{
+			ITreeNavigator nav = TreeView.GetNodeAtObject (t);
+			if (nav != null)
+				return nav;
+			else return null;
+		}
 
 		public override Gtk.Widget Control {
-			get { return frame; }
-		}
-
-		public override void Dispose()
-		{
-			//DesignerSupport.Service.SetPad (null);
-		}
-
-		#endregion
-
-//		#region ICommandDelegatorRouter implementation
-//
-//		object ICommandDelegator.GetDelegatedCommandTarget ()
-//		{
-//			// Route the save command to the object for which we are inspecting the properties,
-//			// so pressing the Save shortcut when doing changes in the property pad will save
-//			// the document we are changing
-//			if (IdeApp.CommandService.CurrentCommand == IdeApp.CommandService.GetCommand (FileCommands.Save))
-//				return CommandRouteOrigin;
-//			else
-//				return null;
-//		}
-//
-//		#endregion
-	
-	}
-
-	class DockToolbarProvider: pg.PropertyGrid.IToolbarProvider
-	{
-		DockItemToolbar tb;
-		List<Gtk.Widget> buttons = new List<Gtk.Widget> ();
-		bool visible = true;
-
-		public DockToolbarProvider ()
-		{
-		}
-
-		public void Attach (DockItemToolbar tb)
-		{
-			if (this.tb == tb)
-				return;
-			this.tb = tb;
-			if (tb != null) {
-				tb.Visible = visible;
-				foreach (var c in tb.Children)
-					tb.Remove (c);
-				foreach (var b in buttons)
-					tb.Add (b);
-			}
-		}
-
-		#region IToolbarProvider implementation
-		public void Insert (Gtk.Widget w, int pos)
-		{
-			if (tb != null)
-				tb.Insert (w, pos);
-
-			if (pos == -1)
-				buttons.Add (w);
-			else
-				buttons.Insert (pos, w);
-		}
-
-
-		public void ShowAll ()
-		{
-			if (tb != null)
-				tb.ShowAll ();
-			else {
-				foreach (var b in buttons)
-					b.Show ();
-			}
-		}
-
-
-		public Gtk.Widget[] Children {
 			get {
-				return buttons.ToArray ();
+				return paned;
 			}
 		}
 
-
-		public bool Visible {
-			get {
-				return visible;
-			}
-			set {
-				visible = value;
-				if (tb != null)
-					tb.Visible = value;
-			}
-		}
-
-		#endregion
-	}
-
-
-	class InvisibleFrame : Gtk.Alignment
-	{
-		public InvisibleFrame ()
-			: base (0, 0, 1, 1)
-		{
-		}
-
-		public Gtk.Widget ReplaceChild (Gtk.Widget widget)
-		{
-			Gtk.Widget old = Child;
-			if (old != null)
-				Remove (old);
-			Add (widget);
-			return old;
-		}
 	}
 }
 

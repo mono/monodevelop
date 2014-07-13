@@ -37,6 +37,12 @@ using System.IO;
 
 namespace GitHub.Repository.Commands
 {
+	public enum GitHubRepoPadCommands
+	{
+		checkout,
+		viewProperties
+	}
+
 	class GitHubCommandHandler: CommandHandler
 	{
 		public GitRepository Repository {
@@ -66,7 +72,8 @@ namespace GitHub.Repository.Commands
 
 			string pathToConfig = Path.Combine (locationDescription, ".git", "config");
 			using (StreamReader sr = File.OpenText(pathToConfig))
-			{
+	
+				{
 				string s = String.Empty;
 				while ((s = sr.ReadLine()) != null)
 				{
