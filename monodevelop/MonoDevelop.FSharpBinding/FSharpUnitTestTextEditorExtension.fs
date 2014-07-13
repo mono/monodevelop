@@ -18,8 +18,6 @@ type FSharpUnitTestTextEditorExtension() =
         let loc = x.Document.Editor.Caret.Location
         let tests = ResizeArray<AbstractUnitTestTextEditorExtension.UnitTestLocation>()
 
-        let kmak = x.Document.Project.GetReferencedItems(IdeApp.Workspace.ActiveConfiguration)
-                   |> Array.ofSeq
         if x.Document.ParsedDocument = null || IdeApp.Workbench.ActiveDocument <> x.Document then tests :> IList<_> else
         match x.Document.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast ->
