@@ -1,28 +1,21 @@
-﻿//
-// JSBeautifier.cs
-//
-// Author:
-//       rekna <https://jsbeautifylib.codeplex.com/>
-//
-// Copyright (c) 2014 Rekna
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+﻿/*
+JSBeautifier.cs
+
+Author:
+     Einar Lielmanis and contributor <https://github.com/beautify-web/js-beautify>
+	 ghost6991 <https://github.com/ghost6991/Jsbeautifier>
+	 Harsimran Bath
+
+The MIT License (MIT)
+
+Copyright (c) 2007-2013 Einar Lielmanis and contributors.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Notes: Originally written in JS by Einar Lielmanis and contributors.  Converted to C# by ghost6991.  I, Harsimran, made a few changes here and there.
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -259,10 +252,10 @@ namespace MonoDevelop.JavaScript.Formatting
 				s = s.Remove (0, 1);
 			}
 
-			var defaultIndent = Opts.DefaultIndent * Opts.IndentSize;
-			while (defaultIndent  != 0) {
-				this.PreindentString += this.Opts.IndentChar;
-				defaultIndent--;
+			int tempDefSize = Opts.DefaultIndent;
+			while (tempDefSize != 0) {
+				this.PreindentString += this.IndentString;
+				tempDefSize--;
 			}
 
 			this.Input = s;
@@ -878,7 +871,8 @@ namespace MonoDevelop.JavaScript.Formatting
 			this.RestoreMode ();
 			if (this.Opts.BraceStyle == JSBraceStyle.Expand) {
 				if (this.LastText != "{")
-					this.AppendNewline ();
+					RemoveIndent ();
+				this.AppendNewline ();
 			} else {
 				if (this.LastType == "TK_START_BLOCK") {
 					if (this.JustAddedNewline)
@@ -918,8 +912,10 @@ namespace MonoDevelop.JavaScript.Formatting
 						haveNewlines = 0;
 					if (!this.Opts.PreserveNewlines)
 						haveNewlines = 1;
-					foreach (int i in Enumerable.Range(0, 2 - haveNewlines))
-						this.AppendNewline (false);
+
+					if (2 - haveNewlines > 0)
+						foreach (int i in Enumerable.Range(0, 2 - haveNewlines))
+							this.AppendNewline (false);
 				}
 				if ((this.LastText == "get" || this.LastText == "set" || this.LastText == "new") || this.LastType == "TK_WORD")
 					this.Append (" ");

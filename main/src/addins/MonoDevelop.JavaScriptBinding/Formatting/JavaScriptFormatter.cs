@@ -50,10 +50,10 @@ namespace MonoDevelop.JavaScript.Formatting
 
 		public override void OnTheFlyFormat (Ide.Gui.Document doc, int startOffset, int endOffset)
 		{
-			string textToFormat = doc.Editor.GetTextBetween (startOffset, endOffset);
+			string textToFormat = doc.Editor.GetTextBetween (startOffset, endOffset).Trim ();
 			DocumentLine currentLine = doc.Editor.GetLineByOffset (startOffset);
 			int indentLevel = 0;
-			const int defaultIndentSize = 4;
+			const int defaultIndentSize = 1;
 
 			if(currentLine != null && currentLine.PreviousLine != null) {
 				string indentString = doc.Editor.GetIndentationString (currentLine.PreviousLine.Offset);
@@ -62,16 +62,11 @@ namespace MonoDevelop.JavaScript.Formatting
 				}
 			}
 
-//			var options = new JSBeautifyOptions {
-//				IndentSize = defaultIndentSize,
-//				IndentChar = ' ',
-//				IndentLevel = indentLevel,
-//				PreserveNewlines = true
-//			};
 			var beautifier = new JSBeautifier (new JSBeautifierOptions{
-				BraceStyle = JSBraceStyle.Expand,
+				BraceStyle = JSBraceStyle.Collapse,
 				IndentSize = defaultIndentSize,
 				IndentWithTabs = true,
+				DefaultIndent = indentLevel
 			});
 			string formattedText = beautifier.Beautify (textToFormat);
 
