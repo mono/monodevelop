@@ -77,7 +77,7 @@ let b = (fun a ->
 
     
     [<Test>]
-    member x.BasicIndents() =
+    member x.``Basic Indents``() =
        // let basicOffset = getBasicOffset (localVariable)
         getIndent (doc, content, 3, 1) |> should equal 5
         getIndent (doc, content, 5, 1) |> should equal 5

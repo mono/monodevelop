@@ -18,6 +18,8 @@ type FSharpUnitTestTextEditorExtension() =
         let loc = x.Document.Editor.Caret.Location
         let tests = ResizeArray<AbstractUnitTestTextEditorExtension.UnitTestLocation>()
 
+        let kmak = x.Document.Project.GetReferencedItems(IdeApp.Workspace.ActiveConfiguration)
+                   |> Array.ofSeq
         if x.Document.ParsedDocument = null || IdeApp.Workbench.ActiveDocument <> x.Document then tests :> IList<_> else
         match x.Document.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast ->
@@ -42,8 +44,8 @@ type FSharpUnitTestTextEditorExtension() =
                                        let test = AbstractUnitTestTextEditorExtension.UnitTestLocation(range.StartLine)
                                        match symbolUse.Symbol with
                                        | :? FSharpMemberFunctionOrValue as func -> 
-                                            let typeName = func.EnclosingEntity.FullName
-                                            let methName = func.LogicalName
+                                            let typeName = func.EnclosingEntity.QualifiedName
+                                            let methName = func.CompiledName
                                             let isIgnored = func.Attributes |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
                                             //add test cases
                                             let testCases = func.Attributes |> Seq.filter (hasAttributeNamed "NUnit.Framework.TestCaseAttribute")
@@ -51,11 +53,12 @@ type FSharpUnitTestTextEditorExtension() =
                                             |> Seq.iter (fun tc -> let ctorArgs = tc.ConstructorArguments |> Seq.cast<string>
                                                                    let fullArgs = "(" + (ctorArgs |> String.concat ", ") + ")"
                                                                    test.TestCases.Add fullArgs )
-                                            test.UnitTestIdentifier <- typeName + "." + Lexhelp.Keywords.QuoteIdentifierIfNeeded methName
+                                            test.UnitTestIdentifier <- typeName + "." + methName
                                             test.IsIgnored <- isIgnored
+
                                             Some test
                                         | :? FSharpEntity as entity ->
-                                            let typeName = entity.FullName
+                                            let typeName = entity.QualifiedName
                                             let isIgnored = entity.Attributes |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")
                                             test.UnitTestIdentifier <- typeName
                                             test.IsIgnored <- isIgnored
