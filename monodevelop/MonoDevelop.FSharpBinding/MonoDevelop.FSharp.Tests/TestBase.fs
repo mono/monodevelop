@@ -1,4 +1,4 @@
-﻿namespace MonoDevelop.FSharp.Tests
+﻿namespace MonoDevelopTests
 open System
 open System.Reflection
 open System.IO

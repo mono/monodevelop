@@ -1,4 +1,4 @@
-﻿namespace MonoDevelop.FSharp.Tests
+﻿namespace MonoDevelopTests
 open System
 open Mono.Addins
 open MonoDevelop.Ide.Gui
