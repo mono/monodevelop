@@ -746,6 +746,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// If command checks are flowing through this view, it means the view's notebook
 			// is the active notebook.
+			if (!(Toplevel is Gtk.Window))
+				return null;
+
 			if (((Gtk.Window)Toplevel).HasToplevelFocus)
 				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
 
