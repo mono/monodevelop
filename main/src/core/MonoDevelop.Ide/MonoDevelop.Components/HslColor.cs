@@ -98,7 +98,7 @@ namespace MonoDevelop.Components
 			hsl.ToRgb (out r, out g, out b);
 			return new Cairo.Color (r, g, b);
 		}
-		
+
 		public static implicit operator HslColor (Color color)
 		{
 			return new HslColor (color);
@@ -108,6 +108,22 @@ namespace MonoDevelop.Components
 		{
 			return new HslColor (color);
 		}
+
+		#if MAC
+
+		public static implicit operator HslColor (AppKit.NSColor color)
+		{
+			return new HslColor ((double)color.RedComponent, (double)color.GreenComponent, (double)color.BlueComponent);
+		}
+
+		public static implicit operator AppKit.NSColor (HslColor hsl)
+		{
+			return AppKit.NSColor.FromCalibratedHsba ((nfloat)hsl.H, (nfloat)hsl.S, (nfloat)hsl.L, (nfloat)1.0);
+		}
+
+
+		#endif
+
 		
 		public static HslColor FromHsl (double h, double s, double l)
 		{
