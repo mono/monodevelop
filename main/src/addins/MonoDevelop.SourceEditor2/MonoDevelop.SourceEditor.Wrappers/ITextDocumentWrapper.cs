@@ -117,7 +117,8 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		IReadonlyTextDocument ITextDocument.CreateDocumentSnapshot ()
 		{
-			throw new NotImplementedException ();
+			// TODO: Implement more efficient rope based data structure for document snapshotting
+			return SimpleReadonlyDocument.CreateReadonlyDocumentAsync (new StringTextSource (document.Text, document.Encoding, document.UseBom), document.FileName, document.MimeType).Result;
 		}
 
 		string ITextDocument.Text {
