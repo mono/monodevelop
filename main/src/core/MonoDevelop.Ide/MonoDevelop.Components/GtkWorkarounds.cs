@@ -33,6 +33,7 @@ using System.Reflection.Emit;
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor.Highlighting;
+using System.Text.RegularExpressions;
 
 namespace MonoDevelop.Components
 {
@@ -971,6 +972,16 @@ namespace MonoDevelop.Components
 
 		[DllImport(PangoUtil.LIBGTKGLUE, CallingConvention = CallingConvention.Cdecl)]
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
+
+		const string urlRegexStr = @"(http|ftp)s?\:\/\/[\w\d\.,;_/\-~%@()+:?&^=#!]*[\w\d/]";
+		static readonly Regex UrlRegex  = new Regex (urlRegexStr, RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
+		public static string MarkupLinks (string text)
+		{
+			if (GtkMinorVersion < 18)
+				return text;
+			return UrlRegex.Replace (text, MatchToUrl);
+		}
 
 		static string MatchToUrl (System.Text.RegularExpressions.Match m)
 		{
