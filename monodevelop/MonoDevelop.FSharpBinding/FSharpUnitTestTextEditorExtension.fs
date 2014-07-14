@@ -38,10 +38,8 @@ type FSharpUnitTestTextEditorExtension() =
                 let refs = dnp.GetReferencedAssemblies(MonoDevelop.getConfig()) |> Seq.toArray
                 refs |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
             | _ -> false
-
-        if x.Document.ParsedDocument = null ||
-            IdeApp.Workbench.ActiveDocument <> x.Document || 
-            not hasNUnitReference then tests :> IList<_> else
+        let activeView = x.Document.Window
+        if x.Document.ParsedDocument = null || not hasNUnitReference then tests :> IList<_> else
 
         match x.Document.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast ->
