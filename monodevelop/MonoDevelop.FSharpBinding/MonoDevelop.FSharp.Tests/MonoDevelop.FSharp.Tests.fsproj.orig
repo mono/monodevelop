@@ -138,6 +138,7 @@
     <Compile Include="DebuggerExpressionResolver.fs" />
     <Compile Include="Checker.fs" />
     <Compile Include="IndentationTrackerTests.fs" />
+    <Compile Include="FSharpUnitTestTextEditorExtensionTests.fs" />
   </ItemGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
