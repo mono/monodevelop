@@ -60,6 +60,7 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -167,6 +168,8 @@
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\GenericPreviewVisualizer.cs" />
     <Compile Include="MonoDevelop.Debugger.Converters\LocationConverters.cs" />
     <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\LocationPreviewVisualizer.cs" />
+    <Compile Include="MonoDevelop.Debugger.Converters\BezierPathConverter.cs" />
+    <Compile Include="MonoDevelop.Debugger.PreviewVisualizers\BezierPathPreviewVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

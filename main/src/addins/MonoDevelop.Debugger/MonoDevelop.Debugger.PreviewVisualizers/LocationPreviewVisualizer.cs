@@ -53,7 +53,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 			mainBox.PackStart (new Label (GettextCatalog.GetString ("Loading...")));
 			using (var stream = new MemoryStream ()) {
 				var cancelSource = new CancellationTokenSource ();
-				var timer = new Timer (delegate {
+				new Timer (delegate {
 					cancelSource.Cancel ();
 				}, null, 4000, System.Threading.Timeout.Infinite);
 				WebRequestHelper.GetResponseAsync (
