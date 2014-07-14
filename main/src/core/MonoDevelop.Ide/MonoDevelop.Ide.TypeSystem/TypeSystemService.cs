@@ -1113,7 +1113,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				lock (updateContentLock) {
                     LoadLazyProject ();
-                    Content = Content.AddOrUpdateFiles (docs.Select (d => d.ParsedFile));
+
+					if(docs.Any (i => i is IUnresolvedFile))
+                    	Content = Content.AddOrUpdateFiles (docs.Select (d => d.ParsedFile));
+
                     foreach (var t in extensionObjects.Values.OfType<IUpdateableProjectContent> ())
                         t.AddOrUpdateFiles (docs);
 					ClearCachedCompilations ();
