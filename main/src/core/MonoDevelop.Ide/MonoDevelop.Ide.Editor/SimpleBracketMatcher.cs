@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Editor
 		const string closingBrackets = ")]}>";
 
 
-		public static int GetMatchingBracketOffset (TextEditor document, int offset)
+		public static int GetMatchingBracketOffset (IReadonlyTextDocument document, int offset)
 		{
 			if (offset < 0 || offset >= document.Length)
 				return -1;
@@ -56,12 +56,12 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 
-		static string[] GetList (TextEditor document, string name)
+		static string[] GetList (IReadonlyTextDocument document, string name)
 		{
 			return TextEditorFactory.GetSyntaxProperties (document.MimeType, name);
 		}
 
-		static int StartsWithListMember (TextEditor document, IList<string> list, int offset)
+		static int StartsWithListMember (IReadonlyTextDocument document, IList<string> list, int offset)
 		{
 			for (int i = 0; i < list.Count; i++) {
 				string item = list[i];
@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Editor
 			return -1;
 		}
 
-		static int SearchMatchingBracketForward (TextEditor document, int offset, char openBracket, char closingBracket)
+		static int SearchMatchingBracketForward (IReadonlyTextDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool isInBlockComment = false;
 			bool isInLineComment  = false;
@@ -140,7 +140,7 @@ namespace MonoDevelop.Ide.Editor
 			return -1;
 		}
 
-		static bool StartsInLineComment (TextEditor document, int offset)
+		static bool StartsInLineComment (IReadonlyTextDocument document, int offset)
 		{
 			IList<string> lineComments = GetList (document, "LineComment");
 			var line = document.GetLineByOffset (offset);
@@ -151,7 +151,7 @@ namespace MonoDevelop.Ide.Editor
 			return false;
 		}
 
-		static int GetLastSourceCodePosition (TextEditor document, int lineOffset)
+		static int GetLastSourceCodePosition (IReadonlyTextDocument document, int lineOffset)
 		{
 			var line = document.GetLineByOffset (lineOffset);
 			bool isInBlockComment = false;
@@ -195,7 +195,7 @@ namespace MonoDevelop.Ide.Editor
 			return lineOffset;
 		}
 
-		static int SearchMatchingBracketBackward (TextEditor document, int offset, char openBracket, char closingBracket)
+		static int SearchMatchingBracketBackward (IReadonlyTextDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool isInBlockComment = false;
 			bool isInLineComment  = false;

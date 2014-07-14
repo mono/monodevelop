@@ -164,16 +164,16 @@ namespace MonoDevelop.AspNet.WebForms
 	{
 		bool SupportsLanguage (string language);
 		
-		ParsedDocument BuildDocument (DocumentInfo info, TextEditor textEditorData);
+		ParsedDocument BuildDocument (DocumentInfo info, MonoDevelop.Ide.Editor.TextEditor textEditorData);
 		
-		ICompletionWidget CreateCompletionWidget (TextEditor realEditor, DocumentContext realContext, LocalDocumentInfo localInfo);
+		ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, LocalDocumentInfo localInfo);
 		
-		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditor textEditorData, string expressionText, string textAfterCaret, bool isExpression);
+		LocalDocumentInfo BuildLocalDocument (DocumentInfo info, MonoDevelop.Ide.Editor.TextEditor textEditorData, string expressionText, string textAfterCaret, bool isExpression);
 		
-		ICompletionDataList HandlePopupCompletion (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo);
-		ICompletionDataList HandleCompletion (TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
-		ParameterDataProvider HandleParameterCompletion (TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
-		bool GetParameterCompletionCommandOffset (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
+		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo);
+		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
+		ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
+		bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
 	}
 	
 	public static class LanguageCompletionBuilderService

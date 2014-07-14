@@ -36,7 +36,6 @@ using System.Linq;
 
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using Mono.TextEditor;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
@@ -45,6 +44,7 @@ using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 using System.Reflection;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -288,7 +288,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return p != null? p.Value as string : null;
 		}
 		
-		public void AddRegisterDirective (WebFormsPageInfo.RegisterDirective directive, TextEditorData editor, bool preserveCaretPosition)
+		public void AddRegisterDirective (WebFormsPageInfo.RegisterDirective directive, TextEditor editor, bool preserveCaretPosition)
 		{
 			if (doc == null)
 				return;
@@ -300,16 +300,17 @@ namespace MonoDevelop.AspNet.WebForms
 			doc.Info.RegisteredTags.Add (directive);
 			
 			var line = Math.Max (node.Region.EndLine, node.Region.BeginLine);
-			var pos = editor.Document.LocationToOffset (line, editor.Document.GetLine (line - 1).Length);
+			var pos = editor.LocationToOffset (line, editor.GetLine (line - 1).Length);
 			if (pos < 0)
 				return;
 			
 			using (var undo = editor.OpenUndoGroup ()) {
-				var oldCaret = editor.Caret.Offset;
-				
-				var inserted = editor.Insert (pos, editor.EolMarker + directive);
+				var oldCaret = editor.CaretOffset;
+				var text = editor.FormatString (pos, editor.EolMarker + directive);
+				var inserted = text.Length;
+				editor.InsertText (pos, text);
 				if (preserveCaretPosition) {
-					editor.Caret.Offset = (pos < oldCaret)? oldCaret + inserted : oldCaret;
+					editor.CaretOffset = (pos < oldCaret)? oldCaret + inserted : oldCaret;
 				}
 			}
 		}

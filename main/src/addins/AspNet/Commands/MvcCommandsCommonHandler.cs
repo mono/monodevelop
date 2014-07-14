@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.Projects;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -44,7 +45,7 @@ namespace MonoDevelop.AspNet.Commands
 				return;
 			}
 
-			var currentLocation = doc.Editor.Caret.Location;
+			var currentLocation = doc.Editor.CaretLocation;
 			var topLevelType = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
 			if (topLevelType == null || !topLevelType.Name.EndsWith ("Controller", StringComparison.Ordinal)) {
 				info.Enabled = info.Visible = false;
@@ -52,7 +53,7 @@ namespace MonoDevelop.AspNet.Commands
 			}
 
 			var correctReturnTypes = new [] { "ActionResult", "ViewResultBase", "ViewResult", "PartialViewResult" };
-			var member = doc.ParsedDocument.GetMember (currentLocation) as IUnresolvedMethod;
+			var member = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)) as IUnresolvedMethod;
 			if (member == null || !member.IsPublic || correctReturnTypes.All (t => t != member.ReturnType.ToString ()))
 				info.Enabled = info.Visible = false;
 		}

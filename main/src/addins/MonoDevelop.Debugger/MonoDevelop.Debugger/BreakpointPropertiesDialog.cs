@@ -358,8 +358,8 @@ namespace MonoDevelop.Debugger
 
 				if (IdeApp.Workbench.ActiveDocument != null) {
 					breakpointLocation.Update (IdeApp.Workbench.ActiveDocument.FileName,
-						IdeApp.Workbench.ActiveDocument.Editor.Caret.Line,
-						IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
+						IdeApp.Workbench.ActiveDocument.Editor.CaretLine,
+						IdeApp.Workbench.ActiveDocument.Editor.CaretColumn);
 					entryLocationFile.Text = breakpointLocation.ToString ();
 					stopOnLocation.Active = true;
 				}

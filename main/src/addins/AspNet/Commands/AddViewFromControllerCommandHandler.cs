@@ -28,6 +28,7 @@ using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using MonoDevelop.AspNet.Projects;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -42,9 +43,9 @@ namespace MonoDevelop.AspNet.Commands
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			var project = (AspNetAppProject)doc.Project;
-			var currentLocation = doc.Editor.Caret.Location;
+			var currentLocation = doc.Editor.CaretLocation;
 
-			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation).Name;
+			string controllerName = doc.ParsedDocument.GetTopLevelTypeDefinition (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
 			int pos = controllerName.LastIndexOf ("Controller", StringComparison.Ordinal);
 			if (pos > 0)
 				controllerName = controllerName.Remove (pos);

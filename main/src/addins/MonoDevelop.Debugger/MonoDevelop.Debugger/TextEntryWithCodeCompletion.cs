@@ -150,6 +150,11 @@ namespace MonoDevelop.Debugger
 			return Text.Substring (startOffset, endOffset - startOffset);
 		}
 
+		public void AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
+
 		public char GetChar (int offset)
 		{
 			if (offset >= Text.Length)
@@ -213,6 +218,9 @@ namespace MonoDevelop.Debugger
 		public int CaretOffset {
 			get {
 				return gtkEntry.Position;
+			}
+			set {
+				gtkEntry.Position = value;
 			}
 		}
 

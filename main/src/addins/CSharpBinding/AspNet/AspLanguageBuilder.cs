@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Mono.TextEditor;
 using MonoDevelop.AspNet.WebForms;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Ide.CodeCompletion;
@@ -38,8 +37,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Parser;
 using System.IO;
 using ICSharpCode.NRefactory.Completion;
-using MonoDevelop.AspNet.StateEngine;
-using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 

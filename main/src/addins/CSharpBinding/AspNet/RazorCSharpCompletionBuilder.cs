@@ -27,9 +27,9 @@
 using System;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.AspNet.Razor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Completion
 {

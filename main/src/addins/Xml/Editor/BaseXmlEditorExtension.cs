@@ -37,7 +37,6 @@ using Gtk;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 
-using Mono.TextEditor;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.DesignerSupport;
@@ -83,15 +82,13 @@ namespace MonoDevelop.Xml.Editor
 			base.Initialize ();
 
 			UpdateOwnerProjects ();
-			var parser = new Parser (CreateRootState (), false);
-			tracker = new DocumentStateTracker<Parser> (parser, Editor);
+			var parser = new XmlParser (CreateRootState (), false);
+			tracker = new DocumentStateTracker<XmlParser> (parser, Editor);
 			DocumentContext.DocumentParsed += UpdateParsedDocument;
 			Editor.CaretPositionChanged += HandleCaretPositionChanged;
+
 			if (DocumentContext.ParsedDocument != null) {
 				lastCU = DocumentContext.ParsedDocument;
-			
-			if (Document.ParsedDocument != null) {
-				lastCU = Document.ParsedDocument;
 				OnParsedDocumentUpdated ();
 			}
 
@@ -103,7 +100,7 @@ namespace MonoDevelop.Xml.Editor
 
 		void HandleProjectChanged (object sender, ProjectFileEventArgs e)
 		{
-			if (e.Any (f => f.ProjectFile.FilePath == Document.FileName))
+			if (e.Any (f => f.ProjectFile.FilePath == DocumentContext.Name))
 				UpdateOwnerProjects ();
 		}
 
@@ -132,7 +129,7 @@ namespace MonoDevelop.Xml.Editor
 
 		void UpdateParsedDocument (object sender, EventArgs args)
 		{
-			lastCU = Document.ParsedDocument;
+			lastCU = DocumentContext.ParsedDocument;
 			OnParsedDocumentUpdated ();
 		}
 
@@ -145,7 +142,7 @@ namespace MonoDevelop.Xml.Editor
 				base.Dispose ();
 			}
 
-			Document.DocumentParsed -= UpdateParsedDocument;
+			DocumentContext.DocumentParsed -= UpdateParsedDocument;
 
 			if (IdeApp.Workspace != null) {
 				IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
@@ -446,9 +443,9 @@ namespace MonoDevelop.Xml.Editor
 
 					using (var undo = buf.OpenUndoGroup ()) {
 
-						buf.InsertText (buf.CursorPosition, tag);
+						buf.InsertText (buf.CaretOffset, tag);
 
-						buf.CursorPosition -= tag.Length;
+						buf.CaretOffset -= tag.Length;
 
 					}
 

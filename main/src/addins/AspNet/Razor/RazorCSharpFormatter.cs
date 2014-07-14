@@ -36,7 +36,7 @@ namespace MonoDevelop.AspNet.Razor
 		public override bool SupportsOnTheFlyFormatting { get { return true; } }
 		public override bool SupportsCorrectingIndent { get { return true; } }
 
-		public override void CorrectIndenting (Projects.Policies.PolicyContainer policyParent,
+		public override void CorrectIndenting (PolicyContainer policyParent,
 			IEnumerable<string> mimeTypeChain, TextEditor data, int line)
 		{
 		}

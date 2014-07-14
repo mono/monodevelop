@@ -87,7 +87,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			ResolveResult resolveResult;
 			AstNode node;
 			doc.TryResolveAt (location, out resolveResult, out node);
-			return ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc, node, ref resolveResult);
+			return ResolveCommandHandler.GetPossibleNamespaces (doc.Editor, doc.Editor.CaretLocation, doc, node, ref resolveResult);
 		}
 
 		[Test]

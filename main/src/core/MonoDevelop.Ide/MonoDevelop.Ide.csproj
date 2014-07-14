@@ -2744,7 +2744,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
-<<<<<<< HEAD
     <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
@@ -2795,7 +2794,6 @@
     <Compile Include="MonoDevelop.Ide.Editor\InsertionModeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\CompletionTextEditorExtension.cs" />
-=======
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebook.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\PlaceholderWindow.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\TabStrip.cs" />
@@ -2803,7 +2801,6 @@
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
->>>>>>> xs6
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
@@ -2811,7 +2808,6 @@
     <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
-<<<<<<< HEAD
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IUnitTestMarker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ChunkStyle.cs" />
@@ -2827,7 +2823,6 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\Usage.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditorFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\AutoSave.cs" />
-=======
     <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
     <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
@@ -2839,7 +2834,6 @@
     <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
->>>>>>> xs6
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

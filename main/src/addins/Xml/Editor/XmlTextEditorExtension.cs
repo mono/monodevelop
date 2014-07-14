@@ -32,8 +32,6 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 
-using Mono.TextEditor;
-
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -719,7 +717,7 @@ namespace MonoDevelop.Xml.Editor
 
 				try {
 
-					IdeApp.Workbench.OpenDocument (stylesheetFileName, Document.Project);
+					IdeApp.Workbench.OpenDocument (stylesheetFileName, DocumentContext.Project);
 
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not open document.", ex);
@@ -757,7 +755,7 @@ namespace MonoDevelop.Xml.Editor
 					string schemaFileName = schemaObject.SourceUri.Replace ("file:/", String.Empty);
 					IdeApp.Workbench.OpenDocument (
 					    schemaFileName,
-						Document.Project,
+						DocumentContext.Project,
 					    Math.Max (1, schemaObject.LineNumber),
 					    Math.Max (1, schemaObject.LinePosition));
 				}

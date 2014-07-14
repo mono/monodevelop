@@ -30,14 +30,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-<<<<<<< HEAD
 using MonoDevelop.Components;
-=======
 using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.Ide.Gui;
->>>>>>> xs6
 
 namespace MonoDevelop.Ide
 {

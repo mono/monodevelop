@@ -1003,8 +1003,8 @@ namespace MonoDevelop.Ide.Gui
 			var dp = new DocumentUserPrefs ();
 			dp.FileName = FileService.AbsoluteToRelativePath (args.Item.BaseDirectory, document.FileName);
 			if (document.Editor != null) {
-				dp.Line = document.Editor.Caret.Column;
-				dp.Column = document.Editor.Caret.Column;
+				dp.Line = document.Editor.CaretLine;
+				dp.Column = document.Editor.CaretColumn;
 			}
 			return dp;
 		}

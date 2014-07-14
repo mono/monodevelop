@@ -30,6 +30,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using ICSharpCode.NRefactory;
 
 namespace MonoDevelop.AspNet.Commands
 {
@@ -43,7 +44,7 @@ namespace MonoDevelop.AspNet.Commands
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
-			var currentLocation = doc.Editor.Caret.Location;
+			var currentLocation = doc.Editor.CaretLocation;
 
 			var controller = doc.ParsedDocument.GetTopLevelTypeDefinition (currentLocation);
 			string controllerName = controller.Name;
@@ -53,7 +54,7 @@ namespace MonoDevelop.AspNet.Commands
 
 			var baseDirectory = doc.FileName.ParentDirectory.ParentDirectory;
 
-			string actionName = doc.ParsedDocument.GetMember (currentLocation).Name;
+			string actionName = doc.ParsedDocument.GetMember (new TextLocation (currentLocation.Line, currentLocation.Column)).Name;
 			var viewFoldersPaths = new [] {
 				baseDirectory.Combine ("Views", controllerName),
 				baseDirectory.Combine ("Views", "Shared")
