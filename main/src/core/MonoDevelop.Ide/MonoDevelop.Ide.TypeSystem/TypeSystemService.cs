@@ -1112,10 +1112,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void AddOrUpdateFiles (params ParsedDocument[] docs)
 			{
 				lock (updateContentLock) {
-					LoadLazyProject ();
-					Content = Content.AddOrUpdateFiles (docs.Select (d => d.ParsedFile));
-					foreach (var t in extensionObjects.Values.OfType<IUpdateableProjectContent> ())
-						t.AddOrUpdateFiles (docs);
+                    LoadLazyProject ();
+
+					if(docs.Any (i => i is IUnresolvedFile))
+                    	Content = Content.AddOrUpdateFiles (docs.Select (d => d.ParsedFile));
+
+                    foreach (var t in extensionObjects.Values.OfType<IUpdateableProjectContent> ())
+                        t.AddOrUpdateFiles (docs);
 					ClearCachedCompilations ();
 					WasChanged = true;
 				}
