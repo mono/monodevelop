@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
     <RootNamespace>MonoDevelop.Ide</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -106,8 +107,8 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="MonoMac" Condition=" '$(Configuration)' == 'DebugMac' ">
-      <HintPath>..\..\..\external\monomac\src\MonoMac.dll</HintPath>
+    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' ">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -762,9 +763,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="branding\AboutImage.png">
       <LogicalName>AboutImage.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="branding\SplashScreen.png">
-      <LogicalName>SplashScreen.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\popup-close-16.png">
       <LogicalName>popup-close-light-16.png</LogicalName>
@@ -1955,6 +1953,18 @@
     <EmbeddedResource Include="icons\light\spinner-18-5%402x.png">
       <LogicalName>spinner-light-18-5@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-16.png">
+      <LogicalName>catchpoint-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-16%402x.png">
+      <LogicalName>catchpoint-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-disabled-16.png">
+      <LogicalName>catchpoint-disabled-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-disabled-16%402x.png">
+      <LogicalName>catchpoint-disabled-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -2007,7 +2017,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewLayoutDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AboutMonoDevelopTabPage.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\VersionInformationTabPage.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SplashScreen.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\TipOfTheDay.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddinLoadErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildPanel.cs" />
@@ -2633,7 +2642,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDocDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DockNotebook.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />
@@ -2736,6 +2744,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
+<<<<<<< HEAD
     <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
     <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
@@ -2786,11 +2795,23 @@
     <Compile Include="MonoDevelop.Ide.Editor\InsertionModeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeOptions.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\CompletionTextEditorExtension.cs" />
+=======
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebook.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\PlaceholderWindow.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\TabStrip.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\TabEventArgs.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
+>>>>>>> xs6
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
+<<<<<<< HEAD
     <Compile Include="MonoDevelop.Ide.Editor.Extension\TextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\IUnitTestMarker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ChunkStyle.cs" />
@@ -2806,6 +2827,19 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\Usage.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TextEditorFactory.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\AutoSave.cs" />
+=======
+    <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDServicesMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDSubMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\ObjcHelper.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Util.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
+>>>>>>> xs6
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2848,11 +2882,7 @@
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
-    <Folder Include="MonoDevelop.Ide.Editor\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Extension\" />
-    <Folder Include="MonoDevelop.Ide.Editor.Highlighting\" />
-    <Folder Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\" />
-  </ItemGroup>
+ </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

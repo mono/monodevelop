@@ -475,6 +475,7 @@ namespace MonoDevelop.Ide.Projects
 					if (!item.Create (project, project, path, titem.Language, filename))
 						return;
 				} catch (Exception ex) {
+					LoggingService.LogError ("Error creating file", ex);
 					MessageService.ShowException (ex);
 					return;
 				}

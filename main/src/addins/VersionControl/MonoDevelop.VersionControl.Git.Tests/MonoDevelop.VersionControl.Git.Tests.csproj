@@ -11,6 +11,7 @@
     <AssemblyName>MonoDevelop.VersionControl.Git.Tests</AssemblyName>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -76,9 +77,9 @@
       <Project>{849AE05D-0058-4A8C-A0E8-77DC6BB12E52}</Project>
       <Name>Sharpen.Unix</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
-      <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
-      <Name>GuiUnit_NET_4_0</Name>
+    <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
+      <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_5</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

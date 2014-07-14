@@ -816,6 +816,17 @@ namespace MonoDevelop.Ide.Gui
 			Assert.AreEqual ("ID11Tag", output);
 		}
 
+		/// <summary>
+		/// Bug 21121 - Aggressive completion for delegates
+		/// </summary>
+		[Test]
+		public void TestBug21121 ()
+		{
+			string output = RunSimulation ("", "d)", true, true, false, "d", "delegate ()");
+			Assert.AreEqual ("d", output);
+		}
+
+
 		[TestFixtureSetUp] 
 		public void SetUp()
 		{

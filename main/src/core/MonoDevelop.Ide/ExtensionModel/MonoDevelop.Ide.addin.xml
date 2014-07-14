@@ -265,7 +265,7 @@
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAll" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab" />
 		<SeparatorItem id = "CloseSeparator" />
@@ -275,6 +275,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" />
+		<SeparatorItem id = "ToggleSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NextNotebook" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.PreviousNotebook" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ExecutionCommandEditors">

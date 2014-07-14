@@ -40,8 +40,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakePackageRepository FakeActiveRepository = new FakePackageRepository ();
 
+		public Func<IPackageRepository> GetActiveRepositoryAction;
+
 		public virtual IPackageRepository ActiveRepository {
-			get { return FakeActiveRepository; }
+			get {
+				if (GetActiveRepositoryAction != null) {
+					return GetActiveRepositoryAction ();
+				}
+				return FakeActiveRepository;
+			}
 		}
 
 		public FakePackageRepository FakeRecentPackageRepository = new FakePackageRepository ();
@@ -67,8 +74,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public FakePackageRepository FakeAggregateRepository = new FakePackageRepository ();
 
+		public Func<IPackageRepository> CreateAggregateRepositoryAction;
+
 		public IPackageRepository CreateAggregateRepository ()
 		{
+			if (CreateAggregateRepositoryAction != null) {
+				return CreateAggregateRepositoryAction ();
+			}
 			return FakeAggregateRepository;
 		}
 

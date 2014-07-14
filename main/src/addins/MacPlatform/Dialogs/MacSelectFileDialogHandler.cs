@@ -26,16 +26,16 @@
 
 using System;
 using System.Text;
-using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
+
+using Foundation;
+using CoreGraphics;
+using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 
@@ -53,7 +53,7 @@ namespace MonoDevelop.MacIntegration
 				if (data.Action == Gtk.FileChooserAction.Save) {
 					panel = new NSSavePanel ();
 				} else {
-					panel = new NSOpenPanel () {
+					panel = new NSOpenPanel {
 						CanChooseDirectories = directoryMode,
 						CanChooseFiles = !directoryMode,
 					};
@@ -89,10 +89,7 @@ namespace MonoDevelop.MacIntegration
 				 return openPanel.Urls.Select (u => (FilePath) u.Path).ToArray ();
 			} else {
 				var url = panel.Url;
-				if (url != null)
-					 return new FilePath[] { panel.Url.Path };
-				else
-					return new FilePath[0];
+				return url != null ? new FilePath[] { panel.Url.Path } : new FilePath[0];
 			}
 		}
 		
@@ -122,7 +119,7 @@ namespace MonoDevelop.MacIntegration
 			var mimetypes = filter.MimeTypes == null || filter.MimeTypes.Count == 0?
 				null : filter.MimeTypes;
 			
-			return (NSSavePanel sender, NSUrl url) => {
+			return (sender, url) => {
 				//never show non-file URLs
 				if (!url.IsFileUrl)
 					return false;
@@ -137,9 +134,9 @@ namespace MonoDevelop.MacIntegration
 					return true;
 				
 				if (mimetypes != null) {
-					var mimetype = MonoDevelop.Ide.DesktopService.GetMimeTypeForUri (path);
+					var mimetype = DesktopService.GetMimeTypeForUri (path);
 					if (mimetype != null) {
-						var chain = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (mimetype);
+						var chain = DesktopService.GetMimeTypeInheritanceChain (mimetype);
 						if (mimetypes.Any (m => chain.Any (c => c == m)))
 							return true;
 					}
@@ -182,10 +179,10 @@ namespace MonoDevelop.MacIntegration
 				return null;
 			}
 			
-			var popup = new NSPopUpButton (new RectangleF (0, 6, 200, 18), false);
+			var popup = new NSPopUpButton (new CGRect (0, 6, 200, 18), false);
 			popup.SizeToFit ();
 			var rect = popup.Frame;
-			popup.Frame = new RectangleF (rect.X, rect.Y, 200, rect.Height);
+			popup.Frame = new CGRect (rect.X, rect.Y, 200, rect.Height);
 			
 			foreach (var filter in filters)
 				popup.AddItem (filter.Name);
@@ -197,7 +194,7 @@ namespace MonoDevelop.MacIntegration
 			panel.ShouldEnableUrl = GetFileFilter (filters[defaultIndex]);
 			
 			popup.Activated += delegate {
-				panel.ShouldEnableUrl = GetFileFilter (filters[popup.IndexOfSelectedItem]);
+				panel.ShouldEnableUrl = GetFileFilter (filters[(int)popup.IndexOfSelectedItem]);
 				panel.Display ();
 			};
 			
@@ -206,7 +203,7 @@ namespace MonoDevelop.MacIntegration
 		
 		internal static NSView CreateLabelledDropdown (string label, float popupWidth, out NSPopUpButton popup)
 		{
-			popup = new NSPopUpButton (new RectangleF (0, 6, popupWidth, 18), false) {
+			popup = new NSPopUpButton (new CGRect (0, 6, popupWidth, 18), false) {
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
 			};
 			return LabelControl (label, 200, popup);
@@ -214,12 +211,12 @@ namespace MonoDevelop.MacIntegration
 		
 		internal static NSView LabelControl (string label, float controlWidth, NSControl control)
 		{
-			var view = new NSView (new RectangleF (0, 0, controlWidth, 28)) {
+			var view = new NSView (new CGRect (0, 0, controlWidth, 28)) {
 				AutoresizesSubviews = true,
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.MaxXMargin,
 			};
 			
-			var text = new NSTextField (new RectangleF (0, 6, 100, 20)) {
+			var text = new NSTextField (new CGRect (0, 6, 100, 20)) {
 				StringValue = label,
 				DrawsBackground = false,
 				Bordered = false,
@@ -227,17 +224,17 @@ namespace MonoDevelop.MacIntegration
 				Selectable = false
 			};
 			text.SizeToFit ();
-			float textWidth = text.Frame.Width;
-			float textHeight = text.Frame.Height;
+			var textWidth = text.Frame.Width;
+			var textHeight = text.Frame.Height;
 			
 			control.SizeToFit ();
 			var rect = control.Frame;
-			float controlHeight = rect.Height;
-			control.Frame = new RectangleF (textWidth + 5, 0, controlWidth, rect.Height);
+			var controlHeight = rect.Height;
+			control.Frame = new CGRect (textWidth + 5, 0, controlWidth, rect.Height);
 			
 			rect = view.Frame;
 			rect.Width = control.Frame.Width + textWidth + 5;
-			rect.Height = Math.Max (controlHeight, textHeight);
+			rect.Height = NMath.Max (controlHeight, textHeight);
 			view.Frame = rect;
 			
 			view.AddSubview (text);

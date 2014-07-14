@@ -669,16 +669,16 @@ namespace MonoDevelop.Ide
 				documentList.NextItem (true);
 
 			documentList.RequestClose += delegate(object sender, DocumentList.RequestActionEventArgs e) {
-				try {
-					if (e.SelectItem) {
-						if (documentList.ActiveItem.Tag is Pad) {
-							((Pad)documentList.ActiveItem.Tag).BringToFront (true);
-						} else {
-							((MonoDevelop.Ide.Gui.Document)documentList.ActiveItem.Tag).Select ();
-						}
-					}
-				} finally {
-					DestroyWindow ();
+				object item = e.SelectItem ? documentList.ActiveItem.Tag : null;
+				DestroyWindow();
+
+				// The selected document has to be focused *after* this window is destroyed, becasuse the window
+				// destruction focuses its parent window.
+				if (item != null) {
+					if (item is Pad)
+						((Pad)item).BringToFront(true);
+					else
+						((MonoDevelop.Ide.Gui.Document)item).Select();
 				}
 			};
 			

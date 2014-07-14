@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.CSharpBinding.Autotools</AssemblyName>
     <RootNamespace>Autotools</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -63,11 +64,6 @@
     <ProjectReference Include="..\..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
       <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
       <Name>MonoDevelop.Refactoring</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\AspNet\MonoDevelop.AspNet\MonoDevelop.AspNet.csproj">
-      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
-      <Name>MonoDevelop.AspNet</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">

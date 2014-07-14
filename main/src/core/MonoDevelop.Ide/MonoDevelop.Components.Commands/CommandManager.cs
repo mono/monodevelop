@@ -57,8 +57,10 @@ namespace MonoDevelop.Components.Commands
 		CommandTargetChain globalHandlerChain;
 		ArrayList commandUpdateErrors = new ArrayList ();
 		ArrayList visitors = new ArrayList ();
-		Dictionary<Gtk.Window,Gtk.Window> topLevelWindows = new Dictionary<Gtk.Window,Gtk.Window> ();
+		LinkedList<Gtk.Window> topLevelWindows = new LinkedList<Gtk.Window> ();
 		Stack delegatorStack = new Stack ();
+
+		List<Gtk.Window> activeWindowStack = new List<Gtk.Window> ();
 
 		HashSet<object> visitedTargets = new HashSet<object> ();
 		
@@ -66,6 +68,7 @@ namespace MonoDevelop.Components.Commands
 		bool toolbarUpdaterRunning;
 		bool enableToolbarUpdate;
 		int guiLock;
+		int lastX, lastY;
 		
 		// Fields used to keep track of the application focus
 		bool appHasFocus;
@@ -394,25 +397,51 @@ namespace MonoDevelop.Components.Commands
 			rootWidget.AddAccelGroup (AccelGroup);
 			RegisterTopWindow (rootWidget);
 		}
+
+		internal IEnumerable<Gtk.Window> TopLevelWindowStack {
+			get { return topLevelWindows; }
+		}
 		
-		void RegisterTopWindow (Gtk.Window win)
+		internal void RegisterTopWindow (Gtk.Window win)
 		{
-			if (!topLevelWindows.ContainsKey (win)) {
-				topLevelWindows.Add (win, win);
+			if (topLevelWindows.First != null && topLevelWindows.First.Value == win)
+				return;
+
+			// Ensure all events that were subscribed in StartWaitingForUserInteraction are unsubscribed
+			// before doing any change to the topLevelWindows list
+			EndWaitingForUserInteraction ();
+
+			var node = topLevelWindows.Find (win);
+			if (node != null) {
+				if (win.HasToplevelFocus) {
+					topLevelWindows.Remove (node);
+					topLevelWindows.AddFirst (node);
+				}
+			} else {
+				topLevelWindows.AddFirst (win);
 				win.KeyPressEvent += OnKeyPressed;
+				win.ButtonPressEvent += HandleButtonPressEvent;
 				win.Destroyed += TopLevelDestroyed;
 			}
+		}
+
+		[GLib.ConnectBefore]
+		void HandleButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+		{
+			RegisterUserInteraction ();
 		}
 		
 		void TopLevelDestroyed (object o, EventArgs args)
 		{
+			RegisterUserInteraction ();
+
 			Gtk.Window w = (Gtk.Window) o;
 			w.Destroyed -= TopLevelDestroyed;
 			w.KeyPressEvent -= OnKeyPressed;
+			w.ButtonPressEvent -= HandleButtonPressEvent;
 			topLevelWindows.Remove (w);
 			if (w == lastFocused)
 				lastFocused = null;
-			RegisterUserInteraction ();
 		}
 		
 		public void Dispose ()
@@ -654,7 +683,40 @@ namespace MonoDevelop.Components.Commands
 			}
 			return menu;
 		}
-		
+
+#if MAC
+		/// <summary>
+		/// Creates a menu.
+		/// </summary>
+		/// <returns>
+		/// The menu.
+		/// </returns>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
+		public AppKit.NSMenu CreateNSMenu (CommandEntrySet entrySet)
+		{
+			return CreateNSMenu (entrySet, new CommandMenu (this));
+		}
+
+		/// <summary>
+		/// Creates the menu.
+		/// </summary>
+		/// <returns>
+		/// The menu.
+		/// </returns>
+		/// <param name='entrySet'>
+		/// Entry with the command definitions
+		/// </param>
+		/// <param name='initialTarget'>
+		/// Initial command route target. The command handler will start looking for command handlers in this object.
+		/// </param>
+		public AppKit.NSMenu CreateNSMenu (CommandEntrySet entrySet, object initialTarget)
+		{
+			return new MonoDevelop.Components.Mac.MDMenu (this, entrySet, CommandSource.ContextMenu, initialTarget);
+		}
+#endif
+
 		/// <summary>
 		/// Creates a menu.
 		/// </summary>
@@ -706,23 +768,45 @@ namespace MonoDevelop.Components.Commands
 		public bool ShowContextMenu (Gtk.Widget parent, Gdk.EventButton evt, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
-			if (Platform.IsMac) {
-				parent.GrabFocus ();
-				int x, y;
-				if (evt != null) {
-					x = (int)evt.X;
-					y = (int)evt.Y;
-				} else {
-					Gdk.Display.Default.GetPointer (out x, out y);
-				}
-				return DesktopService.ShowContextMenu (this, parent, x, y, entrySet, initialCommandTarget);
+#if MAC
+			parent.GrabFocus ();
+			int x, y;
+			if (evt != null) {
+				x = (int)evt.X;
+				y = (int)evt.Y;
 			} else {
-				var menu = CreateMenu (entrySet);
-				if (menu != null)
-					ShowContextMenu (parent, evt, menu, initialCommandTarget);
-
-				return true;
+				Gdk.Display.Default.GetPointer (out x, out y);
 			}
+
+			Gtk.Application.Invoke (delegate {
+				// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
+				Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
+				var menu = CreateNSMenu (entrySet, initialCommandTarget);
+				var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
+				var toplevel = parent.Toplevel as Gtk.Window;
+				int trans_x, trans_y;
+				parent.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
+
+				// Window coordinates in gtk are the same for cocoa, with the exception of the Y coordinate, that has to be flipped.
+				var pt = new CoreGraphics.CGPoint ((float)trans_x, (float)trans_y);
+				int w,h;
+				toplevel.GetSize (out w, out h);
+				pt.Y = h - pt.Y;
+
+				var tmp_event = AppKit.NSEvent.MouseEvent (AppKit.NSEventType.LeftMouseDown,
+					pt,
+					0, 0,
+					MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel).WindowNumber,
+					null, 0, 0, 0);
+
+				AppKit.NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+			});
+#else
+			var menu = CreateMenu (entrySet);
+			if (menu != null)
+				ShowContextMenu (parent, evt, menu, initialCommandTarget);
+#endif
+			return true;
 		}
 		
 		/// <summary>
@@ -1177,6 +1261,7 @@ namespace MonoDevelop.Components.Commands
 					else if (!bypass && typeInfo.GetCommandHandler (commandId) != null) {
 						info.Enabled = guiLock == 0;
 						info.Visible = true;
+						
 						return info;
 					}
 					
@@ -1461,6 +1546,15 @@ namespace MonoDevelop.Components.Commands
 			h.Next = chain ?? DefaultCommandHandler.Instance;
 			return h;
 		}
+
+		Gtk.Window GetCurrentFocusedTopLevelWindow ()
+		{
+			foreach (var window in topLevelWindows) {
+				if (window.HasToplevelFocus)
+					return window;
+			}
+			return rootWidget;
+		}
 		
 		object GetFirstCommandTarget (CommandTargetRoute targetRoute)
 		{
@@ -1471,7 +1565,7 @@ namespace MonoDevelop.Components.Commands
 			if (targetRoute.InitialTarget != null)
 				cmdTarget = targetRoute.InitialTarget;
 			else {
-				cmdTarget = GetActiveWidget (rootWidget);
+				cmdTarget = GetActiveWidget (GetCurrentFocusedTopLevelWindow ());
 				if (cmdTarget == null) {
 					cmdTarget = globalHandlerChain;
 				}
@@ -1602,6 +1696,17 @@ namespace MonoDevelop.Components.Commands
 				toolbarUpdaterRunning = false;
 				return false;
 			}
+
+			if (appHasFocus) {
+				int x, y;
+				Gdk.Display.Default.GetPointer (out x, out y);
+				if (x != lastX || y != lastY) {
+					// Mouse position has changed. The user is interacting.
+					lastX = x;
+					lastY = y;
+					RegisterUserInteraction ();
+				}
+			}
 			
 			uint newWait;
 			double secs = (DateTime.Now - lastUserInteraction).TotalSeconds;
@@ -1626,8 +1731,7 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		bool waitingForUserInteraction;
-		Gtk.Window suspendedActiveWindow;
-		
+
 		void StartStatusUpdater ()
 		{
 			if (enableToolbarUpdate && !toolbarUpdaterRunning && !waitingForUserInteraction) {
@@ -1654,12 +1758,8 @@ namespace MonoDevelop.Components.Commands
 			
 			waitingForUserInteraction = true;
 			toolbarUpdaterRunning = false;
-			Gtk.Window win = GetActiveWindow (rootWidget);
-			suspendedActiveWindow = win;
-			if (win != null) {
+			foreach (var win in topLevelWindows)
 				win.MotionNotifyEvent += HandleWinMotionNotifyEvent;
-				win.Destroyed += HandleWinDestroyed;
-			}
 		}
 		
 		void EndWaitingForUserInteraction ()
@@ -1667,11 +1767,9 @@ namespace MonoDevelop.Components.Commands
 			if (!waitingForUserInteraction)
 				return;
 			waitingForUserInteraction = false;
-			if (suspendedActiveWindow != null) {
-				suspendedActiveWindow.MotionNotifyEvent -= HandleWinMotionNotifyEvent;
-				suspendedActiveWindow.Destroyed -= HandleWinDestroyed;
-				suspendedActiveWindow = null;
-			}
+			foreach (var win in topLevelWindows)
+				win.MotionNotifyEvent -= HandleWinMotionNotifyEvent;
+
 			StartStatusUpdater ();
 		}
 		
@@ -1683,11 +1781,6 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 
-		void HandleWinDestroyed (object sender, EventArgs e)
-		{
-			suspendedActiveWindow = null;
-		}
-		
 		void HandleWinMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
 		{
 			RegisterUserInteraction ();

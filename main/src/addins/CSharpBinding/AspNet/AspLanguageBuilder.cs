@@ -25,10 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using MonoDevelop.AspNet.Gui;
-using System.Text;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Mono.TextEditor;
+using MonoDevelop.AspNet.WebForms;
+using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.TypeSystem;
@@ -40,8 +42,6 @@ using MonoDevelop.AspNet.StateEngine;
 using MonoDevelop.Xml.StateEngine;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
-
-
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -89,7 +89,7 @@ namespace MonoDevelop.CSharp.Completion
 				sb.AppendLine ("{");
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
 				foreach (var node in info.XExpressions) {
-					bool isBlock = node is AspNetRenderBlock;
+					bool isBlock = node is WebFormsRenderBlock;
 
 					if (node.Region.Begin.Line > data.CaretLine || node.Region.Begin.Line == data.CaretLine && node.Region.Begin.Column > data.CaretColumn - 5) 
 						continue;
@@ -323,7 +323,7 @@ namespace MonoDevelop.CSharp.Completion
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
 
 				foreach (var node in info.XExpressions) {
-					bool isBlock = node is AspNetRenderBlock;
+					bool isBlock = node is WebFormsRenderBlock;
 
 					var start = data.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
 					var end = data.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;

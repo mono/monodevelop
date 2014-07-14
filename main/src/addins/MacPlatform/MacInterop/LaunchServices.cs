@@ -27,7 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using MonoMac.Foundation;
+using Foundation;
 
 namespace MonoDevelop.MacInterop
 {
@@ -132,7 +132,7 @@ namespace MonoDevelop.MacInterop
 				appParams.environment = dict.Handle;
 			}
 			
-			var cfUrl = global::MonoMac.CoreFoundation.CFUrl.FromFile (application.Application);
+			var cfUrl = global::CoreFoundation.CFUrl.FromFile (application.Application);
 			ProcessSerialNumber psn;
 			
 			try {

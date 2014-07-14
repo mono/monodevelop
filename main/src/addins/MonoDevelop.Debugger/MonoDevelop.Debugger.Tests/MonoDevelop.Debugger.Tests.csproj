@@ -11,6 +11,7 @@
     <AssemblyName>MonoDevelop.Debugger.Tests</AssemblyName>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -83,9 +84,9 @@
       <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
-      <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
-      <Name>GuiUnit_NET_4_0</Name>
+    <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
+      <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_5</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
       <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>

@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Debugger</AssemblyName>
     <RootNamespace>MonoDevelop.Debugger</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -115,13 +116,9 @@
     <Compile Include="MonoDevelop.Debugger\DebugCommands.cs" />
     <Compile Include="MonoDevelop.Debugger\Extensions.cs" />
     <Compile Include="MonoDevelop.Debugger\AttachToProcessDialog.cs" />
-    <Compile Include="MonoDevelop.Debugger\ExceptionsDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.ExceptionsDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.AttachToProcessDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\ExpressionEvaluatorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.ExpressionEvaluatorDialog.cs" />
-    <Compile Include="MonoDevelop.Debugger\BreakpointPropertiesDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.BreakpointPropertiesDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebugExecutionModeSet.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerEngine.cs" />
     <Compile Include="MonoDevelop.Debugger\ImmediatePad.cs" />
@@ -129,8 +126,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Debugger.BusyEvaluatorDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerOptionsPanelWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Debugger.DebuggerOptionsPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Debugger\AddTracePointDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Debugger.AddTracePointDialog.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatch.cs" />
     <Compile Include="MonoDevelop.Debugger\PinnedWatchStore.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngine.cs" />
@@ -150,6 +145,8 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.Debugger\IDebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.Debugger\DebuggerEngineBackend.cs" />
+    <Compile Include="MonoDevelop.Debugger\BreakpointPropertiesDialog.cs" />
+    <Compile Include="MonoDevelop.Debugger\TextEntryWithCodeCompletion.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Debugger.addin.xml">

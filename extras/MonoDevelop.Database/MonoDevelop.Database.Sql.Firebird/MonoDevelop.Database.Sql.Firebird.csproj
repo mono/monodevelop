@@ -8,7 +8,7 @@
     <ProjectGuid>{DF9EC79D-A4EF-4C63-9A2F-15B4F36C98A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Database.Sql.Firebird</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.Database.Sql.Firebird</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

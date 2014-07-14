@@ -119,6 +119,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SetSearchCategory (string category)
 		{
+			IdeApp.Workbench.RootWindow.Present ();
 			matchEntry.Entry.Text = category + ":";
 			matchEntry.Entry.GrabFocus ();
 			var pos = matchEntry.Entry.Text.Length;

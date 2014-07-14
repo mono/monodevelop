@@ -192,13 +192,7 @@ namespace MonoDevelop.Ide
 			return PlatformService.GetIconForType (mimeType).WithSize (size);
 		}
 
-		public static bool ShowContextMenu (MonoDevelop.Components.Commands.CommandManager commandManager,
-			Gtk.Widget widget, double x, double y, MonoDevelop.Components.Commands.CommandEntrySet entrySet, object initialCommandTarget = null)
-		{
-			return PlatformService.ShowContextMenu (commandManager, widget, x, y, entrySet, initialCommandTarget);
-		}
-
-		public static bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager,
+		internal static bool SetGlobalMenu (MonoDevelop.Components.Commands.CommandManager commandManager,
 			string commandMenuAddinPath, string appMenuAddinPath)
 		{
 			return PlatformService.SetGlobalMenu (commandManager, commandMenuAddinPath, appMenuAddinPath);

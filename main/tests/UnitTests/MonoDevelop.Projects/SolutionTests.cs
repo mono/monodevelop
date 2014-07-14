@@ -732,5 +732,54 @@ namespace MonoDevelop.Projects
 			res = app.Build (Util.GetMonitor (), ConfigurationSelector.Default, true);
 			Assert.IsTrue (res.ErrorCount == 0);
 		}
+
+		[Test]
+		public void UnloadProject ()
+		{
+			string solFile = Util.GetSampleProject ("console-with-libs", "console-with-libs.sln");
+
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			SolutionEntityItem p = sol.FindProjectByName ("console-with-libs");
+			SolutionEntityItem lib1 = sol.FindProjectByName ("library1");
+			SolutionEntityItem lib2 = sol.FindProjectByName ("library2");
+
+			Assert.IsTrue (p.Enabled);
+			Assert.IsTrue (lib1.Enabled);
+			Assert.IsTrue (lib2.Enabled);
+			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (p));
+
+			p.Enabled = false;
+			p.ParentFolder.ReloadItem (Util.GetMonitor (), p);
+
+			p = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.Name == "console-with-libs");
+			Assert.IsNotNull (p);
+			Assert.IsFalse (p.Enabled);
+			Assert.IsTrue (lib1.Enabled);
+			Assert.IsTrue (lib2.Enabled);
+
+			p.Enabled = true;
+			p.ParentFolder.ReloadItem (Util.GetMonitor (), p);
+
+			p = sol.FindProjectByName ("console-with-libs");
+			Assert.IsNotNull (p);
+			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (p));
+
+			// Reload the solution
+
+			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (lib1));
+			lib1.Enabled = false;
+			sol.Save (Util.GetMonitor ());
+			sol.Dispose ();
+
+			sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+			lib1 = sol.GetAllSolutionItems<SolutionEntityItem> ().FirstOrDefault (it => it.Name == "library1");
+			Assert.IsNotNull (lib1);
+			lib1.Enabled = true;
+			lib1.ParentFolder.ReloadItem (Util.GetMonitor (), lib1);
+
+			lib1 = sol.FindProjectByName ("library1");
+			Assert.IsNotNull (lib1);
+			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (lib1));
+		}
 	}
 }
