@@ -14,11 +14,35 @@ type FSharpUnitTestTextEditorExtension() =
     let hasAttributeNamed name (att:FSharpAttribute) =
         att.AttributeType.FullName.Contains name
 
+    let createTestCase (tc:FSharpAttribute) =
+        let sb = Text.StringBuilder(32)
+        sb.Append "(" |> ignore
+        tc.ConstructorArguments 
+        |> Seq.iteri (fun i arg ->
+            if i > 0 then sb.Append ", " |> ignore
+            match arg with
+            | :? string as s -> sb.AppendFormat ("\"{0}\"", s) |> ignore
+            | :? char as c -> sb.AppendFormat ("\"{0}\"", c) |> ignore
+            | other -> sb.Append (other) |> ignore )
+        sb.Append ")" |> ignore
+        sb.ToString ()
+
     override x.GatherUnitTests () =
         let loc = x.Document.Editor.Caret.Location
         let tests = ResizeArray<AbstractUnitTestTextEditorExtension.UnitTestLocation>()
 
-        if x.Document.ParsedDocument = null || IdeApp.Workbench.ActiveDocument <> x.Document then tests :> IList<_> else
+        let hasNUnitReference =
+            match x.Document.Project with
+            | null -> false
+            | :? MonoDevelop.Projects.DotNetProject as dnp ->
+                let refs = dnp.GetReferencedAssemblies(MonoDevelop.getConfig()) |> Seq.toArray
+                refs |> Seq.exists (fun r -> r.EndsWith ("nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase)) 
+            | _ -> false
+
+        if x.Document.ParsedDocument = null ||
+            IdeApp.Workbench.ActiveDocument <> x.Document || 
+            not hasNUnitReference then tests :> IList<_> else
+
         match x.Document.ParsedDocument.Ast with
         | :? ParseAndCheckResults as ast ->
             let allSymbols = ast.GetAllUsesOfAllSymbolsInFile() |> Async.RunSynchronously
@@ -48,12 +72,10 @@ type FSharpUnitTestTextEditorExtension() =
                                             //add test cases
                                             let testCases = func.Attributes |> Seq.filter (hasAttributeNamed "NUnit.Framework.TestCaseAttribute")
                                             testCases
-                                            |> Seq.iter (fun tc -> let ctorArgs = tc.ConstructorArguments |> Seq.cast<string>
-                                                                   let fullArgs = "(" + (ctorArgs |> String.concat ", ") + ")"
-                                                                   test.TestCases.Add fullArgs )
+                                            |> Seq.map createTestCase
+                                            |> test.TestCases.AddRange
                                             test.UnitTestIdentifier <- typeName + "." + methName
                                             test.IsIgnored <- isIgnored
-
                                             Some test
                                         | :? FSharpEntity as entity ->
                                             let typeName = entity.QualifiedName
