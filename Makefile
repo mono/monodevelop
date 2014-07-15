@@ -10,8 +10,9 @@ all: update_submodules roslyn all-recursive
 
 roslyn:
 	find main/external/roslyn -name "obj" | xargs rm -fdr
-	cp main/external/roslyn/Microsoft.Net.ToolsetCompilers.props main/external/roslyn/Src/packages/Microsoft.Net.ToolsetCompilers.0.7.4032713-beta/build
-	xbuild main/external/roslyn/Src/Compilers/CSharp/rcsc/rcsc.csproj
+	mkdir -p main/external/roslyn/Src/packages/Microsoft.Net.ToolsetCompilers.0.7.4032713-beta/build
+	echo "<Project DefaultTargets=\"Build\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\"><PropertyGroup><DisableRoslyn>true</DisableRoslyn><CscToolPath Condition=\" '\$(OS)' == 'Windows_NT'\">$(MSBuildThisFileDirectory)..\\tools</CscToolPath><CscToolExe Condition=\" '\$(OS)' == 'Windows_NT'\">rcsc2.exe</CscToolExe><VbcToolPath>\$(MSBuildThisFileDirectory)..\tools</VbcToolPath><VbcToolExe>rvbc2.exe</VbcToolExe></PropertyGroup></Project>" >main/external/roslyn/Src/packages/Microsoft.Net.ToolsetCompilers.0.7.4032713-beta/build/Microsoft.Net.ToolsetCompilers.props
+	xbuild main/external/roslyn/Src/Compilers/CSharp/csc/csc.csproj
 	xbuild main/external/roslyn/Src/Workspaces/CSharp/CSharpWorkspace.csproj
 	
 update_submodules:
