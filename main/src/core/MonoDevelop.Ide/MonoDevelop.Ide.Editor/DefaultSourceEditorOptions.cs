@@ -77,14 +77,14 @@ namespace MonoDevelop.Ide.Editor
 			instance = new DefaultSourceEditorOptions (policy);
 			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
 
-			PlainEditor = new DefaultSourceEditorOptions (policy) {
+			PlainEditor = new DefaultSourceEditorOptions (policy) /*{
 				ShowLineNumberMargin = false,
 				ShowFoldMargin = false,
 				ShowIconMargin = false,
 				ShowRuler = false,
 
 				ShowWhitespaces = ShowWhitespaces.Never,
-			};
+			}*/;
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)

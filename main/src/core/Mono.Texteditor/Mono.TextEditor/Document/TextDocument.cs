@@ -1941,21 +1941,21 @@ namespace Mono.TextEditor
 				}
 			}
 
-			public SnapshotDocument (Rope<char> text, ITextSourceVersion version) : base (text, new PrimitiveLineSplitter ())
+			public SnapshotDocument (TextDocument doc) : base (doc.buffer.Clone(), new ImmutableLineSplitter (doc.splitter))
 			{
-				this.version = version;
+				this.version = doc.Version;
+				fileName = doc.fileName;
+				Encoding = doc.Encoding;
+				UseBom = doc.UseBom;
+				mimeType = doc.mimeType;
+
 				ReadOnly = true;
 			}
 		}
 
 		public TextDocument CreateDocumentSnapshot ()
 		{
-			var result = new SnapshotDocument (buffer.Clone (), Version);
-			result.fileName = fileName;
-			result.Encoding = Encoding;
-			result.UseBom = UseBom;
-			result.mimeType = mimeType;
-			return result;
+			return new SnapshotDocument (this);
 		}
 
 		public Mono.TextEditor.Utils.Rope<char> CloneRope ()
@@ -1970,7 +1970,7 @@ namespace Mono.TextEditor
 
 		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot ()
 		{
-			return new SnapshotDocument (buffer.Clone (), Version);
+			return new SnapshotDocument (this);
 		}
 
 		#endregion

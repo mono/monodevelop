@@ -30,7 +30,7 @@ namespace MonoDevelop.SourceEditor
 			textEditor.RedrawMarginLine (textEditor.ActionMargin, LineSegment.LineNumber); 
 		}
 
-		public UnitTestMarker (ExtensibleTextEditor textEditor, UnitTestMarkerHost host, UnitTestLocation unitTestLocation)
+		public UnitTestMarker (ExtensibleTextEditor textEditor, UnitTestMarkerHost host, UnitTestLocation unitTest)
 		{
 			this.textEditor = textEditor;
 			this.host = host;

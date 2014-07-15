@@ -39,7 +39,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			if (rope == null)
 				throw new ArgumentNullException ("rope");
 			this.rope = rope;
-			Encoding = encoding;
+			this.encoding = encoding;
 			UseBOM = useBom;
 			this.version = version;
 		}
@@ -96,9 +96,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			private set;
 		}
 
+		System.Text.Encoding encoding;
 		public System.Text.Encoding Encoding {
-			get;
-			private set;
+			get {
+				return encoding ?? System.Text.Encoding.UTF8;
+			}
 		}
 
 		int ITextSource.Length {
