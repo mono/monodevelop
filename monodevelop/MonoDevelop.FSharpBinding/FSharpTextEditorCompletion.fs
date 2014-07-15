@@ -181,7 +181,30 @@ type FSharpTextEditorCompletion() =
   inherit CompletionTextEditorExtension()
 
   let mutable suppressParameterCompletion = false
-  let mutable lastCharDottedInto = false 
+  let mutable lastCharDottedInto = false
+
+  let compilerIdentifierCategory =
+      {new CompletionCategory("Compiler Identifiers", "") with
+            member x.CompareTo _ = 0 }
+        
+  let compilerIdentifiers =
+      let icon = IconId("md-field")
+      [CompletionData("__LINE__",
+                      icon,
+                      "Evaluates to the current line number, considering <tt>#line</tt> directives.",
+                      CompletionCategory = compilerIdentifierCategory, 
+                      DisplayFlags = DisplayFlags.DescriptionHasMarkup) :> ICompletionData
+       CompletionData("__SOURCE_DIRECTORY__",
+                      icon,
+                      "Evaluates to the current full path of the source directory, considering <tt>#line</tt> directives.",
+                      CompletionCategory = compilerIdentifierCategory, 
+                      DisplayFlags = DisplayFlags.DescriptionHasMarkup) :> _
+       CompletionData("__SOURCE_FILE__",
+                      icon,
+                      "Evaluates to the current source file name and its path, considering <tt>#line</tt> directives.",
+                      CompletionCategory = compilerIdentifierCategory,
+                      DisplayFlags = DisplayFlags.DescriptionHasMarkup) :> _ ]
+
 
   override x.ExtendsEditor(doc:Document, editor:IEditableTextBuffer) =
     // Extend any text editor that edits F# files
@@ -327,12 +350,15 @@ type FSharpTextEditorCompletion() =
     with
     | e -> result.Add(FSharpErrorCompletionData(e))
     
-    // Add the code templates
+    // Add the code templates and compiler generated identifiers
     if not dottedInto then
       let templates = CodeTemplateService.GetCodeTemplatesForFile(doc.FileName.ToString())
                       |> Seq.map (fun t -> CodeTemplateCompletionData(doc, t))
                       |> Seq.cast<ICompletionData>
-      result.AddRange(templates)
+     
+      result.AddRange (templates)
+      result.AddRange (compilerIdentifiers)
+
     //If we are forcing completion ensure that AutoCompleteUniqueMatch is set
     if ctrlSpace then
         result.AutoCompleteUniqueMatch <- true
