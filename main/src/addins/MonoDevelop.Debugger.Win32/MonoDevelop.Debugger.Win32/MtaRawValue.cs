@@ -17,6 +17,14 @@ namespace MonoDevelop.Debugger.Win32
 			return MtaThread.Run (() => source.CallMethod (name, parameters, options));
 		}
 
+		public object CallMethod (string name, object[] parameters, out object[] outArgs, EvaluationOptions options)
+		{
+			object[] tempOutArgs = null;
+			var result = MtaThread.Run (() => source.CallMethod (name, parameters, out tempOutArgs, options));
+			outArgs = tempOutArgs;
+			return result;
+		}
+
 		public object GetMemberValue (string name, EvaluationOptions options)
 		{
 			return MtaThread.Run (() => source.GetMemberValue (name, options));
