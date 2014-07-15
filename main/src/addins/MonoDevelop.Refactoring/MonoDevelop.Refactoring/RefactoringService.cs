@@ -208,34 +208,35 @@ namespace MonoDevelop.Refactoring
 		public static Task<IEnumerable<CodeAction>> GetValidActions (TextEditor editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			string disabledNodes = editor != null ? PropertyService.Get ("ContextActions." + editor.MimeType, "") ?? "" : "";
-			return new Task<IEnumerable<CodeAction>> (delegate {
-				var result = new List<CodeAction> ();
-				var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
-				timer.BeginTiming ();
-				try {
-					var parsedDocument = doc.ParsedDocument;
-					if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
-						var ctx = parsedDocument.CreateRefactoringContext (editor, loc, doc, cancellationToken);
-						if (ctx != null) {
-							foreach (var provider in contextActions.Where (fix =>
-								fix.MimeType == editor.MimeType &&
-								disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
-							{
-								try {
-									result.AddRange (provider.GetActions (editor, doc, ctx, loc, cancellationToken));
-								} catch (Exception ex) {
-									LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
-								}
+			var taskSource = new TaskCompletionSource<IEnumerable<CodeAction>>();
+
+			var result = new List<CodeAction> ();
+			var timer = InstrumentationService.CreateTimerCounter ("Source analysis background task", "Source analysis");
+			timer.BeginTiming ();
+			try {
+				var parsedDocument = doc.ParsedDocument;
+				if (editor != null && parsedDocument != null && parsedDocument.CreateRefactoringContext != null) {
+					var ctx = parsedDocument.CreateRefactoringContext (editor, loc, doc, cancellationToken);
+					if (ctx != null) {
+						foreach (var provider in contextActions.Where (fix =>
+							fix.MimeType == editor.MimeType &&
+							disabledNodes.IndexOf (fix.IdString, StringComparison.Ordinal) < 0))
+						{
+							try {
+								result.AddRange (provider.GetActions (editor, doc, ctx, loc, cancellationToken));
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error in context action provider " + provider.Title, ex);
 							}
 						}
 					}
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error in analysis service", ex);
-				} finally {
-					timer.EndTiming ();
 				}
-				return (IEnumerable<CodeAction>)result;
-			});
+			} catch (Exception ex) {
+				LoggingService.LogError ("Error in analysis service", ex);
+			} finally {
+				timer.EndTiming ();
+			}
+			taskSource.SetResult((IEnumerable<CodeAction>)result);
+			return taskSource.Task;
 		}
 
 		public static void QueueQuickFixAnalysis (TextEditor editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken token, Action<List<CodeAction>> callback)
