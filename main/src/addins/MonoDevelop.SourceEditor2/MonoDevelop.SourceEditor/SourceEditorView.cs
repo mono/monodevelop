@@ -180,7 +180,6 @@ namespace MonoDevelop.SourceEditor
 				}
 			}
 
-			widget.TextEditor.Document.SyntaxModeChanged += HandleSyntaxModeChanged;
 			widget.TextEditor.Document.TextReplaced += HandleTextReplaced;
 			widget.TextEditor.Document.LineChanged += HandleLineChanged;
 
@@ -273,17 +272,6 @@ namespace MonoDevelop.SourceEditor
 			}
 			ResetRemoveMarker ();
 		}
-
-		void HandleSyntaxModeChanged (object sender, SyntaxModeChangeEventArgs e)
-		{
-			var oldProvider = e.OldMode as IQuickTaskProvider;
-			if (oldProvider != null)
-				widget.RemoveQuickTaskProvider (oldProvider);
-			var newProvider = e.NewMode as IQuickTaskProvider;
-			if (newProvider != null)
-				widget.AddQuickTaskProvider (newProvider);
-		}
-
 
 		void HandleEndUndo (object sender, TextDocument.UndoOperationEventArgs e)
 		{
@@ -775,10 +763,10 @@ namespace MonoDevelop.SourceEditor
 				WorkbenchWindow.DocumentChanged +=  delegate {
 					if (WorkbenchWindow.Document == null)
 						return;
-					foreach (var provider in WorkbenchWindow.Document.GetContents<IQuickTaskProvider> ()) {
+					foreach (var provider in WorkbenchWindow.Document.Editor.GetContents<IQuickTaskProvider> ()) {
 						widget.AddQuickTaskProvider (provider);
 					}
-					foreach (var provider in WorkbenchWindow.Document.GetContents<UsageProviderEditorExtension> ()) {
+					foreach (var provider in WorkbenchWindow.Document.Editor.GetContents<UsageProviderEditorExtension> ()) {
 						widget.AddUsageTaskProvider (provider);
 					}
 					ownerDocument = WorkbenchWindow.Document;
@@ -965,7 +953,6 @@ namespace MonoDevelop.SourceEditor
 			
 			ClipbardRingUpdated -= UpdateClipboardRing;
 
-			widget.TextEditor.Document.SyntaxModeChanged -= HandleSyntaxModeChanged;
 			widget.TextEditor.Document.TextReplaced -= HandleTextReplaced;
 			widget.TextEditor.Document.LineChanged -= HandleLineChanged;
 			widget.TextEditor.Document.BeginUndo -= HandleBeginUndo; 

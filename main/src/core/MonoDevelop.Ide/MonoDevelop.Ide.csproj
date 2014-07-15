@@ -81,23 +81,18 @@
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
-      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="ICSharpCode.SharpZipLib" />
@@ -2764,8 +2759,6 @@
     <Compile Include="MonoDevelop.Ide.Editor\IFoldSegment.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextLineMarker.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\IQuickTaskProvider.cs" />
-    <Compile Include="MonoDevelop.Ide.Editor\QuickTask.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\TooltipProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\ITextSegmentMarker.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\DocumentRegion.cs" />
@@ -2834,6 +2827,8 @@
     <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\IQuickTaskProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\QuickTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2876,7 +2871,7 @@
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
- </ItemGroup>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -68,7 +68,7 @@ namespace MonoDevelop.CSharp.Highlighting
 		}
 	}
 	
-	class CSharpSyntaxMode : SyntaxMode, MonoDevelop.Ide.Editor.IQuickTaskProvider, IDisposable
+	class CSharpSyntaxMode : SyntaxMode, IDisposable
 	{
 		readonly internal DocumentContext documentContext;
 		readonly internal MonoDevelop.Ide.Editor.TextEditor editor;
@@ -159,13 +159,6 @@ namespace MonoDevelop.CSharp.Highlighting
 							var newResolver = newResolverTask.Result;
 							if (newResolver == null)
 								return;
-							var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
-							try {
-								newResolver.RootNode.AcceptVisitor (visitor);
-							} catch (Exception ex) {
-								LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
-								return;
-							}
 							if (!cancellationToken.IsCancellationRequested) {
 								Gtk.Application.Invoke (delegate {
 									if (cancellationToken.IsCancellationRequested)
@@ -173,10 +166,7 @@ namespace MonoDevelop.CSharp.Highlighting
 									var editorData = documentContext.GetContent<TextEditorData> ();
 									if (editorData == null)
 										return;
-//									compilation = newResolver.Compilation;
 									resolver = newResolver;
-									quickTasks = visitor.QuickTasks;
-									OnTasksUpdated (EventArgs.Empty);
 									foreach (var kv in lineSegments) {
 										try {
 											kv.Value.tree.RemoveListener ();
@@ -283,65 +273,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 
-		class QuickTaskVisitor : DepthFirstAstVisitor
-		{
-			internal List<MonoDevelop.Ide.Editor.QuickTask> QuickTasks = new List<MonoDevelop.Ide.Editor.QuickTask> ();
-			readonly CSharpAstResolver resolver;
-			readonly CancellationToken cancellationToken;
 
-			public QuickTaskVisitor (CSharpAstResolver resolver, CancellationToken cancellationToken)
-			{
-				this.resolver = resolver;
-				this.cancellationToken = cancellationToken;
-			}
-			
-			protected override void VisitChildren (AstNode node)
-			{
-				if (cancellationToken.IsCancellationRequested)
-					return;
-				base.VisitChildren (node);
-			}
-
-			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
-			{
-				base.VisitIdentifierExpression (identifierExpression);
-				var result = resolver.Resolve (identifierExpression, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new MonoDevelop.Ide.Editor.QuickTask (() => string.Format ("error CS0103: The name `{0}' does not exist in the current context", identifierExpression.Identifier), identifierExpression.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
-			{
-				base.VisitMemberReferenceExpression (memberReferenceExpression);
-				var result = resolver.Resolve (memberReferenceExpression, cancellationToken) as UnknownMemberResolveResult;
-				if (result != null && result.TargetType.Kind != TypeKind.Unknown) {
-					QuickTasks.Add (new MonoDevelop.Ide.Editor.QuickTask (string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", result.TargetType.FullName, memberReferenceExpression.MemberName), memberReferenceExpression.MemberNameToken.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitSimpleType (SimpleType simpleType)
-			{
-				base.VisitSimpleType (simpleType);
-				var result = resolver.Resolve (simpleType, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new MonoDevelop.Ide.Editor.QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", simpleType.Identifier), simpleType.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitMemberType (MemberType memberType)
-			{
-				base.VisitMemberType (memberType);
-				var result = resolver.Resolve (memberType, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new MonoDevelop.Ide.Editor.QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", memberType.MemberName), memberType.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitComment (ICSharpCode.NRefactory.CSharp.Comment comment)
-			{
-			}
-		}
 		
 		static CSharpSyntaxMode ()
 		{
@@ -1042,23 +974,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 
-		#region IQuickTaskProvider implementation
-		public event EventHandler TasksUpdated;
 
-		protected virtual void OnTasksUpdated (EventArgs e)
-		{
-			var handler = TasksUpdated;
-			if (handler != null)
-				handler (this, e);
-		}
-
-		List<MonoDevelop.Ide.Editor.QuickTask> quickTasks;
-		public IEnumerable<MonoDevelop.Ide.Editor.QuickTask> QuickTasks {
-			get {
-				return quickTasks;
-			}
-		}
-		#endregion
 	}
 }
  

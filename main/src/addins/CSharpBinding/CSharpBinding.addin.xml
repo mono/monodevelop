@@ -102,6 +102,7 @@
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.Highlighting.HighlightUsagesExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.PathedDocumentTextEditorExtension" />
 		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.UnitTestTextEditorExtension" />
+		<Class fileExtensions = ".cs" class = "MonoDevelop.CSharp.SemanticErrorTextEditorExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">

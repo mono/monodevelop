@@ -1,5 +1,5 @@
 // 
-// QuickTask.cs
+// IQuickTaskProvider.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -25,53 +25,16 @@
 // THE SOFTWARE.
 
 using System;
-using Gtk;
 using System.Collections.Generic;
-using Gdk;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Components.Commands;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Refactoring;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Extension
 {
-	public sealed class QuickTask
+	public interface IQuickTaskProvider
 	{
-		Lazy<string> description;
-		public string Description {
-			get {
-				return description.Value;
-			}
-		}
-		
-		public TextLocation Location {
+		IEnumerable<QuickTask> QuickTasks {
 			get;
-			private set;
 		}
 		
-		public Severity Severity {
-			get;
-			private set;
-		}
-		
-		public QuickTask (Func<string> descriptionFunc, TextLocation location, Severity severity)
-		{
-			this.description = new Lazy<string> (descriptionFunc);
-			this.Location = location;
-			this.Severity = severity;
-		}
-
-		public QuickTask (string description, TextLocation location, Severity severity)
-		{
-			this.description = new Lazy<string> (() => description);
-			this.Location = location;
-			this.Severity = severity;
-		}
-
-		public override string ToString ()
-		{
-			return string.Format ("[QuickTask: Description={0}, Location={1}, Severity={2}]", Description, Location, Severity);
-		}
+		event EventHandler TasksUpdated;
 	}
 }
