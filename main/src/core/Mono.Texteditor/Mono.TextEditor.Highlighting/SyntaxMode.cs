@@ -38,7 +38,7 @@ namespace Mono.TextEditor.Highlighting
 	{
 		protected TextDocument doc;
 
-		public TextDocument Document {
+		public virtual TextDocument Document {
 			get {
 				return doc;
 			}

@@ -47,17 +47,13 @@ namespace MonoDevelop.CSharp.Highlighting
 			base.Initialize ();
 			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
 			syntaxMode = new CSharpSyntaxMode (Editor, DocumentContext);
-			var textEditorData = DocumentContext.GetContent<TextEditorData> ();
-			if (textEditorData != null)
-				textEditorData.Document.SyntaxMode = syntaxMode;
+			Editor.SemanticHighlighting = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				var textEditorData = DocumentContext.GetContent<TextEditorData> ();
-				if (textEditorData != null)
-					textEditorData.Document.SyntaxMode = null;
+				Editor.SemanticHighlighting = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}

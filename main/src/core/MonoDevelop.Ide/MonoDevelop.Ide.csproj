@@ -2829,6 +2829,7 @@
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\IQuickTaskProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\QuickTask.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SemanticHighlighting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

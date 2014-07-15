@@ -45,6 +45,7 @@ using MonoDevelop.Ide.Editor;
 using Atk;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.CSharp.NRefactoryWrapper;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -133,6 +134,21 @@ namespace MonoDevelop.CSharp.Formatting
 
 		bool indentationDisabled;
 
+		public static IEnumerable<string> GetDefinedSymbols (MonoDevelop.Projects.Project project)
+		{
+			var workspace = IdeApp.Workspace;
+			if (workspace == null || project == null)
+				yield break;
+			var configuration = project.GetConfiguration (workspace.ActiveConfiguration) as DotNetProjectConfiguration;
+			if (configuration != null) {
+				foreach (string s in configuration.GetDefineSymbols ())
+					yield return s;
+				// Workaround for mcs defined symbol
+				if (configuration.TargetRuntime.RuntimeId == "Mono") 
+					yield return "__MonoCS__";
+			}
+		}
+
 		void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
 			var policy = Policy.CreateOptions ();
@@ -142,7 +158,7 @@ namespace MonoDevelop.CSharp.Formatting
 			try {
 				var csharpIndentEngine = new CSharpIndentEngine (new DocumentWrapper (Editor), options, policy);
 				//csharpIndentEngine.EnableCustomIndentLevels = true;
-				foreach (var symbol in MonoDevelop.CSharp.Highlighting.CSharpSyntaxMode.GetDefinedSymbols (DocumentContext.Project)) {
+				foreach (var symbol in GetDefinedSymbols (DocumentContext.Project)) {
 					csharpIndentEngine.DefineSymbol (symbol);
 				}
 				indentEngine = csharpIndentEngine;

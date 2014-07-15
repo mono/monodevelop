@@ -47,6 +47,8 @@ using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -69,6 +71,28 @@ namespace MonoDevelop.SourceEditor
 				editorExtension = value;
 				needToAddLastExtension = true;
 			}
+		}
+
+		SemanticHighlighting semanticHighlighting;
+		public SemanticHighlighting SemanticHighlighting {
+			get {
+				return semanticHighlighting;
+			}
+			set {
+				semanticHighlighting = value;
+				UpdateSemanticHighlighting ();
+			}
+		}
+
+		void UpdateSemanticHighlighting ()
+		{
+			if (Document.SyntaxMode is SemanticHighlightingSyntaxMode)
+				return;
+			if (semanticHighlighting == null) {
+				Document.MimeType = Document.MimeType;
+				return;
+			}
+			Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
 		}
 
 		class LastEditorExtension : TextEditorExtension
@@ -134,6 +158,9 @@ namespace MonoDevelop.SourceEditor
 
 			Document.TextReplaced += HandleSkipCharsOnReplace;
 			TypeSystemService.ParseOperationFinished += HandleParseOperationFinished;
+			Document.SyntaxModeChanged += delegate {
+				UpdateSemanticHighlighting ();
+			};
 
 			UpdateEditMode ();
 			this.DoPopupMenu = ShowPopup;

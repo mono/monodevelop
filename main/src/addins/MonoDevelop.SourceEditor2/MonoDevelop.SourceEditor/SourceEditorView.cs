@@ -2978,6 +2978,16 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+
+		SemanticHighlighting ITextEditorImpl.SemanticHighlighting {
+			get {
+				return TextEditor.SemanticHighlighting;
+			}
+			set {
+				TextEditor.SemanticHighlighting = value;
+			}
+		}
+
 		string ITextEditorImpl.GetPangoMarkup (int offset, int length)
 		{
 			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false);

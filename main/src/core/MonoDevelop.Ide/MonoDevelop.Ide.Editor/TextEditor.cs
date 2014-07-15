@@ -139,6 +139,15 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
+		public SemanticHighlighting SemanticHighlighting {
+			get {
+				return textEditorImpl.SemanticHighlighting;
+			}
+			set {
+				textEditorImpl.SemanticHighlighting = value;
+			}
+		}
+
 		public int CaretLine {
 			get {
 				return CaretLocation.Line;

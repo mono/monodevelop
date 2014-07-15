@@ -87,6 +87,8 @@ namespace MonoDevelop.Ide.Editor
 	
 		DocumentLocation CaretLocation { get; set; }
 
+		SemanticHighlighting SemanticHighlighting { get; set; }
+
 		int CaretOffset { get; set; }
 
 		bool IsSomethingSelected { get; }
