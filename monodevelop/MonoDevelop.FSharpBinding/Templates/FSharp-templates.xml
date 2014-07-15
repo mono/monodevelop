@@ -299,8 +299,8 @@ type $name$ =
       <_Group>F#</_Group>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
-      <Shortcut>elsif</Shortcut>
-      <_Description>Code snippet for elsif...then</_Description>
+      <Shortcut>elif</Shortcut>
+      <_Description>Code snippet for elif...then</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -308,7 +308,7 @@ type $name$ =
         <Default>condition</Default>
       </Variable>
     </Variables>
-    <Code><![CDATA[elsif $condition$ then $end$
+    <Code><![CDATA[elif $condition$ then $end$
 else]]></Code>
   </CodeTemplate>
 
