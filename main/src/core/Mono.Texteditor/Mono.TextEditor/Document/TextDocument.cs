@@ -208,15 +208,22 @@ namespace Mono.TextEditor
 
 		public bool SuppressHighlightUpdate { get; set; }
 		internal DocumentLine longestLineAtTextSet;
+		WeakReference cachedText;
 
 		public string Text {
 			get {
-				return buffer.root.ToString () ;
+				string completeText = cachedText != null ? (cachedText.Target as string) : null;
+				if (completeText == null) {
+					completeText = buffer.ToString();
+					cachedText = new WeakReference(completeText);
+				}
+				return completeText;
 			}
 			set {
 				var args = new DocumentChangeEventArgs (0, Text, value);
 				textSegmentMarkerTree.Clear ();
 				OnTextReplacing (args);
+				cachedText = null;
 				buffer.Clear ();
 				buffer.InsertText (0, value); 
 				extendingTextMarkers = new List<TextLineMarker> ();
@@ -276,6 +283,7 @@ namespace Mono.TextEditor
 				}
 				redoStack.Clear ();
 			}
+			cachedText = null;
 			buffer.RemoveRange(offset, count);
 			if (!string.IsNullOrEmpty (value))
 				buffer.InsertText (offset, value);
