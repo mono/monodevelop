@@ -117,8 +117,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		IReadonlyTextDocument ITextDocument.CreateDocumentSnapshot ()
 		{
-			// TODO: Implement more efficient rope based data structure for document snapshotting
-			return SimpleReadonlyDocument.CreateReadonlyDocumentAsync (new StringTextSource (document.Text, document.Encoding, document.UseBom), document.FileName, document.MimeType).Result;
+			return new TextDocumentWrapper (document.CreateDocumentSnapshot ());
 		}
 
 		string ITextDocument.Text {
@@ -321,14 +320,14 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			writer.Write (document.GetTextAt (offset, length));
 		}
 
-		MonoDevelop.Core.Text.ITextSource MonoDevelop.Core.Text.ITextSource.CreateSnapshot ()
+		ITextSource ITextSource.CreateSnapshot ()
 		{
-			return new StringTextSource (document.Text);
+			return new RopeTextSource (document.CloneRope (), document.Encoding, document.UseBom, new TextSourceVersionWrapper (document.Version));
 		}
 
-		MonoDevelop.Core.Text.ITextSource MonoDevelop.Core.Text.ITextSource.CreateSnapshot (int offset, int length)
+		ITextSource ITextSource.CreateSnapshot (int offset, int length)
 		{
-			return new StringTextSource (document.GetTextAt (offset, length));
+			return new RopeTextSource (document.CloneRope (offset, length), document.Encoding, document.UseBom);
 		}
 		#endregion
 	}

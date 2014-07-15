@@ -200,6 +200,7 @@ namespace Mono.TextEditor
 	//	public event EventHandler<LineEventArgs> LineInserted;
 		
 		#region Buffer implementation
+
 		public int TextLength {
 			get {
 				return buffer.Length;
@@ -1949,7 +1950,22 @@ namespace Mono.TextEditor
 
 		public TextDocument CreateDocumentSnapshot ()
 		{
-			return new SnapshotDocument (buffer.Clone (), Version);
+			var result = new SnapshotDocument (buffer.Clone (), Version);
+			result.fileName = fileName;
+			result.Encoding = Encoding;
+			result.UseBom = UseBom;
+			result.mimeType = mimeType;
+			return result;
+		}
+
+		public Mono.TextEditor.Utils.Rope<char> CloneRope ()
+		{
+			return buffer.Clone ();
+		}
+
+		public Mono.TextEditor.Utils.Rope<char> CloneRope (int offset, int count)
+		{
+			return buffer.GetRange (offset, count);
 		}
 
 		ICSharpCode.NRefactory.Editor.IDocument ICSharpCode.NRefactory.Editor.IDocument.CreateDocumentSnapshot ()
