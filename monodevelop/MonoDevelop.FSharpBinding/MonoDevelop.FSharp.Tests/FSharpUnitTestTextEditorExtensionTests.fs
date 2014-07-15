@@ -142,12 +142,3 @@ module Test =
         let testExtension = createDoc normalAndDoubleTick []
         let tests = testExtension.GatherUnitTests()
         tests.Count |> should equal 0
-
-
-      
-
-
-
-
-   
-
