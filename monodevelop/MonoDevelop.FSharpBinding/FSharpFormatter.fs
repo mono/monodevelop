@@ -68,12 +68,13 @@ type FSharpFormatter()  =
     let trimIfNeeded (input:string) (output:string) =
         let trimLinefeed = not <|  input.EndsWith("\n")
         if trimLinefeed then output.TrimEnd('\n') 
-        else input
+        else output
                     
-    let format (doc : Gui.Document) style formatting input options onTheFly =
+    let format (doc : Gui.Document option) style formatting input options =
         let isFsiFile = 
-            if doc = null then false
-            else doc.FileName.Extension.Equals(".fsi", StringComparison.OrdinalIgnoreCase)
+            match doc with 
+            | Some d -> d.FileName.Extension.Equals(".fsi", StringComparison.OrdinalIgnoreCase)
+            | _ -> false
 
         let config = getConfig style formatting
         LoggingService.LogInfo("**Fantomas**: Read config - \n{0}", sprintf "%A" config)
@@ -83,9 +84,9 @@ type FSharpFormatter()  =
             let output =
                 try 
                     let result =
-                        trimIfNeeded doc.Editor.Text (CodeFormatter.formatSourceString isFsiFile input config)
+                        trimIfNeeded input (CodeFormatter.formatSourceString isFsiFile input config)
                     //If onTheFly do the replacements in the document
-                    if onTheFly then doc.Editor.Document.Replace(0, input.Length, result)
+                    doc |> Option.iter (fun d -> d.Editor.Document.Replace(0, input.Length, result))
                     result
                 with exn -> 
                     LoggingService.LogError("Error occured: {0}", exn.Message)
@@ -109,13 +110,13 @@ type FSharpFormatter()  =
                     LoggingService.LogInfo("**Fantomas**: Try to format range {0}.", range)
                     let! result = 
                         try 
+                            let selection = input.Substring(fromOffset, toOffset - fromOffset)
                             let result = 
-                                 trimIfNeeded (doc.Editor.GetTextBetween(fromOffset, toOffset+1)) 
+                                 trimIfNeeded selection 
                                               (CodeFormatter.formatSelectionOnly isFsiFile range input config)
-                            if onTheFly then 
+                            if doc.IsSome then
                                 //If onTheFly do the replacements in the document
-                                let selection = doc.Editor.GetTextBetween(fromOffset, toOffset+1)
-                                doc.Editor.Document.Replace(fromOffset, selection.Length, result)
+                                doc.Value.Editor.Document.Replace(fromOffset, selection.Length, result)
                                 None
                             else Some(result)
                          with exn -> 
@@ -127,7 +128,7 @@ type FSharpFormatter()  =
             | Some newCode -> newCode
             | None -> null
 
-    let formatText (doc : Gui.Document) (policyParent : PolicyContainer) (mimeTypeInheritanceChain : string seq) input formattingOption = 
+    let formatText (doc : Gui.Document option) (policyParent : PolicyContainer) (mimeTypeInheritanceChain : string seq) input formattingOption = 
         let textStylePolicy = policyParent.Get<TextStylePolicy>(mimeTypeInheritanceChain)
         let formattingPolicy = policyParent.Get<FSharpFormattingPolicy>(mimeTypeInheritanceChain)
         format doc textStylePolicy formattingPolicy input formattingOption
@@ -139,7 +140,6 @@ type FSharpFormatter()  =
     override x.CorrectIndenting(policyParent, mimeTypeChain, data, line) = raise (NotSupportedException())
 
     override x.OnTheFlyFormat(doc, fromOffset, toOffset) =
-        let doc = IdeApp.Workbench.ActiveDocument
         let policyParent : PolicyContainer =
             match doc.Project with
             | null -> PolicyService.DefaultPolicies
@@ -152,18 +152,17 @@ type FSharpFormatter()  =
         let input = doc.Editor.Text
         if fromOffset = 0 && toOffset = String.length input then 
             LoggingService.LogInfo("**Fantomas**: OnTheFly Formatting document")
-            formatText doc policyParent mimeTypeChain input Document true
+            formatText (Some doc) policyParent mimeTypeChain input Document
             |> ignore
         else 
             LoggingService.LogInfo("**Fantomas**: OnTheFly Formatting selection")
-            formatText doc policyParent mimeTypeChain input (Selection(fromOffset, toOffset)) true
+            formatText (Some doc) policyParent mimeTypeChain input (Selection(fromOffset, toOffset))
             |> ignore
 
     override x.FormatText(policyParent, mimeTypeChain, input, fromOffset, toOffset) = 
-        let doc = IdeApp.Workbench.ActiveDocument
         if fromOffset = 0 && toOffset = String.length input then 
             LoggingService.LogInfo("**Fantomas**: Formatting document")
-            formatText doc policyParent mimeTypeChain input Document false
+            formatText None policyParent mimeTypeChain input Document
         else 
             LoggingService.LogInfo("**Fantomas**: Formatting selection")
-            formatText doc policyParent mimeTypeChain input (Selection(fromOffset, toOffset)) false
+            formatText None policyParent mimeTypeChain input (Selection(fromOffset, toOffset))
