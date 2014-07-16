@@ -76,7 +76,7 @@ member this.$name$ (sender : $type$) =
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>du</Shortcut>
-      <_Description>Code snippet for Discriminated Unions</_Description>
+      <_Description>Template for Discriminated Unions</_Description>
       <TemplateType>Unknown</TemplateType>
     </Header>
     <Variables>
@@ -97,7 +97,7 @@ member this.$name$ (sender : $type$) =
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>interface</Shortcut>
-      <_Description>Code snippet for interface</_Description>
+      <_Description>Template for interface definition</_Description>
       <TemplateType>Unknown</TemplateType>
     </Header>
     <Variables>
@@ -283,7 +283,7 @@ type $name$ =
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>if</Shortcut>
-      <_Description>Code snippet for if...then</_Description>
+      <_Description>Template for if...then</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -300,7 +300,7 @@ type $name$ =
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>elif</Shortcut>
-      <_Description>Code snippet for elif...then</_Description>
+      <_Description>Template for elif...then</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -318,7 +318,7 @@ else]]></Code>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>ifelse</Shortcut>
-      <_Description>Code snippet for if...then...else</_Description>
+      <_Description>Template for if...then...else</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -337,7 +337,7 @@ else]]></Code>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>while</Shortcut>
-      <_Description>Code snippet for while</_Description>
+      <_Description>Template for while</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -355,7 +355,7 @@ else]]></Code>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>fort</Shortcut>
-      <_Description>Code snippet for for...to</_Description>
+      <_Description>Template for for...to</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -379,7 +379,7 @@ else]]></Code>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>fordt</Shortcut>
-      <_Description>Code snippet for for...downto</_Description>
+      <_Description>Template for for...downto</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -403,7 +403,7 @@ else]]></Code>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>fori</Shortcut>
-      <_Description>Code snippet for for...in</_Description>
+      <_Description>Template for for...in</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -424,7 +424,7 @@ else]]></Code>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>match</Shortcut>
-      <_Description>Code snippet for match</_Description>
+      <_Description>Template for match</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -445,7 +445,7 @@ else]]></Code>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>fun</Shortcut>
-      <_Description>Code snippet for fun</_Description>
+      <_Description>Template for fun</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
@@ -465,7 +465,7 @@ else]]></Code>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>main</Shortcut>
-      <_Description>Code snippet for main</_Description>
+      <_Description>Template for main</_Description>
       <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
