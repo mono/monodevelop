@@ -446,9 +446,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// first close the completion list, then insert the text.
 			// this is required because that's the logical event chain, otherwise things could be messed up
 			CloseCompletionList ();
-			((CompletionData)item).InsertCompletionText (this, ref ka, closeChar, keyChar, modifier);
-			AddWordToHistory (PartialWord, item.CompletionText);
-			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
+			var cdItem = (CompletionData)item;
+			cdItem.InsertCompletionText (this, ref ka, closeChar, keyChar, modifier);
+			AddWordToHistory (PartialWord, cdItem.CompletionText);
+			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 			return true;
 		}
 		
@@ -669,7 +670,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		string IListDataProvider.GetCompletionText (int n)
 		{
-			return completionDataList[n].CompletionText;
+			return ((CompletionData)completionDataList[n]).CompletionText;
 		}
 		static DataItemComparer defaultComparer = new DataItemComparer ();
 		int IListDataProvider.CompareTo (int n, int m)

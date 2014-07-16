@@ -493,7 +493,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			var cls = GetClass (obj, getUserClass);
 			if (cls != null)
-				return cls.Locations.First ().FilePath;
+				return cls.Locations.First ().SourceTree.FilePath;
 			return null;
 		}
 		
@@ -520,13 +520,14 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 						// Return this class only if it is declared outside the gtk-gui
 						// folder. Generated partial classes will be ignored.
 						foreach (var part in cls.Locations) {
-							if (!string.IsNullOrEmpty (part.FilePath) && !((FilePath)part.FilePath).IsChildPathOf (gui_folder)) {
+							var filePath = part.SourceTree.FilePath;
+							if (!string.IsNullOrEmpty (filePath) && !((FilePath)filePath).IsChildPathOf (gui_folder)) {
 								return cls;
 							}
 						}
 						continue;
 					}
-					if (getUserClass && !string.IsNullOrEmpty (cls.Locations.First ().FilePath) && ((FilePath)cls.Locations.First ().FilePath).IsChildPathOf (gui_folder))
+					if (getUserClass && !string.IsNullOrEmpty (cls.Locations.First ().SourceTree.FilePath) && ((FilePath)cls.Locations.First ().SourceTree.FilePath).IsChildPathOf (gui_folder))
 						continue;
 					return cls;
 				}

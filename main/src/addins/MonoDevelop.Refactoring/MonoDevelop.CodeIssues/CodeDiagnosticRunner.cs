@@ -49,7 +49,8 @@ namespace MonoDevelop.CodeIssues
 			var model = input.GetCompilationAsync (cancellationToken).Result;
 			var language = CodeRefactoringService.MimeTypeToLanguage (input.Editor.MimeType);
 			try {
-				return AnalyzerDriver.GetDiagnostics (model, CodeDiagnosticService.GetCodeIssues (language).Select (issue => issue.GetProvider ()), cancellationToken).Select (diagnostic => new DiagnosticResult(diagnostic));
+				var options = new AnalyzerOptions(new Microsoft.CodeAnalysis.AdditionalStream[0], new Dictionary<string, string> ());
+				return AnalyzerDriver.GetDiagnostics (model, CodeDiagnosticService.GetCodeIssues (language).Select (issue => issue.GetProvider ()), options, cancellationToken).Select (diagnostic => new DiagnosticResult(diagnostic));
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while running diagnostics.", e); 
 				return Enumerable.Empty<Result> ();

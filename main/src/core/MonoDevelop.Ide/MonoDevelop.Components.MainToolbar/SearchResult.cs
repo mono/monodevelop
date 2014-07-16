@@ -126,7 +126,7 @@ namespace MonoDevelop.Components.MainToolbar
 		public override SearchResultType SearchResultType { get { return SearchResultType.Type; } }
 
 		public override string File {
-			get { return type.Locations.First().FilePath; }
+			get { return type.Locations.First().SourceTree.FilePath; }
 		}
 		
 		public override Xwt.Drawing.Image Icon {
@@ -177,7 +177,7 @@ namespace MonoDevelop.Components.MainToolbar
 //				if (type.TryGetSourceProject (out project)) {
 //					loc = GettextCatalog.GetString ("project {0}", project.Name);
 //				} else {
-					loc = GettextCatalog.GetString ("file {0}", type.Locations.First ().FilePath);
+				loc = GettextCatalog.GetString ("file {0}", type.Locations.First ().SourceTree.FilePath);
 //				}
 
 				switch (type.TypeKind) {
@@ -292,7 +292,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		public override string File {
-			get { return member.Locations.First ().FilePath; }
+			get { return member.Locations.First ().SourceTree.FilePath; }
 		}
 		
 		public override Xwt.Drawing.Image Icon {

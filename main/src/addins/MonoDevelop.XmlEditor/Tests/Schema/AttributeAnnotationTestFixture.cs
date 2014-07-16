@@ -28,13 +28,13 @@ namespace MonoDevelop.XmlEditor.Tests.Schema
 		[Test]
 		public void FooAttributeDocumentation()
 		{
-			Assert.AreEqual("Documentation for foo attribute.", fooAttributeCompletionData[0].Description);
+			Assert.AreEqual("Documentation for foo attribute.", ((MonoDevelop.Ide.CodeCompletion.CompletionData)fooAttributeCompletionData[0]).Description);
 		}
 		
 		[Test]
 		public void BarAttributeDocumentation()
 		{
-			Assert.AreEqual("Documentation for bar attribute.", barAttributeCompletionData[0].Description);
+			Assert.AreEqual("Documentation for bar attribute.", ((MonoDevelop.Ide.CodeCompletion.CompletionData)barAttributeCompletionData[0]).Description);
 		}
 		
 		protected override string GetSchema()

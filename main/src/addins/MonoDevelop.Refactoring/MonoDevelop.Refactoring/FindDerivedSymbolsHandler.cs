@@ -84,7 +84,7 @@ namespace MonoDevelop.Refactoring
 					}
 					foreach (var foundSymbol in task) {
 						foreach (var loc in foundSymbol.Locations)
-							monitor.ReportResult (new MemberReference (foundSymbol, loc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+							monitor.ReportResult (new MemberReference (foundSymbol, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 					}
 				}
 				

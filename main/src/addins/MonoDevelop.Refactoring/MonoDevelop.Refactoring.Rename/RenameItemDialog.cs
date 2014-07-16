@@ -65,7 +65,7 @@ namespace MonoDevelop.Refactoring.Rename
 					if (typeDefinition.ContainingType == null) {
 						// not supported for inner types
 						this.renameFileFlag.Visible = true;
-						this.renameFileFlag.Active = t.Locations.First ().FilePath.Contains (typeDefinition.Name);
+						this.renameFileFlag.Active = t.Locations.First ().SourceTree.FilePath.Contains (typeDefinition.Name);
 					} else {
 						this.renameFileFlag.Active = false;
 					}

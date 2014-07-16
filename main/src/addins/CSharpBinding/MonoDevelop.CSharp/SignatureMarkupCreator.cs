@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharp
 			if (document != null) {
 				this.options = document.GetOptionSet ();
 			} else {
-				this.options = RoslynTypeSystemService.Workspace.GetOptions ();
+				this.options = RoslynTypeSystemService.Workspace.Options;
 			}
 		}
 

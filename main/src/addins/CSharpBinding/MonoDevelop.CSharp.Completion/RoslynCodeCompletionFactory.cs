@@ -50,7 +50,7 @@ namespace MonoDevelop.CSharp.Completion
 			};
 		}
 		
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (Microsoft.CodeAnalysis.IFieldSymbol field)
+		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (Microsoft.CodeAnalysis.IFieldSymbol field)
 		{
 			return new RoslynSymbolCompletionData (ext, field, field.Type.Name + "." + field.Name);
 		}

@@ -90,7 +90,8 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static void AddNewMember (ITypeSymbol type, Location part, SyntaxNode newMember, bool implementExplicit = false)
 		{
 			bool isOpen;
-			var data = TextFileProvider.Instance.GetTextEditorData (part.FilePath, out isOpen);
+			var filePath = part.SourceTree.FilePath;
+			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
 			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type, part);
@@ -106,10 +107,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			suitableInsertionPoint.Insert (data, newMember.ToString ());
 			if (!isOpen) {
 				try {
-					File.WriteAllText (part.FilePath, data.Text);
+					File.WriteAllText (filePath, data.Text);
 				} catch (Exception e) {
-					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", part.FilePath), e);
-					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", part.FilePath));
+					LoggingService.LogError (GettextCatalog.GetString ("Failed to write file '{0}'.", filePath), e);
+					MessageService.ShowError (GettextCatalog.GetString ("Failed to write file '{0}'.", filePath));
 				}
 			}
 		}
@@ -264,7 +265,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			result [0].LineBefore = NewLineInsertion.None;
 			
 			foreach (var member in type.GetMembers ()) {
-				Location loc = member.Locations.FirstOrDefault (l => l.FilePath == part.FilePath);
+				Location loc = member.Locations.FirstOrDefault (l => l.SourceTree.FilePath == part.SourceTree.FilePath);
 				if (loc == null)
 					continue;
 				
@@ -279,7 +280,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			foreach (var member in type.GetMembers ()) {
-				Location loc = member.Locations.FirstOrDefault (l => l.FilePath == part.FilePath);
+				Location loc = member.Locations.FirstOrDefault (l => l.SourceTree.FilePath == part.SourceTree.FilePath);
 				if (loc == null)
 					continue;
 
@@ -291,7 +292,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			foreach (var nestedType in type.GetTypeMembers ()) {
-				Location loc = nestedType.Locations.FirstOrDefault (l => l.FilePath == part.FilePath);
+				Location loc = nestedType.Locations.FirstOrDefault (l => l.SourceTree.FilePath == part.SourceTree.FilePath);
 				if (loc == null)
 					continue;
 				
@@ -535,7 +536,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		public static void AddAttribute (INamedTypeSymbol cls, string name, params object[] parameters)
 		{
 			bool isOpen;
-			string fileName = cls.Locations.First ().FilePath;
+			string fileName = cls.Locations.First ().SourceTree.FilePath;
 			var buffer = TextFileProvider.Instance.GetTextEditorData (fileName, out isOpen);
 			
 			var attr = new CodeAttributeDeclaration (name);

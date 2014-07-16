@@ -113,7 +113,7 @@ namespace MonoDevelop.Components.MainToolbar
 					newResult.IncludeTypes = searchPattern.Tag == null || typeTags.Contains (searchPattern.Tag) ;
 					newResult.IncludeMembers = searchPattern.Tag == null || memberTags.Contains (searchPattern.Tag);
 					var firstType = types.FirstOrDefault ();
-					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Locations.First ().FilePath) : AmbienceService.DefaultAmbience;
+					newResult.ambience = firstType != null ? AmbienceService.GetAmbienceForFile (firstType.Locations.First ().SourceTree.FilePath) : AmbienceService.DefaultAmbience;
 					
 					string toMatch = searchPattern.Pattern;
 					newResult.matcher = StringMatcher.GetMatcher (toMatch, false);

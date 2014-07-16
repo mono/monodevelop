@@ -48,7 +48,7 @@ namespace MonoDevelop.Refactoring
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
 					foreach (var loc in symbol.Locations) {
-						var sr = new SearchResult (new FileProvider (loc.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
+						var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
 						monitor.ReportResult (sr);
 					}
 					
@@ -95,7 +95,7 @@ namespace MonoDevelop.Refactoring
 				try {
 					foreach (var simSym in SymbolFinder.FindSimilarSymbols (obj, compilation.Result)) {
 						foreach (var loc in simSym.Locations) {
-							var sr = new SearchResult (new FileProvider (loc.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
+							var sr = new SearchResult (new FileProvider (loc.SourceTree.FilePath), loc.SourceSpan.Start, loc.SourceSpan.Length);
 							monitor.ReportResult (sr);
 						}
 

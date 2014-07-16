@@ -80,7 +80,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 					var cls = gproject.FindClass (GetClassName (targetObject));
 					if (cls != null) {
 						className = cls.GetFullName ();
-						classFile = cls.Locations.First ().FilePath;
+						classFile = cls.Locations.First ().SourceTree.FilePath;
 					}
 				}
 			}
@@ -210,7 +210,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (FindField (cls, name) != null)
 				return;
 
-			Document doc = IdeApp.Workbench.OpenDocument (cls.Locations.First ().FilePath, true);
+			Document doc = IdeApp.Workbench.OpenDocument (cls.Locations.First ().SourceTree.FilePath, true);
 			
 			IEditableTextFile editor = doc.GetContent<IEditableTextFile> ();
 			if (editor != null) {

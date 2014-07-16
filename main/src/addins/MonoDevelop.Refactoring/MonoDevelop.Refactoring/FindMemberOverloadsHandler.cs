@@ -57,13 +57,13 @@ namespace MonoDevelop.Refactoring
 				case SymbolKind.Method:
 					foreach (var method in symbol.ContainingType.GetMembers (symbol.Name).OfType<IMethodSymbol> ()) {
 						foreach (var loc in method.Locations)
-							monitor.ReportResult (new MemberReference (method, loc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+							monitor.ReportResult (new MemberReference (method, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 					}
 					break;
 				case SymbolKind.Property:
 					foreach (var property in symbol.ContainingType.GetMembers ().OfType<IPropertySymbol> () .Where (p => p.IsIndexer)) {
 						foreach (var loc in property.Locations)
-							monitor.ReportResult (new MemberReference (property, loc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
+							monitor.ReportResult (new MemberReference (property, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 					}
 					break;
 				}

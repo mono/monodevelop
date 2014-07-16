@@ -1010,7 +1010,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public OptionSet GetOptionSet ()
 		{
-			return RoslynTypeSystemService.Workspace.GetOptions ();
+			return RoslynTypeSystemService.Workspace.Options;
 		}
 	}
 	

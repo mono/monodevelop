@@ -86,7 +86,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			base.Initialize ();
 			if (Document != null)
 				Document.DocumentParsed += UpdateDocumentOutline;
-			astAmbience = new AstAmbience (RoslynTypeSystemService.Workspace.GetOptions ());
+			astAmbience = new AstAmbience (RoslynTypeSystemService.Workspace.Options);
 		}
 
 		public override void Dispose ()
@@ -112,7 +112,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 			outlineTreeModelSort = new TreeModelSort (outlineTreeStore);
 			
 			settings = OutlineSettings.Load ();
-			comparer = new OutlineNodeComparer (new AstAmbience (RoslynTypeSystemService.Workspace.GetOptions ()), settings, outlineTreeModelSort);
+			comparer = new OutlineNodeComparer (new AstAmbience (RoslynTypeSystemService.Workspace.Options), settings, outlineTreeModelSort);
 
 			outlineTreeModelSort.SetSortFunc (0, comparer.CompareNodes);
 			outlineTreeModelSort.SetSortColumnId (0, SortType.Ascending);
@@ -195,7 +195,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 				try {
 					if (MessageService.ShowCustomDialog (dialog) == (int)ResponseType.Ok) {
 						dialog.SaveSettings ();
-						comparer = new OutlineNodeComparer (new AstAmbience (RoslynTypeSystemService.Workspace.GetOptions ()), settings, outlineTreeModelSort);
+						comparer = new OutlineNodeComparer (new AstAmbience (RoslynTypeSystemService.Workspace.Options), settings, outlineTreeModelSort);
 						UpdateSorting ();
 					}
 				} finally {

@@ -46,7 +46,7 @@ namespace MonoDevelop.Refactoring.Rename
 		{
 			var locations = new List<Tuple<string, TextSpan>> ();
 			foreach (var loc in symbol.Locations) {
-				locations.Add (Tuple.Create (loc.FilePath, loc.SourceSpan));
+				locations.Add (Tuple.Create (loc.SourceTree.FilePath, loc.SourceSpan));
 			}
 					
 			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result) {
@@ -77,8 +77,8 @@ namespace MonoDevelop.Refactoring.Rename
 			var locations = new List<Tuple<string, TextSpan>> ();
 			var fileNames = new HashSet<string> ();
 			foreach (var loc in symbol.Locations) {
-				locations.Add (Tuple.Create (loc.FilePath, loc.SourceSpan));
-				fileNames.Add (loc.FilePath);
+				locations.Add (Tuple.Create (loc.SourceTree.FilePath, loc.SourceSpan));
+				fileNames.Add (loc.SourceTree.FilePath);
 			}
 					
 			foreach (var mref in SymbolFinder.FindReferencesAsync (symbol, RoslynTypeSystemService.Workspace.CurrentSolution).Result) {
@@ -162,27 +162,28 @@ namespace MonoDevelop.Refactoring.Rename
 					int currentPart = 1;
 					var alreadyRenamed = new HashSet<string> ();
 					foreach (var part in symbol.Locations) {
-						if (alreadyRenamed.Contains (part.FilePath))
+						var filePath = part.SourceTree.FilePath;
+						if (alreadyRenamed.Contains (filePath))
 							continue;
-						alreadyRenamed.Add (part.FilePath);
+						alreadyRenamed.Add (filePath);
 							
-						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (part.FilePath);
+						string oldFileName = System.IO.Path.GetFileNameWithoutExtension (filePath);
 						string newFileName;
 						if (oldFileName.ToUpper () == properties.NewName.ToUpper () || oldFileName.ToUpper ().EndsWith ("." + properties.NewName.ToUpper (), StringComparison.Ordinal))
 							continue;
 						int idx = oldFileName.IndexOf (symbol.Name, StringComparison.Ordinal);
 						if (idx >= 0) {
-							newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + part.FilePath.Length);
+							newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + filePath.Length);
 						} else {
 							newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
 							currentPart++;
 						}
 							
 						int t = 0;
-						while (System.IO.File.Exists (GetFullFileName (newFileName, part.FilePath, t))) {
+						while (System.IO.File.Exists (GetFullFileName (newFileName, filePath, t))) {
 							t++;
 						}
-						result.Add (new RenameFileChange (part.FilePath, GetFullFileName (newFileName, part.FilePath, t)));
+						result.Add (new RenameFileChange (filePath, GetFullFileName (newFileName, filePath, t)));
 					}
 				}
 				

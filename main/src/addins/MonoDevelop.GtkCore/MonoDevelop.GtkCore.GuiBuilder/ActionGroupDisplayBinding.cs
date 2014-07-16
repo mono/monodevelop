@@ -180,7 +180,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				          null,
 				          SyntaxFactory.ParameterList (parameters),
 				          new SyntaxList<TypeParameterConstraintClauseSyntax> (),
-				          SyntaxFactory.Block ()
+				          SyntaxFactory.Block (),
+				          null
 			          );
 					
 						

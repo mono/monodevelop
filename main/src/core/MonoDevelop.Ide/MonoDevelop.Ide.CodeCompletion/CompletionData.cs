@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				if (aIsImport && !bIsImport)
 					return 1;
 				if (aIsImport && bIsImport)
-					return StringComparer.Ordinal.Compare (a.Description, b.Description);
+					return StringComparer.Ordinal.Compare (((CompletionData)a).Description, ((CompletionData)b).Description);
 				var ca = a as CompletionData;
 				var cb = b as CompletionData;
 				if (ca != null && cb != null && !ca.Icon.IsNull && !cb.Icon.IsNull) {
