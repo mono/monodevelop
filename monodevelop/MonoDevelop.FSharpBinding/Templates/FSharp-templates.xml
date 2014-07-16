@@ -97,7 +97,7 @@ member this.$name$ (sender : $type$) =
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>interface</Shortcut>
-      <_Description>Template for interface definition</_Description>
+      <_Description>Template for interface declaration</_Description>
       <TemplateType>Unknown</TemplateType>
     </Header>
     <Variables>
