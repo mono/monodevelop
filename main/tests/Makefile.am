@@ -6,6 +6,7 @@ MONO=mono
 RUN_TEST=$(MDTOOL_RUN) run-md-tests
 TEST_DIR=$(top_builddir)/build/tests
 EXTERNAL=$(top_builddir)/external
+MACOS_10_10=$(shell (test `sw_vers -productVersion | cut -f1 -d.` = 10 && test `sw_vers -productVersion | cut -f2 -d.` -ge 10) && echo yes)
 
 TEST_PROJECTS_MAC = \
 	MacPlatform.Tests/MacPlatform.Tests.csproj
@@ -46,7 +47,9 @@ TEST_ASSEMBLIES += $(TEST_ASSEMBLIES_WINDOWS)
 endif
 
 test:
-	@if test -n "$(assembly)"; then \
+	@if test "$(assembly)" = "MonoDevelop.VersionControl.Subversion.Tests.dll" && test "x$(MACOS_10_10)" = "xyes"; then \
+		echo "Svn does not work on Yosemite. Bailing out..."; \
+	elif test -n "$(assembly)"; then \
 		for asm in $(TEST_ASSEMBLIES); do \
 			if test `basename $$asm` = $(assembly); then \
 				($(RUN_TEST) -xml=TestResult_`basename $$asm`.xml -labels $$asm) || exit $?; \

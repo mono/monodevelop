@@ -54,7 +54,7 @@ namespace MonoDevelop.PackageManagement.Commands
 
 			if (ShouldRestorePackages) {
 				RestoreAndCheckForUpdates ();
-			} else if (ShouldCheckForUpdates) {
+			} else if (ShouldCheckForUpdates && AnyProjectHasPackages ()) {
 				DispatchService.BackgroundDispatch (() => {
 					CheckForUpdates ();
 				});

@@ -41,7 +41,7 @@
 				<Reference type="Package" refto="Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
 			</References>
 			<Packages>
-				<Package ID="Microsoft.AspNet.Mvc" Version="5.1.2" />
+				<Package ID="Microsoft.AspNet.Mvc" Version="5.2" />
 			</Packages>
 			<Files>
 				<Directory name="Content" />
@@ -83,7 +83,7 @@
 				<Reference type="Project" refto="${ProjectName}" />
 			</References>
 			<Packages>
-				<Package ID="Microsoft.AspNet.Mvc" Version="5.1.2" />
+				<Package ID="Microsoft.AspNet.Mvc" Version="5.2" />
 				<Package ID="NUnit" Version="2.6.3" />
 			</Packages>
 			<Files>
