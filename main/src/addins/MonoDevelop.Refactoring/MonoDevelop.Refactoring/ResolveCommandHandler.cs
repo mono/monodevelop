@@ -276,14 +276,14 @@ namespace MonoDevelop.Refactoring
 				if (OnlyAddReference)
 					return GettextCatalog.GetString (
 						"Reference '{0}'", 
-						GetLibraryName ());
+						GetLibraryName ().Replace ("_", "__"));
 				if (Reference != null) 
 						return GettextCatalog.GetString (
 							"Reference '{0}' and use '{1}'", 
 							GetLibraryName (),
-							string.Format ("using {0};", Namespace));
+						string.Format ("using {0};", Namespace.Replace ("_", "__")));
 
-				return string.Format ("using {0};", Namespace);
+				return string.Format ("using {0};", Namespace.Replace ("_", "__"));
 			}
 
 			public string GetInsertNamespaceText (string member)
@@ -291,10 +291,10 @@ namespace MonoDevelop.Refactoring
 				if (Reference != null) 
 					return GettextCatalog.GetString (
 						"Reference '{0}' and use '{1}'", 
-						GetLibraryName (),
-						Namespace + "." + member
+						GetLibraryName ().Replace ("_", "__"),
+						(Namespace + "." + member).Replace ("_", "__")
 					);
-				return Namespace + "." + member;
+				return (Namespace + "." + member).Replace ("_", "__");
 			}
 		}
 
