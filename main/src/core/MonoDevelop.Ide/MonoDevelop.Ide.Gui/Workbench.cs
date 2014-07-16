@@ -97,6 +97,10 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.FocusIn += delegate(object o, EventArgs args) {
 					CheckFileStatus ();
 				};
+				IdeApp.ProjectOperations.EndBuild += delegate {
+					// The file status checks outputs as well.
+					CheckFileStatus ();
+				};
 
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
