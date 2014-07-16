@@ -2682,9 +2682,10 @@ namespace MonoDevelop.SourceEditor
 				var convertedLink = new Mono.TextEditor.TextLink (link.Name);
 				convertedLink.IsEditable = link.IsEditable;
 				convertedLink.IsIdentifier = link.IsIdentifier;
-				if (link.GetStringFunc != null) {
+				var func = link.GetStringFunc;
+				if (func != null) {
 					convertedLink.GetStringFunc = delegate(Func<string, string> arg) {
-						return new ListDataProviderWrapper (link.GetStringFunc (arg));
+						return new ListDataProviderWrapper (func (arg));
 					};
 				}
 				foreach (var segment in link.Links) {

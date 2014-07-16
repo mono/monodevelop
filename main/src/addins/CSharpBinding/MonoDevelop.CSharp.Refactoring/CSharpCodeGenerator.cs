@@ -98,6 +98,8 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (typeDef == null)
 					return ns + "." + name;
 				var file = DocumentContext.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
+				if (file == null)
+					return ns + "." + name;
 				var csResolver = file.GetResolver (DocumentContext.Compilation, Editor.CaretLocation);
 				var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
 				return OutputNode (Editor, DocumentContext, builder.ConvertType (typeDef));

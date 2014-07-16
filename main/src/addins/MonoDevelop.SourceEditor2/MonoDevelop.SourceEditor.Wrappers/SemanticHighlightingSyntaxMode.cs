@@ -146,7 +146,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					if (!semanticMode.lineSegments.TryGetValue (line, out tree)) {
 						tree = new HighlightingSegmentTree ();
 						tree.InstallListener (semanticMode.Document); 
-						semanticMode.semanticHighlighting.Colorize (new MonoDevelop.Core.Text.TextSegment (line.Offset, line.Length), tree.AddStyle);
+						foreach (var seg in semanticMode.semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (line.Offset, line.Length))) {
+							tree.AddStyle (seg, seg.ColorStyleKey);
+						}
 						semanticMode.lineSegments[line] = tree;
 					}
 					string style;

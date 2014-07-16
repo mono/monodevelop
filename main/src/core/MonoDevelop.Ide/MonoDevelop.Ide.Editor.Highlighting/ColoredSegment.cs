@@ -1,5 +1,5 @@
-﻿//
-// SemanticHighlighting.cs
+//
+// ColoredSegment.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -23,54 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
-{	
+{
 	/// <summary>
-	/// Semantic highlighting adds the ability to add highlighting for things that require
-	/// a background parser to be colored. For example type names.
+	/// A colored segment is used in the highlighter to specify a color scheme style to a specfic part of text.
 	/// </summary>
-	public abstract class SemanticHighlighting : IDisposable
+	public sealed class ColoredSegment : AbstractSegment
 	{
-		protected readonly internal TextEditor editor;
-		protected readonly internal DocumentContext documentContext;
+		readonly string colorStyleKey;
 
-		protected SemanticHighlighting (TextEditor editor, DocumentContext documentContext)
-		{
-			this.editor = editor;
-			this.documentContext = documentContext;
-			this.documentContext.DocumentParsed += HandleDocumentParsed;
-		}
-
-		protected abstract void DocumentParsed ();
-
-		protected void UpdateSemanticHighlighting ()
-		{
-			var handler = SemanticHighlightingUpdated;
-			if (handler != null)
-				handler (this, EventArgs.Empty);
-		}
-
-		/// <summary>
-		/// Colorize the specified offset, count and colorizeCallback.
+		//// <summary>
+		/// Gets the color style. The style is looked up in the current color scheme.
 		/// </summary>
-		/// <param name="segment">The area to run the colorizer in.</param>
-		public abstract IEnumerable<ColoredSegment> GetColoredSegments (ISegment segment);
-
-		void HandleDocumentParsed (object sender, EventArgs e)
-		{
-			if (DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting)
-				DocumentParsed (); 
+		public string ColorStyleKey {
+			get {
+				return colorStyleKey;
+			}
 		}
 
-		public void Dispose ()
+		public ColoredSegment (int offset, int length, string colorStyleKey) : base (offset, length)
 		{
-			documentContext.DocumentParsed -= HandleDocumentParsed;
+			this.colorStyleKey = colorStyleKey;
 		}
 
-		internal event EventHandler SemanticHighlightingUpdated;
+		public ColoredSegment (ISegment segment, string colorStyleKey) : base (segment)
+		{
+			this.colorStyleKey = colorStyleKey;
+		}
 	}
 }

@@ -36,6 +36,8 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
+using GLib;
+using System.Collections.Generic;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -98,13 +100,15 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 
-		public override void Colorize (ISegment segment, Action<ISegment, string> colorizeCallback)
+		public override IEnumerable<ColoredSegment> GetColoredSegments (ISegment segment)
 		{
+			var result = new List<ColoredSegment> ();
 			if (resolver == null)
-				return;
+				return result;
 			int lineNumber = editor.OffsetToLineNumber (segment.Offset);
-			var visitor = new HighlightingVisitior (resolver, colorizeCallback, CancellationToken.None, lineNumber, segment.Offset, segment.Length);
+			var visitor = new HighlightingVisitior (resolver, result.Add, CancellationToken.None, lineNumber, segment.Offset, segment.Length);
 			resolver.RootNode.AcceptVisitor (visitor);
+			return result;
 		}
 		#endregion
 	}
@@ -114,9 +118,9 @@ namespace MonoDevelop.CSharp.Highlighting
 		readonly int lineNumber;
 		readonly int lineOffset;
 		readonly int lineLength;
-		Action<ISegment, string> colorizeCallback;
+		Action<ColoredSegment> colorizeCallback;
 
-		public HighlightingVisitior (CSharpAstResolver resolver, Action<ISegment, string> colorizeCallback, CancellationToken cancellationToken, int lineNumber, int lineOffset, int lineLength)
+		public HighlightingVisitior (CSharpAstResolver resolver, Action<ColoredSegment> colorizeCallback, CancellationToken cancellationToken, int lineNumber, int lineOffset, int lineLength)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException ("resolver");
@@ -190,7 +194,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return;
 				endOffset = lineOffset + lineLength;
 			}
-			colorizeCallback (TextSegment.FromBounds (startOffset, endOffset), color);
+			colorizeCallback (new ColoredSegment (startOffset, endOffset - startOffset, color));
 		}
 	}
 }
