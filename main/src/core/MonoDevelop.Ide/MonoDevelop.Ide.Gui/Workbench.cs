@@ -97,6 +97,11 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.FocusIn += delegate(object o, EventArgs args) {
 					CheckFileStatus ();
 				};
+
+				IdeApp.ProjectOperations.StartBuild += delegate {
+					SaveFileStatus ();
+				};
+
 				IdeApp.ProjectOperations.EndBuild += delegate {
 					// The file status checks outputs as well.
 					CheckFileStatus ();
