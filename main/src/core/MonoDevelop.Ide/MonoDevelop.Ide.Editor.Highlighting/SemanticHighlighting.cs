@@ -24,9 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
+	/// <summary>
+	/// Semantic highlighting adds the ability to add highlighting for things that require
+	/// a background parser to be colored. For example type names.
+	/// </summary>
 	public abstract class SemanticHighlighting : IDisposable
 	{
 		protected readonly internal TextEditor editor;
@@ -48,14 +53,12 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 				handler (this, EventArgs.Empty);
 		}
 
-
 		/// <summary>
 		/// Colorize the specified offset, count and colorizeCallback.
 		/// </summary>
-		/// <param name="offset">The start offset</param>
-		/// <param name="count">The count of chars to colorize</param>
-		/// <param name="colorizeCallback">The colorize callback (startOffset, count, style)</param>
-		public abstract void Colorize (int offset, int count, Action<int, int, string> colorizeCallback);
+		/// <param name="area">The area to run the colorizer in.</param>
+		/// <param name="colorizeCallback">The colorize callback (ISegment chunk, string style)</param>
+		public abstract void Colorize (ISegment area, Action<ISegment, string> colorizeCallback);
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{

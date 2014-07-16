@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -97,12 +98,12 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 		}
 
-		public override void Colorize (int offset, int count, Action<int, int, string> colorizeCallback)
+		public override void Colorize (ISegment segment, Action<ISegment, string> colorizeCallback)
 		{
 			if (resolver == null)
 				return;
-			int lineNumber = editor.OffsetToLineNumber (offset);
-			var visitor = new HighlightingVisitior (resolver, colorizeCallback, CancellationToken.None, lineNumber, offset, count);
+			int lineNumber = editor.OffsetToLineNumber (segment.Offset);
+			var visitor = new HighlightingVisitior (resolver, colorizeCallback, CancellationToken.None, lineNumber, segment.Offset, segment.Length);
 			resolver.RootNode.AcceptVisitor (visitor);
 		}
 		#endregion
@@ -113,9 +114,9 @@ namespace MonoDevelop.CSharp.Highlighting
 		readonly int lineNumber;
 		readonly int lineOffset;
 		readonly int lineLength;
-		Action<int, int, string> colorizeCallback;
+		Action<ISegment, string> colorizeCallback;
 
-		public HighlightingVisitior (CSharpAstResolver resolver, Action<int, int, string> colorizeCallback, CancellationToken cancellationToken, int lineNumber, int lineOffset, int lineLength)
+		public HighlightingVisitior (CSharpAstResolver resolver, Action<ISegment, string> colorizeCallback, CancellationToken cancellationToken, int lineNumber, int lineOffset, int lineLength)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException ("resolver");
@@ -133,41 +134,42 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		void Setup ()
 		{
-			defaultTextColor = "Plain Text";
-			referenceTypeColor = "User Types";
-			valueTypeColor = "User Types(Value types)";
-			interfaceTypeColor = "User Types(Interfaces)";
-			enumerationTypeColor = "User Types(Enums)";
-			typeParameterTypeColor = "User Types(Type parameters)";
-			delegateTypeColor = "User Types(Delegates)";
+			
+			defaultTextColor = Mono.TextEditor.Highlighting.ColorScheme.PlainTextKey;
+			referenceTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesKey;
+			valueTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesValueTypesKey;
+			interfaceTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesInterfacesKey;
+			enumerationTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesEnumsKey;
+			typeParameterTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesTypeParametersKey;
+			delegateTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesDelegatesKey;
 
-			methodCallColor = "User Method Usage";
-			methodDeclarationColor = "User Method Declaration";
+			methodCallColor = Mono.TextEditor.Highlighting.ColorScheme.UserMethodUsageKey;
+			methodDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserMethodDeclarationKey;
 
-			eventDeclarationColor = "User Event Declaration";
-			eventAccessColor = "User Event Usage";
+			eventDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserEventDeclarationKey;
+			eventAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserEventUsageKey;
 
-			fieldDeclarationColor = "User Field Declaration";
-			fieldAccessColor = "User Field Usage";
+			fieldDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserFieldDeclarationKey;
+			fieldAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserFieldUsageKey;
 
-			propertyDeclarationColor = "User Property Declaration";
-			propertyAccessColor = "User Property Usage";
+			propertyDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserPropertyDeclarationKey;
+			propertyAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserPropertyUsageKey;
 
-			variableDeclarationColor = "User Variable Declaration";
-			variableAccessColor = "User Variable Usage";
+			variableDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserVariableDeclarationKey;
+			variableAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserVariableUsageKey;
 
-			parameterDeclarationColor = "User Parameter Declaration";
-			parameterAccessColor = "User Parameter Usage";
+			parameterDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserParameterDeclarationKey;
+			parameterAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserParameterUsageKey;
 
-			valueKeywordColor = "Keyword(Context)";
-			externAliasKeywordColor = "Keyword(Namespace)";
-			varKeywordTypeColor = "Keyword(Type)";
+			valueKeywordColor = Mono.TextEditor.Highlighting.ColorScheme.KeywordContextKey;
+			externAliasKeywordColor = Mono.TextEditor.Highlighting.ColorScheme.KeywordNamespaceKey;
+			varKeywordTypeColor = Mono.TextEditor.Highlighting.ColorScheme.KeywordTypesKey;
 
-			parameterModifierColor = "Keyword(Parameter)";
-			inactiveCodeColor = "Excluded Code";
-			syntaxErrorColor = "Syntax Error";
+			parameterModifierColor = Mono.TextEditor.Highlighting.ColorScheme.KeywordParameterKey;
+			inactiveCodeColor = Mono.TextEditor.Highlighting.ColorScheme.ExcludedCodeKey;
+			syntaxErrorColor = Mono.TextEditor.Highlighting.ColorScheme.SyntaxErrorKey;
 
-			stringFormatItemColor = "String Format Items";
+			stringFormatItemColor = Mono.TextEditor.Highlighting.ColorScheme.StringFormatItemsKey;
 		}
 
 		protected override void Colorize (TextLocation start, TextLocation end, string color)
@@ -188,7 +190,7 @@ namespace MonoDevelop.CSharp.Highlighting
 					return;
 				endOffset = lineOffset + lineLength;
 			}
-			colorizeCallback (startOffset, endOffset, color);
+			colorizeCallback (TextSegment.FromBounds (startOffset, endOffset), color);
 		}
 	}
 }
