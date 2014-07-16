@@ -1,4 +1,4 @@
-﻿namespace MonoDevelop.FSharp.Tests
+﻿namespace MonoDevelopTests
 open System
 open System.Linq
 open MonoDevelop.Core
