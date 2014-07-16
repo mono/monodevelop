@@ -103,6 +103,7 @@
     <Addin id="Ide" version="INSERT_FSPROJ_MDVERSION4"/>
     <Addin id="SourceEditor2" version="INSERT_FSPROJ_MDVERSION4"/>
     <Addin id="Refactoring" version="INSERT_FSPROJ_MDVERSION4"/>
+    <Addin id="NUnit" version="INSERT_FSPROJ_MDVERSION4"/>
 
   </Dependencies>
 
