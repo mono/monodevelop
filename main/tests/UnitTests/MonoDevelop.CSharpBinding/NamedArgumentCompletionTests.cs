@@ -43,6 +43,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -52,11 +54,14 @@ namespace MonoDevelop.CSharpBinding
 	{
 		class TestCompletionWidget : ICompletionWidget 
 		{
-			Document doc;
+			DocumentContext documentContext;
 
-			public TestCompletionWidget (Document doc)
+			MonoDevelop.Ide.Editor.TextEditor editor;
+
+			public TestCompletionWidget (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext documentContext)
 			{
-				this.doc = doc;
+				this.editor = editor;
+				this.documentContext = documentContext;
 			}
 
 			public string CompletedWord {
@@ -71,17 +76,17 @@ namespace MonoDevelop.CSharpBinding
 
 			public string GetText (int startOffset, int endOffset)
 			{
-				return doc.Editor.GetTextBetween (startOffset, endOffset);
+				return editor.GetTextBetween (startOffset, endOffset);
 			}
 
 			public char GetChar (int offset)
 			{
-				return  doc.Editor.GetCharAt (offset);
+				return  editor.GetCharAt (offset);
 			}
 
 			public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 			{
-				var line = doc.Editor.GetLineByOffset (triggerOffset); 
+				var line = editor.GetLineByOffset (triggerOffset); 
 				return new CodeCompletionContext {
 					TriggerOffset = triggerOffset,
 					TriggerLine = line.LineNumber,
@@ -95,7 +100,7 @@ namespace MonoDevelop.CSharpBinding
 
 			public CodeCompletionContext CurrentCodeCompletionContext {
 				get {
-					return CreateCodeCompletionContext (doc.Editor.Caret.Offset);
+					return CreateCodeCompletionContext (editor.CaretOffset);
 				}
 			}
 
@@ -120,13 +125,16 @@ namespace MonoDevelop.CSharpBinding
 
 			public int CaretOffset {
 				get {
-					return doc.Editor.Caret.Offset;
+					return editor.CaretOffset;
+				}
+				set {
+					editor.CaretOffset = value;
 				}
 			}
 
 			public int TextLength {
 				get {
-					return doc.Editor.Document.TextLength;
+					return editor.Length;
 				}
 			}
 
@@ -140,6 +148,12 @@ namespace MonoDevelop.CSharpBinding
 				get {
 					return null;
 				}
+			}
+
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+				// ignore
 			}
 			#endregion
 		}
@@ -165,7 +179,7 @@ namespace MonoDevelop.CSharpBinding
 
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 
 			doc.UpdateParseDocument ();
@@ -179,10 +193,10 @@ namespace MonoDevelop.CSharpBinding
 
 			ListWindow.ClearHistory ();
 			var listWindow = new CompletionListWindow ();
-			var widget = new TestCompletionWidget (ext.Document);
+			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
-			var t = ext.Document.Compilation.FindType (new FullTypeName (type)); 
+			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
 			var foundMember = t.GetMembers (m => m.Name == member).First ();
 			//TODO: Roslyn port!
 //			var data = new MemberCompletionData (ext, foundMember, OutputFlags.ClassBrowserEntries);

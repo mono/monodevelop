@@ -319,6 +319,9 @@ namespace MonoDevelop.Debugger
 
 		int Position {
 			get { return Cursor.Offset - TokenBegin.Offset; }
+			set { 
+				throw new NotSupportedException ();
+			}
 		}
 
 		#region ICompletionWidget implementation
@@ -357,6 +360,9 @@ namespace MonoDevelop.Debugger
 		int ICompletionWidget.CaretOffset {
 			get {
 				return Position;
+			}
+			set {
+				Position = value;
 			}
 		}
 
@@ -438,6 +444,10 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
+		}
 		#endregion
 
 		void OnCustomOutputPadFontChanged (object sender, EventArgs e)

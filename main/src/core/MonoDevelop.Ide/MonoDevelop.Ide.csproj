@@ -40,6 +40,36 @@
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\bin</OutputPath>
+    <DefineConstants>DEBUG,MAC</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>3</WarningLevel>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Ide.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\</OutputPath>
+    <DefineConstants>MAC</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\build\AddIns\MonoDevelop.Ide.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -92,17 +122,16 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Desktop">
       <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.Desktop.dll</HintPath>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' ">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
       <Name>MonoDevelop.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Projects.Formats.MSBuild\MonoDevelop.Projects.Formats.MSBuild.csproj">
@@ -760,9 +789,6 @@
     <EmbeddedResource Include="branding\AboutImage.png">
       <LogicalName>AboutImage.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\SplashScreen.png">
-      <LogicalName>SplashScreen.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\popup-close-16.png">
       <LogicalName>popup-close-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1386,16 +1412,16 @@
       <LogicalName>element-module-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-other-declaration-16.png">
-      <LogicalName>element-other-declaration-16.png</LogicalName>
+      <LogicalName>element-other-declaration-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-other-declaration-16%402x.png">
-      <LogicalName>element-other-declaration-16@2x.png</LogicalName>
+      <LogicalName>element-other-declaration-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-type-16.png">
-      <LogicalName>element-type-16.png</LogicalName>
+      <LogicalName>element-type-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\element-type-16%402x.png">
-      <LogicalName>element-type-16@2x.png</LogicalName>
+      <LogicalName>element-type-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\file-source-16.png">
       <LogicalName>file-source-light-16.png</LogicalName>
@@ -1618,6 +1644,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\done-16%402x.png">
       <LogicalName>done-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\edit-16.png">
+      <LogicalName>edit-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\edit-16%402x.png">
+      <LogicalName>edit-light-16@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\star-16.png">
       <LogicalName>star-light-16.png</LogicalName>
@@ -1886,6 +1918,78 @@
     <EmbeddedResource Include="icons\light\zoom-out-16%402x.png">
       <LogicalName>zoom-out-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-1.png">
+      <LogicalName>spinner-light-14-1.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-1%402x.png">
+      <LogicalName>spinner-light-14-1@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-2.png">
+      <LogicalName>spinner-light-14-2.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-2%402x.png">
+      <LogicalName>spinner-light-14-2@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-3.png">
+      <LogicalName>spinner-light-14-3.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-3%402x.png">
+      <LogicalName>spinner-light-14-3@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-4.png">
+      <LogicalName>spinner-light-14-4.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-4%402x.png">
+      <LogicalName>spinner-light-14-4@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-5.png">
+      <LogicalName>spinner-light-14-5.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-14-5%402x.png">
+      <LogicalName>spinner-light-14-5@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-1.png">
+      <LogicalName>spinner-light-18-1.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-1%402x.png">
+      <LogicalName>spinner-light-18-1@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-2.png">
+      <LogicalName>spinner-light-18-2.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-2%402x.png">
+      <LogicalName>spinner-light-18-2@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-3.png">
+      <LogicalName>spinner-light-18-3.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-3%402x.png">
+      <LogicalName>spinner-light-18-3@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-4.png">
+      <LogicalName>spinner-light-18-4.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-4%402x.png">
+      <LogicalName>spinner-light-18-4@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-5.png">
+      <LogicalName>spinner-light-18-5.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\spinner-18-5%402x.png">
+      <LogicalName>spinner-light-18-5@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-16.png">
+      <LogicalName>catchpoint-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-16%402x.png">
+      <LogicalName>catchpoint-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-disabled-16.png">
+      <LogicalName>catchpoint-disabled-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-disabled-16%402x.png">
+      <LogicalName>catchpoint-disabled-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -1931,7 +2035,6 @@
     <Compile Include="MonoDevelop.Ide.Gui\ViewCommandHandlers.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IBookmarkBuffer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IClipboardHandler.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\IEditableTextBuffer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IPrintable.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ITextBuffer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\CommonAboutDialog.cs" />
@@ -1939,7 +2042,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewLayoutDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AboutMonoDevelopTabPage.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\VersionInformationTabPage.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SplashScreen.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\TipOfTheDay.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddinLoadErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildPanel.cs" />
@@ -1987,7 +2089,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\CodeTranslationFileDescriptionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SelectEncodingsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\FileSelectorDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\IEncodedTextContent.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\TaskPriority.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads\ErrorListPad.cs" />
     <Compile Include="gtk-gui\generated.cs" />
@@ -1996,9 +2097,7 @@
     <Compile Include="MonoDevelop.Ide.Tasks\CommentTasksView.cs" />
     <Compile Include="MonoDevelop.Ide.Tasks\UserTasksView.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\LayoutComboBox.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\IExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\UnknownEntryNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\TextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Commands\NavigationCommands.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ISolutionItemFeature.cs" />
     <Compile Include="MonoDevelop.Ide.StandardHeader\StandardHeaderService.cs" />
@@ -2023,7 +2122,6 @@
     <Compile Include="MonoDevelop.Ide.Templates\FileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PartialTypeFileTemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ParentProjectFileTemplateCondition.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\CompletionTextEditorExtension.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ToolbarComboBox.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\ISplittable.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IFoldable.cs" />
@@ -2133,7 +2231,9 @@
     <Compile Include="MonoDevelop.Ide.Extensions\IOpenFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\IAddFileDialogHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\TextEditorExtensionNode.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DockItemToolbarLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\DockItemToolbarLoader.cs">
+      <DependentUpon>DisplayBindingService.cs</DependentUpon>
+    </Compile>
     <Compile Include="MonoDevelop.Ide.Gui.Components\LogView.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\WorkbenchContext.cs" />
     <Compile Include="MonoDevelop.Ide.Extensions\LayoutExtensionNode.cs" />
@@ -2534,7 +2634,6 @@
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageRecentProjectsList.cs" />
     <Compile Include="MonoDevelop.Ide.WelcomePage\WelcomePageLinksList.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\ProjectLoadProgressMonitor.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\CommonTextEditorOptions.cs" />
     <Compile Include="MonoDevelop.Components\FileFilterSet.cs" />
     <Compile Include="MonoDevelop.Ide\IdeVersionInfo.cs" />
     <Compile Include="MonoDevelop.Components\ContextMenuTreeView.cs" />
@@ -2568,7 +2667,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDocDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DockNotebook.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />
@@ -2617,7 +2715,6 @@
     <Compile Include="MonoDevelop.Ide.TextEditing\TopLevelWidgetExtension.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\VerticalAlignment.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\HorizontalAlignment.cs" />
-    <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\TextFileEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\LineCountEventArgs.cs" />
     <Compile Include="MonoDevelop.Ide.TextEditing\FileExtension.cs" />
@@ -2681,6 +2778,97 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDevelopWorkspace.cs" />
     <Compile Include="MonoDevelop.Ide.TypeSystem\CodeTranslator.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\CompletionHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IDocumentLine.cs" />
+    <Compile Include="MonoDevelop.Ide.CodeTemplates\IListDataProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextEditorOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\WordFindStrategy.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InsertionPoint.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextLink.cs">
+      <DependentUpon>TextLinkModeEventArgs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.Components\WindowTransparencyDecorator.cs" />
+    <Compile Include="MonoDevelop.Components\GtkWorkarounds.cs" />
+    <Compile Include="MonoDevelop.Components\PangoUtil.cs" />
+    <Compile Include="MonoDevelop.Components\HslColor.cs" />
+    <Compile Include="MonoDevelop.Components\HelperMethods.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SelectionMode.cs" />
+    <Compile Include="MonoDevelop.Components\GtkGestures.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\FileSettingsStore.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InsertionCursorEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IFoldSegment.cs" />
+    <Compile Include="MonoDevelop.Ide.TextEditing\TextLineMarkerExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextLineMarker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TooltipProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextSegmentMarker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DocumentRegion.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextMarkerMouseEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DefaultSourceEditorOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\Diff.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\ITextDocument.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorDisplayBinding.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\AbstractUsagesExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SimpleBracketMatcher.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorViewContent.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\IndentationTracker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\SelectionSurroundingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\TextPasteHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DocumentLocation.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SyntaxModeService.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\AmbientColor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ColorScheme.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ColorDescriptionAttribute.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\IStreamProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\TemplateExtensionNodeLoader.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SimpleReadonlyDocument.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeEventArgs.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InsertionModeOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextLinkModeOptions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\CompletionTextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebook.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\PlaceholderWindow.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\TabStrip.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\TabEventArgs.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
+    <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
+    <Compile Include="MonoDevelop.Components\Control.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\TextEditorExtension.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IUnitTestMarker.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ChunkStyle.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextMarkerFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorImpl.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextMarkerFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\IEditorActionHost.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\EditActions.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\DocumentContext.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\InternalExtensionAPI\ITextEditorFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\FoldSegmentFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\IReadonlyTextDocument.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\Usage.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\TextEditorFactory.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\AutoSave.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDServicesMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDSubMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\ObjcHelper.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Util.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\IQuickTaskProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\QuickTask.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SemanticHighlighting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -41,6 +41,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.ClassOutline
 {
@@ -74,18 +77,19 @@ namespace MonoDevelop.CSharp.ClassOutline
 		bool disposed;
 		bool outlineReady;
 
-		public override bool ExtendsEditor (MonoDevelop.Ide.Gui.Document doc, IEditableTextBuffer editor)
+
+		public override bool IsValidInContext (DocumentContext context)
 		{
-			return doc.FileName.Extension == ".cs";
-			//var binding = LanguageBindingService.GetBindingPerFileName (doc.Name);
-			//return binding != null && binding is IDotNetLanguageBinding;
+			var binding = LanguageBindingService.GetBindingPerFileName (context.Name);
+			return binding != null && binding is IDotNetLanguageBinding;
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-			if (Document != null)
-				Document.DocumentParsed += UpdateDocumentOutline;
+
+			if (DocumentContext != null)
+				DocumentContext.DocumentParsed += UpdateDocumentOutline;
 			astAmbience = new AstAmbience (RoslynTypeSystemService.Workspace.Options);
 		}
 
@@ -94,8 +98,8 @@ namespace MonoDevelop.CSharp.ClassOutline
 			if (disposed)
 				return;
 			disposed = true;
-			if (Document != null)
-				Document.DocumentParsed -= UpdateDocumentOutline;
+			if (DocumentContext != null)
+				DocumentContext.DocumentParsed -= UpdateDocumentOutline;
 			RemoveRefillOutlineStoreTimeout ();
 			lastCU = null;
 			settings = null;

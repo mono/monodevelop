@@ -69,6 +69,23 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			}
 			return String.Empty;
 		}
+
+		public event EventHandler SolutionLoaded;
+		public event EventHandler SolutionUnloaded;
+
+		public void RaiseSolutionLoadedEvent ()
+		{
+			if (SolutionLoaded != null) {
+				SolutionLoaded (this, new EventArgs ());
+			}
+		}
+
+		public void RaiseSolutionUnloadedEvent ()
+		{
+			if (SolutionUnloaded != null) {
+				SolutionUnloaded (this, new EventArgs ());
+			}
+		}
 	}
 }
 

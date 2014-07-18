@@ -27,6 +27,7 @@ using System;
 using System.IO;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// </param>
 		public virtual ParsedDocument Parse (bool storeAst, string fileName, Project project = null)
 		{
-			using (var stream = Mono.TextEditor.Utils.TextFileUtility.OpenStream (fileName)) 
+			using (var stream = TextFileUtility.OpenStream (fileName)) 
 				return Parse (storeAst, fileName, stream, project);
 		}
 	}

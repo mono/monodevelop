@@ -327,7 +327,7 @@ namespace MonoDevelop.Ide.Desktop
 		{
 			return false;
 		}
-		
+
 		// Used for preserve the file attributes when monodevelop opens & writes a file.
 		// This should work on unix & mac platform.
 		public virtual object GetFileAttributes (string fileName)

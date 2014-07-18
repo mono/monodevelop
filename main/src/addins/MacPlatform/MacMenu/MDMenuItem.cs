@@ -25,12 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using MonoMac.AppKit;
+using AppKit;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using System.Text;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
+using Foundation;
+using ObjCRuntime;
 using System.Collections.Generic;
 
 namespace MonoDevelop.MacIntegration.MacMenu
@@ -45,11 +45,15 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		CommandManager manager;
 
 		bool isArrayItem;
+		object initialCommandTarget;
+		CommandSource commandSource;
 
-		public MDMenuItem (CommandManager manager, CommandEntry ce, ActionCommand command)
+		public MDMenuItem (CommandManager manager, CommandEntry ce, ActionCommand command, CommandSource commandSource, object initialCommandTarget)
 		{
 			this.ce = ce;
 			this.manager = manager;
+			this.initialCommandTarget = initialCommandTarget;
+			this.commandSource = commandSource;
 
 			isArrayItem = command.CommandArray;
 
@@ -66,9 +70,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			//if the command opens a modal subloop, give cocoa a chance to unhighlight the menu item
 			GLib.Timeout.Add (1, () => {
 				if (a != null) {
-					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, CommandSource.MainMenu);
+					manager.DispatchCommand (ce.CommandId, a.Info.DataItem, initialCommandTarget, commandSource);
 				} else {
-					manager.DispatchCommand (ce.CommandId, CommandSource.MainMenu);
+					manager.DispatchCommand (ce.CommandId, null, initialCommandTarget, commandSource);
 				}
 				return false;
 			});
@@ -84,10 +88,10 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 		public void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index)
 		{
-			var info = manager.GetCommandInfo (ce.CommandId);
+			var info = manager.GetCommandInfo (ce.CommandId, new CommandTargetRoute (initialCommandTarget));
 
 			if (!isArrayItem) {
-				SetItemValues (this, info);
+				SetItemValues (this, info, ce.DisabledVisible);
 				if (!Hidden)
 					MDMenu.ShowLastSeparator (ref lastSeparator);
 				return;
@@ -110,6 +114,9 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 		void PopulateArrayItems (CommandArrayInfo infos, NSMenu parent, ref NSMenuItem lastSeparator, ref int index)
 		{
+			if (infos == null)
+				return;
+
 			foreach (CommandInfo ci in infos) {
 				if (ci.IsArraySeparator) {
 					var n = NSMenuItem.SeparatorItem;
@@ -132,7 +139,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 					NSMenuItem sep = null;
 					PopulateArrayItems (((CommandInfoSet)ci).CommandInfos, item.Submenu, ref sep, ref i);
 				}
-				SetItemValues (item, ci);
+				SetItemValues (item, ci, true);
 
 				if (!item.Hidden)
 					MDMenu.ShowLastSeparator (ref lastSeparator);
@@ -145,11 +152,16 @@ namespace MonoDevelop.MacIntegration.MacMenu
 			public CommandInfo Info;
 		}
 
-		static void SetItemValues (NSMenuItem item, CommandInfo info)
+		void SetItemValues (NSMenuItem item, CommandInfo info, bool disabledVisible)
 		{
 			item.SetTitleWithMnemonic (GetCleanCommandText (info));
-			item.Enabled = !IsGloballyDisabled && info.Enabled;
-			item.Hidden = !info.Visible;
+
+			bool enabled = info.Enabled && (!IsGloballyDisabled || commandSource == CommandSource.ContextMenu);
+			bool visible = info.Visible && (disabledVisible || info.Enabled);
+
+			item.Enabled = enabled;
+			item.Hidden = !visible;
+
 			SetAccel (item, info.AccelKey);
 
 			if (info.Checked) {

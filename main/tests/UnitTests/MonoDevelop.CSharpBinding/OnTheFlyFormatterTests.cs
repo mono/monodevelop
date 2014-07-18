@@ -27,7 +27,6 @@ using System;
 using NUnit.Framework;
 
 using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +40,7 @@ using UnitTests;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.CSharpBinding.Tests;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -51,7 +51,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 			TestWorkbenchWindow tww = new TestWorkbenchWindow ();
 			content = new TestViewContent ();
-			content.Data.Options.IndentStyle = IndentStyle.Auto;
+			content.Data.Options.IndentStyle = Mono.TextEditor.IndentStyle.Auto;
 			tww.ViewContent = content;
 			content.ContentName = "a.cs";
 			content.GetTextEditorData ().Document.MimeType = "text/x-csharp";
@@ -95,12 +95,12 @@ namespace MonoDevelop.CSharpBinding
 			content.CursorPosition = cursorPosition;
 
 			var compExt = new CSharpCompletionTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 			
 			var ext = new CSharpTextEditorIndentation ();
 			CSharpTextEditorIndentation.OnTheFlyFormatting = true;
-			ext.Initialize (doc);
+			ext.Initialize (doc.Editor, doc);
 			content.Contents.Add (ext);
 			
 			doc.UpdateParseDocument ();
@@ -243,7 +243,7 @@ class Foo
 }
 ", out content);
 			ext.ReindentOnTab ();
-			MiscActions.InsertNewLine (content.Data);
+			EditActions.NewLine (ext.Editor);
 			ext.KeyPress ((Gdk.Key)'\n', '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;
@@ -273,8 +273,10 @@ class Foo
 			TestViewContent content;
 
 			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
-			ext.document.Editor.Options.IndentStyle = IndentStyle.Auto;
-			MiscActions.InsertNewLine (content.Data);
+			var options = DefaultSourceEditorOptions.Instance;
+			options.IndentStyle = IndentStyle.Auto;
+			ext.Editor.Options = options;
+			EditActions.NewLine (ext.Editor);
 			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;
@@ -291,8 +293,10 @@ class Foo
 			TestViewContent content;
 
 			var ext = Setup  ("namespace Foo\n{\n\tpublic class Bar\n\t{\n$\t\tvoid Test()\n\t\t{\n\t\t}\n\t}\n}\n", out content);
-			ext.document.Editor.Options.IndentStyle = IndentStyle.Virtual;
-			MiscActions.InsertNewLine (content.Data);
+			var options = DefaultSourceEditorOptions.Instance;
+			options.IndentStyle = IndentStyle.Virtual;
+			ext.Editor.Options = options;
+			EditActions.NewLine (ext.Editor);
 			ext.KeyPress (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
 
 			var newText = content.Text;
@@ -336,7 +340,7 @@ namespace FormatSelectionTest
 	}
 }", out content);
 
-			OnTheFlyFormatter.Format (ext.document, ext.document.Editor.SelectionRange.Offset, ext.document.Editor.SelectionRange.EndOffset); 
+			OnTheFlyFormatter.Format (ext.Editor, ext.DocumentContext, ext.Editor.SelectionRange.Offset, ext.Editor.SelectionRange.EndOffset); 
 
 
 			Assert.AreEqual (@"
@@ -348,7 +352,7 @@ namespace FormatSelectionTest
 		{
 		}
 	}
-}", ext.document.Editor.Text);
+}", ext.Editor.Text);
 		}
 
 	}

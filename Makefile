@@ -84,6 +84,9 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@rm -rf tarballs/external	
 	@echo Decompressing monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@cd tarballs && tar xvjf monodevelop-$(PACKAGE_VERSION).tar.bz2
+	@cp version.config tarballs/monodevelop-$(PACKAGE_VERSION)
+	@cd main && make buildinfo
+	@cp main/build/bin/buildinfo tarballs/monodevelop-$(PACKAGE_VERSION)/
 	@echo Generating merged tarball
 	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION).tar.bz2 monodevelop-$(PACKAGE_VERSION)
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)

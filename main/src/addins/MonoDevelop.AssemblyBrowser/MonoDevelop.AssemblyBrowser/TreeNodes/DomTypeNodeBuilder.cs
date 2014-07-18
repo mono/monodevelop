@@ -30,19 +30,19 @@ using System;
 using System.Text;
 using System.Linq;
 using Mono.Cecil;
-
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Components;
-using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.Decompiler;
 using System.Threading;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using Mono.TextEditor.Highlighting;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -62,7 +62,7 @@ namespace MonoDevelop.AssemblyBrowser
 		}
 		
 		internal static OutputSettings settings;
-		static SyntaxMode mode = SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
+		static SyntaxMode mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
 
 		internal static string MarkupKeyword (string text)
 		{
@@ -170,7 +170,7 @@ namespace MonoDevelop.AssemblyBrowser
 			return result.ToString ();
 		}
 		
-		public List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator)
+		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
@@ -198,14 +198,14 @@ namespace MonoDevelop.AssemblyBrowser
 			};
 		}
 
-		public List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
 				return null;
 			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			if (type == null)
 				return null;
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = CreateDecompilerSettings (publicOnly, codePolicy);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {

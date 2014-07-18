@@ -30,15 +30,12 @@ using System.Linq;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Assemblies;
 
 using Gtk;
 using System.Collections.Generic;
 using MonoDevelop.Components;
-using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using System.IO;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Ide.Projects
 {

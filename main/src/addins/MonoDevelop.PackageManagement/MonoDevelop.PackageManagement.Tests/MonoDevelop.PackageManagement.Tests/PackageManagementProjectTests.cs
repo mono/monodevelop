@@ -52,15 +52,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreateProject ()
 		{
+			fakeSourceRepository = new FakePackageRepository ();
+			CreateProject (fakeSourceRepository);
+		}
+
+		void CreateProject (IPackageRepository sourceRepository)
+		{
 			fakePackageManagerFactory = new FakePackageManagerFactory ();
 			fakePackageManager = fakePackageManagerFactory.FakePackageManager;
 			fakeProjectManager = fakePackageManager.FakeProjectManager;
-			fakeSourceRepository = new FakePackageRepository ();
 			fakeProject = new FakeDotNetProject ();
 			packageManagementEvents = new PackageManagementEvents ();
 
 			project = new PackageManagementProject (
-				fakeSourceRepository,
+				sourceRepository,
 				fakeProject,
 				packageManagementEvents,
 				fakePackageManagerFactory);
@@ -751,6 +756,67 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (package, fakePackageManager.PackagePassedToUpdatePackageReference);
 			Assert.AreEqual (updatePackagesAction, fakePackageManager.SettingsPassedToUpdatePackageReference);
+		}
+
+		[Test]
+		public void Logger_SetLoggerWhenSourceRepositoryIsAggregateRepository_LoggerOnAggregateRepositoryIsSet ()
+		{
+			var aggregateRepository = new AggregateRepository (new FakePackageRepository [0]);
+			CreateProject (aggregateRepository);
+			var expectedLogger = new FakeLogger ();
+
+			project.Logger = expectedLogger;
+
+			Assert.AreEqual (expectedLogger, aggregateRepository.Logger);
+		}
+
+		[Test]
+		public void GetPackageReferences_ProjectManagerHasOnePackageReference_ReturnsOnePackageReference ()
+		{
+			CreateProject ();
+			fakeProjectManager.AddPackageReference ("MyPackage", "1.2.3.4");
+
+			List<PackageReference> packageReferences = project.GetPackageReferences ().ToList ();
+			PackageReference packageReference = packageReferences.FirstOrDefault ();
+
+			Assert.AreEqual ("MyPackage", packageReference.Id);
+			Assert.AreEqual ("1.2.3.4", packageReference.Version.ToString ());
+			Assert.AreEqual (1, packageReferences.Count);
+		}
+
+		[Test]
+		public void AnyUnrestoredPackages_LocalRepositoryHasPackagesForEachPackageReference_ReturnsFalse ()
+		{
+			CreateProject ();
+			fakeProjectManager.AddPackageReference ("MyPackage", "1.2.3.4");
+			fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion ("MyPackage", "1.2.3.4");
+
+			bool result = project.AnyUnrestoredPackages ();
+
+			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public void AnyUnrestoredPackages_LocalRepositoryHasNoPackagesAndProjectHasOnePackageReference_ReturnsTrue ()
+		{
+			CreateProject ();
+			fakeProjectManager.AddPackageReference ("MyPackage", "1.2.3.4");
+
+			bool result = project.AnyUnrestoredPackages ();
+
+			Assert.IsTrue (result);
+		}
+
+		[Test]
+		public void AnyUnrestoredPackages_LocalRepositoryHasDifferentPackageVersion_ReturnsTrue ()
+		{
+			CreateProject ();
+			fakeProjectManager.AddPackageReference ("MyPackage", "1.2.3.4");
+			fakeProjectManager.FakeLocalRepository.AddFakePackageWithVersion ("MyPackage", "1.0");
+
+			bool result = project.AnyUnrestoredPackages ();
+
+			Assert.IsTrue (result);
 		}
 	}
 }

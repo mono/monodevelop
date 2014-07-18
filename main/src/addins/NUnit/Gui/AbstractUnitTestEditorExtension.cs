@@ -28,22 +28,23 @@ using System;
 using MonoDevelop.Ide.Gui.Content;
 using System.Collections.Generic;
 using System.Threading;
-using Mono.TextEditor;
 using MonoDevelop.NUnit;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Gtk;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.NUnit
 {
 	public abstract class AbstractUnitTestTextEditorExtension : TextEditorExtension
 	{
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-			Document.DocumentParsed += HandleDocumentParsed; 
+			DocumentContext.DocumentParsed += HandleDocumentParsed; 
 			if (IdeApp.Workbench == null)
 				return;
 			NUnitService.Instance.TestSessionCompleted += HandleTestSessionCompleted;
@@ -51,16 +52,15 @@ namespace MonoDevelop.NUnit
 
 		void HandleTestSessionCompleted (object sender, EventArgs e)
 		{
-			if (document.Editor == null)
-				return;
-			document.Editor.Parent.TextArea.RedrawMargin (document.Editor.Parent.TextArea.ActionMargin);
+			foreach (var marker in currentMarker)
+				marker.UpdateState ();
 		}
 
 		public override void Dispose ()
 		{
 			NUnitService.Instance.TestSessionCompleted -= HandleTestSessionCompleted;
 			RemoveHandler ();
-			Document.DocumentParsed -= HandleDocumentParsed; 
+			DocumentContext.DocumentParsed -= HandleDocumentParsed; 
 			base.Dispose ();
 		}
 
@@ -84,27 +84,15 @@ namespace MonoDevelop.NUnit
 				if (foundTests == null)
 					return;
 				Application.Invoke (delegate {
-					var editor = document.Editor;
-					if (editor == null)
-						return;
-					var textEditor = editor.Parent;
-					if (textEditor == null)
-						return;
-					var actionMargin = textEditor.ActionMargin;
-					if (actionMargin == null)
-						return;
-					if (actionMargin.IsVisible ^ (foundTests.Count > 0))
-						textEditor.QueueDraw ();
-					actionMargin.IsVisible |= foundTests.Count > 0;
 					foreach (var oldMarker in currentMarker)
-						editor.Document.RemoveMarker (oldMarker);
+						Editor.RemoveMarker (oldMarker);
 
 					foreach (var foundTest in foundTests) {
 						if (token.IsCancellationRequested)
 							return;
-						var unitTestMarker = new UnitTestMarker (foundTest, document);
+						var unitTestMarker = TextMarkerFactory.CreateUnitTestMarker (Editor, new UnitTestMarkerHostImpl (this), foundTest);
 						currentMarker.Add (unitTestMarker);
-						editor.Document.AddMarker (editor.OffsetToLineNumber (foundTest.Offset), unitTestMarker);
+						Editor.AddMarker (editor.OffsetToLineNumber (foundTest.Offset), unitTestMarker);
 					}
 				});
 			});
@@ -120,64 +108,59 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
-		List<UnitTestMarker> currentMarker = new List<UnitTestMarker>();
+		List<IUnitTestMarker> currentMarker = new List<IUnitTestMarker>();
 
-		class UnitTestMarker : MarginMarker
+		class UnitTestMarkerHostImpl : UnitTestMarkerHost
 		{
-			readonly UnitTestLocation unitTest;
-			readonly MonoDevelop.Ide.Gui.Document doc;
-
-			public UnitTestMarker(UnitTestLocation unitTest, MonoDevelop.Ide.Gui.Document doc)
-			{
-				this.unitTest = unitTest;
-				this.doc = doc;
-			}
-
-			public override bool CanDrawForeground (Margin margin)
-			{
-				return margin is ActionMargin;
-			}
-
-			public override void InformMouseHover (TextEditor editor, Margin margin, MarginMouseEventArgs args)
-			{
-				string toolTip;
-				if (unitTest.IsFixture) {
-					if (isFailed) {
-						toolTip = GettextCatalog.GetString ("NUnit Fixture failed (click to run)");
-						if (!string.IsNullOrEmpty (failMessage))
-							toolTip += Environment.NewLine + failMessage.TrimEnd ();
-					} else {
-						toolTip = GettextCatalog.GetString ("NUnit Fixture (click to run)");
-					}
-				} else {
-					if (isFailed) {
-						toolTip = GettextCatalog.GetString ("NUnit Test failed (click to run)");
-						if (!string.IsNullOrEmpty (failMessage))
-							toolTip += Environment.NewLine + failMessage.TrimEnd ();
-						foreach (var id in unitTest.TestCases) {
-							var test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + id);
-							if (test != null) {
-								var result = test.GetLastResult ();
-								if (result != null && result.IsFailure) {
-									if (!string.IsNullOrEmpty (result.Message)) {
-										toolTip += Environment.NewLine + "Test" + id +":";
-										toolTip += Environment.NewLine + result.Message.TrimEnd ();
-									}
-								}
-							}
-
-						}
-					} else {
-						toolTip = GettextCatalog.GetString ("NUnit Test (click to run)");
-					}
-
-				}
-				editor.TooltipText = toolTip;
-			}
-
 			static Menu menu;
 
-			public override void InformMousePress (TextEditor editor, Margin margin, MarginMouseEventArgs args)
+			AbstractUnitTestTextEditorExtension ext;
+
+			public UnitTestMarkerHostImpl (AbstractUnitTestTextEditorExtension ext)
+			{
+				if (ext == null)
+					throw new ArgumentNullException ("ext");
+				this.ext = ext;
+			}
+
+			#region implemented abstract members of UnitTestMarkerHost
+
+			public override Xwt.Drawing.Image GetStatusIcon (string unitTestIdentifier, string caseId = null)
+			{
+				var test = NUnitService.Instance.SearchTestById (unitTestIdentifier + caseId);
+				if (test != null)
+					return test.StatusIcon;
+				return null;
+			}
+
+			public override bool IsFailure (string unitTestIdentifier, string caseId = null)
+			{
+				var test = NUnitService.Instance.SearchTestById (unitTestIdentifier + caseId);
+				if (test != null) {
+					var result = test.GetLastResult ();
+					if (result != null)
+						return result.IsFailure;
+				}
+				return false;
+			}
+
+			public override string GetMessage (string unitTestIdentifier, string caseId = null)
+			{
+				var test = NUnitService.Instance.SearchTestById (unitTestIdentifier + caseId);
+				if (test != null) {
+					var result = test.GetLastResult ();
+					if (result != null)
+						return result.Message;
+				}
+				return null;
+			}
+
+			public override bool HasResult (string unitTestIdentifier, string caseId = null)
+			{
+				return NUnitService.Instance.SearchTestById (unitTestIdentifier + caseId) != null;
+			}
+
+			public override void PopupContextMenu (UnitTestLocation unitTest, int x, int y)
 			{
 				if (menu != null) {
 					menu.Destroy ();
@@ -187,47 +170,47 @@ namespace MonoDevelop.NUnit
 				menu = new Menu ();
 				if (unitTest.IsFixture) {
 					var menuItem = new MenuItem ("_Run All");
-					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
+					menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier, false).Run;
 					menu.Add (menuItem);
 					if (debugModeSet != null) {
 						menuItem = new MenuItem ("_Debug All");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+						menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier, true).Run;
 						menu.Add (menuItem);
 					}
 					menuItem = new MenuItem ("_Select in Test Pad");
-					menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Select;
+					menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier, true).Select;
 					menu.Add (menuItem);
 				} else {
 					if (unitTest.TestCases.Count == 0) {
 						var menuItem = new MenuItem ("_Run");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
+						menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier, false).Run;
 						menu.Add (menuItem);
 						if (debugModeSet != null) {
 							menuItem = new MenuItem ("_Debug");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+							menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier, true).Run;
 							menu.Add (menuItem);
 						}
 						menuItem = new MenuItem ("_Select in Test Pad");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Select;
+						menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier, true).Select;
 						menu.Add (menuItem);
 					} else {
 						var menuItem = new MenuItem ("_Run All");
-						menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, false).Run;
+						menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier, false).Run;
 						menu.Add (menuItem);
 						if (debugModeSet != null) {
 							menuItem = new MenuItem ("_Debug All");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier, true).Run;
+							menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier, true).Run;
 							menu.Add (menuItem);
 						}
 						menu.Add (new SeparatorMenuItem ());
 						foreach (var id in unitTest.TestCases) {
 							var submenu = new Menu ();
 							menuItem = new MenuItem ("_Run");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, false).Run;
+							menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier + id, false).Run;
 							submenu.Add (menuItem);
 							if (debugModeSet != null) {
 								menuItem = new MenuItem ("_Debug");
-								menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Run;
+								menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier + id, true).Run;
 								submenu.Add (menuItem);
 							}
 
@@ -243,7 +226,7 @@ namespace MonoDevelop.NUnit
 							}
 
 							menuItem = new MenuItem ("_Select in Test Pad");
-							menuItem.Activated += new TestRunner (doc, unitTest.UnitTestIdentifier + id, true).Select;
+							menuItem.Activated += new TestRunner (unitTest.UnitTestIdentifier + id, true).Select;
 							submenu.Add (menuItem);
 
 
@@ -256,19 +239,20 @@ namespace MonoDevelop.NUnit
 					}
 				}
 				menu.ShowAll ();
-				editor.TextArea.ResetMouseState (); 
-				GtkWorkarounds.ShowContextMenu (menu, editor, new Gdk.Rectangle ((int)args.X, (int)args.Y, 1, 1));
+
+				GtkWorkarounds.ShowContextMenu (menu, ext.Editor, new Gdk.Rectangle (x, y, 1, 1));
+
 			}
+
+			#endregion
 
 			class TestRunner
 			{
-				//				readonly MonoDevelop.Ide.Gui.Document doc;
 				readonly string testCase;
 				readonly bool debug;
 
-				public TestRunner (MonoDevelop.Ide.Gui.Document doc, string testCase, bool debug)
+				public TestRunner (string testCase, bool debug)
 				{
-					//					this.doc = doc;
 					this.testCase = testCase;
 					this.debug = debug;
 				}
@@ -371,65 +355,6 @@ namespace MonoDevelop.NUnit
 					var content = (TestPad)pad.Content;
 					content.RunTest (test, ctx);
 				}
-			}
-
-			bool isFailed;
-			string failMessage;
-			public override void DrawForeground (TextEditor editor, Cairo.Context cr, MarginDrawMetrics metrics)
-			{
-				isFailed = false;
-				var test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier);
-				bool searchCases = false;
-
-				Xwt.Drawing.Image icon = null;
-
-				if (test != null) {
-					icon = test.StatusIcon;
-					var result = test.GetLastResult ();
-					if (result == null) {
-						searchCases = true;
-					} else if (result.IsFailure) {
-						failMessage = result.Message;
-						isFailed = true;
-					}
-				} else {
-					searchCases = true;
-				}
-
-				if (searchCases) {
-					foreach (var caseId in unitTest.TestCases) {
-						test = NUnitService.Instance.SearchTestById (unitTest.UnitTestIdentifier + caseId);
-						if (test != null) {
-							icon = test.StatusIcon;
-							var result = test.GetLastResult ();
-							if (result != null && result.IsFailure) {
-								failMessage = result.Message;
-								isFailed = true;
-								break;
-							} 
-						}
-					}
-				}
-
-				if (icon != null) {
-					if (icon.Width > metrics.Width || icon.Height > metrics.Height)
-						icon = icon.WithBoxSize (metrics.Width, metrics.Height);
-					cr.DrawImage (editor, icon, Math.Truncate (metrics.X + metrics.Width / 2 - icon.Width / 2), Math.Truncate (metrics.Y + metrics.Height / 2 - icon.Height / 2));
-				}
-			}
-		}
-		public class UnitTestLocation
-		{
-			public int Offset { get; set; }
-			public bool IsFixture { get; set; }
-			public string UnitTestIdentifier { get; set; }
-			public bool IsIgnored { get; set; }
-
-			public List<string> TestCases = new List<string> ();
-
-			public UnitTestLocation (int offset)
-			{
-				Offset = offset;
 			}
 		}
 	}

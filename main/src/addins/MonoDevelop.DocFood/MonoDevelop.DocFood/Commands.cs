@@ -28,9 +28,11 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Collections.Generic;
 using System.Text;
-using Mono.TextEditor;
 using Microsoft.CodeAnalysis;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DocFood
 {
@@ -45,7 +47,7 @@ namespace MonoDevelop.DocFood
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 				IdeApp.Workbench.ActiveDocument.Editor != null &&
-				IdeApp.Workbench.ActiveDocument.Editor.Document.MimeType == "text/x-csharp";
+				IdeApp.Workbench.ActiveDocument.Editor.MimeType == "text/x-csharp";
 			base.Update (info);
 		}
 		
@@ -61,7 +63,7 @@ namespace MonoDevelop.DocFood
 		{
 			info.Enabled = IdeApp.Workbench.ActiveDocument != null && 
 				IdeApp.Workbench.ActiveDocument.Editor != null &&
-				IdeApp.Workbench.ActiveDocument.Editor.Document.MimeType == "text/x-csharp";
+				IdeApp.Workbench.ActiveDocument.Editor.MimeType == "text/x-csharp";
 			base.Update (info);
 		}
 		
@@ -109,17 +111,18 @@ namespace MonoDevelop.DocFood
 		{
 			int lineNr = data.OffsetToLineNumber (member.Locations.First().SourceSpan.Start) - 1;
 			DocumentLine line;
+
 			do {
-				line = data.Document.GetLine (lineNr--);
-			} while (lineNr > 0 && data.Document.GetLineIndent (line).Length == line.Length);
-			return !data.Document.GetTextAt (line).TrimStart ().StartsWith ("///", StringComparison.Ordinal);
+				line = data.GetLine (lineNr--);
+			} while (lineNr > 0 && data.GetLineIndent (line).Length == line.Length);
+			return !data.GetTextAt (line).TrimStart ().StartsWith ("///", StringComparison.Ordinal);
 		}
 		
 		static string GetIndent (TextEditorData data, ISymbol member, out int offset)
 		{
 			DocumentLine line = data.Document.GetLineByOffset (member.Locations.First().SourceSpan.Start);
 			offset = line.Offset;
-			return data.Document.GetLineIndent (line);
+			return data.GetLineIndent (line);
 		}
 		
 		internal static string GenerateDocumentation (TextEditorData data, ISymbol member, string indent)

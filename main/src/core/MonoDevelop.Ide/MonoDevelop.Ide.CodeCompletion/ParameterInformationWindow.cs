@@ -31,6 +31,9 @@ using Gtk;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Fonts;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -66,13 +69,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			TypeHint = Gdk.WindowTypeHint.Tooltip;
 			this.SkipTaskbarHint = true;
 			this.SkipPagerHint = true;
-			if (IdeApp.Workbench != null)
-				this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			this.CanFocus = false;
 			this.CanDefault = false;
-			Mono.TextEditor.PopupWindow.WindowTransparencyDecorator.Attach (this);
+			WindowTransparencyDecorator.Attach (this);
 
 			headlabel = new MonoDevelop.Components.FixedWidthWrapLabel ();
 			headlabel.Indent = -20;
@@ -95,7 +96,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			vb2.Spacing = 4;
 			vb2.PackStart (hb, true, true, 0);
 			ContentBox.Add (vb2);
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 
 			foreColor = scheme.PlainText.Foreground;

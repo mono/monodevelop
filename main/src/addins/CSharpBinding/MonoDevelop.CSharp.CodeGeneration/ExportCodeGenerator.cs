@@ -200,6 +200,7 @@ namespace MonoDevelop.CodeGeneration
 			{
 				var generator = Options.CreateCodeGenerator ();
 				generator.AutoIndent = false;
+
 				foreach (IMember member in includedMembers) {
 					yield return "";
 					//yield return GenerateMemberCode (ctx, builder, member);

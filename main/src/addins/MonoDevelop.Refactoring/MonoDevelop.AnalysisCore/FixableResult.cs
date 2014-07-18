@@ -26,12 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
 using Microsoft.CodeAnalysis.Text;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AnalysisCore
 {
@@ -55,7 +55,7 @@ namespace MonoDevelop.AnalysisCore
 	
 	public interface IFixHandler
 	{
-		IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix);
+		IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, DocumentContext doc, object fix);
 	}
 	
 	public interface IAnalysisFixAction

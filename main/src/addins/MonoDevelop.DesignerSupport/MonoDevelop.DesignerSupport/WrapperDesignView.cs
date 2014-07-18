@@ -102,10 +102,10 @@ namespace MonoDevelop.DesignerSupport
 			base.Dispose ();
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
-			ContentName = fileName;
-			content.Load (fileName);
+			ContentName = fileOpenInformation.FileName;
+			content.Load (ContentName);
 		}
 		
 		public override void LoadNew (System.IO.Stream content, string mimeType)
@@ -117,9 +117,9 @@ namespace MonoDevelop.DesignerSupport
 			get { return contentBox; }
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
-			content.Save (fileName);
+			content.Save (fileSaveInformation);
 		}
 		
 		public override bool IsDirty {

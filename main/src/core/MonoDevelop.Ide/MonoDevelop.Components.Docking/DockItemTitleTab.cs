@@ -32,7 +32,6 @@ using MonoDevelop.Ide.Gui;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Components.Docking

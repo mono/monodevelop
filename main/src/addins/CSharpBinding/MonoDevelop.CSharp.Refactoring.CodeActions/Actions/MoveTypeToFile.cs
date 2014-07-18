@@ -28,7 +28,6 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.PatternMatching;
 using MonoDevelop.Core;
 using System.Collections.Generic;
-using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Refactoring;
 using System.IO;
@@ -38,19 +37,21 @@ using MonoDevelop.Core.ProgressMonitoring;
 using ICSharpCode.NRefactory;
 using System.Threading;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
 	class MoveTypeToFile : MonoDevelop.CodeActions.CodeActionProvider
 	{
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (TextEditor editor, DocumentContext context, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
 		{
-			var context = refactoringContext as MDRefactoringContext;
-			if (context == null)
+			var mdCtx = refactoringContext as MDRefactoringContext;
+			if (mdCtx == null)
 				return Enumerable.Empty<MonoDevelop.CodeActions.CodeAction> ();
-			return GetActions (context);
+			return GetActions (mdCtx);
 		}
-		protected IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context)
+				protected IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (MDRefactoringContext context)
 		{
 			if (context.IsInvalid)
 				yield break;
@@ -97,7 +98,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			if (context.FileContainerProject != null) {
 				string header = StandardHeaderService.GetHeader (context.FileContainerProject, correctFileName, true);
 				if (!string.IsNullOrEmpty (header))
-					content = header + context.TextEditor.EolMarker + StripHeader (content);
+					content = header + context.TextEditor.GetEolMarker () + StripHeader (content);
 			}
 			content = StripDoubleBlankLines (content);
 			
@@ -106,7 +107,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			MonoDevelop.Ide.IdeApp.ProjectOperations.Save (context.FileContainerProject);
 		}
 
-		static bool IsBlankLine (TextDocument doc, int i)
+		static bool IsBlankLine (IReadonlyTextDocument doc, int i)
 		{
 			var line = doc.GetLine (i);
 			return line.Length == line.GetIndentation (doc).Length;
@@ -114,10 +115,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		static string StripDoubleBlankLines (string content)
 		{
-			var doc = new Mono.TextEditor.TextDocument (content);
+			var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (content), "a.cs");
 			for (int i = 1; i + 1 <= doc.LineCount; i++) {
 				if (IsBlankLine (doc, i) && IsBlankLine (doc, i + 1)) {
-					doc.Remove (doc.GetLine (i).SegmentIncludingDelimiter);
+					doc.RemoveText (doc.GetLine (i).SegmentIncludingDelimiter);
 					i--;
 					continue;
 				}

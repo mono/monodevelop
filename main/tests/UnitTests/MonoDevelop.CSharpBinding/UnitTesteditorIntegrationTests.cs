@@ -80,7 +80,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			doc.SetProject (project);
 
 			var compExt = new UnitTestTextEditorExtension ();
-			compExt.Initialize (doc);
+			compExt.Initialize (doc.Editor, doc);
 			content.Contents.Add (compExt);
 			doc.UpdateParseDocument ();
 			return compExt;

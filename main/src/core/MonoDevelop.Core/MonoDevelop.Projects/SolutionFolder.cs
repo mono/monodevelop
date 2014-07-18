@@ -224,9 +224,8 @@ namespace MonoDevelop.Projects
 					if (ParentSolution.IsSolutionItemEnabled (item.FileName))
 						newItem = Services.ProjectService.ReadSolutionItem (monitor, item.FileName);
 					else {
-						UnknownSolutionItem e = new UnknownSolutionItem () {
-							FileName = item.FileName,
-							UnloadedEntry = true
+						UnknownSolutionItem e = new UnloadedSolutionItem () {
+							FileName = item.FileName
 						};
 						var ch = item.GetItemHandler () as MonoDevelop.Projects.Formats.MSBuild.MSBuildHandler;
 						if (ch != null) {
@@ -243,7 +242,16 @@ namespace MonoDevelop.Projects
 					e.FileName = item.FileName;
 					newItem = e;
 				}
-				
+
+				if (!Items.Contains (item)) {
+					// The old item is gone, which probably means it has already been reloaded (BXC20615), or maybe removed.
+					// In this case, there isn't anything else we can do
+					newItem.Dispose ();
+
+					// Find the replacement if it exists
+					return Items.OfType<SolutionEntityItem> ().FirstOrDefault (it => it.FileName == item.FileName);
+				}
+
 				// Replace in the file list
 				Items.Replace (item, newItem);
 				

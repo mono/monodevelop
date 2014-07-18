@@ -34,7 +34,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using ICSharpCode.NRefactory.CSharp;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
@@ -47,6 +46,8 @@ using System.IO;
 using MonoDevelop.CSharp.Formatting;
 using Gtk;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -60,9 +61,9 @@ namespace MonoDevelop.CSharp.Completion
 		string displayText;
 		Dictionary<string, CompletionData> overloads;
 
-		Mono.TextEditor.TextEditorData Editor {
+		TextEditor Editor {
 			get {
-				return editorCompletion.TextEditorData;
+				return editorCompletion.Editor;
 			}
 		}
 
@@ -179,7 +180,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		bool IsBracketAlreadyInserted (IMethod method)
 		{
-			int offset = Editor.Caret.Offset;
+			int offset = Editor.CaretOffset;
 			while (offset < Editor.Length) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsLetterOrDigit (ch))
@@ -208,7 +209,7 @@ namespace MonoDevelop.CSharp.Completion
 				offset--;
 			}
 
-			offset = Editor.Caret.Offset;
+			offset = Editor.CaretOffset;
 			while (offset < Editor.Length) {
 				char ch = Editor.GetCharAt (offset);
 				if (!char.IsLetterOrDigit (ch))
@@ -233,7 +234,7 @@ namespace MonoDevelop.CSharp.Completion
 			bool runCompletionCompletionCommand = false;
 			var method = Entity as IMethod;
 			if (addParens && !IsDelegateExpected && method != null && !HasNonMethodMembersWithSameName ((IMember)Entity) && !IsBracketAlreadyInserted (method)) {
-				var line = Editor.GetLine (Editor.Caret.Line);
+				var line = Editor.GetLine (Editor.CaretLine);
 				//var start = window.CodeCompletionContext.TriggerOffset + partialWord.Length + 2;
 				//var end = line.Offset + line.Length;
 				//string textToEnd = start < end ? Editor.GetTextBetween (start, end) : "";
@@ -318,9 +319,12 @@ namespace MonoDevelop.CSharp.Completion
 						}
 					}
 					if (keyChar == '(') {
-						var skipChar = Editor.SkipChars.LastOrDefault ();
-						if (skipChar != null && skipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && skipChar.Char == ')')
-							Editor.Remove (skipChar.Offset, 1);
+						var skipCharList = Editor.SkipChars;
+						if (skipCharList.Count > 0) {
+							var lastSkipChar = skipCharList[skipCharList.Count - 1];
+							if (lastSkipChar.Offset == (window.CodeCompletionContext.TriggerOffset + partialWord.Length) && lastSkipChar.Char == ')')
+								Editor.RemoveText (lastSkipChar.Offset, 1);
+						}
 					}
 				}
 				ka |= KeyActions.Ignore;
@@ -343,9 +347,9 @@ namespace MonoDevelop.CSharp.Completion
 				runCompletionCompletionCommand = true;
 			}
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, partialWord, text);
-			int offset = Editor.Caret.Offset;
+			int offset = Editor.CaretOffset;
 			for (int i = 0; i < skipChars; i++) {
-				Editor.SetSkipChar (offset, Editor.GetCharAt (offset));
+				Editor.AddSkipChar (offset, Editor.GetCharAt (offset));
 				offset++;
 			}
 			
@@ -384,7 +388,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		TypeSystemAstBuilder GetBuilder (ICompilation compilation)
 		{
-			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (editorCompletion.UnresolvedFileCompilation, editorCompletion.Document.Editor.Caret.Location) as CSharpTypeResolveContext;
+			var ctx = editorCompletion.CSharpUnresolvedFile.GetTypeResolveContext (editorCompletion.UnresolvedFileCompilation, editorCompletion.Editor.CaretLocation) as CSharpTypeResolveContext;
 			var state = new CSharpResolver (ctx);
 			var builder = new TypeSystemAstBuilder (state);
 			builder.AddAnnotations = true;
@@ -674,17 +678,13 @@ namespace MonoDevelop.CSharp.Completion
 
 		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension editorCompletion, CSharpResolver resolver, IEntity entity, bool smartWrap)
 		{
-			return CreateTooltipInformation (editorCompletion.UnresolvedFileCompilation, editorCompletion.CSharpUnresolvedFile, resolver, editorCompletion.TextEditorData, editorCompletion.FormattingPolicy, entity, smartWrap);
+			return CreateTooltipInformation (editorCompletion.UnresolvedFileCompilation, editorCompletion.CSharpUnresolvedFile, resolver, editorCompletion.Editor, editorCompletion.FormattingPolicy, entity, smartWrap);
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditor textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IEntity entity, bool smartWrap, bool createFooter = false)
 		{
 			return CreateTooltipInformation (compilation, file, null, textEditorData, formattingPolicy, entity, smartWrap, createFooter);
 		}
-
-		
-
-		
 
 		#region IOverloadedCompletionData implementation 
 	

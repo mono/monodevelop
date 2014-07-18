@@ -31,8 +31,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Web;
 using MonoDevelop.Ide;
 
-using MonoMac.AppKit;
-using MonoMac.Foundation;
+using AppKit;
+using Foundation;
 using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacIntegration

@@ -1,0 +1,8 @@
+<ExtensionModel>
+	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
+		<DebuggerEngine id="Mono.Debugger.Gdb" 
+			name="GNU Debugger (GDB)" 
+			features="ConditionalBreakpoints, Tracepoints, Catchpoints, Attaching, DebugFile, Stepping, Pause, Breakpoints, Disassembly"
+			type="MonoDevelop.Debugger.Gdb.GdbSessionFactory" />
+	</Extension>
+</ExtensionModel>

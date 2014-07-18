@@ -667,7 +667,7 @@ namespace MonoDevelop.Projects
 			SolutionEntityItem eitem = item as SolutionEntityItem;
 			if (eitem != null) {
 				eitem.NeedsReload = false;
-				if (eitem.SupportsBuild ()) {
+				if (eitem.SupportsBuild () || replacedItem != null) {
 					if (replacedItem == null) {
 						// Register the new entry in every solution configuration
 						foreach (SolutionConfiguration conf in Configurations)
@@ -726,8 +726,8 @@ namespace MonoDevelop.Projects
 			if (!reloading) {
 				foreach (SolutionConfiguration conf in Configurations)
 					conf.RemoveItem (item);
-				if (item is DotNetProject)
-					RemoveReferencesToProject ((DotNetProject)item);
+				if (item is Project)
+					RemoveReferencesToProject ((Project)item);
 
 				if (StartupItem == item)
 					StartupItem = null;
@@ -739,7 +739,7 @@ namespace MonoDevelop.Projects
 			item.FileName = item.FileName;
 		}
 		
-		void RemoveReferencesToProject (DotNetProject projectToRemove)
+		void RemoveReferencesToProject (Project projectToRemove)
 		{
 			if (projectToRemove == null)
 				return;

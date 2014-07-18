@@ -39,7 +39,7 @@ using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -126,10 +126,10 @@ namespace MonoDevelop.CSharp.Completion
 
 		public static TooltipInformation CreateTooltipInformation (CSharpCompletionTextEditorExtension ext, ICompilation compilation, CSharpUnresolvedFile file, IParameterizedMember entity, int currentParameter, bool smartWrap)
 		{
-			return CreateTooltipInformation (compilation, file, ext.TextEditorData, ext.FormattingPolicy, entity, currentParameter, smartWrap);
+			return CreateTooltipInformation (compilation, file, ext.Editor, ext.FormattingPolicy, entity, currentParameter, smartWrap);
 		}
 
-		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditorData textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)
+		public static TooltipInformation CreateTooltipInformation (ICompilation compilation, CSharpUnresolvedFile file, TextEditor textEditorData, MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy formattingPolicy, IParameterizedMember entity, int currentParameter, bool smartWrap)
 		{
 			var tooltipInfo = new TooltipInformation ();
 //			var resolver = file.GetResolver (compilation, textEditorData.Caret.Location);

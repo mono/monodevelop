@@ -26,12 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor.PopupWindow;
-using Mono.TextEditor;
+using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Tasks;
@@ -40,6 +38,9 @@ using System.Threading.Tasks;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 using ICSharpCode.NRefactory6.CSharp.Completion;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeTemplates
 {
@@ -79,7 +80,12 @@ namespace MonoDevelop.Ide.CodeTemplates
 			set;
 		}
 		
-		public MonoDevelop.Ide.Gui.Document Document {
+		public DocumentContext DocumentContext {
+			get;
+			set;
+		}
+
+		public TextEditor Editor {
 			get;
 			set;
 		}
@@ -97,7 +103,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var compilation = CurrentContext.Compilation;
 			if (compilation == null)
 				return null;
-			var enclosingSymbol = compilation.GetEnclosingSymbol (CurrentContext.Document.Editor.Caret.Offset);
+			var enclosingSymbol = compilation.GetEnclosingSymbol (CurrentContext.Editor.CaretOffset);
 
 			if (!(enclosingSymbol is ITypeSymbol))
 				enclosingSymbol = enclosingSymbol.ContainingType;
@@ -110,7 +116,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var compilation = CurrentContext.Compilation;
 			if (compilation == null)
 				return null;
-			var enclosingSymbol = compilation.GetEnclosingSymbol (CurrentContext.Document.Editor.Caret.Offset);
+			var enclosingSymbol = compilation.GetEnclosingSymbol (CurrentContext.Editor.CaretOffset);
 
 			if (!(enclosingSymbol is ITypeSymbol))
 				enclosingSymbol = enclosingSymbol.ContainingType;
@@ -125,9 +131,9 @@ namespace MonoDevelop.Ide.CodeTemplates
 			
 			string var = callback (varName);
 			
-			ITextEditorResolver textEditorResolver = CurrentContext.Document.GetContent <ITextEditorResolver> ();
+			ITextEditorResolver textEditorResolver = CurrentContext.DocumentContext.GetContent <ITextEditorResolver> ();
 			if (textEditorResolver != null) {
-				var result = textEditorResolver.GetLanguageItem (CurrentContext.Document.Editor.Document.LocationToOffset (CurrentContext.InsertPosition), var);
+				var result = textEditorResolver.GetLanguageItem (CurrentContext.Editor.LocationToOffset (CurrentContext.InsertPosition), var);
 				if (result.Type.IsReferenceType.HasValue && !result.Type.IsReferenceType.Value)
 					return "Length";
 			}
@@ -156,7 +162,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 			string var = callback (varName);
 
-			var offset = CurrentContext.Document.Editor.Caret.Offset;
+			var offset = CurrentContext.Editor.CaretOffset;
 			var sym = compilation.LookupSymbols (offset).First (s => s.Name == var);
 			if (sym == null)
 				return "var";
@@ -170,11 +176,11 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public IListDataProvider<string> GetCollections ()
 		{
 			var result = new List<CodeTemplateVariableValue> ();
-			var ext = CurrentContext.Document.GetContent <CompletionTextEditorExtension> ();
+			var ext = CurrentContext.DocumentContext.GetContent <CompletionTextEditorExtension> ();
 			if (ext != null) {
 				if (list == null)
 					list = ext.CodeCompletionCommand (
-						CurrentContext.Document.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
+						CurrentContext.DocumentContext.GetContent <MonoDevelop.Ide.CodeCompletion.ICompletionWidget> ().CurrentCodeCompletionContext);
 				
 				foreach (var data in list.OfType<ISymbolCompletionData> ()) {
 					if (GetElementType (data.Symbol.GetReturnType ()).TypeKind != TypeKind.Error) {
@@ -234,13 +240,14 @@ namespace MonoDevelop.Ide.CodeTemplates
 			var metadataName = string.IsNullOrEmpty (ns) ? name : ns + "." + name;
 			var type = compilation.Compilation.GetTypeByMetadataName (metadataName);
 			if (type != null) {
-				var minimalName = type.ToMinimalDisplayString (compilation, CurrentContext.Document.Editor.Caret.Offset);
+				var minimalName = type.ToMinimalDisplayString (compilation, CurrentContext.Editor.CaretOffset);
 				return string.IsNullOrEmpty (member) ? minimalName :  minimalName + "." + member;
 			}
 			return fullTypeName.Replace ("#", ".");
 		}
 		
-		static readonly Regex functionRegEx = new Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
+
+		static System.Text.RegularExpressions.Regex functionRegEx = new System.Text.RegularExpressions.Regex ("([^(]*)\\(([^(]*)\\)", RegexOptions.Compiled);
 		
 		
 		// We should use reflection here (but for 5 functions it doesn't hurt) !!! - Mike
@@ -261,7 +268,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		public virtual IListDataProvider<string> RunFunction (TemplateContext context, Func<string, string> callback, string function)
 		{
 			this.CurrentContext = context;
-			Match match = functionRegEx.Match (function);
+			var match = functionRegEx.Match (function);
 			if (!match.Success)
 				return null;
 			string name = match.Groups[1].Value;

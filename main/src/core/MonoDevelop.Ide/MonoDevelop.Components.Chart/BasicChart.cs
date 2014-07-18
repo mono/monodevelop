@@ -28,10 +28,8 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Gtk;
 using Gdk;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.Chart
 {

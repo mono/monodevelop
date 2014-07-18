@@ -28,9 +28,9 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CodeIssues;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AnalysisCore.Fixes
 {
@@ -98,7 +98,7 @@ namespace MonoDevelop.AnalysisCore.Fixes
 	public class GenericFixHandler : IFixHandler
 	{
 		#region IFixHandler implementation
-		public IEnumerable<IAnalysisFixAction> GetFixes (MonoDevelop.Ide.Gui.Document doc, object fix)
+		public IEnumerable<IAnalysisFixAction> GetFixes (TextEditor editor, DocumentContext context, object fix)
 		{
 			yield return (GenericFix)fix;
 		}

@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 {
@@ -37,7 +38,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeIssues
 		static NameConventionPanel ()
 		{
 			// ensure that custom text editor shemes are loaded.
-			MonoDevelop.SourceEditor.SourceEditorDisplayBinding.InitSourceEditor ();
+			TextEditorDisplayBinding.InitSourceEditor ();
 		}
 		
 		protected override string PolicyTitleWithMnemonic {

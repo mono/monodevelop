@@ -29,6 +29,7 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -45,7 +46,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.panel = panel;
 			this.Build ();
 			textEditor = new TextEditor ();
-			textEditor.Options = DefaultSourceEditorOptions.Instance;
+			textEditor.Options = new StyledSourceEditorOptions (MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance);
 			this.scrolledwindowTextEditor.Child = textEditor;
 			textEditor.ShowAll ();
 			
@@ -97,8 +98,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				if (editor == null)
 					continue;
 				doc.UpdateParseDocument ();
-				editor.Parent.TextViewMargin.PurgeLayoutCache ();
-				editor.Document.CommitUpdateAll ();
+//				editor.Parent.TextViewMargin.PurgeLayoutCache ();
+//				editor.Document.CommitUpdateAll ();
 			}
 		
 		}

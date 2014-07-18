@@ -92,6 +92,9 @@ namespace MonoDevelop.Ide.Gui
 				get {
 					return sb.Length;
 				}
+				set {
+					throw new NotSupportedException ();
+				}
 			}
 			
 			public int TextLength {
@@ -110,6 +113,12 @@ namespace MonoDevelop.Ide.Gui
 				get {
 					return null;
 				}
+			}
+
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+				// ignore
 			}
 			#endregion
 			public void AddChar (char ch)
@@ -806,6 +815,17 @@ namespace MonoDevelop.Ide.Gui
 			string output = RunSimulation ("", "ID11\t", true, true, false, "ID11Tag");
 			Assert.AreEqual ("ID11Tag", output);
 		}
+
+		/// <summary>
+		/// Bug 21121 - Aggressive completion for delegates
+		/// </summary>
+		[Test]
+		public void TestBug21121 ()
+		{
+			string output = RunSimulation ("", "d)", true, true, false, "d", "delegate ()");
+			Assert.AreEqual ("d", output);
+		}
+
 
 		[TestFixtureSetUp] 
 		public void SetUp()

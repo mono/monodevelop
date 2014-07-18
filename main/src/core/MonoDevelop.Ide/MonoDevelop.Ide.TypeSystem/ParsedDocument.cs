@@ -31,8 +31,7 @@ using System.Linq;
 using System.Threading;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Semantics;
-using Mono.TextEditor;
-
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -251,6 +250,8 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		#endregion
 
+		public Func<ITextDocument, DocumentLocation,  DocumentContext, CancellationToken, IRefactoringContext> CreateRefactoringContext;
+		public Func<ITextDocument, DocumentLocation, object, CancellationToken, IRefactoringContext> CreateRefactoringContextWithEditor;
 	}
 	
 	public class DefaultParsedDocument : ParsedDocument, IUnresolvedFile

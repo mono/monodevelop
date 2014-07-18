@@ -1,21 +1,21 @@
-// 
+//
 // MSBuildResult.cs
-//  
+//
 // Author:
-//       Lluis Sanchez Gual <lluis@novell.com>
-// 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
-// 
+//       Michael Hutchinson <m.j.hutchinson@gmail.com>
+//
+// Copyright (c) 2014 Xamarin Inc.
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,90 +25,35 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
 	[Serializable]
 	public class MSBuildResult
 	{
-		public MSBuildResult (
-			string projectFile, bool isWarning, string subcategory, string code, string file,
-			int lineNumber, int columnNumber, int endLineNumber, int endColumnNumber,
-			string message, string helpKeyword)
-		{
-			ProjectFile = projectFile;
-			IsWarning = isWarning;
-			Subcategory = subcategory;
-			Code = code;
-			File = file;
-			LineNumber = lineNumber;
-			ColumnNumber = columnNumber;
-			EndLineNumber = endLineNumber;
-			EndColumnNumber = endColumnNumber;
-			Message = message;
-			HelpKeyword = helpKeyword;
-		}
-		
-		public string ProjectFile { get; set; }
-		public bool IsWarning { get; set; }
-		public string Subcategory { get; set; }
-		public string Code { get; set; }
-		public string File { get; set; }
-		public int LineNumber { get; set; }
-		public int ColumnNumber { get; set; }
-		public int EndLineNumber { get; set; }
-		public int EndColumnNumber { get; set; }
-		public string Message { get; set; }
-		public string HelpKeyword { get; set; }
+		readonly MSBuildTargetResult[] errors;
+		readonly Dictionary<string,string> properties;
+		readonly Dictionary<string,List<MSBuildEvaluatedItem>> items;
 
-		public override string ToString ()
+		public MSBuildResult (MSBuildTargetResult[] errors)
 		{
-			var sb = new StringBuilder ();
-			if (!string.IsNullOrEmpty (File)) {
-				sb.Append (File);
-				if (LineNumber > 0) {
-					//(line)
-					sb.Append ("(");
-					sb.Append (LineNumber);
-					if (ColumnNumber > 0) {
-						//(line,col)
-						sb.Append (",");
-						sb.Append (ColumnNumber);
-						if (EndColumnNumber > 0) {
-							if (EndLineNumber > 0) {
-								//(line,col,line,col)
-								sb.Append (",");
-								sb.Append (EndLineNumber);
-								sb.Append (",");
-								sb.Append (EndColumnNumber);
-							} else {
-								//(line,col-col)
-								sb.Append ("-");
-								sb.Append (EndColumnNumber);
-							}
-						}
-					} else if (EndLineNumber > 0) {
-						//(line-line)
-						sb.Append ("-");
-						sb.Append (EndLineNumber);
-					}
-					sb.Append (")");
-				}
-				sb.Append (": ");
-			}
-			if (!string.IsNullOrEmpty (Subcategory)) {
-				sb.Append (Subcategory);
-				sb.Append (" ");
-			}
-			sb.Append (IsWarning ? "warning" : "error");
-			if (!string.IsNullOrEmpty (Code)) {
-				sb.Append (" ");
-				sb.Append (Code);
-			}
-			sb.Append (": ");
-			sb.Append (Message);
-			return sb.ToString ();
+			this.errors = errors;
+			this.properties = new Dictionary<string,string> ();
+			this.items = new Dictionary<string,List<MSBuildEvaluatedItem>> ();
+		}
+
+		public MSBuildTargetResult[] Errors {
+			get { return errors; }
+		}
+
+		public Dictionary<string,List<MSBuildEvaluatedItem>> Items {
+			get { return items; }
+		}
+
+		public Dictionary<string, string> Properties {
+			get { return properties; }
 		}
 	}
+
 }

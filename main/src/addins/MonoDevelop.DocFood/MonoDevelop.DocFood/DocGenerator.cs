@@ -28,12 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using Mono.TextEditor;
 using MonoDevelop.Core;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DocFood
 {
@@ -48,7 +48,7 @@ namespace MonoDevelop.DocFood
 			
 		}
 		
-		public DocGenerator (TextEditorData data)
+		public DocGenerator (TextEditor data)
 		{
 //			this.data = data;
 		}

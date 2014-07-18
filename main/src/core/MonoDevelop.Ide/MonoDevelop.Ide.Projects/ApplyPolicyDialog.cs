@@ -30,6 +30,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Text;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -201,7 +202,7 @@ namespace MonoDevelop.Ide.Projects
 				return true;
 			}
 			
-			using (var layout = Mono.TextEditor.PangoUtil.CreateLayout (this)) {
+			using (var layout = PangoUtil.CreateLayout (this)) {
 				layout.SetMarkup ("<i>" + GLib.Markup.EscapeText (message) + "</i>");
 				int w, h;
 				layout.GetPixelSize (out w, out h);

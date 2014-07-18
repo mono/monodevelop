@@ -20,6 +20,7 @@
     <Condition Message="Gtk# version 2.12.9 or greater must be installed.">
       <![CDATA[GTKSHARPVERSION >= "2.12" OR REMOVE ~= "ALL"]]>
     </Condition>
+    <Condition Message="[ProductName] requires at least Windows Vista">VersionNT >= 600</Condition>
 
     <!-- Ensure .Net 4.0 is installed -->
     <PropertyRef Id="NETFRAMEWORK40FULL" />

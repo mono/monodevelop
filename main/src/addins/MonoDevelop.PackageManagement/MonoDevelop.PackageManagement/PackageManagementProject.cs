@@ -67,6 +67,10 @@ namespace ICSharpCode.PackageManagement
 			get { return project.DotNetProject; }
 		}
 
+		public IDotNetProject Project {
+			get { return project; }
+		}
+
 		public FrameworkName TargetFramework {
 			get { return GetTargetFramework(); }
 		}
@@ -89,6 +93,16 @@ namespace ICSharpCode.PackageManagement
 			
 				projectManager.Logger = value;
 				projectManager.Project.Logger = value;
+
+				ConfigureLoggerForSourceRepository ();
+			}
+		}
+
+		void ConfigureLoggerForSourceRepository ()
+		{
+			var aggregateRepository = SourceRepository as AggregateRepository;
+			if (aggregateRepository != null) {
+				aggregateRepository.Logger = Logger;
 			}
 		}
 		
@@ -179,12 +193,22 @@ namespace ICSharpCode.PackageManagement
 		{
 			return new UpdatePackagesAction(this, packageManagementEvents);
 		}
+
+		public ReinstallPackageAction CreateReinstallPackageAction ()
+		{
+			return new ReinstallPackageAction (this, packageManagementEvents);
+		}
 		
 		public IEnumerable<PackageOperation> GetUpdatePackagesOperations(
 			IEnumerable<IPackage> packages,
 			IUpdatePackageSettings settings)
 		{
 			return packageManager.GetUpdatePackageOperations(packages, settings);
+		}
+
+		public ReinstallPackageOperations GetReinstallPackageOperations (IEnumerable<IPackage> packages)
+		{
+			return packageManager.GetReinstallPackageOperations (packages);
 		}
 		
 		public void RunPackageOperations(IEnumerable<PackageOperation> operations)
@@ -202,9 +226,32 @@ namespace ICSharpCode.PackageManagement
 			packageManager.UpdatePackageReference(package, settings);
 		}
 
+		public void AddPackageReference (IPackage package)
+		{
+			bool allowPrerelease = !package.IsReleaseVersion ();
+			bool ignoreDependencies = true;
+			packageManager.AddPackageReference (package, ignoreDependencies, allowPrerelease);
+		}
+
 		public IPackage FindPackage(string packageId)
 		{
 			return projectManager.LocalRepository.FindPackage (packageId);
+		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			return projectManager.GetPackageReferences ();
+		}
+
+		public bool AnyUnrestoredPackages ()
+		{
+			return GetPackageReferences ()
+				.Any (packageReference => !IsPackageInstalled (packageReference));
+		}
+
+		bool IsPackageInstalled (PackageReference packageReference)
+		{
+			return projectManager.LocalRepository.Exists (packageReference.Id, packageReference.Version);
 		}
 	}
 }

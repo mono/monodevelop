@@ -26,9 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 using System.Collections.Generic;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.FindInFiles
 {

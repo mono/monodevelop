@@ -26,13 +26,13 @@
 
 using System;
 
-using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Debugger
 {
 	public interface IDebuggerExpressionResolver
 	{
-		string ResolveExpression (TextEditorData editor, Document doc, int offset, out int startOffset);
+		string ResolveExpression (IReadonlyTextDocument editor, Document doc, int offset, out int startOffset);
 	}
 }

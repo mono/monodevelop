@@ -43,9 +43,10 @@ namespace MonoDevelop.Ide.Gui
 		public static readonly Cairo.Color TabBarBackgroundColor = CairoExtensions.ParseColor ("c2c2c2");
 		public static readonly Cairo.Color TabBarActiveTextColor = new Cairo.Color (0, 0, 0);
 
-		public static readonly Cairo.Color TabBarGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
-		public static readonly Cairo.Color TabBarGradientMidColor = TabBarBackgroundColor;
-		public static readonly Cairo.Color TabBarGradientEndColor = Shift (TabBarBackgroundColor, 0.9);
+		public static readonly Cairo.Color TabBarActiveGradientStartColor = Shift (TabBarBackgroundColor, 0.92);
+		public static readonly Cairo.Color TabBarActiveGradientEndColor = TabBarBackgroundColor;
+		public static readonly Cairo.Color TabBarGradientStartColor = Shift (TabBarBackgroundColor, 1.02);
+		public static readonly Cairo.Color TabBarGradientEndColor = TabBarBackgroundColor;
 		public static readonly Cairo.Color TabBarGradientShadowColor = Shift (TabBarBackgroundColor, 0.8);
 		public static readonly Cairo.Color TabBarHoverActiveTextColor = TabBarActiveTextColor;
 		public static readonly Cairo.Color TabBarInactiveTextColor = Blend (new Cairo.Color (0, 0, 0), TabBarGradientStartColor, 0.4);
@@ -114,7 +115,7 @@ namespace MonoDevelop.Ide.Gui
 		public static int ProgressBarInnerPadding { get { return (int)(4 * PixelScale); } }
 		public static int ProgressBarOuterPadding { get { return (int)(4 * PixelScale); } }
 
-		static readonly double PixelScale = Mono.TextEditor.GtkWorkarounds.GetPixelScale ();
+		static readonly double PixelScale = GtkWorkarounds.GetPixelScale ();
 
 		// Toolbar
 

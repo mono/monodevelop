@@ -29,7 +29,6 @@ using System.ComponentModel;
 using Gtk;
 
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {
@@ -251,7 +250,7 @@ namespace MonoDevelop.Components
 					if (DataProvider != null) {
 						DataProvider.Reset ();
 						if (DataProvider.IconCount > 0) {
-							window = new DropDownBoxListWindow (DataProvider);
+							window = new DropDownBoxListWindow (DataProvider, WindowType.Popup);
 							window.list.SelectItem += delegate {
 								SetItem (window.list.Selection);
 							};

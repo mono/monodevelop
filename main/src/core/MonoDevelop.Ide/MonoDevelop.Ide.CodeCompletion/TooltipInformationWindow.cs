@@ -30,7 +30,8 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Fonts;
 using System.Linq;
-using Mono.TextEditor.PopupWindow;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -65,7 +66,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public void AddOverload (TooltipInformation tooltipInformation)
 		{
-			if (tooltipInformation == null || string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
+			if (tooltipInformation == null || tooltipInformation.IsEmpty)
 				return;
 			overloads.Add (tooltipInformation);
 
@@ -80,7 +81,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public void AddOverload (CompletionData data)
 		{
 			var tooltipInformation = data.CreateTooltipInformation (false);
-			if (string.IsNullOrEmpty (tooltipInformation.SignatureMarkup))
+			if (tooltipInformation.IsEmpty)
 				return;
 
 			using (var layout = new Pango.Layout (PangoContext)) {
@@ -110,7 +111,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (current_overload >= 0 && current_overload < overloads.Count) {
 				var o = overloads[current_overload];
 				headLabel.Markup = o.SignatureMarkup;
-				headLabel.Visible = true;
+				headLabel.Visible = !string.IsNullOrEmpty (o.SignatureMarkup);
 				int x, y;
 				GetPosition (out x, out y);
 				var geometry = DesktopService.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
@@ -197,11 +198,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			vbox.Spacing = 2;
 
-			var catLabel = new FixedWidthWrapLabel ();
-			catLabel.Text = categoryName;
-			catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
+			if (categoryName != null) {
+				var catLabel = new FixedWidthWrapLabel ();
+				catLabel.Text = categoryName;
+				catLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
 
-			vbox.PackStart (catLabel, false, true, 0);
+				vbox.PackStart (catLabel, false, true, 0);
+			}
 
 			var contentLabel = new FixedWidthWrapLabel ();
 			contentLabel.Wrap = Pango.WrapMode.WordChar;
@@ -222,7 +225,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		internal void SetDefaultScheme ()
 		{
-			var scheme = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
+			var scheme = SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme);
 			Theme.SetSchemeColors (scheme);
 			foreColor = scheme.PlainText.Foreground;
 			headLabel.ModifyFg (StateType.Normal, foreColor.ToGdkColor ());
@@ -233,8 +236,6 @@ namespace MonoDevelop.Ide.CodeCompletion
 			TypeHint = Gdk.WindowTypeHint.Tooltip;
 			this.SkipTaskbarHint = true;
 			this.SkipPagerHint = true;
-			if (IdeApp.Workbench != null)
-				this.TransientFor = IdeApp.Workbench.RootWindow;
 			this.AllowShrink = false;
 			this.AllowGrow = false;
 			this.CanFocus = false;

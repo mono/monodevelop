@@ -36,9 +36,9 @@ using System.Threading;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp;
-using Mono.TextEditor.Utils;
 using System.Text;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -77,10 +77,8 @@ namespace MonoDevelop.CodeIssues
 				var fileSummaries = issueSummaries.Where (summary => summary.File == file);
 				var inspectorIds = new HashSet<string> (fileSummaries.Select (summary => summary.InspectorIdString));
 				
-				bool hadBom;
-				Encoding encoding;
 				bool isOpen;
-				var data = TextFileProvider.Instance.GetTextEditorData (file.FilePath, out hadBom, out encoding, out isOpen);
+				var data = TextFileProvider.Instance.GetTextEditorData (file.FilePath, out isOpen);
 				IRefactoringContext refactoringContext;
 				var realActions = GetIssues (data, file, inspectorIds, out refactoringContext).SelectMany (issue => issue.Actions).ToList ();
 				if (realActions.Count == 0 || refactoringContext == null)
@@ -94,13 +92,13 @@ namespace MonoDevelop.CodeIssues
 				
 				if (!isOpen) {
 					// If the file is open we leave it to the user to explicitly save the file
-					TextFileUtility.WriteText (file.Name, data.Text, encoding, hadBom);
+					data.Save ();
 				}
 			});
 			return appliedActions;
 		}
 
-		static IList<CodeIssue> GetIssues (TextEditorData data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
+		static IList<CodeIssue> GetIssues (ITextDocument data, ProjectFile file, ISet<string> inspectorIds, out IRefactoringContext refactoringContext)
 		{
 			var issues = new List<CodeIssue> ();
 //			
@@ -131,7 +129,7 @@ namespace MonoDevelop.CodeIssues
 			return issues;
 		}
 
-		static IList<CodeIssueProvider> GetInspectors (TextEditorData editor, ICollection<string> inspectorIds)
+		static IList<CodeIssueProvider> GetInspectors (IReadonlyTextDocument editor, ICollection<string> inspectorIds)
 		{
 			var inspectors = RefactoringService.GetInspectors (editor.MimeType).ToList ();
 			return inspectors

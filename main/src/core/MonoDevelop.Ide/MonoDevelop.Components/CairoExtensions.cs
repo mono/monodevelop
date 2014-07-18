@@ -33,7 +33,6 @@ using System.Runtime.InteropServices;
 using Gdk;
 using Cairo;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {

@@ -43,10 +43,11 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageManagementSolution(
 			IRegisteredPackageRepositories registeredPackageRepositories,
+			IPackageManagementProjectService projectService,
 			IPackageManagementEvents packageManagementEvents)
 			: this(
 				registeredPackageRepositories,
-				new PackageManagementProjectService(),
+				projectService,
 				new PackageManagementProjectFactory(packageManagementEvents),
 				new SolutionPackageRepositoryFactory())
 		{
@@ -108,7 +109,15 @@ namespace ICSharpCode.PackageManagement
 
 		IPackageManagementProject CreateProject (IPackageRepository sourceRepository, IDotNetProject project)
 		{
+			if (!(sourceRepository is AggregateRepository)) {
+				sourceRepository = CreateFallbackRepository (sourceRepository);
+			}
 			return projectFactory.CreateProject (sourceRepository, project);
+		}
+
+		IPackageRepository CreateFallbackRepository (IPackageRepository repository)
+		{
+			return new FallbackRepository (repository, registeredPackageRepositories.CreateAggregateRepository ());
 		}
 
 		IPackageRepository CreatePackageRepository(PackageSource source)
@@ -202,7 +211,7 @@ namespace ICSharpCode.PackageManagement
 		public IEnumerable<IPackageManagementProject> GetProjects(IPackageRepository sourceRepository)
 		{
 			foreach (IDotNetProject dotNetProject in GetDotNetProjects ()) {
-				yield return projectFactory.CreateProject(sourceRepository, dotNetProject);
+				yield return CreateProject (sourceRepository, dotNetProject);
 			}
 		}
 	}

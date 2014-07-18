@@ -48,11 +48,14 @@ namespace ICSharpCode.PackageManagement
 		static readonly BackgroundPackageActionRunner backgroundPackageActionRunner;
 		static readonly IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		static readonly PackageManagementProgressProvider progressProvider;
-		
+		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
+		static readonly PackageCompatibilityHandler packageCompatibilityHander;
+		static readonly UpdatedPackagesInSolution updatedPackagesInSolution;
+
 		static PackageManagementServices()
 		{
 			options = new PackageManagementOptions();
-			packageRepositoryCache = new PackageRepositoryCache(options.PackageSources, options.RecentPackages);
+			packageRepositoryCache = new PackageRepositoryCache (options);
 			userAgentGenerator = new UserAgentGeneratorForRepositoryRequests ();
 			userAgentGenerator.Register (packageRepositoryCache);
 			progressProvider = new PackageManagementProgressProvider (packageRepositoryCache);
@@ -61,11 +64,16 @@ namespace ICSharpCode.PackageManagement
 			projectTemplatePackageRepositoryCache = new ProjectTemplatePackageRepositoryCache(projectTemplatePackageSources);
 			
 			outputMessagesView = new PackageManagementOutputMessagesView(packageManagementEvents);
-			solution = new PackageManagementSolution(registeredPackageRepositories, packageManagementEvents);
+			solution = new PackageManagementSolution (registeredPackageRepositories, projectService, packageManagementEvents);
 			packageActionRunner = new PackageActionRunner(packageManagementEvents);
 
 			progressMonitorFactory = new PackageManagementProgressMonitorFactory ();
 			backgroundPackageActionRunner = new BackgroundPackageActionRunner (progressMonitorFactory, packageManagementEvents, progressProvider);
+
+			projectTargetFrameworkMonitor = new ProjectTargetFrameworkMonitor (projectService);
+			packageCompatibilityHander = new PackageCompatibilityHandler (projectTargetFrameworkMonitor);
+
+			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories, packageManagementEvents);
 
 			InitializeCredentialProvider();
 		}
@@ -132,6 +140,14 @@ namespace ICSharpCode.PackageManagement
 
 		public static IRecentPackageRepository RecentPackageRepository {
 			get { return packageRepositoryCache.RecentPackageRepository; }
+		}
+
+		public static IProgressProvider ProgressProvider {
+			get { return progressProvider; }
+		}
+
+		public static IUpdatedPackagesInSolution UpdatedPackagesInSolution {
+			get { return updatedPackagesInSolution; }
 		}
 	}
 }

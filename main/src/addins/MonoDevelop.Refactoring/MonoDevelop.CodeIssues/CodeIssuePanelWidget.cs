@@ -28,14 +28,13 @@ using MonoDevelop.Ide.Gui.Dialogs;
 using Gtk;
 using MonoDevelop.Core;
 using System.Linq;
-using MonoDevelop.SourceEditor;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.Refactoring;
 using GLib;
 using MonoDevelop.Components;
 using Gdk;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.CodeActions;
 using Microsoft.CodeAnalysis;
@@ -164,7 +163,7 @@ namespace MonoDevelop.CodeIssues
 				.OrderBy (g => g.Key, StringComparer.Ordinal);
 
 			foreach (var g in grouped) {
-				TreeIter categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>", null, "");
+				TreeIter categoryIter = treeStore.AppendValues ("<b>" + g.Key + "</b>", null, null);
 				categories [g.Key] = categoryIter;
 
 				foreach (var node in g.OrderBy (n => n.Item1.Name, StringComparer.Ordinal)) {

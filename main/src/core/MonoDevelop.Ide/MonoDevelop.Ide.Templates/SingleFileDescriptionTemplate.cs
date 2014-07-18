@@ -40,6 +40,7 @@ using MonoDevelop.Ide.StandardHeader;
 using System.Text;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.CodeFormatting;
+using MonoDevelop.Ide.Editor;
 using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.Templates
@@ -285,7 +286,7 @@ namespace MonoDevelop.Ide.Templates
 				ms.Write (data, 0, data.Length);
 			}
 			
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
+			var doc = TextEditorFactory.CreateNewDocument ();
 			doc.Text = content;
 			
 			TextStylePolicy textPolicy = policyParent != null ? policyParent.Policies.Get<TextStylePolicy> ("text/plain")
@@ -295,7 +296,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			var tabToSpaces = textPolicy.TabsToSpaces? new string (' ', textPolicy.TabWidth) : null;
 			
-			foreach (Mono.TextEditor.DocumentLine line in doc.Lines) {
+			foreach (var line in doc.GetLines ()) {
 				var lineText = doc.GetTextAt (line.Offset, line.Length);
 				if (tabToSpaces != null)
 					lineText = lineText.Replace ("\t", tabToSpaces);
@@ -340,10 +341,8 @@ namespace MonoDevelop.Ide.Templates
 			
 			//need a default namespace or if there is no project, substitutions can get very messed up
 			string ns;
-			if (netProject != null)
-				ns = netProject.GetDefaultNamespace (fileName);
-			else if (project is SharedAssetsProject)
-				ns = ((SharedAssetsProject)project).DefaultNamespace;
+			if (project is IDotNetFileContainer)
+				ns = ((IDotNetFileContainer)project).GetDefaultNamespace (fileName);
 			else
 				ns = "Application";
 			

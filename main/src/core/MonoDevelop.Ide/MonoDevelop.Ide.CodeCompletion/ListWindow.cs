@@ -25,21 +25,22 @@
 //
 //
 
-using Gtk;
-using Gdk;
-using Pango;
 using System;
-using System.Xml;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Core.Text;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using Mono.TextEditor;
 using MonoDevelop.Ide.Gui.Content;
+using System.Linq;
+using Gdk;
+using Gtk;
+using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Components;
-using Mono.TextEditor.Highlighting;
-using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -445,9 +446,15 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 			// special case end with punctuation like 'param:' -> don't input double punctuation, otherwise we would end up with 'param::'
 			if (char.IsPunctuation (keyChar) && keyChar != '_') {
-				foreach (var item in FilteredItems) {
-					if (DataProvider.GetText (item).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
-						list.SelectedItem = item;
+				if (keyChar == ':') {
+					foreach (var item in FilteredItems) {
+						if (DataProvider.GetText (item).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
+							list.SelectedItem = item;
+							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
+						}
+					}
+				} else {
+					if (DataProvider.GetText (list.SelectedItem).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
 						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}
 				}

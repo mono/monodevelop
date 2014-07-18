@@ -36,6 +36,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects.Text;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.VersionControl.Views
 {
@@ -611,10 +612,11 @@ namespace MonoDevelop.VersionControl.Views
 				throw new InvalidOperationException ("Version control info must be set before attaching the merge view to an editor.");
 			dict[data.Document] = data;
 			
-			var editor = info.Document.GetContent <ITextFile> ();
-			if (editor != null)
+			var editor = info.Document.GetContent <MonoDevelop.Ide.Editor.IReadonlyTextDocument> ();
+			if (editor != null) {
 				data.Document.Text = editor.Text;
-			data.Document.ReadOnly = info.Document.GetContent<IEditableTextFile> () == null;
+				data.Document.ReadOnly = editor.IsReadOnly;
+			}
 			
 			CreateDiff ();
 			data.Document.TextReplaced += HandleDataDocumentTextReplaced;
@@ -624,9 +626,8 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			var data = dict [(TextDocument)sender];
 			localUpdate.Remove (data);
-			var editor = info.Document.GetContent<IEditableTextFile> ();
-			editor.DeleteText (e.Offset, e.RemovalLength);
-			editor.InsertText (e.Offset, e.InsertedText.Text);
+			var editor = info.Document.GetContent<MonoDevelop.Ide.Editor.ITextDocument> ();
+			editor.ReplaceText (e.Offset, e.RemovalLength, e.InsertedText.Text);
 			localUpdate.Add (data);
 			UpdateDiff ();
 		}
@@ -888,7 +889,7 @@ namespace MonoDevelop.VersionControl.Views
 								//	mx -= (int)x;
 								//	my -= (int)y;
 									using (var gradient = new Cairo.RadialGradient (mx, my, h, mx, my, 2)) {
-										var color = (HslColor)Style.Mid (StateType.Normal);
+										var color = (MonoDevelop.Components.HslColor)Style.Mid (StateType.Normal);
 										color.L *= 1.05;
 										gradient.AddColorStop (0, color);
 										color.L *= 1.07;
@@ -896,11 +897,11 @@ namespace MonoDevelop.VersionControl.Views
 										cr.SetSource (gradient);
 									}
 								} else {
-									cr.SetSourceColor ((HslColor)Style.Mid (StateType.Normal));
+									cr.SetSourceColor ((MonoDevelop.Components.HslColor)Style.Mid (StateType.Normal));
 								}
 								cr.FillPreserve ();
 								
-								cr.SetSourceColor ((HslColor)Style.Dark (StateType.Normal));
+								cr.SetSourceColor ((MonoDevelop.Components.HslColor)Style.Dark (StateType.Normal));
 								cr.Stroke ();
 								cr.LineWidth = 1;
 								cr.SetSourceRGB (0, 0, 0);

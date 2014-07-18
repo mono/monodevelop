@@ -26,7 +26,6 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide;
@@ -42,6 +41,7 @@ using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using System.Threading;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Resolver
 {
@@ -49,7 +49,7 @@ namespace MonoDevelop.CSharp.Resolver
 	{
 		#region ITextEditorResolverProvider implementation
 		
-		public string GetExpression (Mono.TextEditor.TextEditorData data, int offset)
+		public string GetExpression (IReadonlyTextDocument data, int offset)
 		{
 			if (offset < 0)
 				return "";

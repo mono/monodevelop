@@ -48,12 +48,12 @@ namespace MonoDevelop.CSharp
 			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
-			var node = unit.GetNodeAt (doc.Editor.Caret.Location);
+			var node = unit.GetNodeAt (doc.Editor.CaretLocation);
 			if (node == null)
 				return;
 			
 			if (doc.Editor.IsSomethingSelected) {
-				while (node != null && doc.Editor.MainSelection.IsSelected (node.StartLocation, node.EndLocation)) {
+				while (node != null && ShrinkSelectionHandler.IsSelected (doc.Editor, node.StartLocation, node.EndLocation)) {
 					node = node.Parent;
 				}
 			}
@@ -65,6 +65,12 @@ namespace MonoDevelop.CSharp
 	
 	class ShrinkSelectionHandler : CommandHandler
 	{
+		internal static bool IsSelected (MonoDevelop.Ide.Editor.TextEditor editor, ICSharpCode.NRefactory.TextLocation startLocation, ICSharpCode.NRefactory.TextLocation endLocation)
+		{
+			var selection = editor.SelectionRegion;
+			return selection.Contains (startLocation) && selection.Contains (endLocation);
+		}
+
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -74,13 +80,13 @@ namespace MonoDevelop.CSharp
 			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
-			var node = unit.GetNodeAt (doc.Editor.Caret.Line, doc.Editor.Caret.Column);
+			var node = unit.GetNodeAt (doc.Editor.CaretLine, doc.Editor.CaretColumn);
 			if (node == null)
 				return;
 			var nodeStack = new Stack<AstNode> ();
 			nodeStack.Push (node);
 			if (doc.Editor.IsSomethingSelected) {
-				while (node != null && doc.Editor.MainSelection.IsSelected (node.StartLocation, node.EndLocation)) {
+				while (node != null && IsSelected (doc.Editor, node.StartLocation, node.EndLocation)) {
 					node = node.Parent;
 					if (node != null) {
 						if (nodeStack.Count > 0 && nodeStack.Peek ().StartLocation == node.StartLocation && nodeStack.Peek ().EndLocation == node.EndLocation)

@@ -185,6 +185,9 @@ namespace MonoDevelop.Debugger
 			get {
 				return entry.Position;
 			}
+			set {
+				entry.Position = value;
+			}
 		}
 		
 		char ICompletionWidget.GetChar (int offset)
@@ -256,6 +259,11 @@ namespace MonoDevelop.Debugger
 			get {
 				return entry.Style;
 			}
+		}
+
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
 		}
 		#endregion 
 	}

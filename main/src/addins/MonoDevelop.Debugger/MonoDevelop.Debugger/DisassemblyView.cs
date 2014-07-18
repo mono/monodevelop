@@ -35,10 +35,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using TextEditor = Mono.TextEditor.TextEditor;
-using Mono.TextEditor;
 using Mono.Debugging.Client;
-using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Debugger
 {
@@ -50,10 +48,10 @@ namespace MonoDevelop.Debugger
 		int lastLine;
 		Dictionary<string,int> addressLines = new Dictionary<string,int> ();
 		bool autoRefill;
-		CurrentDebugLineTextMarker currentDebugLineMarker;
+		ICurrentDebugLineTextMarker currentDebugLineMarker;
 		bool dragging;
 		FilePath currentFile;
-		AsmLineMarker asmMarker = new AsmLineMarker ();
+		ITextLineMarker asmMarker;
 		
 		List<AssemblyLine> cachedLines = new List<AssemblyLine> ();
 		string cachedLinesAddrSpace;
@@ -64,12 +62,11 @@ namespace MonoDevelop.Debugger
 		{
 			ContentName = GettextCatalog.GetString ("Disassembly");
 			sw = new Gtk.ScrolledWindow ();
-			editor = new TextEditor ();
-			editor.Document.ReadOnly = true;
-			
-			editor.Options = new CommonTextEditorOptions {
-				ShowLineNumberMargin = false,
-			};
+			editor = TextEditorFactory.CreateNewEditor ();
+			editor.IsReadOnly = true;
+			asmMarker = TextMarkerFactory.CreateAsmLineMarker (editor);
+
+			editor.Options = DefaultSourceEditorOptions.PlainEditor;
 			
 			sw.Add (editor);
 			sw.HscrollbarPolicy = Gtk.PolicyType.Automatic;
@@ -83,7 +80,7 @@ namespace MonoDevelop.Debugger
 			
 			sw.Sensitive = false;
 			
-			currentDebugLineMarker = new CurrentDebugLineTextMarker (editor);
+			currentDebugLineMarker = TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor);
 			DebuggingService.StoppedEvent += OnStop;
 		}
 		
@@ -99,7 +96,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
 		}
 
@@ -113,7 +110,7 @@ namespace MonoDevelop.Debugger
 		{
 			autoRefill = false;
 			
-			editor.Document.RemoveMarker (currentDebugLineMarker);
+			editor.RemoveMarker (currentDebugLineMarker);
 			
 			if (DebuggingService.CurrentFrame == null) {
 				sw.Sensitive = false;
@@ -144,7 +141,7 @@ namespace MonoDevelop.Debugger
 				}
 				currentFile = sf.SourceLocation.FileName;
 				addressLines.Clear ();
-				editor.Document.Text = string.Empty;
+				editor.Text = string.Empty;
 				StreamReader sr = new StreamReader (sf.SourceLocation.FileName);
 				string line;
 				int sourceLine = 1;
@@ -160,9 +157,9 @@ namespace MonoDevelop.Debugger
 					}
 					sourceLine++;
 				}
-				editor.Document.Text = sb.ToString ();
+				editor.Text = sb.ToString ();
 				foreach (int li in asmLineNums)
-					editor.Document.AddMarker (li, asmMarker);
+					editor.AddMarker (li, asmMarker);
 			}
 			int aline;
 			if (!addressLines.TryGetValue (GetAddrId (sf.Address, sf.AddressSpace), out aline))
@@ -208,8 +205,8 @@ namespace MonoDevelop.Debugger
 			firstLine = -150;
 			lastLine = 150;
 			
-			editor.Document.MimeType = "text/plain";
-			editor.Document.Text = string.Empty;
+			editor.MimeType = "text/plain";
+			editor.Text = string.Empty;
 			InsertLines (0, firstLine, lastLine, out firstLine, out lastLine);
 			
 			autoRefill = true;
@@ -219,19 +216,18 @@ namespace MonoDevelop.Debugger
 		
 		void UpdateCurrentLineMarker (bool moveCaret)
 		{
-			editor.Document.RemoveMarker (currentDebugLineMarker);
+			editor.RemoveMarker (currentDebugLineMarker);
 			StackFrame sf = DebuggingService.CurrentFrame;
 			int line;
 			if (addressLines.TryGetValue (GetAddrId (sf.Address, sf.AddressSpace), out line)) {
-				editor.Document.AddMarker (line, currentDebugLineMarker);
+				editor.AddMarker (line, currentDebugLineMarker);
 				if (moveCaret) {
-					editor.Caret.Line = line;
+					editor.CaretLine = line;
 					GLib.Timeout.Add (100, delegate {
 						editor.CenterToCaret ();
 						return false;
 					});
 				}
-				editor.QueueDraw ();
 			}
 		}
 		
@@ -253,8 +249,9 @@ namespace MonoDevelop.Debugger
 			if (!autoRefill || dragging)
 				return;
 			
-			DocumentLocation loc = editor.PointToLocation (0, 0);
-			DocumentLocation loc2 = editor.PointToLocation (0, editor.Allocation.Height);
+			var loc = editor.PointToLocation (0, 0);
+			Gtk.Widget widget = editor;
+			var loc2 = editor.PointToLocation (0, widget.Allocation.Height);
 			//bool moveCaret = editor.Caret.Line >= loc.Line && editor.Caret.Line <= loc2.Line;
 			
 			if (firstLine != int.MinValue && loc.Line < FillMarginLines) {
@@ -269,17 +266,17 @@ namespace MonoDevelop.Debugger
 				addressLines = newLines;
 				
 				//if (moveCaret)
-					editor.Caret.Line += num;
+					editor.CaretLine += num;
 				
 				double hinc = num * editor.LineHeight;
 				sw.Vadjustment.Value += hinc;
 				
 				UpdateCurrentLineMarker (false);
 			}
-			if (lastLine != int.MinValue && loc2.Line >= editor.Document.LineCount - FillMarginLines) {
-				int num = (loc2.Line - (editor.Document.LineCount - FillMarginLines) + 1) * 2;
+			if (lastLine != int.MinValue && loc2.Line >= editor.LineCount - FillMarginLines) {
+				int num = (loc2.Line - (editor.LineCount - FillMarginLines) + 1) * 2;
 				int newFirst;
-				InsertLines (editor.Document.TextLength, lastLine + 1, lastLine + num, out newFirst, out lastLine);
+				InsertLines (editor.Length, lastLine + 1, lastLine + num, out newFirst, out lastLine);
 			}
 		}
 		
@@ -304,15 +301,14 @@ namespace MonoDevelop.Debugger
 			lines.RemoveRange (j + 1, lines.Count - j - 1);
 			
 			int lineCount = 0;
-			int editorLine = editor.GetTextEditorData ().OffsetToLineNumber (offset);
+			int editorLine = editor.OffsetToLineNumber (offset);
 			foreach (AssemblyLine li in lines) {
 				if (li.IsOutOfRange)
 					continue;
 				InsertAssemblerLine (sb, editorLine++, li);
 				lineCount++;
 			}
-			editor.Insert (offset, sb.ToString ());
-			editor.Document.CommitUpdateAll ();
+			editor.InsertText (offset, sb.ToString ());
 			if (offset == 0)
 				this.cachedLines.InsertRange (0, lines);
 			else
@@ -326,7 +322,7 @@ namespace MonoDevelop.Debugger
 			currentFile = null;
 			sw.Sensitive = false;
 			autoRefill = false;
-			editor.Document.Text = string.Empty;
+			editor.Text = string.Empty;
 			cachedLines.Clear ();
 		}
 		
@@ -370,7 +366,7 @@ namespace MonoDevelop.Debugger
 
 		void IClipboardHandler.Copy ()
 		{
-			editor.RunAction (ClipboardActions.Copy);
+			editor.EditorActionHost.ClipboardCopy ();
 		}
 
 		void IClipboardHandler.Paste ()
@@ -385,7 +381,7 @@ namespace MonoDevelop.Debugger
 
 		void IClipboardHandler.SelectAll ()
 		{
-			editor.RunAction (SelectionActions.SelectAll);
+			editor.EditorActionHost.SelectAll ();
 		}
 
 		bool IClipboardHandler.EnableCut {
@@ -393,7 +389,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		bool IClipboardHandler.EnableCopy {
-			get { return !editor.SelectionRange.IsEmpty; }
+			get { return !editor.IsSomethingSelected; }
 		}
 
 		bool IClipboardHandler.EnablePaste {
@@ -409,15 +405,5 @@ namespace MonoDevelop.Debugger
 		}
 
 		#endregion
-	}
-	
-	class AsmLineMarker: TextLineMarker
-	{
-		public override ChunkStyle GetStyle (ChunkStyle baseStyle)
-		{
-			ChunkStyle st = new ChunkStyle (baseStyle);
-			st.Foreground = new Cairo.Color (125, 125, 125);
-			return st;
-		}
 	}
 }

@@ -35,6 +35,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Simplification;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -42,7 +43,12 @@ namespace MonoDevelop.CodeGeneration
 	{
 		readonly int offset;
 
-		public MonoDevelop.Ide.Gui.Document Document {
+		public TextEditor Editor {
+			get;
+			private set;
+		}
+
+		public DocumentContext DocumentContext {
 			get;
 			private set;
 		}
@@ -64,15 +70,15 @@ namespace MonoDevelop.CodeGeneration
 		
 		public string MimeType {
 			get {
-				return DesktopService.GetMimeTypeForUri (Document.FileName);
+				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 		
 		public ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions FormattingOptions {
 			get {
-				var doc = Document;
+				var doc = DocumentContext;
 				var policyParent = doc.Project != null ? doc.Project.Policies : null;
-				var types = DesktopService.GetMimeTypeInheritanceChain (doc.Editor.MimeType);
+				var types = DesktopService.GetMimeTypeInheritanceChain (Editor.MimeType);
 				var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 				return codePolicy.CreateOptions ();
 			}
@@ -103,9 +109,9 @@ namespace MonoDevelop.CodeGeneration
 		
 		public CodeGenerator CreateCodeGenerator ()
 		{
-			var result = CodeGenerator.CreateGenerator (Document);
+			var result = CodeGenerator.CreateGenerator (Editor, DocumentContext);
 			if (result == null)
-				LoggingService.LogError ("Generator can't be generated for : " + Document.Editor.MimeType);
+				LoggingService.LogError ("Generator can't be generated for : " + Editor.MimeType);
 			return result;
 		}
 		

@@ -33,15 +33,14 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 using System.Linq;
 using MonoDevelop.AnalysisCore;
-using ICSharpCode.NRefactory;
 using System.Threading.Tasks;
 using System.Threading;
 using MonoDevelop.CodeActions;
 using MonoDevelop.CodeIssues;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using System.Diagnostics;
 using MonoDevelop.Core.Instrumentation;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -78,9 +77,9 @@ namespace MonoDevelop.Refactoring
 			AcceptChanges (monitor, changes, MonoDevelop.Ide.TextFileProvider.Instance);
 		}
 		
-		public static void AcceptChanges (IProgressMonitor monitor, List<Change> changes, MonoDevelop.Projects.Text.ITextFileProvider fileProvider)
+		public static void AcceptChanges (IProgressMonitor monitor, List<Change> changes, MonoDevelop.Ide.ITextFileProvider fileProvider)
 		{
-			var rctx = new RefactoringOptions (null);
+			var rctx = new RefactoringOptions (null, null);
 			var handler = new RenameHandler (changes);
 			FileService.FileRenamed += handler.FileRename;
 			var fileNames = new HashSet<FilePath> ();
@@ -139,23 +138,23 @@ namespace MonoDevelop.Refactoring
 //			});
 //		}	
 
-		public static DocumentLocation GetCorrectResolveLocation (Document doc, DocumentLocation location)
+		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (IReadonlyTextDocument editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
 			if (doc == null)
 				return location;
-			var editor = doc.Editor;
 			if (editor == null || location.Column == 1)
 				return location;
 
-			if (editor.IsSomethingSelected)
-				return editor.MainSelection.Start;
-
+			/*if (editor is TextEditor) {
+				if (((TextEditor)editor).IsSomethingSelected)
+					return ((TextEditor)editor).SelectionRegion.Begin;
+			}*/
 			var line = editor.GetLine (location.Line);
 			if (line == null || location.Column > line.LengthIncludingDelimiter)
 				return location;
 			int offset = editor.LocationToOffset (location);
-			if (offset > 0 && !char.IsLetterOrDigit (doc.Editor.GetCharAt (offset)) && char.IsLetterOrDigit (doc.Editor.GetCharAt (offset - 1)))
-				return new DocumentLocation (location.Line, location.Column - 1);
+			if (offset > 0 && !char.IsLetterOrDigit (editor.GetCharAt (offset)) && char.IsLetterOrDigit (editor.GetCharAt (offset - 1)))
+				return new MonoDevelop.Ide.Editor.DocumentLocation (location.Line, location.Column - 1);
 			return location;
 		}
 

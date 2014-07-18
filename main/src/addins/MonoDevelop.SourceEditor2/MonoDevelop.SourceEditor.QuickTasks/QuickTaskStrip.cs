@@ -35,6 +35,8 @@ using MonoDevelop.Components.Commands;
 using ICSharpCode.NRefactory;
 using System.Linq;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -62,7 +64,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 		
 		Mono.TextEditor.TextEditor textEditor;
-		public TextEditor TextEditor {
+		public Mono.TextEditor.TextEditor TextEditor {
 			get {
 				return textEditor;
 			}
@@ -87,7 +89,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		}
 		
 		Dictionary<IQuickTaskProvider, List<QuickTask>> providerTasks = new Dictionary<IQuickTaskProvider, List<QuickTask>> ();
-		Dictionary<IUsageProvider, List<Usage>> providerUsages = new Dictionary<IUsageProvider, List<Usage>> ();
+		Dictionary<UsageProviderEditorExtension, List<Usage>> providerUsages = new Dictionary<UsageProviderEditorExtension, List<Usage>> ();
 
 		public IEnumerable<QuickTask> AllTasks {
 			get {
@@ -176,7 +178,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			OnTaskProviderUpdated (EventArgs.Empty);
 		}
 		
-		public void Update (IUsageProvider provider)
+		public void Update (UsageProviderEditorExtension provider)
 		{
 			if (providerTasks == null)
 				return;

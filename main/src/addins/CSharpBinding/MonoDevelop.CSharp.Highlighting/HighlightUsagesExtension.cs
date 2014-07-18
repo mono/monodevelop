@@ -36,6 +36,8 @@ using Microsoft.CodeAnalysis.FindSymbols;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -53,19 +55,18 @@ namespace MonoDevelop.CSharp.Highlighting
 	{
 		CSharpSyntaxMode syntaxMode;
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-
-			TextEditorData.SelectionSurroundingProvider = new CSharpSelectionSurroundingProvider (Document);
-			syntaxMode = new CSharpSyntaxMode (Document);
-			TextEditorData.Document.SyntaxMode = syntaxMode;
+			Editor.SetSelectionSurroundingProvider (new CSharpSelectionSurroundingProvider (Editor, DocumentContext));
+			syntaxMode = new CSharpSyntaxMode (Editor, DocumentContext);
+			Editor.SemanticHighlighting = syntaxMode;
 		}
 
 		public override void Dispose ()
 		{
 			if (syntaxMode != null) {
-				TextEditorData.Document.SyntaxMode = null;
+				Editor.SemanticHighlighting = null;
 				syntaxMode.Dispose ();
 				syntaxMode = null;
 			}

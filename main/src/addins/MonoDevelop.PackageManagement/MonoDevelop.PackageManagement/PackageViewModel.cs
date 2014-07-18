@@ -51,7 +51,8 @@ namespace ICSharpCode.PackageManagement
 		IPackageViewModelParent parent;
 		string summary;
 		List<PackageDependency> dependencies;
-		
+		bool isChecked;
+
 		public PackageViewModel(
 			IPackageViewModelParent parent,
 			IPackageFromRepository package,
@@ -549,7 +550,16 @@ namespace ICSharpCode.PackageManagement
 			return String.Empty;
 		}
 		
-		public string GetDownloadCountDisplayText()
+		public string GetDownloadCountOrVersionDisplayText ()
+		{
+			if (ShowVersionInsteadOfDownloadCount) {
+				return Version.ToString ();
+			}
+
+			return GetDownloadCountDisplayText ();
+		}
+
+		public string GetDownloadCountDisplayText ()
 		{
 			if (HasDownloadCount) {
 				return DownloadCount.ToString ("N0");
@@ -581,6 +591,32 @@ namespace ICSharpCode.PackageManagement
 			return selectedProjects.HasOlderPackageInstalled (package);
 		}
 
-		public bool IsChecked { get; set; }
+		public bool IsChecked {
+			get { return isChecked; }
+			set {
+				if (value != isChecked) {
+					isChecked = value;
+					parent.OnPackageCheckedChanged (this);
+				}
+			}
+		}
+
+		public bool ShowVersionInsteadOfDownloadCount { get; set; }
+
+		public override bool Equals (object obj)
+		{
+			var other = obj as PackageViewModel;
+			if (other == null)
+				return false;
+
+			var packageName = new PackageName (package.Id, package.Version);
+			var otherPackageName = new PackageName (other.package.Id, other.package.Version);
+			return packageName.Equals (otherPackageName);
+		}
+
+		public override int GetHashCode ()
+		{
+			return package.ToString ().GetHashCode ();
+		}
 	}
 }

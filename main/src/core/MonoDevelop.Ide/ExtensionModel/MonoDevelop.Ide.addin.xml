@@ -168,6 +168,34 @@
 		<ExtensionNode name="Type" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
+		<Description>Syntax modes</Description>
+		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Styles" name = "Text editor styles">
+		<Description>Styles</Description>
+		<ExtensionNode name="Templates" type="MonoDevelop.Ide.Editor.Highlighting.TemplateCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/CustomModes" name = "Text editor custom syntax modes">
+		<Description>Styles</Description>
+		<ExtensionNode name="SyntaxMode" type="MonoDevelop.Ide.Editor.Highlighting.SyntaxModeCodon"/>
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/EditorFactory" name = "Editor factories">
+		<Description>Allows providing a platform-specific implementation for the text editor</Description>
+		<ExtensionNode name="Class" />
+	</ExtensionPoint>
+
+	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/TooltipProviders" name = "Tooltip providers">
+		<Description>Tooltip providers. Classes must implement ITooltipProvider.</Description>
+		<ExtensionNode name="Class" />
+		<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
+			<Description>Type of the file being edited.</Description>
+		</ConditionType>
+	</ExtensionPoint>
+
 	<!-- Extensions -->
 	
 	<Extension path = "/MonoDevelop/Core/Applications">
@@ -183,6 +211,8 @@
 	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
 		<DisplayBinding id    = "DefaultDisplayBinding"
 		                class = "MonoDevelop.Ide.Gui.DefaultDisplayBinding"/>
+		<DisplayBinding id = "TextEditor"
+						class = "MonoDevelop.Ide.Editor.TextEditorDisplayBinding" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
@@ -232,14 +262,14 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class id="InitialStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
-		<Class id="MidStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
-		<Class id="FinalStep" class = "MonoDevelop.Ide.Gui.Content.TextEditorExtensionMarker" />
+		<Class id="InitialStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
+		<Class id="MidStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
+		<Class id="FinalStep" class = "MonoDevelop.Ide.Editor.Extension.TextEditorExtensionMarker" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/DocumentTab">
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseFile" />
-		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.CloseAllFiles" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAll" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CloseAllButThis" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ReopenClosedTab" />
 		<SeparatorItem id = "CloseSeparator" />
@@ -249,6 +279,9 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenContainingFolder" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.CopyPathName" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.FileTabCommands.ToggleMaximize" />
+		<SeparatorItem id = "ToggleSeparator" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.NextNotebook" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.PreviousNotebook" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/Ide/ExecutionCommandEditors">
@@ -300,5 +333,4 @@
 	<Extension path = "/MonoDevelop/Ide/CompletionCharacters">
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
-	
 </ExtensionModel>

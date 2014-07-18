@@ -41,16 +41,18 @@ using CBinding.Parser;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory6.CSharp.Completion;
+using MonoDevelop.Ide.Editor;
 
 namespace CBinding
 {
 	public class ParameterDataProvider : ParameterHintingResult
 	{
-		private Mono.TextEditor.TextEditorData editor;
+		private TextEditor editor;
+		private List<Function> functions = new List<Function> ();
 
-		public ParameterDataProvider (int startOffset, Document document, ProjectInformation info, string functionName) : base (startOffset)
+		public ParameterDataProvider (int startOffset, TextEditor editor, ProjectInformation info, string functionName) :base (startOffset)
 		{
-			this.editor = document.Editor;
+			this.editor = editor;
 			
 			foreach (Function f in info.Functions) {
 				if (f.Name == functionName) {
@@ -58,7 +60,7 @@ namespace CBinding
 				}
 			}
 			
-			string currentFile = document.FileName;
+			string currentFile = editor.FileName;
 			
 			if (info.IncludedFiles.ContainsKey (currentFile)) {
 				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFile]) {

@@ -41,7 +41,7 @@
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<Pad id="MonoDevelop.Refactoring.CodeIssuePad" _label="Code Issues" class="MonoDevelop.CodeIssues.CodeIssuePad" defaultPlacement = "Bottom"/>
 	</Extension> -->
-	
+ 	
 	<!-- Text editor integration -->
 	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
 		<Class class = "MonoDevelop.AnalysisCore.Gui.ResultsEditorExtension" />
@@ -52,7 +52,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Rule _name="Code Issue Analysis" input="Document" func="MonoDevelop.CodeIssues.CodeDiagnosticRunner.Check" />
+		<Rule _name="Code Issue Analysis" input="AnalysisDocument" func="MonoDevelop.CodeIssues.CodeAnalysisRunner.Check" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->
@@ -159,13 +159,13 @@
 	<!-- Extensions to the addin points defined by this addin -->
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Types">
-		<Type name="Document" class="MonoDevelop.Ide.Gui.Document" />
+		<Type name="AnalysisDocument" class="MonoDevelop.AnalysisCore.Gui.AnalysisDocument" />
 		<Type name="CompilationUnit" class="MonoDevelop.Projects.Dom.ICompilationUnit" />
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
 		<Adaptor func="MonoDevelop.AnalysisCore.Rules.Adapters.GetCompilationUnit"
-			input="Document" output="CompilationUnit" />
+			input="AnalysisDocument" output="CompilationUnit" />
 		<Category _name="Design Guidelines" id="Design">
 <!--			<Rule _name="Naming Conventions" input="CompilationUnit" 
 				func="MonoDevelop.AnalysisCore.Rules.NamingConventions.ClassNaming" />-->

@@ -36,7 +36,7 @@ using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharpBinding.Tests
 {
-	public class TestViewContent : AbstractViewContent, IEditableTextBuffer, Mono.TextEditor.ITextEditorDataProvider
+	public class TestViewContent : AbstractViewContent, Mono.TextEditor.ITextEditorDataProvider
 	{
 		TextEditorData data;
 		
@@ -65,7 +65,7 @@ namespace MonoDevelop.CSharpBinding.Tests
 			Name = "";
 		}
 		
-		public override void Load(string fileName)
+		public override void Load(FileOpenInformation fileOpenInformation)
 		{
 		}
 		
@@ -230,6 +230,5 @@ namespace MonoDevelop.CSharpBinding.Tests
 		}
 		#endregion
 		public event EventHandler CaretPositionSet;
-		public event EventHandler<TextChangedEventArgs> TextChanged;
 	}
 }

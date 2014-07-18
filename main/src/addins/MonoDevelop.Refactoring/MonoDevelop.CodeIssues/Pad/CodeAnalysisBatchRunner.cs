@@ -39,7 +39,6 @@ using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Core;
 using System.Collections.Concurrent;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Refactoring;
 using System.Collections.Generic;

@@ -29,6 +29,10 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Collections.Generic;
+using System.Threading;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {

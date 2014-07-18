@@ -34,7 +34,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Projects.Policies;
 using Mono.Cecil;
@@ -43,6 +42,8 @@ using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.Ast;
 using ICSharpCode.NRefactory.PatternMatching;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.CSharp.NRefactoryWrapper;
 
 
 namespace MonoDevelop.CSharp.Refactoring
@@ -86,19 +87,20 @@ namespace MonoDevelop.CSharp.Refactoring
 			public ITypeDefinition ImplementingType { get; set; }
 			public IUnresolvedTypeDefinition Part { get; set; }
 
-			public MonoDevelop.Ide.Gui.Document Document { get; set; }
+			public TextEditor Editor { get; set; }
+			public DocumentContext DocumentContext { get; set; }
 
 			public string GetShortType (string ns, string name, int typeArguments = 0)
 			{
-				if (Document == null || Document.ParsedDocument == null)
+				if (DocumentContext == null || DocumentContext.ParsedDocument == null)
 					return ns + "." + name;
-				var typeDef = new GetClassTypeReference (ns, name, typeArguments).Resolve (Document.Compilation.TypeResolveContext);
+				var typeDef = new GetClassTypeReference (ns, name, typeArguments).Resolve (DocumentContext.Compilation.TypeResolveContext);
 				if (typeDef == null)
 					return ns + "." + name;
-				var file = Document.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-				var csResolver = file.GetResolver (Document.Compilation, Document.Editor.Caret.Location);
+				var file = DocumentContext.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
+				var csResolver = file.GetResolver (DocumentContext.Compilation, Editor.CaretLocation);
 				var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-				return OutputNode (Document, builder.ConvertType (typeDef));
+				return OutputNode (Editor, DocumentContext, builder.ConvertType (typeDef));
 			}
 		}
 		
@@ -196,6 +198,7 @@ namespace MonoDevelop.CSharp.Refactoring
 //			throw new NotSupportedException ("member " +  member + " is not supported.");
 //		}
 //		
+
 		void AppendBraceStart (StringBuilder result, BraceStyle braceStyle)
 		{
 			switch (braceStyle) {
@@ -878,11 +881,11 @@ namespace MonoDevelop.CSharp.Refactoring
 //			return result.ToString ();
 //		}
 		
-		int CountBlankLines (MonoDevelop.Ide.Gui.Document doc, int startLine)
+		int CountBlankLines (IReadonlyTextDocument doc, int startLine)
 		{
 			int result = 0;
-			DocumentLine line;
-			while ((line = doc.Editor.GetLine (startLine + result)) != null && doc.Editor.GetLineIndent (line).Length == line.Length) {
+			IDocumentLine line;
+			while ((line = doc.GetLine (startLine + result)) != null && doc.GetLineIndent (line).Length == line.Length) {
 				result++;
 			}
 		
@@ -914,14 +917,14 @@ namespace MonoDevelop.CSharp.Refactoring
 			return node;
 		}
 		
-		public override void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
+		public override void AddGlobalNamespaceImport (TextEditor editor, DocumentContext context, string nsName)
 		{
-			var parsedDocument = doc.ParsedDocument;
+			var parsedDocument = context.ParsedDocument;
 			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
 			
-			var policy = doc.Project != null ? doc.Project.Policies.Get <CSharpFormattingPolicy> () : null;
+			var policy = context.Project != null ? context.Project.Policies.Get <CSharpFormattingPolicy> () : null;
 			if (policy == null)
 				policy = Policy;
 			
@@ -933,7 +936,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (InsertUsingAfter (node)) {
 				lines = policy.BlankLinesBeforeUsings + 1;
 				while (lines-- > 0) {
-					text.Append (doc.Editor.EolMarker);
+					text.Append (editor.EolMarker);
 				}
 			}
 			
@@ -944,34 +947,34 @@ namespace MonoDevelop.CSharp.Refactoring
 			int offset = 0;
 			if (node != null) {
 				var loc = InsertUsingAfter (node) ? node.EndLocation : node.StartLocation;
-				offset = Math.Max (0, doc.Editor.LocationToOffset (loc));
+				offset = Math.Max (0, editor.LocationToOffset (loc));
 			}
 			
 			lines = policy.BlankLinesAfterUsings;
-			lines -= CountBlankLines (doc, doc.Editor.OffsetToLineNumber (offset) + 1);
+			lines -= CountBlankLines (editor, editor.OffsetToLineNumber (offset) + 1);
 			if (lines > 0)
-				text.Append (doc.Editor.EolMarker);
+				text.Append (editor.EolMarker);
 			while (lines-- > 0) {
-				text.Append (doc.Editor.EolMarker);
+				text.Append (editor.EolMarker);
 			}
-			doc.Editor.Insert (offset, text.ToString ());
-			doc.Editor.Document.CommitUpdateAll ();
+			editor.InsertText (offset, text.ToString ());
+			//doc.Editor.Document.CommitUpdateAll ();
 		}
 		
-		public override void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation)
+		public override void AddLocalNamespaceImport (TextEditor editor, DocumentContext context, string nsName, TextLocation caretLocation)
 		{
-			var parsedDocument = doc.ParsedDocument;
+			var parsedDocument = context.ParsedDocument;
 			var unit = parsedDocument.GetAst<SyntaxTree> ();
 			if (unit == null)
 				return;
 			
 			var nsDecl = unit.GetNodeAt<NamespaceDeclaration> (caretLocation);
 			if (nsDecl == null) {
-				AddGlobalNamespaceImport (doc, nsName);
+				AddGlobalNamespaceImport (editor, context, nsName);
 				return;
 			}
 			
-			var policy = doc.Project != null ? doc.Project.Policies.Get <CSharpFormattingPolicy> () : null;
+			var policy = context.Project != null ? context.Project.Policies.Get <CSharpFormattingPolicy> () : null;
 			if (policy == null)
 				policy = Policy;
 			
@@ -984,11 +987,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (InsertUsingAfter (node)) {
 				lines = policy.BlankLinesBeforeUsings + 1;
 				while (lines-- > 0) {
-					text.Append (doc.Editor.EolMarker);
+					text.Append (editor.EolMarker);
 				}
 			}
 			
-			string indent = doc.Editor.GetLineIndent (nsDecl.StartLocation.Line) + "\t";
+			string indent = editor.GetLineIndent (nsDecl.StartLocation.Line) + "\t";
 			text.Append (indent);
 			text.Append ("using ");
 			text.Append (nsName);
@@ -1001,27 +1004,27 @@ namespace MonoDevelop.CSharp.Refactoring
 			} else {
 				loc = nsDecl.LBraceToken.EndLocation;
 			}
-			offset = doc.Editor.LocationToOffset (loc);
+			offset = editor.LocationToOffset (loc);
 			
 			lines = policy.BlankLinesAfterUsings;
-			lines -= CountBlankLines (doc, doc.Editor.OffsetToLineNumber (offset) + 1);
+			lines -= CountBlankLines (editor, editor.OffsetToLineNumber (offset) + 1);
 			if (lines > 0)
-				text.Append (doc.Editor.EolMarker);
+				text.Append (editor.EolMarker);
 			while (lines-- > 0) {
-				text.Append (doc.Editor.EolMarker);
+				text.Append (editor.EolMarker);
 			}
 			
-			doc.Editor.Insert (offset, text.ToString ());
+			editor.InsertText (offset, text.ToString ());
 		}
 		
-		static string OutputNode (MonoDevelop.Ide.Gui.Document doc, AstNode node)
+		static string OutputNode (TextEditor editor, DocumentContext context, AstNode node)
 		{
 			using (var stringWriter = new System.IO.StringWriter ()) {
 //				formatter.Indentation = indentLevel;
 				var formatter = new TextWriterTokenWriter (stringWriter);
-				stringWriter.NewLine = doc.Editor.EolMarker;
+				stringWriter.NewLine = editor.EolMarker;
 				
-				var visitor = new CSharpOutputVisitor (formatter, doc.GetFormattingOptions ());
+				var visitor = new CSharpOutputVisitor (formatter, context.GetFormattingOptions ());
 				node.AcceptVisitor (visitor);
 				return stringWriter.ToString ();
 			}
@@ -1039,8 +1042,8 @@ namespace MonoDevelop.CSharp.Refactoring
 		{
 			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
 			int newOffset;
-			if (fixer.TryFix (doc.Editor.Document, doc.Editor.Caret.Offset, out newOffset)) {
-				doc.Editor.Caret.Offset = newOffset;
+			if (fixer.TryFix (new DocumentWrapper (doc.Editor), doc.Editor.CaretOffset, out newOffset)) {
+				doc.Editor.CaretOffset = newOffset;
 			}
 		}
 	}

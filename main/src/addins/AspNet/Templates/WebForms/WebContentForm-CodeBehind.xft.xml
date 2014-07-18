@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<Template Originator  ="Michael Hutchinson"
+          Created     ="2009/02/24"
+          LastModified="2009/02/24">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Web Content Form with CodeBehind</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Web Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<_Description>Creates an ASP.NET Web Form that is the child of a Master Page, with a CodeBehind class.</_Description>
+	</TemplateConfiguration>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetMasterContentFile name="${Name}.aspx" DefaultExtension=".aspx">
+			<FileText>
+<![CDATA[<%@ Page Language="C#" Inherits="${Namespace}.${EscapedIdentifier}" MasterPageFile="${AspNetMaster}" %>
+<%@ MasterType VirtualPath="${AspNetMaster}" %>
+${AspNetMasterContent}
+]]>
+			</FileText>
+		</AspNetMasterContentFile>
+		<File name="${Name}.aspx.cs" DependsOn="${Name}.aspx" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+namespace ${Namespace} {
+	public partial class ${EscapedIdentifier} : System.Web.UI.Page 
+	{
+	}
+}
+]]>
+		</File>
+		<File name="${Name}.aspx.designer.cs" ShowAutogenerationNotice="True" 
+			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.aspx" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+namespace ${Namespace} {
+	public partial class ${EscapedIdentifier} 
+	{
+	}
+}
+]]>
+		</File>
+	</TemplateFiles>
+</Template>

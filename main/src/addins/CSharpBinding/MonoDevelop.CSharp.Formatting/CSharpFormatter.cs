@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 
 
-using Mono.TextEditor;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Policies;
@@ -36,6 +35,8 @@ using MonoDevelop.Ide.CodeFormatting;
 using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.CSharp.NRefactoryWrapper;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -48,53 +49,53 @@ namespace MonoDevelop.CSharp.Formatting
 		public override bool SupportsCorrectingIndent { get { return true; } }
 
 		public override void CorrectIndenting (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, 
-			TextEditorData data, int line)
+			TextEditor data, int line)
 		{
-			DocumentLine lineSegment = data.Document.GetLine (line);
+			var lineSegment = data.GetLine (line);
 			if (lineSegment == null)
 				return;
 
 			try {
 				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-				var tracker = new CSharpIndentEngine (data.Document, data.CreateNRefactoryTextEditorOptions (),  policy.CreateOptions ());
+				var tracker = new CSharpIndentEngine (new DocumentWrapper (data), data.CreateNRefactoryTextEditorOptions (),  policy.CreateOptions ());
 
 				tracker.Update (lineSegment.Offset);
 				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
-					tracker.Push (data.Document.GetCharAt (i));
+					tracker.Push (data.GetCharAt (i));
 				}
 
-				string curIndent = lineSegment.GetIndentation (data.Document);
+				string curIndent = lineSegment.GetIndentation (data);
 
 				int nlwsp = curIndent.Length;
-				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.Document.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
+				if (!tracker.LineBeganInsideMultiLineComment || (nlwsp < lineSegment.LengthIncludingDelimiter && data.GetCharAt (lineSegment.Offset + nlwsp) == '*')) {
 					// Possibly replace the indent
 					string newIndent = tracker.ThisLineIndent;
 					if (newIndent != curIndent) 
-						data.Replace (lineSegment.Offset, nlwsp, newIndent);
+						data.ReplaceText (lineSegment.Offset, nlwsp, newIndent);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while indenting", e);
 			}
 		}
 
-		public override void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
+		public override void OnTheFlyFormat (TextEditor editor, DocumentContext context, int startOffset, int endOffset)
 		{
-			OnTheFlyFormatter.Format (doc, startOffset, endOffset);
+			OnTheFlyFormatter.Format (editor, context, startOffset, endOffset);
 		}
 
 
 		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
-			var data = new TextEditorData ();
-			data.Document.SuppressHighlightUpdate = true;
-			data.Document.MimeType = mimeType;
-			data.Document.FileName = "toformat.cs";
-			if (textPolicy != null) {
-				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
-				data.Options.TabSize = textPolicy.TabWidth;
-				data.Options.IndentationSize = textPolicy.IndentWidth;
-				data.Options.IndentStyle = textPolicy.RemoveTrailingWhitespace ? IndentStyle.Virtual : IndentStyle.Smart;
-			}
+			var data = TextEditorFactory.CreateNewDocument ();
+			// data.Document.SuppressHighlightUpdate = true;
+			data.MimeType = mimeType;
+			data.FileName = "toformat.cs";
+//			if (textPolicy != null) {
+//				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
+//				data.Options.TabSize = textPolicy.TabWidth;
+//				data.Options.IndentationSize = textPolicy.IndentWidth;
+//				data.Options.IndentStyle = textPolicy.RemoveTrailingWhitespace ? IndentStyle.Virtual : IndentStyle.Smart;
+//			}
 			data.Text = input;
 
 			// System.Console.WriteLine ("-----");
@@ -111,9 +112,9 @@ namespace MonoDevelop.CSharp.Formatting
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
 
-			var originalVersion = data.Document.Version;
+			var originalVersion = data.Version;
 
-			var textEditorOptions = data.CreateNRefactoryTextEditorOptions ();
+			var textEditorOptions = data.CreateNRefactoryTextEditorOptions (policy, textPolicy);
 			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.CSharpFormatter (
 				policy.CreateOptions (),
 				textEditorOptions
@@ -121,7 +122,7 @@ namespace MonoDevelop.CSharp.Formatting
 				FormattingMode = FormattingMode.Intrusive
 			};
 
-			var changes = formattingVisitor.AnalyzeFormatting (data.Document, compilationUnit);
+			var changes = formattingVisitor.AnalyzeFormatting (new DocumentWrapper (data), compilationUnit);
 			try {
 				changes.ApplyChanges (startOffset, endOffset - startOffset);
 			} catch (Exception e) {
@@ -137,10 +138,10 @@ namespace MonoDevelop.CSharp.Formatting
 				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
 			}
 
-			var currentVersion = data.Document.Version;
+			var currentVersion = data.Version;
 
 			string result = data.GetTextBetween (startOffset, originalVersion.MoveOffsetTo (currentVersion, endOffset));
-			data.Dispose ();
+			//data.Dispose ();
 			return result;
 		}
 

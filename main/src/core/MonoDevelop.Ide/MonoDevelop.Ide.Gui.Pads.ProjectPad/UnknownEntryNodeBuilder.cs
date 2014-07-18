@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		{
 			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
 			
-			if (entry.UnloadedEntry) {
+			if (entry is UnloadedSolutionItem) {
 				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project);
 				Xwt.Drawing.Image gicon = Context.GetComposedIcon (nodeInfo.Icon, "fade");
 				if (gicon == null) {
@@ -81,13 +81,13 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
-			return !entry.UnloadedEntry && entry.LoadError.Length > 0;
+			return !(entry is UnloadedSolutionItem) && entry.LoadError.Length > 0;
 		}
 		
 		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
 		{
 			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
-			if (!entry.UnloadedEntry && entry.LoadError.Length > 0)
+			if (!(entry is UnloadedSolutionItem) && entry.LoadError.Length > 0)
 				treeBuilder.AddChild (new TreeViewItem (GLib.Markup.EscapeText (entry.LoadError)));
 		}
 

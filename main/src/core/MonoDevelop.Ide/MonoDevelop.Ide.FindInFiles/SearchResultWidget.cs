@@ -30,9 +30,7 @@ using System.Linq;
 using Gdk;
 
 using Gtk;
-using Mono.TextEditor;
 
-using Mono.TextEditor.Highlighting;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Text;
@@ -42,6 +40,10 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.Gui.Components;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
+
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -56,7 +58,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		const int SearchResultColumn = 0;
 		const int DidReadColumn      = 1;
 		
-		Mono.TextEditor.Highlighting.ColorScheme highlightStyle;
+		ColorScheme highlightStyle;
 		
 		ScrolledWindow scrolledwindowLogView; 
 		PadTreeView treeviewSearchResults;
@@ -274,6 +276,9 @@ namespace MonoDevelop.Ide.FindInFiles
 				treeviewSearchResults.ScrollToPoint (0, 0);
 
 			ResultCount = 0;
+			foreach (var doc in documents) {
+				doc.Value.Dispose ();
+			}
 			documents.Clear ();
 			store.Clear ();
 			labelStatus.Text = "";
@@ -288,13 +293,13 @@ namespace MonoDevelop.Ide.FindInFiles
 
 		static Color AdjustColor (Color baseColor, Color color)
 		{
-			double b1 = Mono.TextEditor.HslColor.Brightness (color);
-			double b2 = Mono.TextEditor.HslColor.Brightness (baseColor);
+			double b1 = HslColor.Brightness (color);
+			double b2 = HslColor.Brightness (baseColor);
 			double delta = Math.Abs (b1 - b2);
 			if (delta < 0.1) {
-				Mono.TextEditor.HslColor color1 = color;
+				HslColor color1 = color;
 				color1.L -= 0.5;
-				if (Math.Abs (Mono.TextEditor.HslColor.Brightness (color1) - b2) < delta) {
+				if (Math.Abs (HslColor.Brightness (color1) - b2) < delta) {
 					color1 = color;
 					color1.L += 0.5;
 				}
@@ -329,7 +334,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				if (Color.Parse(colorStr, ref color))
 
-					colorStr = SyntaxMode.ColorToPangoMarkup(AdjustColor(baseColor, color));
+					colorStr = ColorToPangoMarkup(AdjustColor(baseColor, color));
 
 				result.Append (colorStr);
 				idx = markup.IndexOf ("foreground=\"", idx);
@@ -337,7 +342,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			result.Append (markup.Substring (offset, markup.Length - offset));
 			return result.ToString ();
 		}
-		
+		public static string ColorToPangoMarkup (Gdk.Color color)
+		{
+			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
+		}
 		void DoPopupMenu (Gdk.EventButton evt)
 		{ 
 			IdeApp.CommandService.ShowContextMenu (this.treeviewSearchResults, evt, new CommandEntrySet () {
@@ -473,6 +481,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				pathRenderer.Markup = "";
 		}
 
+		static int TranslateIndexToUTF8 (string text, int index)
+		{
+			byte[] bytes = Encoding.UTF8.GetBytes (text);
+			return Encoding.UTF8.GetString (bytes, 0, index).Length;
+		}
+
 		void ResultTextDataFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
 		{
 			if (TreeIter.Zero.Equals (iter))
@@ -494,31 +508,24 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (searchResult.Markup == null) {
 				if (searchResult.LineNumber <= 0)
 					searchResult.LineNumber = doc.OffsetToLineNumber (searchResult.Offset); 
-				DocumentLine line = doc.GetLine (searchResult.LineNumber );
+				var line = doc.GetLine (searchResult.LineNumber );
 				if (line == null) {
 					textRenderer.Markup = "Invalid line number " + searchResult.LineNumber + " from offset: " + searchResult.Offset;
 					return;
 				}
 				int indent = line.GetIndentation (doc).Length;
-				var data = new Mono.TextEditor.TextEditorData (doc);
-				data.ColorStyle = highlightStyle;
-				var lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
 				int col = searchResult.Offset - line.Offset - indent;
-				// search result contained part of the indent.
-				if (col + searchResult.Length < lineText.Length)
-					lineText = doc.GetTextAt (line.Offset, line.Length);
+				var lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
 
-				var markup = doc.SyntaxMode != null ?
-				data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
-				GLib.Markup.EscapeText (lineText);
-				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
+				var markup = doc.GetPangoMarkup (line.Offset + indent, line.Length - indent);
+				searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', DefaultSourceEditorOptions.Instance.TabSize)));
 
 				if (col >= 0) {
 					uint start;
 					uint end;
 					try {
-						start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
-						end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col + searchResult.Length));
+						start = (uint)TranslateIndexToUTF8 (lineText, col);
+						end = (uint)TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col + searchResult.Length));
 					} catch (Exception e) {
 						LoggingService.LogError ("Exception while translating index to utf8 (column was:" + col + " search result length:" + searchResult.Length + " line text:" + lineText + ")", e);
 						return;
@@ -534,11 +541,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 				if (!isSelected) {
 					var searchColor = searchResult.GetBackgroundMarkerColor (highlightStyle).Color;
-					double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
-					double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), (Mono.TextEditor.HslColor)highlightStyle.PlainText.Foreground));
+					double b1 = HslColor.Brightness (searchColor);
+					double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), (HslColor)highlightStyle.PlainText.Foreground));
 					double delta = Math.Abs (b1 - b2);
 					if (delta < 0.1) {
-						Mono.TextEditor.HslColor color1 = highlightStyle.SearchResult.Color;
+						HslColor color1 = highlightStyle.SearchResult.Color;
 						if (color1.L + 0.5 > 1.0) {
 							color1.L -= 0.5;
 						} else {
@@ -606,18 +613,18 @@ namespace MonoDevelop.Ide.FindInFiles
 
 
 
-		readonly Dictionary<string, TextDocument> documents = new Dictionary<string, TextDocument> ();
+		readonly Dictionary<string, TextEditor> documents = new Dictionary<string, TextEditor> ();
 		
-		TextDocument GetDocument (SearchResult result)
+		TextEditor GetDocument (SearchResult result)
 		{
-			TextDocument doc;
+			TextEditor doc;
 			if (!documents.TryGetValue (result.FileName, out doc)) {
 				var content = result.FileProvider.ReadString ();
 				if (content == null)
 					return null;
-				doc = TextDocument.CreateImmutableDocument (content);
-				doc.MimeType = DesktopService.GetMimeTypeForUri (result.FileName);
-				
+
+				doc = TextEditorFactory.CreateNewEditor (TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (content), result.FileName, DesktopService.GetMimeTypeForUri (result.FileName)));
+
 				documents [result.FileName] = doc;	
 			}
 			return doc;
@@ -652,7 +659,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			var result = store.GetValue (iter, SearchResultColumn) as SearchResult;
 			if (result != null) {
-				DocumentLocation loc = GetLocation (result);
+				var loc = GetLocation (result);
 				store.SetValue (iter, DidReadColumn, true);
 				IdeApp.Workbench.OpenDocument (result.FileName, loc.Line, loc.Column);
 			}
@@ -664,7 +671,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (doc == null)
 				return DocumentLocation.Empty;
 			int lineNr = doc.OffsetToLineNumber (searchResult.Offset);
-			DocumentLine line = doc.GetLine (lineNr);
+			var line = doc.GetLine (lineNr);
 			if (line == null)
 				return DocumentLocation.Empty;
 			return new DocumentLocation (lineNr, searchResult.Offset - line.Offset + 1);
@@ -697,11 +704,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				var result = store.GetValue (iter, SearchResultColumn) as SearchResult;
 				if (result == null)
 					continue;
-				DocumentLocation loc = GetLocation (result);
+				var loc = GetLocation (result);
 				var doc = GetDocument (result);
 				if (doc == null)
 					continue;
-				DocumentLine line = doc.GetLine (loc.Line);
+				var line = doc.GetLine (loc.Line);
 				
 				sb.AppendFormat ("{0} ({1}, {2}):{3}", result.FileName, loc.Line, loc.Column, doc.GetTextAt (line.Offset, line.Length));
 				sb.AppendLine ();
@@ -769,7 +776,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			var doc = GetDocument (searchResult);
 			if (doc == null)
 				return null;
-			DocumentLocation location = doc.OffsetToLocation (searchResult.Offset);
+			var location = doc.OffsetToLocation (searchResult.Offset);
 			return new SearchTextFileNavigationPoint (searchResult.FileName, location.Line, location.Column);
 		}
 		
@@ -785,11 +792,11 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (doc == null)
 					return null;
 				
-				var buf = doc.GetContent<IEditableTextBuffer> ();
+				var buf = doc.Editor;
 				if (buf != null) {
 					doc.DisableAutoScroll ();
 					buf.RunWhenLoaded (() => {
-						buf.SetCaretTo (Math.Max (Line, 1), Math.Max (Column, 1));
+						buf.SetCaretLocation (Math.Max (Line, 1), Math.Max (Column, 1));
 					});
 				}
 				

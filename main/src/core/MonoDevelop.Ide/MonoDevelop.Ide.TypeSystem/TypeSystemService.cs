@@ -33,7 +33,6 @@ using ICSharpCode.NRefactory.TypeSystem;
 using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
-using Mono.TextEditor;
 using System.Threading;
 using MonoDevelop.Core.ProgressMonitoring;
 using System.Xml;
@@ -47,6 +46,8 @@ using MonoDevelop.Core.Assemblies;
 using System.Text;
 using ICSharpCode.NRefactory.Completion;
 using System.Diagnostics;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 using MonoDevelop.Projects.SharedAssetsProjects;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -104,7 +105,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project;
 		}
 
-		public static TextLocation GetLocation (this IType type)
+		public static ICSharpCode.NRefactory.TextLocation GetLocation (this IType type)
 		{
 			return type.GetDefinition ().Region.Begin;
 		}
@@ -250,10 +251,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void HandleActiveConfigurationChanged (object sender, EventArgs e)
 		{
-			foreach (var pr in projectContents.Keys.ToArray ()) {
-				var project = pr as DotNetProject;
+			foreach (var pr in projectContents.ToArray ()) {
+				var project = pr.Key as DotNetProject;
 				if (project != null)
 					CheckProjectOutput (project, true);
+
+				pr.Value.ReconnectAssemblyReferences ();
 			}
 		}
 
@@ -341,7 +344,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			try {
 				if (!File.Exists (fileName))
 					return null;
-				text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (fileName);
+				text = TextFileUtility.ReadAllText (fileName);
 			} catch (Exception) {
 				return null;
 			}
@@ -408,7 +411,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return ParseFile (project, fileName, mimeType, content.ReadToEnd ());
 		}
 
-		public static ParsedDocument ParseFile (Project project, TextEditorData data)
+		public static ParsedDocument ParseFile (Project project, IReadonlyTextDocument data)
 		{
 			return ParseFile (project, data.FileName, data.MimeType, data.Text);
 		}
@@ -1557,7 +1560,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					var newReferencedAssemblies = new List<UnresolvedAssemblyProxy>();
 					try {
-						foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
+						foreach (string file in netProject.GetReferencedAssemblies (IdeApp.IsInitialized ? IdeApp.Workspace.ActiveConfiguration : ConfigurationSelector.Default, false)) {
 							string fileName;
 							if (!Path.IsPathRooted (file)) {
 								fileName = Path.Combine (Path.GetDirectoryName (netProject.FileName), file);
@@ -2399,20 +2402,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		static IEnumerable<SystemAssembly> GetFrameworkAssemblies (DotNetProject netProject)
 		{
 			var assemblies = new Dictionary<string, SystemAssembly> ();
-			foreach (var systemPackage in netProject.AssemblyContext.GetPackages ()) {
-				foreach (var assembly in systemPackage.Assemblies) {
-					SystemAssembly existing;
-					if (assemblies.TryGetValue (assembly.Name, out existing)) {
-						Version v1, v2;
-						if (!Version.TryParse (existing.Version, out v1))
-							continue;
-						if (!Version.TryParse (assembly.Version, out v2))
-							continue;
-						if (v1 > v2)
-							continue;
-					}
-					assemblies [assembly.Name] = assembly;
+			foreach (var assembly in netProject.AssemblyContext.GetAssemblies ()) {
+				SystemAssembly existing;
+				if (assemblies.TryGetValue (assembly.Name, out existing)) {
+					Version v1, v2;
+					if (!Version.TryParse (existing.Version, out v1))
+						continue;
+					if (!Version.TryParse (assembly.Version, out v2))
+						continue;
+					if (v1 > v2)
+						continue;
 				}
+				assemblies [assembly.Name] = assembly;
 			}
 			return assemblies.Values;
 		}
@@ -2606,7 +2607,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						if (token.IsCancellationRequested)
 							return;
 						var fileName = file.FilePath;
-						if (!TypeSystemParserNode.IsCompileBuildAction (file.BuildAction) || filesSkippedInParseThread.Any (f => f == fileName)) {
+						if (filesSkippedInParseThread.Any (f => f == fileName)) {
 							continue;
 						}
 						if (node == null || !node.CanParse (fileName, file.BuildAction)) {

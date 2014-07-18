@@ -34,7 +34,6 @@ using Gdk;
 using Gtk;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core;
-using Mono.TextEditor;
 using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide
@@ -262,8 +261,8 @@ namespace MonoDevelop.Ide
 		{
 			Gdk.Key key;
 			Gdk.ModifierType mod;
-			Mono.TextEditor.KeyboardShortcut[] accels;
-			Mono.TextEditor.GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
+			KeyboardShortcut[] accels;
+			GtkWorkarounds.MapKeys (evnt, out key, out mod, out accels);
 			
 			switch (accels [0].Key) {
 			case Gdk.Key.Left:
@@ -670,16 +669,16 @@ namespace MonoDevelop.Ide
 				documentList.NextItem (true);
 
 			documentList.RequestClose += delegate(object sender, DocumentList.RequestActionEventArgs e) {
-				try {
-					if (e.SelectItem) {
-						if (documentList.ActiveItem.Tag is Pad) {
-							((Pad)documentList.ActiveItem.Tag).BringToFront (true);
-						} else {
-							((MonoDevelop.Ide.Gui.Document)documentList.ActiveItem.Tag).Select ();
-						}
-					}
-				} finally {
-					DestroyWindow ();
+				object item = e.SelectItem ? documentList.ActiveItem.Tag : null;
+				DestroyWindow();
+
+				// The selected document has to be focused *after* this window is destroyed, becasuse the window
+				// destruction focuses its parent window.
+				if (item != null) {
+					if (item is Pad)
+						((Pad)item).BringToFront(true);
+					else
+						((MonoDevelop.Ide.Gui.Document)item).Select();
 				}
 			};
 			

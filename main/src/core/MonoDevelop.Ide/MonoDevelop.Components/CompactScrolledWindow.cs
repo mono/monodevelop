@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components
 {

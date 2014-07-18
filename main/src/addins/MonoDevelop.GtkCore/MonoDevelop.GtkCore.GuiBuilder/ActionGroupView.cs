@@ -140,15 +140,15 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			codeBinder.TargetObject = designer.RootComponent;
 		}
 		
-		public override void Save (string fileName)
+		public override void Save (FileSaveInformation fileSaveInformation)
 		{
 			string oldBuildFile = GuiBuilderService.GetBuildCodeFileName (project.Project, groupInfo.Name);
 			
-			base.Save (fileName);
+			base.Save (fileSaveInformation);
 			if (designer == null)
 				return;
 
-			codeBinder.UpdateBindings (fileName);
+			codeBinder.UpdateBindings (fileSaveInformation.FileName);
 			
 			designer.Save ();
 			

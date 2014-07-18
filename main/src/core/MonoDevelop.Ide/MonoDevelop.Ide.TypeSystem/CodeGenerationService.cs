@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Mono.TextEditor;
 using MonoDevelop.Core;
 using System.CodeDom;
 using MonoDevelop.Projects;
@@ -43,6 +42,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			bool isOpen;
 			var data = TextFileProvider.Instance.GetTextEditorData (type.Region.FileName, out isOpen);
-			var parsedDocument = TypeSystemService.ParseFile (data.Document.FileName, data.Document.MimeType, data.Text);
+			var parsedDocument = TypeSystemService.ParseFile (data.FileName, data.MimeType, data.Text);
 			
 			var insertionPoints = GetInsertionPoints (data, parsedDocument, type);
 			
@@ -115,6 +115,107 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		public static Task<bool> InsertMemberWithCursor (
+			string operation, ITypeDefinition parentType, IUnresolvedTypeDefinition part,
+			IUnresolvedMember newMember, bool implementExplicit = false)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			if (parentType == null)
+				return tcs.Task;
+			part = part ?? parentType.Parts.FirstOrDefault ();
+			if (part == null)
+				return tcs.Task;
+			var loadedDocument = IdeApp.Workbench.OpenDocument (part.Region.FileName);
+			loadedDocument.RunWhenLoaded (delegate {
+				var editor = loadedDocument.Editor;
+				var loc = part.Region.Begin;
+				var parsedDocument = loadedDocument.UpdateParseDocument ();
+				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
+				var insertionPoints = CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType);
+				if (insertionPoints.Count == 0) {
+					MessageService.ShowError (
+						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+						);
+					return;
+				}
+				editor.StartInsertionMode (new InsertionModeOptions (operation, insertionPoints, delegate(InsertionCursorEventArgs iCArgs) {
+					if (!iCArgs.Success) {
+						tcs.SetResult (false);
+						return;
+					}
+					var generator = CreateCodeGenerator (editor, parentType.Compilation);
+					generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
+					var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
+					iCArgs.InsertionPoint.Insert (editor, generatedCode.Code);
+					tcs.SetResult (true);
+				}));
+//				var mode = new InsertionCursorEditMode (
+//					editor.Parent,
+//					insertionPoints);
+//
+//				var suitableInsertionPoint = GetSuitableInsertionPoint (mode.InsertionPoints, part, newMember);
+//				if (suitableInsertionPoint != null)
+//					mode.CurIndex = mode.InsertionPoints.IndexOf (suitableInsertionPoint);
+//				else
+//					mode.CurIndex = 0;
+//
+//				var helpWindow = new Mono.TextEditor.PopupWindow.InsertionCursorLayoutModeHelpWindow () {
+//					TitleText = operation
+//				};
+//				mode.HelpWindow = helpWindow;
+//
+//				mode.StartMode ();
+//				mode.Exited += delegate(object s, InsertionCursorEventArgs iCArgs) {
+//					if (!iCArgs.Success) {
+//						tcs.SetResult (false);
+//						return;
+//					}
+//					var generator = CreateCodeGenerator (editor, parentType.Compilation);
+//					generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
+//					var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
+//					mode.InsertionPoints[mode.CurIndex].Insert (editor, generatedCode.Code);
+//					tcs.SetResult (true);
+//				};
+			});
+
+			return tcs.Task;
+		}
+		
+		public static Task<bool> InsertMember (
+			ITypeDefinition parentType, IUnresolvedTypeDefinition part,
+			IUnresolvedMember newMember, bool implementExplicit = false)
+		{
+			var tcs = new TaskCompletionSource<bool>();
+			if (parentType == null)
+				return tcs.Task;
+			part = part ?? parentType.Parts.FirstOrDefault ();
+			if (part == null)
+				return tcs.Task;
+
+			var loadedDocument = IdeApp.Workbench.OpenDocument (part.Region.FileName);
+			loadedDocument.RunWhenLoaded (delegate {
+				var editor = loadedDocument.Editor;
+				var loc = part.Region.Begin;
+				var parsedDocument = loadedDocument.UpdateParseDocument ();
+				var declaringType = parsedDocument.GetInnermostTypeDefinition (loc);
+				var insertionPoints = CodeGenerationService.GetInsertionPoints (loadedDocument, declaringType);
+				if (insertionPoints.Count == 0) {
+					MessageService.ShowError (
+						GettextCatalog.GetString ("No valid insertion point can be found in type '{0}'.", declaringType.Name)
+						);
+					return;
+				}
+				var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, newMember) ?? insertionPoints.First ();
+
+				var generator = CreateCodeGenerator (editor, parentType.Compilation);
+				generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
+				var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
+				suitableInsertionPoint.Insert (editor, generatedCode.Code);
+			});
+
+			return tcs.Task;
+		}
+
 		public static int CalculateBodyIndentLevel (IUnresolvedTypeDefinition declaringType)
 		{
 			if (declaringType == null)
@@ -141,8 +242,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			return CodeGenerator.CreateGenerator (doc);
 		}
-		
-		public static CodeGenerator CreateCodeGenerator (this TextEditorData data, ICompilation compilation)
+
+		public static CodeGenerator CreateCodeGenerator (this DocumentContext documentContext, TextEditor editor)
+		{
+			return CodeGenerator.CreateGenerator (editor, documentContext);
+		}
+
+		public static CodeGenerator CreateCodeGenerator (this ITextDocument data, ICompilation compilation)
 		{
 			return CodeGenerator.CreateGenerator (data, compilation);
 		}
@@ -162,7 +268,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return GetInsertionPoints (document.Editor, document.ParsedDocument, type);
 		}
 		
-		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, ParsedDocument parsedDocument, IUnresolvedTypeDefinition type)
+		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, IUnresolvedTypeDefinition type)
 		{
 			if (data == null)
 				throw new ArgumentNullException ("data");
@@ -173,46 +279,46 @@ namespace MonoDevelop.Ide.TypeSystem
 			
 			// update type from parsed document, since this is always newer.
 			//type = parsedDocument.GetInnermostTypeDefinition (type.GetLocation ()) ?? type;
-			List<InsertionPoint> result = new List<InsertionPoint> ();
-			int offset = data.LocationToOffset (type.Region.Begin);
+			var result = new List<InsertionPoint> ();
+			int offset = data.LocationToOffset (type.Region.Begin.Line, type.Region.Begin.Column);
 			if (offset < 0 || type.BodyRegion.IsEmpty)
 				return result;
 			while (offset < data.Length && data.GetCharAt (offset) != '{') {
 				offset++;
 			}
 			var realStartLocation = data.OffsetToLocation (offset);
-			result.Add (GetInsertionPosition (data.Document, realStartLocation.Line, realStartLocation.Column));
+			result.Add (GetInsertionPosition (data, realStartLocation.Line, realStartLocation.Column));
 			result [0].LineBefore = NewLineInsertion.None;
 			
 			foreach (var member in type.Members) {
-				TextLocation domLocation = member.BodyRegion.End;
+				var domLocation = member.BodyRegion.End;
 				if (domLocation.Line <= 0) {
-					DocumentLine lineSegment = data.GetLine (member.Region.BeginLine);
+					var lineSegment = data.GetLine (member.Region.BeginLine);
 					if (lineSegment == null)
 						continue;
 					domLocation = new TextLocation (member.Region.BeginLine, lineSegment.Length + 1);
 				}
-				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
 			}
 
 			foreach (var nestedType in type.NestedTypes) {
-				TextLocation domLocation = nestedType.BodyRegion.End;
+				var domLocation = nestedType.BodyRegion.End;
 				if (domLocation.Line <= 0) {
-					DocumentLine lineSegment = data.GetLine (nestedType.Region.BeginLine);
+					var lineSegment = data.GetLine (nestedType.Region.BeginLine);
 					if (lineSegment == null)
 						continue;
 					domLocation = new TextLocation (nestedType.Region.BeginLine, lineSegment.Length + 1);
 				}
-				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
 			}
 
 			result [result.Count - 1].LineAfter = NewLineInsertion.None;
-			CheckStartPoint (data.Document, result [0], result.Count == 1);
+			CheckStartPoint (data, result [0], result.Count == 1);
 			if (result.Count > 1) {
 				result.RemoveAt (result.Count - 1); 
 				NewLineInsertion insertLine;
 				var lineBefore = data.GetLine (type.BodyRegion.EndLine - 1);
-				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data.Document).Length) {
+				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data).Length) {
 					insertLine = NewLineInsertion.None;
 				} else {
 					insertLine = NewLineInsertion.Eol;
@@ -227,7 +333,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						col--;
 				}
 				result.Add (new InsertionPoint (new DocumentLocation (type.BodyRegion.EndLine, col), insertLine, NewLineInsertion.Eol));
-				CheckEndPoint (data.Document, result [result.Count - 1], result.Count == 1);
+				CheckEndPoint (data, result [result.Count - 1], result.Count == 1);
 			}
 			
 			foreach (var region in parsedDocument.UserRegions.Where (r => type.BodyRegion.IsInside (r.Region.Begin))) {
@@ -241,7 +347,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		
 		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, ParsedDocument parsedDocument, ITypeSymbol type, Location part)
 		{
 			if (data == null)
@@ -340,9 +445,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		static void CheckEndPoint (TextDocument doc, InsertionPoint point, bool isStartPoint)
+
+		static void CheckEndPoint (IReadonlyTextDocument doc, InsertionPoint point, bool isStartPoint)
 		{
-			DocumentLine line = doc.GetLine (point.Location.Line);
+			var line = doc.GetLine (point.Location.Line);
 			if (line == null)
 				return;
 			
@@ -352,9 +458,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				point.LineAfter = NewLineInsertion.Eol;
 		}
 		
-		static void CheckStartPoint (TextDocument doc, InsertionPoint point, bool isEndPoint)
+		static void CheckStartPoint (IReadonlyTextDocument doc, InsertionPoint point, bool isEndPoint)
 		{
-			DocumentLine line = doc.GetLine (point.Location.Line);
+			var line = doc.GetLine (point.Location.Line);
 			if (line == null)
 				return;
 			if (doc.GetLineIndent (line).Length + 1 == point.Location.Column) {
@@ -372,10 +478,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				point.LineAfter = isEndPoint ? NewLineInsertion.Eol : NewLineInsertion.BlankLine;
 		}
 		
-		static InsertionPoint GetInsertionPosition (TextDocument doc, int line, int column)
+		static InsertionPoint GetInsertionPosition (IReadonlyTextDocument doc, int line, int column)
 		{
 			int bodyEndOffset = doc.LocationToOffset (line, column) + 1;
-			DocumentLine curLine = doc.GetLine (line);
+			var curLine = doc.GetLine (line);
 			if (curLine != null) {
 				if (bodyEndOffset < curLine.Offset + curLine.Length) {
 					// case1: positition is somewhere inside the start line
@@ -384,7 +490,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			
 			// -> if position is at line end check next line
-			DocumentLine nextLine = doc.GetLine (line + 1);
+			var nextLine = doc.GetLine (line + 1);
 			if (nextLine == null) // check for 1 line case.
 				return new InsertionPoint (new DocumentLocation (line, column + 1), NewLineInsertion.BlankLine, NewLineInsertion.BlankLine);
 			
@@ -396,7 +502,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			DocumentLine nextLine2 = doc.GetLine (line + 2);
+			var nextLine2 = doc.GetLine (line + 2);
 			if (nextLine2 != null) {
 				for (int i = nextLine2.Offset; i < nextLine2.EndOffset; i++) {
 					char ch = doc.GetCharAt (i);
@@ -539,12 +645,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			string fileName = cls.Locations.First ().SourceTree.FilePath;
 			var buffer = TextFileProvider.Instance.GetTextEditorData (fileName, out isOpen);
 			
-			var attr = new CodeAttributeDeclaration (name);
-			foreach (var parameter in parameters) {
-				attr.Arguments.Add (new CodeAttributeArgument (new CodePrimitiveExpression (parameter)));
-			}
 			
-
 			var code = new StringBuilder ();
 			int pos = cls.Locations.First ().SourceSpan.Start;
 			var line = buffer.GetLineByOffset (pos);
@@ -563,10 +664,10 @@ namespace MonoDevelop.Ide.TypeSystem
  			code.Append ("]");
 			code.AppendLine ();
 			
-			buffer.Insert (line.Offset, code.ToString ());
+			buffer.InsertText (line.Offset, code.ToString ());
+
 			if (!isOpen) {
 				File.WriteAllText (fileName, buffer.Text);
-				buffer.Dispose ();
 			}
 		}
 		

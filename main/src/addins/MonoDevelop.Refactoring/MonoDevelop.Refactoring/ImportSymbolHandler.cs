@@ -33,11 +33,16 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Refactoring;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Refactoring
 {
@@ -75,11 +80,12 @@ namespace MonoDevelop.Refactoring
 				return result;
 			result = new GenerateNamespaceImport ();
 			cache[type.ContainingNamespace] = result;
-			TextEditorData data = doc.Editor;
+			var data = doc.Editor;
 			result.InsertNamespace  = false;
-			var nameSpaces = RefactoringOptions.GetUsedNamespacesAsync (doc, data.Caret.Offset).Result;
+			var nameSpaces = RefactoringOptions.GetUsedNamespacesAsync (doc, data.CaretOffset).Result;
 			foreach (var ns in nameSpaces) {
 				if (GetNamespaceString (type.ContainingNamespace) == ns) {
+
 					result.GenerateUsing = false;
 					return result;
 				}
@@ -220,10 +226,8 @@ namespace MonoDevelop.Refactoring
 			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-			ITextEditorExtension ext = doc.EditorExtension;
-			while (ext != null && !(ext is CompletionTextEditorExtension))
-				ext = ext.Next;
-			if (ext == null)
+			var completionExt = doc.GetContent<CompletionTextEditorExtension> ();
+			if (completionExt == null)
 				return;
 			
 			var semanticModel = analysisDocument.GetSemanticModelAsync ().Result; 

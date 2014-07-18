@@ -35,7 +35,6 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using System.Linq;
-using Mono.TextEditor;
 using MonoDevelop.CodeActions;
 using MonoDevelop.SourceEditor.QuickTasks;
 using System.Threading;
@@ -43,6 +42,16 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.FindSymbols;
 using System.Collections.Immutable;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
+using MonoDevelop.CodeActions;
+using MonoDevelop.Projects;
+using MonoDevelop.Ide.Gui.Components;
+using System.Threading;
+using MonoDevelop.Core.Text;
+using MonoDevelop.AnalysisCore;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
 {
@@ -126,7 +135,47 @@ namespace MonoDevelop.Refactoring
 			return RefactoringSymbolInfo.Empty;
 		}
 		
-		
+		class FindDerivedClasses
+		{
+			ITypeDefinition type;
+			
+			public FindDerivedClasses (ITypeDefinition type)
+			{
+				this.type = type;
+			}
+			
+			public void Run ()
+			{
+				FindDerivedClassesHandler.FindDerivedClasses (type);
+			}
+		}
+
+		class RefactoringDocumentInfo
+		{
+			public IEnumerable<CodeAction> validActions;
+			public MonoDevelop.Ide.TypeSystem.ParsedDocument lastDocument;
+
+			public override string ToString ()
+			{
+				return string.Format ("[RefactoringDocumentInfo: #validActions={0}, lastDocument={1}]", validActions != null ? validActions.Count ().ToString () : "null", lastDocument);
+			}
+		}
+
+
+		MonoDevelop.Ide.Editor.DocumentLocation lastLocation;
+
+		static bool HasOverloads (Solution solution, object item)
+		{
+			var member = item as IMember;
+			if (member != null && member.ImplementedInterfaceMembers.Any ())
+				return true;
+			var method = item as IMethod;
+			if (method == null)
+				return false;
+			return method.DeclaringType.GetMethods (m => m.Name == method.Name).Count () > 1;
+		}
+
+
 		protected override void Update (CommandArrayInfo ainfo)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -150,67 +199,57 @@ namespace MonoDevelop.Refactoring
 				added = true;
 			}
 			
-//			foreach (var refactoring in RefactoringService.Refactorings) {
-//				if (refactoring.IsValid (options)) {
-//					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
-//					info.AccelKey = refactoring.AccelKey;
-//					ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
-//				}
-//			}
-//			var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
-//			if (refactoringInfo == null) {
-//				refactoringInfo = new RefactoringDocumentInfo ();
-//				doc.AddAnnotation (refactoringInfo);
-//			}
-//			var loc = doc.Editor.Caret.Location;
-//			bool first = true;
-//			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
-//
-//				if (QuickTaskStrip.Enab///
-////					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
-////				}
-//			}
-//
-//			if (ciset.CommandInfos.Count > 0) {
-//				ainfo.Add (ciset, null);
-//				added = true;
-//			}
-//			
-//			if (canRename) {leFancyFeatures) {
-//					var ext = doc.GetContent <CodeActionEditorExtension> ();
-//					//refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
-//				} else {
-//					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
-//				}
-//
-//				lastLocation = loc;
-//				refactoringInfo.lastDocument = doc.ParsedDocument;
-//			}
-//			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
-//				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc, CancellationToken.None);
-//
-////				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
-////					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
-////						continue;
-////					var fix = fix_;
-////					if (first) {
-////						first = false;
-////						if (ciset.CommandInfos.Count > 0)
-////							ciset.CommandInfos.AddSeparator ();
-////					}
-////
-////					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
-////				}
-//			}
-//
-//			if (ciset.CommandInfos.Count > 0) {
-//				ainfo.Add (ciset, null);
-//				added = true;
-//			}
-//			
-			if (IdeApp.ProjectOperations.CanJumpToDeclaration (info.Symbol) || info.Symbol == null && IdeApp.ProjectOperations.CanJumpToDeclaration (info.CandidateSymbols.FirstOrDefault ())) {
-				var type = (info.Symbol ?? info.CandidateSymbols.FirstOrDefault ()) as INamedTypeSymbol;
-				if (type != null && type.Locations.Length > 1) {
+			foreach (var refactoring in RefactoringService.Refactorings) {
+				if (refactoring.IsValid (options)) {
+					CommandInfo info = new CommandInfo (refactoring.GetMenuDescription (options));
+					info.AccelKey = refactoring.AccelKey;
+					ciset.CommandInfos.Add (info, new Action (new RefactoringOperationWrapper (refactoring, options).Operation));
+				}
+			}
+			var refactoringInfo = doc.Annotation<RefactoringDocumentInfo> ();
+			if (refactoringInfo == null) {
+				refactoringInfo = new RefactoringDocumentInfo ();
+				doc.AddAnnotation (refactoringInfo);
+			}
+			var loc = doc.Editor.CaretLocation;
+			bool first = true;
+			if (refactoringInfo.lastDocument != doc.ParsedDocument || loc != lastLocation) {
+
+				if (AnalysisOptions.EnableFancyFeatures) {
+					var ext = doc.GetContent <CodeActionEditorExtension> ();
+					refactoringInfo.validActions = ext != null ? ext.GetCurrentFixes () : null;
+				} else {
+					refactoringInfo.validActions = RefactoringService.GetValidActions (doc, loc).Result;
+				}
+
+				lastLocation = loc;
+				refactoringInfo.lastDocument = doc.ParsedDocument;
+			}
+			if (refactoringInfo.validActions != null && refactoringInfo.lastDocument != null && refactoringInfo.lastDocument.CreateRefactoringContext != null) {
+				var context = refactoringInfo.lastDocument.CreateRefactoringContext (doc.Editor, doc.Editor.CaretLocation, doc, CancellationToken.None);
+
+				foreach (var fix_ in refactoringInfo.validActions.OrderByDescending (i => Tuple.Create (CodeActionEditorExtension.IsAnalysisOrErrorFix(i), (int)i.Severity, CodeActionEditorExtension.GetUsage (i.IdString)))) {
+					if (CodeActionEditorExtension.IsAnalysisOrErrorFix (fix_))
+						continue;
+					var fix = fix_;
+					if (first) {
+						first = false;
+						if (ciset.CommandInfos.Count > 0)
+							ciset.CommandInfos.AddSeparator ();
+					}
+
+					ciset.CommandInfos.Add (fix.Title, new Action (() => RefactoringService.ApplyFix (fix, context)));
+				}
+			}
+
+			if (ciset.CommandInfos.Count > 0) {
+				ainfo.Add (ciset, null);
+				added = true;
+			}
+			
+			if (IdeApp.ProjectOperations.CanJumpToDeclaration (item)) {
+				var type = item as IType;
+				if (type != null && type.GetDefinition ().Parts.Count > 1) {
 					var declSet = new CommandInfoSet ();
 					declSet.Text = GettextCatalog.GetString ("_Go to Declaration");
 					foreach (var part in type.Locations) {

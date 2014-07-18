@@ -35,6 +35,7 @@ using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using ICSharpCode.Decompiler.ILAst;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -43,14 +44,14 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 	/// </summary>
 	class ConvertToEnumAction : MonoDevelop.CodeActions.CodeActionProvider
 	{
-		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions(MonoDevelop.Ide.Gui.Document document, object refactoringContext, TextLocation loc, CancellationToken cancellationToken)
+		public override IEnumerable<MonoDevelop.CodeActions.CodeAction> GetActions (TextEditor editor, DocumentContext doc, object refactoringContext, MonoDevelop.Ide.Editor.DocumentLocation loc, CancellationToken cancellationToken)
 		{
-			var context = refactoringContext as MDRefactoringContext;
+			var mdCtx = refactoringContext as MDRefactoringContext;
 
-			if (context == null || context.IsInvalid)
+			if (mdCtx == null || mdCtx.IsInvalid)
 				yield break;
 
-			VariableInitializer currentVariable = context.GetNode<VariableInitializer>();
+			VariableInitializer currentVariable = mdCtx.GetNode<VariableInitializer>();
 			if (currentVariable == null) {
 				yield break;
 			}
@@ -64,7 +65,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				yield break;
 			}
 
-			PrimitiveType baseType = TypeToIntegerPrimitive(context, currentField.ReturnType);
+			PrimitiveType baseType = TypeToIntegerPrimitive(mdCtx, currentField.ReturnType);
 			if (baseType == null) {
 				//Can't make enums of these types
 				yield break;

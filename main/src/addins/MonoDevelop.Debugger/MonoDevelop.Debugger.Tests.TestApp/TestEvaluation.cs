@@ -41,6 +41,8 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			return 1;
 		}
 
+		protected string ProtectedStringProperty{ get; set; }
+
 		public virtual int TestMethodBase (string a)
 		{
 			return int.Parse (a) + 1;
@@ -129,6 +131,7 @@ namespace MonoDevelop.Debugger.Tests.TestApp
 			var objWithMethodA = new ClassWithMethodA ();
 
 			var richObject = new RichClass ();
+			byte[] nulledByteArray = null;
 
 			Console.WriteLine (n); /*break*/
 		}
@@ -267,7 +270,7 @@ class RichClass
 
 	private string privatePropStringC { get; set; }
 
-	public RichClass()
+	public RichClass ()
 	{
 		publicPropInt1 = 1;
 		publicPropInt2 = 2;

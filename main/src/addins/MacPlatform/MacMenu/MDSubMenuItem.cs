@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoMac.AppKit;
+using AppKit;
 using MonoDevelop.Components.Commands;
 using System.Linq;
 
@@ -34,11 +34,11 @@ namespace MonoDevelop.MacIntegration.MacMenu
 	{
 		CommandEntrySet ces;
 
-		public MDSubMenuItem (CommandManager manager, CommandEntrySet ces)
+		public MDSubMenuItem (CommandManager manager, CommandEntrySet ces, CommandSource commandSource = CommandSource.MainMenu, object initialCommandTarget = null)
 		{
 			this.ces = ces;
 
-			this.Submenu = new MDMenu (manager, ces);
+			this.Submenu = new MDMenu (manager, ces, commandSource, initialCommandTarget);
 			this.Title = this.Submenu.Title;
 		}
 

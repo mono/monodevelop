@@ -32,6 +32,8 @@ using MonoDevelop.DesignerSupport;
 using MonoDevelop.TextTemplating.Parser;
 using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.TextTemplating.Gui
 {
@@ -44,16 +46,16 @@ namespace MonoDevelop.TextTemplating.Gui
 		{
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-			Document.DocumentParsed += HandleDocumentDocumentParsed;
+			DocumentContext.DocumentParsed += HandleDocumentDocumentParsed;
 			HandleDocumentDocumentParsed (this, EventArgs.Empty);
 		}
 
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)
 		{
-			parsedDoc = (T4ParsedDocument)Document.ParsedDocument;
+			parsedDoc = (T4ParsedDocument)DocumentContext.ParsedDocument;
 			if (parsedDoc != null)
 				RefreshOutline ();
 		}
@@ -74,17 +76,17 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		protected ITextBuffer Buffer {
 			get {
-				if (Document == null)
+				if (DocumentContext == null)
 					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return Document.GetContent<ITextBuffer> ();
+				return DocumentContext.GetContent<ITextBuffer> ();
 			}
 		}
 		
-		protected IEditableTextBuffer EditableBuffer {
+		protected TextEditor EditableBuffer {
 			get {
-				if (Document == null)
+				if (DocumentContext == null)
 					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return Document.GetContent<IEditableTextBuffer> ();
+				return DocumentContext.GetContent<TextEditor> ();
 			}
 		}
 		
@@ -272,9 +274,9 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		void SelectSegment (Mono.TextTemplating.ISegment seg)
 		{
-			int s = Editor.Document.LocationToOffset (seg.TagStartLocation.Line, seg.TagStartLocation.Column);
+			int s = Editor.LocationToOffset (seg.TagStartLocation.Line, seg.TagStartLocation.Column);
 			if (s > -1) {
-				Editor.Caret.Offset = s;
+				Editor.CaretOffset = s;
 				Editor.CenterTo (s);
 			}
 		}

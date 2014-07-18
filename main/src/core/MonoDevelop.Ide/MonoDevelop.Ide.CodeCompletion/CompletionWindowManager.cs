@@ -27,6 +27,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -84,14 +85,16 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			try {
 				if (ext != null) {
-					int inserted = ext.document.Editor.EnsureCaretIsNotVirtual ();
+					int inserted = ext.Editor.EnsureCaretIsNotVirtual ();
 					if (inserted > 0)
-						completionContext.TriggerOffset = ext.document.Editor.Caret.Offset;
+						completionContext.TriggerOffset = ext.Editor.CaretOffset;
 				}
 				if (wnd == null) {
 					wnd = new CompletionListWindow ();
 					wnd.WordCompleted += HandleWndWordCompleted;
 				}
+				if (ext != null)
+					wnd.TransientFor = ext.Editor.GetNativeWidget<Gtk.Widget> ().Parent.Toplevel as Gtk.Window;
 				wnd.Extension = ext;
 				try {
 					if (!wnd.ShowListWindow (firstChar, list, completionWidget, completionContext)) {
@@ -182,7 +185,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return;
 			ParameterInformationWindowManager.UpdateWindow (wnd.Extension, wnd.CompletionWidget);
 			if (wnd.Extension != null)
-				wnd.Extension.document.Editor.FixVirtualIndentation ();
+				wnd.Extension.Editor.FixVirtualIndentation ();
 			wnd.HideWindow ();
 			OnWindowClosed (EventArgs.Empty);
 			//DestroyWindow ();

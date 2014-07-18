@@ -34,8 +34,8 @@ using MonoDevelop.Ide;
 using System.Text.RegularExpressions;
 using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Fonts;
-using MonoDevelop.Components;
 using Gtk;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -355,12 +355,12 @@ namespace MonoDevelop.SourceEditor
 		double bubbleWidth;
 		bool bubbleIsReduced;
 		
-		public override void Draw (TextEditor editor, Cairo.Context g, double y, LineMetrics metrics)
+		public override void Draw (TextEditor editor, Cairo.Context g, LineMetrics metrics)
 		{
 
 		}
 
-		public override void DrawAfterEol (TextEditor textEditor, Cairo.Context g, double y, EndOfLineMetrics metrics)
+		public override void DrawAfterEol (TextEditor textEditor, Cairo.Context g, EndOfLineMetrics metrics)
 		{
 			if (!IsVisible)
 				return;
@@ -374,6 +374,7 @@ namespace MonoDevelop.SourceEditor
 			var sx = metrics.TextRenderEndPosition;
 			var width = LayoutWidth + errorCounterWidth + editor.LineHeight;
 			var drawLayout = layouts[0].Layout;
+			var y = metrics.LineYRenderStartPosition;
 			bool customLayout = true; //sx + width > editor.Allocation.Width;
 			bool hideText = false;
 			bubbleIsReduced = customLayout;
@@ -547,7 +548,7 @@ namespace MonoDevelop.SourceEditor
 
 		#region text background
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context g, double y, LineMetrics metrics)
+		public override bool DrawBackground (TextEditor editor, Cairo.Context g, LineMetrics metrics)
 		{
 			if (!IsVisible)
 				return false;
@@ -569,7 +570,7 @@ namespace MonoDevelop.SourceEditor
 
 			int active = editor.Document.GetTextAt (lineSegment) == initialText ? 0 : 1;
 			bool highlighted = active == 0 && isCaretInLine;
-
+			var y = metrics.LineYRenderStartPosition;
 			// draw background
 			if (!markerShouldDrawnAsHidden) {
 				DrawRectangle (g, x, y, right, editor.LineHeight);

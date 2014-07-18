@@ -30,7 +30,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Core;
 using System.Linq;
-using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Components;
 using Cairo;
 using MonoDevelop.Projects;
@@ -38,14 +37,12 @@ using System.Collections.Generic;
 using Mono.Addins;
 using MonoDevelop.Components.Commands.ExtensionNodes;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Execution;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 using System.Text;
-
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -122,6 +119,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void SetSearchCategory (string category)
 		{
+			IdeApp.Workbench.RootWindow.Present ();
 			matchEntry.Entry.Text = category + ":";
 			matchEntry.Entry.GrabFocus ();
 			var pos = matchEntry.Entry.Text.Length;
@@ -149,7 +147,7 @@ namespace MonoDevelop.Components.MainToolbar
 				renderer.Xpad = 3;
 				return;
 			}
-			renderer.Sensitive = !(target is ExecutionTargetGroup);
+			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
 
 			if (target == null) {
 				renderer.Xpad = (uint) 0;
@@ -167,6 +165,9 @@ namespace MonoDevelop.Components.MainToolbar
 				else
 					renderer.Text = target.Name;
 			}
+
+			if (Platform.IsMac)
+				renderer.WidthChars = renderer.Text != null ? (indent ? renderer.Text.Length + 6 : 0) : 0;
 		}
 
 		string RemoveUnderline (string s)
@@ -218,6 +219,8 @@ namespace MonoDevelop.Components.MainToolbar
 			runtimeCombo = new Gtk.ComboBox ();
 			runtimeCombo.Model = runtimeStore;
 			ctx = new Gtk.CellRendererText ();
+			if (Platform.IsWindows)
+				ctx.Ellipsize = Pango.EllipsizeMode.Middle;
 			runtimeCombo.PackStart (ctx, true);
 			runtimeCombo.SetCellDataFunc (ctx, RuntimeRenderCell);
 			runtimeCombo.RowSeparatorFunc = RuntimeIsSeparator;
@@ -301,9 +304,9 @@ namespace MonoDevelop.Components.MainToolbar
 					var doc = IdeApp.Workbench.ActiveDocument;
 					if (doc != null && doc.Editor != null) {
 						doc.Select ();
-						doc.Editor.Caret.Location = new Mono.TextEditor.DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
+						doc.Editor.CaretLocation = new DocumentLocation (pattern.LineNumber, pattern.Column > 0 ? pattern.Column : 1);
 						doc.Editor.CenterToCaret ();
-						doc.Editor.Parent.StartCaretPulseAnimation ();
+						doc.Editor.StartCaretPulseAnimation ();
 					}
 					return;
 				}
@@ -664,7 +667,7 @@ namespace MonoDevelop.Components.MainToolbar
 			do {
 				var target = (ExecutionTarget) runtimeStore.GetValue (iter, RuntimeExecutionTarget);
 
-				if (target == null)
+				if (target == null || !target.Enabled)
 					continue;
 
 				if (target is ExecutionTargetGroup) {
@@ -814,16 +817,21 @@ namespace MonoDevelop.Components.MainToolbar
 				if (cmds.Count > 0) {
 					bool needsSeparator = runtimes > 0;
 					foreach (CommandEntry ce in cmds) {
-						if (needsSeparator)
-							runtimeStore.AppendValues (null, false);
 						if (ce.CommandId == Command.Separator) {
 							needsSeparator = true;
 							continue;
 						}
 						var cmd = ce.GetCommand (IdeApp.CommandService) as ActionCommand;
 						if (cmd != null) {
-							runtimeStore.AppendValues (null, false, cmd);
-							runtimes++;
+							var ci = IdeApp.CommandService.GetCommandInfo (cmd.Id, new CommandTargetRoute (LastCommandTarget));
+							if (ci.Visible) {
+								if (needsSeparator) {
+									runtimeStore.AppendValues (null, false);
+									needsSeparator = false;
+								}
+								runtimeStore.AppendValues (null, false, cmd);
+								runtimes++;
+							}
 						}
 					}
 				}

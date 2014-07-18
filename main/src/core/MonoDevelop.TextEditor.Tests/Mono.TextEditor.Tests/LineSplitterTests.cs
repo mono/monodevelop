@@ -29,6 +29,7 @@
 using System;
 using System.Text;
 using NUnit.Framework;
+using Mono.TextEditor.Utils;
 
 namespace Mono.TextEditor.Tests
 {
@@ -38,10 +39,10 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLastLineCreation ()
 		{
-			IBuffer buffer = new Mono.TextEditor.GapBuffer ();
+			var buffer = new Rope<char> ();
 			LineSplitter splitter = new Mono.TextEditor.LineSplitter ();
-			buffer.Text = "1\n2\n3\n";
-			splitter.TextReplaced (null, new DocumentChangeEventArgs (0, "", buffer.Text));
+			buffer.InsertText (0, "1\n2\n3\n");
+			splitter.TextReplaced (null, new DocumentChangeEventArgs (0, "", buffer.ToString ()));
 			Assert.AreEqual (4, splitter.Count);
 			for (int i = 0; i < 3; i++) {
 				Assert.AreEqual (i * 2, splitter.Get (i + 1).Offset);
@@ -58,13 +59,13 @@ namespace Mono.TextEditor.Tests
 		[Test()]
 		public void TestLastLineRemove ()
 		{
-			IBuffer buffer = new Mono.TextEditor.GapBuffer ();
+			var buffer = new Rope<char> ();
 			LineSplitter splitter = new Mono.TextEditor.LineSplitter ();
-			buffer.Text = "1\n2\n3\n";
-			splitter.TextReplaced (null, new DocumentChangeEventArgs (0, "", buffer.Text));
+			buffer.InsertText (0, "1\n2\n3\n");
+			splitter.TextReplaced (null, new DocumentChangeEventArgs (0, "", buffer.ToString ()));
 			
 			DocumentLine lastLine = splitter.Get (2);
-			splitter.TextReplaced (null, new DocumentChangeEventArgs (lastLine.Offset, buffer.GetTextAt (lastLine.Offset, lastLine.LengthIncludingDelimiter), ""));
+			splitter.TextReplaced (null, new DocumentChangeEventArgs (lastLine.Offset, buffer.ToString (lastLine.Offset, lastLine.LengthIncludingDelimiter), ""));
 			
 			Assert.AreEqual (3, splitter.Count);
 			

@@ -26,10 +26,8 @@
 using System;
 using MonoDevelop.Ide.Gui.Content;
 using Gtk;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.SourceEditor.QuickTasks;
 using System.Linq;
 using MonoDevelop.Refactoring;
 using ICSharpCode.NRefactory;
@@ -49,6 +47,10 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide;
 using Microsoft.CodeAnalysis.CodeActions;
 using ICSharpCode.NRefactory6.CSharp.Refactoring;
+using MonoDevelop.AnalysisCore;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CodeActions
 {
@@ -95,7 +97,7 @@ namespace MonoDevelop.CodeActions
 		void RemoveWidget ()
 		{
 			if (currentSmartTag != null) {
-				document.Editor.Document.RemoveMarker (currentSmartTag);
+				Editor.RemoveMarker (currentSmartTag);
 				currentSmartTag = null;
 				currentSmartTagBegin = -1;
 			}
@@ -107,9 +109,10 @@ namespace MonoDevelop.CodeActions
 		{
 			CancelMenuCloseTimer ();
 			CancelQuickFixTimer ();
-			document.Editor.SelectionChanged -= HandleSelectionChanged;
-			document.DocumentParsed -= HandleDocumentDocumentParsed;
-			document.Editor.Parent.BeginHover -= HandleBeginHover;
+			Editor.CaretPositionChanged -= HandleCaretPositionChanged;
+			Editor.SelectionChanged -= HandleSelectionChanged;
+			DocumentContext.DocumentParsed -= HandleDocumentDocumentParsed;
+			Editor.BeginMouseHover -= HandleBeginHover;
 			RemoveWidget ();
 			Fixes = null;
 			base.Dispose ();
@@ -148,14 +151,14 @@ namespace MonoDevelop.CodeActions
 
 		CancellationTokenSource quickFixCancellationTokenSource;
 
-		public override void CursorPositionChanged ()
+		void HandleCaretPositionChanged (object sender, EventArgs e)
 		{
 			CancelQuickFixTimer ();
-			if (QuickTaskStrip.EnableFancyFeatures &&  Document.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
+			if (AnalysisOptions.EnableFancyFeatures &&  DocumentContext.ParsedDocument != null && !Debugger.DebuggingService.IsDebugging) {
 				quickFixCancellationTokenSource = new CancellationTokenSource ();
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
-					var loc = Document.Editor.Caret.Offset;
+					var loc = Editor.CaretOffset;
 					var ad = Document.AnalysisDocument;
 					if (ad == null) {
 						quickFixTimeout = 0;
@@ -237,7 +240,6 @@ namespace MonoDevelop.CodeActions
 			} else {
 				RemoveWidget ();
 			}
-			base.CursorPositionChanged ();
 		}
 
 		internal static bool IsAnalysisOrErrorFix (Microsoft.CodeAnalysis.CodeActions.CodeAction act)
@@ -252,14 +254,19 @@ namespace MonoDevelop.CodeActions
 			Gtk.Menu fixMenu = menu;
 			int items = 0;
 			
-			var possibleNamespaces = ResolveCommandHandler.GetPossibleNamespaces (document);
-
+			var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
+					Editor,
+					Editor.CaretLocation,
+					DocumentContext,
+					node,
+					ref resolveResult
+				);
 			if (possibleNamespaces.Count > 0) {
 
 				foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
 					var menuItem = new Gtk.MenuItem (t.GetImportText ());
 					menuItem.Activated += delegate {
-						new ResolveCommandHandler.AddImport (document, possibleNamespaces.ResolveResult, null, t.Reference, true, possibleNamespaces.Node).Run ();
+						new ResolveCommandHandler.AddImport (Editor, DocumentContext, possibleNamespaces.ResolveResult, null, t.Reference, true, possibleNamespaces.Node).Run ();
 						menu.Destroy ();
 					};
 					menu.Add (menuItem);
@@ -272,7 +279,7 @@ namespace MonoDevelop.CodeActions
 						var reference = t.Reference;
 						var menuItem = new Gtk.MenuItem (t.GetImportText ());
 						menuItem.Activated += delegate {
-							new ResolveCommandHandler.AddImport (document, possibleNamespaces.ResolveResult, ns, reference, true, possibleNamespaces.Node).Run ();
+							new ResolveCommandHandler.AddImport (Editor, DocumentContext, possibleNamespaces.ResolveResult, ns, reference, true, possibleNamespaces.Node).Run ();
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);
@@ -285,7 +292,7 @@ namespace MonoDevelop.CodeActions
 						string ns = t.Namespace;
 						var reference = t.Reference;
 						var node = possibleNamespaces.Node;
-						var menuItem = new Gtk.MenuItem (t.GetInsertNamespaceText (document.Editor.GetTextBetween (node.Span.Start, node.Span.End)));
+						var menuItem = new Gtk.MenuItem (t.GetInsertNamespaceText (Editor.GetTextBetween (node.Span.Start, node.Span.End)));
 						menuItem.Activated += delegate {
 							new ResolveCommandHandler.AddImport (document, possibleNamespaces.ResolveResult, ns, reference, false, node).Run ();
 							menu.Destroy ();
@@ -309,22 +316,21 @@ namespace MonoDevelop.CodeActions
 				menu.Destroy ();
 				return;
 			}
-			document.Editor.SuppressTooltips = true;
-			document.Editor.Parent.HideTooltip ();
+//			document.Editor.SuppressTooltips = true;
+//			document.Editor.Parent.HideTooltip ();
 			if (menuAction != null)
 				menuAction (menu);
 			menu.ShowAll ();
-			menu.SelectFirst (true);
+			menu.SelectFirst (true);	
 			menu.Hidden += delegate {
-				document.Editor.SuppressTooltips = false;
+				// document.Editor.SuppressTooltips = false;
 			};
-			var container = document.Editor.Parent;
 
-			var p = container.LocationToPoint (container.OffsetToLocation (currentSmartTagBegin));
+			var p = Editor.LocationToPoint (container.OffsetToLocation (currentSmartTagBegin));
 			var rect = new Gdk.Rectangle (
-				p.X + container.Allocation.X , 
-				p.Y + (int)document.Editor.LineHeight + container.Allocation.Y, 0, 0);
-			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
+				(int)p.X + widget.Allocation.X , 
+				(int)p.Y + (int)Editor.LineHeight + widget.Allocation.Y, 0, 0);
+			GtkWorkarounds.ShowContextMenu (menu, widget, null, rect);
 		}
 
 		void AddFix (Menu menu, ref int mnemonic, CodeAction action)
@@ -370,7 +376,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanSuppressWithAttribute) {
 					var menuItem = new MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
 					menuItem.Activated += delegate {
-						inspector.SuppressWithAttribute (document, GetTextSpan (fix.Item2)); 
+						inspector.SuppressWithAttribute (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -378,7 +384,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableWithPragma) {
 					var menuItem = new MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
 					menuItem.Activated += delegate {
-						inspector.DisableWithPragma (document, GetTextSpan (fix.Item2)); 
+						inspector.DisableWithPragma (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -386,7 +392,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableOnce) {
 					var menuItem = new MenuItem (GettextCatalog.GetString ("_Disable Once"));
 					menuItem.Activated += delegate {
-						inspector.DisableOnce (document, GetTextSpan (fix.Item2)); 
+						inspector.DisableOnce (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -394,7 +400,7 @@ namespace MonoDevelop.CodeActions
 				if (inspector.CanDisableAndRestore) {
 					var menuItem = new MenuItem (GettextCatalog.GetString ("Disable _and Restore"));
 					menuItem.Activated += delegate {
-						inspector.DisableAndRestore (document, GetTextSpan (fix.Item2)); 
+						inspector.DisableAndRestore (Editor, DocumentContext, GetTextSpan (fix.Item2)); 
 					};
 					subMenu.Add (menuItem);
 				}
@@ -422,145 +428,57 @@ namespace MonoDevelop.CodeActions
 
 		}
 
-
 		class ContextActionRunner
 		{
 			readonly CodeAction act;
-			Document document;
+			DocumentContext documentContext;
 			int loc;
 
-			public ContextActionRunner (CodeAction act, Document document, int loc)
+			public ContextActionRunner (MonoDevelop.CodeActions.CodeAction act, TextEditor editor, DocumentContext documentContext, ICSharpCode.NRefactory.TextLocation loc)
 			{
+				this.editor = editor;
 				this.act = act;
-				this.document = document;
+				this.documentContext = documentContext;
 				this.loc = loc;
 			}
 
 			public void Run (object sender, EventArgs e)
 			{
-				foreach (var op in act.GetOperationsAsync (default(CancellationToken)).Result) {
-					op.Apply (RoslynTypeSystemService.Workspace, default(CancellationToken)); 
-				}
+				var context = documentContext.ParsedDocument.CreateRefactoringContext (editor, editor.CaretLocation, documentContext, CancellationToken.None);
+				RefactoringService.ApplyFix (act, context);
+			}
+
+			public void BatchRun (object sender, EventArgs e)
+			{
+				act.BatchRun (editor, documentContext, loc);
 			}
 		}
 
-		class SmartTagMarker : TextSegmentMarker, IActionTextLineMarker
-		{
-			readonly CodeActionEditorExtension codeActionEditorExtension;
-			internal CodeActionContainer fixes;
-			int offset;
+		ISmartTagMarker currentSmartTag;
+		MonoDevelop.Ide.Editor.DocumentLocation currentSmartTagBegin;
 
-			public SmartTagMarker (int offset, CodeActionEditorExtension codeActionEditorExtension, CodeActionContainer fixes) : base (offset, 0)
-			{
-				this.codeActionEditorExtension = codeActionEditorExtension;
-				this.fixes = fixes;
-				this.offset = offset;
-			}
-
-			public SmartTagMarker (int offset) : base (offset, 0)
-			{
-			}
-			const double tagMarkerWidth = 8;
-			const double tagMarkerHeight = 2;
-			public override void Draw (TextEditor editor, Cairo.Context cr, Pango.Layout layout, bool selected, int startOffset, int endOffset, double y, double startXPos, double endXPos)
-			{
-				var loc = editor.OffsetToLocation (offset);
-				var line = editor.GetLine (loc.Line);
-				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.XOffset + editor.TextViewMargin.TextStartPosition;
-
-				cr.Rectangle (Math.Floor (x) + 0.5, Math.Floor (y) + 0.5 + (line == editor.GetLineByOffset (startOffset) ? editor.LineHeight - tagMarkerHeight - 1 : 0), tagMarkerWidth * cr.LineWidth, tagMarkerHeight * cr.LineWidth);
-
-				if (HslColor.Brightness (editor.ColorStyle.PlainText.Background) < 0.5) {
-					cr.SetSourceRGBA (0.8, 0.8, 1, 0.9);
-				} else {
-					cr.SetSourceRGBA (0.2, 0.2, 1, 0.9);
-				}
-				cr.Stroke ();
-			}
-
-			#region IActionTextLineMarker implementation
-
-			bool IActionTextLineMarker.MousePressed (TextEditor editor, MarginMouseEventArgs args)
-			{
-				return false;
-			}
-
-			void IActionTextLineMarker.MouseHover (TextEditor editor, MarginMouseEventArgs args, TextLineMarkerHoverResult result)
-			{
-				if (args.Button != 0)
-					return;
-				var loc = editor.OffsetToLocation (offset);
-
-				var line = editor.GetLine (loc.Line);
-				if (line == null)
-					return;
-				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
-				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
-				if (args.X - x >= 0 * editor.Options.Zoom && 
-				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
-				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom) {
-					result.Cursor = null;
-					Popup ();
-				} else {
-					codeActionEditorExtension.CancelSmartTagPopupTimeout ();
-				}
-			}
-
-			public void Popup ()
-			{
-				codeActionEditorExtension.smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-					codeActionEditorExtension.PopupQuickFixMenu (null, menu => {
-						codeActionEditorExtension.codeActionMenu = menu;
-						menu.MotionNotifyEvent += (o, args) => {
-							if (args.Event.Window == codeActionEditorExtension.Editor.Parent.TextArea.GdkWindow) {
-								codeActionEditorExtension.StartMenuCloseTimer ();
-							} else {
-								codeActionEditorExtension.CancelMenuCloseTimer ();
-							}
-						};
-					});
-					codeActionEditorExtension.smartTagPopupTimeoutId = 0;
-					return false;
-				});
-			}
-
-
-			#endregion
-		}
-
-		SmartTagMarker currentSmartTag;
-		int currentSmartTagBegin;
-
-		static TextSpan GetTextSpan (CodeAction fix)
-		{
-			var nfix = fix as NRefactoryCodeAction;
-			if (nfix != null)
-				return nfix.TextSpan;
-			return TextSpan.FromBounds (-1, -1);
-		}
-
-		void CreateSmartTag (CodeActionContainer fixes, int loc)
+		void CreateSmartTag (List<CodeAction> fixes, MonoDevelop.Ide.Editor.DocumentLocation loc)
 		{
 			Fixes = fixes;
-			if (!QuickTaskStrip.EnableFancyFeatures) {
+			if (!AnalysisOptions.EnableFancyFeatures) {
 				RemoveWidget ();
 				return;
 			}
-			var editor = document.Editor;
-			if (editor == null || editor.Parent == null || !editor.Parent.IsRealized || fixes.IsEmpty) {
+			var editor = Editor;
+			if (editor == null) {
 				RemoveWidget ();
 				return;
 			}
-			if (document.ParsedDocument == null || document.ParsedDocument.IsInvalid) {
+			if (DocumentContext.ParsedDocument == null || DocumentContext.ParsedDocument.IsInvalid) {
 				RemoveWidget ();
 				return;
 			}
 
-			var container = editor.Parent;
-			if (container == null) {
-				RemoveWidget ();
-				return;
-			}
+//			var container = editor.Parent;
+//			if (container == null) {
+//				RemoveWidget ();
+//				return;
+//			}
 			bool first = true;
 			var smartTagLocBegin = loc;
 			foreach (var fix in fixes.CodeDiagnosticActions.Select (i => i.Item2).Concat (fixes.CodeRefactoringActions.Select (i => i.Item2))) {
@@ -587,7 +505,6 @@ namespace MonoDevelop.CodeActions
 //			}
 
 			if (currentSmartTag != null && currentSmartTagBegin == smartTagLocBegin) {
-				currentSmartTag.fixes = fixes;
 				return;
 			}
 			RemoveWidget ();
@@ -596,13 +513,14 @@ namespace MonoDevelop.CodeActions
 			currentSmartTag = new SmartTagMarker (smartTagLocBegin, this, fixes);
 			document.Editor.Document.AddMarker (currentSmartTag);
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-			document.DocumentParsed += HandleDocumentDocumentParsed;
-			document.Editor.SelectionChanged += HandleSelectionChanged;
-			document.Editor.Parent.BeginHover += HandleBeginHover;
+//			document.DocumenInitializetParsed += HandleDocumentDocumentParsed;
+//			document.Editor.SelectionChanged += HandleSelectionChanged;
+			Editor.BeginMouseHover += HandleBeginHover;
+			Editor.CaretPositionChanged += HandleCaretPositionChanged;
 		}
 
 		void HandleBeginHover (object sender, EventArgs e)
@@ -626,30 +544,49 @@ namespace MonoDevelop.CodeActions
 
 		void HandleSelectionChanged (object sender, EventArgs e)
 		{
-			CursorPositionChanged ();
+			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 
 		
 		
 		void HandleDocumentDocumentParsed (object sender, EventArgs e)
 		{
-			CursorPositionChanged ();
+			HandleCaretPositionChanged (null, EventArgs.Empty);
 		}
 		
 		[CommandUpdateHandler(RefactoryCommands.QuickFix)]
 		public void UpdateQuickFixCommand (CommandInfo ci)
 		{
-			if (QuickTaskStrip.EnableFancyFeatures) {
+			if (AnalysisOptions.EnableFancyFeatures) {
 				ci.Enabled = currentSmartTag != null;
 			} else {
 				ci.Enabled = true;
 			}
 		}
+
+		void CurrentSmartTagPopup ()
+		{
+			CancelSmartTagPopupTimeout ();
+			smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
+				PopupQuickFixMenu (null, menu => {
+					codeActionMenu = menu;
+					menu.MotionNotifyEvent += (o, args) => {
+						if (currentSmartTag.IsInsideWindow (args)) {
+							StartMenuCloseTimer ();
+						} else {
+							CancelMenuCloseTimer ();
+						}
+					};
+				});
+				smartTagPopupTimeoutId = 0;
+				return false;
+			});
+		}
 		
 		[CommandHandler(RefactoryCommands.QuickFix)]
 		void OnQuickFixCommand ()
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures) {
+			if (!AnalysisOptions.EnableFancyFeatures) {
 				//Fixes = RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location).Result;
 				currentSmartTagBegin = Document.Editor.Caret.Offset;
 				PopupQuickFixMenu (null, null); 
@@ -658,8 +595,9 @@ namespace MonoDevelop.CodeActions
 			}
 			if (currentSmartTag == null)
 				return;
-			currentSmartTag.Popup ();
+			CurrentSmartTagPopup ();
 		}
+
 
 		internal CodeActionContainer GetCurrentFixes ()
 		{

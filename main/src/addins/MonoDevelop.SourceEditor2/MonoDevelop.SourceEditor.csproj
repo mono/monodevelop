@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.SourceEditor</RootNamespace>
     <AssemblyOriginatorKeyFile>.</AssemblyOriginatorKeyFile>
+    <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -26,7 +27,6 @@
         <Command type="Execute" command="mono --debug ../../../build/bin/MonoDevelop.exe" workingdir="" />
       </CustomCommands>
     </CustomCommands>
-    <AssemblyName>MonoDevelop.SourceEditor2</AssemblyName>
     <ConsolePause>False</ConsolePause>
     <DefineConstants>DEBUG</DefineConstants>
     <NoWarn>1591;1573</NoWarn>
@@ -38,7 +38,6 @@
     <OutputPath>..\..\..\build\AddIns\DisplayBindings\SourceEditor</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AssemblyName>MonoDevelop.SourceEditor</AssemblyName>
     <ConsolePause>False</ConsolePause>
     <Execution>
       <Execution clr-version="Net_2_0" />
@@ -68,11 +67,6 @@
       <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
-      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
-      <Name>Mono.TextEditor</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
       <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
       <Name>ICSharpCode.NRefactory</Name>
@@ -96,6 +90,11 @@
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
       <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -127,8 +126,6 @@
     <Compile Include="MonoDevelop.SourceEditor\EditActions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ExtensibleTextEditor.cs" />
     <Compile Include="MonoDevelop.SourceEditor\LanguageItemWindow.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorDisplayBinding.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SourceEditorOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorView.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorWidget.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\BehaviorPanel.cs" />
@@ -142,8 +139,6 @@
     <Compile Include="MonoDevelop.SourceEditor\CompileErrorTooltipProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugValueTooltipProvider.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Extension\TemplateCodon.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.Extension\TemplateExtensionNodeLoader.cs" />
     <Compile Include="MonoDevelop.SourceEditor\IdeViMode.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.MarkerPanel.cs" />
@@ -151,11 +146,6 @@
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.SearchAndReplaceWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.GotoLineNumberWidget.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\ISourceEditorOptions.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\AutoSave.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeCodon.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\SyntaxModeService.cs" />
     <Compile Include="MonoDevelop.SourceEditor\Counters.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DynamicAbbrevHandler.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PinnedWatchWidget.cs" />
@@ -172,11 +162,8 @@
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskStrip.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\ScrollbarCommand.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\ScrollBarMode.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IQuickTaskProvider.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTask.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskMiniMapMode.cs" />
     <Compile Include="MonoDevelop.SourceEditor.QuickTasks\QuickTaskOverviewMode.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.QuickTasks\IUsageProvider.cs" />
     <Compile Include="MonoDevelop.SourceEditor\FileRegistry.cs" />
     <Compile Include="MonoDevelop.SourceEditor\SearchAndReplaceOptions.cs" />
     <Compile Include="MonoDevelop.SourceEditor\ErrorText.cs" />
@@ -188,10 +175,30 @@
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\CompletionCharactersPanel.cs" />
     <Compile Include="MonoDevelop.SourceEditor\OverlayMessageWindow.cs" />
     <Compile Include="MonoDevelop.SourceEditor\HoverCloseButton.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
-    <Compile Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\AbstractUsagesExtension.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\DocumentLineWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\ITextDocumentWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UsageSegmentMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\DebugTextMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\EditorFactory.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextSourceVersionWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextChangeEventArgsWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TextPasteHandlerWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\SelectionSurroundingProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\IndentationTrackerWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\WavedLineMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\GrayOutMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\SmartTagMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UrlTextLineMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\AsmLineMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\LinkMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\ListDataProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\TooltipProviderWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\TextMarker\UnitTestMarker.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\FoldSegmentWrapper.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\SourceEditorView_ITextEditorOptions.cs" />
+    <Compile Include="MonoDevelop.SourceEditor\StyledSourceEditorOptions.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\RopeTextSource.cs" />
+    <Compile Include="MonoDevelop.SourceEditor.Wrappers\SemanticHighlightingSyntaxMode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -292,5 +299,13 @@
   <ItemGroup>
     <Folder Include="MonoDevelop.SourceEditor\" />
     <Folder Include="MonoDevelop.SourceEditor.QuickTasks\" />
+    <Folder Include="MonoDevelop.SourceEditor.Extension\" />
+    <Folder Include="MonoDevelop.SourceEditor.Wrappers\" />
+    <Folder Include="MonoDevelop.SourceEditor\TextMarker\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MonoDevelop.SourceEditor.JSon\JSonIndentationTracker.cs" />
+    <None Include="MonoDevelop.SourceEditor.JSon\JSonIndentEngine.cs" />
+    <None Include="MonoDevelop.SourceEditor.JSon\JSonTextEditorExtension.cs" />
   </ItemGroup>
 </Project>

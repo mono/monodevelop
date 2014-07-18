@@ -34,6 +34,7 @@ using MonoDevelop.Components;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using Mono.TextEditor.PopupWindow;
+using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -554,6 +555,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			if (base.GdkWindow == null)
 				return;
 			EnsureDeclarationViewWindow ();
+			if (declarationviewwindow.Overloads == 0)
+				return;
 			var selectedItem = List.SelectedItem;
 			Gdk.Rectangle rect = List.GetRowArea (selectedItem);
 			if (rect.IsEmpty || rect.Bottom < (int)List.vadj.Value || rect.Y > List.Allocation.Height + (int)List.vadj.Value)

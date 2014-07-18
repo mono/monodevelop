@@ -59,8 +59,8 @@ namespace MonoDevelop.CSharp.Completion
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			var ext = engine.Ext;
-			var editor = ext.TextEditorData;
-			var generator = CodeGenerator.CreateGenerator (ext.Document);
+			var editor = ext.Editor;
+			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);
 			if (ext.Project != null)
 				generator.PolicyParent = ext.Project.Policies;
 			var builder = engine.MDRefactoringCtx.CreateTypeSystemAstBuilder ();
@@ -68,17 +68,17 @@ namespace MonoDevelop.CSharp.Completion
 			string sb = BaseExportCodeGenerator.GenerateMemberCode (engine.MDRefactoringCtx, builder, member);
 			sb = sb.TrimEnd ();
 
-			string indent = editor.GetIndentationString (editor.Caret.Location); 
+			string indent = editor.GetVirtualIndentationString (editor.CaretLine); 
 			sb = sb.Replace (editor.EolMarker, editor.EolMarker + indent);
 
 			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
 			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
 
-			editor.Replace (declarationBegin, editor.Caret.Offset - declarationBegin, sb);
+			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
 			if (selectionEndPosition > 0) {
 				targetCaretPosition += declarationBegin;
 				selectionEndPosition += declarationBegin;
-				editor.Caret.Offset = selectionEndPosition;
+				editor.CaretOffset = selectionEndPosition;
 				editor.SetSelection (targetCaretPosition, selectionEndPosition);
 			}
 		}

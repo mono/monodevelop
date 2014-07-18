@@ -40,19 +40,17 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Documentation;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using Mono.TextEditor.Theatrics;
-using MonoDevelop.SourceEditor;
 using XmlDocIdLib;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components;
 using System.Threading.Tasks;
 using System.Threading;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -109,6 +107,28 @@ namespace MonoDevelop.AssemblyBrowser
 			public AssemblyBrowserTreeView (NodeBuilder[] builders, TreePadOption[] options) : base (builders, options)
 			{
 			}
+		}
+
+		static string GetLink (ReferenceSegment referencedSegment)
+		{
+			if (referencedSegment == null)
+				return null;
+			if (referencedSegment.Reference is TypeDefinition)
+				return new XmlDocIdGenerator ().GetXmlDocPath ((TypeDefinition)referencedSegment.Reference);
+			if (referencedSegment.Reference is MethodDefinition)
+				return new XmlDocIdGenerator ().GetXmlDocPath ((MethodDefinition)referencedSegment.Reference);
+			if (referencedSegment.Reference is PropertyDefinition)
+				return new XmlDocIdGenerator ().GetXmlDocPath ((PropertyDefinition)referencedSegment.Reference);
+			if (referencedSegment.Reference is FieldDefinition)
+				return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
+			if (referencedSegment.Reference is EventDefinition)
+				return new XmlDocIdGenerator ().GetXmlDocPath ((EventDefinition)referencedSegment.Reference);
+			if (referencedSegment.Reference is FieldDefinition)
+				return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
+			if (referencedSegment.Reference is TypeReference) {
+				return new XmlDocIdGenerator ().GetXmlDocPath ((TypeReference)referencedSegment.Reference);
+			}
+			return referencedSegment.Reference.ToString ();
 		}
 
 		public AssemblyBrowserWidget ()
@@ -173,7 +193,7 @@ namespace MonoDevelop.AssemblyBrowser
 				new ModuleReferenceNodeBuilder (),
 				new AssemblyReferenceNodeBuilder (this),
 				//new AssemblyReferenceFolderNodeBuilder (this),
-				//new AssemblyResourceFolderNodeBuilder (),
+				new AssemblyResourceFolderNodeBuilder (),
 				new ResourceNodeBuilder (),
 				new NamespaceBuilder (this),
 				new DomTypeNodeBuilder (this),
@@ -197,47 +217,15 @@ namespace MonoDevelop.AssemblyBrowser
 //			this.documentationLabel.ModifyBg (Gtk.StateType.Normal, new Gdk.Color (255, 255, 225));
 //			this.documentationLabel.Wrap = true;
 			
-			var options = new MonoDevelop.Ide.Gui.CommonTextEditorOptions () {
-				ShowFoldMargin = false,
-				ShowIconMargin = false,
-				ShowLineNumberMargin = false,
-				HighlightCaretLine = true,
-			};
-			inspectEditor = new TextEditor (new TextDocument (), options);
-			inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
-			
-			this.inspectEditor.Document.ReadOnly = true;
-//			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
-			this.inspectEditor.TextViewMargin.GetLink = delegate(Mono.TextEditor.MarginMouseEventArgs arg) {
-				var loc = inspectEditor.PointToLocation (arg.X, arg.Y);
-				int offset = inspectEditor.LocationToOffset (loc);
-				var referencedSegment = ReferencedSegments != null ? ReferencedSegments.FirstOrDefault (seg => seg.Segment.Contains (offset)) : null;
-				if (referencedSegment == null)
-					return null;
-				if (referencedSegment.Reference is TypeDefinition)
-					return new XmlDocIdGenerator ().GetXmlDocPath ((TypeDefinition)referencedSegment.Reference);
-				
-				if (referencedSegment.Reference is MethodDefinition)
-					return new XmlDocIdGenerator ().GetXmlDocPath ((MethodDefinition)referencedSegment.Reference);
-				
-				if (referencedSegment.Reference is PropertyDefinition)
-					return new XmlDocIdGenerator ().GetXmlDocPath ((PropertyDefinition)referencedSegment.Reference);
-				
-				if (referencedSegment.Reference is FieldDefinition)
-					return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
-				
-				if (referencedSegment.Reference is EventDefinition)
-					return new XmlDocIdGenerator ().GetXmlDocPath ((EventDefinition)referencedSegment.Reference);
-				
-				if (referencedSegment.Reference is FieldDefinition)
-					return new XmlDocIdGenerator ().GetXmlDocPath ((FieldDefinition)referencedSegment.Reference);
 
-				if (referencedSegment.Reference is TypeReference) {
-					return new XmlDocIdGenerator ().GetXmlDocPath ((TypeReference)referencedSegment.Reference);
-				}
-				return referencedSegment.Reference.ToString ();
-			};
-			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
+			inspectEditor = TextEditorFactory.CreateNewEditor ();
+			inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+
+			//inspectEditor.ButtonPressEvent += HandleInspectEditorButtonPressEvent;
+			
+			this.inspectEditor.IsReadOnly = true;
+//			this.inspectEditor.Document.SyntaxMode = new Mono.TextEditor.Highlighting.MarkupSyntaxMode ();
+//			this.inspectEditor.LinkRequest += InspectEditorhandleLinkRequest;
 			documentationScrolledWindow.Add (inspectEditor);
 
 			this.hpaned1.ExposeEvent += HPaneExpose;
@@ -298,13 +286,13 @@ namespace MonoDevelop.AssemblyBrowser
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopyCommand ()
 		{
-			inspectEditor.RunAction (Mono.TextEditor.ClipboardActions.Copy);
+			EditActions.ClipboardCopy (inspectEditor);
 		}
 		
 		[CommandHandler (EditCommands.SelectAll)]
 		protected void OnSelectAllCommand ()
 		{
-			inspectEditor.RunAction (Mono.TextEditor.SelectionActions.SelectAll);
+			EditActions.SelectAll (inspectEditor);
 		}
 		
 		void HandleInspectEditorButtonPressEvent (object o, ButtonPressEventArgs args)
@@ -342,22 +330,7 @@ namespace MonoDevelop.AssemblyBrowser
 			FillInspectLabel ();
 		}
 
-		void InspectEditorhandleLinkRequest (object sender, Mono.TextEditor.LinkEventArgs args)
-		{
-			var loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof(AssemblyLoader), true);
 
-			if (args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)) {
-				AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
-				foreach (var cu in definitions) {
-					assemblyBrowserView.Load (cu.UnresolvedAssembly.AssemblyName);
-				}
-				IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
-				((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (args.Link);
-			} else {
-				this.Open (args.Link, loader);
-			}
-		}
-		
 		public IEntity ActiveMember  {
 			get;
 			set;
@@ -1065,14 +1038,14 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			return result.ToString ();
 		}
-		
+	 
 		List<ReferenceSegment> ReferencedSegments = new List<ReferenceSegment>();
-		List<UnderlineMarker> underlineMarkers = new List<UnderlineMarker> ();
+		List<ITextSegmentMarker> underlineMarkers = new List<ITextSegmentMarker> ();
 		
 		public void ClearReferenceSegment ()
 		{
 			ReferencedSegments = null;
-			underlineMarkers.ForEach (m => inspectEditor.Document.RemoveMarker (m));
+			underlineMarkers.ForEach (m => inspectEditor.RemoveMarker (m));
 			underlineMarkers.Clear ();
 		}
 		
@@ -1081,18 +1054,34 @@ namespace MonoDevelop.AssemblyBrowser
 			ReferencedSegments = refs;
 			if (ReferencedSegments == null)
 				return;
-			foreach (var seg in refs) {
-				DocumentLine line = inspectEditor.GetLineByOffset (seg.Offset);
+			foreach (var _seg in refs) {
+				var seg = _seg;
+				var line = inspectEditor.GetLineByOffset (seg.Offset);
 				if (line == null)
 					continue;
 				// FIXME: ILSpy sometimes gives reference segments for punctuation. See http://bugzilla.xamarin.com/show_bug.cgi?id=2918
-				string text = inspectEditor.GetTextAt (seg);
+				string text = inspectEditor.GetTextAt (seg.Offset, seg.Length);
 				if (text != null && text.Length == 1 && !(char.IsLetter (text [0]) || text [0] == '…'))
 					continue;
-				var marker = new UnderlineMarker (new Cairo.Color (0, 0, 1.0), 1 + seg.Offset - line.Offset, 1 + seg.EndOffset - line.Offset);
-				marker.Wave = false;
+				var marker = TextMarkerFactory.CreateLinkMarker (inspectEditor, seg.Offset, seg.Length, delegate (LinkRequest request) {
+					var link = GetLink (seg);
+					if (link == null)
+						return;
+					var loader = (AssemblyLoader)this.TreeView.GetSelectedNode ().GetParentDataItem (typeof(AssemblyLoader), true);
+					// args.Button == 2 || (args.Button == 1 && (args.ModifierState & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask)
+					if (request == LinkRequest.RequestNewView) {
+						AssemblyBrowserViewContent assemblyBrowserView = new AssemblyBrowserViewContent ();
+						foreach (var cu in definitions) {
+							assemblyBrowserView.Load (cu.UnresolvedAssembly.AssemblyName);
+						}
+						IdeApp.Workbench.OpenDocument (assemblyBrowserView, true);
+						((AssemblyBrowserWidget)assemblyBrowserView.Control).Open (link);
+					} else {
+						this.Open (link, loader);
+					}
+				});
 				underlineMarkers.Add (marker);
-				inspectEditor.Document.AddMarker (line, marker);
+				inspectEditor.AddMarker (marker);
 			}
 		}
 
@@ -1103,29 +1092,28 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			IAssemblyBrowserNodeBuilder builder = nav.TypeNodeBuilder as IAssemblyBrowserNodeBuilder;
 			if (builder == null) {
-				this.inspectEditor.Document.Text = "";
+				this.inspectEditor.Text = "";
 				return;
 			}
 			
 			ClearReferenceSegment ();
-			inspectEditor.Document.ClearFoldSegments ();
+			inspectEditor.SetFoldings (Enumerable.Empty<IFoldSegment> ());
 			switch (this.languageCombobox.Active) {
 			case 0:
-				inspectEditor.Options.ShowFoldMargin = true;
-				this.inspectEditor.Document.MimeType = "text/x-ilasm";
-				SetReferencedSegments (builder.Disassemble (inspectEditor.GetTextEditorData (), nav));
+				inspectEditor.Options = DefaultSourceEditorOptions.Instance;
+				this.inspectEditor.MimeType = "text/x-ilasm";
+				SetReferencedSegments (builder.Disassemble (inspectEditor, nav));
 				break;
 			case 1:
-				inspectEditor.Options.ShowFoldMargin = true;
-				this.inspectEditor.Document.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.Decompile (inspectEditor.GetTextEditorData (), nav, PublicApiOnly));
+				inspectEditor.Options = DefaultSourceEditorOptions.Instance;
+				this.inspectEditor.MimeType = "text/x-csharp";
+				SetReferencedSegments (builder.Decompile (inspectEditor, nav, PublicApiOnly));
 				break;
 			default:
-				inspectEditor.Options.ShowFoldMargin = false;
-				this.inspectEditor.Document.Text = "Invalid combobox value: " + this.languageCombobox.Active;
+				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+				this.inspectEditor.Text = "Invalid combobox value: " + this.languageCombobox.Active;
 				break;
 			}
-			this.inspectEditor.QueueDraw ();
 		}
 			
 		void CreateOutput ()
@@ -1345,11 +1333,11 @@ namespace MonoDevelop.AssemblyBrowser
 				documentationPanel.Destroy ();
 				documentationPanel = null;
 			}
-			if (inspectEditor != null) {
-				inspectEditor.TextViewMargin.GetLink = null;
-				inspectEditor.LinkRequest -= InspectEditorhandleLinkRequest;
-				inspectEditor.Destroy ();
-			}
+//			if (inspectEditor != null) {
+//				inspectEditor.TextViewMargin.GetLink = null;
+//				inspectEditor.LinkRequest -= InspectEditorhandleLinkRequest;
+//				inspectEditor.Destroy ();
+//			}
 			
 			if (this.UIManager != null) {
 				this.UIManager.Dispose ();
@@ -1474,77 +1462,7 @@ namespace MonoDevelop.AssemblyBrowser
 			builder.Selected = builder.Expanded = selectReference;
 		}
 
-		[CommandHandler (SearchCommands.FindNext)]
-		public void FindNext ()
-		{
-			SearchAndReplaceWidget.FindNext (this.inspectEditor);
-		}
-
-		[CommandHandler (SearchCommands.FindPrevious)]
-		public void FindPrevious ()
-		{
-			SearchAndReplaceWidget.FindPrevious (this.inspectEditor);
-		}
-		
-		[CommandHandler (SearchCommands.Find)]
-		public void ShowSearchWidget ()
-		{
-			if (searchAndReplaceWidget == null) {
-				popupWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
-				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
-				popupWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
-				popupWidgetFrame.Show ();
-				
-				popupWidgetFrame.Child = searchAndReplaceWidget = new SearchAndReplaceWidget (inspectEditor, popupWidgetFrame);
-				searchAndReplaceWidget.Destroyed += (sender, e) => {
-					DestroyFrames ();
-					if (inspectEditor.IsRealized)
-						inspectEditor.GrabFocus ();
-				};
-				searchAndReplaceWidget.UpdateSearchPattern ();
-				inspectEditor.AddAnimatedWidget (popupWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -searchAndReplaceWidget.Allocation.Height);
-				searchAndReplaceWidget.IsReplaceMode = false;
-			}
-			
-			searchAndReplaceWidget.Focus ();
-		}
-
 		MonoDevelop.Components.RoundedFrame popupWidgetFrame;
-
-		GotoLineNumberWidget gotoLineNumberWidget;
-		SearchAndReplaceWidget searchAndReplaceWidget;
-		void DestroyFrames ()
-		{
-			if (popupWidgetFrame != null) {
-				popupWidgetFrame.Destroy ();
-				popupWidgetFrame = null;
-				gotoLineNumberWidget = null;
-				searchAndReplaceWidget = null;
-			}
-		}
-
-		[CommandHandler (SearchCommands.GotoLineNumber)]
-		public void ShowGotoLineNumberWidget ()
-		{
-			if (gotoLineNumberWidget == null) {
-				DestroyFrames ();
-				popupWidgetFrame = new MonoDevelop.Components.RoundedFrame ();
-				//searchAndReplaceWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (widget.TextEditor.ColorStyle.Default.BackgroundColor));
-				popupWidgetFrame.SetFillColor (MonoDevelop.Components.CairoExtensions.GdkColorToCairoColor (Style.Background (StateType.Normal)));
-				popupWidgetFrame.Show ();
-				
-				popupWidgetFrame.Child = gotoLineNumberWidget = new GotoLineNumberWidget (inspectEditor, popupWidgetFrame);
-				gotoLineNumberWidget.Destroyed += (sender, e) => {
-					DestroyFrames ();
-					if (inspectEditor.IsRealized)
-						inspectEditor.GrabFocus ();
-				};
-				inspectEditor.AddAnimatedWidget (popupWidgetFrame, 300, Mono.TextEditor.Theatrics.Easing.ExponentialInOut, Blocking.Downstage, inspectEditor.Allocation.Width - 400, -gotoLineNumberWidget.Allocation.Height);
-			}
-			
-			gotoLineNumberWidget.Focus ();
-		}
-
 	
 		#region NavigationHistory
 		Stack<ITreeNavigator> navigationBackwardHistory = new Stack<ITreeNavigator> ();

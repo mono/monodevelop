@@ -27,9 +27,9 @@ using System;
 using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
-using Mono.TextEditor;
 using Microsoft.CodeAnalysis;
 using MonoDevelop.Core;
+using ICSharpCode.NRefactory.Analysis;
 
 namespace MonoDevelop.Refactoring
 {
@@ -66,6 +66,7 @@ namespace MonoDevelop.Refactoring
 							monitor.ReportResult (new MemberReference (property, loc.SourceTree.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length));
 					}
 					break;
+
 				}
 			}
 		}

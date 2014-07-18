@@ -320,6 +320,32 @@ namespace MonoDevelop.Projects
 
 			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
 		}
+
+		[Test]
+		public void RemoveSharedProjectFromSolution ()
+		{
+			var sol = new Solution ();
+
+			var shared = new SharedAssetsProject ("C#");
+			shared.AddFile ("Foo.cs");
+
+			var main = new DotNetAssemblyProject ("C#");
+			var pref = new ProjectReference (shared);
+			main.References.Add (pref);
+
+			sol.RootFolder.AddItem (main);
+			sol.RootFolder.AddItem (shared);
+
+			Assert.IsNotNull (main.Files.GetFile ("Foo.cs"));
+			Assert.IsTrue (main.References.Contains (pref));
+
+			sol.RootFolder.Items.Remove (shared);
+
+			// The shared file and the reference must be gone.
+
+			Assert.IsNull (main.Files.GetFile ("Foo.cs"));
+			Assert.IsFalse (main.References.Contains (pref));
+		}
 	}
 }
 

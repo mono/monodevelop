@@ -26,7 +26,6 @@
 
 using System;
 using Gtk;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using Gdk;
 using MonoDevelop.Core;
@@ -36,7 +35,9 @@ using MonoDevelop.Ide;
 using System.Linq;
 using MonoDevelop.Components;
 using Mono.TextEditor.Theatrics;
+using MonoDevelop.Ide.Editor;
 using Xwt.Drawing;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor.QuickTasks
 {
@@ -85,7 +86,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		int caretLine = -1;
 		
-		public TextEditor TextEditor {
+		public Mono.TextEditor.TextEditor TextEditor {
 			get;
 			private set;
 		}
@@ -141,7 +142,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			yPositionCache.Clear ();
 		}
 
-		void HandleLineUpdateFrom (object sender, HeightTree.HeightChangedEventArgs e)
+		void HandleLineUpdateFrom (object sender, Mono.TextEditor.HeightTree.HeightChangedEventArgs e)
 		{
 			yPositionCache.Clear ();
 		}
@@ -191,7 +192,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			return y < IndicatorHeight;
 		}
 		
-		internal CodeSegmentPreviewWindow previewWindow;
+		internal Mono.TextEditor.CodeSegmentPreviewWindow previewWindow;
 
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
@@ -217,7 +218,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 				if (start == null || end == null) {
 					return base.OnMotionNotifyEvent (evnt);
 				}
-				var showSegment = new TextSegment (start.Offset, end.Offset + end.Length - start.Offset);
+				var showSegment = new Mono.TextEditor.TextSegment (start.Offset, end.Offset + end.Length - start.Offset);
 				
 				if (previewWindow != null) {
 					previewWindow.SetSegment (showSegment, false);
@@ -347,10 +348,10 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		class PreviewPopup {
 			
 			QuickTaskOverviewMode strip;
-			TextSegment segment;
+			Mono.TextEditor.TextSegment segment;
 			int w, y;
 			
-			public PreviewPopup (QuickTaskOverviewMode strip, TextSegment segment, int w, int y)
+			public PreviewPopup (QuickTaskOverviewMode strip, Mono.TextEditor.TextSegment segment, int w, int y)
 			{
 				this.strip = strip;
 				this.segment = segment;
@@ -360,7 +361,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			
 			public bool Run ()
 			{
-				strip.previewWindow = new CodeSegmentPreviewWindow (strip.TextEditor, true, segment, w, -1, false);
+				strip.previewWindow = new Mono.TextEditor.CodeSegmentPreviewWindow (strip.TextEditor, true, segment, w, -1, false);
 				strip.previewWindow.WidthRequest = w;
 				strip.previewWindow.Show ();
 				strip.PositionPreviewWindow (y);
@@ -555,7 +556,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 //				Math.Max (DocumentLocation.MinLine, task.Location.Line),
 //				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
 //			);
-			TextEditor.Caret.Offset = task.Location;
+			TextEditor.CaretOffset = task.Location;
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
 			TextEditor.GrabFocus ();
@@ -655,7 +656,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			Severity severity = Severity.None;
 
 			foreach (var usage in AllUsages) {
-				double y = GetYPosition (usage.Location.Line);
+				double y = GetYPosition (TextEditor.OffsetToLineNumber (usage.Offset));
 				var usageColor = TextEditor.ColorStyle.PlainText.Foreground;
 				usageColor.A = 0.4;
 				HslColor color;

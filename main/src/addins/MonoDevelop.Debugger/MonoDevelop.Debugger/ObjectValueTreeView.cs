@@ -39,8 +39,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
-using Mono.TextEditor;
-
 
 namespace MonoDevelop.Debugger
 {
@@ -526,9 +524,9 @@ namespace MonoDevelop.Debugger
 			
 			if (valueNames.Count > 0) {
 				ObjectValue[] expValues = GetValues (valueNames.ToArray ());
-				for (int n=0; n<expValues.Length; n++) {
-					AppendValue (TreeIter.Zero, valueNames [n], expValues [n]);
-					if (expValues [n].HasChildren)
+				for (int n = 0; n < expValues.Length; n++) {
+					AppendValue (TreeIter.Zero, valueNames[n], expValues[n]);
+					if (expValues[n].HasChildren)
 						showExpanders = true;
 				}
 			}
@@ -709,6 +707,7 @@ namespace MonoDevelop.Debugger
 			name = name ?? val.Name;
 
 			bool hasParent = !parent.Equals (TreeIter.Zero);
+			bool showViewerButton = false;
 			
 			string valPath;
 			if (!hasParent)
@@ -728,23 +727,20 @@ namespace MonoDevelop.Debugger
 					canEdit = !val.IsReadOnly;
 					strval = string.Empty;
 				}
-			}
-			else if (val.IsError) {
+			} else if (val.IsError) {
 				strval = val.Value;
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
 					strval = strval.Substring (0, i);
 				valueColor = errorColor;
 				canEdit = false;
-			}
-			else if (val.IsNotSupported) {
+			} else if (val.IsNotSupported) {
 				strval = val.Value;
 				valueColor = disabledColor;
 				if (val.CanRefresh)
 					valueButton = Stock.Refresh;
 				canEdit = false;
-			}
-			else if (val.IsEvaluating) {
+			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
 				valueColor = disabledColor;
 				if (val.IsEvaluatingGroup) {
@@ -752,8 +748,8 @@ namespace MonoDevelop.Debugger
 					name = val.Name;
 				}
 				canEdit = false;
-			}
-			else {
+			} else {
+				showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 				canEdit = val.IsPrimitive && !val.IsReadOnly;
 				strval = val.DisplayValue ?? "(null)";
 				if (oldValue != null && strval != oldValue)
@@ -761,8 +757,6 @@ namespace MonoDevelop.Debugger
 			}
 			
 			strval = strval.Replace (Environment.NewLine, " ");
-			
-			bool showViewerButton = DebuggingService.HasValueVisualizers (val);
 
 			bool hasChildren = val.HasChildren;
 			string icon = GetIcon (val.Flags);
@@ -1601,6 +1595,9 @@ namespace MonoDevelop.Debugger
 			get {
 				return editEntry.Position;
 			}
+			set {
+				editEntry.Position = value;
+			}
 		}
 		
 		char ICompletionWidget.GetChar (int offset)
@@ -1670,6 +1667,11 @@ namespace MonoDevelop.Debugger
 			get {
 				return editEntry.Style;
 			}
+		}
+
+		void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+		{
+			// ignore
 		}
 		#endregion 
 

@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 
 using MonoDevelop.Core;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -49,6 +50,7 @@ namespace ICSharpCode.PackageManagement
 		ITask<PackagesForSelectedPageResult> task;
 		bool includePrerelease;
 		PackagesForSelectedPageQuery packagesForSelectedPageQuery;
+		bool ignorePackageCheckedChanged;
 
 		public PackagesViewModel(
 			IRegisteredPackageRepositories registeredPackageRepositories,
@@ -60,6 +62,7 @@ namespace ICSharpCode.PackageManagement
 			this.taskFactory = taskFactory;
 			
 			PackageViewModels = new ObservableCollection<PackageViewModel>();
+			CheckedPackageViewModels = new ObservableCollection <PackageViewModel> ();
 			ErrorMessage = String.Empty;
 			ClearPackagesOnPaging = true;
 
@@ -143,7 +146,7 @@ namespace ICSharpCode.PackageManagement
 		
 		void CreateReadPackagesTask()
 		{
-			var query = new PackagesForSelectedPageQuery(this, allPackages, GetSearchCriteria());
+			var query = new PackagesForSelectedPageQuery (this, allPackages, SearchTerms);
 			packagesForSelectedPageQuery = query;
 
 			task = taskFactory.CreateTask(
@@ -197,19 +200,19 @@ namespace ICSharpCode.PackageManagement
 			TotalItems = result.TotalPackages;
 			allPackages = result.AllPackages;
 
-			UpdatePackageViewModels (PrioritizePackages (result));
+			UpdatePackageViewModels (PrioritizePackages (result), result.Query.SearchCriteria);
 		}
 
 		IEnumerable<IPackage> PrioritizePackages (PackagesForSelectedPageResult result)
 		{
-			return PrioritizePackages (result.Packages, GetSearchCriteria ());
+			return PrioritizePackages (result.Packages, result.Query.SearchCriteria);
 		}
 
-		protected virtual IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, string searchCriteria)
+		protected virtual IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, PackageSearchCriteria searchCriteria)
 		{
 			return packages;
 		}
-		
+
 		IEnumerable<IPackage> GetPackagesForSelectedPage(PackagesForSelectedPageQuery query)
 		{
 			IEnumerable<IPackage> filteredPackages = GetFilteredPackagesBeforePagingResults(query);
@@ -221,7 +224,7 @@ namespace ICSharpCode.PackageManagement
 			if (query.AllPackages == null) {
 				IQueryable<IPackage> packages = GetPackagesFromPackageSource(query.SearchCriteria);
 				query.TotalPackages = packages.Count();
-				query.AllPackages = GetFilteredPackagesBeforePagingResults(packages);
+				query.AllPackages = GetFilteredPackagesBeforePagingResults (packages, query.SearchCriteria);
 			}
 			return query.AllPackages;
 		}
@@ -231,27 +234,19 @@ namespace ICSharpCode.PackageManagement
 		/// </summary>
 		public IQueryable<IPackage> GetPackagesFromPackageSource()
 		{
-			return GetPackagesFromPackageSource(GetSearchCriteria());
+			return GetPackagesFromPackageSource(new PackageSearchCriteria (SearchTerms));
 		}
 
-		IQueryable<IPackage> GetPackagesFromPackageSource(string searchCriteria)
+		IQueryable<IPackage> GetPackagesFromPackageSource (PackageSearchCriteria search)
 		{
-			IQueryable<IPackage> packages = GetPackages(searchCriteria);
-			return OrderPackages(packages);
+			IQueryable<IPackage> packages = GetPackages (search);
+			return OrderPackages (packages, search);
 		}
 
-		protected virtual IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
+		protected virtual IQueryable<IPackage> OrderPackages (IQueryable<IPackage> packages, PackageSearchCriteria search)
 		{
 			return packages
 				.OrderBy(package => package.Id);
-		}
-		
-		protected string GetSearchCriteria()
-		{
-			if (String.IsNullOrWhiteSpace(SearchTerms)) {
-				return null;
-			}
-			return SearchTerms;
 		}
 
 		IEnumerable<IPackage> GetPackagesForSelectedPage(IEnumerable<IPackage> allPackages, PackagesForSelectedPageQuery query)
@@ -272,7 +267,7 @@ namespace ICSharpCode.PackageManagement
 		/// <summary>
 		/// Returns packages filtered by search criteria.
 		/// </summary>
-		protected virtual IQueryable<IPackage> GetPackages (string search)
+		protected virtual IQueryable<IPackage> GetPackages (PackageSearchCriteria search)
 		{
 			return null;
 		}
@@ -281,7 +276,7 @@ namespace ICSharpCode.PackageManagement
 		/// Allows filtering of the packages before paging the results. Call base class method
 		/// to run default filtering.
 		/// </summary>
-		protected virtual IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
+		protected virtual IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults (IQueryable<IPackage> allPackages, PackageSearchCriteria search)
 		{
 			IEnumerable<IPackage> bufferedPackages = GetBufferedPackages(allPackages);
 			return bufferedPackages;
@@ -292,9 +287,9 @@ namespace ICSharpCode.PackageManagement
 			return allPackages.AsBufferedEnumerable(30);
 		}
 		
-		void UpdatePackageViewModels(IEnumerable<IPackage> packages)
+		void UpdatePackageViewModels (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
-			IEnumerable<PackageViewModel> currentViewModels = ConvertToPackageViewModels(packages);
+			IEnumerable<PackageViewModel> currentViewModels = ConvertToPackageViewModels (packages, search);
 			UpdatePackageViewModels(currentViewModels);
 		}
 		
@@ -311,14 +306,16 @@ namespace ICSharpCode.PackageManagement
 			PackageViewModels.Clear();
 		}
 		
-		public IEnumerable<PackageViewModel> ConvertToPackageViewModels(IEnumerable<IPackage> packages)
+		public IEnumerable<PackageViewModel> ConvertToPackageViewModels (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
 			foreach (IPackage package in packages) {
-				yield return CreatePackageViewModel(package);
+				PackageViewModel packageViewModel = CreatePackageViewModel (package, search);
+				CheckNewPackageViewModelIfPreviouslyChecked (packageViewModel);
+				yield return packageViewModel;
 			}
 		}
 		
-		PackageViewModel CreatePackageViewModel(IPackage package)
+		protected virtual PackageViewModel CreatePackageViewModel (IPackage package, PackageSearchCriteria search)
 		{
 			PackageFromRepository packageFromRepository = CreatePackageFromRepository (package);
 			return packageViewModelFactory.CreatePackageViewModel(this, packageFromRepository);
@@ -489,5 +486,41 @@ namespace ICSharpCode.PackageManagement
 		public bool ShowPrerelease { get; set; }
 		public bool ClearPackagesOnPaging { get; set; }
 		public bool IsLoadingNextPage { get; private set; }
+
+		public ObservableCollection<PackageViewModel> CheckedPackageViewModels { get; private set; }
+
+		public void OnPackageCheckedChanged (PackageViewModel packageViewModel)
+		{
+			if (ignorePackageCheckedChanged)
+				return;
+
+			if (packageViewModel.IsChecked) {
+				UncheckExistingCheckedPackageWithDifferentVersion (packageViewModel);
+				CheckedPackageViewModels.Add (packageViewModel);
+			} else {
+				CheckedPackageViewModels.Remove (packageViewModel);
+			}
+		}
+
+		void CheckNewPackageViewModelIfPreviouslyChecked (PackageViewModel packageViewModel)
+		{
+			ignorePackageCheckedChanged = true;
+			try {
+				packageViewModel.IsChecked = CheckedPackageViewModels.Contains (packageViewModel);
+			} finally {
+				ignorePackageCheckedChanged = false;
+			}
+		}
+
+		void UncheckExistingCheckedPackageWithDifferentVersion (PackageViewModel packageViewModel)
+		{
+			PackageViewModel existingPackageViewModel = CheckedPackageViewModels
+				.FirstOrDefault (item => item.Id == packageViewModel.Id);
+
+			if (existingPackageViewModel != null) {
+				CheckedPackageViewModels.Remove (existingPackageViewModel);
+				existingPackageViewModel.IsChecked = false;
+			}
+		}
 	}
 }

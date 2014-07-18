@@ -62,7 +62,11 @@ namespace MonoDevelop.PackageManagement
 
 		public void Run ()
 		{
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
+			Run (ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ());
+		}
+
+		public void Run (ProgressMonitorStatusMessage progressMessage)
+		{
 			IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage);
 
 			try {
@@ -73,8 +77,11 @@ namespace MonoDevelop.PackageManagement
 				progressMonitor.ReportError (progressMessage.Error, null);
 				progressMonitor.ShowPackageConsole ();
 				progressMonitor.Dispose();
+				RestoreFailed = true;
 			}
 		}
+
+		public bool RestoreFailed { get; private set; }
 
 		IProgressMonitor CreateProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
@@ -97,7 +104,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			var aggregatedMonitor = (PackageManagementProgressMonitor)progressMonitor;
 
-			Runtime.ProcessService.StartConsoleProcess(
+			IProcessAsyncOperation operation = Runtime.ProcessService.StartConsoleProcess (
 				commandLine.Command,
 				commandLine.Arguments,
 				commandLine.WorkingDirectory,
@@ -108,6 +115,10 @@ namespace MonoDevelop.PackageManagement
 					}
 				}
 			);
+
+			// Wait for console to finish just so check for updates does not run until
+			// all packages are restored.
+			operation.WaitForCompleted ();
 		}
 
 		void OnPackageRestoreCompleted (
@@ -117,8 +128,19 @@ namespace MonoDevelop.PackageManagement
 		{
 			if (operation.Success) {
 				RefreshProjectReferences ();
+				ForceCreationOfSharedRepositoriesConfigFile ();
 			}
 			ReportOutcome (operation, progressMonitor, progressMessage);
+		}
+
+		/// <summary>
+		/// Creating package managers for all the projects will force the 
+		/// repositories.config file to be created.
+		/// </summary>
+		void ForceCreationOfSharedRepositoriesConfigFile ()
+		{
+			var repository = PackageManagementServices.RegisteredPackageRepositories.CreateAggregateRepository ();
+			solution.GetProjects (repository).ToList ();
 		}
 
 		void RefreshProjectReferences ()
@@ -144,6 +166,7 @@ namespace MonoDevelop.PackageManagement
 			} else {
 				progressMonitor.ReportError (progressMessage.Error, null);
 				progressMonitor.ShowPackageConsole ();
+				RestoreFailed = true;
 			}
 		}
 	}

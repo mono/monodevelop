@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Mono.TextEditor</AssemblyName>
     <RootNamespace>Mono.TextEditor</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -167,9 +168,7 @@
     <Compile Include="Mono.TextEditor\Document\DocumentLocation.cs" />
     <Compile Include="Mono.TextEditor\Document\DocumentRegion.cs" />
     <Compile Include="Mono.TextEditor\Document\DocumentUpdateRequest.cs" />
-    <Compile Include="Mono.TextEditor\Document\IBuffer.cs" />
     <Compile Include="Mono.TextEditor\Gui\ITooltipProvider.cs" />
-    <Compile Include="Mono.TextEditor\Document\GapBuffer.cs" />
     <Compile Include="Mono.TextEditor\Document\FoldSegment.cs" />
     <Compile Include="Mono.TextEditor\Document\LineEventArgs.cs" />
     <Compile Include="Mono.TextEditor\Document\LineSplitter.cs" />
@@ -182,12 +181,10 @@
     <Compile Include="Mono.TextEditor\Document\PrimitiveLineSplitter.cs" />
     <Compile Include="Mono.TextEditor\Document\IWordFindStrategy.cs" />
     <Compile Include="Mono.TextEditor\Actions\SelectionActions.cs" />
-    <Compile Include="Mono.TextEditor\Document\StringBuffer.cs" />
     <Compile Include="Mono.TextEditor\Document\TextSegment.cs" />
     <Compile Include="Mono.TextEditor\Gui\TextViewMargin.cs" />
     <Compile Include="Mono.TextEditor\Document\SharpDevelopWordFindStrategy.cs" />
     <Compile Include="Mono.TextEditor\Document\EmacsWordFindStrategy.cs" />
-    <Compile Include="Mono.TextEditor\Document\BufferedTextReader.cs" />
     <Compile Include="Mono.TextEditor\Document\SyntaxModeChangeEventArgs.cs" />
     <Compile Include="Mono.TextEditor\Document\DocumentLine.cs" />
     <Compile Include="Mono.TextEditor\Standalone\TextSourceVersionProvider.cs" />
@@ -235,6 +232,12 @@
     <Compile Include="Mono.TextEditor\Gui\LayoutCache.cs" />
     <Compile Include="Mono.TextEditor\Gui\GtkUtil.cs" />
     <Compile Include="Mono.TextEditor\EditModeChangedEventArgs.cs" />
+    <Compile Include="Mono.TextEditor.Utils\Rope.cs" />
+    <Compile Include="Mono.TextEditor.Utils\RopeNode.cs" />
+    <Compile Include="Mono.TextEditor.Utils\ImmutableStack.cs" />
+    <Compile Include="Mono.TextEditor.Utils\CharRope.cs" />
+    <Compile Include="Mono.TextEditor.Utils\RopeTextReader.cs" />
+    <Compile Include="Mono.TextEditor\Document\ImmutableLineSplitter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Mono.TextEditor.dll.config">

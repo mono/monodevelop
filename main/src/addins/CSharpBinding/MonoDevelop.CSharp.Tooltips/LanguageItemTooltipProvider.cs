@@ -25,7 +25,8 @@
 //
 //
 using System;
-using Mono.TextEditor;
+using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Ide;
 using MonoDevelop.CSharp;
 using MonoDevelop.Core;
@@ -35,6 +36,10 @@ using MonoDevelop.Components;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Projects;
+using Mono.Cecil.Cil;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -59,7 +64,6 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#region ITooltipProvider implementation 
-		
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -105,7 +109,7 @@ namespace MonoDevelop.SourceEditor
 
 		#endregion
 
-		protected override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
@@ -146,7 +150,7 @@ namespace MonoDevelop.SourceEditor
 
 			tipWindow.ShowPopup (positionWidget, caret, PopupPosition.Top);
 			tipWindow.EnterNotifyEvent += delegate {
-				editor.HideTooltip (false);
+//				editor.HideTooltip (false);
 			};
 			lastWindow = tipWindow;
 			lastNode = titem.Token;
@@ -342,8 +346,7 @@ namespace MonoDevelop.SourceEditor
 //			}
 //		}
 
-		
-		protected override void GetRequiredPosition (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
 			var win = (TooltipInformationWindow)tipWindow;
 			requiredWidth = win.Allocation.Width;

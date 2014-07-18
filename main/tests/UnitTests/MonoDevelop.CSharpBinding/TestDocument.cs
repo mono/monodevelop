@@ -31,7 +31,8 @@ namespace MonoDevelop.CSharpBinding
 {
 	public class TestDocument : MonoDevelop.Ide.Gui.Document
 	{
-		internal ParsedDocument HiddenParsedDocument;
+		public ParsedDocument HiddenParsedDocument;
+
 		public override ParsedDocument ParsedDocument {
 			get {
 				return HiddenParsedDocument;
@@ -42,7 +43,7 @@ namespace MonoDevelop.CSharpBinding
 		{
 		}
 		
-		internal IProjectContent HiddenProjectContent;
+		public IProjectContent HiddenProjectContent;
 
 		public override IProjectContent GetProjectContext ()
 		{

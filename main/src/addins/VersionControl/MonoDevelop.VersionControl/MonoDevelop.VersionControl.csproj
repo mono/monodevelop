@@ -396,6 +396,7 @@
     <Compile Include="MonoDevelop.VersionControl.Dialogs\VersionControlSolutionOptionsPanel.cs" />
     <Compile Include="AddinInfo.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlException.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\CommonTextEditorOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

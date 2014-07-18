@@ -28,6 +28,7 @@
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.DesignerSupport.Projects
 {
@@ -42,9 +43,9 @@ namespace MonoDevelop.DesignerSupport.Projects
 		{
 			// Return the ProjectFile object of the file being edited
 			
-			if (Document.HasProject) {
-				string file = Document.FileName;
-				return Document.Project.Files.GetFile (file);
+			if (DocumentContext.HasProject) {
+				string file = DocumentContext.Name;
+				return DocumentContext.Project.Files.GetFile (file);
 			}
 			else
 				return null;
@@ -61,8 +62,8 @@ namespace MonoDevelop.DesignerSupport.Projects
 
 		public void OnChanged (object obj)
 		{
-			if (Document.HasProject)
-				IdeApp.ProjectOperations.Save (Document.Project);
+			if (DocumentContext.HasProject)
+				IdeApp.ProjectOperations.Save (DocumentContext.Project);
 		}
 	}
 }

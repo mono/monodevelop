@@ -89,5 +89,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			return Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
 		}
+
+		public static bool HasPackages (this IDotNetProject project)
+		{
+			return File.Exists (project.GetPackagesConfigFilePath ());
+		}
+
+		public static string GetPackagesConfigFilePath (this IDotNetProject project)
+		{
+			return Path.Combine (project.BaseDirectory, Constants.PackageReferenceFile);
+		}
 	}
 }

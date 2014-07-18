@@ -37,7 +37,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get;
 		}
 
-		int CaretOffset { get;}
+		int CaretOffset { get; set; }
 		int TextLength { get; }
 		int SelectedLength { get; }
 		string GetText (int startOffset, int endOffset);
@@ -53,6 +53,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 		void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word);
 		
 		void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word, int completeWordOffset);
+
+		void AddSkipChar (int cursorPosition, char c);
 		
 		event EventHandler CompletionContextChanged;
 	}

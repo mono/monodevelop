@@ -28,6 +28,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Refactoring.Rename
 {

@@ -41,13 +41,15 @@ using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Refactoring;
 using MonoDevelop.CSharp.Parser;
-using Mono.TextEditor;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Components.PropertyGrid.PropertyEditors;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp
 {
@@ -64,11 +66,9 @@ namespace MonoDevelop.CSharp
 			}
 		}
 		
-		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
+		public static ICSharpCode.NRefactory.CSharp.SyntaxTree Parse (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, IReadonlyTextDocument data)
 		{
-			using (var stream = data.OpenStream ()) {
-				return parser.Parse (stream, data.Document.FileName);
-			}
+			return parser.Parse (new ICSharpCode.NRefactory.Editor.StringTextSource (data.Text), data.FileName);
 		}
 		
 //		public static AstNode ParseSnippet (this ICSharpCode.NRefactory.CSharp.CSharpParser parser, TextEditorData data)
@@ -90,7 +90,7 @@ namespace MonoDevelop.CSharp
 //			}
 //		}
 		
-		internal static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this MonoDevelop.Ide.Gui.Document doc)
+		internal static MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy GetFormattingPolicy (this DocumentContext doc)
 		{
 			var policyParent = doc.Project != null ? doc.Project.Policies : null;
 			var types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
@@ -98,7 +98,7 @@ namespace MonoDevelop.CSharp
 			return codePolicy;
 		}
 
-		public static CSharpFormattingOptions GetFormattingOptions (this MonoDevelop.Ide.Gui.Document doc)
+		public static CSharpFormattingOptions GetFormattingOptions (this DocumentContext doc)
 		{
 			return GetFormattingPolicy (doc).CreateOptions ();
 		}
@@ -111,13 +111,13 @@ namespace MonoDevelop.CSharp
 			return codePolicy.CreateOptions ();
 		}
 		
-		public static bool TryResolveAt (this Document doc, DocumentLocation loc, out ResolveResult result, out AstNode node)
+		public static bool TryResolveAt (this DocumentContext documentContext, DocumentLocation loc, out ResolveResult result, out AstNode node)
 		{
-			if (doc == null)
-				throw new ArgumentNullException ("doc");
+			if (documentContext == null)
+				throw new ArgumentNullException ("documentContext");
 			result = null;
 			node = null;
-			var parsedDocument = doc.ParsedDocument;
+			var parsedDocument = documentContext.ParsedDocument;
 			if (parsedDocument == null)
 				return false;
 
@@ -127,7 +127,7 @@ namespace MonoDevelop.CSharp
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				result = ResolveAtLocation.Resolve (new Lazy<ICompilation>(() => doc.Compilation), parsedFile, unit, loc, out node);
+				result = ResolveAtLocation.Resolve (new Lazy<ICompilation>(() => documentContext.Compilation), parsedFile, unit, loc, out node);
 				if (result == null || node is Statement)
 					return false;
 			} catch (Exception e) {

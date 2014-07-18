@@ -251,7 +251,7 @@ namespace MonoDevelop.Ide.Commands
 		{
 			Document doc = IdeApp.Workbench.ActiveDocument;
 			string header = MonoDevelop.Ide.StandardHeader.StandardHeaderService.GetHeader (doc.Project, doc.Name, false);
-			doc.Editor.Insert (0, header + "\n");
+			doc.Editor.InsertText (0, header + "\n");
 		}
 		
 		protected override void Update (CommandInfo info)

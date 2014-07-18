@@ -54,18 +54,20 @@ using System.Text;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Ide.Gui
 {
-	public class Document : ICSharpCode.NRefactory.AbstractAnnotatable
+
+	public class Document : DocumentContext
 	{
 		internal object MemoryProbe = Counters.DocumentsInMemory.CreateMemoryProbe ();
 		
 		IWorkbenchWindow window;
-		TextEditorExtension editorExtension;
 		ParsedDocument parsedDocument;
 		IProjectContent singleFileContext;
-		Mono.TextEditor.ITextEditorDataProvider provider = null;
 		Microsoft.CodeAnalysis.DocumentId analysisDocument;
 
 		const int ParseDelay = 600;
@@ -95,7 +97,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
  		
-		public T GetContent<T> () where T : class
+		public override T GetContent<T> ()
 		{
 			if (window == null)
 				return null;
@@ -112,13 +114,6 @@ namespace MonoDevelop.Ide.Gui
 					return ret;
 			}
 
-			//no, so look through the TexteditorExtensions as well
-			TextEditorExtension nextExtension = editorExtension;
-			while (nextExtension != null) {
-				if (typeof(T).IsAssignableFrom (nextExtension.GetType ()))
-					return nextExtension as T;
-				nextExtension = nextExtension.Next as TextEditorExtension;
-			}
 			return null;
 		}
 		
@@ -136,15 +131,9 @@ namespace MonoDevelop.Ide.Gui
 				if (ret != null)
 					yield return ret;
 			}
-			
-			//no, so look through the TexteditorExtensions as well
-			TextEditorExtension nextExtension = editorExtension;
-			while (nextExtension != null) {
-				if (typeof(T).IsAssignableFrom (nextExtension.GetType ()))
-					yield return nextExtension as T;
-				nextExtension = nextExtension.Next as TextEditorExtension;
-			}
 		}
+
+
 		static Document ()
 		{
 			if (IdeApp.Workbench != null) {
@@ -197,12 +186,9 @@ namespace MonoDevelop.Ide.Gui
 			get { return !Window.ViewContent.IsViewOnly && (Window.ViewContent.ContentName == null || Window.ViewContent.IsDirty); }
 			set { Window.ViewContent.IsDirty = value; }
 		}
+
 		
-		public bool HasProject {
-			get { return Window != null ? Window.ViewContent.Project != null : false; }
-		}
-		
-		public Project Project {
+		public override Project Project {
 			get { return Window != null ? Window.ViewContent.Project : null; }
 /*			set { 
 				Window.ViewContent.Project = value; 
@@ -214,7 +200,7 @@ namespace MonoDevelop.Ide.Gui
 			}*/
 		}
 
-		public bool IsCompileableInProject {
+		public override bool IsCompileableInProject {
 			get {
 				var project = Project;
 				if (project == null)
@@ -235,13 +221,13 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
-		public  IProjectContent ProjectContent {
+		public override IProjectContent ProjectContent {
 			get {
 				return Project != null ? TypeSystemService.GetProjectContext (Project) : GetProjectContext ();
 			}
 		}
 		
-		public virtual ICompilation Compilation {
+		public override ICompilation Compilation {
 			get {
 				return Project != null ? TypeSystemService.GetCompilation (Project) : GetProjectContext ().CreateCompilation ();
 			}
@@ -255,7 +241,7 @@ namespace MonoDevelop.Ide.Gui
 			return project.GetCompilationAsync (cancellationToken);
 		}
 
-		public virtual ParsedDocument ParsedDocument {
+		public override ParsedDocument ParsedDocument {
 			get {
 				return parsedDocument;
 			}
@@ -323,21 +309,16 @@ namespace MonoDevelop.Ide.Gui
 				return new DocumentView (this, content);
 		}
 
-		public string Name {
+		public override string Name {
 			get {
 				IViewContent view = Window.ViewContent;
 				return view.IsUntitled ? view.UntitledName : view.ContentName;
 			}
 		}
 
-		public Mono.TextEditor.TextEditorData Editor {
+		public TextEditor Editor {
 			get {
-				if (provider == null) {
-					provider = GetContent <Mono.TextEditor.ITextEditorDataProvider> ();
-					if (provider == null)
-						return null;
-				}
-				return provider.GetTextEditorData ();
+				return GetContent <TextEditor> ();
 			}
 		}
 
@@ -421,11 +402,11 @@ namespace MonoDevelop.Ide.Gui
 
 			Encoding encoding = null;
 			
-			IEncodedTextContent tbuffer = GetContent <IEncodedTextContent> ();
+			var tbuffer = GetContent <ITextSource> ();
 			if (tbuffer != null) {
-				encoding = tbuffer.SourceEncoding;
+				encoding = tbuffer.Encoding;
 				if (encoding == null)
-					encoding = Encoding.Default;
+					encoding = Encoding.UTF8;
 			}
 				
 			if (filename == null) {
@@ -462,16 +443,13 @@ namespace MonoDevelop.Ide.Gui
 			// save backup first
 			if ((bool)PropertyService.Get ("SharpDevelop.CreateBackupCopy", false)) {
 				if (tbuffer != null && encoding != null)
-					tbuffer.Save (filename + "~", encoding);
+					TextFileUtility.WriteText (filename + "~", tbuffer.Text, encoding, tbuffer.UseBOM);
 				else
-					Window.ViewContent.Save (filename + "~");
+					Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 			}
 			TypeSystemService.RemoveSkippedfile (FileName);
 			// do actual save
-			if (tbuffer != null && encoding != null)
-				tbuffer.Save (filename, encoding);
-			else
-				Window.ViewContent.Save (filename);
+			Window.ViewContent.Save (new FileSaveInformation (filename + "~", encoding));
 
 			FileService.NotifyFileChanged (filename);
 			DesktopService.RecentFiles.AddFile (filename, (Project)null);
@@ -531,12 +509,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return ((SdiWorkspaceWindow)Window).CloseWindow (false, true);
 		}
-		
-		void OnSaved (EventArgs args)
+
+		protected override void OnSaved (EventArgs e)
 		{
 			IdeApp.Workbench.SaveFileStatus ();
-			if (Saved != null)
-				Saved (this, args);
+			base.OnSaved (e);
 		}
 
 		public void CancelParseTimeout ()
@@ -586,6 +563,9 @@ namespace MonoDevelop.Ide.Gui
 				analysisDocument = null;
 			}
 			DetachExtensionChain ();
+			if (Editor != null) {
+				Editor.Dispose ();
+			}
 			RemoveAnnotations (typeof(System.Object));
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).DetachFromPathedDocument ();
@@ -603,7 +583,6 @@ namespace MonoDevelop.Ide.Gui
 
 			parsedDocument = null;
 			singleFileContext = null;
-			provider = null;
 			views = null;
 			viewsRO = null;
 		}
@@ -655,84 +634,44 @@ namespace MonoDevelop.Ide.Gui
 
 		void InitializeExtensionChain ()
 		{
-			DetachExtensionChain ();
-			var editor = GetContent<IExtensibleTextEditor> ();
+			Editor.InitializeExtensionChain (this, Editor);
 
-			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			editorExtension = null;
-			TextEditorExtension last = null;
-			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
-			foreach (TextEditorExtensionNode extNode in extensions) {
-				if (!extNode.Supports (FileName, mimetypeChain))
-					continue;
-				TextEditorExtension ext;
-				try {
-					ext = (TextEditorExtension)extNode.CreateInstance ();
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type +")", e); 
-					continue;
-				}
-				if (ext.ExtendsEditor (this, editor)) {
-					if (last != null) {
-						ext.Next = last.Next;
-						last.Next = ext;
-						last = ext;
-					} else {
-						editorExtension = last = ext;
-						last.Next = editor.AttachExtension (editorExtension);
-					}
-					ext.Initialize (this);
-				}
-			}
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
+
 		}
 
-		void DetachExtensionChain ()
+		void InitializeEditor ()
 		{
-			while (editorExtension != null) {
-				try {
-					editorExtension.Dispose ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
-				}
-				editorExtension = editorExtension.Next as TextEditorExtension;
-			}
-			editorExtension = null;
-		}
-
-		void InitializeEditor (IExtensibleTextEditor editor)
-		{
-			Editor.Document.TextReplaced += (o, a) => {
+			Editor.TextChanged += (o, a) => {
 				if (parsedDocument != null)
 					parsedDocument.IsInvalid = true;
 
-				if (Editor.Document.IsInAtomicUndo) {
+				if (Editor.IsInAtomicUndo) {
 					wasEdited = true;
 				} else {
 					StartReparseThread ();
 				}
 			};
 			
-			Editor.Document.BeginUndo += delegate {
+			Editor.BeginUndo += delegate {
 				wasEdited = false;
 			};
 			
-			Editor.Document.EndUndo += delegate {
+			Editor.EndUndo += delegate {
 				if (wasEdited)
 					StartReparseThread ();
 			};
-			Editor.Document.Undone += (o, a) => StartReparseThread ();
-			Editor.Document.Redone += (o, a) => StartReparseThread ();
+//			Editor.Undone += (o, a) => StartReparseThread ();
+//			Editor.Redone += (o, a) => StartReparseThread ();
 
 			InitializeExtensionChain ();
 		}
 		
 		internal void OnDocumentAttached ()
 		{
-			IExtensibleTextEditor editor = GetContent<IExtensibleTextEditor> ();
-			if (editor != null) {
-				InitializeEditor (editor);
+			if (Editor != null) {
+				InitializeEditor ();
 				RunWhenLoaded (delegate { ListenToProjectLoad (Project); });
 			}
 			
@@ -748,14 +687,14 @@ namespace MonoDevelop.Ide.Gui
 		public void RunWhenLoaded (System.Action action)
 		{
 			var e = Editor;
-			if (e == null || e.Document == null) {
+			if (e == null) {
 				action ();
 				return;
 			}
-			e.Document.RunWhenLoaded (action);
+			e.RunWhenLoaded (action);
 		}
 
-		public void AttachToProject (Project project)
+		public override void AttachToProject (Project project)
 		{
 			SetProject (project);
 		}
@@ -766,7 +705,6 @@ namespace MonoDevelop.Ide.Gui
 			if (Window.ViewContent.Project == project)
 				return;
 			analysisDocument = null;
-			DetachExtensionChain ();
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
 			if (pr != null) {
 				// Unsubscribe project events
@@ -834,7 +772,7 @@ namespace MonoDevelop.Ide.Gui
 					return null;
 				TypeSystemService.AddSkippedFile (currentParseFile);
 				string currentParseText = editor.Text;
-				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.Document.MimeType, currentParseText);
+				this.parsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, editor.MimeType, currentParseText);
 				if (Project == null && this.parsedDocument != null) {
 					singleFileContext = GetProjectContext ().AddOrUpdateFiles (parsedDocument.ParsedFile);
 				}
@@ -899,7 +837,7 @@ namespace MonoDevelop.Ide.Gui
 					return false;	
 				}
 				string currentParseText = editor.Text;
-				string mimeType = editor.Document.MimeType;
+				string mimeType = editor.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
@@ -921,7 +859,7 @@ namespace MonoDevelop.Ide.Gui
 		/// This method kicks off an async document parser and should be used instead of 
 		/// <see cref="UpdateParseDocument"/> unless you need the parsed document immediately.
 		/// </summary>
-		public void ReparseDocument ()
+		public override void ReparseDocument ()
 		{
 			StartReparseThread ();
 		}
@@ -929,8 +867,8 @@ namespace MonoDevelop.Ide.Gui
 		internal object ExtendedCommandTargetChain {
 			get {
 				// Only go through the text editor chain, if the text editor is selected as subview
-				if (Window != null && Window.ActiveViewContent == Window.ViewContent)
-					return editorExtension;
+				if (Window != null && Window.ActiveViewContent == Window.ViewContent && Editor != null)
+					return Editor.CommandRouter;
 				return null;
 			}
 		}
@@ -941,19 +879,10 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project = null;
 		}
 		
-		void OnDocumentParsed (EventArgs e)
-		{
-			EventHandler handler = this.DocumentParsed;
-			if (handler != null)
-				handler (this, e);
-		}
-		
 		public event EventHandler Closed;
-		public event EventHandler Saved;
 		public event EventHandler ViewChanged;
 		
-		public event EventHandler DocumentParsed;
-		
+
 		public string[] CommentTags {
 			get {
 				if (IsFile)
@@ -967,30 +896,16 @@ namespace MonoDevelop.Ide.Gui
 		{
 			//Document doc = IdeApp.Workbench.ActiveDocument;
 			string loadedMimeType = DesktopService.GetMimeTypeForUri (fileName);
-			
-			Mono.TextEditor.Highlighting.SyntaxMode mode = null;
-			foreach (string mt in DesktopService.GetMimeTypeInheritanceChain (loadedMimeType)) {
-				mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, mt);
-				if (mode != null)
-					break;
-			}
-			
-			if (mode == null)
-				return null;
-			
-			List<string> ctags;
-			if (mode.Properties.TryGetValue ("LineComment", out ctags) && ctags.Count > 0) {
-				return new string [] { ctags [0] };
-			}
-			List<string> tags = new List<string> ();
-			if (mode.Properties.TryGetValue ("BlockCommentStart", out ctags))
-				tags.Add (ctags [0]);
-			if (mode.Properties.TryGetValue ("BlockCommentEnd", out ctags))
-				tags.Add (ctags [0]);
-			if (tags.Count == 2)
-				return tags.ToArray ();
-			else
-				return null;
+
+			var result = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "LineComment");
+			if (result != null)
+				return result;
+
+			var start = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentStart");
+			var end = TextEditorFactory.GetSyntaxProperties (loadedMimeType, "BlockCommentEnd");
+			if (start != null && end != null)
+				return new [] { start[0], end[0] };
+			return null;
 		}
 	
 //		public MonoDevelop.Projects.CodeGeneration.CodeGenerator CreateCodeGenerator ()
@@ -1005,7 +920,7 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public void DisableAutoScroll ()
 		{
-			Mono.TextEditor.Utils.FileSettingsStore.Remove (FileName);
+			FileSettingsStore.Remove (FileName);
 		}
 
 		public OptionSet GetOptionSet ()

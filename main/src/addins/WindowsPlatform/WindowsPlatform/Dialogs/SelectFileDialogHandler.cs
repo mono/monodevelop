@@ -96,10 +96,12 @@ namespace MonoDevelop.Platform
 
 			SetDefaultExtension (data, dialog);
 		}
-		
+
 		static void SetDefaultExtension (SelectFileDialogData data, CommonFileDialog dialog)
 		{
-			var defExt = data.DefaultFilter.Patterns[0];
+			var defExt = data.DefaultFilter == null ? null : data.DefaultFilter.Patterns.FirstOrDefault ();
+			if (defExt == null)
+				return;
 
 			// FileDialog doesn't show the file extension when saving a file,
 			// so we try to look for the precise filter if none was specified.
@@ -118,7 +120,11 @@ namespace MonoDevelop.Platform
 				}
 			}
 
-			dialog.DefaultExtension = defExt.TrimStart ('*', '.');
+			defExt = defExt.Trim();
+			defExt = defExt.Replace("*.", null);
+			defExt = defExt.Replace(".", null);
+
+			dialog.DefaultExtension = defExt;
 		}
 	}
 }

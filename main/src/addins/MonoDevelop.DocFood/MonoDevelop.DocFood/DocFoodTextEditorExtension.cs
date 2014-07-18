@@ -1,6 +1,6 @@
 // 
 // TextEditorExtension.cs
-//  
+//  =
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -25,32 +25,31 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor;
 using System.Text;
 using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
+using System.Linq;
 
 namespace MonoDevelop.DocFood
 {
 	class DocFoodTextEditorExtension : TextEditorExtension
 	{
-		TextEditorData textEditorData {
-			get {
-				return Document.Editor;
-			}
-		}
-		
 		string GenerateDocumentation (ISymbol member, string indent)
 		{
-			string doc = DocumentBufferHandler.GenerateDocumentation (textEditorData, member, indent);
+			string doc = DocumentBufferHandler.GenerateDocumentation (Editor, member, indent);
 			int trimStart = (Math.Min (doc.Length - 1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 		
 		string GenerateEmptyDocumentation (ISymbol member, string indent)
 		{
-			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (textEditorData, member, indent);
+			string doc = DocumentBufferHandler.GenerateEmptyDocumentation (Editor, member, indent);
 			int trimStart = (Math.Min (doc.Length - 1, indent.Length + "//".Length));
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
@@ -60,8 +59,8 @@ namespace MonoDevelop.DocFood
 			if (keyChar != '/')
 				return base.KeyPress (key, keyChar, modifier);
 			
-			var line = textEditorData.Document.GetLine (textEditorData.Caret.Line);
-			string text = textEditorData.Document.GetTextAt (line.Offset, line.Length);
+			var line = Editor.GetLine (Editor.CaretLine);
+			string text = Editor.GetTextAt (line.Offset, line.Length);
 			
 			if (!text.EndsWith ("//", StringComparison.Ordinal))
 				return base.KeyPress (key, keyChar, modifier);
@@ -70,42 +69,45 @@ namespace MonoDevelop.DocFood
 			var l = line.PreviousLine;
 			while (l != null && l.Length == 0)
 				l = l.PreviousLine;
-			if (l != null && textEditorData.GetTextAt (l).TrimStart ().StartsWith ("///"))
+			if (l != null && Editor.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
 				return base.KeyPress (key, keyChar, modifier);
 
 			l = line.NextLine;
 			while (l != null && l.Length == 0)
 				l = l.NextLine;
-			if (l != null && textEditorData.GetTextAt (l).TrimStart ().StartsWith ("///"))
+			if (l != null && Editor.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
 				return base.KeyPress (key, keyChar, modifier);
 
 			var member = GetMemberToDocument ();
 			if (member == null)
 				return base.KeyPress (key, keyChar, modifier);
 			
-			string documentation = GenerateDocumentation (member, textEditorData.Document.GetLineIndent (line));
+			string documentation = GenerateDocumentation (member, Editor.GetLineIndent (line));
 			if (string.IsNullOrEmpty (documentation))
 				return base.KeyPress (key, keyChar, modifier);
 			
-			string documentationEmpty = GenerateEmptyDocumentation (member, textEditorData.Document.GetLineIndent (line));
+			string documentationEmpty = GenerateEmptyDocumentation (member, Editor.GetLineIndent (line));
 			
-			int offset = textEditorData.Caret.Offset;
+			int offset = Editor.CaretOffset;
 			
 			int insertedLength;
 			
 			// Insert key (3rd undo step)
-			textEditorData.Insert (offset, "/");
-			
-			using (var undo = textEditorData.OpenUndoGroup ()) {
-				insertedLength = textEditorData.Replace (offset, 1, documentationEmpty);
+			Editor.InsertText (offset, "/");
+			using (var undo = Editor.OpenUndoGroup ()) {
+				documentationEmpty = Editor.FormatString (offset, documentationEmpty); 
+				insertedLength = documentationEmpty.Length;
+				Editor.ReplaceText (offset, 1, documentationEmpty);
 				// important to set the caret position here for the undo step
-				textEditorData.Caret.Offset = offset + insertedLength;
+				Editor.CaretOffset = offset + insertedLength;
 			}
 			
-			using (var undo = textEditorData.OpenUndoGroup ()) {
-				insertedLength = textEditorData.Replace (offset, insertedLength, documentation);
+			using (var undo = Editor.OpenUndoGroup ()) {
+				documentation = Editor.FormatString (offset, documentation); 
+				Editor.ReplaceText (offset, insertedLength, documentation);
+				insertedLength = documentation.Length;
 				if (SelectSummary (offset, insertedLength, documentation) == false)
-					textEditorData.Caret.Offset = offset + insertedLength;
+					Editor.CaretOffset = offset + insertedLength;
 			}
 			return false;
 		}
@@ -133,27 +135,27 @@ namespace MonoDevelop.DocFood
 
 			const string summaryStart = "<summary>";
 			const string summaryEnd = "</summary>";
-			int start = documentation.IndexOf (summaryStart);
-			int end = documentation.IndexOf (summaryEnd);
+			int start = documentation.IndexOf (summaryStart, StringComparison.Ordinal);
+			int end = documentation.IndexOf (summaryEnd, StringComparison.Ordinal);
 			if (start < 0 || end < 0)
 				return false;
 			start += summaryStart.Length;
 			string summaryText = documentation.Substring (start, end - start).Trim (new char[] {' ', '\t', '\r', '\n', '/'});
-			start = documentation.IndexOf (summaryText, start);
+			start = documentation.IndexOf (summaryText, start, StringComparison.Ordinal);
 			if (start < 0)
 				return false;
-			textEditorData.Caret.Offset = offset + start;
-			textEditorData.SetSelection (offset + start, offset + start + summaryText.Length);
+			Editor.CaretOffset = offset + start;
+			Editor.SetSelection (offset + start, offset + start + summaryText.Length);
 			return true;
 		}
 
 		bool IsEmptyBetweenLines (int start, int end)
 		{
 			for (int i = start + 1; i < end - 1; i++) {
-				DocumentLine lineSegment = textEditorData.GetLine (i);
+				var lineSegment = Editor.GetLine (i);
 				if (lineSegment == null)
 					break;
-				if (lineSegment.Length != textEditorData.GetLineIndent (lineSegment).Length)
+				if (lineSegment.Length != Editor.GetLineIndent (lineSegment).Length)
 					return false;
 				
 			}

@@ -76,6 +76,9 @@ namespace Mono.TextEditor
 			get {
 				return textEditorData.Document;
 			}
+			set {
+				textEditorData.Document = value;
+			}
 		}
 
 		public bool IsDisposed {
@@ -1474,8 +1477,10 @@ namespace Mono.TextEditor
 			} else {
 				double caretX = ColumnToX (Document.GetLine (p.Line), p.Column);
 				double textWith = Allocation.Width - textViewMargin.XOffset;
-				if (this.textEditorData.HAdjustment.Value > caretX) {
-					this.textEditorData.HAdjustment.Value = caretX;
+				if (caretX < this.textEditorData.HAdjustment.Upper) {
+					this.textEditorData.HAdjustment.Value = 0;
+				} else if (this.textEditorData.HAdjustment.Value > caretX) {
+					this.textEditorData.HAdjustment.Value = System.Math.Max (0, caretX - this.textEditorData.HAdjustment.Upper / 2);
 				} else if (this.textEditorData.HAdjustment.Value + textWith < caretX + TextViewMargin.CharWidth) {
 					double adjustment = System.Math.Max (0, caretX - textWith + TextViewMargin.CharWidth);
 					this.textEditorData.HAdjustment.Value = adjustment;
@@ -1697,7 +1702,7 @@ namespace Mono.TextEditor
 			if (this.textEditorData.VAdjustment != null) {
 				double maxY = textEditorData.HeightTree.TotalHeight;
 				//				if (maxY > allocation.Height)
-				maxY += allocation.Height - LineHeight;
+				maxY += allocation.Height / 2 - LineHeight;
 
 				foreach (var containerChild in editor.containerChildren.Concat (containerChildren)) {
 					maxY = System.Math.Max (maxY, containerChild.Y + containerChild.Child.SizeRequest().Height);
@@ -2811,7 +2816,7 @@ namespace Mono.TextEditor
 		void OnTextSet (object sender, EventArgs e)
 		{
 			DocumentLine longest = Document.longestLineAtTextSet;
-			if (longest != longestLine) {
+			if (longest != longestLine && longest != null) {
 				int width = (int)(longest.Length * textViewMargin.CharWidth);
 				if (width > this.longestLineWidth) {
 					this.longestLineWidth = width;

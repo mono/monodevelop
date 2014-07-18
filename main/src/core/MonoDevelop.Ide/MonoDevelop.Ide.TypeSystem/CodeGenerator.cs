@@ -29,12 +29,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
 using MonoDevelop.Core.AddIns;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide.Extensions;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -67,29 +67,45 @@ namespace MonoDevelop.Ide.TypeSystem
 			set;
 		}
 
-		public static CodeGenerator CreateGenerator (Ide.Gui.Document doc)
-		{
-			MimeTypeExtensionNode node;
-			if (!generators.TryGetValue (doc.Editor.MimeType, out node))
-				return null;
-
-			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = doc.Editor.TabsToSpaces;
-			result.EolMarker = doc.Editor.EolMarker;
-			result.TabSize = doc.Editor.Options.TabSize;
-			return result;
+		public ICompilation Compilation {
+			get;
+			set;
 		}
-		
-		public static CodeGenerator CreateGenerator (TextEditorData editor, ICompilation compilation)
+
+		public static CodeGenerator CreateGenerator (TextEditor editor, DocumentContext documentContext)
 		{
 			MimeTypeExtensionNode node;
 			if (!generators.TryGetValue (editor.MimeType, out node))
 				return null;
 
 			var result = (CodeGenerator)node.CreateInstance ();
-			result.UseSpaceIndent = editor.TabsToSpaces;
+
+			result.UseSpaceIndent = editor.Options.TabsToSpaces;
 			result.EolMarker = editor.EolMarker;
 			result.TabSize = editor.Options.TabSize;
+			result.Compilation = documentContext.Compilation;
+
+			return result;
+		}
+
+		public static CodeGenerator CreateGenerator (Ide.Gui.Document doc)
+		{
+			return CreateGenerator (doc.Editor, doc);
+		}
+
+		public static CodeGenerator CreateGenerator (ITextDocument editor, ICompilation compilation)
+		{
+			MimeTypeExtensionNode node;
+			if (!generators.TryGetValue (editor.MimeType, out node))
+				return null;
+
+			var result = (CodeGenerator)node.CreateInstance ();
+
+			//result.UseSpaceIndent = editor.Options.TabsToSpaces;
+			result.EolMarker = editor.GetEolMarker ();
+			//result.TabSize = editor.Options.TabSize;
+			result.Compilation = compilation;
+
 			return result;
 		}
 
@@ -162,8 +178,25 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public abstract string WrapInRegions (string regionName, string text);
 
-		public abstract void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName);
-		public abstract void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation);
+		public abstract void AddGlobalNamespaceImport (TextEditor editor, DocumentContext context, string nsName);
+		public abstract void AddLocalNamespaceImport (TextEditor editor, DocumentContext context, string nsName, TextLocation caretLocation);
+
+		public void AddGlobalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			AddGlobalNamespaceImport (doc.Editor, doc, nsName);
+		}
+
+		public void AddLocalNamespaceImport (MonoDevelop.Ide.Gui.Document doc, string nsName, TextLocation caretLocation)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			AddLocalNamespaceImport (doc.Editor, doc, nsName, caretLocation);
+		}
+
+
+		public abstract string GetShortTypeString (TextEditor editor, DocumentContext context, IType type);
 
 		public abstract void CompleteStatement (MonoDevelop.Ide.Gui.Document doc);
 	}

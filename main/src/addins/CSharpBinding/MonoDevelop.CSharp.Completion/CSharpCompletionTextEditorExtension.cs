@@ -55,6 +55,11 @@ using ICSharpCode.NRefactory.Semantics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
+using MonoDevelop.CSharp.Refactoring.CodeActions;
+using MonoDevelop.Refactoring;
+using MonoDevelop.Ide.Editor.Extension;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.CSharp.NRefactoryWrapper;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -77,7 +82,7 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public MonoDevelop.Projects.Project Project {
 			get {
-				return document.Project;
+				return DocumentContext.Project;
 			}
 		}
 		
@@ -86,8 +91,8 @@ namespace MonoDevelop.CSharp.Completion
 			get {
 				if (policy == null) {
 					IEnumerable<string> types = MonoDevelop.Ide.DesktopService.GetMimeTypeInheritanceChain (MonoDevelop.CSharp.Formatting.CSharpFormatter.MimeType);
-					if (Document.Project != null && Document.Project.Policies != null) {
-						policy = base.Document.Project.Policies.Get<CSharpFormattingPolicy> (types);
+					if (DocumentContext.Project != null && DocumentContext.Project.Policies != null) {
+						policy = base.DocumentContext.Project.Policies.Get<CSharpFormattingPolicy> (types);
 					} else {
 						policy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<CSharpFormattingPolicy> (types);
 					}
@@ -112,10 +117,10 @@ namespace MonoDevelop.CSharp.Completion
 		[System.ComponentModel.Browsable(false)]
 		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc) : this ()
 		{
-			Initialize (doc);
+			Initialize (doc.Editor, doc);
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			document.DocumentParsed += HandleDocumentParsed;
@@ -124,17 +129,17 @@ namespace MonoDevelop.CSharp.Completion
 		[CommandUpdateHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
 		public void CheckShowCodeGenerationWindow (CommandInfo info)
 		{
-			info.Enabled = Document.Editor != null && Document.GetContent<ICompletionWidget> () != null;
+			info.Enabled = Editor != null && DocumentContext.GetContent<ICompletionWidget> () != null;
 		}
 
 		[CommandHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
 		public void ShowCodeGenerationWindow ()
 		{
-			var completionWidget = Document.GetContent<ICompletionWidget> ();
+			var completionWidget = DocumentContext.GetContent<ICompletionWidget> ();
 			if (completionWidget == null)
 				return;
-			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (Document.Editor.Caret.Offset);
-			GenerateCodeWindow.ShowIfValid (Document, completionContext);
+			CodeCompletionContext completionContext = completionWidget.CreateCodeCompletionContext (Editor.CaretOffset);
+			GenerateCodeWindow.ShowIfValid (Editor, DocumentContext, completionContext);
 		}
 
 		public override void Dispose ()
@@ -199,16 +204,16 @@ namespace MonoDevelop.CSharp.Completion
 			//	var timer = Counters.ResolveTime.BeginTiming ();
 			try {
 				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
-					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (document.Editor.GetCharAt (completionContext.TriggerOffset - 2)))
+					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (Editor.GetCharAt (completionContext.TriggerOffset - 2)))
 						return null;
 					triggerWordLength = 1;
 				}
 				return InternalHandleCodeCompletion (completionContext, completionChar, false, ref triggerWordLength);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
-					"FileName: " + Document.FileName + Environment.NewLine + 
+					"FileName: " + DocumentContext.Name + Environment.NewLine + 
 					"Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
-					"Line text: " + Document.Editor.GetLineText (completionContext.TriggerLine), 
+					"Line text: " + Editor.GetLineText (completionContext.TriggerLine), 
 					e);
 				return null;
 			} finally {
@@ -259,7 +264,6 @@ namespace MonoDevelop.CSharp.Completion
 					// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
 					if (ctrlSpace)
 						list.AutoCompleteUniqueMatch = true;
-
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
@@ -318,7 +322,7 @@ namespace MonoDevelop.CSharp.Completion
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int triggerWordLength = 0;
-			char ch = completionContext.TriggerOffset > 0 ? TextEditorData.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
+			char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
 			return InternalHandleCodeCompletion (completionContext, ch, true, ref triggerWordLength);
 		}
 
@@ -504,6 +508,9 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			var offset = Editor.Caret.Offset;
 
+			if (completionChar != '(' && completionChar != ',')
+				return null;
+
 			try {
 				var compilation = document.GetCompilationAsync ().Result; 
 
@@ -517,9 +524,9 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
-					"FileName: " + Document.FileName + Environment.NewLine + 
+					"FileName: " + DocumentContext.Name + Environment.NewLine + 
 					"Position: line=" + completionContext.TriggerLine + " col=" + completionContext.TriggerLineOffset + Environment.NewLine + 
-					"Line text: " + Document.Editor.GetLineText (completionContext.TriggerLine), 
+					"Line text: " + Editor.GetLineText (completionContext.TriggerLine), 
 					e);
 			}
 			return null;
@@ -698,7 +705,7 @@ namespace MonoDevelop.CSharp.Completion
 				public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 				{
 					var def = type.GetDefinition ();
-					var result = def != null ? MemberCompletionData.CreateTooltipInformation (compilation, file, List.Resolver, ext.TextEditorData, ext.FormattingPolicy, def, smartWrap)  : new TooltipInformation ();
+					var result = def != null ? MemberCompletionData.CreateTooltipInformation (compilation, file, List.Resolver, ext.Editor, ext.FormattingPolicy, def, smartWrap)  : new TooltipInformation ();
 					if (ConflictingTypes != null) {
 						var conflicts = new StringBuilder ();
 						var sig = new SignatureMarkupCreator (List.Resolver, ext.FormattingPolicy.CreateOptions ());
@@ -884,7 +891,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			ICompletionData ICompletionDataFactory.CreateNewPartialCompletionData (int declarationBegin, IUnresolvedTypeDefinition type, IUnresolvedMember m)
 			{
-				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.document.Editor.Caret.Location);
+				var ctx = ext.CSharpUnresolvedFile.GetTypeResolveContext (ext.UnresolvedFileCompilation, ext.Editor.CaretLocation);
 				return new NewOverrideCompletionData (ext, declarationBegin, type, m.CreateResolved (ctx));
 			}
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreateCodeTemplateCompletionData ()
@@ -898,7 +905,7 @@ namespace MonoDevelop.CSharp.Completion
 			
 			IEnumerable<ICompletionData> ICompletionDataFactory.CreatePreProcessorDefinesCompletionData ()
 			{
-				var project = ext.document.Project;
+				var project = ext.DocumentContext.Project;
 				if (project == null)
 					yield break;
 				var configuration = project.GetConfiguration (MonoDevelop.Ide.IdeApp.Workspace.ActiveConfiguration) as DotNetProjectConfiguration;
@@ -1007,8 +1014,8 @@ namespace MonoDevelop.CSharp.Completion
 				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 				{
 					Initialize ();
-					var doc = ext.document;
-					using (var undo = doc.Editor.OpenUndoGroup ()) {
+					var doc = ext.DocumentContext;
+					using (var undo = ext.Editor.OpenUndoGroup ()) {
 						string text = insertNamespace ? type.Namespace + "." + type.Name : type.Name;
 						if (text != GetCurrentWord (window)) {
 							if (window.WasShiftPressed && generateUsing) 
@@ -1017,11 +1024,9 @@ namespace MonoDevelop.CSharp.Completion
 						}
 					
 						if (!window.WasShiftPressed && generateUsing) {
-							var generator = CodeGenerator.CreateGenerator (doc);
+							var generator = CodeGenerator.CreateGenerator (ext.Editor, doc);
 							if (generator != null) {
-								generator.AddGlobalNamespaceImport (doc, type.Namespace);
-								// reparse
-								doc.UpdateParseDocument ();
+								generator.AddGlobalNamespaceImport (ext.Editor, doc, type.Namespace);
 							}
 						}
 					}
@@ -1125,14 +1130,14 @@ namespace MonoDevelop.CSharp.Completion
 
 		#region IDebuggerExpressionResolver implementation
 
-		static string GetIdentifierName (TextEditorData editor, ICSharpCode.NRefactory.CSharp.Identifier id, out int startOffset)
+		static string GetIdentifierName (IReadonlyTextDocument editor, ICSharpCode.NRefactory.CSharp.Identifier id, out int startOffset)
 		{
 			startOffset = editor.LocationToOffset (id.StartLocation.Line, id.StartLocation.Column);
 
 			return editor.GetTextBetween (id.StartLocation, id.EndLocation);
 		}
 
-		internal static string ResolveExpression (TextEditorData editor, ResolveResult result, ICSharpCode.NRefactory.CSharp.AstNode node, out int startOffset)
+		internal static string ResolveExpression (IReadonlyTextDocument editor, ResolveResult result, ICSharpCode.NRefactory.CSharp.AstNode node, out int startOffset)
 		{
 			//Console.WriteLine ("result is a {0}", result.GetType ().Name);
 			startOffset = -1;

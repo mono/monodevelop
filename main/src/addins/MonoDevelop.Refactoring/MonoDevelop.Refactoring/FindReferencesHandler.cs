@@ -123,10 +123,11 @@ namespace MonoDevelop.Refactoring
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null || doc.FileName == FilePath.Null)
 				return;
+
 			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset).Result;
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null)
 				FindRefs (sym, doc.GetCompilationAsync ());

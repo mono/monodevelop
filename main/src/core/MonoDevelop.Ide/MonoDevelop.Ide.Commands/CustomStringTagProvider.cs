@@ -81,17 +81,17 @@ namespace MonoDevelop.Ide.Commands
 					
 				case "CURLINE":
 					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.Caret.Line;
+						return wb.ActiveDocument.Editor.CaretLocation.Line;
 					return null;
 					
 				case "CURCOLUMN":
 					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.Caret.Column;
+						return wb.ActiveDocument.Editor.CaretLocation.Column;
 					return null;
 					
 				case "CUROFFSET":
 					if (wb.ActiveDocument != null && wb.ActiveDocument.Editor != null)
-						return wb.ActiveDocument.Editor.Caret.Offset;
+						return wb.ActiveDocument.Editor.CaretOffset;
 					return null;
 					
 				case "CURTEXT":

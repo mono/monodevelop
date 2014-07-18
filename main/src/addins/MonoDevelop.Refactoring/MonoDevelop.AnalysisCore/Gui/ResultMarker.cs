@@ -24,14 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Mono.TextEditor;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
-using System.Collections.Generic;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
+using System.Collections.Generic;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
+/*
 	class ResultMarker : UnderlineTextSegmentMarker
 	{
 		readonly Result result;
@@ -205,4 +206,5 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 		#endregion
 	}
+*/
 }

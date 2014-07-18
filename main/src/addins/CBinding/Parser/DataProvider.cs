@@ -39,6 +39,7 @@ using MonoDevelop.Components;
 using Gtk;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace CBinding.Parser
 {
@@ -48,15 +49,18 @@ namespace CBinding.Parser
 		object tag;
 		Ambience amb;
 		List<IUnresolvedEntity> memberList = new List<IUnresolvedEntity> ();
+
+		TextEditor editor;
 		
-		Document Document {
+		DocumentContext DocumentContext {
 			get;
 			set;
 		}
 		
-		public DataProvider (Document doc, object tag, Ambience amb)
+		public DataProvider (TextEditor editor, DocumentContext documentContext, object tag, Ambience amb)
 		{
-			this.Document = doc;
+			this.editor = editor;
+			this.DocumentContext = documentContext;
 			this.tag = tag;
 			this.amb = amb;
 			Reset ();
@@ -82,7 +86,7 @@ namespace CBinding.Parser
 		
 		string GetString (Ambience amb, IUnresolvedEntity x)
 		{
-			var ctx = new SimpleTypeResolveContext (Document.Compilation.MainAssembly);
+			var ctx = new SimpleTypeResolveContext (DocumentContext.Compilation.MainAssembly);
 			IEntity rx = null;
 			if (x is IUnresolvedMember)
 				rx = ((IUnresolvedMember)x).CreateResolved (ctx);
@@ -113,9 +117,10 @@ namespace CBinding.Parser
 		public void ActivateItem (int n)
 		{
 			var member = memberList[n];
-			MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
-			if (extEditor != null)
-				extEditor.SetCaretTo (Math.Max (1, member.Region.BeginLine), Math.Max (1, member.Region.BeginColumn));
+			var extEditor = editor;
+			if (extEditor != null) {
+				extEditor.SetCaretLocation (Math.Max (1, member.Region.BeginLine), Math.Max (1, member.Region.BeginColumn), true);
+			}
 		}
 		
 		public int IconCount {

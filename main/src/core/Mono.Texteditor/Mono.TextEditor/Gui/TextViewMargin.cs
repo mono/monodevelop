@@ -1592,17 +1592,25 @@ namespace Mono.TextEditor
 				TextRenderEndPosition = xPos + width,
 
 				LineHeight = _lineHeight,
-				WholeLineWidth = textEditor.Allocation.Width - xPos
+				WholeLineWidth = textEditor.Allocation.Width - xPos,
+
+				LineYRenderStartPosition = y
 			};
 
 			foreach (TextLineMarker marker in line.Markers) {
 				if (!marker.IsVisible)
 					continue;
 
-				if (marker.DrawBackground (textEditor, cr, y, metrics)) {
+				if (marker.DrawBackground (textEditor, cr, metrics)) {
 					isSelectionDrawn |= (marker.Flags & TextLineMarkerFlags.DrawsSelection) == TextLineMarkerFlags.DrawsSelection;
 				}
 			}
+
+			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
+				if (layout.Layout != null)
+					marker.DrawBackground (textEditor, cr, metrics, offset, offset + length);
+			}
+
 
 			if (DecorateLineBg != null)
 				DecorateLineBg (cr, layout, offset, length, xPos, y, selectionStartOffset, selectionEndOffset);
@@ -1785,12 +1793,12 @@ namespace Mono.TextEditor
 			}
 			foreach (TextLineMarker marker in line.Markers.Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, y, metrics);
+					marker.Draw (textEditor, cr, metrics);
 			}
 
 			foreach (var marker in Document.GetTextSegmentMarkersAt (line).Where (m => m.IsVisible)) {
 				if (layout.Layout != null)
-					marker.Draw (textEditor, cr, layout.Layout, false, /*selected*/offset, offset + length, y, xPos, xPos + width);
+					marker.Draw (textEditor, cr, metrics, offset, offset + length);
 			}
 			position += System.Math.Floor (layout.LastLineWidth);
 
@@ -1985,7 +1993,7 @@ namespace Mono.TextEditor
 				}
 				mouseSelectionMode = MouseSelectionMode.SingleChar;
 
-				if (textEditor.IsSomethingSelected && textEditor.SelectionRange.Offset <= offset && offset < textEditor.SelectionRange.EndOffset && clickLocation != textEditor.Caret.Location) {
+				if (textEditor.IsSomethingSelected && IsInsideSelection (clickLocation) && clickLocation != textEditor.Caret.Location) {
 					inDrag = true;
 				} else {
 					if ((args.ModifierState & Gdk.ModifierType.ShiftMask) == ModifierType.ShiftMask) {
@@ -2037,6 +2045,19 @@ namespace Mono.TextEditor
 				if (autoScroll)
 					textEditor.Caret.ActivateAutoScrollWithoutMove ();
 			}
+		}
+
+		bool IsInsideSelection (DocumentLocation clickLocation)
+		{
+			var selection = textEditor.MainSelection;
+			if (selection.SelectionMode == SelectionMode.Block) {
+				int minColumn = System.Math.Min (selection.Anchor.Column, selection.Lead.Column);
+				int maxColumn = System.Math.Max (selection.Anchor.Column, selection.Lead.Column);
+
+				return selection.MinLine <= clickLocation.Line && clickLocation.Line <= selection.MaxLine &&
+					minColumn <= clickLocation.Column && clickLocation.Column <= maxColumn;
+			}
+			return selection.Start <= clickLocation && clickLocation < selection.End;
 		}
 
 		protected internal override void MouseReleased (MarginMouseEventArgs args)
@@ -2827,10 +2848,11 @@ namespace Mono.TextEditor
 				var metrics = new EndOfLineMetrics {
 					LineSegment = line,
 					TextRenderEndPosition = TextStartPosition + position,
-					LineHeight = _lineHeight
+					LineHeight = _lineHeight,
+					LineYRenderStartPosition = y
 				};
 				foreach (var marker in line.Markers) {
-					marker.DrawAfterEol (textEditor, cr, y, metrics);
+					marker.DrawAfterEol (textEditor, cr, metrics);
 				}
 			}
 

@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.Debugger
@@ -557,7 +557,7 @@ namespace MonoDevelop.Debugger
 		}
 
 		public int Line {
-			get; private set;
+			get; set;
 		}
 
 		public bool IsMinimized {
@@ -650,9 +650,16 @@ namespace MonoDevelop.Debugger
 			closeSelOverImage = ImageService.GetIcon ("md-popup-close-hover", IconSize.Menu);
 		}
 
+		protected override void OnLineChanged ()
+		{
+			base.OnLineChanged ();
+			dlg.Line = Line;
+		}
+
 		protected override void OnLineDeleted ()
 		{
-			dlg.Dispose ();
+			base.OnLineDeleted ();
+			Line++;
 		}
 
 		public override Widget CreateWidget ()
@@ -737,9 +744,16 @@ namespace MonoDevelop.Debugger
 			Line = line;
 		}
 
+		protected override void OnLineChanged ()
+		{
+			base.OnLineChanged ();
+			dlg.Line = Line;
+		}
+
 		protected override void OnLineDeleted ()
 		{
-			dlg.Dispose ();
+			base.OnLineDeleted ();
+			Line++;
 		}
 
 		public override Widget CreateWidget ()
@@ -766,7 +780,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null &&
 			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
-			    DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == Document.FileName.CanonicalPath) {
+				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(DocumentContext.Name).CanonicalPath) {
 
 				DebuggingService.ExceptionCaughtMessage.ShowMiniButton ();
 				return true;

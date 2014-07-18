@@ -34,6 +34,8 @@ using MonoDevelop.CSharp.Completion;
 using System.Linq;
 using MonoDevelop.Ide;
 using System.Text;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Projects;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -47,14 +49,16 @@ namespace MonoDevelop.CSharp
 	{
 		public override void Dispose ()
 		{
+			Editor.CaretPositionChanged -= UpdatePath;
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
 
-			if (caret != null) {
-				caret.PositionChanged -= UpdatePath;
-				caret = null;
+
+			if (ext != null) {
+				ext.TypeSegmentTreeUpdated -= HandleTypeSegmentTreeUpdated;
+				ext = null;
 			}
-			Document.DocumentParsed -= HandleTypeSegmentTreeUpdated;
+
 			currentPath = null;
 			lastType = null;
 			lastMember = null;
@@ -62,21 +66,20 @@ namespace MonoDevelop.CSharp
 		}
 
 		bool isPathSet;
-		Mono.TextEditor.Caret caret;
 		CSharpCompletionTextEditorExtension ext;
-
 		List<DotNetProject> ownerProjects;
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			isPathSet = false;
 			UpdateOwnerProjects ();
 			UpdatePath (null, null);
-			caret = Document.Editor.Caret;
-			caret.PositionChanged += UpdatePath;
 
-			Document.DocumentParsed += HandleTypeSegmentTreeUpdated;
+			Editor.CaretPositionChanged += UpdatePath;
+			ext = DocumentContext.GetContent<CSharpCompletionTextEditorExtension> ();
+			ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
+
 			IdeApp.Workspace.FileAddedToProject += HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject += HandleProjectChanged;
 		}
@@ -94,20 +97,20 @@ namespace MonoDevelop.CSharp
 
 		void UpdateOwnerProjects ()
 		{
-			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
+			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (DocumentContext.Name)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
-				var dnp = Document.Project as DotNetProject;
+				var dnp = DocumentContext.Project as DotNetProject;
 				if (ownerProjects.Count > 0 && (dnp == null || !ownerProjects.Contains (dnp))) {
 					// If the project for the document is not a DotNetProject but there is a project containing this file
 					// in the current solution, then use that project
-					var pp = Document.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == Document.Project.ParentSolution) : null;
+					var pp = DocumentContext.Project != null ? ownerProjects.FirstOrDefault (p => p.ParentSolution == DocumentContext.Project.ParentSolution) : null;
 					if (pp != null)
-						Document.AttachToProject (pp);
+						DocumentContext.AttachToProject (pp);
 				}
 			}
-			if (Document.Project == null && ownerProjects.Count > 0)
-				Document.AttachToProject (ownerProjects[0]);
+			if (DocumentContext.Project == null && ownerProjects.Count > 0)
+				DocumentContext.AttachToProject (ownerProjects[0]);
 		}
 
 		#region IPathedDocument implementation
@@ -216,6 +219,17 @@ namespace MonoDevelop.CSharp
 						}
 						return sb.ToString ();
 					}
+					var delegateDecl = node as DelegateDeclaration;
+					if (delegateDecl != null) {
+						var sb = new StringBuilder ();
+						sb.Append (delegateDecl.Name);
+						var parentType = delegateDecl.Parent as TypeDeclaration;
+						while (parentType != null) {
+							sb.Insert (0, parentType.Name + ".");
+							parentType = parentType.Parent as TypeDeclaration;
+						}
+						return sb.ToString ();
+					}
 				}
 				
 				var accessor = node as AccessorDeclarationSyntax;
@@ -292,10 +306,10 @@ namespace MonoDevelop.CSharp
 			public void ActivateItem (int n)
 			{
 				if (tag is DotNetProject) {
-					ext.Document.AttachToProject (ext.ownerProjects [n]);
+					ext.DocumentContext.AttachToProject (ext.ownerProjects [n]);
 				} else {
 					var node = memberList [n];
-					var extEditor = ext.Document.Editor;
+					var extEditor = ext.DocumentContext.GetContent<TextEditor> ();
 					if (extEditor != null) {
 						int offset;
 						if (node is OperatorDeclarationSyntax) { 
@@ -305,7 +319,7 @@ namespace MonoDevelop.CSharp
 						} else {
 							offset = node.SpanStart;
 						}
-						extEditor.Caret.Offset = offset;
+						extEditor.SetCaretLocation (line, col, true);
 					}
 				}
 			}
@@ -325,14 +339,17 @@ namespace MonoDevelop.CSharp
 
 		class CompilationUnitDataProvider : DropDownBoxListWindow.IListDataProvider
 		{
-			MonoDevelop.Ide.Gui.Document Document {
+			TextEditor editor;
+
+			DocumentContext DocumentContext {
 				get;
 				set;
 			}
 
-			public CompilationUnitDataProvider (MonoDevelop.Ide.Gui.Document document)
+			public CompilationUnitDataProvider (TextEditor editor, DocumentContext documentContext)
 			{
-				this.Document = document;
+				this.editor = editor;
+				this.DocumentContext = documentContext;
 			}
 
 			#region IListDataProvider implementation
@@ -343,7 +360,7 @@ namespace MonoDevelop.CSharp
 
 			public string GetMarkup (int n)
 			{
-				return GLib.Markup.EscapeText (Document.ParsedDocument.UserRegions.ElementAt (n).Name);
+				return GLib.Markup.EscapeText (DocumentContext.ParsedDocument.UserRegions.ElementAt (n).Name);
 			}
 			
 			internal static Xwt.Drawing.Image Pixbuf {
@@ -359,22 +376,23 @@ namespace MonoDevelop.CSharp
 
 			public object GetTag (int n)
 			{
-				return Document.ParsedDocument.UserRegions.ElementAt (n);
+				return DocumentContext.ParsedDocument.UserRegions.ElementAt (n);
 			}
 
 			public void ActivateItem (int n)
 			{
-				var reg = Document.ParsedDocument.UserRegions.ElementAt (n);
-				var extEditor = Document.GetContent<MonoDevelop.Ide.Gui.Content.IExtensibleTextEditor> ();
-				if (extEditor != null)
-					extEditor.SetCaretTo (Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn);
+				var reg = DocumentContext.ParsedDocument.UserRegions.ElementAt (n);
+				var extEditor = editor;
+				if (extEditor != null) {
+					extEditor.SetCaretLocation(Math.Max (1, reg.Region.BeginLine), reg.Region.BeginColumn, true);
+				}
 			}
 
 			public int IconCount {
 				get {
-					if (Document.ParsedDocument == null)
+					if (DocumentContext.ParsedDocument == null)
 						return 0;
-					return Document.ParsedDocument.UserRegions.Count ();
+					return DocumentContext.ParsedDocument.UserRegions.Count ();
 				}
 			}
 
@@ -388,7 +406,7 @@ namespace MonoDevelop.CSharp
 			if (path == null || index < 0 || index >= path.Length)
 				return null;
 			var tag = path [index].Tag;
-			var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Document) : new DataProvider (this, tag));
+			var window = new DropDownBoxListWindow (tag == null ? (DropDownBoxListWindow.IListDataProvider)new CompilationUnitDataProvider (Editor, DocumentContext) : new DataProvider (this, tag));
 			window.FixedRowHeight = 22;
 			window.MaxVisibleRows = 14;
 			window.SelectItem (path [index].Tag);
@@ -407,7 +425,7 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		static PathEntry GetRegionEntry (ParsedDocument unit, Mono.TextEditor.DocumentLocation loc)
+		static PathEntry GetRegionEntry (ParsedDocument unit, DocumentLocation loc)
 		{
 			PathEntry entry;
 			if (unit == null || !unit.UserRegions.Any ())
@@ -444,12 +462,13 @@ namespace MonoDevelop.CSharp
 			return amb.GetEntityMarkup (node);
 		}
 
+
 		async void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
 		{
 			var analysisDocument = Document.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-			var caretOffset = Document.Editor.Caret.Offset;
+			var caretOffset = Editor.CaretOffset;
 			var unit = await analysisDocument.GetSyntaxTreeAsync ();
 			if (unit == null)
 				return;
@@ -457,6 +476,7 @@ namespace MonoDevelop.CSharp
 			
 			var loc = Document.Editor.Caret.Location;
 			var compExt = Document.GetContent<CSharpCompletionTextEditorExtension> ();
+
 			var segType = compExt.GetTypeAt (caretOffset);
 
 			var root = unit.GetRoot ();
@@ -490,7 +510,7 @@ namespace MonoDevelop.CSharp
 
 			if (ownerProjects.Count > 1) {
 				// Current project if there is more than one
-				result.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
+				result.Add (new PathEntry (ImageService.GetIcon (DocumentContext.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (DocumentContext.Project.Name)) { Tag = DocumentContext.Project });
 			}
 
 			if (curType == null) {

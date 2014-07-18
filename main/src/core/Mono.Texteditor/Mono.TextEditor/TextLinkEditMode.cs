@@ -594,7 +594,7 @@ namespace Mono.TextEditor
 			IsVisible = true;
 		}
 
-		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override bool DrawBackground (TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			int caretOffset = editor.Caret.Offset - BaseOffset;
 
@@ -625,7 +625,7 @@ namespace Mono.TextEditor
 						double x1 = metrics.TextRenderStartPosition + x_pos - 1;
 						double x2 = metrics.TextRenderStartPosition + x_pos2 - 1 + 0.5;
 
-						cr.Rectangle (x1 + 0.5, y + 0.5, x2 - x1, editor.LineHeight - 1);
+						cr.Rectangle (x1 + 0.5, metrics.LineYRenderStartPosition + 0.5, x2 - x1, editor.LineHeight - 1);
 						
 						cr.SetSourceColor (fillGc);
 						cr.FillPreserve ();

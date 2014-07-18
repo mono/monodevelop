@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using MonoDevelop.AspNet.Gui;
-using System.Text;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using MonoDevelop.AspNet.WebForms;
+using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.CSharp.Parser;
@@ -40,8 +40,8 @@ using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.AspNet.StateEngine;
 using MonoDevelop.Xml.StateEngine;
 using ICSharpCode.NRefactory6.CSharp.Completion;
-
-
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -75,9 +75,8 @@ namespace MonoDevelop.CSharp.Completion
 			builder.Append (" : ");
 			builder.AppendLine (info.BaseType);
 		}
-		
-		public LocalDocumentInfo BuildLocalDocument (DocumentInfo info, TextEditorData data,
-		                                             string expressionText, string textAfterCaret, bool isExpression)
+
+		LocalDocumentInfo ILanguageCompletionBuilder.BuildLocalDocument (DocumentInfo info, MonoDevelop.Ide.Editor.TextEditor data, string expressionText, string textAfterCaret, bool isExpression)
 		{
 			var sb = new StringBuilder ();
 			
@@ -90,14 +89,14 @@ namespace MonoDevelop.CSharp.Completion
 				sb.AppendLine ("{");
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
 				foreach (var node in info.XExpressions) {
-					bool isBlock = node is AspNetRenderBlock;
+					bool isBlock = node is WebFormsRenderBlock;
 
-					if (node.Region.Begin.Line > data.Caret.Line || node.Region.Begin.Line == data.Caret.Line && node.Region.Begin.Column > data.Caret.Column - 5) 
+					if (node.Region.Begin.Line > data.CaretLine || node.Region.Begin.Line == data.CaretLine && node.Region.Begin.Column > data.CaretColumn - 5) 
 						continue;
 					//Console.WriteLine ("take xprt:" + expressions.Key.BeginLine  +"/" +expressions.Key.BeginColumn);
 
-					var start = data.Document.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
-					var end = data.Document.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
+					var start = data.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
+					var end = data.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
 
 					if (!isBlock) {
 						sb.Append ("WriteLine (");
@@ -122,54 +121,52 @@ namespace MonoDevelop.CSharp.Completion
 			
 			result.LocalDocument = sb.ToString ();
 			result.CaretPosition = caretPosition;
-			result.OriginalCaretPosition = data.Caret.Offset;
+			result.OriginalCaretPosition = data.CaretOffset;
 			result.ParsedLocalDocument = Parse (info.AspNetDocument.FileName, sb.ToString ());
 			return result;
 		}
 		
-		public ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo)
+		public ICompletionDataList HandlePopupCompletion (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo)
 		{
 			CodeCompletionContext codeCompletionContext;
-			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
+			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out codeCompletionContext)) {
 				return completion.CodeCompletionCommand (codeCompletionContext);
 			}
 		}
 		
-		public ICompletionDataList HandleCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
+		public ICompletionDataList HandleCompletion (TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength)
 		{
 			CodeCompletionContext ccc;
-			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
+			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out ccc)) {
 				return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
 			}
 		}
 		
-		public ParameterHintingResult HandleParameterCompletion (MonoDevelop.Ide.Gui.Document realDocument, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
+		public ParameterHintingResult HandleParameterCompletion (TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar)
 		{
 			CodeCompletionContext ccc;
-			using (var completion = CreateCompletion (realDocument, info, localInfo, out ccc)) {
+			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out ccc)) {
 				return completion.HandleParameterCompletion (completionContext, completionChar);
 			}
 		}
 		
-		public bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
+		public bool GetParameterCompletionCommandOffset (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos)
 		{
 			CodeCompletionContext codeCompletionContext;
-			using (var completion = CreateCompletion (realDocument, info, localInfo, out codeCompletionContext)) {
+			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out codeCompletionContext)) {
 				int wlen;
 				return completion.GetCompletionCommandOffset (out cpos, out wlen);
 			}
 		}
 
-		public ICompletionWidget CreateCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo)
+		public ICompletionWidget CreateCompletionWidget (TextEditor realEditor, DocumentContext realContext, LocalDocumentInfo localInfo)
 		{
-			return new AspCompletionWidget (realDocument, localInfo);
+			return new AspCompletionWidget (realEditor, localInfo);
 		}
 		
-		CSharpCompletionTextEditorExtension CreateCompletion (MonoDevelop.Ide.Gui.Document realDocument, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
+		CSharpCompletionTextEditorExtension CreateCompletion (TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out CodeCompletionContext codeCompletionContext)
 		{
-			var doc = new Mono.TextEditor.TextDocument () {
-				Text = localInfo.LocalDocument,
-			};
+			var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (localInfo.LocalDocument), realEditor.FileName + ".cs"); 
 			var documentLocation = doc.OffsetToLocation (localInfo.CaretPosition);
 			
 			codeCompletionContext = new CodeCompletionContext () {
@@ -179,16 +176,16 @@ namespace MonoDevelop.CSharp.Completion
 			};
 			
 			return new CSharpCompletionTextEditorExtension (localInfo.HiddenDocument) {
-				CompletionWidget = CreateCompletionWidget (realDocument, localInfo)
+				CompletionWidget = CreateCompletionWidget (realEditor, realContext, localInfo)
 			};
 		}
 		
 		class AspCompletionWidget : ICompletionWidget
 		{
-			MonoDevelop.Ide.Gui.Document realDocument;
+			TextEditor realDocument;
 			LocalDocumentInfo localInfo;
 			
-			public AspCompletionWidget (MonoDevelop.Ide.Gui.Document realDocument, LocalDocumentInfo localInfo)
+			public AspCompletionWidget (TextEditor realDocument, LocalDocumentInfo localInfo)
 			{
 				this.realDocument = realDocument;
 				this.localInfo = localInfo;
@@ -197,7 +194,7 @@ namespace MonoDevelop.CSharp.Completion
 			#region ICompletionWidget implementation
 			public CodeCompletionContext CurrentCodeCompletionContext {
 				get {
-					int delta = realDocument.Editor.Caret.Offset - localInfo.OriginalCaretPosition;
+					int delta = realDocument.CaretOffset - localInfo.OriginalCaretPosition;
 					return CreateCodeCompletionContext (localInfo.CaretPosition + delta);
 				}
 			}
@@ -226,10 +223,10 @@ namespace MonoDevelop.CSharp.Completion
 
 			public CodeCompletionContext CreateCodeCompletionContext (int triggerOffset)
 			{
-				var savedCtx = realDocument.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (realDocument.Editor.Caret.Offset + triggerOffset - localInfo.CaretPosition);
+				var savedCtx = realDocument.GetContent<ICompletionWidget> ().CreateCodeCompletionContext (realDocument.CaretOffset + triggerOffset - localInfo.CaretPosition);
 				CodeCompletionContext result = new CodeCompletionContext ();
 				result.TriggerOffset = triggerOffset;
-				DocumentLocation loc = localInfo.HiddenDocument.Editor.Document.OffsetToLocation (triggerOffset);
+				var loc = localInfo.HiddenDocument.Editor.OffsetToLocation (triggerOffset);
 				result.TriggerLine   = loc.Line;
 				result.TriggerLineOffset = loc.Column - 1;
 				
@@ -243,9 +240,9 @@ namespace MonoDevelop.CSharp.Completion
 			{
 				if (ctx == null)
 					return null;
-				int min = Math.Min (ctx.TriggerOffset, localInfo.HiddenDocument.Editor.Caret.Offset);
-				int max = Math.Max (ctx.TriggerOffset, localInfo.HiddenDocument.Editor.Caret.Offset);
-				return localInfo.HiddenDocument.Editor.Document.GetTextBetween (min, max);
+				int min = Math.Min (ctx.TriggerOffset, localInfo.HiddenDocument.Editor.CaretOffset);
+				int max = Math.Max (ctx.TriggerOffset, localInfo.HiddenDocument.Editor.CaretOffset);
+				return localInfo.HiddenDocument.Editor.GetTextBetween (min, max);
 			}
 			
 			public void SetCompletionText (CodeCompletionContext ctx, string partial_word, string complete_word)
@@ -258,7 +255,7 @@ namespace MonoDevelop.CSharp.Completion
 				CodeCompletionContext translatedCtx = new CodeCompletionContext ();
 				int offset = localInfo.OriginalCaretPosition + ctx.TriggerOffset - localInfo.CaretPosition;
 				translatedCtx.TriggerOffset = offset;
-				DocumentLocation loc = localInfo.HiddenDocument.Editor.Document.OffsetToLocation (offset);
+				var loc = localInfo.HiddenDocument.Editor.OffsetToLocation (offset);
 				translatedCtx.TriggerLine   = loc.Line;
 				translatedCtx.TriggerLineOffset = loc.Column - 1;
 				translatedCtx.TriggerWordLength = ctx.TriggerWordLength;
@@ -267,13 +264,16 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public int CaretOffset {
 				get {
-					return localInfo.HiddenDocument.Editor.Caret.Offset;
+					return localInfo.HiddenDocument.Editor.CaretOffset;
+				}
+				set {
+					localInfo.HiddenDocument.Editor.CaretOffset = value;
 				}
 			}
 			
 			public int TextLength {
 				get {
-					return localInfo.HiddenDocument.Editor.Document.TextLength;
+					return localInfo.HiddenDocument.Editor.Length;
 				}
 			}
 
@@ -288,28 +288,33 @@ namespace MonoDevelop.CSharp.Completion
 					return Gtk.Widget.DefaultStyle;
 				}
 			}
+
+			void ICompletionWidget.AddSkipChar (int cursorPosition, char c)
+			{
+				// ignore
+			}
 			#endregion
 		}
-		
-		public ParsedDocument BuildDocument (DocumentInfo info, TextEditorData data)
+
+		ParsedDocument ILanguageCompletionBuilder.BuildDocument (DocumentInfo info, MonoDevelop.Ide.Editor.TextEditor data)
 		{
 			var docStr = BuildDocumentString (info, data);
 			return Parse (info.AspNetDocument.FileName, docStr);
 		}
 		 
-		public string BuildDocumentString (DocumentInfo info, TextEditorData data, List<LocalDocumentInfo.OffsetInfo> offsetInfos = null, bool buildExpressions = false)
+		public string BuildDocumentString (DocumentInfo info, MonoDevelop.Ide.Editor.TextEditor data, List<LocalDocumentInfo.OffsetInfo> offsetInfos = null, bool buildExpressions = false)
 		{
 			var document = new StringBuilder ();
 			
 			WriteUsings (info.Imports, document);
 
 			foreach (var node in info.XScriptBlocks) {
-				var start = data.Document.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
-				var end = data.Document.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
+				var start = data.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
+				var end = data.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
 				if (offsetInfos != null)
 					offsetInfos.Add (new LocalDocumentInfo.OffsetInfo (start, document.Length, end - start));
 				
-				document.AppendLine (data.Document.GetTextBetween (start, end));
+				document.AppendLine (data.GetTextBetween (start, end));
 			}
 			if (buildExpressions) {
 				WriteClassDeclaration (info, document);
@@ -319,10 +324,10 @@ namespace MonoDevelop.CSharp.Completion
 				//Console.WriteLine ("start:" + location.BeginLine  +"/" +location.BeginColumn);
 
 				foreach (var node in info.XExpressions) {
-					bool isBlock = node is AspNetRenderBlock;
+					bool isBlock = node is WebFormsRenderBlock;
 
-					var start = data.Document.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
-					var end = data.Document.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
+					var start = data.LocationToOffset (node.Region.Begin.Line, node.Region.Begin.Column) + 2;
+					var end = data.LocationToOffset (node.Region.End.Line, node.Region.End.Column) - 2;
 					
 					if (!isBlock) {
 						document.Append ("WriteLine (");

@@ -30,18 +30,35 @@ using MonoDevelop.Ide.Gui.Content;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
-using Mono.TextEditor;
 using System.Linq;
-using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Highlighting;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
+	class AnalysisDocument
+	{
+		public TextEditor Editor { get; private set; }
+		public DocumentLocation CaretLocation { get; private set; }
+		public DocumentContext DocumentContext { get; private set; }
+
+		public AnalysisDocument (TextEditor editor, DocumentContext documentContext)
+		{
+			this.Editor = editor;
+			this.CaretLocation = editor.CaretLocation;
+			this.DocumentContext = documentContext;
+		}
+	}
+
 	public class ResultsEditorExtension : TextEditorExtension, IQuickTaskProvider
 	{
 		bool disposed;
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 
@@ -59,11 +76,11 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (disposed) 
 				return;
 			enabled = false;
-			Document.DocumentParsed -= OnDocumentParsed;
+			DocumentContext.DocumentParsed -= OnDocumentParsed;
 			CancelTask ();
 			AnalysisOptions.AnalysisEnabled.Changed -= AnalysisOptionsChanged;
 			while (markers.Count > 0)
-				Document.Editor.Document.RemoveMarker (markers.Dequeue ());
+				Editor.RemoveMarker (markers.Dequeue ());
 			tasks.Clear ();
 			disposed = true;
 		}
@@ -87,8 +104,8 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (enabled)
 				return;
 			enabled = true;
-			Document.DocumentParsed += OnDocumentParsed;
-			if (Document.ParsedDocument != null)
+			DocumentContext.DocumentParsed += OnDocumentParsed;
+			if (DocumentContext.ParsedDocument != null)
 				OnDocumentParsed (null, null);
 		}
 
@@ -110,7 +127,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 			if (!enabled)
 				return;
 			enabled = false;
-			Document.DocumentParsed -= OnDocumentParsed;
+			DocumentContext.DocumentParsed -= OnDocumentParsed;
 			CancelTask ();
 			new ResultsUpdater (this, new Result[0], CancellationToken.None).Update ();
 		}
@@ -120,16 +137,16 @@ namespace MonoDevelop.AnalysisCore.Gui
 		//FIXME: rate-limit this, so we don't send multiple new documents while it's processing
 		void OnDocumentParsed (object sender, EventArgs args)
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures)
+			if (!AnalysisOptions.EnableFancyFeatures)
 				return;
-			var doc = Document.ParsedDocument;
+			var doc = DocumentContext.ParsedDocument;
 			if (doc == null)
 				return;
 			lock (this) {
 				CancelTask ();
 				src = new CancellationTokenSource ();
-				var treeType = new RuleTreeType ("Document", Path.GetExtension (doc.FileName));
-				var task = AnalysisService.QueueAnalysis (Document, treeType, src.Token);
+				var treeType = new RuleTreeType ("AnalysisDocument", Path.GetExtension (doc.FileName));
+				var task = AnalysisService.QueueAnalysis (new AnalysisDocument (Editor, DocumentContext), treeType, src.Token);
 				oldTask = task.ContinueWith (t => new ResultsUpdater (this, t.Result, src.Token).Update (), src.Token);
 			}
 		}
@@ -157,12 +174,30 @@ namespace MonoDevelop.AnalysisCore.Gui
 			
 			public void Update ()
 			{
-				if (!QuickTaskStrip.EnableFancyFeatures || cancellationToken.IsCancellationRequested)
+				if (!AnalysisOptions.EnableFancyFeatures || cancellationToken.IsCancellationRequested)
 					return;
 				ext.tasks.Clear ();
 				GLib.Idle.Add (IdleHandler);
 			}
-			
+
+			static Cairo.Color GetColor (TextEditor editor, Result result)
+			{
+				switch (result.Level) {
+				case Severity.None:
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().PlainText.Background;
+				case Severity.Error:
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineError.Color;
+				case Severity.Warning:
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineWarning.Color;
+				case Severity.Suggestion:
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineSuggestion.Color;
+				case Severity.Hint:
+					return DefaultSourceEditorOptions.Instance.GetColorStyle ().UnderlineHint.Color;
+				default:
+					throw new System.ArgumentOutOfRangeException ();
+				}
+			}
+
 			//this runs as a glib idle handler so it can add/remove text editor markers
 			//in order to to block the GUI thread, we batch them in UPDATE_COUNT
 			bool IdleHandler ()
@@ -170,13 +205,13 @@ namespace MonoDevelop.AnalysisCore.Gui
 				if (cancellationToken.IsCancellationRequested)
 					return false;
 				var editor = ext.Editor;
-				if (editor == null || editor.Document == null)
+				if (editor == null)
 					return false;
 				//clear the old results out at the same rate we add in the new ones
 				for (int i = 0; oldMarkers > 0 && i < UPDATE_COUNT; i++) {
 					if (cancellationToken.IsCancellationRequested)
 						return false;
-					editor.Document.RemoveMarker (ext.markers.Dequeue ());
+					editor.RemoveMarker (ext.markers.Dequeue ());
 					oldMarkers--;
 				}
 				//add in the new markers
@@ -195,16 +230,20 @@ namespace MonoDevelop.AnalysisCore.Gui
 						if (start >= end)
 							continue;
 						if (currentResult.InspectionMark == IssueMarker.GrayOut) {
-							var marker = new GrayOutMarker (currentResult, TextSegment.FromBounds (start, end));
+							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, TextSegmentMarkerEffect.GrayOut, TextSegment.FromBounds (start, end));
 							marker.IsVisible = currentResult.Underline;
-							editor.Document.AddMarker (marker);
+							marker.Tag = currentResult;
+							editor.AddMarker (marker);
 							ext.markers.Enqueue (marker);
-							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
-							editor.Parent.QueueDraw ();
+//							editor.Parent.TextViewMargin.RemoveCachedLine (editor.GetLineByOffset (start));
+//							editor.Parent.QueueDraw ();
 						} else {
-							var marker = new ResultMarker (currentResult, TextSegment.FromBounds (start, end));
+							var effect = currentResult.InspectionMark == IssueMarker.DottedLine ? TextSegmentMarkerEffect.DottedLine : TextSegmentMarkerEffect.WavedLine;
+							var marker = TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, TextSegment.FromBounds (start, end));
+							marker.Color = GetColor (editor, currentResult);
 							marker.IsVisible = currentResult.Underline;
-							editor.Document.AddMarker (marker);
+							marker.Tag = currentResult;
+							editor.AddMarker (marker);
 							ext.markers.Enqueue (marker);
 						}
 					}
@@ -216,7 +255,7 @@ namespace MonoDevelop.AnalysisCore.Gui
 		}
 		
 		//all markers known to be in the editor
-		Queue<ResultMarker> markers = new Queue<ResultMarker> ();
+		Queue<IGenericTextSegmentMarker> markers = new Queue<IGenericTextSegmentMarker> ();
 		
 		const int UPDATE_COUNT = 20;
 		
@@ -226,19 +265,19 @@ namespace MonoDevelop.AnalysisCore.Gui
 //			var line = Editor.GetLineByOffset (offset);
 			
 			var list = new List<Result> ();
-			foreach (var marker in Editor.Document.GetTextSegmentMarkersAt (offset)) {
+			foreach (var marker in Editor.GetTextSegmentMarkersAt (offset)) {
 				if (token.IsCancellationRequested)
 					break;
-				var resultMarker = marker as ResultMarker;
-				if (resultMarker != null)
-					list.Add (resultMarker.Result);
+				var resultMarker = marker as IGenericTextSegmentMarker;
+				if (resultMarker != null && resultMarker.Tag is Result)
+					list.Add (resultMarker.Tag as Result);
 			}
 			return list;
 		}
 		
 		public IEnumerable<Result> GetResults ()
 		{
-			return markers.Select (m => m.Result);
+			return markers.Select (m => m.Tag).OfType<Result> ();
 		}
 
 		#region IQuickTaskProvider implementation

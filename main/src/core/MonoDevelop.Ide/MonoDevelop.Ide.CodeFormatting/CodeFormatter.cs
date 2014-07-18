@@ -26,12 +26,12 @@
 
 using System;
 using MonoDevelop.Projects.Policies;
-using Mono.TextEditor;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.CodeFormatting
 {
@@ -96,16 +96,24 @@ namespace MonoDevelop.Ide.CodeFormatting
 		/// <summary>
 		/// Formats a text document directly with insert/remove operations.
 		/// </summary>
-		public void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
+		public void OnTheFlyFormat (TextEditor editor, DocumentContext documentContext, int startOffset, int endOffset)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsOnTheFlyFormatting)
 				throw new InvalidOperationException ("On the fly formatting not supported");
 			
-			adv.OnTheFlyFormat (doc, startOffset, endOffset);
+			adv.OnTheFlyFormat (editor, documentContext, startOffset, endOffset);
 		}
-		
-		public void CorrectIndenting (PolicyContainer policyParent, TextEditorData data, int line)
+
+		/// <summary>
+		/// Formats a text document directly with insert/remove operations.
+		/// </summary>
+		public void OnTheFlyFormat (MonoDevelop.Ide.Gui.Document doc, int startOffset, int endOffset)
+		{
+			OnTheFlyFormat (doc.Editor, doc, startOffset, endOffset);
+		}
+
+		public void CorrectIndenting (PolicyContainer policyParent, TextEditor data, int line)
 		{
 			var adv = formatter as IAdvancedCodeFormatter;
 			if (adv == null || !adv.SupportsCorrectingIndent)

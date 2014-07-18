@@ -47,10 +47,12 @@ using MonoDevelop.SourceEditor.QuickTasks;
 using ICSharpCode.NRefactory.Semantics;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor
 {
-	class SourceEditorWidget : ITextEditorExtension, IQuickTaskProvider
+	class SourceEditorWidget : IQuickTaskProvider, IServiceProvider
 	{
 		SourceEditorView view;
 		DecoratedScrolledWindow mainsw;
@@ -62,14 +64,7 @@ namespace MonoDevelop.SourceEditor
 		TextEditorData textEditorData;
 		
 		const uint CHILD_PADDING = 0;
-		
-//		bool shouldShowclassBrowser;
-//		bool canShowClassBrowser;
-		ISourceEditorOptions options {
-			get {
-				return textEditor.Options;
-			}
-		}
+
 		
 		bool isDisposed;
 		
@@ -110,44 +105,14 @@ namespace MonoDevelop.SourceEditor
 		}		
 
 		
-		List<IUsageProvider> usageProvider = new List<IUsageProvider> ();
-		public void AddUsageTaskProvider (IUsageProvider provider)
+		List<UsageProviderEditorExtension> usageProvider = new List<UsageProviderEditorExtension> ();
+		public void AddUsageTaskProvider (UsageProviderEditorExtension provider)
 		{
 			usageProvider.Add (provider);
 			mainsw.AddUsageProvider (provider); 
 			if (secondsw != null)
 				secondsw.AddUsageProvider (provider);
 		}
-		
-		#region ITextEditorExtension
-		
-		ITextEditorExtension ITextEditorExtension.Next {
-			get {
-				return null;
-			}
-		}
-		
-		object ITextEditorExtension.GetExtensionCommandTarget ()
-		{
-			return null;
-		}
-
-		void ITextEditorExtension.TextChanged (int startIndex, int endIndex)
-		{
-		}
-
-		void ITextEditorExtension.CursorPositionChanged ()
-		{
-		}
-
-		bool ITextEditorExtension.KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
-		{
-			this.TextEditor.SimulateKeyPress (key, (uint)keyChar, modifier);
-			if (key == Gdk.Key.Escape)
-				return true;
-			return false;
-		}
-		#endregion
 		
 		public bool HasMessageBar {
 			get { return messageBar != null; }
@@ -301,7 +266,7 @@ namespace MonoDevelop.SourceEditor
 			}	
 
 
-			public void AddUsageProvider (IUsageProvider p)
+			public void AddUsageProvider (UsageProviderEditorExtension p)
 			{
 				p.UsagesUpdated += (sender, e) => strip.Update (p);
 			}
@@ -322,7 +287,7 @@ namespace MonoDevelop.SourceEditor
 				args.RetVal = true;
 			}
 		
-			public void SetTextEditor (TextEditor container)
+			public void SetTextEditor (Mono.TextEditor.TextEditor container)
 			{
 				scrolledWindow.Child = container;
 				this.strip.TextEditor = container;
@@ -334,13 +299,13 @@ namespace MonoDevelop.SourceEditor
 			
 			void OptionsChanged (object sender, EventArgs e)
 			{
-				TextEditor editor = (TextEditor)sender;
-				scrolledWindow.ModifyBg (StateType.Normal, (Mono.TextEditor.HslColor)editor.ColorStyle.PlainText.Background);
+				var editor = (Mono.TextEditor.TextEditor)sender;
+				scrolledWindow.ModifyBg (StateType.Normal, (HslColor)editor.ColorStyle.PlainText.Background);
 			}
 			
 			void RemoveEvents ()
 			{
-				var container = scrolledWindow.Child as TextEditor;
+				var container = scrolledWindow.Child as Mono.TextEditor.TextEditor;
 				if (container == null) {
 					LoggingService.LogError ("can't remove events from text editor container.");
 					return;
@@ -351,9 +316,9 @@ namespace MonoDevelop.SourceEditor
 				container.SelectionChanged -= parent.UpdateLineColOnEventHandler;
 			}
 			
-			public TextEditor RemoveTextEditor ()
+			public Mono.TextEditor.TextEditor RemoveTextEditor ()
 			{
-				var child = scrolledWindow.Child as TextEditor;
+				var child = scrolledWindow.Child as Mono.TextEditor.TextEditor;
 				if (child == null)
 					return null;
 				RemoveEvents ();
@@ -442,7 +407,7 @@ namespace MonoDevelop.SourceEditor
 			RemoveErrorUndelinesResetTimerId ();
 		}
 		
-		FoldSegment AddMarker (List<FoldSegment> foldSegments, string text, DomRegion region, FoldingType type)
+		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, Mono.TextEditor.FoldingType type)
 		{
 			Document document = textEditorData.Document;
 			if (document == null || region.BeginLine <= 0 || region.EndLine <= 0 || region.BeginLine > document.LineCount || region.EndLine > document.LineCount)
@@ -451,7 +416,7 @@ namespace MonoDevelop.SourceEditor
 			int startOffset = document.LocationToOffset (region.BeginLine, region.BeginColumn);
 			int endOffset   = document.LocationToOffset (region.EndLine, region.EndColumn );
 			
-			FoldSegment result = new FoldSegment (document, text, startOffset, endOffset - startOffset, type);
+			var result = new Mono.TextEditor.FoldSegment (document, text, startOffset, endOffset - startOffset, type);
 			
 			foldSegments.Add (result);
 			return result;
@@ -465,13 +430,13 @@ namespace MonoDevelop.SourceEditor
 			if (doc == null || parsedDocument == null)
 				return;
 			UpdateErrorUndelines (parsedDocument);
-			if (!options.ShowFoldMargin)
+			if (!textEditor.Options.ShowFoldMargin)
 				return;
 			// don't update parsed documents that contain errors - the foldings from there may be invalid.
 			if (parsedDocument.HasErrors)
 				return;
 			try {
-				List<FoldSegment > foldSegments = new List<FoldSegment> ();
+				var foldSegments = new List<Mono.TextEditor.FoldSegment> ();
 				bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
 				if (!updateSymbols) {
 					foreach (PreProcessorDefine define in parsedDocument.Defines) {
@@ -494,31 +459,31 @@ namespace MonoDevelop.SourceEditor
 				foreach (FoldingRegion region in parsedDocument.Foldings) {
 					if (token.IsCancellationRequested)
 						return;
-					FoldingType type = FoldingType.None;
+					var type = Mono.TextEditor.FoldingType.None;
 					bool setFolded = false;
 					bool folded = false;
 					
 					//decide whether the regions should be folded by default
 					switch (region.Type) {
 					case FoldType.Member:
-						type = FoldingType.TypeMember;
+						type = Mono.TextEditor.FoldingType.TypeMember;
 						break;
 					case FoldType.Type:
-						type = FoldingType.TypeDefinition;
+						type = Mono.TextEditor.FoldingType.TypeDefinition;
 						break;
 					case FoldType.UserRegion:
-						type = FoldingType.Region;
-						setFolded = options.DefaultRegionsFolding;
+						type = Mono.TextEditor.FoldingType.Region;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 						folded = true;
 						break;
 					case FoldType.Comment:
-						type = FoldingType.Comment;
-						setFolded = options.DefaultCommentFolding;
+						type = Mono.TextEditor.FoldingType.Comment;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
 						folded = true;
 						break;
 					case FoldType.CommentInsideMember:
-						type = FoldingType.Comment;
-						setFolded = options.DefaultCommentFolding;
+						type = Mono.TextEditor.FoldingType.Comment;
+						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
 						folded = false;
 						break;
 					case FoldType.Undefined:
@@ -528,7 +493,7 @@ namespace MonoDevelop.SourceEditor
 					}
 					
 					//add the region
-					FoldSegment marker = AddMarker (foldSegments, region.Name, 
+					var marker = AddMarker (foldSegments, region.Name, 
 					                                       region.Region, type);
 					
 					//and, if necessary, set its fold state
@@ -615,7 +580,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void UpdateErrorUndelines (ParsedDocument parsedDocument)
 		{
-			if (!options.UnderlineErrors || parsedDocument == null)
+			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null)
 				return;
 				
 			Application.Invoke (delegate {
@@ -747,7 +712,7 @@ namespace MonoDevelop.SourceEditor
 				 if (!textEditor.TextArea.HasFocus)
 					OnLostFocus ();
 			};
-			splittedTextEditor.Extension = textEditor.Extension;
+			splittedTextEditor.EditorExtension = textEditor.EditorExtension;
 			if (textEditor.GetTextEditorData ().HasIndentationTracker)
 				splittedTextEditor.GetTextEditorData ().IndentationTracker = textEditor.GetTextEditorData ().IndentationTracker;
 			splittedTextEditor.Document.BracketMatcher = textEditor.Document.BracketMatcher;
@@ -966,7 +931,7 @@ namespace MonoDevelop.SourceEditor
 			var image = new HoverCloseButton ();
 			hbox.PackStart (image, false, false, 0);
 			var label = new Label (string.Format ("This file has line endings ({0}) which differ from the policy settings ({1}).", GetEolString (DetectedEolMarker), GetEolString (textEditor.Options.DefaultEolMarker)));
-			var color = (Mono.TextEditor.HslColor)textEditor.ColorStyle.NotificationText.Foreground;
+			var color = (HslColor)textEditor.ColorStyle.NotificationText.Foreground;
 			label.ModifyFg (StateType.Normal, color);
 
 			int w, h;
@@ -1075,11 +1040,10 @@ namespace MonoDevelop.SourceEditor
 				b2.Image = ImageService.GetImage (Gtk.Stock.RevertToSaved, IconSize.Button);
 				b2.Clicked += delegate {
 					try {
-						string content = AutoSave.LoadAutoSave (fileName);
-						AutoSave.RemoveAutoSaveFile (fileName);
+						var content = AutoSave.LoadAndRemoveAutoSave (fileName);
 						TextEditor.GrabFocus ();
 						view.Load (fileName);
-						view.ReplaceContent (fileName, content, view.SourceEncoding);
+						view.ReplaceContent (fileName, content.Text, view.SourceEncoding);
 						view.WorkbenchWindow.Document.ReparseDocument ();
 						view.IsDirty = true;
 					} catch (Exception ex) {
@@ -1723,6 +1687,12 @@ namespace MonoDevelop.SourceEditor
 		}
 
 
+		#region IServiceProvider implementation
+		object IServiceProvider.GetService (Type serviceType)
+		{
+			return view.GetContent (serviceType);
+		}
+		#endregion
 	}
 
 	class ErrorMarker : UnderlineMarker
@@ -1768,11 +1738,11 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public override void Draw (TextEditor editor, Cairo.Context cr, double y, LineMetrics metrics)
+		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineMetrics metrics)
 		{
 			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
 
-			base.Draw (editor, cr, y, metrics);
+			base.Draw (editor, cr, metrics);
 		}
 	}
 }

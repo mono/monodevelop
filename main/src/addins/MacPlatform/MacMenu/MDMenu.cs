@@ -25,11 +25,14 @@
 // THE SOFTWARE.
 
 using System;
-using System.Linq;
-using MonoMac.AppKit;
-using MonoDevelop.Components.Commands;
-using MonoMac.Foundation;
 using System.Diagnostics;
+using System.Linq;
+
+using AppKit;
+using CoreGraphics;
+using Foundation;
+
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.MacIntegration.MacMenu
@@ -38,7 +41,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 	{
 		static readonly string servicesID = (string) CommandManager.ToCommandId (MacIntegrationCommands.Services);
 
-		public MDMenu (CommandManager manager, CommandEntrySet ces)
+		public MDMenu (CommandManager manager, CommandEntrySet ces, CommandSource commandSource, object initialCommandTarget)
 		{
 			this.WeakDelegate = this;
 
@@ -59,7 +62,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 
 				var subset = ce as CommandEntrySet;
 				if (subset != null) {
-					AddItem (new MDSubMenuItem (manager, subset));
+					AddItem (new MDSubMenuItem (manager, subset, commandSource, initialCommandTarget));
 					continue;
 				}
 
@@ -86,7 +89,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 					continue;
 				}
 
-				AddItem (new MDMenuItem (manager, ce, acmd));
+				AddItem (new MDMenuItem (manager, ce, acmd, commandSource, initialCommandTarget));
 			}
 		}
 
@@ -98,7 +101,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 				KeyEquivalent = f35,
 			};
 			var f35Event = NSEvent.KeyEvent (
-				NSEventType.KeyDown, System.Drawing.PointF.Empty, NSEventModifierMask.CommandKeyMask, 0, 0,
+				NSEventType.KeyDown, CGPoint.Empty, NSEventModifierMask.CommandKeyMask, 0, 0,
 				NSGraphicsContext.CurrentContext, f35, f35, false, 0);
 			AddItem (blink);
 			PerformKeyEquivalent (f35Event);

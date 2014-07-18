@@ -35,6 +35,11 @@ namespace MonoDevelop.Core.Execution
 	/// </summary>
 	public abstract class ExecutionTarget
 	{
+		protected ExecutionTarget ()
+		{
+			this.Enabled = true;	
+		}
+
 		/// <summary>
 		/// Display name of the device
 		/// </summary>
@@ -49,6 +54,11 @@ namespace MonoDevelop.Core.Execution
 		/// Unique identifier of the target
 		/// </summary>
 		public abstract string Id { get; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="MonoDevelop.Core.Execution.ExecutionTarget"/> is enabled.
+		/// </summary>
+		public bool Enabled { get; set; }
 
 		public override bool Equals (object obj)
 		{

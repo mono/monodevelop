@@ -72,10 +72,10 @@ namespace MonoDevelop.AssemblyBrowser
 			IsDisposed = false;
 		}
 		
-		public override void Load (string fileName)
+		public override void Load (FileOpenInformation fileOpenInformation)
 		{
 			ContentName = GettextCatalog.GetString ("Assembly Browser");
-			widget.AddReferenceByFileName (fileName);
+			widget.AddReferenceByFileName (fileOpenInformation.FileName);
 		}
 		
 		public override bool IsFile {

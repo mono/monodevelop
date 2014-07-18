@@ -27,13 +27,9 @@
 //
 
 using System;
-using System.Reflection;
-using System.Collections;
 using System.ComponentModel;
-using MonoDevelop.Components.PropertyGrid.PropertyEditors;
 using Gtk;
 using Gdk;
-using Mono.TextEditor;
 
 namespace MonoDevelop.Components.PropertyGrid
 {

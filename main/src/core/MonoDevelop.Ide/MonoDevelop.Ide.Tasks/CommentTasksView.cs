@@ -36,10 +36,10 @@ using MonoDevelop.Core;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
-using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -504,7 +504,7 @@ namespace MonoDevelop.Ide.Tasks
 		{
 			Task task = SelectedTask;
 			if (task != null && ! String.IsNullOrEmpty (task.FileName)) {
-				Document doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column));
+				var doc = IdeApp.Workbench.OpenDocument (task.FileName, Math.Max (1, task.Line), Math.Max (1, task.Column));
 				if (doc != null && doc.HasProject && doc.Project is DotNetProject) {
 					string[] commentTags = doc.CommentTags;
 					if (commentTags != null && commentTags.Length == 1) {
@@ -513,10 +513,11 @@ namespace MonoDevelop.Ide.Tasks
 							string line = doc.Editor.GetLineText (task.Line);
 							int index = line.IndexOf (commentTags[0]);
 							if (index != -1) {
-								doc.Editor.SetCaretTo (task.Line, task.Column);
+								doc.Editor.CaretLocation = new DocumentLocation (task.Line, task.Column);
+								doc.Editor.StartCaretPulseAnimation ();
 								line = line.Substring (0, index);
-								var ls = doc.Editor.Document.GetLine (task.Line);
-								doc.Editor.Replace (ls.Offset, ls.Length, line);
+								var ls = doc.Editor.GetLine (task.Line);
+								doc.Editor.ReplaceText (ls.Offset, ls.Length, line);
 								comments.Remove (task);
 							}
 						}); 

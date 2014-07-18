@@ -32,6 +32,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.CSharp.TypeSystem;
+using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
 using System.Threading;
@@ -42,11 +44,16 @@ namespace MonoDevelop.Refactoring
 {
 	public class RefactoringOptions
 	{
-		public Document Document {
+		public TextEditor Editor {
 			get;
 			private set;
 		}
-		
+
+		public DocumentContext DocumentContext {
+			get;
+			private set;
+		}
+
 		public object SelectedItem {
 			get;
 			set;
@@ -60,13 +67,13 @@ namespace MonoDevelop.Refactoring
 		
 		public string MimeType {
 			get {
-				return DesktopService.GetMimeTypeForUri (Document.FileName);
+				return DesktopService.GetMimeTypeForUri (DocumentContext.Name);
 			}
 		}
 		
 		public TextLocation Location {
 			get {
-				return new TextLocation (Document.Editor.Caret.Line, Document.Editor.Caret.Column);
+				return new TextLocation (Editor.CaretLine, Editor.CaretColumn);
 			}
 		}
 
@@ -75,21 +82,33 @@ namespace MonoDevelop.Refactoring
 		{
 		}
 
-		public RefactoringOptions (Document doc)
+		public RefactoringOptions (Document doc) : this(doc.Editor, doc)
 		{
-			this.Document = doc;
 		}
 
-		public Mono.TextEditor.TextEditorData GetTextEditorData ()
+		public RefactoringOptions (TextEditor editor, DocumentContext doc)
 		{
-			return Document.Editor;
+			this.DocumentContext = doc;
+			this.Editor = editor;
+			/*if (doc != null && doc.ParsedDocument != null) {
+				var sharedResolver = doc.GetSharedResolver ();
+				if (sharedResolver == null)
+					return;
+				resolver = sharedResolver;
+				//Unit = resolver != null ? resolver.RootNode as SyntaxTree : null;
+			}*/
+		}
+
+		public TextEditor GetTextEditorData ()
+		{
+			return Editor;
 		}
 		
-		public static string GetWhitespaces (Document document, int insertionOffset)
+		public static string GetWhitespaces (TextEditor editor, int insertionOffset)
 		{
 			StringBuilder result = new StringBuilder ();
-			for (int i = insertionOffset; i < document.Editor.Length; i++) {
-				char ch = document.Editor.GetCharAt (i);
+			for (int i = insertionOffset; i < editor.Length; i++) {
+				char ch = editor.GetCharAt (i);
 				if (ch == ' ' || ch == '\t') {
 					result.Append (ch);
 				} else {
@@ -101,20 +120,20 @@ namespace MonoDevelop.Refactoring
 
 		public CodeGenerator CreateCodeGenerator ()
 		{
-			var result = CodeGenerator.CreateGenerator (Document);
+			var result = CodeGenerator.CreateGenerator (Editor, DocumentContext);
 			if (result == null)
-				LoggingService.LogError ("Generator can't be generated for : " + Document.Editor.MimeType);
+				LoggingService.LogError ("Generator can't be generated for : " + Editor.MimeType);
 			return result;
 		}
 		
-		public static string GetIndent (Document document, Microsoft.CodeAnalysis.SyntaxNode member)
+		public static string GetIndent (TextEditor editor, Microsoft.CodeAnalysis.SyntaxNode member)
 		{
 			return GetWhitespaces (document, member.SpanStart);
 		}
 		
 		public string GetWhitespaces (int insertionOffset)
 		{
-			return GetWhitespaces (Document, insertionOffset);
+			return GetWhitespaces (Editor, insertionOffset);
 		}
 		
 		public Task<ImmutableArray<string>> GetUsedNamespacesAsync (CancellationToken cancellationToken = default (CancellationToken))
@@ -122,7 +141,7 @@ namespace MonoDevelop.Refactoring
 			return GetUsedNamespacesAsync (Document,  Document.Editor.LocationToOffset (Location));
 		}
 		
-		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (Document doc, int offset, CancellationToken cancellationToken = default (CancellationToken))
+		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (TextEditor editor, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
 			if (doc == null)
 				throw new System.ArgumentNullException ("doc");

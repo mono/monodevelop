@@ -28,8 +28,6 @@ using MonoDevelop.Ide.TypeSystem;
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
-using Mono.TextEditor.Highlighting;
-using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
@@ -44,6 +42,9 @@ using System.Collections.Immutable;
 using MonoDevelop.NUnit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
+using MonoDevelop.Ide.Editor.Highlighting;
 
 namespace MonoDevelop.CSharp
 {
@@ -338,7 +339,7 @@ namespace MonoDevelop.CSharp
 			result.Append (highlightedTypeName);
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
-			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 
 			result.Append ("<span foreground=\"" + colorString + "\">" + " (type parameter)</span>");
 			var tp = t as ITypeParameterSymbol;
@@ -937,7 +938,7 @@ namespace MonoDevelop.CSharp
 			var result = new TooltipInformation ();
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
-			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
@@ -1418,7 +1419,7 @@ namespace MonoDevelop.CSharp
 				break;
 			case SyntaxKind.VirtualKeyword:
 				result.SignatureMarkup = Highlight ("virtual", colorStyle.KeywordModifiers) + keywordSign;
-				result.SummaryMarkup = "The " + Highlight ("virtual", colorStyle.KeywordModifiers) + " keyword is used to modify a method or property declaration, in which case the method or the property is called a virtual member.";
+				result.SummaryMarkup = "The " + Highlight ("virtual", colorStyle.KeywordModifiers) + " keyword is used to modify a method, property, indexer, or event declaration and allow for it to be overridden in a derived class.";
 				break;
 			case SyntaxKind.VolatileKeyword:
 				result.SignatureMarkup = Highlight ("volatile", colorStyle.KeywordModifiers) + keywordSign;
@@ -1470,7 +1471,7 @@ namespace MonoDevelop.CSharp
 			var result = new TooltipInformation ();
 
 			var color = AlphaBlend (colorStyle.PlainText.Foreground, colorStyle.PlainText.Background, optionalAlpha);
-			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 			
 			var keywordSign = "<span foreground=\"" + colorString + "\">" + " (keyword)</span>";
 
@@ -1770,13 +1771,13 @@ namespace MonoDevelop.CSharp
 				color = AlphaBlend (color, (Gdk.Color)((HslColor)colorStyle.PlainText.Background), optionalAlpha);
 			}
 
-			var colorString = Mono.TextEditor.HelperMethods.GetColorString (color);
+			var colorString = MonoDevelop.Components.HelperMethods.GetColorString (color);
 			return "<span foreground=\"" + colorString + "\">" + str + "</span>";
 		}
 
 		string HighlightSemantically (string str, ChunkStyle style)
 		{
-			if (!MonoDevelop.SourceEditor.DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting)
+			if (!DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting)
 				return str;
 			return Highlight (str, style);
 		}

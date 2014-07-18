@@ -76,7 +76,7 @@ namespace MonoDevelop.CodeGeneration
 			column.Expand = true;
 
 			treeView.AppendColumn (column);
-			Ambience ambience = AmbienceService.GetAmbienceForFile (options.Document.FileName);
+			Ambience ambience = AmbienceService.GetAmbienceForFile (options.DocumentContext.Name);
 			foreach (object obj in GetValidMembers ()) {
 				var member = obj as ISymbol;
 				if (member != null) {
@@ -147,7 +147,7 @@ namespace MonoDevelop.CodeGeneration
 			}
 
 			if (output.Length > 0) {
-				var data = options.Document.Editor;
+				var data = options.Editor;
 				data.InsertAtCaret (output.ToString ().TrimStart ());
 			}
 		}

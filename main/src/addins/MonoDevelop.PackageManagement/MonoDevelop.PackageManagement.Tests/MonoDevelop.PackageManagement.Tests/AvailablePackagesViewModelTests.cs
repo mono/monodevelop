@@ -167,6 +167,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			viewModel.SelectedPackageSource = firstPackageSource;
 		}
 
+		void SearchForAllPackageVersions (string packageId, string versions = "")
+		{
+			viewModel.SearchTerms = string.Format ("{0} version:{1}", packageId, versions).TrimEnd ();
+		}
+
 		[Test]
 		public void ReadPackages_RepositoryHasThreePackagesWithSameIdButDifferentVersions_HasLatestPackageVersionOnly ()
 		{
@@ -690,6 +695,221 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual ("Invalid url", ex.Message);
 			Assert.IsTrue (viewModel.HasError);
 			Assert.AreEqual ("Invalid url", viewModel.ErrorMessage);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForAllPackageVersionsWhenThreePackageVersionsAvailable_ShowsOnlyPackagesWithSameIdAndAllVersionsWithHighestVersionFirst ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "0.3.0.0");
+			var package3 = new FakePackage ("A", "0.2.0.0") { IsLatestVersion = false };
+			var package4 = new FakePackage ("AA", "0.1.0.0");
+			var packages = new FakePackage[] {
+				package1, package2, package3, package4
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("a");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package2, package3, package1
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForAllPackageVersionsWhenThreePackageVersionsAvailableButOneIsPrerelease_ShowsOnlyNonPrereleasePackages ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "0.2.0.0");
+			var package3 = new FakePackage ("A", "0.2.0-alpha") { IsLatestVersion = false };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("a");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package2, package1
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForAllPackageVersionsIncludePrereleaseWhenOneIsPrereleaseAndOneIsRelease_ShowsAllPackages ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.2.0.0");
+			var package2 = new FakePackage ("A", "0.2.0-alpha") { IsLatestVersion = false };
+			var packages = new FakePackage[] {
+				 package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("a");
+			viewModel.IncludePrerelease = true;
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package1, package2
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForAllPackageVersionsWhenOneRecentPackageIsAvailable_RecentPackagesNotDisplayed ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "0.2.0.0");
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			var recentPackage = new FakePackage ("A", "0.2.0.0") {
+				Description = "A -version"
+			};
+			recentPackageRepository.AddPackage (recentPackage);
+			SearchForAllPackageVersions ("a");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package2, package1
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForAllPackageVersions_ShowVersionInsteadOfDownloadCountIsTrueForEachPackageViewModel ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "0.2.0.0");
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("a");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package2, package1
+			};
+			Assert.IsTrue (viewModel.PackageViewModels [0].ShowVersionInsteadOfDownloadCount);
+			Assert.IsTrue (viewModel.PackageViewModels [1].ShowVersionInsteadOfDownloadCount);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForPackage_ShowVersionInsteadOfDownloadCountIsFalseForEachPackageViewModel ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0");
+			var package2 = new FakePackage ("B", "0.2.0.0");
+			var packages = new FakePackage[] {
+				package1, package2
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package2, package1
+			};
+			Assert.IsFalse (viewModel.PackageViewModels [0].ShowVersionInsteadOfDownloadCount);
+			Assert.IsFalse (viewModel.PackageViewModels [1].ShowVersionInsteadOfDownloadCount);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForSinglePackageVersionWhenThreePackageVersionsAvailable_ShowsSinglePackagesWithSameIdAndSameVersion ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "0.3.0.0");
+			var package3 = new FakePackage ("A", "0.2.0.0") { IsLatestVersion = false };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("a", "0.2");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package3
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForAllPackageVersionsUsingAsteriskWhenThreePackageVersionsAvailable_HasAllPackageVersions ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "0.3.0.0");
+			var package3 = new FakePackage ("A", "0.2.0.0") { IsLatestVersion = false };
+			var packages = new FakePackage[] {
+				package1, package2, package3
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("a", "*");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package2, package3, package1
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
+		}
+
+		[Test]
+		public void ReadPackages_SearchForAllOnePointZeroPackageVersionsUsingVersionOne_ReturnsAllOnePointZeroVersions ()
+		{
+			CreateViewModel ();
+			AddOnePackageSourceToRegisteredSources ();
+			var package1 = new FakePackage ("A", "1.0.0.0") { IsLatestVersion = false };
+			var package2 = new FakePackage ("A", "2.1.0.0");
+			var package3 = new FakePackage ("A", "2.0.0.0") { IsLatestVersion = false };
+			var package4 = new FakePackage ("A", "1.1.0.0") { IsLatestVersion = false };
+			var package5 = new FakePackage ("A", "1.9.0.0") { IsLatestVersion = false };
+			var package6 = new FakePackage ("A", "1.2.0.0") { IsLatestVersion = false };
+			var package7 = new FakePackage ("A", "1.3.0.0") { IsLatestVersion = false };
+			var package8 = new FakePackage ("A", "0.1.0.0") { IsLatestVersion = false };
+			var packages = new FakePackage[] {
+				package1, package2, package3, package4, package5, package6, package7, package8
+			};
+			registeredPackageRepositories.FakeActiveRepository.FakePackages.AddRange (packages);
+			SearchForAllPackageVersions ("a", "1");
+
+			viewModel.ReadPackages ();
+			CompleteReadPackagesTask ();
+
+			var expectedPackages = new FakePackage[] {
+				package5, package7, package6, package4, package1
+			};
+			PackageCollectionAssert.AreEqual (expectedPackages, viewModel.PackageViewModels);
 		}
 	}
 }

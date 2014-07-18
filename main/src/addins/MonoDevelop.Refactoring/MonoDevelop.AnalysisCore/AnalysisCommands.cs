@@ -34,6 +34,7 @@ using Gtk;
 using MonoDevelop.AnalysisCore.Gui;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.SourceEditor.QuickTasks;
+using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
@@ -67,27 +68,27 @@ namespace MonoDevelop.AnalysisCore
 		
 		protected override void Run ()
 		{
-			var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
-			var view = doc.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
-			if (view == null) {
-				LoggingService.LogWarning ("ShowFixesHandler could not find a SourceEditorView");
-				return;
-			}
-			var widget = view.TextEditor;
-			var pt = view.DocumentToScreenLocation (doc.Editor.Caret.Location);
-			
-			var ces = new CommandEntrySet ();
-			ces.AddItem (AnalysisCommands.FixOperations);
-			var menu = MonoDevelop.Ide.IdeApp.CommandService.CreateMenu (ces);
-			
-			menu.Popup (null, null, delegate (Menu mn, out int x, out int y, out bool push_in) {
-				x = pt.X;
-				y = pt.Y;
-				push_in = true;
-				//if the menu would be off the bottom of the screen, "drop" it upwards
-				if (y + mn.Requisition.Height > widget.Screen.Height)
-					y -= mn.Requisition.Height + (int)widget.LineHeight;
-			}, 0, Global.CurrentEventTime);
+//			var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+//			var view = doc.GetContent<MonoDevelop.SourceEditor.SourceEditorView> ();
+//			if (view == null) {
+//				LoggingService.LogWarning ("ShowFixesHandler could not find a SourceEditorView");
+//				return;
+//			}
+//			var widget = view.TextEditor;
+//			var pt = view.DocumentToScreenLocation (doc.Editor.Caret.Location);
+//			
+//			var ces = new CommandEntrySet ();
+//			ces.AddItem (AnalysisCommands.FixOperations);
+//			var menu = MonoDevelop.Ide.IdeApp.CommandService.CreateMenu (ces);
+//			
+//			menu.Popup (null, null, delegate (Menu mn, out int x, out int y, out bool push_in) {
+//				x = pt.X;
+//				y = pt.Y;
+//				push_in = true;
+//				//if the menu would be off the bottom of the screen, "drop" it upwards
+//				if (y + mn.Requisition.Height > widget.Screen.Height)
+//					y -= mn.Requisition.Height + (int)widget.LineHeight;
+//			}, 0, Global.CurrentEventTime);
 		}
 	}
 	
@@ -142,7 +143,7 @@ namespace MonoDevelop.AnalysisCore
 			if (ext == null)
 				return false;
 			
-			var list = ext.GetResultsAtOffset (document.Editor.Caret.Offset).OfType<FixableResult> ().ToList ();
+			var list = ext.GetResultsAtOffset (document.Editor.CaretOffset).OfType<FixableResult> ().ToList ();
 			list.Sort (ResultCompareImportanceDesc);
 			results = list;
 
@@ -255,11 +256,18 @@ namespace MonoDevelop.AnalysisCore
 		{
 			foreach (var fix in result.Fixes)
 				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))
-					foreach (var action in handler.GetFixes (doc, fix))
+					foreach (var action in handler.GetFixes (editor, doc, fix))
 						yield return action;
 
 		}
-		
+
+		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Gui.Document doc, FixableResult result)
+		{
+			if (doc == null)
+				throw new ArgumentNullException ("doc");
+			return GetActions (doc.Editor, doc, result);
+		}
+
 		static string GetIcon (Severity severity)
 		{
 			switch (severity) {

@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using MonoDevelop.Core;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -40,24 +41,27 @@ namespace ICSharpCode.PackageManagement
 		const string PackageDirectoryPropertyName = "PackagesDirectory";
 		const string RecentPackagesPropertyName = "RecentPackages";
 		const string AutomaticPackageRestoreOnOpeningSolutionPropertyName = "AutomaticPackageRestoreOnOpeningSolution";
+		const string CheckUpdatedPackagesOnOpeningSolutionPropertyName = "CheckUpdatedPackagesOnOpeningSolution";
 
 		RegisteredPackageSourceSettings registeredPackageSourceSettings;
 		Properties properties;
 		List<RecentPackageInfo> recentPackages;
 		PackageRestoreConsent packageRestoreConsent;
-		
-		public PackageManagementOptions(Properties properties, ISettings settings)
+
+		public PackageManagementOptions (
+			Properties properties,
+			ISettingsProvider settingsProvider)
 		{
 			this.properties = properties;
-			registeredPackageSourceSettings = new RegisteredPackageSourceSettings(settings);
-			packageRestoreConsent = new PackageRestoreConsent(settings);
+			registeredPackageSourceSettings = new RegisteredPackageSourceSettings (settingsProvider);
+			packageRestoreConsent = new PackageRestoreConsent (settingsProvider.LoadSettings());
 		}
-		
-		public PackageManagementOptions(Properties properties)
-			: this(properties, Settings.LoadDefaultSettings(null, null, null))
+
+		public PackageManagementOptions (Properties properties)
+			: this (properties, new SettingsProvider ())
 		{
 		}
-		
+
 		public PackageManagementOptions()
 			: this(PropertyService.Get("PackageManagementSettings", new Properties()))
 		{
@@ -71,6 +75,11 @@ namespace ICSharpCode.PackageManagement
 		public bool IsAutomaticPackageRestoreOnOpeningSolutionEnabled {
 			get { return properties.Get(AutomaticPackageRestoreOnOpeningSolutionPropertyName, true); }
 			set { properties.Set(AutomaticPackageRestoreOnOpeningSolutionPropertyName, value); }
+		}
+
+		public bool IsCheckForPackageUpdatesOnOpeningSolutionEnabled {
+			get { return properties.Get(CheckUpdatedPackagesOnOpeningSolutionPropertyName, true); }
+			set { properties.Set(CheckUpdatedPackagesOnOpeningSolutionPropertyName, value); }
 		}
 		
 		public RegisteredPackageSources PackageSources {
@@ -100,6 +109,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			var defaultRecentPackages = new List<RecentPackageInfo>();
 			recentPackages = properties.Get<List<RecentPackageInfo>>(RecentPackagesPropertyName, defaultRecentPackages);
+		}
+
+		public string GetCustomPackagesDirectory ()
+		{
+			return registeredPackageSourceSettings.Settings.GetRepositoryPath ();
 		}
 	}
 }

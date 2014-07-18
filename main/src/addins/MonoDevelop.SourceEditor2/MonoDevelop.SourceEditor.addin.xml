@@ -38,29 +38,6 @@
 		<ExtensionNode name="Class" />
 	</ExtensionPoint>
 
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/TooltipProviders" name = "Tooltip providers">
-		<Description>Tooltip providers. Classes must implement ITooltipProvider.</Description>
-		<ExtensionNode name="Class" />
-		<ConditionType id="FileType" type="MonoDevelop.Ide.Extensions.FileTypeCondition">
-			<Description>Type of the file being edited.</Description>
-		</ConditionType>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/SyntaxModes" name = "Text editor syntax modes">
-		<Description>Syntax modes</Description>
-		<ExtensionNode name="Templates" type="MonoDevelop.SourceEditor.Extension.TemplateCodon"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/Styles" name = "Text editor styles">
-		<Description>Styles</Description>
-		<ExtensionNode name="Templates" type="MonoDevelop.SourceEditor.Extension.TemplateCodon"/>
-	</ExtensionPoint>
-
-	<ExtensionPoint path = "/MonoDevelop/SourceEditor2/CustomModes" name = "Text editor custom syntax modes">
-		<Description>Styles</Description>
-		<ExtensionNode name="SyntaxMode" type="MonoDevelop.SourceEditor.SyntaxModeCodon"/>
-	</ExtensionPoint>
-
 	<!-- Extensions -->
 	<Extension path = "/MonoDevelop/SourceEditor2/TooltipProviders">
 		<Class id="Debug" class="MonoDevelop.SourceEditor.DebugValueTooltipProvider" />
@@ -135,13 +112,6 @@
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.ShowMinimap"
 				_label = "Show _Minimap"
 				type="radio"/>
-	</Extension>
-
-	<Extension path = "/MonoDevelop/Ide/DisplayBindings">
-		<DisplayBinding
-			id = "TextEditor"
-			insertafter ="DefaultDisplayBinding"
-			class = "MonoDevelop.SourceEditor.SourceEditorDisplayBinding" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
@@ -227,9 +197,14 @@
 		<Font name="LanguageTooltips" _displayName="Editor tooltips" default="_DEFAULT_SANS" /><!-- TODO: VV: "_DEFAULT_SANS" => "Segoe UI Bold 8" -->
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
-		<Class fileExtensions = ".json" class = "MonoDevelop.SourceEditor.JSon.JSonTextEditorExtension" />
+	<Extension path = "/MonoDevelop/SourceEditor2/EditorFactory">
+		<Class id = "SourceEditor" class="MonoDevelop.SourceEditor.EditorFactory" />
 	</Extension>
+
+
+<!--	<Extension path = "/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions = ".json" class = "MonoDevelop.SourceEditor.JSon.JSonTextEditorExtension" />
+	</Extension>-->
 
 	<Extension path = "/MonoDevelop/Core/UserDataMigration">
 		<!-- 2.4 -->

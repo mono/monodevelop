@@ -79,9 +79,9 @@ namespace MonoDevelop.CodeGeneration
 			
 			protected override IEnumerable<object> GetValidMembers ()
 			{
-				if (Options == null || Options.EnclosingType == null || Options.EnclosingMember == null || Options.Document == null)
+				if (Options == null || Options.EnclosingType == null || Options.EnclosingMember == null || Options.DocumentContext == null)
 					yield break;
-				var editor = Options.Document.Editor;
+				var editor = Options.Editor;
 				if (editor == null)
 					yield break;
 				

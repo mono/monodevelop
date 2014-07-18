@@ -170,6 +170,29 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableBackgroundPackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageManagementEventsMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\SettingProviderTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageSearchCriteriaTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\WildcardVersionSpecTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ImportAndCondition.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectTargetFrameworkMonitorTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReferenceNodeTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageCompatibilityRunnerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackageCompatibilityChecker.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageReinstallerTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeBackgroundPackageActionRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallPackageActionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ReinstallProjectPackagesActionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackageCompatibilityTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedPackagesTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\UpdatedPackagesInSolutionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableUpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\ProjectPackagesFolderNodeTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableProjectPackagesFolderNode.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeUpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\PackagesViewModelTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackagesViewModel.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PageCollectionAssert.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -182,9 +205,9 @@
       <Name>MonoDevelop.PackageManagement</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_0.csproj">
-      <Project>{E13A0A7B-4DE6-43ED-A139-41052D065A9B}</Project>
-      <Name>GuiUnit_NET_4_0</Name>
+    <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
+      <Project>{D12F0F7B-8DE3-43EC-BA49-41052D065A9B}</Project>
+      <Name>GuiUnit_NET_4_5</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
       <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>

@@ -40,6 +40,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			References = new ProjectReferenceCollection ();
 			Files = new ProjectFileCollection ();
 			TargetFrameworkMoniker = new TargetFrameworkMoniker ("v4.5");
+			CreateEqualsAction ();
 		}
 
 		public FakeDotNetProject (string fileName)
@@ -47,6 +48,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			References = new ProjectReferenceCollection ();
 			Files = new ProjectFileCollection ();
+			CreateEqualsAction ();
 		}
 
 		public DotNetProject DotNetProject { get; set; }
@@ -99,11 +101,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			return buildAction;
 		}
 
-		public List<string> ImportsAdded = new List<string> ();
+		public List<ImportAndCondition> ImportsAdded = new List<ImportAndCondition> ();
 
 		public void AddImportIfMissing (string name, string condition)
 		{
-			ImportsAdded.Add (name);
+			ImportsAdded.Add (new ImportAndCondition (name, condition));
 		}
 
 		public List<string> ImportsRemoved = new List <string> ();
@@ -111,6 +113,29 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void RemoveImport (string name)
 		{
 			ImportsRemoved.Add (name);
+		}
+
+		public event EventHandler<ProjectModifiedEventArgs> Modified;
+
+		public void RaiseModifiedEvent (IDotNetProject project, string propertyName)
+		{
+			if (Modified != null) {
+				Modified (this, new ProjectModifiedEventArgs (project, propertyName));
+			}
+		}
+
+		public Func<IDotNetProject, bool> EqualsAction;
+
+		void CreateEqualsAction ()
+		{
+			EqualsAction = project => {
+				return this == project;
+			};
+		}
+
+		public bool Equals (IDotNetProject project)
+		{
+			return EqualsAction (project);
 		}
 	}
 }

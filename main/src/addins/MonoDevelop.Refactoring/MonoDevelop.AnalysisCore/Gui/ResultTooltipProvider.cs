@@ -25,11 +25,10 @@
 // THE SOFTWARE.
 
 using System;
-using Mono.TextEditor;
-using MonoDevelop.SourceEditor;
 using System.Text;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.AnalysisCore.Gui
 {
@@ -41,55 +40,58 @@ namespace MonoDevelop.AnalysisCore.Gui
 
 		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
-			//get the ResultsEditorExtension from the editor
-			var ed =  editor as ExtensibleTextEditor;
-			if (ed == null)
-				return null;
-			var ext = ed.Extension;
-			while (ext != null && !(ext is ResultsEditorExtension))
-				ext = ext.Next;
-			if (ext == null)
-				return null;
-			var resExt = (ResultsEditorExtension) ext;
-			
-			//get the results from the extension
-			var results = resExt.GetResultsAtOffset (offset);
-			if (results == null || results.Count == 0)
-				return null;
-			
-			return new TooltipItem (results, editor.Document.GetLineByOffset (offset));
+//			//get the ResultsEditorExtension from the editor
+//			var ed =  editor as ExtensibleTextEditor;
+//			if (ed == null)
+//				return null;
+//			var ext = ed.Extension;
+//			while (ext != null && !(ext is ResultsEditorExtension))
+//				ext = ext.Next;
+//			if (ext == null)
+//				return null;
+//			var resExt = (ResultsEditorExtension) ext;
+//			
+//			//get the results from the extension
+//			var results = resExt.GetResultsAtOffset (offset);
+//			if (results == null || results.Count == 0)
+//				return null;
+//			
+//			return new TooltipItem (results, editor.GetLineByOffset (offset));
+			return null;
 		}
 
-		protected override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+
+		public override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
-			//create a message string from all the results
-			var results = (IList<Result>)item.Item;
-			var sb = new StringBuilder ();
-			bool first = false;
-			foreach (var r in results) {
-				if (!first)
-					first = true;
-				else
-					sb.AppendLine ();
-				sb.Append (r.Level.ToString ());
-				sb.Append (": ");
-				sb.Append (AmbienceService.EscapeText (r.Message));
-			}
-
-			//FIXME: use a nicer, more specialized tooltip window, with results formatting and hints about 
-			// commands and stuff
-			var win = new LanguageItemWindow ((ExtensibleTextEditor) editor, modifierState, null, sb.ToString (), null);
-			if (win.IsEmpty)
-				return null;
-			return win;
+//			//create a message string from all the results
+//			var results = (IList<Result>)item.Item;
+//			var sb = new StringBuilder ();
+//			bool first = false;
+//			foreach (var r in results) {
+//				if (!first)
+//					first = true;
+//				else
+//					sb.AppendLine ();
+//				sb.Append (r.Level.ToString ());
+//				sb.Append (": ");
+//				sb.Append (AmbienceService.EscapeText (r.Message));
+//			}
+//
+//			//FIXME: use a nicer, more specialized tooltip window, with results formatting and hints about 
+//			// commands and stuff
+//			var win = new LanguageItemWindow ((ExtensibleTextEditor) editor, modifierState, null, sb.ToString (), null);
+//			if (win.IsEmpty)
+//				return null;
+//			return win;
+			return null;
 		}
 
-		protected override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
-		{
-			var win = (LanguageItemWindow) tipWindow;
-			requiredWidth = win.SetMaxWidth (win.Screen.Width);
-			xalign = 0.5;
-		}
+//		protected override void GetRequiredPosition (ITextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+//		{
+//			var win = (LanguageItemWindow) tipWindow;
+//			requiredWidth = win.SetMaxWidth (win.Screen.Width);
+//			xalign = 0.5;
+//		}
 	}
 }
 

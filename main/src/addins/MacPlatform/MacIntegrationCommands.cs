@@ -26,7 +26,7 @@
 
 using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
-using MonoMac.AppKit;
+using AppKit;
 using System.Linq;
 
 namespace MonoDevelop.MacIntegration

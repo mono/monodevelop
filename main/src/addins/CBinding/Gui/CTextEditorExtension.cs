@@ -44,11 +44,13 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 
 using CBinding.Parser;
-using Mono.TextEditor;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.Completion;
 using ICSharpCode.NRefactory6.CSharp.Completion;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace CBinding
 {
@@ -81,7 +83,6 @@ namespace CBinding
 			new KeyValuePair<string, GetMembersForExtension>(".", GetInstanceMembers)
 		};
 		
-		protected Mono.TextEditor.TextEditorData textEditorData{ get; set; }
 
 		public override string CompletionLanguage {
 			get {
@@ -102,7 +103,7 @@ namespace CBinding
 			return IsOpenBrace  (c) || IsCloseBrace (c);
 		}
 		
-		static int SearchMatchingBracket (TextEditorData editor, int offset, char openBracket, char closingBracket, int direction)
+		static int SearchMatchingBracket (IReadonlyTextDocument editor, int offset, char openBracket, char closingBracket, int direction)
 		{
 			bool isInString       = false;
 			bool isInChar         = false;	
@@ -143,7 +144,7 @@ namespace CBinding
 			return -1;
 		}
 		
-		static int GetClosingBraceForLine (TextEditorData editor, DocumentLine line, out int openingLine)
+		static int GetClosingBraceForLine (IReadonlyTextDocument editor, IDocumentLine line, out int openingLine)
 		{
 			int offset = SearchMatchingBracket (editor, line.Offset, '{', '}', -1);
 			if (offset == -1) {
@@ -151,18 +152,18 @@ namespace CBinding
 				return -1;
 			}
 				
-			openingLine = editor.Document.OffsetToLineNumber (offset);
+			openingLine = editor.OffsetToLineNumber (offset);
 			return offset;
 		}
 		
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
 		{
-			var line = Editor.Document.GetLine (Editor.Caret.Line);
-			string lineText = Editor.GetLineText (Editor.Caret.Line);
-			int lineCursorIndex = Math.Min (lineText.Length, Editor.Caret.Column);
+			var line = Editor.GetLine (Editor.CaretLine);
+			string lineText = Editor.GetLineText (Editor.CaretLine);
+			int lineCursorIndex = Math.Min (lineText.Length, Editor.CaretColumn);
 			
 			// Smart Indentation
-			if (Document.Editor.Options.IndentStyle == IndentStyle.Smart)
+			if (Editor.Options.IndentStyle == IndentStyle.Smart)
 			{
 				if (keyChar == '}') {
 					// Only indent if the brace is preceeded by whitespace.
@@ -170,8 +171,7 @@ namespace CBinding
 						int braceOpeningLine;
 						if(GetClosingBraceForLine(Editor, line, out braceOpeningLine) >= 0)
 						{
-							Editor.Replace (line.Offset, line.Length, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
-							Editor.Document.CommitLineUpdate (line);
+							Editor.ReplaceText (line.Offset, line.Length, GetIndent(Editor, braceOpeningLine, 0) + "}" + lineText.Substring(lineCursorIndex));
 							return false;
 						}
 					}
@@ -185,12 +185,13 @@ namespace CBinding
 							string indent = String.Empty;
 							if (!String.IsNullOrEmpty (Editor.SelectedText)) {
 								int cursorPos = Editor.SelectionRange.Offset;
+
+								Editor.RemoveText (Editor.SelectionRange);
 							
-								Editor.DeleteSelectedText ();
-								Editor.Caret.Offset = cursorPos;
+								Editor.CaretOffset = cursorPos;
 								
-								lineText = Editor.GetLineText (Editor.Caret.Line);
-								lineCursorIndex = Editor.Caret.Column;
+								lineText = Editor.GetLineText (Editor.CaretLine);
+								lineCursorIndex = Editor.CaretColumn;
 	//							System.Console.WriteLine(TextEditorData.Caret.Offset);
 							}
 							if(lineText.Length > 0)
@@ -202,7 +203,7 @@ namespace CBinding
 									nextChar = lineText[lineCursorIndex];
 	
 								if(finalChar == '{')
-									indent = Document.Editor.Options.IndentationString;
+									indent = Editor.Options.GetIndentationString ();
 							}
 	
 							// If the next character is an closing brace, indent it appropriately.
@@ -217,7 +218,7 @@ namespace CBinding
 							}
 						
 							// Default indentation method
-							Editor.InsertAtCaret (Editor.EolMarker + indent + GetIndent(Editor, Editor.Document.OffsetToLineNumber (line.Offset), lineCursorIndex));
+							Editor.InsertAtCaret (Editor.EolMarker + indent + GetIndent(Editor, Editor.OffsetToLineNumber (line.Offset), lineCursorIndex));
 							
 							return false;
 						
@@ -287,7 +288,7 @@ namespace CBinding
 		    CodeCompletionContext completionContext)
 		{
 			int pos = completionContext.TriggerOffset;
-			string lineText = Editor.GetLineText (Editor.Caret.Line).Trim();
+			string lineText = Editor.GetLineText (Editor.CaretLine).Trim();
 			
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
 				if(lineText.EndsWith(pair.Key)) {
@@ -351,7 +352,7 @@ namespace CBinding
 		
 		private CompletionDataList GetMembersOfItem (string itemFullName)
 		{
-			CProject project = Document.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
 				return null;
@@ -362,7 +363,7 @@ namespace CBinding
 			
 			LanguageItem container = null;
 			
-			string currentFileName = Document.FileName;
+			string currentFileName = DocumentContext.Name;
 			bool in_project = false;
 				
 			foreach (LanguageItem li in info.Containers ()) {
@@ -434,7 +435,7 @@ namespace CBinding
 		/// </returns>
 		private CompletionDataList GetMembersOfInstance (string instanceName, bool isPointer)
 		{
-			CProject project = Document.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
 				return null;
@@ -445,7 +446,7 @@ namespace CBinding
 			
 			string container = null;
 			
-			string currentFileName = Document.FileName;
+			string currentFileName = DocumentContext.Name;
 			bool in_project = false;
 			
 			// Find the typename of the instance
@@ -521,7 +522,7 @@ namespace CBinding
 
 		private ICompletionDataList GlobalComplete ()
 		{
-			CProject project = Document.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
 				return null;
@@ -545,7 +546,7 @@ namespace CBinding
 			foreach (Macro m in info.Macros)
 				list.Add (new CompletionData (m));
 			
-			string currentFileName = Document.FileName;
+			string currentFileName = DocumentContext.Name;
 			
 			if (info.IncludedFiles.ContainsKey (currentFileName)) {
 				foreach (CBinding.Parser.FileInformation fi in info.IncludedFiles[currentFileName]) {
@@ -574,13 +575,13 @@ namespace CBinding
 			if (completionChar != '(')
 				return null;
 			
-			CProject project = Document.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			
 			if (project == null)
 				return null;
 			
 			ProjectInformation info = ProjectInformationManager.Instance.Get (project);
-			string lineText = Editor.GetLineText (Editor.Caret.Line).TrimEnd ();
+			string lineText = Editor.GetLineText (Editor.CaretLine).TrimEnd ();
 			if (lineText.EndsWith (completionChar.ToString (), StringComparison.Ordinal))
 				lineText = lineText.Remove (lineText.Length-1).TrimEnd ();
 			
@@ -592,7 +593,8 @@ namespace CBinding
 			
 			if (string.IsNullOrEmpty (functionName))
 				return null;
-			return new ParameterDataProvider (nameStart, Document, info, functionName);
+			
+			return new ParameterDataProvider (nameStart, Editor, info, functionName);
 		}
 		
 		private bool AllWhiteSpace (string lineText)
@@ -606,7 +608,7 @@ namespace CBinding
 		}
 		
 		// Snatched from DefaultFormattingStrategy
-		private string GetIndent (TextEditorData d, int lineNumber, int terminateIndex)
+		private string GetIndent (IReadonlyTextDocument d, int lineNumber, int terminateIndex)
 		{
 			string lineText = d.GetLineText (lineNumber);
 			if(terminateIndex > 0)
@@ -626,9 +628,9 @@ namespace CBinding
 		[CommandHandler (MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles)]
 		protected void Run ()
 		{
-			var cp = this.Document.Project as CProject;
+			var cp = this.DocumentContext.Project as CProject;
 			if (cp != null) {
-				string match = cp.MatchingFile (this.Document.FileName);
+				string match = cp.MatchingFile (this.DocumentContext.Name);
 				if (match != null)
 					MonoDevelop.Ide.IdeApp.Workbench.OpenDocument (match, true);
 			}
@@ -637,8 +639,8 @@ namespace CBinding
 		[CommandUpdateHandler (MonoDevelop.DesignerSupport.Commands.SwitchBetweenRelatedFiles)]
 		protected void Update (CommandInfo info)
 		{
-			var cp = this.Document.Project as CProject;
-			info.Visible = info.Visible = cp != null && cp.MatchingFile (this.Document.FileName) != null;
+			var cp = this.DocumentContext.Project as CProject;
+			info.Visible = info.Visible = cp != null && cp.MatchingFile (this.DocumentContext.Name) != null;
 		}
 		
 		#region IPathedDocument implementation
@@ -655,9 +657,9 @@ namespace CBinding
 			object tag = path[index].Tag;
 			DropDownBoxListWindow.IListDataProvider provider = null;
 			if (tag is ParsedDocument) {
-				provider = new CompilationUnitDataProvider (Document);
+				provider = new CompilationUnitDataProvider (Editor, DocumentContext);
 			} else {
-				provider = new DataProvider (Document, tag, GetAmbience ());
+				provider = new DataProvider (Editor, DocumentContext, tag, new NetAmbience ());
 			}
 			
 			DropDownBoxListWindow window = new DropDownBoxListWindow (provider);
@@ -679,7 +681,7 @@ namespace CBinding
 		#endregion
 		
 		// Yoinked from C# binding
-		void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		void UpdatePath (object sender, EventArgs e)
 		{
 	/*		var unit = Document.ParsedDocument;
 			if (unit == null)
@@ -718,13 +720,25 @@ namespace CBinding
 			OnPathChanged (new DocumentPathChangedEventArgs (prev));*/
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
-			textEditorData = Document.Editor;
 			UpdatePath (null, null);
-			textEditorData.Caret.PositionChanged += UpdatePath;
-			Document.DocumentParsed += delegate { UpdatePath (null, null); };
+			Editor.CaretPositionChanged += UpdatePath;
+			DocumentContext.DocumentParsed += HandleDocumentParsed;
+		}
+
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			UpdatePath (null, null);
+		}
+
+		public override void Dispose ()
+		{
+			Editor.CaretPositionChanged -= UpdatePath;
+			DocumentContext.DocumentParsed -= HandleDocumentParsed;
+
+			base.Dispose ();
 		}
 		
 		/// <summary>
@@ -738,7 +752,7 @@ namespace CBinding
 			int accumulator = 0;
 			
 			for (;
-			     1 < i && char.IsLetterOrDigit (Editor.GetCharAt (i));
+				1 < i && char.IsLetterOrDigit (Editor.GetCharAt (i));
 			     --i, ++accumulator);
 			completionContext.TriggerOffset = i-1;
 			return accumulator+1;
@@ -747,7 +761,7 @@ namespace CBinding
 		[CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
 		public void GotoDeclaration ()
 		{
-			LanguageItem item = GetLanguageItemAt (Editor.Caret.Location);
+			LanguageItem item = GetLanguageItemAt (Editor.CaretLocation);
 			if (item != null)
 				IdeApp.Workbench.OpenDocument ((FilePath)item.File, (int)item.Line, 1);
 		}
@@ -755,13 +769,13 @@ namespace CBinding
 		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
 		public void CanGotoDeclaration (CommandInfo item)
 		{
-			item.Visible = (GetLanguageItemAt (Editor.Caret.Location) != null);
+			item.Visible = (GetLanguageItemAt (Editor.CaretLocation) != null);
 			item.Bypass = !item.Visible;
 		}
 		
 		private LanguageItem GetLanguageItemAt (DocumentLocation location)
 		{
-			CProject project = Document.Project as CProject;
+			CProject project = DocumentContext.Project as CProject;
 			string token = GetTokenAt (location);
 			if (project != null && !string.IsNullOrEmpty (token)) {
 				ProjectInformation info = ProjectInformationManager.Instance.Get (project);

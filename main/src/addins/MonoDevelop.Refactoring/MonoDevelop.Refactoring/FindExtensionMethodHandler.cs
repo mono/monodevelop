@@ -27,7 +27,8 @@
 using System;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.FindInFiles;
-using Mono.TextEditor;
+using ICSharpCode.NRefactory.Analysis;
+using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
@@ -53,6 +54,7 @@ namespace MonoDevelop.Refactoring
 				foreach (var project in solution.Projects) {
 					var comp = project.GetCompilationAsync ().Result;
 					foreach (var type in comp.)
+
 				}
 			}
 			declaredSymbo*/

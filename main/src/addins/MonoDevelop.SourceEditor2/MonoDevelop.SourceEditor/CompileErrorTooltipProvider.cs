@@ -26,24 +26,24 @@
 //
 
 using System;
-using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.SourceEditor
 {
-	
-	
-	public class CompileErrorTooltipProvider: TooltipProvider
+	class CompileErrorTooltipProvider: TooltipProvider
 	{
-		
-		public CompileErrorTooltipProvider()
+		internal static ExtensibleTextEditor GetExtensibleTextEditor (TextEditor editor)
 		{
+			var view = editor.GetContent<SourceEditorView> ();
+			if (view == null)
+				return null;
+			return view.TextEditor;
 		}
 
 		#region ITooltipProvider implementation 
-		
-		public override TooltipItem GetItem (Mono.TextEditor.TextEditor editor, int offset)
+		public override TooltipItem GetItem (TextEditor editor, int offset)
 		{
-			var ed = editor as ExtensibleTextEditor;
+			var ed = GetExtensibleTextEditor (editor);
 			if (ed == null)
 				return null;
 
@@ -51,25 +51,23 @@ namespace MonoDevelop.SourceEditor
 			if (string.IsNullOrEmpty (errorInformation))
 				return null;
 
-			return new TooltipItem (errorInformation, editor.Document.GetLineByOffset (offset));
+			return new TooltipItem (errorInformation, editor.GetLineByOffset (offset));
 		}
 		
-		protected override Gtk.Window CreateTooltipWindow (Mono.TextEditor.TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
+		public override Gtk.Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
-			LanguageItemWindow result = new LanguageItemWindow ((ExtensibleTextEditor) editor, modifierState, null, (string)item.Item, null);
+			var result = new LanguageItemWindow (GetExtensibleTextEditor (editor), modifierState, null, (string)item.Item, null);
 			if (result.IsEmpty)
 				return null;
 			return result;
 		}
 		
-		protected override void GetRequiredPosition (Mono.TextEditor.TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
+		public override void GetRequiredPosition (TextEditor editor, Gtk.Window tipWindow, out int requiredWidth, out double xalign)
 		{
-			LanguageItemWindow win = (LanguageItemWindow) tipWindow;
+			var win = (LanguageItemWindow) tipWindow;
 			requiredWidth = win.SetMaxWidth (win.Screen.Width);
 			xalign = 0.5;
 		}
-
 		#endregion 
-		
 	}
 }
