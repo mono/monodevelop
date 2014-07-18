@@ -138,17 +138,21 @@ namespace MonoDevelop.Debugger
 			var frame = (ExceptionStackFrame) model.GetValue (iter, (int) ModelColumn.StackFrame);
 			var renderer = (StackFrameCellRenderer) cr;
 
-			if (!(renderer.IsStackFrame = frame != null))
+			renderer.Markup = (string) model.GetValue (iter, (int) ModelColumn.Markup);
+
+			if (!(renderer.IsStackFrame = frame != null)) {
+				renderer.IsUserCode = false;
+				renderer.LineNumber = -1;
 				return;
+			}
 
 			renderer.IsUserCode = (bool) model.GetValue (iter, (int) ModelColumn.IsUserCode);
 			renderer.LineNumber = !string.IsNullOrEmpty (frame.File) ? frame.Line : -1;
-			renderer.Markup = (string) model.GetValue (iter, (int) ModelColumn.Markup);
 		}
 
 		Widget CreateStackTraceTreeView ()
 		{
-			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool), typeof (int), typeof (int));
+			var store = new ListStore (typeof (ExceptionStackFrame), typeof (string), typeof (bool));
 			StackTraceTreeView = new TreeView (store);
 			StackTraceTreeView.FixedHeightMode = false;
 			StackTraceTreeView.HeadersVisible = false;
