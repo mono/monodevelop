@@ -76,7 +76,7 @@ namespace MonoDevelop.Debugger
 		readonly CellRendererText crtExp;
 		readonly CellRendererText crtValue;
 		readonly CellRendererText crtType;
-		readonly CellRendererImage crpButton;
+		readonly CellRendererRoundedButton crpButton;
 		readonly CellRendererImage crpPin;
 		readonly CellRendererImage crpLiveUpdate;
 		readonly CellRendererImage crpViewer;
@@ -111,6 +111,8 @@ namespace MonoDevelop.Debugger
 		const int ColorPreviewColumn = 13;
 		const int PreviewIconColumn = 14;
 		const int EvaluateStatusIconColumn = 15;
+		const int EvaluateStatusIconVisibleColumn = 16;
+		const int ValueButtonTextColumn = 17;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
@@ -158,9 +160,62 @@ namespace MonoDevelop.Debugger
 			public Xwt.Drawing.Color Color { get; set; }
 		}
 
+		class CellRendererRoundedButton : CellRenderer {
+			private string text;
+			[GLib.Property ("text")]
+			public virtual string Text {
+				get {
+					return text;
+				}
+				set {
+					text = value;
+				}
+			}
+
+			const int TopBottomPadding = 2;
+
+			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+			{
+				if (string.IsNullOrEmpty (text)) {
+					return;
+				}
+				using (var cr = Gdk.CairoHelper.Create (window)) {
+					cr.RoundedRectangle (
+						cell_area.X,
+						cell_area.Y + TopBottomPadding,
+						cell_area.Width,
+						cell_area.Height - TopBottomPadding * 2,
+						(cell_area.Height - (TopBottomPadding * 2)) / 2);
+					cr.LineWidth = 1;
+					cr.SetSourceRGB (233 / 255.0, 242 / 255.0, 252 / 255.0);
+					cr.FillPreserve ();
+					cr.SetSourceRGB (82 / 255.0, 148 / 255.0, 235 / 255.0);
+					cr.Stroke ();
+					var textSize = cr.TextExtents (text);
+					cr.MoveTo (cell_area.X + (cell_area.Width - textSize.Width) / 2.0 + (textSize.XBearing * -1), cell_area.Y + cell_area.Height - (cell_area.Height - textSize.Height) / 2.0);
+					cr.ShowText (text);
+				}
+			}
+
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				x_offset = y_offset = 0;
+				if (string.IsNullOrEmpty (text)) {
+					width = 0;
+					height = 0;
+					return;
+				}
+				using (var cr = Gdk.CairoHelper.Create (widget.ParentWindow)) {
+					height = cell_area.Height;
+					var textSize = cr.TextExtents (text);
+					width = (int)textSize.Width + (int)textSize.Height * 2;
+				}
+			}
+		}
+
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(Xwt.Drawing.Color?), typeof(string), typeof(Xwt.Drawing.Image));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(Xwt.Drawing.Color?), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(string));
 			Model = store;
 			RulesHint = true;
 			EnableSearch = false;
@@ -198,6 +253,7 @@ namespace MonoDevelop.Debugger
 			valueCol.Title = GettextCatalog.GetString ("Value");
 			var evaluateStatusCell = new CellRendererImage ();
 			valueCol.PackStart (evaluateStatusCell, false);
+			valueCol.AddAttribute (evaluateStatusCell, "visible", EvaluateStatusIconVisibleColumn);
 			valueCol.AddAttribute (evaluateStatusCell, "image", EvaluateStatusIconColumn);
 			var crColorPreview = new CellRendererColorPreview ();
 			valueCol.PackStart (crColorPreview, false);
@@ -210,14 +266,14 @@ namespace MonoDevelop.Debugger
 					cell.Visible = false;
 				}
 			}));
+			crpButton = new CellRendererRoundedButton ();
+			valueCol.PackStart (crpButton, false);
+			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleColumn);
+			valueCol.AddAttribute (crpButton, "text", ValueButtonTextColumn);
 			crpViewer = new CellRendererImage ();
 			crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
-			crpButton = new CellRendererImage ();
-			crpButton.Image = ImageService.GetIcon (Stock.Refresh, IconSize.Menu);
-			valueCol.PackStart (crpButton, false);
-			valueCol.AddAttribute (crpButton, "visible", ValueButtonVisibleColumn);
 			crtValue = new CellRendererText ();
 			valueCol.PackStart (crtValue, true);
 			valueCol.AddAttribute (crtValue, "text", ValueColumn);
@@ -466,7 +522,6 @@ namespace MonoDevelop.Debugger
 					expCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.Sizing = TreeViewColumnSizing.Autosize;
 					valueCol.MaxWidth = 800;
-					crpButton.Image = ImageService.GetIcon (Stock.Refresh).WithSize (12,12);
 					crpViewer.Image = ImageService.GetIcon (Stock.Edit).WithSize (12,12);
 					ColumnsAutosize ();
 				} else {
@@ -796,7 +851,7 @@ namespace MonoDevelop.Debugger
 				strval = val.Value;
 				valueColor = disabledColor;
 				if (val.CanRefresh)
-					valueButton = Stock.Refresh;
+					valueButton = GettextCatalog.GetString ("Show Value");
 				canEdit = false;
 			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
@@ -832,8 +887,10 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
 			store.SetValue (it, ValueColorColumn, valueColor);
+			store.SetValue (it, EvaluateStatusIconVisibleColumn, evaluateStatusIcon != null);
 			store.LoadIcon (it, EvaluateStatusIconColumn, evaluateStatusIcon, IconSize.Menu);
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);
+			store.SetValue (it, ValueButtonTextColumn, valueButton);
 			store.SetValue (it, ViewerButtonVisibleColumn, showViewerButton);
 
 			if (!val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val))
