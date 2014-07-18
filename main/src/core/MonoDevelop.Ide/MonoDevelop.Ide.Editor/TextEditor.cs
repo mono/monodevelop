@@ -213,6 +213,24 @@ namespace MonoDevelop.Ide.Editor
 				textEditorImpl.SelectionRegion = value;
 			}
 		}
+		
+		public int SelectionAnchorOffset {
+			get {
+				return textEditorImpl.SelectionAnchorOffset;
+			}
+			set {
+				textEditorImpl.SelectionAnchorOffset = value;
+			}
+		}
+
+		public int SelectionLeadOffset {
+			get {
+				return textEditorImpl.SelectionLeadOffset;
+			}
+			set {
+				textEditorImpl.SelectionLeadOffset = value;
+			}
+		}
 
 		public string SelectedText {
 			get {

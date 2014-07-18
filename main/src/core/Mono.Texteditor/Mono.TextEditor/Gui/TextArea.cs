@@ -1940,7 +1940,16 @@ namespace Mono.TextEditor
 				this.textEditorData.SelectionAnchor = value;
 			}
 		}
-		
+
+		public int SelectionLead {
+			get {
+				return this.textEditorData.SelectionLead;
+			}
+			set {
+				this.textEditorData.SelectionLead = value;
+			}
+		}
+
 		public IEnumerable<DocumentLine> SelectedLines {
 			get {
 				return this.textEditorData.SelectedLines;

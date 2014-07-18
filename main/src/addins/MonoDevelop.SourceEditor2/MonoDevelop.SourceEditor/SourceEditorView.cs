@@ -68,7 +68,6 @@ namespace MonoDevelop.SourceEditor
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
 	ITextEditorImpl, IEditorActionHost, ITextMarkerFactory, IUndoHandler, MonoDevelop.Ide.Editor.ITextEditorOptions
 	{
-	
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
 		DateTime lastSaveTimeUtc;
@@ -784,6 +783,8 @@ namespace MonoDevelop.SourceEditor
 
 		public void Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
+			widget.TextEditor.Document.TextReplaced -= OnTextReplaced;
+			
 			// Handle the "reload" case.
 			if (ContentName == fileName)
 				AutoSave.RemoveAutoSaveFile (fileName);
@@ -836,6 +837,8 @@ namespace MonoDevelop.SourceEditor
 				Document.InformLoadComplete ();
 				widget.EnsureCorrectEolMarker (fileName);
 			}
+			
+			widget.TextEditor.Document.TextReplaced += OnTextReplaced;
 		}
 		
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
@@ -2455,42 +2458,6 @@ namespace MonoDevelop.SourceEditor
 			widget.MonodocResolverUpdate (cinfo);
 		}
 		
-		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
-		internal void OnUpdateToggleComment (CommandInfo info)
-		{
-			widget.OnUpdateToggleComment (info);
-		}
-
-		[CommandHandler (EditCommands.ToggleCodeComment)]
-		public void ToggleCodeComment ()
-		{
-			widget.ToggleCodeComment ();
-		}
-
-		[CommandUpdateHandler (EditCommands.AddCodeComment)]
-		internal void OnUpdateAddCodeComment (CommandInfo info)
-		{
-			widget.OnUpdateToggleComment (info);
-		}
-
-		[CommandHandler (EditCommands.AddCodeComment)]
-		public void AddCodeComment ()
-		{
-			widget.AddCodeComment ();
-		}
-
-		[CommandUpdateHandler (EditCommands.RemoveCodeComment)]
-		internal void OnUpdateRemoveCodeComment (CommandInfo info)
-		{
-			widget.OnUpdateToggleComment (info);
-		}
-
-		[CommandHandler (EditCommands.RemoveCodeComment)]
-		public void RemoveCodeComment ()
-		{
-			widget.RemoveCodeComment ();
-		}
-
 		[CommandUpdateHandler (SourceEditorCommands.ToggleErrorTextMarker)]
 		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
 		{
@@ -2835,6 +2802,26 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.SelectionRange = new TextSegment (value.Offset, value.Length);
 			}
 		}
+		
+		int ITextEditorImpl.SelectionAnchorOffset {
+			get {
+				return TextEditor.SelectionAnchor;
+			}
+			set {
+				TextEditor.SelectionAnchor = value;
+			}
+		}
+
+		int ITextEditorImpl.SelectionLeadOffset {
+			get {
+				return TextEditor.SelectionLead;
+			}
+			set {
+				TextEditor.SelectionLead = value;
+			}
+		}
+
+
 
 		MonoDevelop.Ide.Editor.DocumentRegion ITextEditorImpl.SelectionRegion {
 			get {
