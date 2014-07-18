@@ -1316,6 +1316,15 @@ namespace MonoDevelop.Ide.Gui
 		}
 
 		public OpenDocumentOptions Options { get; set; }
+		int offset = -1;
+		public int Offset {
+			get {
+				return offset;
+			}
+			set {
+				offset = value;
+			}
+		}
 		public int Line { get; set; }
 		public int Column { get; set; }
 		public IViewDisplayBinding DisplayBinding { get; set; }

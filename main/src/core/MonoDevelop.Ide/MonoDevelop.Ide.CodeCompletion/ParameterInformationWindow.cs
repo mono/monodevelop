@@ -124,7 +124,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			lastParam = currentParam;
 			ClearDescriptions ();
 			var parameterHintingData = (ParameterHintingData)provider [overload];
-			currentTooltipInformation = parameterHintingData.CreateTooltipInformation (ext.document, currentParam, false);
+			currentTooltipInformation = parameterHintingData.CreateTooltipInformation (ext.Editor, ext.DocumentContext, currentParam, false);
 			Theme.NumPages = provider.Count;
 			Theme.CurrentPage = overload;
 			if (provider.Count > 1) {

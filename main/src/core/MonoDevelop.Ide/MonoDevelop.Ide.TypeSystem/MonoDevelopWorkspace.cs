@@ -33,10 +33,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;
 using Microsoft.CodeAnalysis.Text;
-using Mono.TextEditor;
 using Microsoft.CodeAnalysis.Host.Mef;
 using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -328,7 +328,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			)); 
 		}
 
-		internal void InformDocumentOpen (DocumentId documentId, TextEditorData editor)
+		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
 			var document = CurrentSolution.GetDocument (documentId);
 			if (document == null)
@@ -365,7 +365,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			var data = TextFileProvider.Instance.GetTextEditorData (document.FilePath);
 			
 			foreach (var change in text.GetTextChanges (document.GetTextAsync ().Result)) {
-				data.Replace (change.Span.Start, change.Span.Length, change.NewText);
+				data.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
 			}
 			
 			OnDocumentTextChanged (documentId, text, PreservationMode.PreserveValue);

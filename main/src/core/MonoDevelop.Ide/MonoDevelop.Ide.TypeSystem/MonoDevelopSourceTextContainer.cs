@@ -31,6 +31,8 @@ using MonoDevelop.Core;
 using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.Ide.TypeSystem
@@ -45,7 +47,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public MonoDevelopSourceText (Mono.TextEditor.TextDocument doc)
+		public MonoDevelopSourceText (ITextDocument doc)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -75,32 +77,32 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	class MonoDevelopSourceTextContainer : SourceTextContainer
 	{
-		readonly Mono.TextEditor.TextDocument document;
+		readonly ITextDocument document;
 
-		public MonoDevelopSourceTextContainer (Mono.TextEditor.TextEditorData document)
+		public MonoDevelopSourceTextContainer (ITextDocument document)
 		{
-			this.document = document.Document;
-			this.document.TextReplacing += HandleTextReplacing;
-			this.document.TextReplaced += HandleTextReplaced;
+			this.document = document;
+			this.document.TextChanging += HandleTextReplacing;
+			this.document.TextChanged += HandleTextReplaced;
 		}
 		
 		~MonoDevelopSourceTextContainer ()
 		{
-			document.TextReplaced -= HandleTextReplaced;
-			document.TextReplaced -= HandleTextReplacing;
+			document.TextChanged -= HandleTextReplaced;
+			document.TextChanging -= HandleTextReplacing;
 		}
 
 		SourceText oldText;
-		void HandleTextReplacing (object sender, Mono.TextEditor.DocumentChangeEventArgs e)
+		void HandleTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			oldText = SourceText.From (document.Text);
 		}
 		
-		void HandleTextReplaced (object sender, Mono.TextEditor.DocumentChangeEventArgs e)
+		void HandleTextReplaced (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			var handler = TextChanged;
 			if (handler != null)
-				handler (this, new TextChangeEventArgs (oldText, CurrentText, new TextChangeRange (TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
+				handler (this, new Microsoft.CodeAnalysis.Text.TextChangeEventArgs (oldText, CurrentText, new TextChangeRange (TextSpan.FromBounds (e.Offset, e.Offset + e.RemovalLength), e.InsertionLength)));
 		}
 
 		#region implemented abstract members of SourceTextContainer
@@ -110,7 +112,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
-		public override event EventHandler<TextChangeEventArgs> TextChanged;
+		public override event EventHandler<Microsoft.CodeAnalysis.Text.TextChangeEventArgs> TextChanged;
 		#endregion
 	}
 }

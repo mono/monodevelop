@@ -214,13 +214,13 @@ namespace MonoDevelop.Ide.Editor.Extension
 					foreach (var r in references) {
 						if (r == null)
 							continue;
-						var start = editor.LocationToOffset (r.Region.BeginLine, r.Region.BeginColumn);
-						var end   = editor.LocationToOffset (r.Region.EndLine, r.Region.EndColumn);
+						var start = r.Offset;
+						var end = r.Offset + r.Length;
 						var usage = new Usage (TextSegment.FromBounds (start, end), r.ReferenceUsageType);
 						usages.Add (usage);
 						var marker = TextMarkerFactory.CreateUsageMarker (editor, usage);
 						markers.Add (marker);
-						lineNumbers.Add (r.Region.BeginLine);
+						lineNumbers.Add (editor.OffsetToLineNumber (start));
 						editor.AddMarker (marker);
 					}
 				}

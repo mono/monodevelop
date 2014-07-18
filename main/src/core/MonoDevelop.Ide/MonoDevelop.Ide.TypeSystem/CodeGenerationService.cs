@@ -145,9 +145,10 @@ namespace MonoDevelop.Ide.TypeSystem
 					}
 					var generator = CreateCodeGenerator (editor, parentType.Compilation);
 					generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
-					var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
-					iCArgs.InsertionPoint.Insert (editor, generatedCode.Code);
-					tcs.SetResult (true);
+// TODO: Roslyn port.					
+//					var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
+//					iCArgs.InsertionPoint.Insert (editor, generatedCode.Code);
+//					tcs.SetResult (true);
 				}));
 //				var mode = new InsertionCursorEditMode (
 //					editor.Parent,
@@ -206,11 +207,11 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				}
 				var suitableInsertionPoint = GetSuitableInsertionPoint (insertionPoints, part, newMember) ?? insertionPoints.First ();
-
-				var generator = CreateCodeGenerator (editor, parentType.Compilation);
-				generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
-				var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
-				suitableInsertionPoint.Insert (editor, generatedCode.Code);
+// TODO: Roslyn port.
+//				var generator = CreateCodeGenerator (editor, parentType.Compilation);
+//				generator.IndentLevel = CalculateBodyIndentLevel (declaringType);
+//				var generatedCode = generator.CreateMemberImplementation (parentType, part, newMember, implementExplicit);
+//				suitableInsertionPoint.Insert (editor, generatedCode.Code);
 			});
 
 			return tcs.Task;
@@ -347,7 +348,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return result;
 		}
 
-		public static List<InsertionPoint> GetInsertionPoints (TextEditorData data, ParsedDocument parsedDocument, ITypeSymbol type, Location part)
+		public static List<InsertionPoint> GetInsertionPoints (IReadonlyTextDocument data, ParsedDocument parsedDocument, ITypeSymbol type, Location part)
 		{
 			if (data == null)
 				throw new ArgumentNullException ("data");
@@ -366,7 +367,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				offset++;
 			}
 			var realStartLocation = data.OffsetToLocation (offset);
-			result.Add (GetInsertionPosition (data.Document, realStartLocation.Line, realStartLocation.Column));
+			result.Add (GetInsertionPosition (data, realStartLocation.Line, realStartLocation.Column));
 			result [0].LineBefore = NewLineInsertion.None;
 			
 			foreach (var member in type.GetMembers ()) {
@@ -376,12 +377,12 @@ namespace MonoDevelop.Ide.TypeSystem
 				
 				TextLocation domLocation = data.OffsetToLocation (loc.SourceSpan.End);
 				if (domLocation.Line <= 0) {
-					DocumentLine lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
+					var lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
 					if (lineSegment == null)
 						continue;
 					domLocation = new TextLocation (lineSegment.LineNumber, lineSegment.Length + 1);
 				}
-				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
 			}
 
 			foreach (var member in type.GetMembers ()) {
@@ -389,11 +390,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (loc == null)
 					continue;
 
-				DocumentLine lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
+				var lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
 				if (lineSegment == null)
 					continue;
 				var domLocation = new TextLocation (lineSegment.LineNumber, lineSegment.Length + 1);
-				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
 			}
 
 			foreach (var nestedType in type.GetTypeMembers ()) {
@@ -401,22 +402,22 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (loc == null)
 					continue;
 				
-				DocumentLine lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
+				var lineSegment = data.GetLineByOffset (loc.SourceSpan.Start);
 				if (lineSegment == null)
 					continue;
 				var domLocation = new TextLocation (lineSegment.LineNumber, lineSegment.Length + 1);
 				
-				result.Add (GetInsertionPosition (data.Document, domLocation.Line, domLocation.Column));
+				result.Add (GetInsertionPosition (data, domLocation.Line, domLocation.Column));
 			}
 
 			result [result.Count - 1].LineAfter = NewLineInsertion.None;
-			CheckStartPoint (data.Document, result [0], result.Count == 1);
+			CheckStartPoint (data, result [0], result.Count == 1);
 			if (result.Count > 1) {
 				result.RemoveAt (result.Count - 1); 
 				NewLineInsertion insertLine;
 				var endLine = data.GetLineByOffset (part.SourceSpan.End);
 				var lineBefore = endLine.PreviousLine;
-				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data.Document).Length) {
+				if (lineBefore != null && lineBefore.Length == lineBefore.GetIndentation (data).Length) {
 					insertLine = NewLineInsertion.None;
 				} else {
 					insertLine = NewLineInsertion.Eol;
@@ -431,7 +432,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						col--;
 				}
 				result.Add (new InsertionPoint (new DocumentLocation (endLine.LineNumber, col), insertLine, NewLineInsertion.Eol));
-				CheckEndPoint (data.Document, result [result.Count - 1], result.Count == 1);
+				CheckEndPoint (data, result [result.Count - 1], result.Count == 1);
 			}
 			var bodyRegion = new DomRegion (data.OffsetToLocation (part.SourceSpan.Start), data.OffsetToLocation (part.SourceSpan.End));
 			foreach (var region in parsedDocument.UserRegions.Where (r => bodyRegion.IsInside (r.Region.Begin))) {
@@ -535,7 +536,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			throw new InvalidOperationException ("Invalid member type: " + member.SymbolKind);
 		}
 		
-		static InsertionPoint GetSuitableInsertionPoint (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part, SyntaxNode member)
+		static InsertionPoint GetSuitableInsertionPoint (IReadonlyTextDocument data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part, SyntaxNode member)
 		{
 			switch (member.CSharpKind ()) {
 			case SyntaxKind.FieldDeclaration:
@@ -601,7 +602,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		
 		
 		
-		static InsertionPoint GetNewFieldPosition (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
+		static InsertionPoint GetNewFieldPosition (IReadonlyTextDocument data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
 		{
 			if (!cls.GetMembers ().OfType<IFieldSymbol> ().Any ()) 
 				return points.FirstOrDefault ();
@@ -610,7 +611,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return points.FirstOrDefault (p => p.Location.Convert () > begin);
 		}
 		
-		static InsertionPoint GetNewMethodPosition (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
+		static InsertionPoint GetNewMethodPosition (IReadonlyTextDocument data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
 		{
 			if (!cls.GetMembers ().OfType<IMethodSymbol> ().Any ()) 
 				return GetNewPropertyPosition (data, points, cls, part);
@@ -619,7 +620,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return points.FirstOrDefault (p => p.Location.Convert () > begin);
 		}
 		
-		static InsertionPoint GetNewPropertyPosition (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
+		static InsertionPoint GetNewPropertyPosition (IReadonlyTextDocument data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
 		{
 			if (!cls.GetMembers ().OfType<IPropertySymbol> ().Any ()) 
 				return GetNewFieldPosition (data, points, cls, part);
@@ -628,7 +629,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return points.FirstOrDefault (p => p.Location.Convert () > begin);
 		}
 		
-		static InsertionPoint GetNewEventPosition (TextEditorData data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
+		static InsertionPoint GetNewEventPosition (IReadonlyTextDocument data, IEnumerable<InsertionPoint> points, ITypeSymbol cls, Location part)
 		{
 			if (!cls.GetMembers ().OfType<IEventSymbol> ().Any ()) 
 				return GetNewMethodPosition (data, points, cls, part);

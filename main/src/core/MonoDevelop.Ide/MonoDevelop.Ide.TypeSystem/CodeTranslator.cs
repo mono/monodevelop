@@ -130,7 +130,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return new CodeMapping (text, ImmutableArray.Create (new OffsetInfo (0, 0, text.Length)));
 		}
 
-		public CodeMapping UpdateMapping (Mono.TextEditor.DocumentChangeEventArgs e)
+		public CodeMapping UpdateMapping (MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
 			for (int i = 0; i < projections.Length; i++) {
 				var projection = projections [i];

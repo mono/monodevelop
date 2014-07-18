@@ -60,19 +60,13 @@ namespace MonoDevelop.Ide.Editor
 
 
 		/// <summary>
-		/// Get's the type system semantic information about the current Project.
+		/// Returns the roslyn document for this document. This may return <c>null</c> if it's no compileable document.
+		/// Even if it's a C# file.
 		/// </summary>
-		public abstract IProjectContent ProjectContent {
+		public abstract Microsoft.CodeAnalysis.Document AnalysisDocument {
 			get;
 		}
-
-		/// <summary>
-		/// Get's the compilation of the project.
-		/// </summary>
-		public abstract ICompilation Compilation {
-			get;
-		}
-
+		
 		/// <summary>
 		/// The parsed document. Contains all syntax information about the text.
 		/// </summary>

@@ -122,8 +122,8 @@
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp.Desktop">
       <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.Desktop.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
@@ -2833,9 +2833,6 @@
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
-    <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
-    <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
     <Compile Include="MonoDevelop.Components.DockNotebook\DockWindow.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />

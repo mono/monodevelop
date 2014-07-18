@@ -80,16 +80,12 @@ namespace MonoDevelop.Ide.Gui
 			get;
 			set;
 		}
-		
-		public TextEditorExtension EditorExtension {
-			get { return this.editorExtension; }
-		}
 
 		/// <summary>
 		/// Returns the roslyn document for this document. This may return <c>null</c> if it's no compileable document.
 		/// Even if it's a C# file.
 		/// </summary>
-		public Microsoft.CodeAnalysis.Document AnalysisDocument {
+		public override Microsoft.CodeAnalysis.Document AnalysisDocument {
 			get {
 				if (analysisDocument == null)
 					return null;
@@ -218,18 +214,6 @@ namespace MonoDevelop.Ide.Gui
 
 				var pf = project.GetProjectFile (FileName);
 				return pf != null && pf.BuildAction != BuildAction.None;
-			}
-		}
-
-		public override IProjectContent ProjectContent {
-			get {
-				return Project != null ? TypeSystemService.GetProjectContext (Project) : GetProjectContext ();
-			}
-		}
-		
-		public override ICompilation Compilation {
-			get {
-				return Project != null ? TypeSystemService.GetCompilation (Project) : GetProjectContext ().CreateCompilation ();
 			}
 		}
 
@@ -562,7 +546,6 @@ namespace MonoDevelop.Ide.Gui
 				RoslynTypeSystemService.Workspace.InformDocumentClose (analysisDocument, FileName);
 				analysisDocument = null;
 			}
-			DetachExtensionChain ();
 			if (Editor != null) {
 				Editor.Dispose ();
 			}

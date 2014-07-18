@@ -38,8 +38,7 @@ using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.MainToolbar;
-using ICSharpCode.NRefactory.TypeSystem;
-using Mono.TextEditor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -135,7 +134,7 @@ namespace MonoDevelop.Components.MainToolbar
 			return this [item].GetDescriptionMarkupText (widget);
 		}
 
-		TextSegment ISearchDataSource.GetRegion (int item)
+		ISegment ISearchDataSource.GetRegion (int item)
 		{
 			var result = this [item];
 			return new TextSegment (result.Offset, result.Length);

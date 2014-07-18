@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Ide.Gui.Content;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Tasks;
@@ -38,7 +37,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp;
 using ICSharpCode.NRefactory6.CSharp.Completion;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -53,7 +51,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 		
 		public SemanticModel Compilation {
 			get {
-				var analysisDocument = Document.AnalysisDocument;
+				var analysisDocument = DocumentContext.AnalysisDocument;
 				if (analysisDocument == null)
 					return null;
 				return analysisDocument.GetSemanticModelAsync ().Result;

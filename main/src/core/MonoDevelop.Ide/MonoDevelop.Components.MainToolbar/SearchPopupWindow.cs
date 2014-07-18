@@ -34,8 +34,8 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using Mono.Addins;
-using Mono.TextEditor;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.Components.MainToolbar
 {
@@ -85,10 +85,12 @@ namespace MonoDevelop.Components.MainToolbar
 			{
 				throw new NotImplementedException ();
 			}
-			TextSegment ISearchDataSource.GetRegion (int item)
+			
+			ISegment ISearchDataSource.GetRegion (int item)
 			{
 				throw new NotImplementedException ();
 			}
+			
 			string ISearchDataSource.GetFileName (int item)
 			{
 				throw new NotImplementedException ();
@@ -183,7 +185,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				if (string.IsNullOrEmpty (SelectedItemFileName))
 					return;
-				if (region.IsEmpty) {
+				if (region.Length <= 0) {
 					if (Pattern.LineNumber == 0) {
 						IdeApp.Workbench.OpenDocument (SelectedItemFileName);
 					} else {
@@ -751,10 +753,10 @@ namespace MonoDevelop.Components.MainToolbar
 				handler (this, e);
 		}
 
-		public Mono.TextEditor.TextSegment SelectedItemRegion {
+		public ISegment SelectedItemRegion {
 			get {
 				if (selectedItem == null || selectedItem.Item < 0 || selectedItem.Item >= selectedItem.DataSource.ItemCount)
-					return Mono.TextEditor.TextSegment.Invalid;
+					return TextSegment.Invalid;
 				return selectedItem.DataSource.GetRegion (selectedItem.Item);
 			}
 		}

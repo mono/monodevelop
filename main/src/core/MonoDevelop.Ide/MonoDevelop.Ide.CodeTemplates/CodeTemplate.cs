@@ -400,7 +400,7 @@ namespace MonoDevelop.Ide.CodeTemplates
 				Template = this,
 				DocumentContext = context,
 				Editor = editor,
-				ParsedDocument = context.ParsedDocument != null ? context.ParsedDocument.ParsedFile : null,
+				//ParsedDocument = context.ParsedDocument != null ? context.ParsedDocument.ParsedFile : null,
 				InsertPosition = data.CaretLocation,
 				LineIndent = data.GetLineIndent (data.CaretLocation.Line),
 				TemplateCode = Code

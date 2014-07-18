@@ -90,7 +90,7 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			var doc = IdeApp.Workbench.GetDocument (fileName);
 			if (doc != null)
-				return new SearchCollector.FileList (doc.Project, doc.ProjectContent, new [] { (FilePath)fileName });
+				return new SearchCollector.FileList (doc.Project, null, new [] { (FilePath)fileName });
 			return null;
 		}
 

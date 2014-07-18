@@ -27,7 +27,6 @@ using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.CodeAnalysis.Text;
-using Mono.TextEditor.Utils;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -48,7 +47,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				text = SourceText.From (TextFileProvider.Instance.GetTextEditorData (fileName).Text);
 			}
 			else {
-				text = SourceText.From (TextFileUtility.GetText (fileName));
+				text = SourceText.From (MonoDevelop.Core.Text.TextFileUtility.GetText (fileName));
 			}
 			return TextAndVersion.Create (text, VersionStamp.Create ());
 		}

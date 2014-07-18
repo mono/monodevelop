@@ -33,8 +33,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp.Completion;
-using Mono.TextEditor.PopupWindow;
-using ICSharpCode.NRefactory.Completion;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
