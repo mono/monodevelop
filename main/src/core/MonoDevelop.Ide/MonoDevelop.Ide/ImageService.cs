@@ -763,6 +763,84 @@ namespace MonoDevelop.Ide
 			animatedImages.RemoveAll (a => (AnimatedImageInfo)a.Target == ainfo);
 		}
 
+		static List<WeakReference> animatedTreeStoreIconImages = new List<WeakReference> ();
+
+		class AnimatedTreeStoreIconInfo {
+			public Gtk.TreeStore TreeStore;
+			public AnimatedIcon AnimatedIcon;
+			public IDisposable Animation;
+			public string IconId;
+			public Gtk.TreeIter Iter;
+			public int Column;
+
+			public AnimatedTreeStoreIconInfo (Gtk.TreeStore treeStore, Gtk.TreeIter iter, int column, AnimatedIcon anim, string iconId)
+			{
+				TreeStore = treeStore;
+				Iter = iter;
+				Column = column;
+				AnimatedIcon = anim;
+				IconId = iconId;
+				TreeStore.RowDeleted += HandleRowDeleted;
+				StartAnimation ();
+			}
+
+			void HandleRowDeleted (object o, Gtk.RowDeletedArgs args)
+			{
+				Gtk.TreeIter outIter;
+				if (!(TreeStore.GetIter (out outIter, args.Path) && outIter.Equals (Iter))) {
+					UnregisterTreeAnimation (this);
+				}
+			}
+
+			void StartAnimation ()
+			{
+				if (Animation == null) {
+					Animation = AnimatedIcon.StartAnimation (delegate (Xwt.Drawing.Image pix) {
+						TreeStore.SetValue (Iter,Column,pix);
+					});
+				}
+			}
+
+			void StopAnimation ()
+			{
+				if (Animation != null) {
+					Animation.Dispose ();
+					Animation = null;
+				}
+			}
+
+			public void Dispose ()
+			{
+				TreeStore.RowDeleted -= HandleRowDeleted;
+				StopAnimation ();
+			}
+		}
+
+		public static void LoadIcon (this Gtk.TreeStore treeStore, Gtk.TreeIter iter, int column, string iconId, Gtk.IconSize size)
+		{
+			var ainfo = animatedTreeStoreIconImages.Select (a => (AnimatedTreeStoreIconInfo)a.Target).FirstOrDefault (a => a != null && a.TreeStore == treeStore && a.Iter.Equals (iter) && a.Column == column);
+			if (ainfo != null) {
+				if (ainfo.IconId == iconId)
+					return;
+				UnregisterTreeAnimation (ainfo);
+			}
+			if (iconId == null) {
+				treeStore.SetValue (iter, column, null);
+			} else if (IsAnimation (iconId, size)) {
+				var anim = GetAnimatedIcon (iconId);
+				ainfo = new AnimatedTreeStoreIconInfo (treeStore, iter, column, anim, iconId);
+				animatedTreeStoreIconImages.Add (new WeakReference (ainfo));
+			} else {
+				treeStore.SetValue (iter, column, ImageService.GetIcon (iconId));
+			}
+		}
+
+		static void UnregisterTreeAnimation (AnimatedTreeStoreIconInfo ainfo)
+		{
+			ainfo.Dispose ();
+			animatedTreeStoreIconImages.RemoveAll (a => (AnimatedTreeStoreIconInfo)a.Target == ainfo);
+		}
+
 		//TODO: size-limit the in-memory cache
 		//TODO: size-limit the on-disk cache
 		static Dictionary<string,ImageLoader> gravatars = new Dictionary<string,ImageLoader> ();

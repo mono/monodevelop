@@ -110,6 +110,7 @@ namespace MonoDevelop.Debugger
 		const int ViewerButtonVisibleColumn = 12;
 		const int ColorPreviewColumn = 13;
 		const int PreviewIconColumn = 14;
+		const int EvaluateStatusIconColumn = 15;
 		
 		public event EventHandler StartEditing;
 		public event EventHandler EndEditing;
@@ -159,7 +160,7 @@ namespace MonoDevelop.Debugger
 
 		public ObjectValueTreeView ()
 		{
-			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(Xwt.Drawing.Color?), typeof(string));
+			store = new TreeStore (typeof(string), typeof(string), typeof(string), typeof(ObjectValue), typeof(bool), typeof(bool), typeof(string), typeof(string), typeof(string), typeof(bool), typeof(string), typeof(Xwt.Drawing.Image), typeof(bool), typeof(Xwt.Drawing.Color?), typeof(string), typeof(Xwt.Drawing.Image));
 			Model = store;
 			RulesHint = true;
 			EnableSearch = false;
@@ -195,6 +196,9 @@ namespace MonoDevelop.Debugger
 			
 			valueCol = new TreeViewColumn ();
 			valueCol.Title = GettextCatalog.GetString ("Value");
+			var evaluateStatusCell = new CellRendererImage ();
+			valueCol.PackStart (evaluateStatusCell, false);
+			valueCol.AddAttribute (evaluateStatusCell, "image", EvaluateStatusIconColumn);
 			var crColorPreview = new CellRendererColorPreview ();
 			valueCol.PackStart (crColorPreview, false);
 			valueCol.SetCellDataFunc (crColorPreview, new TreeCellDataFunc ((tree_column, cell, model, iter) => {
@@ -754,6 +758,7 @@ namespace MonoDevelop.Debugger
 			string nameColor = null;
 			string valueColor = null;
 			string valueButton = null;
+			string evaluateStatusIcon = null;
 			
 			name = name ?? val.Name;
 
@@ -778,7 +783,9 @@ namespace MonoDevelop.Debugger
 					canEdit = !val.IsReadOnly;
 					strval = string.Empty;
 				}
+				evaluateStatusIcon = MonoDevelop.Ide.Gui.Stock.Warning;
 			} else if (val.IsError) {
+				evaluateStatusIcon = MonoDevelop.Ide.Gui.Stock.Warning;
 				strval = val.Value;
 				int i = strval.IndexOf ('\n');
 				if (i != -1)
@@ -793,6 +800,7 @@ namespace MonoDevelop.Debugger
 				canEdit = false;
 			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
+				evaluateStatusIcon = "md-spinner-14";
 				valueColor = disabledColor;
 				if (val.IsEvaluatingGroup) {
 					nameColor = disabledColor;
@@ -824,6 +832,7 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
 			store.SetValue (it, ValueColorColumn, valueColor);
+			store.LoadIcon (it, EvaluateStatusIconColumn, evaluateStatusIcon, IconSize.Menu);
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);
 			store.SetValue (it, ViewerButtonVisibleColumn, showViewerButton);
 
@@ -1609,7 +1618,6 @@ namespace MonoDevelop.Debugger
 		
 		bool GetCellAtPos (int x, int y, out TreePath path, out TreeViewColumn col, out CellRenderer cellRenderer)
 		{
-			int cx, cy;
 			if (GetPathAtPos (x, y, out path, out col)) {
 				var cellArea = GetCellArea (path, col);
 				x -= cellArea.X;
