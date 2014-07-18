@@ -1258,6 +1258,9 @@ namespace MonoDevelop.Debugger
 			if (PreviewWindowManager.IsVisible && icon != PreviewButtonIcons.Active) {
 				return;
 			}
+			if (Model.GetValue (it, ObjectColumn) == null) {
+				return;
+			}
 			if (currentIcon != icon || !currentHoverIter.Equals (it)) {
 				if (!currentHoverIter.Equals (TreeIter.Zero)) {
 					store.SetValue (currentHoverIter, PreviewIconColumn, null);
