@@ -9,7 +9,8 @@ namespace GitHub.Issues
 {
 	public enum Commands
 	{
-		GetAllIssues
+		GetAllIssues,
+		ViewIssueHandler
 	}
 
 	class GetAllIssuesHandler : CommandHandler
@@ -21,6 +22,23 @@ namespace GitHub.Issues
 
 			if (issues != null)
 				IdeApp.Workbench.OpenDocument (new IssuesView ("Issues View", issues), true);
+		}
+	}
+
+	class ViewIssueHandler : CommandHandler
+	{
+		public ViewIssueHandler(Octokit.Issue issue) : base ()
+		{
+			this.issue = issue;
+			this.Run ();
+		}
+
+		private Octokit.Issue issue;
+
+		protected override void Run ()
+		{
+			if (this.issue != null)
+				IdeApp.Workbench.OpenDocument(new IssueView(this.issue.Title, this.issue), true);
 		}
 	}
 }

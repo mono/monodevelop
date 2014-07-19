@@ -33,10 +33,16 @@ namespace GitHub.Issues.Views
 			get {
 				if (widget == null) {
 					CreateWidgetFromInfo (this.issues);
+					this.widget.IssueSelected = new EventHandler<IssueSelectedEventArgs> (this.ViewIssueDetails);
 				}
 
 				return widget; 
 			}
+		}
+
+		private void ViewIssueDetails(object sender, IssueSelectedEventArgs args)
+		{
+			ViewIssueHandler viewIssueHandler = new ViewIssueHandler (args.SelectedIssue);
 		}
 
 		#endregion

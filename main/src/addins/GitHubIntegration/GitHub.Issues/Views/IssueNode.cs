@@ -2,46 +2,38 @@
 using Octokit;
 using Gtk;
 using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GitHub.Issues
 {
 	public class IssueNode
 	{
-		private Octokit.Issue issue;
+		public Octokit.Issue Issue;
 
 		[Description("Title")]
-		public String Title { get { return this.issue.Title; } }
+		public String Title { get { return this.Issue.Title; } }
 		[Description("Description")]
-		public String Body { get { return this.issue.Body; } }
+		public String Body { get { return this.Issue.Body; } }
 		[Description("Assigned To")]
-		public String Assigee { get { return this.issue.Assignee != null ? this.issue.Assignee.Login : "Unassigned"; } }
+		public String Assigee { get { return this.Issue.Assignee != null ? this.Issue.Assignee.Login : "Unassigned"; } }
 		[Description("Last Updated At")]
-		public String UpdatedAt { get { return this.issue.UpdatedAt.ToString (); } }
+		public String UpdatedAt { get { return this.Issue.UpdatedAt.ToString (); } }
 		[Description("State")]
-		public String State { get { return this.issue.State.ToString (); } }
+		public String State { get { return this.Issue.State.ToString (); } }
 		[Description("Labels")]
 		public String Labels
 		{
 			get {
-				String labels = "";
+				var query = from label in this.Issue.Labels select label.Name;
 
-				foreach (Octokit.Label label in this.issue.Labels) {
-					labels += label.Name + ", ";
-				}
-
-				labels = labels.Trim ();
-
-				if (labels.Length > 0) {
-					labels = labels.Remove (labels.Length - 1);
-				}
-
-				return labels;
+				return String.Join (", ", query);
 			}
 		}
 
-		public IssueNode (Octokit.Issue issue)
+		public IssueNode (Octokit.Issue Issue)
 		{
-			this.issue = issue;
+			this.Issue = Issue;
 		}
 	}
 }
