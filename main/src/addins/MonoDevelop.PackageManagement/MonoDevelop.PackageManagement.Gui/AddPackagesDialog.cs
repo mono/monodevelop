@@ -289,7 +289,7 @@ namespace MonoDevelop.PackageManagement
 			this.packageVersionLabel.Text = packageViewModel.Version.ToString ();
 			this.packageAuthor.Text = packageViewModel.GetAuthors ();
 			this.packagePublishedDate.Text = packageViewModel.GetLastPublishedDisplayText ();
-			this.packageDownloads.Text = packageViewModel.GetDownloadCountOrVersionDisplayText ();
+			this.packageDownloads.Text = packageViewModel.GetDownloadCountDisplayText ();
 			this.packageDescription.Text = packageViewModel.Description;
 			this.packageId.Text = packageViewModel.Id;
 			this.packageId.Visible = packageViewModel.HasNoGalleryUrl;
