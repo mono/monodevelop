@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 			lines = new LineSegment[src.Count];
 			int cur = 0;
 			foreach (var line in src.Lines) {
-				lines [cur] = new LineSegment (this, cur, line.Offset, line.Length, line.UnicodeNewline);
+				lines [cur] = new LineSegment (this, cur, line.Offset, line.LengthIncludingDelimiter, line.UnicodeNewline);
 				cur++;
 			}
 		}

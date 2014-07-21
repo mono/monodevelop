@@ -1907,7 +1907,7 @@ namespace Mono.TextEditor
 
 		public System.IO.TextReader CreateReader (int offset, int length)
 		{
-			throw new NotImplementedException ();
+			return new RopeTextReader(buffer.GetRange(offset, length));
 		}
 
 		string ICSharpCode.NRefactory.Editor.ITextSource.GetText (int offset, int length)
