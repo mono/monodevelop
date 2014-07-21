@@ -32,9 +32,6 @@ using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using Gtk;
 using MonoDevelop.AnalysisCore.Gui;
-using MonoDevelop.SourceEditor;
-using MonoDevelop.SourceEditor.QuickTasks;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.AnalysisCore.Fixes;
 using MonoDevelop.Ide;
 using MonoDevelop.CodeIssues;
@@ -256,16 +253,9 @@ namespace MonoDevelop.AnalysisCore
 		{
 			foreach (var fix in result.Fixes)
 				foreach (var handler in AnalysisExtensions.GetFixHandlers (fix.FixType))
-					foreach (var action in handler.GetFixes (editor, doc, fix))
+					foreach (var action in handler.GetFixes (doc.Editor, doc, fix))
 						yield return action;
 
-		}
-
-		public static IEnumerable<IAnalysisFixAction> GetActions (MonoDevelop.Ide.Gui.Document doc, FixableResult result)
-		{
-			if (doc == null)
-				throw new ArgumentNullException ("doc");
-			return GetActions (doc.Editor, doc, result);
 		}
 
 		static string GetIcon (Severity severity)

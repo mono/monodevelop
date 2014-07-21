@@ -28,8 +28,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Refactoring;
-using Mono.TextEditor;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -169,54 +169,54 @@ namespace MonoDevelop.CodeIssues
 
 		const string analysisDisableTag = "Analysis ";
 
-		public void DisableOnce (MonoDevelop.Ide.Gui.Document document, TextSpan span)
+		public void DisableOnce (TextEditor editor, DocumentContext context, TextSpan span)
 		{
-			var start = document.Editor.OffsetToLocation (span.Start);
-			document.Editor.Insert (
-				document.Editor.LocationToOffset (start.Line, 1), 
-				document.Editor.IndentationTracker.GetIndentationString (span.Start) + "// " + analysisDisableTag + "disable once " + AnalysisDisableKeyword + document.Editor.EolMarker
+			var start =editor.OffsetToLocation (span.Start);
+			editor.InsertText (
+				editor.LocationToOffset (start.Line, 1), 
+				editor.GetVirtualIndentationString (start.Line) + "// " + analysisDisableTag + "disable once " + AnalysisDisableKeyword + editor.EolMarker
 			); 
 		}
 
-		public void DisableAndRestore (MonoDevelop.Ide.Gui.Document document, TextSpan span)
+		public void DisableAndRestore (TextEditor editor, DocumentContext context, TextSpan span)
 		{
-			using (document.Editor.OpenUndoGroup ()) {
-				var start = document.Editor.OffsetToLocation (span.Start);
-				var end = document.Editor.OffsetToLocation (span.End);
-				document.Editor.Insert (
-					document.Editor.LocationToOffset (end.Line + 1, 1),
-					document.Editor.IndentationTracker.GetIndentationString (span.End) + "// " + analysisDisableTag + "restore " + AnalysisDisableKeyword + document.Editor.EolMarker
+			using (editor.OpenUndoGroup ()) {
+				var start = editor.OffsetToLocation (span.Start);
+				var end = editor.OffsetToLocation (span.End);
+				editor.InsertText (
+					editor.LocationToOffset (end.Line + 1, 1),
+					editor.GetVirtualIndentationString (end.Line) + "// " + analysisDisableTag + "restore " + AnalysisDisableKeyword + editor.EolMarker
 				); 
-				document.Editor.Insert (
-					document.Editor.LocationToOffset (start.Line, 1),
-					document.Editor.IndentationTracker.GetIndentationString (span.Start) + "// " + analysisDisableTag + "disable " + AnalysisDisableKeyword + document.Editor.EolMarker
+				editor.InsertText (
+					editor.LocationToOffset (start.Line, 1),
+					editor.GetVirtualIndentationString (start.Line) + "// " + analysisDisableTag + "disable " + AnalysisDisableKeyword + editor.EolMarker
 				); 
 			}
 		}
 
-		public void DisableWithPragma (MonoDevelop.Ide.Gui.Document document, TextSpan span)
+		public void DisableWithPragma (TextEditor editor, DocumentContext context, TextSpan span)
 		{
-			using (document.Editor.OpenUndoGroup ()) {
-				var start = document.Editor.OffsetToLocation (span.Start);
-				var end = document.Editor.OffsetToLocation (span.End);
-				document.Editor.Insert (
-					document.Editor.LocationToOffset (end.Line + 1, 1),
-					document.Editor.IndentationTracker.GetIndentationString (span.End) + "#pragma warning restore " + PragmaWarning + document.Editor.EolMarker
+			using (editor.OpenUndoGroup ()) {
+				var start = editor.OffsetToLocation (span.Start);
+				var end = editor.OffsetToLocation (span.End);
+				editor.InsertText (
+					editor.LocationToOffset (end.Line + 1, 1),
+					editor.GetVirtualIndentationString (end.Line) + "#pragma warning restore " + PragmaWarning + editor.EolMarker
 				); 
-				document.Editor.Insert (
-					document.Editor.LocationToOffset (start.Line, 1),
-					document.Editor.IndentationTracker.GetIndentationString (span.Start) + "#pragma warning disable " + PragmaWarning + document.Editor.EolMarker
+				editor.InsertText (
+					editor.LocationToOffset (start.Line, 1),
+					editor.GetVirtualIndentationString (start.Line) + "#pragma warning disable " + PragmaWarning + editor.EolMarker
 				); 
 			}
 		}
 
-		public void SuppressWithAttribute (MonoDevelop.Ide.Gui.Document document, TextSpan span)
+		public void SuppressWithAttribute (TextEditor editor, DocumentContext context, TextSpan span)
 		{
-			var end = document.Editor.OffsetToLocation (span.End);
-			var member = document.ParsedDocument.GetMember (new ICSharpCode.NRefactory.TextLocation (end.Line, end.Column));
-			document.Editor.Insert (
-				document.Editor.LocationToOffset (member.Region.BeginLine, 1),
-				document.Editor.IndentationTracker.GetIndentationString (span.Start) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + document.Editor.EolMarker, SuppressMessageCategory, SuppressMessageCheckId)
+			var end = editor.OffsetToLocation (span.End);
+			var member = context.ParsedDocument.GetMember (new ICSharpCode.NRefactory.TextLocation (end.Line, end.Column));
+			editor.InsertText (
+				editor.LocationToOffset (member.Region.BeginLine, 1),
+				editor.GetVirtualIndentationString (member.Region.BeginLine) + string.Format ("[SuppressMessage(\"{0}\", \"{1}\")]" + editor.EolMarker, SuppressMessageCategory, SuppressMessageCheckId)
 			); 
 		}
 	}

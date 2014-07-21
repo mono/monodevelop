@@ -30,7 +30,6 @@ using MonoDevelop.AnalysisCore;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 using System.Threading;
-using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.CodeIssues;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CodeFixes;

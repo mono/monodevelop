@@ -98,7 +98,7 @@ namespace MonoDevelop.Refactoring
 			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-			var info = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset);
+			var info = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset);
 			if (info.DeclaredSymbol != null)
 				FindDerivedSymbols (info.DeclaredSymbol);
 

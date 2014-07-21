@@ -42,7 +42,7 @@ namespace MonoDevelop.Refactoring
 			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-			JumpToDeclaration (doc, CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset).Result);
+			JumpToDeclaration (doc, CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset).Result);
 		}
 		
 		public static void JumpToDeclaration (MonoDevelop.Ide.Gui.Document doc, RefactoringSymbolInfo info)

@@ -556,7 +556,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 //				Math.Max (DocumentLocation.MinLine, task.Location.Line),
 //				Math.Max (DocumentLocation.MinColumn, task.Location.Column)
 //			);
-			TextEditor.CaretOffset = task.Location;
+			TextEditor.Caret.Offset = task.Location;
 			TextEditor.CenterToCaret ();
 			TextEditor.StartCaretPulseAnimation ();
 			TextEditor.GrabFocus ();

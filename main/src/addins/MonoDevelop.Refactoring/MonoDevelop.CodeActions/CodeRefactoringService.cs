@@ -34,6 +34,8 @@ using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CodeActions
 {
@@ -58,15 +60,17 @@ namespace MonoDevelop.CodeActions
 			return includeDisabledNodes ? codeActions.Where (ca => ca.Language == language) : codeActions.Where (ca => ca.Language == language && ca.IsEnabled);
 		}
 
-		public static async Task<IEnumerable<Tuple<CodeRefactoringDescriptor, CodeAction>>> GetValidActionsAsync (MonoDevelop.Ide.Gui.Document doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
+		public static async Task<IEnumerable<Tuple<CodeRefactoringDescriptor, CodeAction>>> GetValidActionsAsync (TextEditor editor, DocumentContext doc, TextSpan span, CancellationToken cancellationToken = default (CancellationToken))
 		{
+			if (editor == null)
+				throw new ArgumentNullException ("editor");
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
 			var analysisDocument = doc.AnalysisDocument;
 			var actions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
 			if (analysisDocument == null)
 				return actions;
-			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(doc.Editor.MimeType))) {
+			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(editor.MimeType))) {
 				IEnumerable<CodeAction> refactorings;
 				try {
 					refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (analysisDocument, span, cancellationToken);

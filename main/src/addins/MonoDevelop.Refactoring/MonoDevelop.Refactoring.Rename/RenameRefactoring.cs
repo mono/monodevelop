@@ -92,10 +92,7 @@ namespace MonoDevelop.Refactoring.Rename
 			}
 			
 			if (fileNames.Count == 1) {
-				var data = IdeApp.Workbench.ActiveDocument.Editor;
-				var editor = data.Parent;
-				if (editor == null)
-					return;
+				var editor = IdeApp.Workbench.ActiveDocument.Editor;
 				
 				var links = new List<TextLink> ();
 				var link = new TextLink ("name");
@@ -105,7 +102,7 @@ namespace MonoDevelop.Refactoring.Rename
 				}
 				foreach (var r in locations) {
 					var segment = new TextSegment (r.Item2.Start - baseOffset, r.Item2.Length);
-					if (segment.Offset <= data.Caret.Offset - baseOffset && data.Caret.Offset - baseOffset <= segment.EndOffset) {
+					if (segment.Offset <= editor.CaretOffset - baseOffset && editor.CaretOffset - baseOffset <= segment.EndOffset) {
 						link.Links.Insert (0, segment); 
 					} else {
 						link.AddLink (segment);
@@ -114,7 +111,7 @@ namespace MonoDevelop.Refactoring.Rename
 				
 				links.Add (link);
 
-				data.StartTextLinkMode (new TextLinkModeOptions (links));
+				editor.StartTextLinkMode (new TextLinkModeOptions (links));
 //				if (editor.CurrentMode is TextLinkEditMode)
 //					((TextLinkEditMode)editor.CurrentMode).ExitTextLinkMode ();
 //				TextLinkEditMode tle = new TextLinkEditMode (editor, baseOffset, links);
@@ -179,7 +176,7 @@ namespace MonoDevelop.Refactoring.Rename
 						if (idx >= 0) {
 							newFileName = oldFileName.Substring (0, idx) + properties.NewName + oldFileName.Substring (idx + filePath.Length);
 						} else {
-							newFileName = currentPart != 1 ? newName + currentPart : newName;
+							newFileName = currentPart != 1 ? properties.NewName + currentPart : properties.NewName;
 							currentPart++;
 						}
 							

@@ -27,6 +27,8 @@ using System;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -119,6 +121,8 @@ namespace MonoDevelop.Ide.Editor
 		/// The next call to ParsedDocument will give always the current parsed document but may block the UI thread.
 		/// </summary>
 		public abstract void ReparseDocument ();
+		
+		public abstract Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken));
 
 		// TODO: IMO that needs to be handled differently (this is atm only used in the ASP.NET binding)
 		// Maybe using the file service. Files can be changed/saved w/o beeing opened.

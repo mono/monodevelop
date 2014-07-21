@@ -39,9 +39,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Refactoring
@@ -82,7 +80,7 @@ namespace MonoDevelop.Refactoring
 			cache[type.ContainingNamespace] = result;
 			var data = doc.Editor;
 			result.InsertNamespace  = false;
-			var nameSpaces = RefactoringOptions.GetUsedNamespacesAsync (doc, data.CaretOffset).Result;
+			var nameSpaces = RefactoringOptions.GetUsedNamespacesAsync (doc.Editor, doc, data.CaretOffset).Result;
 			foreach (var ns in nameSpaces) {
 				if (GetNamespaceString (type.ContainingNamespace) == ns) {
 
@@ -259,7 +257,7 @@ namespace MonoDevelop.Refactoring
 			completionList.IsSorted = true;
 			typeList.ForEach (completionList.Add);
 			
-			((CompletionTextEditorExtension)ext).ShowCompletion (completionList);
+			completionExt.ShowCompletion (completionList);
 		}
 	}
 }

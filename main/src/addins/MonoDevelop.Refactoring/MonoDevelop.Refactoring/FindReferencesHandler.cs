@@ -78,7 +78,7 @@ namespace MonoDevelop.Refactoring
 			if (analysisDocument == null)
 				return;
 
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset).Result;
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset).Result;
 			var sym = info.Symbol ?? info.DeclaredSymbol;
 			if (sym != null)
 				FindRefs (sym);

@@ -30,7 +30,6 @@ using MonoDevelop.AnalysisCore;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui;
 using System.Threading;
-using MonoDevelop.SourceEditor.QuickTasks;
 using MonoDevelop.CodeIssues;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -43,7 +42,7 @@ namespace MonoDevelop.CodeIssues
 	{
 		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
 		{
-			if (!QuickTaskStrip.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
+			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
 
 			var model = input.GetCompilationAsync (cancellationToken).Result;

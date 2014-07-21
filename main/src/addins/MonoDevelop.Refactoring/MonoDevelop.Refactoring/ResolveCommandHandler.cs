@@ -33,12 +33,6 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp.Resolver;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.CSharp.Completion;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading;
@@ -48,8 +42,6 @@ using MonoDevelop.Core.ProgressMonitoring;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.CSharp;
-using ICSharpCode.NRefactory.Completion;
-using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring
@@ -61,21 +53,15 @@ namespace MonoDevelop.Refactoring
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			return ResolveAt (doc.Editor, doc.Editor.CaretLocation, doc, out resolveResult, out node, token);
-		}
-
-		public static bool ResolveAt (IReadonlyTextDocument editor, DocumentLocation resolveLocation, DocumentContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
-		{
-			if (doc == null)
-				throw new ArgumentNullException ("doc");
+			var editor = doc.Editor;
 			if (editor == null || editor.MimeType != "text/x-csharp") {
 				node = null;
 				resolveResult = null;
 				return false;
 			}
-			if (!InternalResolveAt (editor, resolveLocation, doc, out resolveResult, out node)) {
-				var location = RefactoringService.GetCorrectResolveLocation (editor, doc, resolveLocation);
-				resolveResult = GetHeuristicResult (editor, doc, location, ref node);
+			if (!InternalResolveAt (doc, out resolveResult, out node)) {
+				var location = RefactoringService.GetCorrectResolveLocation (doc, editor.Caret.Location);
+				resolveResult = GetHeuristicResult (doc, location, ref node);
 				if (resolveResult == null)
 					return false;
 			}
@@ -85,7 +71,7 @@ namespace MonoDevelop.Refactoring
 			return true;
 		}
 
-		static bool InternalResolveAt (IReadonlyTextDocument editor, DocumentLocation resolveLocation, DocumentContext doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
+		static bool InternalResolveAt (Document doc, out ResolveResult resolveResult, out AstNode node, CancellationToken token = default (CancellationToken))
 		{
 			var parsedDocument = doc.ParsedDocument;
 			resolveResult = null;
@@ -97,7 +83,7 @@ namespace MonoDevelop.Refactoring
 			if (unit == null || parsedFile == null)
 				return false;
 			try {
-				var location = RefactoringService.GetCorrectResolveLocation (editor, doc, resolveLocation);
+				var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
 				resolveResult = ResolveAtLocation.Resolve (doc.Compilation, parsedFile, unit, location, out node, token);
 				if (resolveResult == null || node is Statement)
 					return false;
@@ -128,18 +114,17 @@ namespace MonoDevelop.Refactoring
 
 			var resolveMenu = new CommandInfoSet ();
 			resolveMenu.Text = GettextCatalog.GetString ("Resolve");
-			
-			var possibleNamespaces = GetPossibleNamespaces (doc.Editor, doc.Editor.CaretLocation, doc, node, ref resolveResult);
+
+			var possibleNamespaces = GetPossibleNamespaces (doc.Editor, doc, doc.Editor.CaretLocation);
 
 			foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
 				var reference = t.Reference;
 				var info = resolveMenu.CommandInfos.Add (
 					t.GetImportText (),
-
-					new System.Action (new AddImport (doc.Editor, doc, resolveResult, null, reference, true, possibleNamespaces.Node).Run)
-					);
+					new System.Action (new AddImport (doc.Editor, doc, possibleNamespaces.ResolveResult, null, reference, true, possibleNamespaces.Node).Run)
+				);
 				info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
-			
+
 			}
 
 			if (possibleNamespaces.AddUsings) {
@@ -148,12 +133,12 @@ namespace MonoDevelop.Refactoring
 					var reference = t.Reference;
 					var info = resolveMenu.CommandInfos.Add (
 						t.GetImportText (),
-						new System.Action (new AddImport (doc.Editor, doc, resolveResult, ns, reference, true, possibleNamespaces.Node).Run)
-						);
+						new System.Action (new AddImport (doc.Editor, doc, possibleNamespaces.ResolveResult, ns, reference, true, possibleNamespaces.Node).Run)
+					);
 					info.Icon = MonoDevelop.Ide.Gui.Stock.AddNamespace;
 				}
 			}
-			
+
 			if (possibleNamespaces.AddFullyQualifiedName) {
 				if (resolveMenu.CommandInfos.Count > 0)
 					resolveMenu.CommandInfos.AddSeparator ();
@@ -161,31 +146,22 @@ namespace MonoDevelop.Refactoring
 				foreach (var t in possibleNamespaces) {
 					string ns = t.Namespace;
 					var reference = t.Reference;
-
-					resolveMenu.CommandInfos.Add (t.GetInsertNamespaceText (doc.Editor.GetTextBetween (node.Span.Start, node.Span.End)), new System.Action (new AddImport (doc.Editor, doc, resolveResult, ns, reference, false, node).Run));
+					resolveMenu.CommandInfos.Add (t.GetInsertNamespaceText (doc.Editor.GetTextBetween (node.Span.Start, node.Span.End)), new System.Action (new AddImport (doc.Editor, doc, possibleNamespaces.ResolveResult, ns, reference, false, node).Run));
 				}
 			}
-			
+
 			if (resolveMenu.CommandInfos.Count > 0)
 				ainfo.Insert (0, resolveMenu);
 		}
 
 
-		static string CreateStub (IReadonlyTextDocument editor, DocumentContext doc, int offset)
+		/*
+		static ResolveResult GetHeuristicResult (Document doc, DocumentLocation location, ref AstNode node)
 		{
-			if (offset <= 0)
-				return "";
-			string text = editor.GetTextAt (0, Math.Min (editor.Length, offset));
-			var stub = new StringBuilder (text);
-			CSharpCompletionEngine.AppendMissingClosingBrackets (stub, false);
-			return stub.ToString ();
-		}
-
-		static ResolveResult GetHeuristicResult (IReadonlyTextDocument editor, DocumentContext doc, DocumentLocation location, ref AstNode node)
-		{
-			if (editor == null)
+			var editor = doc.Editor;
+			if (editor == null || editor.Caret == null)
 				return null;
-			int offset = editor.LocationToOffset (location);
+			int offset = editor.Caret.Offset;
 			bool wasLetter = false, wasWhitespaceAfterLetter = false;
 			while (offset < editor.Length) {
 				char ch = editor.GetCharAt (offset);
@@ -215,7 +191,7 @@ namespace MonoDevelop.Refactoring
 					wasWhitespaceAfterLetter |= isWhiteSpace;
 			}
 
-			var unit = SyntaxTree.Parse (CreateStub (editor, doc, offset), doc.Name);
+			var unit = SyntaxTree.Parse (CreateStub (doc, offset), doc.FileName);
 
 			return ResolveAtLocation.Resolve (
 				doc.Compilation, 
@@ -223,11 +199,10 @@ namespace MonoDevelop.Refactoring
 				unit,
 				location, 
 				out node);
-		}
+		}*/
 
 
-		
-		public static PossibleNamespaceResult GetPossibleNamespaces (MonoDevelop.Ide.Gui.Document doc, CancellationToken cancellationToken = default(CancellationToken))
+		public static PossibleNamespaceResult GetPossibleNamespaces (IReadonlyTextDocument editor, DocumentContext doc, DocumentLocation loc, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
@@ -235,43 +210,30 @@ namespace MonoDevelop.Refactoring
 			if (analysisDocument == null)
 				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
 			var semanticModel = analysisDocument.GetSemanticModelAsync (cancellationToken).Result; 
-			var location = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.Caret.Location);
-			var offset = doc.Editor.LocationToOffset (location);
+			var location = RefactoringService.GetCorrectResolveLocation (editor, doc, loc);
+			var offset = editor.LocationToOffset (location);
 			bool addUsings = true;
 			bool fullyQualify = true;
 
 			var token = semanticModel.SyntaxTree.GetRoot (cancellationToken).FindToken (offset);
 			var node = token.Parent;
 			var resolveResult = semanticModel.GetSymbolInfo (node, cancellationToken); 
-/*
-		public static List<PossibleNamespace> GetPossibleNamespaces (IReadonlyTextDocument editor, DocumentLocation loc, DocumentContext doc, AstNode node, ref ResolveResult resolveResult)
-		{
-			if (doc == null)
-				throw new ArgumentNullException ("doc");
-			if (node == null)
-				throw new ArgumentNullException ("node");
-			var location = RefactoringService.GetCorrectResolveLocation (editor, doc, loc);
 
-			if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
-				resolveResult = GetHeuristicResult (editor, doc, location, ref node) ?? resolveResult;
-			var foundNamespaces = GetPossibleNamespaces (editor, doc, node, resolveResult, location);
-*/
-			
 
 			// if (resolveResult == null || resolveResult.Type.FullName == "System.Void")
 			//	resolveResult = GetHeuristicResult (doc, location, ref node) ?? resolveResult;
 			List<PossibleNamespace> foundNamespaces;
 			if (node.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.SimpleMemberAccessExpression &&
-			    node.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InvocationExpression) {
-				foundNamespaces = GetPossibleNamespacesForExtensionMethods (doc, semanticModel, node, resolveResult, offset).ToList ();
+				node.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.InvocationExpression) {
+				foundNamespaces = GetPossibleNamespacesForExtensionMethods (editor, doc, semanticModel, node, resolveResult, offset).ToList ();
 			} else {
-				foundNamespaces = GetPossibleNamespacesForTypes (doc, semanticModel, node, resolveResult, offset).ToList ();
+				foundNamespaces = GetPossibleNamespacesForTypes (editor, doc, semanticModel, node, resolveResult, offset).ToList ();
 			}
-			
-//			if (!(resolveResult is AmbiguousTypeResolveResult)) {
-//				var usedNamespaces = RefactoringOptions.GetUsedNamespacesAsync (doc, doc.Editor.LocationToOffset (location)).Result;
-//				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n.Namespace));
-//			}
+
+			//			if (!(resolveResult is AmbiguousTypeResolveResult)) {
+			//				var usedNamespaces = RefactoringOptions.GetUsedNamespacesAsync (doc, doc.Editor.LocationToOffset (location)).Result;
+			//				foundNamespaces = foundNamespaces.Where (n => !usedNamespaces.Contains (n.Namespace));
+			//			}
 			var result = new List<PossibleNamespace> ();
 			foreach (var ns in foundNamespaces) {
 				if (result.Any (n => n.Namespace == ns.Namespace))
@@ -291,17 +253,17 @@ namespace MonoDevelop.Refactoring
 			identifier = node.ChildTokens ().First ();
 			return 0;
 		}
-		
+
 		public class PossibleNamespaceResult : IReadOnlyList<PossibleNamespace>
 		{
 			readonly IReadOnlyList<PossibleNamespace> namespaces;
 
 			public readonly SyntaxNode Node;
 			public readonly SymbolInfo ResolveResult;
-			
+
 			public readonly bool AddUsings;
 			public readonly bool AddFullyQualifiedName;
-			
+
 			internal PossibleNamespaceResult (IReadOnlyList<PossibleNamespace> namespaces, SyntaxNode node, SymbolInfo resolveResult, bool addUsings, bool addFullyQualifiedName)
 			{
 				this.namespaces = namespaces;
@@ -317,7 +279,7 @@ namespace MonoDevelop.Refactoring
 			{
 				return namespaces.GetEnumerator ();
 			}
-			
+
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
 			{
 				return namespaces.GetEnumerator ();
@@ -336,7 +298,7 @@ namespace MonoDevelop.Refactoring
 			}
 			#endregion
 		}
-		
+
 		public class PossibleNamespace
 		{
 			public string Namespace { get; private set; }
@@ -368,10 +330,10 @@ namespace MonoDevelop.Refactoring
 						"Reference '{0}'", 
 						GetLibraryName ());
 				if (Reference != null) 
-						return GettextCatalog.GetString (
-							"Reference '{0}' and use '{1}'", 
-							GetLibraryName (),
-							string.Format ("using {0};", Namespace));
+					return GettextCatalog.GetString (
+						"Reference '{0}' and use '{1}'", 
+						GetLibraryName (),
+						string.Format ("using {0};", Namespace));
 
 				return string.Format ("using {0};", Namespace);
 			}
@@ -386,8 +348,8 @@ namespace MonoDevelop.Refactoring
 					);
 				return Namespace + "." + member;
 			}
-		
-		
+
+
 			internal static PossibleNamespace Create (INamespaceSymbol containingNamespace, bool isAccessibleWithGlobalUsing = true, MonoDevelop.Projects.ProjectReference reference = null)
 			{
 				return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (containingNamespace), isAccessibleWithGlobalUsing, reference);
@@ -416,7 +378,7 @@ namespace MonoDevelop.Refactoring
 			}
 			return sb.ToString ();
 		}
-		
+
 		static bool CanReference (DocumentContext doc, MonoDevelop.Projects.ProjectReference projectReference)
 		{
 			var project = doc.Project as DotNetProject;
@@ -434,7 +396,7 @@ namespace MonoDevelop.Refactoring
 
 		}
 
-		static IEnumerable<PossibleNamespace> GetPossibleNamespaces (IReadonlyTextDocument editor, DocumentContext doc, AstNode node, ResolveResult resolveResult, DocumentLocation location)
+		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForTypes (IReadonlyTextDocument editor, DocumentContext doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
 		{
 			if (resolveResult.Symbol != null)
 				yield break;
@@ -448,12 +410,12 @@ namespace MonoDevelop.Refactoring
 						yield return PossibleNamespace.Create (((INamedTypeSymbol)candidate).ContainingNamespace);
 				}
 			}
-			
+
 			SyntaxToken identifier;
 			int tc = GetTypeParameterCount (node, out identifier);
 			bool isInsideAttributeType = identifier.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierToken &&
-			                             identifier.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName &&
-			                             identifier.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.Attribute;
+				identifier.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.IdentifierName &&
+				identifier.Parent.Parent.CSharpKind () == Microsoft.CodeAnalysis.CSharp.SyntaxKind.Attribute;
 
 			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
 			compilations.Add (Tuple.Create (doc.GetCompilationAsync ().Result, (MonoDevelop.Projects.ProjectReference)null));
@@ -475,26 +437,26 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 
-//			FrameworkLookup frameworkLookup;
-//			if (!TypeSystemService.TryGetFrameworkLookup (netProject, out frameworkLookup))
-//				frameworkLookup = null;
-//			if (frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
-//				var umResult = (UnknownMemberResolveResult)resolveResult;
-//				try {
-//					foreach (var r in frameworkLookup.GetExtensionMethodLookups (umResult)) {
-//						var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
-//						if (systemAssembly == null)
-//							continue;
-//						if (CanBeReferenced (doc.Project, systemAssembly))
-//							compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
-//					}
-//				}
-			
+			//			FrameworkLookup frameworkLookup;
+			//			if (!TypeSystemService.TryGetFrameworkLookup (netProject, out frameworkLookup))
+			//				frameworkLookup = null;
+			//			if (frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
+			//				var umResult = (UnknownMemberResolveResult)resolveResult;
+			//				try {
+			//					foreach (var r in frameworkLookup.GetExtensionMethodLookups (umResult)) {
+			//						var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
+			//						if (systemAssembly == null)
+			//							continue;
+			//						if (CanBeReferenced (doc.Project, systemAssembly))
+			//							compilations.Add (Tuple.Create (TypeSystemService.GetCompilation (systemAssembly, doc.Compilation), new MonoDevelop.Projects.ProjectReference (systemAssembly)));
+			//					}
+			//				}
+
 			bool foundIdentifier = false;
 			var name = identifier.ToString ();
 			string possibleAttributeName = isInsideAttributeType ? name + "Attribute" : null;
 			var typeStack = new Stack<INamedTypeSymbol> ();
-			
+
 			foreach (var comp in compilations) {
 				var compilation = comp.Item1;
 				var requiredReference = comp.Item2;
@@ -510,12 +472,12 @@ namespace MonoDevelop.Refactoring
 					} 
 					if (possibleAttributeName != null) {
 						foreach (var type in curNs.GetTypeMembers (possibleAttributeName, tc)) {
-						if (!semanticModel.IsAccessible (location, type))
-							continue;
+							if (!semanticModel.IsAccessible (location, type))
+								continue;
 							yield return new PossibleNamespace (ImportSymbolCache.GetNamespaceString (curNs), true, requiredReference);
 						} 
 					}
-					
+
 					// Search nested types.
 					foreach (var type in curNs.GetTypeMembers ()) {
 						if (!semanticModel.IsAccessible (location, type))
@@ -605,52 +567,52 @@ namespace MonoDevelop.Refactoring
 				}
 */
 			}
-//
-//			// Try to search framework types
-//			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult && node is AstType) {
-//				var uiResult = resolveResult as UnknownIdentifierResolveResult;
-//				if (uiResult != null) {
-//					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
-//					try {
-//						foreach (var r in frameworkLookup.GetLookups (uiResult, tc, isInsideAttributeType)) {
-//							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
-//							if (systemAssembly == null)
-//								continue;
-//							if (CanBeReferenced (doc.Project, systemAssembly))
-//								lookups.Add (Tuple.Create (r, systemAssembly));
-//						}
-//					} catch (Exception e) {
-//						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-//							LoggingService.LogError (string.Format ("Error while looking up identifier {0}", uiResult.Identifier), e);
-//					}
-//					foreach(var kv in lookups)
-//						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
-//
-//				}
-//			}
-//			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
-//				var uiResult = resolveResult as UnknownMemberResolveResult;
-//				if (uiResult != null) {
-//					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
-//					try {
-//						foreach (var r in frameworkLookup.GetLookups (uiResult, node.ToString (), tc, isInsideAttributeType)) {
-//							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
-//							if (systemAssembly == null)
-//								continue;
-//							if (CanBeReferenced (doc.Project, systemAssembly))
-//								lookups.Add (Tuple.Create (r, systemAssembly));
-//						}
-//					} catch (Exception e) {
-//						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
-//							LoggingService.LogError (string.Format ("Error while looking up member resolve result {0}", node), e);
-//					}
-//					foreach(var kv in lookups)
-//						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
-//				}
-//			}
+			//
+			//			// Try to search framework types
+			//			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownIdentifierResolveResult && node is AstType) {
+			//				var uiResult = resolveResult as UnknownIdentifierResolveResult;
+			//				if (uiResult != null) {
+			//					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
+			//					try {
+			//						foreach (var r in frameworkLookup.GetLookups (uiResult, tc, isInsideAttributeType)) {
+			//							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
+			//							if (systemAssembly == null)
+			//								continue;
+			//							if (CanBeReferenced (doc.Project, systemAssembly))
+			//								lookups.Add (Tuple.Create (r, systemAssembly));
+			//						}
+			//					} catch (Exception e) {
+			//						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
+			//							LoggingService.LogError (string.Format ("Error while looking up identifier {0}", uiResult.Identifier), e);
+			//					}
+			//					foreach(var kv in lookups)
+			//						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
+			//
+			//				}
+			//			}
+			//			if (!foundIdentifier && frameworkLookup != null && resolveResult is UnknownMemberResolveResult) {
+			//				var uiResult = resolveResult as UnknownMemberResolveResult;
+			//				if (uiResult != null) {
+			//					var lookups = new List<Tuple<FrameworkLookup.AssemblyLookup, SystemAssembly>> ();
+			//					try {
+			//						foreach (var r in frameworkLookup.GetLookups (uiResult, node.ToString (), tc, isInsideAttributeType)) {
+			//							var systemAssembly = netProject.AssemblyContext.GetAssemblyFromFullName (r.FullName, r.Package, netProject.TargetFramework);
+			//							if (systemAssembly == null)
+			//								continue;
+			//							if (CanBeReferenced (doc.Project, systemAssembly))
+			//								lookups.Add (Tuple.Create (r, systemAssembly));
+			//						}
+			//					} catch (Exception e) {
+			//						if (!TypeSystemService.RecreateFrameworkLookup (netProject))
+			//							LoggingService.LogError (string.Format ("Error while looking up member resolve result {0}", node), e);
+			//					}
+			//					foreach(var kv in lookups)
+			//						yield return new PossibleNamespace (kv.Item1.Namespace, true, new MonoDevelop.Projects.ProjectReference (kv.Item2));
+			//				}
+			//			}
 
 		}
-		
+
 		static ITypeSymbol GetReturnType (ISymbol symbol)
 		{
 			switch (symbol.Kind) {
@@ -667,8 +629,8 @@ namespace MonoDevelop.Refactoring
 			}
 			return null;
 		}
-		
-		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForExtensionMethods (MonoDevelop.Ide.Gui.Document doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
+
+		static IEnumerable<PossibleNamespace> GetPossibleNamespacesForExtensionMethods (IReadonlyTextDocument editor, DocumentContext doc, SemanticModel semanticModel, SyntaxNode node, SymbolInfo resolveResult, int location)
 		{
 			if (resolveResult.Symbol != null)
 				yield break;
@@ -679,10 +641,10 @@ namespace MonoDevelop.Refactoring
 			if (ma == null)
 				yield break;
 			var targetExpression = semanticModel.GetSymbolInfo (ma.Expression);
-			
+
 			SyntaxToken identifier;
 			int tc = GetTypeParameterCount (node, out identifier);
-			
+
 			var compilations = new List<Tuple<Compilation, MonoDevelop.Projects.ProjectReference>> ();
 			compilations.Add (Tuple.Create (doc.GetCompilationAsync ().Result, (MonoDevelop.Projects.ProjectReference)null));
 			var referencedItems = IdeApp.Workspace != null ? netProject.GetReferencedItems (IdeApp.Workspace.ActiveConfiguration).ToList () : (IEnumerable<SolutionItem>)new SolutionItem[0];
@@ -703,7 +665,7 @@ namespace MonoDevelop.Refactoring
 						compilations.Add (Tuple.Create (comp, new MonoDevelop.Projects.ProjectReference (curProject)));
 				}
 			}
-			
+
 			var name = identifier.ToString ();
 			ITypeSymbol tsym = GetReturnType(targetExpression.Symbol);
 			foreach (var comp in compilations) {
@@ -713,7 +675,7 @@ namespace MonoDevelop.Refactoring
 				ns.Push (semanticModel.Compilation.GlobalNamespace);
 				while (ns.Count > 0) {
 					var curNs = ns.Pop ();
-					
+
 
 					foreach (var type in curNs.GetTypeMembers ()) {
 						if (!type.MightContainExtensionMethods || !semanticModel.IsAccessible (location, type))
@@ -735,35 +697,35 @@ namespace MonoDevelop.Refactoring
 				}
 			}
 		}
-		
+
 
 		internal class AddImport
 		{
 			readonly TextEditor editor;
-			readonly DocumentContext documentContext;
-			readonly ResolveResult resolveResult;
+			readonly DocumentContext doc;
+			readonly SymbolInfo resolveResult;
 			readonly string ns;
 			readonly bool addUsing;
 			readonly SyntaxNode node;
 			readonly MonoDevelop.Projects.ProjectReference reference;
 
-			public AddImport (TextEditor editor, DocumentContext doc, ResolveResult resolveResult, string ns, MonoDevelop.Projects.ProjectReference reference, bool addUsing, AstNode node)
+			public AddImport (TextEditor editor, DocumentContext doc, SymbolInfo resolveResult, string ns, MonoDevelop.Projects.ProjectReference reference, bool addUsing, SyntaxNode node)
 			{
 				this.editor = editor;
-				this.documentContext = doc;
+				this.doc = doc;
 				this.resolveResult = resolveResult;
 				this.ns = ns;
 				this.reference = reference;
 				this.addUsing = addUsing;
 				this.node = node;
 			}
-			
+
 			public void Run ()
 			{
 				var loc = editor.CaretLocation;
 
 				if (reference != null) {
-					var project = documentContext.Project;
+					var project = doc.Project;
 					project.Items.Add (reference);
 					IdeApp.ProjectOperations.Save (project);
 				}
@@ -772,23 +734,22 @@ namespace MonoDevelop.Refactoring
 					return;
 
 				if (!addUsing) {
-//					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
+					//					var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 					int offset = node.Span.Start;
 					editor.InsertText (offset, ns + ".");
-					//doc.Editor.Document.CommitLineUpdate (loc.Line);
 					return;
 				}
 
-				var generator = documentContext.CreateCodeGenerator (editor);
+				var generator = doc.CreateCodeGenerator (editor);
 
-				if (resolveResult is NamespaceResolveResult) {
-					generator.AddLocalNamespaceImport (editor, documentContext, ns, loc);
-				} else {
-					generator.AddGlobalNamespaceImport (editor, documentContext, ns);
-				}
+				//				if (resolveResult is NamespaceResolveResult) {
+				//					generator.AddLocalNamespaceImport (doc, ns, loc);
+				//				} else {
+				generator.AddGlobalNamespaceImport (editor, doc, ns);
+				//				}
 			}
 		}
-		
+
 		protected override void Run (object data)
 		{
 			var del = (System.Action)data;

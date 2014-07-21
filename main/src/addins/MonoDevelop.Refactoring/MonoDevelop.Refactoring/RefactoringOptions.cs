@@ -31,8 +31,6 @@ using MonoDevelop.Projects.Text;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Collections.Immutable;
@@ -71,9 +69,9 @@ namespace MonoDevelop.Refactoring
 			}
 		}
 		
-		public TextLocation Location {
+		public DocumentLocation Location {
 			get {
-				return new TextLocation (Editor.CaretLine, Editor.CaretColumn);
+				return Editor.CaretLocation;
 			}
 		}
 
@@ -128,7 +126,7 @@ namespace MonoDevelop.Refactoring
 		
 		public static string GetIndent (TextEditor editor, Microsoft.CodeAnalysis.SyntaxNode member)
 		{
-			return GetWhitespaces (document, member.SpanStart);
+			return GetWhitespaces (editor, member.SpanStart);
 		}
 		
 		public string GetWhitespaces (int insertionOffset)
@@ -138,13 +136,13 @@ namespace MonoDevelop.Refactoring
 		
 		public Task<ImmutableArray<string>> GetUsedNamespacesAsync (CancellationToken cancellationToken = default (CancellationToken))
 		{
-			return GetUsedNamespacesAsync (Document,  Document.Editor.LocationToOffset (Location));
+			return GetUsedNamespacesAsync (Editor, DocumentContext,  Editor.LocationToOffset (Location));
 		}
 		
-		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (TextEditor editor, int offset, CancellationToken cancellationToken = default (CancellationToken))
+		public static async Task<ImmutableArray<string>> GetUsedNamespacesAsync (TextEditor editor, DocumentContext doc, int offset, CancellationToken cancellationToken = default (CancellationToken))
 		{
-			if (doc == null)
-				throw new System.ArgumentNullException ("doc");
+			if (editor == null)
+				throw new System.ArgumentNullException ("editor");
 			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return ImmutableArray<string>.Empty;

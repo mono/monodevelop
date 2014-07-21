@@ -1,3 +1,4 @@
+
 // 
 // QuickFixEditorExtension.cs
 //  
@@ -159,29 +160,29 @@ namespace MonoDevelop.CodeActions
 				var token = quickFixCancellationTokenSource.Token;
 				quickFixTimeout = GLib.Timeout.Add (100, delegate {
 					var loc = Editor.CaretOffset;
-					var ad = Document.AnalysisDocument;
+					var ad = DocumentContext.AnalysisDocument;
 					if (ad == null) {
 						quickFixTimeout = 0;
 						return false;
 					}
 
 					TextSpan span;
-					if (Document.Editor.IsSomethingSelected)
-						span = TextSpan.FromBounds (document.Editor.SelectionRange.Offset, document.Editor.SelectionRange.EndOffset) ;
+					if (Editor.IsSomethingSelected)
+						span = TextSpan.FromBounds (Editor.SelectionRange.Offset, Editor.SelectionRange.EndOffset) ;
 					else 
 						span = TextSpan.FromBounds (loc, loc + 1);
 
 					var diagnosticsAtCaret =
-						Document.Editor.Document.GetTextSegmentMarkersAt (document.Editor.Caret.Offset)
-						.OfType<ResultMarker> ()
-						.Select (rm => rm.Result)
-						.OfType<DiagnosticResult> ()
-						.Select (dr => dr.Diagnostic)
-						.ToList ();
+						Editor.GetTextSegmentMarkersAt (Editor.CaretOffset)
+							.OfType<IGenericTextSegmentMarker> ()
+							.Select (rm => rm.Tag)
+							.OfType<DiagnosticResult> ()
+							.Select (dr => dr.Diagnostic)
+							.ToList ();
 					System.Threading.Tasks.Task.Factory.StartNew (delegate {
 						var codeIssueFixes = new List<Tuple<CodeFixDescriptor, CodeAction>> ();
 						var diagnosticIds = diagnosticsAtCaret.Select (diagnostic => diagnostic.Id).ToList ();
-						foreach (var cfp in CodeDiagnosticService.GetCodeFixDescriptor (CodeRefactoringService.MimeTypeToLanguage(document.Editor.MimeType))) {
+						foreach (var cfp in CodeDiagnosticService.GetCodeFixDescriptor (CodeRefactoringService.MimeTypeToLanguage(Editor.MimeType))) {
 							if (token.IsCancellationRequested)
 								return;
 							var provider = cfp.GetCodeFixProvider ();
@@ -191,15 +192,15 @@ namespace MonoDevelop.CodeActions
 							List<CodeAction> fixes;
 							try {
 								fixes = provider.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result.ToList ();
-							} catch (Exception e) {
-								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, e); 
+							} catch (Exception ex) {
+								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
 								continue;
 							}
 							foreach (var fix in fixes)
 								codeIssueFixes.Add (Tuple.Create (cfp, fix));
 						}
 						var codeActions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
-						foreach (var action in CodeRefactoringService.GetValidActionsAsync (document, span, token).Result) {
+						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
 							codeActions.Add (action); 
 						}
 
@@ -256,11 +257,8 @@ namespace MonoDevelop.CodeActions
 			
 			var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
 					Editor,
-					Editor.CaretLocation,
 					DocumentContext,
-					node,
-					ref resolveResult
-				);
+					Editor.CaretLocation);
 			if (possibleNamespaces.Count > 0) {
 
 				foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
@@ -294,7 +292,7 @@ namespace MonoDevelop.CodeActions
 						var node = possibleNamespaces.Node;
 						var menuItem = new Gtk.MenuItem (t.GetInsertNamespaceText (Editor.GetTextBetween (node.Span.Start, node.Span.End)));
 						menuItem.Activated += delegate {
-							new ResolveCommandHandler.AddImport (document, possibleNamespaces.ResolveResult, ns, reference, false, node).Run ();
+							new ResolveCommandHandler.AddImport (Editor, DocumentContext, possibleNamespaces.ResolveResult, ns, reference, false, node).Run ();
 							menu.Destroy ();
 						};
 						menu.Add (menuItem);
@@ -325,8 +323,9 @@ namespace MonoDevelop.CodeActions
 			menu.Hidden += delegate {
 				// document.Editor.SuppressTooltips = false;
 			};
-
-			var p = Editor.LocationToPoint (container.OffsetToLocation (currentSmartTagBegin));
+ 
+			var p = Editor.LocationToPoint (Editor.OffsetToLocation (currentSmartTagBegin));
+			Gtk.Widget widget = Editor;
 			var rect = new Gdk.Rectangle (
 				(int)p.X + widget.Allocation.X , 
 				(int)p.Y + (int)Editor.LineHeight + widget.Allocation.Y, 0, 0);
@@ -338,12 +337,20 @@ namespace MonoDevelop.CodeActions
 			var escapedLabel = action.Description.Replace ("_", "__");
 			var label = (mnemonic <= 10) ? "_" + (mnemonic++ % 10) + " " + escapedLabel : "  " + escapedLabel;
 			var thisInstanceMenuItem = new MenuItem (label);
-			thisInstanceMenuItem.Activated += new ContextActionRunner (action, document, currentSmartTagBegin).Run;
+			thisInstanceMenuItem.Activated += new ContextActionRunner (action, Editor, DocumentContext, currentSmartTagBegin).Run;
 			thisInstanceMenuItem.Activated += delegate {
 				ConfirmUsage (action.Description);
 				menu.Destroy ();
 			};
 			menu.Add (thisInstanceMenuItem);
+		}
+
+		TextSpan GetTextSpan (CodeAction action)
+		{
+			var nrc = action as NRefactoryCodeAction;
+			if (nrc == null)
+				return TextSpan.FromBounds (0, 0);
+			return nrc.TextSpan;
 		}
 
 		public void PopulateFixes (Menu menu, ref int items)
@@ -431,10 +438,11 @@ namespace MonoDevelop.CodeActions
 		class ContextActionRunner
 		{
 			readonly CodeAction act;
+			TextEditor editor;
 			DocumentContext documentContext;
 			int loc;
 
-			public ContextActionRunner (MonoDevelop.CodeActions.CodeAction act, TextEditor editor, DocumentContext documentContext, ICSharpCode.NRefactory.TextLocation loc)
+			public ContextActionRunner (CodeAction act, TextEditor editor, DocumentContext documentContext, int loc)
 			{
 				this.editor = editor;
 				this.act = act;
@@ -445,19 +453,19 @@ namespace MonoDevelop.CodeActions
 			public void Run (object sender, EventArgs e)
 			{
 				var context = documentContext.ParsedDocument.CreateRefactoringContext (editor, editor.CaretLocation, documentContext, CancellationToken.None);
-				RefactoringService.ApplyFix (act, context);
+				//RefactoringService.ApplyFix (act, context);
 			}
 
 			public void BatchRun (object sender, EventArgs e)
 			{
-				act.BatchRun (editor, documentContext, loc);
+				//act.BatchRun (editor, documentContext, loc);
 			}
 		}
 
 		ISmartTagMarker currentSmartTag;
-		MonoDevelop.Ide.Editor.DocumentLocation currentSmartTagBegin;
+		int currentSmartTagBegin;
 
-		void CreateSmartTag (List<CodeAction> fixes, MonoDevelop.Ide.Editor.DocumentLocation loc)
+		void CreateSmartTag (CodeActionContainer fixes, int offset)
 		{
 			Fixes = fixes;
 			if (!AnalysisOptions.EnableFancyFeatures) {
@@ -480,12 +488,12 @@ namespace MonoDevelop.CodeActions
 //				return;
 //			}
 			bool first = true;
-			var smartTagLocBegin = loc;
+			var smartTagLocBegin = offset;
 			foreach (var fix in fixes.CodeDiagnosticActions.Select (i => i.Item2).Concat (fixes.CodeRefactoringActions.Select (i => i.Item2))) {
 				var textSpan = GetTextSpan (fix);
 				if (textSpan.IsEmpty)
 					continue;
-				if (first || loc < textSpan.Start) {
+				if (first || offset < textSpan.Start) {
 					smartTagLocBegin = textSpan.Start;
 				}
 				first = false;
@@ -509,9 +517,13 @@ namespace MonoDevelop.CodeActions
 			}
 			RemoveWidget ();
 			currentSmartTagBegin = smartTagLocBegin;
-			var line = document.Editor.GetLineByOffset (smartTagLocBegin);
-			currentSmartTag = new SmartTagMarker (smartTagLocBegin, this, fixes);
-			document.Editor.Document.AddMarker (currentSmartTag);
+			var line = Editor.GetLineByOffset (smartTagLocBegin);
+			var realLoc  = Editor.OffsetToLocation (offset);
+			
+			
+			currentSmartTag = TextMarkerFactory.CreateSmartTagMarker (Editor, smartTagLocBegin, realLoc); 
+			currentSmartTag.Tag = fixes;
+			editor.AddMarker (currentSmartTag);
 		}
 
 		protected override void Initialize ()
@@ -587,8 +599,8 @@ namespace MonoDevelop.CodeActions
 		void OnQuickFixCommand ()
 		{
 			if (!AnalysisOptions.EnableFancyFeatures) {
-				//Fixes = RefactoringService.GetValidActions (Document, Document.Editor.Caret.Location).Result;
-				currentSmartTagBegin = Document.Editor.Caret.Offset;
+				//Fixes = RefactoringService.GetValidActions (Editor, DocumentContext, Editor.CaretLocation).Result;
+				currentSmartTagBegin = Editor.CaretOffset;
 				PopupQuickFixMenu (null, null); 
 
 				return;
@@ -603,8 +615,7 @@ namespace MonoDevelop.CodeActions
 		{
 			if (currentSmartTag == null)
 				return CodeActionContainer.Empty;
-//				return RefactoringService.GetValidActions (document, document.Editor.Caret.Location).Result.ToList ();
-			return currentSmartTag.fixes;
+			return (CodeActionContainer)currentSmartTag.Tag;
 		}
 	}
 }

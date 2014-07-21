@@ -31,7 +31,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using System.Linq;
-using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;

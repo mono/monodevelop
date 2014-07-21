@@ -31,6 +31,10 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor;
+
+
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.Refactoring.Rename
 {
@@ -44,7 +48,7 @@ namespace MonoDevelop.Refactoring.Rename
 			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset).Result;
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset).Result;
 			if (!CanRename (info.Symbol))
 				ci.Bypass = true;
 		}
@@ -78,9 +82,9 @@ namespace MonoDevelop.Refactoring.Rename
 			Run (doc);
 		}
 
-		internal void Run (MonoDevelop.Ide.Gui.Document doc)
+		internal void Run (TextEditor editor, DocumentContext ctx)
 		{
-			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (doc.AnalysisDocument, doc.Editor.Caret.Offset).Result;
+			var info = CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (ctx.AnalysisDocument, editor.CaretOffset).Result;
 			if (!CanRename (info.Symbol))
 				return;
 			new RenameRefactoring ().Rename (info.Symbol);
