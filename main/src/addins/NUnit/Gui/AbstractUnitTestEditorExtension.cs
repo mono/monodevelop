@@ -92,7 +92,7 @@ namespace MonoDevelop.NUnit
 							return;
 						var unitTestMarker = TextMarkerFactory.CreateUnitTestMarker (Editor, new UnitTestMarkerHostImpl (this), foundTest);
 						currentMarker.Add (unitTestMarker);
-						Editor.AddMarker (editor.OffsetToLineNumber (foundTest.Offset), unitTestMarker);
+						Editor.AddMarker (foundTest.LineNumber, unitTestMarker);
 					}
 				});
 			});
