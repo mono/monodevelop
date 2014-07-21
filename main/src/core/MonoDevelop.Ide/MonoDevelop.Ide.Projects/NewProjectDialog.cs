@@ -321,6 +321,7 @@ namespace MonoDevelop.Ide.Projects {
 		{
 			if (!btn_new.Sensitive)
 				return;
+			btn_new.Sensitive = false;
 			
 			if (notebook.Page == 0) {
 				if (!CreateProject ())
@@ -353,6 +354,7 @@ namespace MonoDevelop.Ide.Projects {
 						}
 					}
 					notebook.Page++;
+					btn_new.Sensitive = true;
 					btn_new.Label = Gtk.Stock.Ok;
 					return;
 				}

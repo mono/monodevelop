@@ -43,7 +43,6 @@ namespace MonoDevelop.Ide.Gui
 			base.FontName = PropertyService.Get ("FontName", FontService.MonospaceFontName);
 			base.ColorScheme = IdeApp.Preferences.ColorScheme;
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
-			FontService.RegisterFontChangedCallback ("Editor(Gutter)", UpdateFont);
 		}
 		
 		public override void Dispose ()

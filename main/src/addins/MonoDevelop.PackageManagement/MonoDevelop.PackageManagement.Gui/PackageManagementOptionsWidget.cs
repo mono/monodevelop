@@ -47,11 +47,19 @@ namespace MonoDevelop.PackageManagement
 		{
 			this.automaticPackageRestoreOnOpeningSolutionCheckBox.Active = viewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
 			this.automaticPackageRestoreOnOpeningSolutionCheckBox.Toggled += AutomaticPackageRestoreOnOpeningSolutionCheckBoxToggled;
+
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox.Active = viewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled;
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox.Toggled += CheckForPackageUpdatesOnOpeningSolutionCheckBoxCheckBoxToggled;
 		}
 
 		protected void AutomaticPackageRestoreOnOpeningSolutionCheckBoxToggled (object sender, EventArgs e)
 		{
 			viewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = this.automaticPackageRestoreOnOpeningSolutionCheckBox.Active;
+		}
+
+		protected void CheckForPackageUpdatesOnOpeningSolutionCheckBoxCheckBoxToggled (object sender, EventArgs e)
+		{
+			viewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled = this.checkForPackageUpdatesOnOpeningSolutionCheckBox.Active;
 		}
 	}
 }

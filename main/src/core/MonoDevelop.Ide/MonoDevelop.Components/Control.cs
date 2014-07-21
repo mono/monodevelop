@@ -33,7 +33,7 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.Components
 {
-	public class Control
+	public class Control: IDisposable
 	{
 		object nativeWidget;
 
@@ -44,6 +44,11 @@ namespace MonoDevelop.Components
 		public Control (object widget)
 		{
 			this.nativeWidget = widget;
+		}
+
+		~Control ()
+		{
+			Dispose (false);
 		}
 
 		protected virtual object CreateNativeWidget ()
@@ -62,7 +67,8 @@ namespace MonoDevelop.Components
 					c.Show ();
 					nativeWidget = c;
 					c.Destroyed += delegate {
-						OnDestroyed ();
+						GC.SuppressFinalize (this);
+						Dispose (true);
 					};
 				}
 				else
@@ -104,19 +110,22 @@ namespace MonoDevelop.Components
 			// TODO
 		}
 
-		public void Destroy ()
+		public void Dispose ()
 		{
-			if (nativeWidget is Gtk.Widget)
+			if (nativeWidget is Gtk.Widget) {
 				((Gtk.Widget)nativeWidget).Destroy ();
+				return;
+			}
 			#if MAC
 			else if (nativeWidget is NSView)
 				((NSView)nativeWidget).Dispose ();
 			#endif
-			else
-				OnDestroyed ();
+
+			GC.SuppressFinalize (this);
+			Dispose (true);
 		}
 
-		protected virtual void OnDestroyed ()
+		protected virtual void Dispose (bool disposing)
 		{
 		}
 	}

@@ -78,13 +78,6 @@ namespace VersionControl.Subversion.Unix.Tests
 		// Tests that fail due to Subversion giving wrong data.
 		[Test]
 		[Ignore ("Fix Subversion")]
-		public override void MovesFile ()
-		{
-			base.MovesFile ();
-		}
-
-		[Test]
-		[Ignore ("Fix Subversion")]
 		public override void MovesDirectory ()
 		{
 			base.MovesDirectory ();

@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -33,10 +35,15 @@ namespace MonoDevelop.PackageManagement
 	public class SolutionProxy : ISolution
 	{
 		Solution solution;
+		EventHandler<DotNetProjectEventArgs> projectAdded;
 
 		public SolutionProxy (Solution solution)
 		{
 			this.solution = solution;
+		}
+
+		public Solution Solution {
+			get { return solution; }
 		}
 
 		public FilePath BaseDirectory {
@@ -45,6 +52,37 @@ namespace MonoDevelop.PackageManagement
 
 		public FilePath FileName {
 			get { return solution.FileName; }
+		}
+
+		public IEnumerable<IDotNetProject> GetAllProjects ()
+		{
+			return solution
+				.GetAllProjects ()
+				.OfType<DotNetProject> ()
+				.Select (project => new DotNetProjectProxy (project));
+		}
+
+		public event EventHandler<DotNetProjectEventArgs> ProjectAdded {
+			add {
+				if (projectAdded == null) {
+					solution.SolutionItemAdded += SolutionItemAdded;
+				}
+				projectAdded += value;
+			}
+			remove {
+				projectAdded -= value;
+				if (projectAdded == null) {
+					solution.SolutionItemAdded -= SolutionItemAdded;
+				}
+			}
+		}
+
+		void SolutionItemAdded (object sender, SolutionItemChangeEventArgs e)
+		{
+			var project = e.SolutionItem as DotNetProject;
+			if (project != null) {
+				projectAdded (this, new DotNetProjectEventArgs (project));
+			}
 		}
 	}
 }

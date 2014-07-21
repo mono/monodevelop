@@ -59,6 +59,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 		}
 
+		public TestableProjectManager (PackageReferenceRepository repository)
+			: base (
+				new FakePackageRepository (),
+				new FakePackagePathResolver (),
+				new FakeProjectSystem (),
+				repository)
+		{
+		}
+
 		public override void AddPackageReference (string packageId, SemanticVersion version, bool ignoreDependencies, bool allowPrereleaseVersions)
 		{
 			var package = new FakePackage ();

@@ -27,24 +27,23 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MonoDevelop.Debugger;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.AspNet;
 using Mono.Debugging.Client;
-using MonoDevelop.Debugger.Soft;
-using System.Net;
-using MonoDevelop.Core.Assemblies;
 using Mono.Debugging.Soft;
+using MonoDevelop.AspNet.Execution;
+using MonoDevelop.Core;
+using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Debugger;
+using MonoDevelop.Debugger.Soft;
 
 namespace MonoDevelop.Debugger.Soft.AspNet
 {
 	public class AspNetSoftDebuggerEngine: DebuggerEngineBackend
 	{
-		public override bool CanDebugCommand (ExecutionCommand command)
+		public override bool CanDebugCommand (ExecutionCommand cmd)
 		{
-			var cmd = command as AspNetExecutionCommand;
-			return cmd != null && SoftDebuggerEngine.CanDebugRuntime (cmd.TargetRuntime);
+			var command = cmd as AspNetExecutionCommand;
+			return command != null && SoftDebuggerEngine.CanDebugRuntime (command.TargetRuntime);
 		}
 		
 		FilePath GetFxDir (MonoTargetRuntime runtime, ClrVersion version)

@@ -137,7 +137,7 @@ namespace MonoDevelop.Debugger
 			if (liveUpdate) {
 				var bp = new Breakpoint (watch.File, watch.Line);
 				bp.TraceExpression = "{" + watch.Expression + "}";
-				bp.HitAction = HitAction.PrintExpression;
+				bp.HitAction |= HitAction.PrintExpression;
 				lock (breakpoints)
 					breakpoints.Add (bp);
 				pinnedWatches.Bind (watch, bp);
@@ -256,31 +256,16 @@ namespace MonoDevelop.Debugger
 			PreviewWindowManager.Show (val, widget, previewButtonArea);
 		}
 		
-		public static bool ShowBreakpointProperties (Breakpoint bp, bool editNew)
+		public static bool ShowBreakpointProperties (ref BreakEvent bp)
 		{
-			var dlg = new BreakpointPropertiesDialog (bp, editNew);
-
-			return MessageService.ShowCustomDialog (dlg) == (int) Gtk.ResponseType.Ok;
-		}
-		
-		public static void ShowAddTracepointDialog (string file, int line)
-		{
-			var dlg = new AddTracePointDialog ();
-
-			try {
-				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok && dlg.Text.Length > 0) {
-					var bp = new Breakpoint (file, line);
-					bp.HitAction = HitAction.PrintExpression;
-					bp.TraceExpression = dlg.Text;
-					bp.ConditionExpression = dlg.Condition;
-					lock (breakpoints)
-						breakpoints.Add (bp);
-				}
-			} finally {
-				dlg.Destroy ();
+			using (var dlg = new BreakpointPropertiesDialog (bp)) {
+				Xwt.Command response = dlg.Run ();
+				if (bp == null)
+					bp = dlg.GetBreakEvent ();
+				return response == Xwt.Command.Ok;
 			}
 		}
-		
+
 		public static void AddWatch (string expression)
 		{
 			var pad = IdeApp.Workbench.GetPad<WatchPad> ();
@@ -369,11 +354,6 @@ namespace MonoDevelop.Debugger
 			get {
 				return exceptionDialog;
 			}
-		}
-
-		public static void ShowExceptionsFilters ()
-		{
-			MessageService.ShowCustomDialog (new ExceptionsDialog ());
 		}
 		
 		static void SetupSession ()

@@ -138,10 +138,6 @@
 				defaultHandler = "MonoDevelop.Debugger.NewBreakpointHandler"
 				_label = "New Breakpoint..."
 				icon = "md-breakpoint-new" />
-		<Command id = "MonoDevelop.Debugger.DebugCommands.NewFunctionBreakpoint"
-				defaultHandler = "MonoDevelop.Debugger.NewFunctionBreakpointHandler"
-				_label = "New Function Breakpoint..."
-				icon = "md-breakpoint-new" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.RemoveBreakpoint"
 				defaultHandler = "MonoDevelop.Debugger.RemoveBreakpointHandler"
 				_label = "Remove Breakpoint" />
@@ -154,10 +150,6 @@
 				defaultHandler = "MonoDevelop.Debugger.ToggleBreakpointHandler"
 				shortcut = "F9"
 				macShortcut = "Meta|\" />
-		<Command id = "MonoDevelop.Debugger.DebugCommands.AddTracepoint"
-				_label = "Add Tracepoint"
-				defaultHandler = "MonoDevelop.Debugger.AddTracepointHandler"
-				shortcut = "Control|Shift|F9" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint"
 				_label = "Enable/Disable Breakpoint"
 				defaultHandler = "MonoDevelop.Debugger.EnableDisableBreakpointHandler"
@@ -179,9 +171,6 @@
 				_label = "Expression Evaluator"
 				shortcut = "Shift|F9"
 				defaultHandler = "MonoDevelop.Debugger.ExpressionEvaluatorCommand" />
-		<Command id = "MonoDevelop.Debugger.DebugCommands.SelectExceptions"
-				_label = "Exceptions..."
-				defaultHandler = "MonoDevelop.Debugger.SelectExceptionsCommand" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine"
 				_label = "Show Current Execution Line"
 				shortcut = "Alt|*"
@@ -227,14 +216,11 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.StepOut" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine" />
 		<SeparatorItem id = "MonoDevelop.Debugger.BreakpointsSection" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewFunctionBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.AddTracepoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
-		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.SelectExceptions" />
 		<SeparatorItem id = "MonoDevelop.Debugger.ToolsSection" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ExpressionEvaluator" />
 	</Extension>

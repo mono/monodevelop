@@ -31,7 +31,8 @@ namespace MonoDevelop.PackageManagement.Commands
 	public enum PackageReferenceNodeCommands
 	{
 		ShowPackageVersion,
-		UpdatePackage
+		UpdatePackage,
+		ReinstallPackage
 	}
 }
 

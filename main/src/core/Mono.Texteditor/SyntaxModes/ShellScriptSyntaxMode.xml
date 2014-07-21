@@ -49,7 +49,7 @@ THE SOFTWARE.
 	</Span>
 		
 	<Match color = "String">CSharpNumber</Match>
-	<Match color = "Preprocessor">\$\w+</Match>
+	<Match color = "Preprocessor" ignorecase="True">\$\w+</Match>
 	
 	<Keywords color = "Keyword(Selection)">
 		<Word>if</Word>
@@ -84,7 +84,7 @@ THE SOFTWARE.
 		</Keywords>	
 	</Rule>
 	<Rule name = "String">
-		<Match color = "Preprocessor">\$\w+</Match>
+		<Match color = "Preprocessor" ignorecase="True">\$\w+</Match>
 	</Rule>
 </SyntaxMode>
 
