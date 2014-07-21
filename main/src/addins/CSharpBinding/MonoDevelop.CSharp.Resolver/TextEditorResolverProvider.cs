@@ -56,7 +56,7 @@ namespace MonoDevelop.CSharp.Resolver
 			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return "";
-			var loc = RefactoringService.GetCorrectResolveLocation (doc, data.OffsetToLocation (offset));
+			var loc = RefactoringService.GetCorrectResolveLocation (doc.Editor, data.OffsetToLocation (offset));
 			var unit = doc.ParsedDocument.GetAst<SyntaxTree> ();
 			var parsedFile = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
 			var node       = unit.GetNodeAt<Expression> (loc.Line, loc.Column);
@@ -69,60 +69,62 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		public ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document doc, int offset, out DomRegion expressionRegion)
 		{
-			if (offset < 0) {
-				expressionRegion = DomRegion.Empty;
-				return null;
-			}
-			var loc = RefactoringService.GetCorrectResolveLocation (doc, doc.Editor.OffsetToLocation (offset));
-			ResolveResult result;
-			AstNode node;
-
-			if (!doc.TryResolveAt (loc, out result, out node)) {
-				expressionRegion = DomRegion.Empty;
-				return null;
-			}
-			expressionRegion = new DomRegion (node.StartLocation, node.EndLocation);
-			return result;
+			return null;
+//			if (offset < 0) {
+//				expressionRegion = DomRegion.Empty;
+//				return null;
+//			}
+//			var loc = RefactoringService.GetCorrectResolveLocation (doc.Editor, doc.Editor.OffsetToLocation (offset));
+//			ResolveResult result;
+//			AstNode node;
+//
+//			if (!doc.TryResolveAt (loc, out result, out node)) {
+//				expressionRegion = DomRegion.Empty;
+//				return null;
+//			}
+//			expressionRegion = new DomRegion (node.StartLocation, node.EndLocation);
+//			return result;
 		}
 		
 		public ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document doc, int offset, string expression)
 		{
-			if (offset < 0) {
-				return null;
-			}
-
-			var parsedDocument = doc.ParsedDocument;
-			if (parsedDocument == null)
-				return null;
-			var data = doc.Editor;
-			var loc = data.OffsetToLocation (offset);
-
-			var unit = parsedDocument.GetAst<SyntaxTree> ();
-			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-			
-			if (unit == null || parsedFile == null) {
-				return null;
-			}
-			var node = unit.GetNodeAt (loc);
-			if (node == null) {
-				return null;
-			}
-			
-			var resolver = new CSharpAstResolver (doc.Compilation, unit, parsedFile);
-			resolver.ApplyNavigator (new NodeListResolveVisitorNavigator (node), CancellationToken.None);
-			var state = resolver.GetResolverStateBefore (node, CancellationToken.None);
-
-			var list = new List<IType> ();
-			int indexOf = expression.IndexOf ('`');
-			if (indexOf != -1) {
-				var intType = new PrimitiveType ("int").ToTypeReference ().Resolve (doc.Compilation);
-				var num = expression.Substring (indexOf + 1);
-				int number = int.Parse (num);
-				for (int i = 0; i < number; i++)
-					list.Add (intType);
-				expression = expression.Remove (indexOf);
-			}
-			return state.LookupSimpleNameOrTypeName (expression, list, NameLookupMode.Expression);
+			return null;
+//			if (offset < 0) {
+//				return null;
+//			}
+//
+//			var parsedDocument = doc.ParsedDocument;
+//			if (parsedDocument == null)
+//				return null;
+//			var data = doc.Editor;
+//			var loc = data.OffsetToLocation (offset);
+//
+//			var unit = parsedDocument.GetAst<SyntaxTree> ();
+//			var parsedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
+//			
+//			if (unit == null || parsedFile == null) {
+//				return null;
+//			}
+//			var node = unit.GetNodeAt (loc);
+//			if (node == null) {
+//				return null;
+//			}
+//			
+//			var resolver = new CSharpAstResolver (doc.Compilation, unit, parsedFile);
+//			resolver.ApplyNavigator (new NodeListResolveVisitorNavigator (node), CancellationToken.None);
+//			var state = resolver.GetResolverStateBefore (node, CancellationToken.None);
+//
+//			var list = new List<IType> ();
+//			int indexOf = expression.IndexOf ('`');
+//			if (indexOf != -1) {
+//				var intType = new PrimitiveType ("int").ToTypeReference ().Resolve (doc.Compilation);
+//				var num = expression.Substring (indexOf + 1);
+//				int number = int.Parse (num);
+//				for (int i = 0; i < number; i++)
+//					list.Add (intType);
+//				expression = expression.Remove (indexOf);
+//			}
+//			return state.LookupSimpleNameOrTypeName (expression, list, NameLookupMode.Expression);
 		}
 		
 		
@@ -188,25 +190,25 @@ namespace MonoDevelop.CSharp.Resolver
 		}
 		static CSharpAmbience ambience = new CSharpAmbience ();
 
-		static TypeSystemAstBuilder CreateBuilder (MonoDevelop.Ide.Gui.Document doc, int offset, ICompilation compilation)
-		{
-			var ctx = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-			var state = ctx.GetResolver (doc.Compilation, doc.Editor.OffsetToLocation (offset));
-			var builder = new TypeSystemAstBuilder (state);
-			builder.AddAnnotations = true;
-			var dt = state.CurrentTypeDefinition;
-			var declaring = dt != null ? dt.DeclaringTypeDefinition : null;
-			if (declaring != null) {
-				while (dt != null) {
-					if (dt.Equals (declaring)) {
-						builder.AlwaysUseShortTypeNames = true;
-						break;
-					}
-					dt = dt.DeclaringTypeDefinition;
-				}
-			}
-			return builder;
-		}
+//		static TypeSystemAstBuilder CreateBuilder (MonoDevelop.Ide.Gui.Document doc, int offset, ICompilation compilation)
+//		{
+//			var ctx = doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
+//			var state = ctx.GetResolver (doc.Compilation, doc.Editor.OffsetToLocation (offset));
+//			var builder = new TypeSystemAstBuilder (state);
+//			builder.AddAnnotations = true;
+//			var dt = state.CurrentTypeDefinition;
+//			var declaring = dt != null ? dt.DeclaringTypeDefinition : null;
+//			if (declaring != null) {
+//				while (dt != null) {
+//					if (dt.Equals (declaring)) {
+//						builder.AlwaysUseShortTypeNames = true;
+//						break;
+//					}
+//					dt = dt.DeclaringTypeDefinition;
+//				}
+//			}
+//			return builder;
+//		}
 internal class MyAmbience  : IAmbience
 		{
 			TypeSystemAstBuilder builder;
@@ -476,11 +478,11 @@ internal class MyAmbience  : IAmbience
 				return "// " + comment;
 			}
 		}
-		internal static MyAmbience CreateAmbience (Document doc, int offset, ICompilation compilation)
-		{
-			return new MyAmbience (CreateBuilder (doc, offset, compilation));
-		}
-
+//		internal static MyAmbience CreateAmbience (Document doc, int offset, ICompilation compilation)
+//		{
+//			return new MyAmbience (CreateBuilder (doc, offset, compilation));
+//		}
+//
 		public string CreateTooltip (MonoDevelop.Ide.Gui.Document doc, int offset, ResolveResult result, string errorInformations, Gdk.ModifierType modifierState)
 		{
 			return null;

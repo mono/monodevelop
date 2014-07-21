@@ -210,7 +210,7 @@ namespace MonoDevelop.Refactoring
 			if (analysisDocument == null)
 				return new PossibleNamespaceResult (new List<PossibleNamespace> (), null, new SymbolInfo (), false, false);
 			var semanticModel = analysisDocument.GetSemanticModelAsync (cancellationToken).Result; 
-			var location = RefactoringService.GetCorrectResolveLocation (editor, doc, loc);
+			var location = RefactoringService.GetCorrectResolveLocation (editor, loc);
 			var offset = editor.LocationToOffset (location);
 			bool addUsings = true;
 			bool fullyQualify = true;

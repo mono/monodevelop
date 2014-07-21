@@ -94,15 +94,11 @@ namespace MonoDevelop.CSharp.Refactoring
 			{
 				if (DocumentContext == null || DocumentContext.ParsedDocument == null)
 					return ns + "." + name;
-				var typeDef = new GetClassTypeReference (ns, name, typeArguments).Resolve (DocumentContext.Compilation.TypeResolveContext);
-				if (typeDef == null)
+				
+				var type = DocumentContext.GetCompilationAsync ().Result.GetTypeByMetadataName (ns + "." + name);
+				if (type == null)
 					return ns + "." + name;
-				var file = DocumentContext.ParsedDocument.ParsedFile as CSharpUnresolvedFile;
-				if (file == null)
-					return ns + "." + name;
-				var csResolver = file.GetResolver (DocumentContext.Compilation, Editor.CaretLocation);
-				var builder = new ICSharpCode.NRefactory.CSharp.Refactoring.TypeSystemAstBuilder (csResolver);
-				return OutputNode (Editor, DocumentContext, builder.ConvertType (typeDef));
+				return type.ToMinimalDisplayString (DocumentContext.AnalysisDocument.GetSemanticModelAsync ().Result, Editor.CaretOffset); 
 			}
 		}
 		
@@ -377,7 +373,6 @@ namespace MonoDevelop.CSharp.Refactoring
 			bodyStartOffset = result.Length;
 			result.Append ("throw new ");
 			result.Append (options.GetShortType ("System", "NotImplementedException"));
-			//			AppendReturnType (result, options.ImplementingType, options.Ctx.GetTypeDefinition (typeof (System.NotImplementedException)));
 			if (Policy.BeforeMethodCallParentheses)
 				result.Append (" ");
 			result.Append ("();");

@@ -138,10 +138,8 @@ namespace MonoDevelop.Refactoring
 //			});
 //		}	
 
-		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (IReadonlyTextDocument editor, DocumentContext doc, MonoDevelop.Ide.Editor.DocumentLocation location)
+		public static MonoDevelop.Ide.Editor.DocumentLocation GetCorrectResolveLocation (IReadonlyTextDocument editor, MonoDevelop.Ide.Editor.DocumentLocation location)
 		{
-			if (doc == null)
-				return location;
 			if (editor == null || location.Column == 1)
 				return location;
 

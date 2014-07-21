@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.CodeAnalysis.Options;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -124,6 +125,8 @@ namespace MonoDevelop.Ide.Editor
 		
 		public abstract Task<Microsoft.CodeAnalysis.Compilation> GetCompilationAsync(CancellationToken cancellationToken = default(CancellationToken));
 
+		public abstract OptionSet GetOptionSet ();
+		
 		// TODO: IMO that needs to be handled differently (this is atm only used in the ASP.NET binding)
 		// Maybe using the file service. Files can be changed/saved w/o beeing opened.
 		public event EventHandler Saved;

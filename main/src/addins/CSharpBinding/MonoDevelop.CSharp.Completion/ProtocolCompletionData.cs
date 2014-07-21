@@ -36,7 +36,8 @@ namespace MonoDevelop.CSharp.Completion
 		readonly IMember member;
 		readonly static Ambience ambience = new CSharpAmbience ();
 		readonly int    declarationBegin;
-
+		CSharpCompletionTextEditorExtension engine;
+		
 		public bool GenerateBody { get; set; }
 
 //		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
@@ -44,7 +45,7 @@ namespace MonoDevelop.CSharp.Completion
 //			return MemberCompletionData.CreateTooltipInformation (engine.Ext, null, member, smartWrap);
 //		}
 
-		public ProtocolCompletionData (MonoCSharpCompletionEngine engine, int declarationBegin, IMember member) : base (null)
+		public ProtocolCompletionData (CSharpCompletionTextEditorExtension engine, int declarationBegin, IMember member) : base (null)
 		{
 			this.engine = engine;
 			this.member = member;
@@ -58,29 +59,30 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
-			var ext = engine.Ext;
-			var editor = ext.Editor;
-			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);
-			if (ext.Project != null)
-				generator.PolicyParent = ext.Project.Policies;
-			var builder = engine.MDRefactoringCtx.CreateTypeSystemAstBuilder ();
-
-			string sb = BaseExportCodeGenerator.GenerateMemberCode (engine.MDRefactoringCtx, builder, member);
-			sb = sb.TrimEnd ();
-
-			string indent = editor.GetVirtualIndentationString (editor.CaretLine); 
-			sb = sb.Replace (editor.EolMarker, editor.EolMarker + indent);
-
-			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
-			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
-
-			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
-			if (selectionEndPosition > 0) {
-				targetCaretPosition += declarationBegin;
-				selectionEndPosition += declarationBegin;
-				editor.CaretOffset = selectionEndPosition;
-				editor.SetSelection (targetCaretPosition, selectionEndPosition);
-			}
+			// TODO: Roslyn port.
+//			var ext = engine;
+//			var editor = ext.Editor;
+//			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);
+//			if (ext.Project != null)
+//				generator.PolicyParent = ext.Project.Policies;
+//			var builder = engine.MDRefactoringCtx.CreateTypeSystemAstBuilder ();
+//
+//			string sb = BaseExportCodeGenerator.GenerateMemberCode (engine.MDRefactoringCtx, builder, member);
+//			sb = sb.TrimEnd ();
+//
+//			string indent = editor.GetVirtualIndentationString (editor.CaretLine); 
+//			sb = sb.Replace (editor.EolMarker, editor.EolMarker + indent);
+//
+//			int targetCaretPosition = sb.LastIndexOf ("throw", StringComparison.Ordinal);
+//			int selectionEndPosition = sb.LastIndexOf (";", StringComparison.Ordinal);
+//
+//			editor.ReplaceText (declarationBegin, editor.CaretOffset - declarationBegin, sb);
+//			if (selectionEndPosition > 0) {
+//				targetCaretPosition += declarationBegin;
+//				selectionEndPosition += declarationBegin;
+//				editor.CaretOffset = selectionEndPosition;
+//				editor.SetSelection (targetCaretPosition, selectionEndPosition);
+//			}
 		}
 	}
 }

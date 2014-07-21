@@ -86,16 +86,15 @@ namespace MonoDevelop.CSharp.Completion
 			public ParameterHintingData (IPropertySymbol symbol) : base (symbol)
 			{
 			}
-			
-			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Gui.Document document, int currentParameter, bool smartWrap)
+			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap)
 			{
-				return CreateTooltipInformation (document, Symbol, currentParameter, smartWrap);
+				return CreateTooltipInformation (editor, ctx, Symbol, currentParameter, smartWrap);
 			}
 			
-			internal static TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Gui.Document document, ISymbol sym, int currentParameter, bool smartWrap)
+			internal static TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, ISymbol sym, int currentParameter, bool smartWrap)
 			{
 				var tooltipInfo = new TooltipInformation ();
-				var sig = new SignatureMarkupCreator (document, document.Editor.Caret.Offset);
+				var sig = new SignatureMarkupCreator (editor, ctx, editor.CaretOffset);
 				sig.HighlightParameter = currentParameter;
 				sig.BreakLineAfterReturnType = smartWrap;
 				try {
@@ -204,10 +203,9 @@ namespace MonoDevelop.CSharp.Completion
 					return param != null && param.IsParams;
 				}
 			}
-			
-			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Gui.Document document, int currentParameter, bool smartWrap)
+			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap)
 			{
-				return ParameterHintingData.CreateTooltipInformation (document, invocationMethod, currentParameter, smartWrap);
+				return ParameterHintingData.CreateTooltipInformation (editor, ctx, invocationMethod, currentParameter, smartWrap);
 			}
 
 		}
@@ -238,9 +236,9 @@ namespace MonoDevelop.CSharp.Completion
 				}
 			}
 			
-			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Gui.Document document, int currentParameter, bool smartWrap)
+			public override TooltipInformation CreateTooltipInformation (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int currentParameter, bool smartWrap)
 			{
-				var sig = new SignatureMarkupCreator (document, document.Editor.Caret.Offset) {
+				var sig = new SignatureMarkupCreator (editor, ctx, editor.CaretOffset) {
 					HighlightParameter = currentParameter
 				};
 				return new TooltipInformation {

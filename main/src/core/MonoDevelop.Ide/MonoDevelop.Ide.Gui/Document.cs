@@ -906,7 +906,7 @@ namespace MonoDevelop.Ide.Gui
 			FileSettingsStore.Remove (FileName);
 		}
 
-		public OptionSet GetOptionSet ()
+		public override OptionSet GetOptionSet ()
 		{
 			return RoslynTypeSystemService.Workspace.Options;
 		}

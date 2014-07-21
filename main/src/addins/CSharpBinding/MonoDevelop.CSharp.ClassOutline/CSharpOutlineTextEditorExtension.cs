@@ -149,7 +149,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 				JumpToDeclaration (true);
 			};
 
-			var analysisDocument = Document.AnalysisDocument;
+			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument != null)
 				lastCU = analysisDocument.GetSemanticModelAsync ().Result;
 
@@ -227,13 +227,13 @@ namespace MonoDevelop.CSharp.ClassOutline
 
 			var syntaxNode = o as SyntaxNode;
 			if (syntaxNode != null) {
-				Document.Editor.Caret.Offset = syntaxNode.SpanStart;
+				Editor.CaretOffset = syntaxNode.SpanStart;
 			} else {
-				Document.Editor.Caret.Offset = ((SyntaxTrivia)o).SpanStart;
+				Editor.CaretOffset = ((SyntaxTrivia)o).SpanStart;
 			}
 
 			if (focusEditor)
-				Document.Select ();
+				Editor.GrabFocus ();
 		}
 
 		static void OutlineTreeIconFunc (TreeViewColumn column, CellRenderer cell, TreeModel model, TreeIter iter)
@@ -292,7 +292,7 @@ namespace MonoDevelop.CSharp.ClassOutline
 		uint refillOutlineStoreId;
 		void UpdateDocumentOutline (object sender, EventArgs args)
 		{
-			var analysisDocument = Document.AnalysisDocument;
+			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
 			lastCU = analysisDocument.GetSemanticModelAsync ().Result;

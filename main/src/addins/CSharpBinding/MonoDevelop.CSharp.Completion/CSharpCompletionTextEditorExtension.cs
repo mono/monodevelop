@@ -134,16 +134,16 @@ namespace MonoDevelop.CSharp.Completion
 
 		async void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			var newDocument = Document.AnalysisDocument;
+			var newDocument = DocumentContext.AnalysisDocument;
 			if (newDocument == null) 
 				return;
 			var semanticModel = await newDocument.GetSemanticModelAsync ();
-			var newTree = TypeSystemSegmentTree.Create (Document, semanticModel);
+			var newTree = TypeSystemSegmentTree.Create (Editor, DocumentContext, semanticModel);
 
 			if (validTypeSystemSegmentTree != null)
 				validTypeSystemSegmentTree.RemoveListener ();
 			validTypeSystemSegmentTree = newTree;
-			newTree.InstallListener (document.Editor.Document);
+			newTree.InstallListener (Editor);
 
 			if (TypeSegmentTreeUpdated != null)
 				TypeSegmentTreeUpdated (this, EventArgs.Empty);
@@ -207,21 +207,23 @@ namespace MonoDevelop.CSharp.Completion
 		
 		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
 		{
-			var data = TextEditorData;
-			if (data.CurrentMode is TextLinkEditMode) {
-				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
-					return null;
-			}
-			var offset = Editor.Caret.Offset;
+			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
+				return null;
+//			var data = Editor;
+//			if (data.CurrentMode is TextLinkEditMode) {
+//				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
+//					return null;
+//			}
+			var offset = Editor.CaretOffset;
 
 			var list = new CSharpCompletionDataList ();
 			try {
-				var analysisDocument = document.AnalysisDocument;
+				var analysisDocument = DocumentContext.AnalysisDocument;
 				if (analysisDocument == null)
 					return null;
 
 				Compilation compilation;
-				compilation = document.GetCompilationAsync ().Result; 
+				compilation = DocumentContext.GetCompilationAsync ().Result; 
 
 				if (compilation != null) {
 					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
@@ -321,10 +323,10 @@ namespace MonoDevelop.CSharp.Completion
 		
 		public override int GuessBestMethodOverload (ParameterHintingResult provider, int currentOverload)
 		{
-			var analysisDocument = document.AnalysisDocument;
+			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return -1;
-			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, provider.StartOffset, document.Editor.Caret.Offset).Result;
+			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, provider.StartOffset, Editor.CaretOffset).Result;
 			var cparam = result.ParameterIndex;
 			var list = result.UsedNamespaceParameters;
 			if (cparam > provider[currentOverload].ParameterCount && !provider[currentOverload].IsParameterListAllowed || !HasAllUsedParameters (provider[currentOverload], list)) {
@@ -473,23 +475,21 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
-			var data = TextEditorData;
+			var data = Editor;
 			if (completionChar != '(' && completionChar != ',')
 				return null;
-			if (data.CurrentMode is TextLinkEditMode) {
-				if (((TextLinkEditMode)data.CurrentMode).TextLinkMode == TextLinkMode.EditIdentifier)
-					return null;
-			}
-			var offset = Editor.Caret.Offset;
+			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
+				return null;
+			var offset = Editor.CaretOffset;
 
 			if (completionChar != '(' && completionChar != ',')
 				return null;
 
 			try {
-				var compilation = document.GetCompilationAsync ().Result; 
+				var compilation = DocumentContext.GetCompilationAsync ().Result; 
 
 				if (compilation != null) {
-					var analysisDocument = document.AnalysisDocument;
+					var analysisDocument = DocumentContext.AnalysisDocument;
 					if (analysisDocument == null)
 						return null;
 					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
@@ -526,10 +526,10 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
-			var analysisDocument = document.AnalysisDocument;
+			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return -1;
- 			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, startOffset, document.Editor.Caret.Offset).Result;
+ 			var result = ICSharpCode.NRefactory6.CSharp.ParameterUtil.GetCurrentParameterIndex (analysisDocument, startOffset, Editor.CaretOffset).Result;
 			return result.ParameterIndex;
 		}
 
@@ -1213,20 +1213,22 @@ namespace MonoDevelop.CSharp.Completion
 			return editor.GetTextBetween (node.StartLocation, node.EndLocation);
 		}
 
-		string IDebuggerExpressionResolver.ResolveExpression (TextEditorData editor, MonoDevelop.Ide.Gui.Document doc, int offset, out int startOffset)
+		string IDebuggerExpressionResolver.ResolveExpression (IReadonlyTextDocument editor, MonoDevelop.Ide.Gui.Document doc, int offset, out int startOffset)
 		{
+			// TODO: Roslyn port!
 			startOffset = -1;
 			return null;
-//			ResolveResult result;
-//			AstNode node;
-//
-//			var loc = editor.OffsetToLocation (offset);
-//			if (!TryResolveAt (doc, loc, out result, out node)) {
-//				startOffset = -1;
-//				return null;
-//			}
-//
-//			return ResolveExpression (editor, result, node, out startOffset);
+			/*
+			ResolveResult result;
+			AstNode node;
+
+			var loc = editor.OffsetToLocation (offset);
+			if (!TryResolveAt (doc, loc, out result, out node)) {
+				startOffset = -1;
+				return null;
+			}
+
+			return ResolveExpression (editor, result, node, out startOffset);*/
 		}
 
 		#endregion
@@ -1290,7 +1292,7 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			
 			
-			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Gui.Document document, SemanticModel semanticModel)
+			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext ctx, SemanticModel semanticModel)
 			{
 				TypeSystemSegmentTree result = new TypeSystemSegmentTree ();
 				
@@ -1444,5 +1446,6 @@ namespace MonoDevelop.CSharp.Completion
 //				return new CSharpAstResolver (resolver, rootNode, document.ParsedDocument.ParsedFile as CSharpUnresolvedFile);
 //			}
 //		}
+
 	}
 }

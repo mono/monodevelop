@@ -89,12 +89,12 @@ namespace MonoDevelop.CodeGeneration
 			private set;
 		}
 
-		internal CodeGenerationOptions (MonoDevelop.Ide.Gui.Document document)
+		internal CodeGenerationOptions (TextEditor editor,  DocumentContext ctx)
 		{
-			var analysisDocument = document.AnalysisDocument;
+			var analysisDocument = ctx.AnalysisDocument;
 			if (analysisDocument != null)
 				CurrentState = analysisDocument.GetSemanticModelAsync ().Result;
-			offset = document.Editor.Caret.Offset;
+			offset = editor.CaretOffset;
 			var node = CurrentState.SyntaxTree.GetRoot ().FindNode (TextSpan.FromBounds (offset, offset));
 			EnclosingMember = node.AncestorsAndSelf ().OfType<MemberDeclarationSyntax> ().FirstOrDefault ();
 			EnclosingPart = node.AncestorsAndSelf ().OfType<TypeDeclarationSyntax> ().FirstOrDefault ();
@@ -115,9 +115,9 @@ namespace MonoDevelop.CodeGeneration
 			return result;
 		}
 		
-		public static CodeGenerationOptions CreateCodeGenerationOptions (MonoDevelop.Ide.Gui.Document document)
+		public static CodeGenerationOptions CreateCodeGenerationOptions (TextEditor document, DocumentContext ctx)
 		{
-			return new CodeGenerationOptions (document);
+			return new CodeGenerationOptions (document, ctx);
 		}
 		
 	}

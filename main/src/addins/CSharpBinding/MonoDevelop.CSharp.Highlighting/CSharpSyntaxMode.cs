@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
 using GLib;
 using System.Collections.Generic;
+using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -58,7 +59,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 	class CSharpSyntaxMode : SemanticHighlighting
 	{
-		CSharpAstResolver resolver;
+		SemanticModel resolver;
 		CancellationTokenSource src;
 
 		public CSharpSyntaxMode (TextEditor editor, DocumentContext documentContext) : base (editor, documentContext)
@@ -79,11 +80,14 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (parsedDocument != null) {
 				if (documentContext.Project != null && documentContext.IsCompileableInProject) {
 					src = new CancellationTokenSource ();
-					var newResolverTask = documentContext.GetSharedResolver ();
+					var analysisDocument = documentContext.AnalysisDocument;
+					if (analysisDocument == null)
+						return;
 					var cancellationToken = src.Token;
+					var newResolverTask = analysisDocument.GetSemanticModelAsync (cancellationToken);
+					if (newResolverTask == null)
+						return;
 					System.Threading.Tasks.Task.Factory.StartNew (delegate {
-						if (newResolverTask == null)
-							return;
 						var newResolver = newResolverTask.Result;
 						if (newResolver == null)
 							return;
@@ -91,11 +95,8 @@ namespace MonoDevelop.CSharp.Highlighting
 							Gtk.Application.Invoke (delegate {
 								if (cancellationToken.IsCancellationRequested)
 									return;
-
-								if (!parsedDocument.HasErrors) {
-									resolver = newResolver;
-									UpdateSemanticHighlighting ();
-								}
+								resolver = newResolver;
+								UpdateSemanticHighlighting ();
 							});
 						}
 					}, cancellationToken);
@@ -109,8 +110,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (resolver == null)
 				return result;
 			int lineNumber = editor.OffsetToLineNumber (segment.Offset);
-			var visitor = new HighlightingVisitior (resolver, result.Add, CancellationToken.None, lineNumber, segment.Offset, segment.Length);
-			resolver.RootNode.AcceptVisitor (visitor);
+			var visitor = new HighlightingVisitior (resolver, result.Add, default (CancellationToken), segment);
+			visitor.Visit (resolver.SyntaxTree.GetRoot ()); 
 			return result;
 		}
 		#endregion
@@ -122,23 +123,19 @@ namespace MonoDevelop.CSharp.Highlighting
 		readonly int lineOffset;
 		readonly int lineLength;
 		Action<ColoredSegment> colorizeCallback;
+		
+		readonly ISegment textSpan;
 
-		public HighlightingVisitior (CSharpAstResolver resolver, Action<ColoredSegment> colorizeCallback, CancellationToken cancellationToken, int lineNumber, int lineOffset, int lineLength)
+		public HighlightingVisitior (SemanticModel resolver, Action<ColoredSegment> colorizeCallback, CancellationToken cancellationToken, ISegment textSpan) : base (resolver)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException ("resolver");
-			this.resolver = resolver;
 			this.cancellationToken = cancellationToken;
-			this.lineNumber = lineNumber;
-			this.lineOffset = lineOffset;
-			this.lineLength = lineLength;
 			this.colorizeCallback = colorizeCallback;
-			regionStart = new TextLocation (lineNumber, 1);
-			regionEnd = new TextLocation (lineNumber, lineLength);
-
+			this.textSpan = textSpan;
 			Setup ();
 		}
-
+		
 		void Setup ()
 		{
 			
@@ -179,25 +176,9 @@ namespace MonoDevelop.CSharp.Highlighting
 			stringFormatItemColor = Mono.TextEditor.Highlighting.ColorScheme.StringFormatItemsKey;
 		}
 
-		protected override void Colorize (TextLocation start, TextLocation end, string color)
+		protected override void Colorize (TextSpan span, string color)
 		{
-			int startOffset;
-			if (start.Line == lineNumber) {
-				startOffset = lineOffset + start.Column - 1;
-			} else {
-				if (start.Line > lineNumber)
-					return;
-				startOffset = lineOffset;
-			}
-			int endOffset;
-			if (end.Line == lineNumber) {
-				endOffset = lineOffset + end.Column - 1;
-			} else {
-				if (end.Line < lineNumber)
-					return;
-				endOffset = lineOffset + lineLength;
-			}
-			colorizeCallback (new ColoredSegment (startOffset, endOffset - startOffset, color));
+			colorizeCallback (new ColoredSegment (span.Start, span.Length, color));
 		}
 	}
 }

@@ -219,14 +219,14 @@ namespace MonoDevelop.CSharp
 						}
 						return sb.ToString ();
 					}
-					var delegateDecl = node as DelegateDeclaration;
+					var delegateDecl = node as DelegateDeclarationSyntax;
 					if (delegateDecl != null) {
 						var sb = new StringBuilder ();
-						sb.Append (delegateDecl.Name);
-						var parentType = delegateDecl.Parent as TypeDeclaration;
+						sb.Append (delegateDecl.Identifier.ToString ());
+						var parentType = delegateDecl.Parent as TypeDeclarationSyntax;
 						while (parentType != null) {
-							sb.Insert (0, parentType.Name + ".");
-							parentType = parentType.Parent as TypeDeclaration;
+							sb.Insert (0, parentType.Identifier + ".");
+							parentType = parentType.Parent as TypeDeclarationSyntax;
 						}
 						return sb.ToString ();
 					}
@@ -319,7 +319,7 @@ namespace MonoDevelop.CSharp
 						} else {
 							offset = node.SpanStart;
 						}
-						extEditor.SetCaretLocation (line, col, true);
+						extEditor.SetCaretLocation (extEditor.OffsetToLocation (offset), true);
 					}
 				}
 			}
@@ -463,9 +463,9 @@ namespace MonoDevelop.CSharp
 		}
 
 
-		async void UpdatePath (object sender, Mono.TextEditor.DocumentLocationEventArgs e)
+		async void UpdatePath (object sender, EventArgs e)
 		{
-			var analysisDocument = Document.AnalysisDocument;
+			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
 			var caretOffset = Editor.CaretOffset;
@@ -474,8 +474,8 @@ namespace MonoDevelop.CSharp
 				return;
 			amb = new AstAmbience (RoslynTypeSystemService.Workspace.Options);
 			
-			var loc = Document.Editor.Caret.Location;
-			var compExt = Document.GetContent<CSharpCompletionTextEditorExtension> ();
+			var loc = Editor.CaretLocation;
+			var compExt = Editor.GetContent<CSharpCompletionTextEditorExtension> ();
 
 			var segType = compExt.GetTypeAt (caretOffset);
 
@@ -485,7 +485,7 @@ namespace MonoDevelop.CSharp
 			var curMember = token.AncestorsAndSelf ().FirstOrDefault (m => m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax));
 			var curType = token.AncestorsAndSelf ().FirstOrDefault (m => m is TypeDeclarationSyntax || m is DelegateDeclarationSyntax);
 
-			var curProject = ownerProjects.Count > 1 ? Document.Project : null;
+			var curProject = ownerProjects.Count > 1 ? DocumentContext.Project : null;
 
 			if (curType == curMember || curType is DelegateDeclarationSyntax)
 				curMember = null;
@@ -548,7 +548,7 @@ namespace MonoDevelop.CSharp
 				}
 			}
 				
-			var entry = GetRegionEntry (document.ParsedDocument, loc);
+			var entry = GetRegionEntry (DocumentContext.ParsedDocument, loc);
 			if (entry != null)
 				result.Add (entry);
 				

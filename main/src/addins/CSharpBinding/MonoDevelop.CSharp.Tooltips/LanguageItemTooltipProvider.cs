@@ -40,6 +40,7 @@ using MonoDevelop.Projects;
 using Mono.Cecil.Cil;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using Gtk;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -108,7 +109,6 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#endregion
-
 		public override Window CreateTooltipWindow (TextEditor editor, int offset, Gdk.ModifierType modifierState, TooltipItem item)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -145,7 +145,7 @@ namespace MonoDevelop.SourceEditor
 			var endLoc = editor.OffsetToLocation (hoverNode.Span.End);
 			var p1 = editor.LocationToPoint (startLoc);
 			var p2 = editor.LocationToPoint (endLoc);
-			var positionWidget = editor.TextArea;
+			Gtk.Widget positionWidget = editor;
 			var caret = new Gdk.Rectangle ((int)p1.X - positionWidget.Allocation.X, (int)p2.Y - positionWidget.Allocation.Y, (int)(p2.X - p1.X), (int)editor.LineHeight);
 
 			tipWindow.ShowPopup (positionWidget, caret, PopupPosition.Top);
@@ -165,7 +165,7 @@ namespace MonoDevelop.SourceEditor
 			bool createFooter = (modifierState & Gdk.ModifierType.Mod1Mask) != 0;
 			try {
 				TooltipInformation result;
-				var sig = new SignatureMarkupCreator (doc, offset);
+				var sig = new SignatureMarkupCreator (doc.Editor, doc, offset);
 				sig.BreakLineAfterReturnType = false;
 				
 				var typeOfExpression = data.Token.Parent as TypeOfExpressionSyntax;
@@ -209,7 +209,7 @@ namespace MonoDevelop.SourceEditor
 					return result;
 				
 				if (data.Symbol != null) {
-					result = RoslynSymbolCompletionData.CreateTooltipInformation (doc, data.Symbol, false, createFooter);
+					result = RoslynSymbolCompletionData.CreateTooltipInformation (doc.Editor, doc, data.Symbol, false, createFooter);
 				}
 				
 //				if (result == null && parentKind == SyntaxKind.IdentifierName) {

@@ -45,7 +45,7 @@ namespace MonoDevelop.CSharp
 
 		public override async Task<IList<UnitTestLocation>> GatherUnitTests (CancellationToken token)
 		{
-			var analysisDocument = document.AnalysisDocument;
+			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return emptyResult;
 			var semanticModel = await analysisDocument.GetSemanticModelAsync (token);

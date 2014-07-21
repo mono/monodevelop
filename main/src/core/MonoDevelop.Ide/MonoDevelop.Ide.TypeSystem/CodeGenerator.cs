@@ -190,7 +190,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		}
 
 
-		public abstract string GetShortTypeString (TextEditor editor, DocumentContext context, IType type);
+		//public abstract string GetShortTypeString (TextEditor editor, DocumentContext context, IType type);
 
 		public abstract void CompleteStatement (MonoDevelop.Ide.Gui.Document doc);
 	}

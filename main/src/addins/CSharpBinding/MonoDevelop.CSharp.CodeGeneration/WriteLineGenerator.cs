@@ -89,7 +89,7 @@ namespace MonoDevelop.CodeGeneration
 				// add local variables
 				var state = Options.CurrentState;
 				if (state != null) {
-					foreach (var v in state.LookupSymbols (editor.Caret.Offset).OfType<ILocalSymbol> ()) 
+					foreach (var v in state.LookupSymbols (editor.CaretOffset).OfType<ILocalSymbol> ()) 
 						yield return v;
 				}
 				

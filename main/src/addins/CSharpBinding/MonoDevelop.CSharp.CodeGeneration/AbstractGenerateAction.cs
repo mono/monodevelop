@@ -137,7 +137,7 @@ namespace MonoDevelop.CodeGeneration
 			} while (store.IterNext (ref iter));
 
 			var output = new StringBuilder ();
-			string indent = RefactoringOptions.GetIndent (options.Document, (SyntaxNode)options.EnclosingMember ?? options.EnclosingPart) + "\t";
+			string indent = RefactoringOptions.GetIndent (options.Editor, (SyntaxNode)options.EnclosingMember ?? options.EnclosingPart) + "\t";
 			foreach (string nodeText in GenerateCode (includedMembers)) {
 				if (output.Length > 0) {
 					output.AppendLine ();

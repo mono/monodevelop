@@ -116,8 +116,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 		/// Tries to resolve inside the current location inside tho document.
 		/// </summary>
 		/// <returns><c>true</c>, if resolve was successful, <c>false</c> otherwise.</returns>
-		/// <param name="resolveResult">The resolve result.</param>
-		protected abstract bool TryResolve(out T resolveResult);
+		/// <param name="token">A cancellation token to cancel the operation.</param>
+		protected abstract Task<T> ResolveAsync (CancellationToken token);
+		
 
 		/// <summary>
 		/// Gets all references from a given resolve result. Note that this method is called on a background thread.
@@ -127,18 +128,19 @@ namespace MonoDevelop.Ide.Editor.Extension
 		/// <param name="token">A cancellation token to cancel the operation.</param>
 		protected abstract IEnumerable<MemberReference> GetReferences (T resolveResult, CancellationToken token);
 
-		bool DelayedTooltipShow ()
+		async void DelayedTooltipShow ()
 		{
 			try {
-				T result;
+				CancelTooltip ();
+				
+				var token = tooltipCancelSrc.Token;
 
-				if (!TryResolve(out result)) {
+				T result = await ResolveAsync (token);
+				if (token.IsCancellationRequested) {
 					ClearQuickTasks ();
-					return false;
+					return;
 				}
 
-				CancelTooltip ();
-				var token = tooltipCancelSrc.Token;
 				Task.Factory.StartNew (delegate {
 					var list = GetReferences (result, token).ToList ();
 					if (!token.IsCancellationRequested) {
@@ -154,7 +156,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			} finally {
 				popupTimer = 0;
 			}
-			return false;
 		}
 
 		void RemoveTimer ()
@@ -174,7 +175,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			RemoveMarkers ();
 			RemoveTimer ();
 			if (!Editor.IsSomethingSelected)
-				popupTimer = GLib.Timeout.Add (1000, DelayedTooltipShow);
+				popupTimer = GLib.Timeout.Add (1000, () => { DelayedTooltipShow (); return false; } );
 		}
 
 		void ClearQuickTasks ()

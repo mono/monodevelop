@@ -25,16 +25,11 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Ide.Editor.Extension;
-using MonoDevelop.Ide.Editor;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Threading;
-using ICSharpCode.NRefactory.Semantics;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Core;
-using ICSharpCode.NRefactory.Refactoring;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp
 {
@@ -59,18 +54,22 @@ namespace MonoDevelop.CSharp
 				src.Cancel ();
 			if (DocumentContext.IsProjectContextInUpdate)
 				return;
-			var newResolverTask = DocumentContext.GetSharedResolver ();
 			src = new CancellationTokenSource ();
+			
+			var analysisDocument = DocumentContext.AnalysisDocument;
+			if (analysisDocument == null)
+				return;
 			var cancellationToken = src.Token;
+			var newResolverTask = analysisDocument.GetSemanticModelAsync (cancellationToken);
+			if (newResolverTask == null)
+				return;
 			System.Threading.Tasks.Task.Factory.StartNew (delegate {
-				if (newResolverTask == null)
-					return;
 				var newResolver = newResolverTask.Result;
 				if (newResolver == null)
 					return;
 				var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
 				try {
-					newResolver.RootNode.AcceptVisitor (visitor);
+					visitor.Visit (newResolver.SyntaxTree.GetRoot ());
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
 					return;
@@ -104,64 +103,71 @@ namespace MonoDevelop.CSharp
 		}
 		#endregion
 
-		class QuickTaskVisitor : DepthFirstAstVisitor
+		class QuickTaskVisitor : CSharpSyntaxVisitor
 		{
 			internal List<QuickTask> QuickTasks = new List<QuickTask> ();
-			readonly CSharpAstResolver resolver;
+			readonly SemanticModel resolver;
 			readonly CancellationToken cancellationToken;
 
-			public QuickTaskVisitor (CSharpAstResolver resolver, CancellationToken cancellationToken)
+			public QuickTaskVisitor (SemanticModel resolver, CancellationToken cancellationToken)
 			{
 				this.resolver = resolver;
 				this.cancellationToken = cancellationToken;
 			}
 
-			protected override void VisitChildren (AstNode node)
+			public override void VisitBlock (Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax node)
 			{
-				if (cancellationToken.IsCancellationRequested)
-					return;
-				base.VisitChildren (node);
+				cancellationToken.ThrowIfCancellationRequested ();
+				base.VisitBlock (node);
 			}
 
-			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
+			public override void VisitIdentifierName (Microsoft.CodeAnalysis.CSharp.Syntax.IdentifierNameSyntax node)
 			{
-				base.VisitIdentifierExpression (identifierExpression);
-				var result = resolver.Resolve (identifierExpression, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new QuickTask (() => string.Format ("error CS0103: The name `{0}' does not exist in the current context", identifierExpression.Identifier), identifierExpression.StartLocation, Severity.Error));
+				base.VisitIdentifierName (node);
+				var info = resolver.GetSymbolInfo (node, cancellationToken); 
+				if (info.Symbol == null)  {
+					QuickTasks.Add (new QuickTask (() => string.Format ("error CS0103: The name `{0}' does not exist in the current context", node.GetText ()), node.SpanStart, ICSharpCode.NRefactory.Refactoring.Severity.Error));
 				}
 			}
 
-			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
-			{
-				base.VisitMemberReferenceExpression (memberReferenceExpression);
-				var result = resolver.Resolve (memberReferenceExpression, cancellationToken) as UnknownMemberResolveResult;
-				if (result != null && result.TargetType.Kind != TypeKind.Unknown) {
-					QuickTasks.Add (new QuickTask (string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", result.TargetType.FullName, memberReferenceExpression.MemberName), memberReferenceExpression.MemberNameToken.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitSimpleType (SimpleType simpleType)
-			{
-				base.VisitSimpleType (simpleType);
-				var result = resolver.Resolve (simpleType, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", simpleType.Identifier), simpleType.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitMemberType (MemberType memberType)
-			{
-				base.VisitMemberType (memberType);
-				var result = resolver.Resolve (memberType, cancellationToken);
-				if (result.IsError) {
-					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", memberType.MemberName), memberType.StartLocation, Severity.Error));
-				}
-			}
-
-			public override void VisitComment (Comment comment)
-			{
-			}
+			//			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
+			//			{
+			//				base.VisitIdentifierExpression (identifierExpression);
+			//				var result = resolver.Resolve (identifierExpression, cancellationToken);
+			//				if (result.IsError) {
+			//				}
+			//			}
+			//
+			//			public override void VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression)
+			//			{
+			//				base.VisitMemberReferenceExpression (memberReferenceExpression);
+			//				var result = resolver.Resolve (memberReferenceExpression, cancellationToken) as UnknownMemberResolveResult;
+			//				if (result != null && result.TargetType.Kind != TypeKind.Unknown) {
+			//					QuickTasks.Add (new QuickTask (string.Format ("error CS0117: `{0}' does not contain a definition for `{1}'", result.TargetType.FullName, memberReferenceExpression.MemberName), memberReferenceExpression.MemberNameToken.StartLocation, Severity.Error));
+			//				}
+			//			}
+			//
+			//			public override void VisitSimpleType (SimpleType simpleType)
+			//			{
+			//				base.VisitSimpleType (simpleType);
+			//				var result = resolver.Resolve (simpleType, cancellationToken);
+			//				if (result.IsError) {
+			//					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", simpleType.Identifier), simpleType.StartLocation, Severity.Error));
+			//				}
+			//			}
+			//
+			//			public override void VisitMemberType (MemberType memberType)
+			//			{
+			//				base.VisitMemberType (memberType);
+			//				var result = resolver.Resolve (memberType, cancellationToken);
+			//				if (result.IsError) {
+			//					QuickTasks.Add (new QuickTask (string.Format ("error CS0246: The type or namespace name `{0}' could not be found. Are you missing an assembly reference?", memberType.MemberName), memberType.StartLocation, Severity.Error));
+			//				}
+			//			}
+			//
+			//			public override void VisitComment (ICSharpCode.NRefactory.CSharp.Comment comment)
+			//			{
+			//			}
 		}
 	}
 }

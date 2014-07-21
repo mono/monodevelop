@@ -203,7 +203,7 @@ namespace MonoDevelop.CSharp
 		{
 			if (entity == null)
 				throw new ArgumentNullException ("entity");
-			return MonoDevelop.CSharp.Completion.RoslynSymbolCompletionData.CreateTooltipInformation (null, entity, false, true);
+			return MonoDevelop.CSharp.Completion.RoslynSymbolCompletionData.CreateTooltipInformation (null, null, entity, false, true);
 		}
 
 		static string GetString (TypeKind classType)

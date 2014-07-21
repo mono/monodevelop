@@ -72,7 +72,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			}
 			base.Dispose ();
 		}
-
+		
 		protected async override Task<UsageData> ResolveAsync (CancellationToken token)
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
@@ -82,7 +82,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (analysisDocument == null)
 				return new UsageData ();
 
-			var symbolInfo = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.Caret.Offset, token);
+			var symbolInfo = await CurrentRefactoryOperationsHandler.GetSymbolInfoAsync (analysisDocument, doc.Editor.CaretOffset, token);
 			if (symbolInfo.Symbol == null && symbolInfo.DeclaredSymbol == null)
 				return new UsageData ();
 			return new UsageData {

@@ -51,7 +51,8 @@ namespace MonoDevelop.CSharp
 	class SignatureMarkupCreator
 	{
 		const double optionalAlpha = 0.7;
-		readonly MonoDevelop.Ide.Gui.Document document;
+		readonly MonoDevelop.Ide.Editor.TextEditor editor;
+		readonly MonoDevelop.Ide.Editor.DocumentContext ctx;
 		readonly OptionSet options;
 		readonly ColorScheme colorStyle;
 		readonly int offset;
@@ -72,14 +73,14 @@ namespace MonoDevelop.CSharp
 			}
 		}
 
-		public SignatureMarkupCreator (MonoDevelop.Ide.Gui.Document document, int offset)
+		public SignatureMarkupCreator (MonoDevelop.Ide.Editor.TextEditor editor, MonoDevelop.Ide.Editor.DocumentContext ctx, int offset)
 		{
 			this.offset = offset;
 			this.colorStyle = SyntaxModeService.GetColorStyle (MonoDevelop.Ide.IdeApp.Preferences.ColorScheme);
-
-			this.document = document;
-			if (document != null) {
-				this.options = document.GetOptionSet ();
+			this.editor = editor;
+			this.ctx = ctx;
+			if (ctx != null) {
+				this.options = ctx.GetOptionSet ();
 			} else {
 				this.options = RoslynTypeSystemService.Workspace.Options;
 			}
@@ -99,9 +100,9 @@ namespace MonoDevelop.CSharp
 				return GetTypeReferenceString (((IPointerTypeSymbol)type).PointedAtType, highlight) + "*";
 			string displayString;
 
-			if (document != null) {
+			if (ctx != null) {
 				SemanticModel model = null;
-				var analysisDocument = document.AnalysisDocument;
+				var analysisDocument = ctx.AnalysisDocument;
 				if (analysisDocument != null) {
 					model = analysisDocument.GetSemanticModelAsync ().Result;
 				}
