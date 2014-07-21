@@ -230,7 +230,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		internal bool IsValidClass (ITypeSymbol cls)
 		{
-			if (cls.SpecialType == SpecialType.System_Object)
+			if (cls.SpecialType == Microsoft.CodeAnalysis.SpecialType.System_Object)
 				return false;
 			if (cls.BaseType.GetFullName () == rootWidget.Component.Type.ClassName)
 				return true;
