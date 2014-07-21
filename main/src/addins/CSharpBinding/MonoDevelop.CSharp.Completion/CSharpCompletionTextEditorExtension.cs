@@ -26,60 +26,34 @@
 
 using System;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Mono.TextEditor;
 
 using MonoDevelop.Core;
 using MonoDevelop.Debugger;
-using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.CodeGeneration;
 using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Ide.CodeTemplates;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 
-using MonoDevelop.CSharp.Project;
 using MonoDevelop.CSharp.Formatting;
 
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Recommendations;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.Semantics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-using MonoDevelop.CSharp.Refactoring.CodeActions;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
-using MonoDevelop.CSharp.NRefactoryWrapper;
+using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, ITextEditorMemberPositionProvider, IDebuggerExpressionResolver
 	{
-		internal Mono.TextEditor.TextEditorData TextEditorData {
-			get {
-				var doc = Document;
-				if (doc == null)
-					return null;
-				return doc.Editor;
-			}
-		}
-		
-		public new MonoDevelop.Ide.Gui.Document Document {
-			get {
-				return base.document;
-			}
-		}
-		
+	
 		public MonoDevelop.Projects.Project Project {
 			get {
 				return DocumentContext.Project;
@@ -123,7 +97,7 @@ namespace MonoDevelop.CSharp.Completion
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			document.DocumentParsed += HandleDocumentParsed;
+			DocumentContext.DocumentParsed += HandleDocumentParsed;
 		}
 			
 		[CommandUpdateHandler (CodeGenerationCommands.ShowCodeGenerationWindow)]
@@ -144,7 +118,7 @@ namespace MonoDevelop.CSharp.Completion
 
 		public override void Dispose ()
 		{
-			document.DocumentParsed -= HandleDocumentParsed;
+			DocumentContext.DocumentParsed -= HandleDocumentParsed;
 			if (unstableTypeSystemSegmentTree != null) {
 				unstableTypeSystemSegmentTree.RemoveListener ();
 				unstableTypeSystemSegmentTree = null;
@@ -1341,6 +1315,28 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var nested in type.GetTypeMembers ())
 					AddType (document, result, nested, nested.Locations.First ().SourceSpan);
 			}
+			
+			ITextDocument ownerDocument;
+			public void InstallListener (ITextDocument doc)
+			{
+				if (ownerDocument != null)
+					throw new InvalidOperationException ("Segment tree already installed");
+				ownerDocument = doc;
+				doc.TextChanged += UpdateOnTextChanged;
+			}
+
+			public new void RemoveListener ()
+			{
+				if (ownerDocument == null)
+					throw new InvalidOperationException ("Segment tree is not installed");
+				ownerDocument.TextChanged -= UpdateOnTextChanged;
+				ownerDocument = null;
+			}
+			
+			void UpdateOnTextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
+			{
+				UpdateOnTextReplace (sender, new DocumentChangeEventArgs (e.Offset, e.RemovedText.Text, e.InsertedText.Text));
+			}			
 		}
 		
 		public ITypeSymbol GetTypeAt (int offset)

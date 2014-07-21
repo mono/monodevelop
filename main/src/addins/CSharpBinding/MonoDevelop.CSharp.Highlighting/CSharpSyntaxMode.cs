@@ -27,32 +27,13 @@
 //
 
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using Mono.TextEditor.Highlighting;
-using Mono.TextEditor;
-using System.Xml;
-using MonoDevelop.Projects;
-using MonoDevelop.CSharp.Project;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Tasks;
-using MonoDevelop.Ide.TypeSystem;
-using MonoDevelop.SourceEditor.QuickTasks;
-using System.Threading;
-using System.Diagnostics;
-using MonoDevelop.Core;
-using MonoDevelop.Refactoring;
 using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Analysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.CSharp;
 using MonoDevelop.Ide.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Threading;
-using ICSharpCode.NRefactory.CSharp.Analysis;
 using ICSharpCode.NRefactory;
-using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 
