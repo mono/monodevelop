@@ -80,13 +80,26 @@ namespace MonoDevelop.Platform
 			dialog.DefaultFileName = data.InitialFileName;
 		}
 
+		static FilePath FilterFileName (SelectFileDialogData data, string fileName)
+		{
+			FilePath result = fileName;
+			// FileDialog doesn't show the file extension when saving a file and chooses the extension based
+			// the file filter. But * is no valid extension so the default file name extension needs to be set in that case.
+			if (result.Extension == ".*") {
+				var ext = Path.GetExtension (data.InitialFileName);
+				if (!string.IsNullOrEmpty (ext))
+					result = result.ChangeExtension (ext);
+			} 
+			return result;
+		}
+
 		internal static void GetCommonFormProperties (SelectFileDialogData data, CommonFileDialog dialog)
 		{
 			var fileDialog = dialog as CommonOpenFileDialog;
 			if (fileDialog != null)
-				data.SelectedFiles = fileDialog.FileNames.Select (f => (FilePath) f).ToArray ();
+				data.SelectedFiles = fileDialog.FileNames.Select (f => FilterFileName (data, f)).ToArray ();
 			else
-				data.SelectedFiles = new[] {(FilePath) dialog.FileName};
+				data.SelectedFiles = new[] { FilterFileName (data, dialog.FileName) };
 		}
 
 		static void SetFilters (SelectFileDialogData data, CommonFileDialog dialog)
@@ -102,7 +115,6 @@ namespace MonoDevelop.Platform
 			var defExt = data.DefaultFilter == null ? null : data.DefaultFilter.Patterns.FirstOrDefault ();
 			if (defExt == null)
 				return;
-
 			// FileDialog doesn't show the file extension when saving a file,
 			// so we try to look for the precise filter if none was specified.
 			if (!string.IsNullOrEmpty (data.InitialFileName) && data.Action == FileChooserAction.Save && defExt == "*") {

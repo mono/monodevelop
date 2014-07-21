@@ -633,12 +633,12 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.NextNotebookHandler"
 			_label = "Move to Next Notebook"
 			shortcut = "Control|Alt|Shift|Right"
-			macShortcut = "Meta|Shift|Right"/>
+			macShortcut = "Alt|Meta|Right"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.PreviousNotebook"
 			defaultHandler = "MonoDevelop.Ide.Commands.PreviousNotebookHandler"
 			_label = "Move to Previous Notebook"
 			shortcut = "Control|Alt|Shift|Left"
-			macShortcut = "Meta|Shift|Left"/>
+			macShortcut = "Alt|Meta|Left"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
 			_label = "_Focus Document"

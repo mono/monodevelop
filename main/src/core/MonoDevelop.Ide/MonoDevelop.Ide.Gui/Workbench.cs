@@ -98,6 +98,15 @@ namespace MonoDevelop.Ide.Gui
 					CheckFileStatus ();
 				};
 
+				IdeApp.ProjectOperations.StartBuild += delegate {
+					SaveFileStatus ();
+				};
+
+				IdeApp.ProjectOperations.EndBuild += delegate {
+					// The file status checks outputs as well.
+					CheckFileStatus ();
+				};
+
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
 			} finally {
