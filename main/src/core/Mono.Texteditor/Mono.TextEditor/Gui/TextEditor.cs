@@ -725,7 +725,16 @@ namespace Mono.TextEditor
 				textArea.SelectionAnchor = value;
 			}
 		}
-		
+
+		public int SelectionLead {
+			get {
+				return textArea.SelectionLead;
+			}
+			set {
+				textArea.SelectionLead = value;
+			}
+		}
+
 		public IEnumerable<DocumentLine> SelectedLines {
 			get {
 				return textArea.SelectedLines;

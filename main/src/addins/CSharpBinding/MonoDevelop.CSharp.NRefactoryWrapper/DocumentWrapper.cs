@@ -31,9 +31,9 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 {
 	public class DocumentWrapper : IDocument
 	{
-		readonly ITextDocument document;
+		readonly IReadonlyTextDocument document;
 
-		public DocumentWrapper (ITextDocument document)
+		public DocumentWrapper (IReadonlyTextDocument document)
 		{
 			if (document == null)
 				throw new ArgumentNullException ("document");
@@ -80,6 +80,8 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		IDocument IDocument.CreateDocumentSnapshot ()
 		{
+			if (document is ITextDocument)
+				return new DocumentWrapper (((ITextDocument)document).CreateDocumentSnapshot ());
 			return this;
 		}
 
@@ -113,55 +115,63 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 
 		void IDocument.Insert (int offset, string text)
 		{
-			document.InsertText (offset, text);
+			Replace (offset, 0, text);
 		}
 
 		void IDocument.Insert (int offset, ITextSource text)
 		{
-			document.InsertText (offset, text.Text);
+			Replace (offset, 0, text.Text);
 		}
 
 		void IDocument.Insert (int offset, string text, AnchorMovementType defaultAnchorMovementType)
 		{
-			document.InsertText (offset, text);
+			Replace (offset, 0, text);
 		}
 
 		void IDocument.Insert (int offset, ITextSource text, AnchorMovementType defaultAnchorMovementType)
 		{
-			document.InsertText (offset, text.Text);
+			Replace (offset, 0, text.Text);
 		}
 
 		void IDocument.Remove (int offset, int length)
 		{
-			document.RemoveText (offset, length);
+			Replace (offset, length, null);
 		}
 
-		void IDocument.Replace (int offset, int length, string newText)
-		{
-			document.ReplaceText (offset, length, newText);
+		public void Replace (int offset, int length, string newText)
+		{	
+			if (document is ITextDocument) {
+				((ITextDocument)document).ReplaceText (offset, length, newText);
+			} else {
+				throw new InvalidOperationException ();
+			}
 		}
 
 		void IDocument.Replace (int offset, int length, ITextSource newText)
 		{
-			document.ReplaceText (offset, length, newText.Text);
+			Replace (offset, length, newText.Text);
 		}
 
 		void IDocument.StartUndoableAction ()
 		{
+			throw new NotSupportedException ();
 		}
 
 		void IDocument.EndUndoableAction ()
 		{
+			throw new NotSupportedException ();
 		}
 
 		IDisposable IDocument.OpenUndoGroup ()
 		{
-			return document.OpenUndoGroup ();
+			if (document is ITextDocument) 
+				return ((ITextDocument)document).OpenUndoGroup ();
+			throw new InvalidOperationException ();
 		}
 
 		ITextAnchor IDocument.CreateAnchor (int offset)
 		{
-			throw new NotImplementedException ();
+			throw new NotSupportedException ();
 		}
 
 		string IDocument.Text {
@@ -169,7 +179,11 @@ namespace MonoDevelop.CSharp.NRefactoryWrapper
 				return document.Text;
 			}
 			set {
-				document.Text = value;
+				if (document is ITextDocument) {
+					((ITextDocument)document).Text = value;
+				} else {
+					throw new InvalidOperationException ();
+				}
 			}
 		}
 

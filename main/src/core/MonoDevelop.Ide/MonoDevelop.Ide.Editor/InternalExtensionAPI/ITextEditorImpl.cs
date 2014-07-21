@@ -96,6 +96,8 @@ namespace MonoDevelop.Ide.Editor
 		SelectionMode SelectionMode { get; }
 
 		ISegment SelectionRange { get; set; }
+		int SelectionAnchorOffset { get; set; }
+		int SelectionLeadOffset { get; set; }
 
 		DocumentRegion SelectionRegion { get; set; }
 

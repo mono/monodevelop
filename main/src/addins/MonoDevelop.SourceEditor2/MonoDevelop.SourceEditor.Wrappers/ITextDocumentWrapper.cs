@@ -117,7 +117,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		IReadonlyTextDocument ITextDocument.CreateDocumentSnapshot ()
 		{
-			return new TextDocumentWrapper (document.CreateDocumentSnapshot ());
+			return new ReadonlyDocumentSnapshot (document);
 		}
 
 		string ITextDocument.Text {
@@ -298,12 +298,12 @@ namespace MonoDevelop.SourceEditor.Wrappers
 
 		TextReader MonoDevelop.Core.Text.ITextSource.CreateReader ()
 		{
-			return new StringReader (document.Text);
+			return document.CreateReader ();
 		}
 
 		TextReader MonoDevelop.Core.Text.ITextSource.CreateReader (int offset, int length)
 		{
-			return new StringReader (document.GetTextAt (offset, length));
+			return document.CreateReader (offset, length);
 		}
 
 		void MonoDevelop.Core.Text.ITextSource.WriteTextTo (TextWriter writer)

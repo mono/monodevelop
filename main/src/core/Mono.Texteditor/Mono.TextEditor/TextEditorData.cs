@@ -794,6 +794,26 @@ namespace Mono.TextEditor
 			}
 		}
 
+		public int SelectionLead {
+			get {
+				if (MainSelection.IsEmpty)
+					return -1;
+				return MainSelection.GetLeadOffset (this);
+			}
+			set {
+				DocumentLocation location = Document.OffsetToLocation (value);
+				if (mainSelection.IsEmpty) {
+					MainSelection = new Selection (location, location);
+				} else {
+					if (MainSelection.Anchor == location) {
+						MainSelection = MainSelection.WithAnchor (MainSelection.Lead);
+					} else {
+						MainSelection = MainSelection.WithLead (location);
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Gets or sets the selection range. If nothing is selected (Caret.Offset, 0) is returned.
 		/// </summary>

@@ -27,6 +27,10 @@ using System;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -34,7 +38,7 @@ namespace MonoDevelop.Ide.Editor
 	/// The TextEditor object needs to be available through IBaseViewContent.GetContent therefore we need to insert a 
 	/// decorator in between.
 	/// </summary>
-	class TextEditorViewContent : IViewContent, MonoDevelop.Components.Commands.ICommandRouter
+	class TextEditorViewContent : IViewContent, ICommandRouter
 	{
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
@@ -339,11 +343,185 @@ namespace MonoDevelop.Ide.Editor
 
 		#region ICommandRouter implementation
 
-		object MonoDevelop.Components.Commands.ICommandRouter.GetNextCommandTarget ()
+		object ICommandRouter.GetNextCommandTarget ()
 		{
 			return textEditorImpl;
 		}
 
 		#endregion
+	
+		#region Commands
+		void ToggleCodeCommentWithBlockComments ()
+		{
+			var blockStarts = TextEditorFactory.GetSyntaxProperties (textEditor.MimeType, "BlockCommentStart");
+			var blockEnds = TextEditorFactory.GetSyntaxProperties (textEditor.MimeType, "BlockCommentEnd");
+			if (blockStarts == null || blockEnds == null || blockStarts.Length == 0 || blockEnds.Length == 0)
+				return;
+
+			string blockStart = blockStarts[0];
+			string blockEnd = blockEnds[0];
+
+			using (var undo = textEditor.OpenUndoGroup ()) {
+				IDocumentLine startLine;
+				IDocumentLine endLine;
+
+				if (textEditor.IsSomethingSelected) {
+					startLine = textEditor.GetLineByOffset (textEditor.SelectionRange.Offset);
+					endLine = textEditor.GetLineByOffset (textEditor.SelectionRange.EndOffset);
+				} else {
+					startLine = endLine = textEditor.GetLine (textEditor.CaretLine);
+				}
+				string startLineText = textEditor.GetTextAt (startLine.Offset, startLine.Length);
+				string endLineText = textEditor.GetTextAt (endLine.Offset, endLine.Length);
+				if (startLineText.StartsWith (blockStart, StringComparison.Ordinal) && endLineText.EndsWith (blockEnd, StringComparison.Ordinal)) {
+					textEditor.RemoveText (endLine.Offset + endLine.Length - blockEnd.Length, blockEnd.Length);
+					textEditor.RemoveText (startLine.Offset, blockStart.Length);
+					if (textEditor.IsSomethingSelected) {
+						textEditor.SelectionAnchorOffset -= blockEnd.Length;
+					}
+				} else {
+					textEditor.InsertText (endLine.Offset + endLine.Length, blockEnd);
+					textEditor.InsertText (startLine.Offset, blockStart);
+					if (textEditor.IsSomethingSelected) {
+						textEditor.SelectionAnchorOffset += blockEnd.Length;
+					}
+				}
+			}
+		}
+
+		bool TryGetLineCommentTag (out string commentTag)
+		{
+			var lineComments = TextEditorFactory.GetSyntaxProperties (textEditor.MimeType, "LineComment");
+			if (lineComments == null || lineComments.Length == 0) {
+				commentTag = null;
+				return false;
+			}
+			commentTag = lineComments [0];
+			return true;
+		}
+
+		[CommandUpdateHandler (EditCommands.AddCodeComment)]
+		[CommandUpdateHandler (EditCommands.RemoveCodeComment)]
+		[CommandUpdateHandler (EditCommands.ToggleCodeComment)]
+		void OnUpdateToggleComment (CommandInfo info)
+		{
+			var lineComments = TextEditorFactory.GetSyntaxProperties (textEditor.MimeType, "LineComment");
+			if (lineComments != null && lineComments.Length > 0) {
+				info.Visible = true;
+				return;
+			}
+			var blockStarts = TextEditorFactory.GetSyntaxProperties (textEditor.MimeType, "BlockCommentStart");
+			var blockEnds = TextEditorFactory.GetSyntaxProperties (textEditor.MimeType, "BlockCommentEnd");
+			info.Visible = blockStarts != null && blockStarts.Length > 0 && blockEnds != null && blockEnds.Length > 0;
+		}
+
+		[CommandHandler (EditCommands.ToggleCodeComment)]
+		void ToggleCodeComment ()
+		{
+			string commentTag;
+			if (!TryGetLineCommentTag (out commentTag))
+				return;
+			bool comment = false;
+			foreach (var line in GetSelectedLines (textEditor)) {
+				if (line.GetIndentation (textEditor).Length == line.Length)
+					continue;
+				string text = textEditor.GetTextAt (line);
+				string trimmedText = text.TrimStart ();
+				if (!trimmedText.StartsWith (commentTag, StringComparison.Ordinal)) {
+					comment = true;
+					break;
+				}
+			}
+
+			if (comment) {
+				AddCodeComment ();
+			} else {
+				RemoveCodeComment ();
+			}
+		}
+
+		static IEnumerable<IDocumentLine> GetSelectedLines (TextEditor textEditor)
+		{
+			var selection = textEditor.SelectionRange;
+			var line = textEditor.GetLineByOffset (selection.EndOffset);
+			do {
+				yield return line;
+				line = line.PreviousLine;
+			} while (line.EndOffset > selection.Offset);
+		}
+
+		[CommandHandler (EditCommands.AddCodeComment)]
+		void AddCodeComment ()
+		{
+			string commentTag;
+			if (!TryGetLineCommentTag (out commentTag))
+				return;
+
+			using (var undo = textEditor.OpenUndoGroup ()) {
+				var wasSelected = textEditor.IsSomethingSelected;
+				var lead = textEditor.SelectionLeadOffset;
+				var anchor = textEditor.SelectionAnchorOffset;
+				int lines = 0;
+				foreach (var line in GetSelectedLines (textEditor)) {
+					lines++;
+					//					if (line.GetIndentation (TextEditor.Document).Length == line.EditableLength)
+					//						continue;
+					textEditor.InsertText (line.Offset, commentTag);
+				}
+				if (wasSelected) {
+					if (anchor < lead) {
+						textEditor.SelectionAnchorOffset = anchor + commentTag.Length;
+						textEditor.SelectionLeadOffset = lead + commentTag.Length * lines;
+					} else {
+						textEditor.SelectionAnchorOffset = anchor + commentTag.Length * lines;
+						textEditor.SelectionLeadOffset = lead + commentTag.Length;
+					}
+				}
+			}
+		}
+
+		[CommandHandler (EditCommands.RemoveCodeComment)]
+		void RemoveCodeComment ()
+		{
+			string commentTag;
+			if (!TryGetLineCommentTag (out commentTag))
+				return;
+			
+			using (var undo = textEditor.OpenUndoGroup ()) {
+				var wasSelected = textEditor.IsSomethingSelected;
+				var lead = textEditor.SelectionLeadOffset;
+				var anchor = textEditor.SelectionAnchorOffset;
+				int lines = 0;
+				
+				int first = -1;
+				int last;
+				foreach (var line in GetSelectedLines (textEditor)) {
+					string text = textEditor.GetTextAt (line);
+					string trimmedText = text.TrimStart ();
+					int length = 0;
+					if (trimmedText.StartsWith (commentTag, StringComparison.Ordinal)) {
+						textEditor.RemoveText (line.Offset + (text.Length - trimmedText.Length), commentTag.Length);
+						length = commentTag.Length;
+						lines++;
+					}
+					
+					last = length;
+					if (first < 0)
+						first = last;
+				}
+				
+				if (wasSelected) {
+					if (anchor < lead) {
+						textEditor.SelectionAnchorOffset = anchor - commentTag.Length;
+						textEditor.SelectionLeadOffset = lead - commentTag.Length * lines;
+					} else {
+						textEditor.SelectionAnchorOffset = anchor - commentTag.Length * lines;
+						textEditor.SelectionLeadOffset = lead - commentTag.Length;
+					}
+				}
+			}
+		}
+		#endregion
+	
 	}
 }

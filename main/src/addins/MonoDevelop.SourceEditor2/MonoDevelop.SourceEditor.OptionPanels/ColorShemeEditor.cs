@@ -37,7 +37,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 	{
 		TextEditor textEditor;
 		ColorScheme colorSheme;
-		TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(ColorScheme.PropertyDecsription), typeof(object));
+		TreeStore colorStore = new Gtk.TreeStore (typeof (string), typeof(ColorScheme.PropertyDescription), typeof(object));
 		string fileName;
 		HighlightingPanel panel;
 
@@ -71,7 +71,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void SyntaxCellRenderer (Gtk.CellLayout cell_layout, Gtk.CellRenderer cell, Gtk.TreeModel tree_model, Gtk.TreeIter iter)
 		{
 			var renderer = (Gtk.CellRendererText)cell;
-			var data = (ColorScheme.PropertyDecsription)colorStore.GetValue (iter, 1);
+			var data = (ColorScheme.PropertyDescription)colorStore.GetValue (iter, 1);
 			string markup = GLib.Markup.EscapeText (data.Attribute.Name);
 			renderer.Markup = markup;
 		}
@@ -84,7 +84,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			Gtk.TreeIter iter;
 			if (colorStore.GetIterFirst (out iter)) {
 				do {
-					var data = (ColorScheme.PropertyDecsription)colorStore.GetValue (iter, 1);
+					var data = (ColorScheme.PropertyDescription)colorStore.GetValue (iter, 1);
 					var style = colorStore.GetValue (iter, 2);
 					data.Info.SetValue (sheme, style, null);
 				} while (colorStore.IterNext (ref iter));

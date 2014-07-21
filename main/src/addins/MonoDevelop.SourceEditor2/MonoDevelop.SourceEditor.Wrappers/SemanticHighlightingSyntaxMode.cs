@@ -75,11 +75,11 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return true;
 			}
 
-			public void AddStyle (int startOffset, int endOffset, string style)
+			public void AddStyle (MonoDevelop.Core.Text.ISegment segment, string style)
 			{
 				if (IsDirty)
 					return;
-				Add (new StyledTreeSegment (startOffset, endOffset - startOffset, style));
+				Add (new StyledTreeSegment (segment.Offset, segment.Length, style));
 			}
 		}
 
@@ -146,7 +146,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 					if (!semanticMode.lineSegments.TryGetValue (line, out tree)) {
 						tree = new HighlightingSegmentTree ();
 						tree.InstallListener (semanticMode.Document); 
-						semanticMode.semanticHighlighting.Colorize (line.Offset, line.Length, tree.AddStyle);
+						foreach (var seg in semanticMode.semanticHighlighting.GetColoredSegments (new MonoDevelop.Core.Text.TextSegment (line.Offset, line.Length))) {
+							tree.AddStyle (seg, seg.ColorStyleKey);
+						}
 						semanticMode.lineSegments[line] = tree;
 					}
 					string style;
