@@ -659,7 +659,8 @@ namespace CBinding
 			if (tag is ParsedDocument) {
 				provider = new CompilationUnitDataProvider (Editor, DocumentContext);
 			} else {
-				provider = new DataProvider (Editor, DocumentContext, tag, new NetAmbience ());
+				// TODO: Roslyn port
+				//provider = new DataProvider (Editor, DocumentContext, tag, new NetAmbience ());
 			}
 			
 			DropDownBoxListWindow window = new DropDownBoxListWindow (provider);
