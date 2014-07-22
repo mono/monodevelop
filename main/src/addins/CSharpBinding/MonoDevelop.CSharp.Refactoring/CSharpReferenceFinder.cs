@@ -308,7 +308,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				try {
 					if  (!File.Exists (file))
 						continue;
-					text = Mono.TextEditor.Utils.TextFileUtility.ReadAllText (file);
+					text = TextFileUtility.ReadAllText (file);
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception while file reading.", e);
 					continue;

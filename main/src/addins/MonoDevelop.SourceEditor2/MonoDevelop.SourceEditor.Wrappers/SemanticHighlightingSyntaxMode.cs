@@ -48,7 +48,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		internal class StyledTreeSegment : TreeSegment
+		internal class StyledTreeSegment : Mono.TextEditor.TreeSegment
 		{
 			public string Style {
 				get;
@@ -61,7 +61,7 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			}
 		}
 
-		class HighlightingSegmentTree : SegmentTree<StyledTreeSegment>
+		class HighlightingSegmentTree : Mono.TextEditor.SegmentTree<StyledTreeSegment>
 		{
 			public bool GetStyle (Chunk chunk, ref int endOffset, out string style)
 			{

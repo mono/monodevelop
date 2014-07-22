@@ -31,8 +31,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Mono.TextEditor;
-
 using MonoDevelop.Core;
 using MonoDevelop.Debugger;
 using MonoDevelop.Projects;
@@ -1568,28 +1566,6 @@ namespace MonoDevelop.CSharp.Completion
 				
 				foreach (var nested in type.NestedTypes)
 					AddType (editor, context, result, nested);
-			}
-
-			ITextDocument ownerDocument;
-			public void InstallListener (ITextDocument doc)
-			{
-				if (ownerDocument != null)
-					throw new InvalidOperationException ("Segment tree already installed");
-				ownerDocument = doc;
-				doc.TextChanged += UpdateOnTextChanged;
-			}
-
-			public new void RemoveListener ()
-			{
-				if (ownerDocument == null)
-					throw new InvalidOperationException ("Segment tree is not installed");
-				ownerDocument.TextChanged -= UpdateOnTextChanged;
-				ownerDocument = null;
-			}
-
-			void UpdateOnTextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
-			{
-				UpdateOnTextReplace (sender, new DocumentChangeEventArgs (e.Offset, e.RemovedText.Text, e.InsertedText.Text));
 			}
 		}
 		

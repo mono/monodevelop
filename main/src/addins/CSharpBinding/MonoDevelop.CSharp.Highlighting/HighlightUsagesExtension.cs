@@ -34,7 +34,6 @@ using System.Threading;
 using MonoDevelop.SourceEditor;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
-using Mono.TextEditor;
 
 namespace MonoDevelop.CSharp.Highlighting
 {

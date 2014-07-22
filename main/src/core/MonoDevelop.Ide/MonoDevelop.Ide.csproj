@@ -2831,6 +2831,8 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\QuickTask.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\SemanticHighlighting.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Highlighting\ColoredSegment.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\SegmentTree.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\RedBlackTree.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

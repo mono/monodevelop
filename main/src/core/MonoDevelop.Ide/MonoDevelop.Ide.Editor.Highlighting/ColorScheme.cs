@@ -203,307 +203,409 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		#region Text Colors
 
-		[ColorDescription("Plain Text", VSSetting = "Plain Text")]
+		public const string PlainTextKey = "Plain Text";
+
+		[ColorDescription(PlainTextKey, VSSetting = "Plain Text")]
 		public ChunkStyle PlainText { get; private set; }
 
-		[ColorDescription("Selected Text", VSSetting = "Selected Text")]
+		public const string SelectedTextKey = "Selected Text";
+		[ColorDescription(SelectedTextKey, VSSetting = "Selected Text")]
 		public ChunkStyle SelectedText { get; private set; }
 
-		[ColorDescription("Selected Text(Inactive)", VSSetting = "Inactive Selected Text")]
+		public const string SelectedInactiveTextKey = "Selected Text(Inactive)";
+		[ColorDescription(SelectedInactiveTextKey, VSSetting = "Inactive Selected Text")]
 		public ChunkStyle SelectedInactiveText { get; private set; }
 
-		[ColorDescription("Collapsed Text", VSSetting = "Collapsible Text")]
+		public const string CollapsedTextKey = "Collapsed Text";
+		[ColorDescription(CollapsedTextKey, VSSetting = "Collapsible Text")]
 		public ChunkStyle CollapsedText { get; private set; }
 
-		[ColorDescription("Line Numbers", VSSetting = "Line Numbers")]
+		public const string LineNumbersKey = "Line Numbers";
+		[ColorDescription(LineNumbersKey, VSSetting = "Line Numbers")]
 		public ChunkStyle LineNumbers { get; private set; }
 
-		[ColorDescription("Punctuation", VSSetting = "Operator")]
+		public const string PunctuationKey = "Punctuation";
+		[ColorDescription(PunctuationKey, VSSetting = "Operator")]
 		public ChunkStyle Punctuation { get; private set; }
 
-		[ColorDescription("Punctuation(Brackets)", VSSetting = "Plain Text")]
+		public const string PunctuationForBracketsKey = "Punctuation(Brackets)";
+		[ColorDescription(PunctuationForBracketsKey, VSSetting = "Plain Text")]
 		public ChunkStyle PunctuationForBrackets { get; private set; }
 
-		[ColorDescription("Comment(Line)", VSSetting = "Comment")]
+		public const string CommentsSingleLineKey = "Comment(Line)";
+		[ColorDescription(CommentsSingleLineKey, VSSetting = "Comment")]
 		public ChunkStyle CommentsSingleLine { get; private set; }
 
-		[ColorDescription("Comment(Block)", VSSetting = "Comment")]
-		public ChunkStyle CommentsMultiLine { get; private set; }
+		public const string CommentsBlockKey = "Comment(Block)";
+		[ColorDescription(CommentsBlockKey, VSSetting = "Comment")]
+		public ChunkStyle CommentsBlock { get; private set; }
 
-		[ColorDescription("Comment(Doc)", VSSetting = "XML Doc Comment")]
+		public const string CommentsForDocumentationKey = "Comment(Doc)";
+		[ColorDescription(CommentsForDocumentationKey, VSSetting = "XML Doc Comment")]
 		public ChunkStyle CommentsForDocumentation { get; private set; }
 
-		[ColorDescription("Comment(DocTag)", VSSetting = "XML Doc Tag")]
+		public const string CommentsForDocumentationTagsKey = "Comment(DocTag)";
+		[ColorDescription(CommentsForDocumentationTagsKey, VSSetting = "XML Doc Tag")]
 		public ChunkStyle CommentsForDocumentationTags { get; private set; }
 
-		[ColorDescription("Comment Tag", VSSetting = "Comment")]
+		public const string CommentTagsKey = "Comment Tag";
+		[ColorDescription(CommentTagsKey, VSSetting = "Comment")]
 		public ChunkStyle CommentTags { get; private set; }
 
-		[ColorDescription("Excluded Code", VSSetting = "Excluded Code")]
+		public const string ExcludedCodeKey = "Excluded Code";
+		[ColorDescription(ExcludedCodeKey, VSSetting = "Excluded Code")]
 		public ChunkStyle ExcludedCode { get; private set; }
 
-		[ColorDescription("String", VSSetting = "String")]
+		public const string StringKey = "String";
+		[ColorDescription(StringKey, VSSetting = "String")]
 		public ChunkStyle String { get; private set; }
 
-		[ColorDescription("String(Escape)", VSSetting = "String")]
+		public const string StringEscapeSequenceKey = "String(Escape)";
+		[ColorDescription(StringEscapeSequenceKey, VSSetting = "String")]
 		public ChunkStyle StringEscapeSequence { get; private set; }
 
-		[ColorDescription("String(C# @ Verbatim)", VSSetting = "String(C# @ Verbatim)")]
+		public const string StringVerbatimKey = "String(C# @ Verbatim)";
+		[ColorDescription(StringVerbatimKey, VSSetting = "String(C# @ Verbatim)")]
 		public ChunkStyle StringVerbatim { get; private set; }
 
-		[ColorDescription("Number", VSSetting = "Number")]
+		public const string NumberKey = "Number";
+		[ColorDescription(NumberKey, VSSetting = "Number")]
 		public ChunkStyle Number { get; private set; }
 
-		[ColorDescription("Preprocessor", VSSetting = "Preprocessor Keyword")]
+		public const string PreprocessorKey = "Preprocessor";
+		[ColorDescription(PreprocessorKey, VSSetting = "Preprocessor Keyword")]
 		public ChunkStyle Preprocessor { get; private set; }
 
-		[ColorDescription("Preprocessor(Region Name)", VSSetting = "Plain Text")]
+		public const string PreprocessorRegionNameKey = "Preprocessor(Region Name)";
+		[ColorDescription(PreprocessorRegionNameKey, VSSetting = "Plain Text")]
 		public ChunkStyle PreprocessorRegionName { get; private set; }
 
-		[ColorDescription("Xml Text", VSSetting = "XML Text")]
+		public const string XmlTextKey = "Xml Text";
+		[ColorDescription(XmlTextKey, VSSetting = "XML Text")]
 		public ChunkStyle XmlText { get; private set; }
 
-		[ColorDescription("Xml Delimiter", VSSetting = "XML Delimiter")]
+		public const string XmlDelimiterKey = "Xml Delimiter";
+		[ColorDescription(XmlDelimiterKey, VSSetting = "XML Delimiter")]
 		public ChunkStyle XmlDelimiter { get; private set; }
 
-		[ColorDescription("Xml Name", VSSetting ="XML Name")]
+		public const string XmlNameKey = "Xml Name";
+		[ColorDescription(XmlNameKey, VSSetting ="XML Name")]
 		public ChunkStyle XmlName { get; private set; }
 
-		[ColorDescription("Xml Attribute", VSSetting = "XML Attribute")]
+		public const string XmlAttributeKey = "Xml Attribute";
+		[ColorDescription(XmlAttributeKey, VSSetting = "XML Attribute")]
 		public ChunkStyle XmlAttribute { get; private set; }
 
-		[ColorDescription("Xml Attribute Quotes", VSSetting = "XML Attribute Quotes")]
+		public const string XmlAttributeQuotesKey = "Xml Attribute Quotes";
+		[ColorDescription(XmlAttributeQuotesKey, VSSetting = "XML Attribute Quotes")]
 		public ChunkStyle XmlAttributeQuotes { get; private set; }
 
-		[ColorDescription("Xml Attribute Value", VSSetting = "XML Attribute Value")]
+		public const string XmlAttributeValueKey = "Xml Attribute Value";
+		[ColorDescription(XmlAttributeValueKey, VSSetting = "XML Attribute Value")]
 		public ChunkStyle XmlAttributeValue { get; private set; }
 
-		[ColorDescription("Xml Comment", VSSetting = "XML Comment")]
+		public const string XmlCommentKey = "Xml Comment";
+		[ColorDescription(XmlCommentKey, VSSetting = "XML Comment")]
 		public ChunkStyle XmlComment { get; private set; }
 
-		[ColorDescription("Xml CData Section", VSSetting = "XML CData Section")]
+		public const string XmlCDataSectionKey = "Xml CData Section";
+		[ColorDescription(XmlCDataSectionKey, VSSetting = "XML CData Section")]
 		public ChunkStyle XmlCDataSection { get; private set; }
 
-		[ColorDescription("Tooltip Text")] // not defined in vs.net
+		public const string TooltipTextKey = "Tooltip Text";
+		[ColorDescription(TooltipTextKey)] // not defined in vs.net
 		public ChunkStyle TooltipText { get; private set; }
 
-		[ColorDescription("Notification Text")] // not defined in vs.net
+		public const string NotificationTextKey = "Notification Text";
+		[ColorDescription(NotificationTextKey)] // not defined in vs.net
 		public ChunkStyle NotificationText { get; private set; }
 
-		[ColorDescription("Completion Text")] //not defined in vs.net
+		public const string CompletionTextKey = "Completion Text";
+		[ColorDescription(CompletionTextKey)] //not defined in vs.net
 		public ChunkStyle CompletionText { get; private set; }
 
-		[ColorDescription("Completion Selected Text")] //not defined in vs.net
+		public const string CompletionSelectedTextKey = "Completion Selected Text";
+		[ColorDescription(CompletionSelectedTextKey)] //not defined in vs.net
 		public ChunkStyle CompletionSelectedText { get; private set; }
 
-		[ColorDescription("Completion Selected Text(Inactive)")] //not defined in vs.net
+		public const string CompletionSelectedInactiveTextKey = "Completion Selected Text(Inactive)";
+		[ColorDescription(CompletionSelectedInactiveTextKey)] //not defined in vs.net
 		public ChunkStyle CompletionSelectedInactiveText { get; private set; }
 
-		[ColorDescription("Keyword(Access)", VSSetting = "Keyword")]
+		public const string KeywordAccessorsKey = "Keyword(Access)";
+		[ColorDescription(KeywordAccessorsKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordAccessors { get; private set; }
 
-		[ColorDescription("Keyword(Type)", VSSetting = "Keyword")]
+		public const string KeywordTypesKey = "Keyword(Type)";
+		[ColorDescription(KeywordTypesKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordTypes { get; private set; }
 
-		[ColorDescription("Keyword(Operator)", VSSetting = "Keyword")]
+		public const string KeywordOperatorsKey = "Keyword(Operator)";
+		[ColorDescription(KeywordOperatorsKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordOperators { get; private set; }
 
-		[ColorDescription("Keyword(Selection)", VSSetting = "Keyword")]
+		public const string KeywordSelectionKey = "Keyword(Selection)";
+		[ColorDescription(KeywordSelectionKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordSelection { get; private set; }
 
-		[ColorDescription("Keyword(Iteration)", VSSetting = "Keyword")]
+		public const string KeywordIterationKey = "Keyword(Iteration)";
+		[ColorDescription(KeywordIterationKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordIteration { get; private set; }
 
-		[ColorDescription("Keyword(Jump)", VSSetting = "Keyword")]
+		public const string KeywordJumpKey = "Keyword(Jump)";
+		[ColorDescription(KeywordJumpKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordJump { get; private set; }
 
-		[ColorDescription("Keyword(Context)", VSSetting = "Keyword")]
+		public const string KeywordContextKey = "Keyword(Context)";
+		[ColorDescription(KeywordContextKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordContext { get; private set; }
 
-		[ColorDescription("Keyword(Exception)", VSSetting = "Keyword")]
+		public const string KeywordExceptionKey = "Keyword(Exception)";
+		[ColorDescription(KeywordExceptionKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordException { get; private set; }
 
-		[ColorDescription("Keyword(Modifiers)", VSSetting = "Keyword")]
+		public const string KeywordModifiersKey = "Keyword(Modifiers)";
+		[ColorDescription(KeywordModifiersKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordModifiers { get; private set; }
 
-		[ColorDescription("Keyword(Constants)", VSSetting = "Keyword")]
+		public const string KeywordConstantsKey = "Keyword(Constants)";
+		[ColorDescription(KeywordConstantsKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordConstants { get; private set; }
 
-		[ColorDescription("Keyword(Void)", VSSetting = "Keyword")]
+		public const string KeywordVoidKey = "Keyword(Void)";
+		[ColorDescription(KeywordVoidKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordVoid { get; private set; }
 
-		[ColorDescription("Keyword(Namespace)", VSSetting = "Keyword")]
+		public const string KeywordNamespaceKey = "Keyword(Namespace)";
+		[ColorDescription(KeywordNamespaceKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordNamespace { get; private set; }
 
-		[ColorDescription("Keyword(Property)", VSSetting = "Keyword")]
+		public const string KeywordPropertyKey = "Keyword(Property)";
+		[ColorDescription(KeywordPropertyKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordProperty { get; private set; }
 
-		[ColorDescription("Keyword(Declaration)", VSSetting = "Keyword")]
+		public const string KeywordDeclarationKey = "Keyword(Declaration)";
+		[ColorDescription(KeywordDeclarationKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordDeclaration { get; private set; }
 
-		[ColorDescription("Keyword(Parameter)", VSSetting = "Keyword")]
+		public const string KeywordParameterKey = "Keyword(Parameter)";
+		[ColorDescription(KeywordParameterKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordParameter { get; private set; }
 
-		[ColorDescription("Keyword(Operator Declaration)", VSSetting = "Keyword")]
+		public const string KeywordOperatorDeclarationKey = "Keyword(Operator Declaration)";
+		[ColorDescription(KeywordOperatorDeclarationKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordOperatorDeclaration { get; private set; }
 
-		[ColorDescription("Keyword(Other)", VSSetting = "Keyword")]
+		public const string KeywordOtherKey = "Keyword(Other)";
+		[ColorDescription(KeywordOtherKey, VSSetting = "Keyword")]
 		public ChunkStyle KeywordOther { get; private set; }
 
-		[ColorDescription("User Types", VSSetting = "User Types")]
+		public const string UserTypesKey = "User Types";
+		[ColorDescription(UserTypesKey, VSSetting = "User Types")]
 		public ChunkStyle UserTypes { get; private set; }
 
-		[ColorDescription("User Types(Enums)", VSSetting = "User Types(Enums)")]
+		public const string UserTypesEnumsKey = "User Types(Enums)";
+		[ColorDescription(UserTypesEnumsKey, VSSetting = "User Types(Enums)")]
 		public ChunkStyle UserTypesEnums { get; private set; }
 
-		[ColorDescription("User Types(Interfaces)", VSSetting = "User Types(Interfaces)")]
+		public const string UserTypesInterfacesKey = "User Types(Interfaces)";
+		[ColorDescription(UserTypesInterfacesKey, VSSetting = "User Types(Interfaces)")]
 		public ChunkStyle UserTypesInterfaces { get; private set; }
 
-		[ColorDescription("User Types(Delegates)", VSSetting = "User Types(Delegates)")]
-		public ChunkStyle UserTypesDelegatess { get; private set; }
+		public const string UserTypesDelegatesKey = "User Types(Delegates)";
+		[ColorDescription(UserTypesDelegatesKey, VSSetting = "User Types(Delegates)")]
+		public ChunkStyle UserTypesDelegates { get; private set; }
 
-		[ColorDescription("User Types(Value types)", VSSetting = "User Types(Value types)")]
+		public const string UserTypesValueTypesKey = "User Types(Value types)";
+		[ColorDescription(UserTypesValueTypesKey, VSSetting = "User Types(Value types)")]
 		public ChunkStyle UserTypesValueTypes { get; private set; }
 
-		[ColorDescription("User Types(Type parameters)", VSSetting = "User Types(Type parameters)")]
+		public const string UserTypesTypeParametersKey = "User Types(Type parameters)";
+		[ColorDescription(UserTypesTypeParametersKey, VSSetting = "User Types(Type parameters)")]
 		public ChunkStyle UserTypesTypeParameters { get; private set; }
 
-		[ColorDescription("User Field Usage", VSSetting = "Identifier")]
+		public const string UserFieldUsageKey = "User Field Usage";
+		[ColorDescription(UserFieldUsageKey, VSSetting = "Identifier")]
 		public ChunkStyle UserFieldUsage { get; private set; }
 
-		[ColorDescription("User Field Declaration", VSSetting = "Identifier")]
+		public const string UserFieldDeclarationKey = "User Field Declaration";
+		[ColorDescription(UserFieldDeclarationKey, VSSetting = "Identifier")]
 		public ChunkStyle UserFieldDeclaration { get; private set; }
 
-		[ColorDescription("User Property Usage", VSSetting = "Identifier")]
+		public const string UserPropertyUsageKey = "User Property Usage";
+		[ColorDescription(UserPropertyUsageKey, VSSetting = "Identifier")]
 		public ChunkStyle UserPropertyUsage { get; private set; }
 
-		[ColorDescription("User Property Declaration", VSSetting = "Identifier")]
+		public const string UserPropertyDeclarationKey = "User Property Declaration";
+		[ColorDescription(UserPropertyDeclarationKey, VSSetting = "Identifier")]
 		public ChunkStyle UserPropertyDeclaration { get; private set; }
 
-		[ColorDescription("User Event Usage", VSSetting = "Identifier")]
+		public const string UserEventUsageKey = "User Event Usage";
+		[ColorDescription(UserEventUsageKey, VSSetting = "Identifier")]
 		public ChunkStyle UserEventUsage { get; private set; }
 
-		[ColorDescription("User Event Declaration", VSSetting = "Identifier")]
+		public const string UserEventDeclarationKey = "User Event Declaration";
+		[ColorDescription(UserEventDeclarationKey, VSSetting = "Identifier")]
 		public ChunkStyle UserEventDeclaration { get; private set; }
 
-		[ColorDescription("User Method Usage", VSSetting = "Identifier")]
+		public const string UserMethodUsageKey = "User Method Usage";
+		[ColorDescription(UserMethodUsageKey, VSSetting = "Identifier")]
 		public ChunkStyle UserMethodUsage { get; private set; }
 
-		[ColorDescription("User Method Declaration", VSSetting = "Identifier")]
+		public const string UserMethodDeclarationKey = "User Method Declaration";
+		[ColorDescription(UserMethodDeclarationKey, VSSetting = "Identifier")]
 		public ChunkStyle UserMethodDeclaration { get; private set; }
 
-		[ColorDescription("User Parameter Usage", VSSetting = "Identifier")]
+		public const string UserParameterUsageKey = "User Parameter Usage";
+		[ColorDescription(UserParameterUsageKey, VSSetting = "Identifier")]
 		public ChunkStyle UserParameterUsage { get; private set; }
 
-		[ColorDescription("User Parameter Declaration", VSSetting = "Identifier")]
+		public const string UserParameterDeclarationKey = "User Parameter Declaration";
+		[ColorDescription(UserParameterDeclarationKey, VSSetting = "Identifier")]
 		public ChunkStyle UserParameterDeclaration { get; private set; }
 
-		[ColorDescription("User Variable Usage", VSSetting = "Identifier")]
+		public const string UserVariableUsageKey = "User Variable Usage";
+		[ColorDescription(UserVariableUsageKey, VSSetting = "Identifier")]
 		public ChunkStyle UserVariableUsage { get; private set; }
 
-		[ColorDescription("User Variable Declaration", VSSetting = "Identifier")]
+		public const string UserVariableDeclarationKey = "User Variable Declaration";
+		[ColorDescription(UserVariableDeclarationKey, VSSetting = "Identifier")]
 		public ChunkStyle UserVariableDeclaration { get; private set; }
 
-		[ColorDescription("Syntax Error", VSSetting = "Syntax Error")]
+		public const string SyntaxErrorKey = "Syntax Error";
+		[ColorDescription(SyntaxErrorKey, VSSetting = "Syntax Error")]
 		public ChunkStyle SyntaxError { get; private set; }
 
-		[ColorDescription("String Format Items", VSSetting = "String")]
+		public const string StringFormatItemsKey = "String Format Items";
+		[ColorDescription(StringFormatItemsKey, VSSetting = "String")]
 		public ChunkStyle StringFormatItems { get; private set; }
 
-		[ColorDescription("Breakpoint Text", VSSetting = "Breakpoint (Enabled)")]
+		public const string BreakpointTextKey = "Breakpoint Text";
+		[ColorDescription(BreakpointTextKey, VSSetting = "Breakpoint (Enabled)")]
 		public ChunkStyle BreakpointText { get; private set; }
 
-		[ColorDescription("Debugger Current Statement", VSSetting = "Current Statement")]
+		public const string DebuggerCurrentLineKey = "Debugger Current Statement";
+		[ColorDescription(DebuggerCurrentLineKey, VSSetting = "Current Statement")]
 		public ChunkStyle DebuggerCurrentLine { get; private set; }
 
-		[ColorDescription("Debugger Stack Line")] // not defined
+		public const string DebuggerStackLineKey = "Debugger Stack Line";
+		[ColorDescription(DebuggerStackLineKey)] // not defined
 		public ChunkStyle DebuggerStackLine { get; private set; }
 
-		[ColorDescription("Diff Line(Added)")] //not defined
+		public const string DiffLineAddedKey = "Diff Line(Added)";
+		[ColorDescription(DiffLineAddedKey)] //not defined
 		public ChunkStyle DiffLineAdded { get; private set; }
 
-		[ColorDescription("Diff Line(Removed)")] //not defined
+		public const string DiffLineRemovedKey = "Diff Line(Removed)";
+		[ColorDescription(DiffLineRemovedKey)] //not defined
 		public ChunkStyle DiffLineRemoved { get; private set; }
 
-		[ColorDescription("Diff Line(Changed)")] //not defined
+		public const string DiffLineChangedKey = "Diff Line(Changed)";
+		[ColorDescription(DiffLineChangedKey)] //not defined
 		public ChunkStyle DiffLineChanged { get; private set; }
 
-		[ColorDescription("Diff Header")] //not defined
+		public const string DiffHeaderKey = "Diff Header";
+		[ColorDescription(DiffHeaderKey)] //not defined
 		public ChunkStyle DiffHeader { get; private set; }
 
-		[ColorDescription("Diff Header(Separator)")] //not defined
+		public const string DiffHeaderSeparatorKey = "Diff Header(Separator)";
+		[ColorDescription(DiffHeaderSeparatorKey)] //not defined
 		public ChunkStyle DiffHeaderSeparator { get; private set; }
 
-		[ColorDescription("Diff Header(Old)")] //not defined
+		public const string DiffHeaderOldKey = "Diff Header(Old)";
+		[ColorDescription(DiffHeaderOldKey)] //not defined
 		public ChunkStyle DiffHeaderOld { get; private set; }
 
-		[ColorDescription("Diff Header(New)")] //not defined
+		public const string DiffHeaderNewKey = "Diff Header(New)";
+		[ColorDescription(DiffHeaderNewKey)] //not defined
 		public ChunkStyle DiffHeaderNew { get; private set; }
 
-		[ColorDescription("Diff Location")] //not defined
+		public const string DiffLocationKey = "Diff Location";
+		[ColorDescription(DiffLocationKey)] //not defined
 		public ChunkStyle DiffLocation { get; private set; }
 
-		[ColorDescription("Html Attribute Name", VSSetting="HTML Attribute")]
+		public const string HtmlAttributeNameKey = "Html Attribute Name";
+		[ColorDescription(HtmlAttributeNameKey, VSSetting="HTML Attribute")]
 		public ChunkStyle HtmlAttributeName { get; private set; }
 
-		[ColorDescription("Html Attribute Value", VSSetting="HTML Attribute Value")]
+		public const string HtmlAttributeValueKey = "Html Attribute Value";
+		[ColorDescription(HtmlAttributeValueKey, VSSetting="HTML Attribute Value")]
 		public ChunkStyle HtmlAttributeValue { get; private set; }
 
-		[ColorDescription("Html Comment", VSSetting="HTML Comment")]
+		public const string HtmlCommentKey = "Html Comment";
+		[ColorDescription(HtmlCommentKey, VSSetting="HTML Comment")]
 		public ChunkStyle HtmlComment { get; private set; }
 
-		[ColorDescription("Html Element Name", VSSetting="HTML Element Name")]
+		public const string HtmlElementNameKey = "Html Element Name";
+		[ColorDescription(HtmlElementNameKey, VSSetting="HTML Element Name")]
 		public ChunkStyle HtmlElementName { get; private set; }
 
-		[ColorDescription("Html Entity", VSSetting="HTML Entity")]
+		public const string HtmlEntityKey = "Html Entity";
+		[ColorDescription(HtmlEntityKey, VSSetting="HTML Entity")]
 		public ChunkStyle HtmlEntity { get; private set; }
 
-		[ColorDescription("Html Operator", VSSetting="HTML Operator")]
+		public const string HtmlOperatorKey = "Html Operator";
+		[ColorDescription(HtmlOperatorKey, VSSetting="HTML Operator")]
 		public ChunkStyle HtmlOperator { get; private set; }
 
-		[ColorDescription("Html Server-Side Script", VSSetting="HTML Server-Side Script")]
+		public const string HtmlServerSideScriptKey = "Html Server-Side Script";
+		[ColorDescription(HtmlServerSideScriptKey, VSSetting="HTML Server-Side Script")]
 		public ChunkStyle HtmlServerSideScript { get; private set; }
 
-		[ColorDescription("Html Tag Delimiter", VSSetting="HTML Tag Delimiter")]
+		public const string HtmlTagDelimiterKey = "Html Tag Delimiter";
+		[ColorDescription(HtmlTagDelimiterKey, VSSetting="HTML Tag Delimiter")]
 		public ChunkStyle HtmlTagDelimiter { get; private set; }
 
-		[ColorDescription("Razor Code", VSSetting="Razor Code")]
+		public const string RazorCodeKey = "Razor Code";
+		[ColorDescription(RazorCodeKey, VSSetting="Razor Code")]
 		public ChunkStyle RazorCode { get; private set; }
 
-		[ColorDescription("Css Comment", VSSetting="CSS Comment")]
+		public const string CssCommentKey = "Css Comment";
+		[ColorDescription(CssCommentKey, VSSetting="CSS Comment")]
 		public ChunkStyle CssComment { get; private set; }
 
-		[ColorDescription("Css Property Name", VSSetting="CSS Property Name")]
+		public const string CssPropertyNameKey = "Css Property Name";
+		[ColorDescription(CssPropertyNameKey, VSSetting="CSS Property Name")]
 		public ChunkStyle CssPropertyName { get; private set; }
 
-		[ColorDescription("Css Property Value", VSSetting="CSS Property Value")]
+		public const string CssPropertyValueKey = "Css Property Value";
+		[ColorDescription(CssPropertyValueKey, VSSetting="CSS Property Value")]
 		public ChunkStyle CssPropertyValue { get; private set; }
 
-		[ColorDescription("Css Selector", VSSetting="CSS Selector")]
+		public const string CssSelectorKey = "Css Selector";
+		[ColorDescription(CssSelectorKey, VSSetting="CSS Selector")]
 		public ChunkStyle CssSelector { get; private set; }
 
-		[ColorDescription("Css String Value", VSSetting="CSS String Value")]
+		public const string CssStringValueKey = "Css String Value";
+		[ColorDescription(CssStringValueKey, VSSetting="CSS String Value")]
 		public ChunkStyle CssStringValue { get; private set; }
 
-		[ColorDescription("Css Keyword", VSSetting="CSS Keyword")]
+		public const string CssKeywordKey = "Css Keyword";
+		[ColorDescription(CssKeywordKey, VSSetting="CSS Keyword")]
 		public ChunkStyle CssKeyword { get; private set; }
 
-		[ColorDescription("Script Comment", VSSetting="Script Comment")]
+		public const string ScriptCommentKey = "Script Comment";
+		[ColorDescription(ScriptCommentKey, VSSetting="Script Comment")]
 		public ChunkStyle ScriptComment { get; private set; }
 
-		[ColorDescription("Script Identifier", VSSetting="Script Identifier")]
+		public const string ScriptIdentifierKey = "Script Identifier";
+		[ColorDescription(ScriptIdentifierKey, VSSetting="Script Identifier")]
 		public ChunkStyle ScriptIdentifier { get; private set; }
 
-		[ColorDescription("Script Keyword", VSSetting="Script Keyword")]
+		public const string ScriptKeywordKey = "Script Keyword";
+		[ColorDescription(ScriptKeywordKey, VSSetting="Script Keyword")]
 		public ChunkStyle ScriptKeyword { get; private set; }
 
-		[ColorDescription("Script Number", VSSetting="Script Number")]
+		public const string ScriptNumberKey = "Script Number";
+		[ColorDescription(ScriptNumberKey, VSSetting="Script Number")]
 		public ChunkStyle ScriptNumber { get; private set; }
 
-		[ColorDescription("Script Operator", VSSetting="Script Operator")]
+		public const string ScriptOperatorKey = "Script Operator";
+		[ColorDescription(ScriptOperatorKey, VSSetting="Script Operator")]
 		public ChunkStyle ScriptOperator { get; private set; }
 
-		[ColorDescription("Script String", VSSetting="Script String")]
+		public const string ScriptStringKey = "Script String";
+		[ColorDescription(ScriptStringKey, VSSetting="Script String")]
 		public ChunkStyle ScriptString { get; private set; }
 
 		#endregion
