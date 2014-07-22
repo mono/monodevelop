@@ -827,8 +827,11 @@ namespace MonoDevelop.Xml.Editor
 		
 		void UpdatePath ()
 		{
-			List<XObject> l = GetCurrentPath ();
+			//update timeout could get called after disposed
+			if (tracker == null)
+				return;
 
+			List<XObject> l = GetCurrentPath ();
 			
 			//build the list
 			var path = new List<PathEntry> ();
