@@ -51,6 +51,7 @@ using S = MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.Xml.Dom;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -109,20 +110,22 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		static IUnresolvedTypeDefinition CreateCodeBesideClass (DocumentInfo info, WebFormsTypeContext refman)
+		static INamedTypeSymbol CreateCodeBesideClass (DocumentInfo info, WebFormsTypeContext refman)
 		{
-			var memberList = new WebFormsMemberListBuilder (refman, info.AspNetDocument.XDocument);
-			memberList.Build ();
-			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
-			var dom = refman.Compilation;
-			var baseType = ReflectionHelper.ParseReflectionName (info.BaseType).Resolve (dom);
-			foreach (var m in WebFormsCodeBehind.GetDesignerMembers (memberList.Members.Values, baseType, null)) {
-				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
-					Accessibility = Accessibility.Protected,
-					ReturnType = m.Type.ToTypeReference ()
-				});
-			}
-			return t;
+			//TODO: Roslyn port
+//			var memberList = new WebFormsMemberListBuilder (refman, info.AspNetDocument.XDocument);
+//			memberList.Build ();
+//			var t = new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedTypeDefinition (info.ClassName);
+//			var dom = refman.Compilation;
+//			var baseType = ReflectionHelper.ParseReflectionName (info.BaseType).Resolve (dom);
+//			foreach (var m in WebFormsCodeBehind.GetDesignerMembers (memberList.Members.Values, baseType, null)) {
+//				t.Members.Add (new ICSharpCode.NRefactory.TypeSystem.Implementation.DefaultUnresolvedField (t, m.Name) {
+//					Accessibility = Accessibility.Protected,
+//					ReturnType = m.Type.ToTypeReference ()
+//				});
+//			}
+//			return t;
+			return null;
 		}
 
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
@@ -527,23 +530,23 @@ namespace MonoDevelop.AspNet.WebForms
 			if (!(expr is WebFormsBindingExpression || expr is WebFormsRenderExpression))
 				return null;
 
-			IType codeBehindClass;
+			INamedTypeSymbol codeBehindClass;
 			if (!GetCodeBehind (out codeBehindClass))
 				return null;
 			
 			//list just the class's properties, not properties on base types
 			var list = new CompletionDataList ();
-			list.AddRange (from p in codeBehindClass.GetProperties ()
+			list.AddRange (from p in codeBehindClass.GetMembers ().OfType<IPropertySymbol> ()
 				where p.IsPublic || p.IsPublic
 				select new AspAttributeCompletionData (p));
-			list.AddRange (from p in codeBehindClass.GetFields ()
+			list.AddRange (from p in codeBehindClass.GetMembers ().OfType<IFieldSymbol> ()
 				where p.IsProtected || p.IsPublic
 				select new AspAttributeCompletionData (p));
 			
 			return list.Count > 0? list : null;
 		}
 		
-		bool GetCodeBehind (out IType codeBehindClass)
+		bool GetCodeBehind (out INamedTypeSymbol codeBehindClass)
 		{
 			if (HasDoc && !string.IsNullOrEmpty (aspDoc.Info.InheritedClass)) {
 				codeBehindClass = ReflectionHelper.ParseReflectionName (aspDoc.Info.InheritedClass).Resolve (refman.Compilation);

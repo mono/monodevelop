@@ -34,8 +34,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.TypeSystem;
@@ -45,12 +43,14 @@ using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
 using System.Reflection;
 using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.AspNet.WebForms
 {
 	public class WebFormsTypeContext
 	{
-		ICompilation compilation;
+		Compilation compilation;
 		AspNetAppProject project;
 		WebFormsParsedDocument doc;
 
@@ -78,7 +78,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		public ICompilation Compilation {
+		public Compilation Compilation {
 			get {
 				if (compilation == null)
 					UpdateCompilation ();
@@ -107,7 +107,7 @@ namespace MonoDevelop.AspNet.WebForms
 			compilation = new SimpleCompilation (asm, GetReferencedAssemblies ());
 		}
 		
-		public IType GetType (string tagPrefix, string tagName, string htmlTypeAttribute)
+		public INamedTypeSymbol GetType (string tagPrefix, string tagName, string htmlTypeAttribute)
 		{
 			if (tagPrefix == null || tagPrefix.Length < 1)
 				return HtmlControlTypeLookup (tagName, htmlTypeAttribute);
@@ -140,7 +140,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return GetControlCompletionData (AssemblyTypeLookup ("System.Web.UI", "Control"));
 		}
 		
-		public IEnumerable<CompletionData> GetControlCompletionData (IType baseType)
+		public IEnumerable<CompletionData> GetControlCompletionData (INamedTypeSymbol baseType)
 		{
 			var names = new HashSet<string> ();
 
@@ -148,7 +148,7 @@ namespace MonoDevelop.AspNet.WebForms
 				var ard = rd as WebFormsPageInfo.AssemblyRegisterDirective;
 				if (ard != null) {
 					string prefix = ard.TagPrefix + ":";
-					foreach (IType cls in ListControlClasses (baseType, ard.Namespace))
+					foreach (var cls in ListControlClasses (baseType, ard.Namespace))
 						if (names.Add (prefix + cls.Name))
 							yield return new AspTagCompletionData (prefix, cls);
 					continue;
@@ -160,7 +160,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		public IType GetControlType (string tagPrefix, string tagName)
+		public INamedTypeSymbol GetControlType (string tagPrefix, string tagName)
 		{
 			if (String.IsNullOrEmpty (tagPrefix))
 				return null;
@@ -186,14 +186,14 @@ namespace MonoDevelop.AspNet.WebForms
 			return AssemblyTypeLookup ("System.Web.UI", "Control");
 		}
 		
-		public string GetTagPrefix (IType control)
+		public string GetTagPrefix (INamedTypeSymbol control)
 		{
-			if (control.Namespace == "System.Web.UI.HtmlControls")
+			if (control.ContainingNamespace.GetFullName () == "System.Web.UI.HtmlControls")
 				return string.Empty;
 			
 			foreach (var rd in GetControls ()) {
 				var ard = rd as WebFormsPageInfo.AssemblyRegisterDirective;
-				if (ard != null && ard.Namespace == control.Namespace)
+				if (ard != null && ard.Namespace == control.ContainingNamespace.GetFullName ())
 					return ard.TagPrefix;
 			}
 
@@ -208,7 +208,7 @@ namespace MonoDevelop.AspNet.WebForms
 		/// <summary>
 		/// Gets a tag prefix, also returning the directive that would have to be added if necessary.
 		/// </summary>
-		public string GetTagPrefixWithNewDirective (IType control, string assemblyName, string desiredPrefix, 
+		public string GetTagPrefixWithNewDirective (INamedTypeSymbol control, string assemblyName, string desiredPrefix, 
 			out WebFormsPageInfo.RegisterDirective directiveNeededToAdd)
 		{
 			directiveNeededToAdd = null;
@@ -223,14 +223,14 @@ namespace MonoDevelop.AspNet.WebForms
 			
 			var an = SystemAssemblyService.ParseAssemblyName (assemblyName);
 			
-			directiveNeededToAdd = new WebFormsPageInfo.AssemblyRegisterDirective (prefix, control.Namespace, an.Name);
+			directiveNeededToAdd = new WebFormsPageInfo.AssemblyRegisterDirective (prefix, control.ContainingNamespace.GetFullName (), an.Name);
 			
 			return prefix;
 		}
 		
 		#region "Refactoring" operations -- things that modify the file
 		
-		string GetPrefix (IType control)
+		string GetPrefix (INamedTypeSymbol control)
 		{
 			//FIXME: make this work 
 			/*
@@ -264,7 +264,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 			*/
 			//generate a new prefix base on initials of namespace
-			string[] namespaces = control.Namespace.Split ('.');
+			string[] namespaces = control.ContainingNamespace.GetFullName ().Split ('.');
 			char[] charr = new char[namespaces.Length];
 			for (int i = 0; i < charr.Length; i++)
 				charr[i] = char.ToLower (namespaces[i][0]);
@@ -544,7 +544,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		IType HtmlControlTypeLookup (string tagName, string typeAttribute)
+		INamedTypeSymbol HtmlControlTypeLookup (string tagName, string typeAttribute)
 		{
 			var str = HtmlControlLookup (tagName, typeAttribute);
 			if (str != null)
@@ -552,9 +552,9 @@ namespace MonoDevelop.AspNet.WebForms
 			return null;
 		}
 
-		static IEnumerable<IType> ListControlClasses (IType baseType, string namespac)
+		static IEnumerable<INamedTypeSymbol> ListControlClasses (INamedTypeSymbol baseType, string namespac)
 		{
-			var baseTypeDefinition = baseType.GetDefinition ();
+			var baseTypeDefinition = baseType;
 			if (baseTypeDefinition == null)
 				yield break;
 
@@ -568,13 +568,13 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 
-		IType AssemblyTypeLookup (string namespac, string tagName)
+		INamedTypeSymbol AssemblyTypeLookup (string namespac, string tagName)
 		{
 			var fullName = namespac + "." + tagName;
 			return ReflectionHelper.ParseReflectionName (fullName).Resolve (Compilation);
 		}
 
-		public string GetControlPrefix (IType control)
+		public string GetControlPrefix (INamedTypeSymbol control)
 		{
 			if (control.Namespace == "System.Web.UI.WebControls")
 				return "asp";
@@ -602,7 +602,7 @@ namespace MonoDevelop.AspNet.WebForms
 			return typeName ?? "System.Web.UI.UserControl";
 		}
 
-		IType GetUserControlType (string virtualPath)
+		INamedTypeSymbol GetUserControlType (string virtualPath)
 		{
 			var name = GetUserControlTypeName (virtualPath);
 			return ReflectionHelper.ParseReflectionName (name).Resolve (Compilation);
@@ -611,9 +611,9 @@ namespace MonoDevelop.AspNet.WebForms
 
 	class AspTagCompletionData : CompletionData
 	{
-		readonly IType cls;
+		readonly INamedTypeSymbol cls;
 
-		public AspTagCompletionData (string prefix, IType cls)
+		public AspTagCompletionData (string prefix, INamedTypeSymbol cls)
 			: base (prefix + cls.Name, Gtk.Stock.GoForward)
 		{
 			this.cls = cls;
@@ -622,17 +622,17 @@ namespace MonoDevelop.AspNet.WebForms
 		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
 			var tt = base.CreateTooltipInformation (smartWrap);
-			tt.SignatureMarkup = cls.FullName;
-			tt.SummaryMarkup = AmbienceService.GetSummaryMarkup (cls.GetDefinition ());
+			tt.SignatureMarkup = cls.GetFullName ();
+			tt.SummaryMarkup = AmbienceService.GetSummaryMarkup (cls);
 			return tt;
 		}
 	}
 
 	class AspAttributeCompletionData : CompletionData
 	{
-		readonly IMember member;
+		readonly Microsoft.CodeAnalysis.ISymbol member;
 
-		public AspAttributeCompletionData (IMember member, string name = null)
+		public AspAttributeCompletionData (Microsoft.CodeAnalysis.ISymbol member, string name = null)
 			: base (name ?? member.Name, member.GetStockIcon ())
 		{
 			this.member = member;

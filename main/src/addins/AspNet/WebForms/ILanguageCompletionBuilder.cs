@@ -35,6 +35,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.AspNet.Projects;
 using MonoDevelop.AspNet.WebForms.Dom;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -101,7 +102,7 @@ namespace MonoDevelop.AspNet.WebForms
 		public ParsedDocument ParsedDocument { get; set; }
 		public IEnumerable<string> Imports { get; private set; }
 		
-		public IUnresolvedTypeDefinition CodeBesideClass { get; set; }
+		public INamedTypeSymbol CodeBesideClass { get; set; }
 		
 		public string BaseType {
 			get {
@@ -173,7 +174,7 @@ namespace MonoDevelop.AspNet.WebForms
 		
 		ICompletionDataList HandlePopupCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo);
 		ICompletionDataList HandleCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char currentChar, ref int triggerWordLength);
-		ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
+		ParameterHintingResult HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, CodeCompletionContext completionContext, DocumentInfo info, LocalDocumentInfo localInfo, char completionChar);
 		bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Editor.TextEditor realEditor, DocumentContext realContext, DocumentInfo info, LocalDocumentInfo localInfo, out int cpos);
 	}
 	

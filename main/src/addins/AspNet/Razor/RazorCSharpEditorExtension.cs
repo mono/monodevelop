@@ -45,6 +45,7 @@ using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html;
 using MonoDevelop.AspNet.Razor.Dom;
 using MonoDevelop.AspNet.Razor.Parser;
+using ICSharpCode.NRefactory6.CSharp.Completion;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -189,7 +190,7 @@ namespace MonoDevelop.AspNet.Razor
 		{
 			if (!updateSourceCode && hiddenInfo != null) {
 				hiddenInfo.UnderlyingDocument.HiddenParsedDocument = razorDocument.PageInfo.CSharpParsedFile;
-				hiddenInfo.UnderlyingDocument.HiddenCompilation = razorDocument.PageInfo.Compilation;
+				//hiddenInfo.UnderlyingDocument.HiddenCompilation = razorDocument.PageInfo.Compilation;
 				return;
 			}
 
@@ -203,8 +204,8 @@ namespace MonoDevelop.AspNet.Razor
 			var workbenchWindow = new HiddenWorkbenchWindow ();
 			workbenchWindow.ViewContent = viewContent;
 			hiddenInfo.UnderlyingDocument = new UnderlyingDocument (workbenchWindow) {
-				HiddenParsedDocument = razorDocument.PageInfo.CSharpParsedFile,
-				HiddenCompilation = razorDocument.PageInfo.Compilation
+				HiddenParsedDocument = razorDocument.PageInfo.CSharpParsedFile/*,
+				HiddenCompilation = razorDocument.PageInfo.Compilation*/
 			};
 
 			currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
@@ -532,14 +533,14 @@ namespace MonoDevelop.AspNet.Razor
 
 			return base.CodeCompletionCommand (completionContext);
 		}
-
+		/*
 		public override bool GetParameterCompletionCommandOffset (out int cpos)
 		{
 			if (hiddenInfo != null && isInCSharpContext)
 				return completionBuilder.GetParameterCompletionCommandOffset (defaultEditor, defaultDocumentContext, hiddenInfo, out cpos);
 
 			return base.GetParameterCompletionCommandOffset (out cpos);
-		}
+		}*/
 
 		public override int GetCurrentParameterIndex (int startOffset)
 		{
@@ -550,7 +551,7 @@ namespace MonoDevelop.AspNet.Razor
 			return base.GetCurrentParameterIndex (startOffset);
 		}
 
-		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext,
+		public override ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext,
 			char completionChar)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {

@@ -52,14 +52,9 @@ namespace MonoDevelop.AspNet.Razor
 	public class UnderlyingDocument : Document
 	{
 		internal ParsedDocument HiddenParsedDocument;
-		internal ICompilation HiddenCompilation;
 
 		public override ParsedDocument ParsedDocument {
 			get	{ return HiddenParsedDocument; }
-		}
-
-		public override ICompilation Compilation {
-			get { return HiddenCompilation; }
 		}
 
 		public UnderlyingDocument (IWorkbenchWindow window)
