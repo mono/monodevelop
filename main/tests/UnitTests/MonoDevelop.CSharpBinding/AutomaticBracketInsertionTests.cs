@@ -194,9 +194,9 @@ namespace MonoDevelop.CSharpBinding
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
 
-			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
-			var method = member != null ? t.GetMembers (m => m.Name == member).First () : t.GetConstructors ().First ();
 // TODO: Roslyn port!
+//			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
+//			var method = member != null ? t.GetMembers (m => m.Name == member).First () : t.GetConstructors ().First ();
 //			var data = new MemberCompletionData (ext, method, OutputFlags.ClassBrowserEntries);
 //			data.IsDelegateExpected = isDelegateExpected;
 //			KeyActions ka = KeyActions.Process;

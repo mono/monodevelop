@@ -196,9 +196,9 @@ namespace MonoDevelop.CSharpBinding
 			var widget = new TestCompletionWidget (ext.Editor, ext.DocumentContext);
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
-			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
-			var foundMember = t.GetMembers (m => m.Name == member).First ();
 			//TODO: Roslyn port!
+//			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
+//			var foundMember = t.GetMembers (m => m.Name == member).First ();
 //			var data = new MemberCompletionData (ext, foundMember, OutputFlags.ClassBrowserEntries);
 //			data.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.NamedArgument;
 //			KeyActions ka = KeyActions.Process;

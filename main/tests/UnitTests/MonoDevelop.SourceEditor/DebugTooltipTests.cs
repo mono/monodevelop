@@ -183,12 +183,13 @@ namespace DebuggerTooltipTests
 			ResolveResult result;
 			int startOffset;
 			AstNode node;
-
-			var loc = editor.OffsetToLocation (offset);
-			if (!doc.TryResolveAt (loc, out result, out node))
-				return null;
-
-			return CSharpCompletionTextEditorExtension.ResolveExpression (doc.Editor, result, node, out startOffset);
+// TODO: Roslyn port
+			//var loc = editor.OffsetToLocation (offset);
+			//if (!doc.TryResolveAt (loc, out result, out node))
+			//	return null;
+//
+			//return CSharpCompletionTextEditorExtension.ResolveExpression (doc.Editor, result, node, out startOffset);
+			return "";
 		}
 
 		int GetBasicOffset (string expr)

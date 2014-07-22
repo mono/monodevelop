@@ -249,9 +249,6 @@
     <Compile Include="MonoDevelop.Core\BacktrackingStringMatcherTests.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\SearchPopupWindowTests.cs" />
     <Compile Include="MonoDevelop.Core\LaneStringMatcherTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\HtmlParsingTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\AspNetParsingTests.cs" />
-    <Compile Include="MonoDevelop.Xml.StateEngine\ParsingTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\AutomaticBracketInsertionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\NamedArgumentCompletionTests.cs" />
     <Compile Include="MonoDevelop.SourceEditor\DebugTooltipTests.cs" />
@@ -285,5 +282,6 @@
   <ItemGroup />
   <ItemGroup>
     <Folder Include="MonoDevelop.Refactoring\" />
+    <Folder Include="MonoDevelop.Xml.StateEngine\" />
   </ItemGroup>
 </Project>
