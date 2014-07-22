@@ -104,18 +104,18 @@ namespace GitHub.Repository.Gui
 			return nav.DataItem as Octokit.Repository;
 		}
 
-		void OnGitHubRepoListChanged (object sender, EventArgs e)
-		{
-			if (testService.RootTests.Length > 0) {
-				TreeView.Clear ();
-				foreach (UnitTest t in testService.RootTests)
-					TreeView.AddChild (t);
-			}
-			else {
-				TreeView.Clear ();
-				ClearDetails ();
-			}
-		}
+//		void OnGitHubRepoListChanged (object sender, EventArgs e)
+//		{
+//			if (testService.RootTests.Length > 0) {
+//				TreeView.Clear ();
+//				foreach (UnitTest t in testService.RootTests)
+//					TreeView.AddChild (t);
+//			}
+//			else {
+//				TreeView.Clear ();
+//				ClearDetails ();
+//			}
+//		}
 
 		public void SelectTest (GitHubRepo t)
 		{

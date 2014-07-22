@@ -34,9 +34,9 @@ namespace GitHub.Repository.Gui
 {
 	public class GitHubRepoNodeBuilder : TypeNodeBuilder
 	{
-//		public GitHubRepoNodeBuilder ()
-//		{
-//		}
+		public GitHubRepoNodeBuilder ()
+		{
+		}
 
 		public override Type CommandHandlerType {
 			get { return typeof(GitHubRepoNodeCommandHandler); }

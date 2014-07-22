@@ -8,17 +8,9 @@
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
-
 		<SolutionPad id = "GitHub.Repository.Gui.GitHubPad" class = "GitHub.Repository.Gui.GitHubPad" _label="My GitHub" icon = "nunit-run" defaultStatus="AutoHide" defaultLayout="*" defaultPlacement="Rright">
-			<PadOption id = "GitHub.Repository.Gui.GitHubPad.ViewAllRepos" _label = "View Repositories" defaultValue = "False" />
 			<NodeBuilder id = "GitHubRepoNode" class = "GitHub.Repository.Gui.GitHubRepoNodeBuilder"/>
 		</SolutionPad>
-	</Extension>
-
-	<Extension path="/MonoDevelop/Ide/WorkbenchLayouts">
-		<Layout id="GitHubRepo" _name="GitHub Repo">
-			<LayoutPad id="GitHub.Repository.Gui.GitHubPad" status="Dockable" />
-		</Layout>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
@@ -48,6 +40,6 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "nunit-run" resource = "pad-unit-test-light-16.png" size="Menu" />
+		<StockIcon stockid = "nunit-run" resource = "pad-github-16.png" size="Menu" />
 	</Extension>
 </ExtensionModel>
