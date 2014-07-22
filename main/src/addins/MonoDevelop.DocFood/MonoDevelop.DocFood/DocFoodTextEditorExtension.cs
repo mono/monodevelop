@@ -24,17 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Ide.Gui.Content;
-using System.Text;
-using MonoDevelop.Ide.TypeSystem;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
-using System.Linq;
 
 namespace MonoDevelop.DocFood
 {
@@ -164,15 +157,15 @@ namespace MonoDevelop.DocFood
 		
 		ISymbol GetMemberToDocument ()
 		{
-			var analysisDocument = Document.AnalysisDocument;
+			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return null;
 			var parsedDocument = analysisDocument.GetSemanticModelAsync ().Result;
-			var caretOffset = textEditorData.Caret.Offset;
+			var caretOffset = Editor.CaretOffset;
 			var offset = caretOffset;
 			var root = parsedDocument.SyntaxTree.GetRoot ();
 
-			while (offset < textEditorData.Length) {
+			while (offset < Editor.Length) {
 				var node = root.FindNode (TextSpan.FromBounds (offset, offset));
 				if (node == null || node.SpanStart < caretOffset) {
 					offset++;

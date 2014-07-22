@@ -48,7 +48,7 @@ namespace MonoDevelop.DocFood
 			
 		}
 		
-		public DocGenerator (TextEditor data)
+		public DocGenerator (IReadonlyTextDocument data)
 		{
 //			this.data = data;
 		}

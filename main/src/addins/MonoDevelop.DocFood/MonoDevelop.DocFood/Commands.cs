@@ -30,8 +30,6 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.TypeSystem;
 using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.DocFood
@@ -107,10 +105,10 @@ namespace MonoDevelop.DocFood
 //			}
 		}
 		
-		static bool NeedsDocumentation (TextEditorData data, ISymbol member)
+		static bool NeedsDocumentation (IReadonlyTextDocument data, ISymbol member)
 		{
 			int lineNr = data.OffsetToLineNumber (member.Locations.First().SourceSpan.Start) - 1;
-			DocumentLine line;
+			IDocumentLine line;
 
 			do {
 				line = data.GetLine (lineNr--);
@@ -118,23 +116,23 @@ namespace MonoDevelop.DocFood
 			return !data.GetTextAt (line).TrimStart ().StartsWith ("///", StringComparison.Ordinal);
 		}
 		
-		static string GetIndent (TextEditorData data, ISymbol member, out int offset)
+		static string GetIndent (IReadonlyTextDocument data, ISymbol member, out int offset)
 		{
-			DocumentLine line = data.Document.GetLineByOffset (member.Locations.First().SourceSpan.Start);
+			var line = data.GetLineByOffset (member.Locations.First().SourceSpan.Start);
 			offset = line.Offset;
 			return data.GetLineIndent (line);
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, ISymbol member, string indent)
+		internal static string GenerateDocumentation (IReadonlyTextDocument data, ISymbol member, string indent)
 		{
 			return GenerateDocumentation (data, member, indent, "/// ");
 		}
 		
-		internal static string GenerateDocumentation (TextEditorData data, ISymbol member, string indent, string prefix)
+		internal static string GenerateDocumentation (IReadonlyTextDocument data, ISymbol member, string indent, string prefix)
 		{
 			StringBuilder result = new StringBuilder ();
 			
-			DocGenerator generator = new DocGenerator (data);
+			var generator = new DocGenerator (data);
 			generator.GenerateDoc (member);
 			
 			bool first = true;
@@ -220,7 +218,7 @@ namespace MonoDevelop.DocFood
 			return result.ToString ();
 		}
 		
-		internal static string GenerateEmptyDocumentation (TextEditorData data, ISymbol member, string indent)
+		internal static string GenerateEmptyDocumentation (IReadonlyTextDocument data, ISymbol member, string indent)
 		{
 			StringBuilder result = new StringBuilder ();
 			
