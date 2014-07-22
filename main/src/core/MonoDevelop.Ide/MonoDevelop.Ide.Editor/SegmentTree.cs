@@ -27,6 +27,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Text;
+using System.Text;
+using System.Web.UI.WebControls;
+using System.Diagnostics;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -34,35 +37,120 @@ namespace MonoDevelop.Ide.Editor
 	/// A segment tree contains overlapping segments and get all segments overlapping a segment. It's implemented as a augmented interval tree
 	/// described in Cormen et al. (2001, Section 14.3: Interval trees, pp. 311–317).
 	/// </summary>
-	public class SegmentTree<T> : TextSegmentTree where T : TreeSegment
+	public class SegmentTree<T> : TextSegmentTree, ICollection<T> where T : TreeSegment
 	{
-		internal readonly RedBlackTree<T> tree = new RedBlackTree<T> ();
+		readonly RedBlackTree tree = new RedBlackTree ();
+		
+		ITextDocument ownerDocument;
 
 		public int Count {
 			get {
 				return tree.Count;
 			}
 		}
-
-		public bool IsDirty {
-			get;
-			set;
-		}
-
-		public IEnumerable<T> Segments {
-			get {
-				var root = tree.Root;
-				if (root == null)
-					yield break;
-				var node = root.GetOuterLeft ();
-				while (node != null) {
-					yield return node;
-					node = node.GetNextNode ();
-				}
+		
+		public IEnumerator<T> GetEnumerator ()
+		{
+			var root = tree.Root;
+			if (root == null)
+				yield break;
+			var node = root.OuterLeft;
+			while (node != null) {
+				yield return (T)node;
+				node = node.NextNode;
 			}
 		}
 
-		ITextDocument ownerDocument;
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
+		{
+			return GetEnumerator ();
+		}
+
+		public bool Contains (T item)
+		{
+			return this.Any (item.Equals);
+		}
+
+		public void CopyTo (T[] array, int arrayIndex)
+		{
+			Debug.Assert (array != null);
+			Debug.Assert (0 <= arrayIndex && arrayIndex < array.Length);
+			int i = arrayIndex;
+			foreach (T value in this)
+				array[i++] = value;
+		}
+
+		bool ICollection<T>.IsReadOnly {
+			get {
+				return false;
+			}
+		}
+
+		public void Add (T item)
+		{
+			InternalAdd (item); 
+		}
+
+		public bool Remove (T item)
+		{
+			return InternalRemove (item);
+		}
+		
+		public void Clear ()
+		{
+			tree.Clear ();
+		}
+
+		public IEnumerable<T> GetSegmentsAt (int offset)
+		{
+			return GetSegmentsOverlapping (offset, 0);
+		}
+
+		public IEnumerable<T> GetSegmentsOverlapping (ISegment segment)
+		{
+			if (segment.Offset < 0)
+				return Enumerable.Empty<T> ();
+			return GetSegmentsOverlapping (segment.Offset, segment.Length);
+		}
+
+		public IEnumerable<T> GetSegmentsOverlapping (int offset, int length)
+		{
+			if (tree.Root == null)
+				yield break;
+			var intervalStack = new Stack<Interval> ();
+			intervalStack.Push (new Interval (tree.Root, offset, offset + length));
+			while (intervalStack.Count > 0) {
+				var interval = intervalStack.Pop ();
+				if (interval.end < 0) 
+					continue;
+
+				var node = interval.node;
+				int nodeStart = interval.start - node.DistanceToPrevNode;
+				int nodeEnd = interval.end - node.DistanceToPrevNode;
+				var leftNode = node.Left;
+				if (leftNode != null) {
+					nodeStart -= leftNode.TotalLength;
+					nodeEnd -= leftNode.TotalLength;
+				}
+
+				if (node.DistanceToMaxEnd < nodeStart) 
+					continue;
+
+				if (leftNode != null)
+					intervalStack.Push (new Interval (leftNode, interval.start, interval.end));
+
+				if (nodeEnd < 0) 
+					continue;
+
+				if (nodeStart <= node.Length)
+					yield return (T)node;
+
+				var rightNode = node.Right;
+				if (rightNode != null) 
+					intervalStack.Push (new Interval (rightNode, nodeStart, nodeEnd));
+			}
+		}
+
 		public void InstallListener (ITextDocument doc)
 		{
 			if (ownerDocument != null)
@@ -79,15 +167,8 @@ namespace MonoDevelop.Ide.Editor
 			ownerDocument = null;
 		}
 
-		public void Clear ()
+		void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
 		{
-			IsDirty = false;
-			tree.Clear ();
-		}
-
-		public void UpdateOnTextReplace (object sender, TextChangeEventArgs e)
-		{
-			IsDirty = true;
 			if (e.RemovalLength == 0) {
 				var length = e.InsertionLength;
 				foreach (var segment in GetSegmentsAt (e.Offset).Where (s => s.Offset < e.Offset && e.Offset < s.EndOffset)) {
@@ -113,11 +194,11 @@ namespace MonoDevelop.Ide.Editor
 					continue;
 				}
 				int remainingLength = segment.EndOffset - (e.Offset + e.RemovalLength);
-				Remove (segment);
+				InternalRemove (segment);
 				if (remainingLength > 0) {
 					segment.Offset = e.Offset + e.RemovalLength;
 					segment.Length = remainingLength;
-					Add (segment);
+					InternalAdd (segment);
 				}
 			}
 			var next = SearchFirstSegmentWithStartAfter (e.Offset + 1);
@@ -128,7 +209,7 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public void Add (TreeSegment node)
+		void InternalAdd (TreeSegment node)
 		{
 			if (node == null)
 				throw new ArgumentNullException ("node");
@@ -157,24 +238,24 @@ namespace MonoDevelop.Ide.Editor
 			}
 
 			node.DistanceToPrevNode = node.TotalLength = insertionOffset - tree.Root.TotalLength;
-			tree.InsertRight (tree.Root.GetOuterRight (), node);
+			tree.InsertRight (tree.Root.OuterRight, node);
 		}
 
-		public bool Remove (TreeSegment node)
+		bool InternalRemove (TreeSegment node)
 		{
 			if (node.segmentTree == null)
 				return false;
 			if (node.segmentTree != this)
 				throw new InvalidOperationException ("Tried to remove tree segment from wrong tree.");
 			var calculatedOffset = node.Offset;
-			var next = node.GetNextNode ();
+			var next = node.NextNode;
 			if (next != null)
 				next.DistanceToPrevNode += node.DistanceToPrevNode;
 			tree.Remove (node);
 			if (next != null)
 				next.UpdateAugmentedData ();
 			node.segmentTree = null;
-			node.parent = node.left = node.right = null;
+			node.Parent = node.Left = node.Right = null;
 			node.DistanceToPrevNode = calculatedOffset;
 			return true;
 		}
@@ -184,10 +265,10 @@ namespace MonoDevelop.Ide.Editor
 			if (tree.Root == null)
 				return null;
 			if (startOffset <= 0)
-				return tree.Root.GetOuterLeft ();
+				return tree.Root.OuterLeft;
 			var result = SearchNode (ref startOffset);
 			while (startOffset == 0) {
-				var pre = result == null ? tree.Root.GetOuterRight () : result.GetPrevNode ();
+				var pre = result == null ? tree.Root.OuterRight : result.PrevNode;
 				if (pre == null)
 					return null;
 				startOffset += pre.DistanceToPrevNode;
@@ -200,34 +281,39 @@ namespace MonoDevelop.Ide.Editor
 		{
 			TreeSegment n = tree.Root;
 			while (true) {
-				if (n.left != null) {
-					if (offset < n.left.TotalLength) {
-						n = n.left;
+				if (n.Left != null) {
+					if (offset < n.Left.TotalLength) {
+						n = n.Left;
 						continue;
 					}
-					offset -= n.left.TotalLength;
+					offset -= n.Left.TotalLength;
 				}
 				if (offset < n.DistanceToPrevNode) 
 					return n; 
 				offset -= n.DistanceToPrevNode; 
-				if (n.right == null) 
+				if (n.Right == null) 
 					return null;
-				n = n.right;
+				n = n.Right;
 			}
 		}
 
-		public IEnumerable<T> GetSegmentsAt (int offset)
+		#region TextSegmentTree implementation
+
+		void TextSegmentTree.Add (TreeSegment segment)
 		{
-			return GetSegmentsOverlapping (offset, 0);
+			InternalAdd (segment);
 		}
 
-		public IEnumerable<T> GetSegmentsOverlapping (TextSegment segment)
+		bool TextSegmentTree.Remove (TreeSegment segment)
 		{
-			if (segment.IsInvalid)
-				return Enumerable.Empty<T> ();
-			return GetSegmentsOverlapping (segment.Offset, segment.Length);
+			return InternalRemove (segment);
 		}
 
+		#endregion
+		
+		const bool Black = false;
+		const bool Red = true;
+		
 		struct Interval 
 		{
 			internal TreeSegment node;
@@ -245,42 +331,291 @@ namespace MonoDevelop.Ide.Editor
 				return string.Format ("[Interval: start={0},end={1}]", start, end);
 			}
 		}
-
-		public IEnumerable<T> GetSegmentsOverlapping (int offset, int length)
+		
+		sealed class RedBlackTree
 		{
-			if (tree.Root == null)
-				yield break;
-			Stack<Interval> intervalStack = new Stack<Interval> ();
-			intervalStack.Push (new Interval (tree.Root, offset, offset + length));
-			while (intervalStack.Count > 0) {
-				var interval = intervalStack.Pop ();
-				if (interval.end < 0) 
-					continue;
+			public T Root { get; set; }
 
-				var node = interval.node;
-				int nodeStart = interval.start - node.DistanceToPrevNode;
-				int nodeEnd = interval.end - node.DistanceToPrevNode;
-				var leftNode = node.left;
-				if (leftNode != null) {
-					nodeStart -= leftNode.TotalLength;
-					nodeEnd -= leftNode.TotalLength;
+			public void InsertBefore (TreeSegment node, TreeSegment newNode)
+			{
+				if (node.Left == null) {
+					InsertLeft (node, newNode);
+				} else {
+					InsertRight (node.Left.OuterRight, newNode);
+				}
+			}
+
+			public void InsertLeft (TreeSegment parentNode, TreeSegment newNode)
+			{
+				parentNode.Left = newNode;
+				newNode.Parent = parentNode;
+				newNode.Color = Red;
+				parentNode.UpdateAugmentedData ();
+				FixTreeOnInsert (newNode);
+				Count++;
+			}
+
+			public void InsertRight (TreeSegment parentNode, TreeSegment newNode)
+			{
+				parentNode.Right = newNode;
+				newNode.Parent = parentNode;
+				newNode.Color = Red;
+				parentNode.UpdateAugmentedData ();
+				FixTreeOnInsert (newNode);
+				Count++;
+			}
+
+			void FixTreeOnInsert (TreeSegment node)
+			{
+				var parent = node.Parent;
+				if (parent == null) {
+					node.Color = Black;
+					return;
 				}
 
-				if (node.DistanceToMaxEnd < nodeStart) 
-					continue;
+				if (parent.Color == Black)
+					return;
+				var uncle = node.Uncle;
+				TreeSegment grandParent = parent.Parent;
 
-				if (leftNode != null)
-					intervalStack.Push (new Interval (leftNode, interval.start, interval.end));
+				if (uncle != null && uncle.Color == Red) {
+					parent.Color = Black;
+					uncle.Color = Black;
+					grandParent.Color = Red;
+					FixTreeOnInsert (grandParent);
+					return;
+				}
 
-				if (nodeEnd < 0) 
-					continue;
+				if (node == parent.Right && parent == grandParent.Left) {
+					RotateLeft (parent);
+					node = node.Left;
+				} else if (node == parent.Left && parent == grandParent.Right) {
+					RotateRight (parent);
+					node = node.Right;
+				}
 
-				if (nodeStart <= node.Length)
-					yield return (T)node;
+				parent = node.Parent;
+				grandParent = parent.Parent;
 
-				var rightNode = node.right;
-				if (rightNode != null) 
-					intervalStack.Push (new Interval (rightNode, nodeStart, nodeEnd));
+				parent.Color = Black;
+				grandParent.Color = Red;
+				if (node == parent.Left && parent == grandParent.Left) {
+					RotateRight (grandParent);
+				} else {
+					RotateLeft (grandParent);
+				}
+			}
+
+			void RotateLeft (TreeSegment node)
+			{
+				TreeSegment right = node.Right;
+				Replace (node, right);
+				node.Right = right.Left;
+				if (node.Right != null)
+					node.Right.Parent = node;
+				right.Left = node;
+				node.Parent = right;
+				node.UpdateAugmentedData ();
+				node.Parent.UpdateAugmentedData ();
+			}
+
+			void RotateRight (TreeSegment node)
+			{
+				TreeSegment left = node.Left;
+				Replace (node, left);
+				node.Left = left.Right;
+				if (node.Left != null)
+					node.Left.Parent = node;
+				left.Right = node;
+				node.Parent = left;
+				node.UpdateAugmentedData ();
+				node.Parent.UpdateAugmentedData ();
+			}
+
+			void Replace (TreeSegment oldNode, TreeSegment newNode)
+			{
+				if (newNode != null)
+					newNode.Parent = oldNode.Parent;
+				if (oldNode.Parent == null) {
+					Root = (T)newNode;
+				} else {
+					if (oldNode.Parent.Left == oldNode)
+						oldNode.Parent.Left = newNode;
+					else
+						oldNode.Parent.Right = newNode;
+					oldNode.Parent.UpdateAugmentedData ();
+				}
+			}
+
+			public void Remove (TreeSegment node)
+			{
+				if (node.Left != null && node.Right != null) {
+					var outerLeft = node.Right.OuterLeft;
+					InternalRemove (outerLeft);
+					Replace (node, outerLeft);
+
+					outerLeft.Color = node.Color;
+					outerLeft.Left = node.Left;
+					if (outerLeft.Left != null)
+						outerLeft.Left.Parent = outerLeft;
+
+					outerLeft.Right = node.Right;
+					if (outerLeft.Right != null)
+						outerLeft.Right.Parent = outerLeft;
+					outerLeft.UpdateAugmentedData ();
+					return;
+				}
+				InternalRemove (node);
+			}
+
+			void InternalRemove (TreeSegment node)
+			{
+				if (node.Left != null && node.Right != null) {
+					var outerLeft = node.Right.OuterLeft;
+					InternalRemove (outerLeft);
+					Replace (node, outerLeft);
+
+					outerLeft.Color = node.Color;
+					outerLeft.Left = node.Left;
+					if (outerLeft.Left != null)
+						outerLeft.Left.Parent = outerLeft;
+
+					outerLeft.Right = node.Right;
+					if (outerLeft.Right != null)
+						outerLeft.Right.Parent = outerLeft;
+					outerLeft.UpdateAugmentedData ();
+					return;
+				}
+				Count--;
+				// node has only one child
+				TreeSegment child = node.Left ?? node.Right;
+
+				Replace (node, child);
+
+				if (node.Color == Black && child != null) {
+					if (child.Color == Red) {
+						child.Color = Black;
+					} else {
+						DeleteOneChild (child);
+					}
+				}
+			}
+
+			static bool GetColorSafe (TreeSegment node)
+			{
+				return node != null ? node.Color : Black;
+			}
+
+			void DeleteOneChild (TreeSegment node)
+			{
+				// case 1
+				if (node == null || node.Parent == null)
+					return;
+
+				var parent = node.Parent;
+				var sibling = node.Sibling;
+				if (sibling == null)
+					return;
+
+				// case 2
+				if (sibling.Color == Red) {
+					parent.Color = Red;
+					sibling.Color = Black;
+					if (node == parent.Left) {
+						RotateLeft (parent);
+					} else {
+						RotateRight (parent);
+					}
+					sibling = node.Sibling;
+					if (sibling == null)
+						return;
+				}
+
+				// case 3
+				if (parent.Color == Black && sibling.Color == Black && GetColorSafe (sibling.Left) == Black && GetColorSafe (sibling.Right) == Black) {
+					sibling.Color = Red;
+					DeleteOneChild (parent);
+					return;
+				}
+
+				// case 4
+				if (parent.Color == Red && sibling.Color == Black && GetColorSafe (sibling.Left) == Black && GetColorSafe (sibling.Right) == Black) {
+					sibling.Color = Red;
+					parent.Color = Black;
+					return;
+				}
+
+				// case 5
+				if (node == parent.Left && sibling.Color == Black && GetColorSafe (sibling.Left) == Red && GetColorSafe (sibling.Right) == Black) {
+					sibling.Color = Red;
+					if (sibling.Left != null)
+						sibling.Left.Color = Black;
+					RotateRight (sibling);
+				} else if (node == parent.Right && sibling.Color == Black && GetColorSafe (sibling.Right) == Red && GetColorSafe (sibling.Left) == Black) {
+					sibling.Color = Red;
+					if (sibling.Right != null)
+						sibling.Right.Color = Black;
+					RotateLeft (sibling);
+				}
+
+				// case 6
+				sibling = node.Sibling;
+				if (sibling == null)
+					return;
+				sibling.Color = parent.Color;
+				parent.Color = Black;
+				if (node == parent.Left) {
+					if (sibling.Right != null)
+						sibling.Right.Color = Black;
+					RotateLeft (parent);
+				} else {
+					if (sibling.Left != null)
+						sibling.Left.Color = Black;
+					RotateRight (parent);
+				}
+			}
+
+			public int Count { get; set; }
+
+			public void Clear ()
+			{
+				Root = null;
+				Count = 0;
+			}
+
+			static string GetIndent (int level)
+			{
+				return new String ('\t', level);
+			}
+
+			static void AppendNode (StringBuilder builder, TreeSegment node, int indent)
+			{
+				builder.Append (GetIndent (indent) + "Node (" + (node.Color == Red ? "r" : "b") + "):" + node + Environment.NewLine);
+				builder.Append (GetIndent (indent) + "Left: ");
+				if (node.Left != null) {
+					builder.Append (Environment.NewLine);
+					AppendNode (builder, node.Left, indent + 1);
+				} else {
+					builder.Append ("null");
+				}
+
+				builder.Append (Environment.NewLine);
+				builder.Append (GetIndent (indent) + "Right: ");
+				if (node.Right != null) {
+					builder.Append (Environment.NewLine);
+					AppendNode (builder, node.Right, indent + 1);
+				} else {
+					builder.Append ("null");
+				}
+			}
+
+			public override string ToString ()
+			{
+				if (Root == null)
+					return "<null>";
+				var result = new StringBuilder ();
+				AppendNode (result, Root, 0);
+				return result.ToString ();
 			}
 		}
 	}
@@ -291,10 +626,8 @@ namespace MonoDevelop.Ide.Editor
 		bool Remove (TreeSegment segment);
 	}
 
-	public class TreeSegment : IRedBlackTreeNode
+	public class TreeSegment : ISegment
 	{
-		internal TextSegmentTree segmentTree;
-
 		public int Offset {
 			get {
 				if (segmentTree == null)
@@ -302,15 +635,15 @@ namespace MonoDevelop.Ide.Editor
 
 				var curNode = this;
 				int offset = curNode.DistanceToPrevNode;
-				if (curNode.left != null)
-					offset += curNode.left.TotalLength;
-				while (curNode.parent != null) {
-					if (curNode == curNode.parent.right) {
-						if (curNode.parent.left != null)
-							offset += curNode.parent.left.TotalLength;
-						offset += curNode.parent.DistanceToPrevNode;
+				if (curNode.Left != null)
+					offset += curNode.Left.TotalLength;
+				while (curNode.Parent != null) {
+					if (curNode == curNode.Parent.Right) {
+						if (curNode.Parent.Left != null)
+							offset += curNode.Parent.Left.TotalLength;
+						offset += curNode.Parent.DistanceToPrevNode;
 					}
-					curNode = curNode.parent;
+					curNode = curNode.Parent;
 				}
 				return offset;
 			}
@@ -334,20 +667,6 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		public ISegment Segment {
-			get {
-				return new TextSegment (Offset, Length);
-			}
-		}
-
-		// TotalLength = DistanceToPrevNode + Left.DistanceToPrevNode + Right.DistanceToPrevNode
-		internal int TotalLength;
-
-		internal int DistanceToPrevNode;
-
-		// DistanceToMaxEnd = Max (Length, left.DistanceToMaxEnd + Max (left.Offset, right.Offset) - Offset)
-		internal int DistanceToMaxEnd;
-
 		protected TreeSegment ()
 		{
 		}
@@ -362,36 +681,38 @@ namespace MonoDevelop.Ide.Editor
 		{
 		}
 
-		public bool Contains (int offset)
-		{
-			return Offset <= offset && offset < EndOffset;
-		}
+		#region Internal API
+		internal TextSegmentTree segmentTree;
+		internal TreeSegment Parent, Left, Right;
+		internal bool Color;
+		
+		// TotalLength = DistanceToPrevNode + Left.DistanceToPrevNode + Right.DistanceToPrevNode
+		internal int TotalLength;
 
-		public bool Contains (ISegment segment)
-		{
-			return Offset <= segment.Offset && segment.EndOffset <= EndOffset;
-		}
+		internal int DistanceToPrevNode;
 
-		#region IRedBlackTreeNode implementation
-		public void UpdateAugmentedData ()
+		// DistanceToMaxEnd = Max (Length, left.DistanceToMaxEnd + Max (left.Offset, right.Offset) - Offset)
+		internal int DistanceToMaxEnd;
+		
+		internal void UpdateAugmentedData ()
 		{
 			int totalLength = DistanceToPrevNode;
 			int distanceToMaxEnd = Length;
 
-			if (left != null) {
-				totalLength += left.TotalLength;
-				int leftdistance = left.DistanceToMaxEnd - DistanceToPrevNode;
-				if (left.right != null)
-					leftdistance -= left.right.TotalLength;
+			if (Left != null) {
+				totalLength += Left.TotalLength;
+				int leftdistance = Left.DistanceToMaxEnd - DistanceToPrevNode;
+				if (Left.Right != null)
+					leftdistance -= Left.Right.TotalLength;
 				if (leftdistance > distanceToMaxEnd)
 					distanceToMaxEnd = leftdistance;
 			}
 
-			if (right != null) {
-				totalLength += right.TotalLength;
-				int rightdistance = right.DistanceToMaxEnd + right.DistanceToPrevNode;
-				if (right.left != null)
-					rightdistance += right.left.TotalLength;
+			if (Right != null) {
+				totalLength += Right.TotalLength;
+				int rightdistance = Right.DistanceToMaxEnd + Right.DistanceToPrevNode;
+				if (Right.Left != null)
+					rightdistance += Right.Left.TotalLength;
 				if (rightdistance > distanceToMaxEnd)
 					distanceToMaxEnd = rightdistance;
 			}
@@ -399,46 +720,82 @@ namespace MonoDevelop.Ide.Editor
 			if (TotalLength != totalLength || DistanceToMaxEnd != distanceToMaxEnd) {
 				TotalLength = totalLength;
 				DistanceToMaxEnd = distanceToMaxEnd;
-				if (parent != null)
-					parent.UpdateAugmentedData ();
+				if (Parent != null)
+					Parent.UpdateAugmentedData ();
 			}
 		}
 
-		internal TreeSegment parent, left, right;
-
-		IRedBlackTreeNode IRedBlackTreeNode.Parent {
+		internal TreeSegment Sibling {
 			get {
-				return parent;
-			}
-			set {
-				parent = (TreeSegment)value;
+				if (Parent == null)
+					return null;
+				return this == Parent.Left ? Parent.Right : Parent.Left;
 			}
 		}
 
-		IRedBlackTreeNode IRedBlackTreeNode.Left {
+		internal TreeSegment OuterLeft {
 			get {
-				return left;
-			}
-			set {
-				left = (TreeSegment)value;
+				TreeSegment result = this;
+				while (result.Left != null)
+					result = result.Left;
+				return result;
 			}
 		}
 
-
-		IRedBlackTreeNode IRedBlackTreeNode.Right {
+		internal TreeSegment OuterRight {
 			get {
-				return right;
-			}
-			set {
-				right = (TreeSegment)value;
+				TreeSegment result = this;
+				while (result.Right != null) {
+					result = result.Right;
+				}
+				return result;
 			}
 		}
 
-		RedBlackColor IRedBlackTreeNode.Color {
-			get;
-			set;
+		internal TreeSegment Grandparent {
+			get {
+				return Parent != null ? Parent.Parent : null;
+			}
+		}
+
+		internal TreeSegment Uncle {
+			get {
+				TreeSegment grandparent = Grandparent;
+				if (grandparent == null)
+					return null;
+				return Parent == grandparent.Left ? grandparent.Right : grandparent.Left;
+			}
+		}
+
+		internal TreeSegment NextNode {
+			get {
+				if (Right == null) {
+					TreeSegment curNode = this;
+					TreeSegment oldNode;
+					do {
+						oldNode = curNode;
+						curNode = curNode.Parent;
+					} while (curNode != null && curNode.Right == oldNode);
+					return curNode;
+				}
+				return Right.OuterLeft;
+			}
+		}
+
+		internal TreeSegment PrevNode {
+			get {
+				if (Left == null) {
+					TreeSegment curNode = this;
+					TreeSegment oldNode;
+					do {
+						oldNode = curNode;
+						curNode = curNode.Parent;
+					} while (curNode != null && curNode.Left == oldNode);
+					return curNode;
+				}
+				return Left.OuterRight;
+			}
 		}
 		#endregion
-
 	}
 }
