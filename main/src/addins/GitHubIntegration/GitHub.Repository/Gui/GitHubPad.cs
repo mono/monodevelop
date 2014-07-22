@@ -101,7 +101,7 @@ namespace GitHub.Repository.Gui
 			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			if (nav == null)
 				return null;
-			return nav.DataItem as Octokit.Repository;
+			return nav.DataItem as GitHubRepo;
 		}
 
 //		void OnGitHubRepoListChanged (object sender, EventArgs e)
