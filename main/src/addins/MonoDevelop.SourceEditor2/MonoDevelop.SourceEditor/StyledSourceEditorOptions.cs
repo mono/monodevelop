@@ -186,6 +186,8 @@ namespace MonoDevelop.SourceEditor
 
 		public override Mono.TextEditor.IndentStyle IndentStyle {
 			get {
+				if (optionsCore.IndentStyle == MonoDevelop.Ide.Editor.IndentStyle.Smart && optionsCore.RemoveTrailingWhitespaces)
+					return Mono.TextEditor.IndentStyle.Virtual;
 				return (Mono.TextEditor.IndentStyle)optionsCore.IndentStyle;
 			}
 			set {
