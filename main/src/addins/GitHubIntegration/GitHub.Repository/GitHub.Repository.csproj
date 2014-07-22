@@ -58,17 +58,11 @@
     <Compile Include="Providers\GitHubRepoPropertiesProvider.cs" />
     <Compile Include="Providers\IGitHubProvider.cs" />
     <Compile Include="Services\GitHubRepo.cs" />
-    <Compile Include="NUnitAssemblyGroupConfigurationNodeBuilder.cs">
-      <DependentUpon>GitHub.Repository.addin.xml</DependentUpon>
-    </Compile>
     <Compile Include="Services\GitHubRepoService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Gui\icons\light\pad-unit-test-16.png">
-      <LogicalName>pad-github-16.png</LogicalName>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands\" />
@@ -87,6 +81,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GitHub.Repository.addin.xml">
       <LogicalName>GitHub.Repository.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\pad-github-16.png">
+      <LogicalName>pad-github-16.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

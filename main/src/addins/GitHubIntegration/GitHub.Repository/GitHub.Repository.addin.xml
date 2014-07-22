@@ -8,7 +8,7 @@
 	</ExtensionPoint>
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
-		<SolutionPad id = "GitHub.Repository.Gui.GitHubPad" class = "GitHub.Repository.Gui.GitHubPad" _label="My GitHub" icon = "nunit-run" defaultStatus="AutoHide" defaultLayout="*" defaultPlacement="Rright">
+		<SolutionPad id = "GitHubPad" class = "GitHub.Repository.Gui.GitHubPad" _label="My GitHub" icon = "nunit-run" defaultStatus="AutoHide" defaultLayout="*" defaultPlacement="Right">
 			<NodeBuilder id = "GitHubRepoNode" class = "GitHub.Repository.Gui.GitHubRepoNodeBuilder"/>
 		</SolutionPad>
 	</Extension>

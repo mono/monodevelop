@@ -28,7 +28,7 @@ using Xwt.Drawing;
 
 namespace GitHub.Repository.Services
 {
-	public abstract class GitHubRepo : IDisposable
+	public class GitHubRepo : IDisposable
 	{
 		public GitHubRepo (Octokit.Repository repo)
 		{
@@ -51,8 +51,13 @@ namespace GitHub.Repository.Services
 
 		public Xwt.Drawing.Image StatusIcon {
 			get {
-				return Image.FromResource ("unit-running-light-16.png");
+				return Image.FromResource ("pad-github-16.png");
 			}
+		}
+
+		public virtual void Dispose ()
+		{
+
 		}
 
 	}

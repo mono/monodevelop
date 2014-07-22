@@ -43,14 +43,18 @@ namespace GitHub.Repository.Gui
 {
 	public class GitHubPad : TreeViewPad
 	{
+		GitHubRepoService gitHubRepoService = GitHubRepoService.Instance;
 		ListStore detailsStore;
 		VPaned paned;
 		TreeView detailsTree;
 		VBox detailsPad;
+		EventHandler repoChangedHandler;
 
 		public override void Initialize (NodeBuilder[] builders, TreePadOption[] options, string menuPath)
 		{
 			base.Initialize (builders, options, menuPath);
+
+			repoChangedHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnGitHubRepoListChanged));
 
 			paned = new VPaned ();
 
@@ -80,7 +84,7 @@ namespace GitHub.Repository.Gui
 			col5.Expand = false;
 			//			col5.Alignment = 0.5f;
 
-			col5.Widget = new ImageView (Xwt.Drawing.Image.FromResource ("pad-unit-test-light-16.png"));
+			col5.Widget = new ImageView (Xwt.Drawing.Image.FromResource ("pad-github-16.png"));
 			col5.Widget.Show ();
 			tr = new CellRendererText ();
 			//			tr.Xalign = 0.5f;
@@ -93,10 +97,15 @@ namespace GitHub.Repository.Gui
 			sw.Add (detailsTree);
 			tf.Add (sw);
 			tf.ShowAll ();
+
+			foreach (GitHubRepo r in gitHubRepoService.RepoList) 
+			{
+				TreeView.AddChild (r);
+			}
 		}
 
 
-		Octokit.Repository GetSelectedRepo ()
+		GitHubRepo GetSelectedRepo ()
 		{
 			ITreeNavigator nav = TreeView.GetSelectedNode ();
 			if (nav == null)
@@ -104,18 +113,17 @@ namespace GitHub.Repository.Gui
 			return nav.DataItem as GitHubRepo;
 		}
 
-//		void OnGitHubRepoListChanged (object sender, EventArgs e)
-//		{
-//			if (testService.RootTests.Length > 0) {
-//				TreeView.Clear ();
-//				foreach (UnitTest t in testService.RootTests)
-//					TreeView.AddChild (t);
-//			}
-//			else {
-//				TreeView.Clear ();
-//				ClearDetails ();
-//			}
-//		}
+		void OnGitHubRepoListChanged (object sender, EventArgs e)
+		{
+			if (gitHubRepoService.RepoList.Length > 0) {
+				TreeView.Clear ();
+				foreach (GitHubRepo r in gitHubRepoService.RepoList)
+					TreeView.AddChild (r);
+			}
+			else {
+				TreeView.Clear ();
+			}
+		}
 
 		public void SelectTest (GitHubRepo t)
 		{
