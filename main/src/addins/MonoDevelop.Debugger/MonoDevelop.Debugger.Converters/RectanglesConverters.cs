@@ -38,7 +38,9 @@ namespace MonoDevelop.Debugger.Converters
 			return val.TypeName == "System.Drawing.Rectangle" ||
 			val.TypeName == "Gdk.Rectangle" ||
 			val.TypeName == "Xamarin.Forms.Rectangle" ||
-			val.TypeName == "System.Drawing.RectangleF";
+			val.TypeName == "System.Drawing.RectangleF" ||
+			val.TypeName == "Android.Graphics.Rect" ||
+			val.TypeName == "Android.Graphics.RectF";
 		}
 
 		public override Rectangle GetValue (ObjectValue val)
@@ -51,6 +53,17 @@ namespace MonoDevelop.Debugger.Converters
 				rectangle.Y = (float)val.GetChild ("Y", ops).GetRawValue (ops);
 				rectangle.Width = (float)val.GetChild ("Width", ops).GetRawValue (ops);
 				rectangle.Height = (float)val.GetChild ("Height", ops).GetRawValue (ops);
+			}
+			if (val.TypeName == "Android.Graphics.Rect") {
+				rectangle.X = (int)val.GetChild ("Left", ops).GetRawValue (ops);
+				rectangle.Y = (int)val.GetChild ("Top", ops).GetRawValue (ops);
+				rectangle.Right = (int)val.GetChild ("Right", ops).GetRawValue (ops);
+				rectangle.Bottom = (int)val.GetChild ("Bottom", ops).GetRawValue (ops);
+			} else if (val.TypeName == "Android.Graphics.RectF") {
+				rectangle.X = (float)val.GetChild ("Left", ops).GetRawValue (ops);
+				rectangle.Y = (float)val.GetChild ("Top", ops).GetRawValue (ops);
+				rectangle.Right = (float)val.GetChild ("Right", ops).GetRawValue (ops);
+				rectangle.Bottom = (float)val.GetChild ("Bottom", ops).GetRawValue (ops);
 			} else {
 				rectangle.X = (int)val.GetChild ("X", ops).GetRawValue (ops);
 				rectangle.Y = (int)val.GetChild ("Y", ops).GetRawValue (ops);

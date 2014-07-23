@@ -90,7 +90,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		{
 		}
 
-		const string valuesFormat = "0,0.0####";
+		const string valuesFormat = "0.0####";
 
 		void CaclulateSize ()
 		{
