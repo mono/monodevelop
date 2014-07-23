@@ -512,7 +512,8 @@ namespace Mono.TextTemplating
 					st = new CodeExpressionStatement (new CodeMethodInvokeExpression (writeMeth, new CodePrimitiveExpression (seg.Text)));
 					break;
 				case SegmentType.Helper:
-					type.Members.Add (CreateSnippetMember (seg.Text, location));
+					if (!string.IsNullOrEmpty (seg.Text))
+						type.Members.Add (CreateSnippetMember (seg.Text, location));
 					helperMode = true;
 					break;
 				default:
@@ -524,7 +525,9 @@ namespace Mono.TextTemplating
 						//TODO: is there a way to do this for languages that use indentation for blocks, e.g. python?
 						using (var writer = new StringWriter ()) {
 							settings.Provider.GenerateCodeFromStatement (st, writer, null);
-							type.Members.Add (CreateSnippetMember (writer.ToString (), location ));
+							var text = writer.ToString ();
+							if (!string.IsNullOrEmpty (text))
+								type.Members.Add (CreateSnippetMember (text, location));
 						}
 					} else {
 						st.LinePragma = location;
@@ -546,7 +549,7 @@ namespace Mono.TextTemplating
 			//class code and attributes from processors
 			foreach (var processor in settings.DirectiveProcessors.Values) {
 				string classCode = processor.GetClassCodeForProcessingRun ();
-				if (classCode != null)
+				if (!string.IsNullOrEmpty (classCode))
 					type.Members.Add (CreateSnippetMember (classCode));
 				var atts = processor.GetTemplateClassCustomAttributes ();
 				if (atts != null) {

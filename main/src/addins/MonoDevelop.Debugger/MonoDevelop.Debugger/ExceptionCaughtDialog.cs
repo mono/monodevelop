@@ -124,7 +124,7 @@ namespace MonoDevelop.Debugger
 			ExceptionValueTreeView.Selection.Changed += ExceptionValueSelectionChanged;
 			ExceptionValueTreeView.Show ();
 
-			var scrolled = new ScrolledWindow { HeightRequest = 180 };
+			var scrolled = new ScrolledWindow { HeightRequest = 180, HscrollbarPolicy = PolicyType.Automatic, VscrollbarPolicy = PolicyType.Automatic };
 
 			scrolled.ShadowType = ShadowType.None;
 			scrolled.Add (ExceptionValueTreeView);
@@ -168,7 +168,7 @@ namespace MonoDevelop.Debugger
 			StackTraceTreeView.SizeAllocated += (o, args) => renderer.Width = args.Allocation.Width;
 			StackTraceTreeView.RowActivated += StackFrameActivated;
 
-			var scrolled = new ScrolledWindow { HeightRequest = 180 };
+			var scrolled = new ScrolledWindow { HeightRequest = 180, HscrollbarPolicy = PolicyType.Automatic, VscrollbarPolicy = PolicyType.Automatic };
 			scrolled.ShadowType = ShadowType.None;
 			scrolled.Add (StackTraceTreeView);
 			scrolled.Show ();

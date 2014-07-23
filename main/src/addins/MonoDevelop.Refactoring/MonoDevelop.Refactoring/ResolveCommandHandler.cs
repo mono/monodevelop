@@ -202,9 +202,12 @@ namespace MonoDevelop.Refactoring
 
 			var unit = SyntaxTree.Parse (CreateStub (doc, offset), doc.FileName);
 
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return null;
 			return ResolveAtLocation.Resolve (
 				doc.Compilation, 
-				doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
+				parsedDocument.ParsedFile as CSharpUnresolvedFile,
 				unit,
 				location, 
 				out node);
