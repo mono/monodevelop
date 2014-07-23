@@ -51,6 +51,8 @@ using MonoDevelop.Projects;
 using MonoDevelop.Xml.Completion;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -260,26 +262,23 @@ namespace MonoDevelop.Xml.Editor
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
-			int triggerWordLength = 0;
-			
 			tracker.UpdateEngine ();
-			return HandleCodeCompletion (completionContext, true, ref triggerWordLength);
+			return HandleCodeCompletion (completionContext, true, default(CancellationToken)).Result;
 		}
 
-		public override ICompletionDataList HandleCodeCompletionAsync (
-		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			int pos = completionContext.TriggerOffset;
 			char ch = CompletionWidget != null ? CompletionWidget.GetChar (pos - 1) : Editor.GetCharAt (pos - 1);
 			if (pos > 0 && ch == completionChar) {
 				tracker.UpdateEngine ();
-				return HandleCodeCompletion (completionContext, false, ref triggerWordLength);
+				return HandleCodeCompletion (completionContext, false, token);
 			}
 			return null;
 		}
 
-		protected virtual ICompletionDataList HandleCodeCompletion (
-		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
+		protected virtual Task<ICompletionDataList> HandleCodeCompletion (
+			CodeCompletionContext completionContext, bool forced, CancellationToken token)
 		{
 			var buf = this.Editor;
 
@@ -294,7 +293,7 @@ namespace MonoDevelop.Xml.Editor
 			
 			//closing tag completion
 			if (tracker.Engine.CurrentState is XmlRootState && currentChar == '>')
-				return ClosingTagCompletion (buf, currentLocation);
+				return Task.FromResult (ClosingTagCompletion (buf, currentLocation));
 			
 			// Auto insert '>' when '/' is typed inside tag state (for quick tag closing)
 			//FIXME: avoid doing this when the next non-whitespace char is ">" or ignore the next ">" typed
@@ -325,7 +324,7 @@ namespace MonoDevelop.Xml.Editor
 				list.Add ("&").CompletionText = "amp;";
 				
 				GetEntityCompletions (list);
-				return list;
+				return Task.FromResult ((ICompletionDataList)list);
 			}
 			
 			//doctype completion
@@ -333,7 +332,7 @@ namespace MonoDevelop.Xml.Editor
 				if (tracker.Engine.CurrentStateLength == 1) {
 					CompletionDataList list = GetDocTypeCompletions ();
 					if (list != null && list.Count > 0)
-						return list;
+						return Task.FromResult ((ICompletionDataList)list);
 				}
 				return null;
 			}
@@ -353,9 +352,10 @@ namespace MonoDevelop.Xml.Editor
 						return null;
 
 					//if triggered by first letter of value or forced, grab those letters
-					triggerWordLength = Tracker.Engine.CurrentStateLength - 1;
 
-					return GetAttributeValueCompletions (attributedOb, att);
+					var result = GetAttributeValueCompletions (attributedOb, att);
+					result.TriggerWordLength = Tracker.Engine.CurrentStateLength - 1;
+					return Task.FromResult ((ICompletionDataList)result);
 				}
 			}
 			
@@ -375,16 +375,16 @@ namespace MonoDevelop.Xml.Editor
 					(char.IsWhiteSpace (previousChar) && char.IsLetter (currentChar))))
 				{
 					
-					if (!forced)
-						triggerWordLength = 1;
-					
+
 					var existingAtts = new Dictionary<string,string> (StringComparer.OrdinalIgnoreCase);
 					
 					foreach (XAttribute att in attributedOb.Attributes) {
 						existingAtts [att.Name.FullName] = att.Value ?? string.Empty;
 					}
-					
-					return GetAttributeCompletions (attributedOb, existingAtts);
+					var result = GetAttributeCompletions (attributedOb, existingAtts);
+					if (!forced)
+						result.TriggerWordLength = 1;
+					return Task.FromResult ((ICompletionDataList)result);
 				}
 			}
 			
@@ -399,13 +399,13 @@ namespace MonoDevelop.Xml.Editor
 				var list = new CompletionDataList ();
 				GetElementCompletions (list);
 				AddCloseTag (list, Tracker.Engine.Nodes);
-				return list.Count > 0? list : null;
+				return Task.FromResult ((ICompletionDataList)(list.Count > 0? list : null));
 			}
 
 			if (forced && Tracker.Engine.CurrentState is XmlRootState) {
 				var list = new CompletionDataList ();
 				MonoDevelop.Ide.CodeTemplates.CodeTemplateService.AddCompletionDataForFileName (DocumentContext.Name, list);
-				return list.Count > 0? list : null;
+				return Task.FromResult ((ICompletionDataList)(list.Count > 0? list : null));
 			}
 			
 			return null;
