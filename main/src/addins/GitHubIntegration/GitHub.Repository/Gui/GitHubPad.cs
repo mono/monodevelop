@@ -98,6 +98,8 @@ namespace GitHub.Repository.Gui
 			tf.Add (sw);
 			tf.ShowAll ();
 
+			paned.ShowAll ();
+
 			foreach (GitHubRepo r in gitHubRepoService.RepoList) 
 			{
 				TreeView.AddChild (r);
@@ -125,16 +127,16 @@ namespace GitHub.Repository.Gui
 			}
 		}
 
-		public void SelectTest (GitHubRepo t)
+		public void SelectRepo (GitHubRepo t)
 		{
-			ITreeNavigator node = FindTestNode (t);
+			ITreeNavigator node = FindRepoNode (t);
 			if (node != null) {
 				node.ExpandToNode ();
 				node.Selected = true;
 			}
 		}
 
-		ITreeNavigator FindTestNode (GitHubRepo t)
+		ITreeNavigator FindRepoNode (GitHubRepo t)
 		{
 			ITreeNavigator nav = TreeView.GetNodeAtObject (t);
 			if (nav != null)
