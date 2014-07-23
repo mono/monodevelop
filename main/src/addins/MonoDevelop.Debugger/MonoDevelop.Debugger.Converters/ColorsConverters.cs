@@ -38,6 +38,7 @@ namespace MonoDevelop.Debugger.Converters
 			return val.TypeName != null && (
 			    val.TypeName == "System.Drawing.Color" ||
 			    val.TypeName == "Gdk.Color" ||
+			    val.TypeName == "Android.Graphics.Color" ||
 			    val.TypeName.EndsWith ("UIKit.UIColor") ||
 			    val.TypeName.EndsWith ("CoreGraphics.CGColor"));
 		}
@@ -46,7 +47,7 @@ namespace MonoDevelop.Debugger.Converters
 		{
 			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 			ops.AllowTargetInvoke = true;
-			if (val.TypeName == "System.Drawing.Color") {
+			if (val.TypeName == "System.Drawing.Color" || val.TypeName == "Android.Graphics.Color") {
 				return Color.FromBytes (
 					(byte)val.GetChild ("R", ops).GetRawValue (ops),
 					(byte)val.GetChild ("G", ops).GetRawValue (ops),
