@@ -37,6 +37,7 @@ namespace MonoDevelop.Debugger.Converters
 		public override bool CanGetValue (ObjectValue val)
 		{
 			return val.TypeName != null && (
+			    val.TypeName == "Android.Graphics.Bitmap" ||
 			    val.TypeName == "Gdk.Pixbuf" ||
 			    val.TypeName.EndsWith ("UIKit.UIImage"));
 		}
@@ -48,6 +49,14 @@ namespace MonoDevelop.Debugger.Converters
 			var rawVal = (RawValue)val.GetRawValue (ops);
 			if (val.TypeName == "Gdk.Pixbuf") {
 				var arrayObject = (RawValueArray)rawVal.CallMethod ("SaveToBuffer", "png");
+				var bytes = (byte[])(arrayObject).GetValues (0, arrayObject.Length);
+				var ms = new MemoryStream (bytes, false);
+				return Image.FromStream (ms);
+			} else if (val.TypeName == "Android.Graphics.Bitmap") {
+				var memoryStream = DebuggingService.CurrentFrame.GetExpressionValue ("new System.IO.MemoryStream()", true).GetRawValue (ops);
+				var pngEnum = DebuggingService.CurrentFrame.GetExpressionValue ("Android.Graphics.Bitmap.CompressFormat.Png", true).GetRawValue (ops);
+				((RawValue)val.GetRawValue (ops)).CallMethod ("Compress", pngEnum, 0, memoryStream);
+				var arrayObject = (RawValueArray)((RawValue)memoryStream).CallMethod ("ToArray");
 				var bytes = (byte[])(arrayObject).GetValues (0, arrayObject.Length);
 				var ms = new MemoryStream (bytes, false);
 				return Image.FromStream (ms);
