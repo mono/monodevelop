@@ -82,12 +82,12 @@ namespace GitHub.Repository.Gui
 
 			TreeViewColumn col5 = new TreeViewColumn ();
 			col5.Expand = false;
-			//			col5.Alignment = 0.5f;
+			col5.Alignment = 0.5f;
 
 			col5.Widget = new ImageView (Xwt.Drawing.Image.FromResource ("pad-github-16.png"));
 			col5.Widget.Show ();
 			tr = new CellRendererText ();
-			//			tr.Xalign = 0.5f;
+			tr.Xalign = 0.5f;
 			col5.PackStart (tr, false);
 			col5.AddAttribute (tr, "markup", 4);
 			detailsTree.AppendColumn (col5);
