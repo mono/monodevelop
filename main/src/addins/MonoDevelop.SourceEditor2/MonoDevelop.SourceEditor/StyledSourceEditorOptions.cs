@@ -49,8 +49,21 @@ namespace MonoDevelop.SourceEditor
 			if (optionsCore == null)
 				throw new ArgumentNullException ("optionsCore");
 			this.optionsCore = optionsCore;
+			DefaultSourceEditorOptions.Instance.Changed += HandleChanged;
 		}
-		
+
+		public override void Dispose ()
+		{
+			DefaultSourceEditorOptions.Instance.Changed -= HandleChanged;
+
+			base.Dispose ();
+		}
+
+		void HandleChanged (object sender, EventArgs e)
+		{
+			DisposeFont ();
+			OnChanged (EventArgs.Empty);
+		}
 
 		#region ITextEditorOptions implementation
 		public override double Zoom {
@@ -64,7 +77,7 @@ namespace MonoDevelop.SourceEditor
 		static IWordFindStrategy sharpDevelopWordFindStrategy = new SharpDevelopWordFindStrategy ();
 		static IWordFindStrategy viWordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
 
-		public IWordFindStrategy WordFindStrategy {
+		public override IWordFindStrategy WordFindStrategy {
 			get {
 				switch (DefaultSourceEditorOptions.Instance.WordFindStrategy) {
 				case MonoDevelop.Ide.Editor.WordFindStrategy.MonoDevelop:
