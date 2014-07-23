@@ -53,7 +53,7 @@ namespace MonoDevelop.AspNet.Tests.WebForms
 			if (isCtrlSpace)
 				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
 			else
-				return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1], ref triggerWordLength) as CompletionDataList;
+				return textEditorCompletion.HandleCodeCompletionAsync (ctx, editorText[cursorPosition - 1], ref triggerWordLength) as CompletionDataList;
 		}
 
 		static WebFormsTestingEditorExtension CreateEditor (string text, string extension, out string editorText, out TestViewContent sev)

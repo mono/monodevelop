@@ -34,6 +34,8 @@ using MonoDevelop.Ide;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.TextTemplating.Gui
 {
@@ -110,23 +112,20 @@ namespace MonoDevelop.TextTemplating.Gui
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
-			int triggerWordLength = 0;
-			return HandleCodeCompletion ((CodeCompletionContext) completionContext, true, ref triggerWordLength);
+			return HandleCodeCompletion ((CodeCompletionContext) completionContext, true);
 		}
 
-		public override ICompletionDataList HandleCodeCompletion (
-		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			int pos = completionContext.TriggerOffset;
 			if (pos > 0 && Editor.GetCharAt (pos - 1) == completionChar) {
-				return HandleCodeCompletion ((CodeCompletionContext) completionContext, 
-				                             false, ref triggerWordLength);
+				return Task.FromResult (HandleCodeCompletion ((CodeCompletionContext) completionContext, false));
 			}
 			return null;
 		}
 
 		protected virtual ICompletionDataList HandleCodeCompletion (
-		    CodeCompletionContext completionContext, bool forced, ref int triggerWordLength)
+		    CodeCompletionContext completionContext, bool forced)
 		{
 			//IEditableTextBuffer buf = this.EditableBuffer;
 			return null;

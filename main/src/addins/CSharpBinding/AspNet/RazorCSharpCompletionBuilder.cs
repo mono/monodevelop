@@ -84,7 +84,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeCompletionContext ccc;
 			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
-			return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
+			return completion.HandleCodeCompletionAsync (completionContext, currentChar, ref triggerWordLength);
 		}
 
 		public ParameterDataProvider HandleParameterCompletion (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	CodeCompletionContext completionContext,
@@ -92,7 +92,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeCompletionContext ccc;
 			var completion = CreateCompletionAndUpdate (editor, context, docInfo, out ccc);
-			return completion.HandleParameterCompletion (completionContext, completionChar);
+			return completion.HandleParameterCompletionAsync (completionContext, completionChar);
 		}
 
 		public bool GetParameterCompletionCommandOffset (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context,	UnderlyingDocumentInfo docInfo, out int cpos)

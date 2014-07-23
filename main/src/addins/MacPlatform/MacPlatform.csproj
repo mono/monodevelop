@@ -149,7 +149,7 @@
     <Folder Include="MacMenu\" />
   </ItemGroup>
   <ItemGroup>
-    <LibXammac Include = "/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib" />
+    <LibXammac Include="..\..\..\..\..\..\..\..\Library\Frameworks\Xamarin.Mac.framework\Versions\Current\lib\libxammac.dylib" />
   </ItemGroup>
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(LibXammac)" DestinationFiles="$(OutputPath)\libxammac.dylib" SkipUnchangedFiles="true" />

@@ -36,6 +36,9 @@ using MonoDevelop.Ide.CodeTemplates;
 using ICSharpCode.NRefactory6.CSharp.Completion;
 using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Editor;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -86,7 +89,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			
 			CompletionWindowManager.ShowWindow (this, '\0', completionList, CompletionWidget, currentCompletionContext);
 		}
-
+		CancellationTokenSource src = new CancellationTokenSource ();
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
 		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
@@ -135,28 +138,45 @@ namespace MonoDevelop.Ide.Editor.Extension
 			// Handle code completion
 			if (keyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
-				int triggerWordLength = currentCompletionContext.TriggerWordLength;
-				ICompletionDataList completionList = HandleCodeCompletion (currentCompletionContext, keyChar,
-				                                                           ref triggerWordLength);
-				if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
-					|| (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
-					currentCompletionContext
-						= CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
-					currentCompletionContext.TriggerWordLength = triggerWordLength;
-				}
-				if (completionList != null) {
-					if (!CompletionWindowManager.ShowWindow (this, keyChar, completionList, CompletionWidget, currentCompletionContext))
-						currentCompletionContext = null;
-				} else {
-					currentCompletionContext = null;
+				src.Cancel ();
+				src = new CancellationTokenSource ();
+				var token = src.Token;
+				var task = HandleCodeCompletionAsync (currentCompletionContext, keyChar, token);
+				if (task != null) {
+					task.ContinueWith ((Task<ICompletionDataList> rt, object completionList) => {
+						if (rt.Result == null)
+							return;
+						int triggerWordLength = rt.Result.TriggerWordLength;
+
+						if (triggerWordLength > 0 && (triggerWordLength < Editor.CaretOffset
+							|| (triggerWordLength == 1 && Editor.CaretOffset == 1))) {
+							currentCompletionContext = CompletionWidget.CreateCodeCompletionContext (Editor.CaretOffset - triggerWordLength);
+							currentCompletionContext.TriggerWordLength = triggerWordLength;
+						}
+						if (completionList != null) {
+							if (!CompletionWindowManager.ShowWindow (this, keyChar, rt.Result, CompletionWidget, currentCompletionContext))
+								currentCompletionContext = null;
+						} else {
+							currentCompletionContext = null;
+						}
+					}, TaskScheduler.Current, token);
 				}
 			}
 			
 			if (/*EnableParameterInsight &&*/ CompletionWidget != null) {
 				CodeCompletionContext ctx = CompletionWidget.CurrentCodeCompletionContext;
-				var paramProvider = HandleParameterCompletion (ctx, keyChar);
-				if (paramProvider != null)
-					ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, paramProvider);
+
+				src.Cancel ();
+				src = new CancellationTokenSource ();
+				var token = src.Token;
+
+				var task = HandleParameterCompletionAsync (ctx, keyChar, token);
+				if (task != null) {
+					task.ContinueWith ((Task<ParameterHintingResult> rt, object completionList) => {
+						if (rt.Result != null)
+							ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, rt.Result);
+					}, TaskScheduler.Current, token);
+				}
 			}
 /*			autoHideCompletionWindow = true;
 			autoHideParameterWindow = keyChar != ':';*/
@@ -307,16 +327,16 @@ namespace MonoDevelop.Ide.Editor.Extension
 			return (CompletionWidget != null && !ParameterInformationWindowManager.IsWindowVisible);
 		}
 		
-		
-		public virtual ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
-		                                                         char completionChar, ref int triggerWordLength)
+		static readonly ICompletionDataList emptyList = new CompletionDataList ();
+
+		public virtual Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
-			return null;
+			return Task.FromResult (emptyList);
 		}
 		
-		public virtual ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
+		public virtual Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
-			return null;
+			return Task.FromResult (ParameterHintingResult.Empty);
 		}
 		
 		// return false if completion can't be shown
@@ -390,8 +410,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			int pos = completionContext.TriggerOffset;
 			if (pos > 0) {
 				char ch = Editor.GetCharAt (pos - 1);
-				int triggerWordLength = completionContext.TriggerWordLength;
-				ICompletionDataList completionList = HandleCodeCompletion (completionContext, ch, ref triggerWordLength);
+				var task = HandleCodeCompletionAsync (completionContext, ch);
+				if (task == null)
+					return null;
+				var completionList = task.Result;
 				if (completionList != null)
 					return completionList;
 			}
@@ -406,7 +428,10 @@ namespace MonoDevelop.Ide.Editor.Extension
 			int pos = completionContext.TriggerOffset;
 			if (pos <= 0)
 				return null;
-			var cp = HandleParameterCompletion (completionContext, Editor.GetCharAt (pos - 1));
+			var task = HandleParameterCompletionAsync (completionContext, Editor.GetCharAt (pos - 1));
+			if (task == null)
+				return null;
+			var cp = task.Result;
 			if (cp != null)
 				return cp;
 			return null;

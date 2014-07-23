@@ -48,6 +48,8 @@ using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using Mono.TextEditor;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -168,7 +170,7 @@ namespace MonoDevelop.CSharp.Completion
 			return result;
 		}
 		
-		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 //			if (!EnableCodeCompletion)
 //				return null;
@@ -177,12 +179,13 @@ namespace MonoDevelop.CSharp.Completion
 
 			//	var timer = Counters.ResolveTime.BeginTiming ();
 			try {
+				int triggerWordLength = 0;
 				if (char.IsLetterOrDigit (completionChar) || completionChar == '_') {
 					if (completionContext.TriggerOffset > 1 && char.IsLetterOrDigit (Editor.GetCharAt (completionContext.TriggerOffset - 2)))
 						return null;
 					triggerWordLength = 1;
 				}
-				return InternalHandleCodeCompletion (completionContext, completionChar, false, ref triggerWordLength);
+				return InternalHandleCodeCompletion (completionContext, completionChar, false, triggerWordLength, token);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected code completion exception." + Environment.NewLine + 
 					"FileName: " + DocumentContext.Name + Environment.NewLine + 
@@ -205,7 +208,7 @@ namespace MonoDevelop.CSharp.Completion
 			CSharpCompletionDataList List { get; set; }
 		}
 		
-		ICompletionDataList InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, ref int triggerWordLength)
+		async Task<ICompletionDataList> InternalHandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, bool ctrlSpace, int triggerWordLength, CancellationToken token)
 		{
 			if (Editor.EditMode != MonoDevelop.Ide.Editor.EditMode.Edit)
 				return null;
@@ -217,19 +220,20 @@ namespace MonoDevelop.CSharp.Completion
 			var offset = Editor.CaretOffset;
 
 			var list = new CSharpCompletionDataList ();
+			list.TriggerWordLength = triggerWordLength;
 			try {
 				var analysisDocument = DocumentContext.AnalysisDocument;
 				if (analysisDocument == null)
 					return null;
 
 				Compilation compilation;
-				compilation = DocumentContext.GetCompilationAsync ().Result; 
+				compilation = await DocumentContext.GetCompilationAsync (token); 
 
 				if (compilation != null) {
-					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
+					var syntaxTree = await analysisDocument.GetSyntaxTreeAsync (token);
 					var engine = new CompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
 					
-					var completionResult = engine.GetCompletionData (analysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace);
+					var completionResult = engine.GetCompletionData (analysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace, token);
 					foreach (var symbol in completionResult) {
 						list.Add (symbol); 
 					}
@@ -292,14 +296,14 @@ namespace MonoDevelop.CSharp.Completion
 //			} catch (Exception e) {
 //				LoggingService.LogError ("Error while getting completion data.", e);
 //			}
-			return list.Count > 0 ? list : null;
+			return (ICompletionDataList)list;
 		}
 		
 		public override ICompletionDataList CodeCompletionCommand (CodeCompletionContext completionContext)
 		{
 			int triggerWordLength = 0;
 			char ch = completionContext.TriggerOffset > 0 ? Editor.GetCharAt (completionContext.TriggerOffset - 1) : '\0';
-			return InternalHandleCodeCompletion (completionContext, ch, true, ref triggerWordLength);
+			return InternalHandleCodeCompletion (completionContext, ch, true, triggerWordLength, default(CancellationToken)).Result;
 		}
 
 		static bool HasAllUsedParameters (IParameterHintingData provider, string[] list)
@@ -473,7 +477,7 @@ namespace MonoDevelop.CSharp.Completion
 //		}
 		
 
-		public override ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
+		public override async Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			var data = Editor;
 			if (completionChar != '(' && completionChar != ',')
@@ -486,7 +490,7 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 
 			try {
-				var compilation = DocumentContext.GetCompilationAsync ().Result; 
+				var compilation = await DocumentContext.GetCompilationAsync (token); 
 
 				if (compilation != null) {
 					var analysisDocument = DocumentContext.AnalysisDocument;
@@ -494,7 +498,7 @@ namespace MonoDevelop.CSharp.Completion
 						return null;
 					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
 					var engine = new ParameterHintingEngine (RoslynTypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-					return engine.GetParameterDataProvider (analysisDocument, compilation.GetSemanticModel (syntaxTree), offset);
+					return engine.GetParameterDataProvider (analysisDocument, compilation.GetSemanticModel (syntaxTree), offset, token);
 				}
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 

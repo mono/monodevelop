@@ -409,7 +409,7 @@ namespace MonoDevelop.AspNet.Razor
 			return hiddenOff;
 		}
 
-		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
+		public override ICompletionDataList HandleCodeCompletionAsync (CodeCompletionContext completionContext,
 			char completionChar, ref int triggerWordLength)
 		{
 //			if (!EnableCodeCompletion)
@@ -443,7 +443,7 @@ namespace MonoDevelop.AspNet.Razor
 				return list;
 			}
 
-			return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
+			return base.HandleCodeCompletionAsync (completionContext, completionChar, ref triggerWordLength);
 		}
 
 		//recreating the list is over 2x as fast as using remove operations, saves typically 10ms
@@ -551,7 +551,7 @@ namespace MonoDevelop.AspNet.Razor
 			return base.GetCurrentParameterIndex (startOffset);
 		}
 
-		public override ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext,
+		public override ParameterHintingResult HandleParameterCompletionAsync (CodeCompletionContext completionContext,
 			char completionChar)
 		{
 			if (hiddenInfo != null && isInCSharpContext) {
@@ -559,7 +559,7 @@ namespace MonoDevelop.AspNet.Razor
 					hiddenInfo, completionChar);
 			}
 
-			return base.HandleParameterCompletion (completionContext, completionChar);
+			return base.HandleParameterCompletionAsync (completionContext, completionChar);
 		}
 
 		#endregion

@@ -291,11 +291,11 @@ namespace MonoDevelop.AspNet.WebForms
 			});
 		}
 		
-		public override ICompletionDataList HandleCodeCompletion (
+		public override ICompletionDataList HandleCodeCompletionAsync (
 		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 			if (localDocumentInfo == null)
-				return base.HandleCodeCompletion (completionContext, completionChar, ref triggerWordLength);
+				return base.HandleCodeCompletionAsync (completionContext, completionChar, ref triggerWordLength);
 			localDocumentInfo.HiddenDocument.Editor.InsertAtCaret (completionChar.ToString ());
 			return documentBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
 		}
@@ -324,13 +324,13 @@ namespace MonoDevelop.AspNet.WebForms
 			return result;
 		}
 		
-		public override ParameterHintingResult HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
+		public override ParameterHintingResult HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar)
 		{
 /*			if (Tracker.Engine.CurrentState is AspNetExpressionState && documentBuilder != null && localDocumentInfo != null) {
 				return documentBuilder.HandleParameterCompletion (defaultDocument, completionContext, documentInfo, localDocumentInfo, completionChar);
 			}*/
 			
-			return base.HandleParameterCompletion (completionContext, completionChar);
+			return base.HandleParameterCompletionAsync (completionContext, completionChar);
 		}
 
 		/*public override void RunParameterCompletionCommand ()

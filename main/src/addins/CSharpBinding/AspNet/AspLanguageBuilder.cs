@@ -138,7 +138,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeCompletionContext ccc;
 			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out ccc)) {
-				return completion.HandleCodeCompletion (completionContext, currentChar, ref triggerWordLength);
+				return completion.HandleCodeCompletionAsync (completionContext, currentChar, ref triggerWordLength);
 			}
 		}
 		
@@ -146,7 +146,7 @@ namespace MonoDevelop.CSharp.Completion
 		{
 			CodeCompletionContext ccc;
 			using (var completion = CreateCompletion (realEditor, realContext, info, localInfo, out ccc)) {
-				return completion.HandleParameterCompletion (completionContext, completionChar);
+				return completion.HandleParameterCompletionAsync (completionContext, completionChar);
 			}
 		}
 		

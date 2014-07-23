@@ -51,6 +51,8 @@ using ICSharpCode.NRefactory6.CSharp.Completion;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Extension;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace CBinding
 {
@@ -228,8 +230,8 @@ namespace CBinding
 			
 			return base.KeyPress (key, keyChar, modifier);
 		}
-		
-		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
+
+		public override Task<ICompletionDataList> HandleCodeCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			string lineText = Editor.GetLineText (completionContext.TriggerLine).TrimEnd();
 			
@@ -244,15 +246,15 @@ namespace CBinding
 					if (string.IsNullOrEmpty (itemName))
 						return null;
 					
-					return pair.Value (this, pair.Key, itemName);
+					return Task.FromResult ((ICompletionDataList)pair.Value (this, pair.Key, itemName));
 				}
 			}
 			
 			if (char.IsLetter (completionChar)) {
 				// Aggressive completion
-				ICompletionDataList list = GlobalComplete ();
-				triggerWordLength = ResetTriggerOffset (completionContext);
-				return list;
+				var list = GlobalComplete ();
+				list.TriggerWordLength = ResetTriggerOffset (completionContext);
+				return Task.FromResult ((ICompletionDataList)list);
 			}
 			
 			return null;
@@ -292,8 +294,7 @@ namespace CBinding
 			
 			foreach (KeyValuePair<string, GetMembersForExtension> pair in completionExtensions) {
 				if(lineText.EndsWith(pair.Key)) {
-					int triggerWordLength = completionContext.TriggerWordLength;
-					return HandleCodeCompletion (completionContext, Editor.GetCharAt (pos), ref triggerWordLength);
+					return HandleCodeCompletionAsync (completionContext, Editor.GetCharAt (pos)).Result;
 				}
 			}
 
@@ -520,7 +521,7 @@ namespace CBinding
 				}
 		}
 
-		private ICompletionDataList GlobalComplete ()
+		private CompletionDataList GlobalComplete ()
 		{
 			CProject project = DocumentContext.Project as CProject;
 			
@@ -569,8 +570,7 @@ namespace CBinding
 			return list;
 		}
 		
-		public override  ParameterHintingResult HandleParameterCompletion (
-		    CodeCompletionContext completionContext, char completionChar)
+		public override Task<ParameterHintingResult> HandleParameterCompletionAsync (CodeCompletionContext completionContext, char completionChar, CancellationToken token = default(CancellationToken))
 		{
 			if (completionChar != '(')
 				return null;
@@ -594,7 +594,7 @@ namespace CBinding
 			if (string.IsNullOrEmpty (functionName))
 				return null;
 			
-			return new ParameterDataProvider (nameStart, Editor, info, functionName);
+			return Task.FromResult ((ParameterHintingResult)new ParameterDataProvider (nameStart, Editor, info, functionName));
 		}
 		
 		private bool AllWhiteSpace (string lineText)

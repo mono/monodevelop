@@ -65,7 +65,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			if (isCtrlSpace)
 				return textEditorCompletion.CodeCompletionCommand (ctx) as CompletionDataList;
 			else
-				return textEditorCompletion.HandleCodeCompletion (ctx, editorText[cursorPosition - 1], ref triggerWordLength) as CompletionDataList;
+				return textEditorCompletion.HandleCodeCompletionAsync (ctx, editorText[cursorPosition - 1], ref triggerWordLength) as CompletionDataList;
 		}
 
 		public static ParameterHintingResult CreateProvider (string text)
@@ -77,7 +77,7 @@ namespace MonoDevelop.AspNet.Tests.Razor
 			int cursorPosition = text.IndexOf ('$');
 
 			var ctx = textEditorCompletion.GetCodeCompletionContext (true, sev);
-			return textEditorCompletion.HandleParameterCompletion (ctx, editorText[cursorPosition - 1]);
+			return textEditorCompletion.HandleParameterCompletionAsync (ctx, editorText[cursorPosition - 1]);
 		}
 
 		static RazorTestingEditorExtension CreateEditor (string text, bool isInCSharpContext, out string editorText,

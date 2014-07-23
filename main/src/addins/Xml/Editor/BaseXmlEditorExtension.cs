@@ -266,7 +266,7 @@ namespace MonoDevelop.Xml.Editor
 			return HandleCodeCompletion (completionContext, true, ref triggerWordLength);
 		}
 
-		public override ICompletionDataList HandleCodeCompletion (
+		public override ICompletionDataList HandleCodeCompletionAsync (
 		    CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)
 		{
 			int pos = completionContext.TriggerOffset;
