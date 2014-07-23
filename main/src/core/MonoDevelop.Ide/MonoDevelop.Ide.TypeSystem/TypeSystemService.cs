@@ -2781,12 +2781,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static bool IsFileModified (ProjectFile file, IUnresolvedFile parsedFile)
 		{
-			if (parsedFile == null)
+			if (parsedFile == null || !parsedFile.LastWriteTime.HasValue)
 				return true;
 			try {
 				return File.GetLastWriteTimeUtc (file.FilePath) > parsedFile.LastWriteTime;
 			} catch (Exception) {
-				return false;
+				return true;
 			}
 		}
 
