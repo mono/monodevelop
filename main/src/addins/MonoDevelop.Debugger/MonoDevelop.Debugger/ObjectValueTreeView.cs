@@ -586,6 +586,15 @@ namespace MonoDevelop.Debugger
 			values [idx] = @new;
 			Refresh (false);
 		}
+
+		public void ClearAll ()
+		{
+			values.Clear ();
+			valueNames.Clear ();
+			cachedValues.Clear ();
+			frame = null;
+			Refresh (true);
+		}
 		
 		public void ClearValues ()
 		{
