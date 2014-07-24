@@ -1480,7 +1480,7 @@ namespace MonoDevelop.Debugger
 					SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
 				} else if (cr == crtValue) {
 					if ((Platform.IsMac && ((evnt.State & Gdk.ModifierType.Mod2Mask) > 0)) ||
-					    (Platform.IsWindows && ((evnt.State & Gdk.ModifierType.ControlMask) > 0))) {
+						(!Platform.IsMac && ((evnt.State & Gdk.ModifierType.ControlMask) > 0))) {
 						var url = crtValue.Text.Trim ('"', '{', '}');
 						Uri uri;
 						if (url != null && Uri.TryCreate (url, UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
