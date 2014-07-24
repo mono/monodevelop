@@ -39,7 +39,8 @@ namespace MonoDevelop.Debugger.Converters
 			return val.TypeName != null && (
 			    val.TypeName == "Android.Graphics.Bitmap" ||
 			    val.TypeName == "Gdk.Pixbuf" ||
-			    val.TypeName.EndsWith ("UIKit.UIImage"));
+			    val.TypeName.EndsWith ("UIKit.UIImage") ||
+			    val.TypeName.EndsWith ("CoreGraphics.CGImage"));
 		}
 
 		public override Image GetValue (ObjectValue val)
@@ -57,6 +58,13 @@ namespace MonoDevelop.Debugger.Converters
 				var pngEnum = DebuggingService.CurrentFrame.GetExpressionValue ("Android.Graphics.Bitmap.CompressFormat.Png", true).GetRawValue (ops);
 				((RawValue)val.GetRawValue (ops)).CallMethod ("Compress", pngEnum, 0, memoryStream);
 				var arrayObject = (RawValueArray)((RawValue)memoryStream).CallMethod ("ToArray");
+				var bytes = (byte[])(arrayObject).GetValues (0, arrayObject.Length);
+				var ms = new MemoryStream (bytes, false);
+				return Image.FromStream (ms);
+			} else if (val.TypeName.EndsWith ("CoreGraphics.CGImage")) {
+				rawVal = (RawValue)DebuggingService.CurrentFrame.GetExpressionValue ("MonoTouch.UIKit.UIImage.FromImage(" + val.Name + ")", true).GetRawValue (ops);
+				RawValue nsData = (RawValue)rawVal.CallMethod ("AsPNG");
+				var arrayObject = (RawValueArray)nsData.CallMethod ("ToArray");
 				var bytes = (byte[])(arrayObject).GetValues (0, arrayObject.Length);
 				var ms = new MemoryStream (bytes, false);
 				return Image.FromStream (ms);
