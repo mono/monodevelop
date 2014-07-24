@@ -135,6 +135,25 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.DeleteKey);
 		}
 
+		class CellRendererTextUrl : CellRendererText{
+			[GLib.Property ("texturl")]
+			public string TextUrl {
+				get {
+					return Text;
+				}
+				set {
+					Uri uri;
+					if (value != null && Uri.TryCreate (value.Trim ('"', '{', '}'), UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
+						Underline = Pango.Underline.Single;
+						Foreground = "#197CEF";
+					} else {
+						Underline = Pango.Underline.None;
+					}
+					Text = value;
+				}
+			}
+		}
+
 		class CellRendererColorPreview : CellRenderer
 		{
 			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
@@ -274,9 +293,9 @@ namespace MonoDevelop.Debugger
 			crpViewer.Image = ImageService.GetIcon (Stock.Edit, IconSize.Menu);
 			valueCol.PackStart (crpViewer, false);
 			valueCol.AddAttribute (crpViewer, "visible", ViewerButtonVisibleColumn);
-			crtValue = new CellRendererText ();
+			crtValue = new CellRendererTextUrl ();
 			valueCol.PackStart (crtValue, true);
-			valueCol.AddAttribute (crtValue, "text", ValueColumn);
+			valueCol.AddAttribute (crtValue, "texturl", ValueColumn);
 			valueCol.AddAttribute (crtValue, "editable", ValueEditableColumn);
 			valueCol.AddAttribute (crtValue, "foreground", ValueColorColumn);
 			valueCol.Resizable = true;
@@ -1459,6 +1478,15 @@ namespace MonoDevelop.Debugger
 					rect.Y += (int)Vadjustment.Value;
 					DebuggingService.ShowPreviewVisualizer (val, this, rect);
 					SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+				} else if (cr == crtValue) {
+					if ((Platform.IsMac && ((evnt.State & Gdk.ModifierType.Mod2Mask) > 0)) ||
+					    (Platform.IsWindows && ((evnt.State & Gdk.ModifierType.ControlMask) > 0))) {
+						var url = crtValue.Text.Trim ('"', '{', '}');
+						Uri uri;
+						if (url != null && Uri.TryCreate (url, UriKind.Absolute, out uri) && (uri.Scheme == "http" || uri.Scheme == "https")) {
+							DesktopService.ShowUrl (url);
+						}
+					}
 				} else if (!editing) {
 					if (cr == crpButton) {
 						RefreshRow (it);
