@@ -29,6 +29,7 @@ using MonoDevelop.Core.Text;
 using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Editor.Util;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -179,7 +180,7 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException ("changedDocument");
 			var codeDictionary = new Dictionary<string, int> ();
 			int codeCounter = 0;
-			return MonoDevelop.Ide.Editor.Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, includeEol),
+			return Diff.GetDiff<int> (GetDiffCodes (document, ref codeCounter, codeDictionary, includeEol),
 				GetDiffCodes (changedDocument, ref codeCounter, codeDictionary, includeEol));
 		}
 
@@ -189,7 +190,7 @@ namespace MonoDevelop.Ide.Editor
 				throw new ArgumentNullException ("document");
 			if (changedDocument == null)
 				throw new ArgumentNullException ("changedDocument");
-			return MonoDevelop.Ide.Editor.Diff.GetDiffString (GetDiff (document, changedDocument, includeEol), document, changedDocument, document.FileName, changedDocument.FileName);
+			return Diff.GetDiffString (GetDiff (document, changedDocument, includeEol), document, changedDocument, document.FileName, changedDocument.FileName);
 		}
 
 		public static int OffsetToLineNumber (this IReadonlyTextDocument document, int offset)

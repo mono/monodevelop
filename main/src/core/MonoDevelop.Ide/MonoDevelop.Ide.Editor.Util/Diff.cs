@@ -97,7 +97,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Util
 {
 	/// <summary>
 	/// A DiffHunk represents a single change in a diff between two files.

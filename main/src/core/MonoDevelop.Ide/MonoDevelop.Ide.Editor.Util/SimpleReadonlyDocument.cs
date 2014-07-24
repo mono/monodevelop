@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Util
 {
 	/// <summary>
 	/// A simple and fast implementation for a read only text document.

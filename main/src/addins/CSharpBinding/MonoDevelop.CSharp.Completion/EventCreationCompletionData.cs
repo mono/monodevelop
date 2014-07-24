@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Util;
 
 namespace MonoDevelop.CSharp.Completion
 {

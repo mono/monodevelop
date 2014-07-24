@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Editor.Highlighting;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.Ide.Editor.Util
 {
 	public static class SimpleBracketMatcher
 	{

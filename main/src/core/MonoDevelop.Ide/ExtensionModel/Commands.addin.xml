@@ -1015,8 +1015,12 @@
 			_label = "Toggle block selection mode"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
 			_label = "Duplicate line"/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DynamicAbbrev"
+			defaultHandler = "MonoDevelop.Ide.Editor.DynamicAbbrevHandler"
+			_label = "Dynamic abbrev"
+			_description = "Cycles completing the current word from matching words in all open files"
+			macShortcut = "Ctrl|/"
+			shortcut = "Alt|/" />
 	</Category>
-
 </Extension>
-
 </ExtensionModel>

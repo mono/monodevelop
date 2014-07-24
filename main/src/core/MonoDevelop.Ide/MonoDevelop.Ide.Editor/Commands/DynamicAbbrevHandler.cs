@@ -30,9 +30,9 @@ using MonoDevelop.Ide.Gui;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.Ide.Editor
 {
-	public class DynamicAbbrevHandler : CommandHandler
+	class DynamicAbbrevHandler : CommandHandler
 	{
 		enum AbbrevState {
 			SearchBackward,
@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor
 			CycleThroughFoundWords
 		}
 		
-		static SourceEditorView lastView = null;
+		static TextEditor       lastView = null;
 		static string           lastAbbrev = null;
 		static int              lastTriggerOffset = 0;
 		static int              lastInsertPos = 0;
@@ -51,62 +51,62 @@ namespace MonoDevelop.SourceEditor
 		
 		protected override void Run (object data)
 		{
-			MonoDevelop.Ide.Gui.Document doc = IdeApp.Workbench.ActiveDocument;
+			var doc = IdeApp.Workbench.ActiveDocument;
 			if (doc == null)
 				return;
-			SourceEditorView view = IdeApp.Workbench.ActiveDocument.GetContent<SourceEditorView> ();
-			if (view == null)
+			var editor = doc.Editor;
+			if (editor == null)
 				return;
 			
 			string abbrevWord;
 			int offset;
 			int startOffset;
 			
-			if (lastView == view && view.TextEditor.Caret.Offset == lastTriggerOffset) {
+			if (lastView == editor && editor.CaretOffset == lastTriggerOffset) {
 				abbrevWord = lastAbbrev;
 				offset = lastStartOffset;
 			} else {
-				abbrevWord = GetWordBeforeCaret (view.TextEditor);
+				abbrevWord = GetWordBeforeCaret (editor);
 				lastAbbrev = abbrevWord;
-				offset = view.TextEditor.Caret.Offset - abbrevWord.Length - 1;
+				offset = editor.CaretOffset - abbrevWord.Length - 1;
 				lastInsertPos = lastTriggerOffset = offset + 1;
 				foundWords.Clear ();
 				foundWords.Add (abbrevWord);
 				curState = AbbrevState.SearchBackward;
 			}
 			
-			lastView = view;
+			lastView = editor;
 			switch (curState) {
 			case AbbrevState.SearchBackward:
 				while (offset > 0) {
-					if (IsMatchAt (view, offset, abbrevWord)) {
-						int endOffset = SearchEndPos (offset, view);
-						string curWord = view.TextEditor.Document.GetTextBetween (offset, endOffset);
+					if (IsMatchAt (editor, offset, abbrevWord)) {
+						int endOffset = SearchEndPos (offset, editor);
+						string curWord = editor.GetTextBetween (offset, endOffset);
 						if (foundWords.Contains (curWord)) {
 							offset--;
 							continue;
 						}
 						foundWords.Add (curWord);
-						ReplaceWord (view, curWord);
+						ReplaceWord (editor, curWord);
 						lastStartOffset = offset - 1;
 						return;
 					}
 					offset--;
 				}
-				offset = view.TextEditor.Caret.Offset;
+				offset = editor.CaretOffset;
 				curState = AbbrevState.SearchForward;
 				goto case AbbrevState.SearchForward;
 			case AbbrevState.SearchForward:
-				while (offset < view.TextEditor.Document.TextLength) {
-					if (IsMatchAt (view, offset, abbrevWord)) {
-						int endOffset = SearchEndPos (offset, view);
-						string curWord = view.TextEditor.Document.GetTextBetween (offset, endOffset);
+				while (offset < editor.Length) {
+					if (IsMatchAt (editor, offset, abbrevWord)) {
+						int endOffset = SearchEndPos (offset, editor);
+						string curWord = editor.GetTextBetween (offset, endOffset);
 						if (foundWords.Contains (curWord)) {
 							offset++;
 							continue;
 						}
 						foundWords.Add (curWord);
-						ReplaceWord (view, curWord);
+						ReplaceWord (editor, curWord);
 						lastStartOffset = offset + 1;
 						return;
 					}
@@ -116,13 +116,13 @@ namespace MonoDevelop.SourceEditor
 				goto case AbbrevState.SearchOtherBuffers;
 			case AbbrevState.SearchOtherBuffers:
 				foreach (Document curDoc in IdeApp.Workbench.Documents) {
-					SourceEditorView otherView = curDoc.GetContent<SourceEditorView> ();
-					if (curDoc == doc || otherView == null || otherView.Document == null)
+					var otherView = curDoc.GetContent<TextEditor> ();
+					if (curDoc == doc || otherView == null)
 						continue;
-					for (int i = 0; i < otherView.Document.TextLength; i++) {
+					for (int i = 0; i < otherView.Length; i++) {
 						if (IsMatchAt (otherView, i, abbrevWord)) {
 							int endOffset = SearchEndPos (i, otherView);
-							string curWord = otherView.TextEditor.Document.GetTextBetween (i, endOffset);
+							string curWord = otherView.GetTextBetween (i, endOffset);
 							if (foundWords.Contains (curWord))
 								continue;
 							foundWords.Add (curWord);
@@ -132,13 +132,13 @@ namespace MonoDevelop.SourceEditor
 				curState = AbbrevState.CycleThroughFoundWords;
 				goto case AbbrevState.CycleThroughFoundWords;
 			case AbbrevState.CycleThroughFoundWords:
-				int index = foundWords.IndexOf (view.TextEditor.Document.GetTextAt (lastInsertPos, view.TextEditor.Caret.Offset - lastInsertPos));
+				int index = foundWords.IndexOf (editor.GetTextAt (lastInsertPos, editor.CaretOffset - lastInsertPos));
 				if (index < 0)
 					break;
 				startOffset = offset;
 				offset = startOffset + foundWords[index].Length;
 				index = (index + foundWords.Count + 1) % foundWords.Count;
-				ReplaceWord (view, foundWords[index]);
+				ReplaceWord (editor, foundWords[index]);
 				break;
 			}
 		}
@@ -148,12 +148,12 @@ namespace MonoDevelop.SourceEditor
 			return char.IsLetterOrDigit (ch) || ch == '_';
 		}
 		
-		static string GetWordBeforeCaret (MonoDevelop.SourceEditor.ExtensibleTextEditor editor)
+		static string GetWordBeforeCaret (TextEditor editor)
 		{
-			int startOffset = editor.Caret.Offset;
+			int startOffset = editor.CaretOffset;
 			int offset = startOffset - 1;
 			while (offset > 0) {
-				char ch = editor.Document.GetCharAt (offset);
+				char ch = editor.GetCharAt (offset);
 				if (!IsIdentifierPart (ch)) {
 					offset++;
 					break;
@@ -162,34 +162,32 @@ namespace MonoDevelop.SourceEditor
 			}
 			if (offset >= startOffset)
 				return "";
-			return editor.Document.GetTextBetween (offset, startOffset);
+			return editor.GetTextBetween (offset, startOffset);
 		}
 		
-		static void ReplaceWord (MonoDevelop.SourceEditor.SourceEditorView view, string curWord)
+		static void ReplaceWord (TextEditor editor, string curWord)
 		{
-			view.TextEditor.Replace (lastInsertPos, view.TextEditor.Caret.Offset - lastInsertPos, curWord);
-			view.TextEditor.Document.CommitLineUpdate (view.TextEditor.Caret.Line);
-			lastTriggerOffset = view.TextEditor.Caret.Offset;
+			editor.ReplaceText (lastInsertPos, editor.CaretOffset - lastInsertPos, curWord);
+			lastTriggerOffset = editor.CaretOffset;
 		}
 		
-		static int SearchEndPos (int offset, MonoDevelop.SourceEditor.SourceEditorView view)
+		static int SearchEndPos (int offset, TextEditor editor)
 		{
-			while (offset < view.TextEditor.Document.TextLength && IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset))) {
+			while (offset < editor.Length && IsIdentifierPart (editor.GetCharAt (offset))) {
 				offset++;
 			}
 			return offset;
 		}
 		
-		static bool IsMatchAt (MonoDevelop.SourceEditor.SourceEditorView view, int offset, string abbrevWord)
+		static bool IsMatchAt (TextEditor editor, int offset, string abbrevWord)
 		{
-			if (offset + abbrevWord.Length >= view.TextEditor.Document.TextLength)
+			if (offset + abbrevWord.Length >= editor.Length)
 				return false;
-			if (offset > 0 && IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset - 1)))
+			if (offset > 0 && IsIdentifierPart (editor.GetCharAt (offset - 1)))
 				return false;
-			if (offset + abbrevWord.Length < view.TextEditor.Document.TextLength && !IsIdentifierPart (view.TextEditor.Document.GetCharAt (offset + abbrevWord.Length)))
+			if (offset + abbrevWord.Length < editor.Length && !IsIdentifierPart (editor.GetCharAt (offset + abbrevWord.Length)))
 				return false;
-			return view.TextEditor.Document.GetTextAt (offset, abbrevWord.Length) == abbrevWord;
+			return editor.GetTextAt (offset, abbrevWord.Length) == abbrevWord;
 		}
 	}
 }
- 
