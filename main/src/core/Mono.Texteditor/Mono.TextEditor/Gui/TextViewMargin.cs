@@ -294,11 +294,14 @@ namespace Mono.TextEditor
 			Application.Invoke (delegate {
 				this.selectedRegions = newRegions;
 				if (updateLines != null) {
+					var document = textEditor.Document;
+					if (document == null)
+						return;
 					foreach (int lineNumber in updateLines) {
 //						RemoveCachedLine (Document.GetLine (lineNumber));
-						textEditor.Document.RequestUpdate (new LineUpdate (lineNumber));
+						document.RequestUpdate (new LineUpdate (lineNumber));
 					}
-					textEditor.Document.CommitDocumentUpdate ();
+					document.CommitDocumentUpdate ();
 				} else {
 					UpdateRegions (args.OldRegions.Concat (newRegions), args);
 				}
@@ -2632,7 +2635,6 @@ namespace Mono.TextEditor
 //			xStart = System.Math.Max (0, xStart);
 			var correctedXOffset = System.Math.Floor (XOffset) - 1;
 			var lineArea = new Cairo.Rectangle (correctedXOffset, y, textEditor.Allocation.Width - correctedXOffset, _lineHeight);
-			int width, height;
 			double position = x - textEditor.HAdjustment.Value + TextStartPosition;
 			defaultBgColor = Document.ReadOnly ? ColorStyle.BackgroundReadOnly.Color : ColorStyle.PlainText.Background;
 
@@ -2673,12 +2675,13 @@ namespace Mono.TextEditor
 					
 					offset = folding.EndLine.Offset + folding.EndColumn - 1;
 					markerLayout.SetText (folding.Description);
-					markerLayout.GetSize (out width, out height);
+					int width, height;
+					markerLayout.GetPixelSize (out width, out height);
 					
 					bool isFoldingSelected = !this.HideSelection && textEditor.IsSomethingSelected && textEditor.SelectionRange.Contains (folding.Segment);
 					double pixelX = 0.5 + System.Math.Floor (position);
 					double foldXMargin = foldMarkerXMargin * textEditor.Options.Zoom;
-					double pixelWidth = System.Math.Floor (position + width/ Pango.Scale.PangoScale - pixelX + foldXMargin * 2);
+					double pixelWidth = System.Math.Floor (position + width - pixelX + foldXMargin * 2);
 					var foldingRectangle = new Cairo.Rectangle (
 						pixelX, 
 						y, 
@@ -2709,7 +2712,7 @@ namespace Mono.TextEditor
 					cr.Save ();
 					cr.Translate (
 						position + foldXMargin,
-						System.Math.Floor (boundingRectangleY + (boundingRectangleHeight - System.Math.Floor (height / Pango.Scale.PangoScale)) / 2));
+						System.Math.Floor (boundingRectangleY + System.Math.Max (0, boundingRectangleHeight - height) / 2));
 					cr.ShowLayout (markerLayout);
 					cr.Restore ();
 

@@ -450,7 +450,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 						}
 					}
 				} else {
-					if (DataProvider.GetText (list.SelectedItem).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
+					var selectedItem = list.SelectedItem;
+					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
+						return KeyActions.CloseWindow;
+					if (DataProvider.GetText (selectedItem).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
 						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}
 				}

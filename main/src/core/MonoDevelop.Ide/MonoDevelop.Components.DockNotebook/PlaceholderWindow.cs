@@ -41,6 +41,7 @@ namespace MonoDevelop.Components.DockNotebook
 		uint anim;
 		int rx, ry, rw, rh;
 		List<DockNotebook> allNotebooks;
+		uint timeout;
 
 		DocumentTitleWindow titleWindow;
 
@@ -69,6 +70,19 @@ namespace MonoDevelop.Components.DockNotebook
 			titleWindow = new DocumentTitleWindow (this, tab);
 			IdeApp.Workbench.LockActiveWindowChangeEvent ();
 
+			titleWindow.FocusInEvent += delegate {
+				if (timeout != 0) {
+					GLib.Source.Remove (timeout);
+					timeout = 0;
+				}
+			};
+
+			titleWindow.FocusOutEvent += delegate {
+				timeout = GLib.Timeout.Add (100, () => {
+					titleWindow.Close ();
+					return false;
+				});
+			};
 
 			var windowStack = IdeApp.CommandService.TopLevelWindowStack.ToArray ();
 			allNotebooks = DockNotebook.AllNotebooks.ToList ();
@@ -203,6 +217,26 @@ namespace MonoDevelop.Components.DockNotebook
 			Hide ();
 			placementDelegate = PlaceInFloatingFrame;
 			titleWindow.SetDectorated (true);
+		}
+
+		protected override bool OnFocusInEvent (EventFocus evt)
+		{
+			if (timeout != 0) {
+				GLib.Source.Remove (timeout);
+				timeout = 0;
+			}
+
+			return base.OnFocusInEvent (evt);
+		}
+
+		protected override bool OnFocusOutEvent (EventFocus evt)
+		{
+			timeout = GLib.Timeout.Add (100, () => {
+				titleWindow.Close ();
+				return false;
+			});
+
+			return base.OnFocusOutEvent (evt);
 		}
 
 		protected override void OnRealized ()
