@@ -52,6 +52,8 @@ namespace MonoDevelop.HexEditor
 
 		public override bool CanVisualize (ObjectValue val)
 		{
+			if (val.TypeName != null && val.TypeName.EndsWith ("Foundation.NSData"))
+				return true;
 			switch (val.TypeName) {
 			case "sbyte[]": return true;
 			case "byte[]": return true;
@@ -63,6 +65,8 @@ namespace MonoDevelop.HexEditor
 
 		public override bool IsDefaultVisualizer (ObjectValue val)
 		{
+			if (val.TypeName != null && val.TypeName.EndsWith ("Foundation.NSData"))
+				return true;
 			switch (val.TypeName) {
 			case "sbyte[]":
 			case "byte[]": return true;
@@ -85,8 +89,11 @@ namespace MonoDevelop.HexEditor
 
 			IBuffer buffer = null;
 
-			if (val.TypeName != "string") {
-				var raw = (RawValueArray) val.GetRawValue ();
+			if (val.TypeName != null && val.TypeName.EndsWith ("Foundation.NSData")) {
+				var raw = (RawValueArray)((RawValue)val.GetRawValue ()).CallMethod ("ToArray");
+				buffer = new RawByteArrayBuffer (raw);
+			} else if (val.TypeName != "string") {
+				var raw = (RawValueArray)val.GetRawValue ();
 
 				switch (val.TypeName) {
 				case "sbyte[]":
@@ -103,7 +110,7 @@ namespace MonoDevelop.HexEditor
 				var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 				ops.ChunkRawStrings = true;
 
-				buffer = new RawStringBuffer ((RawValueString) val.GetRawValue (ops));
+				buffer = new RawStringBuffer ((RawValueString)val.GetRawValue (ops));
 			}
 
 			hexEditor.HexEditorData.Buffer = buffer;
