@@ -34,6 +34,8 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -114,10 +116,9 @@ namespace MonoDevelop.CodeGeneration
 		
 		static string AddIndent (string text, string indent)
 		{
-			var doc = new Mono.TextEditor.TextDocument ();
-			doc.Text = text;
+			var doc = TextEditorFactory.CreateNewReadonlyDocument (new StringTextSource (text), "");
 			var result = new StringBuilder ();
-			foreach (var line in doc.Lines) {
+			foreach (var line in doc.GetLines ()) {
 				result.Append (indent);
 				result.Append (doc.GetTextAt (line.SegmentIncludingDelimiter));
 			}

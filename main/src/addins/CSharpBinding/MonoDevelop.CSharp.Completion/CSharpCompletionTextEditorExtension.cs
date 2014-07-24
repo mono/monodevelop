@@ -28,7 +28,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-
 using MonoDevelop.Core;
 using MonoDevelop.Debugger;
 using MonoDevelop.Ide.Gui;
@@ -1321,28 +1320,6 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var nested in type.GetTypeMembers ())
 					AddType (document, result, nested, nested.Locations.First ().SourceSpan);
 			}
-			
-			ITextDocument ownerDocument;
-			public void InstallListener (ITextDocument doc)
-			{
-				if (ownerDocument != null)
-					throw new InvalidOperationException ("Segment tree already installed");
-				ownerDocument = doc;
-				doc.TextChanged += UpdateOnTextChanged;
-			}
-
-			public new void RemoveListener ()
-			{
-				if (ownerDocument == null)
-					throw new InvalidOperationException ("Segment tree is not installed");
-				ownerDocument.TextChanged -= UpdateOnTextChanged;
-				ownerDocument = null;
-			}
-			
-			void UpdateOnTextChanged (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
-			{
-				UpdateOnTextReplace (sender, new DocumentChangeEventArgs (e.Offset, e.RemovedText.Text, e.InsertedText.Text));
-			}			
 		}
 		
 		public ITypeSymbol GetTypeAt (int offset)

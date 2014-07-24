@@ -29,6 +29,7 @@ using ICSharpCode.NRefactory;
 using MonoDevelop.Ide;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Util;
 
 namespace MonoDevelop.AspNet.Razor.Dom
 {

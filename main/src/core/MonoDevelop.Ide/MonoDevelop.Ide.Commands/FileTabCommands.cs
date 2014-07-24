@@ -54,12 +54,10 @@ namespace MonoDevelop.Ide.Commands
 			var active = IdeApp.Workbench.ActiveDocument;
 			if (active == null)
 				return;
+			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
 			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
-				var w1 = doc.Window as SdiWorkspaceWindow;
-				var w2 = active.Window  as SdiWorkspaceWindow;
-				if (w1 == null || w2 == null)
-					continue;
-				if (w1.TabControl == w2.TabControl)
+				var w1 = (SdiWorkspaceWindow) doc.Window;
+				if (w1.TabControl == activeNotebook)
 					doc.Close ();
 			}
 		}
@@ -72,12 +70,10 @@ namespace MonoDevelop.Ide.Commands
 			var active = IdeApp.Workbench.ActiveDocument;
 			if (active == null)
 				return;
+			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
 			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
-				var w1 = doc.Window as SdiWorkspaceWindow;
-				var w2 = active.Window  as SdiWorkspaceWindow;
-				if (w1 == null || w2 == null)
-					continue;
-				if (w1.TabControl == w2.TabControl && doc != active)
+				var w1 = (SdiWorkspaceWindow) doc.Window;
+				if (w1.TabControl == activeNotebook && doc != active)
 					doc.Close ();
 			}
 		}

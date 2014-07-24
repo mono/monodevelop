@@ -892,7 +892,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static bool InsertUsingAfter (AstNode node)
 		{
 			return node is NewLineNode && IsCommentOrUsing (node.GetNextSibling (s => !(s is NewLineNode))) ||
-				IsCommentOrUsing (node);
+				IsCommentOrUsing (node) || (node is PreProcessorDirective);
 		}
 
 		static bool IsCommentOrUsing (AstNode node)

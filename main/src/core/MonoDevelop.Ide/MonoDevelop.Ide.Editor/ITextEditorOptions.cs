@@ -83,7 +83,8 @@ namespace MonoDevelop.Ide.Editor
 		IndentStyle IndentStyle { get; }
 		bool OverrideDocumentEolMarker { get; }
 		bool EnableSyntaxHighlighting { get; }
-
+		bool RemoveTrailingWhitespaces { get; }
+		
 		bool WrapLines { get; }
 
 		string FontName { get; }

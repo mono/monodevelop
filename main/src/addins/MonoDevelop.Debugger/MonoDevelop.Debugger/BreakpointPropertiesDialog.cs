@@ -356,7 +356,9 @@ namespace MonoDevelop.Debugger
 				conditionalHitType.SelectedItem = ConditionalHitWhen.ConditionIsTrue;
 				checkIncludeSubclass.Active = true;
 
-				if (IdeApp.Workbench.ActiveDocument != null) {
+				if (IdeApp.Workbench.ActiveDocument != null &&
+				    IdeApp.Workbench.ActiveDocument.Editor != null &&
+				    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
 					breakpointLocation.Update (IdeApp.Workbench.ActiveDocument.FileName,
 						IdeApp.Workbench.ActiveDocument.Editor.CaretLine,
 						IdeApp.Workbench.ActiveDocument.Editor.CaretColumn);

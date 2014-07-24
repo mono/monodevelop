@@ -128,13 +128,13 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 
 		static string StripHeader (string content)
 		{
-			var doc = new Mono.TextEditor.TextDocument (content);
+			var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (content), "");
 			while (true) {
 				string lineText = doc.GetLineText (1);
 				if (lineText == null)
 					break;
-				if (lineText.StartsWith ("//")) {
-					doc.Remove (doc.GetLine (1).SegmentIncludingDelimiter);
+				if (lineText.StartsWith ("//", StringComparison.Ordinal)) {
+					doc.RemoveText (doc.GetLine (1).SegmentIncludingDelimiter);
 					continue;
 				}
 				break;

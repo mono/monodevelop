@@ -345,7 +345,7 @@ namespace Mono.TextEditor
 			}
 		}
 
-		void DisposeFont ()
+		protected void DisposeFont ()
 		{
 			if (font != null) {
 				font.Dispose ();

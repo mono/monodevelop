@@ -155,6 +155,11 @@ namespace MonoDevelop.SourceEditor
 				return (IncludeWhitespaces)TextEditor.Options.IncludeWhitespaces;
 			}
 		}
-
+		
+		bool MonoDevelop.Ide.Editor.ITextEditorOptions.RemoveTrailingWhitespaces {
+			get {
+				return ((StyledSourceEditorOptions)TextEditor.Options).OptionsCore.RemoveTrailingWhitespaces;
+			}
+		}
 	}
 }

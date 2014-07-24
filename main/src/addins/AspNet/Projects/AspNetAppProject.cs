@@ -694,7 +694,7 @@ namespace MonoDevelop.AspNet.Projects
 
 		protected virtual string GetDefaultAspNetMvcVersion ()
 		{
-			return "5.1.2";
+			return "5.2";
 		}
 
 		public virtual bool IsAspMvcProject {

@@ -643,7 +643,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public string GetVirtualIndentationString (int lineNumber)
 		{
-			if (lineNumber < 1 || lineNumber >= LineCount)
+			if (lineNumber < 1 || lineNumber > LineCount)
 				throw new ArgumentOutOfRangeException ("lineNumber");
 			return textEditorImpl.GetVirtualIndentationString (lineNumber);
 		}

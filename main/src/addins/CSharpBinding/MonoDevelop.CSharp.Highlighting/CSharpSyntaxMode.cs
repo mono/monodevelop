@@ -139,41 +139,41 @@ namespace MonoDevelop.CSharp.Highlighting
 		void Setup ()
 		{
 			
-			defaultTextColor = Mono.TextEditor.Highlighting.ColorScheme.PlainTextKey;
-			referenceTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesKey;
-			valueTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesValueTypesKey;
-			interfaceTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesInterfacesKey;
-			enumerationTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesEnumsKey;
-			typeParameterTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesTypeParametersKey;
-			delegateTypeColor = Mono.TextEditor.Highlighting.ColorScheme.UserTypesDelegatesKey;
+			defaultTextColor = ColorScheme.PlainTextKey;
+			referenceTypeColor = ColorScheme.UserTypesKey;
+			valueTypeColor = ColorScheme.UserTypesValueTypesKey;
+			interfaceTypeColor = ColorScheme.UserTypesInterfacesKey;
+			enumerationTypeColor = ColorScheme.UserTypesEnumsKey;
+			typeParameterTypeColor = ColorScheme.UserTypesTypeParametersKey;
+			delegateTypeColor = ColorScheme.UserTypesDelegatesKey;
 
-			methodCallColor = Mono.TextEditor.Highlighting.ColorScheme.UserMethodUsageKey;
-			methodDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserMethodDeclarationKey;
+			methodCallColor = ColorScheme.UserMethodUsageKey;
+			methodDeclarationColor = ColorScheme.UserMethodDeclarationKey;
 
-			eventDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserEventDeclarationKey;
-			eventAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserEventUsageKey;
+			eventDeclarationColor = ColorScheme.UserEventDeclarationKey;
+			eventAccessColor = ColorScheme.UserEventUsageKey;
 
-			fieldDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserFieldDeclarationKey;
-			fieldAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserFieldUsageKey;
+			fieldDeclarationColor = ColorScheme.UserFieldDeclarationKey;
+			fieldAccessColor = ColorScheme.UserFieldUsageKey;
 
-			propertyDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserPropertyDeclarationKey;
-			propertyAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserPropertyUsageKey;
+			propertyDeclarationColor = ColorScheme.UserPropertyDeclarationKey;
+			propertyAccessColor = ColorScheme.UserPropertyUsageKey;
 
-			variableDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserVariableDeclarationKey;
-			variableAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserVariableUsageKey;
+			variableDeclarationColor = ColorScheme.UserVariableDeclarationKey;
+			variableAccessColor = ColorScheme.UserVariableUsageKey;
 
-			parameterDeclarationColor = Mono.TextEditor.Highlighting.ColorScheme.UserParameterDeclarationKey;
-			parameterAccessColor = Mono.TextEditor.Highlighting.ColorScheme.UserParameterUsageKey;
+			parameterDeclarationColor = ColorScheme.UserParameterDeclarationKey;
+			parameterAccessColor = ColorScheme.UserParameterUsageKey;
 
-			valueKeywordColor = Mono.TextEditor.Highlighting.ColorScheme.KeywordContextKey;
-			externAliasKeywordColor = Mono.TextEditor.Highlighting.ColorScheme.KeywordNamespaceKey;
-			varKeywordTypeColor = Mono.TextEditor.Highlighting.ColorScheme.KeywordTypesKey;
+			valueKeywordColor = ColorScheme.KeywordContextKey;
+			externAliasKeywordColor = ColorScheme.KeywordNamespaceKey;
+			varKeywordTypeColor = ColorScheme.KeywordTypesKey;
 
-			parameterModifierColor = Mono.TextEditor.Highlighting.ColorScheme.KeywordParameterKey;
-			inactiveCodeColor = Mono.TextEditor.Highlighting.ColorScheme.ExcludedCodeKey;
-			syntaxErrorColor = Mono.TextEditor.Highlighting.ColorScheme.SyntaxErrorKey;
+			parameterModifierColor = ColorScheme.KeywordParameterKey;
+			inactiveCodeColor = ColorScheme.ExcludedCodeKey;
+			syntaxErrorColor = ColorScheme.SyntaxErrorKey;
 
-			stringFormatItemColor = Mono.TextEditor.Highlighting.ColorScheme.StringFormatItemsKey;
+			stringFormatItemColor = ColorScheme.StringFormatItemsKey;
 		}
 
 		protected override void Colorize (TextSpan span, string color)

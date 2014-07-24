@@ -188,9 +188,9 @@ namespace MonoDevelop.VersionControl.Views
 						int l = ParseCurrentLine (line);
 						if (l != -1) cline = l - 1;
 						inHeader = false;
-					} else if (tag != '-' && !inHeader)
+					} else if (tag == '+' && !inHeader)
 						cline++;
-					
+
 					BlockType type;
 					switch (tag) {
 						case '-': type = BlockType.Removed; break;

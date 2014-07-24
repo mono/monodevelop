@@ -264,10 +264,13 @@ namespace MonoDevelop.Ide.Gui
 			if (window != null)
 				window.Present ();
 
-			// Focus the tab in the next iteration since focusing the window may take some time
+			// The tab change must be done now to ensure that the content is created
+			// before exiting this method.
+			tabControl.CurrentTabIndex = tab.Index;
+
+			// Focus the tab in the next iteration since presenting the window may take some time
 			Application.Invoke (delegate {
 				DockNotebook.ActiveNotebook = tabControl;
-				tabControl.CurrentTabIndex = tab.Index;
 				DeepGrabFocus (this.ActiveViewContent.Control);
 			});
 		}
@@ -743,6 +746,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			// If command checks are flowing through this view, it means the view's notebook
 			// is the active notebook.
+			if (!(Toplevel is Gtk.Window))
+				return null;
+
 			if (((Gtk.Window)Toplevel).HasToplevelFocus)
 				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
 

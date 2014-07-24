@@ -633,12 +633,12 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.NextNotebookHandler"
 			_label = "Move to Next Notebook"
 			shortcut = "Control|Alt|Shift|Right"
-			macShortcut = "Meta|Shift|Right"/>
+			macShortcut = "Alt|Meta|Right"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.PreviousNotebook"
 			defaultHandler = "MonoDevelop.Ide.Commands.PreviousNotebookHandler"
 			_label = "Move to Previous Notebook"
 			shortcut = "Control|Alt|Shift|Left"
-			macShortcut = "Meta|Shift|Left"/>
+			macShortcut = "Alt|Meta|Left"/>
 	<Command id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.FocusCurrentDocumentHandler"
 			_label = "_Focus Document"
@@ -1015,8 +1015,12 @@
 			_label = "Toggle block selection mode"/>
 	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DuplicateLine"
 			_label = "Duplicate line"/>
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.DynamicAbbrev"
+			defaultHandler = "MonoDevelop.Ide.Editor.DynamicAbbrevHandler"
+			_label = "Dynamic abbrev"
+			_description = "Cycles completing the current word from matching words in all open files"
+			macShortcut = "Ctrl|/"
+			shortcut = "Alt|/" />
 	</Category>
-
 </Extension>
-
 </ExtensionModel>
