@@ -46,7 +46,6 @@ using Microsoft.CodeAnalysis.Text;
 
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
-using Mono.TextEditor;
 using System.Threading.Tasks;
 using System.Threading;
 
