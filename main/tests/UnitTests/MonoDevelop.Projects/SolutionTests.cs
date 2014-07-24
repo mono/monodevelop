@@ -700,9 +700,13 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (2, p.Files.Count);
 
 			p.AddFile (p.BaseDirectory.Combine ("Test.cs"), BuildAction.Compile);
+
+			var solText = File.ReadAllLines (solFile);
+
 			sol.Save (new NullProgressMonitor ());
 
 			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (solText, File.ReadAllLines (solFile));
 		}
 
 		[Test]

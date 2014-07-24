@@ -319,7 +319,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					SolutionEntityItem p = cce.Item;
 
 					// Don't save configurations for shared projects
-					if (!p.SupportsBuild () && !(p is UnloadedSolutionItem))
+					if (!p.SupportsConfigurations ())
 						continue;
 					
                     // <ProjectGuid>...</ProjectGuid> in some Visual Studio generated F# project files 
@@ -1072,7 +1072,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				SolutionEntityItem item;
-				if (slnData.ItemsByGuid.TryGetValue (projGuid, out item) && (item.SupportsBuild () || item is UnloadedSolutionItem)) {
+				if (slnData.ItemsByGuid.TryGetValue (projGuid, out item) && item.SupportsConfigurations ()) {
 					string key = projGuid + "." + slnConfig;
 					SolutionConfigurationEntry combineConfigEntry = null;
 					if (cache.ContainsKey (key)) {

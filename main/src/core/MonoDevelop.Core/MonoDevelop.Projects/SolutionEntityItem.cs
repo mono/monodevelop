@@ -217,6 +217,11 @@ namespace MonoDevelop.Projects
 				NotifyModified ("FileFormat");
 			}
 		}
+
+		public virtual bool SupportsConfigurations ()
+		{
+			return SupportsBuild ();
+		}
 		
 		public ProjectItemCollection Items {
 			get { return items; }
