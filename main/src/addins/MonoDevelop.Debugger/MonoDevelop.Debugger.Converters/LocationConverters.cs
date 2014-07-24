@@ -41,13 +41,19 @@ namespace MonoDevelop.Debugger.Converters
 
 		public override bool CanGetValue (ObjectValue val)
 		{
-			return val.TypeName == "Android.Locations.Location";
+			return val.TypeName != null && (
+			    val.TypeName == "Android.Locations.Location" ||
+			    val.TypeName.EndsWith ("CoreLocation.CLLocationCoordinate2D") ||
+			    val.TypeName.EndsWith ("CoreLocation.CLLocation"));
 		}
 
 		public override GpsLocation GetValue (ObjectValue val)
 		{
 			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 			ops.AllowTargetInvoke = true;
+			if (val.TypeName.EndsWith ("CoreLocation.CLLocation")) {
+				val = val.GetChild ("Coordinate", ops);
+			}
 			return new GpsLocation () {
 				Latitude = (double)val.GetChild ("Latitude", ops).GetRawValue (ops),
 				Longitude = (double)val.GetChild ("Longitude", ops).GetRawValue (ops)

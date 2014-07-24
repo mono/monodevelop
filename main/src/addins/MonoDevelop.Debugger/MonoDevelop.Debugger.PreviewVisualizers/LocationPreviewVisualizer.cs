@@ -63,7 +63,9 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 					null, 
 					cancelSource.Token).ContinueWith ((System.Threading.Tasks.Task<HttpWebResponse> arg) => {
 					Application.Invoke (delegate {
-						mainBox.Remove (mainBox.Children [0]);
+						if (mainBox.Children.Length > 0) {
+							mainBox.Remove (mainBox.Children [0]);
+						}
 						if (arg.Exception == null) {
 							var imageView = new ImageView (Xwt.Drawing.Image.FromStream (arg.Result.GetResponseStream ()));
 							imageView.Show ();
