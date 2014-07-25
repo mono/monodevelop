@@ -98,7 +98,6 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (resolver == null)
 				return result;
 			var visitor = new HighlightingVisitior (resolver, result.Add, default (CancellationToken), segment);
-			Console.WriteLine ("visit :"  + segment);
 			visitor.Visit (resolver.SyntaxTree.GetRoot ()); 
 			return result;
 		}
@@ -161,7 +160,6 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		protected override void Colorize (TextSpan span, string color)
 		{
-			Console.WriteLine ("color : " + span + " with : "+ color);
 			colorizeCallback (new ColoredSegment (span.Start, span.Length, color));
 		}
 	}
