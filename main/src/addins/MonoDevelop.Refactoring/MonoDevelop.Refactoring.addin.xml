@@ -52,7 +52,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/AnalysisCore/Rules">
-		<Rule _name="Code Issue Analysis" input="AnalysisDocument" func="MonoDevelop.CodeIssues.CodeAnalysisRunner.Check" />
+		<Rule _name="Code Issue Analysis" input="AnalysisDocument" func="MonoDevelop.CodeIssues.CodeDiagnosticRunner.Check" />
 	</Extension>
 	
 	<!-- RefactoryCommands -->

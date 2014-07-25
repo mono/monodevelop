@@ -35,18 +35,20 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CodeFixes;
 using MonoDevelop.CodeActions;
 using MonoDevelop.Core;
+using MonoDevelop.AnalysisCore.Gui;
 
 namespace MonoDevelop.CodeIssues
 {
 	static class CodeDiagnosticRunner
 	{
-		public static IEnumerable<Result> Check (Document input, CancellationToken cancellationToken)
+		public static IEnumerable<Result> Check (AnalysisDocument analysisDocument, CancellationToken cancellationToken)
 		{
+			var input = analysisDocument.DocumentContext;
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
 
 			var model = input.GetCompilationAsync (cancellationToken).Result;
-			var language = CodeRefactoringService.MimeTypeToLanguage (input.Editor.MimeType);
+			var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
 			try {
 				var options = new AnalyzerOptions(new Microsoft.CodeAnalysis.AdditionalStream[0], new Dictionary<string, string> ());
 				return AnalyzerDriver.GetDiagnostics (model, CodeDiagnosticService.GetCodeIssues (language).Select (issue => issue.GetProvider ()), options, cancellationToken).Select (diagnostic => new DiagnosticResult(diagnostic));
