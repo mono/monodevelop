@@ -42,7 +42,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
-using Mono.TextEditor.Highlighting;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -51,44 +51,17 @@ namespace MonoDevelop.AssemblyBrowser
 		public override Type NodeDataType {
 			get { return typeof(IUnresolvedTypeDefinition); }
 		}
-		
+
 		public override string ContextMenuAddinPath {
 			get { return "/MonoDevelop/AssemblyBrowser/TypeNode/ContextMenu"; }
 		}
-		
+
 		public DomTypeNodeBuilder (AssemblyBrowserWidget widget) : base (widget)
 		{
-			
 		}
-		
-		internal static OutputSettings settings;
-		static SyntaxMode mode = Mono.TextEditor.Highlighting.SyntaxModeService.GetSyntaxMode (null, "text/x-csharp");
 
-		internal static string MarkupKeyword (string text)
-		{
-			foreach (Keywords words in mode.Keywords) {
-				foreach (string word in words.Words) {
-					if (word == text) {
-						return "<span style=\"" + words.Color +  "\">" + text + "</span>";
-					}
-				}
-			}
-			return text;
-		}
-		
 		static DomTypeNodeBuilder ()
 		{
-			DomTypeNodeBuilder.settings = new OutputSettings (OutputFlags.AssemblyBrowserDescription);
-			
-			DomTypeNodeBuilder.settings.MarkupCallback += delegate (string text) {
-				return "<span style=\"text\">" + text + "</span>";
-			};
-			DomTypeNodeBuilder.settings.EmitModifiersCallback = delegate (string text) {
-				return "<span style=\"keyword.modifier\">" + text + "</span>";
-			};
-			DomTypeNodeBuilder.settings.EmitKeywordCallback = delegate (string text) {
-				return MarkupKeyword (text);
-			};
 //			DomTypeNodeBuilder.settings.EmitNameCallback = delegate (IEntity domVisitable, ref string outString) {
 //				if (domVisitable is IType) {
 //					outString = "<span style=\"text.link\"><u><a ref=\"" + ((IType)domVisitable).HelpUrl + "\">" + outString + "</a></u></span>";
@@ -102,13 +75,13 @@ namespace MonoDevelop.AssemblyBrowser
 //				}
 //			};
 		}
-		
+
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
 		{
 			var type = (IUnresolvedTypeDefinition)dataObject;
 			return type.Name;
 		}
-		
+
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var type = (IUnresolvedTypeDefinition)dataObject;
@@ -122,7 +95,7 @@ namespace MonoDevelop.AssemblyBrowser
 				nodeInfo.Label = DomMethodNodeBuilder.FormatPrivate (nodeInfo.Label);
 			nodeInfo.Icon = Context.GetIcon (type.GetStockIcon ());
 		}
-		
+
 		public override void BuildChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			var type = (IUnresolvedTypeDefinition)dataObject;
@@ -136,25 +109,26 @@ namespace MonoDevelop.AssemblyBrowser
 				list.Add (m);
 			builder.AddChildren (list);
 		}
-		
+
 		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
 		{
 			return true;
 		}
-		
+
 		#region IAssemblyBrowserNodeBuilder
+
 		internal static void PrintAssembly (StringBuilder result, ITreeNavigator navigator)
 		{
-			var assemblyDefinition = (AssemblyDefinition)navigator.GetParentDataItem (typeof (AssemblyDefinition), false);
+			var assemblyDefinition = (AssemblyDefinition)navigator.GetParentDataItem (typeof(AssemblyDefinition), false);
 			if (assemblyDefinition == null)
 				return;
 			
 			result.Append (String.Format (GettextCatalog.GetString ("<b>Assembly:</b>\t{0}, Version={1}"),
-			                              assemblyDefinition.Name.Name,
-			                              assemblyDefinition.Name.Version));
+				assemblyDefinition.Name.Name,
+				assemblyDefinition.Name.Version));
 			result.AppendLine ();
 		}
-		
+
 		public string GetDescription (ITreeNavigator navigator)
 		{
 			var type = (IUnresolvedTypeDefinition)navigator.DataItem;
@@ -169,10 +143,10 @@ namespace MonoDevelop.AssemblyBrowser
 			PrintAssembly (result, navigator);
 			return result.ToString ();
 		}
-		
+
 		public List<ReferenceSegment> Disassemble (TextEditor data, ITreeNavigator navigator)
 		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data))
 				return null;
 			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			if (type == null)
@@ -200,7 +174,7 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public List<ReferenceSegment> Decompile (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
-			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data))
 				return null;
 			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			if (type == null)
@@ -212,7 +186,7 @@ namespace MonoDevelop.AssemblyBrowser
 				builder.AddType (type);
 			}, settings);
 		}
-		
+
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			var type = (IUnresolvedTypeDefinition)navigator.DataItem;
@@ -233,6 +207,7 @@ namespace MonoDevelop.AssemblyBrowser
 			
 			return result.ToString ();
 		}
+
 		#endregion
 		
 	}
