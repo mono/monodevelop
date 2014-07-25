@@ -69,7 +69,6 @@ namespace MonoDevelop.CSharp.Resolver
 		
 		public ResolveResult GetLanguageItem (MonoDevelop.Ide.Gui.Document doc, int offset, out DomRegion expressionRegion)
 		{
-			return null;
 //			if (offset < 0) {
 //				expressionRegion = DomRegion.Empty;
 //				return null;
@@ -79,8 +78,8 @@ namespace MonoDevelop.CSharp.Resolver
 //			AstNode node;
 //
 //			if (!doc.TryResolveAt (loc, out result, out node)) {
-//				expressionRegion = DomRegion.Empty;
-//				return null;
+				expressionRegion = DomRegion.Empty;
+				return null;
 //			}
 //			expressionRegion = new DomRegion (node.StartLocation, node.EndLocation);
 //			return result;
