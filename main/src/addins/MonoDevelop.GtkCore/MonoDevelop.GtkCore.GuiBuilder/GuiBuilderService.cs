@@ -42,6 +42,8 @@ using MonoDevelop.Projects.Policies;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor;
+using MonoDevelop.Core.Text;
 
 
 namespace MonoDevelop.GtkCore.GuiBuilder
@@ -592,8 +594,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		
 		static string StripHeaderAndBlankLines (string text, CodeDomProvider provider)
 		{
-			Mono.TextEditor.TextDocument doc = new Mono.TextEditor.TextDocument ();
-			doc.Text = text;
+			var doc = TextEditorFactory.CreateNewDocument (new StringTextSource (text), "");
 			int realStartLine = 0;
 			for (int i = 1; i <= doc.LineCount; i++) {
 				string lineText = doc.GetTextAt (doc.GetLine (i));
@@ -610,11 +611,11 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (provider is Microsoft.CSharp.CSharpCodeProvider) {
 				bool previousWasBlank = false;
 				for (int i = 1; i <= doc.LineCount; i++) {
-					Mono.TextEditor.DocumentLine line = doc.GetLine (i);
+					var line = doc.GetLine (i);
 					bool isBlank, isBracket;
 					CheckLine (doc, line, out isBlank, out isBracket);
 					if (isBlank && previousWasBlank && line.LengthIncludingDelimiter > 0) {
-						doc.Remove (line.Offset, line.LengthIncludingDelimiter);
+						doc.RemoveText (line.Offset, line.LengthIncludingDelimiter);
 						i--;
 					}
 					previousWasBlank = isBlank || isBracket;
@@ -622,10 +623,10 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			}
 			
 			int offset = doc.GetLine (realStartLine).Offset;
-			return doc.GetTextAt (offset, doc.TextLength - offset);
+			return doc.GetTextAt (offset, doc.Length - offset);
 		}
 
-		static void CheckLine (Mono.TextEditor.TextDocument doc, Mono.TextEditor.DocumentLine line, out bool isBlank, out bool isBracket)
+		static void CheckLine (IReadonlyTextDocument doc, IDocumentLine line, out bool isBlank, out bool isBracket)
 		{
 			isBlank = true;
 			isBracket = false;
