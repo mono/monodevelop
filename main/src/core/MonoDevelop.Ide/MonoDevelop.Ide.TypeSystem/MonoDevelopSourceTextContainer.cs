@@ -39,26 +39,26 @@ namespace MonoDevelop.Ide.TypeSystem
 {
 	class MonoDevelopSourceText : SourceText
 	{
-		readonly string doc;
+		readonly ITextSource doc;
 
 		public override System.Text.Encoding Encoding {
 			get {
-				return System.Text.Encoding.Default;
+				return doc.Encoding;
 			}
 		}
 
-		public MonoDevelopSourceText (ITextDocument doc)
+		public MonoDevelopSourceText (ITextSource doc)
 		{
 			if (doc == null)
 				throw new ArgumentNullException ("doc");
-			this.doc = doc.Text;
+			this.doc = doc;
 		}
 
 		#region implemented abstract members of SourceText
 		public override void CopyTo (int sourceIndex, char[] destination, int destinationIndex, int count)
 		{
 			while (count --> 0) {
-				destination[destinationIndex++] = doc[sourceIndex++];
+				destination[destinationIndex++] = doc.GetCharAt (sourceIndex++);
 			}
 		}
 		
@@ -67,9 +67,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				return doc.Length;
 			}
 		}
+
 		public override char this [int index] {
 			get {
-				return doc [index];
+				return doc.GetCharAt (index);
 			}
 		}
 		#endregion
@@ -95,7 +96,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		SourceText oldText;
 		void HandleTextReplacing (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
 		{
-			oldText = SourceText.From (document.Text);
+			oldText = new MonoDevelopSourceText (document.CreateSnapshot ());
 		}
 		
 		void HandleTextReplaced (object sender, MonoDevelop.Core.Text.TextChangeEventArgs e)
@@ -108,7 +109,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		#region implemented abstract members of SourceTextContainer
 		public override SourceText CurrentText {
 			get {
-				return new MonoDevelopSourceText (document);
+				return new MonoDevelopSourceText (document.CreateSnapshot ());
 			}
 		}
 
