@@ -31,15 +31,11 @@ using Microsoft.CodeAnalysis;
 using ICSharpCode.NRefactory6.CSharp.Analysis;
 using Microsoft.CodeAnalysis.Text;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.CSharp.Resolver;
 using System.Threading;
-using ICSharpCode.NRefactory;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using MonoDevelop.Core.Text;
-using GLib;
 using System.Collections.Generic;
-using MonoDevelop.Refactoring;
 
 namespace MonoDevelop.CSharp.Highlighting
 {
@@ -73,35 +69,27 @@ namespace MonoDevelop.CSharp.Highlighting
 			if (src != null)
 				src.Cancel ();
 			resolver = null;
-
-			if (documentContext.IsProjectContextInUpdate)
+			src = new CancellationTokenSource ();
+			var analysisDocument = documentContext.AnalysisDocument;
+			if (analysisDocument == null)
 				return;
-			var parsedDocument = documentContext.ParsedDocument;
-			if (parsedDocument != null) {
-				if (documentContext.Project != null && documentContext.IsCompileableInProject) {
-					src = new CancellationTokenSource ();
-					var analysisDocument = documentContext.AnalysisDocument;
-					if (analysisDocument == null)
-						return;
-					var cancellationToken = src.Token;
-					var newResolverTask = analysisDocument.GetSemanticModelAsync (cancellationToken);
-					if (newResolverTask == null)
-						return;
-					System.Threading.Tasks.Task.Factory.StartNew (delegate {
-						var newResolver = newResolverTask.Result;
-						if (newResolver == null)
+			var cancellationToken = src.Token;
+			System.Threading.Tasks.Task.Factory.StartNew (delegate {
+				var newResolverTask = analysisDocument.GetSemanticModelAsync (cancellationToken);
+				if (newResolverTask == null)
+					return;
+				var newResolver = newResolverTask.Result;
+				if (newResolver == null)
+					return;
+				if (!cancellationToken.IsCancellationRequested) {
+					Gtk.Application.Invoke (delegate {
+						if (cancellationToken.IsCancellationRequested)
 							return;
-						if (!cancellationToken.IsCancellationRequested) {
-							Gtk.Application.Invoke (delegate {
-								if (cancellationToken.IsCancellationRequested)
-									return;
-								resolver = newResolver;
-								UpdateSemanticHighlighting ();
-							});
-						}
-					}, cancellationToken);
+						resolver = newResolver;
+						UpdateSemanticHighlighting ();
+					});
 				}
-			}
+			}, cancellationToken);
 		}
 
 		public override IEnumerable<ColoredSegment> GetColoredSegments (ISegment segment)
@@ -109,8 +97,8 @@ namespace MonoDevelop.CSharp.Highlighting
 			var result = new List<ColoredSegment> ();
 			if (resolver == null)
 				return result;
-			int lineNumber = editor.OffsetToLineNumber (segment.Offset);
 			var visitor = new HighlightingVisitior (resolver, result.Add, default (CancellationToken), segment);
+			Console.WriteLine ("visit :"  + segment);
 			visitor.Visit (resolver.SyntaxTree.GetRoot ()); 
 			return result;
 		}
@@ -119,12 +107,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 	class HighlightingVisitior : SemanticHighlightingVisitor<string>
 	{
-		readonly int lineNumber;
-		readonly int lineOffset;
-		readonly int lineLength;
-		Action<ColoredSegment> colorizeCallback;
-		
-		readonly ISegment textSpan;
+		readonly Action<ColoredSegment> colorizeCallback;
 
 		public HighlightingVisitior (SemanticModel resolver, Action<ColoredSegment> colorizeCallback, CancellationToken cancellationToken, ISegment textSpan) : base (resolver)
 		{
@@ -132,7 +115,7 @@ namespace MonoDevelop.CSharp.Highlighting
 				throw new ArgumentNullException ("resolver");
 			this.cancellationToken = cancellationToken;
 			this.colorizeCallback = colorizeCallback;
-			this.textSpan = textSpan;
+			this.region = new TextSpan (textSpan.Offset, textSpan.Length);
 			Setup ();
 		}
 		
@@ -178,6 +161,7 @@ namespace MonoDevelop.CSharp.Highlighting
 
 		protected override void Colorize (TextSpan span, string color)
 		{
+			Console.WriteLine ("color : " + span + " with : "+ color);
 			colorizeCallback (new ColoredSegment (span.Start, span.Length, color));
 		}
 	}

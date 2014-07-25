@@ -99,7 +99,7 @@ namespace MonoDevelop.CSharp.Highlighting
 			var documents = ImmutableHashSet.Create (doc); 
 			var symbol = resolveResult.Symbol;
 			foreach (var loc in symbol.Locations) {
-				if (loc.SourceTree.FilePath == doc.FilePath)
+				if (loc.IsInSource && loc.SourceTree.FilePath == doc.FilePath)
 					yield return new MemberReference (symbol, doc.FilePath, loc.SourceSpan.Start, loc.SourceSpan.Length) {
 						ReferenceUsageType = ReferenceUsageType.Declariton	
 					};
