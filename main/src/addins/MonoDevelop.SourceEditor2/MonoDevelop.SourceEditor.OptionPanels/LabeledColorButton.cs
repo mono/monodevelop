@@ -29,7 +29,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
-	public class LabeledColorButton:VBox
+	public class LabeledColorButton:HBox
 	{
 		Color color = Colors.AliceBlue;
 		Label label = new Label ();
