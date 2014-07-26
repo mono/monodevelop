@@ -138,8 +138,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.togglebuttonBold.Active = chunkStyle.FontWeight == Xwt.Drawing.FontWeight.Bold;
 			this.togglebuttonItalic.Active = chunkStyle.FontStyle == Xwt.Drawing.FontStyle.Italic;
 
-			this.colorbuttonPrimary.LabelText = "Foreground:";
-			this.colorbuttonSecondary.LabelText = "Background:";
+			this.colorbuttonPrimary.LabelText = "Foreground";
+			this.colorbuttonSecondary.LabelText = "Background";
 
 			this.colorbuttonPrimary.Sensitive = true;
 			this.colorbuttonSecondary.Sensitive = true;
@@ -169,8 +169,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.togglebuttonBold.Visible = false;
 			this.togglebuttonItalic.Visible = false;
 
-			this.colorbuttonPrimary.LabelText = "Primary color:";
-			this.colorbuttonSecondary.LabelText = "Secondary color:";
+			this.colorbuttonPrimary.LabelText = "Primary color";
+			this.colorbuttonSecondary.LabelText = "Secondary color";
 
 			handleUIEvents = true;
 		}
@@ -351,7 +351,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.entryName.Text = scheme.Name;
 			this.entryDescription.Text = scheme.Description;
 			SetCodeExample (GroupNames.CSharp);
-			this.textEditor.GetTextEditorData ().ColorStyle = scheme;
+			var data = this.textEditor.GetTextEditorData ();
+			data.ColorStyle = scheme;
+			data.Caret.PositionChanged += CaretPositionChanged;
 
 			var styleCollection = ColorScheme.TextColors.Concat (ColorScheme.AmbientColors);
 			FillTreeStore (colorStore, styleCollection, scheme);
@@ -374,6 +376,25 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			navigator.SetValue (nameField, data.Attribute.Name);
 			navigator.SetValue (propertyField, data);
 			navigator.SetValue (styleField, data.Info.GetValue (scheme, null));
+		}
+
+		void CaretPositionChanged (object sender, DocumentLocationEventArgs e)
+		{
+			var caret = this.textEditor.Caret;
+			var lineNumber = caret.Line;//e.Location.Line;
+			var columnNumber = caret.Column;//e.Location.Column;
+
+			var document = this.textEditor.Document;
+			var syntaxMode = document.SyntaxMode;
+			var line = document.GetLine (lineNumber);
+
+			var lineChunks = syntaxMode.GetChunks (this.colorScheme, line, line.Offset, line.Length);
+			var offset = line.Offset + columnNumber-1;
+			var chunk = lineChunks.FirstOrDefault (ch => ch.Offset <= offset && ch.EndOffset >= offset);
+			if (chunk == null)
+				return;
+
+			var style = chunk.Style;
 		}
 	}
 }

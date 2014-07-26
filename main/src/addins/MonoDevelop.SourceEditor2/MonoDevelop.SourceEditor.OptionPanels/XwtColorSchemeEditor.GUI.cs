@@ -48,9 +48,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		DataField<ColorScheme.PropertyDecsription> propertyField = new DataField<ColorScheme.PropertyDecsription> ();
 		TreeStore colorStore;
 		TreeView treeviewColors = new TreeView ();
-		LabeledColorButton colorbuttonPrimary = new LabeledColorButton ("Primary:");
-		LabeledColorButton colorbuttonSecondary = new LabeledColorButton ("Secondary:");
-		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border:");
+		LabeledColorButton colorbuttonPrimary = new LabeledColorButton ("Primary");
+		LabeledColorButton colorbuttonSecondary = new LabeledColorButton ("Secondary");
+		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border");
 		ToggleButton togglebuttonBold = new ToggleButton ("B"){Style=ButtonStyle.Flat};
 		ToggleButton togglebuttonItalic = new ToggleButton ("I"){Style=ButtonStyle.Flat};
 		Button buttonFormat = new Button ("FBP"){Style=ButtonStyle.Flat};
