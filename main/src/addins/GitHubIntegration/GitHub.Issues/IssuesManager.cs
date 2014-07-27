@@ -152,17 +152,28 @@ namespace GitHub.Issues
 		{
 			try
 			{
+				Octokit.IssueUpdate details = new IssueUpdate ();
+				details.Title = title;
+				details.Body = body;
+
+				if (milestone != null)
+					details.Milestone = milestone.Number;
+
+				if (!string.IsNullOrEmpty(assignee))
+					details.Assignee = assignee;
+
+				details.State = state;
+
 				// Update issue details
-				gitHubClient.Issue.Update (currentRepository.Owner.Login, currentRepository.Name, issue.Number, new IssueUpdate () {
-					Title = title,
-					Body = body,
-					State = state,
-					Milestone = milestone.Number,
-					Assignee = assignee
-				});
-						
-				// Update labels for issue
-				gitHubClient.Issue.Labels.ReplaceAllForIssue(currentRepository.Owner.Login, currentRepository.Name, issue.Number, labels).Wait();
+				gitHubClient.Issue.Update (currentRepository.Owner.Login, currentRepository.Name, issue.Number, details);
+			}
+			catch (Exception e) {
+				HandleException (e);
+			}
+
+			try
+			{
+				gitHubClient.Issue.Labels.ReplaceAllForIssue (currentRepository.Owner.Login, currentRepository.Name, issue.Number, labels);
 			}
 			catch (Exception e) {
 				HandleException (e);
@@ -184,13 +195,24 @@ namespace GitHub.Issues
 
 			try
 			{
-				newIssue = gitHubClient.Issue.Create (currentRepository.Owner.Login, currentRepository.Name, new NewIssue (title) {
-					Body = body,
-					Assignee = assignee,
-					Milestone = milestone != null ? (int?)milestone.Number : null
-				}).Result;
+				Octokit.NewIssue details = new NewIssue (title);
+				details.Body = body;
 
-				gitHubClient.Issue.Labels.ReplaceAllForIssue (currentRepository.Owner.Login, currentRepository.Name, newIssue.Number, labels).Wait();
+				if (milestone != null)
+					details.Milestone = milestone.Number;
+
+				if (!string.IsNullOrEmpty(assignee))
+					details.Assignee = assignee;
+
+				newIssue = gitHubClient.Issue.Create (currentRepository.Owner.Login, currentRepository.Name, details).Result;
+			}
+			catch (Exception e) {
+				HandleException (e);
+			}
+
+			try
+			{
+				gitHubClient.Issue.Labels.ReplaceAllForIssue (currentRepository.Owner.Login, currentRepository.Name, newIssue.Number, labels);
 			}
 			catch (Exception e) {
 				HandleException (e);

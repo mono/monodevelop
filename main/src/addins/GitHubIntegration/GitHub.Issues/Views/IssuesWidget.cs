@@ -104,8 +104,8 @@ namespace GitHub.Issues.UserInterface
 			Gtk.HBox tablesContainer = new Gtk.HBox ();
 			Gtk.VBox columnsSelectionContainer = new Gtk.VBox ();
 
-			headerContainer.Add (LayoutUtilities.LeftAlign (updateIssueListButton));
-			headerContainer.Add (LayoutUtilities.LeftAlign (createNewIssueButton));
+			headerContainer.Add (updateIssueListButton);
+			headerContainer.Add (createNewIssueButton);
 
 			columnsSelectionContainer.PackStart (columnListView, true, true, padding);
 
@@ -113,7 +113,7 @@ namespace GitHub.Issues.UserInterface
 			tablesContainer.PackStart (issueTable, true, true, 10);
 
 			// Add the layout to the main container
-			mainContainer.PackStart (headerContainer, expand, fill, padding);
+			mainContainer.PackStart (LayoutUtilities.LeftAlign (headerContainer), expand, fill, padding);
 			mainContainer.PackStart (tablesContainer, true, true, padding);
 
 			// Add main container to screen/widget
@@ -399,7 +399,8 @@ namespace GitHub.Issues.UserInterface
 			values.Add (issue.Issue);
 
 			foreach (IssueColumn column in this.columns) {
-				values.Add(typeof(IssueNode).GetProperty (column.PropertyName).GetValue (issue).ToString());
+				object value = typeof(IssueNode).GetProperty (column.PropertyName).GetValue (issue);
+				values.Add(value != null ? value.ToString() : string.Empty);
 			}
 
 			listStore.AppendValues (values.ToArray());
