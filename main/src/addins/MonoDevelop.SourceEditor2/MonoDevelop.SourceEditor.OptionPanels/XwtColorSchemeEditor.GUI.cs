@@ -51,21 +51,27 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		LabeledColorButton colorbuttonPrimary = new LabeledColorButton ("Primary");
 		LabeledColorButton colorbuttonSecondary = new LabeledColorButton ("Secondary");
 		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border");
-		ToggleButton togglebuttonBold = new ToggleButton ("B"){Style=ButtonStyle.Flat};
-		ToggleButton togglebuttonItalic = new ToggleButton ("I"){Style=ButtonStyle.Flat};
-		Button buttonFormat = new Button ("FBP"){Style=ButtonStyle.Flat};
+		ToggleButton togglebuttonBold = new ToggleButton ("B"){ Style = ButtonStyle.Flat };
+		ToggleButton togglebuttonItalic = new ToggleButton ("I"){ Style = ButtonStyle.Flat };
+		Button buttonFormat = new Button ("FBP"){ Style = ButtonStyle.Flat };
 		TextEntry entryName = new TextEntry ();
 		TextEntry entryDescription = new TextEntry ();
 		SearchTextEntry searchEntry = new SearchTextEntry (){ PlaceholderText = "Type here..." };
-		Button undoButton = new Button (ImageService.GetIcon (Stock.UndoIcon).WithSize (Xwt.IconSize.Small)){ Sensitive = false,Style=ButtonStyle.Flat };
-		Button redoButton = new Button (ImageService.GetIcon (Stock.RedoIcon).WithSize (Xwt.IconSize.Small)){ Sensitive = false,Style=ButtonStyle.Flat };
+		Button undoButton = new Button (ImageService.GetIcon (Stock.UndoIcon).WithSize (Xwt.IconSize.Small)) {
+			Sensitive = false,
+			Style = ButtonStyle.Flat
+		};
+		Button redoButton = new Button (ImageService.GetIcon (Stock.RedoIcon).WithSize (Xwt.IconSize.Small)) {
+			Sensitive = false,
+			Style = ButtonStyle.Flat
+		};
 
-		private void Build()
+		private void Build ()
 		{
 			this.Buttons.Add (new DialogButton (Command.Cancel));
 			this.Buttons.Add (new DialogButton (Command.Ok));
 
-			colorStore = CreateColorStore();
+			colorStore = CreateColorStore ();
 
 			var mainTable = new Table ();
 
@@ -85,7 +91,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			undoButton.Clicked += Undo;
 			redoButton.Clicked += Redo;
 			commandHBox.PackStart (undoRedoButton);
-			commandHBox.PackStart (new Button ("AutoSet"){Style=ButtonStyle.Flat});
+			commandHBox.PackStart (new Button ("AutoSet"){ Style = ButtonStyle.Flat });
 			table.Add (commandHBox, 0, 0);
 
 			var adjustHBox = new HBox ();
@@ -143,9 +149,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.Width = 800;
 		}
 
-		TreeStore CreateColorStore()
+		TreeStore CreateColorStore ()
 		{
-			return new TreeStore(nameField, styleField, propertyField);
+			return new TreeStore (nameField, styleField, propertyField);
 		}
 	}
 }
