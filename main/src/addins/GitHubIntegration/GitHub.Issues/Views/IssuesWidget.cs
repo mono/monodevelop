@@ -22,14 +22,19 @@ namespace GitHub.Issues.UserInterface
 		private Gtk.TreeView columnListView;
 
 		private Gtk.Button updateIssueListButton;
+		private Gtk.Button createNewIssueButton;
 
 		private List<IssueNode> issues;
 
 		private Octokit.Issue oldSelectedIssue;
 
+		private CommonControlsFactories commonControlsFactory;
+
 		#region Events
 
 		public EventHandler<IssueSelectedEventArgs> IssueSelected;
+
+		public EventHandler CreateNewIssueClicked;
 
 		#endregion
 
@@ -56,14 +61,18 @@ namespace GitHub.Issues.UserInterface
 		{
 			this.Build ();
 
+			this.commonControlsFactory = new CommonControlsFactories ();
+
 			// Wrap the Octokit Issues into my issues which are easier to read with reflection
 			// because I can handle conditional property reads from within my properties masked
 			// behind a single property which is not easy with reflection (if possible at all.)
 			// Look at Assignee for example. I can do the check internally in my property.
 			this.issues = new List<IssueNode>();
 
-			foreach (Octokit.Issue issue in issues) {
-				this.issues.Add (new IssueNode (issue));
+			if (issues != null) {
+				foreach (Octokit.Issue issue in issues) {
+					this.issues.Add (new IssueNode (issue));
+				}
 			}
 
 			// Create the tree view to hold the issues
@@ -72,6 +81,7 @@ namespace GitHub.Issues.UserInterface
 			this.columnListView = this.createColumnListView ();
 			// Create the button
 			this.updateIssueListButton = this.createUpdateIssueListButton ();
+			this.createNewIssueButton = this.createCreateIssueButton ();
 
 			// Set sizing
 			// this.columnListView.SetSizeRequest (100, 600);
@@ -90,16 +100,20 @@ namespace GitHub.Issues.UserInterface
 			uint padding = 0;
 
 			Gtk.VBox mainContainer = new Gtk.VBox (false, 10);
+			Gtk.HBox headerContainer = new Gtk.HBox ();
 			Gtk.HBox tablesContainer = new Gtk.HBox ();
 			Gtk.VBox columnsSelectionContainer = new Gtk.VBox ();
 
+			headerContainer.Add (LayoutUtilities.LeftAlign (updateIssueListButton));
+			headerContainer.Add (LayoutUtilities.LeftAlign (createNewIssueButton));
+
 			columnsSelectionContainer.PackStart (columnListView, true, true, padding);
-			columnsSelectionContainer.PackStart (updateIssueListButton, expand, fill, padding);
 
 			tablesContainer.PackStart (columnsSelectionContainer, expand, fill, padding);
 			tablesContainer.PackStart (issueTable, true, true, 10);
 
 			// Add the layout to the main container
+			mainContainer.PackStart (headerContainer, expand, fill, padding);
 			mainContainer.PackStart (tablesContainer, true, true, padding);
 
 			// Add main container to screen/widget
@@ -110,6 +124,16 @@ namespace GitHub.Issues.UserInterface
 		}
 
 		#region Event Handlers
+
+		/// <summary>
+		/// Called when the create issue button is clicked
+		/// </summary>
+		/// <param name="sender">Sender.</param>
+		/// <param name="e">E.</param>
+		private void createIssueButtonClicked(object sender, EventArgs e)
+		{
+			this.CreateNewIssueClicked (this, null);
+		}
 
 		/// <summary>
 		/// Called when the button to update columns is clicked
@@ -223,6 +247,9 @@ namespace GitHub.Issues.UserInterface
 					}));
 			};
 
+			// Show horizontal separators between the rows
+			treeView.EnableGridLines = Gtk.TreeViewGridLines.Horizontal;
+
 			return treeView;
 		}
 
@@ -257,13 +284,16 @@ namespace GitHub.Issues.UserInterface
 		/// <returns>The "update issue list" button.</returns>
 		private Gtk.Button createUpdateIssueListButton ()
 		{
-			Gtk.Button button = new Gtk.Button ();
-			button.Label = "Update";
+			return this.commonControlsFactory.CreateButton (StringResources.Update, this.updateIssueListButtonClicked);
+		}
 
-			// Method which handles the udpate of visible columns
-			button.Clicked += this.updateIssueListButtonClicked;
-
-			return button;
+		/// <summary>
+		/// Creates a button which allows the creation of new issues
+		/// </summary>
+		/// <returns>The create issue button.</returns>
+		private Gtk.Button createCreateIssueButton ()
+		{
+			return this.commonControlsFactory.CreateButton (StringResources.CreateNewIssue, this.createIssueButtonClicked);
 		}
 
 		#endregion
@@ -623,9 +653,11 @@ namespace GitHub.Issues.UserInterface
 		/// <param name="issueListStore">Issue list store of the table</param>
 		private void populateIssuesTable(List<IssueNode> issues, Gtk.ListStore issueListStore)
 		{
-			// Add all issues as rows into the list store
-			foreach (IssueNode issue in issues) {
-				this.addIssueRowIntoListStore (issueListStore, issue);
+			if (issues != null) {
+				// Add all issues as rows into the list store
+				foreach (IssueNode issue in issues) {
+					this.addIssueRowIntoListStore (issueListStore, issue);
+				}
 			}
 		}
 

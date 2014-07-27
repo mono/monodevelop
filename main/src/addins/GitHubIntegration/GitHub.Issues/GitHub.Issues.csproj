@@ -99,6 +99,11 @@
     <Compile Include="Utilities\CommonControlsFactories.cs" />
     <Compile Include="Utilities\StringResources.cs" />
     <Compile Include="Utilities\TreeViewUtilities.cs" />
+    <Compile Include="Custom Widgets\CommentBoxWidget.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.CommentBoxWidget.cs" />
+    <Compile Include="Events\DeleteCommentClickEventArgs.cs" />
+    <Compile Include="Utilities\EditMode.cs" />
+    <Compile Include="Events\IssueSavedEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

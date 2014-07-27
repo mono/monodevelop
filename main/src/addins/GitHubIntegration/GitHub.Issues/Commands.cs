@@ -20,8 +20,7 @@ namespace GitHub.Issues
 			IssuesManager manager = new IssuesManager ();
 			IReadOnlyList<Octokit.Issue> issues = manager.GetAllIssues ();
 
-			if (issues != null)
-				IdeApp.Workbench.OpenDocument (new IssuesView ("Issues View", issues), true);
+			IdeApp.Workbench.OpenDocument (new IssuesView ("Issues View", issues), true);
 		}
 	}
 
@@ -37,8 +36,7 @@ namespace GitHub.Issues
 
 		protected override void Run ()
 		{
-			if (this.issue != null)
-				IdeApp.Workbench.OpenDocument(new IssueView(this.issue.Title, this.issue), true);
+			IdeApp.Workbench.OpenDocument(new IssueView(this.issue != null ? this.issue.Title : StringResources.NewIssueTitle, this.issue), true);
 		}
 	}
 }

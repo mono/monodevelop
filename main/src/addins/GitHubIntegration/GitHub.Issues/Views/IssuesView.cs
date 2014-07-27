@@ -33,16 +33,37 @@ namespace GitHub.Issues.Views
 			get {
 				if (widget == null) {
 					CreateWidgetFromInfo (this.issues);
-					this.widget.IssueSelected = new EventHandler<IssueSelectedEventArgs> (this.ViewIssueDetails);
+					this.widget.IssueSelected += new EventHandler<IssueSelectedEventArgs> (this.ViewIssueDetails);
+					this.widget.CreateNewIssueClicked += new EventHandler (this.CreateNewIssueClicked);
 				}
 
 				return widget; 
 			}
 		}
 
+		#endregion
+
+		#region Event Handlers
+
+		/// <summary>
+		/// Called when an issue is selected from the list and the user wants to view it
+		/// </summary>
+		/// <param name="sender">Sender.</param>
+		/// <param name="args">Arguments.</param>
 		private void ViewIssueDetails(object sender, IssueSelectedEventArgs args)
 		{
 			ViewIssueHandler viewIssueHandler = new ViewIssueHandler (args.SelectedIssue);
+		}
+
+		/// <summary>
+		/// Called when the "Create New Issue" button is cliked
+		/// </summary>
+		/// <param name="sender">Sender.</param>
+		/// <param name="e">E.</param>
+		private void CreateNewIssueClicked(object sender, EventArgs e)
+		{
+			// [null] makes it go into creation mode
+			ViewIssueHandler viewIssueHandler = new ViewIssueHandler (null);
 		}
 
 		#endregion

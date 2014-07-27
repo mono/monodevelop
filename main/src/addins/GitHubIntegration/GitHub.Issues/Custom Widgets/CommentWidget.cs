@@ -6,20 +6,49 @@ namespace GitHub.Issues
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class CommentWidget : Gtk.Bin
 	{
+		#region Private Members
+
+		/// <summary>
+		/// The control factory.
+		/// </summary>
+		private CommonControlsFactories controlFactory = new CommonControlsFactories();
+
+		/// <summary>
+		/// The delete button handler.
+		/// </summary>
+		private EventHandler<DeleteCommentClickEventArgs> deleteButtonHandler;
+
+		/// <summary>
+		/// Comment which is represented by this control.
+		/// </summary>
+		private Octokit.IssueComment comment;
+
+		#endregion
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GitHub.Issues.CommentWidget"/> class.
 		/// </summary>
 		/// <param name="comment">Comment.</param>
-		public CommentWidget (Octokit.IssueComment comment)
+		public CommentWidget (Octokit.IssueComment comment, EventHandler<DeleteCommentClickEventArgs> deleteButtonHandler)
 		{
 			this.Build ();
+
+			this.comment = comment;
 
 			Gtk.VBox mainContainer = new Gtk.VBox ();
 
 			Gtk.HBox topPanel = new Gtk.HBox ();
 
+			this.deleteButtonHandler = deleteButtonHandler;
+
 			topPanel.Add (this.padWidget(this.leftAlign(this.createOwnerTextBox (comment)), 10, 0, 0, 10));
-			topPanel.Add (this.padWidget(this.rightAlign(this.createCommentDateTextBox(comment)), 10, 0, 0, 10));
+
+			// Contains the date and time of writting and the delete button
+			Gtk.HBox dateAndDeleteContainer = new Gtk.HBox ();
+			dateAndDeleteContainer.Add (this.createCommentDateTextBox (comment));
+			dateAndDeleteContainer.Add (this.padWidget(this.rightAlign (this.createDeleteButton (this.DeleteButtonHandler)), 10, 0, 5, 10));
+
+			topPanel.Add (this.padWidget(this.rightAlign(dateAndDeleteContainer), 10, 0, 0, 0));
 
 			mainContainer.Add(topPanel);
 
@@ -32,6 +61,7 @@ namespace GitHub.Issues
 			};
 
 			mainContainer.Add (this.padWidget(commentBox, 10, 10, 0, 10));
+			mainContainer.Add (new Gtk.HSeparator ());
 
 			this.Add (mainContainer);
 		}
@@ -74,6 +104,16 @@ namespace GitHub.Issues
 			commentBox.Wrap = true;
 
 			return commentBox;
+		}
+
+		/// <summary>
+		/// Creates the delete button.
+		/// </summary>
+		/// <returns>The delete button.</returns>
+		/// <param name="handler">Handler.</param>
+		private Gtk.Button createDeleteButton(EventHandler handler)
+		{
+			return this.controlFactory.CreateButton ("X", handler);
 		}
 
 		#endregion
@@ -136,6 +176,22 @@ namespace GitHub.Issues
 			alignment.RightPadding = rightPadding;
 
 			return alignment;
+		}
+
+		#endregion
+
+		#region Event Handlers
+
+		/// <summary>
+		/// Event handler which fires another handler off when the delete button is clicked for this comment
+		/// </summary>
+		/// <param name="sender">Sender.</param>
+		/// <param name="e">Arguments.</param>
+		private void DeleteButtonHandler(object sender, EventArgs e)
+		{
+			this.deleteButtonHandler (this, new DeleteCommentClickEventArgs () {
+				CommentToDelete = this.comment
+			});
 		}
 
 		#endregion

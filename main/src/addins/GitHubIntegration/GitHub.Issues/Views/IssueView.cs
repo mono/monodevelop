@@ -43,6 +43,7 @@ namespace GitHub.Issues
 		private void CreateWidgetFromInfo (Octokit.Issue issue)
 		{
 			this.widget = new IssueWidget (issue);
+			this.widget.IssueSaved += this.IssueSaved;
 		}
 
 		void IAttachableViewContent.Selected ()
@@ -59,6 +60,18 @@ namespace GitHub.Issues
 
 		void IAttachableViewContent.BaseContentChanged ()
 		{
+		}
+
+		/// <summary>
+		/// Called whenever the issue is saved from within the widget and updates the name etc.
+		/// </summary>
+		/// <returns><c>true</c> if this instance issue saved the specified sender e; otherwise, <c>false</c>.</returns>
+		/// <param name="sender">Sender.</param>
+		/// <param name="e">E.</param>
+		private void IssueSaved(object sender, IssueSavedEventArgs e)
+		{
+			this.name = e.issue.Title;
+			this.issue = e.issue;
 		}
 	}
 }
