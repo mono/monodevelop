@@ -126,6 +126,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			if (o is AmbientColor)
 				AmbientColorSelected ((AmbientColor)o);
+
+			var groupName = GetGroupNameFromNode (navigator);
+			ApplyNewScheme (groupName);
 		}
 
 		void ChunkStyleSelected (ChunkStyle chunkStyle)
@@ -182,6 +185,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void StyleChanged (object sender, EventArgs e)
 		{
+			if (!handleUIEvents)
+				return;
+
 			TreePosition pos = treeviewColors.SelectedRow;
 			if (pos == null)
 				return;
@@ -189,11 +195,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			var navigator = colorStore.GetNavigatorAt (pos);
 			var o = navigator.GetValue (styleField);
 
-			if (o is ChunkStyle) {
+			if (o is ChunkStyle)
 				ChangeChunkStyle (navigator, (ChunkStyle)o);
-			} else if (o is AmbientColor) {
+			else if (o is AmbientColor)
 				ChangeAmbientColor (navigator, (AmbientColor)o);
-			}
+
 		}
 
 		void ChangeChunkStyle (TreeNavigator navigator, ChunkStyle oldStyle)
@@ -246,26 +252,29 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			switch (groupName) {
 			case GroupNames.XML:
-				this.textEditor.Text = CodeSamples.XML;
-				this.textEditor.Document.MimeType = "application/xml";
+				SetEditorText (CodeSamples.XML, "application/xml");
 				break;
 			case GroupNames.HTML:
-				this.textEditor.Text = CodeSamples.Web;
-				this.textEditor.Document.MimeType = "text/html";
+				SetEditorText (CodeSamples.Web, "text/html");
 				break;
 			case GroupNames.CSS:
-				this.textEditor.Text = CodeSamples.CSS;
-				this.textEditor.Document.MimeType = "text/css";
+				SetEditorText (CodeSamples.CSS, "text/css");
 				break;
 			case GroupNames.Script:
-				this.textEditor.Text = CodeSamples.Javascript;
-				this.textEditor.Document.MimeType = "text/javascript";
+				SetEditorText (CodeSamples.Javascript, "text/javascript");
 				break;
 			default:
-				this.textEditor.Text = CodeSamples.CSharp;
-				this.textEditor.Document.MimeType = "text/x-csharp";
+				SetEditorText (CodeSamples.CSharp, "text/x-csharp");
 				break;
 			}
+		}
+
+		void SetEditorText (string newText, string newMimeType)
+		{
+			if (this.textEditor.MimeType == newMimeType)
+				return;
+			this.textEditor.Text = newText;
+			this.textEditor.Document.MimeType = newMimeType;
 		}
 
 		void ChangeAmbientColor (TreeNavigator navigator, AmbientColor oldStyle)
@@ -381,20 +390,48 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void CaretPositionChanged (object sender, DocumentLocationEventArgs e)
 		{
 			var caret = this.textEditor.Caret;
-			var lineNumber = caret.Line;//e.Location.Line;
-			var columnNumber = caret.Column;//e.Location.Column;
+			var lineNumber = caret.Line;
+			var columnNumber = caret.Column;
 
 			var document = this.textEditor.Document;
 			var syntaxMode = document.SyntaxMode;
 			var line = document.GetLine (lineNumber);
 
 			var lineChunks = syntaxMode.GetChunks (this.colorScheme, line, line.Offset, line.Length);
-			var offset = line.Offset + columnNumber-1;
+			var offset = line.Offset + columnNumber - 1;
 			var chunk = lineChunks.FirstOrDefault (ch => ch.Offset <= offset && ch.EndOffset >= offset);
-			if (chunk == null)
+			if (chunk == null) {
+				treeviewColors.UnselectAll ();
 				return;
+			}
 
-			var style = chunk.Style;
+			var styleName = chunk.Style;
+			var navigator = GetNodeFromStyleName (styleName);
+			if (navigator == null)
+				treeviewColors.UnselectAll ();
+			else {
+				this.treeviewColors.SelectRow (navigator.CurrentPosition);
+				treeviewColors.ScrollToRow (navigator.CurrentPosition);
+			}
+		}
+
+		TreeNavigator GetNodeFromStyleName (string styleName)
+		{
+			var navigator = colorStore.GetFirstNode ();
+
+			do {
+				navigator.MoveToChild ();
+
+				do {
+					var data = (ColorScheme.PropertyDecsription)navigator.GetValue (propertyField);
+					if (data != null && data.Attribute != null && data.Attribute.Name == styleName)
+						return navigator;
+				} while (navigator.MoveNext ());
+
+				navigator.MoveToParent ();
+			} while (navigator.MoveNext ());
+
+			return null;
 		}
 	}
 }
