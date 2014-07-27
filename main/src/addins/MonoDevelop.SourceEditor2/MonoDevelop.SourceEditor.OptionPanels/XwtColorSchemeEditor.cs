@@ -199,7 +199,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				ChangeChunkStyle (navigator, (ChunkStyle)o);
 			else if (o is AmbientColor)
 				ChangeAmbientColor (navigator, (AmbientColor)o);
-
 		}
 
 		void ChangeChunkStyle (TreeNavigator navigator, ChunkStyle oldStyle)
@@ -407,11 +406,51 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			var styleName = chunk.Style;
 			var navigator = GetNodeFromStyleName (styleName);
-			if (navigator == null)
+			if (navigator == null) {
 				treeviewColors.UnselectAll ();
-			else {
+				return;
+			}
+
+			if (formatByPatternMode) {
+				var oldNavigator = colorStore.GetNavigatorAt (treeviewColors.SelectedRow);
+				var oldStyle = oldNavigator.GetValue (styleField);
+				var newStyle = navigator.GetValue (styleField);
+				if (oldStyle.GetType () == newStyle.GetType ()) {
+					this.treeviewColors.SelectRow (navigator.CurrentPosition);
+					CopyStyle (oldStyle, newStyle, oldNavigator);
+					this.treeviewColors.SelectRow (oldNavigator.CurrentPosition);
+				}
+				this.buttonFormat.Active = false;
+			} else {
 				this.treeviewColors.SelectRow (navigator.CurrentPosition);
 				treeviewColors.ScrollToRow (navigator.CurrentPosition);
+			}
+		}
+
+		void CopyStyle (object oldStyle, object newStyle, TreeNavigator navigator)
+		{
+			var oldChunkStyle = oldStyle as ChunkStyle;
+			if (oldChunkStyle != null) {
+				var newChunkStyle = newStyle as ChunkStyle;
+				oldChunkStyle.Background = newChunkStyle.Background;
+				oldChunkStyle.FontStyle = newChunkStyle.FontStyle;
+				oldChunkStyle.FontWeight = newChunkStyle.FontWeight;
+				oldChunkStyle.Foreground = newChunkStyle.Foreground;
+				oldChunkStyle.Underline = newChunkStyle.Underline;
+				ChangeChunkStyle (navigator, oldChunkStyle);
+				return;
+			}
+
+			var oldAmbientColor = oldStyle as AmbientColor;
+			if (oldAmbientColor != null) {
+				var newAmbientColor = newStyle as AmbientColor;
+				oldAmbientColor.Color = newAmbientColor.Color;
+				if (newAmbientColor.HasBorderColor && oldAmbientColor.HasBorderColor)
+					oldAmbientColor.BorderColor = newAmbientColor.BorderColor;
+				if (newAmbientColor.HasSecondColor && oldAmbientColor.HasSecondColor)
+					oldAmbientColor.SecondColor = newAmbientColor.SecondColor;
+				ChangeAmbientColor (navigator, oldAmbientColor);
+				return;
 			}
 		}
 
@@ -432,6 +471,13 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			} while (navigator.MoveNext ());
 
 			return null;
+		}
+
+		void FormatByPatternToggled (object sender, EventArgs e)
+		{
+			formatByPatternMode = !formatByPatternMode;
+			//if (!formatByPatternMode)
+			//return;
 		}
 	}
 }

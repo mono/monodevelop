@@ -37,6 +37,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public partial class XwtColorSchemeEditor
 	{
+		bool formatByPatternMode;
 		bool handleUIEvents = true;
 		ColorSchemeEditorHistory history;
 		TextEditor textEditor;
@@ -53,7 +54,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border");
 		ToggleButton togglebuttonBold = new ToggleButton ("B"){ Style = ButtonStyle.Flat };
 		ToggleButton togglebuttonItalic = new ToggleButton ("I"){ Style = ButtonStyle.Flat };
-		Button buttonFormat = new Button ("FBP"){ Style = ButtonStyle.Flat };
+		ToggleButton buttonFormat = new ToggleButton ("FBP"){ Style = ButtonStyle.Flat };
 		TextEntry entryName = new TextEntry ();
 		TextEntry entryDescription = new TextEntry ();
 		SearchTextEntry searchEntry = new SearchTextEntry (){ PlaceholderText = "Type here..." };
@@ -108,6 +109,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.colorbuttonBorder.ColorSet += StyleChanged;
 			this.togglebuttonBold.Toggled += StyleChanged;
 			this.togglebuttonItalic.Toggled += StyleChanged;
+			this.buttonFormat.Toggled += FormatByPatternToggled;
 
 			this.textEditor = new TextEditor ();
 			this.textEditor.Options = DefaultSourceEditorOptions.Instance;
