@@ -389,13 +389,6 @@ namespace MonoDevelop.Components.DockNotebook
 			return alloc;
 		}
 
-		protected override bool OnGrabBrokenEvent (EventGrabBroken evnt)
-		{
-			if (placeholderWindow != null)
-				placeholderWindow.Destroy ();
-			return base.OnGrabBrokenEvent (evnt);
-		}
-
 		protected override bool OnMotionNotifyEvent (EventMotion evnt)
 		{
 			if (draggingTab && mouseHasLeft) {

@@ -109,7 +109,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public WelcomePageProjectBar ()
 		{
 			SetPadding (3, 3, 12, 12);
-			GradientBackround = true;
+			GradientBackground = true;
 
 			HBox box = new HBox (false, 6);
 			box.PackStart (messageLabel = new Gtk.Label () { Xalign = 0 }, true, true, 0);
