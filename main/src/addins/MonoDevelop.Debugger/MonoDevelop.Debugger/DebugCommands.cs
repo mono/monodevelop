@@ -63,7 +63,9 @@ namespace MonoDevelop.Debugger
 		StopEvaluation,
 		RunToCursor,
 		SetNextStatement,
-		ShowNextStatement
+		ShowNextStatement,
+		NewCatchpoint,
+		NewFunctionBreakpoint
 	}
 
 	class DebugHandler: CommandHandler
@@ -535,7 +537,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 	}
-	
+
 	class NewBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
@@ -548,10 +550,50 @@ namespace MonoDevelop.Debugger
 					breakpoints.Add (bp);
 			}
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
+		}
+	}
+
+	class NewFunctionBreakpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			BreakEvent bp = null;
+			if (DebuggingService.ShowBreakpointProperties (ref bp, BreakpointType.Function)) {
+				var breakpoints = DebuggingService.Breakpoints;
+
+				lock (breakpoints)
+					breakpoints.Add (bp);
+			}
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
+		}
+	}
+
+	class NewCatchpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			BreakEvent bp = null;
+			if (DebuggingService.ShowBreakpointProperties (ref bp, BreakpointType.Catchpoint)) {
+				var breakpoints = DebuggingService.Breakpoints;
+
+				lock (breakpoints)
+					breakpoints.Add (bp);
+			}
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
 			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
 		}
 	}
