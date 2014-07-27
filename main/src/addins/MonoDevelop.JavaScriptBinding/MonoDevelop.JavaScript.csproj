@@ -15,7 +15,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\build\AddIns\MonoDevelop.JavaScript\</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.JavaScript</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -28,13 +28,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\build\AddIns\</OutputPath>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.JavaScript</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Execution>
       <Execution clr-version="Net_2_0" />
     </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -141,7 +142,6 @@
     <Compile Include="Jurassic\Library\Object\ObjectInstance.cs" />
     <Compile Include="Parser\JavaScriptParsedDocument.cs" />
     <Compile Include="Parser\JavaScriptParser.cs" />
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TextEditor\JavaScriptEditorExtension.cs" />
     <Compile Include="Extensions\FunctionExtensions.cs" />
     <Compile Include="Formatting\JSBeautifier.cs" />
@@ -159,12 +159,13 @@
     <Compile Include="Parser\JSUpdateableProjectContent.cs" />
     <Compile Include="Completion\CodeCompletionUtility.cs" />
     <Compile Include="Jurassic\Core\JurassicUtility.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\AddinInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Formatting\MonoJSPolicy.xml" />
     <Content Include="Jurassic\License.txt" />
     <Content Include="Notes\JurrasicJSMap.txt" />
-    <EmbeddedResource Include="MonoDevelop.JavaScript.addin.xml" />
     <None Include="Templates\EmptyJSFile.xft.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -186,6 +187,9 @@
     <None Include="JSReferences\dom.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="Properties\MonoDevelop.JavaScript.addin.xml">
+      <LogicalName>MonoDevelop.JavaScript.MonoDevelop.JavaScript.addin.xml</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
@@ -222,5 +226,6 @@
     <Folder Include="DomainObjects\" />
     <Folder Include="DomainObjects\Cache\" />
     <Folder Include="JSReferences\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

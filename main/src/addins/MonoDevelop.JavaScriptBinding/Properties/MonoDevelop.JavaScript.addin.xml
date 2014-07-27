@@ -1,13 +1,7 @@
 ﻿<ExtensionModel>
 	<Runtime>
 		<Import file="Templates\EmptyJSFile.xft.xml" />
-		<Import file="Templates\EmptyJSONFile.xft.xml" />
 	</Runtime>
-	<Extension path="/MonoDevelop/Core/MimeTypes">
-		<MimeType id="application/javascript" _description="Javascript source code" icon="md-script-file-icon" isText="true">
-			<File pattern="*.js" />
-		</MimeType>
-	</Extension>
 	<Extension path="/MonoDevelop/Ide/FileFilters">
 		<FileFilter id="JSFile" insertafter="Xml" _label="JavaScript Files" extensions="*.js" />
 	</Extension>
