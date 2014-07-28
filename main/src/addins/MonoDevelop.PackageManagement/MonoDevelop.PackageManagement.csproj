@@ -348,6 +348,7 @@
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopAggregateRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\RestorePackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesInProjectHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\FailingPackageRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

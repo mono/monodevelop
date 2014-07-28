@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -132,7 +133,7 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackageRepository> CreateAllEnabledRepositories()
 		{
 			foreach (PackageSource source in PackageSources.GetEnabledPackageSources ()) {
-				yield return CreateRepository(source.Source);
+				yield return CreateRepositoryIgnoringFailures (source.Source);
 			}
 		}
 
@@ -177,6 +178,19 @@ namespace ICSharpCode.PackageManagement
 		public IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ()
 		{
 			return new PriorityPackageRepository (machineCache, CreateAggregateRepository ());
+		}
+
+		IPackageRepository CreateRepositoryIgnoringFailures (string packageSource)
+		{
+			try {
+				return CreateRepository (packageSource);
+			} catch (Exception ex) {
+				// Deliberately caching the failing package source so the
+				// AggregateRepository only reports its failure once.
+				var repository = new FailingPackageRepository (packageSource, ex);
+				repositories.TryAdd(packageSource, repository);
+				return repository;
+			}
 		}
 	}
 }
