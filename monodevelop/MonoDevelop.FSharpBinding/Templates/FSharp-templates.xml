@@ -77,7 +77,7 @@ member this.$name$ (sender : $type$) =
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>du</Shortcut>
       <_Description>Template for Discriminated Unions</_Description>
-      <TemplateType>Unknown</TemplateType>
+      <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
       <Variable name="name">
@@ -97,17 +97,20 @@ member this.$name$ (sender : $type$) =
       <Version />
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>interface</Shortcut>
-      <_Description>Template for interface declaration</_Description>
-      <TemplateType>Unknown</TemplateType>
+      <_Description>Template for interface implementation</_Description>
+      <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
       <Variable name="name">
         <Default>name</Default>
       </Variable>
+      <Variable name="interface">
+        <Default>IDisposable</Default>
+      </Variable>
     </Variables>
-    <Code><![CDATA[type $param1$ = interface
-    $selected$$end$
-end]]></Code>
+    <Code><![CDATA[type $name$ =
+    interface $interface$ with 
+        &end&]]></Code>
   </CodeTemplate>
 
   <CodeTemplate version="2.0">
@@ -156,7 +159,7 @@ end]]></Code>
       <MimeType>text/x-fsharp</MimeType>
       <Shortcut>virt</Shortcut>
       <_Description>Adds a virtual member</_Description>
-      <TemplateType>Unknown</TemplateType>
+      <TemplateType>Expansion</TemplateType>
     </Header>
     <Variables>
       <Variable name="funName">
@@ -221,7 +224,7 @@ default this.$funName$ (delta:int) = ()]]></Code>
       <TemplateType>Unknown</TemplateType>
     </Header>
     <Variables />
-    <Code><![CDATA[seq { $end$ }]]></Code>
+    <Code><![CDATA[seq {$end$}]]></Code>
   </CodeTemplate>
 
    <CodeTemplate version="2.0">
@@ -238,7 +241,7 @@ default this.$funName$ (delta:int) = ()]]></Code>
         <Default>name</Default>
       </Variable>
     </Variables>
-    <Code><![CDATA[let $name$ = [ $end$ ]]]></Code>
+    <Code><![CDATA[let $name$ = [$end$]]]></Code>
   </CodeTemplate>
 
      <CodeTemplate version="2.0">
@@ -255,7 +258,7 @@ default this.$funName$ (delta:int) = ()]]></Code>
         <Default>name</Default>
       </Variable>
     </Variables>
-    <Code><![CDATA[let $name$ = [| $end$ |]]]></Code>
+    <Code><![CDATA[let $name$ = [|$end$|]]]></Code>
   </CodeTemplate>
 
   <CodeTemplate version="2.0">
