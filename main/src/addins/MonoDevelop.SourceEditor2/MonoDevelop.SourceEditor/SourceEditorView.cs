@@ -66,7 +66,7 @@ namespace MonoDevelop.SourceEditor
 		ICompletionWidget,  ISplittable, IFoldable, IToolboxDynamicProvider,
 		ICustomFilteringToolboxConsumer, IZoomable, ITextEditorResolver, ITextEditorDataProvider,
 		ICodeTemplateHandler, ICodeTemplateContextProvider, ISupportsProjectReload, IPrintable,
-	ITextEditorImpl, IEditorActionHost, ITextMarkerFactory, IUndoHandler, MonoDevelop.Ide.Editor.ITextEditorOptions
+	ITextEditorImpl, IEditorActionHost, ITextMarkerFactory, IUndoHandler
 	{
 		readonly SourceEditorWidget widget;
 		bool isDisposed = false;
@@ -2763,7 +2763,7 @@ namespace MonoDevelop.SourceEditor
 
 		MonoDevelop.Ide.Editor.ITextEditorOptions ITextEditorImpl.Options {
 			get {
-				return this;
+				return((StyledSourceEditorOptions)TextEditor.Options).OptionsCore;
 			}
 			set {
 				((StyledSourceEditorOptions)TextEditor.Options).OptionsCore = value;
