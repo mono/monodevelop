@@ -34,12 +34,6 @@ using System.Linq;
 using System.Diagnostics;
 using Mono.Addins;
 using MonoDevelop.Core.LogReporting;
-
-#if ENABLE_RAYGUN
-using System.Threading;
-using Mindscape.Raygun4Net;
-#endif
-
 using MonoDevelop.Core.Logging;
 using Mono.Unix.Native;
 

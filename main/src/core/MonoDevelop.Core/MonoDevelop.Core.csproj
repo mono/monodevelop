@@ -69,9 +69,6 @@
     <NoWarn>1591;1573</NoWarn>
     <DocumentationFile>..\..\..\build\bin\MonoDevelop.Core.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(BUILD_REVISION)' != ''">
-    <DefineConstants>$(DefineConstants);ENABLE_RAYGUN</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Mono.Posix" />
