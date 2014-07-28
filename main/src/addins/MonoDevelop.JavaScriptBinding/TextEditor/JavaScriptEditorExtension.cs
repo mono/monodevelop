@@ -39,6 +39,7 @@ using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Components;
 using Jurassic.Compiler;
 using System.Diagnostics;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.JavaScript
 {
@@ -204,6 +205,46 @@ namespace MonoDevelop.JavaScript
 		public override ParameterDataProvider HandleParameterCompletion (CodeCompletionContext completionContext, char completionChar)
 		{
 			return null;
+		}
+
+		#endregion
+
+		#region Refractoring
+
+		[CommandHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
+		public void GotoDeclaration ()
+		{
+			int offset = Editor.LocationToOffset (Editor.Caret.Location);
+			int wordStart = Editor.FindCurrentWordStart (offset);
+			int wordEnd = Editor.FindCurrentWordEnd (offset);
+			string word = Editor.GetTextBetween (wordStart, wordEnd);
+			GotoDeclarationAction.ReportDeclarations (word);
+		}
+
+		[CommandUpdateHandler (MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration)]
+		public void CanGotoDeclaration (CommandInfo item)
+		{
+			int offset = Editor.LocationToOffset (Editor.Caret.Location);
+			int wordStart = Editor.FindCurrentWordStart (offset);
+			int wordEnd = Editor.FindCurrentWordEnd (offset);
+			string word = Editor.GetTextBetween (wordStart, wordEnd);
+
+			bool isPossible = false;
+
+			// Check whitespace, line terminator
+			if (string.IsNullOrWhiteSpace (word))
+				isPossible = false;
+			else if (!Lexer.IsWhiteSpace (word [0]) && !Lexer.IsLineTerminator (word [0])) {
+				// Check if inside string
+				if (word [0] == '"' || word [0] == '\'')
+					isPossible = false;
+				else
+					isPossible = (KeywordToken.FromString (word, Jurassic.CompatibilityMode.Latest, false) is IdentifierToken);
+			} else
+				isPossible = false;
+
+			item.Visible = isPossible;
+			item.Bypass = !item.Visible;
 		}
 
 		#endregion

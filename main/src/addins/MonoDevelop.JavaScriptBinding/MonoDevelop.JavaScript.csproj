@@ -161,6 +161,7 @@
     <Compile Include="Jurassic\Core\JurassicUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
+    <Compile Include="Refractoring\GotoDeclarationAction.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Formatting\MonoJSPolicy.xml" />
@@ -220,6 +221,10 @@
       <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
       <Name>Xwt</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -227,5 +232,6 @@
     <Folder Include="DomainObjects\Cache\" />
     <Folder Include="JSReferences\" />
     <Folder Include="Properties\" />
+    <Folder Include="Refractoring\" />
   </ItemGroup>
 </Project>
