@@ -77,14 +77,157 @@ namespace MonoDevelop.Ide.Editor
 			instance = new DefaultSourceEditorOptions (policy);
 			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
 
-			PlainEditor = new DefaultSourceEditorOptions (policy) /*{
-				ShowLineNumberMargin = false,
-				ShowFoldMargin = false,
-				ShowIconMargin = false,
-				ShowRuler = false,
+			PlainEditor = new PlainEditorOptions ();
+		}
 
-				ShowWhitespaces = ShowWhitespaces.Never,
-			}*/;
+		class PlainEditorOptions : ITextEditorOptions
+		{
+			#region IDisposable implementation
+
+			void IDisposable.Dispose ()
+			{
+				// nothing
+			}
+
+			#endregion
+
+			#region ITextEditorOptions implementation
+
+			WordFindStrategy ITextEditorOptions.WordFindStrategy {
+				get {
+					return DefaultSourceEditorOptions.Instance.WordFindStrategy;
+				}
+			}
+
+			bool ITextEditorOptions.TabsToSpaces {
+				get {
+					return DefaultSourceEditorOptions.Instance.TabsToSpaces;
+				}
+			}
+
+			int ITextEditorOptions.IndentationSize {
+				get {
+					return DefaultSourceEditorOptions.Instance.IndentationSize;
+				}
+			}
+
+			int ITextEditorOptions.TabSize {
+				get {
+					return DefaultSourceEditorOptions.Instance.TabSize;
+				}
+			}
+
+			bool ITextEditorOptions.ShowIconMargin {
+				get {
+					return false;
+				}
+			}
+
+			bool ITextEditorOptions.ShowLineNumberMargin {
+				get {
+					return false;
+				}
+			}
+
+			bool ITextEditorOptions.ShowFoldMargin {
+				get {
+					return false;
+				}
+			}
+
+			bool ITextEditorOptions.HighlightCaretLine {
+				get {
+					return DefaultSourceEditorOptions.Instance.HighlightCaretLine;
+				}
+			}
+
+			int ITextEditorOptions.RulerColumn {
+				get {
+					return DefaultSourceEditorOptions.Instance.RulerColumn;
+				}
+			}
+
+			bool ITextEditorOptions.ShowRuler {
+				get {
+					return false;
+				}
+			}
+
+			IndentStyle ITextEditorOptions.IndentStyle {
+				get {
+					return DefaultSourceEditorOptions.Instance.IndentStyle;
+				}
+			}
+
+			bool ITextEditorOptions.OverrideDocumentEolMarker {
+				get {
+					return false;
+				}
+			}
+
+			bool ITextEditorOptions.EnableSyntaxHighlighting {
+				get {
+					return DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting;
+				}
+			}
+
+			bool ITextEditorOptions.RemoveTrailingWhitespaces {
+				get {
+					return DefaultSourceEditorOptions.Instance.RemoveTrailingWhitespaces;
+				}
+			}
+
+			bool ITextEditorOptions.WrapLines {
+				get {
+					return DefaultSourceEditorOptions.Instance.WrapLines;
+				}
+			}
+
+			string ITextEditorOptions.FontName {
+				get {
+					return DefaultSourceEditorOptions.Instance.FontName;
+				}
+			}
+
+			string ITextEditorOptions.GutterFontName {
+				get {
+					return DefaultSourceEditorOptions.Instance.GutterFontName;
+				}
+			}
+
+			string ITextEditorOptions.ColorScheme {
+				get {
+					return DefaultSourceEditorOptions.Instance.ColorScheme;
+				}
+			}
+
+			string ITextEditorOptions.DefaultEolMarker {
+				get {
+					return DefaultSourceEditorOptions.Instance.DefaultEolMarker;
+				}
+			}
+
+			bool ITextEditorOptions.GenerateFormattingUndoStep {
+				get {
+					return DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep;
+				}
+			}
+
+			ShowWhitespaces ITextEditorOptions.ShowWhitespaces {
+				get {
+					return ShowWhitespaces.Never;
+				}
+			}
+
+			IncludeWhitespaces ITextEditorOptions.IncludeWhitespaces {
+				get {
+					return DefaultSourceEditorOptions.Instance.IncludeWhitespaces;
+				}
+			}
+
+			#endregion
+
+
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
