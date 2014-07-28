@@ -293,6 +293,19 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
 		}
+
+		[Test]
+		public void CheckForUpdates_NoPackagesUpdated_LoggerConfiguredForProject ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+
+			updatedPackagesInSolution.CheckForUpdates ();
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.IsInstanceOf<PackageManagementLogger> (project.Logger);
+		}
 	}
 }
 
