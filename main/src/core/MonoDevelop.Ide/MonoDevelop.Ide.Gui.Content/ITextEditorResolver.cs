@@ -50,14 +50,7 @@ namespace MonoDevelop.Ide.Gui.Content
 		string CreateTooltip (MonoDevelop.Ide.Gui.Document document, int offset, ResolveResult result, string errorInformations, Gdk.ModifierType modifierState);
 
 	}
-	
-	public interface ITextEditorMemberPositionProvider
-	{
-		ITypeSymbol GetTypeAt (int offset);
-		Microsoft.CodeAnalysis.ISymbol GetMemberAt (int offset);
-	}
-	
-	
+
 	public static class TextEditorResolverService
 	{
 		static List<TextEditorResolverProviderCodon> providers = new List<TextEditorResolverProviderCodon> ();

@@ -477,8 +477,6 @@ namespace MonoDevelop.CSharp
 			var loc = Editor.CaretLocation;
 			var compExt = Editor.GetContent<CSharpCompletionTextEditorExtension> ();
 
-			var segType = compExt.GetTypeAt (caretOffset);
-
 			var root = unit.GetRoot ();
 			SyntaxNode token;
 			try {

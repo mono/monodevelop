@@ -37,6 +37,10 @@ using MonoDevelop.Core;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CSharp.NRefactoryWrapper;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Formatting;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -86,63 +90,10 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
-			var data = TextEditorFactory.CreateNewDocument ();
-			// data.Document.SuppressHighlightUpdate = true;
-			data.MimeType = mimeType;
-			data.FileName = "toformat.cs";
-//			if (textPolicy != null) {
-//				data.Options.TabsToSpaces = textPolicy.TabsToSpaces;
-//				data.Options.TabSize = textPolicy.TabWidth;
-//				data.Options.IndentationSize = textPolicy.IndentWidth;
-//				data.Options.IndentStyle = textPolicy.RemoveTrailingWhitespace ? IndentStyle.Virtual : IndentStyle.Smart;
-//			}
-			data.Text = input;
-
-			// System.Console.WriteLine ("-----");
-			// System.Console.WriteLine (data.Text.Replace (" ", ".").Replace ("\t", "->"));
-			// System.Console.WriteLine ("-----");
-
-			var parser = new CSharpParser ();
-			var compilationUnit = parser.Parse (data);
-			bool hadErrors = parser.HasErrors;
-			
-			if (hadErrors) {
-				//				foreach (var e in parser.ErrorReportPrinter.Errors)
-				//					Console.WriteLine (e.Message);
-				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
-			}
-
-			var originalVersion = data.Version;
-
-			var textEditorOptions = data.CreateNRefactoryTextEditorOptions (policy, textPolicy);
-			var formattingVisitor = new ICSharpCode.NRefactory.CSharp.CSharpFormatter (
-				policy.CreateOptions (),
-				textEditorOptions
-			) {
-				FormattingMode = FormattingMode.Intrusive
-			};
-
-			var changes = formattingVisitor.AnalyzeFormatting (new DocumentWrapper (data), compilationUnit);
-			try {
-				changes.ApplyChanges (startOffset, endOffset - startOffset);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error in code formatter", e);
-				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
-			}
-
-			// check if the formatter has produced errors
-			parser = new CSharpParser ();
-			parser.Parse (data);
-			if (parser.HasErrors) {
-				LoggingService.LogError ("C# formatter produced source code errors. See console for output.");
-				return input.Substring (startOffset, Math.Max (0, Math.Min (endOffset, input.Length) - startOffset));
-			}
-
-			var currentVersion = data.Version;
-
-			string result = data.GetTextBetween (startOffset, originalVersion.MoveOffsetTo (currentVersion, endOffset));
-			//data.Dispose ();
-			return result;
+			var inputTree = CSharpSyntaxTree.ParseText (SourceText.From (input));
+			var doc = Formatter.Format (inputTree.GetRoot (), new TextSpan (startOffset, endOffset - startOffset), RoslynTypeSystemService.Workspace);
+			var result = doc.ToFullString ();
+			return result.Substring (startOffset, endOffset + result.Length - input.Length);
 		}
 
 		public override string FormatText (PolicyContainer policyParent, IEnumerable<string> mimeTypeChain, string input, int startOffset, int endOffset)

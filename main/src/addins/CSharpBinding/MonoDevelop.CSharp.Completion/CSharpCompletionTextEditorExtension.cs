@@ -48,10 +48,11 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
 using System.Threading;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, ITextEditorMemberPositionProvider, IDebuggerExpressionResolver
+	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IDebuggerExpressionResolver
 	{
 	
 		public MonoDevelop.Projects.Project Project {
@@ -119,11 +120,6 @@ namespace MonoDevelop.CSharp.Completion
 		public override void Dispose ()
 		{
 			DocumentContext.DocumentParsed -= HandleDocumentParsed;
-			if (unstableTypeSystemSegmentTree != null) {
-				unstableTypeSystemSegmentTree.RemoveListener ();
-				unstableTypeSystemSegmentTree = null;
-			}
-
 			if (validTypeSystemSegmentTree != null) {
 				validTypeSystemSegmentTree.RemoveListener ();
 				validTypeSystemSegmentTree = null;
@@ -1228,16 +1224,15 @@ namespace MonoDevelop.CSharp.Completion
 		#region TypeSystemSegmentTree
 
 		TypeSystemSegmentTree validTypeSystemSegmentTree;
-		TypeSystemSegmentTree unstableTypeSystemSegmentTree;
 
 		internal class TypeSystemTreeSegment : TreeSegment
 		{
-			public ISymbol Entity {
+			public SyntaxNode Entity {
 				get;
 				private set;
 			}
 			
-			public TypeSystemTreeSegment (int offset, int length, ISymbol entity) : base (offset, length)
+			public TypeSystemTreeSegment (int offset, int length, SyntaxNode entity) : base (offset, length)
 			{
 				this.Entity = entity;
 			}
@@ -1246,8 +1241,6 @@ namespace MonoDevelop.CSharp.Completion
 		internal TypeSystemTreeSegment GetMemberSegmentAt (int offset)
 		{
 			TypeSystemTreeSegment result = null;
-			if (unstableTypeSystemSegmentTree != null)
-				result = unstableTypeSystemSegmentTree.GetMemberSegmentAt (offset);
 			if (result == null && validTypeSystemSegmentTree != null)
 				result = validTypeSystemSegmentTree.GetMemberSegmentAt (offset);
 			return result;
@@ -1255,20 +1248,10 @@ namespace MonoDevelop.CSharp.Completion
 		
 		internal class TypeSystemSegmentTree : SegmentTree<TypeSystemTreeSegment>
 		{
-			public ITypeSymbol GetTypeAt (int offset)
-			{
-				ITypeSymbol result = null;
-				foreach (var seg in GetSegmentsAt (offset).Where (s => s.Entity is ITypeSymbol)) {
-					if (result == null /*|| result.Locations.Any (l => l.Span).IsInside (seg.Entity.Region.Begin)*/)
-						result = (ITypeSymbol)seg.Entity;
-				}
-				return result;
-			}
-			
-			public ISymbol GetMemberAt (int offset)
+			public SyntaxNode GetMemberAt (int offset)
 			{
 				// Members don't overlap
-				var seg = GetSegmentsAt (offset).FirstOrDefault (s => !(s.Entity is ITypeSymbol));
+				var seg = GetSegmentsAt (offset).FirstOrDefault ();
 				if (seg == null)
 					return null;
 				return seg.Entity;
@@ -1276,146 +1259,99 @@ namespace MonoDevelop.CSharp.Completion
 			
 			public TypeSystemTreeSegment GetMemberSegmentAt (int offset)
 			{
-				// Members don't overlap
-				var seg = GetSegmentsAt (offset).FirstOrDefault (s => !(s.Entity is ITypeSymbol));
-				if (seg == null)
-					return null;
-				return seg;
+				return GetSegmentsAt (offset).LastOrDefault ();
 			}
 			
 			
 			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext ctx, SemanticModel semanticModel)
 			{
-				TypeSystemSegmentTree result = new TypeSystemSegmentTree ();
-				
-//				foreach (var type in semanticModel.SyntaxTree)
-//					AddType (document, result, type, type.lo);
-//				
-				return result;
+				var visitor = new TreeVisitor ();
+				visitor.Visit (semanticModel.SyntaxTree.GetRoot ()); 
+				return visitor.Result;
+			}
+
+			class TreeVisitor : CSharpSyntaxWalker
+			{
+				public TypeSystemSegmentTree Result = new TypeSystemSegmentTree ();
+
+				public override void VisitClassDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.ClassDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+					base.VisitClassDeclaration (node);
+				}
+				public override void VisitStructDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.StructDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+					base.VisitStructDeclaration (node);
+				}
+
+				public override void VisitInterfaceDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.InterfaceDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+					base.VisitInterfaceDeclaration (node);
+				}
+
+				public override void VisitEnumDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.EnumDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitPropertyDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitMethodDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.MethodDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitConstructorDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.ConstructorDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitDestructorDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.DestructorDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitIndexerDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.IndexerDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitDelegateDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.DelegateDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitOperatorDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.OperatorDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitEventDeclaration (Microsoft.CodeAnalysis.CSharp.Syntax.EventDeclarationSyntax node)
+				{
+					Result.Add (new TypeSystemTreeSegment (node.SpanStart, node.Span.Length, node));
+				}
+
+				public override void VisitBlock (Microsoft.CodeAnalysis.CSharp.Syntax.BlockSyntax node)
+				{
+					// nothing
+				}
 			}
 			
-			static void AddType (MonoDevelop.Ide.Gui.Document document, TypeSystemSegmentTree result, ITypeSymbol type, TextSpan seg)
-			{
-				int offset = seg.Start;
-				int endOffset = seg.End;
-				if (endOffset < offset)
-					endOffset = int.MaxValue;
-				result.Add (new TypeSystemTreeSegment (offset, endOffset - offset, type));
-				foreach (var entity in type.GetMembers ()) {
-					var span = entity.Locations.First ().SourceSpan;
-					result.Add (new TypeSystemTreeSegment (span.Start, span.Length, entity));
-				}
-				
-				foreach (var nested in type.GetTypeMembers ())
-					AddType (document, result, nested, nested.Locations.First ().SourceSpan);
-			}
 		}
 		
-		public ITypeSymbol GetTypeAt (int offset)
+		public SyntaxNode GetMemberAt (int offset)
 		{
-			if (unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
-				return null;
-			ITypeSymbol type = null;
-			if (unstableTypeSystemSegmentTree != null)
-				type = unstableTypeSystemSegmentTree.GetTypeAt (offset);
-			if (type == null && validTypeSystemSegmentTree != null)
-				type = validTypeSystemSegmentTree.GetTypeAt (offset);
-			return type;
-		}
-			
-		public ISymbol GetMemberAt (int offset)
-		{
-			if (unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
-				return null;
-
-			ISymbol member = null;
-			if (unstableTypeSystemSegmentTree != null)
-				member = unstableTypeSystemSegmentTree.GetMemberAt (offset);
+			SyntaxNode member = null;
 			if (member == null && validTypeSystemSegmentTree != null)
 				member = validTypeSystemSegmentTree.GetMemberAt (offset);
 
 			return member;
 		}
 		#endregion
-
-
-//		class CompletionContextProvider : ICompletionContextProvider
-//		{
-//			MonoDevelop.Ide.Gui.Document document;
-//			TypeSystemSegmentTree validTypeSystemSegmentTree;
-//			TypeSystemSegmentTree unstableTypeSystemSegmentTree;
-//
-//			public CompletionContextProvider (MonoDevelop.Ide.Gui.Document document, TypeSystemSegmentTree validTypeSystemSegmentTree, TypeSystemSegmentTree unstableTypeSystemSegmentTree)
-//			{
-//				this.document = document;
-//				this.validTypeSystemSegmentTree = validTypeSystemSegmentTree;
-//				this.unstableTypeSystemSegmentTree = unstableTypeSystemSegmentTree;
-//			}
-//
-//			IList<string> ICompletionContextProvider.ConditionalSymbols {
-//				get {
-//					return document.ParsedDocument.GetAst<SyntaxTree> ().ConditionalSymbols;
-//				}
-//			}
-//
-//			void ICompletionContextProvider.GetCurrentMembers (int offset, out IUnresolvedTypeDefinition currentType, out IUnresolvedMember currentMember)
-//			{
-//				currentType = GetTypeAt (offset);
-//				currentMember = GetMemberAt (offset);
-//			}
-//
-//			public IUnresolvedTypeDefinition GetTypeAt (int offset)
-//			{
-//				if (unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
-//					return null;
-//				IUnresolvedTypeDefinition type = null;
-//				if (unstableTypeSystemSegmentTree != null)
-//					type = unstableTypeSystemSegmentTree.GetTypeAt (offset);
-//				if (type == null && validTypeSystemSegmentTree != null)
-//					type = validTypeSystemSegmentTree.GetTypeAt (offset);
-//				return type;
-//			}
-//
-//			public IUnresolvedMember GetMemberAt (int offset)
-//			{
-//				if (unstableTypeSystemSegmentTree == null && validTypeSystemSegmentTree == null)
-//					return null;
-//
-//				IUnresolvedMember member = null;
-//				if (unstableTypeSystemSegmentTree != null)
-//					member = unstableTypeSystemSegmentTree.GetMemberAt (offset);
-//				if (member == null && validTypeSystemSegmentTree != null)
-//					member = validTypeSystemSegmentTree.GetMemberAt (offset);
-//				return member;
-//			}
-//
-//			Tuple<string, TextLocation> ICompletionContextProvider.GetMemberTextToCaret (int caretOffset, IUnresolvedTypeDefinition currentType, IUnresolvedMember currentMember)
-//			{
-//				int startOffset;
-//				if (currentMember != null && currentType != null && currentType.Kind != TypeKind.Enum) {
-//					startOffset = document.Editor.LocationToOffset(currentMember.Region.Begin);
-//				} else if (currentType != null) {
-//					startOffset = document.Editor.LocationToOffset(currentType.Region.Begin);
-//				} else {
-//					startOffset = 0;
-//				}
-//				while (startOffset > 0) {
-//					char ch = document.Editor.GetCharAt(startOffset - 1);
-//					if (ch != ' ' && ch != '\t') {
-//						break;
-//					}
-//					--startOffset;
-//				}
-//				return Tuple.Create (caretOffset > startOffset ? document.Editor.GetTextAt (startOffset, caretOffset - startOffset) : "", 
-//				                     (TextLocation)document.Editor.OffsetToLocation (startOffset));
-//			}
-//
-//
-//			CSharpAstResolver ICompletionContextProvider.GetResolver (CSharpResolver resolver, AstNode rootNode)
-//			{
-//				return new CSharpAstResolver (resolver, rootNode, document.ParsedDocument.ParsedFile as CSharpUnresolvedFile);
-//			}
-//		}
-
 	}
 }

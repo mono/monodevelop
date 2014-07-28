@@ -61,6 +61,11 @@ namespace MonoDevelop.Ide.Editor
 			get;
 		}
 
+		public Microsoft.CodeAnalysis.Workspace RoslynWorkspace {
+			get {
+				return RoslynTypeSystemService.Workspace;
+			}
+		}
 
 		/// <summary>
 		/// Returns the roslyn document for this document. This may return <c>null</c> if it's no compileable document.
