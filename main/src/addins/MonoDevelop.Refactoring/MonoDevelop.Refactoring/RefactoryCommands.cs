@@ -114,11 +114,16 @@ namespace MonoDevelop.Refactoring
 			var unit = await document.GetSemanticModelAsync (cancellationToken);
 			if (unit != null) {
 				var root = await unit.SyntaxTree.GetRootAsync (cancellationToken);
-				var token = root.FindToken (offset);
 
-				return new RefactoringSymbolInfo (unit.GetSymbolInfo (token.Parent)) {
-					DeclaredSymbol = unit.GetDeclaredSymbol (token.Parent)
-				};
+				try {
+					var token = root.FindToken (offset);
+
+					return new RefactoringSymbolInfo (unit.GetSymbolInfo (token.Parent)) {
+						DeclaredSymbol = unit.GetDeclaredSymbol (token.Parent)
+					};
+				} catch (Exception) {
+					return RefactoringSymbolInfo.Empty;
+				}
 			}
 			return RefactoringSymbolInfo.Empty;
 		}

@@ -480,8 +480,12 @@ namespace MonoDevelop.CSharp
 			var segType = compExt.GetTypeAt (caretOffset);
 
 			var root = unit.GetRoot ();
-			var token = root.FindNode (TextSpan.FromBounds (caretOffset, caretOffset));
-
+			SyntaxNode token;
+			try {
+				token = root.FindNode (TextSpan.FromBounds (caretOffset, caretOffset));
+			} catch (Exception) {
+				return;
+			}
 			var curMember = token.AncestorsAndSelf ().FirstOrDefault (m => m is MemberDeclarationSyntax && !(m is NamespaceDeclarationSyntax));
 			var curType = token.AncestorsAndSelf ().FirstOrDefault (m => m is TypeDeclarationSyntax || m is DelegateDeclarationSyntax);
 

@@ -224,25 +224,19 @@ namespace MonoDevelop.CSharp.Completion
 				if (analysisDocument == null)
 					return null;
 
-				Compilation compilation;
-				compilation = await DocumentContext.GetCompilationAsync (token); 
-
-				if (compilation != null) {
-					var syntaxTree = await analysisDocument.GetSyntaxTreeAsync (token);
-					var engine = new CompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
-					
-					var completionResult = engine.GetCompletionData (analysisDocument, compilation.GetSemanticModel (syntaxTree), offset, ctrlSpace, token);
-					foreach (var symbol in completionResult) {
-						list.Add (symbol); 
-					}
-					list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
-					// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
-					list.AutoSelect = completionResult.AutoSelect;
-					list.DefaultCompletionString = completionResult.DefaultCompletionString;
-					// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
-					if (ctrlSpace)
-						list.AutoCompleteUniqueMatch = true;
+				var semanticModel = await analysisDocument.GetSemanticModelAsync (token);
+				var engine = new CompletionEngine (RoslynTypeSystemService.Workspace, new RoslynCodeCompletionFactory (this));
+				var completionResult = engine.GetCompletionData (analysisDocument, semanticModel, offset, ctrlSpace, token);
+				foreach (var symbol in completionResult) {
+					list.Add (symbol); 
 				}
+				list.AutoCompleteEmptyMatch = completionResult.AutoCompleteEmptyMatch;
+				// list.AutoCompleteEmptyMatchOnCurlyBrace = completionResult.AutoCompleteEmptyMatchOnCurlyBracket;
+				list.AutoSelect = completionResult.AutoSelect;
+				list.DefaultCompletionString = completionResult.DefaultCompletionString;
+				// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
+				if (ctrlSpace)
+					list.AutoCompleteUniqueMatch = true;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
 			}
@@ -488,16 +482,12 @@ namespace MonoDevelop.CSharp.Completion
 				return null;
 
 			try {
-				var compilation = await DocumentContext.GetCompilationAsync (token); 
-
-				if (compilation != null) {
-					var analysisDocument = DocumentContext.AnalysisDocument;
-					if (analysisDocument == null)
-						return null;
-					var syntaxTree = analysisDocument.GetSyntaxTreeAsync ().Result;
-					var engine = new ParameterHintingEngine (RoslynTypeSystemService.Workspace, new RoslynParameterHintingFactory ());
-					return engine.GetParameterDataProvider (analysisDocument, compilation.GetSemanticModel (syntaxTree), offset, token);
-				}
+				var analysisDocument = DocumentContext.AnalysisDocument;
+				if (analysisDocument == null)
+					return null;
+				var semanticModel = await analysisDocument.GetSemanticModelAsync ();
+				var engine = new ParameterHintingEngine (RoslynTypeSystemService.Workspace, new RoslynParameterHintingFactory ());
+				return engine.GetParameterDataProvider (analysisDocument, semanticModel, offset, token);
 			} catch (Exception e) {
 				LoggingService.LogError ("Unexpected parameter completion exception." + Environment.NewLine + 
 					"FileName: " + DocumentContext.Name + Environment.NewLine + 
