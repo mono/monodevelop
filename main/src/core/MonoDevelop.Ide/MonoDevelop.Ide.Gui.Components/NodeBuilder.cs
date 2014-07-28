@@ -29,6 +29,7 @@
 using System;
 
 using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -154,6 +155,30 @@ namespace MonoDevelop.Ide.Gui.Components
 
 	public class NodeInfo
 	{
+		public NodeInfo ()
+		{
+			Reset ();
+		}
+
+		public void Reset ()
+		{
+			Label = string.Empty;
+			Icon = CellRendererImage.NullImage;
+			ClosedIcon = CellRendererImage.NullImage;
+			OverlayBottomLeft = CellRendererImage.NullImage;
+			OverlayBottomRight = CellRendererImage.NullImage;
+			OverlayTopLeft = CellRendererImage.NullImage;
+			OverlayTopRight = CellRendererImage.NullImage;
+			StatusIcon = CellRendererImage.NullImage;
+			StatusMessage = null;
+		}
+
+		internal static readonly NodeInfo Empty = new NodeInfo ();
+
+		internal bool IsShared {
+			get { return this == Empty; }
+		}
+
 		public string Label { get; set; }
 		public Xwt.Drawing.Image Icon { get; set; }
 		public Xwt.Drawing.Image ClosedIcon { get; set; }
@@ -161,5 +186,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		public Xwt.Drawing.Image OverlayBottomRight { get; set; }
 		public Xwt.Drawing.Image OverlayTopLeft { get; set; }
 		public Xwt.Drawing.Image OverlayTopRight { get; set; }
+		public Xwt.Drawing.Image StatusIcon { get; set; }
+		public string StatusMessage { get; set; }
 	}
 }

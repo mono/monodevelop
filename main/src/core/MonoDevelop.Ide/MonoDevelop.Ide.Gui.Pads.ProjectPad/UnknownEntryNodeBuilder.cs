@@ -64,8 +64,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				nodeInfo.Label = GettextCatalog.GetString ("<span foreground='grey'>{0} <span size='small'>(Unavailable)</span></span>", GLib.Markup.EscapeText (entry.Name));
 			}
 			else if (entry.LoadError.Length > 0) {
-				nodeInfo.Icon = Context.GetIcon (Gtk.Stock.DialogError);
-				nodeInfo.Label = GettextCatalog.GetString ("{0} <span foreground='red' size='small'>(Load failed)</span>", GLib.Markup.EscapeText (entry.Name));
+				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project).WithAlpha (0.5);
+				nodeInfo.Label = entry.Name;
+				nodeInfo.StatusIcon = Context.GetIcon (Gtk.Stock.DialogError).WithSize (10, 10);
+				nodeInfo.StatusMessage = GettextCatalog.GetString ("Load failed: ") + entry.LoadError;
 			} else {
 				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project);
 				var gicon = Context.GetComposedIcon (nodeInfo.Icon, "fade");
@@ -76,19 +78,6 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				nodeInfo.Icon = gicon;
 				nodeInfo.Label = GLib.Markup.EscapeText (entry.Name);
 			}
-		}
-		
-		public override bool HasChildNodes (ITreeBuilder builder, object dataObject)
-		{
-			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
-			return !(entry is UnloadedSolutionItem) && entry.LoadError.Length > 0;
-		}
-		
-		public override void BuildChildNodes (ITreeBuilder treeBuilder, object dataObject)
-		{
-			UnknownSolutionItem entry = (UnknownSolutionItem) dataObject;
-			if (!(entry is UnloadedSolutionItem) && entry.LoadError.Length > 0)
-				treeBuilder.AddChild (new TreeViewItem (GLib.Markup.EscapeText (entry.LoadError)));
 		}
 
 		public override string GetNodeName (ITreeNavigator thisNode, object dataObject)
