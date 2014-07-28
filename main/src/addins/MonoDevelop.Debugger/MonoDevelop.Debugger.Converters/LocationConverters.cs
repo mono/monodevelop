@@ -43,6 +43,7 @@ namespace MonoDevelop.Debugger.Converters
 		{
 			return val.TypeName != null && (
 			    val.TypeName == "Android.Locations.Location" ||
+			    val.TypeName == "Android.Gms.Maps.Model.LatLng" ||
 			    val.TypeName.EndsWith ("CoreLocation.CLLocationCoordinate2D") ||
 			    val.TypeName.EndsWith ("CoreLocation.CLLocation"));
 		}
