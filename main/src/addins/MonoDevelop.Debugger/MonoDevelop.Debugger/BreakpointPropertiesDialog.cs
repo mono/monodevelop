@@ -46,6 +46,13 @@ namespace MonoDevelop.Debugger
 		ExpressionChanges
 	}
 
+	public enum BreakpointType
+	{
+		Location,
+		Function,
+		Catchpoint
+	}
+
 	sealed class BreakpointPropertiesDialog : Dialog
 	{
 		// For button sensitivity.
@@ -193,15 +200,29 @@ namespace MonoDevelop.Debugger
 		string parsedFunction;
 		readonly HashSet<string> classes = new HashSet<string> ();
 
-
-		public BreakpointPropertiesDialog (BreakEvent be)
+		public BreakpointPropertiesDialog (BreakEvent be, BreakpointType breakpointType)
 		{
 			this.be = be;
-
 			LoadExceptionList ();
 			Initialize ();
 			SetInitialData ();
 			SetLayout ();
+			if (be == null) {
+				switch (breakpointType) {
+				case BreakpointType.Location:
+					stopOnLocation.Active = true;
+					entryLocationFile.SetFocus ();
+					break;
+				case BreakpointType.Function:
+					stopOnFunction.Active = true;
+					entryFunctionName.SetFocus ();
+					break;
+				case BreakpointType.Catchpoint:
+					stopOnException.Active = true;
+					entryExceptionType.SetFocus ();
+					break;
+				}
+			}
 		}
 
 		void Initialize ()

@@ -1,5 +1,5 @@
 ﻿//
-// IExtendedTitleBarWindowBackend.cs
+// CrashReporter.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -23,44 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using Xwt.Backends;
-using Xwt.GtkBackend;
+using Mono.Addins;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Components.Extensions
+namespace MonoDevelop.Core.LogReporting
 {
-	public interface IExtendedTitleBarWindowBackend: IWindowBackend
+	[TypeExtensionPoint]
+	public abstract class CrashReporter
 	{
-		void SetHeaderContent (IWidgetBackend backend);
-	}
-
-	class GtkExtendedTitleBarWindowBackend: WindowBackend, IExtendedTitleBarWindowBackend
-	{
-		HeaderBox toolbar;
-
-		public override void Initialize ()
-		{
-			base.Initialize ();
-			toolbar = new HeaderBox ();
-			toolbar.GradientBackground = true;
-			toolbar.SetMargins (0, 1, 0, 0);
-			MainBox.PackStart (toolbar, false, false, 0);
-			((Gtk.Box.BoxChild)MainBox [toolbar]).Position = 0;
-		}
-
-		public void SetHeaderContent (IWidgetBackend backend)
-		{
-			if (toolbar.Child != null) {
-				WidgetBackend.RemoveChildPlacement (toolbar.Child);
-				toolbar.Remove (toolbar.Child);
-			}
-			if (backend != null) {
-				toolbar.Child = WidgetBackend.GetWidgetWithPlacement (backend);
-				toolbar.Show ();
-			} else {
-				toolbar.Hide ();
-			}
-		}
+		public abstract void ReportCrash (Exception ex, bool willShutDown, IEnumerable<string> tags);
 	}
 }
 

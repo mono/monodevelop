@@ -30,6 +30,15 @@ using System;
 
 namespace MonoDevelop.Components.Commands
 {
+	public enum CommandEntryDisplayType
+	{
+		Default,
+		TextOnly,
+		IconOnly,
+		IconHasPriority,
+		IconAndText
+	}
+
 	public class CommandEntry
 	{
 		object cmdId;
@@ -65,6 +74,11 @@ namespace MonoDevelop.Components.Commands
 		public bool DisabledVisible {
 			get { return disabledVisible; }
 			set { disabledVisible = value; }
+		}
+
+		public CommandEntryDisplayType DispayType {
+			get;
+			set;
 		}
 		
 		public virtual Command GetCommand (CommandManager manager)

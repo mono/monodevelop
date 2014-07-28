@@ -102,7 +102,15 @@
 				icon="md-step-out-debug"/>
 		<Command id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint"
 				defaultHandler = "MonoDevelop.Debugger.NewBreakpointHandler"
-				_label = "New Breakpoint..."
+				_label = "New Breakpoint"
+				icon = "md-breakpoint-new" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.NewFunctionBreakpoint"
+				defaultHandler = "MonoDevelop.Debugger.NewFunctionBreakpointHandler"
+				_label = "New Function Breakpoint"
+				icon = "md-breakpoint-new" />
+		<Command id = "MonoDevelop.Debugger.DebugCommands.NewCatchpoint"
+				defaultHandler = "MonoDevelop.Debugger.NewCatchpointHandler"
+				_label = "New Exception Catchpoint"
 				icon = "md-breakpoint-new" />
 		<Command id = "MonoDevelop.Debugger.DebugCommands.RemoveBreakpoint"
 				defaultHandler = "MonoDevelop.Debugger.RemoveBreakpointHandler"
@@ -183,6 +191,9 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowCurrentExecutionLine" />
 		<SeparatorItem id = "MonoDevelop.Debugger.BreakpointsSection" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewFunctionBreakpoint" />
+		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.NewCatchpoint" />
+		<CommandItem id = "Pad|MonoDevelop.Debugger.BreakpointPad" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ToggleBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.EnableDisableBreakpoint" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
