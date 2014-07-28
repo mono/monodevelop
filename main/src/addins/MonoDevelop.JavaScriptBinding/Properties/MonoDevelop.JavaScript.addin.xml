@@ -29,4 +29,9 @@
 	<Extension path="/MonoDevelop/Ide/CompletionCharacters">
 		<Complete language="JavaScript" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\" />
 	</Extension>
+	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<Condition id="FileType" fileExtensions=".js">
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
+		</Condition>
+	</Extension>
 </ExtensionModel>

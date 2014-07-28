@@ -11,3 +11,5 @@
 [assembly:AddinDependency ("Core", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("Ide", MonoDevelop.BuildInfo.Version)]
 [assembly:AddinDependency ("DesignerSupport", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("Refactoring", MonoDevelop.BuildInfo.Version)]
+[assembly:AddinDependency ("SourceEditor2", MonoDevelop.BuildInfo.Version)]
