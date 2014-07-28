@@ -1283,10 +1283,18 @@ namespace MonoDevelop.Debugger
 
 		void SetPreviewButtonIcon (PreviewButtonIcons icon, TreeIter it = default(TreeIter))
 		{
-			if (PreviewWindowManager.IsVisible && icon != PreviewButtonIcons.Active) {
-				return;
+			if (!it.Equals (TreeIter.Zero)) {
+				var obj = Model.GetValue (it, ObjectColumn) as ObjectValue;
+				if (obj == null)
+					icon = PreviewButtonIcons.Hidden;
+				if (obj.IsPrimitive && obj.TypeName != "string")
+					icon = PreviewButtonIcons.Hidden;
+				if (obj.IsNull)
+					icon = PreviewButtonIcons.Hidden;
+				if (string.IsNullOrEmpty (obj.TypeName))
+					icon = PreviewButtonIcons.Hidden;
 			}
-			if (Model.GetValue (it, ObjectColumn) == null) {
+			if (PreviewWindowManager.IsVisible && icon != PreviewButtonIcons.Active) {
 				return;
 			}
 			if (currentIcon != icon || !currentHoverIter.Equals (it)) {
