@@ -24,12 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using MonoDevelop.Ide.Tasks;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Components
 {
 	public class TooltipPopoverWindow: PopoverWindow
 	{
 		Gtk.Label label;
+		TaskSeverity? severity;
+		bool hasMarkup;
+		string text;
 
 		public TooltipPopoverWindow ()
 		{
@@ -40,23 +45,55 @@ namespace MonoDevelop.Components
 
 		public string Text {
 			get {
-				return label != null ? label.Text : string.Empty;
+				return text;
 			}
 			set {
+				hasMarkup = false;
+				text = value;
 				AddLabel ();
-				label.Text = value;
+				UpdateLabel ();
 				AdjustSize ();
 			}
 		}
 
 		public string Markup {
 			get {
-				return label != null ? label.Text : string.Empty;
+				return text;
 			}
 			set {
+				hasMarkup = true;
+				text = value;
 				AddLabel ();
-				label.Markup = value;
+				UpdateLabel ();
 				AdjustSize ();
+			}
+		}
+
+		public TaskSeverity? Severity {
+			get { return severity; }
+			set {
+				severity = value;
+				UpdateLabel ();
+				if (severity.HasValue) {
+					Theme.BorderColor = new Cairo.Color (0, 0, 0, 0);
+					switch (severity.Value) {
+					case TaskSeverity.Information:
+						Theme.SetFlatColor (Styles.PopoverWindow.InformationBackgroundColor);
+						break;
+					case TaskSeverity.Comment:
+						Theme.SetFlatColor (Styles.PopoverWindow.InformationBackgroundColor);
+						break;
+					case TaskSeverity.Error:
+						Theme.SetFlatColor (Styles.PopoverWindow.ErrorBackgroundColor);
+						return;
+					case TaskSeverity.Warning:
+						Theme.SetFlatColor (Styles.PopoverWindow.WarningBackgroundColor);
+						return;
+					}
+				} else {
+					Theme.SetFlatColor (new Cairo.Color (1d, 243d / 255d, 207d / 255d, 0.9d));
+					Theme.BorderColor = new Cairo.Color (128d/255d, 122d / 255d, 104d / 255d);
+				}
 			}
 		}
 
@@ -70,6 +107,27 @@ namespace MonoDevelop.Components
 				ContentBox.Add (al);
 				al.ShowAll ();
 			}
+		}
+
+		void UpdateLabel ()
+		{
+			if (severity.HasValue) {
+				string msg = hasMarkup ? text : GLib.Markup.EscapeText (text);
+				switch (severity.Value) {
+				case TaskSeverity.Information:
+				case TaskSeverity.Comment:
+				case TaskSeverity.Error:
+					label.Markup = "<b><span color='white'>" + text + "</span></b>";
+					return;
+				case TaskSeverity.Warning:
+					label.Markup = "<b><span color='#221d0f'>" + text + "</span></b>";
+					return;
+				}
+			}
+			if (hasMarkup)
+				label.Markup = text;
+			else
+				label.Text = text;
 		}
 
 		void AdjustSize ()

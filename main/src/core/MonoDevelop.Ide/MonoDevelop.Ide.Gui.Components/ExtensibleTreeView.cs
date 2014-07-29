@@ -50,6 +50,7 @@ using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
 using Mono.TextEditor;
 using System.Linq;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -249,9 +250,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
 			var cell = (ZoomableCellRendererPixbuf)renderer;
 
-			cell.Image = info.Icon;
-			cell.ImageExpanderOpen = info.Icon;
-			cell.ImageExpanderClosed = info.ClosedIcon;
+			cell.Image = info.Icon != null && info.Icon != CellRendererImage.NullImage && info.DisabledStyle ? info.Icon.WithAlpha (0.5) : info.Icon;
+			cell.ImageExpanderOpen = cell.Image;
+			cell.ImageExpanderClosed = info.ClosedIcon != null && info.ClosedIcon != CellRendererImage.NullImage && info.DisabledStyle ? info.ClosedIcon.WithAlpha (0.5) : info.ClosedIcon;
 			cell.OverlayBottomLeft = info.OverlayBottomLeft;
 			cell.OverlayBottomRight = info.OverlayBottomRight;
 			cell.OverlayTopLeft = info.OverlayTopLeft;
@@ -263,8 +264,12 @@ namespace MonoDevelop.Ide.Gui.Components
 			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
 			var cell = (CustomCellRendererText)renderer;
 
-			cell.TextMarkup = info.Label;
-			cell.StatusIcon = info.StatusIcon;
+			if (info.DisabledStyle)
+				cell.TextMarkup = "<span foreground='gray'>" + info.Label + "</span>";
+			else
+				cell.TextMarkup = info.Label;
+
+			cell.StatusIcon = info.StatusIconInternal;
 			cell.ShowPopupButton = (bool)model.GetValue (it, ShowPopupColumn);
 		}
 
@@ -441,7 +446,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				Gtk.TreeIter it;
 				if (store.GetIter (out it, path)) {
 					var info = (NodeInfo)store.GetValue (it, NodeInfoColumn);
-					if (info.StatusIcon != CellRendererImage.NullImage && info.StatusIcon != null) {
+					if (info.StatusIconInternal != CellRendererImage.NullImage && info.StatusIconInternal != null) {
 						var cellArea = tree.GetCellArea (path, tree.Columns [0]);
 						int sp, w;
 						col.CellGetPosition (text_render, out sp, out w);
@@ -474,7 +479,8 @@ namespace MonoDevelop.Ide.Gui.Components
 
 			statusPopover = new TooltipPopoverWindow {
 				ShowArrow = true,
-				Text = info.StatusMessage
+				Text = info.StatusMessage,
+				Severity = info.StatusSeverity
 			};
 			statusPopover.ShowPopup (this, rect, PopupPosition.Bottom);
 		}

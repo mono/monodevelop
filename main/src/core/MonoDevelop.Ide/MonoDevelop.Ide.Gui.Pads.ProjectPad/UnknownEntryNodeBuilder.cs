@@ -36,6 +36,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using System.Linq;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -66,7 +67,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			else if (entry.LoadError.Length > 0) {
 				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project).WithAlpha (0.5);
 				nodeInfo.Label = entry.Name;
-				nodeInfo.StatusIcon = Context.GetIcon (Gtk.Stock.DialogError).WithSize (10, 10);
+				nodeInfo.StatusSeverity = TaskSeverity.Error;
 				nodeInfo.StatusMessage = GettextCatalog.GetString ("Load failed: ") + entry.LoadError;
 			} else {
 				nodeInfo.Icon = Context.GetIcon (MonoDevelop.Ide.Gui.Stock.Project);

@@ -30,6 +30,7 @@ using System;
 
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
@@ -171,6 +172,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			OverlayTopRight = CellRendererImage.NullImage;
 			StatusIcon = CellRendererImage.NullImage;
 			StatusMessage = null;
+			StatusSeverity = null;
+			DisabledStyle = false;
 		}
 
 		internal static readonly NodeInfo Empty = new NodeInfo ();
@@ -188,5 +191,27 @@ namespace MonoDevelop.Ide.Gui.Components
 		public Xwt.Drawing.Image OverlayTopRight { get; set; }
 		public Xwt.Drawing.Image StatusIcon { get; set; }
 		public string StatusMessage { get; set; }
+		public TaskSeverity? StatusSeverity { get; set; }
+		public bool DisabledStyle { get; set; }
+		 
+		internal Xwt.Drawing.Image StatusIconInternal {
+			get { 
+				if (StatusIcon != null && StatusIcon != CellRendererImage.NullImage)
+					return StatusIcon;
+				if (StatusSeverity.HasValue) {
+					switch (StatusSeverity.Value) {
+					case TaskSeverity.Error:
+						return ImageService.GetIcon (Stock.StatusError);
+					case TaskSeverity.Warning:
+						return ImageService.GetIcon (Stock.StatusWarning);
+					case TaskSeverity.Information:
+						return ImageService.GetIcon (Stock.Information);
+					case TaskSeverity.Comment:
+						return ImageService.GetIcon (Stock.Information);
+					}
+				}
+				return CellRendererImage.NullImage;
+			}
+		}
 	}
 }
