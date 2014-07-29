@@ -73,14 +73,13 @@ namespace MonoDevelop.Debugger
 		double valueColWidth;
 		double typeColWidth;
 
-		readonly CellRendererText crtExp;
+		readonly CellRendererTextWithIcon crtExp;
 		readonly CellRendererText crtValue;
 		readonly CellRendererText crtType;
 		readonly CellRendererRoundedButton crpButton;
 		readonly CellRendererImage crpPin;
 		readonly CellRendererImage crpLiveUpdate;
 		readonly CellRendererImage crpViewer;
-		readonly CellRendererImage crpPreviewButton;
 		Entry editEntry;
 		Mono.Debugging.Client.CompletionData currentCompletionData;
 		
@@ -133,6 +132,52 @@ namespace MonoDevelop.Debugger
 			menuSet.AddItem (EditCommands.Copy);
 			menuSet.AddItem (EditCommands.Rename);
 			menuSet.AddItem (EditCommands.DeleteKey);
+		}
+
+		class CellRendererTextWithIcon : CellRendererText{
+
+			IconId icon;
+
+			[GLib.Property ("icon")]
+			public string Icon {
+				get {
+					return icon;
+				}
+				set {
+					icon = value;
+				}
+			}
+
+			Xwt.Drawing.Image img {
+				get {
+					return ImageService.GetIcon (icon, IconSize.Menu);
+				}
+			}
+
+			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				if (!icon.IsNull)
+					width += (int)(Xpad * 2 + img.Width);
+			}
+
+			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
+			{
+				base.Render (window, widget, background_area, cell_area, expose_area, flags);
+				if (!icon.IsNull) {
+					using (var ctx = Gdk.CairoHelper.Create (window)) {
+						var layout = new Pango.Layout (widget.PangoContext);
+						layout.FontDescription = FontDesc.Copy ();
+						layout.FontDescription.Family = Family;
+						layout.SetText (Text);
+						int w, h;
+						layout.GetPixelSize (out w, out h);
+						var x = cell_area.X + w + 3 * Xpad;
+						var y = cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
+						ctx.DrawImage (widget, img, x, y);
+					}
+				}
+			}
 		}
 
 		class CellRendererTextUrl : CellRendererText{
@@ -253,19 +298,16 @@ namespace MonoDevelop.Debugger
 			var crp = new CellRendererImage ();
 			expCol.PackStart (crp, false);
 			expCol.AddAttribute (crp, "stock_id", IconColumn);
-			crtExp = new CellRendererText ();
+			crtExp = new CellRendererTextWithIcon ();
 			expCol.PackStart (crtExp, true);
 			expCol.AddAttribute (crtExp, "text", NameColumn);
 			expCol.AddAttribute (crtExp, "editable", NameEditableColumn);
 			expCol.AddAttribute (crtExp, "foreground", NameColorColumn);
+			expCol.AddAttribute (crtExp, "icon", PreviewIconColumn);
 			expCol.Resizable = true;
 			expCol.Sizing = TreeViewColumnSizing.Fixed;
 			expCol.MinWidth = 15;
 			expCol.AddNotification ("width", OnColumnWidthChanged);
-//			expCol.Expand = true;
-			crpPreviewButton = new CellRendererImage ();
-			expCol.PackStart (crpPreviewButton, false);
-			expCol.AddAttribute (crpPreviewButton, "stock_id", PreviewIconColumn);
 			AppendColumn (expCol);
 			
 			valueCol = new TreeViewColumn ();
@@ -1285,14 +1327,16 @@ namespace MonoDevelop.Debugger
 		{
 			if (!it.Equals (TreeIter.Zero)) {
 				var obj = Model.GetValue (it, ObjectColumn) as ObjectValue;
-				if (obj == null)
+				if (obj == null) {
 					icon = PreviewButtonIcons.Hidden;
-				if (obj.IsPrimitive && obj.TypeName != "string")
-					icon = PreviewButtonIcons.Hidden;
-				if (obj.IsNull)
-					icon = PreviewButtonIcons.Hidden;
-				if (string.IsNullOrEmpty (obj.TypeName))
-					icon = PreviewButtonIcons.Hidden;
+				} else {
+					if (obj.IsPrimitive && obj.TypeName != "string")
+						icon = PreviewButtonIcons.Hidden;
+					if (obj.IsNull)
+						icon = PreviewButtonIcons.Hidden;
+					if (string.IsNullOrEmpty (obj.TypeName))
+						icon = PreviewButtonIcons.Hidden;
+				}
 			}
 			if (PreviewWindowManager.IsVisible && icon != PreviewButtonIcons.Active) {
 				return;
@@ -1330,8 +1374,22 @@ namespace MonoDevelop.Debugger
 				if (store.GetIter (out it, path)) {
 					TreeViewColumn col;
 					CellRenderer cr;
-					if (GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && cr == crpPreviewButton) {
-						SetPreviewButtonIcon (PreviewButtonIcons.Hover, it);
+					if (GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && cr == crtExp) {
+						var layout = new Pango.Layout (PangoContext);
+						layout.FontDescription = crtExp.FontDesc.Copy ();
+						layout.FontDescription.Family = crtExp.Family;
+						layout.SetText ((string)store.GetValue (it, NameColumn));
+						int w, h;
+						layout.GetPixelSize (out w, out h);
+						var cellArea = GetCellRendererArea (path, col, cr);
+						var iconXOffset = cellArea.X + w + cr.Xpad * 3;
+						if (iconXOffset < evnt.X &&
+						     iconXOffset + 16 > evnt.X) {
+							SetPreviewButtonIcon (PreviewButtonIcons.Hover, it);
+						} else {
+							SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
+						}
+
 					} else {
 						SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
 					}
@@ -1478,9 +1536,17 @@ namespace MonoDevelop.Debugger
 				if (cr == crpViewer) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					DebuggingService.ShowValueVisualizer (val);
-				} else if (cr == crpPreviewButton) {
+				} else if (cr == crtExp && (store.GetValue (it, PreviewIconColumn) as string) == "md-preview-hover") {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					var rect = GetCellRendererArea (path, col, cr);
+					var layout = new Pango.Layout (PangoContext);
+					layout.FontDescription = crtExp.FontDesc.Copy ();
+					layout.FontDescription.Family = crtExp.Family;
+					layout.SetText ((string)store.GetValue (it, NameColumn));
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					rect.X += (int)(w + cr.Xpad * 3);
+					rect.Width = 16;
 					ConvertTreeToWidgetCoords (rect.X, rect.Y, out rect.X, out rect.Y);
 					rect.X += (int)Hadjustment.Value;
 					rect.Y += (int)Vadjustment.Value;
