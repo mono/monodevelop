@@ -1509,7 +1509,7 @@ namespace Mono.TextEditor
 			cr.SetDash (dotted, (int)y + textEditor.VAdjustment.Value);
 			var top = y;
 			var bottom = y + LineHeight;
-			if (Caret.Line == line.LineNumber && textEditor.Options.HighlightCaretLine) {
+			if (Caret.Line == line.LineNumber && textEditor.GetTextEditorData ().HighlightCaretLine) {
 				top += textEditor.Options.Zoom;
 				bottom -= textEditor.Options.Zoom;
 			}
@@ -1565,7 +1565,7 @@ namespace Mono.TextEditor
 			double xPos = position;
 
 			// The caret line marker must be drawn below the text markers otherwise the're invisible
-			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNumber)
+			if ((HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) && Caret.Line == lineNumber)
 				DrawCaretLineMarker (cr, xPos, y, layout.Width, _lineHeight);
 
 			//		if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Document.GetLine(Caret.Line) != line) {
@@ -2653,7 +2653,7 @@ namespace Mono.TextEditor
 			restart:
 			int logicalRulerColumn = line.GetLogicalColumn (textEditor.GetTextEditorData (), textEditor.Options.RulerColumn);
 
-			if ((HighlightCaretLine || textEditor.Options.HighlightCaretLine) && Caret.Line == lineNr)
+			if ((HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) && Caret.Line == lineNr)
 				DrawCaretLineMarker (cr, x, y, TextStartPosition, _lineHeight);
 
 			foreach (FoldSegment folding in foldings) {
@@ -2798,7 +2798,7 @@ namespace Mono.TextEditor
 						DrawRectangleWithRuler (cr, x, lineArea, this.SelectionColor.Background, false);
 					if (line.Length == 0)
 						DrawIndent (cr, wrapper, line, lx, y);
-				} else if (!(HighlightCaretLine || textEditor.Options.HighlightCaretLine) || Caret.Line != lineNr) {
+				} else if (!(HighlightCaretLine || textEditor.GetTextEditorData ().HighlightCaretLine) || Caret.Line != lineNr) {
 					wrapper = GetLayout (line);
 					if (wrapper.EolSpanStack != null) {
 						foreach (var span in wrapper.EolSpanStack) {
