@@ -149,6 +149,16 @@ namespace Mono.TextEditor
 			}
 		}
 
+		bool? customHighlightCaretLine;
+		public bool HighlightCaretLine {
+			get {
+				return customHighlightCaretLine.HasValue ? customHighlightCaretLine.Value : options.HighlightCaretLine;
+			}
+			set {
+				customHighlightCaretLine = value;
+			}
+		}
+
 		#region Tooltip providers
 		internal List<TooltipProvider> tooltipProviders = new List<TooltipProvider> ();
 		public IEnumerable<TooltipProvider> TooltipProviders {
