@@ -1937,7 +1937,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (i == -1)
 				return false;
 			if (cond.Substring (0, i).Trim () == "'$(Configuration)|$(Platform)'") {
-				cond = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out cond))
+					return false;
 				i = cond.IndexOf ('|');
 				if (i != -1) {
 					config = cond.Substring (0, i);
@@ -1951,18 +1952,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return true;
 			}
 			else if (cond.Substring (0, i).Trim () == "'$(Configuration)'") {
-				config = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out config))
+					return false;
 				platform = Unspecified;
 				return true;
 			}
 			else if (cond.Substring (0, i).Trim () == "'$(Platform)'") {
 				config = Unspecified;
-				platform = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out platform))
+					return false;
 				if (platform == "AnyCPU")
 					platform = string.Empty;
 				return true;
 			}
 			return false;
+		}
+
+		bool ExtractConfigName (string name, out string config)
+		{
+			config = name.Trim (' ');
+			if (config.Length <= 2)
+				return false;
+			if (config [0] != '\'' || config [config.Length - 1] != '\'')
+				return false;
+			config = config.Substring (1, config.Length - 2);
+			return config.IndexOf ('\'') == -1;
 		}
 		
 		string BuildConfigCondition (string config, string platform)

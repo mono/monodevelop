@@ -482,5 +482,20 @@ namespace MonoDevelop.Projects
 
 			Assert.AreEqual (condition, import.GetAttribute ("Condition"));
 		}
+
+		[Test]
+		public void ProjectWithCustomConfigPropertyGroupBug20554 ()
+		{
+			string solFile = Util.GetSampleProject ("console-project-custom-configs", "ConsoleProject.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+
+			string proj = sol.GetAllProjects ().First ().FileName;
+
+			string projectXml1 = Util.GetXmlFileInfoset (proj);
+			sol.Save (new NullProgressMonitor ());
+
+			string projectXml2 = Util.GetXmlFileInfoset (proj);
+			Assert.AreEqual (projectXml1, projectXml2);
+		}
 	}
 }
