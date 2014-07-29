@@ -279,6 +279,31 @@ namespace MonoDevelop.Debugger
 			entryPrintExpression.Changed += OnUpdateText;
 
 			buttonOk.Clicked += OnSave;
+
+			CompletionWindowManager.WindowShown += HandleCompletionWindowShown;
+			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
+		}
+
+		void HandleCompletionWindowClosed (object sender, EventArgs e)
+		{
+			var gtkWidget = Xwt.Toolkit.CurrentEngine.GetNativeWidget (vboxLocation) as Gtk.Widget;//Any widget is fine
+			if (gtkWidget != null) {
+				var topWindow = gtkWidget.Toplevel as Gtk.Window;
+				if (topWindow != null) {
+					topWindow.Modal = true;
+				}
+			}
+		}
+
+		void HandleCompletionWindowShown (object sender, EventArgs e)
+		{
+			var gtkWidget = Xwt.Toolkit.CurrentEngine.GetNativeWidget (vboxLocation) as Gtk.Widget;//Any widget is fine
+			if (gtkWidget != null) {
+				var topWindow = gtkWidget.Toplevel as Gtk.Window;
+				if (topWindow != null) {
+					topWindow.Modal = false;
+				}
+			}
 		}
 
 		void SetInitialFunctionBreakpointData (FunctionBreakpoint fb)
@@ -778,6 +803,12 @@ namespace MonoDevelop.Debugger
 			}
 
 			OnUpdateControls (null, null);
+		}
+		protected override void Dispose (bool disposing)
+		{
+			CompletionWindowManager.WindowShown -= HandleCompletionWindowShown;
+			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
+			base.Dispose (disposing);
 		}
 	}
 }
