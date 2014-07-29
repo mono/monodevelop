@@ -1343,7 +1343,13 @@ namespace MonoDevelop.Ide.Gui
 			if (fileName.IsEmpty)
 				return fileName;
 			try {
+				var alreadyVisted = new HashSet<FilePath> ();
 				while (true) {
+					if (alreadyVisted.Contains (fileName)) {
+						LoggingService.LogError ("Cyclic links detected: " + fileName);
+						return FilePath.Empty;
+					}
+					alreadyVisted.Add (fileName);
 					var linkInfo = new Mono.Unix.UnixSymbolicLinkInfo (fileName);
 					if (linkInfo.IsSymbolicLink && linkInfo.HasContents) {
 						FilePath contentsPath = linkInfo.ContentsPath;
@@ -1354,7 +1360,7 @@ namespace MonoDevelop.Ide.Gui
 						}
 						continue;
 					}
-					return ResolveSymbolicLink (fileName.ParentDirectory).Combine (fileName.FileName);
+					return ResolveSymbolicLink (fileName.ParentDirectory).Combine (fileName.FileName).CanonicalPath;
 				}
 			} catch (Exception) {
 				return fileName;
