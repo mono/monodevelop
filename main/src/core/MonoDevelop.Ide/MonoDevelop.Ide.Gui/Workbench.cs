@@ -1358,6 +1358,7 @@ namespace MonoDevelop.Ide.Gui
 						} else {
 							fileName = fileName.ParentDirectory.Combine (contentsPath);
 						}
+						fileName = fileName.CanonicalPath;
 						continue;
 					}
 					return ResolveSymbolicLink (fileName.ParentDirectory).Combine (fileName.FileName).CanonicalPath;
