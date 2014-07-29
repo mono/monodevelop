@@ -1340,6 +1340,8 @@ namespace MonoDevelop.Ide.Gui
 
 		static FilePath ResolveSymbolicLink (FilePath fileName)
 		{
+			if (fileName.IsEmpty)
+				return fileName;
 			try {
 				while (true) {
 					var linkInfo = new Mono.Unix.UnixSymbolicLinkInfo (fileName);
@@ -1350,10 +1352,9 @@ namespace MonoDevelop.Ide.Gui
 						} else {
 							fileName = fileName.ParentDirectory.Combine (contentsPath);
 						}
-						Console.WriteLine ("link to : " + fileName);
 						continue;
 					}
-					return fileName;
+					return ResolveSymbolicLink (fileName.ParentDirectory).Combine (fileName.FileName);
 				}
 			} catch (Exception) {
 				return fileName;
