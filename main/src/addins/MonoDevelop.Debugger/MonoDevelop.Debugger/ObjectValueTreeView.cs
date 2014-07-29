@@ -166,15 +166,16 @@ namespace MonoDevelop.Debugger
 				base.Render (window, widget, background_area, cell_area, expose_area, flags);
 				if (!icon.IsNull) {
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
-						var layout = new Pango.Layout (widget.PangoContext);
-						layout.FontDescription = FontDesc.Copy ();
-						layout.FontDescription.Family = Family;
-						layout.SetText (Text);
-						int w, h;
-						layout.GetPixelSize (out w, out h);
-						var x = cell_area.X + w + 3 * Xpad;
-						var y = cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
-						ctx.DrawImage (widget, img, x, y);
+						using (var layout = new Pango.Layout (widget.PangoContext)) {
+							layout.FontDescription = FontDesc.Copy ();
+							layout.FontDescription.Family = Family;
+							layout.SetText (Text);
+							int w, h;
+							layout.GetPixelSize (out w, out h);
+							var x = cell_area.X + w + 3 * Xpad;
+							var y = cell_area.Y + cell_area.Height / 2 - (int)(img.Height / 2);
+							ctx.DrawImage (widget, img, x, y);
+						}
 					}
 				}
 			}
@@ -224,30 +225,20 @@ namespace MonoDevelop.Debugger
 			public Xwt.Drawing.Color Color { get; set; }
 		}
 
-		class CellRendererRoundedButton : CellRenderer {
-			private string text;
-			[GLib.Property ("text")]
-			public virtual string Text {
-				get {
-					return text;
-				}
-				set {
-					text = value;
-				}
-			}
-
-			const int TopBottomPadding = 2;
+		class CellRendererRoundedButton : CellRendererText {
+			const int TopBottomPadding = 1;
 
 			protected override void Render (Gdk.Drawable window, Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, CellRendererState flags)
 			{
-				if (string.IsNullOrEmpty (text)) {
+				if (string.IsNullOrEmpty (Text)) {
 					return;
 				}
 				using (var cr = Gdk.CairoHelper.Create (window)) {
+					int xpad = (int)Xpad;
 					cr.RoundedRectangle (
-						cell_area.X,
+						cell_area.X + xpad,
 						cell_area.Y + TopBottomPadding,
-						cell_area.Width,
+						cell_area.Width - 2 * xpad,
 						cell_area.Height - TopBottomPadding * 2,
 						(cell_area.Height - (TopBottomPadding * 2)) / 2);
 					cr.LineWidth = 1;
@@ -255,24 +246,36 @@ namespace MonoDevelop.Debugger
 					cr.FillPreserve ();
 					cr.SetSourceRGB (82 / 255.0, 148 / 255.0, 235 / 255.0);
 					cr.Stroke ();
-					var textSize = cr.TextExtents (text);
-					cr.MoveTo (cell_area.X + (cell_area.Width - textSize.Width) / 2.0 + (textSize.XBearing * -1), cell_area.Y + cell_area.Height - (cell_area.Height - textSize.Height) / 2.0);
-					cr.ShowText (text);
+					using (var layout = new Pango.Layout (widget.PangoContext)) {
+						layout.SetText (Text);
+						layout.FontDescription = FontDesc;
+						layout.FontDescription.Family = Family;
+						Pango.Rectangle ink_rect, logical_rect;
+						layout.GetPixelExtents (out ink_rect, out logical_rect);
+						window.DrawLayoutWithColors (widget.Style.TextGC (StateType.Normal),
+							cell_area.X + cell_area.Height / 2 + xpad,
+							cell_area.Y + 1 + TopBottomPadding,
+							layout, new Gdk.Color (82, 148, 235), new Gdk.Color (233, 242, 252));
+					}
 				}
 			}
 
 			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				x_offset = y_offset = 0;
-				if (string.IsNullOrEmpty (text)) {
+				if (string.IsNullOrEmpty (Text)) {
 					width = 0;
 					height = 0;
 					return;
 				}
-				using (var cr = Gdk.CairoHelper.Create (widget.ParentWindow)) {
+				using (var layout = new Pango.Layout (widget.PangoContext)) {
+					layout.SetText (Text);
+					layout.FontDescription = FontDesc;
+					layout.FontDescription.Family = Family;
 					height = cell_area.Height;
-					var textSize = cr.TextExtents (text);
-					width = (int)textSize.Width + (int)textSize.Height * 2;
+					int w, h;
+					layout.GetPixelSize (out w, out h);
+					width = w + h + 4 * (int)Xpad;
 				}
 			}
 		}
@@ -595,6 +598,7 @@ namespace MonoDevelop.Debugger
 				crtExp.FontDesc = newFont;
 				crtValue.FontDesc = newFont;
 				crtType.FontDesc = newFont;
+				crpButton.FontDesc = newFont;
 				ResetColumnSizes ();
 				AdjustColumnSizes ();
 			}
@@ -1375,21 +1379,21 @@ namespace MonoDevelop.Debugger
 					TreeViewColumn col;
 					CellRenderer cr;
 					if (GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr) && cr == crtExp) {
-						var layout = new Pango.Layout (PangoContext);
-						layout.FontDescription = crtExp.FontDesc.Copy ();
-						layout.FontDescription.Family = crtExp.Family;
-						layout.SetText ((string)store.GetValue (it, NameColumn));
-						int w, h;
-						layout.GetPixelSize (out w, out h);
-						var cellArea = GetCellRendererArea (path, col, cr);
-						var iconXOffset = cellArea.X + w + cr.Xpad * 3;
-						if (iconXOffset < evnt.X &&
-						     iconXOffset + 16 > evnt.X) {
-							SetPreviewButtonIcon (PreviewButtonIcons.Hover, it);
-						} else {
-							SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
+						using (var layout = new Pango.Layout (PangoContext)) {
+							layout.FontDescription = crtExp.FontDesc.Copy ();
+							layout.FontDescription.Family = crtExp.Family;
+							layout.SetText ((string)store.GetValue (it, NameColumn));
+							int w, h;
+							layout.GetPixelSize (out w, out h);
+							var cellArea = GetCellRendererArea (path, col, cr);
+							var iconXOffset = cellArea.X + w + cr.Xpad * 3;
+							if (iconXOffset < evnt.X &&
+							   iconXOffset + 16 > evnt.X) {
+								SetPreviewButtonIcon (PreviewButtonIcons.Hover, it);
+							} else {
+								SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
+							}
 						}
-
 					} else {
 						SetPreviewButtonIcon (PreviewButtonIcons.RowHover, it);
 					}
@@ -1539,19 +1543,20 @@ namespace MonoDevelop.Debugger
 				} else if (cr == crtExp && (store.GetValue (it, PreviewIconColumn) as string) == "md-preview-hover") {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					var rect = GetCellRendererArea (path, col, cr);
-					var layout = new Pango.Layout (PangoContext);
-					layout.FontDescription = crtExp.FontDesc.Copy ();
-					layout.FontDescription.Family = crtExp.Family;
-					layout.SetText ((string)store.GetValue (it, NameColumn));
-					int w, h;
-					layout.GetPixelSize (out w, out h);
-					rect.X += (int)(w + cr.Xpad * 3);
-					rect.Width = 16;
-					ConvertTreeToWidgetCoords (rect.X, rect.Y, out rect.X, out rect.Y);
-					rect.X += (int)Hadjustment.Value;
-					rect.Y += (int)Vadjustment.Value;
-					DebuggingService.ShowPreviewVisualizer (val, this, rect);
-					SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+					using (var layout = new Pango.Layout (PangoContext)) {
+						layout.FontDescription = crtExp.FontDesc.Copy ();
+						layout.FontDescription.Family = crtExp.Family;
+						layout.SetText ((string)store.GetValue (it, NameColumn));
+						int w, h;
+						layout.GetPixelSize (out w, out h);
+						rect.X += (int)(w + cr.Xpad * 3);
+						rect.Width = 16;
+						ConvertTreeToWidgetCoords (rect.X, rect.Y, out rect.X, out rect.Y);
+						rect.X += (int)Hadjustment.Value;
+						rect.Y += (int)Vadjustment.Value;
+						DebuggingService.ShowPreviewVisualizer (val, this, rect);
+						SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+					}
 				} else if (cr == crtValue) {
 					if ((Platform.IsMac && ((evnt.State & Gdk.ModifierType.Mod2Mask) > 0)) ||
 						(!Platform.IsMac && ((evnt.State & Gdk.ModifierType.ControlMask) > 0))) {
@@ -2020,7 +2025,7 @@ namespace MonoDevelop.Debugger
 		
 		internal void SetCustomFont (Pango.FontDescription font)
 		{
-			crtExp.FontDesc = crtType.FontDesc = crtValue.FontDesc = font;
+			crpButton.FontDesc = crtExp.FontDesc = crtType.FontDesc = crtValue.FontDesc = font;
 		}
 	}
 	
