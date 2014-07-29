@@ -922,7 +922,7 @@ namespace MonoDevelop.Debugger
 				valueColor = errorColor;
 				canEdit = false;
 			} else if (val.IsNotSupported) {
-				strval = val.Value;
+				strval = "";//val.Value; with new "Show Value" button we don't want to display message "Implicit evaluation is disabled"
 				valueColor = disabledColor;
 				if (val.CanRefresh)
 					valueButton = GettextCatalog.GetString ("Show Value");
