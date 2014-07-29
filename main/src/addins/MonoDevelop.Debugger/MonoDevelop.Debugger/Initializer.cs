@@ -72,6 +72,7 @@ namespace MonoDevelop.Debugger
 				return;
 			
 			FilePath file = frame.SourceLocation.FileName;
+			file = file.CanonicalPath;
 			int line = frame.SourceLocation.Line;
 			
 			if (!file.IsNullOrEmpty && System.IO.File.Exists (file) && line != -1) {
