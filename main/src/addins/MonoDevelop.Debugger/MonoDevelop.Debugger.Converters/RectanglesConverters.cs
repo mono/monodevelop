@@ -53,8 +53,7 @@ namespace MonoDevelop.Debugger.Converters
 				rectangle.Y = (float)val.GetChild ("Y", ops).GetRawValue (ops);
 				rectangle.Width = (float)val.GetChild ("Width", ops).GetRawValue (ops);
 				rectangle.Height = (float)val.GetChild ("Height", ops).GetRawValue (ops);
-			}
-			if (val.TypeName == "Android.Graphics.Rect") {
+			} else if (val.TypeName == "Android.Graphics.Rect") {
 				rectangle.X = (int)val.GetChild ("Left", ops).GetRawValue (ops);
 				rectangle.Y = (int)val.GetChild ("Top", ops).GetRawValue (ops);
 				rectangle.Right = (int)val.GetChild ("Right", ops).GetRawValue (ops);
