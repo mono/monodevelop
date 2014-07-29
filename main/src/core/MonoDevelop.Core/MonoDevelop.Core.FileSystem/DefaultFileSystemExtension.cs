@@ -97,7 +97,7 @@ namespace MonoDevelop.Core.FileSystem
 		
 		public override void MoveDirectory (FilePath source, FilePath dest)
 		{
-			Directory.Move (source, dest);
+			FileService.SystemDirectoryRename (source, dest);
 		}
 		
 		public override void DeleteDirectory (FilePath path)

@@ -566,7 +566,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected virtual void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
-			Directory.Move (localSrcPath, localDestPath);
+			FileService.SystemDirectoryRename (localSrcPath, localDestPath);
 		}
 		
 		// Deletes a file or directory. This method may be called for versioned and unversioned
