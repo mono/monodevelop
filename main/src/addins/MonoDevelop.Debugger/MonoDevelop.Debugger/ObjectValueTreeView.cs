@@ -404,6 +404,7 @@ namespace MonoDevelop.Debugger
 		{
 			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed -= HandlePreviewWindowClosed;
+			PreviewWindowManager.DestroyWindow ();
 			crtExp.Edited -= OnExpEdited;
 			crtExp.EditingStarted -= OnExpEditing;
 			crtExp.EditingCanceled -= OnEditingCancelled;
@@ -1523,7 +1524,8 @@ namespace MonoDevelop.Debugger
 		{
 			allowStoreColumnSizes = true;
 			bool retval = base.OnButtonPressEvent (evnt);
-			
+			PreviewWindowManager.DestroyWindow ();
+
 			//HACK: show context menu in release event instead of show event to work around gtk bug
 			if (evnt.TriggersContextMenu ()) {
 			//	ShowPopup (evnt);
