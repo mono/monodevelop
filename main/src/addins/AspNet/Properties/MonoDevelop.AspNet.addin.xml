@@ -306,7 +306,7 @@
 		<MimeType id="application/x-master-page" _description="ASP.NET master page" icon="md-html-file-icon" isText="true">
 			<File pattern="*.master|*.Master" />
 		</MimeType>
-		<MimeType id="application/javascript" _description="Javascript source code" icon="md-html-file-icon" isText="true">
+		<MimeType id="application/javascript" _description="Javascript source code" icon="md-script-file-icon" isText="true">
 			<File pattern="*.js" />
 		</MimeType>
 		<MimeType id="text/css" _description="CSS document" icon="md-html-file-icon" isText="true">

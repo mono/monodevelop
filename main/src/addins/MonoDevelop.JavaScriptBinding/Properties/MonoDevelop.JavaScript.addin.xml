@@ -1,0 +1,37 @@
+﻿<ExtensionModel>
+	<Runtime>
+		<Import file="Templates\EmptyJSFile.xft.xml" />
+	</Runtime>
+	<Extension path="/MonoDevelop/Ide/FileFilters">
+		<FileFilter id="JSFile" insertafter="Xml" _label="JavaScript Files" extensions="*.js" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/FileTemplates">
+		<FileTemplate id="JSFile" file="Templates\EmptyJSFile.xft.xml" />
+	</Extension>
+	<Extension path="/MonoDevelop/TypeSystem/Parser">
+		<Parser class="MonoDevelop.JavaScript.JavaScriptParser" mimeType="application/javascript, text/javascript" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/TextEditorExtensions">
+		<Class fileExtensions=".js" class="MonoDevelop.JavaScript.JavaScriptEditorExtension" />
+	</Extension>
+	<Extension path="/MonoDevelop/ProjectModel/LanguageBindings">
+		<LanguageBinding id="JavaScript" supportedextensions=".js" class="MonoDevelop.JavaScript.JavaScriptLanguageBinding" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/CodeFormatters">
+		<Formatter mimeType="application/javascript" class="MonoDevelop.JavaScript.Formatting.JavaScriptFormatter" />
+	</Extension>
+	<!--	<Extension path="/MonoDevelop/ProjectModel/PolicySets/Mono">
+		<Policies resource="MonoJSPolicy.xml" />
+	</Extension>-->
+	<Extension path="/MonoDevelop/Ide/CodeTemplates">
+		<CodeTemplate file="Templates\JS-CodeTemplates.xml" />
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/CompletionCharacters">
+		<Complete language="JavaScript" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\" />
+	</Extension>
+	<Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<Condition id="FileType" fileExtensions=".js">
+			<CommandItem id = "MonoDevelop.Refactoring.RefactoryCommands.GotoDeclaration" insertafter="MonoDevelop.SourceEditor.SourceEditorCommands.MarkerOperations" />
+		</Condition>
+	</Extension>
+</ExtensionModel>

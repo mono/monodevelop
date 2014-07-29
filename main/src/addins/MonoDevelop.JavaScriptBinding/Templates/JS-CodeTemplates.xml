@@ -1,0 +1,308 @@
+﻿<JavaScriptCodeTemplates version="1.0">
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>for</Shortcut>
+      <_Description>Template for 'for' loop</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="index">
+        <Default>i</Default>
+        <_ToolTip>Index</_ToolTip>
+      </Variable>
+      <Variable name="max">
+        <Default>max</Default>
+        <_ToolTip>Number of iterations</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[for (var $index$ = 0; $index$ < $max$; $index$++) {
+    $selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>forr</Shortcut>
+      <_Description>Template for reverse 'for' loop</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="index">
+        <Default>i</Default>
+        <_ToolTip>Index</_ToolTip>
+      </Variable>
+      <Variable name="max">
+        <Default>max</Default>
+        <_ToolTip>Number of iterations</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[for (var $index$ = $max$ - 1; $index$ >= 0; $index$--) {
+    $selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>while</Shortcut>
+      <_Description>Template for 'while' loop</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="expression">
+        <Default>true</Default>
+        <_ToolTip>Expression to evaluate</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[while ($expression$) {
+    $selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>while</Shortcut>
+      <_Description>Template for 'while' loop</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="expression">
+        <Default>true</Default>
+        <_ToolTip>Expression to evaluate</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[while ($expression$) {
+	$selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>do</Shortcut>
+      <_Description>Template for 'do...while' loop</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="expression">
+        <Default>true</Default>
+        <_ToolTip>Expression to evaluate</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[do {
+    $selected$$end$
+} while ($expression$);]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>else</Shortcut>
+      <_Description>Template for 'else'</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Code>
+      <![CDATA[else {
+    $selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>forin</Shortcut>
+      <_Description>Template for 'forin' loop</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="index">
+        <Default>i</Default>
+        <_ToolTip>Identifier for the current element</_ToolTip>
+      </Variable>
+      <Variable name="collection">
+        <Default>o</Default>
+        <_ToolTip>Collection to iterate through</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[for (var $index$ in $collection$) {
+    $selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>if</Shortcut>
+      <_Description>Template for 'if' statement</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="expression">
+        <Default>true</Default>
+        <_ToolTip>Expression to evaluate</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[if ($expression$) {
+    $selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>try</Shortcut>
+      <_Description>Template for try...catch</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="exception" isEditable="false">
+        <Default>e</Default>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[try {
+    $selected$
+} catch ($exception$) {
+    $end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>tryf</Shortcut>
+      <_Description>Template for try...finally</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="object" isEditable="false">
+        <Default>o</Default>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[with ($object$) {
+    $selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>function</Shortcut>
+      <_Description>Template for 'function' statement</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="name">
+        <Default>myfunction</Default>
+        <_ToolTip>Name of the function.</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[function $name$() {
+    $selected$$end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>alert</Shortcut>
+      <_Description>Template for 'alert' function call</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="selected">
+        <Default>message</Default>
+        <_ToolTip>Message to alert.</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[alert($selected$);$end$]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>switch</Shortcut>
+      <_Description>Template for 'switch' statement</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Variables>
+      <Variable name="expression">
+        <Default>switch_on</Default>
+        <_ToolTip>Expression to switch on</_ToolTip>
+      </Variable>
+    </Variables>
+    <Code>
+      <![CDATA[switch ($expression$) {
+    default:
+        $end$
+}]]>
+    </Code>
+  </CodeTemplate>
+
+  <CodeTemplate version="2.0">
+    <Header>
+      <_Group>JavaScript</_Group>
+      <Version>1.0</Version>
+      <MimeType>application/javascript</MimeType>
+      <Shortcut>console</Shortcut>
+      <_Description>Template for console.log</_Description>
+      <TemplateType>SurroundsWith,Expansion</TemplateType>
+    </Header>
+    <Code>
+      <![CDATA[console.log($end$);]]>
+    </Code>
+  </CodeTemplate>
+  
+</JavaScriptCodeTemplates>

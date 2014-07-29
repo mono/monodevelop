@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6281ED35-6EFB-4D37-9517-C9F37E14BD8F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MonoDevelop.JavaScript</RootNamespace>
+    <AssemblyName>MonoDevelop.JavaScript</AssemblyName>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.JavaScript</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <NoWarn>1591;1573</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\build\AddIns\MonoDevelop.JavaScript</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Mono.Posix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Factories\DomRegionFactory.cs" />
+    <Compile Include="Formatting\JavaScriptFormatter.cs" />
+    <Compile Include="Formatting\JavaScriptFormattingPolicy.cs" />
+    <Compile Include="Formatting\JavaScriptFormattingSettings.cs" />
+    <Compile Include="JavaScriptLanguageBinding.cs" />
+    <Compile Include="Jurassic\Compiler\Debugging\SourceCodePosition.cs" />
+    <Compile Include="Jurassic\Compiler\Debugging\SourceCodeSpan.cs" />
+    <Compile Include="Jurassic\Compiler\Emit\MethodOptimizationHints.cs" />
+    <Compile Include="Jurassic\Compiler\Emit\PrimitiveType.cs" />
+    <Compile Include="Jurassic\Compiler\Emit\PrimitiveTypeUtilities.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\AssignmentExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\BinaryExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\Expression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\FunctionCallExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\FunctionExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\GroupingExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\IReferenceExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\ListExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\LiteralExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\MemberAccessExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\NameExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\NewExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\OperatorExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\TernaryExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\ThisExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Expressions\UnaryExpression.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\IdentifierToken.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\KeywordToken.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\Lexer.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\LiteralToken.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\PunctuatorToken.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\RegularExpressionLiteral.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\Token.cs" />
+    <Compile Include="Jurassic\Compiler\MethodGenerator\CodeContext.cs" />
+    <Compile Include="Jurassic\Compiler\MethodGenerator\CompilerOptions.cs" />
+    <Compile Include="Jurassic\Compiler\MethodGenerator\FunctionMethodGenerator.cs" />
+    <Compile Include="Jurassic\Compiler\MethodGenerator\MethodGenerator.cs" />
+    <Compile Include="Jurassic\Compiler\Parser\AstNode.cs" />
+    <Compile Include="Jurassic\Compiler\Parser\Operator.cs" />
+    <Compile Include="Jurassic\Compiler\Parser\Parser.cs" />
+    <Compile Include="Jurassic\Compiler\Scope\DeclarativeScope.cs" />
+    <Compile Include="Jurassic\Compiler\Scope\ObjectScope.cs" />
+    <Compile Include="Jurassic\Compiler\Scope\Scope.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\BlockStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\BreakStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\ContinueStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\DebuggerStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\DoWhileStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\EmptyStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\ExpressionStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\ForInStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\ForStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\FunctionStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\IfStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\LoopStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\ReturnStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\Statement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\SwitchStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\ThrowStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\TryCatchFinallyStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\VarStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\WhileStatement.cs" />
+    <Compile Include="Jurassic\Compiler\Statements\WithStatement.cs" />
+    <Compile Include="Jurassic\Core\BigInteger.cs" />
+    <Compile Include="Jurassic\Core\CompatibilityMode.cs" />
+    <Compile Include="Jurassic\Core\JavaScriptException.cs" />
+    <Compile Include="Jurassic\Core\Null.cs" />
+    <Compile Include="Jurassic\Core\NumberParser.cs" />
+    <Compile Include="Jurassic\Core\ScriptEngine.cs" />
+    <Compile Include="Jurassic\Core\ScriptSource\ScriptSource.cs" />
+    <Compile Include="Jurassic\Core\ScriptSource\StringScriptSource.cs" />
+    <Compile Include="Jurassic\Core\StringHelpers.cs" />
+    <Compile Include="Jurassic\Core\Undefined.cs" />
+    <Compile Include="Jurassic\Library\GlobalObject.cs" />
+    <Compile Include="Jurassic\Library\Object\ObjectInstance.cs" />
+    <Compile Include="Parser\JavaScriptParsedDocument.cs" />
+    <Compile Include="Parser\JavaScriptParser.cs" />
+    <Compile Include="TextEditor\JavaScriptEditorExtension.cs" />
+    <Compile Include="Extensions\FunctionExtensions.cs" />
+    <Compile Include="Formatting\JSBeautifier.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Completion\CompletionData.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\MultilineComment.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\Comment.cs" />
+    <Compile Include="Jurassic\Compiler\Lexer\SingleLineComment.cs" />
+    <Compile Include="DomainObjects\Cache\JavaScriptDocumentCache.cs" />
+    <Compile Include="DomainObjects\Cache\JSStatement.cs" />
+    <Compile Include="DomainObjects\Cache\JSFunctionStatement.cs" />
+    <Compile Include="DomainObjects\Cache\JSVariableDeclaration.cs" />
+    <Compile Include="DomainObjects\Cache\SimpleJSAst.cs" />
+    <Compile Include="Factories\SimpleJSAstFactory.cs" />
+    <Compile Include="Parser\JSUpdateableProjectContent.cs" />
+    <Compile Include="Completion\CodeCompletionUtility.cs" />
+    <Compile Include="Jurassic\Core\JurassicUtility.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\AddinInfo.cs" />
+    <Compile Include="Refractoring\GotoDeclarationAction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Formatting\MonoJSPolicy.xml" />
+    <Content Include="Jurassic\License.txt" />
+    <Content Include="Notes\JurrasicJSMap.txt" />
+    <None Include="Templates\EmptyJSFile.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\JS-CodeTemplates.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\system.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\xhr.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\browser.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\window.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="JSReferences\dom.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Properties\MonoDevelop.JavaScript.addin.xml">
+      <LogicalName>MonoDevelop.JavaScript.MonoDevelop.JavaScript.addin.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="DomainObjects\" />
+    <Folder Include="DomainObjects\Cache\" />
+    <Folder Include="JSReferences\" />
+    <Folder Include="Properties\" />
+    <Folder Include="Refractoring\" />
+  </ItemGroup>
+</Project>

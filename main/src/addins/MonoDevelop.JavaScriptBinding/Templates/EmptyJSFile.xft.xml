@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<Template
+	Originator="Harsimran Bath"
+	Created="2014/04/22"
+	LastModified="2014/04/22">
+
+  <!-- Template Header -->
+  <TemplateConfiguration>
+    <_Name>Empty JavaScript File</_Name>
+    <Icon>md-script-file-icon</Icon>
+    <_Category>Web</_Category>
+    <_Description>Create an empty JavaScript file.</_Description>
+  </TemplateConfiguration>
+
+  <TemplateFiles>
+    <File DefaultExtension=".js">
+      <![CDATA[]]>
+    </File>
+  </TemplateFiles>
+
+  <FileOptions/>
+
+</Template>
