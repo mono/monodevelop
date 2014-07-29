@@ -787,7 +787,7 @@ namespace MonoDevelop.Ide
 			void HandleRowDeleted (object o, Gtk.RowDeletedArgs args)
 			{
 				Gtk.TreeIter outIter;
-				if (!(TreeStore.GetIter (out outIter, args.Path) && outIter.Equals (Iter))) {
+				if (TreeStore.GetIter (out outIter, args.Path) && outIter.Equals (Iter)) {
 					UnregisterTreeAnimation (this);
 				}
 			}
