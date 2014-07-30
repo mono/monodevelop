@@ -385,3 +385,6 @@ type LanguageService(dirtyNotify) =
     return refs }
 
   member x.InvalidateConfiguration(options) = checker.InvalidateConfiguration(options)
+
+  member x.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients() =
+      checker.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()

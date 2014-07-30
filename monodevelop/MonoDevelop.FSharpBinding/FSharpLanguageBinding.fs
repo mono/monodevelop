@@ -80,6 +80,7 @@ type FSharpLanguageBinding() =
       IdeApp.Workspace.FileRenamedInProject.Add(invalidateAll)
       IdeApp.Workspace.ReferenceAddedToProject.Add(fun r -> invalidateProjectFile(r.Project))
       IdeApp.Workspace.ReferenceRemovedFromProject.Add(fun r -> invalidateProjectFile(r.Project))
+      IdeApp.Workspace.SolutionUnloaded.Add(fun _ -> MDLanguageService.Instance.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients())
 
     
   // ----------------------------------------------------------------------------
