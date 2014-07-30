@@ -845,42 +845,49 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		uint parseTimeout = 0;
+		object reparseLock = new object();
 		internal void StartReparseThread ()
 		{
-			// Don't directly parse the document because doing it at every key press is
-			// very inefficient. Do it after a small delay instead, so several changes can
-			// be parsed at the same time.
-			string currentParseFile = FileName;
-			if (string.IsNullOrEmpty (currentParseFile))
-				return;
-			CancelParseTimeout ();
-			if (IsProjectContextInUpdate)
-				return;
-			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
-				var editor = Editor;
-				if (editor == null || IsProjectContextInUpdate) {
+			lock (reparseLock) {
+				if (currentWrapper != null)
+					currentWrapper.EnsureReferencesAreLoaded ();
+
+				// Don't directly parse the document because doing it at every key press is
+				// very inefficient. Do it after a small delay instead, so several changes can
+				// be parsed at the same time.
+				string currentParseFile = FileName;
+				if (string.IsNullOrEmpty (currentParseFile))
+					return;
+				CancelParseTimeout ();
+				if (IsProjectContextInUpdate) {
+					return;
+				}
+				parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
+					var editor = Editor;
+					if (editor == null || IsProjectContextInUpdate) {
+						parseTimeout = 0;
+						return false;
+					}
+					string currentParseText = editor.Text;
+					string mimeType = editor.Document.MimeType;
+					ThreadPool.QueueUserWorkItem (delegate {
+						if (IsProjectContextInUpdate) {
+							return;
+						}
+						TypeSystemService.AddSkippedFile (currentParseFile);
+						var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
+						Application.Invoke (delegate {
+							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+							if (isClosed)
+								return;
+							this.parsedDocument = currentParsedDocument;
+							OnDocumentParsed (EventArgs.Empty);
+						});
+					});
 					parseTimeout = 0;
 					return false;
-				}
-				string currentParseText = editor.Text;
-				string mimeType = editor.Document.MimeType;
-				ThreadPool.QueueUserWorkItem (delegate {
-					if (IsProjectContextInUpdate)
-						return;
-					TypeSystemService.AddSkippedFile (currentParseFile);
-					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
-					Application.Invoke (delegate {
-						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-						if (isClosed)
-							return;
-
-						this.parsedDocument = currentParsedDocument;
-						OnDocumentParsed (EventArgs.Empty);
-					});
 				});
-				parseTimeout = 0;
-				return false;
-			});
+			}
 		}
 		
 		/// <summary>
