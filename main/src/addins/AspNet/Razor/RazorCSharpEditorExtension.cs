@@ -208,7 +208,8 @@ namespace MonoDevelop.AspNet.Razor
 			};
 
 			// completion window needs this
-			hiddenInfo.UnderlyingDocument.Editor.Parent = Editor.Parent;
+			Gtk.Widget editor = hiddenInfo.UnderlyingDocument.Editor;
+			editor.Parent = ((Gtk.Widget)Editor).Parent;
 
 			currentMappings = razorDocument.PageInfo.GeneratorResults.DesignTimeLineMappings;
 			codeFragment = null;
