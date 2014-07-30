@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						WriteDataItem (writer, data);
 						writer.WriteLine ("\tEndProjectSection");
 					}
-					if (item.ItemDependencies.Count > 0) {
+					if (item.ItemDependencies.Count > 0 || handler.UnresolvedProjectDependencies != null) {
 						writer.WriteLine ("\tProjectSection(ProjectDependencies) = postProject");
 						foreach (var dep in item.ItemDependencies)
 							writer.WriteLine ("\t\t{0} = {0}", dep.ItemId);
@@ -905,7 +905,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			// Resolve project dependencies
-			foreach (var it in items.OfType<SolutionEntityItem> ()) {
+			foreach (var it in items.Values.OfType<SolutionEntityItem> ()) {
 				MSBuildHandler handler = (MSBuildHandler) it.ItemHandler;
 				if (handler.UnresolvedProjectDependencies != null) {
 					foreach (var id in handler.UnresolvedProjectDependencies.ToArray ()) {
