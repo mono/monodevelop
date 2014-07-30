@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Ide.Gui.Content;
 using System.Collections.Generic;
 using System.Threading;
 using MonoDevelop.NUnit;
@@ -85,7 +84,7 @@ namespace MonoDevelop.NUnit
 				Application.Invoke (delegate {
 					foreach (var oldMarker in currentMarker)
 						Editor.RemoveMarker (oldMarker);
-
+					currentMarker = new List<IUnitTestMarker> ();
 					foreach (var foundTest in foundTests) {
 						if (token.IsCancellationRequested)
 							return;
@@ -113,7 +112,7 @@ namespace MonoDevelop.NUnit
 		{
 			static Menu menu;
 
-			AbstractUnitTestTextEditorExtension ext;
+			readonly AbstractUnitTestTextEditorExtension ext;
 
 			public UnitTestMarkerHostImpl (AbstractUnitTestTextEditorExtension ext)
 			{
