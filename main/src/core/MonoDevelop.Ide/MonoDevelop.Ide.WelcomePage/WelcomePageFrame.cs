@@ -58,6 +58,26 @@ namespace MonoDevelop.Ide.WelcomePage
 			Add (box);
 			Show ();
 			UpdateProjectBar ();
+
+			IdeApp.Workbench.GuiLocked += HandleGuiLocked;
+			IdeApp.Workbench.GuiUnlocked += HandleGuiUnlocked;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			IdeApp.Workbench.GuiLocked -= HandleGuiLocked;
+			IdeApp.Workbench.GuiUnlocked -= HandleGuiUnlocked;
+		}
+
+		void HandleGuiUnlocked (object sender, EventArgs e)
+		{
+			Sensitive = true;
+		}
+
+		void HandleGuiLocked (object sender, EventArgs e)
+		{
+			Sensitive = false;
 		}
 
 		public void UpdateProjectBar ()
