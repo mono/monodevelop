@@ -203,10 +203,13 @@ namespace MonoDevelop.CodeActions
 						foreach (var action in CodeRefactoringService.GetValidActionsAsync (Editor, DocumentContext, span, token).Result) {
 							codeActions.Add (action); 
 						}
-
 						Application.Invoke (delegate {
 							if (token.IsCancellationRequested)
 								return;
+							if (codeIssueFixes.Count == 0 && codeActions.Count == 0) {
+								RemoveWidget ();
+								return;
+							}
 							CreateSmartTag (new CodeActionContainer (codeIssueFixes, codeActions), loc);
 						});
 					});
@@ -452,8 +455,10 @@ namespace MonoDevelop.CodeActions
 
 			public void Run (object sender, EventArgs e)
 			{
-				var context = documentContext.ParsedDocument.CreateRefactoringContext (editor, editor.CaretLocation, documentContext, CancellationToken.None);
-				//RefactoringService.ApplyFix (act, context);
+				var token = default(CancellationToken);
+				foreach (var op in act.GetOperationsAsync (token).Result) {
+					op.Apply (documentContext.RoslynWorkspace, token); 
+				}
 			}
 
 			public void BatchRun (object sender, EventArgs e)
@@ -517,10 +522,8 @@ namespace MonoDevelop.CodeActions
 			}
 			RemoveWidget ();
 			currentSmartTagBegin = smartTagLocBegin;
-			var line = Editor.GetLineByOffset (smartTagLocBegin);
-			var realLoc  = Editor.OffsetToLocation (offset);
-			
-			
+			var realLoc  = Editor.OffsetToLocation (smartTagLocBegin);
+
 			currentSmartTag = TextMarkerFactory.CreateSmartTagMarker (Editor, smartTagLocBegin, realLoc); 
 			currentSmartTag.Tag = fixes;
 			editor.AddMarker (currentSmartTag);
