@@ -93,11 +93,10 @@ namespace MonoDevelop.VersionControl.Views
 		{
 			info.Start ();
 			ComparisonWidget.UpdateLocalText ();
-			var buffer = info.Document.GetContent<ITextBuffer> ();
+			var buffer = info.Document.GetContent<MonoDevelop.Ide.Editor.TextEditor> ();
 			if (buffer != null) {
-				int line, col;
-				buffer.GetLineColumnFromPosition (buffer.CursorPosition, out line, out col);
-				ComparisonWidget.OriginalEditor.SetCaretTo (line, col);
+				var loc = buffer.CaretLocation;
+				ComparisonWidget.OriginalEditor.SetCaretTo (loc.Line, loc.Column);
 			}
 			
 			if (ComparisonWidget.Allocation.Height == 1 && ComparisonWidget.Allocation.Width == 1) {

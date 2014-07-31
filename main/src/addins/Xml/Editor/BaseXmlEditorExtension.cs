@@ -180,26 +180,17 @@ namespace MonoDevelop.Xml.Editor
 		protected ParsedDocument CU {
 			get { return lastCU; }
 		}
-		
-		protected ITextBuffer Buffer {
-			get {
-				if (DocumentContext == null)
-					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return DocumentContext.GetContent<ITextBuffer> ();
-			}
-		}
-		
+
 		protected DocumentStateTracker<XmlParser> Tracker {
 			get { return tracker; }
 		}
 		
 		protected string GetBufferText (DomRegion region)
 		{
-			ITextBuffer buf = Buffer;
-			int start = buf.GetPositionFromLineColumn (region.BeginLine, region.BeginColumn);
-			int end = buf.GetPositionFromLineColumn (region.EndLine, region.EndColumn);
+			int start = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
+			int end = Editor.LocationToOffset (region.EndLine, region.EndColumn);
 			if (end > start && start >= 0)
-				return buf.GetText (start, end);
+				return Editor.GetTextBetween (start, end);
 			return null;
 		}
 		

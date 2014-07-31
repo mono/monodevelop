@@ -1482,7 +1482,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		#endregion
 		
-		#region ITextBuffer
 		public int CursorPosition { 
 			get {
 				return TextEditor.Caret.Offset;
@@ -1491,34 +1490,6 @@ namespace MonoDevelop.SourceEditor
 				TextEditor.Caret.Offset = value;
 			}
 		}
-
-		public int SelectionStartPosition { 
-			get {
-				if (!TextEditor.IsSomethingSelected)
-					return TextEditor.Caret.Offset;
-				return TextEditor.SelectionRange.Offset;
-			}
-		}
-
-		public int SelectionEndPosition { 
-			get {
-				if (!TextEditor.IsSomethingSelected)
-					return TextEditor.Caret.Offset;
-				return TextEditor.SelectionRange.EndOffset;
-			}
-		}
-		
-		public void Select (int startPosition, int endPosition)
-		{
-			TextEditor.SelectionRange = new TextSegment (startPosition, endPosition - startPosition);
-			TextEditor.ScrollToCaret ();
-		}
-		
-		public void ShowPosition (int position)
-		{
-			// TODO
-		}
-		#endregion
 		
 		#region ITextFile
 		public FilePath Name {

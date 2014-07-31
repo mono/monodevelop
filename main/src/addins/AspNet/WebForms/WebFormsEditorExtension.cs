@@ -127,9 +127,8 @@ namespace MonoDevelop.AspNet.WebForms
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
 		{
-			ITextBuffer buf = Buffer;
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
+			char currentChar = completionContext.TriggerOffset < 1? ' ' : Editor.GetCharAt (completionContext.TriggerOffset - 1);
 			//char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
 			
 			

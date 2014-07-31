@@ -73,15 +73,7 @@ namespace MonoDevelop.TextTemplating.Gui
 		protected T4ParsedDocument ParsedDoc {
 			get { return parsedDoc; }
 		}
-		
-		protected ITextBuffer Buffer {
-			get {
-				if (DocumentContext == null)
-					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return DocumentContext.GetContent<ITextBuffer> ();
-			}
-		}
-		
+
 		protected TextEditor EditableBuffer {
 			get {
 				if (DocumentContext == null)
@@ -92,11 +84,10 @@ namespace MonoDevelop.TextTemplating.Gui
 		
 		protected string GetBufferText (DomRegion region)
 		{
-			MonoDevelop.Ide.Gui.Content.ITextBuffer buf = Buffer;
-			int start = buf.GetPositionFromLineColumn (region.BeginLine, region.BeginColumn);
-			int end = buf.GetPositionFromLineColumn (region.EndLine, region.EndColumn);
+			int start = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
+			int end = Editor.LocationToOffset (region.EndLine, region.EndColumn);
 			if (end > start && start >= 0)
-				return buf.GetText (start, end);
+				return Editor.GetTextBetween (start, end);
 			else
 				return null;
 		}
