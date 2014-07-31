@@ -1014,6 +1014,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public event EventHandler CurrentItemActivated;
 
+		[Obsolete ("Not supported anymore")]
+		public double Zoom {
+			get { return 1d; }
+			set { }
+		}
+
 		[CommandHandler (EditCommands.Copy)]
 		public void CopyCurrentItem ()
 		{
