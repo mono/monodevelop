@@ -482,6 +482,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				Text = info.StatusMessage,
 				Severity = info.StatusSeverity
 			};
+			rect.Y += 2;
 			statusPopover.ShowPopup (this, rect, PopupPosition.Bottom);
 		}
 
@@ -497,7 +498,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		[GLib.ConnectBefore]
 		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
 		{
-
+			HideStatusMessage ();
 		}
 
 		void HandleMenuHidden (object sender, EventArgs e)
@@ -2335,6 +2336,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			Gdk.Rectangle buttonAllocation;
 			string markup;
 
+			const int StatusIconSpacing = 4;
+
 			public bool Pushed { get; set; }
 
 			//using this instead of FontDesc property, FontDesc seems to be broken
@@ -2422,12 +2425,12 @@ namespace MonoDevelop.Ide.Gui.Components
 				bool hasStatusIcon = StatusIcon != CellRendererImage.NullImage && StatusIcon != null;
 
 				if (hasStatusIcon && iconMode != 2) {
-					var x = iconMode == 1 ? tx : tx + w + 3;
+					var x = iconMode == 1 ? tx : tx + w + StatusIconSpacing;
 					using (var ctx = Gdk.CairoHelper.Create (window)) {
 						ctx.DrawImage (widget, StatusIcon, x, cell_area.Y + (cell_area.Height - StatusIcon.Height) / 2);
 					}
 					if (iconMode == 1)
-						tx += (int)StatusIcon.Width + 3;
+						tx += (int)StatusIcon.Width + StatusIconSpacing;
 				}
 
 				window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
@@ -2489,10 +2492,10 @@ namespace MonoDevelop.Ide.Gui.Components
 						using (var ctx = Gdk.CairoHelper.Create (window)) {
 							if (ShowPopupButton && selected) {
 								if (hasStatusIcon)
-									x -= (int) icon.Width + 3;
+									x -= (int) icon.Width + StatusIconSpacing;
 								ctx.DrawImage (widget, icon, x, y);
 								if (hasStatusIcon)
-									x += (int) icon.Width + 3;
+									x += (int) icon.Width + StatusIconSpacing;
 							}
 							if (hasStatusIcon) {
 								ctx.DrawImage (widget, StatusIcon, x, y);
@@ -2511,7 +2514,7 @@ namespace MonoDevelop.Ide.Gui.Components
 
 				int tx = cell_area.X + (int)Xpad;
 				if (iconMode == 0) {
-					var x = tx + w + 3;
+					var x = tx + w + StatusIconSpacing;
 					return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
 				} else if (iconMode == 1) {
 					var x = tx;
@@ -2519,6 +2522,13 @@ namespace MonoDevelop.Ide.Gui.Components
 				} else {
 					return new Gdk.Rectangle (cell_area.Width - (int) StatusIcon.Width, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
 				}
+			}
+
+			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				if (StatusIcon != CellRendererImage.NullImage && StatusIcon != null)
+					width += (int) StatusIcon.Width + StatusIconSpacing;
 			}
 
 			public double Zoom {
