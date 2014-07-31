@@ -1166,12 +1166,12 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			internal void RequestLoad ()
 			{
+				BeginLoadOperation ();
 				EnsureReferencesAreLoaded ();
 				CancelLoad ();
 				src = new CancellationTokenSource ();
 				var token = src.Token;
 				Task.Factory.StartNew (delegate {
-					BeginLoadOperation ();
 					try {
 						foreach (var asm in referencedAssemblies.ToArray ()) {
 							if (token.IsCancellationRequested)
@@ -1754,7 +1754,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			TrackFileChanges = true;
 		}
 
-		internal static void UnloadProject (Project project)
+		internal static void UnloadProject (Project project, bool skipProjectSerialization = false)
 		{
 			if (DecLoadCount (project) != 0)
 				return;
@@ -1770,7 +1770,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				projectContents.Remove (project);
 			}
-			StoreProjectCache (project, wrapper);
+			if (!skipProjectSerialization)
+				StoreProjectCache (project, wrapper);
 			OnProjectUnloaded (new ProjectUnloadEventArgs (project, wrapper));
 			wrapper.Unload ();
 		}
