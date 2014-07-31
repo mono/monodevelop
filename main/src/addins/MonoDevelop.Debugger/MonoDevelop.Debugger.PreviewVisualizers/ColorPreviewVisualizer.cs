@@ -41,7 +41,6 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 		{
 			var color = DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val);
 			var mainBox = new HBox ();
-
 			var colorBox = new ColorBox { Color = color };
 			mainBox.PackStart (colorBox);
 
@@ -49,49 +48,73 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 			var mainTable = new Table (3, 6, false);
 			mainTable.RowSpacing = 2;
 			mainTable.ColumnSpacing = 3;
-			mainTable.SetColSpacing (1, 12);
-			mainTable.SetColSpacing (3, 12);
+			mainTable.SetColSpacing (1, 18);
+			mainTable.SetColSpacing (3, 18);
 
 			var titleColor = new Gdk.Color (139, 139, 139);
+			var valueColor = new Gdk.Color (100, 100, 100);
 			var titleLabel = new Label ("R");
 			titleLabel.ModifyFg (StateType.Normal, titleColor);
 			mainTable.Attach (titleLabel, 0, 1, 0, 1);
-			mainTable.Attach (new Label (((byte)(color.Red * 255.0)).ToString ()){ Xalign = 0 }, 1, 2, 0, 1);
+			var valueLabel = new Label (((byte)(color.Red * 255.0)).ToString ()){ Xalign = 0 };
+			valueLabel.ModifyFg (StateType.Normal, valueColor);
+			mainTable.Attach (valueLabel, 1, 2, 0, 1);
 			titleLabel = new Label ("G");
 			titleLabel.ModifyFg (StateType.Normal, titleColor);
 			mainTable.Attach (titleLabel, 0, 1, 1, 2);
-			mainTable.Attach (new Label (((byte)(color.Green * 255.0)).ToString ()){ Xalign = 0 }, 1, 2, 1, 2);
+			valueLabel = new Label (((byte)(color.Green * 255.0)).ToString ()){ Xalign = 0 };
+			valueLabel.ModifyFg (StateType.Normal, valueColor);
+			mainTable.Attach (valueLabel, 1, 2, 1, 2);
 			titleLabel = new Label ("B");
 			titleLabel.ModifyFg (StateType.Normal, titleColor);
 			mainTable.Attach (titleLabel, 0, 1, 2, 3);
-			mainTable.Attach (new Label (((byte)(color.Blue * 255.0)).ToString ()){ Xalign = 0 }, 1, 2, 2, 3);
+			valueLabel = new Label (((byte)(color.Blue * 255.0)).ToString ()){ Xalign = 0 };
+			valueLabel.ModifyFg (StateType.Normal, valueColor);
+			mainTable.Attach (valueLabel, 1, 2, 2, 3);
 
 			titleLabel = new Label ("H");
 			titleLabel.ModifyFg (StateType.Normal, titleColor);
 			mainTable.Attach (titleLabel, 2, 3, 0, 1);
-			mainTable.Attach (new Label ((color.Hue * 360.0).ToString ("0.##") + "°"){ Xalign = 0 }, 3, 4, 0, 1);
+			valueLabel = new Label ((color.Hue * 360.0).ToString ("0.##") + "°"){ Xalign = 0 };
+			valueLabel.ModifyFg (StateType.Normal, valueColor);
+			mainTable.Attach (valueLabel, 3, 4, 0, 1);
 			titleLabel = new Label ("S");
 			titleLabel.ModifyFg (StateType.Normal, titleColor);
 			mainTable.Attach (titleLabel, 2, 3, 1, 2);
-			mainTable.Attach (new Label ((color.Saturation * 100.0).ToString ("0.##") + "%"){ Xalign = 0 }, 3, 4, 1, 2);
+			valueLabel = new Label ((color.Saturation * 100.0).ToString ("0.##") + "%"){ Xalign = 0 };
+			valueLabel.ModifyFg (StateType.Normal, valueColor);
+			mainTable.Attach (valueLabel, 3, 4, 1, 2);
 			titleLabel = new Label ("L");
 			titleLabel.ModifyFg (StateType.Normal, titleColor);
 			mainTable.Attach (titleLabel, 2, 3, 2, 3);
-			mainTable.Attach (new Label ((color.Light * 100.0).ToString ("0.##") + "%"){ Xalign = 0 }, 3, 4, 2, 3);
+			valueLabel = new Label ((color.Light * 100.0).ToString ("0.##") + "%"){ Xalign = 0 };
+			valueLabel.ModifyFg (StateType.Normal, valueColor);
+			mainTable.Attach (valueLabel, 3, 4, 2, 3);
 
 			titleLabel = new Label ("A");
 			titleLabel.ModifyFg (StateType.Normal, titleColor);
 			mainTable.Attach (titleLabel, 4, 5, 0, 1);
-			mainTable.Attach (new Label (((byte)(color.Alpha * 255.0)).ToString () + " (" + (color.Alpha * 100.0).ToString ("0.##") + "%)"){ Xalign = 0 }, 5, 6, 0, 1);
+			valueLabel = new Label (((byte)(color.Alpha * 255.0)).ToString () + " (" + (color.Alpha * 100.0).ToString ("0.##") + "%)"){ Xalign = 0 };
+			valueLabel.ModifyFg (StateType.Normal, valueColor);
+			mainTable.Attach (valueLabel, 5, 6, 0, 1);
 			titleLabel = new Label ("#");
 			titleLabel.ModifyFg (StateType.Normal, titleColor);
 			mainTable.Attach (titleLabel, 4, 5, 1, 2);
-			mainTable.Attach (new Label (
+			valueLabel = new Label (
 				((byte)(color.Red * 255.0)).ToString ("X2") +
 				((byte)(color.Green * 255.0)).ToString ("X2") +
-				((byte)(color.Blue * 255.0)).ToString ("X2")){ Xalign = 0 }, 5, 6, 1, 2);
-
-			mainBox.PackStart (mainTable, true, true, 3);
+				((byte)(color.Blue * 255.0)).ToString ("X2")){ Xalign = 0 };
+			valueLabel.ModifyFg (StateType.Normal, valueColor);
+			mainTable.Attach (valueLabel, 5, 6, 1, 2);
+			var font = mainBox.Style.FontDescription.Copy ();
+			if (font.SizeIsAbsolute) {
+				font.AbsoluteSize = font.Size - 1;
+			} else {
+				font.Size -= (int)(Pango.Scale.PangoScale);
+			}
+			foreach (var child in mainTable.AllChildren)
+				((Gtk.Label)child).ModifyFont (font);
+			mainBox.PackStart (mainTable, true, true, 9);
 			mainBox.ShowAll ();
 			return mainBox;
 		}
