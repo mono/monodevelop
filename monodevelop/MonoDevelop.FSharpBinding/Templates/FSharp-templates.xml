@@ -75,49 +75,6 @@ member this.$name$ (sender : $type$) =
       <_Group>F#</_Group>
       <Version />
       <MimeType>text/x-fsharp</MimeType>
-      <Shortcut>du</Shortcut>
-      <_Description>Template for Discriminated Unions</_Description>
-      <TemplateType>Expansion</TemplateType>
-    </Header>
-    <Variables>
-      <Variable name="name">
-        <Default>name</Default>
-      </Variable>
-      <Variable name="case">
-        <Default>case</Default>
-      </Variable>
-    </Variables>
-    <Code><![CDATA[type $name$ = 
-    | $case$ $end$]]></Code>
-  </CodeTemplate>
-
-    <CodeTemplate version="2.0">
-    <Header>
-      <_Group>F#</_Group>
-      <Version />
-      <MimeType>text/x-fsharp</MimeType>
-      <Shortcut>interface</Shortcut>
-      <_Description>Template for interface implementation</_Description>
-      <TemplateType>Expansion</TemplateType>
-    </Header>
-    <Variables>
-      <Variable name="name">
-        <Default>name</Default>
-      </Variable>
-      <Variable name="interface">
-        <Default>IDisposable</Default>
-      </Variable>
-    </Variables>
-    <Code><![CDATA[type $name$ =
-    interface $interface$ with 
-        &end&]]></Code>
-  </CodeTemplate>
-
-  <CodeTemplate version="2.0">
-    <Header>
-      <_Group>F#</_Group>
-      <Version />
-      <MimeType>text/x-fsharp</MimeType>
       <Shortcut>uncheck</Shortcut>
       <_Description>Creates an unchecked default value</_Description>
       <TemplateType>Unknown</TemplateType>
