@@ -497,7 +497,7 @@ namespace MonoDevelop.AspNet.Razor
 //				return null;
 
 			var currentLocation = new ICSharpCode.NRefactory.TextLocation (completionContext.TriggerLine, completionContext.TriggerLineOffset);
-			char currentChar = completionContext.TriggerOffset < 1 ? ' ' : Buffer.GetCharAt (completionContext.TriggerOffset - 1);
+			char currentChar = completionContext.TriggerOffset < 1 ? ' ' : Editor.GetCharAt (completionContext.TriggerOffset - 1);
 
 			var codeState = Tracker.Engine.CurrentState as RazorCodeFragmentState;
 			if (currentChar == '<' && codeState != null) {
