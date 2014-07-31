@@ -1171,7 +1171,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				CancelLoad ();
 				src = new CancellationTokenSource ();
 				var token = src.Token;
-				Task.Factory.StartNew (delegate {
+				//Task.Factory.StartNew (delegate {
 					try {
 						foreach (var asm in referencedAssemblies.ToArray ()) {
 							if (token.IsCancellationRequested)
@@ -1183,7 +1183,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					} finally {
 						EndLoadOperation ();
 					}
-				});
+				//});
 			}
 
 			public event EventHandler Loaded;
