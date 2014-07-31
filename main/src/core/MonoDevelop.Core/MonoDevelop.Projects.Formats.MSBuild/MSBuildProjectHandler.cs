@@ -167,11 +167,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			// If the default runtime changes, the project builder for this project may change
 			// so it has to be created again.
-			if (projectBuilder != null) {
-				projectBuilder.Dispose ();
-				projectBuilder = null;
-			}
+			CleanupProjectBuilder ();
 		}
+
+		object builderLock = new object ();
 		
 		RemoteProjectBuilder GetProjectBuilder ()
 		{
@@ -185,21 +184,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var sln = item.ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
-				if (projectBuilder != null) {
-					projectBuilder.Dispose ();
-					projectBuilder = null;
+			lock (builderLock) {
+				if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
+					CleanupProjectBuilder ();
+					projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, item.FileName, slnFile);
+					lastBuildToolsVersion = ToolsVersion;
+					lastBuildRuntime = runtime.Id;
+					lastFileName = item.FileName;
+					lastSlnFileName = slnFile;
 				}
-				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, item.FileName, slnFile);
-				lastBuildToolsVersion = ToolsVersion;
-				lastBuildRuntime = runtime.Id;
-				lastFileName = item.FileName;
-				lastSlnFileName = slnFile;
-			}
-			else if (modifiedInMemory) {
-				modifiedInMemory = false;
-				var p = SaveProject (new NullProgressMonitor ());
-				projectBuilder.RefreshWithContent (p.SaveToString ());
+				if (modifiedInMemory) {
+					modifiedInMemory = false;
+					var p = SaveProject (new NullProgressMonitor ());
+					projectBuilder.RefreshWithContent (p.SaveToString ());
+				}
 			}
 			return projectBuilder;
 		}
@@ -259,17 +257,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				var configs = GetConfigurations (item, configuration);
-
-				var result = builder.Run (
-					configs, null, MSBuildVerbosity.Normal,
-					new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null
-				);
-
-				List<MSBuildEvaluatedItem> items;
-				if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
-					foreach (var i in items)
-						yield return i.ItemSpec;
-				}
+				foreach (var r in builder.ResolveAssemblyReferences (configs))
+					yield return r;
 			}
 			else {
 				CleanupProjectBuilder ();
