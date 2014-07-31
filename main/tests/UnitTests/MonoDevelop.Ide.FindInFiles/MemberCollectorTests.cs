@@ -48,7 +48,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			wrapper.RequestLoad ();
 			do {
 				System.Threading.Thread.Sleep (10);
-			} while (wrapper.InLoad);
+			} while (wrapper.IsLoaded);
 			return wrapper.Compilation.MainAssembly;
 		}
 
