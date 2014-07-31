@@ -946,11 +946,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			internal IProjectContent _content;
 			internal bool referencesConnected;
 
-			public bool ReferencesConnected {
-				get {
-					return referencesConnected; // GetReferencesConnected (this, new HashSet<ProjectContentWrapper> ());
-				}
-			}
 			/*
 			static bool GetReferencesConnected (ProjectContentWrapper pcw, HashSet<ProjectContentWrapper> wrapper)
 			{
@@ -960,22 +955,10 @@ namespace MonoDevelop.Ide.TypeSystem
 				return pcw.referencesConnected && pcw.referencedWrappers.All (w => GetReferencesConnected (w, wrapper));
 			}*/
 
-			public bool IsLoaded {
-				get {
-					if (!ReferencesConnected)
-						return false;
-					foreach (var wrapper in referencedWrappers) {
-						if (!wrapper.IsLoaded)
-							return false;
-					}
-					return true;
-				}
-			}
-
 			public IProjectContent Content {
 				get {
 					if (!referencesConnected) {
-						LoadAssemblyReferences ();
+						EnsureReferencesAreLoaded ();
 					}
 					return _content;
 				}
@@ -1141,6 +1124,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				lock (loadOperationLocker) {
 					loadOperationDepth++;
+					if (loadOperationDepth == 1)
+						UpdateLoadState ();
 				}
 			}
 
@@ -1150,13 +1135,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (loadOperationDepth > 0) {
 						loadOperationDepth--;
 					}
+					if (loadOperationDepth == 0)
+						UpdateLoadState ();
 				}
-				OnLoad (EventArgs.Empty);
 			}
-			bool inLoad;
-			public bool InLoad {
+
+			bool isLoaded;
+			public bool IsLoaded {
 				get {
-					return inLoad;
+					return isLoaded;
 				}
 			}
 
@@ -1171,47 +1158,31 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			void UpdateLoadState ()
 			{
-				inLoad = loadOperationDepth > 0 || referencedWrappers.Any (w => w.InLoad) || referencedAssemblies.Any (a => a.InLoad);
+				bool wasLoaded = isLoaded;
+				isLoaded = loadOperationDepth == 0 && referencesConnected && !referencedAssemblies.Any (a => a.InLoad);
+				if (isLoaded && !wasLoaded)
+					OnLoad (EventArgs.Empty);
 			}
 
 			internal void RequestLoad ()
 			{
 				EnsureReferencesAreLoaded ();
-				UpdateLoadState ();
-				if (!InLoad)
-					return;
 				CancelLoad ();
 				src = new CancellationTokenSource ();
 				var token = src.Token;
 				Task.Factory.StartNew (delegate {
-					var s = new Stack<ProjectContentWrapper> ();
-					s.Push (this);
-
-					var w = new HashSet<ProjectContentWrapper> ();
-					while (s.Count > 0) {
-						var wrapper = s.Pop ();
-						if (token.IsCancellationRequested)
-							return;
-						if (w.Contains (wrapper))
-							continue;
-						w.Add (wrapper);
-
-						wrapper.EnsureReferencesAreLoaded ();
-
-						foreach (var asm in wrapper.referencedAssemblies.ToArray ()) {
+					BeginLoadOperation ();
+					try {
+						foreach (var asm in referencedAssemblies.ToArray ()) {
 							if (token.IsCancellationRequested)
-								return;
+								break;
 							var ctxLoader = asm.CtxLoader;
 							if (ctxLoader != null)
 								ctxLoader.EnsureAssemblyLoaded ();
 						}
-						foreach (var rw in wrapper.referencedWrappers.ToArray ()) {
-							if (token.IsCancellationRequested)
-								return;
-							s.Push (rw); 
-						}
+					} finally {
+						EndLoadOperation ();
 					}
-					OnLoad (EventArgs.Empty);
 				});
 			}
 
@@ -1219,9 +1190,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			protected virtual void OnLoad (EventArgs e)
 			{
-				UpdateLoadState ();
-				if (InLoad)
-					return;
 				var handler = Loaded;
 				if (handler != null)
 					handler (this, e);
@@ -1537,7 +1505,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			object assemblyReconnectLock = new object();
 
-			void LoadAssemblyReferences ()
+			public void EnsureReferencesAreLoaded ()
 			{
 				lock (assemblyReconnectLock) {
 					if (referencesConnected)
@@ -1606,8 +1574,9 @@ namespace MonoDevelop.Ide.TypeSystem
 							LoggingService.LogError ("Target runtime assembly context was null: " + Project.Name);
 						}
 						LoggingService.LogError ("Error while reloading all references of project: " + Project.Name, e);
-					} 
-					UpdateLoadState ();
+					} finally {
+						UpdateLoadState ();
+					}
 				}
 			}
 			object reconnectLock = new object();
@@ -1623,21 +1592,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			public void EnsureReferencesAreLoaded ()
-			{
-				lock (assemblyReconnectLock) {
-					if (referencesConnected)
-						return;
-					LoadAssemblyReferences ();
-					UpdateLoadState ();
-					if (!InLoad)
-						OnLoad (EventArgs.Empty);
-				}
-			}
-
 			void HandleReferencedProjectInLoadChange (object sender, EventArgs e)
 			{
-				OnLoad (EventArgs.Empty);
+				UpdateLoadState ();
 			}
 
 			internal void Unload ()
