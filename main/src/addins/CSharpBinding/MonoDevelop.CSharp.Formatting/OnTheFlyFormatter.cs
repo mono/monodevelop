@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Projects.Policies;
 using ICSharpCode.NRefactory.CSharp;
-using System.Text;
+using System.Linq;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.CSharp.TypeSystem;
@@ -102,7 +102,7 @@ namespace MonoDevelop.CSharp.Formatting
 					var syntaxTree = context.AnalysisDocument.GetSyntaxTreeAsync ().Result;
 					var doc = Formatter.FormatAsync (context.AnalysisDocument, span).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
-					foreach (var change in newTree.GetChanges (syntaxTree)) {
+					foreach (var change in newTree.GetChanges (syntaxTree).OrderByDescending (c => c.Span.Start) ) {
 						editor.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
 					}
 				} catch (Exception e) {
