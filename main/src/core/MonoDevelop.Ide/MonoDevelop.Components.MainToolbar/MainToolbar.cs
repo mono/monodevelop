@@ -148,6 +148,12 @@ namespace MonoDevelop.Components.MainToolbar
 				renderer.Visible = ci.Visible;
 				renderer.Sensitive = ci.Enabled;
 				renderer.Xpad = 3;
+
+				// it seems that once we add the ExecutionTargetGroups to the drop down then the width
+				// calculation for items needs some help in calculating the correct width
+				// doing this helps.
+				if (Platform.IsMac)
+					renderer.WidthChars = renderer.Text != null ? renderer.Text.Length : 0;
 				return;
 			}
 			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);

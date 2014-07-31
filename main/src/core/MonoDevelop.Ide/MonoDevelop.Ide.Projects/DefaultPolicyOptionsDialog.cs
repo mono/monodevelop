@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Projects
 			align.Add (topBar);
 			
 			HeaderBox ebox = new HeaderBox ();
-			ebox.GradientBackround = true;
+			ebox.GradientBackground = true;
 			ebox.SetMargins (0, 1, 0, 0);
 			ebox.Add (align);
 			

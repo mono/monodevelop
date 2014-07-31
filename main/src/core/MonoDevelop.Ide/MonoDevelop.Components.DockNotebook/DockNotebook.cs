@@ -75,6 +75,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			ShowAll ();
 
+			contentBox.NoShowAll = true;
+
 			tabStrip.DropDownButton.Sensitive = false;
 
 			tabStrip.DropDownButton.MenuCreator = delegate {

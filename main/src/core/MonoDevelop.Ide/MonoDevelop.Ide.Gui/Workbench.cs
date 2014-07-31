@@ -98,6 +98,15 @@ namespace MonoDevelop.Ide.Gui
 					CheckFileStatus ();
 				};
 
+				IdeApp.ProjectOperations.StartBuild += delegate {
+					SaveFileStatus ();
+				};
+
+				IdeApp.ProjectOperations.EndBuild += delegate {
+					// The file status checks outputs as well.
+					CheckFileStatus ();
+				};
+
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
 			} finally {
@@ -279,16 +288,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void LockGui ()
 		{
-			IdeApp.CommandService.LockAll ();
-			if (GuiLocked != null)
-				GuiLocked (this, EventArgs.Empty);
+			if (IdeApp.CommandService.LockAll ()) {
+				if (GuiLocked != null)
+					GuiLocked (this, EventArgs.Empty);
+			}
 		}
 		
 		public void UnlockGui ()
 		{
-			IdeApp.CommandService.UnlockAll ();
-			if (GuiUnlocked != null)
-				GuiUnlocked (this, EventArgs.Empty);
+			if (IdeApp.CommandService.UnlockAll ()) {
+				if (GuiUnlocked != null)
+					GuiUnlocked (this, EventArgs.Empty);
+			}
 		}
 		
 		public void SaveAll ()
@@ -1276,7 +1287,7 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = value.CanonicalPath;
+				fileName = ResolveSymbolicLink (value.CanonicalPath);
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}
@@ -1326,6 +1337,36 @@ namespace MonoDevelop.Ide.Gui
 				this.Options |= OpenDocumentOptions.BringToFront;
 			} else {
 				this.Options &= ~OpenDocumentOptions.BringToFront;
+			}
+		}
+
+		static FilePath ResolveSymbolicLink (FilePath fileName)
+		{
+			if (fileName.IsEmpty)
+				return fileName;
+			try {
+				var alreadyVisted = new HashSet<FilePath> ();
+				while (true) {
+					if (alreadyVisted.Contains (fileName)) {
+						LoggingService.LogError ("Cyclic links detected: " + fileName);
+						return FilePath.Empty;
+					}
+					alreadyVisted.Add (fileName);
+					var linkInfo = new Mono.Unix.UnixSymbolicLinkInfo (fileName);
+					if (linkInfo.IsSymbolicLink && linkInfo.HasContents) {
+						FilePath contentsPath = linkInfo.ContentsPath;
+						if (contentsPath.IsAbsolute) {
+							fileName = linkInfo.ContentsPath;
+						} else {
+							fileName = fileName.ParentDirectory.Combine (contentsPath);
+						}
+						fileName = fileName.CanonicalPath;
+						continue;
+					}
+					return ResolveSymbolicLink (fileName.ParentDirectory).Combine (fileName.FileName).CanonicalPath;
+				}
+			} catch (Exception) {
+				return fileName;
 			}
 		}
 	}

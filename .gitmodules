@@ -33,10 +33,6 @@
 	path = main/external/fsharpbinding
 	url = git://github.com/fsharp/fsharpbinding.git
 	branch = master
-[submodule "main/external/raygun4net"]
-	path = main/external/raygun4net
-	url = git://github.com/mono/raygun4net.git
-	branch = xshacks
 [submodule "main/external/sharpsvn-binary"]
 	path = main/external/sharpsvn-binary
 	url = git://github.com/mono/sharpsvn-binary.git

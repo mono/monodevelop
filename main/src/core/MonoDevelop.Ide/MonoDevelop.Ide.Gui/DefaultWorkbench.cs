@@ -451,8 +451,6 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			}
 
-			RegisterPad (content);
-			
 			if (item != null) {
 				if (show)
 					item.Visible = true;
@@ -1292,6 +1290,8 @@ namespace MonoDevelop.Ide.Gui
 		
 		void AddPad (PadCodon padCodon, string placement, DockItemStatus defaultStatus)
 		{
+			RegisterPad (padCodon);
+
 			PadWindow window = new PadWindow (this, padCodon);
 			window.Icon = padCodon.Icon;
 			padWindows [padCodon] = window;
@@ -1331,9 +1331,6 @@ namespace MonoDevelop.Ide.Gui
 				else
 					window.NotifyContentHidden ();
 			};
-			
-			if (!padContentCollection.Contains (padCodon))
-				padContentCollection.Add (padCodon);
 		}
 		
 		void UpdatePad (object source, EventArgs args)
