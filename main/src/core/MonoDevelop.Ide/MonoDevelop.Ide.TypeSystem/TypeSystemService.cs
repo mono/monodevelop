@@ -962,16 +962,14 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public bool IsLoaded {
 				get {
-					return GetIsLoaded (this, new HashSet<ProjectContentWrapper> ());
-				}
-			}
-
-			static bool GetIsLoaded (ProjectContentWrapper pcw, HashSet<ProjectContentWrapper> wrapper)
-			{
-				if (wrapper.Contains (pcw))
+					if (!ReferencesConnected)
+						return false;
+					foreach (var wrapper in referencedWrappers) {
+						if (!wrapper.IsLoaded)
+							return false;
+					}
 					return true;
-				wrapper.Add (pcw); 
-				return !pcw.InLoad && pcw.ReferencesConnected && pcw.referencedWrappers.All (w => GetIsLoaded (w, wrapper));
+				}
 			}
 
 			public IProjectContent Content {
@@ -1180,9 +1178,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				EnsureReferencesAreLoaded ();
 				UpdateLoadState ();
-				if (!InLoad) {
+				if (!InLoad)
 					return;
-				}
 				CancelLoad ();
 				src = new CancellationTokenSource ();
 				var token = src.Token;
@@ -1610,28 +1607,32 @@ namespace MonoDevelop.Ide.TypeSystem
 						}
 						LoggingService.LogError ("Error while reloading all references of project: " + Project.Name, e);
 					} 
+					UpdateLoadState ();
 				}
-				if (!InLoad)
-					OnLoad (EventArgs.Empty);
 			}
-
+			object reconnectLock = new object();
 			public void ReconnectAssemblyReferences ()
 			{
-				this.referencesConnected = false;
 				var netProject = Project as DotNetProject;
 				if (netProject == null)
 					return;
-				CancelLoad ();
-				EnsureReferencesAreLoaded ();
-				RequestLoad ();
+				lock (reconnectLock) {
+					CancelLoad ();
+					this.referencesConnected = false;
+					RequestLoad ();
+				}
 			}
 
 			public void EnsureReferencesAreLoaded ()
 			{
-				if (referencesConnected)
-					return;
-				LoadAssemblyReferences ();
-				UpdateLoadState ();
+				lock (assemblyReconnectLock) {
+					if (referencesConnected)
+						return;
+					LoadAssemblyReferences ();
+					UpdateLoadState ();
+					if (!InLoad)
+						OnLoad (EventArgs.Empty);
+				}
 			}
 
 			void HandleReferencedProjectInLoadChange (object sender, EventArgs e)
