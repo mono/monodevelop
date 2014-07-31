@@ -1,5 +1,5 @@
 ﻿//
-// PackagesRequiringReinstallationMonitor.cs
+// MonoDevelopAggregateRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,24 +25,43 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using MonoDevelop.Core;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCompatibilityHandler
+	public class MonoDevelopAggregateRepository : AggregateRepository
 	{
-		public void MonitorTargetFrameworkChanges (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
+		ConcurrentQueue<Exception> failures = new ConcurrentQueue<Exception> ();
+
+		public MonoDevelopAggregateRepository (IEnumerable<IPackageRepository> repositories)
+			: base (repositories)
 		{
-			projectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
 		}
 
-		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
+		public override void LogRepository (IPackageRepository repository, Exception ex)
 		{
-			if (e.Project.HasPackages ()) {
-				var runner = new PackageCompatibilityRunner (e.Project);
-				runner.Run ();
-			}
+			base.LogRepository (repository, ex);
+			LoggingService.LogInfo ("PackageRepository failure.", ex);
+			failures.Enqueue (ex);
+		}
+
+		public bool AnyFailures ()
+		{
+			return failures.Count > 0;
+		}
+
+		public bool AllFailed ()
+		{
+			return failures.Count >= Repositories.Count ();
+		}
+
+		public AggregateException GetAggregateException ()
+		{
+			return new AggregateException (failures);
 		}
 	}
 }

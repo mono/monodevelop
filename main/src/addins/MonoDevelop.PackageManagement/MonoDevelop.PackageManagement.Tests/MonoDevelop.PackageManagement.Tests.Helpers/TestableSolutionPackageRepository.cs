@@ -1,5 +1,5 @@
 ﻿//
-// PackagesRequiringReinstallationMonitor.cs
+// TestableSolutionPackageRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,23 +26,25 @@
 
 using System;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class PackageCompatibilityHandler
+	public class TestableSolutionPackageRepository : SolutionPackageRepository
 	{
-		public void MonitorTargetFrameworkChanges (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
+		public TestableSolutionPackageRepository (
+			ISolution solution,
+			ISharpDevelopPackageRepositoryFactory repositoryFactory,
+			PackageManagementOptions options)
+			: base (solution, repositoryFactory, options)
 		{
-			projectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
 		}
 
-		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
+		public TestableLocalPackageRepository LocalPackageRepository = new TestableLocalPackageRepository ();
+
+		protected override LocalPackageRepository CreateLocalPackageRepository ()
 		{
-			if (e.Project.HasPackages ()) {
-				var runner = new PackageCompatibilityRunner (e.Project);
-				runner.Run ();
-			}
+			return LocalPackageRepository;
 		}
 	}
 }

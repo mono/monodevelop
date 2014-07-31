@@ -214,5 +214,10 @@ namespace ICSharpCode.PackageManagement
 				yield return CreateProject (sourceRepository, dotNetProject);
 			}
 		}
+
+		public ISolutionPackageRepository GetRepository ()
+		{
+			return CreateSolutionPackageRepository ();
+		}
 	}
 }

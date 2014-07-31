@@ -163,6 +163,16 @@ namespace MonoDevelop.PackageManagement
 			);
 		}
 
+		public static ProgressMonitorStatusMessage CreateRestoringPackagesInProjectMessage ()
+		{
+			return new ProgressMonitorStatusMessage (
+				GetString ("Restoring packages for project..."),
+				GetString ("Packages successfully restored."),
+				GetString ("Could not restore packages. Please see Package Console for details."),
+				GetString ("Packages restored with warnings. Please see Package Console for details.")
+			);
+		}
+
 		public static ProgressMonitorStatusMessage CreateCheckingPackageCompatibilityMessage ()
 		{
 			return new ProgressMonitorStatusMessage (
@@ -209,7 +219,7 @@ namespace MonoDevelop.PackageManagement
 				GetString ("Checking for package updates..."),
 				GetString ("Packages are up to date."),
 				GetString ("Could not check for package updates. Please see Package Console for details."),
-				String.Empty);
+				GetString ("No updates found but warnings were reported. Please see Package Console for details."));
 		}
 
 		static string GetString (string phrase)
