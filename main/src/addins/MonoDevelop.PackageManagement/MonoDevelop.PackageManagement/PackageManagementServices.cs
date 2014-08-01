@@ -51,6 +51,7 @@ namespace ICSharpCode.PackageManagement
 		static readonly ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor;
 		static readonly PackageCompatibilityHandler packageCompatibilityHandler;
 		static readonly UpdatedPackagesInSolution updatedPackagesInSolution;
+		static readonly PackageManagementProjectOperations projectOperations;
 
 		static PackageManagementServices()
 		{
@@ -75,6 +76,8 @@ namespace ICSharpCode.PackageManagement
 			packageCompatibilityHandler.MonitorTargetFrameworkChanges (projectTargetFrameworkMonitor);
 
 			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories, packageManagementEvents);
+
+			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner);
 
 			InitializeCredentialProvider();
 		}
@@ -149,6 +152,10 @@ namespace ICSharpCode.PackageManagement
 
 		public static IUpdatedPackagesInSolution UpdatedPackagesInSolution {
 			get { return updatedPackagesInSolution; }
+		}
+
+		public static IPackageManagementProjectOperations ProjectOperations {
+			get { return projectOperations; }
 		}
 	}
 }
