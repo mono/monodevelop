@@ -222,7 +222,10 @@ namespace MonoDevelop.Ide
 						return 1;
 					reportedFailures = errorsList.Count;
 				}
-				
+
+				if (!CheckSCPlugin ())
+					return 1;
+
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
@@ -535,6 +538,35 @@ namespace MonoDevelop.Ide
 			} catch (Exception e) {
 				LoggingService.LogWarning ("There was a problem checking whether to use managed file watching", e);
 			}
+		}
+
+		bool CheckSCPlugin ()
+		{
+			if (Platform.IsMac && Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin")) {
+				string message = "SCPlugin not supported";
+				string detail = "MonoDevelop has detected that SCPlugin (scplugin.tigris.org) is installed. " +
+				                "SCPlugin is a Subversion extension for Finder that is known to cause crashes in MonoDevelop and" +
+				                "other applications running on Mac OSX 10.9 (Mavericks) or upper. Please uninstall SCPlugin " +
+				                "before proceeding.";
+				var close = new AlertButton (BrandingService.BrandApplicationName (GettextCatalog.GetString ("Close MonoDevelop")));
+				var info = new AlertButton (GettextCatalog.GetString ("More Information"));
+				var cont = new AlertButton (GettextCatalog.GetString ("Continue Anyway"));
+				while (true) {
+					var res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), info, cont, close);
+					if (res == close) {
+						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Closing."));
+						return false;
+					}
+					if (res == info)
+						DesktopService.ShowUrl ("https://bugzilla.xamarin.com/show_bug.cgi?id=21755");
+					if (res == cont) {
+						bool exists = Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin");
+						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Continuing " + (exists ? "Installed." : "Uninstalled.")));
+						return true;
+					}
+				}
+			}
+			return true;
 		}
 
 		static void SetupExceptionManager ()
