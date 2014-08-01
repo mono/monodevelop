@@ -253,7 +253,7 @@
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
         <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
       </Or>
-      <Pad id="MonoDevelop.FSharp.FSharpInteractivePad" defaultLayout="*" defaultPlacement="Bottom" _label="F# Interactive" icon="md-project" class="MonoDevelop.FSharp.FSharpInteractivePad" />
+      <Pad id="MonoDevelop.FSharp.FSharpInteractivePad" defaultPlacement="Bottom" _label="F# Interactive" icon="md-project" class="MonoDevelop.FSharp.FSharpInteractivePad" />
     </ComplexCondition>
   </Extension>
 
