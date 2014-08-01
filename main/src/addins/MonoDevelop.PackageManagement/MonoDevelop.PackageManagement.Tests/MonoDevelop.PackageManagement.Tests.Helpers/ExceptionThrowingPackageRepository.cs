@@ -1,5 +1,5 @@
 ﻿//
-// PackagesRequiringReinstallationMonitor.cs
+// ExceptionThrowingPackageRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,24 +25,28 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
+using System.Linq;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class PackageCompatibilityHandler
+	public class ExceptionThrowingPackageRepository : FakePackageRepository
 	{
-		public void MonitorTargetFrameworkChanges (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
+		public Exception GetPackagesException;
+
+		public ExceptionThrowingPackageRepository ()
+			: this (new Exception ("Error"))
 		{
-			projectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
 		}
 
-		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
+		public ExceptionThrowingPackageRepository (Exception exception)
 		{
-			if (e.Project.HasPackages ()) {
-				var runner = new PackageCompatibilityRunner (e.Project);
-				runner.Run ();
-			}
+			GetPackagesException = exception;
+		}
+
+		public override IQueryable<IPackage> GetPackages ()
+		{
+			throw GetPackagesException;
 		}
 	}
 }

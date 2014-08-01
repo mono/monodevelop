@@ -1,5 +1,5 @@
 ﻿//
-// PackagesRequiringReinstallationMonitor.cs
+// RestorePackagesInProjectHandler.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,25 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using ICSharpCode.PackageManagement;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Commands
 {
-	public class PackageCompatibilityHandler
+	public class RestorePackagesInProjectHandler : PackagesCommandHandler
 	{
-		public void MonitorTargetFrameworkChanges (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
+		protected override void Run ()
 		{
-			projectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
+			IDotNetProject project = GetSelectedProject ();
+			if (project == null)
+				return;
+
+			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInProjectMessage ();
+			var runner = new PackageRestoreRunner ();
+			DispatchService.BackgroundDispatch (() => {
+				runner.Run (project, progressMessage);
+			});
 		}
 
-		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
+		IDotNetProject GetSelectedProject ()
 		{
-			if (e.Project.HasPackages ()) {
-				var runner = new PackageCompatibilityRunner (e.Project);
-				runner.Run ();
+			DotNetProject project = GetSelectedDotNetProject ();
+			if (project != null) {
+				return new DotNetProjectProxy (project);
 			}
+			return null;
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Enabled = SelectedDotNetProjectOrSolutionHasPackages ();
 		}
 	}
 }

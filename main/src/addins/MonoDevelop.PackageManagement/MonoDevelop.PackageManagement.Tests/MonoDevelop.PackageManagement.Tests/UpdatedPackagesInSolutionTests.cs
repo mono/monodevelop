@@ -97,10 +97,10 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
 			project.AddPackageReference ("MyPackage", "1.0");
-			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 
 			updatedPackagesInSolution.CheckForUpdates ();
-			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+			updatedPackagesInSolution.GetUpdatedPackages (project.Project);
 
 			Assert.AreEqual (registeredPackageRepositories.FakeAggregateRepository, solution.SourceRepositoryPassedToGetProjects);
 		}
@@ -144,7 +144,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateUpdatedPackagesInSolution ();
 			FakePackageManagementProject project = AddProjectToSolution ();
 			project.AddPackageReference ("MyPackage", "1.0");
-			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			bool fired = false;
 			packageManagementEvents.UpdatedPackagesAvailable += (sender, e) => {
 				fired = true;
@@ -285,13 +285,26 @@ namespace MonoDevelop.PackageManagement.Tests
 			FakePackageManagementProject project = AddProjectToSolution ();
 			project.AddPackageReference ("MyPackage", "1.0");
 			var package = FakePackage.CreatePackageWithVersion ("MyPackage", "1.0");
-			FakePackage updatedPackage = AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
+			AddUpdatedPackageToAggregateSourceRepository ("MyPackage", "1.1");
 			updatedPackagesInSolution.CheckForUpdates ();
 			packageManagementEvents.OnParentPackageUninstalled (package, project);
 
 			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
 
 			Assert.AreEqual (0, updatedPackages.GetPackages ().Count ());
+		}
+
+		[Test]
+		public void CheckForUpdates_NoPackagesUpdated_LoggerConfiguredForProject ()
+		{
+			CreateUpdatedPackagesInSolution ();
+			FakePackageManagementProject project = AddProjectToSolution ();
+			project.AddPackageReference ("MyPackage", "1.0");
+
+			updatedPackagesInSolution.CheckForUpdates ();
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project.Project);
+
+			Assert.IsInstanceOf<PackageManagementLogger> (project.Logger);
 		}
 	}
 }

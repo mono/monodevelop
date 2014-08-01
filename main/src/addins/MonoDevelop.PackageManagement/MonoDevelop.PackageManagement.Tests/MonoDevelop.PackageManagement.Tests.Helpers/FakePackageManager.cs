@@ -214,10 +214,22 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			SettingsPassedToUpdatePackageReference = settings;
 		}
 
+		public bool IgnoreWalkInfoPassedToInstallPackage;
+		public bool IsPackageInstalled;
+
 		public void InstallPackage (IPackage package, bool ignoreDependencies, bool allowPrereleaseVersions, bool ignoreWalkInfo)
 		{
-			throw new NotImplementedException ();
+			IsPackageInstalled = true;
+
+			PackagePassedToInstallPackage = package;
+			IgnoreDependenciesPassedToInstallPackage = ignoreDependencies;
+			AllowPrereleaseVersionsPassedToInstallPackage = allowPrereleaseVersions;
+			IgnoreWalkInfoPassedToInstallPackage = ignoreWalkInfo;
+
+			PackagesInstalled.Add (package);
 		}
+
+		public List<IPackage> PackagesInstalled = new List<IPackage> ();
 
 		public DependencyVersion DependencyVersion {
 			get {

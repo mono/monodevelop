@@ -40,7 +40,6 @@ namespace MonoDevelop.PackageManagement.Tests
 	{
 		UpdatedPackages updatedPackages;
 		FakeServiceBasedRepository sourceRepository;
-		List<FakePackage> installedPackages;
 		List<FakePackage> sourceRepositoryPackages;
 		List<IPackageName> packageNamesUsedWhenCheckingForUpdates;
 		bool includePreleaseUsedWhenCheckingForUpdates;
@@ -50,7 +49,6 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Init ()
 		{
 			sourceRepository = new FakeServiceBasedRepository ();
-			installedPackages = new List<FakePackage> ();
 			sourceRepositoryPackages = new List<FakePackage> ();
 			packageNamesUsedWhenCheckingForUpdates = new List<IPackageName> ();
 			project = new FakePackageManagementProject ();
@@ -106,7 +104,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			AddPackageToSourceRepository ("Test", "1.1");
 			CreateUpdatedPackages ();
 
-			IEnumerable<IPackage> packages = updatedPackages.GetUpdatedPackages ();
+			updatedPackages.GetUpdatedPackages ();
 
 			IPackageName packageChecked = packageNamesUsedWhenCheckingForUpdates.FirstOrDefault ();
 			Assert.AreSame ("Test", packageChecked.Id);

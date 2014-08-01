@@ -1,5 +1,5 @@
 ﻿//
-// PackagesRequiringReinstallationMonitor.cs
+// TestableLocalPackageRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,24 +25,34 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
+using System.Collections.Generic;
+using System.Linq;
+using NuGet;
 
-namespace MonoDevelop.PackageManagement
+namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
-	public class PackageCompatibilityHandler
+	public class TestableLocalPackageRepository : LocalPackageRepository
 	{
-		public void MonitorTargetFrameworkChanges (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
+		public TestableLocalPackageRepository ()
+			: base (@"d:\projects\MySolution\packages".ToNativePath ())
 		{
-			projectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
 		}
 
-		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
+		public override IEnumerable<string> GetPackageLookupPaths (string packageId, SemanticVersion version)
 		{
-			if (e.Project.HasPackages ()) {
-				var runner = new PackageCompatibilityRunner (e.Project);
-				runner.Run ();
+			var packageName = new PackageName (packageId, version);
+			List<string> filePaths = null;
+			if (packageLookupPaths.TryGetValue (packageName, out filePaths)) {
+				return filePaths;
 			}
+			return Enumerable.Empty<string> ();
+		}
+
+		Dictionary<PackageName, List<string>> packageLookupPaths = new Dictionary<PackageName, List<string>> ();
+
+		public void AddPackageLookupPath (PackageName packageName, params string[] filePaths)
+		{
+			packageLookupPaths.Add (packageName, filePaths.ToList ());
 		}
 	}
 }

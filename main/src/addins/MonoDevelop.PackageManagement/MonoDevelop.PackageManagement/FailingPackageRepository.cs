@@ -1,5 +1,5 @@
 ﻿//
-// PackagesRequiringReinstallationMonitor.cs
+// FailingPackageRepository.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,24 +25,51 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
+using System.Linq;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public class PackageCompatibilityHandler
+	/// <summary>
+	/// Wraps access to a package repository that could not be created due to an invalid
+	/// Url. A call to any method will return the original exception that was thrown.
+	/// This is only used when creating an AggregateRepository so it does not prevent packages
+	/// being returned from other valid package repositories.
+	/// </summary>
+	public class FailingPackageRepository : IPackageRepository
 	{
-		public void MonitorTargetFrameworkChanges (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
+		string source;
+		Exception exception;
+
+		public FailingPackageRepository (string source, Exception exception)
 		{
-			projectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
+			this.source = source;
+			this.exception = exception;
 		}
 
-		void ProjectTargetFrameworkChanged (object sender, ProjectTargetFrameworkChangedEventArgs e)
+		public IQueryable<IPackage> GetPackages ()
 		{
-			if (e.Project.HasPackages ()) {
-				var runner = new PackageCompatibilityRunner (e.Project);
-				runner.Run ();
-			}
+			throw exception;
+		}
+
+		public void AddPackage (IPackage package)
+		{
+			throw exception;
+		}
+
+		public void RemovePackage (IPackage package)
+		{
+			throw exception;
+		}
+
+		public string Source {
+			get { return source; }
+		}
+
+		public PackageSaveModes PackageSaveMode { get; set; }
+
+		public bool SupportsPrereleasePackages {
+			get { return true; }
 		}
 	}
 }
