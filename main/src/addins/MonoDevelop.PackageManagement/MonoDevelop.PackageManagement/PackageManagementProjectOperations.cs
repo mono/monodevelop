@@ -38,16 +38,25 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
 		IBackgroundPackageActionRunner backgroundActionRunner;
+		IPackageManagementEvents packageManagementEvents;
 
 		public PackageManagementProjectOperations (
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IBackgroundPackageActionRunner backgroundActionRunner)
+			IBackgroundPackageActionRunner backgroundActionRunner,
+			IPackageManagementEvents packageManagementEvents)
 		{
 			this.solution = solution;
 			this.registeredPackageRepositories = registeredPackageRepositories;
 			this.backgroundActionRunner = backgroundActionRunner;
+			this.packageManagementEvents = packageManagementEvents;
+
+			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
+			packageManagementEvents.ParentPackageUninstalled += PackageUninstalled;
 		}
+
+		public event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceAdded;
+		public event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceRemoved;
 
 		public void InstallPackages (
 			string packageSourceUrl,
@@ -84,6 +93,40 @@ namespace MonoDevelop.PackageManagement
 				.GetPackageReferences ()
 				.Select (packageReference => new PackageManagementPackageReference (packageReference.Id, packageReference.Version.ToString ()))
 				.ToList ();
+		}
+
+		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)
+		{
+			OnPackageReferencedRemoved (e);
+		}
+
+		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
+		{
+			OnPackageReferenceAdded (e);
+		}
+
+		void OnPackageReferencedRemoved (ParentPackageOperationEventArgs e)
+		{
+			var handler = PackageReferenceRemoved;
+			if (handler != null) {
+				handler (this, CreateEventArgs (e));
+			}
+		}
+
+		void OnPackageReferenceAdded (ParentPackageOperationEventArgs e)
+		{
+			var handler = PackageReferenceAdded;
+			if (handler != null) {
+				handler (this, CreateEventArgs (e));
+			}
+		}
+
+		PackageManagementPackageReferenceEventArgs CreateEventArgs (ParentPackageOperationEventArgs e)
+		{
+			return new PackageManagementPackageReferenceEventArgs (
+				e.Project.DotNetProject,
+				e.Package.Id,
+				e.Package.Version.ToString ());
 		}
 	}
 }

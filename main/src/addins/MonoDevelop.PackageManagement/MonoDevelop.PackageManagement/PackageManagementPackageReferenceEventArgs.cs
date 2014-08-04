@@ -1,5 +1,5 @@
 ﻿//
-// IPackageManagementProjectOperations.cs
+// PackageManagementPackageReferenceEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -26,23 +26,19 @@
 
 using System;
 using MonoDevelop.Projects;
-using System.Collections.Generic;
 
 namespace MonoDevelop.PackageManagement
 {
-	/// <summary>
-	/// Provides a simplified interface for working with NuGet packages in a project.
-	/// 
-	/// Used by the ComponentReferencingProjectAdaptor in Xamarin.Ide so keep the NuGet 
-	/// package management logic in the NuGet addin.
-	/// </summary>
-	public interface IPackageManagementProjectOperations
+	public class PackageManagementPackageReferenceEventArgs : EventArgs
 	{
-		void InstallPackages (string packageSourceUrl, Project project, IEnumerable<PackageManagementPackageReference> packages);
-		IEnumerable<PackageManagementPackageReference> GetInstalledPackages (Project project);
+		public PackageManagementPackageReferenceEventArgs (Project project, string id, string version)
+		{
+			Project = project;
+			PackageReference = new PackageManagementPackageReference (id, version);
+		}
 
-		event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceAdded;
-		event EventHandler<PackageManagementPackageReferenceEventArgs> PackageReferenceRemoved;
+		public Project Project { get; private set; }
+		public PackageManagementPackageReference PackageReference { get; private set; }
 	}
 }
 

@@ -77,7 +77,7 @@ namespace ICSharpCode.PackageManagement
 
 			updatedPackagesInSolution = new UpdatedPackagesInSolution (solution, registeredPackageRepositories, packageManagementEvents);
 
-			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner);
+			projectOperations = new PackageManagementProjectOperations (solution, registeredPackageRepositories, backgroundPackageActionRunner, packageManagementEvents);
 
 			InitializeCredentialProvider();
 		}

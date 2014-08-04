@@ -357,6 +357,7 @@
     <Compile Include="MonoDevelop.PackageManagement\IPackageManagementProjectOperations.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReference.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProjectOperations.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageManagementPackageReferenceEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
