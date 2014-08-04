@@ -50,6 +50,7 @@ namespace MonoDevelop.Debugger
 		readonly Dictionary<ObjectValue, TreeRowReference> nodes = new Dictionary<ObjectValue, TreeRowReference> ();
 		readonly Dictionary<string, ObjectValue> cachedValues = new Dictionary<string, ObjectValue> ();
 		readonly Dictionary<ObjectValue, Task> expandTasks = new Dictionary<ObjectValue, Task> ();
+		readonly List<ObjectValue> enumerableLoading = new List<ObjectValue> ();
 		readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource ();
 		readonly Dictionary<string, string> oldValues = new Dictionary<string, string> ();
 		readonly List<ObjectValue> values = new List<ObjectValue> ();
@@ -729,6 +730,64 @@ namespace MonoDevelop.Debugger
 		{
 			Refresh (true);
 		}
+
+		void HandleValueButton (TreeIter it)
+		{
+			var val = (ObjectValue)store.GetValue (it, ObjectColumn);
+			if (val.Flags.HasFlag (ObjectValueFlags.IEnumerable)) {
+				if (val.Name == "") {
+					LoadIEnumerableChildren (it);
+				} else {
+					ExpandRow (store.GetPath (it), false);
+				}
+			} else {
+				RefreshRow (it);
+			}
+		}
+
+		void LoadIEnumerableChildren (TreeIter iter)
+		{
+			var value = (ObjectValue)store.GetValue (iter, ObjectColumn);
+			if (enumerableLoading.Contains (value))
+				return;
+			enumerableLoading.Add (value);
+			store.SetValue (iter, ValueButtonTextColumn, "");
+			if (value.Name == "") {
+				store.IterParent (out iter, iter);
+				value = (ObjectValue)store.GetValue (iter, ObjectColumn);
+			}
+
+			int numberOfChildren = store.IterNChildren (iter);
+			Task.Factory.StartNew<ObjectValue[]> (delegate (object arg) {
+				try {
+					return ((ObjectValue)arg).GetRangeOfChildren (numberOfChildren - 1, 20);
+				} catch (Exception ex) {
+					// Note: this should only happen if someone breaks ObjectValue.GetAllChildren()
+					LoggingService.LogError ("Failed to get ObjectValue children.", ex);
+					return new ObjectValue[0];
+				}
+			}, value, cancellationTokenSource.Token).ContinueWith (t => {
+				TreeIter it;
+				if (disposed)
+					return;
+				store.IterNthChild (out it, iter, numberOfChildren - 1);
+				foreach (var child in t.Result) {
+					SetValues (iter, it, null, child);
+					RegisterValue (child, it);
+					it = store.InsertNodeAfter (it);
+				}
+				ScrollToCell (store.GetPath (it), expCol, true, 0f, 0f);
+				if (t.Result.Length == 20) {//If we get back 20 elements it means there is probably more...
+					SetValues (iter, it, null, ObjectValue.CreateNullObject (null, "", "", ObjectValueFlags.IEnumerable));
+				} else {
+					store.Remove (ref it);
+				}
+
+				if (compact)
+					ColumnsAutosize ();
+				enumerableLoading.Remove (value);
+			}, cancellationTokenSource.Token, TaskContinuationOptions.NotOnCanceled, Xwt.Application.UITaskScheduler);
+		}
 		
 		void RefreshRow (TreeIter iter)
 		{
@@ -937,6 +996,14 @@ namespace MonoDevelop.Debugger
 					name = val.Name;
 				}
 				canEdit = false;
+			} else if (val.Flags.HasFlag (ObjectValueFlags.IEnumerable)) {
+				if (val.Name == "") {
+					valueButton = GettextCatalog.GetString ("Show More");
+				} else {
+					valueButton = GettextCatalog.GetString ("Show Values");
+				}
+				strval = "";
+				canEdit = false;
 			} else {
 				showViewerButton = !val.IsNull && DebuggingService.HasValueVisualizers (val);
 				canEdit = val.IsPrimitive && !val.IsReadOnly;
@@ -1102,10 +1169,14 @@ namespace MonoDevelop.Debugger
 			TreeIter child;
 			
 			if (store.IterChildren (out child, iter)) {
-				var value = (ObjectValue) store.GetValue (child, ObjectColumn);
+				var value = (ObjectValue)store.GetValue (child, ObjectColumn);
 				if (value == null) {
-					value = (ObjectValue) store.GetValue (iter, ObjectColumn);
-					AddChildrenAsync (value, new TreePathReference (store, store.GetPath (iter)));
+					value = (ObjectValue)store.GetValue (iter, ObjectColumn);
+					if (value.HasFlag (ObjectValueFlags.IEnumerable)) {
+						LoadIEnumerableChildren (iter);
+					} else {
+						AddChildrenAsync (value, new TreePathReference (store, store.GetPath (iter)));
+					}
 				}
 			}
 			
@@ -1347,7 +1418,7 @@ namespace MonoDevelop.Debugger
 				return;
 			}
 			if (currentIcon != icon || !currentHoverIter.Equals (it)) {
-				if (!currentHoverIter.Equals (TreeIter.Zero)) {
+				if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
 					store.SetValue (currentHoverIter, PreviewIconColumn, null);
 				}
 				switch (icon) {
@@ -1570,7 +1641,7 @@ namespace MonoDevelop.Debugger
 					}
 				} else if (!editing) {
 					if (cr == crpButton) {
-						RefreshRow (it);
+						HandleValueButton (it);
 					} else if (cr == crpPin) {
 						TreeIter pi;
 						if (PinnedWatch != null && !store.IterParent (out pi, it))
