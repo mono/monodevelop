@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -37,13 +38,13 @@ namespace MonoDevelop.PackageManagement
 	{
 		IPackageManagementSolution solution;
 		IRegisteredPackageRepositories registeredPackageRepositories;
-		IBackgroundPackageActionRunner backgroundActionRunner;
+		BackgroundPackageActionRunner backgroundActionRunner;
 		IPackageManagementEvents packageManagementEvents;
 
 		public PackageManagementProjectOperations (
 			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
-			IBackgroundPackageActionRunner backgroundActionRunner,
+			BackgroundPackageActionRunner backgroundActionRunner,
 			IPackageManagementEvents packageManagementEvents)
 		{
 			this.solution = solution;
@@ -63,16 +64,21 @@ namespace MonoDevelop.PackageManagement
 			Project project,
 			IEnumerable<PackageManagementPackageReference> packages)
 		{
-			IPackageRepository repository = registeredPackageRepositories.CreateRepository (new PackageSource (packageSourceUrl));
-			IPackageManagementProject packageManagementProject = solution.GetProject (repository, new DotNetProjectProxy ((DotNetProject)project));
-			List<IPackageAction> actions = packages.Select (packageReference => {
-				InstallPackageAction action = packageManagementProject.CreateInstallPackageAction ();
-				action.PackageId = packageReference.Id;
-				action.PackageVersion = new SemanticVersion (packageReference.Version);
-				return (IPackageAction)action;
-			}).ToList ();
+			List<IPackageAction> actions = null;
+
+			DispatchService.GuiSyncDispatch (() => {
+				IPackageRepository repository = registeredPackageRepositories.CreateRepository (new PackageSource (packageSourceUrl));
+				IPackageManagementProject packageManagementProject = solution.GetProject (repository, new DotNetProjectProxy ((DotNetProject)project));
+				actions = packages.Select (packageReference => {
+					InstallPackageAction action = packageManagementProject.CreateInstallPackageAction ();
+					action.PackageId = packageReference.Id;
+					action.PackageVersion = new SemanticVersion (packageReference.Version);
+					return (IPackageAction)action;
+				}).ToList ();
+			});
+
 			ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (actions);
-			backgroundActionRunner.Run (progressMessage, actions);
+			backgroundActionRunner.RunAndWait (progressMessage, actions);
 		}
 
 		ProgressMonitorStatusMessage GetProgressMonitorStatusMessages (List<IPackageAction> packageActions)
@@ -86,13 +92,19 @@ namespace MonoDevelop.PackageManagement
 
 		public IEnumerable<PackageManagementPackageReference> GetInstalledPackages (Project project)
 		{
-			string url = RegisteredPackageSources.DefaultPackageSourceUrl;
-			var repository = registeredPackageRepositories.CreateRepository (new PackageSource(url));
-			IPackageManagementProject packageManagementProject = solution.GetProject (repository, new DotNetProjectProxy ((DotNetProject)project));
-			return packageManagementProject
-				.GetPackageReferences ()
-				.Select (packageReference => new PackageManagementPackageReference (packageReference.Id, packageReference.Version.ToString ()))
-				.ToList ();
+			List<PackageManagementPackageReference> packageReferences = null;
+		
+			DispatchService.GuiSyncDispatch (() => {
+				string url = RegisteredPackageSources.DefaultPackageSourceUrl;
+				var repository = registeredPackageRepositories.CreateRepository (new PackageSource (url));
+				IPackageManagementProject packageManagementProject = solution.GetProject (repository, new DotNetProjectProxy ((DotNetProject)project));
+				packageReferences = packageManagementProject
+					.GetPackageReferences ()
+					.Select (packageReference => new PackageManagementPackageReference (packageReference.Id, packageReference.Version.ToString ()))
+					.ToList ();
+			});
+
+			return packageReferences;
 		}
 
 		void PackageUninstalled (object sender, ParentPackageOperationEventArgs e)
