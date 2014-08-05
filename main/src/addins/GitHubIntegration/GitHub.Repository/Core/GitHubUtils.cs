@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.VersionControl.Git;
 using MonoDevelop.Ide;
 using GitHub.Repository.UserInterface;
+using MonoDevelop.Projects;
 
 
 namespace GitHub.Repository.Core
@@ -43,6 +44,11 @@ namespace GitHub.Repository.Core
 			} finally {
 				dlg.Destroy ();
 			}
+		}
+
+		public static void GistThis (IFileItem file)
+		{
+
 		}
 	}
 }

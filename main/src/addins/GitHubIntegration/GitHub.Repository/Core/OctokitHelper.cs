@@ -53,27 +53,20 @@ namespace GitHub.Repository.Core
 			return repo;
 		}
 
-//		public bool GistThis(List<Octokit.GistFile> gistFiles){
-//			Octokit.Gist gist = new Octokit.Gist ();
-//			gist.Files.Add (gistFiles);
-//			Octokit.GistFile file = new Octokit.GistFile ();
-//			try {
-//				GitHubService.Client.Gist.Create (gist).Result;
-//				return true;
-//			} catch (Exception ex) {
-//				return false;
-//			}
-//		}
+		public bool GistThis(String fileName, String FileContent){
 
+			Octokit.NewGist newGist = new Octokit.NewGist ();
+			var dictionary = new Dictionary<string, string>();
+			dictionary.Add(fileName, FileContent);
+			newGist.Files = dictionary;
 
-		//in progress
-//		public bool GistAFile()
-//		{
-//			Octokit.Gist gist = new Octokit.Gist ();
-//			Octokit.GistFile file = new Octokit.GistFile ();
-//			//gist.Files.Add (file);
-//			//GitHubService.Client.Gist.Create (gist).Result;
-//		}
+			try {
+				GitHubService.Client.Gist.Create (newGist).Result;
+				return true;
+			} catch (Exception ex) {
+				return false;
+			}
+		}
 			
 	}
 }

@@ -34,6 +34,7 @@ using MonoDevelop.VersionControl.Git;
 using MonoDevelop.VersionControl;
 using GitHub.Repository.Core;
 using System.IO;
+using System.Collections.Generic;
 
 namespace GitHub.Repository.Commands
 {
@@ -45,6 +46,15 @@ namespace GitHub.Repository.Commands
 
 	class GitHubCommandHandler: CommandHandler
 	{
+		public ProjectFile SelectedFile{
+			get{ 
+				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedItem;
+				if (wob != null && wob is ProjectFile)
+					return (ProjectFile)wob;
+				else
+					return null;
+			}
+		}
 		public GitRepository Repository {
 			get {
 				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolution;
@@ -100,6 +110,23 @@ namespace GitHub.Repository.Commands
 		{
 			GitHubUtils.ViewProperties (ORepository);
 		}
+	}
+
+	class GistThisHandler : GitHubCommandHandler{
+
+		protected override void Run ()
+		{
+			Octokit.GistFile file = new Octokit.GistFile ();
+			file.Filename = SelectedFile.Name;
+			file.Content = SelectedFile.Data;
+			file.Language = "C Sharp";
+
+			List<Octokit.GistFile> listOfFiles = new  List<Octokit.GistFile> ();
+			listOfFiles.Add (file);
+			var obj = new OctokitHelper ();
+			obj.GistThis (listOfFiles);
+		}
+
 	}
 }
 
