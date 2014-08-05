@@ -10,7 +10,8 @@ namespace GitHub.Issues
 	public enum Commands
 	{
 		GetAllIssues,
-		ViewIssueHandler
+		ViewIssueHandler,
+		LabelsHandler
 	}
 
 	class GetAllIssuesHandler : CommandHandler
@@ -26,7 +27,7 @@ namespace GitHub.Issues
 
 	class ViewIssueHandler : CommandHandler
 	{
-		public ViewIssueHandler(Octokit.Issue issue) : base ()
+		public ViewIssueHandler (Octokit.Issue issue) : base ()
 		{
 			this.issue = issue;
 			this.Run ();
@@ -36,7 +37,20 @@ namespace GitHub.Issues
 
 		protected override void Run ()
 		{
-			IdeApp.Workbench.OpenDocument(new IssueView(this.issue != null ? this.issue.Title : StringResources.NewIssueTitle, this.issue), true);
+			IdeApp.Workbench.OpenDocument (new IssueView (this.issue != null ? this.issue.Title : StringResources.NewIssueTitle, this.issue), true);
+		}
+	}
+
+	class LabelsHandler : CommandHandler
+	{
+		public LabelsHandler ()
+		{
+			this.Run ();
+		}
+
+		protected override void Run ()
+		{
+			IdeApp.Workbench.OpenDocument (new LabelsView (StringResources.ManageLabels), true);
 		}
 	}
 }

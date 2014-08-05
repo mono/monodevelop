@@ -22,8 +22,7 @@ namespace GitHub.Issues
 		/// Current repository that we are working in
 		/// </summary>
 		/// <value>The current repository.</value>
-		private Octokit.Repository currentRepository 
-		{
+		private Octokit.Repository currentRepository {
 			get {
 				if (this.repository == null) {
 					// Find the current repository and its information
@@ -52,14 +51,13 @@ namespace GitHub.Issues
 		/// Gets all issues for the current repository
 		/// </summary>
 		/// <returns>The all issues.</returns>
-		public IReadOnlyList<Octokit.Issue> GetAllIssues()
+		public IReadOnlyList<Octokit.Issue> GetAllIssues ()
 		{
 			try {
 				Task<IReadOnlyList<Octokit.Issue>> task = gitHubClient.Issue.GetForRepository (currentRepository.Owner.Login, currentRepository.Name);
 				IReadOnlyList<Octokit.Issue> issues = task.Result;
 				return issues;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
@@ -70,14 +68,13 @@ namespace GitHub.Issues
 		/// Gets all labels for the current repository
 		/// </summary>
 		/// <returns>The all labels.</returns>
-		public IReadOnlyList<Octokit.Label> GetAllLabels()
+		public IReadOnlyList<Octokit.Label> GetAllLabels ()
 		{
 			try {
-				Task<IReadOnlyList<Octokit.Label>> task = gitHubClient.Issue.Labels.GetForRepository(currentRepository.Owner.Login, currentRepository.Name);
+				Task<IReadOnlyList<Octokit.Label>> task = gitHubClient.Issue.Labels.GetForRepository (currentRepository.Owner.Login, currentRepository.Name);
 				IReadOnlyList<Octokit.Label> labels = task.Result;
 				return labels;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
@@ -89,16 +86,15 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The comments for issue.</returns>
 		/// <param name="issue">Issue.</param>
-		public IReadOnlyList<Octokit.IssueComment> GetCommentsForIssue(Octokit.Issue issue)
+		public IReadOnlyList<Octokit.IssueComment> GetCommentsForIssue (Octokit.Issue issue)
 		{
 			try {
 				int numberOfComments = issue.Comments;
 
-				Task<IReadOnlyList<Octokit.IssueComment>> comments = gitHubClient.Issue.Comment.GetForIssue(currentRepository.Owner.Login, currentRepository.Name, issue.Number);
+				Task<IReadOnlyList<Octokit.IssueComment>> comments = gitHubClient.Issue.Comment.GetForIssue (currentRepository.Owner.Login, currentRepository.Name, issue.Number);
 
 				return comments.Result;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
@@ -111,13 +107,11 @@ namespace GitHub.Issues
 		/// <returns>Comment that got created.</returns>
 		/// <param name="issue">Issue to add the comment to.</param>
 		/// <param name="comment">Comment to add.</param>
-		public Octokit.IssueComment AddComment(Octokit.Issue issue, String comment)
+		public Octokit.IssueComment AddComment (Octokit.Issue issue, String comment)
 		{
-			try
-			{
+			try {
 				return gitHubClient.Issue.Comment.Create (currentRepository.Owner.Login, currentRepository.Name, issue.Number, comment).Result;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
@@ -128,13 +122,11 @@ namespace GitHub.Issues
 		/// Deletes a comment from the issue
 		/// </summary>
 		/// <param name="comment">Comment to delete.</param>
-		public void DeleteComment(Octokit.IssueComment comment)
+		public void DeleteComment (Octokit.IssueComment comment)
 		{
-			try
-			{
-				gitHubClient.Issue.Comment.Delete(currentRepository.Owner.Login, currentRepository.Name, comment.Id);
-			}
-			catch (Exception e) {
+			try {
+				gitHubClient.Issue.Comment.Delete (currentRepository.Owner.Login, currentRepository.Name, comment.Id);
+			} catch (Exception e) {
 				HandleException (e);
 			}
 		}
@@ -148,10 +140,9 @@ namespace GitHub.Issues
 		/// <param name="labels">All labels assigned to the issue.</param>
 		/// <param name="state">New state of the issue.</param>
 		/// <param name="milestone">New milestone of the issue</param> 
-		public void UpdateIssue(Octokit.Issue issue, String title, String body, String assignee, String[] labels, Octokit.ItemState state, Octokit.Milestone milestone)
+		public void UpdateIssue (Octokit.Issue issue, String title, String body, String assignee, String[] labels, Octokit.ItemState state, Octokit.Milestone milestone)
 		{
-			try
-			{
+			try {
 				Octokit.IssueUpdate details = new IssueUpdate ();
 				details.Title = title;
 				details.Body = body;
@@ -159,23 +150,20 @@ namespace GitHub.Issues
 				if (milestone != null)
 					details.Milestone = milestone.Number;
 
-				if (!string.IsNullOrEmpty(assignee))
+				if (!string.IsNullOrEmpty (assignee))
 					details.Assignee = assignee;
 
 				details.State = state;
 
 				// Update issue details
 				gitHubClient.Issue.Update (currentRepository.Owner.Login, currentRepository.Name, issue.Number, details);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
-			try
-			{
+			try {
 				gitHubClient.Issue.Labels.ReplaceAllForIssue (currentRepository.Owner.Login, currentRepository.Name, issue.Number, labels);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HandleException (e);
 			}
 		}
@@ -193,28 +181,24 @@ namespace GitHub.Issues
 		{
 			Octokit.Issue newIssue = null;
 
-			try
-			{
+			try {
 				Octokit.NewIssue details = new NewIssue (title);
 				details.Body = body;
 
 				if (milestone != null)
 					details.Milestone = milestone.Number;
 
-				if (!string.IsNullOrEmpty(assignee))
+				if (!string.IsNullOrEmpty (assignee))
 					details.Assignee = assignee;
 
 				newIssue = gitHubClient.Issue.Create (currentRepository.Owner.Login, currentRepository.Name, details).Result;
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
-			try
-			{
+			try {
 				gitHubClient.Issue.Labels.ReplaceAllForIssue (currentRepository.Owner.Login, currentRepository.Name, newIssue.Number, labels);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
@@ -226,13 +210,11 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The selected milestone.</returns>
 		/// <param name="issue">Issue.</param>
-		public Octokit.Milestone GetSelectedMilestone(Octokit.Issue issue)
+		public Octokit.Milestone GetSelectedMilestone (Octokit.Issue issue)
 		{
-			try
-			{
-				return gitHubClient.Issue.Milestone.Get(currentRepository.Owner.Login, currentRepository.Name, issue.Number).Result;
-			}
-			catch (Exception e) {
+			try {
+				return gitHubClient.Issue.Milestone.Get (currentRepository.Owner.Login, currentRepository.Name, issue.Number).Result;
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
@@ -243,13 +225,11 @@ namespace GitHub.Issues
 		/// Gets all milestones for the current repository
 		/// </summary>
 		/// <returns>All milestones for the current repository.</returns>
-		public IReadOnlyList<Octokit.Milestone> GetAllMilestones()
+		public IReadOnlyList<Octokit.Milestone> GetAllMilestones ()
 		{
-			try
-			{
-				return gitHubClient.Issue.Milestone.GetForRepository(currentRepository.Owner.Login, currentRepository.Name).Result;
-			}
-			catch (Exception e) {
+			try {
+				return gitHubClient.Issue.Milestone.GetForRepository (currentRepository.Owner.Login, currentRepository.Name).Result;
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
@@ -260,17 +240,63 @@ namespace GitHub.Issues
 		/// Gets all assignees for the current repository.
 		/// </summary>
 		/// <returns>All possible assignees.</returns>
-		public IReadOnlyList<Octokit.User> GetAllAssignees()
+		public IReadOnlyList<Octokit.User> GetAllAssignees ()
 		{
-			try
-			{
-				return gitHubClient.Issue.Assignee.GetForRepository(currentRepository.Owner.Login, currentRepository.Name).Result;
-			}
-			catch (Exception e) {
+			try {
+				return gitHubClient.Issue.Assignee.GetForRepository (currentRepository.Owner.Login, currentRepository.Name).Result;
+			} catch (Exception e) {
 				HandleException (e);
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Creates the label.
+		/// </summary>
+		/// <returns>The label.</returns>
+		/// <param name="name">Name.</param>
+		/// <param name="color">Color.</param>
+		public Octokit.Label CreateLabel (string name, string color)
+		{
+			try {
+				return gitHubClient.Issue.Labels.Create (currentRepository.Owner.Login, currentRepository.Name, new NewLabel (name, color)).Result;
+			} catch (Exception e) {
+				HandleException (e);
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Updates the label.
+		/// </summary>
+		/// <returns>The label.</returns>
+		/// <param name="oldLabel">Old label.</param>
+		/// <param name="name">Name.</param>
+		/// <param name="color">Color.</param>
+		public Octokit.Label UpdateLabel (Octokit.Label oldLabel, string name, string color)
+		{
+			try {
+				return gitHubClient.Issue.Labels.Update (currentRepository.Owner.Login, currentRepository.Name, oldLabel.Name, new LabelUpdate (name, color)).Result;
+			} catch (Exception e) {
+				HandleException (e);
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Deletes the label.
+		/// </summary>
+		/// <param name="label">Label.</param>
+		public void DeleteLabel (Octokit.Label label)
+		{
+			try {
+				gitHubClient.Issue.Labels.Delete (currentRepository.Owner.Login, currentRepository.Name, label.Name);
+			} catch (Exception e) {
+				HandleException (e);
+			}
 		}
 
 		/// <summary>
@@ -282,8 +308,7 @@ namespace GitHub.Issues
 			// Need to compare manually otherwise it escapes into another catch which catches "Exception" :(
 			if (e.InnerException != null && e.InnerException is Octokit.ApiException) {
 				MessageService.ShowError (e.InnerException.Message);
-			}
-			else {
+			} else {
 				// Done to preserve the stack trace
 				throw new Exception ("", e);
 			}

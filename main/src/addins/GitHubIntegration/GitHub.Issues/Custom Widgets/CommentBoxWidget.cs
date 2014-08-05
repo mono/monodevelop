@@ -25,8 +25,7 @@ namespace GitHub.Issues
 		/// Gets the text from the comment text box
 		/// </summary>
 		/// <value>The comment text.</value>
-		public String CommentText
-		{
+		public String CommentText {
 			get {
 				return this.commentTextBox.Buffer.Text;
 			}
@@ -63,20 +62,20 @@ namespace GitHub.Issues
 		/// Creates the comment text box.
 		/// </summary>
 		/// <returns>The comment text box.</returns>
-		private Gtk.TextView createCommentTextBox()
+		private Gtk.TextView createCommentTextBox ()
 		{
-			return this.controlFactory.CreateTextBox (string.Empty, 5);
+			return this.controlFactory.CreateTextBox (string.Empty, 5, 250);
 		}
-			
+
 		/// <summary>
 		/// Creates the add comment button.
 		/// </summary>
 		/// <returns>The add comment button.</returns>
 		/// <param name="buttonText">Button text.</param>
 		/// <param name="addCommentHandler">Add comment handler.</param>
-		private Gtk.Button createAddCommentButton(String buttonText, EventHandler addCommentHandler)
+		private Gtk.Button createAddCommentButton (String buttonText, EventHandler addCommentHandler)
 		{
-			return this.controlFactory.CreateButton(buttonText, addCommentHandler);
+			return this.controlFactory.CreateButton (buttonText, addCommentHandler);
 		}
 
 		#endregion
@@ -86,7 +85,7 @@ namespace GitHub.Issues
 		/// <summary>
 		/// Reset this instance.
 		/// </summary>
-		public void Reset()
+		public void Reset ()
 		{
 			this.commentTextBox.Buffer.Text = string.Empty;
 		}

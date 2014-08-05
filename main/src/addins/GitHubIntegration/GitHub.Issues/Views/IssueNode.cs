@@ -11,21 +11,26 @@ namespace GitHub.Issues
 	{
 		public Octokit.Issue Issue;
 
-		[Description("Title")]
+		[Description ("Title")]
 		public String Title { get { return this.Issue.Title; } }
-		[Description("Description")]
+
+		[Description ("Description")]
 		public String Body { get { return this.Issue.Body; } }
-		[Description("Assigned To")]
+
+		[Description ("Assigned To")]
 		public String Assigee { get { return this.Issue.Assignee != null ? this.Issue.Assignee.Login : "Unassigned"; } }
-		[Description("Last Updated At")]
+
+		[Description ("Last Updated At")]
 		public String UpdatedAt { get { return this.Issue.UpdatedAt.ToString (); } }
-		[Description("State")]
+
+		[Description ("State")]
 		public String State { get { return this.Issue.State.ToString (); } }
-		[Description("Labels")]
-		public String Labels
-		{
+
+		[Description ("Labels")]
+		public String Labels {
 			get {
-				var query = from label in this.Issue.Labels select label.Name;
+				var query = from label in this.Issue.Labels
+				            select label.Name;
 
 				return String.Join (", ", query);
 			}

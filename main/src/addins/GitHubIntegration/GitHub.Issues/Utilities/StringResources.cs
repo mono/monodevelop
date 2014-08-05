@@ -15,6 +15,13 @@ namespace GitHub.Issues
 		public static readonly string NewIssueTitle = "New Issue Title*";
 		public static readonly string Update = "Update";
 		public static readonly string CreateNewIssue = "Create New Issue";
+		public static readonly string ManageLabels = "Manage Labels";
+		public static readonly string LabelsManager = "Labels Manager";
+		public static readonly string LabelName = "Label Name";
+		public static readonly string LabelColor = "Label Color";
+		public static readonly string New = "New";
+		public static readonly string NewLabelTitle = "New Label Title*";
+		public static readonly string Delete = "Delete";
 
 		public static readonly string[] ListOfIssueStates = { "Open", "Closed" };
 	}

@@ -7,7 +7,7 @@
   <import>
     <widget-library name="../../../../../build/AddIns/GitHubIntegration/GitHub.Issues/GitHub.Issues.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="GitHub.Issues.UserInterface.IssuesWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="GitHub.Issues.IssuesWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -36,6 +36,13 @@
     </child>
   </widget>
   <widget class="Gtk.Bin" id="GitHub.Issues.CommentBoxWidget" design-size="300 300">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <placeholder />
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="GitHub.Issues.LabelsWidget" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>

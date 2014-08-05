@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO; 
+using System.IO;
 using MonoDevelop.Ide.Gui;
 
 namespace GitHub.Issues.Views
@@ -19,7 +19,7 @@ namespace GitHub.Issues.Views
 
 		void IViewContent.Load (string fileName)
 		{
-			throw new InvalidOperationException();
+			throw new InvalidOperationException ();
 		}
 
 		void IViewContent.LoadNew (Stream stream, string mimeType)
@@ -89,9 +89,16 @@ namespace GitHub.Issues.Views
 			set { }
 		}
 
-		event EventHandler IViewContent.BeforeSave { add { } remove { } }
-		event EventHandler IViewContent.ContentChanged { add { } remove { } }
-		event EventHandler IViewContent.ContentNameChanged { add { } remove { } }
-		event EventHandler IViewContent.DirtyChanged { add { } remove { } }
+		event EventHandler IViewContent.BeforeSave { add { } remove { }
+		}
+
+		event EventHandler IViewContent.ContentChanged { add { } remove { }
+		}
+
+		event EventHandler IViewContent.ContentNameChanged { add { } remove { }
+		}
+
+		event EventHandler IViewContent.DirtyChanged { add { } remove { }
+		}
 	}
 }

@@ -7,6 +7,7 @@ namespace GitHub.Issues
 		where T : IAttachableViewContent
 	{
 		bool CanHandle ();
+
 		T CreateView (String name);
 	}
 }

@@ -11,7 +11,7 @@ namespace GitHub.Issues
 		/// <summary>
 		/// The control factory.
 		/// </summary>
-		private CommonControlsFactories controlFactory = new CommonControlsFactories();
+		private CommonControlsFactories controlFactory = new CommonControlsFactories ();
 
 		/// <summary>
 		/// The delete button handler.
@@ -41,26 +41,25 @@ namespace GitHub.Issues
 
 			this.deleteButtonHandler = deleteButtonHandler;
 
-			topPanel.Add (this.padWidget(this.leftAlign(this.createOwnerTextBox (comment)), 10, 0, 0, 10));
+			topPanel.Add (this.padWidget (this.leftAlign (this.createOwnerTextBox (comment)), 10, 0, 0, 10));
 
 			// Contains the date and time of writting and the delete button
 			Gtk.HBox dateAndDeleteContainer = new Gtk.HBox ();
 			dateAndDeleteContainer.Add (this.createCommentDateTextBox (comment));
-			dateAndDeleteContainer.Add (this.padWidget(this.rightAlign (this.createDeleteButton (this.DeleteButtonHandler)), 10, 0, 5, 10));
+			dateAndDeleteContainer.Add (this.padWidget (this.rightAlign (this.createDeleteButton (this.DeleteButtonHandler)), 10, 0, 5, 10));
 
-			topPanel.Add (this.padWidget(this.rightAlign(dateAndDeleteContainer), 10, 0, 0, 0));
+			topPanel.Add (this.padWidget (this.rightAlign (dateAndDeleteContainer), 10, 0, 0, 0));
 
-			mainContainer.Add(topPanel);
+			mainContainer.Add (topPanel);
 
 			Gtk.Label commentBox = this.createCommentBox (comment);
 
 			// Bind the width to the parent size
-			mainContainer.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => 
-			{
+			mainContainer.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => {
 				commentBox.WidthRequest = args.Allocation.Width;
 			};
 
-			mainContainer.Add (this.padWidget(commentBox, 10, 10, 0, 10));
+			mainContainer.Add (this.padWidget (commentBox, 10, 10, 0, 10));
 			mainContainer.Add (new Gtk.HSeparator ());
 
 			this.Add (mainContainer);
@@ -85,9 +84,9 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The comment date text box.</returns>
 		/// <param name="comment">Comment.</param>
-		private Gtk.Label createCommentDateTextBox(Octokit.IssueComment comment)
+		private Gtk.Label createCommentDateTextBox (Octokit.IssueComment comment)
 		{
-			Gtk.Label date = new Gtk.Label (comment.CreatedAt.DateTime.ToString());
+			Gtk.Label date = new Gtk.Label (comment.CreatedAt.DateTime.ToString ());
 
 			return date;
 		}
@@ -97,7 +96,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The comment box.</returns>
 		/// <param name="comment">Comment.</param>
-		private Gtk.Label createCommentBox(Octokit.IssueComment comment)
+		private Gtk.Label createCommentBox (Octokit.IssueComment comment)
 		{
 			Gtk.Label commentBox = new Gtk.Label (comment.Body);
 			commentBox.LineWrapMode = Pango.WrapMode.WordChar;
@@ -111,7 +110,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The delete button.</returns>
 		/// <param name="handler">Handler.</param>
-		private Gtk.Button createDeleteButton(EventHandler handler)
+		private Gtk.Button createDeleteButton (EventHandler handler)
 		{
 			return this.controlFactory.CreateButton ("X", handler);
 		}
@@ -151,7 +150,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The top and bottom.</returns>
 		/// <param name="widget">Widget.</param>
-		private Gtk.Alignment padWidget(Gtk.Widget widget, uint topPadding, uint bottomPadding, uint leftPadding, uint rightPadding)
+		private Gtk.Alignment padWidget (Gtk.Widget widget, uint topPadding, uint bottomPadding, uint leftPadding, uint rightPadding)
 		{
 			Gtk.Alignment alignment = this.leftAlign (widget);
 
@@ -168,7 +167,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The top and bottom.</returns>
 		/// <param name="widget">Widget.</param>
-		private Gtk.Alignment padWidget(Gtk.Alignment alignment, uint topPadding, uint bottomPadding, uint leftPadding, uint rightPadding)
+		private Gtk.Alignment padWidget (Gtk.Alignment alignment, uint topPadding, uint bottomPadding, uint leftPadding, uint rightPadding)
 		{
 			alignment.TopPadding = topPadding;
 			alignment.BottomPadding = bottomPadding;
@@ -187,7 +186,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="e">Arguments.</param>
-		private void DeleteButtonHandler(object sender, EventArgs e)
+		private void DeleteButtonHandler (object sender, EventArgs e)
 		{
 			this.deleteButtonHandler (this, new DeleteCommentClickEventArgs () {
 				CommentToDelete = this.comment

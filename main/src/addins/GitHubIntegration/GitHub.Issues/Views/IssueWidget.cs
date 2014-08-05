@@ -121,8 +121,7 @@ namespace GitHub.Issues
 			if (this.issue != null) {
 				// Since we have an issue passed in we are editing an issue
 				this.editMode = EditMode.Edit;
-			}
-			else {
+			} else {
 				this.editMode = EditMode.Creation;
 			}
 
@@ -133,8 +132,7 @@ namespace GitHub.Issues
 			// Disable or enable the appropriate features based on which mode we are currently in
 			if (this.editMode == EditMode.Creation) {
 				this.DisableEditFeatures ();
-			}
-			else if (this.editMode == EditMode.Edit) {
+			} else if (this.editMode == EditMode.Edit) {
 				this.EnableEditFeatures ();
 			}
 
@@ -145,7 +143,7 @@ namespace GitHub.Issues
 		/// Creates the and initializes the widget with the information from the specified issue
 		/// </summary>
 		/// <param name="issue">Issue to show on screen</param>
-		private void CreateAndInitializeWidget(Octokit.Issue issue)
+		private void CreateAndInitializeWidget (Octokit.Issue issue)
 		{
 			Gtk.HBox mainSplit = new Gtk.HBox (false, 5);
 
@@ -168,7 +166,7 @@ namespace GitHub.Issues
 			//******************************LABELS PANEL************************************
 
 			// Issue Labels
-			labelsTable.Attach (LayoutUtilities.SetPadding(LayoutUtilities.LeftAlign (this.issueLabelsTreeView = this.CreateLabelsTreeView (issue)), 0 ,0, 0, 5),
+			labelsTable.Attach (LayoutUtilities.SetPadding (LayoutUtilities.LeftAlign (this.issueLabelsTreeView = this.CreateLabelsTreeView (issue)), 0, 0, 0, 5),
 				--left, --right, top, ++bottom, xOptions, yOptions, 5, 5);
 
 			labelsTable.Show ();
@@ -185,7 +183,7 @@ namespace GitHub.Issues
 			//******************************DETAILS PANEL************************************
 
 			// Issue name
-			this.issueTitle = this.createIssueNameTextBox (this.issue != null ? this.issue.Title : StringResources.NewIssueTitle);
+			this.issueTitle = this.CreateIssueNameTextBox (this.issue != null ? this.issue.Title : StringResources.NewIssueTitle);
 
 			// Used to easily account for the text boxes going out of bounds and running over onto the next panel
 			// Manually tweaked value - couldn't find a way to get a column's width of the table programmatically so ended up using this *** HACKY SOLUTION ***
@@ -194,8 +192,8 @@ namespace GitHub.Issues
 			LayoutUtilities.SetUpWidthBinding (detailsTable, issueTitle, -hackyLeftColumnWidth);
 
 			// Issue Title
-			detailsTable.Attach (LayoutUtilities.LeftAlign(this.createIssueNameTitleLabel ()), --left, --right, top, ++bottom, xOptions, Gtk.AttachOptions.Fill, 5, 5);
-			detailsTable.Attach (LayoutUtilities.LeftAlign(this.issueTitle), ++left, ++right, top, bottom, xOptions, yOptions, 5, 5);
+			detailsTable.Attach (LayoutUtilities.LeftAlign (this.CreateIssueNameTitleLabel ()), --left, --right, top, ++bottom, xOptions, Gtk.AttachOptions.Fill, 5, 5);
+			detailsTable.Attach (LayoutUtilities.LeftAlign (this.issueTitle), ++left, ++right, top, bottom, xOptions, yOptions, 5, 5);
 
 			// Issue State
 			detailsTable.Attach (LayoutUtilities.LeftAlign (this.CreateIssueStateLabel ()), --left, --right, ++top, ++bottom, xOptions, Gtk.AttachOptions.Fill, 5, 5);
@@ -203,17 +201,17 @@ namespace GitHub.Issues
 
 			// Issue Milestone
 			detailsTable.Attach (LayoutUtilities.LeftAlign (this.CreateIssueMilestoneLabel ()), --left, --right, ++top, ++bottom, xOptions, Gtk.AttachOptions.Fill, 5, 5);
-			detailsTable.Attach (LayoutUtilities.LeftAlign (this.issueMilestoneComboBox = this.CreateIssueMilestonesComboBox(issue)), ++left, ++right, top, bottom, xOptions, yOptions, 5, 5);
+			detailsTable.Attach (LayoutUtilities.LeftAlign (this.issueMilestoneComboBox = this.CreateIssueMilestonesComboBox (issue)), ++left, ++right, top, bottom, xOptions, yOptions, 5, 5);
 
 			// Issue Assignee
 			detailsTable.Attach (LayoutUtilities.LeftAlign (this.CreateIssueAssigneeLabel ()), --left, --right, ++top, ++bottom, xOptions, Gtk.AttachOptions.Fill, 5, 5);
-			detailsTable.Attach (LayoutUtilities.LeftAlign (this.issueAssigneeComboBox = this.CreateIssueAssigneeComboBox(issue)), ++left, ++right, top, bottom, xOptions, yOptions, 5, 5);
+			detailsTable.Attach (LayoutUtilities.LeftAlign (this.issueAssigneeComboBox = this.CreateIssueAssigneeComboBox (issue)), ++left, ++right, top, bottom, xOptions, yOptions, 5, 5);
 
 			// Issue Body
-			detailsTable.Attach (LayoutUtilities.LeftAlign(this.createIssueBodyLabel ()), --left, --right, ++top, ++bottom, xOptions, Gtk.AttachOptions.Fill, 5, 5);
-			this.issueBody = this.createIssueBodyTextBox (this.issue != null ? this.issue.Body : string.Empty);
+			detailsTable.Attach (LayoutUtilities.LeftAlign (this.CreateIssueBodyLabel ()), --left, --right, ++top, ++bottom, xOptions, Gtk.AttachOptions.Fill, 5, 5);
+			this.issueBody = this.CreateIssueBodyTextBox (this.issue != null ? this.issue.Body : string.Empty);
 			LayoutUtilities.SetUpWidthBinding (detailsTable, this.issueBody, -hackyLeftColumnWidth);
-			detailsTable.Attach (LayoutUtilities.LeftAlign(this.issueBody), ++left, ++right, top, bottom, Gtk.AttachOptions.Fill, yOptions, 5, 5);
+			detailsTable.Attach (LayoutUtilities.LeftAlign (this.issueBody), ++left, ++right, top, bottom, Gtk.AttachOptions.Fill, yOptions, 5, 5);
 			this.issueBody.WrapMode = Gtk.WrapMode.Word;
 
 			detailsTable.Show ();
@@ -226,7 +224,7 @@ namespace GitHub.Issues
 			List<CommentWidget> comments = new List<CommentWidget> ();
 
 			if (this.issue != null) {
-				comments = this.createCommentWidgets (this.manager.GetCommentsForIssue (this.issue));
+				comments = this.CreateCommentWidgets (this.manager.GetCommentsForIssue (this.issue));
 			}
 
 			this.commentsContainer = new Gtk.VBox ();
@@ -262,7 +260,7 @@ namespace GitHub.Issues
 			LayoutUtilities.SetUpWidthBinding (mainSplit, detailsPanel, 0.4);
 
 			// Header and Body type of layout
-			verticalSplit.PackStart (LayoutUtilities.LeftAlign(this.commonControlsFactory.CreateButton (StringResources.Save, this.SaveIssueDetailsHandler)), false, true, 5);
+			verticalSplit.PackStart (LayoutUtilities.LeftAlign (this.commonControlsFactory.CreateButton (StringResources.Save, this.SaveIssueDetailsHandler)), false, true, 5);
 			verticalSplit.PackStart (mainSplit, true, true, 5);
 
 			this.Add (verticalSplit);
@@ -275,7 +273,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The comment widgets.</returns>
 		/// <param name="comments">Comments.</param>
-		private List<CommentWidget> createCommentWidgets(IReadOnlyList<Octokit.IssueComment> comments)
+		private List<CommentWidget> CreateCommentWidgets (IReadOnlyList<Octokit.IssueComment> comments)
 		{
 			List<CommentWidget> commentWidgets = new List<CommentWidget> ();
 
@@ -291,7 +289,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The issue name text box</returns>
 		/// <param name="text">Name of the issue to put into the textbox</param>
-		private Gtk.TextView createIssueNameTextBox(string text)
+		private Gtk.TextView CreateIssueNameTextBox (string text)
 		{
 			return this.commonControlsFactory.CreateTextBox (text, 1, Gtk.WrapMode.WordChar);
 		}
@@ -300,7 +298,7 @@ namespace GitHub.Issues
 		/// Creates the issue name title label.
 		/// </summary>
 		/// <returns>The issue name title label.</returns>
-		private Gtk.Label createIssueNameTitleLabel()
+		private Gtk.Label CreateIssueNameTitleLabel ()
 		{
 			return this.commonControlsFactory.CreateLabel (StringResources.IssueName);
 		}
@@ -310,7 +308,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The issue body text box.</returns>
 		/// <param name="text">Text.</param>
-		private Gtk.TextView createIssueBodyTextBox(string text)
+		private Gtk.TextView CreateIssueBodyTextBox (string text)
 		{
 			return this.commonControlsFactory.CreateTextBox (text, 10, Gtk.WrapMode.WordChar);
 		}
@@ -319,7 +317,7 @@ namespace GitHub.Issues
 		/// Creates the issue body label.
 		/// </summary>
 		/// <returns>The issue body label.</returns>
-		private Gtk.Label createIssueBodyLabel()
+		private Gtk.Label CreateIssueBodyLabel ()
 		{
 			return this.commonControlsFactory.CreateLabel (StringResources.IssueDescription);
 		}
@@ -328,7 +326,7 @@ namespace GitHub.Issues
 		/// Creates the labels tree view label.
 		/// </summary>
 		/// <returns>The labels tree view label.</returns>
-		private Gtk.Label CreateLabelsTreeViewLabel()
+		private Gtk.Label CreateLabelsTreeViewLabel ()
 		{
 			return this.commonControlsFactory.CreateLabel (StringResources.Labels);
 		}
@@ -338,7 +336,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The labels tree list store.</returns>
 		/// <param name="issue">Issue.</param>
-		private Gtk.ListStore createLabelsTreeListStore(Octokit.Issue issue)
+		private Gtk.ListStore CreateLabelsTreeListStore (Octokit.Issue issue)
 		{
 			Gtk.ListStore store = new Gtk.ListStore (typeof(Boolean), typeof(String), typeof(String));
 
@@ -384,13 +382,13 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The labels tree view.</returns>
 		/// <param name="issue">Issue.</param>
-		private Gtk.TreeView CreateLabelsTreeView(Octokit.Issue issue)
+		private Gtk.TreeView CreateLabelsTreeView (Octokit.Issue issue)
 		{
 			Gtk.TreeView treeView = new Gtk.TreeView ();
 
 			Gtk.CellRendererToggle selectionToggle = new Gtk.CellRendererToggle ();
 			selectionToggle.Mode = Gtk.CellRendererMode.Activatable;
-			selectionToggle.Toggled += this.toggleRenderedToggledHandlerIssueLabels;
+			selectionToggle.Toggled += this.ToggleRenderedToggledHandlerIssueLabels;
 
 			Gtk.CellRendererText labelRenderer = new Gtk.CellRendererText ();
 
@@ -400,13 +398,13 @@ namespace GitHub.Issues
 			treeView.AppendColumn (selectionColumn);
 			treeView.AppendColumn (labelColumn);
 
-			selectionColumn.SetCellDataFunc (selectionToggle, new Gtk.TreeCellDataFunc(this.ColorLabelRow));
-			labelColumn.SetCellDataFunc (labelRenderer, new Gtk.TreeCellDataFunc(this.ColorLabelRow));
+			selectionColumn.SetCellDataFunc (selectionToggle, new Gtk.TreeCellDataFunc (this.ColorLabelRow));
+			labelColumn.SetCellDataFunc (labelRenderer, new Gtk.TreeCellDataFunc (this.ColorLabelRow));
 
 			treeView.ModifyBase (Gtk.StateType.Normal, new Gdk.Color (245, 245, 245));
 			treeView.HeadersVisible = false;
 
-			treeView.Model = this.labelsStore = this.createLabelsTreeListStore (issue);
+			treeView.Model = this.labelsStore = this.CreateLabelsTreeListStore (issue);
 
 			return treeView;
 		}
@@ -415,7 +413,7 @@ namespace GitHub.Issues
 		/// Creates the issue state label.
 		/// </summary>
 		/// <returns>The issue state label.</returns>
-		private Gtk.Label CreateIssueStateLabel()
+		private Gtk.Label CreateIssueStateLabel ()
 		{
 			return this.commonControlsFactory.CreateLabel (StringResources.State);
 		}
@@ -424,7 +422,7 @@ namespace GitHub.Issues
 		/// Creates the issue milestone label.
 		/// </summary>
 		/// <returns>The issue milestone label.</returns>
-		private Gtk.Label CreateIssueMilestoneLabel()
+		private Gtk.Label CreateIssueMilestoneLabel ()
 		{
 			return this.commonControlsFactory.CreateLabel (StringResources.AssignedToMilestone);
 		}
@@ -433,7 +431,7 @@ namespace GitHub.Issues
 		/// Creates the issue assignee label.
 		/// </summary>
 		/// <returns>The issue assignee label.</returns>
-		private Gtk.Label CreateIssueAssigneeLabel()
+		private Gtk.Label CreateIssueAssigneeLabel ()
 		{
 			return this.commonControlsFactory.CreateLabel (StringResources.Assignee);
 		}
@@ -443,13 +441,13 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The issue state indicator.</returns>
 		/// <param name="issue">Issue.</param>
-		private Gtk.ComboBox CreateIssueStateComboBox(Octokit.Issue issue)
+		private Gtk.ComboBox CreateIssueStateComboBox (Octokit.Issue issue)
 		{
 			// 0: State name
 			this.statesStore = new Gtk.ListStore (typeof(Octokit.ItemState), typeof(String));
 
 			foreach (Octokit.ItemState state in Enum.GetValues(typeof(Octokit.ItemState))) {
-				this.statesStore.AppendValues (state, state.ToString());
+				this.statesStore.AppendValues (state, state.ToString ());
 			}
 
 			Gtk.ComboBox comboBox = this.commonControlsFactory.CreateComboBox (this.statesStore, delegate(object sender, EventArgs e) {
@@ -482,7 +480,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The issue milestones combo box.</returns>
 		/// <param name="issue">Issue.</param>
-		private Gtk.ComboBox CreateIssueMilestonesComboBox(Octokit.Issue issue)
+		private Gtk.ComboBox CreateIssueMilestonesComboBox (Octokit.Issue issue)
 		{
 			IReadOnlyList<Octokit.Milestone> milestones = this.manager.GetAllMilestones ();
 
@@ -524,7 +522,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The issue assignee combo box.</returns>
 		/// <param name="issue">Issue.</param>
-		public Gtk.ComboBox CreateIssueAssigneeComboBox(Octokit.Issue issue)
+		public Gtk.ComboBox CreateIssueAssigneeComboBox (Octokit.Issue issue)
 		{
 			IReadOnlyList<Octokit.User> possibleAssignees = this.manager.GetAllAssignees ();
 
@@ -571,7 +569,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <param name="container">Container to add the comment to.</param>
 		/// <param name="comment">Comment to add.</param>
-		private void AddCommentToList(Gtk.VBox container, CommentWidget comment)
+		private void AddCommentToList (Gtk.VBox container, CommentWidget comment)
 		{
 			container.Add (comment);
 		}
@@ -580,9 +578,9 @@ namespace GitHub.Issues
 		/// Adds the "no comments label" to comments list.
 		/// </summary>
 		/// <param name="container">Comments container.</param>
-		private void AddNoCommentsLabelToList(Gtk.VBox container)
+		private void AddNoCommentsLabelToList (Gtk.VBox container)
 		{
-			container.Add (LayoutUtilities.SetPadding(LayoutUtilities.CenterHorizontalAlign(new Gtk.Label ("No comments...")), 10, 15, 0, 0));
+			container.Add (LayoutUtilities.SetPadding (LayoutUtilities.CenterHorizontalAlign (new Gtk.Label ("No comments...")), 10, 15, 0, 0));
 			container.Add (new Gtk.HSeparator ());
 		}
 
@@ -590,7 +588,7 @@ namespace GitHub.Issues
 		/// Gets the selected labels.
 		/// </summary>
 		/// <returns>The selected labels.</returns>
-		private List<String> GetSelectedLabels()
+		private List<String> GetSelectedLabels ()
 		{
 			if (this.labelsStore != null) {
 				IEnumerator rowEnumerator = this.labelsStore.GetEnumerator ();
@@ -603,28 +601,27 @@ namespace GitHub.Issues
 					Array currentRow = (Array)rowEnumerator.Current;
 
 					// Get column property (not title - not the user friendly name) and the row index
-					if ((bool)currentRow.GetValue(0) == true)
-					{
-						selectedLabels.Add ((String)currentRow.GetValue(1));
+					if ((bool)currentRow.GetValue (0) == true) {
+						selectedLabels.Add ((String)currentRow.GetValue (1));
 					}
 				}
 
 				return selectedLabels;
 			}
 
-			return new List<String>();
+			return new List<String> ();
 		}
 
 		/// <summary>
 		/// Gets the selected milestone.
 		/// </summary>
 		/// <returns>The selected milestone.</returns>
-		private Octokit.Milestone GetSelectedMilestone()
+		private Octokit.Milestone GetSelectedMilestone ()
 		{
 			Octokit.Milestone milestone = null;
 
 			if (this.milestoneStore != null) {
-				Gtk.TreeIter iterator = new Gtk.TreeIter();
+				Gtk.TreeIter iterator = new Gtk.TreeIter ();
 
 				// If there is a selection then retrieve the item as a milestone and return it
 				if (this.issueMilestoneComboBox.GetActiveIter (out iterator)) {
@@ -639,13 +636,13 @@ namespace GitHub.Issues
 		/// Gets the state of the selected issue.
 		/// </summary>
 		/// <returns>The selected issue state.</returns>
-		private Octokit.ItemState GetSelectedIssueState()
+		private Octokit.ItemState GetSelectedIssueState ()
 		{
 			// Default to the first one in the list (Opened) - Each issue has to be in some state at any given point in time
 			Octokit.ItemState state = Octokit.ItemState.Open;
 
 			if (this.statesStore != null) {
-				Gtk.TreeIter iterator = new Gtk.TreeIter();
+				Gtk.TreeIter iterator = new Gtk.TreeIter ();
 
 				// If there is a selection then retrieve the item as a milestone and return it
 				if (this.issueStateComboBox.GetActiveIter (out iterator)) {
@@ -660,12 +657,12 @@ namespace GitHub.Issues
 		/// Gets the selected assignee.
 		/// </summary>
 		/// <returns>The selected assignee.</returns>
-		private Octokit.User GetSelectedAssignee()
+		private Octokit.User GetSelectedAssignee ()
 		{
 			Octokit.User user = null;
 
 			if (this.assigneeStore != null) {
-				Gtk.TreeIter iterator = new Gtk.TreeIter();
+				Gtk.TreeIter iterator = new Gtk.TreeIter ();
 
 				// If there is a selection then retrieve the item as a milestone and return it
 				if (this.issueAssigneeComboBox.GetActiveIter (out iterator)) {
@@ -679,7 +676,7 @@ namespace GitHub.Issues
 		/// <summary>
 		/// Enables features which are only available when editing an existing issue not during the creation
 		/// </summary>
-		private void EnableEditFeatures()
+		private void EnableEditFeatures ()
 		{
 			this.issueStateComboBox.Sensitive = true;
 			this.commentBox.Sensitive = true;
@@ -688,7 +685,7 @@ namespace GitHub.Issues
 		/// <summary>
 		/// Disables the edit features for the time of the creation of the issue, once the issue is saved these features should be enabled
 		/// </summary>
-		private void DisableEditFeatures()
+		private void DisableEditFeatures ()
 		{
 			this.issueStateComboBox.Sensitive = false;
 			this.commentBox.Sensitive = false;
@@ -703,7 +700,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="args">Arguments.</param>
-		private void toggleRenderedToggledHandlerIssueLabels(object sender, Gtk.ToggledArgs args)
+		private void ToggleRenderedToggledHandlerIssueLabels (object sender, Gtk.ToggledArgs args)
 		{
 			TreeViewUtilities.ToggleCheckBoxRenderer (this.labelsStore, 0, args);
 		}
@@ -715,7 +712,7 @@ namespace GitHub.Issues
 		/// <param name="cell">Cell.</param>
 		/// <param name="model">Model.</param>
 		/// <param name="iterator">Iterator.</param>
-		private void ColorLabelRow(Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iterator)
+		private void ColorLabelRow (Gtk.TreeViewColumn column, Gtk.CellRenderer cell, Gtk.TreeModel model, Gtk.TreeIter iterator)
 		{
 			String color = (String)model.GetValue (iterator, 2);
 
@@ -723,8 +720,7 @@ namespace GitHub.Issues
 				try {
 					System.Drawing.Color colorRGB = System.Drawing.ColorTranslator.FromHtml ('#' + color);
 					cell.CellBackgroundGdk = new Gdk.Color (colorRGB.R, colorRGB.G, colorRGB.B);
-				}
-				catch (Exception) {
+				} catch (Exception) {
 				}
 			}
 		}
@@ -734,7 +730,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="args">Arguments.</param>
-		private void AddCommentHandler(object sender, EventArgs args)
+		private void AddCommentHandler (object sender, EventArgs args)
 		{
 			Octokit.IssueComment comment = this.manager.AddComment (this.issue, this.commentBox.CommentText);
 
@@ -747,7 +743,7 @@ namespace GitHub.Issues
 				}
 			}
 
-			this.AddCommentToList (this.commentsContainer, new CommentWidget(comment, this.DeleteCommentHandler));
+			this.AddCommentToList (this.commentsContainer, new CommentWidget (comment, this.DeleteCommentHandler));
 
 			this.noComments = false;
 
@@ -762,7 +758,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="args">Arguments.</param>
-		private void DeleteCommentHandler(object sender, DeleteCommentClickEventArgs args)
+		private void DeleteCommentHandler (object sender, DeleteCommentClickEventArgs args)
 		{
 			this.manager.DeleteComment (args.CommentToDelete);
 
@@ -774,12 +770,11 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="e">Event arguments.</param>
-		private void SaveIssueDetailsHandler(object sender, EventArgs e)
+		private void SaveIssueDetailsHandler (object sender, EventArgs e)
 		{
 			if (this.editMode == EditMode.Edit) {
 				this.Update ();
-			}
-			else if (this.editMode == EditMode.Creation) {
+			} else if (this.editMode == EditMode.Creation) {
 				this.Create ();
 				this.editMode = EditMode.Edit;
 				this.EnableEditFeatures ();
@@ -798,7 +793,7 @@ namespace GitHub.Issues
 		/// <summary>
 		/// Updates an already created issue
 		/// </summary>
-		private void Update()
+		private void Update ()
 		{
 			Octokit.User assignee = this.GetSelectedAssignee ();
 
@@ -814,7 +809,7 @@ namespace GitHub.Issues
 		/// <summary>
 		/// Creates a new issue on GitHub Issues system
 		/// </summary>
-		private void Create()
+		private void Create ()
 		{
 			Octokit.User assignee = this.GetSelectedAssignee ();
 

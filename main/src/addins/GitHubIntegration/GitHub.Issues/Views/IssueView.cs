@@ -20,7 +20,7 @@ namespace GitHub.Issues
 			}
 		}
 
-		public IssueView (String name, Octokit.Issue issue) : base(name)
+		public IssueView (String name, Octokit.Issue issue) : base (name)
 		{
 			this.name = name;
 			this.issue = issue;
@@ -68,7 +68,7 @@ namespace GitHub.Issues
 		/// <returns><c>true</c> if this instance issue saved the specified sender e; otherwise, <c>false</c>.</returns>
 		/// <param name="sender">Sender.</param>
 		/// <param name="e">E.</param>
-		private void IssueSaved(object sender, IssueSavedEventArgs e)
+		private void IssueSaved (object sender, IssueSavedEventArgs e)
 		{
 			this.name = e.issue.Title;
 			this.issue = e.issue;

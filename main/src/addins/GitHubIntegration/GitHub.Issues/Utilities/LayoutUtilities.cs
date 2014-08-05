@@ -14,7 +14,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The aligned widget</returns>
 		/// <param name="widget">Widget.</param>
-		public static Gtk.Alignment LeftAlign(Gtk.Widget widget)
+		public static Gtk.Alignment LeftAlign (Gtk.Widget widget)
 		{
 			Gtk.Alignment alignment = new Gtk.Alignment (0, 0, 0, 0);
 			alignment.Add (widget);
@@ -27,7 +27,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The aligned widget</returns>
 		/// <param name="widget">Widget.</param>
-		public static Gtk.Alignment RightAlign(Gtk.Widget widget)
+		public static Gtk.Alignment RightAlign (Gtk.Widget widget)
 		{
 			Gtk.Alignment alignment = new Gtk.Alignment (1, 0, 0, 0);
 			alignment.Add (widget);
@@ -40,7 +40,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The align.</returns>
 		/// <param name="alignment">Alignment.</param>
-		public static Gtk.Alignment TopAlign(Gtk.Alignment alignment)
+		public static Gtk.Alignment TopAlign (Gtk.Alignment alignment)
 		{
 			alignment.Yalign = 0;
 			alignment.Yscale = 1;
@@ -53,7 +53,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The horizontal align.</returns>
 		/// <param name="widget">Widget.</param>
-		public static Gtk.Alignment CenterHorizontalAlign(Gtk.Widget widget)
+		public static Gtk.Alignment CenterHorizontalAlign (Gtk.Widget widget)
 		{
 			Gtk.Alignment alignment = new Gtk.Alignment (0.5f, 0, 1, 0);
 			alignment.Add (widget);
@@ -67,7 +67,7 @@ namespace GitHub.Issues
 		/// <returns>The padding.</returns>
 		/// <param name="alignment">Aligned object</param>
 		/// <param name="padding">Padding amount.</param>
-		public static Gtk.Alignment SetPadding(Gtk.Alignment alignment, uint padding)
+		public static Gtk.Alignment SetPadding (Gtk.Alignment alignment, uint padding)
 		{
 			alignment.SetPadding (padding, padding, padding, padding);
 
@@ -83,7 +83,7 @@ namespace GitHub.Issues
 		/// <param name="bottom">Bottom.</param>
 		/// <param name="left">Left.</param>
 		/// <param name="right">Right.</param>
-		public static Gtk.Alignment SetPadding(Gtk.Widget widget, uint top, uint bottom, uint left, uint right)
+		public static Gtk.Alignment SetPadding (Gtk.Widget widget, uint top, uint bottom, uint left, uint right)
 		{
 			Gtk.Alignment alignment = new Gtk.Alignment (0, 0, 0, 0);
 			alignment.Add (widget);
@@ -102,7 +102,7 @@ namespace GitHub.Issues
 		/// <param name="bottom">Bottom.</param>
 		/// <param name="left">Left.</param>
 		/// <param name="right">Right.</param>
-		public static Gtk.Alignment SetPadding(Gtk.Alignment alignment, uint top, uint bottom, uint left, uint right)
+		public static Gtk.Alignment SetPadding (Gtk.Alignment alignment, uint top, uint bottom, uint left, uint right)
 		{
 			alignment.SetPadding (top, bottom, left, right);
 
@@ -114,7 +114,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>Modified alignment</returns>
 		/// <param name="alignment">Alignment to modify.</param>
-		public static Gtk.Alignment StretchHorizontally(Gtk.Alignment alignment)
+		public static Gtk.Alignment StretchHorizontally (Gtk.Alignment alignment)
 		{
 			alignment.Xscale = 1;
 
@@ -131,11 +131,10 @@ namespace GitHub.Issues
 		/// <param name="parent">Parent.</param>
 		/// <param name="child">Child.</param>
 		/// <param name="ratio">Ratio between 0 and 1.</param>
-		public static void SetUpWidthBinding(Gtk.Widget parent, Gtk.Widget child, double ratio)
+		public static void SetUpWidthBinding (Gtk.Widget parent, Gtk.Widget child, double ratio)
 		{
-			parent.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => 
-			{
-				child.WidthRequest = Convert.ToInt32(args.Allocation.Width * ratio);
+			parent.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => {
+				child.WidthRequest = Convert.ToInt32 (args.Allocation.Width * ratio);
 			};
 		}
 
@@ -145,11 +144,10 @@ namespace GitHub.Issues
 		/// <param name="parent">Parent.</param>
 		/// <param name="child">Child.</param>
 		/// <param name="offset">Offset.</param>
-		public static void SetUpWidthBinding(Gtk.Widget parent, Gtk.Widget child, int offset)
+		public static void SetUpWidthBinding (Gtk.Widget parent, Gtk.Widget child, int offset)
 		{
-			parent.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => 
-			{
-				child.WidthRequest = Convert.ToInt32(args.Allocation.Width + offset);
+			parent.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => {
+				child.WidthRequest = Convert.ToInt32 (args.Allocation.Width + offset);
 			};
 		}
 
@@ -159,11 +157,10 @@ namespace GitHub.Issues
 		/// <param name="parent">Parent.</param>
 		/// <param name="child">Child.</param>
 		/// <param name="ratio">Ratio between 0 and 1.</param>
-		public static void SetUpHeighBinding(Gtk.Widget parent, Gtk.Widget child, double ratio)
+		public static void SetUpHeighBinding (Gtk.Widget parent, Gtk.Widget child, double ratio)
 		{
-			parent.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => 
-			{
-				child.HeightRequest = Convert.ToInt32(args.Allocation.Height * ratio);
+			parent.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => {
+				child.HeightRequest = Convert.ToInt32 (args.Allocation.Height * ratio);
 			};
 		}
 

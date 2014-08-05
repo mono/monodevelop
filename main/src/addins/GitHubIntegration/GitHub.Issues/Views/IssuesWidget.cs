@@ -4,14 +4,14 @@ using Octokit;
 using System.ComponentModel;
 using System.Collections;
 
-namespace GitHub.Issues.UserInterface
+namespace GitHub.Issues
 {
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class IssuesWidget : Gtk.Bin
 	{
 		private List<IssueColumn> columns = new List<IssueColumn> ();
 		private List<Gtk.TreeViewColumn> treeColumns = new List<Gtk.TreeViewColumn> ();
-		private List<KeyValuePair<String, Int32>> filters = new List<KeyValuePair<string, int>>();
+		private List<KeyValuePair<String, Int32>> filters = new List<KeyValuePair<string, int>> ();
 
 		private Gtk.ListStore issueListStore;
 		private Gtk.ListStore columnListStore;
@@ -23,6 +23,7 @@ namespace GitHub.Issues.UserInterface
 
 		private Gtk.Button updateIssueListButton;
 		private Gtk.Button createNewIssueButton;
+		private Gtk.Button manageLabelsButton;
 
 		private List<IssueNode> issues;
 
@@ -35,6 +36,7 @@ namespace GitHub.Issues.UserInterface
 		public EventHandler<IssueSelectedEventArgs> IssueSelected;
 
 		public EventHandler CreateNewIssueClicked;
+		public EventHandler ManageLabelsButtonClicked;
 
 		#endregion
 
@@ -42,8 +44,7 @@ namespace GitHub.Issues.UserInterface
 		/// Smart ListStore property
 		/// </summary>
 		/// <value>The list store.</value>
-		public Gtk.ListStore ListStore
-		{
+		public Gtk.ListStore ListStore {
 			get {
 				if (issueListStore == null) {
 					issueListStore = new Gtk.ListStore (typeof(IssueNode));
@@ -67,7 +68,7 @@ namespace GitHub.Issues.UserInterface
 			// because I can handle conditional property reads from within my properties masked
 			// behind a single property which is not easy with reflection (if possible at all.)
 			// Look at Assignee for example. I can do the check internally in my property.
-			this.issues = new List<IssueNode>();
+			this.issues = new List<IssueNode> ();
 
 			if (issues != null) {
 				foreach (Octokit.Issue issue in issues) {
@@ -76,12 +77,13 @@ namespace GitHub.Issues.UserInterface
 			}
 
 			// Create the tree view to hold the issues
-			this.issueTable = this.createIssueTable (this.issues);
+			this.issueTable = this.CreateIssueTable (this.issues);
 			// Create the tree view to hold column selections
-			this.columnListView = this.createColumnListView ();
+			this.columnListView = this.CreateColumnListView ();
 			// Create the button
-			this.updateIssueListButton = this.createUpdateIssueListButton ();
-			this.createNewIssueButton = this.createCreateIssueButton ();
+			this.updateIssueListButton = this.CreateUpdateIssueListButton ();
+			this.createNewIssueButton = this.CreateCreateIssueButton ();
+			this.manageLabelsButton = this.CreateManageLabelsButton ();
 
 			// Set sizing
 			// this.columnListView.SetSizeRequest (100, 600);
@@ -106,6 +108,7 @@ namespace GitHub.Issues.UserInterface
 
 			headerContainer.Add (updateIssueListButton);
 			headerContainer.Add (createNewIssueButton);
+			headerContainer.Add (manageLabelsButton);
 
 			columnsSelectionContainer.PackStart (columnListView, true, true, padding);
 
@@ -130,9 +133,19 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="e">E.</param>
-		private void createIssueButtonClicked(object sender, EventArgs e)
+		private void CreateIssueButtonClicked (object sender, EventArgs e)
 		{
 			this.CreateNewIssueClicked (this, null);
+		}
+
+		/// <summary>
+		/// Called when the manage labels button is clicked
+		/// </summary>
+		/// <param name="sender">Sender.</param>
+		/// <param name="e">E.</param>
+		private void ManageLabelsButtonClickedHandler (object sender, EventArgs e)
+		{
+			this.ManageLabelsButtonClicked (this, null);
 		}
 
 		/// <summary>
@@ -140,19 +153,19 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="e">Events from click</param>
-		private void updateIssueListButtonClicked(object sender, EventArgs e)
+		private void UpdateIssueListButtonClickedHandler (object sender, EventArgs e)
 		{
 			// Clear the existing columns
-			this.deleteColumnsFromTreeView (this.issueTable, this.treeColumns);
+			this.DeleteColumnsFromTreeView (this.issueTable, this.treeColumns);
 
 			// Find and save the selected columns
-			this.columns = this.getIssueColumnsFromSelectedColumns (this.getSelectedColumns (this.columnListStore));
+			this.columns = this.GetIssueColumnsFromSelectedColumns (this.GetSelectedColumns (this.columnListStore));
 
 			// Reconfigure the issue tree view to show the selected columns
-			this.treeColumns = this.createAndAppendColumnsToTreeView (this.issueTable, this.columns);
+			this.treeColumns = this.CreateAndAppendColumnsToTreeView (this.issueTable, this.columns);
 
 			// Retrieve the filter values which can be used to search the issue list store
-			this.filters = this.getFiltersForColumns (this.columnListStore);
+			this.filters = this.GetFiltersForColumns (this.columnListStore);
 
 			// Update the table with the new filter values (regardless if updated or not)
 			this.filter.Refilter ();
@@ -163,7 +176,7 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="args">Arguments.</param>
-		private void toggleRenderedToggledHandlerColumnList(object sender, Gtk.ToggledArgs args)
+		private void ToggleRenderedToggledHandlerColumnList (object sender, Gtk.ToggledArgs args)
 		{
 			TreeViewUtilities.ToggleCheckBoxRenderer (this.columnListStore, 2, args);
 		}
@@ -173,13 +186,12 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="args">Arguments.</param>
-		private void textRendererEditedHandlerColumnList(object sender, Gtk.EditedArgs args)
+		private void TextRendererEditedHandlerColumnList (object sender, Gtk.EditedArgs args)
 		{
 			Gtk.TreeIter iterator;
 
 			// Try and find the edited item in the column list store
-			if (this.columnListStore.GetIter(out iterator, new Gtk.TreePath(args.Path)))
-			{
+			if (this.columnListStore.GetIter (out iterator, new Gtk.TreePath (args.Path))) {
 				// Update the new filter text
 				this.columnListStore.SetValue (iterator, 3, args.NewText);
 			}
@@ -194,18 +206,18 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <returns>The table to populate</returns>
 		/// <param name="issues">Issues to insert into the table</param>
-		private Gtk.TreeView createIssueTable(List<IssueNode> issues)
+		private Gtk.TreeView CreateIssueTable (List<IssueNode> issues)
 		{
 			// Setting up the table
 			Gtk.TreeView treeView = new Gtk.TreeView ();
 
 			// Fill up the table and create sort and filter models
-			this.issueListStore = this.createIssuesListStore (this.getAllPossibleColumns ());
+			this.issueListStore = this.CreateIssuesListStore (this.GetAllPossibleColumns ());
 
 			// Set up the columns in the TreeView for issues
 			// Needs to be set up before creating the filter and sort based
 			// on this store. Getting a StackOverflowException otherwise
-			this.populateIssuesTable (issues, this.issueListStore);
+			this.PopulateIssuesTable (issues, this.issueListStore);
 
 			// Set up the filtering and sorting models based on data
 			this.filter = new Gtk.TreeModelFilter (this.issueListStore, null);
@@ -221,30 +233,26 @@ namespace GitHub.Issues.UserInterface
 			// 
 			// Also need to save the output of this method for later in case we need to
 			// remove those column mappings (it needs those exact instances... stupid.)
-			this.treeColumns = this.createAndAppendColumnsToTreeView (treeView, this.columns);
+			this.treeColumns = this.CreateAndAppendColumnsToTreeView (treeView, this.columns);
 
 			// Assign the store so that it can read the issue rows and display them
 			treeView.Model = this.sort;
 
 			// When the selection changes we need to locate the correct Octokit.Issue instance and 
 			// pass it out with the event to whoever is interested in it
-			treeView.CursorChanged += (object sender, EventArgs e) => 
-			{
-				treeView.Selection.SelectedForeach(new Gtk.TreeSelectionForeachFunc((Gtk.TreeModel model, Gtk.TreePath path, Gtk.TreeIter iter) => 
-					{
-						Octokit.Issue selectedIssue = (Octokit.Issue)model.GetValue(iter, 0);
+			treeView.CursorChanged += (object sender, EventArgs e) => {
+				treeView.Selection.SelectedForeach (new Gtk.TreeSelectionForeachFunc ((Gtk.TreeModel model, Gtk.TreePath path, Gtk.TreeIter iter) => {
+					Octokit.Issue selectedIssue = (Octokit.Issue)model.GetValue (iter, 0);
 
-						if (this.IssueSelected != null)
-						{
-							this.IssueSelected.Invoke(this, new IssueSelectedEventArgs()
-								{
-									OldSelectedIssue = this.oldSelectedIssue,
-									SelectedIssue = selectedIssue
-								});
-						}
+					if (this.IssueSelected != null) {
+						this.IssueSelected.Invoke (this, new IssueSelectedEventArgs () {
+							OldSelectedIssue = this.oldSelectedIssue,
+							SelectedIssue = selectedIssue
+						});
+					}
 
-						this.oldSelectedIssue = selectedIssue;
-					}));
+					this.oldSelectedIssue = selectedIssue;
+				}));
 			};
 
 			// Show horizontal separators between the rows
@@ -257,18 +265,18 @@ namespace GitHub.Issues.UserInterface
 		/// Creates and returns an instance of the list view which allows the users to select columns they'd like to see
 		/// </summary>
 		/// <returns>The column list view.</returns>
-		private Gtk.TreeView createColumnListView()
+		private Gtk.TreeView CreateColumnListView ()
 		{
 			// Set up the control panel for column selection
 			this.columnListStore = new Gtk.ListStore (typeof(String), typeof(String), typeof(Boolean), typeof(String));
 
 			// Add all properties into the list store that appear in IssueNode class
 			// The property names won't show, the Description attribute value will be displayed instead
-			this.populatePropertiesIntoListStore (this.columnListStore, typeof(IssueNode));
+			this.PopulatePropertiesIntoListStore (this.columnListStore, typeof(IssueNode));
 
 			// Create the list instance 
 			Gtk.TreeView columnListView = new Gtk.TreeView ();
-			this.initializeColumnListControl (columnListView);
+			this.InitializeColumnListControl (columnListView);
 
 			columnListView.Model = this.columnListStore;
 
@@ -282,18 +290,27 @@ namespace GitHub.Issues.UserInterface
 		/// Creates a button which triggers update of visible columns in the issue tree view
 		/// </summary>
 		/// <returns>The "update issue list" button.</returns>
-		private Gtk.Button createUpdateIssueListButton ()
+		private Gtk.Button CreateUpdateIssueListButton ()
 		{
-			return this.commonControlsFactory.CreateButton (StringResources.Update, this.updateIssueListButtonClicked);
+			return this.commonControlsFactory.CreateButton (StringResources.Update, this.UpdateIssueListButtonClickedHandler);
 		}
 
 		/// <summary>
 		/// Creates a button which allows the creation of new issues
 		/// </summary>
 		/// <returns>The create issue button.</returns>
-		private Gtk.Button createCreateIssueButton ()
+		private Gtk.Button CreateCreateIssueButton ()
 		{
-			return this.commonControlsFactory.CreateButton (StringResources.CreateNewIssue, this.createIssueButtonClicked);
+			return this.commonControlsFactory.CreateButton (StringResources.CreateNewIssue, this.CreateIssueButtonClicked);
+		}
+
+		/// <summary>
+		/// Creates the manage labels button.
+		/// </summary>
+		/// <returns>The manage labels button.</returns>
+		private Gtk.Button CreateManageLabelsButton ()
+		{
+			return this.commonControlsFactory.CreateButton (StringResources.ManageLabels, this.ManageLabelsButtonClickedHandler);
 		}
 
 		#endregion
@@ -308,7 +325,7 @@ namespace GitHub.Issues.UserInterface
 		private void SetFilteringHandlers (List<Gtk.TreeViewColumn> columns, Gtk.TreeModelFilter sort)
 		{
 			// Set the visibility function for filtering
-			sort.VisibleFunc = this.treeFilterVisibilityFunctionForIssues;
+			sort.VisibleFunc = this.TreeFilterVisibilityFunctionForIssues;
 		}
 
 		/// <summary>
@@ -317,7 +334,7 @@ namespace GitHub.Issues.UserInterface
 		/// <returns><c>true</c>, if filter visibility function for issues was treed, <c>false</c> otherwise.</returns>
 		/// <param name="treeModel">Tree model.</param>
 		/// <param name="iterator">Iterator.</param>
-		private bool treeFilterVisibilityFunctionForIssues(Gtk.TreeModel treeModel, Gtk.TreeIter iterator)
+		private bool TreeFilterVisibilityFunctionForIssues (Gtk.TreeModel treeModel, Gtk.TreeIter iterator)
 		{
 			// Need to compare all values of all columns against the filters (we also accept filters against columns which are not shown)
 			foreach (KeyValuePair<String, Int32> filter in this.filters) {
@@ -348,32 +365,25 @@ namespace GitHub.Issues.UserInterface
 			foreach (Gtk.TreeViewColumn column in columns) {
 				// When its clicked we either set up the sorting (if currently on a different column)
 				// or toggle if already on this column
-				column.Clicked += (object sender, EventArgs e) => 
-				{
+				column.Clicked += (object sender, EventArgs e) => {
 					int colId = -1;
 					Gtk.SortType currentSort = Gtk.SortType.Descending;
 
 					// Get the column id of the current column which is sorted and the sort type of that sort
-					bool sorted = sort.GetSortColumnId(out colId, out currentSort);
+					bool sorted = sort.GetSortColumnId (out colId, out currentSort);
 
 					// If no sorting is applied at the minute
-					if (sorted == false)
-					{
+					if (sorted == false) {
 						// Set up myself as sort column
-						sort.SetSortColumnId(column.SortColumnId, currentSort);
-					}
-					else
-					{
+						sort.SetSortColumnId (column.SortColumnId, currentSort);
+					} else {
 						// If sorting is currently on myself
-						if (colId == column.SortColumnId)
-						{
+						if (colId == column.SortColumnId) {
 							// Toggle the sorting type
-							sort.ChangeSortColumn();
-						}
-						else
-						{
+							sort.ChangeSortColumn ();
+						} else {
 							// If someone else is sorted, set up the sorting on myself with Descending (look above - currentSort)
-							sort.SetSortColumnId(column.SortColumnId, currentSort);
+							sort.SetSortColumnId (column.SortColumnId, currentSort);
 						}
 					}
 				};
@@ -391,7 +401,7 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <param name="listStore">List store</param>
 		/// <param name="issue">Issue to add into the row</param>
-		private void addIssueRowIntoListStore(Gtk.ListStore listStore, IssueNode issue)
+		private void AddIssueRowIntoListStore (Gtk.ListStore listStore, IssueNode issue)
 		{
 			List<Object> values = new List<Object> ();
 
@@ -400,10 +410,10 @@ namespace GitHub.Issues.UserInterface
 
 			foreach (IssueColumn column in this.columns) {
 				object value = typeof(IssueNode).GetProperty (column.PropertyName).GetValue (issue);
-				values.Add(value != null ? value.ToString() : string.Empty);
+				values.Add (value != null ? value.ToString () : string.Empty);
 			}
 
-			listStore.AppendValues (values.ToArray());
+			listStore.AppendValues (values.ToArray ());
 		}
 
 		/// <summary>
@@ -411,7 +421,7 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <returns>The issues list store.</returns>
 		/// <param name="allColumns">All columns.</param>
-		private Gtk.ListStore createIssuesListStore(List<KeyValuePair<String, Int32>> allColumns)
+		private Gtk.ListStore CreateIssuesListStore (List<KeyValuePair<String, Int32>> allColumns)
 		{
 			this.columns.Clear ();
 
@@ -435,7 +445,7 @@ namespace GitHub.Issues.UserInterface
 				columnTypes.Add (column.Type);
 			}
 
-			return new Gtk.ListStore (columnTypes.ToArray());
+			return new Gtk.ListStore (columnTypes.ToArray ());
 		}
 
 		#endregion
@@ -449,7 +459,7 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <param name="treeView">Tree view to remove columns from.</param>
 		/// <param name="columnsToRemove">Columns to remove.</param>
-		private void deleteColumnsFromTreeView(Gtk.TreeView treeView, List<Gtk.TreeViewColumn> columnsToRemove)
+		private void DeleteColumnsFromTreeView (Gtk.TreeView treeView, List<Gtk.TreeViewColumn> columnsToRemove)
 		{
 			foreach (Gtk.TreeViewColumn column in columnsToRemove) {
 				treeView.RemoveColumn (column);
@@ -465,7 +475,7 @@ namespace GitHub.Issues.UserInterface
 		/// <returns>The and append columns to tree view.</returns>
 		/// <param name="treeView">Tree view to add to</param>
 		/// <param name="columnsToAdd">Columns to add</param>
-		private List<Gtk.TreeViewColumn> createAndAppendColumnsToTreeView(Gtk.TreeView treeView, List<IssueColumn> columnsToAdd)
+		private List<Gtk.TreeViewColumn> CreateAndAppendColumnsToTreeView (Gtk.TreeView treeView, List<IssueColumn> columnsToAdd)
 		{
 			List<Gtk.TreeViewColumn> columns = new List<Gtk.TreeViewColumn> ();
 
@@ -487,17 +497,17 @@ namespace GitHub.Issues.UserInterface
 		/// Initializes the columns for the list control which contains the columns available for selection
 		/// </summary>
 		/// <param name="columnListView">Column list view.</param>
-		private void initializeColumnListControl(Gtk.TreeView columnListView)
+		private void InitializeColumnListControl (Gtk.TreeView columnListView)
 		{
 			// Only show column 0 from the list store since it contains the user friendly description, leave out the second one (property name - used for back end)
 			Gtk.CellRendererToggle displayToggle = new Gtk.CellRendererToggle ();
 			displayToggle.Mode = Gtk.CellRendererMode.Activatable;
-			displayToggle.Toggled += this.toggleRenderedToggledHandlerColumnList;
+			displayToggle.Toggled += this.ToggleRenderedToggledHandlerColumnList;
 
 			Gtk.CellRendererText filterTextBox = new Gtk.CellRendererText ();
 			filterTextBox.Mode = Gtk.CellRendererMode.Activatable;
 			filterTextBox.Editable = true;
-			filterTextBox.Edited += this.textRendererEditedHandlerColumnList;
+			filterTextBox.Edited += this.TextRendererEditedHandlerColumnList;
 			filterTextBox.SingleParagraphMode = true;
 
 			Gtk.TreeViewColumn displayColumn = new Gtk.TreeViewColumn ("Display", displayToggle, "active", 2);
@@ -522,13 +532,13 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <returns>The issue columns from selected columns.</returns>
 		/// <param name="selectedColumns">Selected columns.</param>
-		private List<IssueColumn> getIssueColumnsFromSelectedColumns(List<KeyValuePair<String, Int32>> selectedColumns)
+		private List<IssueColumn> GetIssueColumnsFromSelectedColumns (List<KeyValuePair<String, Int32>> selectedColumns)
 		{
 			List<IssueColumn> issueColumns = new List<IssueColumn> ();
 
 			foreach (KeyValuePair<String, Int32> column in selectedColumns) {
 				String columnTitle = ((DescriptionAttribute)Attribute.GetCustomAttribute (typeof(IssueNode).GetProperty (column.Key), typeof(DescriptionAttribute))).Description;
-				issueColumns.Add(new IssueColumn(typeof(String), columnTitle, column.Key, column.Value));
+				issueColumns.Add (new IssueColumn (typeof(String), columnTitle, column.Key, column.Value));
 			}
 
 			return issueColumns;
@@ -545,7 +555,7 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <returns>The selected columns</returns>
 		/// <param name="columnsListStore">Columns list store which contains the selected columns</param>
-		private List<KeyValuePair<String, Int32>> getSelectedColumns(Gtk.ListStore columnsListStore)
+		private List<KeyValuePair<String, Int32>> GetSelectedColumns (Gtk.ListStore columnsListStore)
 		{
 			if (columnsListStore != null) {
 				IEnumerator rowEnumerator = columnsListStore.GetEnumerator ();
@@ -560,9 +570,8 @@ namespace GitHub.Issues.UserInterface
 					Array currentRow = (Array)rowEnumerator.Current;
 
 					// Get column property (not title - not the user friendly name) and the row index
-					if ((bool)currentRow.GetValue(2) == true)
-					{
-						selectedColumns.Add (new KeyValuePair<string, int> ((String)currentRow.GetValue(1), currentRowCount));
+					if ((bool)currentRow.GetValue (2) == true) {
+						selectedColumns.Add (new KeyValuePair<string, int> ((String)currentRow.GetValue (1), currentRowCount));
 					}
 
 					// Keep track of column indexes - used for correct mapping to columns in store
@@ -572,7 +581,7 @@ namespace GitHub.Issues.UserInterface
 				return selectedColumns;
 			}
 
-			return new List<KeyValuePair<String, Int32>>();
+			return new List<KeyValuePair<String, Int32>> ();
 		}
 
 		/// <summary>
@@ -580,7 +589,7 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <returns>The filters for columns</returns>
 		/// <param name="columnsListStore">Columns list store</param>
-		private List<KeyValuePair<String, Int32>> getFiltersForColumns(Gtk.ListStore columnsListStore)
+		private List<KeyValuePair<String, Int32>> GetFiltersForColumns (Gtk.ListStore columnsListStore)
 		{
 			if (columnsListStore != null) {
 				IEnumerator rowEnumerator = columnsListStore.GetEnumerator ();
@@ -594,7 +603,7 @@ namespace GitHub.Issues.UserInterface
 					Array currentRow = (Array)rowEnumerator.Current;
 
 					// Get column filter value and the row index
-					columnsIndexesAndFilterValues.Add (new KeyValuePair<string, int> ((String)currentRow.GetValue(3), currentRowCount));
+					columnsIndexesAndFilterValues.Add (new KeyValuePair<string, int> ((String)currentRow.GetValue (3), currentRowCount));
 
 					// Keep track of column indexes - used for correct mapping to columns in store
 					currentRowCount++;
@@ -605,7 +614,7 @@ namespace GitHub.Issues.UserInterface
 
 			return new List<KeyValuePair<string, int>> ();
 		}
-			
+
 		/// <summary>
 		/// Populates the list store with each value of the given enum type. Mainly used to
 		/// populate all column types from the properties into the list store which is then used
@@ -614,10 +623,9 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <param name="list">List</param>
 		/// <param name="classType">Class type</param>
-		private void populatePropertiesIntoListStore(Gtk.ListStore list, Type classType)
+		private void PopulatePropertiesIntoListStore (Gtk.ListStore list, Type classType)
 		{
-			foreach (System.Reflection.PropertyInfo property in classType.GetProperties())
-			{
+			foreach (System.Reflection.PropertyInfo property in classType.GetProperties()) {
 				// Use the reflection magic to extract the information that we need ie. Property to read for value and Description to use as column name (user friendliness)
 				String propertyName = property.Name;
 				String description = ((DescriptionAttribute)Attribute.GetCustomAttribute (classType.GetProperty (propertyName), typeof(DescriptionAttribute))).Description;
@@ -633,7 +641,7 @@ namespace GitHub.Issues.UserInterface
 		/// Gets all possible column types and returns them in a list along with their respective indexes in the list store
 		/// </summary>
 		/// <returns>The all possible columns</returns>
-		private List<KeyValuePair<String, Int32>> getAllPossibleColumns()
+		private List<KeyValuePair<String, Int32>> GetAllPossibleColumns ()
 		{
 			List<KeyValuePair<String, Int32>> columns = new List<KeyValuePair<string, int>> ();
 
@@ -652,12 +660,12 @@ namespace GitHub.Issues.UserInterface
 		/// </summary>
 		/// <param name="issues">Issues to add to the table/param>
 		/// <param name="issueListStore">Issue list store of the table</param>
-		private void populateIssuesTable(List<IssueNode> issues, Gtk.ListStore issueListStore)
+		private void PopulateIssuesTable (List<IssueNode> issues, Gtk.ListStore issueListStore)
 		{
 			if (issues != null) {
 				// Add all issues as rows into the list store
 				foreach (IssueNode issue in issues) {
-					this.addIssueRowIntoListStore (issueListStore, issue);
+					this.AddIssueRowIntoListStore (issueListStore, issue);
 				}
 			}
 		}

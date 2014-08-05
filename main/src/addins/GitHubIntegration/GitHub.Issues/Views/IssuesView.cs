@@ -1,6 +1,6 @@
 ﻿using System;
 using MonoDevelop.Ide.Gui;
-using GitHub.Issues.UserInterface;
+using GitHub.Issues;
 using System.Collections.Generic;
 
 namespace GitHub.Issues.Views
@@ -21,7 +21,7 @@ namespace GitHub.Issues.Views
 			}
 		}
 
-		public IssuesView (String name, IReadOnlyList<Octokit.Issue> issues) : base(name)
+		public IssuesView (String name, IReadOnlyList<Octokit.Issue> issues) : base (name)
 		{
 			this.name = name;
 			this.issues = issues;
@@ -35,6 +35,7 @@ namespace GitHub.Issues.Views
 					CreateWidgetFromInfo (this.issues);
 					this.widget.IssueSelected += new EventHandler<IssueSelectedEventArgs> (this.ViewIssueDetails);
 					this.widget.CreateNewIssueClicked += new EventHandler (this.CreateNewIssueClicked);
+					this.widget.ManageLabelsButtonClicked += new EventHandler (this.ManageLabelsButtonClicked);
 				}
 
 				return widget; 
@@ -50,7 +51,7 @@ namespace GitHub.Issues.Views
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="args">Arguments.</param>
-		private void ViewIssueDetails(object sender, IssueSelectedEventArgs args)
+		private void ViewIssueDetails (object sender, IssueSelectedEventArgs args)
 		{
 			ViewIssueHandler viewIssueHandler = new ViewIssueHandler (args.SelectedIssue);
 		}
@@ -60,10 +61,20 @@ namespace GitHub.Issues.Views
 		/// </summary>
 		/// <param name="sender">Sender.</param>
 		/// <param name="e">E.</param>
-		private void CreateNewIssueClicked(object sender, EventArgs e)
+		private void CreateNewIssueClicked (object sender, EventArgs e)
 		{
 			// [null] makes it go into creation mode
 			ViewIssueHandler viewIssueHandler = new ViewIssueHandler (null);
+		}
+
+		/// <summary>
+		/// Called when the "Manage Labels" button is cliked
+		/// </summary>
+		/// <param name="sender">Sender.</param>
+		/// <param name="e">E.</param>
+		private void ManageLabelsButtonClicked (object sender, EventArgs e)
+		{
+			LabelsHandler labelsHandler = new LabelsHandler ();
 		}
 
 		#endregion

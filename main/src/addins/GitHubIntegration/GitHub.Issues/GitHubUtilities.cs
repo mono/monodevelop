@@ -16,6 +16,10 @@ namespace GitHub.Issues
 		{
 		}
 
+		/// <summary>
+		/// Gets the repository (GitRepository) that we are currently working in if one exists or is set up
+		/// </summary>
+		/// <value>The repository.</value>
 		public GitRepository Repository {
 			get {
 				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolution;
@@ -27,9 +31,13 @@ namespace GitHub.Issues
 			}
 		}
 
+		/// <summary>
+		/// Gets the repository (Octokit.Repository) that we are currently working in if one exists or is set up
+		/// </summary>
+		/// <value>The O repository.</value>
 		public Octokit.Repository ORepository {
 
-			get{
+			get {
 				string locationUri = this.Repository.LocationDescription;
 				string Url = getRepositoryURL (locationUri);
 
@@ -38,14 +46,18 @@ namespace GitHub.Issues
 			}
 		}
 
-		private string getRepositoryURL(string locationDescription){
+		/// <summary>
+		/// Gets the repository URL.
+		/// </summary>
+		/// <returns>The repository URL.</returns>
+		/// <param name="locationDescription">Location description.</param>
+		private string getRepositoryURL (string locationDescription)
+		{
 
 			string pathToConfig = Path.Combine (locationDescription, ".git", "config");
-			using (StreamReader sr = File.OpenText(pathToConfig))
-			{
+			using (StreamReader sr = File.OpenText (pathToConfig)) {
 				string s = String.Empty;
-				while ((s = sr.ReadLine()) != null)
-				{
+				while ((s = sr.ReadLine ()) != null) {
 					if (s.Trim ().StartsWith ("[remote")) {
 						break;
 					}
@@ -56,13 +68,18 @@ namespace GitHub.Issues
 			}
 		}
 
-		public Octokit.Repository GetCurrentRepository(string gitHubUrl)
+		/// <summary>
+		/// Gets the current repository.
+		/// </summary>
+		/// <returns>The current repository.</returns>
+		/// <param name="gitHubUrl">Git hub URL.</param>
+		public Octokit.Repository GetCurrentRepository (string gitHubUrl)
 		{
 			Octokit.Repository repo = null;
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
+			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent ();
 			foreach (var item in repositories.Result) {
 				if (item.CloneUrl == gitHubUrl) {
-					repo = item ;
+					repo = item;
 					break;
 				} 
 			} 

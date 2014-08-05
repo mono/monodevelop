@@ -81,7 +81,6 @@
     <Compile Include="Views\BaseView.cs" />
     <Compile Include="Views\IssuesView.cs" />
     <Compile Include="Views\IssuesWidget.cs" />
-    <Compile Include="gtk-gui\GitHub.Issues.UserInterface.IssuesWidget.cs" />
     <Compile Include="Handlers\IssuesViewHandler.cs" />
     <Compile Include="Handlers\IGitHubIssuesViewHandler.cs" />
     <Compile Include="Views\IssueNode.cs" />
@@ -104,6 +103,10 @@
     <Compile Include="Events\DeleteCommentClickEventArgs.cs" />
     <Compile Include="Utilities\EditMode.cs" />
     <Compile Include="Events\IssueSavedEventArgs.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.IssuesWidget.cs" />
+    <Compile Include="Views\LabelsWidget.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.LabelsWidget.cs" />
+    <Compile Include="Views\LabelsView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

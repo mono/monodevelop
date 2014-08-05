@@ -10,12 +10,12 @@ namespace GitHub.Issues
 
 	public class IssueViewHandler
 	{
-		public bool canHandle()
+		public bool canHandle ()
 		{
 			return true;
 		}
 
-		public IIssueView CreateView(String name, Octokit.Issue issue)
+		public IIssueView CreateView (String name, Octokit.Issue issue)
 		{
 			return new IssueView (name, issue);
 		}
