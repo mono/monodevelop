@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.CSharp.NRefactoryWrapper;
 using MonoDevelop.Ide.Gui.Content;
 using System.Threading.Tasks;
+using Gtk;
 
 namespace MonoDevelop.CSharp.Refactoring.CodeActions
 {
@@ -143,39 +144,37 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			}
 		}
 
+		bool isSomethingSelected;
 		public override bool IsSomethingSelected { 
 			get {
-				if (TextEditor is TextEditor)
-					return ((TextEditor)TextEditor).IsSomethingSelected;
-				return false;
+				return isSomethingSelected;
 			}
 		}
 
 		public override string SelectedText {
 			get {
-				if (TextEditor is TextEditor)
-					return ((TextEditor)TextEditor).SelectedText;
-				return "";
+				if (!isSomethingSelected)
+					return "";
+				return TextEditor.GetTextAt (selectionRange);
  			}
 		}
 
+		MonoDevelop.Core.Text.ISegment selectionRange = MonoDevelop.Core.Text.TextSegment.Invalid;
 		public override TextLocation SelectionStart {
 			get {
-				if (TextEditor is TextEditor) {
-					var begin = ((TextEditor)TextEditor).SelectionRegion.Begin;
-					return new TextLocation(begin.Line, begin.Column);
-				}
-				return TextLocation.Empty;
+				if (!isSomethingSelected)
+					return TextLocation.Empty;
+				var begin = TextEditor.OffsetToLocation (selectionRange.Offset);
+				return new TextLocation(begin.Line, begin.Column);
 			}
 		}
 
 		public override TextLocation SelectionEnd { 
 			get {
-				if (TextEditor is TextEditor) {
-					var end = ((TextEditor)TextEditor).SelectionRegion.End;
-					return new TextLocation(end.Line, end.Column);
-				}
-				return TextLocation.Empty;
+				if (!isSomethingSelected)
+					return TextLocation.Empty;
+				var end = TextEditor.OffsetToLocation (selectionRange.EndOffset);
+				return new TextLocation(end.Line, end.Column);
 			}
 		}
 
@@ -269,6 +268,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			var policy = document.HasProject ? document.Project.Policies.Get<NameConventionPolicy> () : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), policy.CreateNRefactoryService ());
 			Services.AddService (typeof(ICSharpCode.NRefactory.CSharp.CodeGenerationService), new CSharpCodeGenerationService());
+			Initialize ();
 		}
 
 		public MDRefactoringContext (DotNetProject project, ITextDocument data, ParsedDocument parsedDocument, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
@@ -281,6 +281,19 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			this.location = loc;
 			var namingPolicy = Project.Policies.Get<NameConventionPolicy> ();
 			Services.AddService (typeof(NamingConventionService), namingPolicy.CreateNRefactoryService ());
+			Initialize ();
+		}
+
+		void Initialize ()
+		{
+			var editor = TextEditor as TextEditor;
+			if (editor != null) {
+				Application.Invoke (delegate {
+					this.isSomethingSelected = editor.IsSomethingSelected;
+					this.selectionRange = editor.SelectionRange;
+
+				}); 
+			}
 		}
 	}
 }
