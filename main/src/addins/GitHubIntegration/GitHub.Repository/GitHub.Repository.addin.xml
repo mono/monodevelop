@@ -21,15 +21,13 @@
 				defaultHandler = "GitHub.Repository.Commands.GitHubPropertyHandler"
 				description = "GitHub Properties of the project"/>
 
-				GitHub.Repository.Commands.GistThisSelect
-
 			<Command id = "GitHub.Repository.Commands.GistThis"
 				_label = "_Gist This"
 				icon = "github-icon"
 				defaultHandler = "GitHub.Repository.Commands.GistThisHandler"
 				description = "Gist this document"/>
 
-				<Command id = "GitHub.Repository.Commands.GistThisSelection"
+			<Command id = "GitHub.Repository.Commands.GistThisSelection"
 				_label = "_Gist This selection"
 				icon = "github-icon"
 				defaultHandler = "GitHub.Repository.Commands.GistThisSelectedOnlyHandler"
