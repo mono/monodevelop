@@ -282,7 +282,11 @@ namespace GitHub.Issues
 			colorSelector.CurrentColor = new Gdk.Color (colorRGB.R, colorRGB.G, colorRGB.B);
 			colorSelector.PreviousColor = new Gdk.Color (colorRGB.R, colorRGB.G, colorRGB.B);
 
-			this.mode = EditMode.Edit;
+			if (labelToSelect != null) {
+				this.mode = EditMode.Edit;
+			} else {
+				this.mode = EditMode.Creation;
+			}
 		}
 
 		/// <summary>
@@ -372,6 +376,10 @@ namespace GitHub.Issues
 		private void DeleteLabel ()
 		{
 			this.manager.DeleteLabel (this.currentSelectedLabel);
+
+			this.labelsStore.Remove (ref this.currentSelectedLabelIterator);
+
+			this.SetSelectedLabel (null);
 		}
 
 		#endregion
