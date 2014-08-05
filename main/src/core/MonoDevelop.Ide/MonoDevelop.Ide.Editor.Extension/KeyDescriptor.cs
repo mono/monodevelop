@@ -24,6 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+#if MAC
+using AppKit;
+#endif
 
 namespace MonoDevelop.Ide.Editor.Extension
 {
@@ -115,6 +118,74 @@ namespace MonoDevelop.Ide.Editor.Extension
 		}
 		#endregion
 
+		#if MAC
+
+		public static KeyDescriptor FromMac (char ch, NSEventModifierMask state)
+		{
+			return new KeyDescriptor (ConvertKey (ch), ch, ConvertModifiers (state));
+		}
+
+		static SpecialKey ConvertKey (char ch)
+		{
+			if (ch == '\n' || ch == '\r')
+				return SpecialKey.Return;
+			if (ch == '\t')
+				return SpecialKey.Tab;
+			if (ch == '\b')
+				return SpecialKey.BackSpace;
+
+			switch ((NSKey)ch) {
+			case NSKey.Delete:
+				return SpecialKey.BackSpace;
+			case NSKey.Tab:
+				return SpecialKey.Tab;
+			case NSKey.Return:
+			case NSKey.KeypadEnter:
+				return SpecialKey.Return;
+			case NSKey.Escape:
+				return SpecialKey.Escape;
+			case NSKey.Space:
+				return SpecialKey.Space;
+			case NSKey.PageUp:
+				return SpecialKey.PageUp;
+			case NSKey.PageDown:
+				return SpecialKey.PageDown;
+			case NSKey.End:
+				return SpecialKey.End;
+			case NSKey.Begin:
+				return SpecialKey.Begin;
+			case NSKey.Home:
+				return SpecialKey.Home;
+			case NSKey.LeftArrow:
+				return SpecialKey.Left;
+			case NSKey.UpArrow:
+				return SpecialKey.Up;
+			case NSKey.RightArrow:
+				return SpecialKey.Right;
+			case NSKey.DownArrow:
+				return SpecialKey.Down;
+			case NSKey.DeleteChar:
+				return SpecialKey.Delete;
+			}
+			return SpecialKey.None;
+		}
+
+
+
+		static ModifierKeys ConvertModifiers (NSEventModifierMask e)
+		{
+			var m = ModifierKeys.None;
+			if ((e & NSEventModifierMask.ControlKeyMask) != 0)
+				m |= ModifierKeys.Control;
+			if ((e & NSEventModifierMask.AlternateKeyMask) != 0)
+				m |= ModifierKeys.Alt;
+			if ((e & NSEventModifierMask.CommandKeyMask) != 0)
+				m |= ModifierKeys.Command;
+			if ((e & NSEventModifierMask.ShiftKeyMask) != 0)
+				m |= ModifierKeys.Shift;
+			return m;
+		}
+		#endif
 	}
 }
 
