@@ -116,7 +116,7 @@ namespace GitHub.Repository.Commands
 
 		protected override void Run ()
 		{
-			Document doc = SelectedFile;
+			Document doc = SelectedDocument;
 			string content = doc.Editor.Text;
 			var obj = new OctokitHelper ();
 			obj.GistThis (doc.FileName, content);
@@ -127,7 +127,7 @@ namespace GitHub.Repository.Commands
 	class GistThisSelectedOnlyHandler : GitHubCommandHandler {
 		protected override void Run ()
 		{
-			Document doc = SelectedFile;
+			Document doc = SelectedDocument;
 			string content = doc.Editor.SelectedText;
 			var obj = new OctokitHelper ();
 			obj.GistThis (doc.FileName, content);

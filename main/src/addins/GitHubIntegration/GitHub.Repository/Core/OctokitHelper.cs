@@ -56,12 +56,10 @@ namespace GitHub.Repository.Core
 		public bool GistThis(String fileName, String FileContent){
 
 			Octokit.NewGist newGist = new Octokit.NewGist ();
-			var dictionary = new Dictionary<string, string>();
-			dictionary.Add(fileName, FileContent);
-			newGist.Files = dictionary;
+			newGist.Files.Add (fileName, FileContent);
 
 			try {
-				GitHubService.Client.Gist.Create (newGist).Result;
+				GitHubService.Client.Gist.Create (newGist);
 				return true;
 			} catch (Exception ex) {
 				return false;
