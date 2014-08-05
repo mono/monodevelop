@@ -51,7 +51,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
-		<ItemSet id = "GitHubRepository" _label = "GitHub" autohide="true">
+		<ItemSet id = "GitHubRepository" _label = "_GitHub">
 			<CommandItem id="GitHub.Repository.Commands.GistThis"/>
 			<CommandItem id="GitHub.Repository.Commands.GistThisSelection"/>
 		</ItemSet>
