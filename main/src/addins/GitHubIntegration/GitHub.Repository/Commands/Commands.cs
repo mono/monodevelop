@@ -116,6 +116,7 @@ namespace GitHub.Repository.Commands
 
 		protected override void Run ()
 		{
+			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			Document doc = SelectedDocument;
 			string content = doc.Editor.Text;
 			var obj = new OctokitHelper ();
@@ -127,6 +128,7 @@ namespace GitHub.Repository.Commands
 	class GistThisSelectedOnlyHandler : GitHubCommandHandler {
 		protected override void Run ()
 		{
+			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			Document doc = SelectedDocument;
 			string content = doc.Editor.SelectedText;
 			var obj = new OctokitHelper ();

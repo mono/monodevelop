@@ -45,11 +45,6 @@ namespace GitHub.Repository.Core
 				dlg.Destroy ();
 			}
 		}
-
-		public static void GistThis (IFileItem file)
-		{
-
-		}
 	}
 }
 
