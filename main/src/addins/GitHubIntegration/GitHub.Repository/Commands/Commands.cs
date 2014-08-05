@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide.ProgressMonitoring;
@@ -35,6 +36,7 @@ using MonoDevelop.VersionControl;
 using GitHub.Repository.Core;
 using System.IO;
 using System.Collections.Generic;
+using Mono.TextEditor;
 
 namespace GitHub.Repository.Commands
 {
@@ -46,15 +48,13 @@ namespace GitHub.Repository.Commands
 
 	class GitHubCommandHandler: CommandHandler
 	{
-		public ProjectFile SelectedFile{
+		public Document SelectedDocument{
 			get{ 
-				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedItem;
-				if (wob != null && wob is ProjectFile)
-					return (ProjectFile)wob;
-				else
-					return null;
+				var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+				return doc;
 			}
 		}
+
 		public GitRepository Repository {
 			get {
 				IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedSolution;
@@ -116,16 +116,23 @@ namespace GitHub.Repository.Commands
 
 		protected override void Run ()
 		{
-			Octokit.GistFile file = new Octokit.GistFile ();
-			file.Filename = SelectedFile.Name;
-			file.Content = SelectedFile.Data;
-			file.Language = "C Sharp";
-
-			List<Octokit.GistFile> listOfFiles = new  List<Octokit.GistFile> ();
-			listOfFiles.Add (file);
+			Document doc = SelectedFile;
+			string content = doc.Editor.Text;
 			var obj = new OctokitHelper ();
-			obj.GistThis (listOfFiles);
+			obj.GistThis (doc.FileName, content);
 		}
+
+	}
+
+	class GistThisSelectedOnlyHandler : GitHubCommandHandler {
+		protected override void Run ()
+		{
+			Document doc = SelectedFile;
+			string content = doc.Editor.SelectedText;
+			var obj = new OctokitHelper ();
+			obj.GistThis (doc.FileName, content);
+		}
+
 
 	}
 }

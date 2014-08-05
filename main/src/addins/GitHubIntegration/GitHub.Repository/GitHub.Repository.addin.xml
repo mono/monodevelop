@@ -34,17 +34,21 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
-		<Condition id="ItemType" value="Solution|IFileItem">
+		<Condition id="ItemType" value="Solution">
 			<ItemSet id = "GitHubRepository" _label = "GitHub" autohide="true">
 				<Condition id="ItemType" value="Solution">
 					<CommandItem id="GitHub.Repository.Commands.ViewProperties"/>
 				</Condition>
-				<SeparatorItem/>
-				<Condition id="ItemType" value="IFileItem">
-					<CommandItem id="GitHub.Repository.Commands.GistThis"/>
-				</Condition>
+
 			</ItemSet>
         </Condition>
+	</Extension>
+
+	<Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+		<ItemSet id = "GitHubRepository" _label = "GitHub" autohide="true">
+			<CommandItem id="GitHub.Repository.Commands.GistThisHandler"/>
+			<CommandItem id="GitHub.Repository.Commands.GistThisSelectedOnlyHandler"/>
+		</ItemSet>
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu">
