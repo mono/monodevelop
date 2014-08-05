@@ -95,6 +95,20 @@ namespace MonoDevelop.SourceEditor
 			Document.SyntaxMode = new SemanticHighlightingSyntaxMode (this, Document.SyntaxMode, semanticHighlighting);
 		}
 
+		static Gdk.ModifierType ConvertModifiers (ModifierKeys s)
+		{
+			Gdk.ModifierType m = Gdk.ModifierType.None;
+			if ((s & ModifierKeys.Shift) != 0)
+				m |= Gdk.ModifierType.ShiftMask;
+			if ((s & ModifierKeys.Control) != 0)
+				m |= Gdk.ModifierType.ControlMask;
+			if ((s & ModifierKeys.Alt) != 0)
+				m |= Gdk.ModifierType.Mod1Mask;
+			if ((s & ModifierKeys.Command) != 0)
+				m |= Gdk.ModifierType.Mod2Mask;
+			return m;
+		}
+
 		class LastEditorExtension : TextEditorExtension
 		{
 			readonly ExtensibleTextEditor ext;
@@ -105,10 +119,10 @@ namespace MonoDevelop.SourceEditor
 				this.ext = ext;
 			}
 			
-			public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+			public override bool KeyPress (KeyDescriptor descriptor)
 			{
-				ext.SimulateKeyPress (key, (uint)keyChar, modifier);
-				if (key == Gdk.Key.Escape)
+				ext.SimulateKeyPress ((Gdk.Key)descriptor.SpecialKey, (uint)descriptor.KeyChar, ConvertModifiers (descriptor.ModifierKeys));
+				if (descriptor.SpecialKey == SpecialKey.Escape)
 					return true;
 				return false;
 			}
@@ -282,7 +296,7 @@ namespace MonoDevelop.SourceEditor
 					ext.Next = new LastEditorExtension (this);
 					needToAddLastExtension = false;
 				}
-				return EditorExtension.KeyPress (key, (char)ch, state);
+				return EditorExtension.KeyPress (KeyDescriptor.FromGtk (key, (char)ch, state));
 			} catch (Exception ex) {
 				ReportExtensionError (ex);
 			} finally {

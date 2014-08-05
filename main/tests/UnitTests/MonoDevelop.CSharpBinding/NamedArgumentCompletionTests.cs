@@ -200,7 +200,7 @@ namespace MonoDevelop.CSharpBinding
 			var data = new MemberCompletionData (ext, foundMember, OutputFlags.ClassBrowserEntries);
 			data.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.NamedArgument;
 			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, key, (char)key, Gdk.ModifierType.None, true, false); 
+			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None), true, false); 
 			return widget.CompletedWord;
 		}
 

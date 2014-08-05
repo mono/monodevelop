@@ -776,9 +776,9 @@ namespace MonoDevelop.Debugger
 
 	class ExceptionCaughtTextEditorExtension: TextEditorExtension
 	{
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (key == Gdk.Key.Escape && DebuggingService.ExceptionCaughtMessage != null &&
+			if (descriptor.SpecialKey == SpecialKey.Escape && DebuggingService.ExceptionCaughtMessage != null &&
 			    !DebuggingService.ExceptionCaughtMessage.IsMinimized &&
 				DebuggingService.ExceptionCaughtMessage.File.CanonicalPath == new FilePath(DocumentContext.Name).CanonicalPath) {
 
@@ -786,7 +786,7 @@ namespace MonoDevelop.Debugger
 				return true;
 			}
 
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 	}
 }

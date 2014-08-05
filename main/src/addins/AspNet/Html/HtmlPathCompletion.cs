@@ -30,6 +30,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using System.Text.RegularExpressions;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AspNet.Html
 {
@@ -116,7 +117,7 @@ namespace MonoDevelop.AspNet.Html
 				get { throw new InvalidOperationException (); }
 			}
 			
-			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 			{
 				string text;
 				var dialog = new MonoDevelop.Ide.Projects.ProjectFileSelectorDialog (proj, "", pattern);

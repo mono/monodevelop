@@ -155,7 +155,7 @@ namespace CBinding
 			return offset;
 		}
 		
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			var line = Editor.GetLine (Editor.CaretLine);
 			string lineText = Editor.GetLineText (Editor.CaretLine);
@@ -164,7 +164,7 @@ namespace CBinding
 			// Smart Indentation
 			if (Editor.Options.IndentStyle == IndentStyle.Smart)
 			{
-				if (keyChar == '}') {
+				if (descriptor.KeyChar == '}') {
 					// Only indent if the brace is preceeded by whitespace.
 					if(AllWhiteSpace(lineText.Substring(0, lineCursorIndex))) {
 						int braceOpeningLine;
@@ -175,9 +175,9 @@ namespace CBinding
 						}
 					}
 				} else {
-					switch(key)
+					switch(descriptor.SpecialKey)
 					{
-						case Gdk.Key.Return:
+						case SpecialKey.Return:
 							// Calculate additional indentation, if any.
 							char finalChar = '\0';
 							char nextChar = '\0';
@@ -225,7 +225,7 @@ namespace CBinding
 				}
 			}
 			
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 		
 		public override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext, char completionChar, ref int triggerWordLength)

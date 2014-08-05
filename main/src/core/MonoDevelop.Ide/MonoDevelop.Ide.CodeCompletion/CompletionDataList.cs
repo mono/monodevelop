@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -56,8 +57,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 	
 	public interface ICompletionKeyHandler
 	{
-		bool PreProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
-		bool PostProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction);
+		bool PreProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction);
+		bool PostProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction);
 	}
 	
 	public enum CompletionSelectionMode {

@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -65,7 +66,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.CompletionText = member.SymbolKind == SymbolKind.Indexer ? "this" : member.Name;
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var editor = ext.Editor;
 			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);

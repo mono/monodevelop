@@ -34,6 +34,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Xml.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Xml.Completion
 {
@@ -107,15 +108,15 @@ namespace MonoDevelop.Xml.Completion
 			}
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			if (XmlEditorOptions.AutoInsertFragments && dataType == DataType.XmlAttribute) {
-				base.InsertCompletionText (window, ref ka, closeChar, keyChar, modifier);
+				base.InsertCompletionText (window, ref ka, descriptor);
 				window.CompletionWidget.AddSkipChar (window.CompletionWidget.CaretOffset, '"');
 				IdeApp.CommandService.DispatchCommand (TextEditorCommands.ShowCompletionWindow);
 				ka &= ~KeyActions.CloseWindow;
 			} else {
-				base.InsertCompletionText (window, ref ka, closeChar, keyChar, modifier);
+				base.InsertCompletionText (window, ref ka, descriptor);
 			}
 		}
 		

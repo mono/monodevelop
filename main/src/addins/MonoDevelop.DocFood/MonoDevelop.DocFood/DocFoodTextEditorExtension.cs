@@ -53,37 +53,37 @@ namespace MonoDevelop.DocFood
 			return doc.Substring (trimStart).TrimEnd ('\n', '\r');
 		}
 
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			if (keyChar != '/')
-				return base.KeyPress (key, keyChar, modifier);
+			if (descriptor.KeyChar != '/')
+				return base.KeyPress (descriptor);
 			
 			var line = Editor.GetLine (Editor.CaretLine);
 			string text = Editor.GetTextAt (line.Offset, line.Length);
 			
 			if (!text.EndsWith ("//", StringComparison.Ordinal))
-				return base.KeyPress (key, keyChar, modifier);
+				return base.KeyPress (descriptor);
 
 			// check if there is doc comment above or below.
 			var l = line.PreviousLine;
 			while (l != null && l.Length == 0)
 				l = l.PreviousLine;
 			if (l != null && Editor.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
-				return base.KeyPress (key, keyChar, modifier);
+				return base.KeyPress (descriptor);
 
 			l = line.NextLine;
 			while (l != null && l.Length == 0)
 				l = l.NextLine;
 			if (l != null && Editor.GetTextAt (l).TrimStart ().StartsWith ("///", StringComparison.Ordinal))
-				return base.KeyPress (key, keyChar, modifier);
+				return base.KeyPress (descriptor);
 
 			var member = GetMemberToDocument ();
 			if (member == null)
-				return base.KeyPress (key, keyChar, modifier);
+				return base.KeyPress (descriptor);
 			
 			string documentation = GenerateDocumentation (member, Editor.GetLineIndent (line));
 			if (string.IsNullOrEmpty (documentation))
-				return base.KeyPress (key, keyChar, modifier);
+				return base.KeyPress (descriptor);
 			
 			string documentationEmpty = GenerateEmptyDocumentation (member, Editor.GetLineIndent (line));
 			

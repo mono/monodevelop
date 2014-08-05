@@ -371,23 +371,23 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			bool skipFormatting = StateTracker.IsInsideOrdinaryCommentOrString ||
 			                      StateTracker.IsInsidePreprocessorDirective;
 			cursorPositionBeforeKeyPress = Editor.CaretOffset;
 			bool isSomethingSelected = Editor.IsSomethingSelected;
-			if (key == Gdk.Key.BackSpace && Editor.CaretOffset == lastInsertedSemicolon) {
+			if (descriptor.SpecialKey == SpecialKey.BackSpace && Editor.CaretOffset == lastInsertedSemicolon) {
 				EditActions.Undo (Editor);
 				lastInsertedSemicolon = -1;
 				return false;
 			}
 			lastInsertedSemicolon = -1;
-			if (keyChar == ';' && Editor.EditMode == EditMode.Edit && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get (
+			if (descriptor.KeyChar == ';' && Editor.EditMode == EditMode.Edit && !DoInsertTemplate () && !isSomethingSelected && PropertyService.Get (
 				    "SmartSemicolonPlacement",
 				    false
 			    ) && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
-				bool retval = base.KeyPress (key, keyChar, modifier);
+				bool retval = base.KeyPress (descriptor);
 				var curLine = Editor.GetLine (Editor.CaretLine);
 				string text = Editor.GetTextAt (curLine);
 				if (!(text.EndsWith (";", StringComparison.Ordinal) || text.Trim ().StartsWith ("for", StringComparison.Ordinal))) {
@@ -398,7 +398,7 @@ namespace MonoDevelop.CSharp.Formatting
 							Editor.RemoveText (Editor.CaretOffset - 1, 1);
 							Editor.CaretOffset = guessedOffset;
 							lastInsertedSemicolon = Editor.CaretOffset + 1;
-							retval = base.KeyPress (key, keyChar, modifier);
+							retval = base.KeyPress (descriptor);
 						}
 					}
 				}
@@ -410,7 +410,7 @@ namespace MonoDevelop.CSharp.Formatting
 				return retval;
 			}
 			
-			if (key == Gdk.Key.Tab) {
+			if (descriptor.SpecialKey == SpecialKey.Tab) {
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				if (stateTracker.IsInsideStringLiteral && !Editor.IsSomethingSelected) {
 					var lexer = new CSharpCompletionEngineBase.MiniLexer (Editor.GetTextAt (0, Editor.CaretOffset));
@@ -423,7 +423,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 
 
-			if (key == Gdk.Key.Tab && DefaultSourceEditorOptions.Instance.TabIsReindent && !CompletionWindowManager.IsVisible && Editor.EditMode == EditMode.Edit && !DoInsertTemplate () && !isSomethingSelected) {
+			if (descriptor.SpecialKey == SpecialKey.Tab && DefaultSourceEditorOptions.Instance.TabIsReindent && !CompletionWindowManager.IsVisible && Editor.EditMode == EditMode.Edit && !DoInsertTemplate () && !isSomethingSelected) {
 				ReindentOnTab ();
 
 				return false;
@@ -431,8 +431,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 			SafeUpdateIndentEngine (Editor.CaretOffset);
 			if (!stateTracker.IsInsideOrdinaryCommentOrString) {
-				if (keyChar == '@') {
-					var retval = base.KeyPress (key, keyChar, modifier);
+				if (descriptor.KeyChar == '@') {
+					var retval = base.KeyPress (descriptor);
 					int cursor = Editor.CaretOffset;
 					if (cursor < Editor.Length && Editor.GetCharAt (cursor) == '"')
 						ConvertNormalToVerbatimString (Editor, cursor + 1);
@@ -452,24 +452,24 @@ namespace MonoDevelop.CSharp.Formatting
 				//pass through to the base class, which actually inserts the character
 				//and calls HandleCodeCompletion etc to handles completion
 				using (var undo = Editor.OpenUndoGroup ()) {
-					DoPreInsertionSmartIndent (key);
+					DoPreInsertionSmartIndent (descriptor.SpecialKey);
 				}
 				wasInStringLiteral = stateTracker.IsInsideStringLiteral;
 				bool automaticReindent;
 				// need to be outside of an undo group - otherwise it interferes with other text editor extension
 				// esp. the documentation insertion undo steps.
-				retval = base.KeyPress (key, keyChar, modifier);
+				retval = base.KeyPress (descriptor);
 				//handle inserted characters
 				if (Editor.CaretOffset <= 0 || Editor.IsSomethingSelected)
 					return retval;
 				
-				lastCharInserted = TranslateKeyCharForIndenter (key, keyChar, Editor.GetCharAt (Editor.CaretOffset - 1));
+				lastCharInserted = TranslateKeyCharForIndenter (descriptor.SpecialKey, descriptor.KeyChar, Editor.GetCharAt (Editor.CaretOffset - 1));
 				if (lastCharInserted == '\0')
 					return retval;
 				using (var undo = Editor.OpenUndoGroup ()) {
 					SafeUpdateIndentEngine (Editor.CaretOffset);
 
-					if (key == Gdk.Key.Return && modifier == Gdk.ModifierType.ControlMask) {
+					if (descriptor.SpecialKey == SpecialKey.Return && descriptor.ModifierKeys == ModifierKeys.Control) {
 						FixLineStart (Editor, stateTracker, Editor.CaretLine + 1);
 					} else {
 						if (!(oldLine == Editor.CaretLine + 1 && lastCharInserted == '\n') && (oldBufLen != Editor.Length || lastCharInserted != '\0')) {
@@ -485,7 +485,7 @@ namespace MonoDevelop.CSharp.Formatting
 					SafeUpdateIndentEngine (Editor.CaretOffset);
 					// Automatically reindent in text link mode will cause the mode exiting, therefore we need to prevent that.
 					automaticReindent = (stateTracker.NeedsReindent && lastCharInserted != '\0') && Editor.EditMode == EditMode.Edit;
-					if (key == Gdk.Key.Return && (reIndent || automaticReindent)) {
+					if (descriptor.SpecialKey == SpecialKey.Return && (reIndent || automaticReindent)) {
 						if (Editor.Options.IndentStyle == IndentStyle.Virtual) {
 							if (Editor.GetLine (Editor.CaretLine).Length == 0)
 								Editor.CaretColumn = Editor.GetVirtualIndentationColumn (Editor.CaretLine);
@@ -496,14 +496,14 @@ namespace MonoDevelop.CSharp.Formatting
 				}
 
 				const string reindentChars = ";){}";
-				if (reIndent || key != Gdk.Key.Return && key != Gdk.Key.Tab && automaticReindent && reindentChars.Contains (keyChar)) {
+				if (reIndent || descriptor.SpecialKey != SpecialKey.Return && descriptor.SpecialKey != SpecialKey.Tab && automaticReindent && reindentChars.Contains (descriptor.KeyChar)) {
 					using (var undo = Editor.OpenUndoGroup ()) {
 						DoReSmartIndent ();
 					}
 				}
 
 				if (!skipFormatting && !(stateTracker.IsInsideComment || stateTracker.IsInsideString)) {
-					if (keyChar == ';' || keyChar == '}') {
+					if (descriptor.KeyChar == ';' || descriptor.KeyChar == '}') {
 						using (var undo = Editor.OpenUndoGroup ()) {
 							if (OnTheFlyFormatting && Editor != null && Editor.EditMode == EditMode.Edit) {
 								OnTheFlyFormatter.FormatStatmentAt (Editor, DocumentContext, Editor.CaretLocation);
@@ -514,28 +514,28 @@ namespace MonoDevelop.CSharp.Formatting
 
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				lastCharInserted = '\0';
-				CheckXmlCommentCloseTag (keyChar);
+				CheckXmlCommentCloseTag (descriptor.KeyChar);
 				return retval;
 			}
 
-			if (Editor.Options.IndentStyle == IndentStyle.Auto && DefaultSourceEditorOptions.Instance.TabIsReindent && key == Gdk.Key.Tab) {
-				bool retval = base.KeyPress (key, keyChar, modifier);
+			if (Editor.Options.IndentStyle == IndentStyle.Auto && DefaultSourceEditorOptions.Instance.TabIsReindent && descriptor.SpecialKey == SpecialKey.Tab) {
+				bool retval = base.KeyPress (descriptor);
 				DoReSmartIndent ();
-				CheckXmlCommentCloseTag (keyChar);
+				CheckXmlCommentCloseTag (descriptor.KeyChar);
 				return retval;
 			}
 
 			//pass through to the base class, which actually inserts the character
 			//and calls HandleCodeCompletion etc to handles completion
-			var result = base.KeyPress (key, keyChar, modifier);
+			var result = base.KeyPress (descriptor);
 
-			if (!indentationDisabled && (key == Gdk.Key.Return || key == Gdk.Key.KP_Enter)) {
+			if (!indentationDisabled && (descriptor.SpecialKey == SpecialKey.Return)) {
 				DoReSmartIndent ();
 			}
 
-			CheckXmlCommentCloseTag (keyChar);
+			CheckXmlCommentCloseTag (descriptor.KeyChar);
 
-			if (!skipFormatting && keyChar == '}')
+			if (!skipFormatting && descriptor.KeyChar == '}')
 				RunFormatter (new MonoDevelop.Ide.Editor.DocumentLocation (Editor.CaretLine, Editor.CaretColumn));
 			return result;
 		}
@@ -643,13 +643,12 @@ namespace MonoDevelop.CSharp.Formatting
 			return true;
 		}
 
-		static char TranslateKeyCharForIndenter (Gdk.Key key, char keyChar, char docChar)
+		static char TranslateKeyCharForIndenter (SpecialKey key, char keyChar, char docChar)
 		{
 			switch (key) {
-			case Gdk.Key.Return:
-			case Gdk.Key.KP_Enter:
+			case SpecialKey.Return:
 				return '\n';
-			case Gdk.Key.Tab:
+			case SpecialKey.Tab:
 				return '\t';
 			default:
 				if (docChar == keyChar)
@@ -693,14 +692,14 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
-		void DoPreInsertionSmartIndent (Gdk.Key key)
+		void DoPreInsertionSmartIndent (SpecialKey key)
 		{
 			switch (key) {
-			case Gdk.Key.BackSpace:
+			case SpecialKey.BackSpace:
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				HandleStringConcatinationDeletion (Editor.CaretOffset - 1, 0);
 				break;
-			case Gdk.Key.Delete:
+			case SpecialKey.Delete:
 				SafeUpdateIndentEngine (Editor.CaretOffset);
 				HandleStringConcatinationDeletion (Editor.CaretOffset, Editor.Length);
 				break;

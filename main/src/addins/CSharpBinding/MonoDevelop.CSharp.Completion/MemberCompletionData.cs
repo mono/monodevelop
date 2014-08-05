@@ -173,9 +173,9 @@ namespace MonoDevelop.CSharp.Completion
 			return method.DeclaringType.GetMethods ().Any (m => m.Name == method.Name && m.Parameters.Count > 0);
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
-			InsertCompletionText (window, ref ka, closeChar, keyChar, modifier, CompletionTextEditorExtension.AddParenthesesAfterCompletion, CompletionTextEditorExtension.AddOpeningOnly);
+			InsertCompletionText (window, ref ka, descriptor, CompletionTextEditorExtension.AddParenthesesAfterCompletion, CompletionTextEditorExtension.AddOpeningOnly);
 		}
 
 		bool IsBracketAlreadyInserted (IMethod method)
@@ -225,7 +225,7 @@ namespace MonoDevelop.CSharp.Completion
 			return true;
 		}
 
-		public void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier, bool addParens, bool addOpeningOnly)
+		public void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor, bool addParens, bool addOpeningOnly)
 		{
 			string text = CompletionText;
 			string partialWord = GetCurrentWord (window);
@@ -252,14 +252,14 @@ namespace MonoDevelop.CSharp.Completion
 					insertSemicolon = false;
 				//int pos;
 
-				Gdk.Key[] keys = new [] { Gdk.Key.Return, Gdk.Key.Tab, Gdk.Key.space, Gdk.Key.KP_Enter, Gdk.Key.ISO_Enter };
-				if (keys.Contains (closeChar) || keyChar == '.') {
+				var keys = new [] { SpecialKey.Return, SpecialKey.Tab, SpecialKey.Space };
+				if (keys.Contains (descriptor.SpecialKey) || descriptor.KeyChar == '.') {
 					if (HasAnyOverloadWithParameters (method)) {
 						if (addOpeningOnly) {
 							text += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
 							skipChars = 0;
 						} else {
-							if (keyChar == '.') {
+							if (descriptor.KeyChar == '.') {
 								if (RequireGenerics (method)) {
 									text += addSpace ? "<> ()" : "<>()";
 								} else {
@@ -292,7 +292,7 @@ namespace MonoDevelop.CSharp.Completion
 							text += RequireGenerics (method) ? "<|" : (addSpace ? " (|" : "(|");
 							skipChars = 0;
 						} else {
-							if (keyChar == '.') {
+							if (descriptor.KeyChar == '.') {
 								if (RequireGenerics (method)) {
 									text += addSpace ? "<> ().|" : "<>().|";
 								} else {
@@ -318,7 +318,7 @@ namespace MonoDevelop.CSharp.Completion
 							}
 						}
 					}
-					if (keyChar == '(') {
+					if (descriptor.KeyChar == '(') {
 						var skipCharList = Editor.SkipChars;
 						if (skipCharList.Count > 0) {
 							var lastSkipChar = skipCharList[skipCharList.Count - 1];
@@ -331,18 +331,13 @@ namespace MonoDevelop.CSharp.Completion
 			}
 			if ((DisplayFlags & DisplayFlags.NamedArgument) == DisplayFlags.NamedArgument &&
 				CompletionTextEditorExtension.AddParenthesesAfterCompletion &&
-			    (closeChar == Gdk.Key.Tab ||
-				 closeChar == Gdk.Key.KP_Tab ||
-				 closeChar == Gdk.Key.ISO_Left_Tab ||
-				 closeChar == Gdk.Key.Return ||
-				 closeChar == Gdk.Key.KP_Enter ||
-				 closeChar == Gdk.Key.ISO_Enter ||
-				 closeChar == Gdk.Key.space ||
-				 closeChar == Gdk.Key.KP_Space)) {
+				(descriptor.SpecialKey == SpecialKey.Tab ||
+				 descriptor.SpecialKey == SpecialKey.Return ||
+				 descriptor.SpecialKey == SpecialKey.Space)) {
 				if (Policy.AroundAssignmentParentheses)
 					text += " ";
 				text += "=";
-				if (Policy.AroundAssignmentParentheses && !(closeChar == Gdk.Key.space || closeChar == Gdk.Key.KP_Space))
+				if (Policy.AroundAssignmentParentheses && descriptor.SpecialKey != SpecialKey.Space)
 					text += " ";
 				runCompletionCompletionCommand = true;
 			}

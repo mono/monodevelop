@@ -43,6 +43,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.CSharp.Completion;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharpBinding
 {
@@ -198,7 +199,7 @@ namespace MonoDevelop.CSharpBinding
 			var data = new MemberCompletionData (ext, method, OutputFlags.ClassBrowserEntries);
 			data.IsDelegateExpected = isDelegateExpected;
 			KeyActions ka = KeyActions.Process;
-			data.InsertCompletionText (listWindow, ref ka, key, (char)key, Gdk.ModifierType.None, true, false); 
+			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None), true, false); 
 			return widget.CompletedWord;
 		}
 

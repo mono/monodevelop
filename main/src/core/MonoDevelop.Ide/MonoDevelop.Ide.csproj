@@ -2832,6 +2832,9 @@
     <Compile Include="MonoDevelop.Ide.Editor.Util\SimpleBracketMatcher.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Util\SimpleReadonlyDocument.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Commands\DynamicAbbrevHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\ModifierKeys.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\SpecialKey.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\KeyDescriptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

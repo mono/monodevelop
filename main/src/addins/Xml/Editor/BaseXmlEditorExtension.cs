@@ -219,12 +219,12 @@ namespace MonoDevelop.Xml.Editor
 		{
 		}
 		
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
 				var newLine = Editor.CaretLine + 1;
-				var ret = base.KeyPress (key, keyChar, modifier);
-				if (key == Gdk.Key.Return && Editor.CaretLine == newLine) {
+				var ret = base.KeyPress (descriptor);
+				if (descriptor.SpecialKey == SpecialKey.Return && Editor.CaretLine == newLine) {
 					string indent = GetLineIndent (newLine);
 					var oldIndent = Editor.GetLineIndent (newLine);
 					var seg = Editor.GetLine (newLine);
@@ -241,7 +241,7 @@ namespace MonoDevelop.Xml.Editor
 				}
 				return ret;
 			}
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 		
 		#region Code completion

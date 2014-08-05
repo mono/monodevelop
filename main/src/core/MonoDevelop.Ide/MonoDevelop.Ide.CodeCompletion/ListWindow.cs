@@ -270,20 +270,20 @@ namespace MonoDevelop.Ide.CodeCompletion
 			private set;
 		}
 
-		public KeyActions PostProcessKey (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public KeyActions PostProcessKey (KeyDescriptor descriptor)
 		{
 			if (StartOffset > CompletionWidget.CaretOffset)
 				return KeyActions.CloseWindow | KeyActions.Process;
 
 			if (HideWhenWordDeleted && StartOffset >= CompletionWidget.CaretOffset)
 				return KeyActions.CloseWindow | KeyActions.Process;
-			switch (key) {
-			case Gdk.Key.BackSpace:
+			switch (descriptor.SpecialKey) {
+			case SpecialKey.BackSpace:
 				ResetSizes ();
 				UpdateWordSelection ();
 				return KeyActions.Process;
 			}
-			
+			var keyChar = descriptor.KeyChar;
 			const string commitChars = " <>()[]{}=+-*/%~&|!";
 			if (keyChar == '[' && CloseOnSquareBrackets)
 				return KeyActions.Process | KeyActions.CloseWindow;
@@ -323,22 +323,22 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return KeyActions.Process;
 		}
 		
-		public KeyActions PreProcessKey (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public KeyActions PreProcessKey (KeyDescriptor descriptor)
 		{
-			switch (key) {
-			case Gdk.Key.Home:
-				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			switch (descriptor.SpecialKey) {
+			case SpecialKey.Home:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 					return KeyActions.Process;
 				List.SelectionFilterIndex = 0;
 				return KeyActions.Ignore;
-			case Gdk.Key.End:
-				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			case SpecialKey.End:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 					return KeyActions.Process;
 				List.SelectionFilterIndex = List.filteredItems.Count - 1;
 				return KeyActions.Ignore;
 				
-			case Gdk.Key.Up:
-				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+			case SpecialKey.Up:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift) {
 					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
 						AutoCompleteEmptyMatch = AutoSelect = true;
 					if (!List.InCategoryMode) {
@@ -357,21 +357,18 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				return KeyActions.Ignore;
 
-			case Gdk.Key.Tab:
+			case SpecialKey.Tab:
 				//tab always completes current item even if selection is disabled
 				if (!AutoSelect)
 					AutoSelect = true;
-				goto case Gdk.Key.Return;
+				goto case SpecialKey.Return;
 
-			case Gdk.Key.Return:
-			case Gdk.Key.ISO_Enter:
-			case Gdk.Key.Key_3270_Enter:
-			case Gdk.Key.KP_Enter:
+			case SpecialKey.Return:
 				lastCommitCharEndoffset = CompletionWidget.CaretOffset;
-				WasShiftPressed = (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask;
+				WasShiftPressed = (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift;
 				return KeyActions.Complete | KeyActions.Ignore | KeyActions.CloseWindow;
-			case Gdk.Key.Down:
-				if ((modifier & Gdk.ModifierType.ShiftMask) == Gdk.ModifierType.ShiftMask) {
+			case SpecialKey.Down:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift) {
 					if (!SelectionEnabled /*&& !CompletionWindowManager.ForceSuggestionMode*/)
 						AutoCompleteEmptyMatch = AutoSelect = true;
 					if (!List.InCategoryMode) {
@@ -391,8 +388,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				}
 				return KeyActions.Ignore;
 
-			case Gdk.Key.Page_Up:
-				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			case SpecialKey.PageUp:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 					return KeyActions.Process;
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
@@ -400,8 +397,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 				list.MoveCursor (-8);
 				return KeyActions.Ignore;
 
-			case Gdk.Key.Page_Down:
-				if ((modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			case SpecialKey.PageDown:
+				if ((descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 					return KeyActions.Process;
 				if (list.filteredItems.Count < 2)
 					return KeyActions.CloseWindow | KeyActions.Process;
@@ -409,42 +406,42 @@ namespace MonoDevelop.Ide.CodeCompletion
 				list.MoveCursor (8);
 				return KeyActions.Ignore;
 
-			case Gdk.Key.Left:
+			case SpecialKey.Left:
 				//if (curPos == 0) return KeyActions.CloseWindow | KeyActions.Process;
 				//curPos--;
 				return KeyActions.Process;
 
-			case Gdk.Key.Right:
+			case SpecialKey.Right:
 				//if (curPos == word.Length) return KeyActions.CloseWindow | KeyActions.Process;
 				//curPos++;
 				return KeyActions.Process;
 
-			case Gdk.Key.Caps_Lock:
-			case Gdk.Key.Num_Lock:
-			case Gdk.Key.Scroll_Lock:
-				return KeyActions.Ignore;
-
-			case Gdk.Key.Control_L:
-			case Gdk.Key.Control_R:
-			case Gdk.Key.Alt_L:
-			case Gdk.Key.Alt_R:
-			case Gdk.Key.Shift_L:
-			case Gdk.Key.Shift_R:
-			case Gdk.Key.ISO_Level3_Shift:
-				// AltGr
-				return KeyActions.Process;
+//			case Gdk.Key.Caps_Lock:
+//			case Gdk.Key.Num_Lock:
+//			case Gdk.Key.Scroll_Lock:
+//				return KeyActions.Ignore;
+//
+//			case Gdk.Key.Control_L:
+//			case Gdk.Key.Control_R:
+//			case Gdk.Key.Alt_L:
+//			case Gdk.Key.Alt_R:
+//			case Gdk.Key.Shift_L:
+//			case Gdk.Key.Shift_R:
+//			case Gdk.Key.ISO_Level3_Shift:
+//				// AltGr
+//				return KeyActions.Process;
 			}
-			if (keyChar == '\0')
+			if (descriptor.KeyChar == '\0')
 				return KeyActions.Process;
 
-			if (keyChar == ' ' && (modifier & ModifierType.ShiftMask) == ModifierType.ShiftMask)
+			if (descriptor.KeyChar == ' ' && (descriptor.ModifierKeys & ModifierKeys.Shift) == ModifierKeys.Shift)
 				return KeyActions.CloseWindow | KeyActions.Process;
 
 			// special case end with punctuation like 'param:' -> don't input double punctuation, otherwise we would end up with 'param::'
-			if (char.IsPunctuation (keyChar) && keyChar != '_') {
-				if (keyChar == ':') {
+			if (char.IsPunctuation (descriptor.KeyChar) && descriptor.KeyChar != '_') {
+				if (descriptor.KeyChar == ':') {
 					foreach (var item in FilteredItems) {
-						if (DataProvider.GetText (item).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
+						if (DataProvider.GetText (item).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
 							list.SelectedItem = item;
 							return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 						}
@@ -453,13 +450,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 					var selectedItem = list.SelectedItem;
 					if (selectedItem < 0 || selectedItem >= DataProvider.ItemCount)
 						return KeyActions.CloseWindow;
-					if (DataProvider.GetText (selectedItem).EndsWith (keyChar.ToString (), StringComparison.Ordinal)) {
+					if (DataProvider.GetText (selectedItem).EndsWith (descriptor.KeyChar.ToString (), StringComparison.Ordinal)) {
 						return KeyActions.Complete | KeyActions.CloseWindow | KeyActions.Ignore;
 					}
 				}
 			}
-
-
 
 	/*		//don't input letters/punctuation etc when non-shift modifiers are active
 			bool nonShiftModifierActive = ((Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask

@@ -247,11 +247,11 @@ namespace MonoDevelop.CSharp.Completion
 			HandleDocumentParsed (null, null);
 		}
 		
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
-			bool result = base.KeyPress (key, keyChar, modifier);
+			bool result = base.KeyPress (descriptor);
 			
-			if (/*EnableParameterInsight &&*/ (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
+			if (/*EnableParameterInsight &&*/ (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ())
 				base.RunParameterCompletionCommand ();
 			
 //			if (IsInsideComment ())
@@ -803,10 +803,10 @@ namespace MonoDevelop.CSharp.Completion
 					overloads.Add (data);
 				}
 
-				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 				{
 					var currentWord = GetCurrentWord (window);
-					if (CompletionText == "new()" && keyChar == '(') {
+					if (CompletionText == "new()" && descriptor.KeyChar == '(') {
 						window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, "new");
 					} else {
 						window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);
@@ -1006,11 +1006,11 @@ namespace MonoDevelop.CSharp.Completion
 
 
 
-				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 				{
 					var currentWord = GetCurrentWord (window);
 					var text = CompletionText;
-					if (keyChar != '>')
+					if (descriptor.KeyChar != '>')
 						text += ">";
 					window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
 				}
@@ -1167,7 +1167,7 @@ namespace MonoDevelop.CSharp.Completion
 				}
 
 				#region IActionCompletionData implementation
-				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+				public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 				{
 					Initialize ();
 					var doc = ext.DocumentContext;

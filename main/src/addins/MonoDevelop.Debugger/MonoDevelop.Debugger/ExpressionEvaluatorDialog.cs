@@ -28,6 +28,7 @@
 using System;
 using MonoDevelop.Ide.CodeCompletion;
 using Gtk;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Debugger
 {
@@ -111,7 +112,7 @@ namespace MonoDevelop.Debugger
 
 			string text = ctx == null ? entry.Text : entry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, entry.Text.Length)));
 			CompletionWindowManager.UpdateWordSelection (text);
-			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
+			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ((Entry) sender);
 		}
 
@@ -130,7 +131,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (currentCompletionData != null)
-				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier);
+				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 		}
 
 		void OnEditFocusOut (object sender, FocusOutEventArgs args)

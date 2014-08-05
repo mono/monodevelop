@@ -32,6 +32,7 @@ using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -137,38 +138,38 @@ namespace MonoDevelop.Ide.Gui
 			foreach (char ch in input) {
 				switch (ch) {
 				case '8':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Up, '\0', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Up, '\0', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Up, '\0', Gdk.ModifierType.None));
 					break;
 				case '2':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Down, '\0', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Down, '\0', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Down, '\0', Gdk.ModifierType.None));
 					break;
 				case '4':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Left, '\0', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Left, '\0', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Left, '\0', Gdk.ModifierType.None));
 					break;
 				case '6':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Right, '\0', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Right, '\0', Gdk.ModifierType.None));
 					break;
 				case '\t':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Tab, '\t', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Tab, '\t', Gdk.ModifierType.None));
 					break;
 				case '\b':
-					listWindow.PreProcessKeyEvent (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
 					((TestCompletionWidget)listWindow.CompletionWidget).Backspace ();
-					listWindow.PostProcessKeyEvent (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None);
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.BackSpace, '\b', Gdk.ModifierType.None));
 					break;
 				case '\n':
-					listWindow.PreProcessKeyEvent (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
-					listWindow.PostProcessKeyEvent (Gdk.Key.Return, '\n', Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk (Gdk.Key.Return, '\n', Gdk.ModifierType.None));
 					break;
 				default:
-					listWindow.PreProcessKeyEvent ((Gdk.Key)ch, ch, Gdk.ModifierType.None);
+					listWindow.PreProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
 					((TestCompletionWidget)listWindow.CompletionWidget).AddChar (ch);
-					listWindow.PostProcessKeyEvent ((Gdk.Key)ch, ch, Gdk.ModifierType.None);
+					listWindow.PostProcessKeyEvent (KeyDescriptor.FromGtk ((Gdk.Key)ch, ch, Gdk.ModifierType.None));
 					break;
 				}
 			}

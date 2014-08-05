@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -102,7 +103,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			return result;
 		}
 
-		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public virtual void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var currentWord = GetCurrentWord (window);
 			window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, CompletionText);

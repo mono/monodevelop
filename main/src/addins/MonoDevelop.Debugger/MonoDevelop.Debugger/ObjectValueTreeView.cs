@@ -39,6 +39,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Debugger
 {
@@ -1065,7 +1066,7 @@ namespace MonoDevelop.Debugger
 			if (!wasHandled) {
 				string text = ctx == null ? editEntry.Text : editEntry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, editEntry.Text.Length)));
 				CompletionWindowManager.UpdateWordSelection (text);
-				CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifierState);
+				CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				PopupCompletion ((Entry) sender);
 			}
 		}
@@ -1087,7 +1088,7 @@ namespace MonoDevelop.Debugger
 			keyValue = args.Event.KeyValue;
 
 			if (currentCompletionData != null) {
-				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifierState);
+				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				args.RetVal = wasHandled;
 			}
 		}

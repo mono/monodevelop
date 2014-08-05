@@ -137,14 +137,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			OnWindowClosed (EventArgs.Empty);
 		}
 		
-		public static bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public static bool PreProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
 				return false;
-			if (keyChar != '\0') {
+			if (descriptor.KeyChar != '\0') {
 				wnd.EndOffset = wnd.StartOffset + wnd.CurrentPartialWord.Length + 1;
 			}
-			return wnd.PreProcessKeyEvent (key, keyChar, modifier);
+			return wnd.PreProcessKeyEvent (descriptor);
 		}
 
 		public static void UpdateCursorPosition ()
@@ -165,11 +165,11 @@ namespace MonoDevelop.Ide.CodeCompletion
 			}
 		}
 
-		public static void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public static void PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			if (!IsVisible)
 				return;
-			wnd.PostProcessKeyEvent (key, keyChar, modifier);
+			wnd.PostProcessKeyEvent (descriptor);
 		}
 
 		public static void RepositionWindow ()

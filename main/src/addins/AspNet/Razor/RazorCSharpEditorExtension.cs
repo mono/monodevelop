@@ -45,6 +45,7 @@ using MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.Html;
 using MonoDevelop.AspNet.Razor.Dom;
 using MonoDevelop.AspNet.Razor.Parser;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AspNet.Razor
 {
@@ -220,17 +221,16 @@ namespace MonoDevelop.AspNet.Razor
 		XObject prevNode;
 		bool updateNeeded;
 
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			Tracker.UpdateEngine ();
 			if (razorDocument == null)
-				return NonCSharpCompletion (key, keyChar, modifier);
+				return NonCSharpCompletion (descriptor);
 
 			var n = Tracker.Engine.Nodes.Peek ();
 			if (prevNode is RazorExpression && !(n is RazorExpression))
 				updateNeeded = true;
 			prevNode = n;
-
 			var state = Tracker.Engine.CurrentState;
 			int off = Editor.CaretOffset;
 
@@ -240,22 +240,22 @@ namespace MonoDevelop.AspNet.Razor
 			// Determine completion context here, before calling base method to set the context correctly
 
 			// Rule out Razor comments, html, transition sign (@) and e-mail addresses
-			if (state is RazorCommentState || (previousChar != '@' && !(state is RazorState))  || keyChar == '@'
+			if (state is RazorCommentState || (previousChar != '@' && !(state is RazorState))  || descriptor.KeyChar == '@'
 				|| (previousChar == '@' && Char.IsLetterOrDigit (beforePrevious)))
-				return NonCSharpCompletion (key, keyChar, modifier);
+				return NonCSharpCompletion (descriptor);
 
 			// Determine if we are inside generics
 			if (previousChar == '<') {
 				var codeState = state as RazorCodeFragmentState;
 				if (codeState == null || !codeState.IsInsideGenerics)
-					return NonCSharpCompletion (key, keyChar, modifier);
+					return NonCSharpCompletion (descriptor);
 			}
 			// Determine whether we begin an html tag or generics
-			else if (keyChar == '<' && (n is XElement || !Char.IsLetterOrDigit (previousChar)))
-				return NonCSharpCompletion (key, keyChar, modifier);
+			else if (descriptor.KeyChar == '<' && (n is XElement || !Char.IsLetterOrDigit (previousChar)))
+				return NonCSharpCompletion (descriptor);
 			// Determine whether we are inside html text or in code
 			else if (previousChar != '@' && n is XElement && !(state is RazorSpeculativeState) && !(state is RazorExpressionState))
-			    return NonCSharpCompletion (key, keyChar, modifier);
+				return NonCSharpCompletion (descriptor);
 
 			// We're in C# context
 			InitializeCodeCompletion ();
@@ -263,8 +263,8 @@ namespace MonoDevelop.AspNet.Razor
 
 			bool result;
 			try {
-				result = base.KeyPress (key, keyChar, modifier);
-				if (/*EnableParameterInsight &&*/ (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ())
+				result = base.KeyPress (descriptor);
+				if (/*EnableParameterInsight &&*/ (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ())
 				    base.RunParameterCompletionCommand ();
 			} finally {
 				SwitchToReal ();
@@ -289,10 +289,10 @@ namespace MonoDevelop.AspNet.Razor
 			CompletionWidget = defaultCompletionWidget;
 		}
 
-		bool NonCSharpCompletion (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		bool NonCSharpCompletion (KeyDescriptor descriptor)
 		{
 			isInCSharpContext = false;
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 
 		protected void InitializeCodeCompletion ()

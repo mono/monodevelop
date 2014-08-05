@@ -50,6 +50,7 @@ using S = MonoDevelop.Xml.Parser;
 using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.Xml.Dom;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -295,20 +296,20 @@ namespace MonoDevelop.AspNet.WebForms
 			return documentBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
 		}
 
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			Tracker.UpdateEngine ();
 			bool isAspExprState = Tracker.Engine.CurrentState is WebFormsExpressionState;
 			if (documentBuilder == null || !isAspExprState)
-				return base.KeyPress (key, keyChar, modifier);
+				return base.KeyPress (descriptor);
 			InitializeCodeCompletion ('\0');
 			DocumentContext = localDocumentInfo.HiddenDocument;
 			Editor = localDocumentInfo.HiddenDocument.Editor;
 			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo.HiddenDocument.Editor, localDocumentInfo.HiddenDocument, localDocumentInfo);
 			bool result;
 			try {
-				result = base.KeyPress (key, keyChar, modifier);
-				if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ()) {
+				result = base.KeyPress (descriptor);
+				if (PropertyService.Get ("EnableParameterInsight", true) && (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ()) {
 					RunParameterCompletionCommand ();
 				}
 			} finally {

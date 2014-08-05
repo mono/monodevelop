@@ -61,14 +61,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		
 		// Called when a key is pressed in the editor.
 		// Returns false if the key press has to continue normal processing.
-		public static bool ProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
+		public static bool ProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
 		{
 			if (methods.Count == 0)
 				return false;
 
 			MethodData cmd = methods [methods.Count - 1];
-			
-			if (key == Gdk.Key.Down) {
+
+			if (descriptor.SpecialKey == SpecialKey.Down) {
 				if (cmd.MethodProvider.Count <= 1)
 					return false;
 				if (cmd.CurrentOverload < cmd.MethodProvider.Count - 1)
@@ -78,7 +78,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 				window.ChangeOverload ();
 				UpdateWindow (ext, widget);
 				return true;
-			} else if (key == Gdk.Key.Up) {
+			} else if (descriptor.SpecialKey == SpecialKey.Up) {
 				if (cmd.MethodProvider.Count <= 1)
 					return false;
 				if (cmd.CurrentOverload > 0)
@@ -89,14 +89,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 				UpdateWindow (ext, widget);
 				return true;
 			}
-			else if (key == Gdk.Key.Escape) {
+			else if (descriptor.SpecialKey == SpecialKey.Escape) {
 				HideWindow (ext, widget);
 				return true;
 			}
 			return false;
 		}
 		
-		public static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, Gdk.Key key, Gdk.ModifierType modifier)
+		public static void PostProcessKeyEvent (CompletionTextEditorExtension ext, ICompletionWidget widget, KeyDescriptor descriptor)
 		{
 		}
 
