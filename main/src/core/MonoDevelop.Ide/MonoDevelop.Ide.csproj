@@ -762,9 +762,6 @@
     <EmbeddedResource Include="branding\AboutImage.png">
       <LogicalName>AboutImage.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="branding\SplashScreen.png">
-      <LogicalName>SplashScreen.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\popup-close-16.png">
       <LogicalName>popup-close-light-16.png</LogicalName>
     </EmbeddedResource>
@@ -1954,6 +1951,36 @@
     <EmbeddedResource Include="icons\light\spinner-18-5%402x.png">
       <LogicalName>spinner-light-18-5@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-16.png">
+      <LogicalName>catchpoint-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-16%402x.png">
+      <LogicalName>catchpoint-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-disabled-16.png">
+      <LogicalName>catchpoint-disabled-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\catchpoint-disabled-16%402x.png">
+      <LogicalName>catchpoint-disabled-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-information-16.png">
+      <LogicalName>project-status-information-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-information-16%402x.png">
+      <LogicalName>project-status-information-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-warning-16.png">
+      <LogicalName>project-status-warning-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-warning-16%402x.png">
+      <LogicalName>project-status-warning-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-error-16.png">
+      <LogicalName>project-status-error-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-error-16%402x.png">
+      <LogicalName>project-status-error-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -2007,7 +2034,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewLayoutDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AboutMonoDevelopTabPage.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\VersionInformationTabPage.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Dialogs\SplashScreen.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\TipOfTheDay.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\AddinLoadErrorDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.OptionPanels\BuildPanel.cs" />
@@ -2636,7 +2662,6 @@
     <Compile Include="MonoDevelop.Ide.TypeSystem\MonoDocDocumentationProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Projects.OptionPanels\PortableRuntimeOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanelWidget.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui\DockNotebook.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\Styles.cs" />
     <Compile Include="MonoDevelop.Ide.Gui\DocumentToolbar.cs" />
     <Compile Include="MonoDevelop.Components.MainToolbar\MainToolbar.cs" />
@@ -2740,9 +2765,18 @@
     <Compile Include="MonoDevelop.Ide.Templates\WorkspaceItemCreatedInformation.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\PackageReferencesForCreatedProject.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatePackageInstaller.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebook.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\PlaceholderWindow.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\TabStrip.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\TabEventArgs.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookTab.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockNotebookContainer.cs" />
+    <Compile Include="MonoDevelop.Ide.Gui\Split.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\SapNodeBuilder.cs" />
     <Compile Include="MonoDevelop.Ide.CustomTools\PublicResXFileCodeGenerator.cs" />
     <Compile Include="MonoDevelop.Components\ImageLoader.cs" />
+    <Compile Include="MonoDevelop.Components.DockNotebook\DockWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
   </ItemGroup>
@@ -2787,6 +2821,7 @@
     <Folder Include="MonoDevelop.Components.MainToolbar\Theme\" />
     <Folder Include="MonoDevelop.Ide.WelcomePage\icons\" />
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
+    <Folder Include="MonoDevelop.Components.DockNotebook\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

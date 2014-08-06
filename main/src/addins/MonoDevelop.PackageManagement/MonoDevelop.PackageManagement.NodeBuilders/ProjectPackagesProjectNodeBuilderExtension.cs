@@ -46,6 +46,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			packageManagementEvents.PackagesRestored += PackagesRestored;
 			packageManagementEvents.PackageOperationsStarting += PackageOperationsStarting;
 			packageManagementEvents.PackageOperationError += PackageOperationError;
+			packageManagementEvents.UpdatedPackagesAvailable += UpdatedPackagesAvailable;
 
 			FileService.FileChanged += FileChanged;
 		}
@@ -61,6 +62,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		}
 
 		void PackageOperationError (object sender, EventArgs e)
+		{
+			RefreshAllChildNodes ();
+		}
+
+		void UpdatedPackagesAvailable (object sender, EventArgs e)
 		{
 			RefreshAllChildNodes ();
 		}
@@ -94,6 +100,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			packageManagementEvents.PackagesRestored -= PackagesRestored;
 			packageManagementEvents.PackageOperationsStarting -= PackageOperationsStarting;
 			packageManagementEvents.PackageOperationError -= PackageOperationError;
+			packageManagementEvents.UpdatedPackagesAvailable -= UpdatedPackagesAvailable;
 		}
 
 		public override bool CanBuildNode (Type dataType)
@@ -137,16 +144,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		bool IsPackagesConfigFileChanged (FileEventArgs fileEventArgs)
 		{
-			return fileEventArgs.Any (file => IsPackagesConfigFileName (file.FileName));
-		}
-
-		bool IsPackagesConfigFileName (FilePath filePath)
-		{
-			if (filePath == null) {
-				return false;
-			}
-
-			return Constants.PackageReferenceFile.Equals (filePath.FileName, StringComparison.OrdinalIgnoreCase);
+			return fileEventArgs.Any (file => file.FileName.IsPackagesConfigFileName ());
 		}
 	}
 }

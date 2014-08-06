@@ -224,9 +224,8 @@ namespace MonoDevelop.Projects
 					if (ParentSolution.IsSolutionItemEnabled (item.FileName))
 						newItem = Services.ProjectService.ReadSolutionItem (monitor, item.FileName);
 					else {
-						UnknownSolutionItem e = new UnknownSolutionItem () {
-							FileName = item.FileName,
-							UnloadedEntry = true
+						UnknownSolutionItem e = new UnloadedSolutionItem () {
+							FileName = item.FileName
 						};
 						var ch = item.GetItemHandler () as MonoDevelop.Projects.Formats.MSBuild.MSBuildHandler;
 						if (ch != null) {

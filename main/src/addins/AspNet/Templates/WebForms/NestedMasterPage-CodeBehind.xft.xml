@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<Template Originator  ="Michael Hutchinson"
+          Created     ="2009/02/24"
+          LastModified="2009/02/24">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Nested Master Page with CodeBehind</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Web Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates an ASP.NET Nested Master Page with a CodeBehind class.</_Description>
+		<ProjectType>AspNetApp</ProjectType>
+	</TemplateConfiguration>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<AspNetMasterContentFile name="${Name}.master">
+			<FileText>
+				<![CDATA[<%@ Master Language="C#" MasterPageFile="${AspNetMaster}" Inherits="${Namespace}.${EscapedIdentifier}" %>
+<%@ MasterType VirtualPath="${AspNetMaster}" %>
+${AspNetMasterContent}
+]]>
+			</FileText>
+		</AspNetMasterContentFile>
+		
+		<File name="${Name}.master.cs" DependsOn="${Name}.master" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+namespace ${Namespace} {
+	public partial class ${EscapedIdentifier} : System.Web.UI.MasterPage 
+	{
+	}
+}
+]]>
+		</File>
+		<File name="${Name}.master.designer.cs" ShowAutogenerationNotice="True" 
+			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.master" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+namespace ${Namespace} {
+	public partial class ${EscapedIdentifier} 
+	{
+	}
+}
+]]>
+		</File>
+	</TemplateFiles>
+</Template>

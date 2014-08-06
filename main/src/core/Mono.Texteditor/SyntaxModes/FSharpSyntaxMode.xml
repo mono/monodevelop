@@ -72,7 +72,7 @@
 	
 	<Span rule="Let" stopateol = "false">
 		<Begin color="Keyword(Iteration)" flags="NewWord">let </Begin>
-		<End>=</End>
+		<End>=|(|&lt;</End>
 	</Span>
 
 <!-- 
@@ -92,19 +92,17 @@
        <Group color="String"/>
 	</Match> -->
 
-	<Match color="String">'(\w|\\['ntbrafv])'</Match>
+	<Match color="String" ignorecase="True">'(\w|\\['ntbrafv])'</Match>
        
 
 
 	<Match color="Number">CSharpNumber</Match>
-	<Match color="Keyword(Iteration)">let(!)?</Match>
-	<Match color="Keyword(Iteration)">use(!)?</Match>
-	<Match color="Keyword(Iteration)">yield(!)?</Match>
-	<Match color="Keyword(Iteration)">return(!)?</Match>
-	<Match color="Keyword(Iteration)">do(!)?</Match>
+	<Match color="Keyword(Iteration)">(let|use|yield|return|do)(!)?\s</Match>
+	<Match color="Keyword(Iteration)">(let|use|yield|return|do)(!)?$</Match>
 
 	<!-- reserved-ident-keyword F# spec v3.0 section 3.4 -->
-	<Match color="Keyword(Other)">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?</Match>
+	<Match color="Keyword(Other)">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?\s</Match>
+	<Match color="Keyword(Other)">(atomic|break|checked|component|const|constraint|constructor|continue|eager|fixed|fori|functor|include|measure|method|mixin|object|parallel|params|process|protected|pure|recursive|sealed|tailcall|trait|virtual|volatile)[!#]?$</Match>
 
 	<!-- It is really impossible to do some intelligent grouping here, because
 	     it looks weird no matter what we do... some things are context-sensitive,
@@ -286,7 +284,7 @@
 	</Rule>
 
 	<Rule name="String">
-		<Match color ="String(Escape)">\\(U[0-9a-fA-F]{8}|u[0-9a-fA-F]{4}|[\\'ntbrafv])</Match>
+		<Match color ="String(Escape)" ignorecase="True">\\(U[0-9a-fA-F]{8}|u[0-9a-fA-F]{4}|[\\'ntbrafv])</Match>
 	</Rule>
 	
 	<Rule name="Let">

@@ -667,7 +667,7 @@ namespace MonoDevelop.Projects
 			SolutionEntityItem eitem = item as SolutionEntityItem;
 			if (eitem != null) {
 				eitem.NeedsReload = false;
-				if (eitem.SupportsBuild ()) {
+				if (eitem.SupportsConfigurations () || replacedItem != null) {
 					if (replacedItem == null) {
 						// Register the new entry in every solution configuration
 						foreach (SolutionConfiguration conf in Configurations)

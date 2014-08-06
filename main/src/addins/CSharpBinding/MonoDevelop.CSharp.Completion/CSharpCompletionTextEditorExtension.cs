@@ -58,6 +58,7 @@ using MonoDevelop.CSharp.Project;
 using MonoDevelop.CSharp.Formatting;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.Refactoring;
+using System.Xml;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -147,13 +148,16 @@ namespace MonoDevelop.CSharp.Completion
 		public CSharpCompletionTextEditorExtension ()
 		{
 		}
-		
+
+		bool addEventHandlersInInitialization = true;
+
 		/// <summary>
 		/// Used in testing environment.
 		/// </summary>
 		[System.ComponentModel.Browsable(false)]
-		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc) : this ()
+		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc, bool addEventHandlersInInitialization = true) : this ()
 		{
+			this.addEventHandlersInInitialization = addEventHandlersInInitialization;
 			Initialize (doc);
 		}
 		
@@ -165,10 +169,12 @@ namespace MonoDevelop.CSharp.Completion
 				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
 				this.UnresolvedFileCompilation = Document.Compilation;
 				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-				document.Editor.Caret.PositionChanged += HandlePositionChanged;
+				if (addEventHandlersInInitialization)
+					document.Editor.Caret.PositionChanged += HandlePositionChanged;
 			}
-			
-			Document.DocumentParsed += HandleDocumentParsed; 
+
+			if (addEventHandlersInInitialization)
+				Document.DocumentParsed += HandleDocumentParsed; 
 		}
 
 		CancellationTokenSource src = new CancellationTokenSource ();

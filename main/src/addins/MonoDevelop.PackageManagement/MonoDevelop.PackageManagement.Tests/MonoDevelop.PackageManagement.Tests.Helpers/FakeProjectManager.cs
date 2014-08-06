@@ -205,5 +205,27 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException ();
 		}
+
+		public List<PackageReference> PackageReferences = new List<PackageReference> ();
+
+		public PackageReference AddPackageReference (string packageId, string packageVersion)
+		{
+			var packageReference = new PackageReference (
+				packageId,
+				new SemanticVersion (packageVersion),
+				null,
+				null,
+				false,
+				false);
+
+			PackageReferences.Add (packageReference);
+
+			return packageReference;
+		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			return PackageReferences;
+		}
 	}
 }

@@ -36,11 +36,19 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public FakePackageManager FakePackageManager = new FakePackageManager ();
 		public IPackageRepository PackageRepositoryPassedToCreatePackageManager;
 		public IDotNetProject ProjectPassedToCreateRepository;
+		public ISolutionPackageRepository SolutionPackageRepositoryPassedToCreatePackageManager;
 
 		public ISharpDevelopPackageManager CreatePackageManager (IPackageRepository sourceRepository, IDotNetProject project)
 		{
 			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
 			ProjectPassedToCreateRepository = project;
+			return FakePackageManager;
+		}
+
+		public IPackageManager CreatePackageManager (IPackageRepository sourceRepository, ISolutionPackageRepository solutionPackageRepository)
+		{
+			PackageRepositoryPassedToCreatePackageManager = sourceRepository;
+			SolutionPackageRepositoryPassedToCreatePackageManager = solutionPackageRepository;
 			return FakePackageManager;
 		}
 	}

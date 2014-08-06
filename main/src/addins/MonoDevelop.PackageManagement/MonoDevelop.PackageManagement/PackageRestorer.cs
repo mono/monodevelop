@@ -38,27 +38,47 @@ namespace MonoDevelop.PackageManagement
 	public class PackageRestorer
 	{
 		List<ProjectPackageReferenceFile> packageReferenceFiles;
+		IDotNetProject singleProject;
 
 		public PackageRestorer (Solution solution)
+			: this (solution.GetAllDotNetProjects ())
 		{
-			packageReferenceFiles = FindAllPackageReferenceFiles (solution).ToList ();
 		}
 
-		IEnumerable<ProjectPackageReferenceFile> FindAllPackageReferenceFiles (Solution solution)
+		public PackageRestorer (DotNetProject project)
+			: this (new [] { project })
 		{
-			return solution
-				.GetAllProjectsWithPackages ()
+			singleProject = new DotNetProjectProxy (project);
+		}
+
+		public PackageRestorer (IEnumerable<DotNetProject> projects)
+		{
+			packageReferenceFiles = FindAllPackageReferenceFiles (projects).ToList ();
+		}
+
+		IEnumerable<ProjectPackageReferenceFile> FindAllPackageReferenceFiles (IEnumerable<DotNetProject> projects)
+		{
+			return projects
+				.Where (project => project.HasPackages ())
 				.Select (project => new ProjectPackageReferenceFile (project));
 		}
 
+		public bool RestoreFailed { get; private set; }
+
 		public void Restore ()
+		{
+			Restore (ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ());
+		}
+
+		public void Restore (ProgressMonitorStatusMessage progressMessage)
 		{
 			try {
 				if (AnyMissingPackages ()) {
-					RestoreWithProgressMonitor ();
+					RestoreWithProgressMonitor (progressMessage);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
+				RestoreFailed = true;
 			}
 		}
 
@@ -67,10 +87,15 @@ namespace MonoDevelop.PackageManagement
 			return packageReferenceFiles.Any (file => file.AnyMissingPackages ());
 		}
 
-		void RestoreWithProgressMonitor ()
+		void RestoreWithProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
 			var runner = new PackageRestoreRunner ();
-			runner.Run ();
+			if (singleProject != null) {
+				runner.Run (singleProject, progressMessage);
+			} else {
+				runner.Run (progressMessage);
+			}
+			RestoreFailed = runner.RestoreFailed;
 		}
 	}
 }

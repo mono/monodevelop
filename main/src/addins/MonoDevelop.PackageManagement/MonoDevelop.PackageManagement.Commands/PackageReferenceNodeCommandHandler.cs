@@ -84,13 +84,25 @@ namespace MonoDevelop.PackageManagement.Commands
 		public void UpdatePackage ()
 		{
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
 
 			try {
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id, project);
 				UpdatePackageAction action = project.CreateUpdatePackageAction ();
 				action.PackageId = packageReferenceNode.Id;
 
+				RestoreBeforeUpdateAction.Restore (project, () => {
+					UpdatePackage (progressMessage, action);
+				});
+			} catch (Exception ex) {
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (packageReferenceNode.Id);
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+			}
+		}
+
+		void UpdatePackage (ProgressMonitorStatusMessage progressMessage, UpdatePackageAction action)
+		{
+			try {
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, action);
 			} catch (Exception ex) {
 				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
@@ -103,6 +115,21 @@ namespace MonoDevelop.PackageManagement.Commands
 			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
 			info.Enabled = false;
 			info.Text = packageReferenceNode.GetPackageVersionLabel ();
+		}
+
+		[CommandUpdateHandler (PackageReferenceNodeCommands.ReinstallPackage)]
+		public void UpdateReinstallPackageItem (CommandInfo info)
+		{
+			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			info.Visible = packageReferenceNode.IsReinstallNeeded;
+		}
+
+		[CommandHandler (PackageReferenceNodeCommands.ReinstallPackage)]
+		public void ReinstallPackage ()
+		{
+			var packageReferenceNode = (PackageReferenceNode)CurrentNode.DataItem;
+			var reinstaller = new PackageReinstaller ();
+			reinstaller.Run (packageReferenceNode);
 		}
 	}
 }

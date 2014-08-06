@@ -56,9 +56,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			repositoryPackages.Add (key, packages.ToList ());
 		}
 
+		public Func<IEnumerable<IPackageName>, bool, bool, IEnumerable<FrameworkName>, IEnumerable<IVersionSpec>, IEnumerable<IPackage>> GetUpdatesAction;
+
 		public IEnumerable<IPackage> GetUpdates (IEnumerable<IPackageName> packages, bool includePrerelease, bool includeAllVersions, IEnumerable<FrameworkName> targetFrameworks, IEnumerable<IVersionSpec> versionConstraints)
 		{
-			throw new NotImplementedException ();
+			return GetUpdatesAction (packages, includePrerelease, includeAllVersions, targetFrameworks, versionConstraints);
 		}
 	}
 }
