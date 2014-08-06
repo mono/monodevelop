@@ -118,7 +118,9 @@ namespace MonoDevelop.Components
 
 		public static implicit operator AppKit.NSColor (HslColor hsl)
 		{
-			return AppKit.NSColor.FromCalibratedHsba ((nfloat)hsl.H, (nfloat)hsl.S, (nfloat)hsl.L, (nfloat)1.0);
+			double r = 0, g = 0, b = 0;
+			hsl.ToRgb (out r, out g, out b);
+			return AppKit.NSColor.FromCalibratedRgba ((nfloat)r, (nfloat)g, (nfloat)b, (nfloat)1.0);
 		}
 
 
