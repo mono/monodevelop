@@ -16,7 +16,7 @@
 	url = git://github.com/mono/mdtestharness.git
 [submodule "main/external/xwt"]
 	path = main/external/xwt
-	url = git://github.com/mono/xwt.git
+	url = git://github.com/sheff146/xwt.git
 [submodule "main/external/Newtonsoft.Json"]
 	path = main/external/Newtonsoft.Json
 	url = git://github.com/mono/Newtonsoft.Json.git
