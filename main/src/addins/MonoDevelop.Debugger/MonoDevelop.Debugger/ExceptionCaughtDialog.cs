@@ -27,6 +27,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 using Gtk;
 
@@ -301,7 +302,7 @@ namespace MonoDevelop.Debugger
 
 			if (frame != null && !string.IsNullOrEmpty (frame.File) && File.Exists (frame.File)) {
 				try {
-					IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column);
+					IdeApp.Workbench.OpenDocument (frame.File, null, frame.Line, frame.Column, MonoDevelop.Ide.Gui.OpenDocumentOptions.Debugger);
 				} catch (FileNotFoundException) {
 				}
 			}
@@ -312,7 +313,7 @@ namespace MonoDevelop.Debugger
 			if (frame == null || string.IsNullOrEmpty (frame.File))
 				return false;
 
-			return IdeApp.Workspace.GetProjectContainingFile (frame.File) != null;
+			return IdeApp.Workspace.GetProjectsContainingFile (frame.File).Any ();
 		}
 
 		void ShowStackTrace (ExceptionInfo ex)

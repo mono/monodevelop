@@ -106,7 +106,12 @@ namespace MonoDevelop.Ide.Projects
 		
 		void UpdateContentLabels ()
 		{
-			PolicySet pset = GetPolicySet (false);
+			PolicySet pset = null;
+			try {
+				pset = GetPolicySet (false);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Policy file could not be loaded", ex);
+			}
 			tree.SetPolicies (pset);
 			if (tree.HasPolicies) {
 				buttonOk.Sensitive = true;

@@ -56,7 +56,7 @@ namespace Mono.TextEditor
 			return GetCharacterClass (ch, false, false);
 		}
 		
-		public static CharacterClass GetCharacterClass (char ch, bool subword, bool treat_)
+		public static CharacterClass GetCharacterClass (char ch, bool subword, bool includeUnderscore)
 		{
 			if (Char.IsWhiteSpace (ch))
 				return CharacterClass.Whitespace;
@@ -70,7 +70,7 @@ namespace Mono.TextEditor
 				else
 					return CharacterClass.LowercaseLetter;
 			}
-			if (!subword && treat_ && ch == '_')
+			if (!subword && includeUnderscore && ch == '_')
  				return CharacterClass.IdentifierPart;
  			return CharacterClass.Unknown;
  		}

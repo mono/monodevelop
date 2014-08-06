@@ -210,11 +210,13 @@ namespace MonoDevelop.Ide.CustomTools
 				
 				if (broken)
 					return;
-				
+
 				if (result.Success)
 					monitor.ReportSuccess ("Generated file successfully.");
+				else if (result.SuccessWithWarnings)
+					monitor.ReportSuccess ("Warnings in file generation.");
 				else
-					monitor.ReportError ("Failed to generate file. See error pad for details.", null);
+					monitor.ReportError ("Errors in file generation.", null);
 				
 			} finally {
 				monitor.Dispose ();
@@ -301,13 +303,11 @@ namespace MonoDevelop.Ide.CustomTools
 				o.Completed += checkOp;
 
 			evt.WaitOne ();
-			bool success = operations.All (op => op.Success);
-
-			if (!success)
-				monitor.ReportError ("Error in custom tool", null);
 
 			monitor.EndTask ();
-			return success;
+
+			//the tool operations display warnings themselves
+			return operations.Any (op => !op.SuccessWithWarnings);
 		}
 	}
 }
