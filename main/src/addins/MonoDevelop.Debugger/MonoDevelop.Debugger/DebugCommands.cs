@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
@@ -595,6 +596,17 @@ namespace MonoDevelop.Debugger
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
 			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
+		}
+	}
+
+	class ShowBreakpointsHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			var breakpointsPad = IdeApp.Workbench.Pads.FirstOrDefault (p => p.Id == "MonoDevelop.Debugger.BreakpointPad");
+			if (breakpointsPad != null) {
+				breakpointsPad.BringToFront ();
+			}
 		}
 	}
 
