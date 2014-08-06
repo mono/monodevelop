@@ -87,7 +87,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Init ();
 			this.buttons = message.Buttons.ToArray ();
-			
+
+			Modal = true;
+
 			string primaryText;
 			string secondaryText;
 			

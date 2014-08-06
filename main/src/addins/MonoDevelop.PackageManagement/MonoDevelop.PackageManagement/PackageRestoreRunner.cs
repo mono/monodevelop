@@ -33,6 +33,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.Projects;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -41,110 +42,107 @@ namespace MonoDevelop.PackageManagement
 		IPackageManagementSolution solution;
 		IPackageManagementProgressMonitorFactory progressMonitorFactory;
 		IPackageManagementEvents packageManagementEvents;
+		IProgressProvider progressProvider;
+		IDotNetProject project;
 
 		public PackageRestoreRunner()
 			: this(
 				PackageManagementServices.Solution,
 				PackageManagementServices.ProgressMonitorFactory,
-				PackageManagementServices.PackageManagementEvents)
+				PackageManagementServices.PackageManagementEvents,
+				PackageManagementServices.ProgressProvider)
 		{
 		}
 
 		public PackageRestoreRunner(
 			IPackageManagementSolution solution,
 			IPackageManagementProgressMonitorFactory progressMonitorFactory,
-			IPackageManagementEvents packageManagementEvents)
+			IPackageManagementEvents packageManagementEvents,
+			IProgressProvider progressProvider)
 		{
 			this.solution = solution;
 			this.progressMonitorFactory = progressMonitorFactory;
 			this.packageManagementEvents = packageManagementEvents;
+			this.progressProvider = progressProvider;
 		}
 
 		public void Run ()
 		{
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ();
-			IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage);
+			Run (ProgressMonitorStatusMessageFactory.CreateRestoringPackagesInSolutionMessage ());
+		}
 
-			try {
-				RestorePackages(progressMonitor, progressMessage);
-			} catch (Exception ex) {
-				LoggingService.LogInternalError (ex);
-				progressMonitor.Log.WriteLine(ex.Message);
-				progressMonitor.ReportError (progressMessage.Error, null);
-				progressMonitor.ShowPackageConsole ();
-				progressMonitor.Dispose();
+		public void Run (IDotNetProject project, ProgressMonitorStatusMessage progressMessage)
+		{
+			this.project = project;
+			Run (progressMessage);
+		}
+
+		public void Run (ProgressMonitorStatusMessage progressMessage)
+		{
+			using (IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage)) {
+				using (PackageManagementEventsMonitor eventMonitor = CreateEventMonitor (progressMonitor)) {
+					try {
+						RestorePackages (progressMonitor, progressMessage);
+					} catch (Exception ex) {
+						LoggingService.LogInternalError (ex);
+						progressMonitor.Log.WriteLine (ex.Message);
+						progressMonitor.ReportError (progressMessage.Error, null);
+						progressMonitor.ShowPackageConsole ();
+						progressMonitor.Dispose ();
+						RestoreFailed = true;
+					}
+				}
 			}
 		}
+
+		public bool RestoreFailed { get; private set; }
 
 		IProgressMonitor CreateProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
 			return progressMonitorFactory.CreateProgressMonitor (progressMessage.Status);
 		}
 
-		void RestorePackages(IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
+		PackageManagementEventsMonitor CreateEventMonitor (IProgressMonitor monitor)
 		{
-			var commandLine = new NuGetPackageRestoreCommandLine(solution);
-
-			progressMonitor.Log.WriteLine(commandLine.ToString());
-
-			RestorePackages(progressMonitor, progressMessage, commandLine);
+			return new PackageManagementEventsMonitor (monitor, packageManagementEvents, progressProvider);
 		}
 
-		void RestorePackages(
-			IProgressMonitor progressMonitor,
-			ProgressMonitorStatusMessage progressMessage,
-			NuGetPackageRestoreCommandLine commandLine)
+		void RestorePackages (IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
 		{
-			var aggregatedMonitor = (PackageManagementProgressMonitor)progressMonitor;
-
-			Runtime.ProcessService.StartConsoleProcess(
-				commandLine.Command,
-				commandLine.Arguments,
-				commandLine.WorkingDirectory,
-				aggregatedMonitor.Console,
-				(sender, e) => {
-					using (progressMonitor) {
-						OnPackageRestoreCompleted ((IAsyncOperation)sender, progressMonitor, progressMessage);
-					}
-				}
-			);
-		}
-
-		void OnPackageRestoreCompleted (
-			IAsyncOperation operation,
-			IProgressMonitor progressMonitor,
-			ProgressMonitorStatusMessage progressMessage)
-		{
-			if (operation.Success) {
-				RefreshProjectReferences ();
+			var action = new RestorePackagesAction (solution, packageManagementEvents);
+			if (project != null) {
+				action.Project = project;
 			}
-			ReportOutcome (operation, progressMonitor, progressMessage);
+			action.Execute ();
+
+			RefreshProjectReferences ();
+			ForceCreationOfSharedRepositoriesConfigFile ();
+
+			progressMonitor.ReportSuccess (progressMessage.Success);
+			packageManagementEvents.OnPackagesRestored ();
 		}
 
+		/// <summary>
+		/// Creating package managers for all the projects will force the 
+		/// repositories.config file to be created.
+		/// </summary>
+		void ForceCreationOfSharedRepositoriesConfigFile ()
+		{
+			var repository = PackageManagementServices.RegisteredPackageRepositories.CreateAggregateRepository ();
+			solution.GetProjects (repository).ToList ();
+		}
+
+		/// <summary>
+		/// Refresh all projects even though we may have only restored packages for one project since
+		/// the packages may be used in other projects.
+		/// </summary>
 		void RefreshProjectReferences ()
 		{
 			DispatchService.GuiDispatch (() => {
-				Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-				if (solution != null) {
-					foreach (DotNetProject project in solution.GetAllDotNetProjects ()) {
-						project.RefreshReferenceStatus ();
-					}
+				foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
+					projectInSolution.DotNetProject.RefreshReferenceStatus ();
 				}
 			});
-		}
-
-		void ReportOutcome (
-			IAsyncOperation operation,
-			IProgressMonitor progressMonitor,
-			ProgressMonitorStatusMessage progressMessage)
-		{
-			if (operation.Success) {
-				progressMonitor.ReportSuccess (progressMessage.Success);
-				packageManagementEvents.OnPackagesRestored ();
-			} else {
-				progressMonitor.ReportError (progressMessage.Error, null);
-				progressMonitor.ShowPackageConsole ();
-			}
 		}
 	}
 }

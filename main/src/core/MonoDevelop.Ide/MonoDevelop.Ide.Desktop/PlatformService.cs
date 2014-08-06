@@ -55,10 +55,7 @@ namespace MonoDevelop.Ide.Desktop
 
 		public abstract string Name { get; }
 
-		/// <summary>
-		/// Used in the text editor. Valid values are found in MonoDevelop.SourceEditor.ControlLeftRightMode in the
-		/// source editor project.
-		/// </summary>
+		[Obsolete]
 		public virtual string DefaultControlLeftRightBehavior {
 			get {
 				return "MonoDevelop";
@@ -329,7 +326,7 @@ namespace MonoDevelop.Ide.Desktop
 		}
 
 		public virtual bool ShowContextMenu (MonoDevelop.Components.Commands.CommandManager commandManager,
-			Gtk.Widget widget, double x, double y, MonoDevelop.Components.Commands.CommandEntrySet entrySet)
+			Gtk.Widget widget, double x, double y, MonoDevelop.Components.Commands.CommandEntrySet entrySet, object initialCommandTarget = null)
 		{
 			return false;
 		}

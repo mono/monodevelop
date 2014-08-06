@@ -92,7 +92,8 @@ namespace MonoDevelop.Debugger
 			lock (watches) {
 				foreach (PinnedWatch w in watches) {
 					foreach (Breakpoint bp in bps.GetBreakpoints ()) {
-						if (bp.HitAction == HitAction.PrintExpression && bp.TraceExpression == "{" + w.Expression + "}" && bp.FileName == w.File && bp.Line == w.Line)
+						if ((bp.HitAction & HitAction.PrintExpression) != HitAction.None &&
+							bp.TraceExpression == "{" + w.Expression + "}" && bp.FileName == w.File && bp.Line == w.Line)
 							Bind (w, bp);
 					}
 				}

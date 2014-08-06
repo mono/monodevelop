@@ -6,6 +6,7 @@ ADDINS=$(MACOS)/lib/monodevelop/AddIns
 EXTRAS=$(top_srcdir)/../extras
 ARTIFACTS=$(top_srcdir)/../../artifacts
 MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
+SDK_PATH=$(shell xcrun --sdk macosx10.8 --show-sdk-path)
 
 PACKAGE_UPDATE_ID=$(shell $(MD_CONFIGURE) get-releaseid)
 BUNDLE_VERSION=$(shell $(MD_CONFIGURE) get-version)
@@ -23,7 +24,7 @@ dmg: render.exe app
 	./make-dmg-bundle.sh
 
 monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
-	gcc -Wall -mmacosx-version-min=10.6 -m32 -o $@ $^ -framework AppKit
+	gcc -Wall -mmacosx-version-min=10.6 -m32 -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
 
 clean-local:
 	rm -rf MonoDevelop.app

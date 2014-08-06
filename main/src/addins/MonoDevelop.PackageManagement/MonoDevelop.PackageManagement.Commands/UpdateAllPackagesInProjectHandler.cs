@@ -29,8 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -40,21 +39,32 @@ namespace MonoDevelop.PackageManagement.Commands
 		{
 			try {
 				IPackageManagementProject project = PackageManagementServices.Solution.GetActiveProject ();
+				RestoreBeforeUpdateAction.Restore (project, () => {
+					DispatchService.GuiSyncDispatch (() => Update (project));
+				});
+			} catch (Exception ex) {
+				ShowStatusBarError (ex);
+			}
+		}
+
+		void Update (IPackageManagementProject project)
+		{
+			try {
 				var updateAllPackages = new UpdateAllPackagesInProject (project);
 				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
-				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions);
+				ProgressMonitorStatusMessage progressMessage = CreateProgressMessage (updateActions, project);
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
 			} catch (Exception ex) {
 				ShowStatusBarError (ex);
 			}
 		}
 
-		ProgressMonitorStatusMessage CreateProgressMessage (List<UpdatePackageAction> updateActions)
+		ProgressMonitorStatusMessage CreateProgressMessage (List<UpdatePackageAction> updateActions, IPackageManagementProject project)
 		{
 			if (updateActions.Count == 1) {
-				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (updateActions.First ().PackageId);
+				return ProgressMonitorStatusMessageFactory.CreateUpdatingSinglePackageMessage (updateActions.First ().PackageId, project);
 			}
-			return ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count);
+			return ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInProjectMessage (updateActions.Count, project);
 		}
 
 		void ShowStatusBarError (Exception ex)

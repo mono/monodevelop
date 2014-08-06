@@ -43,6 +43,12 @@ namespace MonoDevelop.Projects
 		{
 			NeedsReload = false;
 		}
+
+		public override bool SupportsConfigurations ()
+		{
+			// The item is unknown, but we still want to read/write its configurations
+			return true;
+		}
 		
 		public override FilePath FileName {
 			get { return fileName; }
@@ -112,6 +118,14 @@ namespace MonoDevelop.Projects
 		
 		protected internal override void OnSave (IProgressMonitor monitor)
 		{
+		}
+	}
+
+	public class UnloadedSolutionItem: UnknownSolutionItem
+	{
+		public UnloadedSolutionItem ()
+		{
+			UnloadedEntry = true;
 		}
 	}
 }

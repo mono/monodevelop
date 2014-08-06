@@ -159,13 +159,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				try {
 					if (!FileService.IsValidPath (newFoldername)) {
 						MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
-					} else if (File.Exists (newFoldername) || Directory.Exists (newFoldername)) {
+						return;
+					} 
+					if (File.Exists (newFoldername)) {
 						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
-					} else {
-						FileService.RenameDirectory (oldFoldername, newName);
-						if (folder.Project != null)
-							IdeApp.ProjectOperations.Save (folder.Project);
+						return;
 					}
+					// Don't use Directory.Exists because we want to check for the exact case in case-insensitive file systems
+					var di = Directory.GetDirectories (Path.GetDirectoryName (newFoldername), Path.GetFileName (newFoldername)).FirstOrDefault ();
+					if (di != null) {
+						MessageService.ShowWarning (GettextCatalog.GetString ("File or directory name is already in use. Please choose a different one."));
+						return;
+					}
+
+					FileService.RenameDirectory (oldFoldername, newName);
+					if (folder.Project != null)
+						IdeApp.ProjectOperations.Save (folder.Project);
+
 				} catch (System.ArgumentException) { // new file name with wildcard (*, ?) characters in it
 					MessageService.ShowWarning (GettextCatalog.GetString ("The name you have chosen contains illegal characters. Please choose a different name."));
 				} catch (System.IO.IOException ex) {

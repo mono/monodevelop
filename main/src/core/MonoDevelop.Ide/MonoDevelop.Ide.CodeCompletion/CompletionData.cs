@@ -58,7 +58,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public virtual TooltipInformation CreateTooltipInformation (bool smartWrap)
 		{
-			return new TooltipInformation ();
+			var tt = new TooltipInformation ();
+			if (!string.IsNullOrEmpty (Description))
+				tt.AddCategory (null, Description);
+			return tt;
 		}
 
 		public virtual bool HasOverloads { 

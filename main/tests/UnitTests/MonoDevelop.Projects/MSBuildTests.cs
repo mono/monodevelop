@@ -27,6 +27,7 @@
 
 using System;
 using System.IO;
+using System.Xml;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.Projects.Extensions;
@@ -435,6 +436,57 @@ namespace MonoDevelop.Projects
 		public void SaveReferenceWithCondition ()
 		{
 			string solFile = Util.GetSampleProject ("console-project-conditional-reference", "ConsoleProject.sln");
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+
+			string proj = sol.GetAllProjects ().First ().FileName;
+
+			string projectXml1 = Util.GetXmlFileInfoset (proj);
+			sol.Save (new NullProgressMonitor ());
+
+			string projectXml2 = Util.GetXmlFileInfoset (proj);
+			Assert.AreEqual (projectXml1, projectXml2);
+		}
+
+		[Test]
+		public void AddNewImportWithoutConditionToProject ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			var project = sol.GetAllProjects ().First () as DotNetProject;
+			project.AddImportIfMissing (@"packages\Xamarin.Forms\build\Xamarin.Forms.targets", null);
+			sol.Save (Util.GetMonitor ());
+
+			var doc = new XmlDocument ();
+			doc.Load (project.FileName);
+			var manager = new XmlNamespaceManager (doc.NameTable);
+			manager.AddNamespace ("ms", "http://schemas.microsoft.com/developer/msbuild/2003");
+			XmlElement import = (XmlElement)doc.SelectSingleNode (@"//ms:Import[@Project='packages\Xamarin.Forms\build\Xamarin.Forms.targets']", manager);
+
+			Assert.IsNotNull (import);
+			Assert.IsFalse (import.HasAttribute ("Condition"));
+		}
+
+		[Test]
+		public void AddNewImportWithConditionToProject ()
+		{
+			Solution sol = TestProjectsChecks.CreateConsoleSolution ("console-project-msbuild");
+			var project = sol.GetAllProjects ().First () as DotNetProject;
+			string condition = @"Exists('packages\Xamarin.Forms\build\Xamarin.Forms.targets')";
+			project.AddImportIfMissing (@"packages\Xamarin.Forms\build\Xamarin.Forms.targets", condition);
+			sol.Save (Util.GetMonitor ());
+
+			var doc = new XmlDocument ();
+			doc.Load (project.FileName);
+			var manager = new XmlNamespaceManager (doc.NameTable);
+			manager.AddNamespace ("ms", "http://schemas.microsoft.com/developer/msbuild/2003");
+			XmlElement import = (XmlElement)doc.SelectSingleNode (@"//ms:Import[@Project='packages\Xamarin.Forms\build\Xamarin.Forms.targets']", manager);
+
+			Assert.AreEqual (condition, import.GetAttribute ("Condition"));
+		}
+
+		[Test]
+		public void ProjectWithCustomConfigPropertyGroupBug20554 ()
+		{
+			string solFile = Util.GetSampleProject ("console-project-custom-configs", "ConsoleProject.sln");
 			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
 
 			string proj = sol.GetAllProjects ().First ().FileName;

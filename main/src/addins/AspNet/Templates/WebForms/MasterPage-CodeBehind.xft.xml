@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<Template	Originator="John Anderson"
+			Created="2007/02/03"
+			LastModified="2007/02/03">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Master Page with CodeBehind</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Web Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates an ASP.NET Master Page with a CodeBehind class.</_Description>
+		<ProjectType>AspNetApp</ProjectType>
+	</TemplateConfiguration>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.master">
+<![CDATA[<%@ Master Language="C#" Inherits="${Namespace}.${EscapedIdentifier}" %>
+<!DOCTYPE html>
+<html>
+<head runat="server">
+	<title>${Name}</title>
+</head>
+<body>
+<div id="container">
+<form runat="server">
+    <asp:contentplaceholder id="contentPlaceHolder" runat="server" /> 
+</form>
+</div>
+</body>
+</html>
+]]>
+		</File>
+		
+		<File name="${Name}.master.cs" DependsOn="${Name}.master" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+namespace ${Namespace} {
+	public partial class ${EscapedIdentifier} : System.Web.UI.MasterPage 
+	{
+	}
+}
+]]>
+		</File>
+		<File name="${Name}.master.designer.cs" ShowAutogenerationNotice="True" 
+			AddStandardHeader="False" SuppressAutoOpen="True" DependsOn="${Name}.master" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.UI;
+namespace ${Namespace} {
+	public partial class ${EscapedIdentifier} 
+	{
+	}
+}
+]]>
+		</File>
+	</TemplateFiles>
+</Template>

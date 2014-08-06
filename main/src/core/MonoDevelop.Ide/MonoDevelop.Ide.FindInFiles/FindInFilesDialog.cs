@@ -69,9 +69,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			Alignment alignment = new Alignment (0.5f, 0.5f, 0f, 0f);
 			Label label = new Label (button.Label);
 			HBox hbox = new HBox (false, 2);
-			Image image = new Image ();
+			ImageView image = new ImageView ();
 			
-			image.Pixbuf = Stetic.IconLoader.LoadIcon (button, stockIcon, IconSize.Button);
+			image.Image = ImageService.GetIcon (stockIcon, IconSize.Menu);
 			image.Show ();
 			hbox.Add (image);
 			

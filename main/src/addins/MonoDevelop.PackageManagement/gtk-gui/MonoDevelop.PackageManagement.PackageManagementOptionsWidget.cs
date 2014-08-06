@@ -5,10 +5,23 @@ namespace MonoDevelop.PackageManagement
 	public partial class PackageManagementOptionsWidget
 	{
 		private global::Gtk.VBox mainVBox;
+		
 		private global::Gtk.HBox restorePackagesLabelHBox;
+		
 		private global::Gtk.Label restorePackagesLabel;
+		
 		private global::Gtk.Label restorePackagesPaddingLabel;
+		
 		private global::Gtk.CheckButton automaticPackageRestoreOnOpeningSolutionCheckBox;
+		
+		private global::Gtk.HBox packageUpdatesLabelHBox;
+		
+		private global::Gtk.Label packageUpdatesLabel;
+		
+		private global::Gtk.Label packageUpdatesPaddingLabel;
+		
+		private global::Gtk.CheckButton checkForPackageUpdatesOnOpeningSolutionCheckBox;
+		
 		private global::Gtk.Label bottomLabel;
 
 		protected virtual void Build ()
@@ -60,17 +73,54 @@ namespace MonoDevelop.PackageManagement
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child mainVBox.Gtk.Box+BoxChild
+			this.packageUpdatesLabelHBox = new global::Gtk.HBox ();
+			this.packageUpdatesLabelHBox.Name = "packageUpdatesLabelHBox";
+			this.packageUpdatesLabelHBox.Spacing = 6;
+			// Container child packageUpdatesLabelHBox.Gtk.Box+BoxChild
+			this.packageUpdatesLabel = new global::Gtk.Label ();
+			this.packageUpdatesLabel.Name = "packageUpdatesLabel";
+			this.packageUpdatesLabel.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>Package Updates</b>");
+			this.packageUpdatesLabel.UseMarkup = true;
+			this.packageUpdatesLabelHBox.Add (this.packageUpdatesLabel);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.packageUpdatesLabelHBox [this.packageUpdatesLabel]));
+			w5.Position = 0;
+			w5.Expand = false;
+			w5.Fill = false;
+			// Container child packageUpdatesLabelHBox.Gtk.Box+BoxChild
+			this.packageUpdatesPaddingLabel = new global::Gtk.Label ();
+			this.packageUpdatesPaddingLabel.Name = "packageUpdatesPaddingLabel";
+			this.packageUpdatesLabelHBox.Add (this.packageUpdatesPaddingLabel);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.packageUpdatesLabelHBox [this.packageUpdatesPaddingLabel]));
+			w6.Position = 1;
+			this.mainVBox.Add (this.packageUpdatesLabelHBox);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.mainVBox [this.packageUpdatesLabelHBox]));
+			w7.Position = 2;
+			w7.Expand = false;
+			w7.Fill = false;
+			// Container child mainVBox.Gtk.Box+BoxChild
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox = new global::Gtk.CheckButton ();
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox.CanFocus = true;
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox.Name = "checkForPackageUpdatesOnOpeningSolutionCheckBox";
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Check for package _updates when opening a solution.");
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox.DrawIndicator = true;
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox.UseUnderline = true;
+			this.checkForPackageUpdatesOnOpeningSolutionCheckBox.BorderWidth = ((uint)(10));
+			this.mainVBox.Add (this.checkForPackageUpdatesOnOpeningSolutionCheckBox);
+			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.mainVBox [this.checkForPackageUpdatesOnOpeningSolutionCheckBox]));
+			w8.Position = 3;
+			w8.Expand = false;
+			w8.Fill = false;
+			// Container child mainVBox.Gtk.Box+BoxChild
 			this.bottomLabel = new global::Gtk.Label ();
 			this.bottomLabel.Name = "bottomLabel";
 			this.mainVBox.Add (this.bottomLabel);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.mainVBox [this.bottomLabel]));
-			w5.Position = 2;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.mainVBox [this.bottomLabel]));
+			w9.Position = 4;
 			this.Add (this.mainVBox);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.automaticPackageRestoreOnOpeningSolutionCheckBox.Toggled += new global::System.EventHandler (this.AutomaticPackageRestoreOnOpeningSolutionCheckBoxToggled);
 		}
 	}
 }

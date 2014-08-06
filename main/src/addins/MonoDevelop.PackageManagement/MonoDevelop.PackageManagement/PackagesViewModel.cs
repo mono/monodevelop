@@ -50,6 +50,7 @@ namespace ICSharpCode.PackageManagement
 		ITask<PackagesForSelectedPageResult> task;
 		bool includePrerelease;
 		PackagesForSelectedPageQuery packagesForSelectedPageQuery;
+		bool ignorePackageCheckedChanged;
 
 		public PackagesViewModel(
 			IRegisteredPackageRepositories registeredPackageRepositories,
@@ -61,6 +62,7 @@ namespace ICSharpCode.PackageManagement
 			this.taskFactory = taskFactory;
 			
 			PackageViewModels = new ObservableCollection<PackageViewModel>();
+			CheckedPackageViewModels = new ObservableCollection <PackageViewModel> ();
 			ErrorMessage = String.Empty;
 			ClearPackagesOnPaging = true;
 
@@ -122,13 +124,19 @@ namespace ICSharpCode.PackageManagement
 		void StartReadPackagesTask(bool clearPackages = true)
 		{
 			IsReadingPackages = true;
-			HasError = false;
+			ClearError ();
 			if (clearPackages) {
 				ClearPackages ();
 			}
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
 			task.Start();
+		}
+
+		void ClearError ()
+		{
+			HasError = false;
+			ErrorMessage = String.Empty;
 		}
 		
 		protected virtual void UpdateRepositoryBeforeReadPackagesTaskStarts()
@@ -168,6 +176,7 @@ namespace ICSharpCode.PackageManagement
 				// Ignore.
 				return;
 			} else {
+				SaveAnyWarnings ();
 				UpdatePackagesForSelectedPage(task.Result);
 			}
 			base.OnPropertyChanged(null);
@@ -189,6 +198,20 @@ namespace ICSharpCode.PackageManagement
 		{
 			var errorMessage = new AggregateExceptionErrorMessage(ex);
 			return errorMessage.ToString();
+		}
+
+		void SaveAnyWarnings ()
+		{
+			string warning = GetWarningMessage ();
+			if (!String.IsNullOrEmpty (warning)) {
+				HasError = true;
+				ErrorMessage = warning;
+			}
+		}
+
+		protected virtual string GetWarningMessage ()
+		{
+			return String.Empty;
 		}
 
 		void UpdatePackagesForSelectedPage(PackagesForSelectedPageResult result)
@@ -307,7 +330,9 @@ namespace ICSharpCode.PackageManagement
 		public IEnumerable<PackageViewModel> ConvertToPackageViewModels (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
 			foreach (IPackage package in packages) {
-				yield return CreatePackageViewModel (package, search);
+				PackageViewModel packageViewModel = CreatePackageViewModel (package, search);
+				CheckNewPackageViewModelIfPreviouslyChecked (packageViewModel);
+				yield return packageViewModel;
 			}
 		}
 		
@@ -482,5 +507,41 @@ namespace ICSharpCode.PackageManagement
 		public bool ShowPrerelease { get; set; }
 		public bool ClearPackagesOnPaging { get; set; }
 		public bool IsLoadingNextPage { get; private set; }
+
+		public ObservableCollection<PackageViewModel> CheckedPackageViewModels { get; private set; }
+
+		public void OnPackageCheckedChanged (PackageViewModel packageViewModel)
+		{
+			if (ignorePackageCheckedChanged)
+				return;
+
+			if (packageViewModel.IsChecked) {
+				UncheckExistingCheckedPackageWithDifferentVersion (packageViewModel);
+				CheckedPackageViewModels.Add (packageViewModel);
+			} else {
+				CheckedPackageViewModels.Remove (packageViewModel);
+			}
+		}
+
+		void CheckNewPackageViewModelIfPreviouslyChecked (PackageViewModel packageViewModel)
+		{
+			ignorePackageCheckedChanged = true;
+			try {
+				packageViewModel.IsChecked = CheckedPackageViewModels.Contains (packageViewModel);
+			} finally {
+				ignorePackageCheckedChanged = false;
+			}
+		}
+
+		void UncheckExistingCheckedPackageWithDifferentVersion (PackageViewModel packageViewModel)
+		{
+			PackageViewModel existingPackageViewModel = CheckedPackageViewModels
+				.FirstOrDefault (item => item.Id == packageViewModel.Id);
+
+			if (existingPackageViewModel != null) {
+				CheckedPackageViewModels.Remove (existingPackageViewModel);
+				existingPackageViewModel.IsChecked = false;
+			}
+		}
 	}
 }

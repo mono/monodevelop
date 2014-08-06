@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using NuGet;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -57,7 +58,6 @@ namespace ICSharpCode.PackageManagement
 		
 		public void OnPackageOperationError(Exception ex)
 		{
-			LoggingService.LogInfo("Package operation error: " + ex.ToString());
 			if (PackageOperationError != null) {
 				PackageOperationError(this, new PackageOperationExceptionEventArgs(ex));
 			}
@@ -152,6 +152,27 @@ namespace ICSharpCode.PackageManagement
 			if (FileChanged != null) {
 				FileChanged (this, new FileEventArgs (new FilePath (path), false));
 			}
+		}
+
+		public event EventHandler UpdatedPackagesAvailable;
+
+		public void OnUpdatedPackagesAvailable ()
+		{
+			if (UpdatedPackagesAvailable != null) {
+				UpdatedPackagesAvailable (this, new EventArgs ());
+			}
+		}
+
+		public event EventHandler<FileRemovingEventArgs> FileRemoving;
+
+		public bool OnFileRemoving (string path)
+		{
+			if (FileRemoving != null) {
+				var eventArgs = new FileRemovingEventArgs (path);
+				FileRemoving (this, eventArgs);
+				return !eventArgs.IsCancelled;
+			}
+			return true;
 		}
 	}
 }

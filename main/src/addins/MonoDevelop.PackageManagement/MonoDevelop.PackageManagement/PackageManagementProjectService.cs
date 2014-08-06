@@ -84,12 +84,8 @@ namespace ICSharpCode.PackageManagement
 
 		public IEnumerable<IDotNetProject> GetOpenProjects ()
 		{
-			Solution solution = IdeApp.ProjectOperations.CurrentSelectedSolution;
-			if (solution != null) {
-				return solution
-					.GetAllProjects ()
-					.OfType<DotNetProject> ()
-					.Select (project => new DotNetProjectProxy (project));
+			if (OpenSolution != null) {
+				return OpenSolution.GetAllProjects ();
 			}
 			return new IDotNetProject [0];
 		}

@@ -27,6 +27,12 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using MonoDevelop.Core;
+using System.IO;
+using System.Linq;
 
 namespace MonoDevelop.Projects.Formats.MSBuild
 {
@@ -54,9 +60,14 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			engine.UnloadProject (pb);
 		}
 
-		public void Initialize (string slnFile, CultureInfo uiCulture)
+		public void SetCulture (CultureInfo uiCulture)
 		{
-			engine.Initialize (slnFile, uiCulture);
+			engine.SetCulture (uiCulture);
+		}
+
+		public void SetGlobalProperties (IDictionary<string, string> properties)
+		{
+			engine.SetGlobalProperties (properties);
 		}
 		
 		public void Dispose ()
@@ -76,34 +87,61 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 	{
 		RemoteBuildEngine engine;
 		IProjectBuilder builder;
-		
+		Dictionary<string,string[]> referenceCache;
+
 		internal RemoteProjectBuilder (string file, RemoteBuildEngine engine)
 		{
 			this.engine = engine;
 			builder = engine.LoadProject (file);
+			referenceCache = new Dictionary<string, string[]> ();
 		}
-		
-		public MSBuildResult[] RunTarget (string target, ProjectConfigurationInfo[] configurations, ILogWriter logWriter,
-			MSBuildVerbosity verbosity)
-		{
-			if (target == null)
-				throw new ArgumentNullException ("target");
 
-			return builder.RunTarget (target, configurations, logWriter, verbosity);
-		}
-		
-		public string[] GetAssemblyReferences (ProjectConfigurationInfo[] configurations)
+		public MSBuildResult Run (
+			ProjectConfigurationInfo[] configurations,
+			ILogWriter logWriter,
+			MSBuildVerbosity verbosity,
+			string[] runTargets,
+			string[] evaluateItems,
+			string[] evaluateProperties)
 		{
-			return builder.GetAssemblyReferences (configurations);
+			return builder.Run (configurations, logWriter, verbosity, runTargets, evaluateItems, evaluateProperties);
 		}
-		
+
+		public string[] ResolveAssemblyReferences (ProjectConfigurationInfo[] configurations)
+		{
+			string[] refs = null;
+			var id = configurations [0].Configuration + "|" + configurations [0].Platform;
+
+			lock (referenceCache) {
+				if (!referenceCache.TryGetValue (id, out refs)) {
+					var result = Run (
+						            configurations, null, MSBuildVerbosity.Normal,
+						            new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null
+					            );
+
+					List<MSBuildEvaluatedItem> items;
+					if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
+						refs = items.Select (i => i.ItemSpec).ToArray ();
+					} else
+						refs = new string[0];
+
+					referenceCache [id] = refs;
+				}
+			}
+			return refs;
+		}
+
 		public void Refresh ()
 		{
+			lock (referenceCache)
+				referenceCache.Clear ();
 			builder.Refresh ();
 		}
 		
 		public void RefreshWithContent (string projectContent)
 		{
+			lock (referenceCache)
+				referenceCache.Clear ();
 			builder.RefreshWithContent (projectContent);
 		}
 

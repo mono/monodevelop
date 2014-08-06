@@ -5,6 +5,7 @@
 //   Kenneth Skovhede <kenneth@hexad.dk>
 //   Michael Hutchinson <m.j.hutchinson@gmail.com>
 //   Bernhard Johannessen <bernhard@voytsje.com>
+//   Matthew Diamond <matthewdiamond96@gmail.com>
 //
 // Copyright (C) 2013 Kenneth Skovhede
 // Copyright (C) 2013 Xamarin Inc.
@@ -77,8 +78,7 @@ namespace MonoDevelop.Ide.CustomTools
 				var rd = new Dictionary<object, object> ();
 
 				using (var r = new ResXResourceReader (file.FilePath)) {
-					r.UseResXDataNodes = true;
-					r.BasePath = Path.GetDirectoryName (file.FilePath.ParentDirectory);
+					r.BasePath = file.FilePath.ParentDirectory;
 
 					foreach (DictionaryEntry e in r) {
 						rd.Add (e.Key, e.Value);

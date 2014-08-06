@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Components.Commands;
-using MonoDevelop.Core;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -37,9 +37,23 @@ namespace MonoDevelop.PackageManagement.Commands
 	{
 		protected override void Run ()
 		{
-			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage ();
 			try {
 				UpdateAllPackagesInSolution updateAllPackages = CreateUpdateAllPackagesInSolution ();
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage (updateAllPackages.Projects);
+				RestoreBeforeUpdateAction.Restore (updateAllPackages.Projects, () => {
+					DispatchService.GuiSyncDispatch (() => {
+						Update (updateAllPackages, progressMessage);
+					});
+				});
+			} catch (Exception ex) {
+				ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateUpdatingPackagesInSolutionMessage ();
+				PackageManagementServices.BackgroundPackageActionRunner.ShowError (progressMessage, ex);
+			}
+		}
+
+		void Update (UpdateAllPackagesInSolution updateAllPackages, ProgressMonitorStatusMessage progressMessage)
+		{
+			try {
 				List<UpdatePackageAction> updateActions = updateAllPackages.CreateActions ().ToList ();
 				PackageManagementServices.BackgroundPackageActionRunner.Run (progressMessage, updateActions);
 			} catch (Exception ex) {

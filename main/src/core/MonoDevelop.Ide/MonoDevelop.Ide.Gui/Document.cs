@@ -379,7 +379,13 @@ namespace MonoDevelop.Ide.Gui
 				// Note that the parsed document may be overwritten by a background thread to a more recent one.
 				var doc = parsedDocument;
 				if (doc != null && doc.ParsedFile != null) {
-					doc.ParsedFile.LastWriteTime = DateTime.Now;
+					string fileName = Window.ViewContent.ContentName;
+					try {
+						doc.ParsedFile.LastWriteTime = File.GetLastWriteTimeUtc (fileName);
+					} catch (Exception e) {
+						doc.ParsedFile.LastWriteTime = DateTime.UtcNow;
+						LoggingService.LogWarning ("Exception while getting the write time from " + fileName, e); 
+					}
 				}
 				TypeSystemService.TrackFileChanges = true;
 			}
@@ -411,7 +417,6 @@ namespace MonoDevelop.Ide.Gui
 					Encoding = encoding,
 					ShowEncodingSelector = (tbuffer != null),
 				};
-				
 				if (Window.ViewContent.IsUntitled)
 					dlg.InitialFileName = Window.ViewContent.UntitledName;
 				else {
@@ -820,7 +825,7 @@ namespace MonoDevelop.Ide.Gui
 			get {
 				if (currentWrapper == null)
 					return false;
-				return !currentWrapper.IsLoaded || !currentWrapper.ReferencesConnected;
+				return !currentWrapper.IsLoaded;
 			}
 		}
 
@@ -840,42 +845,49 @@ namespace MonoDevelop.Ide.Gui
 		}
 		
 		uint parseTimeout = 0;
+		object reparseLock = new object();
 		internal void StartReparseThread ()
 		{
-			// Don't directly parse the document because doing it at every key press is
-			// very inefficient. Do it after a small delay instead, so several changes can
-			// be parsed at the same time.
-			string currentParseFile = FileName;
-			if (string.IsNullOrEmpty (currentParseFile))
-				return;
-			CancelParseTimeout ();
-			if (IsProjectContextInUpdate)
-				return;
-			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
-				var editor = Editor;
-				if (editor == null || IsProjectContextInUpdate) {
+			lock (reparseLock) {
+				if (currentWrapper != null)
+					currentWrapper.EnsureReferencesAreLoaded ();
+
+				// Don't directly parse the document because doing it at every key press is
+				// very inefficient. Do it after a small delay instead, so several changes can
+				// be parsed at the same time.
+				string currentParseFile = FileName;
+				if (string.IsNullOrEmpty (currentParseFile))
+					return;
+				CancelParseTimeout ();
+				if (IsProjectContextInUpdate) {
+					return;
+				}
+				parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
+					var editor = Editor;
+					if (editor == null || IsProjectContextInUpdate) {
+						parseTimeout = 0;
+						return false;
+					}
+					string currentParseText = editor.Text;
+					string mimeType = editor.Document.MimeType;
+					ThreadPool.QueueUserWorkItem (delegate {
+						if (IsProjectContextInUpdate) {
+							return;
+						}
+						TypeSystemService.AddSkippedFile (currentParseFile);
+						var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
+						Application.Invoke (delegate {
+							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
+							if (isClosed)
+								return;
+							this.parsedDocument = currentParsedDocument;
+							OnDocumentParsed (EventArgs.Empty);
+						});
+					});
 					parseTimeout = 0;
 					return false;
-				}
-				string currentParseText = editor.Text;
-				string mimeType = editor.Document.MimeType;
-				ThreadPool.QueueUserWorkItem (delegate {
-					if (IsProjectContextInUpdate)
-						return;
-					TypeSystemService.AddSkippedFile (currentParseFile);
-					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
-					Application.Invoke (delegate {
-						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-						if (isClosed)
-							return;
-
-						this.parsedDocument = currentParsedDocument;
-						OnDocumentParsed (EventArgs.Empty);
-					});
 				});
-				parseTimeout = 0;
-				return false;
-			});
+			}
 		}
 		
 		/// <summary>

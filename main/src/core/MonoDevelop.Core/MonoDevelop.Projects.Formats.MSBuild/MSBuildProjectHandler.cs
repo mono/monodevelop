@@ -167,11 +167,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			// If the default runtime changes, the project builder for this project may change
 			// so it has to be created again.
-			if (projectBuilder != null) {
-				projectBuilder.Dispose ();
-				projectBuilder = null;
-			}
+			CleanupProjectBuilder ();
 		}
+
+		object builderLock = new object ();
 		
 		RemoteProjectBuilder GetProjectBuilder ()
 		{
@@ -185,21 +184,20 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var sln = item.ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
-				if (projectBuilder != null) {
-					projectBuilder.Dispose ();
-					projectBuilder = null;
+			lock (builderLock) {
+				if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
+					CleanupProjectBuilder ();
+					projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, item.FileName, slnFile);
+					lastBuildToolsVersion = ToolsVersion;
+					lastBuildRuntime = runtime.Id;
+					lastFileName = item.FileName;
+					lastSlnFileName = slnFile;
 				}
-				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, item.FileName, slnFile);
-				lastBuildToolsVersion = ToolsVersion;
-				lastBuildRuntime = runtime.Id;
-				lastFileName = item.FileName;
-				lastSlnFileName = slnFile;
-			}
-			else if (modifiedInMemory) {
-				modifiedInMemory = false;
-				var p = SaveProject (new NullProgressMonitor ());
-				projectBuilder.RefreshWithContent (p.SaveToString ());
+				if (modifiedInMemory) {
+					modifiedInMemory = false;
+					var p = SaveProject (new NullProgressMonitor ());
+					projectBuilder.RefreshWithContent (p.SaveToString ());
+				}
 			}
 			return projectBuilder;
 		}
@@ -259,8 +257,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				var configs = GetConfigurations (item, configuration);
-				foreach (string s in builder.GetAssemblyReferences (configs))
-					yield return s;
+				foreach (var r in builder.ResolveAssemblyReferences (configs))
+					yield return r;
 			}
 			else {
 				CleanupProjectBuilder ();
@@ -282,19 +280,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					LogWriter logWriter = new LogWriter (monitor.Log);
 					RemoteProjectBuilder builder = GetProjectBuilder ();
 					var configs = GetConfigurations (item, configuration);
-					MSBuildResult[] results = builder.RunTarget (target, configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity);
+					var result = builder.Run (configs, logWriter, MSBuildProjectService.DefaultMSBuildVerbosity, new[] { target }, null, null);
 					System.Runtime.Remoting.RemotingServices.Disconnect (logWriter);
 					
 					var br = new BuildResult ();
-					foreach (MSBuildResult res in results) {
+					foreach (var err in result.Errors) {
 						FilePath file = null;
-						if (res.File != null)
-							file = Path.Combine (Path.GetDirectoryName (res.ProjectFile), res.File);
+						if (err.File != null)
+							file = Path.Combine (Path.GetDirectoryName (err.ProjectFile), err.File);
 
-						if (res.IsWarning)
-							br.AddWarning (file, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
+						if (err.IsWarning)
+							br.AddWarning (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
 						else
-							br.AddError (file, res.LineNumber, res.ColumnNumber, res.Code, res.Message);
+							br.AddError (file, err.LineNumber, err.ColumnNumber, err.Code, err.Message);
 					}
 					return br;
 				}
@@ -360,7 +358,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
 			// of shared projects.
-			if (!itemGuid.StartsWith ("{") && fileName.EndsWith (".shproj"))
+			if (!itemGuid.StartsWith ("{"))
 				itemGuid = "{" + itemGuid + "}";
 
 			itemGuid = itemGuid.ToUpper ();
@@ -1313,21 +1311,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Impdate the imports section
 			
-			List<string> currentImports = msproject.Imports.Select (i => i.Project).ToList ();
-			List<string> imports = new List<string> (currentImports);
+			List<DotNetProjectImport> currentImports = msproject.Imports.Select (i => new DotNetProjectImport (i.Project)).ToList ();
+			List<DotNetProjectImport> imports = new List<DotNetProjectImport> (currentImports);
 			
 			// If the project is not new, don't add the default project imports,
 			// just assume that the current imports are correct
 			UpdateImports (imports, dotNetProject, newProject);
-			foreach (string imp in imports) {
+			foreach (DotNetProjectImport imp in imports) {
 				if (!currentImports.Contains (imp)) {
-					msproject.AddNewImport (imp);
+					MSBuildImport import = msproject.AddNewImport (imp.Name);
+					if (imp.HasCondition ())
+						import.Condition = imp.Condition;
 					currentImports.Add (imp);
 				}
 			}
-			foreach (string imp in currentImports) {
+			foreach (DotNetProjectImport imp in currentImports) {
 				if (!imports.Contains (imp))
-					msproject.RemoveImport (imp);
+					msproject.RemoveImport (imp.Name);
 			}
 			
 			DataItem extendedData = ser.ExternalItemProperties;
@@ -1640,14 +1640,18 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			buildItem.Condition = pref.Condition;
 		}
 		
-		void UpdateImports (List<string> imports, DotNetProject project, bool addItemTypeImports)
+		void UpdateImports (List<DotNetProjectImport> imports, DotNetProject project, bool addItemTypeImports)
 		{
 			if (targetImports != null && addItemTypeImports) {
 				AddMissingImports (imports, targetImports);
 			}
+
+			List <string> updatedImports = imports.Select (import => import.Name).ToList ();
 			foreach (IMSBuildImportProvider ip in AddinManager.GetExtensionObjects ("/MonoDevelop/ProjectModel/MSBuildImportProviders")) {
-				ip.UpdateImports (EntityItem, imports);
+				ip.UpdateImports (EntityItem, updatedImports);
 			}
+
+			UpdateImports (imports, updatedImports);
 
 			if (project != null) {
 				AddMissingImports (imports, project.ImportsAdded);
@@ -1656,16 +1660,33 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
-		void AddMissingImports (List<string> existingImports, IEnumerable<string> newImports)
+		void AddMissingImports (List<DotNetProjectImport> existingImports, IEnumerable<string> newImports)
 		{
-			foreach (string imp in newImports)
+			AddMissingImports (existingImports, newImports.Select (import => new DotNetProjectImport (import)));
+		}
+
+		void AddMissingImports (List<DotNetProjectImport> existingImports, IEnumerable<DotNetProjectImport> newImports)
+		{
+			foreach (DotNetProjectImport imp in newImports)
 				if (!existingImports.Contains (imp))
 					existingImports.Add (imp);
 		}
 
-		void RemoveImports (List<string> existingImports, IEnumerable<string> importsToRemove)
+		void UpdateImports (List<DotNetProjectImport> existingImports, List<string> updatedImports)
 		{
-			foreach (string imp in importsToRemove)
+			RemoveMissingImports (existingImports, updatedImports);
+			AddMissingImports (existingImports, updatedImports);
+		}
+
+		void RemoveMissingImports (List<DotNetProjectImport> existingImports, List<string> updatedImports)
+		{
+			List <DotNetProjectImport> importsToRemove = existingImports.Where (import => !updatedImports.Contains (import.Name)).ToList ();
+			RemoveImports (existingImports, importsToRemove);
+		}
+
+		void RemoveImports (List<DotNetProjectImport> existingImports, IEnumerable<DotNetProjectImport> importsToRemove)
+		{
+			foreach (DotNetProjectImport imp in importsToRemove)
 				existingImports.Remove (imp);
 		}
 
@@ -1905,7 +1926,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (i == -1)
 				return false;
 			if (cond.Substring (0, i).Trim () == "'$(Configuration)|$(Platform)'") {
-				cond = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out cond))
+					return false;
 				i = cond.IndexOf ('|');
 				if (i != -1) {
 					config = cond.Substring (0, i);
@@ -1919,18 +1941,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return true;
 			}
 			else if (cond.Substring (0, i).Trim () == "'$(Configuration)'") {
-				config = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out config))
+					return false;
 				platform = Unspecified;
 				return true;
 			}
 			else if (cond.Substring (0, i).Trim () == "'$(Platform)'") {
 				config = Unspecified;
-				platform = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out platform))
+					return false;
 				if (platform == "AnyCPU")
 					platform = string.Empty;
 				return true;
 			}
 			return false;
+		}
+
+		bool ExtractConfigName (string name, out string config)
+		{
+			config = name.Trim (' ');
+			if (config.Length <= 2)
+				return false;
+			if (config [0] != '\'' || config [config.Length - 1] != '\'')
+				return false;
+			config = config.Substring (1, config.Length - 2);
+			return config.IndexOf ('\'') == -1;
 		}
 		
 		string BuildConfigCondition (string config, string platform)

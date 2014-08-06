@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<Template	Originator="Michael Hutchinson"
+			Created="2006/07/13"
+			LastModified="2006/07/13">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<_Name>Web Service with CodeBehind</_Name>
+		<_Category>ASP.NET Web Forms</_Category>
+		<Icon>md-html-file-icon</Icon>
+		<LanguageName>C#</LanguageName>
+		<ProjectType>AspNetApp</ProjectType>
+		<_Description>Creates an ASP.NET web service with a CodeBehind class.</_Description>
+	</TemplateConfiguration>
+
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.asmx">
+<![CDATA[<%@ WebService Language="C#" Class="${Namespace}.${EscapedIdentifier}" %>
+]]>
+		</File>
+		<File name="${Name}.asmx.cs" DependsOn="${Name}.asmx" >
+<![CDATA[using System;
+using System.Web;
+using System.Web.Services;
+
+namespace ${Namespace}
+{
+	public class ${EscapedIdentifier} : System.Web.Services.WebService
+	{
+		
+	}
+}
+]]>
+		</File>
+	</TemplateFiles>
+</Template>

@@ -117,6 +117,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public IRecentPackageRepository RecentPackageRepository {
 			get { return FakeRecentPackageRepository; }
 		}
+
+		public FakePackageRepository FakePriorityPackageRepository = new FakePackageRepository ();
+
+		public IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ()
+		{
+			return FakePriorityPackageRepository;
+		}
 	}
 }
 

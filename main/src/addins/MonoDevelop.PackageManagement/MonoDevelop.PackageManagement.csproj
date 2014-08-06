@@ -130,8 +130,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesViewTitle.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopCredentialProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MSBuildProjectExtensions.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\NuGetExePath.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\NuGetPackageRestoreCommandLine.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageActionRunner.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageFromRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageLicenseViewModel.cs" />
@@ -278,7 +276,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessageFactory.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorStatusMessage.cs" />
     <Compile Include="AddinInfo.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageRestoreStartupHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestorer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectPackageReferenceFile.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageRestoreRunner.cs" />
@@ -323,6 +320,40 @@
     <Compile Include="MonoDevelop.PackageManagement\SettingsProvider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageSearchCriteria.cs" />
     <Compile Include="MonoDevelop.PackageManagement\WildcardVersionSpec.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectTargetFrameworkChangedEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectModifiedEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\DotNetProjectEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityRunner.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibilityChecker.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageReinstaller.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallProjectPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ReinstallPackageOperations.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\ReinstallAllPackagesInProjectHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageCompatibility.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectPackagesCompatibilityReport.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesInProject.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IUpdatedPackagesInSolution.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageUpdateChecker.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\FallbackRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\PackageManagementStartupHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PackageUpdatesEventMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatedPackagesMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdatePackagesProgressMonitorStatusMessage.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\CheckForUpdatedPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestoreBeforeUpdateAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopAggregateRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\RestorePackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Commands\RestorePackagesInProjectHandler.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\FailingPackageRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\FileRemovingEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\PreventPackagesConfigFileBeingRemovedOnUpdateMonitor.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\FilePathExtensions.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\FileRemover.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\IFileRemover.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -399,10 +430,6 @@
     <Folder Include="MonoDevelop.PackageManagement.NodeBuilders\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\external\nuget-binary\NuGet.exe">
-      <Link>NuGet.exe</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="..\..\..\external\nuget-binary\NuGet-LICENSE.txt">
       <Link>NuGet-LICENSE.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

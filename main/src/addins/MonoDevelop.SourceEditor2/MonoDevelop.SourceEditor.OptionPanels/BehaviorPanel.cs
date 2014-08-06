@@ -40,9 +40,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			indentationCombobox.InsertText (2, GettextCatalog.GetString ("Smart"));
 //			indentationCombobox.InsertText (3, GettextCatalog.GetString ("Virtual"));
 
-			controlLeftRightCombobox.InsertText (0, GettextCatalog.GetString ("MonoDevelop"));
-			controlLeftRightCombobox.InsertText (1, GettextCatalog.GetString ("Emacs"));
-			controlLeftRightCombobox.InsertText (2, GettextCatalog.GetString ("SharpDevelop"));
+			controlLeftRightCombobox.InsertText (0, GettextCatalog.GetString ("Unix"));
+			controlLeftRightCombobox.InsertText (1, GettextCatalog.GetString ("Windows"));
 			
 			autoInsertBraceCheckbutton.Toggled += HandleAutoInsertBraceCheckbuttonToggled;
 		}
@@ -55,7 +54,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			
 			tabAsReindentCheckbutton.Active = DefaultSourceEditorOptions.Instance.TabIsReindent;
 			indentationCombobox.Active = (int)DefaultSourceEditorOptions.Instance.IndentStyle;
-			controlLeftRightCombobox.Active = (int)DefaultSourceEditorOptions.Instance.ControlLeftRightMode;
+			controlLeftRightCombobox.Active = (int)DefaultSourceEditorOptions.Instance.WordNavigationStyle;
 			useViModesCheck.Active = DefaultSourceEditorOptions.Instance.UseViModes;
 			checkbuttonOnTheFlyFormatting.Active = DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			checkbuttonGenerateFormattingUndoStep.Active = DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep;
@@ -79,7 +78,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement = smartSemicolonPlaceCheckbutton.Active;
 			DefaultSourceEditorOptions.Instance.IndentStyle = (IndentStyle)indentationCombobox.Active;
 			DefaultSourceEditorOptions.Instance.TabIsReindent = tabAsReindentCheckbutton.Active;
-			DefaultSourceEditorOptions.Instance.ControlLeftRightMode = (ControlLeftRightMode)controlLeftRightCombobox.Active;
+			DefaultSourceEditorOptions.Instance.WordNavigationStyle = (WordNavigationStyle)controlLeftRightCombobox.Active;
 			DefaultSourceEditorOptions.Instance.UseViModes = useViModesCheck.Active;
 			DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = checkbuttonOnTheFlyFormatting.Active;
 			DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep = checkbuttonGenerateFormattingUndoStep.Active;

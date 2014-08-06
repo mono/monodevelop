@@ -325,16 +325,41 @@ namespace MonoDevelop.VersionControl.Tests
 		// Tests Repository.MoveFile.
 		public virtual void MovesFile ()
 		{
-			string src = LocalPath + "testfile";
-			string dst = src + "2";
+			string src;
+			string dst;
+			VersionInfo srcVi;
+			VersionInfo dstVi;
 
+			// Versioned file.
 			AddFile ("testfile", null, true, true);
+			src = LocalPath + "testfile";
+			dst = src + "2";
 			Repo.MoveFile (src, dst, false, new NullProgressMonitor ());
-			VersionInfo srcVi = Repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
-			VersionInfo dstVi = Repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
-			const VersionStatus expectedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
-			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & expectedStatus);
+			srcVi = Repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
+			dstVi = Repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
+			const VersionStatus versionedStatus = VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+			Assert.AreNotEqual (VersionStatus.Unversioned, srcVi.Status & versionedStatus);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
+
+			// Just added file.
+			AddFile ("addedfile", null, true, false);
+			src = LocalPath + "addedfile";
+			dst = src + "2";
+			Repo.MoveFile (src, dst, false, new NullProgressMonitor ());
+			srcVi = Repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
+			dstVi = Repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, srcVi.Status);
+			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
+
+			// Non versioned file.
+			AddFile ("unversionedfile", null, false, false);
+			src = LocalPath + "unversionedfile";
+			dst = src + "2";
+			Repo.MoveFile (src, dst, false, new NullProgressMonitor ());
+			srcVi = Repo.GetVersionInfo (src, VersionInfoQueryFlags.IgnoreCache);
+			dstVi = Repo.GetVersionInfo (dst, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, srcVi.Status);
+			Assert.AreEqual (VersionStatus.Unversioned, dstVi.Status);
 		}
 
 		[Test]
@@ -357,29 +382,91 @@ namespace MonoDevelop.VersionControl.Tests
 			Assert.AreEqual (VersionStatus.ScheduledAdd, dstVi.Status & VersionStatus.ScheduledAdd);
 		}
 
+		void DeleteFileTestHelper (bool keepLocal)
+		{
+			VersionInfo vi;
+			string added;
+			string postFix = keepLocal ? "2" : "";
+			// Versioned file.
+			added = LocalPath + "testfile1" + postFix;
+			AddFile ("testfile1" + postFix, null, true, true);
+			Repo.DeleteFile (added, true, new NullProgressMonitor (), keepLocal);
+			vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.ScheduledDelete, vi.Status & VersionStatus.ScheduledDelete);
+			Assert.AreEqual (keepLocal, File.Exists (added));
+
+			// Just added file.
+			added = LocalPath + "testfile2" + postFix;
+			AddFile ("testfile2" + postFix, null, true, false);
+			Repo.DeleteFile (added, true, new NullProgressMonitor (), keepLocal);
+			vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, vi.Status);
+			Assert.AreEqual (keepLocal, File.Exists (added));
+
+			// Non versioned file.
+			added = LocalPath + "testfile3" + postFix;
+			AddFile ("testfile3" + postFix, null, false, false);
+			Repo.DeleteFile (added, true, new NullProgressMonitor (), keepLocal);
+			vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, vi.Status);
+			Assert.AreEqual (keepLocal, File.Exists (added));
+		}
+
 		[Test]
 		// Tests Repository.DeleteFile.
 		public virtual void DeletesFile ()
 		{
-			string added = LocalPath + "testfile";
-			AddFile ("testfile", null, true, true);
-			Repo.DeleteFile (added, true, new NullProgressMonitor ());
-			VersionInfo vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			DeleteFileTestHelper (false);
+			DeleteFileTestHelper (true);
+		}
+
+		void DeleteTestDirectoryHelper (bool keepLocal)
+		{
+			VersionInfo vi;
+			string addedDir;
+			string added;
+			string postFix = keepLocal ? "2" : "";
+
+			// Versioned directory.
+			addedDir = LocalPath + "test1" + postFix;
+			added = addedDir + Path.DirectorySeparatorChar + "testfile";
+			AddDirectory ("test1" + postFix, true, false);
+			AddFile ("test1" + postFix + Path.DirectorySeparatorChar + "testfile", null, true, true);
+
+			Repo.DeleteDirectory (addedDir, true, new NullProgressMonitor (), keepLocal);
+			vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
 			Assert.AreEqual (VersionStatus.ScheduledDelete, vi.Status & VersionStatus.ScheduledDelete);
+			Assert.AreEqual (keepLocal, File.Exists (added));
+
+			// Just added directory.
+			addedDir = LocalPath + "test2" + postFix;
+			added = addedDir + Path.DirectorySeparatorChar + "testfile";
+			AddDirectory ("test2" + postFix, true, false);
+			AddFile ("test2" + postFix + Path.DirectorySeparatorChar + "testfile", null, true, false);
+
+			Repo.DeleteDirectory (addedDir, true, new NullProgressMonitor (), keepLocal);
+			vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, vi.Status);
+			Assert.AreEqual (keepLocal, File.Exists (added));
+
+			// Non versioned file.
+			addedDir = LocalPath + "test3" + postFix;
+			added = addedDir + Path.DirectorySeparatorChar + "testfile";
+			AddDirectory ("test3" + postFix, true, false);
+			AddFile ("test3" + postFix + Path.DirectorySeparatorChar + "testfile", null, false, false);
+
+			Repo.DeleteDirectory (addedDir, true, new NullProgressMonitor (), keepLocal);
+			vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
+			Assert.AreEqual (VersionStatus.Unversioned, vi.Status);
+			Assert.AreEqual (keepLocal, File.Exists (added));
 		}
 
 		[Test]
 		// Tests Repository.DeleteDirectory.
 		public virtual void DeletesDirectory ()
 		{
-			string addedDir = LocalPath + "test";
-			string added = addedDir + Path.DirectorySeparatorChar + "testfile";
-			AddDirectory ("test", true, false);
-			AddFile ("testfile", null, true, true);
-
-			Repo.DeleteDirectory (addedDir, true, new NullProgressMonitor ());
-			VersionInfo vi = Repo.GetVersionInfo (added, VersionInfoQueryFlags.IgnoreCache);
-			Assert.AreEqual (VersionStatus.ScheduledDelete, vi.Status & VersionStatus.ScheduledDelete);
+			DeleteTestDirectoryHelper (false);
+			DeleteTestDirectoryHelper (true);
 		}
 
 		[Test]

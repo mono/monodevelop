@@ -107,11 +107,22 @@ namespace MonoDevelop.Ide.FindInFiles
 		{
 			if (IdeApp.Workspace.IsOpen) {
 				var alreadyVisited = new HashSet<string> ();
+				foreach (var solutionFolder in IdeApp.Workspace.GetAllSolutionItems().OfType<SolutionFolder>()) {
+					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in solution folder '{0}'", solutionFolder.Name));
+					foreach (var file in solutionFolder.Files.Where (f => filterOptions.NameMatches (f.FileName) && File.Exists (f.FullPath))) {
+						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FullPath))
+							continue;
+						if (alreadyVisited.Contains (file.FullPath))
+							continue;
+						alreadyVisited.Add (file.FileName);
+						yield return new FileProvider (file.FullPath);
+					}
+				}
 				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 					foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
 						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FilePath))
-								continue;
+							continue;
 						if (alreadyVisited.Contains (file.Name))
 							continue;
 						alreadyVisited.Add (file.Name);
