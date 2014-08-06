@@ -52,17 +52,17 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		LabeledColorButton colorbuttonPrimary = new LabeledColorButton ("Primary");
 		LabeledColorButton colorbuttonSecondary = new LabeledColorButton ("Secondary");
 		LabeledColorButton colorbuttonBorder = new LabeledColorButton ("Border");
-		ToggleButton togglebuttonBold = new ToggleButton ("B"){ Style = ButtonStyle.Flat };
-		ToggleButton togglebuttonItalic = new ToggleButton ("I"){ Style = ButtonStyle.Flat };
-		ToggleButton buttonFormat = new ToggleButton ("FBP"){ Style = ButtonStyle.Flat };
+		ToggleButton togglebuttonBold = new ToggleButton (ImageService.GetIcon (Stock.BoldIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
+		ToggleButton togglebuttonItalic = new ToggleButton (ImageService.GetIcon (Stock.ItalicIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
+		ToggleButton buttonFormat = new ToggleButton (ImageService.GetIcon (Stock.ColorPickerIcon).WithSize (Xwt.IconSize.Medium)){ Style = ButtonStyle.Flat };
 		TextEntry entryName = new TextEntry ();
 		TextEntry entryDescription = new TextEntry ();
 		SearchTextEntry searchEntry = new SearchTextEntry (){ PlaceholderText = "Type here..." };
-		Button undoButton = new Button (ImageService.GetIcon (Stock.UndoIcon).WithSize (Xwt.IconSize.Small)) {
+		Button undoButton = new Button (ImageService.GetIcon (Stock.UndoIcon).WithSize (Xwt.IconSize.Medium)) {
 			Sensitive = false,
 			Style = ButtonStyle.Flat
 		};
-		Button redoButton = new Button (ImageService.GetIcon (Stock.RedoIcon).WithSize (Xwt.IconSize.Small)) {
+		Button redoButton = new Button (ImageService.GetIcon (Stock.RedoIcon).WithSize (Xwt.IconSize.Medium)) {
 			Sensitive = false,
 			Style = ButtonStyle.Flat
 		};
