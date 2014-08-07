@@ -45,6 +45,11 @@ namespace MonoDevelop.Ide.Editor.Extension
 			ModifierKeys = modifierKeys;
 		}
 
+		public override string ToString ()
+		{
+			return string.Format ("[KeyDescriptor: SpecialKey={0}, KeyChar={1}, ModifierKeys={2}]", SpecialKey, KeyChar, ModifierKeys);
+		}
+
 		#region GTK
 		public static KeyDescriptor FromGtk (Gdk.Key key, char ch, Gdk.ModifierType state)
 		{
@@ -122,18 +127,21 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		public static KeyDescriptor FromMac (char ch, NSEventModifierMask state)
 		{
-			return new KeyDescriptor (ConvertKey (ch), ch, ConvertModifiers (state));
+			var specialKey = ConvertKey (ref ch);
+			var keyDescriptor = new KeyDescriptor (specialKey, ch, ConvertModifiers (state));
+			return keyDescriptor;
 		}
 
-		static SpecialKey ConvertKey (char ch)
+		static SpecialKey ConvertKey (ref char ch)
 		{
 			if (ch == '\n' || ch == '\r')
 				return SpecialKey.Return;
 			if (ch == '\t')
 				return SpecialKey.Tab;
-			if (ch == '\b')
+			if (ch == '\b' || ch == (char)127) {
+				ch = '\b';
 				return SpecialKey.BackSpace;
-
+			}
 			switch ((NSKey)ch) {
 			case NSKey.Delete:
 				return SpecialKey.BackSpace;
