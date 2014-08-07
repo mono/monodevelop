@@ -147,6 +147,7 @@ namespace GitHub.Issues
 		{
 			Gtk.HBox mainSplit = new Gtk.HBox (false, 5);
 
+			Gtk.HBox headerContainer = new Gtk.HBox ();
 			Gtk.VBox labelsPanel = new Gtk.VBox (false, 5);
 			Gtk.VBox detailsPanel = new Gtk.VBox (false, 5);
 			Gtk.VBox commentsPanel = new Gtk.VBox (false, 5);
@@ -154,6 +155,13 @@ namespace GitHub.Issues
 			Gtk.Table labelsTable = new Gtk.Table (1, 1, false);
 			Gtk.Table detailsTable = new Gtk.Table (5, 2, false);
 
+			//******************************HEADER PANEL************************************
+			headerContainer.Add (LayoutUtilities.SetPadding(this.commonControlsFactory.CreateButton (StringResources.Save, this.SaveIssueDetailsHandler), 3, 3, 3, 0));
+
+			Gtk.EventBox headerEventBox = new Gtk.EventBox ();
+			headerEventBox.Add (LayoutUtilities.LeftAlign (headerContainer));
+			headerEventBox.ModifyBg (Gtk.StateType.Normal, ThemeColors.HeaderBarColor);
+			
 			Gtk.AttachOptions xOptions = Gtk.AttachOptions.Fill;
 			Gtk.AttachOptions yOptions = Gtk.AttachOptions.Expand;
 
@@ -254,13 +262,13 @@ namespace GitHub.Issues
 
 			mainSplit.PackStart (detailsPanel, false, true, 0);
 			mainSplit.PackStart (labelsPanel, false, true, 0);
-			mainSplit.PackStart (commentsPanel, true, true, 0);
+			mainSplit.PackStart (LayoutUtilities.SetPadding(LayoutUtilities.StretchXAlign(commentsPanel), 0, 0, 0, 10), true, true, 0);
 
 			// Bind details panel to use 40% of the main panels width
 			LayoutUtilities.SetUpWidthBinding (mainSplit, detailsPanel, 0.4);
 
 			// Header and Body type of layout
-			verticalSplit.PackStart (LayoutUtilities.LeftAlign (this.commonControlsFactory.CreateButton (StringResources.Save, this.SaveIssueDetailsHandler)), false, true, 5);
+			verticalSplit.PackStart (headerEventBox, false, true, 0);
 			verticalSplit.PackStart (mainSplit, true, true, 5);
 
 			this.Add (verticalSplit);

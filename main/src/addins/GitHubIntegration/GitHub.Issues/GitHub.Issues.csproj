@@ -107,6 +107,9 @@
     <Compile Include="Views\LabelsWidget.cs" />
     <Compile Include="gtk-gui\GitHub.Issues.LabelsWidget.cs" />
     <Compile Include="Views\LabelsView.cs" />
+    <Compile Include="Utilities\CachingUtility.cs" />
+    <Compile Include="Utilities\CacheItem.cs" />
+    <Compile Include="Utilities\ThemeColors.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

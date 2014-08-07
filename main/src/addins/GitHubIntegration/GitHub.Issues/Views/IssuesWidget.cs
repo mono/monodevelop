@@ -101,22 +101,27 @@ namespace GitHub.Issues
 			bool fill = false;
 			uint padding = 0;
 
-			Gtk.VBox mainContainer = new Gtk.VBox (false, 10);
+			Gtk.VBox mainContainer = new Gtk.VBox (false, 0);
 			Gtk.HBox headerContainer = new Gtk.HBox ();
 			Gtk.HBox tablesContainer = new Gtk.HBox ();
 			Gtk.VBox columnsSelectionContainer = new Gtk.VBox ();
 
-			headerContainer.Add (updateIssueListButton);
-			headerContainer.Add (createNewIssueButton);
-			headerContainer.Add (manageLabelsButton);
+			headerContainer.Add (LayoutUtilities.SetPadding(updateIssueListButton, 3, 3, 3, 0));
+			headerContainer.Add (LayoutUtilities.SetPadding(createNewIssueButton, 3, 3, 0, 0));
+			headerContainer.Add (LayoutUtilities.SetPadding(manageLabelsButton, 3, 3, 0, 0));
+
+			Gtk.EventBox headerEventBox = new Gtk.EventBox ();
+			headerEventBox.Add (LayoutUtilities.LeftAlign (headerContainer));
+			headerEventBox.ModifyBg (Gtk.StateType.Normal, ThemeColors.HeaderBarColor);
 
 			columnsSelectionContainer.PackStart (columnListView, true, true, padding);
 
 			tablesContainer.PackStart (columnsSelectionContainer, expand, fill, padding);
-			tablesContainer.PackStart (issueTable, true, true, 10);
+
+			tablesContainer.PackStart (LayoutUtilities.SetPadding(LayoutUtilities.StretchXAlign(issueTable), 0, 0, 10, 0), true, true, 0);
 
 			// Add the layout to the main container
-			mainContainer.PackStart (LayoutUtilities.LeftAlign (headerContainer), expand, fill, padding);
+			mainContainer.PackStart (headerEventBox, false, false, 0);
 			mainContainer.PackStart (tablesContainer, true, true, padding);
 
 			// Add main container to screen/widget
@@ -563,7 +568,8 @@ namespace GitHub.Issues
 				// Here we will store string representations of the selected column names
 				List<KeyValuePair<String, Int32>> selectedColumns = new List<KeyValuePair<String, Int32>> ();
 
-				int currentRowCount = 0;
+				// 0 contains the Octokit.Issue reference, 1 and above are all details
+				int currentRowCount = 1;
 
 				while (rowEnumerator.MoveNext ()) {
 					// 0 - Title, 1 - Property, 2 - Display?, 3 - Filter Value
@@ -596,13 +602,13 @@ namespace GitHub.Issues
 
 				List<KeyValuePair<String, Int32>> columnsIndexesAndFilterValues = new List<KeyValuePair<String, Int32>> ();
 
-				int currentRowCount = 0;
+				int currentRowCount = 1;
 
 				while (rowEnumerator.MoveNext ()) {
-					// 0 - Title, 1 - Property, 2 - Display?, 3 - Filter Value
 					Array currentRow = (Array)rowEnumerator.Current;
 
 					// Get column filter value and the row index
+					// 0 - Title, 1 - Property, 2 - Display?, 3 - Filter Value
 					columnsIndexesAndFilterValues.Add (new KeyValuePair<string, int> ((String)currentRow.GetValue (3), currentRowCount));
 
 					// Keep track of column indexes - used for correct mapping to columns in store
@@ -645,6 +651,7 @@ namespace GitHub.Issues
 		{
 			List<KeyValuePair<String, Int32>> columns = new List<KeyValuePair<string, int>> ();
 
+			// 0 stores the reference of the Octokit.Issue, details start at 1
 			int columnCount = 1;
 
 			// Add all properties as columns

@@ -35,31 +35,34 @@ namespace GitHub.Issues
 
 			this.comment = comment;
 
-			Gtk.VBox mainContainer = new Gtk.VBox ();
-
-			Gtk.HBox topPanel = new Gtk.HBox ();
-
 			this.deleteButtonHandler = deleteButtonHandler;
 
-			topPanel.Add (this.padWidget (this.leftAlign (this.createOwnerTextBox (comment)), 10, 0, 0, 10));
+			Gtk.VBox mainContainer = new Gtk.VBox ();
+			Gtk.HBox topPanel = new Gtk.HBox ();
+			Gtk.HBox ownerContainer = new Gtk.HBox (false, 3);
+
+			ownerContainer.Add (this.CreateOwnerPicture (comment));
+			ownerContainer.Add (this.CreateOwnerHyperlink (comment));
+
+			topPanel.Add (this.PadWidget (this.LeftAlign (ownerContainer), 10, 0, 0, 10));
 
 			// Contains the date and time of writting and the delete button
 			Gtk.HBox dateAndDeleteContainer = new Gtk.HBox ();
-			dateAndDeleteContainer.Add (this.createCommentDateTextBox (comment));
-			dateAndDeleteContainer.Add (this.padWidget (this.rightAlign (this.createDeleteButton (this.DeleteButtonHandler)), 10, 0, 5, 10));
+			dateAndDeleteContainer.Add (this.CreateCommentDateLabel (comment));
+			dateAndDeleteContainer.Add (this.PadWidget (this.RightAlign (this.CreateDeleteButton (this.DeleteButtonHandler)), 10, 0, 5, 10));
 
-			topPanel.Add (this.padWidget (this.rightAlign (dateAndDeleteContainer), 10, 0, 0, 0));
+			topPanel.Add (this.PadWidget (this.RightAlign (dateAndDeleteContainer), 10, 0, 0, 0));
 
 			mainContainer.Add (topPanel);
 
-			Gtk.Label commentBox = this.createCommentBox (comment);
+			Gtk.Label commentBox = this.CreateCommentBox (comment);
 
 			// Bind the width to the parent size
 			mainContainer.SizeAllocated += (object o, Gtk.SizeAllocatedArgs args) => {
 				commentBox.WidthRequest = args.Allocation.Width;
 			};
 
-			mainContainer.Add (this.padWidget (commentBox, 10, 10, 0, 10));
+			mainContainer.Add (this.PadWidget (commentBox, 10, 10, 0, 10));
 			mainContainer.Add (new Gtk.HSeparator ());
 
 			this.Add (mainContainer);
@@ -72,11 +75,11 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The owner text box.</returns>
 		/// <param name="comment">Comment.</param>
-		private Gtk.Label createOwnerTextBox (Octokit.IssueComment comment)
+		private Gtk.LinkButton CreateOwnerHyperlink (Octokit.IssueComment comment)
 		{
-			Gtk.Label owner = new Gtk.Label (comment.User.Login);
+			Gtk.LinkButton link = new Gtk.LinkButton (comment.User.Url, comment.User.Login);
 
-			return owner;
+			return link;
 		}
 
 		/// <summary>
@@ -84,7 +87,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The comment date text box.</returns>
 		/// <param name="comment">Comment.</param>
-		private Gtk.Label createCommentDateTextBox (Octokit.IssueComment comment)
+		private Gtk.Label CreateCommentDateLabel (Octokit.IssueComment comment)
 		{
 			Gtk.Label date = new Gtk.Label (comment.CreatedAt.DateTime.ToString ());
 
@@ -96,7 +99,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The comment box.</returns>
 		/// <param name="comment">Comment.</param>
-		private Gtk.Label createCommentBox (Octokit.IssueComment comment)
+		private Gtk.Label CreateCommentBox (Octokit.IssueComment comment)
 		{
 			Gtk.Label commentBox = new Gtk.Label (comment.Body);
 			commentBox.LineWrapMode = Pango.WrapMode.WordChar;
@@ -110,9 +113,21 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The delete button.</returns>
 		/// <param name="handler">Handler.</param>
-		private Gtk.Button createDeleteButton (EventHandler handler)
+		private Gtk.Button CreateDeleteButton (EventHandler handler)
 		{
 			return this.controlFactory.CreateButton ("X", handler);
+		}
+
+		/// <summary>
+		/// Creates the owner picture.
+		/// </summary>
+		/// <returns>The owner picture.</returns>
+		/// <param name="comment">Comment.</param>
+		private Gtk.Image CreateOwnerPicture (Octokit.IssueComment comment)
+		{
+			Gtk.Image image = this.controlFactory.CreateAvatarImage (comment.User, true, 30, 30);
+
+			return image;
 		}
 
 		#endregion
@@ -124,7 +139,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The align.</returns>
 		/// <param name="widget">Widget.</param>
-		private Gtk.Alignment leftAlign (Gtk.Widget widget)
+		private Gtk.Alignment LeftAlign (Gtk.Widget widget)
 		{
 			Gtk.Alignment alignment = new Gtk.Alignment (0, 0, 0, 0);
 			alignment.Add (widget);
@@ -137,7 +152,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The align.</returns>
 		/// <param name="widget">Widget.</param>
-		private Gtk.Alignment rightAlign (Gtk.Widget widget)
+		private Gtk.Alignment RightAlign (Gtk.Widget widget)
 		{
 			Gtk.Alignment alignment = new Gtk.Alignment (1, 0, 0, 0);
 			alignment.Add (widget);
@@ -150,9 +165,9 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The top and bottom.</returns>
 		/// <param name="widget">Widget.</param>
-		private Gtk.Alignment padWidget (Gtk.Widget widget, uint topPadding, uint bottomPadding, uint leftPadding, uint rightPadding)
+		private Gtk.Alignment PadWidget (Gtk.Widget widget, uint topPadding, uint bottomPadding, uint leftPadding, uint rightPadding)
 		{
-			Gtk.Alignment alignment = this.leftAlign (widget);
+			Gtk.Alignment alignment = this.LeftAlign (widget);
 
 			alignment.TopPadding = topPadding;
 			alignment.BottomPadding = bottomPadding;
@@ -167,7 +182,7 @@ namespace GitHub.Issues
 		/// </summary>
 		/// <returns>The top and bottom.</returns>
 		/// <param name="widget">Widget.</param>
-		private Gtk.Alignment padWidget (Gtk.Alignment alignment, uint topPadding, uint bottomPadding, uint leftPadding, uint rightPadding)
+		private Gtk.Alignment PadWidget (Gtk.Alignment alignment, uint topPadding, uint bottomPadding, uint leftPadding, uint rightPadding)
 		{
 			alignment.TopPadding = topPadding;
 			alignment.BottomPadding = bottomPadding;

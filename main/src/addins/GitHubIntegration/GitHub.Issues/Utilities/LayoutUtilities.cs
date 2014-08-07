@@ -62,6 +62,19 @@ namespace GitHub.Issues
 		}
 
 		/// <summary>
+		/// Stretchs the X align.
+		/// </summary>
+		/// <returns>The X align.</returns>
+		/// <param name="widget">Widget.</param>
+		public static Gtk.Alignment StretchXAlign (Gtk.Widget widget)
+		{
+			Gtk.Alignment alignment = new Gtk.Alignment (0, 0, 1, 0);
+			alignment.Add (widget);
+
+			return alignment;
+		}
+
+		/// <summary>
 		/// Sets uniform padding for a given control
 		/// </summary>
 		/// <returns>The padding.</returns>

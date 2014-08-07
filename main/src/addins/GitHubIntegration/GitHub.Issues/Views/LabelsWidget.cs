@@ -52,9 +52,13 @@ namespace GitHub.Issues
 			this.saveLabelButton = this.CreateSaveLabelButton ();
 			this.deleteLabelButton = this.CreateDeleteLabelButton ();
 
-			headerContainer.Add (this.createNewLabelButton);
-			headerContainer.Add (this.saveLabelButton);
-			headerContainer.Add (this.deleteLabelButton);
+			headerContainer.Add (LayoutUtilities.SetPadding(this.createNewLabelButton, 3, 3, 3, 0));
+			headerContainer.Add (LayoutUtilities.SetPadding(this.saveLabelButton, 3, 3, 0, 0));
+			headerContainer.Add (LayoutUtilities.SetPadding(this.deleteLabelButton, 3, 3, 0, 0));
+
+			Gtk.EventBox headerEventBox = new Gtk.EventBox ();
+			headerEventBox.Add (LayoutUtilities.LeftAlign (headerContainer));
+			headerEventBox.ModifyBg (Gtk.StateType.Normal, ThemeColors.HeaderBarColor);
 
 			// *************** Left labels panel *******************
 			Gtk.VBox labelsPanel = new Gtk.VBox ();
@@ -87,7 +91,7 @@ namespace GitHub.Issues
 			mainSplit.PackStart (labelsPanel, false, false, 5);
 			mainSplit.PackStart (detailsPanel, true, true, 5);
 
-			screenContainer.PackStart (LayoutUtilities.LeftAlign (headerContainer), false, false, 0);
+			screenContainer.PackStart (headerEventBox, false, false, 0);
 			screenContainer.PackStart (mainSplit, true, true, 0);
 
 			this.Add (screenContainer);

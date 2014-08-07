@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace GitHub.Issues
 {
@@ -170,6 +171,48 @@ namespace GitHub.Issues
 			comboBox.Changed += changedHandler;
 
 			return comboBox;
+		}
+
+		/// <summary>
+		/// Creates the avatar image.
+		/// </summary>
+		/// <returns>The avatar image.</returns>
+		/// <param name="user">User.</param>
+		/// <param name="scale">Determines whether to scale the image or not.</param>
+		/// <param name="height">Height to scale to.</param>
+		/// <param name="width">Width to scale to.</param>
+		public Gtk.Image CreateAvatarImage (Octokit.User user, bool scale, int height, int width)
+		{
+			Gdk.Pixbuf image = (Gdk.Pixbuf)CachingUtility.GetCachedItem (user.AvatarUrl);
+
+			// If not cached
+			if (image == null) {
+				// Image is not cached so we need to make a request for it
+				WebRequest request = WebRequest.Create (user.AvatarUrl);
+
+				if (request != null) {
+					WebResponse response = request.GetResponse ();
+
+					image = new Gdk.Pixbuf (response.GetResponseStream ());
+
+					// Need to cache the image now to save time in requesting it multiple times next time
+					CachingUtility.CacheItem (user.AvatarUrl, image, CachingUtility.DefaultLifeTime);
+				}
+			}
+
+			if (image != null) {
+				// We cached before scaling the image in case we need to scale to different sizes later
+				if (scale) {
+					// The scaling interpretation type can be adjusted if it becomes a performance issue
+					image = image.ScaleSimple (width, height, Gdk.InterpType.Tiles);
+				}
+
+				// Create an return the image widget with the loaded image
+				return new Gtk.Image (image);
+			}
+
+			// Unable to get the image
+			return null;
 		}
 	}
 }
