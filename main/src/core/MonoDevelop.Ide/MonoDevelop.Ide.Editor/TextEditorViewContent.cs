@@ -521,6 +521,14 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 		}
+
+
+
+		[CommandHandler (EditCommands.InsertGuid)]
+		void InsertGuid ()
+		{
+			textEditor.InsertAtCaret (Guid.NewGuid ().ToString ());
+		}
 		#endregion
 	
 	}

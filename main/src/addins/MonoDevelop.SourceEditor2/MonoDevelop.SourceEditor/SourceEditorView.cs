@@ -2457,12 +2457,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			MiscActions.RemoveTab (widget.TextEditor.GetTextEditorData ());
 		}
-		
-		[CommandHandler (EditCommands.InsertGuid)]
-		public void InsertGuid ()
-		{
-			TextEditor.InsertAtCaret (Guid.NewGuid ().ToString ());
-		}
 
 		[CommandHandler (SourceEditorCommands.NextIssue)]
 		void NextIssue ()
