@@ -53,4 +53,11 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
+      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
+    </PropertyGroup>
+    <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
+  </Target>
 </Project>
