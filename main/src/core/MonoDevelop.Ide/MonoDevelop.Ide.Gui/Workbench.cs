@@ -1081,7 +1081,7 @@ namespace MonoDevelop.Ide.Gui
 
 			foreach (var doc in list) {
 				string fileName = baseDir.Combine (doc.FileName).FullPath;
-				if (File.Exists (fileName)) {
+				if (GetDocument(fileName) == null && File.Exists (fileName)) {
 					if (doc.NotebookId != currentNotebook) {
 						if (currentNotebook != -1 || nb == null)
 							nb = container.InsertRight (null);
