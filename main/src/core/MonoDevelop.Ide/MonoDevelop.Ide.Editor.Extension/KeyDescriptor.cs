@@ -142,6 +142,9 @@ namespace MonoDevelop.Ide.Editor.Extension
 				ch = '\b';
 				return SpecialKey.BackSpace;
 			}
+			if (ch == (char)27) {
+				return SpecialKey.Escape;
+			}
 			switch ((NSKey)ch) {
 			case NSKey.Delete:
 				return SpecialKey.BackSpace;

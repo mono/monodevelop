@@ -120,7 +120,7 @@ namespace MonoDevelop.Components
 		{
 			double r = 0, g = 0, b = 0;
 			hsl.ToRgb (out r, out g, out b);
-			return AppKit.NSColor.FromCalibratedRgba ((nfloat)r, (nfloat)g, (nfloat)b, (nfloat)1.0);
+			return AppKit.NSColor.FromDeviceRgba ((nfloat)r, (nfloat)g, (nfloat)b, (nfloat)1.0);
 		}
 
 
