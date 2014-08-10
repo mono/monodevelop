@@ -122,7 +122,7 @@ namespace GitHub.Repository.Commands
 			string content = doc.Editor.Text;
 			string gistFileName = doc.Name + "-" + DateTime.Now.ToString ();
 			var obj = new OctokitHelper ();
-			obj.GistThis (gistFileName, content);
+			obj.GistThis ("asdsd", content);
 		}
 
 	}
@@ -136,7 +136,7 @@ namespace GitHub.Repository.Commands
 			string gistFileName = doc.FileName.FileName + "-" + DateTime.Now.ToString ();
 			var obj = new OctokitHelper ();
 
-			obj.GistThis (gistFileName , content);
+			obj.GistThis ("asd" , content);
 		}
 
 
