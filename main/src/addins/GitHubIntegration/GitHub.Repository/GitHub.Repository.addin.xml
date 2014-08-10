@@ -27,6 +27,12 @@
 				defaultHandler = "GitHub.Repository.Commands.GistThisHandler"
 				description = "Gist this document"/>
 
+			<Command id = "GitHub.Repository.Commands.CopyURLInGitToClipboad"
+				_label = "Clipboard Github URL"
+				icon = "github-icon"
+				defaultHandler = "GitHub.Repository.Commands.CopyURLInGitHubHandler"
+				description = "Gist this document"/>
+
 			<Command id = "GitHub.Repository.Commands.GistThisSelection"
 				_label = "_Gist This selection"
 				icon = "github-icon"
@@ -54,6 +60,8 @@
 		<ItemSet id = "GitHubRepository" _label = "_GitHub">
 			<CommandItem id="GitHub.Repository.Commands.GistThis"/>
 			<CommandItem id="GitHub.Repository.Commands.GistThisSelection"/>
+			<CommandItem id="GitHub.Repository.Commands.CopyURLInGitToClipboad"/>
+
 		</ItemSet>
 	</Extension>
 

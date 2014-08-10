@@ -37,6 +37,7 @@ using GitHub.Repository.Core;
 using System.IO;
 using System.Collections.Generic;
 using Mono.TextEditor;
+using Gtk;
 
 namespace GitHub.Repository.Commands
 {
@@ -119,8 +120,9 @@ namespace GitHub.Repository.Commands
 			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			Document doc = SelectedDocument;
 			string content = doc.Editor.Text;
+			string gistFileName = doc.Name + "-" + DateTime.Now.ToString ();
 			var obj = new OctokitHelper ();
-			obj.GistThis (doc.FileName, content);
+			obj.GistThis (gistFileName, content);
 		}
 
 	}
@@ -128,14 +130,43 @@ namespace GitHub.Repository.Commands
 	class GistThisSelectedOnlyHandler : GitHubCommandHandler {
 		protected override void Run ()
 		{
-			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			//MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			Document doc = SelectedDocument;
 			string content = doc.Editor.SelectedText;
+			string gistFileName = doc.FileName.FileName + "-" + DateTime.Now.ToString ();
 			var obj = new OctokitHelper ();
-			obj.GistThis (doc.FileName, content);
+
+			obj.GistThis (gistFileName , content);
 		}
 
 
+	}
+
+	class CopyURLInGitHubHandler : GitHubCommandHandler
+	{
+		protected override void Run ()
+		{
+			string repositoryURL = this.Repository.GetCurrentRemote();
+			string locationUri = this.Repository.LocationDescription;
+			var wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.BaseDirectory.FileName;
+
+			Octokit.Repository repo = this.ORepository;
+
+			string url = repo.GitUrl.Substring (0, (repo.GitUrl.Length- 4));
+
+
+			Document document = this.SelectedDocument;
+			string fileName = document.FileName;
+
+
+			IEnumerable<DocumentLine> selectedDocumentLines = document.Editor.SelectedLines;
+
+			
+			Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+			clipboard.Text = "praveena";
+			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
+			clipboard.Text = "praveena1";
+		}
 	}
 }
 
