@@ -46,6 +46,11 @@ namespace MonoDevelop.Components
 			get;
 			set;
 		}
+
+		public double Alpha {
+			get;
+			set;
+		}
 		
 		void ToRgb(out double r, out double g, out double b)
 		{
@@ -96,7 +101,7 @@ namespace MonoDevelop.Components
 		{
 			double r = 0, g = 0, b = 0;
 			hsl.ToRgb (out r, out g, out b);
-			return new Cairo.Color (r, g, b);
+			return new Cairo.Color (r, g, b, hsl.Alpha);
 		}
 
 		public static implicit operator HslColor (Color color)
@@ -129,7 +134,7 @@ namespace MonoDevelop.Components
 		
 		public static HslColor FromHsl (double h, double s, double l)
 		{
-			return new HslColor () {
+			return new HslColor {
 				H = h,
 				S = s,
 				L = l
@@ -154,7 +159,7 @@ namespace MonoDevelop.Components
 			return new HslColor (r, g, b);
 		}
 		
-		public HslColor (double r, double g, double b) : this ()
+		public HslColor (double r, double g, double b, double a = 1.0) : this ()
 		{
 			double v = System.Math.Max (r, g);
 			v = System.Math.Max (v, b);
@@ -186,13 +191,15 @@ namespace MonoDevelop.Components
 				this.H = (r == m ? 3.0 + g2 : 5.0 - r2);
 			}
 			this.H /= 6.0;
+
+			this.Alpha = a;
 		}
 		
 		public HslColor (Color color) : this (color.Red / (double)ushort.MaxValue, color.Green / (double)ushort.MaxValue, color.Blue / (double)ushort.MaxValue)
 		{
 		}
 		
-		public HslColor (Cairo.Color color) : this (color.R, color.G, color.B)
+		public HslColor (Cairo.Color color) : this (color.R, color.G, color.B, color.A)
 		{
 		}
 		
@@ -249,9 +256,9 @@ namespace MonoDevelop.Components
 		
 		public override string ToString ()
 		{
-			return string.Format ("[HslColor: H={0}, S={1}, L={2}]", H, S, L);
+			return string.Format ("[HslColor: H={0}, S={1}, L={2}, A={3}]", H, S, L, Alpha);
 		}
-		
+
 		public string ToPangoString ()
 		{
 			var resultColor = (Cairo.Color)this;
@@ -259,6 +266,19 @@ namespace MonoDevelop.Components
 				(int)(resultColor.R * 255),
 				(int)(resultColor.G * 255), 
 				(int)(resultColor.B * 255));
+		}
+
+
+		public string ToMarkup ()
+		{
+			if (Alpha == 1.0)
+				return ToPangoString ();
+			var resultColor = (Cairo.Color)this;
+			return string.Format ("#{0:x2}{1:x2}{2:x2}{3:x2}",
+				(int)(resultColor.R * 255),
+				(int)(resultColor.G * 255), 
+				(int)(resultColor.B * 255), 
+				(int)(resultColor.A * 255));
 		}
 	}
 }

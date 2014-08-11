@@ -27,6 +27,7 @@
 using System;
 using Mono.TextEditor;
 using System.Collections.Generic;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
@@ -110,7 +111,7 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		Cairo.Color MonoDevelop.Ide.Editor.IGenericTextSegmentMarker.Color {
+		HslColor MonoDevelop.Ide.Editor.IGenericTextSegmentMarker.Color {
 			get {
 				throw new NotSupportedException ();
 			}

@@ -31,15 +31,16 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Reflection;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Editor.Highlighting
 {
 	public sealed class AmbientColor
 	{
 		public string Name { get; private set; }
-		public readonly List<Tuple<string, Cairo.Color>> Colors = new List<Tuple<string, Cairo.Color>> ();
+		public readonly List<Tuple<string, HslColor>> Colors = new List<Tuple<string, HslColor>> ();
 
-		public Cairo.Color Color {
+		public HslColor Color {
 			get {
 				return GetColor ("color");
 			}
@@ -55,7 +56,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public Cairo.Color SecondColor {
+		public HslColor SecondColor {
 			get {
 				return GetColor ("secondcolor");
 			}
@@ -77,7 +78,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public Cairo.Color BorderColor {
+		public HslColor BorderColor {
 			get {
 				return GetColor ("bordercolor");
 			}
@@ -99,17 +100,17 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public Cairo.Color GetColor (string name)
+		public HslColor GetColor (string name)
 		{
 			foreach (var color in Colors) {
 				if (color.Item1 == name)
 					return color.Item2;
 			}
 
-			return new Cairo.Color (0, 0, 0);
+			return new HslColor (0, 0, 0);
 		}
 
-		public static AmbientColor Create (XElement element, Dictionary<string, Cairo.Color> palette)
+		public static AmbientColor Create (XElement element, Dictionary<string, HslColor> palette)
 		{
 			var result = new AmbientColor ();
 			foreach (var node in element.DescendantNodes ()) {

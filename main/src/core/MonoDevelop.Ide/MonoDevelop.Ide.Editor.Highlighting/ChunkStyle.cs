@@ -35,18 +35,18 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 	public sealed class ChunkStyle
 	{
 		public string Name { get; set; }
-		public Cairo.Color Foreground { get; set; }
-		public Cairo.Color Background { get; set; }
+		public HslColor Foreground { get; set; }
+		public HslColor Background { get; set; }
 
 		public bool TransparentForeground {
 			get {
-				return Foreground.A == 0.0;
+				return Foreground.Alpha == 0.0;
 
 			}
 		}
 		public bool TransparentBackground {
 			get {
-				return Background.A == 0.0;
+				return Background.Alpha == 0.0;
 			}
 		}
 
@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 
 		public ChunkStyle ()
 		{
-			Foreground = Background = new Cairo.Color (0, 0, 0, 0);
+			Foreground = Background = new HslColor (0, 0, 0, 0);
 			FontWeight = Xwt.Drawing.FontWeight.Normal;
 			FontStyle = Xwt.Drawing.FontStyle.Normal;
 		}
@@ -108,7 +108,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static ChunkStyle Create (XElement element, Dictionary<string, Cairo.Color> palette)
+		public static ChunkStyle Create (XElement element, Dictionary<string, HslColor> palette)
 		{
 			var result = new ChunkStyle ();
 
@@ -156,14 +156,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return new Gdk.GC (drawable) { RgbBgColor = (HslColor)Background, RgbFgColor = (HslColor)Foreground };
 		}
 
-		static string ColorToString (Cairo.Color cairoColor)
-		{
-			return "R:" + cairoColor.R + " G:" + cairoColor.G + " B:" + cairoColor.B + " A:" + cairoColor.A;
-		}
-
 		public override string ToString ()
 		{
-			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", Name, ColorToString (Foreground), ColorToString (Background), FontWeight, FontStyle);
+			return string.Format ("[ChunkStyle: Name={0}, CairoColor={1}, CairoBackgroundColor={2}, FontWeight={3}, FontStyle={4}]", Name, Foreground, Background, FontWeight, FontStyle);
 		}
 
 		public static ChunkStyle Import (string name, ColorScheme.VSSettingColor vsc)
@@ -173,7 +168,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			if (!string.IsNullOrEmpty (vsc.Foreground) && vsc.Foreground != "0x02000000") {
 				textColor.Foreground = ColorScheme.ImportVsColor (vsc.Foreground);
 				if (textColor.TransparentForeground && name != "Selected Text" && name != "Selected Text(Inactive)")
-					textColor.Foreground = new Cairo.Color (0, 0, 0);
+					textColor.Foreground = new HslColor (0, 0, 0);
 			}
 			if (!string.IsNullOrEmpty (vsc.Background) && vsc.Background != "0x02000000")
 				textColor.Background = ColorScheme.ImportVsColor (vsc.Background);

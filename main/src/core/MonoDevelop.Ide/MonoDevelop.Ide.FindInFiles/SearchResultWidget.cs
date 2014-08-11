@@ -554,7 +554,8 @@ namespace MonoDevelop.Ide.FindInFiles
 						searchColor = color1;
 					}
 					if (searchResult.StartIndex != searchResult.EndIndex) {
-						var attr = new Pango.AttrBackground ((ushort)(searchColor.R * ushort.MaxValue), (ushort)(searchColor.G * ushort.MaxValue), (ushort)(searchColor.B * ushort.MaxValue));
+						var sc = (Cairo.Color)searchColor;
+						var attr = new Pango.AttrBackground ((ushort)(sc.R * ushort.MaxValue), (ushort)(sc.G * ushort.MaxValue), (ushort)(sc.B * ushort.MaxValue));
 						attr.StartIndex = searchResult.StartIndex;
 						attr.EndIndex = searchResult.EndIndex;
 
