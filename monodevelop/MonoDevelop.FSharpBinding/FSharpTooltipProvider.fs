@@ -46,8 +46,7 @@ type ToolTips =
 | ToolTip of string * XmlDoc * TextSegment
 | EmptyTip
 
-[<AutoOpen>]
-module NewTooltips =
+module Highlight =
     let getColourScheme () =
         Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme)
 
@@ -55,6 +54,23 @@ module NewTooltips =
         let color = getColourScheme().GetForeground (style) |> GtkUtil.ToGdkColor
         let  colorString = HelperMethods.GetColorString (color)
         "<span foreground=\"" + colorString + "\">" + str + "</span>"
+
+    let asSymbol s =
+        let cs = getColourScheme ()
+        hl s cs.KeywordOperators
+
+    let asKeyword k =
+        let cs = getColourScheme ()
+        hl k cs.KeywordTypes
+    
+    let asUserType u =
+        let cs = getColourScheme ()
+        hl u cs.UserTypes
+
+[<AutoOpen>]
+module NewTooltips =
+
+    let escapeText = GLib.Markup.EscapeText
 
     /// Add two strings with a space between
     let (++) a b = a + " " + b
@@ -72,7 +88,7 @@ module NewTooltips =
             | :? FSharpField as fsf -> fsf.XmlDoc, fsf.XmlDocSig
             | _ -> ResizeArray() :> IList<_>, ""
 
-        if xmlDoc.Count > 0 then Full (String.Join( "\n", xmlDoc |> Seq.map GLib.Markup.EscapeText))
+        if xmlDoc.Count > 0 then Full (String.Join( "\n", xmlDoc |> Seq.map escapeText))
         else
             if String.IsNullOrWhiteSpace xmlDocSig then XmlDoc.EmptyDoc
             else Lookup(xmlDocSig, symbolUse.Symbol.Assembly.FileName)
@@ -126,13 +142,11 @@ type FSharpTooltipProvider() =
                 match symbolUse.Symbol with
                 | :? FSharpEntity as fse ->
                     try
-                        let cs = getColourScheme()
-
                         let displayName = fse.DisplayName
 
                         let modifier = match fse.Accessibility with
-                                       | a when a.IsInternal -> hl "internal " cs.KeywordTypes
-                                       | a when a.IsPrivate -> hl "private " cs.KeywordTypes
+                                       | a when a.IsInternal -> Highlight.asKeyword "internal "
+                                       | a when a.IsPrivate -> Highlight.asKeyword "private "
                                        | _ -> ""
 
                         let attributes =
@@ -155,36 +169,35 @@ type FSharpTooltipProvider() =
                                 | _                         -> "type"
 
                             let enumtip () =
-                                hl " =" cs.KeywordOperators + "\n" + 
-                                hl "| " cs.KeywordOperators +
+                                Highlight.asSymbol " =" + "\n" + 
+                                Highlight.asSymbol "|" ++
                                 (fse.FSharpFields
                                 |> Seq.filter (fun f -> not f.IsCompilerGenerated)
                                 |> Seq.map (fun field -> field.Name) //TODO Fix FSC to expose enum filed literals: field.Name + (hl " = " cs.KeywordOperators) + hl field.LiteralValue cs.UserTypesValueTypes*)
-                                |> String.concat ("\n" + hl "| " cs.KeywordOperators) )
+                                |> String.concat ("\n" + Highlight.asSymbol "| " ) )
                
 
                             let uniontip () = 
-                                hl " =" cs.KeywordOperators + "\n" + 
-                                hl "| " cs.KeywordOperators +
+                                Highlight.asSymbol " =" + "\n" + 
+                                Highlight.asSymbol "|" ++
                                 (fse.UnionCases 
                                 |> Seq.map (fun unionCase -> 
                                                 if unionCase.UnionCaseFields.Count > 0 then
                                                    let typeList =
                                                       unionCase.UnionCaseFields
-                                                      |> Seq.map (fun unionField -> unionField.Name + (hl " : " cs.KeywordOperators) + hl (unionField.FieldType.Format symbolUse.DisplayContext) cs.UserTypes ) 
-                                                      |> String.concat (hl " * " cs.KeywordOperators)
-                                                   unionCase.Name + (hl " of " cs.KeywordTypes) + typeList
+                                                      |> Seq.map (fun unionField -> unionField.Name ++ Highlight.asSymbol ":" ++ Highlight.asUserType (escapeText (unionField.FieldType.Format symbolUse.DisplayContext)))
+                                                      |> String.concat (Highlight.asSymbol " * " )
+                                                   unionCase.Name ++ Highlight.asKeyword "of" ++ typeList
                                                  else unionCase.Name)
 
-                                |> String.concat ("\n" + hl "| " cs.KeywordOperators) )
+                                |> String.concat ("\n" + Highlight.asSymbol "| " ) )
                                                      
-                            modifier +
-                            hl typeName cs.KeywordTypes ++ 
-                            hl displayName cs.UserTypes +
-                            (if fse.IsFSharpUnion then uniontip()
-                             elif fse.IsEnum then enumtip() 
-                             else "") +
-                            "\n\nFull name: " + fse.FullName
+                            let typeDisplay = modifier + Highlight.asKeyword typeName ++ Highlight.asUserType displayName
+                            let fullName = "\n\nFull name: " + fse.FullName
+                            match fse.IsFSharpUnion, fse.IsEnum with
+                            | true, false -> typeDisplay + uniontip () + fullName
+                            | false, true -> typeDisplay + enumtip () + fullName
+                            | _ -> typeDisplay + fullName
 
                         ToolTip(signature, getSummaryFromSymbol symbolUse, getSegFromSymbolUse editor symbolUse)
                     with exn -> ToolTips.EmptyTip
@@ -214,32 +227,38 @@ type FSharpTooltipProvider() =
                             else
                                 let signature =
 
-                                    let cs = getColourScheme()
-
                                     let backupSignature = func.FullType.Format symbolUse.DisplayContext
                                     let argInfos =
                                         func.CurriedParameterGroups 
                                         |> Seq.map Seq.toList 
                                         |> Seq.toList 
 
-                                    let retType = hl (GLib.Markup.EscapeText(func.ReturnParameter.Type.Format symbolUse.DisplayContext)) cs.UserTypes
+                                    let retType = Highlight.asUserType (escapeText(func.ReturnParameter.Type.Format symbolUse.DisplayContext))
 
                                     //example of building up the parameters using Display name and Type
                                     let signature =
-                                        let padLength = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length) |> List.max
-                                        let parameters = 
-                                            match argInfos with
-                                            | [] -> retType
-                                            | [[single]] -> "   " + single.DisplayName + hl ": " cs.KeywordOperators + hl (GLib.Markup.EscapeText(single.Type.Format symbolUse.DisplayContext)) cs.UserTypes
-                                            | many ->
+                                        let padLength = 
+                                            let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
+                                            match allLengths with
+                                            | [] -> 0
+                                            | l -> l |> List.max
+
+                                        match argInfos with
+                                        | [] -> retType //When does this occur, val type within  module?
+                                        | [[]] -> retType //A ctor with () parameters seems to be a list with an empty list
+                                        | [[single]] -> "   " + single.DisplayName + Highlight.asSymbol ":" ++ Highlight.asUserType (escapeText (single.Type.Format symbolUse.DisplayContext))
+                                                        + "\n   " +  Highlight.asSymbol "->" ++ retType
+                                        | many ->
+                                            let allParams =
                                                 many
                                                 |> List.map(fun listOfParams ->
+
                                                                 listOfParams
                                                                 |> List.map(fun (p:FSharpParameter) ->
-                                                                                "   " + p.DisplayName.PadRight (padLength) + hl ": " cs.KeywordOperators + hl (GLib.Markup.EscapeText(p.Type.Format symbolUse.DisplayContext)) cs.UserTypes)
-                                                                                |> String.concat (hl " * " cs.KeywordOperators + "\n"))
-                                                |> String.concat (hl " ->" cs.KeywordOperators + "\n")
-                                        parameters + hl ("\n   " + (String.replicate (padLength-1) " ") +  "-> ") cs.KeywordOperators + retType
+                                                                                "   " + p.DisplayName.PadRight (padLength) + Highlight.asSymbol ":" ++ Highlight.asUserType (escapeText (p.Type.Format symbolUse.DisplayContext)))
+                                                                                |> String.concat (Highlight.asSymbol " *" ++ "\n"))
+                                                |> String.concat (Highlight.asSymbol " ->" + "\n") 
+                                            allParams +  "\n   " + (String.replicate (max (padLength-1) 0) " ") +  Highlight.asSymbol "->" ++ retType
 
                                     let modifiers = 
                                         if func.IsMember then 
@@ -252,19 +271,18 @@ type FSharpTooltipProvider() =
                                             elif func.IsInstanceMember then "val"
                                             else "val" //does this need to be static prefixed?
 
-                                    hl modifiers cs.KeywordTypes ++ func.DisplayName + hl " : " cs.KeywordOperators + "\n" + signature
+                                    Highlight.asKeyword modifiers ++ func.DisplayName ++ Highlight.asSymbol ":" + "\n" + signature
 
                                 ToolTip(signature, getSummaryFromSymbol symbolUse, getSegFromSymbolUse editor symbolUse)                            
 
                     else
                         //val name : Type
                         let signature =
-                                let cs = getColourScheme()
-                                let retType = hl (GLib.Markup.EscapeText(func.ReturnParameter.Type.Format symbolUse.DisplayContext)) cs.UserTypes
+                                let retType = Highlight.asUserType (escapeText(func.ReturnParameter.Type.Format symbolUse.DisplayContext))
                                 let prefix = 
-                                    if func.IsMutable then hl "val" cs.KeywordTypes ++ hl "mutable" cs.KeywordModifiers
-                                    else hl "val" cs.KeywordTypes
-                                prefix ++ func.DisplayName ++ hl ":" cs.KeywordOperators ++ retType
+                                    if func.IsMutable then Highlight.asKeyword "val" ++ Highlight.asKeyword "mutable"
+                                    else Highlight.asKeyword "val"
+                                prefix ++ func.DisplayName ++ Highlight.asSymbol ":" ++ retType
 
                         ToolTip(signature, getSummaryFromSymbol symbolUse, getSegFromSymbolUse editor symbolUse)
                     with exn -> ToolTips.EmptyTip
