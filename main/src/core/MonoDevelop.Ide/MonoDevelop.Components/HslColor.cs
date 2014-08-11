@@ -143,7 +143,8 @@ namespace MonoDevelop.Components
 			return new HslColor {
 				H = h,
 				S = s,
-				L = l
+				L = l,
+				Alpha = 1.0d
 			};
 		}
 
@@ -203,6 +204,7 @@ namespace MonoDevelop.Components
 		
 		public HslColor (Color color) : this (color.Red / (double)ushort.MaxValue, color.Green / (double)ushort.MaxValue, color.Blue / (double)ushort.MaxValue)
 		{
+			Alpha = 1.0;
 		}
 		
 		public HslColor (Cairo.Color color) : this (color.R, color.G, color.B, color.A)
