@@ -715,63 +715,20 @@ namespace MonoDevelop.SourceEditor
 			if (!string.IsNullOrEmpty (ContentName))
 				AutoSave.RemoveAutoSaveFile (ContentName);
 		}
+
+		public void InformLoadComplete ()
+		{
+			Document.InformLoadComplete ();
+		}
 		
 		public override void LoadNew (Stream content, string mimeType)
 		{
-			Document.MimeType = mimeType;
-			string text = null;
-			if (content != null) {
-				text = TextFileUtility.GetText (content, out encoding, out hadBom);
-				Document.Text = text;
-			}
-			CreateDocumentParsedHandler ();
-			RunFirstTimeFoldUpdate (text);
-			Document.InformLoadComplete ();
+			throw new NotSupportedException ("Moved to TextEditorViewContent.LoadNew.");
 		}
 		
 		public override void Load (FileOpenInformation fileOpenInformation)
 		{
 			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding);
-		}
-
-		void RunFirstTimeFoldUpdate (string text)
-		{
-			if (string.IsNullOrEmpty (text)) 
-				return;
-			ParsedDocument parsedDocument = null;
-
-			var foldingParser = TypeSystemService.GetFoldingParser (Document.MimeType);
-			if (foldingParser != null) {
-				parsedDocument = foldingParser.Parse (Document.FileName, text);
-			} else {
-				var normalParser = TypeSystemService.GetParser (Document.MimeType);
-				if (normalParser != null) {
-					using (var sr = new StringReader (text))
-						parsedDocument = normalParser.Parse (true, Document.FileName, sr, null);
-				}
-			}
-			if (parsedDocument != null) 
-				widget.UpdateParsedDocument (parsedDocument);
-		}
-
-		void CreateDocumentParsedHandler ()
-		{
-			WorkbenchWindowChanged += delegate {
-				if (WorkbenchWindow == null)
-					return;
-				WorkbenchWindow.DocumentChanged +=  delegate {
-					if (WorkbenchWindow.Document == null)
-						return;
-					foreach (var provider in WorkbenchWindow.Document.Editor.GetContents<IQuickTaskProvider> ()) {
-						widget.AddQuickTaskProvider (provider);
-					}
-					foreach (var provider in WorkbenchWindow.Document.Editor.GetContents<UsageProviderEditorExtension> ()) {
-						widget.AddUsageTaskProvider (provider);
-					}
-					ownerDocument = WorkbenchWindow.Document;
-					ownerDocument.DocumentParsed += HandleDocumentParsed;
-				};
-			};
 		}
 
 		Document ownerDocument;
@@ -821,10 +778,8 @@ namespace MonoDevelop.SourceEditor
 				didLoadCleanly = true;
 			}
 			// TODO: Would be much easier if the view would be created after the containers.
-			CreateDocumentParsedHandler ();
 			ContentName = fileName;
 			lastSaveTimeUtc = File.GetLastWriteTimeUtc (ContentName);
-			RunFirstTimeFoldUpdate (text);
 			widget.TextEditor.Caret.Offset = 0;
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
@@ -834,7 +789,7 @@ namespace MonoDevelop.SourceEditor
 			UpdateTasks (null, null);
 			widget.TextEditor.TextArea.SizeAllocated += HandleTextEditorVAdjustmentChanged;
 			if (didLoadCleanly) {
-				Document.InformLoadComplete ();
+				InformLoadComplete ();
 				widget.EnsureCorrectEolMarker (fileName);
 			}
 			
@@ -900,14 +855,12 @@ namespace MonoDevelop.SourceEditor
 			inLoad = false;
 			encoding = enc;
 			ContentName = fileName;
-			RunFirstTimeFoldUpdate (content);
-			CreateDocumentParsedHandler ();
 			UpdateExecutionLocation ();
 			UpdateBreakpoints ();
 			UpdatePinnedWatches ();
 			LoadExtensions ();
 			IsDirty = false;
-			Document.InformLoadComplete ();
+			InformLoadComplete ();
 		}
 	
 		void UpdateMimeType (string fileName)
@@ -2250,7 +2203,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			TextEditor.InsertTemplate (template, editor, context);
 		}
-		
+
 		[CommandHandler (TextEditorCommands.GotoMatchingBrace)]
 		protected void OnGotoMatchingBrace ()
 		{
@@ -2946,6 +2899,24 @@ namespace MonoDevelop.SourceEditor
 			return TextEditor.GetTextEditorData ().GetMarkup (offset, length, false);
 		}
 
+		void ITextEditorImpl.SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers)
+		{
+			widget.ClearUsageTaskProvider ();
+			foreach (var p in providers) {
+				widget.AddUsageTaskProvider (p);
+			}
+		}
+
+		void ITextEditorImpl.SetQuickTaskProviders (IEnumerable<IQuickTaskProvider> providers)
+		{
+			widget.ClearQuickTaskProvider ();
+			foreach (var p in providers) {
+				widget.AddQuickTaskProvider (p);
+			}
+		}
+
+
+
 		#region IEditorActionHost implementation
 
 		void IEditorActionHost.MoveCaretDown ()
@@ -3064,6 +3035,11 @@ namespace MonoDevelop.SourceEditor
 		ISmartTagMarker ITextMarkerFactory.CreateSmartTagMarker (int offset, MonoDevelop.Ide.Editor.DocumentLocation realLocation)
 		{
 			return new SmartTagMarker (offset, realLocation);
+		}
+
+		IErrorMarker ITextMarkerFactory.CreateErrorMarker (Error info, int offset, int length)
+		{
+			return new ErrorMarker (info, offset, length);
 		}
 		#endregion
 	}

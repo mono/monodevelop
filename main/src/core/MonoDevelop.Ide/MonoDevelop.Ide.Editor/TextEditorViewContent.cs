@@ -31,6 +31,20 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDevelop.Ide.TypeSystem;
+using System.IO;
+using MonoDevelop.Core.Text;
+using System.Text;
+using Gtk;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
+using MonoDevelop.Ide.Editor.Extension;
+using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -38,11 +52,12 @@ namespace MonoDevelop.Ide.Editor
 	/// The TextEditor object needs to be available through IBaseViewContent.GetContent therefore we need to insert a 
 	/// decorator in between.
 	/// </summary>
-	class TextEditorViewContent : IViewContent, ICommandRouter
+	class TextEditorViewContent : IViewContent, ICommandRouter, IQuickTaskProvider
 	{
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
 
+		DocumentContext currentContext;
 		MonoDevelop.Projects.Policies.PolicyContainer policyContainer;
 
 		public TextEditorViewContent (TextEditor textEditor, ITextEditorImpl textEditorImpl)
@@ -57,6 +72,12 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditor.TextChanged += HandleTextChanged;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
 			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
+			this.textEditor.DocumentContextChanged += delegate {
+				if (currentContext != null)
+					currentContext.DocumentParsed -= HandleDocumentParsed;
+				currentContext = textEditor.DocumentContext;
+				currentContext.DocumentParsed += HandleDocumentParsed;
+			};
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
@@ -127,6 +148,179 @@ namespace MonoDevelop.Ide.Editor
 			textEditor.Options = DefaultSourceEditorOptions.Instance.WithTextStyle (currentPolicy);
 		}
 
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			UpdateErrorUndelines (currentContext.ParsedDocument);
+			UpdateQuickTasks (currentContext.ParsedDocument);
+			UpdateFoldings (currentContext.ParsedDocument);
+		}
+
+		#region Error handling
+		List<IErrorMarker> errors = new List<IErrorMarker> ();
+		uint resetTimerId;
+
+		void RemoveErrorUndelinesResetTimerId ()
+		{
+			if (resetTimerId > 0) {
+				GLib.Source.Remove (resetTimerId);
+				resetTimerId = 0;
+			}
+		}
+
+		void RemoveErrorUnderlines ()
+		{
+			errors.ForEach (err => textEditor.RemoveMarker (err));
+			errors.Clear ();
+		}
+
+		void UnderLineError (Error info)
+		{
+			var error = TextMarkerFactory.CreateErrorMarker (textEditor, info);
+			textEditor.AddMarker (error); 
+			errors.Add (error);
+		}
+
+		void UpdateErrorUndelines (ParsedDocument parsedDocument)
+		{
+			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null)
+				return;
+
+			Application.Invoke (delegate {
+				RemoveErrorUndelinesResetTimerId ();
+				const uint timeout = 500;
+				resetTimerId = GLib.Timeout.Add (timeout, delegate {
+					RemoveErrorUnderlines ();
+
+					// Else we underline the error
+					if (parsedDocument.Errors != null) {
+						foreach (var error in parsedDocument.Errors) {
+							UnderLineError (error);
+						}
+					}
+					resetTimerId = 0;
+					return false;
+				});
+			});
+		}
+		#endregion
+		HashSet<string> symbols = new HashSet<string> ();
+		CancellationTokenSource src = new CancellationTokenSource ();
+		void UpdateFoldings (ParsedDocument parsedDocument, bool firstTime = false)
+		{
+			if (parsedDocument == null || !textEditor.Options.ShowFoldMargin)
+				return;
+			// don't update parsed documents that contain errors - the foldings from there may be invalid.
+			if (parsedDocument.HasErrors)
+				return;
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+			var token = src.Token;
+			Task.Factory.StartNew (delegate {
+				try {
+					var foldSegments = new List<IFoldSegment> ();
+					bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
+					if (!updateSymbols) {
+						foreach (PreProcessorDefine define in parsedDocument.Defines) {
+							if (token.IsCancellationRequested)
+								return;
+							if (!symbols.Contains (define.Define)) {
+								updateSymbols = true;
+								break;
+							}
+						}
+					}
+
+					if (updateSymbols) {
+						symbols.Clear ();
+						foreach (PreProcessorDefine define in parsedDocument.Defines) {
+							symbols.Add (define.Define);
+						}
+					}
+
+					foreach (FoldingRegion region in parsedDocument.Foldings) {
+						if (token.IsCancellationRequested)
+							return;
+						var type = FoldingType.Unknown;
+						bool setFolded = false;
+						bool folded = false;
+
+						//decide whether the regions should be folded by default
+						switch (region.Type) {
+						case FoldType.Member:
+							type = FoldingType.TypeMember;
+							break;
+						case FoldType.Type:
+							type = FoldingType.TypeDefinition;
+							break;
+						case FoldType.UserRegion:
+							type = FoldingType.Region;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
+							folded = true;
+							break;
+						case FoldType.Comment:
+							type = FoldingType.Comment;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+							folded = true;
+							break;
+						case FoldType.CommentInsideMember:
+							type = FoldingType.Comment;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+							folded = false;
+							break;
+						case FoldType.Undefined:
+							setFolded = true;
+							folded = region.IsFoldedByDefault;
+							break;
+						}
+						var start = textEditor.LocationToOffset (region.Region.Begin);
+						var end   = textEditor.LocationToOffset (region.Region.End);
+						var marker = textEditor.CreateFoldSegment (start, end - start);
+						foldSegments.Add (marker);
+						marker.CollapsedText = region.Name;
+						marker.FoldingType = type;
+
+						//and, if necessary, set its fold state
+						if (marker != null && setFolded && firstTime) {
+							// only fold on document open, later added folds are NOT folded by default.
+							marker.IsCollapsed = folded;
+							continue;
+						}
+						if (marker != null && region.Region.IsInside (textEditor.CaretLine, textEditor.CaretColumn))
+							marker.IsCollapsed = false;
+					}
+					Application.Invoke (delegate {
+						Console.WriteLine ("update foldings :" + foldSegments.Count +"/"+firstTime);
+						if (!token.IsCancellationRequested)
+							textEditor.SetFoldings (foldSegments);
+					});
+				} catch (Exception ex) {
+					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
+				}
+			});
+		}
+
+		void RunFirstTimeFoldUpdate (string text)
+		{
+			if (string.IsNullOrEmpty (text)) 
+				return;
+			ParsedDocument parsedDocument = null;
+
+			var foldingParser = TypeSystemService.GetFoldingParser (textEditor.MimeType);
+			if (foldingParser != null) {
+				parsedDocument = foldingParser.Parse (textEditor.FileName, text);
+			} else {
+				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
+				if (normalParser != null) {
+					using (var sr = new StringReader (text))
+						parsedDocument = normalParser.Parse (true, textEditor.FileName, sr, null);
+				}
+			}
+			if (parsedDocument != null) {
+				UpdateFoldings (parsedDocument, true);
+			}
+		}
+
+
 		#region IViewContent implementation
 
 		event EventHandler IViewContent.ContentNameChanged {
@@ -168,16 +362,29 @@ namespace MonoDevelop.Ide.Editor
 		void IViewContent.Load (FileOpenInformation fileOpenInformation)
 		{
 			textEditorImpl.Load (fileOpenInformation);
+			RunFirstTimeFoldUpdate (textEditor.Text);
 		}
 		
 		void IViewContent.Load (string fileName)
 		{
 			textEditorImpl.Load (new FileOpenInformation (fileName));
+			RunFirstTimeFoldUpdate (textEditor.Text);
 		}
 
 		void IViewContent.LoadNew (System.IO.Stream content, string mimeType)
 		{
-			textEditorImpl.LoadNew (content, mimeType);
+			textEditor.MimeType = mimeType;
+			string text = null;
+			if (content != null) {
+				Encoding encoding;
+				bool hadBom;
+				text = TextFileUtility.GetText (content, out encoding, out hadBom);
+				textEditor.Text = text;
+				textEditor.Encoding = encoding;
+				textEditor.UseBOM = hadBom;
+			}
+			RunFirstTimeFoldUpdate (text);
+			textEditorImpl.InformLoadComplete ();
 		}
 
 		void IViewContent.Save (FileSaveInformation fileSaveInformation)
@@ -296,6 +503,29 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.GetContent (type);
 		}
 
+		public virtual IEnumerable<T> GetContents<T> () where T : class
+		{
+			if (typeof(T) == typeof(TextEditor)) {
+				yield return (T)(object)textEditor;
+				yield break;
+			}
+			var result = this as T;
+			if (result != null) {
+				yield return result;
+			}
+			var ext = textEditorImpl.EditorExtension;
+			while (ext != null) {
+				result = ext as T;
+				if (result != null) {
+					yield return result;
+				}
+				ext = ext.Next;
+			}
+			foreach (var cnt in textEditorImpl.GetContents<T> ()) {
+				yield return cnt;
+			}
+		}
+
 		bool IBaseViewContent.CanReuseView (string fileName)
 		{
 			return textEditorImpl.CanReuseView (fileName);
@@ -336,6 +566,7 @@ namespace MonoDevelop.Ide.Editor
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();
 			RemoveAutoSaveTimer ();
+			RemoveErrorUndelinesResetTimerId ();
 			textEditorImpl.Dispose ();
 		}
 
@@ -531,5 +762,40 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 	
+		#region IQuickTaskProvider implementation
+		List<QuickTask> tasks = new List<QuickTask> ();
+
+		public event EventHandler TasksUpdated;
+
+		protected virtual void OnTasksUpdated (EventArgs e)
+		{
+			EventHandler handler = this.TasksUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public IEnumerable<QuickTask> QuickTasks {
+			get {
+				return tasks;
+			}
+		}
+
+		void UpdateQuickTasks (ParsedDocument doc)
+		{
+			tasks.Clear ();
+			foreach (var cmt in doc.TagComments) {
+				var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
+				tasks.Add (newTask);
+			}
+
+			foreach (var error in doc.Errors) {
+				var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
+				tasks.Add (newTask);
+			}
+
+			OnTasksUpdated (EventArgs.Empty);
+		}
+		#endregion
+
 	}
 }

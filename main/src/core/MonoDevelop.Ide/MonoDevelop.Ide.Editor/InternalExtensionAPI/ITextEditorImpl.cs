@@ -211,6 +211,12 @@ namespace MonoDevelop.Ide.Editor
 		Xwt.Point GetEditorWindowOrigin ();
 
 		Xwt.Rectangle GetEditorAllocation ();
+
+		void InformLoadComplete ();
+
+		void SetUsageTaskProviders (IEnumerable<UsageProviderEditorExtension> providers);
+
+		void SetQuickTaskProviders (IEnumerable<IQuickTaskProvider> providers);
 		#endregion
 	}
 }

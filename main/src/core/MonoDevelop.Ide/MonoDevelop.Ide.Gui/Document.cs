@@ -98,19 +98,16 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		public IEnumerable<T> GetContents<T> () where T : class
+		public override IEnumerable<T> GetContents<T> ()
 		{
-			//check whether the ViewContent can return the type directly
-			T ret = (T) Window.ActiveViewContent.GetContent (typeof(T));
-			if (ret != null)
-				yield return ret;
-			
-			//check the primary viewcontent
-			//not sure if this is the right thing to do, but things depend on this behaviour
-			if (Window.ViewContent != Window.ActiveViewContent) {
-				ret = (T) Window.ViewContent.GetContent (typeof(T));
-				if (ret != null)
-					yield return ret;
+			foreach (var cnt in window.ViewContent.GetContents<T> ()) {
+				yield return cnt;
+			}
+
+			foreach (var subView in window.SubViewContents) {
+				foreach (var cnt in subView.GetContents<T> ()) {
+					yield return cnt;
+				}
 			}
 		}
 
@@ -606,7 +603,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void InitializeExtensionChain ()
 		{
-			Editor.InitializeExtensionChain (this, Editor);
+			Editor.InitializeExtensionChain (this);
 
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());

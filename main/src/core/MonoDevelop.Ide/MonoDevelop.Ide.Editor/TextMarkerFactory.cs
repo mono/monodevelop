@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Extension;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -92,7 +93,23 @@ namespace MonoDevelop.Ide.Editor
 		{
 			return editor.TextMarkerFactory.CreateSmartTagMarker (offset, realLocation);
 		}
+
+		static bool IsIdentifierPart (char ch)
+		{
+			return char.IsLetterOrDigit (ch) || ch == '_';
+		}
+
+		public static IErrorMarker CreateErrorMarker (TextEditor editor, Error info)
+		{
+			int offset    = editor.LocationToOffset (info.Region.BeginLine, info.Region.BeginColumn);
+			int endOffset = editor.LocationToOffset (info.Region.EndLine, info.Region.EndColumn);
+			if (endOffset < offset) {
+				endOffset = offset + 1;
+				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset)))
+					endOffset++;
+			}
+			return editor.TextMarkerFactory.CreateErrorMarker (info, offset, endOffset - offset);
+		}
 		#endregion
 	}
 }
-

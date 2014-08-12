@@ -52,7 +52,7 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.SourceEditor
 {
-	class SourceEditorWidget : IQuickTaskProvider, IServiceProvider
+	class SourceEditorWidget : IServiceProvider
 	{
 		SourceEditorView view;
 		DecoratedScrolledWindow mainsw;
@@ -96,6 +96,14 @@ namespace MonoDevelop.SourceEditor
 				secondsw.AddQuickTaskProvider (provider);
 		}
 
+		internal void ClearQuickTaskProvider ()
+		{
+			foreach (var provider in quickTaskProvider.ToArray ()) {
+				RemoveQuickTaskProvider (provider);
+			}
+			quickTaskProvider = new List<IQuickTaskProvider> ();
+		}
+
 		public void RemoveQuickTaskProvider (IQuickTaskProvider provider)
 		{
 			quickTaskProvider.Remove (provider);
@@ -106,12 +114,30 @@ namespace MonoDevelop.SourceEditor
 
 		
 		List<UsageProviderEditorExtension> usageProvider = new List<UsageProviderEditorExtension> ();
+
+		internal void ClearUsageTaskProvider()
+		{
+			foreach (var provider in usageProvider.ToArray ()) {
+				RemoveUsageTaskProvider (provider);
+			}
+			usageProvider = new List<UsageProviderEditorExtension> ();
+
+		}
+
 		public void AddUsageTaskProvider (UsageProviderEditorExtension provider)
 		{
 			usageProvider.Add (provider);
 			mainsw.AddUsageProvider (provider); 
 			if (secondsw != null)
 				secondsw.AddUsageProvider (provider);
+		}
+
+		void RemoveUsageTaskProvider (UsageProviderEditorExtension provider)
+		{
+			usageProvider.Remove (provider);
+			mainsw.RemoveUsageProvider (provider); 
+			if (secondsw != null)
+				secondsw.RemoveUsageProvider (provider);
 		}
 		
 		public bool HasMessageBar {
@@ -265,12 +291,21 @@ namespace MonoDevelop.SourceEditor
 					provider.TasksUpdated -= HandleTasksUpdated;
 			}	
 
-
 			public void AddUsageProvider (UsageProviderEditorExtension p)
 			{
-				p.UsagesUpdated += (sender, e) => strip.Update (p);
+				p.UsagesUpdated += HandleUsagesUpdated;
 			}
-			
+
+			public void RemoveUsageProvider (UsageProviderEditorExtension p)
+			{
+				p.UsagesUpdated -= HandleUsagesUpdated;
+			}	
+
+			void HandleUsagesUpdated (object sender, EventArgs e)
+			{
+				strip.Update ((UsageProviderEditorExtension)sender);
+			}
+
 			protected override void OnDestroyed ()
 			{
 				if (scrolledWindow.Child != null)
@@ -307,6 +342,7 @@ namespace MonoDevelop.SourceEditor
 			{
 				var container = scrolledWindow.Child as Mono.TextEditor.TextEditor;
 				if (container == null) {
+
 					LoggingService.LogError ("can't remove events from text editor container.");
 					return;
 				}
@@ -362,13 +398,11 @@ namespace MonoDevelop.SourceEditor
 			};
 			vbox.Destroyed += delegate {
 				isDisposed = true;
-				RemoveErrorUndelinesResetTimerId ();
 				StopParseInfoThread ();
 				KillWidgets ();
 
-				foreach (var provider in quickTaskProvider.ToArray ()) {
-					RemoveQuickTaskProvider (provider);
-				}
+				ClearQuickTaskProvider ();
+				ClearUsageTaskProvider ();
 
 				this.lastActiveEditor = null;
 				this.splittedTextEditor = null;
@@ -378,6 +412,7 @@ namespace MonoDevelop.SourceEditor
 //				IdeApp.Workbench.StatusBar.ClearCaretState ();
 			};
 			vbox.ShowAll ();
+
 		}
 
 		void OnLostFocus ()
@@ -404,7 +439,6 @@ namespace MonoDevelop.SourceEditor
 		
 		public void Dispose ()
 		{
-			RemoveErrorUndelinesResetTimerId ();
 		}
 		
 		Mono.TextEditor.FoldSegment AddMarker (List<Mono.TextEditor.FoldSegment> foldSegments, string text, DomRegion region, Mono.TextEditor.FoldingType type)
@@ -421,105 +455,22 @@ namespace MonoDevelop.SourceEditor
 			foldSegments.Add (result);
 			return result;
 		}
-		HashSet<string> symbols = new HashSet<string> ();
 		bool reloadSettings;
 		
 		void HandleParseInformationUpdaterWorkerThreadDoWork (bool firstTime, ParsedDocument parsedDocument, CancellationToken token = default(CancellationToken))
 		{
-			var doc = Document;
-			if (doc == null || parsedDocument == null)
-				return;
-			UpdateErrorUndelines (parsedDocument);
-			if (!textEditor.Options.ShowFoldMargin)
-				return;
-			// don't update parsed documents that contain errors - the foldings from there may be invalid.
-			if (parsedDocument.HasErrors)
-				return;
-			try {
-				var foldSegments = new List<Mono.TextEditor.FoldSegment> ();
-				bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
-				if (!updateSymbols) {
-					foreach (PreProcessorDefine define in parsedDocument.Defines) {
-						if (token.IsCancellationRequested)
-							return;
-						if (!symbols.Contains (define.Define)) {
-							updateSymbols = true;
-							break;
-						}
-					}
-				}
-				
-				if (updateSymbols) {
-					symbols.Clear ();
-					foreach (PreProcessorDefine define in parsedDocument.Defines) {
-						symbols.Add (define.Define);
-					}
-				}
-				
-				foreach (FoldingRegion region in parsedDocument.Foldings) {
-					if (token.IsCancellationRequested)
-						return;
-					var type = Mono.TextEditor.FoldingType.None;
-					bool setFolded = false;
-					bool folded = false;
-					
-					//decide whether the regions should be folded by default
-					switch (region.Type) {
-					case FoldType.Member:
-						type = Mono.TextEditor.FoldingType.TypeMember;
-						break;
-					case FoldType.Type:
-						type = Mono.TextEditor.FoldingType.TypeDefinition;
-						break;
-					case FoldType.UserRegion:
-						type = Mono.TextEditor.FoldingType.Region;
-						setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
-						folded = true;
-						break;
-					case FoldType.Comment:
-						type = Mono.TextEditor.FoldingType.Comment;
-						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-						folded = true;
-						break;
-					case FoldType.CommentInsideMember:
-						type = Mono.TextEditor.FoldingType.Comment;
-						setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
-						folded = false;
-						break;
-					case FoldType.Undefined:
-						setFolded = true;
-						folded = region.IsFoldedByDefault;
-						break;
-					}
-					
-					//add the region
-					var marker = AddMarker (foldSegments, region.Name, 
-					                                       region.Region, type);
-					
-					//and, if necessary, set its fold state
-					if (marker != null && setFolded && firstTime) {
-						// only fold on document open, later added folds are NOT folded by default.
-						marker.IsFolded = folded;
-						continue;
-					}
-					if (marker != null && region.Region.IsInside (textEditorData.Caret.Line, textEditorData.Caret.Column))
-						marker.IsFolded = false;
-					
-				}
-				doc.UpdateFoldSegments (foldSegments, false, true, token);
 
-				if (reloadSettings) {
-					reloadSettings = false;
-					Application.Invoke (delegate {
-						if (isDisposed)
-							return;
-						view.LoadSettings ();
-						mainsw.QueueDraw ();
-					});
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
+
+			if (reloadSettings) {
+				reloadSettings = false;
+				Application.Invoke (delegate {
+					if (isDisposed)
+						return;
+					view.LoadSettings ();
+					mainsw.QueueDraw ();
+				});
 			}
+
 		}
 
 		internal void UpdateParsedDocument (ParsedDocument document)
@@ -566,68 +517,7 @@ namespace MonoDevelop.SourceEditor
 			this.lastActiveEditor = editor;
 		}
 			
-		#region Error underlining
-		List<ErrorMarker> errors = new List<ErrorMarker> ();
-		uint resetTimerId;
-		
-		void RemoveErrorUndelinesResetTimerId ()
-		{
-			if (resetTimerId > 0) {
-				GLib.Source.Remove (resetTimerId);
-				resetTimerId = 0;
-			}
-		}
-		
-		void UpdateErrorUndelines (ParsedDocument parsedDocument)
-		{
-			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null)
-				return;
-				
-			Application.Invoke (delegate {
-				if (!quickTaskProvider.Contains (this))
-					AddQuickTaskProvider (this);
-				RemoveErrorUndelinesResetTimerId ();
-				const uint timeout = 500;
-				resetTimerId = GLib.Timeout.Add (timeout, delegate {
-					if (!this.isDisposed) {
-						Document doc = this.TextEditor != null ? this.TextEditor.Document : null;
-						if (doc != null) {
-							RemoveErrorUnderlines (doc);
-							
-							// Else we underline the error
-							if (parsedDocument.Errors != null) {
-								foreach (var error in parsedDocument.Errors)
-									UnderLineError (doc, error);
-							}
-						}
-					}
-					resetTimerId = 0;
-					return false;
-				});
-				UpdateQuickTasks (parsedDocument);
-			});
-		}
-		
-		void RemoveErrorUnderlines (Document doc)
-		{
-			errors.ForEach (err => doc.RemoveMarker (err));
-			errors.Clear ();
-		}
-		
-		void UnderLineError (Document doc, Error info)
-		{
-			var line = doc.GetLine (info.Region.BeginLine);
-			// If the line is already underlined
-			if (errors.Any (em => em.LineSegment == line))
-				return;
-			ErrorMarker error = new ErrorMarker (textEditor.Document, info, line);
-			errors.Add (error);
-			doc.AddMarker (line, error);
-		}
-		#endregion
-	
-		
-		Gtk.Paned splitContainer = null;
+		Gtk.Paned splitContainer;
 		public bool IsSplitted {
 			get {
 				return splitContainer != null;
@@ -1428,42 +1318,6 @@ namespace MonoDevelop.SourceEditor
 		}
 	
 		#endregion
-		
-		#region IQuickTaskProvider implementation
-		List<QuickTask> tasks = new List<QuickTask> ();
-
-		public event EventHandler TasksUpdated;
-
-		protected virtual void OnTasksUpdated (EventArgs e)
-		{
-			EventHandler handler = this.TasksUpdated;
-			if (handler != null)
-				handler (this, e);
-		}
-		
-		public IEnumerable<QuickTask> QuickTasks {
-			get {
-				return tasks;
-			}
-		}
-		
-		void UpdateQuickTasks (ParsedDocument doc)
-		{
-			tasks.Clear ();
-			
-			foreach (var cmt in doc.TagComments) {
-				var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
-				tasks.Add (newTask);
-			}
-			
-			foreach (var error in doc.Errors) {
-				var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
-				tasks.Add (newTask);
-			}
-			
-			OnTasksUpdated (EventArgs.Empty);
-		}
-		#endregion
 
 		internal void NextIssue ()
 		{
@@ -1502,54 +1356,4 @@ namespace MonoDevelop.SourceEditor
 		#endregion
 	}
 
-	class ErrorMarker : UnderlineMarker
-	{
-		public Error Info { get; private set; }
-		
-		public ErrorMarker (TextDocument doc, Error info, DocumentLine line)
-		{
-			Info = info;
-			LineSegment = line;
-			// may be null if no line is assigned to the error.
-			Wave = true;
-			
-			StartCol = Info.Region.BeginColumn;
-			if (line != null) {
-				var startOffset = line.Offset;
-				if (startOffset + StartCol - 1 >= 0) {
-					while (StartCol < line.Length) {
-						char ch = doc.GetCharAt (startOffset + StartCol - 1);
-						if (!char.IsWhiteSpace (ch))
-							break;
-						StartCol++;
-					}
-				}
-			}
-
-			if (Info.Region.EndColumn > StartCol) {
-				EndCol = Info.Region.EndColumn;
-			} else {
-				if (line == null) {
-					EndCol = StartCol + 1;
-					return;
-				}
-				var start = line.Offset + StartCol - 1;
-				int o = start + 1;
-				while (o < line.EndOffset) {
-					char ch = doc.GetCharAt (o);
-					if (!(char.IsLetterOrDigit (ch) || ch == '_'))
-						break;
-					o++;
-				}
-				EndCol = Info.Region.BeginColumn + o - start + 1;
-			}
-		}
-
-		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineMetrics metrics)
-		{
-			Color = Info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
-
-			base.Draw (editor, cr, metrics);
-		}
-	}
 }

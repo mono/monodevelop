@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Projects;
 using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.TypeSystem;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -104,6 +105,13 @@ namespace MonoDevelop.Ide.Editor
 			if (t != null)
 				return t;
 			return null;
+		}
+
+		public virtual IEnumerable<T> GetContents<T> () where T : class
+		{
+			var t = this as T;
+			if (t != null)
+				yield return t;
 		}
 
 		/// <summary>

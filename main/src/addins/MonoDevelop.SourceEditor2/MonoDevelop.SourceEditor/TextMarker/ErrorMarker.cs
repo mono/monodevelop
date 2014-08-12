@@ -1,5 +1,5 @@
 ﻿//
-// ITextSegmentMarker.cs
+// ErrorMarker.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@xamarin.com>
@@ -24,63 +24,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core.Text;
-using MonoDevelop.Ide.Editor;
-using MonoDevelop.Components;
 using ICSharpCode.NRefactory.TypeSystem;
+using Mono.TextEditor;
+using MonoDevelop.Ide.Editor;
 
-namespace MonoDevelop.Ide.Editor
+namespace MonoDevelop.SourceEditor
 {
-	public interface ITextSegmentMarker : ISegment
+	class ErrorMarker : UnderlineTextSegmentMarker, IErrorMarker
 	{
-		bool IsVisible {
+		readonly static Cairo.Color defaultColor = new Cairo.Color(0, 0, 0);
+
+		readonly Error info;
+
+		public ErrorMarker (Error info, int offset, int length) : base (defaultColor, new TextSegment (offset, length))
+		{
+			this.info = info;
+			this.Wave = true;
+		}
+
+		public override void Draw (Mono.TextEditor.TextEditor editor, Cairo.Context cr, LineMetrics metrics, int startOffset, int endOffset)
+		{
+			Color = info.ErrorType == ErrorType.Warning ? editor.ColorStyle.UnderlineWarning.Color : editor.ColorStyle.UnderlineError.Color;
+			base.Draw (editor, cr, metrics, startOffset, endOffset);
+		}
+
+		event EventHandler<TextMarkerMouseEventArgs> ITextSegmentMarker.MousePressed {
+			add {
+				throw new NotImplementedException ();
+			}
+			remove {
+				throw new NotImplementedException ();
+			}
+		}
+
+		event EventHandler<TextMarkerMouseEventArgs> ITextSegmentMarker.MouseHover {
+			add {
+				throw new NotImplementedException ();
+			}
+			remove {
+				throw new NotImplementedException ();
+			}
+		}
+
+		object ITextSegmentMarker.Tag {
 			get;
 			set;
 		}
 
-		object Tag {
-			get;
-			set;
+		public Error Error {
+			get {
+				return info;
+			}
 		}
-
-		event EventHandler<TextMarkerMouseEventArgs> MousePressed;
-		event EventHandler<TextMarkerMouseEventArgs> MouseHover;
-	}
-
-	public enum TextSegmentMarkerEffect {
-		/// <summary>
-		/// The region is marked as waved underline.
-		/// </summary>
-		WavedLine,
-
-		/// <summary>
-		/// The region is marked as dotted line.
-		/// </summary>
-		DottedLine,
-
-		/// <summary>
-		/// The text is grayed out.
-		/// </summary>
-		GrayOut
-	}
-
-	public interface IGenericTextSegmentMarker : ITextSegmentMarker
-	{
-		TextSegmentMarkerEffect Effect { get; }
-
-		HslColor Color { get; set; }
-	}
-
-	public interface IErrorMarker : ITextSegmentMarker
-	{
-		Error Error { get; }
-	}
-
-	public interface ISmartTagMarker : ITextSegmentMarker
-	{
-		bool IsInsideSmartTag (double x, double y);
-
-		bool IsInsideWindow (Gtk.MotionNotifyEventArgs args);
 	}
 }
 

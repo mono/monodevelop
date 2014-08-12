@@ -26,6 +26,7 @@
 using System;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Extension;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -50,6 +51,7 @@ namespace MonoDevelop.Ide.Editor
 
 		IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length);
 		ISmartTagMarker CreateSmartTagMarker (int offset, DocumentLocation realLocation);
+		IErrorMarker CreateErrorMarker (Error info, int offset, int length);
 		#endregion
 	}
 }

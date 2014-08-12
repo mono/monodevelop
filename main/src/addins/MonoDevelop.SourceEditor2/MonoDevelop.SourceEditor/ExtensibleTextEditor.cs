@@ -511,14 +511,15 @@ namespace MonoDevelop.SourceEditor
 			DocumentLine line = Document.GetLine (location.Line);
 			if (line == null)
 				return null;
-			var error = line.Markers.FirstOrDefault (m => m is ErrorMarker) as ErrorMarker;
+
+			var error = Document.GetTextSegmentMarkersAt (offset).OfType<ErrorMarker> ().FirstOrDefault ();
 			
 			if (error != null) {
-				if (error.Info.ErrorType == ErrorType.Warning)
+				if (error.Error.ErrorType == ErrorType.Warning)
 					return GettextCatalog.GetString ("<b>Parser Warning</b>: {0}",
-					                                 GLib.Markup.EscapeText (error.Info.Message));
+						GLib.Markup.EscapeText (error.Error.Message));
 				return GettextCatalog.GetString ("<b>Parser Error</b>: {0}",
-				                                 GLib.Markup.EscapeText (error.Info.Message));
+					GLib.Markup.EscapeText (error.Error.Message));
 			}
 			return null;
 		}
