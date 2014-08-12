@@ -2629,7 +2629,9 @@ namespace MonoDevelop.Ide.TypeSystem
 							return;
 						if (file.Item2 != null)
 							Context.InformFileRemoved (new ParsedFileEventArgs (file.Item2));
-						Context.InformFileAdded (new ParsedFileEventArgs (file.Item1.ParsedFile));
+						var parsedDocument = file.Item1;
+						if ((parsedDocument.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+							Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
 				} finally {
 					Context.EndLoadOperation ();
