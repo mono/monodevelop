@@ -207,9 +207,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 			return Contents.FirstOrDefault (o => type.IsInstanceOfType (type)) ??  base.GetContent (type);
 		}
 
-		public override IEnumerable<T> GetContents<T> () where T : class
+		public override IEnumerable<T> GetContents<T> ()
 		{
-			return Contents.OfType<T> ()
+			return Contents.OfType<T> ();
 		}
 
 		public IDisposable OpenUndoGroup ()
