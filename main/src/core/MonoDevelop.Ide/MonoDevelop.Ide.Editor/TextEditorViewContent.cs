@@ -215,7 +215,7 @@ namespace MonoDevelop.Ide.Editor
 			src.Cancel ();
 			src = new CancellationTokenSource ();
 			var token = src.Token;
-			Task.Factory.StartNew (delegate {
+			System.Action action = delegate {
 				try {
 					var foldSegments = new List<IFoldSegment> ();
 					bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
@@ -229,21 +229,18 @@ namespace MonoDevelop.Ide.Editor
 							}
 						}
 					}
-
 					if (updateSymbols) {
 						symbols.Clear ();
 						foreach (PreProcessorDefine define in parsedDocument.Defines) {
 							symbols.Add (define.Define);
 						}
 					}
-
 					foreach (FoldingRegion region in parsedDocument.Foldings) {
 						if (token.IsCancellationRequested)
 							return;
 						var type = FoldingType.Unknown;
 						bool setFolded = false;
 						bool folded = false;
-
 						//decide whether the regions should be folded by default
 						switch (region.Type) {
 						case FoldType.Member:
@@ -273,12 +270,11 @@ namespace MonoDevelop.Ide.Editor
 							break;
 						}
 						var start = textEditor.LocationToOffset (region.Region.Begin);
-						var end   = textEditor.LocationToOffset (region.Region.End);
+						var end = textEditor.LocationToOffset (region.Region.End);
 						var marker = textEditor.CreateFoldSegment (start, end - start);
 						foldSegments.Add (marker);
 						marker.CollapsedText = region.Name;
 						marker.FoldingType = type;
-
 						//and, if necessary, set its fold state
 						if (marker != null && setFolded && firstTime) {
 							// only fold on document open, later added folds are NOT folded by default.
@@ -288,15 +284,24 @@ namespace MonoDevelop.Ide.Editor
 						if (marker != null && region.Region.IsInside (textEditor.CaretLine, textEditor.CaretColumn))
 							marker.IsCollapsed = false;
 					}
-					Application.Invoke (delegate {
-						Console.WriteLine ("update foldings :" + foldSegments.Count +"/"+firstTime);
-						if (!token.IsCancellationRequested)
-							textEditor.SetFoldings (foldSegments);
-					});
-				} catch (Exception ex) {
+					if (firstTime) {
+						textEditor.SetFoldings (foldSegments);
+					} else {
+						Application.Invoke (delegate {
+							if (!token.IsCancellationRequested)
+								textEditor.SetFoldings (foldSegments);
+						});
+					}
+				}
+				catch (Exception ex) {
 					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
 				}
-			});
+			};
+			if (firstTime) {
+				action ();
+				return;
+			}
+			Task.Factory.StartNew (action);
 		}
 
 		void RunFirstTimeFoldUpdate (string text)
@@ -321,7 +326,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 
-		#region IViewContent implementation
+		#region IViewFContent implementation
 
 		event EventHandler IViewContent.ContentNameChanged {
 			add {
