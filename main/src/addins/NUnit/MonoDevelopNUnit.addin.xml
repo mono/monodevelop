@@ -136,6 +136,8 @@
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.GoToFailure" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.ShowTestCode" />
 		<CommandItem id = "MonoDevelop.NUnit.Commands.TestCommands.SelectTestInTree" />
+		<SeparatorItem id = "s1" />
+		<CommandItem id = "MonoDevelop.Ide.Commands.EditCommands.Copy" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/NUnit/ContextMenu/TestChart">
