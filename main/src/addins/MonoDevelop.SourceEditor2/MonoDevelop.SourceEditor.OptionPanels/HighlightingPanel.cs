@@ -111,7 +111,9 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				var editor = new XwtColorSchemeEditor (this);
 				var colorScheme = (Mono.TextEditor.Highlighting.ColorScheme)this.styleStore.GetValue (selectedIter, 1);
 				editor.SetScheme (colorScheme);
-				editor.Run ();
+				var toolkit = Xwt.Toolkit.CurrentEngine;
+				var window=toolkit.WrapWindow (dialog);
+				editor.Run (window);
 				editor.Dispose ();
 			}
 		}
