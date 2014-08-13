@@ -42,6 +42,7 @@ using MonoDevelop.Components.Docking;
 using MonoDevelop.Ide;
 using System.Text.RegularExpressions;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.NUnit
 {
@@ -475,6 +476,39 @@ namespace MonoDevelop.NUnit
 				}
 			}
 		}
+
+
+
+		[CommandHandler (EditCommands.Copy)]
+		protected void OnCopy ()
+		{
+			UnitTest test = GetSelectedTest ();
+			if (test != null) {
+				var last = test.GetLastResult ();
+				if (last == null)
+					return;
+				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
+				clipboard.Text = last.StackTrace;
+			}
+		}
+
+		[CommandUpdateHandler (EditCommands.Copy)]
+		protected void OnUpdateCopy (CommandInfo info)
+		{
+			UnitTest test = GetSelectedTest ();
+			Console.WriteLine ("selected test :" + test);
+			if (test != null) {
+				var result = test.GetLastResult ();
+				Console.WriteLine ("last result:" + result);
+				if (result != null) {
+					Console.WriteLine (result.StackTrace);
+					info.Enabled = !string.IsNullOrEmpty (result.StackTrace);
+					return;
+				}
+			}
+			info.Enabled = false;
+		}
+
 		
 		[CommandHandler (TestCommands.SelectTestInTree)]
 		protected void OnSelectTestInTree ()
