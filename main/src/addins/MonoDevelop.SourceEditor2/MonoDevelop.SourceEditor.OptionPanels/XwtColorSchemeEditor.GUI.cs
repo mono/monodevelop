@@ -92,7 +92,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			undoButton.Clicked += Undo;
 			redoButton.Clicked += Redo;
 			commandHBox.PackStart (undoRedoButton);
-			commandHBox.PackStart (new Button ("AutoSet"){ Style = ButtonStyle.Flat });
 			table.Add (commandHBox, 0, 0);
 
 			var adjustHBox = new HBox ();
@@ -102,7 +101,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			adjustHBox.PackStart (togglebuttonBold, false, WidgetPlacement.End);
 			adjustHBox.PackStart (togglebuttonItalic, false, WidgetPlacement.End);
 			adjustHBox.PackStart (buttonFormat, false, WidgetPlacement.End);
-			table.Add (adjustHBox, 0, 1);
+			commandHBox.PackStart (new Xwt.VSeparator ());
+			commandHBox.PackStart (adjustHBox);
 
 			this.colorbuttonPrimary.ColorSet += StyleChanged;
 			this.colorbuttonSecondary.ColorSet += StyleChanged;

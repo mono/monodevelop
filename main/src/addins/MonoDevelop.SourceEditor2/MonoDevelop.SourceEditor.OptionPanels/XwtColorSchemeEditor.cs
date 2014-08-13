@@ -172,8 +172,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.togglebuttonBold.Visible = false;
 			this.togglebuttonItalic.Visible = false;
 
-			this.colorbuttonPrimary.LabelText = "Primary color";
-			this.colorbuttonSecondary.LabelText = "Secondary color";
+			this.colorbuttonPrimary.LabelText = "Primary";
+			this.colorbuttonSecondary.LabelText = "Secondary";
 
 			handleUIEvents = true;
 		}
