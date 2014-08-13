@@ -1510,11 +1510,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (assemblyReconnectLock) {
 					if (referencesConnected)
 						return;
+					compilation = null;
+					referencesConnected = true;
 					var netProject = Project as DotNetProject;
 					if (netProject == null)
 						return;
-					compilation = null;
-					referencesConnected = true;
 					try {
 						var contexts = new List<IAssemblyReference> ();
 						var nonCyclicCache = new HashSet<Project> ();
