@@ -803,5 +803,338 @@ namespace MonoDevelop.Ide.Editor
 		}
 		#endregion
 
+		#region Key bindings
+
+		[CommandHandler (TextEditorCommands.LineEnd)]
+		void OnLineEnd ()
+		{
+			EditActions.MoveCaretToLineEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.LineStart)]
+		void OnLineStart ()
+		{
+			EditActions.MoveCaretToLineStart (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteLeftChar)]
+		void OnDeleteLeftChar ()
+		{
+			EditActions.Backspace (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteRightChar)]
+		void OnDeleteRightChar ()
+		{
+			EditActions.Delete (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.CharLeft)]
+		void OnCharLeft ()
+		{
+			EditActions.MoveCaretLeft (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.CharRight)]
+		void OnCharRight ()
+		{
+			EditActions.MoveCaretRight (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.LineUp)]
+		void OnLineUp ()
+		{
+			EditActions.MoveCaretUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.LineDown)]
+		void OnLineDown ()
+		{
+			EditActions.MoveCaretDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DocumentStart)]
+		void OnDocumentStart ()
+		{
+			EditActions.MoveCaretToDocumentStart (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DocumentEnd)]
+		void OnDocumentEnd ()
+		{
+			EditActions.MoveCaretToDocumentEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.PageUp)]
+		void OnPageUp ()
+		{
+			EditActions.PageUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.PageDown)]
+		void OnPageDown ()
+		{
+			EditActions.PageDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteLine)]
+		void OnDeleteLine ()
+		{
+			EditActions.DeleteCurrentLine (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteToLineEnd)]
+		void OnDeleteToLineEnd ()
+		{
+			EditActions.DeleteCurrentLineToEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ScrollLineUp)]
+		void OnScrollLineUp ()
+		{
+			EditActions.ScrollLineUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ScrollLineDown)]
+		void OnScrollLineDown ()
+		{
+			EditActions.ScrollLineDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ScrollPageUp)]
+		void OnScrollPageUp ()
+		{
+			EditActions.ScrollPageUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ScrollPageDown)]
+		void OnScrollPageDown ()
+		{
+			EditActions.ScrollPageDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.GotoMatchingBrace)]
+		void OnGotoMatchingBrace ()
+		{
+			EditActions.GotoMatchingBrace (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveLeft)]
+		void OnSelectionMoveLeft ()
+		{
+			EditActions.SelectionMoveLeft (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveRight)]
+		void OnSelectionMoveRight ()
+		{
+			EditActions.SelectionMoveRight (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MovePrevWord)]
+		void OnMovePrevWord ()
+		{
+			EditActions.MovePrevWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MoveNextWord)]
+		void OnMoveNextWord ()
+		{
+			EditActions.MoveNextWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMovePrevWord)]
+		void OnSelectionMovePrevWord ()
+		{
+			EditActions.SelectionMovePrevWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveNextWord)]
+		void OnSelectionMoveNextWord ()
+		{
+			EditActions.SelectionMoveNextWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MovePrevSubword)]
+		void OnMovePrevSubword ()
+		{
+			EditActions.MovePrevSubWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MoveNextSubword)]
+		void OnMoveNextSubword ()
+		{
+			EditActions.MoveNextSubWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMovePrevSubword)]
+		void OnSelectionMovePrevSubword ()
+		{
+			EditActions.SelectionMovePrevSubWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveNextSubword)]
+		void OnSelectionMoveNextSubword ()
+		{
+			EditActions.SelectionMoveNextSubWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveUp)]
+		void OnSelectionMoveUp ()
+		{
+			EditActions.SelectionMoveUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveDown)]
+		void OnSelectionMoveDown ()
+		{
+			EditActions.SelectionMoveDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveHome)]
+		void OnSelectionMoveHome ()
+		{
+			EditActions.SelectionMoveLineStart (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveEnd)]
+		void OnSelectionMoveEnd ()
+		{
+			EditActions.SelectionMoveLineEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveToDocumentStart)]
+		void OnSelectionMoveToDocumentStart ()
+		{
+			EditActions.SelectionMoveToDocumentStart (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ExpandSelectionToLine)]
+		void OnExpandSelectionToLine ()
+		{
+			EditActions.ExpandSelectionToLine (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveToDocumentEnd)]
+		void OnSelectionMoveToDocumentEnd ()
+		{
+			EditActions.SelectionMoveToDocumentEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SwitchCaretMode)]
+		void OnSwitchCaretMode ()
+		{
+			EditActions.SwitchCaretMode (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.InsertTab)]
+		void OnInsertTab ()
+		{
+			EditActions.InsertTab (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.RemoveTab)]
+		void OnRemoveTab ()
+		{
+			EditActions.RemoveTab (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.InsertNewLine)]
+		void OnInsertNewLine ()
+		{
+			EditActions.InsertNewLine (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.InsertNewLineAtEnd)]
+		void OnInsertNewLineAtEnd ()
+		{
+			EditActions.InsertNewLineAtEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.InsertNewLinePreserveCaretPosition)]
+		void OnInsertNewLinePreserveCaretPosition ()
+		{
+			EditActions.InsertNewLinePreserveCaretPosition (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.CompleteStatement)]
+		void OnCompleteStatement ()
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var generator = CodeGenerator.CreateGenerator (doc);
+			if (generator != null) {
+				generator.CompleteStatement (doc);
+			}
+		}
+
+		[CommandHandler (TextEditorCommands.DeletePrevWord)]
+		void OnDeletePrevWord ()
+		{
+			EditActions.DeletePreviousWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteNextWord)]
+		void OnDeleteNextWord ()
+		{
+			EditActions.DeleteNextWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeletePrevSubword)]
+		void OnDeletePrevSubword ()
+		{
+			EditActions.DeletePreviousSubword (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteNextSubword)]
+		void OnDeleteNextSubword ()
+		{
+			EditActions.DeleteNextSubword (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionPageDownAction)]
+		void OnSelectionPageDownAction ()
+		{
+			EditActions.SelectionPageDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionPageUpAction)]
+		void OnSelectionPageUpAction ()
+		{
+			EditActions.SelectionPageUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.PulseCaret)]
+		void OnPulseCaretCommand ()
+		{
+			EditActions.StartCaretPulseAnimation (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.TransposeCharacters)]
+		void TransposeCharacters ()
+		{
+			EditActions.TransposeCharacters (textEditor);
+
+		}
+
+		[CommandHandler (TextEditorCommands.DuplicateLine)]
+		void DuplicateLine ()
+		{	
+			EditActions.DuplicateCurrentLine (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.RecenterEditor)]
+		void RecenterEditor ()
+		{
+			EditActions.RecenterEditor (textEditor);
+		}
+
+		[CommandHandler (EditCommands.JoinWithNextLine)]
+		void JoinLines ()
+		{
+			EditActions.JoinLines (textEditor);
+		}
+
+		#endregion
+
 	}
 }

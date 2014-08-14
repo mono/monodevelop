@@ -1021,6 +1021,11 @@
 			_description = "Cycles completing the current word from matching words in all open files"
 			macShortcut = "Ctrl|/"
 			shortcut = "Alt|/" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret"
+			_label = "Find caret"
+			_description = "Animates the text editor caret to help find it"
+			shortcut = "Ctrl||"
+			macShortcut = "Meta||" />
 	</Category>
 </Extension>
 </ExtensionModel>

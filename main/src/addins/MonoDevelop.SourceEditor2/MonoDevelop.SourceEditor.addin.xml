@@ -80,11 +80,6 @@
 				_description = "Cycles completing the current word from matching words in all open files"
 				macShortcut = "Ctrl|/"
 				shortcut = "Alt|/" />
-		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.PulseCaret"
-				_label = "Find caret"
-				_description = "Animates the text editor caret to help find it"
-				shortcut = "Ctrl||"
-				macShortcut = "Meta||" />
 		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker"
 				_label = "Toggle message bubble"
 				_description = "Toggles message bubble on/off"/>

@@ -2983,6 +2983,139 @@ namespace MonoDevelop.SourceEditor
 		{
 			MiscActions.InsertNewLine (TextEditor.GetTextEditorData ());
 		}
+
+		void IEditorActionHost.SwitchCaretMode ()
+		{
+			TextEditor.RunAction (MiscActions.SwitchCaretMode);
+		}
+
+		void IEditorActionHost.InsertTab ()
+		{
+			TextEditor.RunAction (MiscActions.InsertTab);
+		}
+
+		void IEditorActionHost.RemoveTab ()
+		{
+			TextEditor.RunAction (MiscActions.RemoveTab);
+		}
+
+		void IEditorActionHost.InsertNewLine ()
+		{
+			TextEditor.RunAction (MiscActions.InsertNewLine);
+		}
+
+		void IEditorActionHost.InsertNewLineAtEnd ()
+		{
+			TextEditor.RunAction (MiscActions.InsertNewLineAtEnd);
+		}
+
+		void IEditorActionHost.InsertNewLinePreserveCaretPosition ()
+		{
+			TextEditor.RunAction (MiscActions.InsertNewLinePreserveCaretPosition);
+		}
+
+		void IEditorActionHost.DeletePreviousWord ()
+		{
+			TextEditor.RunAction (DeleteActions.PreviousWord);
+		}
+
+		void IEditorActionHost.DeleteNextWord ()
+		{
+			TextEditor.RunAction (DeleteActions.NextWord);
+		}
+
+		void IEditorActionHost.DeletePreviousSubword ()
+		{
+			TextEditor.RunAction (DeleteActions.PreviousSubword);
+		}
+
+		void IEditorActionHost.DeleteNextSubword ()
+		{
+			TextEditor.RunAction (DeleteActions.NextSubword);
+		}
+
+		void IEditorActionHost.StartCaretPulseAnimation ()
+		{
+			TextEditor.StartCaretPulseAnimation ();
+		}
+
+		void IEditorActionHost.RecenterEditor ()
+		{
+			TextEditor.RunAction (MiscActions.RecenterEditor);
+		}
+
+		void IEditorActionHost.JoinLines ()
+		{
+			using (var undo = Document.OpenUndoGroup ()) {
+				TextEditor.RunAction (Mono.TextEditor.Vi.ViActions.Join);
+			}
+		}
+
+		void IEditorActionHost.MoveNextSubWord ()
+		{ 
+			TextEditor.RunAction (SelectionActions.MoveNextSubword);
+		}
+
+		void IEditorActionHost.MovePrevSubWord ()
+		{
+			TextEditor.RunAction (SelectionActions.MovePreviousSubword);
+		}
+
+		void IEditorActionHost.MoveNextWord ()
+		{
+			TextEditor.RunAction (CaretMoveActions.NextWord);
+		}
+
+		void IEditorActionHost.MovePrevWord ()
+		{
+			TextEditor.RunAction (CaretMoveActions.PreviousWord);
+		}
+
+		void IEditorActionHost.PageUp ()
+		{
+			TextEditor.RunAction (CaretMoveActions.PageUp);
+		}
+
+		void IEditorActionHost.PageDown ()
+		{
+			TextEditor.RunAction (CaretMoveActions.PageDown);
+		}
+
+		void IEditorActionHost.DeleteCurrentLine ()
+		{
+			TextEditor.RunAction (DeleteActions.CaretLine);
+		}
+
+		void IEditorActionHost.DeleteCurrentLineToEnd ()
+		{
+			TextEditor.RunAction (DeleteActions.CaretLineToEnd);
+		}
+
+		void IEditorActionHost.ScrollLineUp ()
+		{
+			TextEditor.RunAction (ScrollActions.Up);
+		}
+
+		void IEditorActionHost.ScrollLineDown ()
+		{
+			TextEditor.RunAction (ScrollActions.Down);
+		}
+
+		void IEditorActionHost.ScrollPageUp ()
+		{
+			TextEditor.RunAction (ScrollActions.PageUp);
+		}
+
+		void IEditorActionHost.ScrollPageDown ()
+		{
+			TextEditor.RunAction (ScrollActions.PageDown);
+		}
+
+		void IEditorActionHost.GotoMatchingBrace ()
+		{
+			TextEditor.RunAction (MiscActions.GotoMatchingBracket);
+		}
+
 		#endregion
 	
 		 
