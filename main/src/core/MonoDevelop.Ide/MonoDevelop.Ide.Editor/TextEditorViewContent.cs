@@ -215,6 +215,7 @@ namespace MonoDevelop.Ide.Editor
 			src.Cancel ();
 			src = new CancellationTokenSource ();
 			var token = src.Token;
+			var caretLocation = textEditor.CaretLocation;
 			System.Action action = delegate {
 				try {
 					var foldSegments = new List<IFoldSegment> ();
@@ -281,7 +282,7 @@ namespace MonoDevelop.Ide.Editor
 							marker.IsCollapsed = folded;
 							continue;
 						}
-						if (marker != null && region.Region.IsInside (textEditor.CaretLine, textEditor.CaretColumn))
+						if (marker != null && region.Region.IsInside (caretLocation.Line, caretLocation.Column))
 							marker.IsCollapsed = false;
 					}
 					if (firstTime) {
