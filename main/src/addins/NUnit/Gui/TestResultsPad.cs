@@ -477,8 +477,6 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
-
-
 		[CommandHandler (EditCommands.Copy)]
 		protected void OnCopy ()
 		{
@@ -496,12 +494,9 @@ namespace MonoDevelop.NUnit
 		protected void OnUpdateCopy (CommandInfo info)
 		{
 			UnitTest test = GetSelectedTest ();
-			Console.WriteLine ("selected test :" + test);
 			if (test != null) {
 				var result = test.GetLastResult ();
-				Console.WriteLine ("last result:" + result);
 				if (result != null) {
-					Console.WriteLine (result.StackTrace);
 					info.Enabled = !string.IsNullOrEmpty (result.StackTrace);
 					return;
 				}
@@ -509,7 +504,6 @@ namespace MonoDevelop.NUnit
 			info.Enabled = false;
 		}
 
-		
 		[CommandHandler (TestCommands.SelectTestInTree)]
 		protected void OnSelectTestInTree ()
 		{
