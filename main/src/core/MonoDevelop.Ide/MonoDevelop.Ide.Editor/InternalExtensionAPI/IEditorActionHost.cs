@@ -115,5 +115,15 @@ namespace MonoDevelop.Ide.Editor
 		void ScrollPageDown ();
 
 		void GotoMatchingBrace ();
+
+		void MoveBlockUp ();
+
+		void MoveBlockDown ();
+
+		void ToggleBlockSelectionMode ();
+
+		void IndentSelection ();
+
+		void UnIndentSelection ();
 	}
 }

@@ -2204,12 +2204,6 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.InsertTemplate (template, editor, context);
 		}
 
-		[CommandHandler (TextEditorCommands.GotoMatchingBrace)]
-		protected void OnGotoMatchingBrace ()
-		{
-			TextEditor.RunAction (MiscActions.GotoMatchingBracket);
-		}
-		
 		void CorrectIndenting ()
 		{
 			var doc = ownerDocument.Editor;
@@ -2236,45 +2230,6 @@ namespace MonoDevelop.SourceEditor
 				formatter.CorrectIndenting (policies, doc, TextEditor.Caret.Line);
 			}
 		}
-
-		[CommandUpdateHandler (TextEditorCommands.MoveBlockUp)]
-		[CommandUpdateHandler (TextEditorCommands.MoveBlockDown)]
-		void MoveBlockUpdateHandler (CommandInfo cinfo)
-		{
-			cinfo.Enabled = widget.EditorHasFocus;
-		}
-
-		[CommandHandler (TextEditorCommands.MoveBlockUp)]
-		protected void OnMoveBlockUp ()
-		{
-			using (var undo = TextEditor.OpenUndoGroup ()) {
-				TextEditor.RunAction (MiscActions.MoveBlockUp);
-				CorrectIndenting ();
-			}
-		}
-		
-		[CommandHandler (TextEditorCommands.MoveBlockDown)]
-		protected void OnMoveBlockDown ()
-		{
-			using (var undo = TextEditor.OpenUndoGroup ()) {
-				TextEditor.RunAction (MiscActions.MoveBlockDown);
-				CorrectIndenting ();
-			}
-		}
-		
-		[CommandUpdateHandler (TextEditorCommands.ToggleBlockSelectionMode)]
-		protected void UpdateToggleBlockSelectionMode (CommandInfo cinfo)
-		{
-			cinfo.Enabled = TextEditor.IsSomethingSelected;
-		}
-		
-		[CommandHandler (TextEditorCommands.ToggleBlockSelectionMode)]
-		protected void OnToggleBlockSelectionMode ()
-		{
-			TextEditor.SelectionMode = TextEditor.SelectionMode == Mono.TextEditor.SelectionMode.Normal ? Mono.TextEditor.SelectionMode.Block : Mono.TextEditor.SelectionMode.Normal;
-			TextEditor.QueueDraw ();
-		}
-
 
 		public override object GetContent (Type type)
 		{
@@ -2392,23 +2347,6 @@ namespace MonoDevelop.SourceEditor
 		public void OnToggleErrorTextMarker ()
 		{
 			widget.OnToggleErrorTextMarker ();
-		}
-
-		[CommandHandler (EditCommands.IndentSelection)]
-		public void IndentSelection ()
-		{
-			if (widget.TextEditor.IsSomethingSelected) {
-				MiscActions.IndentSelection (widget.TextEditor.GetTextEditorData ());
-			} else {
-				int offset = widget.TextEditor.LocationToOffset (widget.TextEditor.Caret.Line, 1);
-				widget.TextEditor.Insert (offset, widget.TextEditor.Options.IndentationString);
-			}
-		}
-		
-		[CommandHandler (EditCommands.UnIndentSelection)]
-		public void UnIndentSelection ()
-		{
-			MiscActions.RemoveTab (widget.TextEditor.GetTextEditorData ());
 		}
 
 		[CommandHandler (SourceEditorCommands.NextIssue)]
@@ -3114,6 +3052,43 @@ namespace MonoDevelop.SourceEditor
 		void IEditorActionHost.GotoMatchingBrace ()
 		{
 			TextEditor.RunAction (MiscActions.GotoMatchingBracket);
+		}
+
+		void IEditorActionHost.MoveBlockUp ()
+		{
+			using (var undo = TextEditor.OpenUndoGroup ()) {
+				TextEditor.RunAction (MiscActions.MoveBlockUp);
+				CorrectIndenting ();
+			}
+		}
+
+		void IEditorActionHost.MoveBlockDown ()
+		{
+			using (var undo = TextEditor.OpenUndoGroup ()) {
+				TextEditor.RunAction (MiscActions.MoveBlockDown);
+				CorrectIndenting ();
+			}
+		}
+
+		void IEditorActionHost.ToggleBlockSelectionMode ()
+		{
+			TextEditor.SelectionMode = TextEditor.SelectionMode == Mono.TextEditor.SelectionMode.Normal ? Mono.TextEditor.SelectionMode.Block : Mono.TextEditor.SelectionMode.Normal;
+			TextEditor.QueueDraw ();
+		}
+
+		void IEditorActionHost.IndentSelection ()
+		{
+			if (widget.TextEditor.IsSomethingSelected) {
+				MiscActions.IndentSelection (widget.TextEditor.GetTextEditorData ());
+			} else {
+				int offset = widget.TextEditor.LocationToOffset (widget.TextEditor.Caret.Line, 1);
+				widget.TextEditor.Insert (offset, widget.TextEditor.Options.IndentationString);
+			}
+		}
+
+		void IEditorActionHost.UnIndentSelection ()
+		{
+			MiscActions.RemoveTab (widget.TextEditor.GetTextEditorData ());
 		}
 
 		#endregion

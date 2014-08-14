@@ -1113,7 +1113,6 @@ namespace MonoDevelop.Ide.Editor
 		void TransposeCharacters ()
 		{
 			EditActions.TransposeCharacters (textEditor);
-
 		}
 
 		[CommandHandler (TextEditorCommands.DuplicateLine)]
@@ -1132,6 +1131,36 @@ namespace MonoDevelop.Ide.Editor
 		void JoinLines ()
 		{
 			EditActions.JoinLines (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MoveBlockUp)]
+		void OnMoveBlockUp ()
+		{
+			EditActions.MoveBlockUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MoveBlockDown)]
+		void OnMoveBlockDown ()
+		{
+			EditActions.MoveBlockDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ToggleBlockSelectionMode)]
+		void OnToggleBlockSelectionMode ()
+		{
+			EditActions.ToggleBlockSelectionMode (textEditor);
+		}
+
+		[CommandHandler (EditCommands.IndentSelection)]
+		void IndentSelection ()
+		{
+			EditActions.IndentSelection (textEditor);
+		}
+
+		[CommandHandler (EditCommands.UnIndentSelection)]
+		void UnIndentSelection ()
+		{
+			EditActions.UnIndentSelection (textEditor);
 		}
 
 		#endregion

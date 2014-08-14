@@ -322,6 +322,31 @@ namespace MonoDevelop.Ide.Editor
 			textEditor.EditorActionHost.SwitchCaretMode ();
 		}
 
+		public static void MoveBlockUp (TextEditor textEditor)
+		{
+			textEditor.EditorActionHost.MoveBlockUp ();
+		}
+
+		public static void MoveBlockDown (TextEditor textEditor)
+		{
+			textEditor.EditorActionHost.MoveBlockDown ();
+		}
+
+		public static void ToggleBlockSelectionMode (TextEditor textEditor)
+		{
+			textEditor.EditorActionHost.ToggleBlockSelectionMode ();
+		}
+
+		public static void IndentSelection (TextEditor editor)
+		{
+			editor.EditorActionHost.IndentSelection ();
+		}
+
+		public static void UnIndentSelection (TextEditor editor)
+		{
+			editor.EditorActionHost.UnIndentSelection ();
+		}
+
 		#region SelectionActions
 
 		static void RunSelectionAction (TextEditor textEditor, Action<TextEditor> action)
