@@ -38,6 +38,7 @@ using Gtk;
 using MonoDevelop.Components;
 using Xwt.Drawing;
 using GitHub.Repository.Services;
+using GitHub.Repository.Commands;
 
 namespace GitHub.Repository.Gui
 {
@@ -149,6 +150,8 @@ namespace GitHub.Repository.Gui
 				return paned;
 			}
 		}
+
+
 
 	}
 }

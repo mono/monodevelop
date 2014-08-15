@@ -39,8 +39,8 @@
 				defaultHandler = "GitHub.Repository.Commands.GistThisSelectedOnlyHandler"
 				description = "Gist the selection in the document"/>
 
-			<Command id = "GitHub.Repository.Commands.CloneRepo" _label = "Clone this Repo.." />
-			<Command id = "GitHub.Repository.Commands.ViewGitHubRepoProperties" _label = "Properties" />
+			<Command id = "GitHub.Repository.Commands.GitHubRepoCommands.CloneRepo" _label = "_Clone this Repo" />
+			<Command id = "GitHub.Repository.Commands.GitHubRepoCommands.ViewGitHubRepoProperties" _label = "_GitHub Repo Properties" />
 
 		</Category>
 	</Extension>
@@ -77,8 +77,8 @@
 	</Extension>
 		
 	<Extension path = "/MonoDevelop/GitHubRepository/ContextMenu/GitHubPad">
-		<CommandItem id = "GitHub.Repository.Commands.CloneRepo" />
-		<CommandItem id = "GitHub.Repository.Commands.ViewGitHubRepoProperties" />
+		<CommandItem id = "GitHub.Repository.Commands.GitHubRepoCommands.CloneRepo" />
+		<CommandItem id = "GitHub.Repository.Commands.GitHubRepoCommands.ViewGitHubRepoProperties" />
 	</Extension>
 
 </ExtensionModel>

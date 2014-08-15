@@ -53,9 +53,10 @@ namespace GitHub.Repository.Core
 			return repo;
 		}
 
-		public bool GistThis(String fileName, String FileContent){
+		public bool GistThis(String fileName, String FileContent, string mimeType){
 
 			Octokit.NewGist newGist = new Octokit.NewGist ();
+			newGist.Description = "A Gist from MonoDevelop!";
 			newGist.Files.Add (fileName, FileContent);
 
 			try {

@@ -29,6 +29,7 @@ using MonoDevelop.Components.Commands;
 using GitHub.Repository.Commands;
 using GitHub.Repository.Services;
 using GitHub.Repository.Core;
+using MonoDevelop.VersionControl.Dialogs;
 
 namespace GitHub.Repository.Gui
 {
@@ -68,18 +69,31 @@ namespace GitHub.Repository.Gui
 
 	class GitHubRepoNodeCommandHandler: NodeCommandHandler
 	{
-		[CommandHandler (GitHubRepoPadCommands.checkout)]
-		protected void Checkout ()
-		{
-			GitHubRepo test = CurrentNode.DataItem as GitHubRepo;
-		}
 
-		[CommandHandler (GitHubRepoPadCommands.viewProperties)]
-		protected void ViewGitHubRepoProperties ()
+		[CommandHandler (GitHubRepoCommands.ViewGitHubRepoProperties)]
+		protected void OnViewGitHubRepoProperties ()
 		{
 			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
 			GitHubUtils.ViewProperties (repo.ORepository);
+
 		}
+
+		[CommandHandler (GitHubRepoCommands.CloneRepo)]
+		protected void OnCloneRepo ()
+		{
+			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
+			//SelectRepositoryDialog del = new SelectRepositoryDialog (SelectRepositoryMode.Checkout);
+			//try {
+			//	if (MessageService.RunCustomDialog (del) == (int) Gtk.ResponseType.Ok && del.Repository != null) {
+			//		CheckoutWorker w = new CheckoutWorker (del.Repository, del.TargetPath);
+			//		w.Start ();
+			//	}
+			//} finally {
+			//	del.Destroy ();
+			//}
+
+		}
+
 
 	}
 }

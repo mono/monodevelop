@@ -41,10 +41,10 @@ using Gtk;
 
 namespace GitHub.Repository.Commands
 {
-	public enum GitHubRepoPadCommands
+	public enum GitHubRepoCommands
 	{
-		checkout,
-		viewProperties
+		CloneRepo,
+		ViewGitHubRepoProperties
 	}
 
 	class GitHubCommandHandler: CommandHandler
@@ -96,12 +96,23 @@ namespace GitHub.Repository.Commands
 				string[] words = s.Split ('=');
 				return words [1].Trim ();
 			}
+
+
+
 		}
 
 		protected override void Update (CommandInfo info)
 		{
 			info.Enabled = Repository != null;
 		}
+
+		protected string getGistFileName(string fileName)
+		{
+			return (fileName + "-" + DateTime.Now.ToString ()).Replace("/","-").Replace(" ","-").Trim();
+
+		}
+
+
 	}
 
 
@@ -119,10 +130,12 @@ namespace GitHub.Repository.Commands
 		{
 			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			Document doc = SelectedDocument;
+			string mimeType = doc.Editor.MimeType;
 			string content = doc.Editor.Text;
-			string gistFileName = doc.Name + "-" + DateTime.Now.ToString ();
+			string gistFileName = getGistFileName(doc.FileName.FileName);
 			var obj = new OctokitHelper ();
-			obj.GistThis ("asdsd", content);
+
+			obj.GistThis (gistFileName, content, mimeType);
 		}
 
 	}
@@ -133,14 +146,15 @@ namespace GitHub.Repository.Commands
 			//MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			Document doc = SelectedDocument;
 			string content = doc.Editor.SelectedText;
-			string gistFileName = doc.FileName.FileName + "-" + DateTime.Now.ToString ();
+			string mimeType = doc.Editor.MimeType;
+			string gistFileName = getGistFileName(doc.FileName.FileName);
 			var obj = new OctokitHelper ();
-
-			obj.GistThis ("asd" , content);
+			obj.GistThis (gistFileName , content, mimeType);
 		}
 
 
 	}
+
 
 	class CopyURLInGitHubHandler : GitHubCommandHandler
 	{
@@ -152,20 +166,19 @@ namespace GitHub.Repository.Commands
 
 			Octokit.Repository repo = this.ORepository;
 
-			string url = repo.GitUrl.Substring (0, (repo.GitUrl.Length- 4));
+			string url = "https" + repo.GitUrl.Substring (3, (repo.GitUrl.Length- 7));
 
 
 			Document document = this.SelectedDocument;
 			string fileName = document.FileName;
-
-
+			string relativeFilePath = document.PathRelativeToProject;
 			IEnumerable<DocumentLine> selectedDocumentLines = document.Editor.SelectedLines;
-
+			String githubURL = url + "/blob/" + relativeFilePath + "#L" + selectedDocumentLines.First ().LineNumber + "-" + selectedDocumentLines.Last ().LineNumber;
 			
 			Clipboard clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-			clipboard.Text = "praveena";
+			clipboard.Text = githubURL;
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
-			clipboard.Text = "praveena1";
+			clipboard.Text = githubURL;
 		}
 	}
 }
