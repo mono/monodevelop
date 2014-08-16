@@ -55,6 +55,25 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			navigator.SetValue (nameField, groupName);
 			return navigator;
 		}
+
+		public static TreeNavigator GetNodeFromStyleName (this TreeStore colorStore, string styleName, IDataField<ColorScheme.PropertyDecsription> propertyField)
+		{
+			var navigator = colorStore.GetFirstNode ();
+
+			do {
+				navigator.MoveToChild ();
+
+				do {
+					var data = (ColorScheme.PropertyDecsription)navigator.GetValue (propertyField);
+					if (data != null && data.Attribute != null && data.Attribute.Name == styleName)
+						return navigator;
+				} while (navigator.MoveNext ());
+
+				navigator.MoveToParent ();
+			} while (navigator.MoveNext ());
+
+			return null;
+		}
 	}
 }
 

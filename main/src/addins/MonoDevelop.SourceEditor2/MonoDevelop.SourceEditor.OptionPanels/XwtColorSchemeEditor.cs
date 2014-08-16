@@ -217,7 +217,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				: FontStyle.Normal;
 
 			if (handleUIEvents)
-				history.AddCommand (new ChangeChunkStyleCommand (oldStyle, newStyle, navigator));
+				history.AddCommand (new ChangeChunkStyleCommand (oldStyle, newStyle, navigator.GetValue (nameField)));
 
 			var groupName = GetGroupNameFromNode (navigator);
 			ApplyNewScheme (groupName);
@@ -309,7 +309,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			newStyle.SecondColor = GetColorFromButton (colorbuttonSecondary);
 
 			if (handleUIEvents)
-				history.AddCommand (new ChangeAmbientColorCommand (oldStyle, newStyle, navigator));
+				history.AddCommand (new ChangeAmbientColorCommand (oldStyle, newStyle, navigator.GetValue (nameField)));
 
 			var groupName = GetGroupNameFromNode (navigator);
 			ApplyNewScheme (groupName);
@@ -431,7 +431,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			}
 
 			var styleName = chunk.Style;
-			var navigator = GetNodeFromStyleName (styleName);
+			var navigator = colorStore.GetNodeFromStyleName (styleName, propertyField);
 			if (navigator == null) {
 				treeviewColors.UnselectAll ();
 				return;
@@ -478,25 +478,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				ChangeAmbientColor (navigator, oldAmbientColor);
 				return;
 			}
-		}
-
-		TreeNavigator GetNodeFromStyleName (string styleName)
-		{
-			var navigator = colorStore.GetFirstNode ();
-
-			do {
-				navigator.MoveToChild ();
-
-				do {
-					var data = (ColorScheme.PropertyDecsription)navigator.GetValue (propertyField);
-					if (data != null && data.Attribute != null && data.Attribute.Name == styleName)
-						return navigator;
-				} while (navigator.MoveNext ());
-
-				navigator.MoveToParent ();
-			} while (navigator.MoveNext ());
-
-			return null;
 		}
 
 		void FormatByPatternToggled (object sender, EventArgs e)

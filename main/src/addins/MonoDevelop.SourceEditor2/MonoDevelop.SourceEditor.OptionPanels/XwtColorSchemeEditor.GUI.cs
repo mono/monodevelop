@@ -118,7 +118,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.scrollView = new ScrollView (wrappedTextEditor) {
 				HorizontalScrollPolicy = ScrollPolicy.Always,
 				VerticalScrollPolicy = ScrollPolicy.Always
-			};
+			};//Stucked with this. Scrolling doesn't work.
 			table.Add (scrollView, 0, 2, 1, 1, true, true);
 
 			this.treeviewColors = new TreeView ();
@@ -126,7 +126,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.treeviewColors.HeadersVisible = false;
 			this.treeviewColors.DataSource = colorStore;
 			this.treeviewColors.SelectionChanged += TreeviewColorsSelectionChanged;
-			history = new ColorSchemeEditorHistory (treeviewColors, styleField);
+			history = new ColorSchemeEditorHistory (treeviewColors, styleField, propertyField);
 			history.CanUndoRedoChanged += CanUndoRedoChanged;
 
 			var box = new HPaned ();
