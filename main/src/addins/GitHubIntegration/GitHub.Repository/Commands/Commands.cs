@@ -98,8 +98,6 @@ namespace GitHub.Repository.Commands
 				return words [1].Trim ();
 			}
 
-
-
 		}
 
 		protected override void Update (CommandInfo info)
@@ -112,8 +110,6 @@ namespace GitHub.Repository.Commands
 			return (fileName + "-" + DateTime.Now.ToString ()).Replace("/","-").Replace(" ","-").Trim();
 
 		}
-
-
 	}
 
 
