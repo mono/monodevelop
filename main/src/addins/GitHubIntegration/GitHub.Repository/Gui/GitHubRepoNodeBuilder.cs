@@ -30,6 +30,8 @@ using GitHub.Repository.Commands;
 using GitHub.Repository.Services;
 using GitHub.Repository.Core;
 using MonoDevelop.VersionControl.Dialogs;
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace GitHub.Repository.Gui
 {
@@ -73,8 +75,12 @@ namespace GitHub.Repository.Gui
 		[CommandHandler (GitHubRepoCommands.ViewGitHubRepoProperties)]
 		protected void OnViewGitHubRepoProperties ()
 		{
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Loading properties"));
+
 			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
 			GitHubUtils.ViewProperties (repo.ORepository);
+
+			IdeApp.Workbench.StatusBar.EndProgress ();
 
 		}
 

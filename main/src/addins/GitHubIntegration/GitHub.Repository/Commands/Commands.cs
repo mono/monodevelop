@@ -38,6 +38,7 @@ using System.IO;
 using System.Collections.Generic;
 using Mono.TextEditor;
 using Gtk;
+using MonoDevelop.Core;
 
 namespace GitHub.Repository.Commands
 {
@@ -120,7 +121,9 @@ namespace GitHub.Repository.Commands
 	{
 		protected override void Run ()
 		{
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Loading properties"));
 			GitHubUtils.ViewProperties (ORepository);
+			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 	}
 
@@ -128,7 +131,8 @@ namespace GitHub.Repository.Commands
 
 		protected override void Run ()
 		{
-			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Started Gisting the selected document.."));
+			IdeApp.Workbench.StatusBar.AutoPulse = true;
 			Document doc = SelectedDocument;
 			string mimeType = doc.Editor.MimeType;
 			string content = doc.Editor.Text;
@@ -136,6 +140,7 @@ namespace GitHub.Repository.Commands
 			var obj = new OctokitHelper ();
 
 			obj.GistThis (gistFileName, content, mimeType);
+			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 
 	}
@@ -143,13 +148,15 @@ namespace GitHub.Repository.Commands
 	class GistThisSelectedOnlyHandler : GitHubCommandHandler {
 		protected override void Run ()
 		{
-			//MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Started Gisting the selection in the document.."));
+			IdeApp.Workbench.StatusBar.AutoPulse = true;
 			Document doc = SelectedDocument;
 			string content = doc.Editor.SelectedText;
 			string mimeType = doc.Editor.MimeType;
 			string gistFileName = getGistFileName(doc.FileName.FileName);
 			var obj = new OctokitHelper ();
 			obj.GistThis (gistFileName , content, mimeType);
+			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 
 
@@ -160,6 +167,7 @@ namespace GitHub.Repository.Commands
 	{
 		protected override void Run ()
 		{
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Started copying the github location of the line in code"));
 			string repositoryURL = this.Repository.GetCurrentRemote();
 			string locationUri = this.Repository.LocationDescription;
 			var wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.BaseDirectory.FileName;
@@ -179,6 +187,8 @@ namespace GitHub.Repository.Commands
 			clipboard.Text = githubURL;
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
 			clipboard.Text = githubURL;
+
+			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 	}
 }
