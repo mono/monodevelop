@@ -207,19 +207,19 @@ namespace Mono.TextEditor.Highlighting
 
 		#region Text Colors
 
-		[ColorDescription ("Plain Text", VSSetting = "Plain Text", GroupName = GroupNames.CSharp)]
+		[ColorDescription ("Plain Text", VSSetting = "Plain Text", GroupName = GroupNames.Other)]
 		public ChunkStyle PlainText { get; private set; }
 
-		[ColorDescription ("Selected Text", VSSetting = "Selected Text", GroupName = GroupNames.CSharp)]
+		[ColorDescription ("Selected Text", VSSetting = "Selected Text", GroupName = GroupNames.Other)]
 		public ChunkStyle SelectedText { get; private set; }
 
-		[ColorDescription ("Selected Text(Inactive)", VSSetting = "Inactive Selected Text", GroupName = GroupNames.CSharp)]
+		[ColorDescription ("Selected Text(Inactive)", VSSetting = "Inactive Selected Text", GroupName = GroupNames.Other)]
 		public ChunkStyle SelectedInactiveText { get; private set; }
 
-		[ColorDescription ("Collapsed Text", VSSetting = "Collapsible Text", GroupName = GroupNames.CSharp)]
+		[ColorDescription ("Collapsed Text", VSSetting = "Collapsible Text", GroupName = GroupNames.Other)]
 		public ChunkStyle CollapsedText { get; private set; }
 
-		[ColorDescription ("Line Numbers", VSSetting = "Line Numbers", GroupName = GroupNames.CSharp)]
+		[ColorDescription ("Line Numbers", VSSetting = "Line Numbers", GroupName = GroupNames.Other)]
 		public ChunkStyle LineNumbers { get; private set; }
 
 		[ColorDescription ("Punctuation", VSSetting = "Operator", GroupName = GroupNames.CSharp)]

@@ -42,6 +42,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		{
 			this.panel = panel;
 			Build ();
+			this.textEditor.ShowAll ();
 			TreeviewColorsSelectionChanged (null, null);
 		}
 
@@ -249,6 +250,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 		void SetCodeExample (string groupName)
 		{
+			GetSampleFromEditor ();
 			switch (groupName) {
 			case GroupNames.XML:
 				SetEditorText (CodeSamples.XML, "application/xml");
@@ -262,8 +264,32 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			case GroupNames.Script:
 				SetEditorText (CodeSamples.Javascript, "text/javascript");
 				break;
-			default:
+			case GroupNames.CSharp:
 				SetEditorText (CodeSamples.CSharp, "text/x-csharp");
+				break;
+			default:
+				SetEditorText (CodeSamples.Text, "text");
+				break;
+			}
+		}
+
+		void GetSampleFromEditor ()
+		{
+			switch (this.textEditor.MimeType) {
+			case "application/xml":
+				CodeSamples.XML = textEditor.Text;
+				break;
+			case "text/html":
+				CodeSamples.Web = textEditor.Text;
+				break;
+			case "text/css":
+				CodeSamples.CSS = textEditor.Text;
+				break;
+			case "text/javascript":
+				CodeSamples.Javascript = textEditor.Text;
+				break;
+			case "text/x-csharp":
+				CodeSamples.CSharp = textEditor.Text;
 				break;
 			}
 		}
@@ -476,8 +502,6 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		void FormatByPatternToggled (object sender, EventArgs e)
 		{
 			formatByPatternMode = !formatByPatternMode;
-			//if (!formatByPatternMode)
-			//return;
 		}
 	}
 }
