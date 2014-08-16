@@ -41,6 +41,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		bool handleUIEvents = true;
 		ColorSchemeEditorHistory history;
 		TextEditor textEditor;
+		ScrollView scrollView;
 		ColorScheme colorScheme;
 		string fileName;
 		HighlightingPanel panel;
@@ -110,13 +111,11 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			this.togglebuttonBold.Toggled += StyleChanged;
 			this.togglebuttonItalic.Toggled += StyleChanged;
 			this.buttonFormat.Toggled += FormatByPatternToggled;
-
 			this.textEditor = new TextEditor ();
 			this.textEditor.Options = DefaultSourceEditorOptions.Instance;
-			this.textEditor.ShowAll ();
 			var toolkit = Toolkit.CurrentEngine;
 			var wrappedTextEditor = toolkit.WrapWidget (textEditor);
-			var scrollView = new ScrollView (wrappedTextEditor) {
+			this.scrollView = new ScrollView (wrappedTextEditor) {
 				HorizontalScrollPolicy = ScrollPolicy.Always,
 				VerticalScrollPolicy = ScrollPolicy.Always
 			};

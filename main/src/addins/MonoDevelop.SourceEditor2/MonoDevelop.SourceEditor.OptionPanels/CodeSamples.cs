@@ -29,19 +29,20 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 {
 	public static class CodeSamples
 	{
-		public static readonly string CSharp = @"#region Studio Style
+		public static string Text = "Just a text";
+
+		public static string CSharp = @"#region CSharp Sample
 class Program : IThemeable
 {
     static int _I = 1;
     delegate void DoSomething();
 
     /// <summary>
-    /// The quick brown fox jumps over the lazy dog
-    /// THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG
+    /// The entry point of the application
     /// </summary>
     static void Main(string[] args)
     {
-        string normalStr = ""The time now is approximately "" + DateTime.Now;
+        string normalStr = ""The time now is "" + DateTime.Now;
         Uri Illegal1Uri = new Uri(""http://packmyboxwith/jugs.html?q=five-dozen&t=liquor"");
         Regex OperatorRegex = new Regex(@""\S#$"", RegexOptions.IgnorePatternWhitespace);
 
@@ -57,11 +58,11 @@ class Program : IThemeable
     }
 }
 #endregion";
-		public static readonly string Web = @"<%@ Page Language=""C#"" Inherits=""System.Web.Mvc.ViewPage<List<Person>>"" %>
+		public static string Web = @"<%@ Page Language=""C#"" Inherits=""System.Web.Mvc.ViewPage<List<Person>>"" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Studio Style ASP.NET</title>
+    <title>ASP.NET Sample</title>
 </head>
 <body>
     <h1>A test page</h1>
@@ -75,17 +76,17 @@ class Program : IThemeable
     </ul>
 </body>
 </html>";
-		public static readonly string CSS = @".people {
+		public static string CSS = @".people {
         font-family: 'Arial Narrow';
         font-size: 100% !important; /* comment */
     }";
-		public static readonly string Javascript = @"        // TODO: use jQuery instead
+		public static string Javascript = @"        // TODO: use jQuery instead
         window.onload = function() {
             for(var i = 0; i < 23; i++) {
                 alert(""Hello"");
             }
         }";
-		//		public static readonly string Razor=@"@model List<Person>
+		//		public static string Razor=@"@model List<Person>
 		//
 		//@{
 		//    ViewBag.Title = ""Razor"";
@@ -100,9 +101,9 @@ class Program : IThemeable
 		//    </li>
 		//}
 		//</ul>";
-		public static readonly string XML = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+		public static string XML = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <!-- this is an example XML file -->
-<people xmlns:x=""http://studiostyles.info"">
+<people xmlns:x=""http://example.com"">
   <person name=""Jim Jones"" ID=""27"">
     <email html=""yes"">jim@example.invalid</email>
     <address>
