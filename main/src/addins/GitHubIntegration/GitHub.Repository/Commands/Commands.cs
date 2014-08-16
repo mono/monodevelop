@@ -143,6 +143,14 @@ namespace GitHub.Repository.Commands
 			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			if (SelectedDocument.Editor.IsSomethingSelected) {
+				info.Enabled = false;
+			}
+		}
+
 	}
 
 	class GistThisSelectedOnlyHandler : GitHubCommandHandler {
@@ -159,6 +167,15 @@ namespace GitHub.Repository.Commands
 			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 
+		protected override void Update (CommandInfo info)
+		{
+			base.Update (info);
+			if (!SelectedDocument.Editor.IsSomethingSelected) {
+				info.Enabled = false;
+			}
+
+		}
+
 
 	}
 
@@ -168,6 +185,7 @@ namespace GitHub.Repository.Commands
 		protected override void Run ()
 		{
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Started copying the github location of the line in code"));
+
 			string repositoryURL = this.Repository.GetCurrentRemote();
 			string locationUri = this.Repository.LocationDescription;
 			var wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.BaseDirectory.FileName;

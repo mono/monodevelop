@@ -85,6 +85,12 @@
     <EmbeddedResource Include="Gui\icons\light\pad-github-16.png">
       <LogicalName>pad-github-16.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\pad-repo-16.png">
+      <LogicalName>pad-repo-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\github-clipboard-16.png">
+      <LogicalName>github-clipboard-16.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">

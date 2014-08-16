@@ -51,7 +51,7 @@ namespace GitHub.Repository.Services
 
 		public Xwt.Drawing.Image StatusIcon {
 			get {
-				return Image.FromResource ("pad-github-16.png");
+				return Image.FromResource ("pad-repo-16.png");
 			}
 		}
 

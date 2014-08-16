@@ -9,7 +9,7 @@
 
 	<Extension path = "/MonoDevelop/Ide/Pads">
 		<SolutionPad id = "GitHubPad" class = "GitHub.Repository.Gui.GitHubPad" _label="My GitHub" icon = "github-icon" defaultStatus="AutoHide" defaultLayout="*" defaultPlacement="Right">
-			<NodeBuilder id = "GitHubRepoNode" class = "GitHub.Repository.Gui.GitHubRepoNodeBuilder"/>
+			<NodeBuilder id = "GitHubRepoNode" class = "GitHub.Repository.Gui.GitHubRepoNodeBuilder" />
 		</SolutionPad>
 	</Extension>
 
@@ -29,7 +29,7 @@
 
 			<Command id = "GitHub.Repository.Commands.CopyURLInGitToClipboad"
 				_label = "Clipboard Github URL"
-				icon = "github-icon"
+				icon = "github-clipboard-icon"
 				defaultHandler = "GitHub.Repository.Commands.CopyURLInGitHubHandler"
 				description = "Gist this document"/>
 
@@ -39,7 +39,7 @@
 				defaultHandler = "GitHub.Repository.Commands.GistThisSelectedOnlyHandler"
 				description = "Gist the selection in the document"/>
 
-			<Command id = "GitHub.Repository.Commands.GitHubRepoCommands.ForkRepo" _label = "_Fork this Repo" />
+			<Command id = "GitHub.Repository.Commands.GitHubRepoCommands.ForkRepo" _label = "_Fork this Repo" icon="github-icon"/>
 			<Command id = "GitHub.Repository.Commands.GitHubRepoCommands.ViewGitHubRepoProperties" _label = "_GitHub Repo Properties" />
 
 		</Category>
@@ -74,6 +74,8 @@
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
 		<StockIcon stockid = "github-icon" resource = "pad-github-16.png" size="Menu" />
+		<StockIcon stockid = "github-repo-icon" resource = "pad-repo-16.png" size="Menu" />
+		<StockIcon stockid = "github-clipboard-icon" resource = "github-clipboard-16.png" size="Menu" />
 	</Extension>
 		
 	<Extension path = "/MonoDevelop/GitHubRepository/ContextMenu/GitHubPad">
