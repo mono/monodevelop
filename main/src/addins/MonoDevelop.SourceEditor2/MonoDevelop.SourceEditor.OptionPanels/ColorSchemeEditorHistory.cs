@@ -37,23 +37,34 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		readonly Stack<StyleCommand> redoStack = new Stack<StyleCommand> ();
 		readonly TreeView treeView;
 		readonly IDataField<object> dataField;
+		readonly IDataField<ColorScheme.PropertyDecsription> propertyField;
 
 		public event EventHandler CanUndoRedoChanged;
 
-		public ColorSchemeEditorHistory (TreeView treeView, IDataField<object> dataField)
+		public ColorSchemeEditorHistory (TreeView treeView, IDataField<object> dataField, IDataField<ColorScheme.PropertyDecsription> propertyField)
 		{
 			this.treeView = treeView;
 			this.dataField = dataField;
+			this.propertyField = propertyField;
 		}
 
 		public void AddCommand (StyleCommand command)
 		{
 			redoStack.Clear ();
 			undoStack.Push (command);
-			command.Redo (dataField);
+			var navigator = GetNavigator (command);
+			command.Redo (navigator, dataField);
 
 			if (CanUndoRedoChanged != null)
 				CanUndoRedoChanged (this, new EventArgs ());
+		}
+
+		private TreeNavigator GetNavigator (StyleCommand command)
+		{
+			var treeStore = treeView.DataSource as TreeStore;
+			return treeStore == null
+				? null
+				: treeStore.GetNodeFromStyleName (command.StyleName, propertyField);
 		}
 
 		public bool CanUndo{ get { return undoStack.Count > 0; } }
@@ -65,9 +76,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (!CanUndo)
 				return;
 			var command = undoStack.Pop ();
-			command.Undo (dataField);
+			var navigator = GetNavigator (command);
+			command.Undo (navigator, dataField);
 			redoStack.Push (command);
-			SelectAndScroll (command.Position);
+			SelectAndScroll (navigator.CurrentPosition);
 
 			if (CanUndoRedoChanged != null)
 				CanUndoRedoChanged (this, new EventArgs ());
@@ -84,9 +96,10 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			if (!CanRedo)
 				return;
 			var command = redoStack.Pop ();
+			var navigator = GetNavigator (command);
 			undoStack.Push (command);
-			command.Redo (dataField);
-			SelectAndScroll (command.Position);
+			command.Redo (navigator, dataField);
+			SelectAndScroll (navigator.CurrentPosition);
 
 			if (CanUndoRedoChanged != null)
 				CanUndoRedoChanged (this, new EventArgs ());
@@ -95,18 +108,16 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 	public abstract class StyleCommand
 	{
-		protected TreeNavigator navigator;
+		public string StyleName{ get; private set; }
 
-		protected StyleCommand (TreeNavigator navigator)
+		protected StyleCommand (string styleName)
 		{
-			this.navigator = navigator.Clone ();
+			this.StyleName = styleName;
 		}
 
-		public TreePosition Position{ get { return navigator.CurrentPosition; } }
+		public abstract void Undo (TreeNavigator navigator, IDataField<object> dataField);
 
-		public abstract void Undo (IDataField<object> dataField);
-
-		public abstract void Redo (IDataField<object> dataField);
+		public abstract void Redo (TreeNavigator navigator, IDataField<object> dataField);
 	}
 
 	public class ChangeChunkStyleCommand:StyleCommand
@@ -114,19 +125,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		ChunkStyle oldStyle;
 		ChunkStyle newStyle;
 
-		public ChangeChunkStyleCommand (ChunkStyle oldStyle, ChunkStyle newStyle, TreeNavigator navigator)
-			:base(navigator)
+		public ChangeChunkStyleCommand (ChunkStyle oldStyle, ChunkStyle newStyle, string styleName)
+			: base (styleName)
 		{
 			this.oldStyle = oldStyle;
 			this.newStyle = newStyle;
 		}
 
-		public override void Undo (IDataField<object> dataField)
+		public override void Undo (TreeNavigator navigator, IDataField<object> dataField)
 		{
 			navigator.SetValue (dataField, oldStyle);
 		}
 
-		public override void Redo (IDataField<object> dataField)
+		public override void Redo (TreeNavigator navigator, IDataField<object> dataField)
 		{
 			navigator.SetValue (dataField, newStyle);
 		}
@@ -137,19 +148,19 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		AmbientColor oldStyle;
 		AmbientColor newStyle;
 
-		public ChangeAmbientColorCommand (AmbientColor oldStyle, AmbientColor newStyle, TreeNavigator navigator)
-			:base(navigator)
+		public ChangeAmbientColorCommand (AmbientColor oldStyle, AmbientColor newStyle, string styleName)
+			: base (styleName)
 		{
 			this.oldStyle = oldStyle;
 			this.newStyle = newStyle;
 		}
 
-		public override void Undo (IDataField<object> dataField)
+		public override void Undo (TreeNavigator navigator, IDataField<object> dataField)
 		{
 			navigator.SetValue (dataField, oldStyle);
 		}
 
-		public override void Redo (IDataField<object> dataField)
+		public override void Redo (TreeNavigator navigator, IDataField<object> dataField)
 		{
 			navigator.SetValue (dataField, newStyle);
 		}
