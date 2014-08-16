@@ -55,7 +55,7 @@ namespace GitHub.Repository.Services
 		void getAllReposFromGitHub(){
 			List<GitHubRepo> repos = new List<GitHubRepo>();
 			foreach (Octokit.Repository item in new OctokitHelper().GetAllRepositories()) {
-				repos.Add (new GitHubRepo (item){ Name = item.Name });
+				repos.Add (new GitHubRepo (item){ Name = item.FullName });
 			} 
 			repoList = repos.ToArray ();
 		}

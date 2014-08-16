@@ -22,13 +22,12 @@ namespace GitHub.Repository.UserInterface
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.gitHubPropertyGrid = new global::MonoDevelop.Components.PropertyGrid.PropertyGrid ();
 			this.gitHubPropertyGrid.Name = "gitHubPropertyGrid";
+			this.gitHubPropertyGrid.BorderWidth = ((uint)(6));
 			this.gitHubPropertyGrid.ShowToolbar = false;
 			this.gitHubPropertyGrid.ShowHelp = false;
 			w1.Add (this.gitHubPropertyGrid);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(w1 [this.gitHubPropertyGrid]));
 			w2.Position = 0;
-			w2.Expand = false;
-			w2.Fill = false;
 			// Internal child GitHub.Repository.UserInterface.GitHubPropertyDialog.ActionArea
 			global::Gtk.HButtonBox w3 = this.ActionArea;
 			w3.Name = "dialog1_ActionArea";

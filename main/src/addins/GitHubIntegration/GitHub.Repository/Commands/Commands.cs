@@ -44,7 +44,7 @@ namespace GitHub.Repository.Commands
 {
 	public enum GitHubRepoCommands
 	{
-		CloneRepo,
+		ForkRepo,
 		ViewGitHubRepoProperties
 	}
 

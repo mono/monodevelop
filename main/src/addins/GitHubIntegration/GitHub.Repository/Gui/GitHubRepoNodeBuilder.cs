@@ -32,6 +32,7 @@ using GitHub.Repository.Core;
 using MonoDevelop.VersionControl.Dialogs;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
+using GitHub.Auth;
 
 namespace GitHub.Repository.Gui
 {
@@ -84,13 +85,26 @@ namespace GitHub.Repository.Gui
 
 		}
 
-		[CommandHandler (GitHubRepoCommands.CloneRepo)]
-		protected void OnCloneRepo ()
+		[CommandHandler (GitHubRepoCommands.ForkRepo)]
+		protected void OnForkRepo ()
 		{
 			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
-
+			//repo.Fork()
 
 		}
+
+		[CommandUpdateHandler (GitHubRepoCommands.ForkRepo)]
+		protected void OnUpdateForkRepo (CommandInfo info)
+		{
+			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
+			if (repo.ORepository.Owner.Login == GitHubService.Client.Credentials.Login) 
+			{
+				info.Enabled = false;
+			} 
+
+		}
+
+
 
 
 	}
