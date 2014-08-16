@@ -88,15 +88,7 @@ namespace GitHub.Repository.Gui
 		protected void OnCloneRepo ()
 		{
 			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
-			//SelectRepositoryDialog del = new SelectRepositoryDialog (SelectRepositoryMode.Checkout);
-			//try {
-			//	if (MessageService.RunCustomDialog (del) == (int) Gtk.ResponseType.Ok && del.Repository != null) {
-			//		CheckoutWorker w = new CheckoutWorker (del.Repository, del.TargetPath);
-			//		w.Start ();
-			//	}
-			//} finally {
-			//	del.Destroy ();
-			//}
+
 
 		}
 
