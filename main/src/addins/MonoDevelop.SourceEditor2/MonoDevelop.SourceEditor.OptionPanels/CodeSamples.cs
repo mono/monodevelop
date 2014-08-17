@@ -86,21 +86,6 @@ class Program : IThemeable
                 alert(""Hello"");
             }
         }";
-		//		public static string Razor=@"@model List<Person>
-		//
-		//@{
-		//    ViewBag.Title = ""Razor"";
-		//    Layout = ""~/Views/Shared/_Layout.cshtml"";
-		//}
-		//
-		//<h1>Razor</h1>
-		//<ul class=""people"">
-		//@foreach(Person person in Model) {
-		//    <li>
-		//        @person.Name &gt; (@Html.ActionLink(""edit"", ""Edit"", new { id = 1 }))
-		//    </li>
-		//}
-		//</ul>";
 		public static string XML = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <!-- this is an example XML file -->
 <people xmlns:x=""http://example.com"">
