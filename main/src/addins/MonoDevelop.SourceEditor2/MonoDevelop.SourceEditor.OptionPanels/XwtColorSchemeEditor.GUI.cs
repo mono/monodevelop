@@ -102,7 +102,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 			adjustHBox.PackStart (togglebuttonBold, false, WidgetPlacement.End);
 			adjustHBox.PackStart (togglebuttonItalic, false, WidgetPlacement.End);
 			adjustHBox.PackStart (buttonFormat, false, WidgetPlacement.End);
-			commandHBox.PackStart (new Xwt.VSeparator ());
+			commandHBox.PackStart (new VSeparator ());
 			commandHBox.PackStart (adjustHBox);
 
 			this.colorbuttonPrimary.ColorSet += StyleChanged;
@@ -133,7 +133,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			var treeBox = new VBox ();
 			treeBox.PackStart (searchEntry);
-			searchEntry.MarginTop = 1;
+			searchEntry.Margin = 2;
+			searchEntry.MinHeight = 30;
 			treeBox.PackStart (treeviewColors, true, true);
 			box.Panel1.Content = treeBox;
 			box.Panel2.Content = table;
@@ -146,8 +147,8 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 
 			searchEntry.Changed += SearchTextChanged;
 
-			this.Height = 500;
-			this.Width = 800;
+			this.Height = 600;
+			this.Width = 900;
 		}
 
 		TreeStore CreateColorStore ()
@@ -156,4 +157,3 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		}
 	}
 }
-
