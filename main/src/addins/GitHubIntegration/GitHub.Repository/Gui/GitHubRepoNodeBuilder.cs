@@ -77,10 +77,11 @@ namespace GitHub.Repository.Gui
 		protected void OnViewGitHubRepoProperties ()
 		{
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Loading properties"));
-
+			IdeApp.Workbench.StatusBar.AutoPulse = true;
 			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
 			GitHubUtils.ViewProperties (repo.ORepository);
-
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Done loading properties"));
+			IdeApp.Workbench.StatusBar.AutoPulse = false;
 			IdeApp.Workbench.StatusBar.EndProgress ();
 
 		}

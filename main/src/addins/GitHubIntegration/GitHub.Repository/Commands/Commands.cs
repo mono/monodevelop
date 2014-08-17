@@ -118,7 +118,10 @@ namespace GitHub.Repository.Commands
 		protected override void Run ()
 		{
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Loading properties"));
+			IdeApp.Workbench.StatusBar.AutoPulse = true;
 			GitHubUtils.ViewProperties (ORepository);
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Done loading properties"));
+			IdeApp.Workbench.StatusBar.AutoPulse = false;
 			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 	}
@@ -136,6 +139,8 @@ namespace GitHub.Repository.Commands
 			var obj = new OctokitHelper ();
 
 			obj.GistThis (gistFileName, content, mimeType);
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Done Gisting the selected document.."));
+			IdeApp.Workbench.StatusBar.AutoPulse = false;
 			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 
@@ -160,6 +165,8 @@ namespace GitHub.Repository.Commands
 			string gistFileName = getGistFileName(doc.FileName.FileName);
 			var obj = new OctokitHelper ();
 			obj.GistThis (gistFileName , content, mimeType);
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Done Gisting the selection in the document.."));
+			IdeApp.Workbench.StatusBar.AutoPulse = false;
 			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 
@@ -201,7 +208,8 @@ namespace GitHub.Repository.Commands
 			clipboard.Text = githubURL;
 			clipboard = Clipboard.Get (Gdk.Atom.Intern ("PRIMARY", false));
 			clipboard.Text = githubURL;
-
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Done copying the github location of the line in code"));
+			IdeApp.Workbench.StatusBar.AutoPulse = false;
 			IdeApp.Workbench.StatusBar.EndProgress ();
 		}
 	}
