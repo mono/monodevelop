@@ -59,12 +59,22 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 		public static TreeNavigator GetNodeFromStyleName (this TreeStore colorStore, string styleName, IDataField<ColorScheme.PropertyDecsription> propertyField)
 		{
 			var navigator = colorStore.GetFirstNode ();
+			if (navigator == null)
+				return null;
 
 			do {
-				navigator.MoveToChild ();
+				if (!navigator.MoveToChild ())
+					return null;
 
 				do {
-					var data = (ColorScheme.PropertyDecsription)navigator.GetValue (propertyField);
+					ColorScheme.PropertyDecsription data;
+
+					try {
+						data = navigator.GetValue (propertyField);	
+					} catch (Exception) {
+						return null;
+					}
+
 					if (data != null && data.Attribute != null && data.Attribute.Name == styleName)
 						return navigator;
 				} while (navigator.MoveNext ());
