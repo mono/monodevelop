@@ -38,7 +38,7 @@ namespace MonoDevelop.Components
 	{
 		static Dictionary<TreeView, TreeViewTooltipsData> treeData = new Dictionary<TreeView, TreeViewTooltipsData> ();
 
-		static readonly Xwt.Toolkit gtkToolkit = Xwt.Toolkit.LoadedToolkits.First (t => t.Type == Xwt.ToolkitType.Gtk);
+		static readonly Xwt.Toolkit gtkToolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.Gtk);
 
 		public static Cairo.Color ToCairoColor (this Gdk.Color color)
 		{
