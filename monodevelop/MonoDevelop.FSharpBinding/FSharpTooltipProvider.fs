@@ -5,11 +5,13 @@
 namespace MonoDevelop.FSharp
 
 open System
+open System.IO
 open System.Collections.Generic
 open FSharp.CompilerBinding
 open Mono.TextEditor
 open MonoDevelop.Core
 open MonoDevelop.Ide
+open MonoDevelop.SourceEditor
 open MonoDevelop.Ide.CodeCompletion
 open Gdk
 open MonoDevelop.Components
@@ -108,12 +110,22 @@ type FSharpTooltipProvider() =
        | Some(w:TooltipInformationWindow) -> w.Destroy()
        | None -> ()
 
+    let isSupported fileName= 
+        [|".fs";".fsi";".fsx";".fsscript"|] 
+        |> Array.exists ((=) (Path.GetExtension fileName))
+
     override x.GetItem (editor, offset) =
       try
-        let fileName = IdeApp.Workbench.ActiveDocument.FileName.FullPath.ToString()
-        let extEditor = editor :?> MonoDevelop.SourceEditor.ExtensibleTextEditor 
+        let activeDoc = IdeApp.Workbench.ActiveDocument
+        if activeDoc = null then null else
+
+        let fileName = activeDoc.FileName.FullPath.ToString()
+        let extEditor = editor :?> ExtensibleTextEditor
+     
+        if not (isSupported fileName) then null else
         let docText = editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else
+
         let projFile, files, args, framework = MonoDevelop.getCheckerArgs(extEditor.Project, fileName)
         let tyResOpt =
             MDLanguageService.Instance.GetTypedParseResultWithTimeout
