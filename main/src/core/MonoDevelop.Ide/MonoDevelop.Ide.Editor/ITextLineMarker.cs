@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -68,5 +69,10 @@ namespace MonoDevelop.Ide.Editor
 
 	public interface IMessageBubbleLineMarker : ITextLineMarker
 	{
+		int TaskCount { get; }
+		IEnumerable<MonoDevelop.Ide.Tasks.Task> Tasks { get; }
+
+		void AddTask (MonoDevelop.Ide.Tasks.Task task);
+		void SetPrimaryTask (MonoDevelop.Ide.Tasks.Task task);
 	}
 }

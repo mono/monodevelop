@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Editor
 		ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker ();
 		ITextLineMarker CreateAsmLineMarker ();
 		IUnitTestMarker CreateUnitTestMarker (UnitTestMarkerHost host, UnitTestLocation unitTestLocation);
+		IMessageBubbleLineMarker CreateMessageBubbleLineMarker ();
 		#endregion
 
 		#region Segment marker

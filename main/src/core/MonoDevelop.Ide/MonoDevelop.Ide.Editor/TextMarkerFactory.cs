@@ -57,6 +57,12 @@ namespace MonoDevelop.Ide.Editor
 			return editor.TextMarkerFactory.CreateUnitTestMarker (host, unitTestLocation);
 		}
 
+		public static IMessageBubbleLineMarker CreateMessageBubbleLineMarker (TextEditor editor)
+		{
+			return editor.TextMarkerFactory.CreateMessageBubbleLineMarker ();
+		}
+
+
 		#endregion
 
 		#region Segment marker

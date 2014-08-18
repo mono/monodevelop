@@ -576,7 +576,7 @@ namespace MonoDevelop.SourceEditor
 			//NRE and bring down MD
 			/*if (messageBubbleHighlightPopupWindow != null)
 				messageBubbleHighlightPopupWindow.Destroy ();*/
-			
+
 			currentErrorMarkers.ForEach (em => {
 				widget.Document.RemoveMarker (em);
 				em.Dispose ();
@@ -3132,6 +3132,10 @@ namespace MonoDevelop.SourceEditor
 			return new UnitTestMarker (TextEditor, host, unitTestLocation);
 		}
 
+		IMessageBubbleLineMarker ITextMarkerFactory.CreateMessageBubbleLineMarker ()
+		{
+			return new MessageBubbleTextMarker (messageBubbleCache);
+		}
 
 		IGenericTextSegmentMarker ITextMarkerFactory.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length)
 		{
