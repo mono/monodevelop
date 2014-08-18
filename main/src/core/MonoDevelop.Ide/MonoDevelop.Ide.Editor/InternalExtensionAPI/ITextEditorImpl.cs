@@ -195,6 +195,10 @@ namespace MonoDevelop.Ide.Editor
 		void SetSelectionSurroundingProvider (SelectionSurroundingProvider surroundingProvider);
 		void SetTextPasteHandler (TextPasteHandler textPasteHandler);
 
+		event EventHandler<LineEventArgs> LineChanged;
+		event EventHandler<LineEventArgs> LineInserted;
+		event EventHandler<LineEventArgs> LineRemoved;
+
 		#region Internal use only API (do not mirror in TextEditor)
 
 		TextEditorExtension EditorExtension {

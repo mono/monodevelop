@@ -181,6 +181,8 @@ namespace MonoDevelop.SourceEditor
 
 			widget.TextEditor.Document.TextReplaced += HandleTextReplaced;
 			widget.TextEditor.Document.LineChanged += HandleLineChanged;
+			widget.TextEditor.Document.LineInserted += HandleLineChanged;
+			widget.TextEditor.Document.LineRemoved += HandleLineChanged;
 
 			widget.TextEditor.Document.BeginUndo += HandleBeginUndo; 
 			widget.TextEditor.Document.EndUndo += HandleEndUndo;
@@ -195,7 +197,7 @@ namespace MonoDevelop.SourceEditor
 			
 			widget.TextEditor.Caret.PositionChanged += HandlePositionChanged; 
 			widget.TextEditor.IconMargin.ButtonPressed += OnIconButtonPress;
-		
+
 			debugStackLineMarker = new DebugStackLineTextMarker (widget.TextEditor);
 			currentDebugLineMarker = new CurrentDebugLineTextMarker (widget.TextEditor);
 			
@@ -239,7 +241,7 @@ namespace MonoDevelop.SourceEditor
 			FileRegistry.Add (this);
 		}
 
-		void HandleLineChanged (object sender, LineEventArgs e)
+		void HandleLineChanged (object sender, Mono.TextEditor.LineEventArgs e)
 		{
 			UpdateBreakpoints ();
 			UpdateWidgetPositions ();
@@ -251,6 +253,9 @@ namespace MonoDevelop.SourceEditor
 					marker.GetLineHeight (widget.TextEditor);
 				}
 			}
+			var handler = LineChanged;
+			if (handler != null)
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
 		}
 
 		void HandleTextReplaced (object sender, DocumentChangeEventArgs args)
@@ -2841,7 +2846,25 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
+		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineChanged;
 
+		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineInserted;
+
+		void HandleLineInserted (object sender, Mono.TextEditor.LineEventArgs e)
+		{
+			var handler = LineInserted;
+			if (handler != null)
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+		}
+
+		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineRemoved;
+
+		void HandleLineRemoved (object sender, Mono.TextEditor.LineEventArgs e)
+		{
+			var handler = LineRemoved;
+			if (handler != null)
+				handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+		}
 
 		#region IEditorActionHost implementation
 

@@ -105,6 +105,21 @@ namespace MonoDevelop.Ide.Editor
 			remove { textEditorImpl.BeginMouseHover -= value; }
 		}
 
+		public event EventHandler<LineEventArgs> LineChanged {
+			add { textEditorImpl.LineChanged += value; }
+			remove { textEditorImpl.LineChanged -= value; }
+		}
+
+		public event EventHandler<LineEventArgs> LineInserted {
+			add { textEditorImpl.LineInserted += value; }
+			remove { textEditorImpl.LineInserted -= value; }
+		}
+
+		public event EventHandler<LineEventArgs> LineRemoved {
+			add { textEditorImpl.LineRemoved += value; }
+			remove { textEditorImpl.LineRemoved -= value; }
+		}
+
 		public ITextEditorOptions Options {
 			get {
 				return textEditorImpl.Options;
