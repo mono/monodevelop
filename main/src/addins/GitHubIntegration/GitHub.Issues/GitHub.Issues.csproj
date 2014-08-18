@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{410A2C5E-B7CC-422E-8F25-BF18A024EDF0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>GitHub.Issues</RootNamespace>
+    <AssemblyName>GitHub.Issues</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CustomCommands>
+      <CustomCommands>
+        <Command type="Execute" command="..\..\..\..\build\bin\MonoDevelop.exe" workingdir="..\..\..\..\build\bin">
+          <EnvironmentVariables>
+            <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
+          </EnvironmentVariables>
+        </Command>
+      </CustomCommands>
+    </CustomCommands>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="MonoDevelop.Core">
+      <HintPath>..\..\..\..\build\bin\MonoDevelop.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.Ide">
+      <HintPath>..\..\..\..\build\bin\MonoDevelop.Ide.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Addins">
+      <HintPath>..\..\..\..\build\bin\Mono.Addins.dll</HintPath>
+    </Reference>
+    <Reference Include="GitHub.Auth">
+      <HintPath>..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Octokit">
+      <HintPath>..\..\..\..\build\AddIns\GitHubIntegration\GitHub.Issues\Octokit.dll</HintPath>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\..\build\bin\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.VersionControl">
+      <HintPath>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoDevelop.VersionControl.Git">
+      <HintPath>..\..\..\..\build\AddIns\VersionControl\MonoDevelop.VersionControl.Git.dll</HintPath>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AddinInfo.cs" />
+    <Compile Include="IssuesManager.cs" />
+    <Compile Include="Commands.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Views\BaseView.cs" />
+    <Compile Include="Views\IssuesView.cs" />
+    <Compile Include="Views\IssuesWidget.cs" />
+    <Compile Include="Handlers\IssuesViewHandler.cs" />
+    <Compile Include="Handlers\IGitHubIssuesViewHandler.cs" />
+    <Compile Include="Views\IssueNode.cs" />
+    <Compile Include="Views\IssueColumn.cs" />
+    <Compile Include="GitHubUtilities.cs" />
+    <Compile Include="Views\IssueView.cs" />
+    <Compile Include="Views\IssueWidget.cs" />
+    <Compile Include="Handlers\IGitHubIssueViewHandler.cs" />
+    <Compile Include="Handlers\IssueViewHandler.cs" />
+    <Compile Include="Events\IssueSelectedEventArgs.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.IssueWidget.cs" />
+    <Compile Include="Custom Widgets\CommentWidget.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.CommentWidget.cs" />
+    <Compile Include="Utilities\LayoutUtilities.cs" />
+    <Compile Include="Utilities\CommonControlsFactories.cs" />
+    <Compile Include="Utilities\StringResources.cs" />
+    <Compile Include="Utilities\TreeViewUtilities.cs" />
+    <Compile Include="Custom Widgets\CommentBoxWidget.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.CommentBoxWidget.cs" />
+    <Compile Include="Events\DeleteCommentClickEventArgs.cs" />
+    <Compile Include="Utilities\EditMode.cs" />
+    <Compile Include="Events\IssueSavedEventArgs.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.IssuesWidget.cs" />
+    <Compile Include="Views\LabelsWidget.cs" />
+    <Compile Include="gtk-gui\GitHub.Issues.LabelsWidget.cs" />
+    <Compile Include="Views\LabelsView.cs" />
+    <Compile Include="Utilities\CachingUtility.cs" />
+    <Compile Include="Utilities\CacheItem.cs" />
+    <Compile Include="Utilities\ThemeColors.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <EmbeddedResource Include="GitHub.Issues.addin.xml">
+      <LogicalName>GitHub.Issues.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dialogs\" />
+    <Folder Include="Views\" />
+    <Folder Include="Handlers\" />
+    <Folder Include="Events\" />
+    <Folder Include="Custom Widgets\" />
+    <Folder Include="Utilities\" />
+  </ItemGroup>
+</Project>
