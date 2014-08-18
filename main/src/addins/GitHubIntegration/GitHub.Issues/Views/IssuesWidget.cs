@@ -6,6 +6,10 @@ using System.Collections;
 
 namespace GitHub.Issues
 {
+	/// <summary>
+	/// Issues widget - displays the list of issues for the current working repository
+	/// Allows to filter and select the visible columns and to go into other management screens
+	/// </summary>
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class IssuesWidget : Gtk.Bin
 	{

@@ -3,6 +3,9 @@ using Pango;
 
 namespace GitHub.Issues
 {
+	/// <summary>
+	/// Widget which displays and provides functionality for an already created comment
+	/// </summary>
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class CommentWidget : Gtk.Bin
 	{

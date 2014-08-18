@@ -2,6 +2,9 @@
 
 namespace GitHub.Issues
 {
+	/// <summary>
+	/// UI control for adding new comments to an issue
+	/// </summary>
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class CommentBoxWidget : Gtk.Bin
 	{

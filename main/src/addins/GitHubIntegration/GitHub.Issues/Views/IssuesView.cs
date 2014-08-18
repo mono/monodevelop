@@ -5,10 +5,17 @@ using System.Collections.Generic;
 
 namespace GitHub.Issues.Views
 {
+	/// <summary>
+	/// Interface for the issues view
+	/// </summary>
 	public interface IIssuesView : IAttachableViewContent
 	{
 	}
 
+	/// <summary>
+	/// Issues View which displays all issues from the current repository, allows selection of columns/properties to display and filtering
+	/// Also provides funtionality to move to other more specific management windows
+	/// </summary>
 	public partial class IssuesView : BaseView, IIssuesView
 	{
 		private IssuesWidget widget;

@@ -5,6 +5,10 @@ using System.Collections;
 
 namespace GitHub.Issues
 {
+	/// <summary>
+	/// Issue widget - Allows management of a single issue in the current repository
+	/// Also used for creation of a new issue
+	/// </summary>
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class IssueWidget : Gtk.Bin
 	{

@@ -2,6 +2,9 @@
 
 namespace GitHub.Issues
 {
+	/// <summary>
+	/// Constant string resources which are reused across the plugin
+	/// </summary>
 	public class StringResources
 	{
 		public static readonly string State = "State";

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace GitHub.Issues
 {
+	/// <summary>
+	/// Widget which allows label management for the current repository
+	/// </summary>
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class LabelsWidget : Gtk.Bin
 	{
@@ -32,6 +35,9 @@ namespace GitHub.Issues
 
 		#region Constructor
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GitHub.Issues.LabelsWidget"/> class.
+		/// </summary>
 		public LabelsWidget ()
 		{
 			this.Build ();
