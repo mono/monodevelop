@@ -65,4 +65,8 @@ namespace MonoDevelop.Ide.Editor
 	{
 
 	}
+
+	public interface IMessageBubbleLineMarker : ITextLineMarker
+	{
+	}
 }

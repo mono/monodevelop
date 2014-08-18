@@ -2835,6 +2835,7 @@
     <Compile Include="MonoDevelop.Ide.Editor.Extension\ModifierKeys.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\SpecialKey.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Extension\KeyDescriptor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\MessageBubbles\MessageBubbleCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2879,6 +2880,7 @@
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
     <Folder Include="MonoDevelop.Ide.Editor.Util\" />
     <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
+    <Folder Include="MonoDevelop.Ide.Editor\MessageBubbles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">

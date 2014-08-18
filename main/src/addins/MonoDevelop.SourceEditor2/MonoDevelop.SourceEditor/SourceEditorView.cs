@@ -2336,18 +2336,6 @@ namespace MonoDevelop.SourceEditor
 		{
 			widget.MonodocResolverUpdate (cinfo);
 		}
-		
-		[CommandUpdateHandler (SourceEditorCommands.ToggleErrorTextMarker)]
-		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
-		{
-			widget.OnUpdateToggleErrorTextMarker (info);
-		}
-		
-		[CommandHandler (SourceEditorCommands.ToggleErrorTextMarker)]
-		public void OnToggleErrorTextMarker ()
-		{
-			widget.OnToggleErrorTextMarker ();
-		}
 
 		[CommandHandler (SourceEditorCommands.NextIssue)]
 		void NextIssue ()

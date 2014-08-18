@@ -1026,6 +1026,17 @@
 			_description = "Animates the text editor caret to help find it"
 			shortcut = "Ctrl||"
 			macShortcut = "Meta||" />
+			
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle"
+			_label = "Toggle message bubble"
+			_description = "Toggles message bubble on/off"/>
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues"
+			defaultHandler = "MonoDevelop.Ide.Editor.HideIssuesHandler"
+			_label = "_Hide Issues"/>
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues"
+			defaultHandler = "MonoDevelop.Ide.Editor.ToggleIssuesHandler"
+			_label = "Toggle Issues"
+			type="array"/>
 	</Category>
 </Extension>
 </ExtensionModel>

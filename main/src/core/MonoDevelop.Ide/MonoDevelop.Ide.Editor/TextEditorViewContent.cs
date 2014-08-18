@@ -759,12 +759,35 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-
-
 		[CommandHandler (EditCommands.InsertGuid)]
 		void InsertGuid ()
 		{
 			textEditor.InsertAtCaret (Guid.NewGuid ().ToString ());
+		}
+
+		[CommandUpdateHandler (MessageBubbleCommands.Toggle)]
+		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
+		{
+			var line = textEditor.GetLine (textEditor.CaretLine);
+			if (line == null) {
+				info.Visible = false;
+				return;
+			}
+
+			var marker = (IMessageBubbleLineMarker)textEditor.GetLineMarkers (line).FirstOrDefault (m => m is IMessageBubbleLineMarker);
+			info.Visible = marker != null;
+		}
+
+		[CommandHandler (MessageBubbleCommands.Toggle)]
+		public void OnToggleErrorTextMarker ()
+		{
+			var line = textEditor.GetLine (textEditor.CaretLine);
+			if (line == null)
+				return;
+			var marker = (IMessageBubbleLineMarker)textEditor.GetLineMarkers (line).FirstOrDefault (m => m is IMessageBubbleLineMarker);
+			if (marker != null) {
+				marker.IsVisible = !marker.IsVisible;
+			}
 		}
 		#endregion
 	

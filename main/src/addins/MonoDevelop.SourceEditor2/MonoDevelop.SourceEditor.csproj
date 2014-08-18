@@ -151,7 +151,6 @@
     <Compile Include="MonoDevelop.SourceEditor\SourceEditorPrintOperation.cs" />
     <Compile Include="MonoDevelop.SourceEditor\PrintSettingsWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.SourceEditor.PrintSettingsWidget.cs" />
-    <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCommands.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleTextMarker.cs" />
     <Compile Include="MonoDevelop.SourceEditor\MessageBubbleCache.cs" />
     <Compile Include="MonoDevelop.SourceEditor.OptionPanels\ColorShemeEditor.cs" />

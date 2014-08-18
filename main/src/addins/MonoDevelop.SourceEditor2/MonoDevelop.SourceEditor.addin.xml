@@ -80,19 +80,7 @@
 				_description = "Cycles completing the current word from matching words in all open files"
 				macShortcut = "Ctrl|/"
 				shortcut = "Alt|/" />
-		<Command id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker"
-				_label = "Toggle message bubble"
-				_description = "Toggles message bubble on/off"/>
 		
-		<Command id = "MonoDevelop.SourceEditor.MessageBubbleCommands.HideIssues"
-				defaultHandler = "MonoDevelop.SourceEditor.HideIssuesHandler"
-				_label = "_Hide Issues"/>
-
-		<Command id = "MonoDevelop.SourceEditor.MessageBubbleCommands.ToggleIssues"
-				defaultHandler = "MonoDevelop.SourceEditor.ToggleIssuesHandler"
-				_label = "Toggle Issues"
-				type="array"/>
-
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Top"
 				_label = "_Top"/>
 		<Command id = "MonoDevelop.SourceEditor.QuickTasks.ScrollbarCommand.Bottom"
@@ -154,7 +142,7 @@
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.DisableAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ClearAllBreakpoints" />
 		<CommandItem id = "MonoDevelop.Debugger.DebugCommands.ShowBreakpointProperties" />
-		<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker" />
+		<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
@@ -162,20 +150,11 @@
 		<Section id="Markers" _label="Markers and Rulers" class="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" icon="md-prefs-markers-rulers" />
 		<Section id="Behavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" icon="md-prefs-text-editor-behavior" />
 		<Section id="CompletionBehavior" _label="Completion Behavior" class="MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel" icon="md-prefs-completion-behavior" />
-		<!-- <Section id="CompletionCharacters" _label="Completion Characters" class="MonoDevelop.SourceEditor.OptionPanels.CompletionCharactersPanel" /> -->
+		<!-- <Section id="CompletionCharacters" _label="Completion Characters" class="MonoDevelop.SourceEFditor.OptionPanels.CompletionCharactersPanel" /> -->
 		<Section id="CompletionAppearance" _label="Completion Appearance" class="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" icon="md-prefs-completion-appearance" />
 		<Section id="SyntaxHighlighting" _label="Syntax Highlighting" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
 	</Extension>
 
-	<Extension path = "/MonoDevelop/Ide/MainMenu/View">
-		<ItemSet id = "MessageBubbles" _label = "_Message Bubbles" insertafter="MonoDevelop.Ide.Commands.ViewCommands.ViewList" insertbefore="ViewSeparator3">
-			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.ToggleErrorTextMarker" />
-			<CommandItem id = "MonoDevelop.SourceEditor.MessageBubbleCommands.HideIssues" />
-			<SeparatorItem id = "Separator1" />
-			<CommandItem id = "MonoDevelop.SourceEditor.MessageBubbleCommands.ToggleIssues" />
-		</ItemSet>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Search">
 		<ItemSet id = "Inspect" _label = "Inspect" insertafter="MonoDevelop.Ide.Commands.ViewCommands.ShowNext" insertbefore="Separator3">
 			<CommandItem id = "MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" />

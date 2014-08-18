@@ -36,10 +36,11 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Fonts;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.SourceEditor
 {
-	class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker
+	class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker, MonoDevelop.Ide.Editor.IMessageBubbleLineMarker
 	{
 		readonly MessageBubbleCache cache;
 		
@@ -51,7 +52,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool IsVisible {
 			get { return !task.Completed; }
-			set { task.Completed = !value; }
+			set { task.Completed = !value; editor.QueueDraw (); }
 		}
 
 		public bool UseVirtualLines { get; set; }
@@ -653,5 +654,11 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#endregion
+
+		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
+			get {
+				return new DocumentLineWrapper (LineSegment);
+			}
+		}
 	}
 }

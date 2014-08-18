@@ -1291,33 +1291,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		#endregion
-		
-		#region commenting and indentation
-	
-		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
-		{
-			DocumentLine line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
-			if (line == null) {
-				info.Visible = false;
-				return;
-			}
-			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
-			info.Visible = marker != null;
-		}
-		
-		public void OnToggleErrorTextMarker ()
-		{
-			DocumentLine line = TextEditor.Document.GetLine (TextEditor.Caret.Line);
-			if (line == null)
-				return;
-			var marker = (MessageBubbleTextMarker)line.Markers.FirstOrDefault (m => m is MessageBubbleTextMarker);
-			if (marker != null) {
-				marker.IsVisible = !marker.IsVisible;
-				TextEditor.QueueDraw ();
-			}
-		}
-	
-		#endregion
 
 		internal void NextIssue ()
 		{

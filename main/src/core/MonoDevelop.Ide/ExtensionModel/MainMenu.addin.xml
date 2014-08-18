@@ -114,6 +114,12 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.DeleteCurrentLayout" />
 		<SeparatorItem id = "ViewSeparator2" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ViewList" />
+		<ItemSet id = "MessageBubbles" _label = "_Message Bubbles">
+			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle" />
+			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues" />
+			<SeparatorItem id = "Separator1" />
+			<CommandItem id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues" />
+		</ItemSet>
 		<SeparatorItem id = "ViewSeparator3" />
 		<SeparatorItem id = "ViewItemsSeparator" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ZoomIn" />
@@ -127,6 +133,7 @@
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FocusCurrentDocument" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.ShowWelcomePage" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ViewCommands.FullScreen" />
+	
 	</ItemSet>
 	
 	<ItemSet id = "Search" _label = "_Search">

@@ -28,10 +28,11 @@ using MonoDevelop.Ide;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 	
-namespace MonoDevelop.SourceEditor
+namespace MonoDevelop.Ide.Editor
 {
-	public enum MessageBubbleCommands
+	enum MessageBubbleCommands
 	{
+		Toggle,
 		HideIssues,
 		ToggleIssues
 	}
