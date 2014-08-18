@@ -29,7 +29,7 @@ namespace MonoDevelop.Ide.Editor
 {
 	public class LineEventArgs : System.EventArgs
 	{
-		public readonly IDocumentLine line;
+		readonly IDocumentLine line;
 
 		public IDocumentLine Line {
 			get {
