@@ -22,8 +22,7 @@ type CorrectGuidMSBuildExtension() =
         try
             let fsimportExists =
                 project.Imports
-                |> Seq.exists (fun import -> import.Project.EndsWith ("FSharp.Targets",
-                                                                      StringComparison.OrdinalIgnoreCase))
+                |> Seq.exists (fun import -> import.Project.EndsWith ("FSharp.Targets", StringComparison.OrdinalIgnoreCase))
 
             if fsimportExists then
                 project.GetGlobalPropertyGroup().Properties
