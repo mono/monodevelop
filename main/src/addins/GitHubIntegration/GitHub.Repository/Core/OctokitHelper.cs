@@ -27,33 +27,41 @@ using System;
 using GitHub.Auth;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MonoDevelop.VersionControl.Git;
 
 namespace GitHub.Repository.Core
 {
 	public class OctokitHelper
 	{
 
-		public IReadOnlyList<Octokit.Repository> GetAllRepositories()
+		public IReadOnlyList<Octokit.Repository> GetAllRepositories ()
 		{
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
+			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent ();
 			return repositories.Result;
 		}
 
 
-		public Octokit.Repository GetCurrentRepository(string gitHubUrl)
+		public Octokit.Repository GetCurrentRepository (string gitHubUrl)
 		{
 			Octokit.Repository repo = null;
-			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent();
+			Task<IReadOnlyList<Octokit.Repository>> repositories = GitHubService.Client.Repository.GetAllForCurrent ();
 			foreach (var item in repositories.Result) {
 				if (item.CloneUrl == gitHubUrl) {
-					repo = item ;
+					repo = item;
 					break;
 				} 
 			} 
 			return repo;
 		}
 
-		public bool GistThis(String fileName, String FileContent, string mimeType){
+		public bool SendPullRequest (Octokit.Repository reop, GitRepository gitRepo)
+		{
+			//	GitHubService.Client.Repository.PullRequest.Create(reop.Owner, reop.Name, new Octokit.NewPullRequest(
+			return true;
+		}
+
+		public bool GistThis (String fileName, String FileContent, string mimeType)
+		{
 
 			Octokit.NewGist newGist = new Octokit.NewGist ();
 			newGist.Description = "A Gist from MonoDevelop!";

@@ -39,11 +39,11 @@ namespace GitHub.Repository.UserInterface
 		{
 			this.Build ();
 			this.repository = (Object)repo;
-			List<Object> providers = new List<Object>();
-			providers.Add (new GitHubRepoPropertiesProvider().CreateProvider(this.repository));
+			List<Object> providers = new List<Object> ();
+			providers.Add (new GitHubRepoPropertiesProvider ().CreateProvider (this.repository));
 
-			if (providers.Count >0) {
-				this.gitHubPropertyGrid.SetCurrentObject (this.repository, providers.ToArray());
+			if (providers.Count > 0) {
+				this.gitHubPropertyGrid.SetCurrentObject (this.repository, providers.ToArray ());
 			}
 
 		}

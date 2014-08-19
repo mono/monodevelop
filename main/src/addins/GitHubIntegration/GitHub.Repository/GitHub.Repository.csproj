@@ -59,6 +59,8 @@
     <Compile Include="Providers\IGitHubProvider.cs" />
     <Compile Include="Services\GitHubRepo.cs" />
     <Compile Include="Services\GitHubRepoService.cs" />
+    <Compile Include="PullRequestDialog.cs" />
+    <Compile Include="gtk-gui\GitHub.Repository.PullRequestDialog.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

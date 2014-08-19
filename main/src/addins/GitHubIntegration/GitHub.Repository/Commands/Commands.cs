@@ -50,8 +50,8 @@ namespace GitHub.Repository.Commands
 
 	class GitHubCommandHandler: CommandHandler
 	{
-		public Document SelectedDocument{
-			get{ 
+		public Document SelectedDocument {
+			get { 
 				var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
 				return doc;
 			}
@@ -70,7 +70,7 @@ namespace GitHub.Repository.Commands
 
 		public Octokit.Repository ORepository {
 
-			get{
+			get {
 				string locationUri = this.Repository.LocationDescription;
 				string Url = getRepositoryURL (locationUri);
 
@@ -80,15 +80,13 @@ namespace GitHub.Repository.Commands
 			}
 		}
 
-		private string getRepositoryURL(string locationDescription){
+		private string getRepositoryURL (string locationDescription)
+		{
 
 			string pathToConfig = Path.Combine (locationDescription, ".git", "config");
-			using (StreamReader sr = File.OpenText(pathToConfig))
-	
-				{
+			using (StreamReader sr = File.OpenText (pathToConfig)) {
 				string s = String.Empty;
-				while ((s = sr.ReadLine()) != null)
-				{
+				while ((s = sr.ReadLine ()) != null) {
 					if (s.Trim ().StartsWith ("[remote")) {
 						break;
 					}
@@ -105,9 +103,9 @@ namespace GitHub.Repository.Commands
 			info.Enabled = Repository != null;
 		}
 
-		protected string getGistFileName(string fileName)
+		protected string getGistFileName (string fileName)
 		{
-			return (fileName + "-" + DateTime.Now.ToString ()).Replace("/","-").Replace(" ","-").Trim();
+			return (fileName + "-" + DateTime.Now.ToString ()).Replace ("/", "-").Replace (" ", "-").Trim ();
 
 		}
 	}
@@ -126,7 +124,20 @@ namespace GitHub.Repository.Commands
 		}
 	}
 
-	class GistThisHandler : GitHubCommandHandler{
+	class GitHubPullRequestHandler: GitHubCommandHandler
+	{
+		protected override void Run ()
+		{
+			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Loading properties"));
+			IdeApp.Workbench.StatusBar.AutoPulse = true;
+			//ORepository.
+			IdeApp.Workbench.StatusBar.AutoPulse = false;
+			IdeApp.Workbench.StatusBar.EndProgress ();
+		}
+	}
+
+	class GistThisHandler : GitHubCommandHandler
+	{
 
 		protected override void Run ()
 		{
@@ -135,7 +146,7 @@ namespace GitHub.Repository.Commands
 			Document doc = SelectedDocument;
 			string mimeType = doc.Editor.MimeType;
 			string content = doc.Editor.Text;
-			string gistFileName = getGistFileName(doc.FileName.FileName);
+			string gistFileName = getGistFileName (doc.FileName.FileName);
 			var obj = new OctokitHelper ();
 
 			obj.GistThis (gistFileName, content, mimeType);
@@ -154,7 +165,8 @@ namespace GitHub.Repository.Commands
 
 	}
 
-	class GistThisSelectedOnlyHandler : GitHubCommandHandler {
+	class GistThisSelectedOnlyHandler : GitHubCommandHandler
+	{
 		protected override void Run ()
 		{
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Started Gisting the selection in the document.."));
@@ -162,9 +174,9 @@ namespace GitHub.Repository.Commands
 			Document doc = SelectedDocument;
 			string content = doc.Editor.SelectedText;
 			string mimeType = doc.Editor.MimeType;
-			string gistFileName = getGistFileName(doc.FileName.FileName);
+			string gistFileName = getGistFileName (doc.FileName.FileName);
 			var obj = new OctokitHelper ();
-			obj.GistThis (gistFileName , content, mimeType);
+			obj.GistThis (gistFileName, content, mimeType);
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Done Gisting the selection in the document.."));
 			IdeApp.Workbench.StatusBar.AutoPulse = false;
 			IdeApp.Workbench.StatusBar.EndProgress ();
@@ -189,13 +201,13 @@ namespace GitHub.Repository.Commands
 		{
 			IdeApp.Workbench.StatusBar.BeginProgress (GettextCatalog.GetString ("Started copying the github location of the line in code"));
 
-			string repositoryURL = this.Repository.GetCurrentRemote();
+			string repositoryURL = this.Repository.GetCurrentRemote ();
 			string locationUri = this.Repository.LocationDescription;
 			var wob = IdeApp.ProjectOperations.CurrentSelectedWorkspaceItem.BaseDirectory.FileName;
 
 			Octokit.Repository repo = this.ORepository;
 
-			string url = "https" + repo.GitUrl.Substring (3, (repo.GitUrl.Length- 7));
+			string url = "https" + repo.GitUrl.Substring (3, (repo.GitUrl.Length - 7));
 
 
 			Document document = this.SelectedDocument;

@@ -38,7 +38,7 @@ namespace GitHub.Repository.Core
 		{
 			var dlg = new GitHubPropertyDialog (repo);
 			try {
-				if (MessageService.RunCustomDialog (dlg) != (int) Gtk.ResponseType.Ok)
+				if (MessageService.RunCustomDialog (dlg) != (int)Gtk.ResponseType.Ok)
 					return;
 					
 			} finally {

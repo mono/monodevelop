@@ -30,6 +30,7 @@ namespace GitHub.Repository.Providers
 	public interface IGitHubProvider
 	{
 		bool SupportsObject (object obj);
+
 		object CreateProvider (object obj);
 	}
 }

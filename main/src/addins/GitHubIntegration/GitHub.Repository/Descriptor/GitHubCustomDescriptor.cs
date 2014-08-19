@@ -41,7 +41,7 @@ namespace GitHub.Repository.Descriptors
 			PropertyDescriptorCollection props = TypeDescriptor.GetProperties (this, arr, true);
 			PropertyDescriptor[] newProps = new PropertyDescriptor [props.Count];
 
-			for (int n=0; n<props.Count; n++) {
+			for (int n = 0; n < props.Count; n++) {
 				PropertyDescriptor prop = props [n];
 				Attribute[] atts = GetCustomAttributes (prop.Name);
 				if (atts != null)
@@ -52,52 +52,52 @@ namespace GitHub.Repository.Descriptors
 			return new PropertyDescriptorCollection (newProps);
 		}
 
-		public virtual PropertyDescriptorCollection GetProperties()
+		public virtual PropertyDescriptorCollection GetProperties ()
 		{
 			return GetProperties (null);
 		}
 
-		public virtual EventDescriptorCollection GetEvents(Attribute[] arr)
+		public virtual EventDescriptorCollection GetEvents (Attribute[] arr)
 		{
 			return TypeDescriptor.GetEvents (this, arr, true);
 		}
 
-		public virtual EventDescriptorCollection GetEvents()
+		public virtual EventDescriptorCollection GetEvents ()
 		{
 			return TypeDescriptor.GetEvents (this, true);
 		}
 
-		public virtual Object GetEditor(Type editorBaseType)
+		public virtual Object GetEditor (Type editorBaseType)
 		{
 			return TypeDescriptor.GetEditor (this, editorBaseType, true);
 		}
 
-		public virtual PropertyDescriptor GetDefaultProperty()
+		public virtual PropertyDescriptor GetDefaultProperty ()
 		{
 			return TypeDescriptor.GetDefaultProperty (this, true);
 		}
 
-		public virtual EventDescriptor GetDefaultEvent()
+		public virtual EventDescriptor GetDefaultEvent ()
 		{
 			return TypeDescriptor.GetDefaultEvent (this, true);
 		}
 
-		public virtual TypeConverter GetConverter()
+		public virtual TypeConverter GetConverter ()
 		{
 			return TypeDescriptor.GetConverter (this, true);
 		}
 
-		public virtual String GetComponentName()
+		public virtual String GetComponentName ()
 		{
 			return TypeDescriptor.GetComponentName (this, true);
 		}
 
-		public virtual String GetClassName()
+		public virtual String GetClassName ()
 		{
 			return TypeDescriptor.GetClassName (this, true);
 		}
 
-		public virtual AttributeCollection GetAttributes()
+		public virtual AttributeCollection GetAttributes ()
 		{
 			return TypeDescriptor.GetAttributes (this, true);
 		}
@@ -121,7 +121,7 @@ namespace GitHub.Repository.Descriptors
 		PropertyDescriptor prop;
 		Attribute[] customAtts;
 
-		public CustomProperty (PropertyDescriptor prop, Attribute[] customAtts): base (prop)
+		public CustomProperty (PropertyDescriptor prop, Attribute[] customAtts) : base (prop)
 		{
 			this.prop = prop;
 			this.customAtts = customAtts;

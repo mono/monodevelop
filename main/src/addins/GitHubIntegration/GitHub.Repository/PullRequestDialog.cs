@@ -1,5 +1,5 @@
 ﻿//
-// GitHubRepoPropertiesProvider.cs
+// PullRequestDialog.cs
 //
 // Author:
 //       Praveena <>
@@ -24,20 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using GitHub.Repository.Descriptors;
 
-namespace GitHub.Repository.Providers
+namespace GitHub.Repository
 {
-	public class GitHubRepoPropertiesProvider : IGitHubProvider
+	public partial class PullRequestDialog : Gtk.Dialog
 	{
-		public object CreateProvider (object obj)
+		public PullRequestDialog ()
 		{
-			return new GitHubRepoPropertiesDescriptor ((Octokit.Repository)obj);
-		}
-
-		public bool SupportsObject (object obj)
-		{
-			return obj is Octokit.Repository;
+			this.Build ();
 		}
 	}
 }

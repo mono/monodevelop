@@ -55,7 +55,7 @@ namespace GitHub.Repository.Gui
 		{
 			base.Initialize (builders, options, menuPath);
 
-			repoChangedHandler = (EventHandler) DispatchService.GuiDispatch (new EventHandler (OnGitHubRepoListChanged));
+			repoChangedHandler = (EventHandler)DispatchService.GuiDispatch (new EventHandler (OnGitHubRepoListChanged));
 
 			paned = new VPaned ();
 
@@ -76,7 +76,7 @@ namespace GitHub.Repository.Gui
 
 			detailsTree.HeadersVisible = true;
 			detailsTree.RulesHint = true;
-			detailsStore = new ListStore (typeof(object), typeof(string), typeof (string), typeof (string), typeof (string));
+			detailsStore = new ListStore (typeof(object), typeof(string), typeof(string), typeof(string), typeof(string));
 
 			CellRendererText trtest = new CellRendererText ();
 			CellRendererText tr;
@@ -101,8 +101,7 @@ namespace GitHub.Repository.Gui
 
 			paned.ShowAll ();
 
-			foreach (GitHubRepo r in gitHubRepoService.RepoList) 
-			{
+			foreach (GitHubRepo r in gitHubRepoService.RepoList) {
 				TreeView.AddChild (r);
 			}
 		}
@@ -122,8 +121,7 @@ namespace GitHub.Repository.Gui
 				TreeView.Clear ();
 				foreach (GitHubRepo r in gitHubRepoService.RepoList)
 					TreeView.AddChild (r);
-			}
-			else {
+			} else {
 				TreeView.Clear ();
 			}
 		}
@@ -142,7 +140,8 @@ namespace GitHub.Repository.Gui
 			ITreeNavigator nav = TreeView.GetNodeAtObject (t);
 			if (nav != null)
 				return nav;
-			else return null;
+			else
+				return null;
 		}
 
 		public override Gtk.Widget Control {

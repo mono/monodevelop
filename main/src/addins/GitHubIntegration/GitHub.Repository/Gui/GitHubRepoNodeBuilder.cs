@@ -98,8 +98,7 @@ namespace GitHub.Repository.Gui
 		protected void OnUpdateForkRepo (CommandInfo info)
 		{
 			GitHubRepo repo = CurrentNode.DataItem as GitHubRepo;
-			if (repo.ORepository.Owner.Login == GitHubService.Client.Credentials.Login) 
-			{
+			if (repo.ORepository.Owner.Login == GitHubService.Client.Credentials.Login) {
 				info.Enabled = false;
 			} 
 
