@@ -39,27 +39,27 @@ namespace MonoDevelop.Ide.Editor
 		#region Line marker
 		public static IUrlTextLineMarker CreateUrlTextMarker (TextEditor editor, IDocumentLine line, string value, UrlType url, string syntax, int startCol, int endCol)
 		{
-			return editor.TextMarkerFactory.CreateUrlTextMarker (line, value, url, syntax, startCol, endCol);
+			return editor.TextMarkerFactory.CreateUrlTextMarker (editor, line, value, url, syntax, startCol, endCol);
 		}
 
 		public static ICurrentDebugLineTextMarker CreateCurrentDebugLineTextMarker (TextEditor editor)
 		{
-			return editor.TextMarkerFactory.CreateCurrentDebugLineTextMarker ();
+			return editor.TextMarkerFactory.CreateCurrentDebugLineTextMarker (editor);
 		}
 
 		public static ITextLineMarker CreateAsmLineMarker (TextEditor editor)
 		{
-			return editor.TextMarkerFactory.CreateAsmLineMarker ();
+			return editor.TextMarkerFactory.CreateAsmLineMarker (editor);
 		}
 
 		public static IUnitTestMarker CreateUnitTestMarker (TextEditor editor, UnitTestMarkerHost host, UnitTestLocation unitTestLocation)
 		{
-			return editor.TextMarkerFactory.CreateUnitTestMarker (host, unitTestLocation);
+			return editor.TextMarkerFactory.CreateUnitTestMarker (editor, host, unitTestLocation);
 		}
 
 		public static IMessageBubbleLineMarker CreateMessageBubbleLineMarker (TextEditor editor)
 		{
-			return editor.TextMarkerFactory.CreateMessageBubbleLineMarker ();
+			return editor.TextMarkerFactory.CreateMessageBubbleLineMarker (editor);
 		}
 
 
@@ -68,36 +68,36 @@ namespace MonoDevelop.Ide.Editor
 		#region Segment marker
 		public static ITextSegmentMarker CreateUsageMarker (TextEditor editor, Usage usage)
 		{
-			return editor.TextMarkerFactory.CreateUsageMarker (usage);
+			return editor.TextMarkerFactory.CreateUsageMarker (editor, usage);
 		}
 
 		public static ITextSegmentMarker CreateLinkMarker (TextEditor editor, int offset, int length, Action<LinkRequest> activateLink)
 		{
-			return editor.TextMarkerFactory.CreateLinkMarker (offset, length, activateLink);
+			return editor.TextMarkerFactory.CreateLinkMarker (editor, offset, length, activateLink);
 		}
 
 		public static ITextSegmentMarker CreateLinkMarker (TextEditor editor, ISegment segment, Action<LinkRequest> activateLink)
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			return editor.TextMarkerFactory.CreateLinkMarker (segment.Offset, segment.Length, activateLink);
+			return editor.TextMarkerFactory.CreateLinkMarker (editor, segment.Offset, segment.Length, activateLink);
 		}
 
 		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length)
 		{
-			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (effect, offset, length);
+			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, offset, length);
 		}
 
 		public static IGenericTextSegmentMarker CreateGenericTextSegmentMarker (TextEditor editor, TextSegmentMarkerEffect effect, ISegment segment)
 		{
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
-			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (effect, segment.Offset, segment.Length);
+			return editor.TextMarkerFactory.CreateGenericTextSegmentMarker (editor, effect, segment.Offset, segment.Length);
 		}
 
 		public static ISmartTagMarker CreateSmartTagMarker (TextEditor editor, int offset, DocumentLocation realLocation)
 		{
-			return editor.TextMarkerFactory.CreateSmartTagMarker (offset, realLocation);
+			return editor.TextMarkerFactory.CreateSmartTagMarker (editor, offset, realLocation);
 		}
 
 		static bool IsIdentifierPart (char ch)
@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Editor
 				while (endOffset < editor.Length && IsIdentifierPart (editor.GetCharAt (endOffset)))
 					endOffset++;
 			}
-			return editor.TextMarkerFactory.CreateErrorMarker (info, offset, endOffset - offset);
+			return editor.TextMarkerFactory.CreateErrorMarker (editor, info, offset, endOffset - offset);
 		}
 		#endregion
 	}

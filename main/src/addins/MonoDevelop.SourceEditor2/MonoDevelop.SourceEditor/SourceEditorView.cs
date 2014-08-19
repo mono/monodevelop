@@ -3107,37 +3107,37 @@ namespace MonoDevelop.SourceEditor
 		 
 		#region ISegmentMarkerHost implementation
 
-		ITextSegmentMarker ITextMarkerFactory.CreateUsageMarker (Usage usage)
+		ITextSegmentMarker ITextMarkerFactory.CreateUsageMarker (MonoDevelop.Ide.Editor.TextEditor editor, Usage usage)
 		{
 			return new UsageSegmentMarker (usage);
 		}
 
-		IUrlTextLineMarker ITextMarkerFactory.CreateUrlTextMarker (IDocumentLine line, string value, MonoDevelop.Ide.Editor.UrlType url, string syntax, int startCol, int endCol)
+		IUrlTextLineMarker ITextMarkerFactory.CreateUrlTextMarker (MonoDevelop.Ide.Editor.TextEditor editor, IDocumentLine line, string value, MonoDevelop.Ide.Editor.UrlType url, string syntax, int startCol, int endCol)
 		{
 			return new UrlTextLineMarker (TextEditor.Document, line, value, (Mono.TextEditor.UrlType)url, syntax, startCol, endCol);
 		}
 
-		ICurrentDebugLineTextMarker ITextMarkerFactory.CreateCurrentDebugLineTextMarker ()
+		ICurrentDebugLineTextMarker ITextMarkerFactory.CreateCurrentDebugLineTextMarker (MonoDevelop.Ide.Editor.TextEditor editor)
 		{
 			return new CurrentDebugLineTextMarker (TextEditor);
 		}
 
-		ITextLineMarker ITextMarkerFactory.CreateAsmLineMarker ()
+		ITextLineMarker ITextMarkerFactory.CreateAsmLineMarker (MonoDevelop.Ide.Editor.TextEditor editor)
 		{
 			return new AsmLineMarker ();
 		}
 
-		IUnitTestMarker ITextMarkerFactory.CreateUnitTestMarker (UnitTestMarkerHost host, UnitTestLocation unitTestLocation)
+		IUnitTestMarker ITextMarkerFactory.CreateUnitTestMarker (MonoDevelop.Ide.Editor.TextEditor editor, UnitTestMarkerHost host, UnitTestLocation unitTestLocation)
 		{
 			return new UnitTestMarker (TextEditor, host, unitTestLocation);
 		}
 
-		IMessageBubbleLineMarker ITextMarkerFactory.CreateMessageBubbleLineMarker ()
+		IMessageBubbleLineMarker ITextMarkerFactory.CreateMessageBubbleLineMarker (MonoDevelop.Ide.Editor.TextEditor editor)
 		{
 			return new MessageBubbleTextMarker (messageBubbleCache);
 		}
 
-		IGenericTextSegmentMarker ITextMarkerFactory.CreateGenericTextSegmentMarker (TextSegmentMarkerEffect effect, int offset, int length)
+		IGenericTextSegmentMarker ITextMarkerFactory.CreateGenericTextSegmentMarker (MonoDevelop.Ide.Editor.TextEditor editor, TextSegmentMarkerEffect effect, int offset, int length)
 		{
 			switch (effect) {
 			case TextSegmentMarkerEffect.DottedLine:
@@ -3150,17 +3150,17 @@ namespace MonoDevelop.SourceEditor
 			}
 		}
 
-		public ITextSegmentMarker CreateLinkMarker (int offset, int length, Action<LinkRequest> activateLink)
+		public ITextSegmentMarker CreateLinkMarker (MonoDevelop.Ide.Editor.TextEditor editor, int offset, int length, Action<LinkRequest> activateLink)
 		{
 			return new LinkMarker (offset, length, activateLink);
 		}
 
-		ISmartTagMarker ITextMarkerFactory.CreateSmartTagMarker (int offset, MonoDevelop.Ide.Editor.DocumentLocation realLocation)
+		ISmartTagMarker ITextMarkerFactory.CreateSmartTagMarker (MonoDevelop.Ide.Editor.TextEditor editor, int offset, MonoDevelop.Ide.Editor.DocumentLocation realLocation)
 		{
 			return new SmartTagMarker (offset, realLocation);
 		}
 
-		IErrorMarker ITextMarkerFactory.CreateErrorMarker (Error info, int offset, int length)
+		IErrorMarker ITextMarkerFactory.CreateErrorMarker (MonoDevelop.Ide.Editor.TextEditor editor, Error info, int offset, int length)
 		{
 			return new ErrorMarker (info, offset, length);
 		}
