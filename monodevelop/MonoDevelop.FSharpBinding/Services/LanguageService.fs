@@ -39,25 +39,23 @@ module internal TipFormatter =
           try ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x)
           with exn -> null)
 
+  let tryExists s = try if File.Exists s then Some s else None with _ -> None
+
   /// Return the XmlDocumentationProvider for an assembly
   let findXmlDocProviderForAssembly file  = 
-      let tryExists s = try if File.Exists s then Some s else None with _ -> None
-      let xmlDocFilename = 
-          match tryExists (Path.ChangeExtension(file,"xml")) with 
-          | Some x -> Some x 
-          | None -> tryExists (Path.ChangeExtension(file,"XML"))
-      match xmlDocFilename with 
-      | None -> None
-      | Some xmlFile ->
-      let docReader = xmlDocProvider xmlFile
-      if docReader = null then None else Some docReader
+      maybe {let! xmlFile =
+                match tryExists (Path.ChangeExtension(file,"xml")) with 
+                | Some x -> Some x 
+                | None -> tryExists (Path.ChangeExtension(file,"XML"))
+             let docReader = xmlDocProvider xmlFile
+             if docReader = null then return! None
+             else return docReader}
 
   let findXmlDocProviderForEntity (file, key:string)  = 
-      match findXmlDocProviderForAssembly file with 
-      | None -> None
-      | Some docReader ->
-          let doc = docReader.GetDocumentation key
-          if String.IsNullOrEmpty doc then None else Some doc
+      maybe {let! docReader = findXmlDocProviderForAssembly file
+             let doc = docReader.GetDocumentation key
+             if String.IsNullOrEmpty doc then return! None
+             else return doc}
 
   let (|MemberName|_|) (name:string) = 
       let dotRight = name.LastIndexOf '.'
@@ -124,37 +122,26 @@ module internal TipFormatter =
         let helpxml = helpTree.GetHelpXml(key)
         if helpxml = null then None else Some(helpxml)
     with ex -> 
-        Debug.WriteLine (sprintf "GetHelpXml failed for key %s:\r\n\t%A" key ex)
+        LoggingService.LogError (sprintf "GetHelpXml failed for key %s" key, ex)
         None  
                   
   /// Try to find the MonoDoc documentation for a file/key pair representing an entity with documentation
   let findMonoDocProviderForEntity (file, key) = 
-      Debug.WriteLine (sprintf "key= %A, File= %A" key file) 
       let typeMemberFormatter name = "/Type/Members/Member[@MemberName='" + name + "']" 
       match key with
       | TypeKey(typ) -> 
-          Debug.WriteLine (sprintf "Type Key = %s" typ )
-          match tryGetDoc (typ) with
-          | Some docXml -> if docXml = null then None else 
-                           Debug.WriteLine (sprintf "TypeKey xml= <<<%s>>>" docXml.OuterXml )
-                           Some docXml.OuterXml
-          | None -> None
+          maybe {let! docXml = tryGetDoc typ
+                 return docXml.OuterXml}
       | SimpleKey (parentId, name) -> 
-          Debug.WriteLine (sprintf "SimpleKey parentId= %s, name= %s" parentId name )
-          match tryGetDoc ("T:" + parentId) with
-          | Some doc -> let docXml = doc.SelectSingleNode (typeMemberFormatter name)
-                        if docXml = null then None else 
-                        Debug.WriteLine (sprintf "SimpleKey xml= <<<%s>>>" docXml.OuterXml )
-                        Some docXml.OuterXml
-          | None -> None
+          maybe {let! doc = tryGetDoc ("T:" + parentId) 
+                 let docXml = doc.SelectSingleNode (typeMemberFormatter name)
+                 return docXml.OuterXml }
       | MethodKey(parentId, name, count, args) -> 
-          Debug.WriteLine (sprintf "MethodKey, parentId= %s, name= %s, count= %i args= %A" parentId name count args )
-          match tryGetDoc ("T:" + parentId) with
-          | Some doc -> let nodeXmls = doc.SelectNodes (typeMemberFormatter name)
-                        let docXml = trySelectOverload (nodeXmls, args)
-                        docXml |> Option.map (fun xml -> xml.OuterXml) 
-          | None -> None
-      | _ -> Debug.WriteLine (sprintf "**No match for key = %s" key)
+          maybe { let! doc = tryGetDoc ("T:" + parentId) 
+                  let nodeXmls = doc.SelectNodes (typeMemberFormatter name)
+                  let! docXml = trySelectOverload (nodeXmls, args)
+                  return docXml.OuterXml }
+      | _ -> LoggingService.LogWarning <| sprintf "findMonoDocProviderForEntity, No match for key = %s" key
              None
       
   /// Find the documentation for a file/key pair representing an entity with documentation
@@ -173,7 +160,6 @@ module internal TipFormatter =
         | Some doc -> Tooltips.getTooltip Styles.simpleMarkup doc
     | _ -> String.Empty
         
-
   /// Format some of the data returned by the F# compiler
   let private buildFormatElement el =
     let signatureB, commentB = StringBuilder(), StringBuilder()
@@ -214,30 +200,26 @@ module internal TipFormatter =
           let signature, summary = buildFormatElement item
           signature, summary ]
 
-
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =  
     match comment with
-    | XmlCommentText(s) -> 
-        Tooltips.getParameterTip Styles.simpleMarkup s paramName
+    | XmlCommentText(s) -> Tooltips.getParameterTip Styles.simpleMarkup s paramName
     // For 'XmlCommentSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
     | XmlCommentSignature(file,key) -> 
-        match findXmlDocProviderForAssembly file with 
-        | None -> None
-        | Some docReader ->
-            let doc = docReader.GetDocumentation(key)
-            if String.IsNullOrEmpty(doc) then  None else
-            let parameterTip = Tooltips.getParameterTip Styles.simpleMarkup doc paramName
-            parameterTip
+        maybe {let! docReader = findXmlDocProviderForAssembly file  
+               let doc = docReader.GetDocumentation(key)
+               if String.IsNullOrEmpty doc then return! None else
+               let parameterTip = Tooltips.getParameterTip Styles.simpleMarkup doc paramName
+               return! parameterTip}
     | _ -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromElement paramName element = 
       match element with 
       | ToolTipElementNone -> None
-      | ToolTipElement(it, comment) -> extractParamTipFromComment paramName comment 
-      | ToolTipElementGroup(items) -> List.tryPick (snd >> extractParamTipFromComment paramName) items
-      | ToolTipElementCompositionError(err) -> None
+      | ToolTipElement (it, comment) -> extractParamTipFromComment paramName comment 
+      | ToolTipElementGroup items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
+      | ToolTipElementCompositionError err -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let extractParamTip paramName (ToolTipText elements) = 
