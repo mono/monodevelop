@@ -638,6 +638,7 @@ namespace MonoDevelop.Ide.Gui
 			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			editorExtension = null;
 			TextEditorExtension last = null;
+			TextEditorExtension first = null;
 			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
 			foreach (TextEditorExtensionNode extNode in extensions) {
 				if (!extNode.Supports (FileName, mimetypeChain))
@@ -655,10 +656,20 @@ namespace MonoDevelop.Ide.Gui
 						last.Next = ext;
 						last = ext;
 					} else {
-						editorExtension = last = ext;
+						editorExtension = first = last = ext;
 						last.Next = editor.AttachExtension (editorExtension);
 					}
 					ext.Initialize (this);
+				}
+			}
+			if (first != editorExtension) {
+				while (first != null) {
+					try {
+						first.Dispose ();
+					} catch (Exception ex) {
+						LoggingService.LogError ("Exception while disposing extension:" + editorExtension, ex);
+					}
+					first = first.Next as TextEditorExtension;
 				}
 			}
 			if (window is SdiWorkspaceWindow)
