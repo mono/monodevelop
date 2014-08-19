@@ -82,7 +82,7 @@ module NewTooltips =
         let endOffset = editor.Document.LocationToOffset(symbolUse.RangeAlternate.EndLine, symbolUse.RangeAlternate.EndColumn)
         TextSegment.FromBounds(startOffset, endOffset)
 
-    let getSummaryFromSymbol (symbolUse:FSharpSymbolUse) =
+    let getSummaryFromSymbol (symbolUse:FSharpSymbolUse) (backupSig: Lazy<Option<string * string>>) =
         let xmlDoc, xmlDocSig = 
             match symbolUse.Symbol with
             | :? FSharpMemberFunctionOrValue as func -> func.XmlDoc, func.XmlDocSig
@@ -92,10 +92,14 @@ module NewTooltips =
 
         if xmlDoc.Count > 0 then Full (String.Join( "\n", xmlDoc |> Seq.map escapeText))
         else
-            if String.IsNullOrWhiteSpace xmlDocSig then XmlDoc.EmptyDoc
+            if String.IsNullOrWhiteSpace xmlDocSig then
+                let backup = backupSig.Force()
+                match backup with
+                | Some (key, file) ->Lookup (key, Some file)
+                | None -> XmlDoc.EmptyDoc
             else Lookup(xmlDocSig, symbolUse.Symbol.Assembly.FileName)
 
-    let getTooltipFromSymbol (symbolUse:FSharpSymbolUse option) editor =
+    let getTooltipFromSymbol (symbolUse:FSharpSymbolUse option) editor (backUpSig: Lazy<_>) =
         match symbolUse with
         | Some symbolUse -> 
             match symbolUse.Symbol with
@@ -158,7 +162,7 @@ module NewTooltips =
                         | false, true -> typeDisplay + enumtip () + fullName
                         | _ -> typeDisplay + fullName
 
-                    ToolTip(signature, getSummaryFromSymbol symbolUse, getSegFromSymbolUse editor symbolUse)
+                    ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
                 with exn -> ToolTips.EmptyTip
 
             | :? FSharpMemberFunctionOrValue as func ->
@@ -232,7 +236,7 @@ module NewTooltips =
 
                                 Highlight.asKeyword modifiers ++ func.DisplayName ++ Highlight.asSymbol ":" + "\n" + signature
 
-                            ToolTip(signature, getSummaryFromSymbol symbolUse, getSegFromSymbolUse editor symbolUse)                            
+                            ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)                            
 
                 else
                     //val name : Type
@@ -243,7 +247,7 @@ module NewTooltips =
                                 else Highlight.asKeyword "val"
                             prefix ++ func.DisplayName ++ Highlight.asSymbol ":" ++ retType
 
-                    ToolTip(signature, getSummaryFromSymbol symbolUse, getSegFromSymbolUse editor symbolUse)
+                    ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
                 with exn -> ToolTips.EmptyTip
 
             | _ -> ToolTips.EmptyTip
@@ -297,7 +301,33 @@ type FSharpTooltipProvider() =
            | None -> return ParseAndCheckNotFound
            | Some parseAndCheckResults ->
                let! symbol = parseAndCheckResults.GetSymbol(line, col, lineStr)
-               let typeTip = getTooltipFromSymbol symbol extEditor
+               //Hack: Because FCS does not always contain XmlDocSigs for tooltips we have to have to currently use the old tooltips
+               // to extract the signature, this is only limited in that it deals with onlt a single tooltip in a group/list
+               // This should be fine as there are issues with genewric tooltip xmldocs anyway
+               // e.g. generics such as Dictionary<'a,'b>.Contains currently dont work.
+               let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
+               //we create the backupSig as lazily as possible we could put the asyn call in here but I was worried about GC retension.
+               let backupSig = 
+                   lazy
+                       match tip with
+                       | Some t ->
+                           match t with
+                           | ToolTipText [xs], (_,_) -> 
+                               match xs with
+                               | ToolTipElement (name, xmlComment) ->
+                                    match xmlComment with
+                                    | XmlCommentSignature (key, file) -> Some (file, key)
+                                    | _ -> None
+                               | ToolTipElementGroup [name, xmlComment] ->
+                                    match xmlComment with
+                                    | XmlCommentSignature (key, file) -> Some (file, key)
+                                    | _ -> None
+                               | ToolTipElementCompositionError _ -> None
+                               | _ -> None
+                           | _  -> None
+                       | _ -> None
+
+               let typeTip = getTooltipFromSymbol symbol extEditor backupSig
                // As the new tooltips are unfinished we match ToolTip here to use the new tooltips and anything else to run through the old tooltip system
                // In the section above we return EmptyTip for any tooltips symbols that have not yet ben finished
                match typeTip with
