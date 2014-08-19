@@ -119,13 +119,17 @@ namespace MonoDevelop.HexEditor
 
 		public override bool StoreValue (ObjectValue val)
 		{
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowTargetInvoke = true;
+
 			switch (val.TypeName) {
 			case "byte[]":
 				// HACK: make sure to load the full byte stream...
 				long length = hexEditor.HexEditorData.Length;
+
 				hexEditor.HexEditorData.GetBytes (length - 1, 1);
 
-				val.SetRawValue (hexEditor.HexEditorData.Bytes);
+				val.SetRawValue (hexEditor.HexEditorData.Bytes, options);
 				return true;
 			default:
 				return false;

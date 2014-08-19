@@ -173,12 +173,15 @@ namespace MonoDevelop.Debugger.Visualizer
 		
 		public override bool StoreValue (ObjectValue val)
 		{
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowTargetInvoke = true;
+
 			switch (val.TypeName) {
 			case "char[]":
-				val.SetRawValue (textView.Buffer.Text.ToCharArray ());
+				val.SetRawValue (textView.Buffer.Text.ToCharArray (), options);
 				return true;
 			case "string":
-				val.SetRawValue (textView.Buffer.Text);
+				val.SetRawValue (textView.Buffer.Text, options);
 				return true;
 			default:
 				return false;
