@@ -81,12 +81,16 @@ namespace MonoDevelop.HexEditor
 
 		public override Widget GetVisualizerWidget (ObjectValue val)
 		{
-			hexEditor = new Mono.MHex.HexEditor ();
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowTargetInvoke = true;
+			options.ChunkRawStrings = true;
 
 			IBuffer buffer = null;
 
+			hexEditor = new Mono.MHex.HexEditor ();
+
 			if (val.TypeName != "string") {
-				var raw = (RawValueArray) val.GetRawValue ();
+				var raw = (RawValueArray) val.GetRawValue (options);
 
 				switch (val.TypeName) {
 				case "sbyte[]":
@@ -100,10 +104,7 @@ namespace MonoDevelop.HexEditor
 					break;
 				}
 			} else {
-				var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-				ops.ChunkRawStrings = true;
-
-				buffer = new RawStringBuffer ((RawValueString) val.GetRawValue (ops));
+				buffer = new RawStringBuffer ((RawValueString) val.GetRawValue (options));
 			}
 
 			hexEditor.HexEditorData.Buffer = buffer;
