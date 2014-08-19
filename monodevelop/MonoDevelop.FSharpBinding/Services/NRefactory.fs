@@ -83,7 +83,7 @@ module NRefactory =
            // Create a resolution context for the resolved type definition.
            let nsp = match fsEntity.Namespace with None -> "" | Some n -> n
            let unresolvedTypeDef = DefaultUnresolvedTypeDefinition (nsp, Region=region, Name=lastIdent, Accessibility=access (* , UnresolvedFile=unresolvedFile *) )
-           Microsoft.FSharp.Linq.RuntimeHelpers.LeafExpressionConverter.QuotationToExpression
+
            // TODO: Add base type references, this will allow 'Go To Base' to work. 
            // It may also allow 'Find Derived Types' to work. This would require generating 
            // ITypeReference nodes to reference other type definitions in the assembly being edited.
