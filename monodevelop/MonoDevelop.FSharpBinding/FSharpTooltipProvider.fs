@@ -310,21 +310,20 @@ type FSharpTooltipProvider() =
                let backupSig = 
                    lazy
                        match tip with
-                       | Some t ->
-                           match t with
-                           | ToolTipText [xs], (_,_) -> 
-                               match xs with
-                               | ToolTipElement (name, xmlComment) ->
-                                    match xmlComment with
-                                    | XmlCommentSignature (key, file) -> Some (file, key)
-                                    | _ -> None
-                               | ToolTipElementGroup [name, xmlComment] ->
-                                    match xmlComment with
-                                    | XmlCommentSignature (key, file) -> Some (file, key)
-                                    | _ -> None
-                               | ToolTipElementCompositionError _ -> None
+                       | Some (ToolTipText xs, (_,_)) when xs.Length > 0 ->
+                           let first = xs.Head    
+                           match first with
+                           | ToolTipElement (name, xmlComment) ->
+                                match xmlComment with
+                                | XmlCommentSignature (key, file) -> Some (file, key)
+                                | _ -> None
+                           | ToolTipElementGroup tts when tts.Length > 0 ->
+                               let name, xmlComment = tts.Head
+                               match xmlComment with
+                               | XmlCommentSignature (key, file) -> Some (file, key)
                                | _ -> None
-                           | _  -> None
+                           | ToolTipElementCompositionError _ -> None
+                           | _ -> None
                        | _ -> None
 
                let typeTip = getTooltipFromSymbol symbol extEditor backupSig
