@@ -289,7 +289,7 @@ update_environment (const char *macosDir, const char *app)
 		free (v2);
 	}
 	
-	if ((value = str_append (macosDir, "/lib"))) {
+	if ((value = str_append (macosDir, "/../Resources/lib"))) {
 		push_env ("DYLD_FALLBACK_LIBRARY_PATH", value);
 		free (value);
 	}
@@ -357,7 +357,7 @@ env2bool (const char *env, bool defaultValue)
 int main (int argc, char **argv)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/MacOS/lib/monodevelop/bin"];
+	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 	// can be overridden with plist string MonoMinVersion
 	NSString *req_mono_version = @"3.0.7";
