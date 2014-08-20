@@ -501,7 +501,7 @@ namespace MonoDevelop.SourceEditor
 			if (marker == null)
 				return;
 			
-			marker.SetPrimaryError (task.Description);
+			marker.SetPrimaryError (task);
 			
 			if (TextEditor != null && TextEditor.IsComposited) {
 				/*if (messageBubbleHighlightPopupWindow != null)

@@ -63,6 +63,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		Task task;
+		Task primaryTask;
 		DocumentLine lineSegment;
 //		int editorAllocHeight = -1;
 //		int lastLineLength = -1;
@@ -97,8 +98,10 @@ namespace MonoDevelop.SourceEditor
 			return height;*/
 		}
 
-		public void SetPrimaryError (string text)
+		public void SetPrimaryError (Task task)
 		{
+			this.primaryTask = task;
+			var text = task.Description;
 			EnsureLayoutCreated (editor);
 			
 			var match = mcsErrorFormat.Match (text);
@@ -678,9 +681,13 @@ namespace MonoDevelop.SourceEditor
 			AddError (task, task.Severity == TaskSeverity.Error, task.Description);
 		}
 
-		void MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.SetPrimaryTask (Task task)
-		{
-			SetPrimaryError (task.Description);
+		Task MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.PrimaryTask {
+			get {
+				return primaryTask;
+			}
+			set {
+				SetPrimaryError (task);
+			}
 		}
 
 		int MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.TaskCount {

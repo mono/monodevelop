@@ -70,9 +70,11 @@ namespace MonoDevelop.Ide.Editor
 	public interface IMessageBubbleLineMarker : ITextLineMarker
 	{
 		int TaskCount { get; }
+
+		MonoDevelop.Ide.Tasks.Task PrimaryTask { get; set; }
+
 		IEnumerable<MonoDevelop.Ide.Tasks.Task> Tasks { get; }
 
 		void AddTask (MonoDevelop.Ide.Tasks.Task task);
-		void SetPrimaryTask (MonoDevelop.Ide.Tasks.Task task);
 	}
 }
