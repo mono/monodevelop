@@ -81,6 +81,7 @@
     <Import file="Templates/ios/Common/Info_iPhone.Storyboard.plist.xml" />
     <Import file="Templates/ios/Common/Info_Universal.Storyboard.plist.xml" />
     <Import file="Templates/ios/Common/Entitlements.plist.xml" />
+    <Import file="Templates/ios/Common/Default-568h.png" />
     <Import file="Templates/ios/Empty/AppDelegate.fs" />
     <Import file="Templates/ios/Empty/ProjectIPad.xpt.xml" />
     <Import file="Templates/ios/Empty/ProjectIPhone.xpt.xml" />
