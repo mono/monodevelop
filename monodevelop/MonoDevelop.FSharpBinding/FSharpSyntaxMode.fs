@@ -47,6 +47,13 @@ module FSharpSyntaxModeInternals =
                 disabled <- value
                 this.setColor()
 
+    type EndIfBlockSpan() as this =
+        inherit Span()
+        do
+            this.Color <- "Preprocessor"
+            this.Rule <- "PreProcessorComment"
+
+
     type IfBlockSpan(isValid) =
         inherit AbstractBlockSpan(isValid)
         override this.ToString() =
@@ -71,6 +78,7 @@ module FSharpSyntaxModeInternals =
     type AbstractStringSpan () as this =
         inherit Span() 
         do
+            this.StopAtEol <- false
             this.Rule <- "String"
             this.Color <- "String"
 
@@ -83,6 +91,7 @@ module FSharpSyntaxModeInternals =
     type TripleQuotedStringSpan() as this =
         inherit AbstractStringSpan()
         do
+            this.Begin <- Regex("\"\"\"")
             this.End <- Regex("\"\"\"")
 
     type VerbatimStringSpan() as this =
@@ -90,6 +99,7 @@ module FSharpSyntaxModeInternals =
         do
             this.Begin <- Regex("@\"")
             this.End <- Regex("\"")
+            
             
 
 
@@ -115,7 +125,9 @@ module FSharpSyntaxModeInternals =
             while spanStack.Count > 0 do
                 spanStack.Pop() |> ignore
             let elseBlockSpan = ElseBlockSpan(true)
-            elseBlockSpan.Disabled <- not (this.CurSpan :?> IfBlockSpan).Disabled
+            if typeof<IfBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
+                elseBlockSpan.Disabled <- not (this.CurSpan :?> IfBlockSpan).Disabled
+                this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
             this.FoundSpanBegin.Invoke(elseBlockSpan, i , "#else".Length)
             i <- i + "#else".Length
             let preprocessorSpan = this.CreatePreProcessorSpan()
@@ -134,8 +146,8 @@ module FSharpSyntaxModeInternals =
             let existsInDefines = defines |> Seq.exists(fun t->t = parameter.Trim())
             let span = IfBlockSpan(true)
             span.Disabled <- not existsInDefines
-            this.FoundSpanBegin.Invoke(span, i, len)
-            i <- len - 1
+            this.FoundSpanBegin.Invoke(span, i,len)
+            i <- i + endIdx
 
 
 
@@ -146,22 +158,28 @@ module FSharpSyntaxModeInternals =
                 this.FoundSpanBegin.Invoke(CommentBlockSpan(),i,1)
                         
             if (this.CurRule.Name <> "String") then
-                let span = 
-                    if currentText.IsAt(textOffset, "\"") then
-                        StringSpan() :> AbstractStringSpan
-                    elif currentText.IsAt(textOffset, "\"\"\"") then
-                        TripleQuotedStringSpan():> AbstractStringSpan
-                    elif currentText.IsAt(textOffset, "@\"") then
-                        VerbatimStringSpan():> AbstractStringSpan
-                    else null
-                if (span <> null) then
-                    this.FoundSpanBegin.Invoke(span, i, span.Begin.Pattern.Length)
-                    i <- i + span.Begin.Pattern.Length
-            else 
-                if typeof<AbstractStringSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
-                    if (currentText.Contains("\"\"\"")) then
-                        this.FoundSpanEnd.Invoke(this.CurSpan,i + currentText.IndexOf("\"\"\""),3)
-                        
+                if this.CurSpan <> null && typeof<AbstractBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) && not (this.CurSpan :?> AbstractBlockSpan).Disabled then
+                    let span = 
+                        if currentText.IsAt(textOffset, "\"\"\"") then
+                            TripleQuotedStringSpan():> AbstractStringSpan
+                        elif currentText.IsAt(textOffset, "@\"") then
+                            VerbatimStringSpan():> AbstractStringSpan
+                        elif currentText.IsAt(textOffset, "\"") then
+                            StringSpan() :> AbstractStringSpan
+                        else null
+                    if (span <> null) then
+                        this.FoundSpanBegin.Invoke(span, i + textOffset, span.Begin.Pattern.Length)
+                        i <- i + textOffset 
+            elif typeof<AbstractStringSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
+                if typeof<TripleQuotedStringSpan>.IsAssignableFrom(this.CurSpan.GetType()) && (currentText.Contains("\"\"\"")) then
+                    this.FoundSpanEnd.Invoke(this.CurSpan,i + currentText.LastIndexOf("\"\"\""),3)
+                    i <- i + textOffset
+                elif currentText.Substring(textOffset).Contains("\"") then
+                    this.FoundSpanEnd.Invoke(this.CurSpan,i + currentText.LastIndexOf("\""),1)
+                    i <- i + currentText.LastIndexOf("\"")
+                elif currentText.Contains("#endif") then
+                    this.FoundSpanEnd.Invoke(this.CurSpan,i+textOffset,1)
+                    i <- i + textOffset
             if (textOffset < this.CurText.Length && this.CurRule.Name <> "Comment" &&
                 this.CurRule.Name <> "String" && this.CurRule.Name <> "VerbatimString" &&
                 this.CurText.[textOffset] = '#' && this.IsFirstNonWsChar(textOffset)) then
@@ -171,17 +189,20 @@ module FSharpSyntaxModeInternals =
                     true
                 elif currentText.IsAt(textOffset, "#if") then
                     this.ScanPreProcessorIf(textOffset,&i)
-                    true      
-                else
-                    if (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
-                        base.ScanSpan(&i)
-                    else
-                        false
-            else
-                if (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
+                    false      
+                elif currentText.IsAt(textOffset,"#endif") then
+                    let span = EndIfBlockSpan()
+                    this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
+                    this.FoundSpanEnd.Invoke(span, i + textOffset + 6,0)
+                    true
+                elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
                     base.ScanSpan(&i)
                 else
                     false
+            elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
+                base.ScanSpan(&i)
+            else
+                false
 
 [<AutoOpen>]
 module internal Patterns =
@@ -274,7 +295,6 @@ type FSharpSyntaxMode() as this =
         System.Diagnostics.Debug.AutoFlush <- true
     let mutable m_Document : MonoDevelop.Ide.Gui.Document = null
     let mutable m_ParsedDocument : FSharp.CompilerBinding.ParseAndCheckResults option = None
-    let mutable m_HasPushedSpans = false
     
     let getDefineSymbols (project: MonoDevelop.Projects.Project) =
         seq { 
@@ -313,59 +333,40 @@ type FSharpSyntaxMode() as this =
     let HandleConfigurationChanged(eventArgs) =  
         for doc in IdeApp.Workbench.Documents do
             let data = doc.Editor
-            if (data <> null) then
+            if (data <> null && doc.Editor <> null) then
                 // Force Syntax Mode Reparse
-                let editor = doc.Editor
-                if (editor <> null) then
-                    if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
-                        let sm = data.Document.SyntaxMode :?> SyntaxMode
-                        sm.UpdateDocumentHighlighting()
-                        SyntaxModeService.WaitUpdate(data.Document)
-                    editor.Parent.TextViewMargin.PurgeLayoutCache()
-                    doc.ReparseDocument()
-                    editor.Parent.QueueDraw()
+                if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
+                    let sm = data.Document.SyntaxMode :?> SyntaxMode
+                    sm.UpdateDocumentHighlighting()
+                    SyntaxModeService.WaitUpdate(data.Document)
+                doc.Editor.Parent.TextViewMargin.PurgeLayoutCache()
+                doc.ReparseDocument()
+                doc.Editor.Parent.QueueDraw()
 
     let HandleDocumentParsed(eventArgs) =
-        if m_Document <> null then
-            if m_Document.IsProjectContextInUpdate then
-                ()
-            else
-                let parsedDocument = m_Document.ParsedDocument
-                if parsedDocument <> null then
-                    m_ParsedDocument <- Some(parsedDocument.Ast :?> FSharp.CompilerBinding.ParseAndCheckResults)
-                    m_SourceTokenizer <- Some(SourceTokenizer(getDefineSymbols(getProject(this.Document)) |> List.ofSeq, m_Document.FileName.FileName))
-                    this.UpdateDocumentHighlighting()
-                    IdeApp.Workbench.ActiveDocument.Editor.Parent.TextViewMargin.PurgeLayoutCache()
-                    IdeApp.Workbench.ActiveDocument.Editor.Parent.QueueDraw()
+        if m_Document <> null && not m_Document.IsProjectContextInUpdate then
+            let parsedDocument = m_Document.ParsedDocument
+            if parsedDocument <> null then
+                m_ParsedDocument <- Some(parsedDocument.Ast :?> FSharp.CompilerBinding.ParseAndCheckResults)
+                m_SourceTokenizer <- Some(SourceTokenizer(getDefineSymbols(getProject(this.Document)) |> List.ofSeq, m_Document.FileName.FileName))
+                this.UpdateDocumentHighlighting()
+                IdeApp.Workbench.ActiveDocument.Editor.Parent.TextViewMargin.PurgeLayoutCache()
+                IdeApp.Workbench.ActiveDocument.Editor.Parent.QueueDraw()
             
-
-    let HandleDocumentSet (eventArgs) =
-        if (this.Document <> null) then
-            let doc = IdeApp.Workbench.Documents |> Seq.tryFind(fun t-> t.FileName.FileName = this.Document.FileName)
-            match doc with
-            | None -> ()
-            | Some(doc) -> 
-                m_Document <- doc
-                if (m_Document <> null) then
-                    m_Document.DocumentParsed.Add(HandleDocumentParsed)
-                    if (m_Document.ParsedDocument <> null) then
-                        HandleDocumentParsed(EventArgs.Empty)
-
-    
     let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (lineText:string) (token: TokenInformation) =
         let mcInternal (cs:ChunkStyle) = 
             Chunk(offset + token.LeftColumn, token.FullMatchedLength, cs.Name)
-
+        
         let symbol = 
             if not (isSimpleToken token.ColorClass) then
-                match m_ParsedDocument with
-                | None -> None
-                | Some (parsedDocument) ->
-                    asyncMaybe 
-                        {
-                            let! symbol = parsedDocument.GetSymbol(lineNumber, token.LeftColumn, lineText)
-                            return symbol
-                        } |> Async.RunSynchronously
+                maybe {
+                    let! parsedDocument = m_ParsedDocument
+                    return! asyncMaybe 
+                                {
+                                    let! symbol = parsedDocument.GetSymbol(lineNumber, token.LeftColumn, lineText)
+                                    return symbol
+                                } |> Async.RunSynchronously
+                }
             else
                 None
         let tokenSymbol = { TokenSymbol.TokenColor = token.ColorClass; SymbolUse = symbol }
@@ -403,7 +404,6 @@ type FSharpSyntaxMode() as this =
         this.keywords <- baseMode.keywords
         if IdeApp.Workspace <> null then
             IdeApp.Workspace.ActiveConfigurationChanged.Add HandleConfigurationChanged
-        this.DocumentSet.Add (HandleDocumentSet)
 
     member private this.HasRegisteredParsedEvent 
         with get() = m_HasRegisteredParsedEvent
@@ -453,23 +453,15 @@ type FSharpSyntaxMode() as this =
             if not this.HasRegisteredParsedEvent then
                 this.HasRegisteredParsedEvent <- true
                 m_Document.DocumentParsed.Add(HandleDocumentParsed)
-        
-        if (line.StartSpan.Count > 0) then
-            let currentRuleName = line.StartSpan.Peek().Rule 
-            if (currentRuleName = "Comment" || currentRuleName = "String" || currentRuleName = "VerbatimString") then
-                base.GetChunks(style,line,offset,length)
-            elif line.StartSpan.Count = 1 && typeof<FSharpSyntaxModeInternals.AbstractBlockSpan>.IsAssignableFrom(line.StartSpan.Peek().GetType())  then
-                let isDisabled = (line.StartSpan.Peek() :?> FSharpSyntaxModeInternals.AbstractBlockSpan).Disabled
-                let dt = this.Document.GetTextAt(line.Segment)
-                if isDisabled then
-                    if not (dt.StartsWith("#else")) && not (dt.StartsWith("#endif"))  then
-                        Seq.singleton(Chunk(offset,length,"Excluded Code"))
-                    else
-                        Seq.singleton(Chunk(offset,length,style.Preprocessor.Name))
-                else
-                    this.getLexedChunks(style,line,offset,length)
-            else
-                this.getLexedChunks(style,line,offset,length)
+        let docText = this.Document.GetTextAt(line.Segment)
+        if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
+            base.GetChunks(style,line,offset,length) 
+        elif (line.StartSpan.Count > 0) && (line.StartSpan.Peek().Rule = "Comment" || line.StartSpan.Peek().Rule = "String" || line.StartSpan.Peek().Rule = "VerbatimString") && not (typeof<FSharpSyntaxModeInternals.AbstractBlockSpan>.IsAssignableFrom(line.StartSpan.Peek().GetType())) then
+            base.GetChunks(style,line,offset,length)
+        elif 
+            typeof<FSharpSyntaxModeInternals.AbstractBlockSpan>.IsAssignableFrom(line.StartSpan.Peek().GetType()) &&
+            (line.StartSpan.Peek() :?> FSharpSyntaxModeInternals.AbstractBlockSpan).Disabled then 
+                Seq.singleton(Chunk(offset,length,"Excluded Code"))
         else
             this.getLexedChunks(style,line,offset,length)
 
