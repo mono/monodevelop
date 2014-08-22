@@ -30,7 +30,7 @@ type FSharpSettingsPanel() =
   let mutable widget : FSharpSettingsWidget = null
 
   // NOTE: This setting is only relevant when xbuild is not being used.
-  member internal x.setCompilerDisplay(use_default:bool) = 
+  let setCompilerDisplay(use_default:bool) = 
     if widget.CheckCompilerUseDefault.Active <> use_default then
       widget.CheckCompilerUseDefault.Active <- use_default
     let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
@@ -39,7 +39,7 @@ type FSharpSettingsPanel() =
     widget.EntryCompilerPath.Sensitive <- not use_default
     widget.ButtonCompilerBrowse.Sensitive <- not use_default
 
-  member internal x.setInteractiveDisplay(use_default:bool) =
+  let setInteractiveDisplay(use_default:bool) =
     if widget.CheckInteractiveUseDefault.Active <> use_default then
       widget.CheckInteractiveUseDefault.Active <- use_default
     let prop_interp_path = PropertyService.Get<string>(fsiPathPropName, "")
@@ -51,6 +51,7 @@ type FSharpSettingsPanel() =
     widget.EntryPath.Sensitive <- not use_default
     widget.ButtonBrowse.Sensitive <- not use_default
     widget.EntryArguments.Sensitive <- not use_default
+
   override x.Dispose() =
     if widget <> null then
       widget.Dispose()
@@ -82,13 +83,12 @@ type FSharpSettingsPanel() =
     let default_interp_path = CompilerArguments.getDefaultInteractive
     let default_interp_args = ""
 
-    x.setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
-    x.setCompilerDisplay( (prop_compiler_path = "") )
+    setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
+    setCompilerDisplay( (prop_compiler_path = "") )
 
     let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
     widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
-    
-        
+
     //fsi colors
     widget.MatchThemeCheckBox.Clicked.Add(fun _ -> 
                                             if(widget.MatchThemeCheckBox.Active) then // there may be a race condition here.
@@ -112,11 +112,11 @@ type FSharpSettingsPanel() =
 
     // Implement checkbox for F# Interactive options
     widget.CheckInteractiveUseDefault.Toggled.Add(fun _ -> 
-        x.setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active))
+        setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active))
 
     // Implement checkbox for F# Compiler options
     widget.CheckCompilerUseDefault.Toggled.Add(fun _ -> 
-        x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
+        setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
     
     widget.Show()
     upcast widget 

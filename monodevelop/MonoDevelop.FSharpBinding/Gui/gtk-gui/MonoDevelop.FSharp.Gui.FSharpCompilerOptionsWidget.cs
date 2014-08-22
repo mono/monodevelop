@@ -5,23 +5,39 @@ namespace MonoDevelop.FSharp.Gui
 	public partial class FSharpCompilerOptionsWidget
 	{
 		private global::Gtk.VBox vbox4;
-		private global::Gtk.Frame frame3;
-		private global::Gtk.Alignment GtkAlignment;
-		private global::Gtk.VBox vbox3;
-		private global::Gtk.CheckButton checkDebugInfo;
-		private global::Gtk.CheckButton checkOptimize;
-		private global::Gtk.CheckButton checkTailCalls;
-		private global::Gtk.CheckButton checkXmlDocumentation;
-		private global::Gtk.Label GtkLabel4;
-		private global::Gtk.Frame frame4;
-		private global::Gtk.Alignment GtkAlignment1;
-		private global::Gtk.Entry entryDefines;
-		private global::Gtk.Label GtkLabel5;
-		private global::Gtk.Frame frame5;
-		private global::Gtk.Alignment GtkAlignment2;
-		private global::Gtk.Entry entryCustomParameters;
-		private global::Gtk.Label GtkLabel6;
 		
+		private global::Gtk.Frame frame3;
+		
+		private global::Gtk.Alignment GtkAlignment;
+		
+		private global::Gtk.VBox vbox3;
+		
+		private global::Gtk.CheckButton checkDebugInfo;
+		
+		private global::Gtk.CheckButton checkOptimize;
+		
+		private global::Gtk.CheckButton checkTailCalls;
+		
+		private global::Gtk.CheckButton checkXmlDocumentation;
+		
+		private global::Gtk.Label GtkLabel4;
+		
+		private global::Gtk.Frame frame4;
+		
+		private global::Gtk.Alignment GtkAlignment1;
+		
+		private global::Gtk.Entry entryDefines;
+		
+		private global::Gtk.Label GtkLabel5;
+		
+		private global::Gtk.Frame frame5;
+		
+		private global::Gtk.Alignment GtkAlignment2;
+		
+		private global::Gtk.Entry entryCustomParameters;
+		
+		private global::Gtk.Label GtkLabel6;
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
