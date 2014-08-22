@@ -75,11 +75,6 @@
 		<End>=|(|&lt;|\s</End>
 	</Span>
 
-    <Span rule="Mutable" stopateol="false">
-        <Begin color="Keyword(Iteration)" flags="NewWord">mutable</Begin>
-        <End>=|(|&lt;\s</End>
-    </Span>
-
 <!-- 
 	<Span color="String" rule="String" stopateol="true" escape='\'>
 		<Begin>[]</Begin>
