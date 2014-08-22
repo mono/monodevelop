@@ -194,24 +194,22 @@ type FSharpInteractivePad() =
     | :? Gtk.TextView as v -> 
           let colourStyles = Mono.TextEditor.Highlighting.SyntaxModeService.GetColorStyle(MonoDevelop.Ide.IdeApp.Preferences.ColorScheme)
           
-          let (_, shouldMatch) = PropertyService.Get<string>("FSharpBinding.MatchWitThemePropName", "false") |> System.Boolean.TryParse
+          let shouldMatch = PropertyService.Get ("FSharpBinding.MatchWithThemePropName", false)
           let themeTextColour = colourStyles.PlainText.Foreground |> cairoToGdk
           let themeBackColour = colourStyles.PlainText.Background |> cairoToGdk
-          if(shouldMatch) then
+          if shouldMatch then
               v.ModifyText(Gtk.StateType.Normal, themeTextColour)
               v.ModifyBase(Gtk.StateType.Normal, themeBackColour)
           else
-              let textColour = PropertyService.Get<string>("FSharpBinding.TextColorPropName", "#000000") 
-                               |> ColorHelpers.strToColor
-              let backColour = PropertyService.Get<string>("FSharpBinding.BaseColorPropName", "#FFFFFF") 
-                               |> ColorHelpers.strToColor
+              let textColour = PropertyService.Get ("FSharpBinding.TextColorPropName", "#000000") |> ColorHelpers.strToColor
+              let backColour = PropertyService.Get ("FSharpBinding.BaseColorPropName", "#FFFFFF") |> ColorHelpers.strToColor
               v.ModifyText(Gtk.StateType.Normal, textColour)
               v.ModifyBase(Gtk.StateType.Normal, backColour)
     | _ -> ()
     
   member x.UpdateFont() = 
     let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
-    let fontName = PropertyService.Get<string>("FSharpBinding.FsiFontName", fontName)
+    let fontName = PropertyService.Get ("FSharpBinding.FsiFontName", fontName)
     Debug.WriteLine (sprintf "Interactive: Loading font '%s'" fontName)
     let font = Pango.FontDescription.FromString(fontName)
     view.SetFont(font)
@@ -235,7 +233,8 @@ type FSharpInteractivePad() =
       let sel = String.Format("# {0} \"{1}\"\n{2}\n", line, file.FullPath, text)
       sendCommand sel
       //advance to the next line
-      IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo(line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
+      if PropertyService.Get ("FSharpBinding.AdvanceToNextLine", true)
+      then IdeApp.Workbench.ActiveDocument.Editor.SetCaretTo (line + 1, Mono.TextEditor.DocumentLocation.MinColumn, false)
 
   member x.SendFile() =
     let text = IdeApp.Workbench.ActiveDocument.Editor.Document.Text

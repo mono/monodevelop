@@ -12,6 +12,7 @@ namespace MonoDevelop.FSharp.Gui
 		public Gtk.CheckButton CheckInteractiveUseDefault { get { return checkInteractiveUseDefault; } }
     	public Gtk.Button ButtonBrowse { get { return buttonBrowse; } }
     	public Gtk.Entry EntryArguments { get { return entryArguments; } }
+		public Gtk.CheckButton AdvanceLine { get { return advanceToNextLineCheckbox; } }
 	    public Gtk.Entry EntryPath { get { return entryPath; } }
 	    public Gtk.FontButton FontInteractive { get { return fontbutton1; } }
 		public Gtk.CheckButton MatchThemeCheckBox { get { return matchThemeCheckbox; } }

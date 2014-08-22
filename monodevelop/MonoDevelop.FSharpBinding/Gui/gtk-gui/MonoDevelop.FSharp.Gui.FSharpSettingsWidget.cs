@@ -24,6 +24,8 @@ namespace MonoDevelop.FSharp.Gui
 		
 		private global::Gtk.Label GtkLabel6;
 		
+		private global::Gtk.CheckButton advanceToNextLineCheckbox;
+		
 		private global::Gtk.HSeparator hseparator4;
 		
 		private global::Gtk.VBox vbox4;
@@ -179,13 +181,27 @@ namespace MonoDevelop.FSharp.Gui
 			w9.Expand = false;
 			w9.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.hseparator4 = new global::Gtk.HSeparator ();
-			this.hseparator4.Name = "hseparator4";
-			this.vbox1.Add (this.hseparator4);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hseparator4]));
+			this.advanceToNextLineCheckbox = new global::Gtk.CheckButton ();
+			this.advanceToNextLineCheckbox.TooltipMarkup = "When sending a line or an empty selection to F# interactive this property automatically advances to the next line.";
+			this.advanceToNextLineCheckbox.CanFocus = true;
+			this.advanceToNextLineCheckbox.Name = "advanceToNextLineCheckbox";
+			this.advanceToNextLineCheckbox.Label = global::Mono.Unix.Catalog.GetString ("Advance to next line");
+			this.advanceToNextLineCheckbox.Active = true;
+			this.advanceToNextLineCheckbox.DrawIndicator = true;
+			this.advanceToNextLineCheckbox.UseUnderline = true;
+			this.vbox1.Add (this.advanceToNextLineCheckbox);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.advanceToNextLineCheckbox]));
 			w10.Position = 2;
 			w10.Expand = false;
 			w10.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.hseparator4 = new global::Gtk.HSeparator ();
+			this.hseparator4.Name = "hseparator4";
+			this.vbox1.Add (this.hseparator4);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hseparator4]));
+			w11.Position = 3;
+			w11.Expand = false;
+			w11.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.vbox4 = new global::Gtk.VBox ();
 			this.vbox4.Name = "vbox4";
@@ -197,10 +213,10 @@ namespace MonoDevelop.FSharp.Gui
 			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>FSI Appearance</b>");
 			this.label1.UseMarkup = true;
 			this.vbox4.Add (this.label1);
-			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label1]));
-			w11.Position = 0;
-			w11.Expand = false;
-			w11.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.label1]));
+			w12.Position = 0;
+			w12.Expand = false;
+			w12.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.matchThemeCheckbox = new global::Gtk.CheckButton ();
 			this.matchThemeCheckbox.CanFocus = true;
@@ -210,10 +226,10 @@ namespace MonoDevelop.FSharp.Gui
 			this.matchThemeCheckbox.DrawIndicator = true;
 			this.matchThemeCheckbox.UseUnderline = true;
 			this.vbox4.Add (this.matchThemeCheckbox);
-			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.matchThemeCheckbox]));
-			w12.Position = 1;
-			w12.Expand = false;
-			w12.Fill = false;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.matchThemeCheckbox]));
+			w13.Position = 1;
+			w13.Expand = false;
+			w13.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.hbox7 = new global::Gtk.HBox ();
 			this.hbox7.Name = "hbox7";
@@ -223,49 +239,49 @@ namespace MonoDevelop.FSharp.Gui
 			this.label5.Xalign = 0F;
 			this.label5.LabelProp = global::Mono.Unix.Catalog.GetString ("Base Color");
 			this.hbox7.Add (this.label5);
-			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.label5]));
-			w13.Position = 0;
-			w13.Expand = false;
-			w13.Fill = false;
-			w13.Padding = ((uint)(8));
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.label5]));
+			w14.Position = 0;
+			w14.Expand = false;
+			w14.Fill = false;
+			w14.Padding = ((uint)(8));
 			// Container child hbox7.Gtk.Box+BoxChild
 			this.baseColorButton = new global::Gtk.ColorButton ();
 			this.baseColorButton.CanFocus = true;
 			this.baseColorButton.Events = ((global::Gdk.EventMask)(784));
 			this.baseColorButton.Name = "baseColorButton";
 			this.hbox7.Add (this.baseColorButton);
-			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.baseColorButton]));
-			w14.Position = 1;
-			w14.Expand = false;
-			w14.Fill = false;
-			w14.Padding = ((uint)(8));
+			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.baseColorButton]));
+			w15.Position = 1;
+			w15.Expand = false;
+			w15.Fill = false;
+			w15.Padding = ((uint)(8));
 			// Container child hbox7.Gtk.Box+BoxChild
 			this.label6 = new global::Gtk.Label ();
 			this.label6.Name = "label6";
 			this.label6.Xalign = 0F;
 			this.label6.LabelProp = global::Mono.Unix.Catalog.GetString ("Text Color");
 			this.hbox7.Add (this.label6);
-			global::Gtk.Box.BoxChild w15 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.label6]));
-			w15.Position = 2;
-			w15.Expand = false;
-			w15.Fill = false;
-			w15.Padding = ((uint)(8));
+			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.label6]));
+			w16.Position = 2;
+			w16.Expand = false;
+			w16.Fill = false;
+			w16.Padding = ((uint)(8));
 			// Container child hbox7.Gtk.Box+BoxChild
 			this.textColorButton = new global::Gtk.ColorButton ();
 			this.textColorButton.CanFocus = true;
 			this.textColorButton.Events = ((global::Gdk.EventMask)(784));
 			this.textColorButton.Name = "textColorButton";
 			this.hbox7.Add (this.textColorButton);
-			global::Gtk.Box.BoxChild w16 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.textColorButton]));
-			w16.Position = 3;
-			w16.Expand = false;
-			w16.Fill = false;
-			w16.Padding = ((uint)(8));
-			this.vbox4.Add (this.hbox7);
-			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hbox7]));
-			w17.Position = 2;
+			global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.hbox7 [this.textColorButton]));
+			w17.Position = 3;
 			w17.Expand = false;
 			w17.Fill = false;
+			w17.Padding = ((uint)(8));
+			this.vbox4.Add (this.hbox7);
+			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hbox7]));
+			w18.Position = 2;
+			w18.Expand = false;
+			w18.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.hbox9 = new global::Gtk.HBox ();
 			this.hbox9.Name = "hbox9";
@@ -276,51 +292,52 @@ namespace MonoDevelop.FSharp.Gui
 			this.GtkLabel13.LabelProp = global::Mono.Unix.Catalog.GetString ("Interactive Pad Font");
 			this.GtkLabel13.UseMarkup = true;
 			this.hbox9.Add (this.GtkLabel13);
-			global::Gtk.Box.BoxChild w18 = ((global::Gtk.Box.BoxChild)(this.hbox9 [this.GtkLabel13]));
-			w18.Position = 0;
-			w18.Expand = false;
-			w18.Fill = false;
-			w18.Padding = ((uint)(8));
+			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox9 [this.GtkLabel13]));
+			w19.Position = 0;
+			w19.Expand = false;
+			w19.Fill = false;
+			w19.Padding = ((uint)(8));
 			// Container child hbox9.Gtk.Box+BoxChild
 			this.fontbutton1 = new global::Gtk.FontButton ();
 			this.fontbutton1.CanFocus = true;
 			this.fontbutton1.Name = "fontbutton1";
 			this.hbox9.Add (this.fontbutton1);
-			global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.hbox9 [this.fontbutton1]));
-			w19.Position = 1;
-			w19.Padding = ((uint)(8));
+			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.hbox9 [this.fontbutton1]));
+			w20.Position = 1;
+			w20.Padding = ((uint)(8));
 			this.vbox4.Add (this.hbox9);
-			global::Gtk.Box.BoxChild w20 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hbox9]));
-			w20.Position = 3;
-			w20.Expand = false;
-			w20.Fill = false;
-			this.vbox1.Add (this.vbox4);
-			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vbox4]));
+			global::Gtk.Box.BoxChild w21 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.hbox9]));
 			w21.Position = 3;
 			w21.Expand = false;
 			w21.Fill = false;
+			this.vbox1.Add (this.vbox4);
+			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.vbox4]));
+			w22.Position = 4;
+			w22.Expand = false;
+			w22.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hseparator3 = new global::Gtk.HSeparator ();
 			this.hseparator3.Name = "hseparator3";
 			this.vbox1.Add (this.hseparator3);
-			global::Gtk.Box.BoxChild w22 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hseparator3]));
-			w22.Position = 4;
-			w22.Expand = false;
-			w22.Fill = false;
+			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hseparator3]));
+			w23.Position = 5;
+			w23.Expand = false;
+			w23.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
+			this.label2.TooltipMarkup = "This is only used when xbuild is not being used.";
 			this.label2.Name = "label2";
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("<b>F# Default Compiler</b>");
 			this.label2.UseMarkup = true;
 			this.hbox1.Add (this.label2);
-			global::Gtk.Box.BoxChild w23 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
-			w23.Position = 0;
-			w23.Expand = false;
-			w23.Fill = false;
+			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label2]));
+			w24.Position = 0;
+			w24.Expand = false;
+			w24.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.checkCompilerUseDefault = new global::Gtk.CheckButton ();
 			this.checkCompilerUseDefault.CanFocus = true;
@@ -330,13 +347,13 @@ namespace MonoDevelop.FSharp.Gui
 			this.checkCompilerUseDefault.DrawIndicator = true;
 			this.checkCompilerUseDefault.UseUnderline = true;
 			this.hbox1.Add (this.checkCompilerUseDefault);
-			global::Gtk.Box.BoxChild w24 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.checkCompilerUseDefault]));
-			w24.Position = 1;
+			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.checkCompilerUseDefault]));
+			w25.Position = 1;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w25 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
-			w25.Position = 5;
-			w25.Expand = false;
-			w25.Fill = false;
+			global::Gtk.Box.BoxChild w26 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
+			w26.Position = 6;
+			w26.Expand = false;
+			w26.Fill = false;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.frame1 = new global::Gtk.Frame ();
 			this.frame1.Name = "frame1";
@@ -353,12 +370,12 @@ namespace MonoDevelop.FSharp.Gui
 			this.buttonCompilerBrowse.UseUnderline = true;
 			this.buttonCompilerBrowse.Label = global::Mono.Unix.Catalog.GetString ("_Browse...");
 			this.table2.Add (this.buttonCompilerBrowse);
-			global::Gtk.Table.TableChild w26 = ((global::Gtk.Table.TableChild)(this.table2 [this.buttonCompilerBrowse]));
-			w26.LeftAttach = ((uint)(2));
-			w26.RightAttach = ((uint)(3));
-			w26.XPadding = ((uint)(8));
-			w26.XOptions = ((global::Gtk.AttachOptions)(4));
-			w26.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.table2 [this.buttonCompilerBrowse]));
+			w27.LeftAttach = ((uint)(2));
+			w27.RightAttach = ((uint)(3));
+			w27.XPadding = ((uint)(8));
+			w27.XOptions = ((global::Gtk.AttachOptions)(4));
+			w27.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.entryCompilerPath = new global::Gtk.Entry ();
 			this.entryCompilerPath.CanFocus = true;
@@ -366,27 +383,27 @@ namespace MonoDevelop.FSharp.Gui
 			this.entryCompilerPath.IsEditable = true;
 			this.entryCompilerPath.InvisibleChar = '●';
 			this.table2.Add (this.entryCompilerPath);
-			global::Gtk.Table.TableChild w27 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryCompilerPath]));
-			w27.LeftAttach = ((uint)(1));
-			w27.RightAttach = ((uint)(2));
-			w27.XPadding = ((uint)(8));
-			w27.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w28 = ((global::Gtk.Table.TableChild)(this.table2 [this.entryCompilerPath]));
+			w28.LeftAttach = ((uint)(1));
+			w28.RightAttach = ((uint)(2));
+			w28.XPadding = ((uint)(8));
+			w28.YOptions = ((global::Gtk.AttachOptions)(4));
 			// Container child table2.Gtk.Table+TableChild
 			this.label3 = new global::Gtk.Label ();
 			this.label3.Name = "label3";
 			this.label3.Xalign = 0F;
 			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Path");
 			this.table2.Add (this.label3);
-			global::Gtk.Table.TableChild w28 = ((global::Gtk.Table.TableChild)(this.table2 [this.label3]));
-			w28.XPadding = ((uint)(8));
-			w28.XOptions = ((global::Gtk.AttachOptions)(4));
-			w28.YOptions = ((global::Gtk.AttachOptions)(4));
+			global::Gtk.Table.TableChild w29 = ((global::Gtk.Table.TableChild)(this.table2 [this.label3]));
+			w29.XPadding = ((uint)(8));
+			w29.XOptions = ((global::Gtk.AttachOptions)(4));
+			w29.YOptions = ((global::Gtk.AttachOptions)(4));
 			this.frame1.Add (this.table2);
 			this.vbox1.Add (this.frame1);
-			global::Gtk.Box.BoxChild w30 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.frame1]));
-			w30.Position = 6;
-			w30.Expand = false;
-			w30.Fill = false;
+			global::Gtk.Box.BoxChild w31 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.frame1]));
+			w31.Position = 7;
+			w31.Expand = false;
+			w31.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

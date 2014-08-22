@@ -193,7 +193,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.FSharpSettingsWidget" design-size="316 327">
+  <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.FSharpSettingsWidget" design-size="456 352">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -367,11 +367,29 @@
           </packing>
         </child>
         <child>
+          <widget class="Gtk.CheckButton" id="advanceToNextLineCheckbox">
+            <property name="MemberName" />
+            <property name="Tooltip" translatable="yes">When sending a line or an empty selection to F# interactive this property automatically advances to the next line.</property>
+            <property name="CanFocus">True</property>
+            <property name="Label" translatable="yes">Advance to next line</property>
+            <property name="Active">True</property>
+            <property name="DrawIndicator">True</property>
+            <property name="HasLabel">True</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
           <widget class="Gtk.HSeparator" id="hseparator4">
             <property name="MemberName" />
           </widget>
           <packing>
-            <property name="Position">2</property>
+            <property name="Position">3</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -520,7 +538,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">3</property>
+            <property name="Position">4</property>
             <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -531,7 +549,7 @@
             <property name="MemberName" />
           </widget>
           <packing>
-            <property name="Position">4</property>
+            <property name="Position">5</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -572,7 +590,7 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">5</property>
+            <property name="Position">6</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
@@ -655,20 +673,13 @@
             </child>
           </widget>
           <packing>
-            <property name="Position">6</property>
+            <property name="Position">7</property>
             <property name="AutoSize">False</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
         </child>
       </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.Widget" design-size="300 300">
-    <property name="MemberName" />
-    <property name="Visible">False</property>
-    <child>
-      <placeholder />
     </child>
   </widget>
   <widget class="Gtk.Bin" id="MonoDevelop.FSharp.Gui.Widget" design-size="300 300">

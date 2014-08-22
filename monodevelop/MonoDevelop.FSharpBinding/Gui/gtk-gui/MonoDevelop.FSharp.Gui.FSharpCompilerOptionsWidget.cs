@@ -118,6 +118,8 @@ namespace MonoDevelop.FSharp.Gui
 			this.vbox4.Add (this.frame3);
 			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox4 [this.frame3]));
 			w7.Position = 0;
+			w7.Expand = false;
+			w7.Fill = false;
 			// Container child vbox4.Gtk.Box+BoxChild
 			this.frame4 = new global::Gtk.Frame ();
 			this.frame4.Name = "frame4";
