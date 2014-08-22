@@ -25,25 +25,26 @@ type FSharpSettingsPanel() =
   let fsiFontNamePropName = "FSharpBinding.FsiFontName"
   let fsiBaseColorPropName ="FSharpBinding.BaseColorPropName"
   let fsiTextColorPropName ="FSharpBinding.TextColorPropName"
-  let fsiMatchWitThemePropName = "FSharpBinding.MatchWitThemePropName"
+  let fsiMatchWithThemePropName = "FSharpBinding.MatchWithThemePropName"
+  let fsiAdvanceToNextLine = "FSharpBinding.AdvanceToNextLine"
   
   let mutable widget : FSharpSettingsWidget = null
 
   // NOTE: This setting is only relevant when xbuild is not being used.
-  member internal x.setCompilerDisplay(use_default:bool) = 
+  let setCompilerDisplay (use_default:bool) = 
     if widget.CheckCompilerUseDefault.Active <> use_default then
       widget.CheckCompilerUseDefault.Active <- use_default
-    let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
+    let prop_compiler_path = PropertyService.Get (fscPathPropName,"")
     let default_compiler_path = match CompilerArguments.getDefaultFSharpCompiler() with | Some(r) -> r | None -> ""
     widget.EntryCompilerPath.Text <- if use_default || prop_compiler_path = "" then default_compiler_path else prop_compiler_path
     widget.EntryCompilerPath.Sensitive <- not use_default
     widget.ButtonCompilerBrowse.Sensitive <- not use_default
 
-  member internal x.setInteractiveDisplay(use_default:bool) =
+  let setInteractiveDisplay (use_default:bool) =
     if widget.CheckInteractiveUseDefault.Active <> use_default then
       widget.CheckInteractiveUseDefault.Active <- use_default
-    let prop_interp_path = PropertyService.Get<string>(fsiPathPropName, "")
-    let prop_interp_args = PropertyService.Get<string>(fsiArgumentsPropName, "")
+    let prop_interp_path = PropertyService.Get (fsiPathPropName, "")
+    let prop_interp_args = PropertyService.Get (fsiArgumentsPropName, "")
     let default_interp_path = match CompilerArguments.getDefaultInteractive() with | Some(r) -> r | None -> ""
     let default_interp_args = ""
     widget.EntryPath.Text <- if use_default || prop_interp_path = "" then default_interp_path else prop_interp_path
@@ -51,9 +52,9 @@ type FSharpSettingsPanel() =
     widget.EntryPath.Sensitive <- not use_default
     widget.ButtonBrowse.Sensitive <- not use_default
     widget.EntryArguments.Sensitive <- not use_default
+
   override x.Dispose() =
-    if widget <> null then
-      widget.Dispose()
+    if widget <> null then widget.Dispose()
 
   override x.CreatePanelWidget() =
     widget <- new FSharpSettingsWidget()
@@ -69,70 +70,67 @@ type FSharpSettingsPanel() =
     // Implement "Browse..." button for F# Compiler path
     widget.ButtonCompilerBrowse.Clicked.Add(fun _ ->
       let args = [| box "Cancel"; box ResponseType.Cancel; box "Open"; box ResponseType.Accept |]
-      use dlg = new FileChooserDialog("Broser for F# Compiler", null, FileChooserAction.Open, args)
+      use dlg = new FileChooserDialog("Browse for F# Compiler", null, FileChooserAction.Open, args)
       if dlg.Run() = int ResponseType.Accept then
         widget.EntryCompilerPath.Text <- dlg.Filename
       dlg.Hide() )
 
     // Load current state
-    let prop_interp_path = PropertyService.Get<string>(fsiPathPropName, "")
-    let prop_interp_args = PropertyService.Get<string>(fsiArgumentsPropName, "")
-    let prop_interp_font = PropertyService.Get<string>(fsiFontNamePropName,"")  
-    let prop_compiler_path = PropertyService.Get<string>(fscPathPropName,"")
-    let default_interp_path = CompilerArguments.getDefaultInteractive
-    let default_interp_args = ""
+    let interactivePath = PropertyService.Get (fsiPathPropName, "")
+    let interactiveArgs = PropertyService.Get (fsiArgumentsPropName, "")
+    let interactiveAdvanceToNextLine = PropertyService.Get (fsiAdvanceToNextLine, true)
+    let matchWithTheme = PropertyService.Get (fsiMatchWithThemePropName, true)
+    let interactiveFont = PropertyService.Get (fsiFontNamePropName, "")  
+    let compilerPath = PropertyService.Get (fscPathPropName, "")
+    let defaultInteractivePath = CompilerArguments.getDefaultInteractive
+    let defaultInteractiveArgs = ""
 
-    x.setInteractiveDisplay(prop_interp_path = "" && prop_interp_args = "")
-    x.setCompilerDisplay( (prop_compiler_path = "") )
+    setInteractiveDisplay (interactivePath = "" && interactiveArgs = "")
+    setCompilerDisplay (compilerPath = "")
+
+    widget.AdvanceLine.Active <- interactiveAdvanceToNextLine
 
     let fontName = MonoDevelop.Ide.Fonts.FontService.MonospaceFont.Family
-    widget.FontInteractive.FontName <- PropertyService.Get<string>(fsiFontNamePropName, fontName)
-    
-        
+    widget.FontInteractive.FontName <- PropertyService.Get (fsiFontNamePropName, fontName)
+
     //fsi colors
-    widget.MatchThemeCheckBox.Clicked.Add(fun _ -> 
-                                            if(widget.MatchThemeCheckBox.Active) then // there may be a race condition here.
-                                                widget.ColorsHBox.Hide()
-                                            else
-                                                widget.ColorsHBox.Show())
-    
-    let (_, matchWithTheme) = PropertyService.Get<string>(fsiMatchWitThemePropName, "false")
-                              |> System.Boolean.TryParse
+    widget.MatchThemeCheckBox.Clicked.Add(fun _ -> if widget.MatchThemeCheckBox.Active then // there may be a race condition here.
+                                                       widget.ColorsHBox.Hide ()
+                                                   else widget.ColorsHBox.Show ())
                             
     if matchWithTheme then widget.ColorsHBox.Hide()
-    else widget.ColorsHBox.Show()                            
+    else widget.ColorsHBox.Show ()                            
     
     widget.MatchThemeCheckBox.Active <- matchWithTheme
     
-    let textColor = PropertyService.Get<string>(fsiTextColorPropName, "#000000") |> strToColor
+    let textColor = PropertyService.Get (fsiTextColorPropName, "#000000") |> strToColor
     widget.TextColorButton.Color <- textColor
     
-    let baseColor = PropertyService.Get<string>(fsiBaseColorPropName, "#FFFFFF") |> strToColor
+    let baseColor = PropertyService.Get (fsiBaseColorPropName, "#FFFFFF") |> strToColor
     widget.BaseColorButton.Color <- baseColor
 
     // Implement checkbox for F# Interactive options
-    widget.CheckInteractiveUseDefault.Toggled.Add(fun _ -> 
-        x.setInteractiveDisplay(widget.CheckInteractiveUseDefault.Active))
+    widget.CheckInteractiveUseDefault.Toggled.Add (fun _ -> setInteractiveDisplay widget.CheckInteractiveUseDefault.Active)
 
     // Implement checkbox for F# Compiler options
-    widget.CheckCompilerUseDefault.Toggled.Add(fun _ -> 
-        x.setCompilerDisplay(widget.CheckCompilerUseDefault.Active))
+    widget.CheckCompilerUseDefault.Toggled.Add (fun _ -> setCompilerDisplay widget.CheckCompilerUseDefault.Active)
     
     widget.Show()
     upcast widget 
   
   override x.ApplyChanges() =
-    PropertyService.Set(fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
+    PropertyService.Set (fscPathPropName, if widget.CheckCompilerUseDefault.Active then null else widget.EntryCompilerPath.Text)
 
-    PropertyService.Set(fsiPathPropName, if widget.CheckInteractiveUseDefault.Active then null else widget.EntryPath.Text)
-    PropertyService.Set(fsiArgumentsPropName, if widget.CheckInteractiveUseDefault.Active then null else widget.EntryArguments.Text)
+    PropertyService.Set (fsiPathPropName, if widget.CheckInteractiveUseDefault.Active then null else widget.EntryPath.Text)
+    PropertyService.Set (fsiArgumentsPropName, if widget.CheckInteractiveUseDefault.Active then null else widget.EntryArguments.Text)
 
-    PropertyService.Set(fsiFontNamePropName, widget.FontInteractive.FontName)
-    PropertyService.Set(fsiBaseColorPropName, widget.BaseColorButton.Color |> colorToStr)
-    PropertyService.Set(fsiTextColorPropName, widget.TextColorButton.Color |> colorToStr)
+    PropertyService.Set (fsiFontNamePropName, widget.FontInteractive.FontName)
+    PropertyService.Set (fsiBaseColorPropName, widget.BaseColorButton.Color |> colorToStr)
+    PropertyService.Set (fsiTextColorPropName, widget.TextColorButton.Color |> colorToStr)
     
-    let matchWithTheme = if widget.MatchThemeCheckBox.Active then "true" else "false"
-    PropertyService.Set(fsiMatchWitThemePropName, matchWithTheme)
+    PropertyService.Set (fsiMatchWithThemePropName, widget.MatchThemeCheckBox.Active)
+
+    PropertyService.Set (fsiAdvanceToNextLine, widget.AdvanceLine.Active)
 
     FSharpInteractivePad.Fsi |> Option.iter (fun fsi -> fsi.UpdateFont()    
                                                         fsi.UpdateColors())
@@ -149,13 +147,13 @@ type CodeGenerationPanel() =
   inherit MultiConfigItemOptionsPanel()
   let mutable widget : FSharpCompilerOptionsWidget = null
 
-  override x.Dispose() =
+  override x.Dispose () =
     if widget <> null then
-      widget.Dispose()
+      widget.Dispose ()
 
   override x.CreatePanelWidget() =
-    widget <- new FSharpCompilerOptionsWidget()
-    widget.Show()
+    widget <- new FSharpCompilerOptionsWidget ()
+    widget.Show ()
     upcast widget 
   
   override x.LoadConfigData() =
@@ -166,10 +164,10 @@ type CodeGenerationPanel() =
     widget.CheckOptimize.Active <- fsconfig.Optimize
     widget.CheckTailCalls.Active <- fsconfig.GenerateTailCalls
     widget.CheckXmlDocumentation.Active <- not (String.IsNullOrEmpty fsconfig.DocumentationFile)
-    widget.EntryCommandLine.Text <- if (String.IsNullOrWhiteSpace fsconfig.OtherFlags) then "" else fsconfig.OtherFlags
+    widget.EntryCommandLine.Text <- if String.IsNullOrWhiteSpace fsconfig.OtherFlags then "" else fsconfig.OtherFlags
     widget.EntryDefines.Text <- fsconfig.DefineConstants
   
-  override x.ApplyChanges() =
+  override x.ApplyChanges () =
     let config = x.CurrentConfiguration :?> DotNetProjectConfiguration
     let fsconfig = config.CompilationParameters :?> FSharpCompilerParameters
 
@@ -185,9 +183,8 @@ type CodeGenerationPanel() =
            // files without mucking with them needlessly is very nice.
            config.OutputDirectory.ToRelative(x.ConfiguredProject.BaseDirectory).ToString().Replace("/","\\").TrimEnd('\\') 
               + "\\" + Path.GetFileNameWithoutExtension(config.CompiledOutputName.ToString())+".XML" 
-        else 
-           null
-    fsconfig.OtherFlags <- if (String.IsNullOrWhiteSpace widget.EntryCommandLine.Text) then null else widget.EntryCommandLine.Text
+        else null
+
+    fsconfig.OtherFlags <- if String.IsNullOrWhiteSpace widget.EntryCommandLine.Text then null
+                           else widget.EntryCommandLine.Text
     fsconfig.DefineConstants <- widget.EntryDefines.Text
-
-

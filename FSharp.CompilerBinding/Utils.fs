@@ -127,6 +127,7 @@ type MaybeBuilder () =
                 x.Delay (fun () ->
                     body enum.Current)))
 
+
 [<Sealed>]
 type AsyncMaybeBuilder () =
     // 'T -> M<'T>

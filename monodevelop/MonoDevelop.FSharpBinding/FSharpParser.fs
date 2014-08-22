@@ -20,7 +20,7 @@ type FSharpParsedDocument(fileName) =
 type FSharpParser() = 
     inherit TypeSystemParser()
     do Debug.WriteLine("Parsing: Creating FSharpParser")
-    
+    let languageService = MDLanguageService.Instance
     /// Split a line so it fits to a line width
     let splitLine (sb : StringBuilder) (line : string) lineWidth = 
         let emit (s : string) = sb.Append(s) |> ignore
@@ -73,17 +73,14 @@ type FSharpParser() =
         if fileName = null || not (CompilerArguments.supportedExtension (Path.GetExtension(fileName))) then null
         else 
             let fileContent = content.ReadToEnd()
-            Debug.WriteLine
-                ("[Thread {0}] Parsing: Update in FSharpParser.Parse to file {1}, hash {2}", 
-                 System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
+            LoggingService.LogInfo ("[Thread {0}] Parsing: Update in FSharpParser.Parse to file {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
             let doc = new FSharpParsedDocument(fileName)
             doc.Flags <- doc.Flags ||| ParsedDocumentFlags.NonSerializable
             // Not sure if these are needed yet. 
             doc.CreateRefactoringContext <- Func<_, _, _>(fun doc token -> FSharpRefactoringContext() :> IRefactoringContext)
             doc.CreateRefactoringContextWithEditor <- Func<_, _, _, _> (fun data resolver token -> FSharpRefactoringContext() :> IRefactoringContext)
-            Debug.WriteLine
-                ("[Thread {0}]: TriggerParse file {1}, hash {2}", System.Threading.Thread.CurrentThread.ManagedThreadId, fileName, 
-                 hash fileContent)
+            LoggingService.LogInfo ("[Thread {0}]: TriggerParse file {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
+
             let filePathOpt = 
                 // TriggerParse will work only for full paths
                 if IO.Path.IsPathRooted(fileName) then Some(fileName)
@@ -91,33 +88,40 @@ type FSharpParser() =
                     let doc = IdeApp.Workbench.ActiveDocument
                     if doc <> null then 
                         let file = doc.FileName.FullPath.ToString()
-                        if file = "" then None
-                        else Some file
+                        if file = "" then None else Some file
                     else None
+
             match filePathOpt with
             | None -> ()
             | Some filePath -> 
                 let projFile, files, args, framework = MonoDevelop.getCheckerArgs (proj, filePath)
-                let results = 
-                    Async.RunSynchronously (MDLanguageService.Instance.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, framework, storeAst), ServiceSettings.maximumTimeout )
-                match results.GetErrors() with
-                | Some errors -> 
-                    errors 
-                    |> Array.map formatError 
-                    |> doc.Add
-                | _ -> ()
+                LoggingService.LogInfo ("[Thread {0}] Parsing: Running ParseAndCheckFileResults for file {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
+                let results =
+                    try
+                        Async.RunSynchronously (
+                            computation = languageService.ParseAndCheckFileInProject(projFile, filePath, fileContent, files, args, framework, storeAst), 
+                            timeout = ServiceSettings.maximumTimeout)
+                    with
+                    | :? TimeoutException ->
+                        doc.IsInvalid <- true
+                        LoggingService.LogWarning ("[Thread {0}] Parsing: ParseAndCheckFileInProject timed out for file {1}, hash {2}", Thread.CurrentThread.ManagedThreadId, fileName, hash fileContent)
+                        ParseAndCheckResults.Empty
+                    | ex -> doc.IsInvalid <- true
+                            LoggingService.LogError( sprintf "[Thread %i] Parsing: Error processing ParseAndCheckFileResults for file %s, hash %i" Thread.CurrentThread.ManagedThreadId fileName (hash fileContent), ex)
+                            ParseAndCheckResults.Empty
+                                                                                     
+                results.GetErrors() |> Option.iter (Array.map formatError >> doc.Add)
+
                 //Set code folding regions, GetNavigationItems may throw in some situations
                 try 
                     let regions = 
                         let processDecl (decl : SourceCodeServices.DeclarationItem) = 
                             let m = decl.Range
                             FoldingRegion(decl.Name, DomRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
-                        seq { 
-                            for toplevel in results.GetNavigationItems() do
+                        seq {for toplevel in results.GetNavigationItems() do
                                 yield processDecl toplevel.Declaration
                                 for next in toplevel.Nested do
-                                    yield processDecl next
-                        }
+                                    yield processDecl next }
                     doc.Add(regions)
                 with _ -> Debug.Assert(false, "couldn't update navigation items, ignoring")
                 //also store the AST of active results if applicable 
