@@ -69,7 +69,7 @@ type FSharpSettingsPanel() =
     // Implement "Browse..." button for F# Compiler path
     widget.ButtonCompilerBrowse.Clicked.Add(fun _ ->
       let args = [| box "Cancel"; box ResponseType.Cancel; box "Open"; box ResponseType.Accept |]
-      use dlg = new FileChooserDialog("Broser for F# Compiler", null, FileChooserAction.Open, args)
+      use dlg = new FileChooserDialog("Browse for F# Compiler", null, FileChooserAction.Open, args)
       if dlg.Run() = int ResponseType.Accept then
         widget.EntryCompilerPath.Text <- dlg.Filename
       dlg.Hide() )
