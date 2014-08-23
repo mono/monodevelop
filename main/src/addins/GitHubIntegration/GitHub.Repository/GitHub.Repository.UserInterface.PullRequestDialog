@@ -1,0 +1,12 @@
+﻿using System;
+namespace GitHub.Repository
+{
+	public partial class GitHub : Gtk.Dialog
+	{
+		public GitHub()
+		{
+			this.Build();
+		}
+	}
+}
+

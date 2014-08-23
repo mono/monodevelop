@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{404AB2A5-A1DF-4A95-9600-B81D3D55FBA8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>GitHub.Repository</RootNamespace>
+    <AssemblyName>GitHub.Repository</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\GitHubIntegration</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\build\AddIns\GitHubIntegration</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
+    <Reference Include="Octokit">
+      <HintPath>..\..\..\..\packages\Octokit.0.3.4\lib\net45\Octokit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="Interface\GitHubPropertyDialog.cs" />
+    <Compile Include="gtk-gui\GitHub.Repository.UserInterface.GitHubPropertyDialog.cs" />
+    <Compile Include="Gui\GitHubPad.cs" />
+    <Compile Include="Gui\GitHubRepoNodeBuilder.cs" />
+    <Compile Include="Descriptor\GitHubCustomDescriptor.cs" />
+    <Compile Include="Descriptor\GitHubRepoPropertiesDescriptor.cs" />
+    <Compile Include="Core\GitHubUtils.cs" />
+    <Compile Include="Core\OctokitHelper.cs" />
+    <Compile Include="Commands\Commands.cs" />
+    <Compile Include="AddinInfo.cs" />
+    <Compile Include="Providers\GitHubRepoPropertiesProvider.cs" />
+    <Compile Include="Providers\IGitHubProvider.cs" />
+    <Compile Include="Services\GitHubRepo.cs" />
+    <Compile Include="Services\GitHubRepoService.cs" />
+    <Compile Include="PullRequestDialog.cs" />
+    <Compile Include="gtk-gui\GitHub.Repository.PullRequestDialog.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commands\" />
+    <Folder Include="Core\" />
+    <Folder Include="Descriptor\" />
+    <Folder Include="Gui\" />
+    <Folder Include="Providers\" />
+    <Folder Include="Interface\" />
+    <Folder Include="Gui\icons\" />
+    <Folder Include="Gui\icons\light\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GitHub.Repository.addin.xml">
+      <LogicalName>GitHub.Repository.addin.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\pad-github-16.png">
+      <LogicalName>pad-github-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\pad-repo-16.png">
+      <LogicalName>pad-repo-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\icons\light\github-clipboard-16.png">
+      <LogicalName>github-clipboard-16.png</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VersionControl\MonoDevelop.VersionControl\MonoDevelop.VersionControl.csproj">
+      <Project>{19DE0F35-D204-4FD8-A553-A19ECE05E24D}</Project>
+      <Name>MonoDevelop.VersionControl</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VersionControl\MonoDevelop.VersionControl.Git\MonoDevelop.VersionControl.Git.csproj">
+      <Project>{0413DB7D-8B35-423F-9752-D75C9225E7DE}</Project>
+      <Name>MonoDevelop.VersionControl.Git</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\GitHub.Auth\GitHub.Auth.csproj">
+      <Project>{46EEB116-B156-4216-A2CE-795F62646793}</Project>
+      <Name>GitHub.Auth</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
