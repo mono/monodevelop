@@ -53,7 +53,6 @@ module FSharpSyntaxModeInternals =
             this.Color <- "Preprocessor"
             this.Rule <- "PreProcessorComment"
 
-
     type IfBlockSpan(isValid) =
         inherit AbstractBlockSpan(isValid)
         override this.ToString() =
@@ -66,32 +65,14 @@ module FSharpSyntaxModeInternals =
         override this.ToString() =
             sprintf "[ElseBlockSpan: IsValid: %b, Disabled: %b, Color: %s, Rule: %s]" isValid this.Disabled this.Color this.Rule
 
-    type CommentBlockSpan() as this =
-        inherit Span()
-        do 
-            this.Rule <- "Comment"
-            this.Begin <- Regex("(*")
-            this.End <- Regex("*)")
-            this.Color <- "Comment(Block)"
-
     type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string seq) as this =
         inherit SyntaxMode.SpanParser(mode, spanStack)
         do
             mode.Rules |> Seq.iter this.RuleStack.Push
             LoggingService.LogInfo("Creating FSharpSpanParser()")
-        
-        let isDisabledSpan (span: Span) =
-            let spanExists = span <> null 
-            if (not spanExists) then
-                false
-            else
-                typeof<AbstractBlockSpan>.IsAssignableFrom(span.GetType()) && 
-                (span :?> AbstractBlockSpan).Disabled
 
         member private this.CreatePreProcessorSpan() =
             Span(TagColor="Preprocessor", Color="Preprocessor", Rule="String",StopAtEol=true)
-
-        
                             
         member private this.ScanPreProcessorElse(i: byref<int>) =
             if not (spanStack |> contains (fun span -> span.GetType() = typeof<IfBlockSpan>)) then
@@ -408,8 +389,8 @@ type FSharpSyntaxMode() as this =
         let lineText = this.Document.GetText(line.Segment)
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
         let tokens = Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
-                                                | Some t, s -> Some(t,s)
-                                                | _         -> None) 0L |> Array.ofSeq
+                                          | Some t, s -> Some(t,s)
+                                          | _         -> None) 0L |> Array.ofSeq
         tokens |> Seq.map (makeChunk line.LineNumber style line.Segment.Offset lineText)        
 
     member private this.getLexedChunks (style,line: DocumentLine,offset,length) = 
@@ -452,7 +433,7 @@ type FSharpSyntaxMode() as this =
             match (this.Document,line) with
             | StringCode -> Seq.singleton(Chunk(offset,length, style.String.Name))
             | CommentCode -> Seq.singleton(Chunk(offset,length, style.CommentsMultiLine.Name))
-            | ExcludedCode -> Seq.singleton(Chunk(offset,length,"Excluded Code"))
+            | ExcludedCode -> Seq.singleton(Chunk(offset,length,style.ExcludedCode.Name))
             | PreProcessorCode -> base.GetChunks(style,line,offset,length) 
             | OtherCode  -> this.getLexedChunks(style,line,offset,length)
         with
