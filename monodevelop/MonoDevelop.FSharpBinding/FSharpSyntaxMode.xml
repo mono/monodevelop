@@ -65,14 +65,14 @@
 		<End>"""</End>
 	</Span>
 	
-	<Span color="String" rule="String" stopateol="true" escape='\"'>
+	<Span color="String" rule="String" stopateol="false" escape='\"'>
 		<Begin>"</Begin>
 		<End>"</End>
 	</Span>
 	
 	<Span rule="Let" stopateol = "false">
-		<Begin color="Keyword(Iteration)" flags="NewWord">let</Begin>
-		<End>=|(|&lt;|\s</End>
+		<Begin color="Keyword(Iteration)" flags="NewWord">let </Begin>
+		<End>=|(|&lt;</End>
 	</Span>
 
 <!-- 
