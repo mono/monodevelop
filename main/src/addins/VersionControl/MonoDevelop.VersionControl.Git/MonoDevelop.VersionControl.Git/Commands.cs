@@ -131,7 +131,6 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			var stashes = Repository.GetStashes ();
 			NewStashDialog dlg = new NewStashDialog ();
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
@@ -140,7 +139,7 @@ namespace MonoDevelop.VersionControl.Git
 					var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
-							Repository.CreateStash (comment);
+							Repository.CreateStash (monitor, comment);
 						} catch (Exception ex) {
 							MessageService.ShowException (ex);
 						}
@@ -160,12 +159,11 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			var stashes = Repository.GetStashes ();
 			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					GitService.ReportStashResult (Repository.PopStash ());
+					GitService.ReportStashResult (Repository.PopStash (monitor));
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
 				}

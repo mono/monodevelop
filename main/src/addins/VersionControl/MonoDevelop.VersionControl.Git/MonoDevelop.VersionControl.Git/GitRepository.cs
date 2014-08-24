@@ -49,8 +49,6 @@ namespace MonoDevelop.VersionControl.Git
 
 	public sealed class GitRepository : UrlBasedRepository
 	{
-		static readonly byte[] EmptyContent = new byte[0];
-
 		public LibGit2Sharp.Repository RootRepository {
 			get; set;
 		}
@@ -145,31 +143,39 @@ namespace MonoDevelop.VersionControl.Git
 			return RootRepository.Stashes;
 		}
 
-		public CherryPickResult ApplyStash (Stash stash)
+		public CherryPickResult ApplyStash (IProgressMonitor monitor, Stash stash)
 		{
-			var name = RootRepository.Config.Get<string> ("user.name").Value;
-			var email = RootRepository.Config.Get<string> ("user.email").Value;
-			CherryPickResult mr = RootRepository.CherryPick (stash.Index, new Signature (name, email, DateTimeOffset.Now));
+			if (monitor != null)
+				monitor.BeginTask ("Applying stash", 1);
+
+			CherryPickResult mr = RootRepository.CherryPick (stash.Index, GetSignature ());
 
 			foreach (var change in RootRepository.Diff.Compare<TreeChanges> (stash.Index.Tree, stash.Base.Tree))
 				RootRepository.Index.Stage (change.Path);
+
+			monitor.EndTask ();
 			return mr;
 		}
 
-		public CherryPickResult PopStash ()
+		public CherryPickResult PopStash (IProgressMonitor monitor)
 		{
 			int i = RootRepository.Stashes.Count () - 1;
 			var stash = RootRepository.Stashes [i];
-			CherryPickResult mr = ApplyStash (stash);
+			CherryPickResult mr = ApplyStash (monitor, stash);
 			RootRepository.Stashes.Remove (i);
 
 			return mr;
 		}
 
-		public Stash CreateStash (string message)
+		public Stash CreateStash (IProgressMonitor monitor, string message)
 		{
+			if (monitor != null)
+				monitor.BeginTask ("Stashing changes", 1);
+
 			var stash = RootRepository.Stashes.Add (GetSignature (), message);
 			RootRepository.Reset (ResetMode.Hard);
+
+			monitor.EndTask ();
 			return stash;
 		}
 
@@ -443,9 +449,11 @@ namespace MonoDevelop.VersionControl.Git
 
 				GitUpdateOptions options = GitService.StashUnstashWhenUpdating ? GitUpdateOptions.NormalUpdate : GitUpdateOptions.UpdateSubmodules;
 				if (GitService.UseRebaseOptionWhenPulling)
-					Merge (RootRepository.Head.TrackedBranch.Name, options, monitor);
-				else
 					Rebase (RootRepository.Head.TrackedBranch.Name, options, monitor);
+				else
+					Merge (RootRepository.Head.TrackedBranch.Name, options, monitor);
+
+				monitor.Step (1);
 			}
 
 			monitor.EndTask ();
@@ -453,12 +461,14 @@ namespace MonoDevelop.VersionControl.Git
 
 		public void Fetch (IProgressMonitor monitor, string remote)
 		{
+			monitor.Log.WriteLine (GettextCatalog.GetString ("Fetching from '{0}'", remote));
 			RootRepository.Fetch (remote, new FetchOptions {
 				CredentialsProvider = GitCredentials.TryGet,
 				OnProgress = null,
 				OnTransferProgress = null,
 				OnUpdateTips = null,
 			});
+			monitor.Step (1);
 		}
 
 		public void Rebase (string branch, GitUpdateOptions options, IProgressMonitor monitor)
@@ -491,7 +501,7 @@ namespace MonoDevelop.VersionControl.Git
 
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
-					stash = CreateStash (GetStashName ("_tmp_"));
+					stash = CreateStash (monitor, GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
 
@@ -504,7 +514,11 @@ namespace MonoDevelop.VersionControl.Git
 				});
 
 				RootRepository.Reset (ResetMode.Hard, divergence.Another);
+
+				int count = toApply.Count ();
+				int i = 1;
 				foreach (var com in toApply) {
+					monitor.Log.WriteLine ("Cherry-picking {0} - {1}/{2}", com.Id, i, count);
 					CherryPickResult cherryRes = RootRepository.CherryPick (com, com.Author, new CherryPickOptions {
 						CheckoutNotifyFlags = CheckoutNotifyFlags.Updated,
 						OnCheckoutNotify = (path, flags) => {
@@ -528,6 +542,7 @@ namespace MonoDevelop.VersionControl.Git
 						if (commit)
 							RootRepository.Commit (RootRepository.Info.Message ?? com.Message);
 					}
+					++i;
 				}
 			} finally {
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges)
@@ -536,7 +551,7 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stash != null) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					ApplyStash (stash);
+					ApplyStash (monitor, stash);
 					stashes.Remove (stash);
 					monitor.Step (1);
 				}
@@ -574,7 +589,7 @@ namespace MonoDevelop.VersionControl.Git
 
 				if ((options & GitUpdateOptions.SaveLocalChanges) == GitUpdateOptions.SaveLocalChanges) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Saving local changes"));
-					CreateStash (GetStashName ("_tmp_"));
+					CreateStash (monitor, GetStashName ("_tmp_"));
 					monitor.Step (1);
 				}
 				
@@ -610,7 +625,7 @@ namespace MonoDevelop.VersionControl.Git
 				// Restore local changes
 				if (stash != null) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Restoring local changes"));
-					ApplyStash (stash);
+					ApplyStash (monitor, stash);
 					stashes.Remove (stash);
 					monitor.Step (1);
 				}
@@ -673,6 +688,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public void GetUserInfo (out string name, out string email)
 		{
+			// Add dialog.
 			name = RootRepository.Config.Get<string> ("user.name").Value;
 			email = RootRepository.Config.Get<string> ("user.email").Value;
 		}
@@ -996,7 +1012,7 @@ namespace MonoDevelop.VersionControl.Git
 				if (stash != null)
 					RootRepository.Stashes.Remove (stash);
 
-				CreateStash (currentBranch);
+				CreateStash (monitor, currentBranch);
 				monitor.Step (1);
 			}
 
@@ -1023,7 +1039,7 @@ namespace MonoDevelop.VersionControl.Git
 			monitor.EndTask ();
 		}
 
-		void NotifyFileChanges (IProgressMonitor monitor,TreeChanges statusList)
+		void NotifyFileChanges (IProgressMonitor monitor, TreeChanges statusList)
 		{
 			// Files added to source branch not present to target branch.
 			var removed = statusList.Where (c => c.Status == ChangeKind.Added).Select (c => GetRepository (c.Path).FromGitPath (c.Path)).ToList ();
