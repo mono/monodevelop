@@ -72,7 +72,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 		protected override void TestDiff ()
 		{
 			string difftext = @"diff --git a/testfile b/testfile
-index e69de29..fdc74c1 100644
+index e69de29..8e27be7 100644
 --- a/testfile
 +++ b/testfile
 @@ -0,0 +1 @@
