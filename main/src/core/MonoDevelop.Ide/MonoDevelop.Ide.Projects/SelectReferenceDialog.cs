@@ -231,7 +231,7 @@ namespace MonoDevelop.Ide.Projects
 			selectedHeader.Remove (w);
 			HeaderBox header = new HeaderBox (1, 0, 1, 1);
 			header.SetPadding (6, 6, 6, 6);
-			header.GradientBackround = true;
+			header.GradientBackground = true;
 			header.Add (w);
 			selectedHeader.Add (header);
 			

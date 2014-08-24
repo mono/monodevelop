@@ -88,10 +88,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			PropertyService.PropertyChanged += HandlePropertyChanged;
 			DefaultMSBuildVerbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
 
-			Runtime.ShuttingDown += delegate {
-				ShutDown = true;
-				CleanProjectBuilders ();
-			};
+			Runtime.ShuttingDown += (sender, e) => ShutDown = true;
 
 			const string gppPath = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders";
 			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (gppPath);
@@ -623,45 +620,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static void ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
 			lock (builders) {
-				if (engine.ReferenceCount > 0) {
-					if (--engine.ReferenceCount == 0) {
-						engine.ReleaseTime = DateTime.Now.AddSeconds (3);
-						ScheduleProjectBuilderCleanup (engine.ReleaseTime.AddMilliseconds (500));
-					}
-				}
-			}
-		}
-		
-		static DateTime nextCleanup = DateTime.MinValue;
-		
-		static void ScheduleProjectBuilderCleanup (DateTime cleanupTime)
-		{
-			lock (builders) {
-				if (cleanupTime < nextCleanup)
+				if (--engine.ReferenceCount != 0)
 					return;
-				nextCleanup = cleanupTime;
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-					DateTime tnow = DateTime.Now;
-					while (tnow < nextCleanup) {
-						System.Threading.Thread.Sleep ((int)(nextCleanup - tnow).TotalMilliseconds);
-						CleanProjectBuilders ();
-						tnow = DateTime.Now;
-					}
-				});
+				builders.Remove (builders.First (kvp => kvp.Value == engine).Key);
 			}
-		}
-		
-		static void CleanProjectBuilders ()
-		{
-			lock (builders) {
-				DateTime tnow = DateTime.Now;
-				foreach (var val in new Dictionary<string,RemoteBuildEngine> (builders)) {
-					if (val.Value.ReferenceCount == 0 && val.Value.ReleaseTime <= tnow) {
-						builders.Remove (val.Key);
-						val.Value.Dispose ();
-					}
-				}
-			}
+			engine.Dispose ();
 		}
 
 		static Dictionary<string, string> cultureNamesTable;

@@ -78,7 +78,6 @@ namespace MonoDevelop.Ide.CustomTools
 				var rd = new Dictionary<object, object> ();
 
 				using (var r = new ResXResourceReader (file.FilePath)) {
-					r.UseResXDataNodes = true;
 					r.BasePath = file.FilePath.ParentDirectory;
 
 					foreach (DictionaryEntry e in r) {

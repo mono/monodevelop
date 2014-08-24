@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Gui
 		{
 			Widget w = CreateWidget (entry);
 			if (w is Button) {
-				buttons.Add (new ToolButtonStatus (entry.CommandId, (Gtk.Button) w));
+				buttons.Add (new ToolButtonStatus (entry.CommandId, (Gtk.Button)w, entry.DispayType));
 				((Gtk.Button) w).Clicked += delegate {
 					IdeApp.CommandService.DispatchCommand (entry.CommandId, null, initialTarget, CommandSource.MainToolbar);
 				};
@@ -141,11 +141,16 @@ namespace MonoDevelop.Ide.Gui
 		string stockId;
 		Button button;
 		object cmdId;
+		CommandEntryDisplayType displayType;
 		
-		public ToolButtonStatus (object cmdId, Button button)
+		public ToolButtonStatus (object cmdId, Button button, CommandEntryDisplayType displayType = CommandEntryDisplayType.Default)
 		{
 			this.cmdId = cmdId;
 			this.button = button;
+			if (displayType == CommandEntryDisplayType.Default)//Simplefies code in rest of class
+				this.displayType = CommandEntryDisplayType.IconHasPriority;
+			else
+				this.displayType = displayType;
 		}
 		
 		public void Update (CommandTargetRoute targetRoute)
@@ -155,10 +160,12 @@ namespace MonoDevelop.Ide.Gui
 			bool hasAccel = string.IsNullOrEmpty (cmdInfo.AccelKey);
 			bool hasIcon = !cmdInfo.Icon.IsNull;
 			string desc = cmdInfo.Description;
-			
+			bool displayText = !(displayType == CommandEntryDisplayType.IconHasPriority && hasIcon) &&
+			                          displayType != CommandEntryDisplayType.IconOnly;
+
 			//If the button only has an icon it's not always clear what it does. In such cases, use the label as a
 			//fallback tooltip. Also do this if there's an accelerator, so the user can see what it is.
-			if (string.IsNullOrEmpty (desc) && (hasIcon || hasAccel))
+			if (string.IsNullOrEmpty (desc) && (!displayText || hasAccel))
 				desc = cmdInfo.Text;
 			
 			if (lastDesc != desc) {
@@ -172,10 +179,11 @@ namespace MonoDevelop.Ide.Gui
 				lastDesc = desc;
 			}
 			
-			if (!hasIcon && button.Label != cmdInfo.Text)
+			if (displayText && button.Label != cmdInfo.Text) {
 				button.Label = cmdInfo.Text;
-			
-			if (cmdInfo.Icon != stockId) {
+			}
+
+			if (displayType != CommandEntryDisplayType.TextOnly && cmdInfo.Icon != stockId) {
 				stockId = cmdInfo.Icon;
 				button.Image = new Gtk.Image (cmdInfo.Icon, Gtk.IconSize.Menu);
 			}

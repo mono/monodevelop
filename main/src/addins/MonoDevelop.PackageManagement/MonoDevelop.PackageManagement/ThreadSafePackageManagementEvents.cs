@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -271,6 +272,16 @@ namespace ICSharpCode.PackageManagement
 		public void OnUpdatedPackagesAvailable ()
 		{
 			unsafeEvents.OnUpdatedPackagesAvailable ();
+		}
+
+		public event EventHandler<FileRemovingEventArgs> FileRemoving {
+			add { unsafeEvents.FileRemoving += value; }
+			remove { unsafeEvents.FileRemoving -= value; }
+		}
+
+		public bool OnFileRemoving (string path)
+		{
+			return unsafeEvents.OnFileRemoving (path);
 		}
 	}
 }

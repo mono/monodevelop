@@ -46,6 +46,13 @@ namespace MonoDevelop.Debugger
 		ExpressionChanges
 	}
 
+	public enum BreakpointType
+	{
+		Location,
+		Function,
+		Catchpoint
+	}
+
 	sealed class BreakpointPropertiesDialog : Dialog
 	{
 		// For button sensitivity.
@@ -193,15 +200,29 @@ namespace MonoDevelop.Debugger
 		string parsedFunction;
 		readonly HashSet<string> classes = new HashSet<string> ();
 
-
-		public BreakpointPropertiesDialog (BreakEvent be)
+		public BreakpointPropertiesDialog (BreakEvent be, BreakpointType breakpointType)
 		{
 			this.be = be;
-
 			LoadExceptionList ();
 			Initialize ();
 			SetInitialData ();
 			SetLayout ();
+			if (be == null) {
+				switch (breakpointType) {
+				case BreakpointType.Location:
+					stopOnLocation.Active = true;
+					entryLocationFile.SetFocus ();
+					break;
+				case BreakpointType.Function:
+					stopOnFunction.Active = true;
+					entryFunctionName.SetFocus ();
+					break;
+				case BreakpointType.Catchpoint:
+					stopOnException.Active = true;
+					entryExceptionType.SetFocus ();
+					break;
+				}
+			}
 		}
 
 		void Initialize ()
@@ -258,7 +279,45 @@ namespace MonoDevelop.Debugger
 			entryPrintExpression.Changed += OnUpdateText;
 
 			buttonOk.Clicked += OnSave;
+
+			CompletionWindowManager.WindowShown += HandleCompletionWindowShown;
+			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 		}
+
+		#region Modal and Dialog.Run workaround
+		/*
+		 * If Dialog is ran with Dialog.Run and Modal=true it takes all events like mouse, keyboard... from other windows.
+		 * So when CodeCompletionList window appears mouse events don't work on it(except if CodeCompletionList.Modal=true, but then
+		 * events don't work on BreakpointPropertiesDialog(can't type rest of exception type name)).
+		 * So what this workaround does is disables Modal on BreakpointProperties so CodeCompletionList mouse events work fine. But if user
+		 * tries to access anything outside this two windows(e.g. MainWindow). CodeCompletionList loses focus and closes itself. Resulting
+		 * in BreakpointProperties.Modal = true and user can't do anything on MainWindow.
+		 * All this is done so fast(or in correct order) that user can't notice this Modal switching.
+		 */
+
+		void HandleCompletionWindowClosed (object sender, EventArgs e)
+		{
+			var gtkWidget = Xwt.Toolkit.CurrentEngine.GetNativeWidget (vboxLocation) as Gtk.Widget;//Any widget is fine
+			if (gtkWidget != null) {
+				var topWindow = gtkWidget.Toplevel as Gtk.Window;
+				if (topWindow != null) {
+					topWindow.Modal = true;
+				}
+			}
+		}
+
+		void HandleCompletionWindowShown (object sender, EventArgs e)
+		{
+			var gtkWidget = Xwt.Toolkit.CurrentEngine.GetNativeWidget (vboxLocation) as Gtk.Widget;//Any widget is fine
+			if (gtkWidget != null) {
+				var topWindow = gtkWidget.Toplevel as Gtk.Window;
+				if (topWindow != null) {
+					topWindow.Modal = false;
+				}
+			}
+		}
+
+		#endregion
 
 		void SetInitialFunctionBreakpointData (FunctionBreakpoint fb)
 		{
@@ -356,7 +415,9 @@ namespace MonoDevelop.Debugger
 				conditionalHitType.SelectedItem = ConditionalHitWhen.ConditionIsTrue;
 				checkIncludeSubclass.Active = true;
 
-				if (IdeApp.Workbench.ActiveDocument != null) {
+				if (IdeApp.Workbench.ActiveDocument != null &&
+				    IdeApp.Workbench.ActiveDocument.Editor != null &&
+				    IdeApp.Workbench.ActiveDocument.FileName != FilePath.Null) {
 					breakpointLocation.Update (IdeApp.Workbench.ActiveDocument.FileName,
 						IdeApp.Workbench.ActiveDocument.Editor.Caret.Line,
 						IdeApp.Workbench.ActiveDocument.Editor.Caret.Column);
@@ -755,6 +816,12 @@ namespace MonoDevelop.Debugger
 			}
 
 			OnUpdateControls (null, null);
+		}
+		protected override void Dispose (bool disposing)
+		{
+			CompletionWindowManager.WindowShown -= HandleCompletionWindowShown;
+			CompletionWindowManager.WindowClosed -= HandleCompletionWindowClosed;
+			base.Dispose (disposing);
 		}
 	}
 }

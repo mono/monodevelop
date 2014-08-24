@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		void CreateAction (string packageId = "MyPackage", string packageVersion = "1.2.3.4")
 		{
 			project = new FakePackageManagementProject ();
-			FakePackageOperation operation = project.AddFakeInstallOperation ();
+			project.AddFakeInstallOperation ();
 
 			packageManagementEvents = new PackageManagementEvents ();
 
@@ -84,7 +84,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		public void Execute_PackageExistsInSourceRepository_PackageIsForcefullyRemovedSoItDoesNotFailIfOtherPackagesDependOnIt ()
 		{
 			CreateAction ("MyPackage", "1.2.3.4");
-			FakePackage package = AddPackageToSourceRepository ("MyPackage", "1.2.3.4");
+			AddPackageToSourceRepository ("MyPackage", "1.2.3.4");
 
 			action.Execute ();
 

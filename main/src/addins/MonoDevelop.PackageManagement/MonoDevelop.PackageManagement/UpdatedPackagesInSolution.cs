@@ -111,6 +111,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			LogCheckingForUpdates (project.Name);
 
+			project.Logger = new PackageManagementLogger (packageManagementEvents);
 			var updatedPackages = new UpdatedPackages (project, project.SourceRepository);
 			List<IPackage> packages = updatedPackages.GetUpdatedPackages ().ToList ();
 

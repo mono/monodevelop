@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using NuGet;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -160,6 +161,18 @@ namespace ICSharpCode.PackageManagement
 			if (UpdatedPackagesAvailable != null) {
 				UpdatedPackagesAvailable (this, new EventArgs ());
 			}
+		}
+
+		public event EventHandler<FileRemovingEventArgs> FileRemoving;
+
+		public bool OnFileRemoving (string path)
+		{
+			if (FileRemoving != null) {
+				var eventArgs = new FileRemovingEventArgs (path);
+				FileRemoving (this, eventArgs);
+				return !eventArgs.IsCancelled;
+			}
+			return true;
 		}
 	}
 }
