@@ -17,16 +17,10 @@ module FSharpSyntaxModeInternals =
     type System.String with
         member this.IsAt (idx, pattern:string) =
             let strVal = this
-            let mutable result = true
             if (idx + pattern.Length > strVal.Length) then
                 false
             else
-                for i in [0..pattern.Length-1] do
-                    let patPart = pattern.[i]
-                    let strValPart = strVal.[idx + i]
-                    if (patPart <> strValPart) then
-                        result <- false
-                result
+                strVal.Substring(idx).StartsWith(pattern)
 
     type AbstractBlockSpan (isValid) =
         inherit Span()
@@ -76,7 +70,7 @@ module FSharpSyntaxModeInternals =
                             
         member private this.ScanPreProcessorElse(i: byref<int>) =
             if not (spanStack |> contains (fun span -> span.GetType() = typeof<IfBlockSpan>)) then
-                this.ScanSpan (&i) |> ignore
+                i <- i + "#else".Length
                 ()
             let mutable previousResult = false
             for span in spanStack do
@@ -90,8 +84,6 @@ module FSharpSyntaxModeInternals =
                 this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
             this.FoundSpanBegin.Invoke(elseBlockSpan, i , "#else".Length)
             i <- i + "#else".Length
-            let preprocessorSpan = this.CreatePreProcessorSpan()
-            this.FoundSpanBegin.Invoke(preprocessorSpan, i, 0)
 
         member private this.ScanPreProcessorIf(textOffset:int, i: byref<int>) =
             let mutable endIdx = this.CurText.Length
@@ -118,13 +110,13 @@ module FSharpSyntaxModeInternals =
                 this.CurRule.Name <> "String" && this.CurRule.Name <> "VerbatimString" &&
                 this.CurText.[textOffset] = '#' && this.IsFirstNonWsChar(textOffset)) then
                 
-                if currentText.IsAt(textOffset, "#else") then
+                if currentText.Substring(textOffset).StartsWith("#else") then
                     this.ScanPreProcessorElse(&i)
                     true
-                elif currentText.IsAt(textOffset, "#if") then
+                elif currentText.Substring(textOffset).StartsWith("#if") then
                     this.ScanPreProcessorIf(textOffset,&i)
                     false      
-                elif currentText.IsAt(textOffset,"#endif") then
+                elif currentText.Substring(textOffset).StartsWith("#endif") then
                     let span = EndIfBlockSpan()
                     this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
                     this.FoundSpanEnd.Invoke(span, i + textOffset + 6,0)
@@ -238,8 +230,13 @@ module internal Patterns =
     let hasSpans (line: DocumentLine) =
         line <> null && line.StartSpan <> null && line.StartSpan.Count > 0
 
-    let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument,line: DocumentLine) =
-        let docText = document.GetTextAt(line.Segment)
+    // TODO: Don't commit this.
+    let tempLog (text: string) =
+        System.IO.File.AppendAllText("C:\Temp\MDLog.log", text + System.Environment.NewLine)
+
+    let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument,line: DocumentLine,offset,length) =
+        let docText = document.GetTextAt(offset,length)
+        tempLog (sprintf "In GetChunks. [DocumentLine: %s]" docText)
         if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
             PreProcessorCode
         elif (hasSpans(line)) then
@@ -271,9 +268,18 @@ module Seq =
 /// Currently, this just loads the keyword-based highlighting info from resources
 type FSharpSyntaxMode() as this =
     inherit SyntaxMode()
+    // Mutable Local Variables
     let mutable document : MonoDevelop.Ide.Gui.Document = null
     let mutable parsedDocument : FSharp.CompilerBinding.ParseAndCheckResults option = None
     let mutable sourceTokenizer: SourceTokenizer option = None
+    let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
+    let mutable m_HasRegisteredParsedEvent = false
+    
+
+    let HandlePropertyChanged (eventArgs: PropertyChangedEventArgs) =
+        if eventArgs.Key = "EnableSemanticHighlighting" then
+            semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true);
+    
     let getDefineSymbols (project: MonoDevelop.Projects.Project) =
         seq { 
             let workspace = IdeApp.Workspace
@@ -288,6 +294,8 @@ type FSharpSyntaxMode() as this =
                 for s in configuration.GetDefineSymbols() do
                     yield s
         }
+
+    
     
 
     let getProject (doc: TextDocument) =
@@ -359,12 +367,11 @@ type FSharpSyntaxMode() as this =
         let chunks = mcInternal chunkStyle
         chunks
 
-    let mutable m_HasRegisteredParsedEvent = false
-
     
 
     do
         LoggingService.LogInfo("Creating FSharpSyntaxMode()")
+        PropertyService.PropertyChanged.Add HandlePropertyChanged
         let provider = new ResourceStreamProvider(this.GetType().Assembly, "FSharpSyntaxMode.xml");
         use reader = provider.Open()
         let baseMode = SyntaxMode.Read(reader)
@@ -385,13 +392,13 @@ type FSharpSyntaxMode() as this =
         with get() = m_HasRegisteredParsedEvent
         and set(value) = m_HasRegisteredParsedEvent <- value
 
-    member private this.getLexedTokens (style,line:DocumentLine,offset,length, sourceTokenizer:SourceTokenizer) =
-        let lineText = this.Document.GetText(line.Segment)
+    member private this.getLexedTokens (style,line:DocumentLine,offset,length:int, sourceTokenizer:SourceTokenizer) =
+        let lineText = this.Document.GetTextAt(offset,length)
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
         let tokens = Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
                                           | Some t, s -> Some(t,s)
                                           | _         -> None) 0L |> Array.ofSeq
-        tokens |> Seq.map (makeChunk line.LineNumber style line.Segment.Offset lineText)        
+        tokens |> Seq.map (makeChunk line.LineNumber style offset lineText)        
 
     member private this.getLexedChunks (style,line: DocumentLine,offset,length) = 
         
@@ -430,12 +437,13 @@ type FSharpSyntaxMode() as this =
                 if not this.HasRegisteredParsedEvent then
                     this.HasRegisteredParsedEvent <- true
                     document.DocumentParsed.Add(HandleDocumentParsed)
-            match (this.Document,line) with
-            | StringCode -> Seq.singleton(Chunk(offset,length, style.String.Name))
+            match (this.Document,line,offset,length) with
+            | StringCode when semanticHighlightingEnabled -> Seq.singleton(Chunk(offset,length, style.String.Name))
             | CommentCode -> Seq.singleton(Chunk(offset,length, style.CommentsMultiLine.Name))
             | ExcludedCode -> Seq.singleton(Chunk(offset,length,style.ExcludedCode.Name))
             | PreProcessorCode -> base.GetChunks(style,line,offset,length) 
-            | OtherCode  -> this.getLexedChunks(style,line,offset,length)
+            | OtherCode when semanticHighlightingEnabled -> this.getLexedChunks(style,line,offset,length)
+            | _ -> base.GetChunks(style,line,offset,length)
         with
             | exn -> 
                 LoggingService.LogError("Error in FSharpSyntaxMode.GetChunks", exn)
