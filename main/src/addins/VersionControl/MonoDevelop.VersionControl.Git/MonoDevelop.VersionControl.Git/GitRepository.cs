@@ -676,21 +676,41 @@ namespace MonoDevelop.VersionControl.Git
 					(string)changeSet.ExtendedProperties ["Git.AuthorEmail"],
 					DateTimeOffset.Now));
 			else
-				repo.RootRepository.Commit (message);
+				repo.RootRepository.Commit (message, GetSignature ());
 		}
 
 		public bool IsUserInfoDefault ()
 		{
-			var name = RootRepository.Config.Get<string> ("user.name");
-			var email = RootRepository.Config.Get<string> ("user.email");
+			string name;
+			string email;
+			try {
+				name = RootRepository.Config.Get<string> ("user.name").Value;
+				email = RootRepository.Config.Get<string> ("user.email").Value;
+			} catch {
+				name = email = null;
+			}
 			return name == null && email == null;
 		}
 		
 		public void GetUserInfo (out string name, out string email)
 		{
-			// Add dialog.
-			name = RootRepository.Config.Get<string> ("user.name").Value;
-			email = RootRepository.Config.Get<string> ("user.email").Value;
+			try {
+				name = RootRepository.Config.Get<string> ("user.name").Value;
+				email = RootRepository.Config.Get<string> ("user.email").Value;
+			} catch {
+				var dlg = new UserGitConfigDialog ();
+				try {
+					if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
+						name = dlg.UserText;
+						email = dlg.EmailText;
+						SetUserInfo (name, email);
+					} else {
+						name = email = null;
+					}
+				} finally {
+					dlg.Destroy ();
+				}
+			}
 		}
 
 		public void SetUserInfo (string name, string email)
