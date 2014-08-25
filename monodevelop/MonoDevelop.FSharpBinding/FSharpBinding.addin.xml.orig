@@ -238,10 +238,6 @@
     <Class fileExtensions = ".fs" class = "MonoDevelop.FSharp.FSharpUnitTestTextEditorExtension" />
   </Extension>
 
-  <Extension path = "/MonoDevelop/SourceEditor2/CustomModes">
-	<SyntaxMode mimeTypes="text/x-fsharp" class="MonoDevelop.FSharp.FSharpSyntaxMode"/>
-  </Extension>
-  
   <Extension path = "/MonoDevelop/ProjectModel/ProjectServiceExtensions">
     <Class class = "MonoDevelop.FSharp.FSharpProjectServiceExtension" />
   </Extension>

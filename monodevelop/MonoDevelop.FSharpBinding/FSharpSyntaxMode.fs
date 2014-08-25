@@ -91,6 +91,8 @@ module FSharpSyntaxModeInternals =
                     false      
                 elif currentText.Substring(textOffset).StartsWith("#endif") then
                     let span = EndIfBlockSpan()
+                    if this.CurSpan <> null && typeof<IfBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
+                        this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
                     this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
                     this.FoundSpanEnd.Invoke(span, i + textOffset + 6,0)
                     true
