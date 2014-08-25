@@ -130,7 +130,9 @@ namespace MonoDevelop.Platform
 			if (viewerCombo != null) {
 				if (closeSolution != null)
 					data.CloseCurrentWorkspace = closeSolution.Visible && closeSolution.IsChecked;
-				data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items [viewerCombo.SelectedIndex]).Viewer;
+				int index = viewerCombo.SelectedIndex;
+				if (index != -1)
+					data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items [index]).Viewer;
 			}
 
 			return true;
