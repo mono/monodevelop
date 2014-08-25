@@ -186,7 +186,7 @@
     </When>
     <When Condition=" '$(Configuration)' == 'DebugWin32' ">
       <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit2sharp\Lib\NativeBinaries\x86\*.*" />
+        <NativeBinaries Include="..\..\..\..\external\libgit-binary\windows\*.*" />
       </ItemGroup>
     </When>
     <Otherwise>
