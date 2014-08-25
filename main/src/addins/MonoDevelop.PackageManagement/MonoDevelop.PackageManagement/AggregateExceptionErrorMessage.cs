@@ -36,15 +36,23 @@ namespace ICSharpCode.PackageManagement
 	{
 		AggregateException ex;
 		StringBuilder errorMessage = new StringBuilder();
-		
+
 		public AggregateExceptionErrorMessage(AggregateException ex)
+			: this (null, ex)
+		{
+		}
+
+		public AggregateExceptionErrorMessage (string message, AggregateException ex)
 		{
 			this.ex = ex;
-			BuildErrorMessage();
+			BuildErrorMessage (message);
 		}
 		
-		void BuildErrorMessage()
+		void BuildErrorMessage (string message)
 		{
+			if (!String.IsNullOrEmpty (message)) {
+				errorMessage.AppendLine (message);
+			}
 			BuildErrorMessage(ex.InnerExceptions);
 		}
 		

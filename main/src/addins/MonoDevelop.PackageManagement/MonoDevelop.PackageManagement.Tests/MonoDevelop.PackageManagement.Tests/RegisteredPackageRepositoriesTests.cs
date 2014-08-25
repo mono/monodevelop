@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using NuGet;
@@ -54,6 +55,17 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			fakeRepositoryCache = new FakePackageRepositoryFactory ();
 			registeredRepositories = new RegisteredPackageRepositories (fakeRepositoryCache, packageSourcesHelper.Options);	
+		}
+
+		void AddPackageSourcesToSettings (params string[] sources)
+		{
+			var packageSources = sources.Select (source => new PackageSource (source));
+			packageSourcesHelper.FakeSettings.AddFakePackageSources (packageSources);
+		}
+
+		void SetActivePackageSourceInSettings (PackageSource packageSource)
+		{
+			packageSourcesHelper.FakeSettings.SetFakeActivePackageSource (packageSource);
 		}
 
 		[Test]
@@ -308,6 +320,48 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageSource activePackageSource = registeredRepositories.ActivePackageSource;
 
 			Assert.IsNull (activePackageSource);
+		}
+
+		[Test]
+		public void UpdatePackageSources_SolutionLoadedAggregatePackageSourceIsActiveThenAllSourcesDisabledApartFromOne_ActivePackageSourceIsNotAggregatePackageSource ()
+		{
+			CreateRegisteredPackageRepositories ();
+			packageSourcesHelper.AddTwoPackageSources ("One", "Two");
+			var expectedPackageSource = new PackageSource ("Two") { IsEnabled = true };
+			var updatedPackageSources = new PackageSource [] {
+				new PackageSource ("One") { IsEnabled = false },
+				expectedPackageSource
+			};
+			AddPackageSourcesToSettings ("One", "Two");
+			SetActivePackageSourceInSettings (RegisteredPackageSourceSettings.AggregatePackageSource);
+			packageSourcesHelper.Options.ProjectService.RaiseSolutionLoadedEvent ();
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+
+			registeredRepositories.UpdatePackageSources (updatedPackageSources);
+
+			Assert.AreEqual (expectedPackageSource, registeredRepositories.ActivePackageSource);
+		}
+
+		[Test]
+		public void UpdatePackageSources_PackageSourcesUpdatedInPreferencesWhenAggregatePackageSourceIsActive_ActiveRepositoryIsRecreated ()
+		{
+			CreateRegisteredPackageRepositories ();
+			packageSourcesHelper.AddTwoPackageSources ("One", "Two");
+			var updatedPackageSources = new PackageSource [] {
+				new PackageSource ("One"),
+				new PackageSource ("Two")
+			};
+			AddPackageSourcesToSettings ("One", "Two");
+			SetActivePackageSourceInSettings (RegisteredPackageSourceSettings.AggregatePackageSource);
+			registeredRepositories.ActivePackageSource = RegisteredPackageSourceSettings.AggregatePackageSource;
+			IPackageRepository firstAggregateRepository = registeredRepositories.ActiveRepository;
+			fakeRepositoryCache.FakeAggregateRepository = new FakePackageRepository ();
+
+			registeredRepositories.UpdatePackageSources (updatedPackageSources);
+			IPackageRepository secondAggregateRepository = registeredRepositories.ActiveRepository;
+
+			Assert.AreNotSame (firstAggregateRepository, secondAggregateRepository);
+			Assert.AreSame (secondAggregateRepository, fakeRepositoryCache.FakeAggregateRepository);
 		}
 	}
 }

@@ -37,5 +37,9 @@ namespace ICSharpCode.PackageManagement
 		ISharpDevelopPackageManager CreatePackageManager (
 			IPackageRepository sourceRepository, 
 			IDotNetProject project);
+
+		IPackageManager CreatePackageManager (
+			IPackageRepository sourceRepository,
+			ISolutionPackageRepository solutionPackageRepository);
 	}
 }

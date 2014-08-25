@@ -186,13 +186,14 @@ namespace MonoDevelop.Debugger
 
 			foreach (var thread in threads) {
 				ThreadInfo activeThread = DebuggingService.DebuggerSession.ActiveThread;
+				var name = thread.Name == null && thread.Id == 1 ? "Main Thread" : thread.Name;
 				var weight = thread == activeThread ? Pango.Weight.Bold : Pango.Weight.Normal;
 				var icon = thread == activeThread ? Gtk.Stock.GoForward : null;
 
 				if (iter.Equals (TreeIter.Zero))
-					store.AppendValues (icon, thread.Id.ToString (), thread.Name, thread, (int) weight, thread.Location);
+					store.AppendValues (icon, thread.Id.ToString (), name, thread, (int) weight, thread.Location);
 				else
-					store.AppendValues (iter, icon, thread.Id.ToString (), thread.Name, thread, (int) weight, thread.Location);
+					store.AppendValues (iter, icon, thread.Id.ToString (), name, thread, (int) weight, thread.Location);
 			}
 		}
 

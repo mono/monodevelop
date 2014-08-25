@@ -86,12 +86,15 @@ namespace MonoDevelop.Components.Docking
 			mainBox.ShowAll ();
 			mainBox.NoShowAll = true;
 			CompactGuiLevel = 2;
-			dockBarTop.UpdateVisibility ();
-			dockBarBottom.UpdateVisibility ();
-			dockBarLeft.UpdateVisibility ();
-			dockBarRight.UpdateVisibility ();
+			UpdateDockbarsVisibility ();
 
 			DefaultVisualStyle = new DockVisualStyle ();
+		}
+
+		public bool DockbarsVisible {
+			get {
+				return !OverlayWidgetVisible;
+			}
 		}
 		
 		/// <summary>
@@ -137,6 +140,8 @@ namespace MonoDevelop.Components.Docking
 				currentOverlayPosition = Math.Max (0, Allocation.Y);
 				QueueResize ();
 			}
+
+			UpdateDockbarsVisibility ();
 		}
 
 		public void RemoveOverlayWidget (bool animate = false)
@@ -164,9 +169,19 @@ namespace MonoDevelop.Components.Docking
 					QueueResize ();
 				}
 			}
+
+			UpdateDockbarsVisibility ();
 		}
 
 		int currentOverlayPosition;
+
+		void UpdateDockbarsVisibility ()
+		{
+			dockBarTop.UpdateVisibility ();
+			dockBarBottom.UpdateVisibility ();
+			dockBarLeft.UpdateVisibility ();
+			dockBarRight.UpdateVisibility ();
+		}
 
 		void ShowOverlayWidgetAnimation (double value)
 		{

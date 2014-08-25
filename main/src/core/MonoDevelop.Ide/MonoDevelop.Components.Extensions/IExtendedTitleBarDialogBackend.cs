@@ -42,7 +42,7 @@ namespace MonoDevelop.Components.Extensions
 		{
 			base.Initialize ();
 			toolbar = new HeaderBox ();
-			toolbar.GradientBackround = true;
+			toolbar.GradientBackground = true;
 			toolbar.SetMargins (0, 1, 0, 0);
 			MainBox.PackStart (toolbar, false, false, 0);
 			((Gtk.Box.BoxChild)MainBox [toolbar]).Position = 0;

@@ -85,15 +85,18 @@ namespace MonoDevelop.HexEditor
 
 		public override Widget GetVisualizerWidget (ObjectValue val)
 		{
-			hexEditor = new Mono.MHex.HexEditor ();
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowTargetInvoke = true;
+			options.ChunkRawStrings = true;
 
 			IBuffer buffer = null;
+			hexEditor = new Mono.MHex.HexEditor ();
 
 			if (val.TypeName != null && val.TypeName.EndsWith ("Foundation.NSData")) {
 				var raw = (RawValueArray)((RawValue)val.GetRawValue ()).CallMethod ("ToArray");
 				buffer = new RawByteArrayBuffer (raw);
 			} else if (val.TypeName != "string") {
-				var raw = (RawValueArray)val.GetRawValue ();
+				var raw = (RawValueArray)val.GetRawValue (options);
 
 				switch (val.TypeName) {
 				case "sbyte[]":
@@ -107,10 +110,7 @@ namespace MonoDevelop.HexEditor
 					break;
 				}
 			} else {
-				var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-				ops.ChunkRawStrings = true;
-
-				buffer = new RawStringBuffer ((RawValueString)val.GetRawValue (ops));
+				buffer = new RawStringBuffer ((RawValueString)val.GetRawValue (options));
 			}
 
 			hexEditor.HexEditorData.Buffer = buffer;
@@ -126,13 +126,17 @@ namespace MonoDevelop.HexEditor
 
 		public override bool StoreValue (ObjectValue val)
 		{
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowTargetInvoke = true;
+
 			switch (val.TypeName) {
 			case "byte[]":
 				// HACK: make sure to load the full byte stream...
 				long length = hexEditor.HexEditorData.Length;
+
 				hexEditor.HexEditorData.GetBytes (length - 1, 1);
 
-				val.SetRawValue (hexEditor.HexEditorData.Bytes);
+				val.SetRawValue (hexEditor.HexEditorData.Bytes, options);
 				return true;
 			default:
 				return false;

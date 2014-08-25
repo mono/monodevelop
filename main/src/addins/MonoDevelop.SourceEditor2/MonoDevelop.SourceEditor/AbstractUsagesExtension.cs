@@ -71,7 +71,8 @@ namespace MonoDevelop.SourceEditor
 
 		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
 		{
-			RemoveMarkers ();
+			if (TextEditorData.IsSomethingSelected)
+				RemoveMarkers ();
 		}
 
 		void HandleTextEditorDataDocumentTextReplaced (object sender, DocumentChangeEventArgs e)

@@ -800,14 +800,14 @@ namespace MonoDevelop.Debugger
 				parent = TreeIter.Zero;
 
 			if (CanQueryDebugger && frame != null) {
-				EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
-				ops.AllowMethodEvaluation = true;
-				ops.AllowToStringCalls = true;
-				ops.AllowTargetInvoke = true;
-				ops.EllipsizeStrings = false;
+				var options = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+				options.AllowMethodEvaluation = true;
+				options.AllowToStringCalls = true;
+				options.AllowTargetInvoke = true;
+				options.EllipsizeStrings = false;
 
 				string oldName = val.Name;
-				val.Refresh (ops);
+				val.Refresh (options);
 
 				// Don't update the name for the values entered by the user
 				if (store.IterDepth (iter) == 0)

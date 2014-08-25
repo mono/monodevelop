@@ -1188,10 +1188,14 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			if (nav != null)
 				return;
-			if (currentAssembly != null) {
-				OpenFromAssembly (url, currentAssembly);
-			} else {
-				OpenFromAssemblyNames (url);
+			try {
+				if (currentAssembly != null) {
+					OpenFromAssembly (url, currentAssembly);
+				} else {
+					OpenFromAssemblyNames (url);
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while opening the assembly browser with id:" + url, e); 
 			}
 		}
 
@@ -1220,20 +1224,22 @@ namespace MonoDevelop.AssemblyBrowser
 					t2.Wait ();
 					if (definitions == null) // disposed
 						return;
-					var nav = SearchMember (url);
-					if (nav == null) {
-						if (++i == references.Count)
-							LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
-						else
-							loadNext ();
-					}
+					Application.Invoke (delegate {
+						var nav = SearchMember (url);
+						if (nav == null) {
+							if (++i == references.Count)
+								LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
+							else
+								loadNext ();
+						}
+					});
 				}, TaskScheduler.Current);
 			};
 		}
 
 		void OpenFromAssemblyNames (string url)
 		{
-			List<Task> tasks = new List<Task> ();
+			var tasks = new List<Task> ();
 			foreach (var definition in definitions.ToArray ()) {
 				var cecilObject = loader.GetCecilObject (definition.UnresolvedAssembly);
 				if (cecilObject == null) {
@@ -1259,14 +1265,22 @@ namespace MonoDevelop.AssemblyBrowser
 			Task.Factory.ContinueWhenAll (tasks.ToArray (), tarr => {
 				var exceptions = tarr.Where (t => t.IsFaulted).Select (t => t.Exception).ToArray ();
 				if (exceptions != null) {
-					throw new AggregateException (exceptions).Flatten ();
+					var ex = new AggregateException (exceptions).Flatten ();
+					if (ex.InnerExceptions.Count > 0) {
+						foreach (var inner in ex.InnerExceptions) {
+							LoggingService.LogError ("Error while loading assembly in the browser.", inner);
+						}
+						throw ex;
+					}
 				}
 				if (definitions == null) // disposed
 					return;
-				var nav = SearchMember (url);
-				if (nav == null) {
-					LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
-				}
+				Application.Invoke (delegate {
+					var nav = SearchMember (url);
+					if (nav == null) {
+						LoggingService.LogError ("Assembly browser: Can't find: " + url + ".");
+					}
+				});
 			}, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Current);
 		}
 		
@@ -1437,13 +1451,17 @@ namespace MonoDevelop.AssemblyBrowser
 				Application.Invoke (delegate {
 					if (definitions == null)
 						return;
-					ITreeBuilder builder;
-					if (definitions.Count + projects.Count == 1) {
-						builder = TreeView.LoadTree (result);
-					} else {
-						builder = TreeView.AddChild (result);
+					try {
+						ITreeBuilder builder;
+						if (definitions.Count + projects.Count == 1) {
+							builder = TreeView.LoadTree (result);
+						} else {
+							builder = TreeView.AddChild (result);
+						}
+						builder.Selected = builder.Expanded = selectReference;
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while adding assembly to the assembly list", e);
 					}
-					builder.Selected = builder.Expanded = selectReference;
 				});
 			}
 			);

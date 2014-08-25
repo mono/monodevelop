@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Projects
 			PackStart (chooser, true, true, 0);
 			
 			HeaderBox hbox = new HeaderBox (1, 0, 0, 0);
-			hbox.GradientBackround = true;
+			hbox.GradientBackground = true;
 			hbox.SetPadding (6,6,6,6);
 			
 			HBox box = new HBox ();

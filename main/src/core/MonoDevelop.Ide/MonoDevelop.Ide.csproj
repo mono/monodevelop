@@ -1981,6 +1981,24 @@
     <EmbeddedResource Include="icons\light\catchpoint-disabled-16%402x.png">
       <LogicalName>catchpoint-disabled-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-information-16.png">
+      <LogicalName>project-status-information-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-information-16%402x.png">
+      <LogicalName>project-status-information-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-warning-16.png">
+      <LogicalName>project-status-warning-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-warning-16%402x.png">
+      <LogicalName>project-status-warning-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-error-16.png">
+      <LogicalName>project-status-error-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-error-16%402x.png">
+      <LogicalName>project-status-error-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />

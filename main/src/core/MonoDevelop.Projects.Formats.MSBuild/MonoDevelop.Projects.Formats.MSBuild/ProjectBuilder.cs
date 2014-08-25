@@ -161,24 +161,30 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			foreach (var pc in configurations) {
 				var p = buildEngine.Engine.GetLoadedProject (pc.ProjectFile);
-				if (p == null) {
-					p = new Project (buildEngine.Engine);
-					var content = buildEngine.GetUnsavedProjectContent (pc.ProjectFile);
-					if (content == null)
-						p.Load (pc.ProjectFile);
-					else {
-						p.FullFileName = pc.ProjectFile;
 
-						if (HasXbuildFileBug ()) {
-							// Workaround for Xamarin bug #14295: Project.Load incorrectly resets the FullFileName property
-							var t = p.GetType ();
-							t.InvokeMember ("PushThisFileProperty", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, p, new object[] { p.FullFileName });
-							t.InvokeMember ("DoLoad", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, p, new object[] { new StringReader (content) });
-						} else {
-							p.Load (new StringReader (content));
-						}
+				if (p != null) {
+					// building the project may create new items and/or modify some properties,
+					// so we always need to use a new instance of the project when building
+					buildEngine.Engine.UnloadProject (p);
+				}
+
+				p = new Project (buildEngine.Engine);
+				var content = buildEngine.GetUnsavedProjectContent (pc.ProjectFile);
+				if (content == null) {
+					p.Load (pc.ProjectFile);
+				} else {
+					p.FullFileName = pc.ProjectFile;
+
+					if (HasXbuildFileBug ()) {
+						// Workaround for Xamarin bug #14295: Project.Load incorrectly resets the FullFileName property
+						var t = p.GetType ();
+						t.InvokeMember ("PushThisFileProperty", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, p, new object[] { p.FullFileName });
+						t.InvokeMember ("DoLoad", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, p, new object[] { new StringReader (content) });
+					} else {
+						p.Load (new StringReader (content));
 					}
 				}
+
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
 				if (!string.IsNullOrEmpty (pc.Platform))
 					p.GlobalProperties.SetProperty ("Platform", pc.Platform);

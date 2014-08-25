@@ -109,13 +109,6 @@
     <Compile Include="GuiDispatchServerSink.cs" />
     <Compile Include="GuiDispatchServerSinkProvider.cs" />
     <Compile Include="LibraryCache.cs" />
-    <Compile Include="Metacity\ButtonFunction.cs" />
-    <Compile Include="Metacity\ButtonLayout.cs" />
-    <Compile Include="Metacity\FrameFlags.cs" />
-    <Compile Include="Metacity\FrameType.cs" />
-    <Compile Include="Metacity\ObjectManager.cs" />
-    <Compile Include="Metacity\Preview.cs" />
-    <Compile Include="Metacity\Theme.cs" />
     <Compile Include="Palette.cs" />
     <Compile Include="PaletteBackend.cs" />
     <Compile Include="PluggableWidget.cs" />

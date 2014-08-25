@@ -32,12 +32,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Diagnostics;
-
-#if ENABLE_RAYGUN
-using System.Threading;
-using Mindscape.Raygun4Net;
-#endif
-
+using Mono.Addins;
+using MonoDevelop.Core.LogReporting;
 using MonoDevelop.Core.Logging;
 using Mono.Unix.Native;
 
@@ -49,9 +45,6 @@ namespace MonoDevelop.Core
 		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
 		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
 
-#if ENABLE_RAYGUN
-		static RaygunClient raygunClient;
-#endif
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
 		static DateTime timestamp;
@@ -101,13 +94,6 @@ namespace MonoDevelop.Core
 			}
 
 			timestamp = DateTime.Now;
-
-#if ENABLE_RAYGUN
-			string raygunKey = BrandingService.GetString ("RaygunApiKey");
-			if (raygunKey != null) {
-				raygunClient = new RaygunClient (raygunKey);
-			}
-#endif
 
 			//remove the default trace listener on .NET, it throws up horrible dialog boxes for asserts
 			Debug.Listeners.Clear ();
@@ -215,22 +201,8 @@ namespace MonoDevelop.Core
 				if (ReportCrashes.HasValue && !ReportCrashes.Value)
 					return;
 
-				var customData = new Hashtable ();
-				foreach (var cd in SystemInformation.GetDescription ())
-					customData[cd.Title ?? ""] = cd.Description;
-
-#if ENABLE_RAYGUN
-				if (raygunClient != null) {
-					ThreadPool.QueueUserWorkItem (delegate {
-						try {
-							raygunClient.Send (ex, tags, customData, Runtime.Version.ToString ());
-						} catch {
-							// If we get here then things have gone really wrong - we can't log anything or
-							// attempt to report anything. Drop any exception that ends up here.
-						}
-					});
-				}
-#endif
+				foreach (var cr in AddinManager.GetExtensionObjects<CrashReporter> (true))
+					cr.ReportCrash (ex, willShutDown, tags);
 
 				//ensure we don't lose the setting
 				if (ReportCrashes != oldReportCrashes) {
@@ -549,5 +521,4 @@ namespace MonoDevelop.Core
 
 #endregion
 	}
-
 }

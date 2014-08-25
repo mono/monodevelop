@@ -134,8 +134,6 @@ namespace MonoDevelop.Components.DockNotebook
 			tracker = new MouseTracker (this);
 			GtkWorkarounds.FixContainerLeak (this);
 
-			IdeApp.Workbench.RootWindow.FocusOutEvent += (o, args) => {};
-
 			this.notebook = notebook;
 			WidgetFlags |= Gtk.WidgetFlags.AppPaintable;
 			Events |= EventMask.PointerMotionMask | EventMask.LeaveNotifyMask | EventMask.ButtonPressMask;

@@ -438,7 +438,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateAction ();
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
 			expectedPackage.RequireLicenseAcceptance = true;
-			var expectedPackages = new IPackage [] { expectedPackage };
 			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
 			action.PackageId = expectedPackage.Id;
 			action.PackageVersion = expectedPackage.Version;
@@ -460,7 +459,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateAction ();
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
 			expectedPackage.RequireLicenseAcceptance = true;
-			var expectedPackages = new IPackage [] { expectedPackage };
 			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
 			action.PackageId = expectedPackage.Id;
 			action.PackageVersion = expectedPackage.Version;

@@ -700,9 +700,13 @@ namespace MonoDevelop.Projects
 			Assert.AreEqual (2, p.Files.Count);
 
 			p.AddFile (p.BaseDirectory.Combine ("Test.cs"), BuildAction.Compile);
+
+			var solText = File.ReadAllLines (solFile);
+
 			sol.Save (new NullProgressMonitor ());
 
 			Assert.AreEqual (Util.GetXmlFileInfoset (p.FileName + ".saved"), Util.GetXmlFileInfoset (p.FileName));
+			Assert.AreEqual (solText, File.ReadAllLines (solFile));
 		}
 
 		[Test]
@@ -780,6 +784,158 @@ namespace MonoDevelop.Projects
 			lib1 = sol.FindProjectByName ("library1");
 			Assert.IsNotNull (lib1);
 			Assert.IsTrue (sol.Configurations [0].BuildEnabledForItem (lib1));
+		}
+
+		[Test]
+		public void SolutionBoundUnbound ()
+		{
+			Solution sol = new Solution ();
+
+			var e = new SomeItem ();
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+
+			sol.RootFolder.AddItem (e);
+			Assert.AreEqual (1, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+			Assert.AreEqual (1, e.InternalItem.BoundEvents);
+			Assert.AreEqual (0, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			sol.RootFolder.Items.Remove (e);
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (1, e.UnboundEvents);
+			Assert.AreEqual (0, e.InternalItem.BoundEvents);
+			Assert.AreEqual (1, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			sol.RootFolder.AddItem (e);
+			Assert.AreEqual (1, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+			Assert.AreEqual (1, e.InternalItem.BoundEvents);
+			Assert.AreEqual (0, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			sol.RootFolder.Items.Remove (e);
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (1, e.UnboundEvents);
+			Assert.AreEqual (0, e.InternalItem.BoundEvents);
+			Assert.AreEqual (1, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			var f = new SolutionFolder ();
+			f.AddItem (e);
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+			Assert.AreEqual (0, e.InternalItem.BoundEvents);
+			Assert.AreEqual (0, e.InternalItem.UnboundEvents);
+
+			sol.RootFolder.AddItem (f);
+			Assert.AreEqual (1, e.BoundEvents);
+			Assert.AreEqual (0, e.UnboundEvents);
+			Assert.AreEqual (1, e.InternalItem.BoundEvents);
+			Assert.AreEqual (0, e.InternalItem.UnboundEvents);
+
+			e.Reset ();
+			sol.RootFolder.Items.Remove (f);
+			Assert.AreEqual (0, e.BoundEvents);
+			Assert.AreEqual (1, e.UnboundEvents);
+			Assert.AreEqual (0, e.InternalItem.BoundEvents);
+			Assert.AreEqual (1, e.InternalItem.UnboundEvents);
+
+			f.Dispose ();
+			sol.Dispose ();
+		}
+
+		[Test]
+		public void SolutionBuildOrder ()
+		{
+			string solFile = Util.GetSampleProject ("solution-build-order", "ConsoleApplication3.sln");
+
+			Solution sol = Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile) as Solution;
+			SolutionEntityItem p = sol.FindProjectByName ("ConsoleApplication3");
+			SolutionEntityItem lib1 = sol.FindProjectByName ("ClassLibrary1");
+			SolutionEntityItem lib2 = sol.FindProjectByName ("ClassLibrary2");
+
+			Assert.IsTrue (p.ItemDependencies.Contains (lib1));
+			Assert.IsTrue (p.ItemDependencies.Contains (lib2));
+			Assert.AreEqual (2, p.ItemDependencies.Count);
+
+			Assert.IsTrue (lib2.ItemDependencies.Contains (lib1));
+			Assert.AreEqual (1, lib2.ItemDependencies.Count);
+			Assert.AreEqual (0, lib1.ItemDependencies.Count);
+
+			// Check that dependencies are saved
+
+			var solContent1 = File.ReadAllLines (solFile);
+
+			sol.Save (new NullProgressMonitor ());
+
+			var solContent2 = File.ReadAllLines (solFile);
+			Assert.AreEqual (solContent1, solContent2);
+
+			// Check that when an item is removed, it is removed from the dependencies list
+
+			lib1.ParentFolder.Items.Remove (lib1);
+			lib1.Dispose ();
+
+			Assert.IsTrue (p.ItemDependencies.Contains (lib2));
+			Assert.AreEqual (1, p.ItemDependencies.Count);
+			Assert.AreEqual (0, lib2.ItemDependencies.Count);
+
+			// Check that when an item is reloaded, it is kept from the dependencies list
+
+			var lib2Reloaded = lib2.ParentFolder.ReloadItem (Util.GetMonitor (), lib2);
+
+			Assert.AreNotEqual (lib2, lib2Reloaded);
+			Assert.IsTrue (p.ItemDependencies.Contains (lib2Reloaded));
+			Assert.AreEqual (1, p.ItemDependencies.Count);
+		}
+	}
+
+	class SomeItem: SolutionEntityItem
+	{
+		public int BoundEvents;
+		public int UnboundEvents;
+
+		public SomeItem InternalItem;
+
+		public SomeItem (bool createInternal = true)
+		{
+			if (createInternal) {
+				InternalItem = new SomeItem (false);
+				RegisterInternalChild (InternalItem);
+			}
+		}
+
+		public void Reset ()
+		{
+			BoundEvents = UnboundEvents = 0;
+			if (InternalItem != null)
+				InternalItem.Reset ();
+		}
+
+		protected override void OnBoundToSolution ()
+		{
+			base.OnBoundToSolution ();
+			BoundEvents++;
+		}
+
+		protected override void OnUnboundFromSolution ()
+		{
+			base.OnUnboundFromSolution ();
+			UnboundEvents++;
+		}
+
+		protected override void OnClean (IProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+		}
+		protected override BuildResult OnBuild (IProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return new BuildResult ();
+		}
+		protected override void OnExecute (IProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
+		{
 		}
 	}
 }

@@ -64,8 +64,8 @@ namespace MonoDevelop.PackageManagement
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateCheckingForPackageUpdatesMessage ();
 			using (IProgressMonitor progressMonitor = CreateProgressMonitor (progressMessage)) {
 				try {
-					using (IDisposable eventMonitor = new PackageUpdatesEventMonitor (progressMonitor)) {
-						CheckForPackageUpdates (progressMonitor, progressMessage);
+					using (var eventMonitor = new PackageUpdatesEventMonitor (progressMonitor)) {
+						CheckForPackageUpdates (progressMonitor, progressMessage, eventMonitor);
 					}
 				} catch (Exception ex) {
 					LoggingService.LogInternalError (ex);
@@ -81,11 +81,16 @@ namespace MonoDevelop.PackageManagement
 			return progressMonitorFactory.CreateProgressMonitor (progressMessage.Status);
 		}
 
-		void CheckForPackageUpdates (IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
+		void CheckForPackageUpdates (
+			IProgressMonitor progressMonitor,
+			ProgressMonitorStatusMessage progressMessage,
+			PackageUpdatesEventMonitor eventMonitor)
 		{
 			updatedPackagesInSolution.CheckForUpdates ();
 			if (updatedPackagesInSolution.AnyUpdates ()) {
 				progressMonitor.ReportSuccess (GettextCatalog.GetString ("Package updates are available."));
+			} else if (eventMonitor.WarningReported) {
+				progressMonitor.ReportWarning (progressMessage.Warning);
 			} else {
 				progressMonitor.ReportSuccess (progressMessage.Success);
 			}

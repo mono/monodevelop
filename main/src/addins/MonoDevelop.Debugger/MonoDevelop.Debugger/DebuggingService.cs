@@ -256,9 +256,9 @@ namespace MonoDevelop.Debugger
 			PreviewWindowManager.Show (val, widget, previewButtonArea);
 		}
 		
-		public static bool ShowBreakpointProperties (ref BreakEvent bp)
+		public static bool ShowBreakpointProperties (ref BreakEvent bp, BreakpointType breakpointType = BreakpointType.Location)
 		{
-			using (var dlg = new BreakpointPropertiesDialog (bp)) {
+			using (var dlg = new BreakpointPropertiesDialog (bp, breakpointType)) {
 				Xwt.Command response = dlg.Run ();
 				if (bp == null)
 					bp = dlg.GetBreakEvent ();
