@@ -239,7 +239,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     // Mutable Local Variables
     let mutable parsedDocument : FSharp.CompilerBinding.ParseAndCheckResults option = None
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
-
+    let mutable symbolsInFile: FSharpSymbolUse[] option = None
     
 
     let HandlePropertyChanged (eventArgs: PropertyChangedEventArgs) =
@@ -302,24 +302,26 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             let localParsedDocument = document.ParsedDocument
             if localParsedDocument <> null then
                 parsedDocument <- Some(localParsedDocument.Ast :?> FSharp.CompilerBinding.ParseAndCheckResults)
-                this.UpdateDocumentHighlighting()
-                IdeApp.Workbench.ActiveDocument.Editor.Parent.TextViewMargin.PurgeLayoutCache()
-                IdeApp.Workbench.ActiveDocument.Editor.Parent.QueueDraw()
+                Async.StartWithContinuations(
+                    parsedDocument.Value.GetAllUsesOfAllSymbolsInFile(),
+                    (
+                        fun t -> 
+                            symbolsInFile <- t
+                            this.UpdateDocumentHighlighting()
+                    ),
+                    (fun _ -> ()),
+                    (fun _ -> ()))
+                
             
-    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (lineText:string) (token: TokenInformation) =
+    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (token: TokenInformation) =
         let mcInternal (cs:ChunkStyle) = 
-            Chunk(offset + token.LeftColumn, token.FullMatchedLength, cs.Name)
+            Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, cs.Name)
         
         let symbol = 
             if not (isSimpleToken token.ColorClass) then
-                maybe {
-                    let! parsedDocument = parsedDocument
-                    return! asyncMaybe 
-                                {
-                                    let! symbol = parsedDocument.GetSymbol(lineNumber, token.LeftColumn, lineText)
-                                    return symbol
-                                } |> Async.RunSynchronously
-                }
+                match symbolsInFile with
+                | None -> None
+                | Some(symbols) -> symbols |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.StartColumn = token.LeftColumn)
             else
                 None
         let tokenSymbol = { TokenSymbol.TokenColor = token.ColorClass; SymbolUse = symbol }
@@ -359,15 +361,15 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         if IdeApp.Workspace <> null then
             IdeApp.Workspace.ActiveConfigurationChanged.Add HandleConfigurationChanged
 
-    member private this.getLexedTokens (style,line:DocumentLine,offset,length:int, sourceTokenizer:SourceTokenizer,lineText) =
+    member private this.getLexedTokens (style,line:DocumentLine,offset, lineText) =
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
         Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
                              | Some t, s -> Some(t,s)
                              | _         -> None) 0L 
-        |> Seq.map (makeChunk line.LineNumber style offset lineText)
+        |> Seq.map (makeChunk line.LineNumber style offset)
          
-    member private this.getLexedChunks (style,line: DocumentLine,offset,length, lineText) = 
-        this.getLexedTokens(style,line,offset,length,sourceTokenizer,lineText)
+    member private this.getLexedChunks (style,line: DocumentLine,offset, lineText) = 
+        this.getLexedTokens(style,line,offset,lineText)
 
     override this.CreateSpanParser(line, spanStack) =
         let ss = if spanStack = null then
@@ -389,7 +391,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | CommentCode styleName -> Seq.singleton(Chunk(offset,length, styleName))
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
             | PreProcessorCode styleName -> base.GetChunks(style,line,offset,length) 
-            | OtherCode (styleName,lineText) when semanticHighlightingEnabled -> this.getLexedChunks(style,line,offset,length,lineText)
+            | OtherCode (styleName,lineText) when semanticHighlightingEnabled -> this.getLexedChunks(style,line,offset,lineText)
             | _ -> base.GetChunks(style,line,offset,length)
         with
             | exn -> 

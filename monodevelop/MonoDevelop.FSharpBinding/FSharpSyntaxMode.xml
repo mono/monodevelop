@@ -35,8 +35,8 @@
   <EolSpan color="Comment(Doc)" rule="XmlDocumentation" tagColor="Comment(Line)">///</EolSpan>
   <EolSpan color="Comment(Line)" rule="Comment" tagColor="Comment(Line)">//</EolSpan>
 
-  <Span color="Comment(Block)" rule="MultiComment" tagColor="Comment(Line)">
-    <Begin>(*$)</Begin>
+  <Span color="Comment(Block)" rule="MultiComment" tagColor="Comment(Line)" stopateol="false">
+    <Begin>(*</Begin>
     <End>*)</End>
   </Span>
 
