@@ -230,13 +230,8 @@ module internal Patterns =
     let hasSpans (line: DocumentLine) =
         line <> null && line.StartSpan <> null && line.StartSpan.Count > 0
 
-    // TODO: Don't commit this.
-    let tempLog (text: string) =
-        System.IO.File.AppendAllText("C:\Temp\MDLog.log", text + System.Environment.NewLine)
-
     let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument,line: DocumentLine,offset,length) =
         let docText = document.GetTextAt(offset,length)
-        tempLog (sprintf "In GetChunks. [DocumentLine: %s]" docText)
         if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
             PreProcessorCode
         elif (hasSpans(line)) then
