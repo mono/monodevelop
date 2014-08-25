@@ -4,7 +4,6 @@ open System
 open System.Collections.Generic
 open MonoDevelop.Ide
 open MonoDevelop.Core
-//open MonoDevelop.Projects.Dom.Parser
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
 open Microsoft.FSharp.Compiler.SourceCodeServices
@@ -14,26 +13,17 @@ module FSharpSyntaxModeInternals =
     let contains predicate sequence =
         sequence |> Seq.exists predicate
         
-    type System.String with
-        member this.IsAt (idx, pattern:string) =
-            let strVal = this
-            if (idx + pattern.Length > strVal.Length) then
-                false
-            else
-                strVal.Substring(idx).StartsWith(pattern)
-
-    type AbstractBlockSpan (isValid) =
+    type AbstractBlockSpan () =
         inherit Span()
         let mutable disabled = false
         member private this.setColor() =
             base.TagColor <- "Preprocessor"
-            if disabled || not isValid then
+            if disabled then
                 base.Color <- "Excluded Code"
                 base.Rule <- "PreProcessorComment"
             else
                 base.Color <- "Plain Text"
                 base.Rule <- "<root>"
-        member this.IsValid with get() = isValid
         member this.Disabled 
             with get() = 
                     disabled
@@ -47,38 +37,27 @@ module FSharpSyntaxModeInternals =
             this.Color <- "Preprocessor"
             this.Rule <- "PreProcessorComment"
 
-    type IfBlockSpan(isValid) =
-        inherit AbstractBlockSpan(isValid)
-        override this.ToString() =
-            sprintf "[IfBlockSpan: IsValid: %b, Disabled: %b, Color: %s, Rule: %s]" isValid this.Disabled this.Color this.Rule
+    type IfBlockSpan() =
+        inherit AbstractBlockSpan()
 
-    type ElseBlockSpan(isValid) =
-        inherit AbstractBlockSpan(isValid)
+    type ElseBlockSpan() =
+        inherit AbstractBlockSpan()
         do
             base.Begin <- Regex("#else")
-        override this.ToString() =
-            sprintf "[ElseBlockSpan: IsValid: %b, Disabled: %b, Color: %s, Rule: %s]" isValid this.Disabled this.Color this.Rule
 
     type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string seq) as this =
         inherit SyntaxMode.SpanParser(mode, spanStack)
         do
             mode.Rules |> Seq.iter this.RuleStack.Push
             LoggingService.LogInfo("Creating FSharpSpanParser()")
-
-        member private this.CreatePreProcessorSpan() =
-            Span(TagColor="Preprocessor", Color="Preprocessor", Rule="String",StopAtEol=true)
                             
         member private this.ScanPreProcessorElse(i: byref<int>) =
             if not (spanStack |> contains (fun span -> span.GetType() = typeof<IfBlockSpan>)) then
                 i <- i + "#else".Length
                 ()
-            let mutable previousResult = false
-            for span in spanStack do
-                    if span.GetType() = typeof<IfBlockSpan> then
-                        previousResult <- (span :?> IfBlockSpan).IsValid
             while spanStack.Count > 0 do
                 spanStack.Pop() |> ignore
-            let elseBlockSpan = ElseBlockSpan(true)
+            let elseBlockSpan = ElseBlockSpan()
             if typeof<IfBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
                 elseBlockSpan.Disabled <- not (this.CurSpan :?> IfBlockSpan).Disabled
                 this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
@@ -87,16 +66,10 @@ module FSharpSyntaxModeInternals =
 
         member private this.ScanPreProcessorIf(textOffset:int, i: byref<int>) =
             let mutable endIdx = this.CurText.Length
-            let mutable idx = 0
-            while ((idx <- this.CurText.IndexOf('/', idx)); idx >= 0) && idx + 1 < this.CurText.Length do
-                let next = this.CurText.[idx + 1]
-                if next = '/' then
-                    endIdx <- idx - 1
-                idx <- idx + 1
             let len = endIdx - textOffset
             let parameter = this.CurText.Substring(textOffset + 3, len - 3)
             let existsInDefines = defines |> Seq.exists(fun t->t = parameter.Trim())
-            let span = IfBlockSpan(true)
+            let span = IfBlockSpan()
             span.Disabled <- not existsInDefines
             this.FoundSpanBegin.Invoke(span, i,len)
             i <- i + endIdx
@@ -230,26 +203,26 @@ module internal Patterns =
     let hasSpans (line: DocumentLine) =
         line <> null && line.StartSpan <> null && line.StartSpan.Count > 0
 
-    let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument,line: DocumentLine,offset,length) =
+    let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument,line: DocumentLine,offset,length, style: Highlighting.ColorScheme) =
         let docText = document.GetTextAt(offset,length)
         if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
-            PreProcessorCode
+            PreProcessorCode style.Preprocessor.Name
         elif (hasSpans(line)) then
             if not (lineStartsWithAbstractBlockSpan line.StartSpan)  then
                 if (containsAbstractBlockSpan line.StartSpan) &&
                     (getAbstractBlockSpan line.StartSpan).Disabled  then
-                    ExcludedCode
+                    ExcludedCode style.ExcludedCode.Name
                 elif hasSpans(line) && line.StartSpan.Peek().Rule = "String" || line.StartSpan.Peek().Rule = "VerbatimString" || line.StartSpan.Peek().Rule = "TripleQuotedString" then
-                    StringCode
+                    StringCode style.String.Name
                 elif hasSpans(line) && (line.StartSpan.Peek().Rule = "Comment" || line.StartSpan.Peek().Rule = "MultiComment") then
-                    CommentCode
-                else OtherCode
+                    CommentCode style.CommentsMultiLine.Name
+                else OtherCode (style.PlainText.Name, docText)
             elif containsAbstractBlockSpan line.StartSpan &&
                (getAbstractBlockSpan line.StartSpan).Disabled then
-                ExcludedCode
+                ExcludedCode style.ExcludedCode.Name
             else
-                OtherCode
-        else OtherCode
+                OtherCode (style.PlainText.Name, docText)
+        else OtherCode (style.PlainText.Name, docText)
 
 module Seq =
     let headOrDefault (defaultVal) sequence = 
@@ -261,14 +234,12 @@ module Seq =
 
 /// Implements syntax highlighting for F# sources
 /// Currently, this just loads the keyword-based highlighting info from resources
-type FSharpSyntaxMode() as this =
+type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     inherit SyntaxMode()
     // Mutable Local Variables
-    let mutable document : MonoDevelop.Ide.Gui.Document = null
     let mutable parsedDocument : FSharp.CompilerBinding.ParseAndCheckResults option = None
-    let mutable sourceTokenizer: SourceTokenizer option = None
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true);
-    let mutable m_HasRegisteredParsedEvent = false
+
     
 
     let HandlePropertyChanged (eventArgs: PropertyChangedEventArgs) =
@@ -294,19 +265,24 @@ type FSharpSyntaxMode() as this =
     
 
     let getProject (doc: TextDocument) =
-        let view = doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView>()
+        let view = if doc = null then
+                     null 
+                   else 
+                     doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView>()
 
         let mutable project: MonoDevelop.Projects.Project = null
                         
         if view <> null then
             project <- view.Project
         if project = null then
-            let ideDocument = IdeApp.Workbench.GetDocument(doc.FileName)
-            if ideDocument <> null then
-                project <- ideDocument.Project
+            project <- document.Project
         if project = null then
-            project <- IdeApp.Workspace.GetProjectsContainingFile(doc.FileName) |> Seq.headOrDefault (null)
+            if doc <> null then
+                project <- IdeApp.Workspace.GetProjectsContainingFile(doc.FileName) |> Seq.headOrDefault (null)
         project
+
+    let project = getProject(document.Editor.Document)
+    let sourceTokenizer: SourceTokenizer = SourceTokenizer(getDefineSymbols(project) |> List.ofSeq, document.FileName.FileName)
 
     let HandleConfigurationChanged(eventArgs) =  
         for doc in IdeApp.Workbench.Documents do
@@ -326,7 +302,6 @@ type FSharpSyntaxMode() as this =
             let localParsedDocument = document.ParsedDocument
             if localParsedDocument <> null then
                 parsedDocument <- Some(localParsedDocument.Ast :?> FSharp.CompilerBinding.ParseAndCheckResults)
-                sourceTokenizer <- Some(SourceTokenizer(getDefineSymbols(getProject(this.Document)) |> List.ofSeq, document.FileName.FileName))
                 this.UpdateDocumentHighlighting()
                 IdeApp.Workbench.ActiveDocument.Editor.Parent.TextViewMargin.PurgeLayoutCache()
                 IdeApp.Workbench.ActiveDocument.Editor.Parent.QueueDraw()
@@ -367,6 +342,7 @@ type FSharpSyntaxMode() as this =
     do
         LoggingService.LogInfo("Creating FSharpSyntaxMode()")
         PropertyService.PropertyChanged.Add HandlePropertyChanged
+        document.DocumentParsed.Add(HandleDocumentParsed)
         let provider = new ResourceStreamProvider(this.GetType().Assembly, "FSharpSyntaxMode.xml");
         use reader = provider.Open()
         let baseMode = SyntaxMode.Read(reader)
@@ -383,30 +359,15 @@ type FSharpSyntaxMode() as this =
         if IdeApp.Workspace <> null then
             IdeApp.Workspace.ActiveConfigurationChanged.Add HandleConfigurationChanged
 
-    member private this.HasRegisteredParsedEvent 
-        with get() = m_HasRegisteredParsedEvent
-        and set(value) = m_HasRegisteredParsedEvent <- value
-
-    member private this.getLexedTokens (style,line:DocumentLine,offset,length:int, sourceTokenizer:SourceTokenizer) =
-        let lineText = this.Document.GetTextAt(offset,length)
+    member private this.getLexedTokens (style,line:DocumentLine,offset,length:int, sourceTokenizer:SourceTokenizer,lineText) =
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
-        let tokens = Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
-                                          | Some t, s -> Some(t,s)
-                                          | _         -> None) 0L |> Array.ofSeq
-        tokens |> Seq.map (makeChunk line.LineNumber style offset lineText)        
-
-    member private this.getLexedChunks (style,line: DocumentLine,offset,length) = 
-        
-        match (sourceTokenizer) with
-        | Some(sourceTokenizer) -> 
-            this.getLexedTokens(style,line,offset,length,sourceTokenizer)
-        | _ -> 
-            if (this.Document <> null) then
-                let localSourceTokenizer = SourceTokenizer(getDefineSymbols(getProject(this.Document)) |> List.ofSeq,this.Document.FileName)
-                sourceTokenizer <- Some(localSourceTokenizer)
-                this.getLexedTokens(style,line,offset,length,localSourceTokenizer)
-            else
-                base.GetChunks(style,line,offset,length)
+        Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
+                             | Some t, s -> Some(t,s)
+                             | _         -> None) 0L 
+        |> Seq.map (makeChunk line.LineNumber style offset lineText)
+         
+    member private this.getLexedChunks (style,line: DocumentLine,offset,length, lineText) = 
+        this.getLexedTokens(style,line,offset,length,sourceTokenizer,lineText)
 
     override this.CreateSpanParser(line, spanStack) =
         let ss = if spanStack = null then
@@ -417,27 +378,18 @@ type FSharpSyntaxMode() as this =
                 if (this.Document = null) then
                     Seq.empty<string>
                 else
-                    getDefineSymbols(getProject(this.Document))
+                    getDefineSymbols(project)
 
         FSharpSyntaxModeInternals.FSharpSpanParser(this,ss,defines) :> SyntaxMode.SpanParser
 
     override this.GetChunks(style,line,offset,length) =
         try 
-            let docs = IdeApp.Workbench.Documents 
-            let doc = docs |> Seq.tryFind(fun t-> t.FileName.CanonicalPath.ToString() = this.Document.FileName)
-            match doc with
-            | None -> ()
-            | Some(doc) -> 
-                document <- doc
-                if not this.HasRegisteredParsedEvent then
-                    this.HasRegisteredParsedEvent <- true
-                    document.DocumentParsed.Add(HandleDocumentParsed)
-            match (this.Document,line,offset,length) with
-            | StringCode when semanticHighlightingEnabled -> Seq.singleton(Chunk(offset,length, style.String.Name))
-            | CommentCode -> Seq.singleton(Chunk(offset,length, style.CommentsMultiLine.Name))
-            | ExcludedCode -> Seq.singleton(Chunk(offset,length,style.ExcludedCode.Name))
-            | PreProcessorCode -> base.GetChunks(style,line,offset,length) 
-            | OtherCode when semanticHighlightingEnabled -> this.getLexedChunks(style,line,offset,length)
+            match (this.Document,line,offset,length,style) with
+            | StringCode styleName when semanticHighlightingEnabled -> Seq.singleton(Chunk(offset,length, styleName))
+            | CommentCode styleName -> Seq.singleton(Chunk(offset,length, styleName))
+            | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
+            | PreProcessorCode styleName -> base.GetChunks(style,line,offset,length) 
+            | OtherCode (styleName,lineText) when semanticHighlightingEnabled -> this.getLexedChunks(style,line,offset,length,lineText)
             | _ -> base.GetChunks(style,line,offset,length)
         with
             | exn -> 

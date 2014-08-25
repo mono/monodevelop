@@ -14,6 +14,11 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 /// MD/XS extension for highlighting the usages of a symbol within the current buffer.
 type HighlightUsagesExtension() as this =
     inherit MonoDevelop.SourceEditor.AbstractUsagesExtension<ResolveResult>()
+
+    override x.Initialize() =
+        base.Initialize ()
+        let syntaxMode = new FSharpSyntaxMode (this.Document)
+        this.TextEditorData.Document.SyntaxMode <- syntaxMode
             
     override x.TryResolve(resolveResult) =
         true

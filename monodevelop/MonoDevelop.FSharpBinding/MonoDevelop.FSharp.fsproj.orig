@@ -312,7 +312,6 @@
     <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
     <Compile Include="FSharpProjectServiceExtension.fs" />
     <Compile Include="FSharpProjectFileNodeExtension.fs" />
-    <Compile Include="FSharpHighlightUsagesExtension.fs" />
     <Compile Include="FSharpTooltipProvider.fs" />
     <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="FSharpReferenceFinderExtension.fs" />
@@ -321,6 +320,7 @@
     <Compile Include="FSharpFormattingPanelWidget.fs" />
     <Compile Include="FSharpFormattingPolicyPanel.fs" />
 	<Compile Include="FSharpSyntaxMode.fs" />
+	<Compile Include="FSharpHighlightUsagesExtension.fs" />
 	<EmbeddedResource Include="FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
     <EmbeddedResource Include="FSharpStylePolicy.xml" />
