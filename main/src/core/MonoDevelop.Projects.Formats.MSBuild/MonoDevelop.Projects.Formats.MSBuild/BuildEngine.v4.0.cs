@@ -67,7 +67,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		public void SetGlobalProperties (IDictionary<string, string> properties)
 		{
 			foreach (var p in properties)
-				engine.SetGlobalProperty (p.Key, p.Value);
+				engine.GlobalProperties[p.Key] = p.Value;
 		}
 
 		public IProjectBuilder LoadProject (string file)
