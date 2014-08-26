@@ -35,6 +35,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Components.Commands;
 using Mono.Addins;
 using System.ComponentModel;
+using System.Linq;
 
 namespace MonoDevelop.Components.Commands.ExtensionNodes
 {
@@ -158,7 +159,12 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			var keyBinding = Platform.IsMac ? macShortcut : shortcut;
 			if (Platform.IsWindows && !string.IsNullOrEmpty (winShortcut))
 				keyBinding = winShortcut;
-			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (keyBinding);
+			string[] splittedKeys = (keyBinding ?? "").Split (' ');
+
+			cmd.AccelKey = KeyBindingManager.CanonicalizeBinding (splittedKeys[0]);
+			if (splittedKeys.Length > 1) {
+				cmd.AlternateAccelKeys = splittedKeys.Skip (1).ToArray ();
+			}
 			
 			cmd.DisabledVisible = disabledVisible;
 			
