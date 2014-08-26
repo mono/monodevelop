@@ -64,7 +64,7 @@
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
-    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <Target Name="AfterBuild">
@@ -312,7 +312,6 @@
     <Compile Include="FSharpUnitTestTextEditorExtension.fs" />
     <Compile Include="FSharpProjectServiceExtension.fs" />
     <Compile Include="FSharpProjectFileNodeExtension.fs" />
-    <Compile Include="FSharpHighlightUsagesExtension.fs" />
     <Compile Include="FSharpTooltipProvider.fs" />
     <Compile Include="FSharpResolverProvider.fs" />
     <Compile Include="FSharpReferenceFinderExtension.fs" />
@@ -320,6 +319,9 @@
     <Compile Include="FSharpFormatter.fs" />
     <Compile Include="FSharpFormattingPanelWidget.fs" />
     <Compile Include="FSharpFormattingPolicyPanel.fs" />
+	<Compile Include="FSharpSyntaxMode.fs" />
+	<Compile Include="FSharpHighlightUsagesExtension.fs" />
+	<EmbeddedResource Include="FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
     <EmbeddedResource Include="FSharpStylePolicy.xml" />
     <EmbeddedResource Include="FSharpBinding.addin.xml">
@@ -346,6 +348,9 @@
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Posix" />
+	  <Reference Include="MonoDevelop.DesignerSupport">
+      <HintPath>INSERT_FSPROJ_MDROOT\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Addins">
       <Private>False</Private>
       <HintPath>INSERT_FSPROJ_MDROOT\bin\Mono.Addins.dll</HintPath>
