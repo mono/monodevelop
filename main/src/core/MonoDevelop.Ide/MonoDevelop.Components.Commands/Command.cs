@@ -95,10 +95,39 @@ namespace MonoDevelop.Components.Commands
 					KeyBindingChanged (this, new KeyBindingChangedEventArgs (this, oldKeyBinding));
 			}
 		}
-		
+
+		string[] alternateAccelKeys;
+		KeyBinding[] alternateKeyBindings;
+		static readonly KeyBinding[] emptyBindings = new KeyBinding[0];
+
+		public string[] AlternateAccelKeys {
+			get { return alternateAccelKeys; }
+			set { 
+				var oldKeybindings = alternateKeyBindings;
+				if (value == null || value.Length == 0) {
+					alternateKeyBindings = null;
+				} else {
+					alternateKeyBindings = new KeyBinding[value.Length];
+					for (int i = 0; i < value.Length; i++) {
+						KeyBinding b;
+						KeyBinding.TryParse (value[i], out b);
+						alternateKeyBindings [i] = b;
+					}
+				}
+				alternateAccelKeys = value; 
+				if (AlternateKeyBindingChanged != null)
+					AlternateKeyBindingChanged (this, new AlternateKeyBindingChangedEventArgs (this, oldKeybindings));
+			}
+		} 
+
 		public KeyBinding KeyBinding {
 			get { return binding; }
 		}
+
+		public KeyBinding[] AlternateKeyBindings {
+			get { return alternateKeyBindings ?? emptyBindings; }
+		} 
+
 		
 		public bool DisabledVisible {
 			get { return disabledVisible; }
@@ -116,6 +145,7 @@ namespace MonoDevelop.Components.Commands
 		}
 		
 		public event KeyBindingChangedEventHandler KeyBindingChanged;
+		public event EventHandler<AlternateKeyBindingChangedEventArgs> AlternateKeyBindingChanged;
 	}
 	
 	public class KeyBindingChangedEventArgs {
@@ -124,17 +154,37 @@ namespace MonoDevelop.Components.Commands
 			OldKeyBinding = oldKeyBinding;
 			Command = command;
 		}
-		
+
 		public Command Command {
 			get; private set;
 		}
-		
+
 		public KeyBinding OldKeyBinding {
 			get; private set;
 		}
-		
+
 		public KeyBinding NewKeyBinding {
 			get { return Command.KeyBinding; }
+		}
+	}
+
+	public class AlternateKeyBindingChangedEventArgs {
+		public AlternateKeyBindingChangedEventArgs (Command command, KeyBinding[] oldKeyBinding)
+		{
+			OldKeyBinding = oldKeyBinding;
+			Command = command;
+		}
+
+		public Command Command {
+			get; private set;
+		}
+
+		public KeyBinding[] OldKeyBinding {
+			get; private set;
+		}
+
+		public KeyBinding[] NewKeyBinding {
+			get { return Command.AlternateKeyBindings; }
 		}
 	}
 }
