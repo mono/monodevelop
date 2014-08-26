@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using MonoDevelop.Core;
+using MonoDevelop.Core.ProgressMonitoring;
 using MonoDevelop.VersionControl;
 using MonoDevelop.VersionControl.Git;
 using MonoDevelop.VersionControl.Tests;
@@ -121,7 +122,7 @@ index e69de29..8e27be7 100644
 		protected override void PostCommit (Repository repo)
 		{
 			var repo2 = (GitRepository)repo;
-			repo2.Push (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), repo2.GetCurrentRemote (), repo2.GetCurrentBranch ());
+			repo2.Push (new NullProgressMonitor (), repo2.GetCurrentRemote (), repo2.GetCurrentBranch ());
 		}
 
 		protected override void BlameExtraInternals (Annotation [] annotations)
@@ -141,9 +142,9 @@ index e69de29..8e27be7 100644
 			var repo2 = (GitRepository)Repo;
 			AddFile ("file2", "nothing", true, true);
 			AddFile ("file1", "text", true, false);
-			repo2.CreateStash ("meh");
+			repo2.CreateStash (new NullProgressMonitor (), "meh");
 			Assert.IsTrue (!File.Exists (LocalPath + "file1"), "Stash creation failure");
-			repo2.PopStash ();
+			repo2.PopStash (new NullProgressMonitor ());
 
 			VersionInfo vi = repo2.GetVersionInfo (LocalPath + "file1", VersionInfoQueryFlags.IgnoreCache);
 			Assert.AreEqual (VersionStatus.ScheduledAdd, vi.Status & VersionStatus.ScheduledAdd, "Stash pop failure");
@@ -157,19 +158,19 @@ index e69de29..8e27be7 100644
 			AddFile ("file1", "text", true, true);
 			repo2.CreateBranch ("branch1", null);
 
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch1");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "branch1");
 			Assert.AreEqual ("branch1", repo2.GetCurrentBranch ());
 			Assert.IsTrue (File.Exists (LocalPath + "file1"), "Branch not inheriting from current.");
 
 			AddFile ("file2", "text", true, false);
 			repo2.CreateBranch ("branch2", null);
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch2");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "branch2");
 			Assert.IsTrue (!File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed");
-			repo2.PopStash ();
+			repo2.PopStash (new NullProgressMonitor ());
 
 			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Uncommitted changes were not stashed correctly");
 
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "master");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "master");
 			repo2.RemoveBranch ("branch1");
 			Assert.IsFalse (repo2.GetBranches ().Any (b => b.Name == "branch1"), "Failed to delete branch");
 
@@ -188,14 +189,14 @@ index e69de29..8e27be7 100644
 			PostCommit (repo2);
 
 			repo2.CreateBranch ("branch3", null);
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch3");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "branch3");
 			AddFile ("file2", "asdf", true, true);
-			repo2.Push (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "origin", "branch3");
+			repo2.Push (new NullProgressMonitor (), "origin", "branch3");
 
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "master");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "master");
 
 			repo2.CreateBranch ("branch4", "origin/branch3");
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch4");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "branch4");
 			Assert.IsTrue (File.Exists (LocalPath + "file2"), "Tracking remote is not grabbing correct commits");
 		}
 
@@ -266,9 +267,9 @@ index 0000000..009b64b
 		protected override void TestValidUrl ()
 		{
 			var repo2 = (GitRepository)Repo;
-			//Assert.IsTrue (repo2.IsUrlValid ("git@github.com:mono/monodevelop"));
+			Assert.IsTrue (repo2.IsUrlValid ("git@github.com:mono/monodevelop"));
 			Assert.IsTrue (repo2.IsUrlValid ("git://github.com:80/mono/monodevelop.git"));
-			//Assert.IsTrue (repo2.IsUrlValid ("ssh://user@host.com:80/mono/monodevelop.git"));
+			Assert.IsTrue (repo2.IsUrlValid ("ssh://user@host.com:80/mono/monodevelop.git"));
 			Assert.IsTrue (repo2.IsUrlValid ("http://github.com:80/mono/monodevelop.git"));
 			Assert.IsTrue (repo2.IsUrlValid ("https://github.com:80/mono/monodevelop.git"));
 			//Assert.IsTrue (repo2.IsUrlValid ("ftp://github.com:80/mono/monodevelop.git"));
@@ -287,7 +288,7 @@ index 0000000..009b64b
 			AddFile ("file1", "text", true, true);
 			PostCommit (repo2);
 			repo2.CreateBranch ("branch1", null);
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch1");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "branch1");
 			AddFile ("file2", "text", true, true);
 			PostCommit (repo2);
 			Assert.AreEqual (2, repo2.GetBranches ().Count ());
@@ -309,12 +310,12 @@ index 0000000..009b64b
 			Assert.IsTrue (repo2.IsBranchMerged ("master"));
 
 			repo2.CreateBranch ("branch1", null);
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "branch1");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "branch1");
 			AddFile ("file2", "text", true, true);
 
-			repo2.SwitchToBranch (new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor (), "master");
+			repo2.SwitchToBranch (new NullProgressMonitor (), "master");
 			Assert.IsFalse (repo2.IsBranchMerged ("branch1"));
-			repo2.Merge ("branch1", GitUpdateOptions.NormalUpdate, new MonoDevelop.Core.ProgressMonitoring.NullProgressMonitor ());
+			repo2.Merge ("branch1", GitUpdateOptions.NormalUpdate, new NullProgressMonitor ());
 			Assert.IsTrue (repo2.IsBranchMerged ("branch1"));
 		}
 
