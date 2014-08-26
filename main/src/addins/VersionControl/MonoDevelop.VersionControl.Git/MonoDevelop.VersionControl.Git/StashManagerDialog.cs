@@ -62,7 +62,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		void Fill ()
 		{
-			TreeViewState tvs = new TreeViewState (list, 0);
+			var tvs = new TreeViewState (list, 0);
 			tvs.Save ();
 			store.Clear ();
 			foreach (var s in stashes) {

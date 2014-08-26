@@ -91,7 +91,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		void FillBranches ()
 		{
-			TreeViewState state = new TreeViewState (listBranches, 3);
+			var state = new TreeViewState (listBranches, 3);
 			state.Save ();
 			storeBranches.Clear ();
 			string currentBranch = repo.GetCurrentBranch ();
@@ -101,10 +101,10 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			state.Load ();
 		}
-		
+
 		void FillRemotes ()
 		{
-			TreeViewState state = new TreeViewState (treeRemotes, 4);
+			var state = new TreeViewState (treeRemotes, 4);
 			state.Save ();
 			storeRemotes.Clear ();
 			string currentRemote = repo.GetCurrentRemote ();
@@ -145,7 +145,7 @@ namespace MonoDevelop.VersionControl.Git
 			TreeIter it;
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
-			Branch b = (Branch) storeBranches.GetValue (it, 0);
+			var b = (Branch) storeBranches.GetValue (it, 0);
 			var dlg = new EditBranchDialog (repo, b.Name, b.IsTracking ? b.TrackedBranch.Name : String.Empty);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) ResponseType.Ok) {
@@ -169,7 +169,7 @@ namespace MonoDevelop.VersionControl.Git
 			TreeIter it;
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
-			Branch b = (Branch) storeBranches.GetValue (it, 0);
+			var b = (Branch) storeBranches.GetValue (it, 0);
 			string txt = null;
 			if (!repo.IsBranchMerged (b.Name))
 				txt = GettextCatalog.GetString ("WARNING: The branch has not yet been merged to HEAD");
@@ -188,7 +188,7 @@ namespace MonoDevelop.VersionControl.Git
 			TreeIter it;
 			if (!listBranches.Selection.GetSelected (out it))
 				return;
-			Branch b = (Branch) storeBranches.GetValue (it, 0);
+			var b = (Branch) storeBranches.GetValue (it, 0);
 			GitService.SwitchToBranch (repo, b.Name);
 			FillBranches ();
 		}

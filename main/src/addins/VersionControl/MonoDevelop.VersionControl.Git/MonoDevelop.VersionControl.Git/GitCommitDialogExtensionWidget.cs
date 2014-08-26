@@ -51,13 +51,13 @@ namespace MonoDevelop.VersionControl.Git
 			get { return entryEmail.Text; }
 		}
 
-		protected void OnCheckAuthorToggled (object sender, System.EventArgs e)
+		protected void OnCheckAuthorToggled (object sender, EventArgs e)
 		{
 			authorBox.Visible = checkAuthor.Active;
 			OnChanged (sender, e);
 		}
 		
-		void OnChanged (object sender, System.EventArgs e)
+		void OnChanged (object sender, EventArgs e)
 		{
 			if (Changed != null)
 				Changed (this, EventArgs.Empty);

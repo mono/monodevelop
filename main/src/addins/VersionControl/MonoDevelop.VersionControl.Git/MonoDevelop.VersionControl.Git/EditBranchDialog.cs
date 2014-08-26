@@ -30,7 +30,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using LibGit2Sharp;
-using System;
 
 namespace MonoDevelop.VersionControl.Git
 {

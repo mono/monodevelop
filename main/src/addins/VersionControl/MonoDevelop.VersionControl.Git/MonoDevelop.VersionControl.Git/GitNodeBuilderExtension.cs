@@ -58,8 +58,8 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
-			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
-			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
+			var ob = (IWorkspaceObject) dataObject;
+			var rep = VersionControlService.GetRepository (ob) as GitRepository;
 			if (rep != null) {
 				IWorkspaceObject rob;
 				if (repos.TryGetValue (rep.RootPath, out rob)) {
@@ -71,8 +71,8 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void OnNodeAdded (object dataObject)
 		{
-			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
-			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
+			var ob = (IWorkspaceObject) dataObject;
+			var rep = VersionControlService.GetRepository (ob) as GitRepository;
 			if (rep != null && !repos.ContainsKey (rep.RootPath)) {
 				repos [rep.RootPath] = ob;
 			}
@@ -80,8 +80,8 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override void OnNodeRemoved (object dataObject)
 		{
-			IWorkspaceObject ob = (IWorkspaceObject) dataObject;
-			GitRepository rep = VersionControlService.GetRepository (ob) as GitRepository;
+			var ob = (IWorkspaceObject) dataObject;
+			var rep = VersionControlService.GetRepository (ob) as GitRepository;
 			IWorkspaceObject rob;
 			if (rep != null && repos.TryGetValue (rep.RootPath, out rob)) {
 				if (ob == rob)

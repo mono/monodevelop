@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (repo == null)
 				return;
 
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
+			var wob = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
 			if (wob == null)
 				return;
 			if (((wob is WorkspaceItem) && ((WorkspaceItem)wob).ParentWorkspace == null) ||
@@ -131,11 +131,11 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			NewStashDialog dlg = new NewStashDialog ();
+			var dlg = new NewStashDialog ();
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					string comment = dlg.Comment;
-					MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+					var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 					var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
@@ -159,7 +159,7 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {

@@ -34,7 +34,6 @@ using System.Collections.Generic;
 using System.Text;
 using MonoDevelop.Ide;
 using LibGit2Sharp;
-using GLib;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -83,7 +82,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override string[] SupportedProtocols {
 			get {
-				return new string[] {"git", /*"ssh",*/ "http", "https", /*"ftp", "ftps", "rsync",*/ "file"};
+				return new [] {"git", "ssh", "http", "https", /*"ftp", "ftps", "rsync",*/ "file"};
 			}
 		}
 
@@ -111,7 +110,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			base.CopyConfigurationFrom (other);
 
-			GitRepository r = (GitRepository)other;
+			var r = (GitRepository)other;
 			RootPath = r.RootPath;
 			if (!RootPath.IsNullOrEmpty)
 				RootRepository = new LibGit2Sharp.Repository (RootPath);
@@ -128,9 +127,7 @@ namespace MonoDevelop.VersionControl.Git
 		public override string GetBaseText (FilePath localFile)
 		{
 			Commit c = GetHeadCommit (GetRepository (localFile));
-			if (c == null)
-				return string.Empty;
-			return GetCommitTextContent (c, localFile);
+			return c == null ? string.Empty : GetCommitTextContent (c, localFile);
 		}
 				
 		static Commit GetHeadCommit (LibGit2Sharp.Repository repository)
@@ -219,7 +216,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override Revision[] OnGetHistory (FilePath localFile, Revision since)
 		{
-			List<Revision> revs = new List<Revision> ();
+			var revs = new List<Revision> ();
 
 			var repository = GetRepository (localFile);
 			var sinceRev = (GitRevision)since;
@@ -250,11 +247,11 @@ namespace MonoDevelop.VersionControl.Git
 		
 		protected override RevisionPath[] OnGetRevisionChanges (Revision revision)
 		{
-			GitRevision rev = (GitRevision) revision;
+			var rev = (GitRevision) revision;
 			if (rev.Commit == null)
 				return new RevisionPath [0];
 
-			List<RevisionPath> paths = new List<RevisionPath> ();
+			var paths = new List<RevisionPath> ();
 			var parent = rev.Commit.Parents.FirstOrDefault ();
 			var changes = rev.GitRepository.Diff.Compare <TreeChanges>(parent != null ? parent.Tree : null, rev.Commit.Tree);
 
@@ -534,7 +531,8 @@ namespace MonoDevelop.VersionControl.Git
 								RootRepository.Reset (ResetMode.Hard, toApply.Last ());
 								commit = false;
 								break;
-							} else if (res == ConflictResult.Skip) {
+							}
+							if (res == ConflictResult.Skip) {
 								Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 								break;
 							}
@@ -610,7 +608,8 @@ namespace MonoDevelop.VersionControl.Git
 							RootRepository.Reset (ResetMode.Hard);
 							commit = false;
 							break;
-						} else if (res == ConflictResult.Skip) {
+						}
+						if (res == ConflictResult.Skip) {
 							Revert (RootRepository.FromGitPath (conflictFile.Ancestor.Path), false, monitor);
 							break;
 						}
@@ -637,7 +636,7 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			ConflictResult res = ConflictResult.Abort;
 			DispatchService.GuiSyncDispatch (delegate {
-				ConflictResolutionDialog dlg = new ConflictResolutionDialog ();
+				var dlg = new ConflictResolutionDialog ();
 				try {
 					dlg.Load (file);
 					var dres = (Gtk.ResponseType) MessageService.RunCustomDialog (dlg);
@@ -761,7 +760,7 @@ namespace MonoDevelop.VersionControl.Git
 		protected override void OnRevertToRevision (FilePath localPath, Revision revision, IProgressMonitor monitor)
 		{
 			LibGit2Sharp.Repository repo = GetRepository (localPath);
-			GitRevision gitRev = (GitRevision)revision;
+			var gitRev = (GitRevision)revision;
 
 			// Rewrite file data from selected revision.
 			repo.CheckoutPaths (gitRev.Commit.Sha, new [] { repo.ToGitPath (localPath) }, new CheckoutOptions {
@@ -856,7 +855,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public override DiffInfo[] PathDiff (FilePath baseLocalPath, FilePath[] localPaths, bool remoteDiff)
 		{
-			List<DiffInfo> diffs = new List<DiffInfo> ();
+			var diffs = new List<DiffInfo> ();
 			VersionInfo[] vinfos = GetDirectoryVersionInfo (baseLocalPath, localPaths, false, true);
 			foreach (VersionInfo vi in vinfos) {
 				var diff = GenerateDiff (baseLocalPath, vi);
@@ -886,21 +885,16 @@ namespace MonoDevelop.VersionControl.Git
 		{
 			var repository = GetRepository (file);
 			var blob = (Blob)c [repository.ToGitPath (file)].Target;
-			if (blob.IsBinary)
-				return String.Empty;
-			return blob.GetContentText ();
+			return blob.IsBinary ? String.Empty : blob.GetContentText ();
 		}
 
 		public string GetCurrentRemote ()
 		{
-			List<string> remotes = new List<string> (GetRemotes ().Select (r => r.Name));
+			var remotes = new List<string> (GetRemotes ().Select (r => r.Name));
 			if (remotes.Count == 0)
 				return null;
 			
-			if (remotes.Contains ("origin"))
-				return "origin";
-
-			return remotes[0];
+			return remotes.Contains ("origin") ? "origin" : remotes [0];
 		}
 
 		public void Push (IProgressMonitor monitor, string remote, string remoteBranch)
@@ -1083,10 +1077,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public static string GetStashBranchName (string stashName)
 		{
-			if (stashName.StartsWith ("__MD_", StringComparison.Ordinal))
-				return stashName.Substring (5);
-
-			return null;
+			return stashName.StartsWith ("__MD_", StringComparison.Ordinal) ? stashName.Substring (5) : null;
 		}
 
 		static Stash GetStashForBranch (StashCollection stashes, string branchName)
@@ -1123,7 +1114,7 @@ namespace MonoDevelop.VersionControl.Git
 					status = VersionStatus.Modified;
 					break;
 				}
-				VersionInfo vi = new VersionInfo (RootRepository.FromGitPath (change.Path), "", false, status | VersionStatus.Versioned, null, VersionStatus.Versioned, null);
+				var vi = new VersionInfo (RootRepository.FromGitPath (change.Path), "", false, status | VersionStatus.Versioned, null, VersionStatus.Versioned, null);
 				cset.AddFile (vi);
 			}
 			return cset;
@@ -1134,7 +1125,7 @@ namespace MonoDevelop.VersionControl.Git
 			Commit reference = RootRepository.Branches[remote + "/" + branch].Tip;
 			Commit compared = RootRepository.Head.Tip;
 			
-			List<DiffInfo> diffs = new List<DiffInfo> ();
+			var diffs = new List<DiffInfo> ();
 			var patch = RootRepository.Diff.Compare<Patch> (reference.Tree, compared.Tree);
 			foreach (var change in GitUtil.CompareCommits (RootRepository, reference, compared)) {
 				string path;
@@ -1212,18 +1203,18 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnIgnore (FilePath[] localPath)
 		{
-			List<FilePath> ignored = new List<FilePath> ();
+			var ignored = new List<FilePath> ();
 			string gitignore = RootPath + Path.DirectorySeparatorChar + ".gitignore";
 			string txt;
 			if (File.Exists (gitignore)) {
-				using (StreamReader br = new StreamReader (gitignore)) {
+				using (var br = new StreamReader (gitignore)) {
 					while ((txt = br.ReadLine ()) != null) {
 						ignored.Add (txt);
 					}
 				}
 			}
 
-			StringBuilder sb = new StringBuilder ();
+			var sb = new StringBuilder ();
 			foreach (var path in localPath.Except (ignored))
 				sb.AppendLine (RootRepository.ToGitPath (path));
 
@@ -1233,18 +1224,18 @@ namespace MonoDevelop.VersionControl.Git
 
 		protected override void OnUnignore (FilePath[] localPath)
 		{
-			List<string> ignored = new List<string> ();
+			var ignored = new List<string> ();
 			string gitignore = RootPath + Path.DirectorySeparatorChar + ".gitignore";
 			string txt;
 			if (File.Exists (gitignore)) {
-				using (StreamReader br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
+				using (var br = new StreamReader (RootPath + Path.DirectorySeparatorChar + ".gitignore")) {
 					while ((txt = br.ReadLine ()) != null) {
 						ignored.Add (txt);
 					}
 				}
 			}
 
-			StringBuilder sb = new StringBuilder ();
+			var sb = new StringBuilder ();
 			foreach (var path in ignored.Except (RootRepository.ToGitPath (localPath)))
 				sb.AppendLine (path);
 
@@ -1289,7 +1280,7 @@ namespace MonoDevelop.VersionControl.Git
 
 		public override Revision GetPrevious ()
 		{
-			return ((GitRepository) this.Repository).GetPreviousRevisionFor (this);
+			return ((GitRepository) Repository).GetPreviousRevisionFor (this);
 		}
 	}
 }

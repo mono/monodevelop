@@ -29,14 +29,14 @@ using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class CredentialsDialog : Gtk.Dialog
+	partial class CredentialsDialog : Dialog
 	{
-		uint r = 0;
+		uint r;
 		public CredentialsDialog (Uri uri, SupportedCredentialTypes type, Credentials cred)
 		{
 			this.Build ();
 			
-			labelTop.Text = string.Format (labelTop.Text, uri.ToString ());
+			labelTop.Text = string.Format (labelTop.Text, uri);
 			
 			var table = new Table (0, 0, false);
 			table.ColumnSpacing = 6;
@@ -87,7 +87,7 @@ namespace MonoDevelop.VersionControl.Git
 			return editor;
 		}
 
-		UsernamePasswordCredentials upcred;
+		readonly UsernamePasswordCredentials upcred;
 	}
 }
 

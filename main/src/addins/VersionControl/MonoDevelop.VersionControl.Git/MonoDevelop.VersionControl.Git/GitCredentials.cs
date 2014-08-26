@@ -28,7 +28,6 @@ using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using LibGit2Sharp;
-using LibGit2Sharp.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -50,7 +49,7 @@ namespace MonoDevelop.VersionControl.Git
 					};
 			} /* no ssh support yet TryGetPassphrase (uri, out passphraseItem)*/
 
-			UsernamePasswordCredentials cred = new UsernamePasswordCredentials ();
+			var cred = new UsernamePasswordCredentials ();
 			DispatchService.GuiSyncDispatch (delegate {
 				var dlg = new CredentialsDialog (uri, types, cred);
 				try {

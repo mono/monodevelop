@@ -52,11 +52,11 @@ namespace MonoDevelop.VersionControl.Git
 			store = new TreeStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string), typeof(string));
 			tree.Model = store;
 			
-			CellRendererImage crp = new CellRendererImage ();
-			TreeViewColumn col = new TreeViewColumn ();
+			var crp = new CellRendererImage ();
+			var col = new TreeViewColumn ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "image", 1);
-			CellRendererText crt = new CellRendererText ();
+			var crt = new CellRendererText ();
 			col.PackStart (crt, true);
 			col.AddAttribute (crt, "text", 2);
 			tree.AppendColumn (col);

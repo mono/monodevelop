@@ -86,7 +86,7 @@ namespace MonoDevelop.VersionControl.Git
 	
 		public static void ShowMergeDialog (GitRepository repo, bool rebasing)
 		{
-			MergeDialog dlg = new MergeDialog (repo, rebasing);
+			var dlg = new MergeDialog (repo, rebasing);
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					dlg.Hide ();
@@ -111,13 +111,13 @@ namespace MonoDevelop.VersionControl.Git
 	
 		public static void ShowStashManager (GitRepository repo)
 		{
-			StashManagerDialog dlg = new StashManagerDialog (repo);
+			var dlg = new StashManagerDialog (repo);
 			MessageService.ShowCustomDialog (dlg);
 		}
 		
 		public static void SwitchToBranch (GitRepository repo, string branch)
 		{
-			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			try {
 				IdeApp.Workbench.AutoReloadDocuments = true;
 				IdeApp.Workbench.LockGui ();
@@ -139,7 +139,7 @@ namespace MonoDevelop.VersionControl.Git
 		
 		public static IAsyncOperation ApplyStash (GitRepository repo, Stash s)
 		{
-			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
