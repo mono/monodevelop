@@ -148,7 +148,8 @@ namespace MonoDevelop.Components.Commands
 		public event EventHandler<AlternateKeyBindingChangedEventArgs> AlternateKeyBindingChanged;
 	}
 	
-	public class KeyBindingChangedEventArgs {
+	public class KeyBindingChangedEventArgs  : EventArgs 
+	{
 		public KeyBindingChangedEventArgs (Command command, KeyBinding oldKeyBinding)
 		{
 			OldKeyBinding = oldKeyBinding;
@@ -168,7 +169,8 @@ namespace MonoDevelop.Components.Commands
 		}
 	}
 
-	public class AlternateKeyBindingChangedEventArgs {
+	public class AlternateKeyBindingChangedEventArgs : EventArgs 
+	{
 		public AlternateKeyBindingChangedEventArgs (Command command, KeyBinding[] oldKeyBinding)
 		{
 			OldKeyBinding = oldKeyBinding;
