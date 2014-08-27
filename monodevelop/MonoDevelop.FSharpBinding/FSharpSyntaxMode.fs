@@ -53,8 +53,8 @@ module FSharpSyntaxModeInternals =
             while spanStack.Count > 0 do
                 spanStack.Pop() |> ignore
             let elseBlockSpan = ElseBlockSpan()
-            if typeof<IfBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
-                elseBlockSpan.Disabled <- not (this.CurSpan :?> IfBlockSpan).Disabled
+            if this.CurSpan <> null && typeof<AbstractBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
+                elseBlockSpan.Disabled <- not (this.CurSpan :?> AbstractBlockSpan).Disabled
                 this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
             this.FoundSpanBegin.Invoke(elseBlockSpan, i , "#else".Length)
             i <- i + "#else".Length
@@ -70,33 +70,39 @@ module FSharpSyntaxModeInternals =
             i <- i + endIdx
 
         override this.ScanSpan( i) : bool =
-            let textOffset = i - this.StartOffset
-            let currentText = this.CurText
-            if (textOffset < this.CurText.Length && this.CurRule.Name <> "Comment" &&
-                this.CurRule.Name <> "String" && this.CurRule.Name <> "VerbatimString" &&
-                this.CurText.[textOffset] = '#' && this.IsFirstNonWsChar(textOffset)) then
+            try 
+                let textOffset = i - this.StartOffset
+                let currentText = this.CurText
+                if (textOffset < this.CurText.Length && this.CurRule.Name <> "Comment" &&
+                    this.CurRule.Name <> "String" && this.CurRule.Name <> "VerbatimString" &&
+                    this.CurText.[textOffset] = '#' && this.IsFirstNonWsChar(textOffset)) then
 
-                if currentText.Substring(textOffset).StartsWith("#else") then
-                    this.ScanPreProcessorElse(&i)
-                    true
-                elif currentText.Substring(textOffset).StartsWith("#if") then
-                    this.ScanPreProcessorIf(textOffset,&i)
-                    false
-                elif currentText.Substring(textOffset).StartsWith("#endif") then
-                    let span = EndIfBlockSpan()
-                    if this.CurSpan <> null && typeof<IfBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
-                        this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
-                    this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
-                    this.FoundSpanEnd.Invoke(span, i + textOffset + 6,0)
-                    true
+                    if currentText.Substring(textOffset).StartsWith("#else") then
+                        this.ScanPreProcessorElse(&i)
+                        true
+                    elif currentText.Substring(textOffset).StartsWith("#if") then
+                        this.ScanPreProcessorIf(textOffset,&i)
+                        false
+                    elif currentText.Substring(textOffset).StartsWith("#endif") then
+                        let span = EndIfBlockSpan()
+                        if this.CurSpan <> null && typeof<AbstractBlockSpan>.IsAssignableFrom(this.CurSpan.GetType()) then
+                            this.FoundSpanEnd.Invoke(this.CurSpan, i, 0)
+                        this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
+                        this.FoundSpanEnd.Invoke(span, i + textOffset + 6,0)
+                        true
+                    elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
+                        base.ScanSpan(&i)
+                    else
+                        false
                 elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
                     base.ScanSpan(&i)
                 else
-                    false
-            elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
+                    base.ScanSpan(&i)
+            with
+            | exn -> 
+                LoggingService.LogError("An error occurred in FSharpSpanParser.ScanSpan", exn)
                 base.ScanSpan(&i)
-            else
-                base.ScanSpan(&i)
+
 
 [<AutoOpen>]
 module internal Patterns =
@@ -134,21 +140,103 @@ module internal Patterns =
         | TokenColorKind.UpperIdentifier -> false
         | _ -> true
 
-    let (|ClassName|_|) ts =
-        if isIdentifier ts.TokenColor then
-            match ts.SymbolUse with
-            | Some symbolUse ->
-                match symbolUse.Symbol with
-                | :? FSharpEntity as fse ->
-                        match fse with
-                        | _ when fse.IsFSharpModule -> Some(ClassName)
-                        | _ when fse.IsEnum         -> Some(ClassName)
-                        | _ when fse.IsValueType    -> Some(ClassName)
-                        | _                         -> Some(ClassName)
-                | :? FSharpMemberFunctionOrValue as fsm when fsm.CompiledName = ".ctor" && fsm.LogicalEnclosingEntity.IsClass = true -> Some(ClassName)
-                | _ -> None
-            | None -> None
-        else None
+    let (|Identifier|_|) ts =
+        match isIdentifier ts.TokenColor with
+        | true -> Identifier (ts.SymbolUse) |> Some
+        | false -> None
+
+    let (|IdentifierSymbol|_|) ts =
+        match ts with
+        | Identifier symbolUse when symbolUse.IsSome -> IdentifierSymbol(symbolUse.Value) |> Some
+        | _ -> None
+
+    let (|Class|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.ExtendedPatterns.Class -> Class |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|Enum|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.ExtendedPatterns.Enum -> Enum |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|Record|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.ExtendedPatterns.Record -> Record |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|ValueType|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.ExtendedPatterns.ValueType -> ValueType |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|Module|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.ExtendedPatterns.Module -> Module |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|Union|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.ExtendedPatterns.Union -> Union |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|GenericParameter|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.CorePatterns.GenericParameter _ -> GenericParameter |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|UnionCase|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.CorePatterns.UnionCase _ -> UnionCase |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|ActivePatternCase|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.CorePatterns.ActivePatternCase _ -> ActivePatternCase |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|Interface|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.ExtendedPatterns.Interface _ -> Interface |> Some
+            | _ -> None
+        | _ -> None
+
+    let (|TypeAbbreviation|_|) ts = 
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | FSharpSymbolHelper.ExtendedPatterns.TypeAbbreviation _ -> TypeAbbreviation |> Some
+            | _ -> None
+        | _ -> None
 
     let (|ComputationExpression|_|) ts =
         if isIdentifier ts.TokenColor then
@@ -228,6 +316,8 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
           if workspace = null then
               if this.Document <> null && (this.Document.FileName.EndsWith(".fsx") || this.Document.FileName.EndsWith(".fsscript")) then
                   yield "INTERACTIVE"
+              else
+                  yield "COMPILED"
           match project with
           | Some p -> match p.GetConfiguration(workspace.ActiveConfiguration) with
                       | :? MonoDevelop.Projects.DotNetProjectConfiguration as configuration ->
@@ -246,7 +336,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
 
     let sourceTokenizer= SourceTokenizer(getDefineSymbols project, document.FileName.FileName)
 
-    let handleConfigurationChanged(eventArgs) =
+    let handleConfigurationChanged(_) =
         for doc in IdeApp.Workbench.Documents do
             let data = doc.Editor
             if (data <> null && doc.Editor <> null) then
@@ -259,7 +349,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                 doc.ReparseDocument()
                 doc.Editor.Parent.QueueDraw()
 
-    let handleDocumentParsed(eventArgs) =
+    let handleDocumentParsed(_) =
         if document <> null && not document.IsProjectContextInUpdate then
             let localParsedDocument = document.ParsedDocument
             if localParsedDocument <> null then
@@ -267,7 +357,8 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                 Async.StartWithContinuations(
                     parsedDocument.Value.GetAllUsesOfAllSymbolsInFile(),
                     continuation = (fun t -> symbolsInFile <- t
-                                             this.UpdateDocumentHighlighting()),
+                                             this.UpdateDocumentHighlighting()
+                                             document.Editor.Parent.QueueDraw()),
                     exceptionContinuation = ignore,
                     cancellationContinuation = ignore )
 
@@ -289,7 +380,16 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | Comment -> style.CommentsSingleLine
             | StringLiteral -> style.String
             | NumberLiteral -> style.Number
-            | ClassName -> style.UserTypes
+            | Module
+            | ActivePatternCase
+            | Record
+            | Union
+            | TypeAbbreviation
+            | Class -> style.UserTypes
+            | UnionCase
+            | Enum -> style.UserTypesEnums
+            | Interface -> style.UserTypesInterfaces
+            | ValueType -> style.UserTypesValueTypes
             | PreprocessorKeyword -> style.Preprocessor
             | _ -> style.PlainText
         let chunks = Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
@@ -342,8 +442,8 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | StringCode styleName when semanticHighlightingEnabled -> Seq.singleton(Chunk(offset,length, styleName))
             | CommentCode styleName -> Seq.singleton(Chunk(offset,length, styleName))
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
-            | PreProcessorCode styleName -> base.GetChunks(style,line,offset,length)
-            | OtherCode (styleName,lineText) when semanticHighlightingEnabled -> getLexedChunks(style,line,offset,lineText)
+            | PreProcessorCode _ -> base.GetChunks(style,line,offset,length)
+            | OtherCode (_,lineText) when semanticHighlightingEnabled -> getLexedChunks(style,line,offset,lineText)
             | _ -> base.GetChunks(style,line,offset,length)
         with
             | exn ->
