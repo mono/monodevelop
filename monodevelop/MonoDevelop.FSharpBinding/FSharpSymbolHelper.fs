@@ -1,46 +1,47 @@
 ﻿module MonoDevelop.FSharp.FSharpSymbolHelper
-
+open System
+open System.Reflection
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
 module CorePatterns =
-    let (|ActivePatternCase|_|) (symbol: FSharpSymbol) =
+    let (|ActivePatternCase|_|) (symbol : FSharpSymbol) =
         match symbol with
-        | :? FSharpActivePatternCase -> ActivePatternCase(symbol :?> FSharpActivePatternCase) |> Some
+        | :? FSharpActivePatternCase as ap-> ActivePatternCase(ap) |> Some
         | _ -> None
 
     let (|Entity|_|) (symbol : FSharpSymbol) =
         match symbol with
-        | :? FSharpEntity -> Entity(symbol :?> FSharpEntity) |> Some
+        | :? FSharpEntity as ent -> Entity(ent) |> Some
         | _ -> None
 
-    let (|Field|_|) (symbol: FSharpSymbol) =
+    let (|Field|_|) (symbol : FSharpSymbol) =
         match symbol with
-        | :? FSharpField -> Field(symbol :?> FSharpField) |> Some
+        | :? FSharpField as field-> Field (field) |> Some
         |  _ -> None
 
     let (|GenericParameter|_|) (symbol: FSharpSymbol) = 
         match symbol with
-        | :? FSharpGenericParameter -> GenericParameter(symbol :?> FSharpGenericParameter) |> Some
+        | :? FSharpGenericParameter as gp -> GenericParameter(gp) |> Some
         | _ -> None
 
     let (|MemberFunctionOrValue|_|) (symbol : FSharpSymbol) =
         match symbol with
-        | :? FSharpMemberFunctionOrValue -> MemberFunctionOrValue(symbol:?> FSharpMemberFunctionOrValue) |> Some
+        | :? FSharpMemberFunctionOrValue as func -> MemberFunctionOrValue(func) |> Some
         | _ -> None
 
-    let (|Parameter|_|) (symbol: FSharpSymbol) = 
+    let (|Parameter|_|) (symbol : FSharpSymbol) = 
         match symbol with
-        | :? FSharpParameter -> Parameter(symbol :?> FSharpParameter) |> Some
+        | :? FSharpParameter as param -> Parameter(param) |> Some
         | _ -> None
 
-    let (|StaticParameter|_|) (symbol:FSharpSymbol) =
+    let (|StaticParameter|_|) (symbol : FSharpSymbol) =
         match symbol with
-        | :? FSharpStaticParameter -> StaticParameter(symbol:?> FSharpStaticParameter) |> Some
+        | :? FSharpStaticParameter as sp -> StaticParameter(sp) |> Some
         | _ -> None
 
-    let (|UnionCase|_|) (symbol:FSharpSymbol) =
+    let (|UnionCase|_|) (symbol : FSharpSymbol) =
         match symbol with
-        | :? FSharpUnionCase -> UnionCase(symbol :?> FSharpUnionCase) |> Some
+        | :? FSharpUnionCase as uc-> UnionCase(uc) |> Some
         | _ -> None
 
 module ExtendedPatterns = 
@@ -95,24 +96,20 @@ module ExtendedPatterns =
         | CorePatterns.Entity symbol when symbol.IsValueType -> Some(ValueType)
         | _ -> None
 
-type Microsoft.FSharp.Compiler.SourceCodeServices.FSharpType with
-    member this.NonAbbreviatedTypeName
-        with get() = 
-            match this.IsAbbreviation with
-            | false -> this.TypeDefinition.FullName
-            | true -> this.AbbreviatedType.NonAbbreviatedTypeName
-    member this.NonAbbreviatedType
-        with get() =
-            System.Type.GetType(this.NonAbbreviatedTypeName)
+type FSharpType with
+    member this.NonAbbreviatedTypeName = 
+        if this.IsAbbreviation then this.AbbreviatedType.NonAbbreviatedTypeName
+        else this.TypeDefinition.FullName
 
-type System.Type with
-    member this.PublicInstanceMembers 
-        with get() = 
-            this.GetMembers(System.Reflection.BindingFlags.Instance ||| System.Reflection.BindingFlags.FlattenHierarchy ||| System.Reflection.BindingFlags.Public)
+    member this.NonAbbreviatedType =
+        Type.GetType(this.NonAbbreviatedTypeName)
 
-type System.Reflection.MemberInfo with
-    member this.DeclaringTypeValue 
-        with get() =
-            match this with
-            | :? System.Reflection.MethodInfo -> (this :?> System.Reflection.MethodInfo).GetBaseDefinition().DeclaringType
-            | _ -> this.DeclaringType
+type Type with
+    member this.PublicInstanceMembers =
+        this.GetMembers(BindingFlags.Instance ||| BindingFlags.FlattenHierarchy ||| BindingFlags.Public)
+
+type MemberInfo with
+    member this.DeclaringTypeValue =
+        match this with
+        | :? MethodInfo as mi -> mi.GetBaseDefinition().DeclaringType
+        | _ -> this.DeclaringType
