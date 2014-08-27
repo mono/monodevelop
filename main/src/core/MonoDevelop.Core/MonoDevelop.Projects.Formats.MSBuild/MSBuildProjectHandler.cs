@@ -188,6 +188,9 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
 					CleanupProjectBuilder ();
 					projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, item.FileName, slnFile);
+					projectBuilder.Disconnected += delegate {
+						CleanupProjectBuilder ();
+					};
 					lastBuildToolsVersion = ToolsVersion;
 					lastBuildRuntime = runtime.Id;
 					lastFileName = item.FileName;

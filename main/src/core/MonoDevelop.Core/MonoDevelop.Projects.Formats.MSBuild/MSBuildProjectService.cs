@@ -576,6 +576,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				
 				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
+				builder.Disconnected += delegate {
+					lock (builders)
+						builders.Remove (builderKey);
+				};
 				return new RemoteProjectBuilder (file, builder);
 			}
 		}
