@@ -349,8 +349,9 @@
     <Reference Include="mscorlib" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Posix" />
-	  <Reference Include="MonoDevelop.DesignerSupport">
+	<Reference Include="MonoDevelop.DesignerSupport">
       <HintPath>INSERT_FSPROJ_MDROOT\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Addins">
       <Private>False</Private>
@@ -366,7 +367,7 @@
     </Reference>
     <Reference Include="Mono.TextEditor">
       <Private>False</Private>
-      <HintPath>INSERT_FSPROJ_MDROOT\bin\Mono.TextEditor.dll</HintPath> 
+      <HintPath>INSERT_FSPROJ_MDROOT\bin\Mono.TextEditor.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Core">
       <Private>False</Private>
@@ -427,7 +428,7 @@
       <HintPath>packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="FantomasLib">
-      <HintPath>packages\Fantomas.1.4.0\lib\FantomasLib.dll</HintPath>      
+      <HintPath>packages\Fantomas.1.4.0\lib\FantomasLib.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
