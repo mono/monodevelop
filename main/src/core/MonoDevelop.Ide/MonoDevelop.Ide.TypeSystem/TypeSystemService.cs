@@ -2237,7 +2237,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			IUnresolvedAssembly LoadAssembly ()
 			{
 				var assemblyPath = cache != null ? Path.Combine (cache, "assembly.data") : null;
-				var assemblyTag = Path.Combine (cache, "assembly.tag");
+				var assemblyTag = cache != null ? Path.Combine (cache, "assembly.tag") : null;
 				try {
 					if (assemblyPath != null && assemblyTag != null && File.Exists (assemblyPath) && File.Exists (assemblyTag)) {
 						var deserializedAssembly = DeserializeObject <IUnresolvedAssembly> (assemblyPath);
