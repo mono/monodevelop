@@ -104,28 +104,29 @@ module FSharpSyntaxModeInternals =
                 base.ScanSpan(&i)
 
 
+open MonoDevelop.FSharp.FSharpSymbolHelper
 [<AutoOpen>]
 module internal Patterns =
-    type TokenSymbol = {TokenColor: TokenColorKind;SymbolUse: FSharpSymbolUse option}
+    type TokenSymbol = {TokenColor: TokenColorKind; SymbolUse: FSharpSymbolUse option}
 
     let (|Keyword|_|) ts =
-        if (ts.TokenColor) = TokenColorKind.Keyword then Some(Keyword)
+        if ts.TokenColor = TokenColorKind.Keyword then Some Keyword
         else None
 
     let (|Comment|_|) ts =
-        if ts.TokenColor = TokenColorKind.Comment then Some(Comment)
+        if ts.TokenColor = TokenColorKind.Comment then Some Comment
         else None
 
     let (|StringLiteral|_|) ts =
-        if ts.TokenColor = TokenColorKind.String then Some(StringLiteral)
+        if ts.TokenColor = TokenColorKind.String then Some StringLiteral
         else None
 
     let (|NumberLiteral|_|) ts =
-        if ts.TokenColor = TokenColorKind.Number then Some(NumberLiteral)
+        if ts.TokenColor = TokenColorKind.Number then Some NumberLiteral
         else None
 
     let (|PreprocessorKeyword|_|) ts =
-        if ts.TokenColor = TokenColorKind.PreprocessorKeyword then Some(PreprocessorKeyword)
+        if ts.TokenColor = TokenColorKind.PreprocessorKeyword then Some PreprocessorKeyword
         else None
 
     let private isIdentifier =
@@ -142,7 +143,7 @@ module internal Patterns =
 
     let (|Identifier|_|) ts =
         match isIdentifier ts.TokenColor with
-        | true -> Identifier (ts.SymbolUse) |> Some
+        | true -> Identifier Some ts.SymbolUse
         | false -> None
 
     let (|IdentifierSymbol|_|) ts =
@@ -154,7 +155,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.ExtendedPatterns.Class -> Class |> Some
+            | ExtendedPatterns.Class -> Some Class
             | _ -> None
         | _ -> None
 
@@ -162,7 +163,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.ExtendedPatterns.Enum -> Enum |> Some
+            | ExtendedPatterns.Enum -> Some Enum
             | _ -> None
         | _ -> None
 
@@ -170,7 +171,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.ExtendedPatterns.Record -> Record |> Some
+            | ExtendedPatterns.Record -> Some Record
             | _ -> None
         | _ -> None
 
@@ -178,7 +179,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.ExtendedPatterns.ValueType -> ValueType |> Some
+            | ExtendedPatterns.ValueType -> Some ValueType
             | _ -> None
         | _ -> None
 
@@ -186,7 +187,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.ExtendedPatterns.Module -> Module |> Some
+            | ExtendedPatterns.Module -> Some Module
             | _ -> None
         | _ -> None
 
@@ -194,7 +195,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.ExtendedPatterns.Union -> Union |> Some
+            | ExtendedPatterns.Union -> Some Union
             | _ -> None
         | _ -> None
 
@@ -202,7 +203,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.CorePatterns.GenericParameter _ -> GenericParameter |> Some
+            | CorePatterns.GenericParameter _ -> Some GenericParameter
             | _ -> None
         | _ -> None
 
@@ -210,7 +211,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.CorePatterns.UnionCase _ -> UnionCase |> Some
+            | CorePatterns.UnionCase _ -> Some UnionCase
             | _ -> None
         | _ -> None
 
@@ -218,7 +219,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.CorePatterns.ActivePatternCase _ -> ActivePatternCase |> Some
+            | CorePatterns.ActivePatternCase _ -> Some ActivePatternCase
             | _ -> None
         | _ -> None
 
@@ -226,7 +227,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.ExtendedPatterns.Interface _ -> Interface |> Some
+            | ExtendedPatterns.Interface _ -> Some Interface
             | _ -> None
         | _ -> None
 
@@ -234,7 +235,7 @@ module internal Patterns =
         match ts with
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
-            | FSharpSymbolHelper.ExtendedPatterns.TypeAbbreviation _ -> TypeAbbreviation |> Some
+            | ExtendedPatterns.TypeAbbreviation _ -> Some TypeAbbreviation
             | _ -> None
         | _ -> None
 
@@ -249,7 +250,7 @@ module internal Patterns =
         else None
 
     let (|UnusedCode|_|) ts =
-        if ts.TokenColor = TokenColorKind.InactiveCode then Some(UnusedCode)
+        if ts.TokenColor = TokenColorKind.InactiveCode then Some UnusedCode
         else None
 
     let isAbstractBlockSpan (span: Span) =
@@ -303,7 +304,6 @@ module internal Patterns =
 type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     inherit SyntaxMode()
     // Mutable Local Variables
-    let mutable parsedDocument : FSharp.CompilerBinding.ParseAndCheckResults option = None
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
     let mutable symbolsInFile: FSharpSymbolUse[] option = None
 
@@ -349,18 +349,19 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                 doc.ReparseDocument()
                 doc.Editor.Parent.QueueDraw()
 
+    let getAndProcessSymbols (pd:ParseAndCheckResults) =
+        async {let! symbols = pd.GetAllUsesOfAllSymbolsInFile()
+               do symbolsInFile <- symbols
+               do Gtk.Application.Invoke (fun _ _ -> document.Editor.Parent.TextViewMargin.PurgeLayoutCache ()
+                                                     document.Editor.Parent.QueueDraw())}
+
     let handleDocumentParsed(_) =
-        if document <> null && not document.IsProjectContextInUpdate then
+        if document <> null && not document.IsProjectContextInUpdate && semanticHighlightingEnabled then
             let localParsedDocument = document.ParsedDocument
             if localParsedDocument <> null then
-                parsedDocument <- Some(localParsedDocument.Ast :?> FSharp.CompilerBinding.ParseAndCheckResults)
-                Async.StartWithContinuations(
-                    parsedDocument.Value.GetAllUsesOfAllSymbolsInFile(),
-                    continuation = (fun t -> symbolsInFile <- t
-                                             this.UpdateDocumentHighlighting()
-                                             document.Editor.Parent.QueueDraw()),
-                    exceptionContinuation = ignore,
-                    cancellationContinuation = ignore )
+                localParsedDocument.Ast 
+                |> tryCast<ParseAndCheckResults>
+                |> Option.iter (getAndProcessSymbols >> Async.Start)
 
     let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (token: TokenInformation) =
         let symbol =
@@ -409,7 +410,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         LoggingService.LogInfo("Creating FSharpSyntaxMode()")
         PropertyService.PropertyChanged.Add HandlePropertyChanged
         document.DocumentParsed.Add(handleDocumentParsed)
-        let provider = ResourceStreamProvider(this.GetType().Assembly, "FSharpSyntaxMode.xml");
+        let provider = ResourceStreamProvider(this.GetType().Assembly, "FSharpSyntaxMode.xml")
         use reader = provider.Open()
         let baseMode = SyntaxMode.Read(reader)
         let rules = baseMode.Rules
@@ -436,9 +437,9 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
 
         FSharpSyntaxModeInternals.FSharpSpanParser(this,ss,defines) :> SyntaxMode.SpanParser
 
-    override this.GetChunks(style,line,offset,length) =
+    override this.GetChunks(style, line, offset, length) =
         try
-            match (this.Document,line,offset,length,style) with
+            match (this.Document, line, offset, length, style) with
             | StringCode styleName when semanticHighlightingEnabled -> Seq.singleton(Chunk(offset,length, styleName))
             | CommentCode styleName -> Seq.singleton(Chunk(offset,length, styleName))
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
