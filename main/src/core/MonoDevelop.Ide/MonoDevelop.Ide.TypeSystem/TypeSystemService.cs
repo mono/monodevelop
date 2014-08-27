@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.6";
+		const string CurrentVersion = "1.1.7";
 		static readonly List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
@@ -2237,8 +2237,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			IUnresolvedAssembly LoadAssembly ()
 			{
 				var assemblyPath = cache != null ? Path.Combine (cache, "assembly.data") : null;
+				var assemblyTag = Path.Combine (cache, "assembly.tag");
 				try {
-					if (assemblyPath != null && File.Exists (assemblyPath)) {
+					if (assemblyPath != null && assemblyTag != null && File.Exists (assemblyPath) && File.Exists (assemblyTag)) {
 						var deserializedAssembly = DeserializeObject <IUnresolvedAssembly> (assemblyPath);
 						if (deserializedAssembly != null) {
 							return deserializedAssembly;
@@ -2260,7 +2261,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (cache != null) {
 					var writeTime = File.GetLastWriteTimeUtc (fileName);
 					SerializeObject (assemblyPath, result);
-					SerializeObject (Path.Combine (cache, "assembly.tag"), new AssemblyTag (writeTime));
+					SerializeObject (assemblyTag, new AssemblyTag (writeTime));
 				}
 				return result;
 			}
@@ -2862,12 +2863,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (writeTime != cacheTime.LastWriteTimeUTC) {
 					cache = GetCacheDirectory (context.FileName);
 					if (cache != null) {
-						context.CtxLoader = new LazyAssemblyLoader (context.FileName, cache);
 						try {
-							// File is reloaded by the lazy loader
+							// Files will be reloaded by the lazy loader
 							File.Delete (assemblyDataDirectory);
+							File.Delete (Path.Combine (cache, "assembly.data"));
 						} catch {
 						}
+						context.CtxLoader = new LazyAssemblyLoader (context.FileName, cache);
 					}
 				}
 			} catch (Exception e) {
