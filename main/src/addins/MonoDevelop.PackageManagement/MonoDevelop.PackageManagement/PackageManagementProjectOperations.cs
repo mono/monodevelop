@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 			List<IPackageAction> actions = null;
 
 			DispatchService.GuiSyncDispatch (() => {
-				IPackageRepository repository = registeredPackageRepositories.CreateRepository (new PackageSource (packageSourceUrl));
+				IPackageRepository repository = CreatePackageRepository (packageSourceUrl);
 				IPackageManagementProject packageManagementProject = solution.GetProject (repository, new DotNetProjectProxy ((DotNetProject)project));
 				actions = packages.Select (packageReference => {
 					InstallPackageAction action = packageManagementProject.CreateInstallPackageAction ();
@@ -79,6 +79,12 @@ namespace MonoDevelop.PackageManagement
 
 			ProgressMonitorStatusMessage progressMessage = GetProgressMonitorStatusMessages (actions);
 			backgroundActionRunner.RunAndWait (progressMessage, actions);
+		}
+
+		IPackageRepository CreatePackageRepository (string packageSourceUrl)
+		{
+			IPackageRepository repository = registeredPackageRepositories.CreateRepository (new PackageSource (packageSourceUrl));
+			return new PriorityPackageRepository (MachineCache.Default, repository);
 		}
 
 		ProgressMonitorStatusMessage GetProgressMonitorStatusMessages (List<IPackageAction> packageActions)
