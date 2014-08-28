@@ -142,7 +142,12 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
 
     member x.ParseTree = match infoOpt with
                          | Some (check,parse) -> parse.ParseTree
-                         | None -> None    
+                         | None -> None
+
+    member x.GetExtraColorizations() =
+        match infoOpt with
+        | Some(parse,check) -> parse.GetExtraColorizationsAlternate() |> Some
+        | None -> None
 
 [<RequireQualifiedAccess>]
 type AllowStaleResults = 
