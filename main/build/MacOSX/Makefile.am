@@ -1,8 +1,9 @@
 MAC_APP_DIR=MonoDevelop.app
 APP_NAME=MonoDevelop
 MACOS=$(MAC_APP_DIR)/Contents/MacOS
-MAC_APP_LIB_DIR=$(MACOS)/lib/monodevelop
-ADDINS=$(MACOS)/lib/monodevelop/AddIns
+LIB_DIR=$(MAC_APP_DIR)/Contents/Resources/lib
+MAC_APP_LIB_DIR=$(LIB_DIR)/monodevelop
+ADDINS=$(MAC_APP_LIB_DIR)/AddIns
 EXTRAS=$(top_srcdir)/../extras
 ARTIFACTS=$(top_srcdir)/../../artifacts
 MD_CONFIGURE=$(top_srcdir)/../scripts/configure.sh
@@ -35,7 +36,7 @@ app: monostub
 	@echo "Creating directories in app bundle"
 	@echo ""
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
-	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/{lib,share}
+	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/share
 	mkdir -p $(MAC_APP_LIB_DIR)
 
 #	@echo ""
@@ -62,9 +63,9 @@ app: monostub
 	sed -e "s/@BUNDLE_VERSION@/$(BUNDLE_VERSION)/" -e "s/@ASSEMBLY_VERSION@/$(ASSEMBLY_VERSION)/" -e "s/@APP_NAME@/$(APP_NAME)/" -e "s|@RELEASE_ID@|$(PACKAGE_UPDATE_ID)|" Info.plist.in > $(MAC_APP_DIR)/Contents/Info.plist
 	cp ../../theme-icons/Mac/*.icns $(MAC_APP_DIR)/Contents/Resources/
 
-# copy monodevelop.pc and monodevelop-core-addins.pc to Contents/MacOS/lib/pkgconfig
-	mkdir -p $(MACOS)/lib/pkgconfig
-	cp ../../*.pc $(MACOS)/lib/pkgconfig
+# copy monodevelop.pc and monodevelop-core-addins.pc to Contents/Resources/lib/pkgconfig
+	mkdir -p $(LIB_DIR)/pkgconfig
+	cp ../../*.pc $(LIB_DIR)/pkgconfig
 
 # Copy main/monodevelop.xml to MonoDevelop.app/Contents/MacOS/share/mime/packages
 	mkdir -p $(MACOS)/share/{applications,mime,icons,locale,man}
@@ -92,13 +93,13 @@ app: monostub
 	@echo "Removing unneeded files"
 	@echo ""
 
-	rm -rf $(MACOS)/lib/monodevelop/bin/UnitTests.dll* \
-	  $(MACOS)/lib/monodevelop/bin/TestResult.xml \
-	  $(MACOS)/lib/monodevelop/bin/addin-db* \
-	  $(MACOS)/lib/monodevelop/bin/local \
-	  $(MACOS)/lib/monodevelop/bin/repository-cache* \
-	  $(MACOS)/lib/monodevelop/bin/addins-setup.config \
-	  $(MACOS)/lib/monodevelop/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
+	rm -rf $(MAC_APP_LIB_DIR)/bin/UnitTests.dll* \
+	  $(MAC_APP_LIB_DIR)/bin/TestResult.xml \
+	  $(MAC_APP_LIB_DIR)/bin/addin-db* \
+	  $(MAC_APP_LIB_DIR)/bin/local \
+	  $(MAC_APP_LIB_DIR)/bin/repository-cache* \
+	  $(MAC_APP_LIB_DIR)/bin/addins-setup.config \
+	  $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
 
 # add extras known to work on Mac, if they exist
 	@echo ""
@@ -118,7 +119,7 @@ app: monostub
 	@echo "Copying binary artifacts into app bundle"
 	@echo ""
 
-	mkdir -p $(MACOS)/lib/pkgconfig
+	mkdir -p $(LIB_DIR)/pkgconfig
 	mkdir -p $(MACOS)/MonoDoc.app/
 	test ! -d $(ARTIFACTS)/MonoDoc.app ||  cp -pR $(ARTIFACTS)/MonoDoc.app/* $(MACOS)/MonoDoc.app/
 
@@ -129,13 +130,13 @@ app: monostub
 	@echo "Updating build information"
 	@echo ""
 
-	$(MD_CONFIGURE) gen-buildinfo "$(MACOS)/lib/monodevelop/bin"
+	$(MD_CONFIGURE) gen-buildinfo "$(MAC_APP_LIB_DIR)/bin"
 
 # touch the directory so that update dependencies work
 	touch MonoDevelop.app
 
 	@echo ""
-	@cat "$(MACOS)/lib/monodevelop/bin/buildinfo"
+	@cat "$(MAC_APP_LIB_DIR)/bin/buildinfo"
 	@if test -f missing-stuff; then echo ""; echo "Missing stuff:"; cat missing-stuff; fi
 	@echo ""
 	@rm -f missing-stuff

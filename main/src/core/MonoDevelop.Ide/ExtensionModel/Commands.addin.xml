@@ -78,7 +78,7 @@
 			icon = "gtk-redo"
 			_description = "Redo last undone action"
 			shortcut = "Control|Shift|Z"
-			winShortcut = "Control|Y"
+			winShortcut = "Control|Y Control|Shift|Z"
 			macShortcut = "Meta|Shift|Z" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll"
 			_label = "Select _All"

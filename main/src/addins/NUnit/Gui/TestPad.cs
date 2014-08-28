@@ -44,6 +44,7 @@ using MonoDevelop.Projects;
 using Mono.TextEditor;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.NUnit
 {

@@ -159,7 +159,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.5";
+		const string CurrentVersion = "1.1.7";
 		static readonly List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
@@ -1510,11 +1510,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (assemblyReconnectLock) {
 					if (referencesConnected)
 						return;
+					compilation = null;
+					referencesConnected = true;
 					var netProject = Project as DotNetProject;
 					if (netProject == null)
 						return;
-					compilation = null;
-					referencesConnected = true;
 					try {
 						var contexts = new List<IAssemblyReference> ();
 						var nonCyclicCache = new HashSet<Project> ();
@@ -2233,11 +2233,13 @@ namespace MonoDevelop.Ide.TypeSystem
 				this.cache = cache;
 			}
 
+
 			IUnresolvedAssembly LoadAssembly ()
 			{
 				var assemblyPath = cache != null ? Path.Combine (cache, "assembly.data") : null;
+				var assemblyTag = cache != null ? Path.Combine (cache, "assembly.tag") : null;
 				try {
-					if (assemblyPath != null && File.Exists (assemblyPath)) {
+					if (assemblyPath != null && assemblyTag != null && File.Exists (assemblyPath) && File.Exists (assemblyTag)) {
 						var deserializedAssembly = DeserializeObject <IUnresolvedAssembly> (assemblyPath);
 						if (deserializedAssembly != null) {
 							return deserializedAssembly;
@@ -2259,13 +2261,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (cache != null) {
 					var writeTime = File.GetLastWriteTimeUtc (fileName);
 					SerializeObject (assemblyPath, result);
-					if (File.Exists (assemblyPath)) {
-						try {
-							File.SetCreationTimeUtc (assemblyPath, writeTime);
-						} catch (Exception e) {
-							LoggingService.LogError ("Can't set creation time for: " + assemblyPath, e);
-						}
-					}
+					SerializeObject (assemblyTag, new AssemblyTag (writeTime));
 				}
 				return result;
 			}
@@ -2634,7 +2630,9 @@ namespace MonoDevelop.Ide.TypeSystem
 							return;
 						if (file.Item2 != null)
 							Context.InformFileRemoved (new ParsedFileEventArgs (file.Item2));
-						Context.InformFileAdded (new ParsedFileEventArgs (file.Item1.ParsedFile));
+						var parsedDocument = file.Item1;
+						if ((parsedDocument.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable)
+							Context.InformFileAdded (new ParsedFileEventArgs (parsedDocument.ParsedFile));
 					}
 				} finally {
 					Context.EndLoadOperation ();
@@ -2839,24 +2837,39 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 		}
 
+		/// <summary>
+		/// Used to store meta data information about the assembly.
+		/// </summary>
+		[Serializable]
+		class AssemblyTag
+		{
+			public DateTime LastWriteTimeUTC { get; set; }
+
+			public AssemblyTag (DateTime lastWriteTimeUTC)
+			{
+				this.LastWriteTimeUTC = lastWriteTimeUTC;
+			}
+		}
+
 		static void CheckModifiedFile (UnresolvedAssemblyProxy context)
 		{
 			try {
 				string cache = GetCacheDirectory (context.FileName);
 				if (cache == null)
 					return;
-				var assemblyDataDirectory = Path.Combine (cache, "assembly.data");
+				var assemblyDataDirectory = Path.Combine (cache, "assembly.tag");
 				var writeTime = File.GetLastWriteTimeUtc (context.FileName);
-				var cacheTime = File.Exists (assemblyDataDirectory) ? File.GetCreationTimeUtc (assemblyDataDirectory) : writeTime;
-				if (writeTime != cacheTime) {
+				var cacheTime = File.Exists (assemblyDataDirectory) ? DeserializeObject<AssemblyTag> (assemblyDataDirectory) : new AssemblyTag (writeTime);
+				if (writeTime != cacheTime.LastWriteTimeUTC) {
 					cache = GetCacheDirectory (context.FileName);
 					if (cache != null) {
-						context.CtxLoader = new LazyAssemblyLoader (context.FileName, cache);
 						try {
-							// File is reloaded by the lazy loader
+							// Files will be reloaded by the lazy loader
 							File.Delete (assemblyDataDirectory);
+							File.Delete (Path.Combine (cache, "assembly.data"));
 						} catch {
 						}
+						context.CtxLoader = new LazyAssemblyLoader (context.FileName, cache);
 					}
 				}
 			} catch (Exception e) {

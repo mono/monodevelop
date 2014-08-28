@@ -358,7 +358,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
 			// of shared projects.
-			if (!itemGuid.StartsWith ("{"))
+			if (!itemGuid.StartsWith ("{", StringComparison.Ordinal))
 				itemGuid = "{" + itemGuid + "}";
 
 			itemGuid = itemGuid.ToUpper ();
@@ -369,7 +369,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (projectTypeGuids != null) {
 				foreach (string guid in projectTypeGuids.Split (';')) {
 					string sguid = guid.Trim ();
-					if (sguid.Length > 0 && string.Compare (sguid, TypeGuid, true) != 0)
+					if (sguid.Length > 0 && string.Compare (sguid, TypeGuid, StringComparison.OrdinalIgnoreCase) != 0)
 						subtypeGuids.Add (guid);
 				}
 			}
@@ -1011,7 +1011,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool ReferenceStringHasVersion (string asmName)
 		{
 			int commaPos = asmName.IndexOf (',');
-			return commaPos >= 0 && asmName.IndexOf ("Version", commaPos) >= 0;
+			return commaPos >= 0 && asmName.IndexOf ("Version", commaPos, StringComparison.Ordinal) >= 0;
 		}
 
 		bool IsValidFile (string path)
@@ -1922,7 +1922,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool ParseConfigCondition (string cond, out string config, out string platform)
 		{
 			config = platform = Unspecified;
-			int i = cond.IndexOf ("==");
+			int i = cond.IndexOf ("==", StringComparison.Ordinal);
 			if (i == -1)
 				return false;
 			if (cond.Substring (0, i).Trim () == "'$(Configuration)|$(Platform)'") {

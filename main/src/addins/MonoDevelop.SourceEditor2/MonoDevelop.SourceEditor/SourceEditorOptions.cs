@@ -33,11 +33,18 @@ using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.SourceEditor
 {
-	public enum ControlLeftRightMode {
+	[Obsolete ("Use WordNavigationStyle")]
+	public enum ControlLeftRightMode
+	{
 		MonoDevelop,
 		Emacs,
 		SharpDevelop
-		
+	}
+
+	public enum WordNavigationStyle
+	{
+		Unix,
+		Windows
 	}
 	
 	public enum LineEndingConversion {
@@ -180,8 +187,8 @@ namespace MonoDevelop.SourceEditor
 				case "OnTheFlyFormatting":
 					this.OnTheFlyFormatting = (bool)args.NewValue;
 					break;
-				case "ControlLeftRightMode":
-					this.ControlLeftRightMode = (ControlLeftRightMode)args.NewValue;
+				case "WordNavigationStyle":
+					this.WordNavigationStyle = (WordNavigationStyle)args.NewValue;
 					break;
 				case "EnableAnimations":
 					base.EnableAnimations = (bool)args.NewValue;
@@ -223,8 +230,13 @@ namespace MonoDevelop.SourceEditor
 			this.defaultCommentFolding = PropertyService.Get ("DefaultCommentFolding", true);
 			this.useViModes = PropertyService.Get ("UseViModes", false);
 			this.onTheFlyFormatting = PropertyService.Get ("OnTheFlyFormatting", true);
-			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
-			this.ControlLeftRightMode = PropertyService.Get ("ControlLeftRightMode", defaultControlMode);
+
+			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
+			if (Platform.IsWindows || PropertyService.Get ("ControlLeftRightMode", (string)null) == "SharpDevelop") {
+				defaultWordNavigation = WordNavigationStyle.Windows;
+			}
+			this.WordNavigationStyle = PropertyService.Get ("WordNavigationStyle", defaultWordNavigation);
+
 			base.EnableAnimations = PropertyService.Get ("EnableAnimations", true);
 			this.EnableHighlightUsages = PropertyService.Get ("EnableHighlightUsages", false);
 			base.DrawIndentationMarkers = PropertyService.Get ("DrawIndentationMarkers", false);
@@ -448,18 +460,38 @@ namespace MonoDevelop.SourceEditor
 			get { return defaultEolMarker; }
 		}
 
-		ControlLeftRightMode controlLeftRightMode = Platform.IsWindows
-			? ControlLeftRightMode.SharpDevelop
-			: ControlLeftRightMode.MonoDevelop;
-		
+		WordNavigationStyle wordNavigationStyle = Platform.IsWindows
+			? WordNavigationStyle.Windows
+			: WordNavigationStyle.Unix;
+
+		[Obsolete("Use WordNavigationStyle")]
 		public ControlLeftRightMode ControlLeftRightMode {
 			get {
-				return controlLeftRightMode;
+				return WordNavigationStyle == WordNavigationStyle.Unix
+					? ControlLeftRightMode.MonoDevelop
+					: ControlLeftRightMode.SharpDevelop;
 			}
 			set {
-				if (controlLeftRightMode != value) {
-					controlLeftRightMode = value;
-					PropertyService.Set ("ControlLeftRightMode", value);
+				switch (value) {
+				case ControlLeftRightMode.Emacs:
+				case ControlLeftRightMode.MonoDevelop:
+					WordNavigationStyle = WordNavigationStyle.Unix;
+					return;
+				default:
+					WordNavigationStyle = WordNavigationStyle.Windows;
+					return;
+				}
+			}
+		}
+
+		public WordNavigationStyle WordNavigationStyle {
+			get {
+				return wordNavigationStyle;
+			}
+			set {
+				if (wordNavigationStyle != value) {
+					wordNavigationStyle = value;
+					PropertyService.Set ("WordNavigationStyle", value);
 					SetWordFindStrategy ();
 					OnChanged (EventArgs.Empty);
 				}
@@ -481,19 +513,16 @@ namespace MonoDevelop.SourceEditor
 		void SetWordFindStrategy ()
 		{
 			if (useViModes) {
-				this.wordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
+				wordFindStrategy = new Mono.TextEditor.Vi.ViWordFindStrategy ();
 				return;
 			}
 			
-			switch (ControlLeftRightMode) {
-			case ControlLeftRightMode.MonoDevelop:
-				this.wordFindStrategy = new EmacsWordFindStrategy (true);
+			switch (WordNavigationStyle) {
+			case WordNavigationStyle.Windows:
+				wordFindStrategy = new SharpDevelopWordFindStrategy ();
 				break;
-			case ControlLeftRightMode.Emacs:
-				this.wordFindStrategy = new EmacsWordFindStrategy (false);
-				break;
-			case ControlLeftRightMode.SharpDevelop:
-				this.wordFindStrategy = new SharpDevelopWordFindStrategy ();
+			default:
+				wordFindStrategy = new EmacsWordFindStrategy ();
 				break;
 			}
 		}
