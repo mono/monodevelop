@@ -985,6 +985,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var privateCopy = buildItem.GetBoolMetadata ("Private");
 					if (privateCopy != null)
 						pref.LocalCopy = privateCopy.Value;
+					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					return pref;
 				}
 				else if (dt == null && !string.IsNullOrEmpty (buildItem.Include)) {
