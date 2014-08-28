@@ -23,7 +23,6 @@ type FSharpResolverProvider() =
     member x.GetLanguageItem(doc:Document, offset:int, region:DomRegion byref) : ResolveResult =
 
       try
-        LoggingService.LogInfo "ResolverProvider: In GetLanguageItem"
         if doc.Editor = null || doc.Editor.Document = null then null else
         let docText = doc.Editor.Text
         if docText = null || offset >= docText.Length || offset < 0 then null else

@@ -296,10 +296,9 @@ type MDLanguageService() =
         new FSharp.CompilerBinding.LanguageService(
             (fun changedfile ->
                 DispatchService.GuiDispatch(fun () ->
-                    try LoggingService.LogInfo(sprintf "F# Parsing: Considering re-typcheck of: '%s' because compiler reports it needs it" changedfile)
-                        let doc = IdeApp.Workbench.ActiveDocument
+                    try let doc = IdeApp.Workbench.ActiveDocument
                         if doc <> null && doc.FileName.FullPath.ToString() = changedfile then
-                            LoggingService.LogWarning(sprintf "F# Parsing: Requesting re-parse of: '%s' because some errors were reported asynchronously" changedfile)
+                            LoggingService.LogInfo(sprintf "FSharp Language Service: Compiler requesting reparse of document '%s'." (Path.GetFileName changedfile))
                             doc.ReparseDocument()
                     with exn  -> () )))
 
