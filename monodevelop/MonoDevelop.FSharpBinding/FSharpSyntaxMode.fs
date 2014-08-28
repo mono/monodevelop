@@ -40,7 +40,7 @@ module FSharpSyntaxModeInternals =
     type ElseBlockSpan() =
         inherit AbstractBlockSpan(Begin = Regex("#else"))
 
-    type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string list) as this =
+    type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string list) =
         inherit SyntaxMode.SpanParser(mode, spanStack)
         do
             LoggingService.LogInfo("Creating FSharpSpanParser()")
@@ -376,16 +376,15 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | Some(symbols) ->
                 symbols
                 |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.StartColumn = token.LeftColumn)
-        let extraColor = match extraColorInfo with
-                         | None -> None
-                         | Some(extraColourInfo) -> extraColourInfo 
-                                                    |> Array.tryFind
-                                                        (
-                                                            fun eci -> 
-                                                                let rng = fst eci
-                                                                rng.StartLine = lineNumber && rng.StartColumn = token.LeftColumn
-                                                        )
-        let tokenSymbol = { TokenSymbol.TokenColor = token.ColorClass; SymbolUse = symbol; ExtraColorInfo=extraColor }
+
+        let extraColor =
+            match extraColorInfo with
+            | None -> None
+            | Some(extraColourInfo) ->
+                extraColourInfo
+                |> Array.tryFind (fun (rng, _) -> rng.StartLine = lineNumber && rng.StartColumn = token.LeftColumn)
+
+        let tokenSymbol = { TokenSymbol.TokenColor = token.ColorClass; SymbolUse = symbol; ExtraColorInfo = extraColor }
         let chunkStyle =
             match tokenSymbol with
             | UnusedCode -> style.ExcludedCode
