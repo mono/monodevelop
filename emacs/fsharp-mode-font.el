@@ -246,30 +246,6 @@
                              'syntax-table (string-to-syntax "|")))
           )))))
 
-
-(defconst inferior-fsharp-font-lock-keywords
-  (append
-   (list
-;inferior
-    '("^[#-]" . font-lock-comment-face)
-   '("^>" . font-lock-variable-name-face))
-   fsharp-font-lock-keywords))
-
-(defun inferior-fsharp-mode-font-hook ()
-  (cond
-   ((fboundp 'global-font-lock-mode)
-    (make-local-variable 'font-lock-defaults)
-    (setq font-lock-defaults
-          '(inferior-fsharp-font-lock-keywords
-            nil nil ((?' . "w") (?_ . "w")))))
-   (t
-    (setq font-lock-keywords inferior-fsharp-font-lock-keywords)))
-  (make-local-variable 'font-lock-keywords-only)
-  (setq font-lock-keywords-only t)
-  (font-lock-mode 1))
-
-(add-hook 'inferior-fsharp-mode-hooks 'inferior-fsharp-mode-font-hook)
-
 (provide 'fsharp-mode-font)
 
 ;;; fsharp-mode-font.el ends here

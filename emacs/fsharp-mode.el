@@ -188,9 +188,7 @@ and whether it is in a project directory.")
   (require 'fsharp-doc)
   (require 'fsharp-mode-completion)
 
-  ;(kill-all-local-variables)
   (use-local-map fsharp-mode-map)
-  ;(set-syntax-table fsharp-mode-syntax-table)
 
   (mapc 'make-local-variable
         '(paragraph-start
