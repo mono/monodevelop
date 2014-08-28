@@ -48,6 +48,7 @@ using System.Text;
 using ICSharpCode.NRefactory.Completion;
 using System.Diagnostics;
 using MonoDevelop.Projects.SharedAssetsProjects;
+using Mono.CSharp.Nullable;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -269,6 +270,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				var fileName = project.GetOutputFileName (IdeApp.Workspace.ActiveConfiguration);
 
 				var wrapper = GetProjectContentWrapper (project);
+				if (wrapper == null)
+					return;
 				bool update = wrapper.UpdateTrackedOutputAssembly (fileName);
 				if (autoUpdate && update) {
 					wrapper.ReconnectAssemblyReferences ();
@@ -1032,7 +1035,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				lock (updateContentLock) {
 					if (_content is LazyProjectLoader) {
 						if (loadActions != null) {
-							loadActions.Clear ();
 							loadActions.Add (act);
 						}
 						return;
@@ -1053,12 +1055,25 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					cleared.Add (cur);
 					cur.compilation = null;
-					foreach (var project in cur.ReferencedProjects)
-						stack.Push (GetProjectContentWrapper (project));
+					foreach (var project in cur.ReferencedProjects) {
+						var projectContentWrapper = GetProjectContentWrapper (project);
+						if (projectContentWrapper != null)
+							stack.Push (projectContentWrapper);
+					}
 				}
 			}
 
 			readonly object updateContentLock = new object ();
+
+			void RunLoadActions ()
+			{
+				if (loadActions == null)
+					return;
+				var actions = loadActions.ToArray ();
+				loadActions = null;
+				foreach (var action in actions)
+					action (Content);
+			}
 
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
 			{
@@ -1066,12 +1081,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					var lazyProjectLoader = Content as LazyProjectLoader;
 					if (lazyProjectLoader != null) {
 						lazyProjectLoader.ContextTask.Wait ();
-						if (loadActions != null) {
-							var action = loadActions.FirstOrDefault ();
-							loadActions = null;
-							if (action != null)
-								action (Content);
-						}
 					}
 					Content = updateFunc (Content);
 					ClearCachedCompilations ();
@@ -1214,7 +1223,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (project == null)
 					throw new ArgumentNullException ("project");
 				this.Project = project;
-				this.Content = new LazyProjectLoader (this);
+				var lazyProjectLoader = new LazyProjectLoader (this);
+				lazyProjectLoader.ContextTask.ContinueWith (delegate { RunLoadActions (); }, TaskContinuationOptions.OnlyOnRanToCompletion);
+				this.Content = lazyProjectLoader;
 			}
 
 			public IEnumerable<Project> ReferencedProjects {
@@ -1634,7 +1645,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					project.FileRenamedInProject += OnFileRenamed;
 					project.Modified += OnProjectModified;
 
-
 					if (dotNetProject != null) {
 						StartFrameworkLookup (dotNetProject);
 					}
@@ -1804,6 +1814,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var files = wrapper.Project.Files.ToArray ();
 					Task.Factory.StartNew (delegate {
 						CheckModifiedFiles (wrapper.Project, files, wrapper);
+						wrapper.RequestLoad ();
 					});
 				}
 			}
@@ -2367,6 +2378,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				throw new ArgumentNullException ("project");
 			var content = GetProjectContentWrapper (project);
+			if (content == null)
+				return null;
 			return content.Content;
 		}
 
@@ -2375,6 +2388,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (project == null)
 				throw new ArgumentNullException ("project");
 			var content = GetProjectContentWrapper (project);
+			if (content == null)
+				return null;
 			return content.Compilation;
 		}
 
@@ -2519,7 +2534,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectContentWrapper content;
 			if (projectContents.TryGetValue (project, out content))
 				return content;
-			return new ProjectContentWrapper (project);
+			// in case of outdated projects try to get the most recent project wrapper.
+			foreach (var cnt in projectContents) {
+				if (cnt.Key.FileName == project.FileName)
+					return cnt.Value;
+			}
+			return null;
 		}
 
 		public static IProjectContent GetContext (FilePath file, string mimeType, string text)
@@ -2772,7 +2792,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (parsedFile == null || !parsedFile.LastWriteTime.HasValue)
 				return true;
 			try {
-				return File.GetLastWriteTimeUtc (file.FilePath) > parsedFile.LastWriteTime;
+				return File.GetLastWriteTimeUtc (file.FilePath) != parsedFile.LastWriteTime;
 			} catch (Exception) {
 				return true;
 			}
@@ -2780,17 +2800,18 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		static void CheckModifiedFiles (Project project, ProjectFile[] projectFiles, ProjectContentWrapper content, CancellationToken token = default (CancellationToken))
 		{
-			if (token.IsCancellationRequested)
+			if (token.IsCancellationRequested) {
 				return;
+			}
 			content.RunWhenLoaded (delegate(IProjectContent cnt) {
 				try {
 					content.BeginLoadOperation ();
 					var modifiedFiles = new List<ProjectFile> ();
 					var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
-
 					foreach (var file in projectFiles) {
-						if (token.IsCancellationRequested)
+						if (token.IsCancellationRequested) {
 							return;
+						}
 						if (file.BuildAction == null)
 							continue;
 						// if the file is already inside the content a parser exists for it, if not check if it can be parsed.
@@ -2815,8 +2836,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					// check if file needs to be removed from project content 
 					foreach (var file in cnt.Files) {
-						if (token.IsCancellationRequested)
+						if (token.IsCancellationRequested) {
 							return;
+						}
 						if (project.GetProjectFile (file.FileName) == null) {
 							content.UpdateContent (c => c.RemoveFiles (file.FileName));
 							content.InformFileRemoved (new ParsedFileEventArgs (file));
@@ -2824,16 +2846,18 @@ namespace MonoDevelop.Ide.TypeSystem
 								tags.RemoveFile (project, file.FileName);
 						}
 					}
-					if (token.IsCancellationRequested)
+					if (token.IsCancellationRequested) {
 						return;
-					if (modifiedFiles.Count > 0)
+					}
+					if (modifiedFiles.Count > 0)  {
 						QueueParseJob (content, modifiedFiles);
+						WaitForParseJob ();
+					}
 				} catch (Exception e) {
 					LoggingService.LogError ("Exception in check modified files.", e);
 				} finally {
 					content.EndLoadOperation ();
 				}
-
 			});
 		}
 
