@@ -123,7 +123,7 @@ namespace MonoDevelop.Core.Instrumentation
 				throw new InvalidOperationException ("Service not published");
 			
 			if (Platform.IsMac) {
-				var macOSDir = PropertyService.EntryAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory;
+				var macOSDir = PropertyService.EntryAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory.ParentDirectory.Combine ("MacOS");
 				var app = macOSDir.Combine ("MDMonitor.app");
 				if (Directory.Exists (app)) {
 					var psi = new ProcessStartInfo ("open", string.Format ("-n '{0}' --args -c localhost:{1} ", app, publicPort)) {
