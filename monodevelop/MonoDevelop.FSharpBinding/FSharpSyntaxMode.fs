@@ -43,7 +43,6 @@ module FSharpSyntaxModeInternals =
     type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string list) as this =
         inherit SyntaxMode.SpanParser(mode, spanStack)
         do
-            mode.Rules |> Seq.iter this.RuleStack.Push
             LoggingService.LogInfo("Creating FSharpSpanParser()")
 
         member private this.ScanPreProcessorElse(i: byref<int>) =
@@ -107,10 +106,16 @@ module FSharpSyntaxModeInternals =
 open MonoDevelop.FSharp.FSharpSymbolHelper
 [<AutoOpen>]
 module internal Patterns =
-    type TokenSymbol = {TokenColor: TokenColorKind; SymbolUse: FSharpSymbolUse option}
+    type TokenSymbol = 
+        {
+            TokenColor: TokenColorKind; 
+            SymbolUse: FSharpSymbolUse option
+            ExtraColorInfo: (Microsoft.FSharp.Compiler.Range.range * TokenColorKind) option
+        }
 
     let (|Keyword|_|) ts =
-        if ts.TokenColor = TokenColorKind.Keyword then Some Keyword
+        if (ts.TokenColor) = TokenColorKind.Keyword || 
+           (ts.ExtraColorInfo.IsSome && (snd ts.ExtraColorInfo.Value) = TokenColorKind.Keyword)  then Some(Keyword)
         else None
 
     let (|Comment|_|) ts =
@@ -363,7 +368,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                 |> tryCast<ParseAndCheckResults>
                 |> Option.iter (getAndProcessSymbols >> Async.Start)
 
-    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (token: TokenInformation) =
+    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Microsoft.FSharp.Compiler.Range.range * TokenColorKind)[] option) (token: TokenInformation) =
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with
@@ -371,8 +376,16 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | Some(symbols) ->
                 symbols
                 |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.StartColumn = token.LeftColumn)
-
-        let tokenSymbol = { TokenSymbol.TokenColor = token.ColorClass; SymbolUse = symbol }
+        let extraColor = match extraColorInfo with
+                         | None -> None
+                         | Some(extraColourInfo) -> extraColourInfo 
+                                                    |> Array.tryFind
+                                                        (
+                                                            fun eci -> 
+                                                                let rng = fst eci
+                                                                rng.StartLine = lineNumber && rng.StartColumn = token.LeftColumn
+                                                        )
+        let tokenSymbol = { TokenSymbol.TokenColor = token.ColorClass; SymbolUse = symbol; ExtraColorInfo=extraColor }
         let chunkStyle =
             match tokenSymbol with
             | UnusedCode -> style.ExcludedCode
@@ -396,15 +409,15 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         let chunks = Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
         chunks
 
-    let getLexedTokens (style,line:DocumentLine,offset, lineText) =
+    let getLexedTokens (style, line:DocumentLine, offset, lineText, extraColorInfo) =
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
         Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
                              | Some t, s -> Some(t,s)
                              | _         -> None) 0L
-        |> Seq.map (makeChunk line.LineNumber style offset)
+        |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
 
-    let getLexedChunks (style,line: DocumentLine,offset, lineText) =
-        getLexedTokens(style,line,offset,lineText)
+    let getLexedChunks (style,line: DocumentLine,offset, lineText, extraColorInfo) =
+        getLexedTokens(style,line,offset,lineText,extraColorInfo)
 
     do
         LoggingService.LogInfo("Creating FSharpSyntaxMode()")
@@ -439,12 +452,14 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
 
     override this.GetChunks(style, line, offset, length) =
         try
+            let extraColorInfo =
+                if (document <> null && document.ParsedDocument <> null) then 
+                    (document.ParsedDocument.Ast :?> ParseAndCheckResults).GetExtraColorizations() 
+                else None
             match (this.Document, line, offset, length, style) with
-            | StringCode styleName when semanticHighlightingEnabled -> Seq.singleton(Chunk(offset,length, styleName))
-            | CommentCode styleName -> Seq.singleton(Chunk(offset,length, styleName))
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
             | PreProcessorCode _ -> base.GetChunks(style,line,offset,length)
-            | OtherCode (_,lineText) when semanticHighlightingEnabled -> getLexedChunks(style,line,offset,lineText)
+            | OtherCode (_,lineText) when semanticHighlightingEnabled -> getLexedChunks(style,line,offset,lineText,extraColorInfo)
             | _ -> base.GetChunks(style,line,offset,length)
         with
             | exn ->
