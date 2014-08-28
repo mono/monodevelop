@@ -40,12 +40,17 @@ module FSharpTypeExt =
             isReferenceCell x
 
 type XmlDoc =
+  ///A full xmldoc tooltip
 | Full of string
-| Lookup of key: string * filename: string option
+  ///A lookup of key, filename
+| Lookup of string * string option
+  ///No xmldoc
 | EmptyDoc
 
 type ToolTips =
+  ///A ToolTip of signature, summary, TextSegment
 | ToolTip of string * XmlDoc * TextSegment
+  ///A empty tip
 | EmptyTip
 
 module Highlight =
