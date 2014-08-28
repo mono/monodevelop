@@ -350,7 +350,7 @@
     <Reference Include="Mono.Cairo" />
     <Reference Include="Mono.Posix" />
 	<Reference Include="MonoDevelop.DesignerSupport">
-      <HintPath>INSERT_FSPROJ_MDROOT\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
+      <HintPath>INSERT_FSPROJ_MDROOT\Addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Mono.Addins">
