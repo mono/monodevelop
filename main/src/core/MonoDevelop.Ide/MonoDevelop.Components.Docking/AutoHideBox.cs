@@ -133,6 +133,8 @@ namespace MonoDevelop.Components.Docking
 			get { return disposed; }
 			set { disposed = value; }
 		}
+
+		internal Gtk.Widget ContainerWindow { get; set; }
 		
 		public void AnimateShow ()
 		{

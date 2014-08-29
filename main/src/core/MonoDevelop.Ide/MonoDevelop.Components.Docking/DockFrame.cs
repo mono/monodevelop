@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using Xwt.Motion;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -890,7 +891,7 @@ namespace MonoDevelop.Components.Docking
 			Gdk.Size sBot = GetBarFrameSize (dockBarBottom);
 			Gdk.Size sLeft = GetBarFrameSize (dockBarLeft);
 			Gdk.Size sRgt = GetBarFrameSize (dockBarRight);
-			
+
 			int x,y;
 			if (bar == dockBarLeft || bar == dockBarRight) {
 				aframe.HeightRequest = Allocation.Height - sTop.Height - sBot.Height;
@@ -909,8 +910,22 @@ namespace MonoDevelop.Components.Docking
 				else
 					y = Allocation.Height - size - sBot.Height;
 			}
-			AddTopLevel (aframe, x, y);
-			aframe.AnimateShow ();
+
+			if (Platform.IsMac) {
+				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
+				win.SkipTaskbarHint = true;
+				win.Decorated = false;
+				aframe.ContainerWindow = win;
+				win.Add (aframe);
+				aframe.Show ();
+				var p = this.GetScreenCoordinates (new Gdk.Point (x, y));
+				win.Move (p.X, p.Y);
+				win.Show ();
+				Ide.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
+			} else {
+				AddTopLevel (aframe, x, y);
+				aframe.AnimateShow ();
+			}
 			return aframe;
 		}
 		
@@ -972,7 +987,11 @@ namespace MonoDevelop.Components.Docking
 					}
 					parent.Remove (item.TitleTab);
 				}
-				RemoveTopLevel (widget);
+				if (widget.ContainerWindow != null) {
+					widget.ContainerWindow.Destroy ();
+				} else
+					RemoveTopLevel (widget);
+
 				widget.Disposed = true;
 				widget.Destroy ();
 			}

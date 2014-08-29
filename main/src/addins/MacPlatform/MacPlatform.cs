@@ -769,5 +769,16 @@ namespace MonoDevelop.MacIntegration
 
 			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) && !t.Key.DebugDescription.StartsWith("<NSStatusBarWindow"));
 		}
+
+		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			NSWindow w = GtkQuartz.GetWindow (parent);
+			child.Realize ();
+			NSWindow overlay = GtkQuartz.GetWindow (child);
+			overlay.SetExcludedFromWindowsMenu (true);
+			overlay.StyleMask = NSWindowStyle.Borderless;
+			overlay.Level = NSWindowLevel.Status;
+			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
+		}
 	}
 }

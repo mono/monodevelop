@@ -461,5 +461,13 @@ namespace MonoDevelop.Ide.Desktop
 				SetMainWindowDecorations (window);
 			}
 		}
+
+		public virtual void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+		}
+
+		public virtual void RemoveChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+		}
 	}
 }
