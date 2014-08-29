@@ -67,6 +67,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			ser.SerializationContext.BaseFile = EntityItem.FileName;
 			ser.SerializationContext.ProgressMonitor = monitor;
 
+			((SharedAssetsProject)Item).ProjItemsPath = projitemsFile;
 			Item.SetItemHandler (this);
 
 			var cp = p.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
@@ -111,7 +112,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 				msproject.ToolsVersion = "2.0";
 
 			if (projitemsFile == null)
-				projitemsFile = Path.ChangeExtension (EntityItem.FileName, ".projitems");
+				projitemsFile = ((SharedAssetsProject)Item).ProjItemsPath;
 			if (File.Exists (projitemsFile)) {
 				projitemsProject.Load (projitemsFile);
 			} else {
