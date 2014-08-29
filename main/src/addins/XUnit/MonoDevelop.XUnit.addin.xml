@@ -1,0 +1,12 @@
+﻿<ExtensionModel>
+
+	<Runtime>
+		<Import assembly="xunit.abstractions.dll" />
+		<Import assembly="xunit.runner.utility.dll" />
+	</Runtime>
+
+	<Extension path = "/MonoDevelop/NUnit/TestProviders">
+		<Class id="XUnitTestProvider" class="MonoDevelop.XUnit.XUnitTestProvider" />
+	</Extension>
+
+</ExtensionModel>
