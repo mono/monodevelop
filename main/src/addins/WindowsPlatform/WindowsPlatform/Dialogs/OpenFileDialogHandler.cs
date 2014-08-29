@@ -96,6 +96,7 @@ namespace MonoDevelop.Platform
 				dialog.Controls.Add (group);
 
 				if (IdeApp.Workspace.IsOpen) {
+					viewerCombo.SelectedIndexChanged += (o, e) => closeSolution.Visible = ((ViewerComboItem)viewerCombo.Items[viewerCombo.SelectedIndex]).Viewer == null;
 					var group2 = new CommonFileDialogGroupBox ();
 
 					// "Close current workspace" is too long and splits the text on 2 lines.
