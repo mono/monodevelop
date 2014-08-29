@@ -46,6 +46,8 @@ namespace MonoDevelop.CSharp
 		{
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
+			IdeApp.Workspace.WorkspaceItemUnloaded -= HandleWorkspaceItemUnloaded;
+			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;;
 
 			if (caret != null) {
 				caret.PositionChanged -= UpdatePath;
