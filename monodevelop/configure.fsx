@@ -19,7 +19,8 @@ let UnixPaths =
       "/Applications/MonoDevelop.app/Contents/MacOS/lib/"
       "monodevelop"
       "/opt/mono/lib/monodevelop"
-      "/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop" ]
+      "/Applications/Xamarin Studio.app/Contents/MacOS/lib/monodevelop" 
+      "/Applications/Xamarin Studio.app/Contents/Resources/lib/monodevelop" ]
 
 let WindowsPaths = 
     [ @"C:\Program Files\Xamarin Studio"
