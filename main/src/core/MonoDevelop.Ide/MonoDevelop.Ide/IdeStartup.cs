@@ -617,6 +617,8 @@ namespace MonoDevelop.Ide
 			
 			LoggingService.Initialize (options.RedirectOutput);
 
+			if (customizer == null)
+				customizer = LoadBrandingCustomizer ();
 			options.IdeCustomizer = customizer;
 
 			int ret = -1;
@@ -654,6 +656,25 @@ namespace MonoDevelop.Ide
 			LoggingService.Shutdown ();
 
 			return ret;
+		}
+
+		static IdeCustomizer LoadBrandingCustomizer ()
+		{
+			var paths = BrandingService.GetString ("CustomizerAssemblyPath").Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			var type = BrandingService.GetString ("CustomizerType");
+			if (!string.IsNullOrEmpty (type)) {
+				foreach (var path in paths) {
+					if (File.Exists (path)) {
+						Assembly asm = Assembly.LoadFrom (path);
+						var t = asm.GetType (type, true);
+						var c = Activator.CreateInstance (t) as IdeCustomizer;
+						if (c == null)
+							throw new InvalidOperationException ("Customizer class specific in the branding file is not an IdeCustomizer subclass");
+						return c;
+					}
+				}
+			}
+			return null;
 		}
 	}
 	
