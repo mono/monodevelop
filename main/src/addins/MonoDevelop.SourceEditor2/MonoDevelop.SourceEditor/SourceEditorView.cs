@@ -2953,16 +2953,6 @@ namespace MonoDevelop.SourceEditor
 			TextEditor.RunAction (MiscActions.InsertNewLine);
 		}
 
-		void IEditorActionHost.InsertNewLineAtEnd ()
-		{
-			TextEditor.RunAction (MiscActions.InsertNewLineAtEnd);
-		}
-
-		void IEditorActionHost.InsertNewLinePreserveCaretPosition ()
-		{
-			TextEditor.RunAction (MiscActions.InsertNewLinePreserveCaretPosition);
-		}
-
 		void IEditorActionHost.DeletePreviousWord ()
 		{
 			TextEditor.RunAction (DeleteActions.PreviousWord);
@@ -3058,11 +3048,6 @@ namespace MonoDevelop.SourceEditor
 		void IEditorActionHost.ScrollPageDown ()
 		{
 			TextEditor.RunAction (ScrollActions.PageDown);
-		}
-
-		void IEditorActionHost.GotoMatchingBrace ()
-		{
-			TextEditor.RunAction (MiscActions.GotoMatchingBracket);
 		}
 
 		void IEditorActionHost.MoveBlockUp ()

@@ -38,10 +38,6 @@ namespace MonoDevelop.Ide.Editor
 
 		void InsertNewLine ();
 
-		void InsertNewLineAtEnd ();
-
-		void InsertNewLinePreserveCaretPosition ();
-
 		void DeletePreviousWord ();
 
 		void DeleteNextWord ();
@@ -113,8 +109,6 @@ namespace MonoDevelop.Ide.Editor
 		void ScrollPageUp ();
 
 		void ScrollPageDown ();
-
-		void GotoMatchingBrace ();
 
 		void MoveBlockUp ();
 

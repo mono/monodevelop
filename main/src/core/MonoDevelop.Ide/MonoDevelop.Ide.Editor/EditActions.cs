@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Editor.Util;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -162,7 +163,9 @@ namespace MonoDevelop.Ide.Editor
 
 		public static void GotoMatchingBrace (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.GotoMatchingBrace ();
+			var offset = SimpleBracketMatcher.GetMatchingBracketOffset (textEditor, textEditor.CaretOffset);
+			if (offset > 0)
+				textEditor.CaretOffset = offset;
 		}
 
 		public static void MovePrevWord (TextEditor textEditor)
@@ -294,12 +297,23 @@ namespace MonoDevelop.Ide.Editor
 
 		public static void InsertNewLinePreserveCaretPosition (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.InsertNewLinePreserveCaretPosition ();
+			if (textEditor.IsReadOnly)
+				return;
+			using (var undoGroup = textEditor.OpenUndoGroup ()) {
+				var loc = textEditor.CaretLocation;
+				InsertNewLine (textEditor);
+				textEditor.CaretLocation = loc;
+			}
 		}
 
 		public static void InsertNewLineAtEnd (TextEditor textEditor)
 		{
-			textEditor.EditorActionHost.InsertNewLineAtEnd ();
+			if (textEditor.IsReadOnly)
+				return;
+			using (var undoGroup = textEditor.OpenUndoGroup ()) {
+				MoveCaretToLineEnd (textEditor);
+				InsertNewLine (textEditor);
+			}
 		}
 
 		public static void InsertNewLine (TextEditor textEditor)
