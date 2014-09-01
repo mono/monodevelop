@@ -17,13 +17,6 @@ open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
 
-/// Contains settings of the F# language service
-module ServiceSettings =
-
-  /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
-  let blockingTimeout = 500
-  let maximumTimeout = 10000
-
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter =
 

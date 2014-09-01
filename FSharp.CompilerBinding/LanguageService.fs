@@ -20,6 +20,13 @@ module Symbols =
             (beginLine, beginCol)
     (beginLine, beginCol), (endLine, endCol)
 
+/// Contains settings of the F# language service
+module ServiceSettings =
+
+  /// When making blocking calls from the GUI, we specify this value as the timeout, so that the GUI is not blocked forever
+  let blockingTimeout = 500
+  let maximumTimeout = 10000
+
 // --------------------------------------------------------------------------------------
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips). Provides default
@@ -40,8 +47,11 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
             let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
             Debug.WriteLine (sprintf "GetDeclarations: '%A', '%s'" longName residue)
             // Get items & generate output
-            try Some (checkResults.GetDeclarationsAlternate(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
-                      |> Async.RunSynchronously, residue)
+            try
+             let results =
+                 Async.RunSynchronously (checkResults.GetDeclarationsAlternate(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
+                                         timeout = ServiceSettings.maximumTimeout )
+             Some (results, residue)
             with :? TimeoutException as e -> None
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
@@ -263,9 +273,10 @@ type LanguageService(dirtyNotify) =
         try 
           let fileName = fixFileName(fileName)
           Debug.WriteLine (sprintf "GetScriptCheckerOptions: Creating for stand-alone file or script: '%s'" fileName )
-          let opts = checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename)
-                     |> Async.RunSynchronously
-          
+          let opts =
+              Async.RunSynchronously (checker.GetProjectOptionsFromScript(fileName, source, fakeDateTimeRepresentingTimeLoaded projFilename),
+                                      timeout = ServiceSettings.maximumTimeout)
+
           // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
           if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
