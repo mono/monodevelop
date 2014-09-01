@@ -72,6 +72,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		internal void UpdateStatus ()
 		{
+			InstrumentationService.InitializeHandlers ();
 			enabled = InstrumentationService.Enabled || Handlers.Count > 0;
 			storeValues = InstrumentationService.Enabled;
 		}

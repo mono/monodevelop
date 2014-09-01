@@ -86,24 +86,35 @@ namespace MonoDevelop.Core.Instrumentation
 		{
 			var handler = (InstrumentationConsumer)args.ExtensionObject;
 			if (args.Change == ExtensionChange.Add) {
-				handlers.Add (handler);
-				lock (counters) {
-					foreach (var c in counters.Values) {
-						if (handler.SupportsCounter (c))
-							c.Handlers.Add (handler);
-					}
-				}
+				RegisterInstrumentationConsumer (handler);
 			}
 			else {
-				handlers.Remove (handler);
-				lock (counters) {
-					foreach (var c in counters.Values)
-						c.Handlers.Remove (handler);
+				UnregisterInstrumentationConsumer (handler);
+			}
+		}
+
+		public static void RegisterInstrumentationConsumer (InstrumentationConsumer consumer)
+		{
+			lock (counters) {
+				handlers.Add (consumer);
+				foreach (var c in counters.Values) {
+					if (consumer.SupportsCounter (c))
+						c.Handlers.Add (consumer);
 				}
 			}
 			UpdateCounterStatus ();
 		}
 		
+		public static void UnregisterInstrumentationConsumer (InstrumentationConsumer consumer)
+		{
+			lock (counters) {
+				handlers.Remove (consumer);
+				foreach (var c in counters.Values)
+					c.Handlers.Remove (consumer);
+			}
+			UpdateCounterStatus ();
+		}
+
 		public static int PublishService ()
 		{
 			RemotingService.RegisterRemotingChannel ();
