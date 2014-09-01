@@ -667,7 +667,11 @@ namespace MonoDevelop.Ide
 
 		static IdeCustomizer LoadBrandingCustomizer ()
 		{
-			var paths = BrandingService.GetString ("CustomizerAssemblyPath").Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			var pathsString = BrandingService.GetString ("CustomizerAssemblyPath");
+			if (string.IsNullOrEmpty (pathsString))
+				return null;
+
+			var paths = pathsString.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
 			var type = BrandingService.GetString ("CustomizerType");
 			if (!string.IsNullOrEmpty (type)) {
 				foreach (var path in paths) {
