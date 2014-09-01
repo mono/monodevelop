@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Single View Application</_Name>
-		<_Category>F#/iOS/Classic API/iPhone</_Category>
+		<_Name>Empty Project</_Name>
+		<_Category>F#/iOS/Unified API/Universal</_Category>
 		<Icon>md-project-iphone</Icon>
 		<LanguageName>F#</LanguageName>
-		<_Description>Single view application project for iPhone.</_Description>
+		<_Description>Empty project for both iPad and iPhone.</_Description>
 	</TemplateConfiguration>
 	
 	<Actions>
@@ -17,24 +17,22 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
-		<Project name = "${ProjectName}" directory = "." type = "MonoTouch">
+		<Project name = "${ProjectName}" directory = "." type = "XamarinIOS">
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
 				<Reference type="Gac" refto="mscorlib" />
 				<Reference type="Gac" refto="FSharp.Core" />
-				<Reference type="Gac" refto="monotouch" />
+				<Reference type="Gac" refto="Xamarin.iOS" />
 			</References>
 			<Files>
 				<Directory name="Resources">
 					<RawFile name="Default-568h@2x.png" src="../Common/Default-568h.png" />
 				</Directory>
-				<File name="Info.plist" AddStandardHeader="False" src="../Common/Info_iPhone.plist.xml" />
+				<File name="Info.plist" AddStandardHeader="False" src="../Common/Info_Universal.plist.xml" />
 				<File name="Entitlements.plist" AddStandardHeader="False" src="../Common/Entitlements.plist.xml" />
-				<File name="${SafeProjectName}ViewController.fs" AddStandardHeader="True"
-					src="IPhone/ViewController.fs" />
-				<File name="AppDelegate.fs" AddStandardHeader="True" src="Common/AppDelegate.fs" />
+				<File name="AppDelegate.fs" AddStandardHeader="True" src="AppDelegate.fs" />
 			</Files>
 		</Project>
 	</Combine>

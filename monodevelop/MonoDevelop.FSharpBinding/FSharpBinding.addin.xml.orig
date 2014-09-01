@@ -15,7 +15,7 @@
     <Import file = "FSharpBinding.dll.mdb" />
     <Import file = "FSharpBinding.Gui.dll.mdb" />
   INSTALL_DEBUG-->
-    
+
     <Import file = "Templates/EmptyFSharpSource.xft.xml" />
     <Import file = "Templates/EmptyFSharpScript.xft.xml" />
     <Import file = "Templates/EmptyFSharpSignature.xft.xml" />
@@ -73,7 +73,7 @@
     <Import file = "Templates/Android/UnitTestProject/MainActivity.fs" />
     <Import file = "Templates/Android/UnitTestProject/TestsSample.fs" />
 
-    <!--- F# ios templates -->
+    <!--- F# ios classic templates -->
     <Import file="Templates/ios/Common/Info_iPad.plist.xml" />
     <Import file="Templates/ios/Common/Info_iPhone.plist.xml" />
     <Import file="Templates/ios/Common/Info_Universal.plist.xml" />
@@ -94,6 +94,31 @@
     <Import file="Templates/ios/SingleView/ProjectIPhone.xpt.xml" />
     <Import file="Templates/ios/SingleView/ProjectUniversal.xpt.xml" />
     <Import file="Templates/ios/LibraryProject.xpt.xml" />
+
+    <!--- F# Xamarin.iOS unified templates -->
+    <Import file="Templates/Xamarin.iOS/Project/Common/Info_iPad.plist.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/Info_iPhone.plist.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/Info_Universal.plist.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/Info_iPad.Storyboard.plist.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/Info_iPhone.Storyboard.plist.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/Info_Universal.Storyboard.plist.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/Entitlements.plist.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/Default-568h.png" />
+    <Import file="Templates/Xamarin.iOS/Project/Empty/AppDelegate.fs" />
+    <Import file="Templates/Xamarin.iOS/Project/Empty/ProjectIPad.xpt.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Empty/ProjectIPhone.xpt.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/Empty/ProjectUniversal.xpt.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/SingleView/Common/AppDelegate.fs" />
+    <Import file="Templates/Xamarin.iOS/Project/SingleView/IPad/ViewController.fs" />
+    <Import file="Templates/Xamarin.iOS/Project/SingleView/IPhone/ViewController.fs" />
+    <Import file="Templates/Xamarin.iOS/Project/SingleView/Universal/ViewController.fs" />
+    <Import file="Templates/Xamarin.iOS/Project/SingleView/ProjectIPad.xpt.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/SingleView/ProjectIPhone.xpt.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/SingleView/ProjectUniversal.xpt.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/LibraryProject.xpt.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestAppDelegate.fs" />
+    <Import file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestsProject.xpt.xml" />
+
     <!-- Code templates -->
     <Import file = "Templates/FSharp-templates.xml" />
 
@@ -116,14 +141,13 @@
   <!-- By default projects use the F# 3.1 targets file unless only 3.0 is available on the machine. -->
   <!-- New projects will be created with this targets file. -->
   <Extension path="/MonoDevelop/ProjectModel/MSBuildItemTypes">
+    <!--  If FSharp 3.1 is available, use it. Note XS looks for the first DotNetProject node under 'Extension' -->
+	<Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" >
+      <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+	</Condition>
 
-            <!--  If FSharp 3.1 is available, use it. Note XS looks for the first DotNetProject node under 'Extension' -->
-	    <Condition id="MSBuildTargetIsAvailable" target="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" >
-              <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
-	    </Condition>
-
-            <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
-            <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
+    <!--  If FSharp 3.1 is not available, then use FSharp 3.0  -->
+    <DotNetProject language="F#" extension="fsproj" guid="{f2a71f9b-5d33-465a-a702-920d77279786}" import="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets"  resourceHandler="MonoDevelop.FSharp.FSharpResourceIdBuilder"/>
   </Extension>
 
   <Extension path = "/MonoDevelop/Refactoring/CodeActionSource">
@@ -169,7 +193,7 @@
 		</Or>
 		<ProjectTemplate id="FSharpTutorialProject" file="Templates/FSharpTutorialProject.xpt.xml"/>
 	</ComplexCondition>
-      
+
     <ProjectTemplate id="FSharpGtkProject" file="Templates/FSharpGtkProject.xpt.xml"/>
     <Condition id="Platform" value="windows">
       <ProjectTemplate id="FSharpMvc4Project" file="Templates/FSharpProjectMvc4Razor.windows.xpt.xml"/>
@@ -224,7 +248,7 @@
   <Extension path = "/MonoDevelop/ProjectModel/PolicySets/Mono" >
     <Policies resource="FSharpStylePolicy.xml" />
   </Extension>
-   
+
   <Policies resource="FSharpFormattingPolicy.xml" />
 
   <Extension path = "/MonoDevelop/ProjectModel/Gui/MimeTypePolicyPanels">
@@ -297,14 +321,14 @@
             id="MonoDevelop.FSharp.FSharpCommands.SendReferences"
             macShortcut="Meta|Control|P"
             shortcut="Ctrl|Alt|P" />
-            
+
         <Command _description="Restart F# Interactive"
             _label="Restart F# Interactive"
             defaultHandler="MonoDevelop.FSharp.RestartFsi"
             id="MonoDevelop.FSharp.FSharpCommands.RestartFsi"
             macShortcut="Meta|Control|R"
             shortcut="Ctrl|Alt|R" />
-            
+
         <Command _description="Clear F# Interactive"
             _label="Clear F# Interactive"
             defaultHandler="MonoDevelop.FSharp.ClearFsi"
@@ -366,7 +390,7 @@
     </Extension>
 
 <!--     <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-      <DotNetProjectSubtype 
+      <DotNetProjectSubtype
         guid="{F278D4AB-4730-4720-B08E-FE5E31564D9E}"
         type="MonoDevelop.MonoDroid.MonoDroidProject"
         useXBuild="true">
@@ -396,19 +420,65 @@
     </Dependencies>
 
     <Extension path="/MonoDevelop/Ide/ProjectTemplates">
-      <ProjectTemplate id="FSharpIOSEmptyIPadProject" file="Templates/ios/Empty/ProjectIPad.xpt.xml"/>
-      <ProjectTemplate id="FSharpIOSEmptyIPhoneProject" file="Templates/ios/Empty/ProjectIPhone.xpt.xml"/>
-      <ProjectTemplate id="FSharpIOSEmptyUniversalProject" file="Templates/ios/Empty/ProjectUniversal.xpt.xml"/>
-      <ProjectTemplate id="FSharpIOSSingleViewIPadProject" file="Templates/ios/SingleView/ProjectIPad.xpt.xml"/>
-      <ProjectTemplate id="FSharpIOSSingleViewIPhoneProject" file="Templates/ios/SingleView/ProjectIPhone.xpt.xml"/>
-      <ProjectTemplate id="FSharpIOSSingleViewUniversalProject" file="Templates/ios/SingleView/ProjectUniversal.xpt.xml"/>
-      <ProjectTemplate id="FSharpIOSLibraryProject" file="Templates/ios/LibraryProject.xpt.xml"/>
+      <Condition id="MonoTouchInstalled">
+        <ProjectTemplate file="Templates/ios/Empty/ProjectIPad.xpt.xml"/>
+        <ProjectTemplate file="Templates/ios/Empty/ProjectIPhone.xpt.xml"/>
+        <ProjectTemplate file="Templates/ios/Empty/ProjectUniversal.xpt.xml"/>
+        <ProjectTemplate file="Templates/ios/SingleView/ProjectIPad.xpt.xml"/>
+        <ProjectTemplate file="Templates/ios/SingleView/ProjectIPhone.xpt.xml"/>
+        <ProjectTemplate file="Templates/ios/SingleView/ProjectUniversal.xpt.xml"/>
+        <ProjectTemplate file="Templates/ios/LibraryProject.xpt.xml"/>
+      </Condition>
+
+      <Condition id="XamarinIOSInstalled">
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/Empty/ProjectIPad.xpt.xml"/>
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/Empty/ProjectIPhone.xpt.xml"/>
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/Empty/ProjectUniversal.xpt.xml"/>
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/SingleView/ProjectIPad.xpt.xml"/>
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/SingleView/ProjectIPhone.xpt.xml"/>
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/SingleView/ProjectUniversal.xpt.xml"/>
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/LibraryProject.xpt.xml"/>
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestsProject.xpt.xml"/>
+      </Condition>
     </Extension>
+
+    <!-- iOS Classic API -->
+    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.MonoTouchProject">
+      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.FSharp.targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+    </Extension>
+
+    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.MonoTouchBindingProject">
+      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Xamarin.ObjcBinding.FSharp.targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+    </Extension>
+
+    <!-- iOS Unified API -->
+    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.XamarinIOSProject">
+      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.FSharp.targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+    </Extension>
+
+    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.XamarinIOSAppExtensionProject">
+      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.AppExtension.FSharp.targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+    </Extension>
+
+    <Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes/MonoDevelop.IPhone.XamarinIOSBindingProject">
+      <AddImport language="F#" projects="$(MSBuildExtensionsPath)\Xamarin\Xamarin.ObjcBinding.FSharp.targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.1\Framework\v4.0\Microsoft.FSharp.Targets" />
+      <RemoveImport language="F#" projects="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" />
+    </Extension>
+
   </Module>
 
   <!-- MonoMac-->
   <Module>
-    <Dependencies>    
+    <Dependencies>
       <Addin id="MacDev" version="5.0"/>
       <Addin id="MacPlatform" version="5.0"/>
       <Addin id="Xamarin.Ide" version="5.0"/>
