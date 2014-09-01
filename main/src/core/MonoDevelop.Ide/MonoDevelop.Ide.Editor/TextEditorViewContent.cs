@@ -150,9 +150,10 @@ namespace MonoDevelop.Ide.Editor
 
 		void HandleDocumentParsed (object sender, EventArgs e)
 		{
-			UpdateErrorUndelines (currentContext.ParsedDocument);
-			UpdateQuickTasks (currentContext.ParsedDocument);
-			UpdateFoldings (currentContext.ParsedDocument);
+			var ctx = (DocumentContext)sender;
+			UpdateErrorUndelines (ctx.ParsedDocument);
+			UpdateQuickTasks (ctx.ParsedDocument);
+			UpdateFoldings (ctx.ParsedDocument);
 		}
 
 		#region Error handling
@@ -792,7 +793,7 @@ namespace MonoDevelop.Ide.Editor
 		#endregion
 	
 		#region IQuickTaskProvider implementation
-		List<QuickTask> tasks = new List<QuickTask> ();
+		readonly List<QuickTask> tasks = new List<QuickTask> ();
 
 		public event EventHandler TasksUpdated;
 
@@ -812,16 +813,17 @@ namespace MonoDevelop.Ide.Editor
 		void UpdateQuickTasks (ParsedDocument doc)
 		{
 			tasks.Clear ();
-			foreach (var cmt in doc.TagComments) {
-				var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
-				tasks.Add (newTask);
-			}
+			if (doc != null) {
+				foreach (var cmt in doc.TagComments) {
+					var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
+					tasks.Add (newTask);
+				}
 
-			foreach (var error in doc.Errors) {
-				var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
-				tasks.Add (newTask);
+				foreach (var error in doc.Errors) {
+					var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
+					tasks.Add (newTask);
+				}
 			}
-
 			OnTasksUpdated (EventArgs.Empty);
 		}
 		#endregion
