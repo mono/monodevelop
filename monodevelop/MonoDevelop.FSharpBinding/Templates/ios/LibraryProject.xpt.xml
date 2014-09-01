@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>iOS Library Project</_Name>
-		<_Category>F#/iOS</_Category>
+		<_Category>F#/iOS/Classic API</_Category>
 		<Icon>md-project-library</Icon>
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates a iOS library project.</_Description>
@@ -17,7 +17,7 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
-		<Project name = "${ProjectName}" directory = "." type = "IPhone">
+		<Project name = "${ProjectName}" directory = "." type = "MonoTouch">
 			<Options Target = "Library" />
 			<References>
 				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
