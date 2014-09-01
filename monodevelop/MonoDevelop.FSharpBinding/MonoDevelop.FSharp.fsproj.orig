@@ -286,6 +286,72 @@
     <None Include="Templates/ios/SingleView/Universal/ViewController.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\Xamarin.iOS\Project\UnitTests\UnitTestsProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\SingleView\ProjectIPad.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\SingleView\ProjectIPhone.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\SingleView\ProjectUniversal.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Empty\AppDelegate.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Empty\ProjectIPad.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Empty\ProjectIPhone.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Empty\ProjectUniversal.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Default-568h.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Entitlements.plist.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Info_iPad.plist.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Info_iPad.Storyboard.plist.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Info_iPhone.plist.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Info_iPhone.Storyboard.plist.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Info_Universal.plist.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Info_Universal.Storyboard.plist.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\LibraryProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\SingleView\Common\AppDelegate.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\SingleView\IPad\ViewController.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\SingleView\IPhone\ViewController.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\SingleView\Universal\ViewController.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\UnitTests\UnitTestAppDelegate.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Templates/FSharp-templates.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -331,16 +397,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="pango-sharp">
-    </Reference>
-    <Reference Include="atk-sharp">
-    </Reference>
-    <Reference Include="gdk-sharp">
-    </Reference>
-    <Reference Include="gtk-sharp">
-    </Reference>
-    <Reference Include="glib-sharp">
-    </Reference>
+    <Reference Include="pango-sharp"/>
+    <Reference Include="atk-sharp"/>
+    <Reference Include="gdk-sharp"/>
+    <Reference Include="gtk-sharp"/>
+    <Reference Include="glib-sharp"/>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
