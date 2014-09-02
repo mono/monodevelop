@@ -134,48 +134,68 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		static SpecialKey ConvertKey (ref char ch)
 		{
-			if (ch == '\n' || ch == '\r')
+			if (ch == '\n' || ch == '\r') {
+				ch = '\0';
 				return SpecialKey.Return;
-			if (ch == '\t')
+			}
+			if (ch == '\t') {
+				ch = '\0';
 				return SpecialKey.Tab;
+			}
 			if (ch == '\b' || ch == (char)127) {
-				ch = '\b';
+				ch = '\0';
 				return SpecialKey.BackSpace;
 			}
 			if (ch == (char)27) {
+				ch = '\0';
 				return SpecialKey.Escape;
 			}
 			switch ((NSKey)ch) {
 			case NSKey.Delete:
+				ch = '\0';
 				return SpecialKey.BackSpace;
 			case NSKey.Tab:
+				ch = '\0';
 				return SpecialKey.Tab;
 			case NSKey.Return:
 			case NSKey.KeypadEnter:
+				ch = '\0';
 				return SpecialKey.Return;
 			case NSKey.Escape:
+				ch = '\0';
 				return SpecialKey.Escape;
 			case NSKey.Space:
+				ch = '\0';
 				return SpecialKey.Space;
 			case NSKey.PageUp:
+				ch = '\0';
 				return SpecialKey.PageUp;
 			case NSKey.PageDown:
+				ch = '\0';
 				return SpecialKey.PageDown;
 			case NSKey.End:
+				ch = '\0';
 				return SpecialKey.End;
 			case NSKey.Begin:
+				ch = '\0';
 				return SpecialKey.Begin;
 			case NSKey.Home:
+				ch = '\0';
 				return SpecialKey.Home;
 			case NSKey.LeftArrow:
+				ch = '\0';
 				return SpecialKey.Left;
 			case NSKey.UpArrow:
+				ch = '\0';
 				return SpecialKey.Up;
 			case NSKey.RightArrow:
+				ch = '\0';
 				return SpecialKey.Right;
 			case NSKey.DownArrow:
+				ch = '\0';
 				return SpecialKey.Down;
 			case NSKey.DeleteChar:
+				ch = '\0';
 				return SpecialKey.Delete;
 			}
 			return SpecialKey.None;
