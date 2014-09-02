@@ -361,6 +361,7 @@ namespace MonoDevelop.Core.Instrumentation
 			this.message = null;
 			traces = null;
 			threadId = 0;
+			change = 0;
 		}
 		
 		internal CounterValue (int value, int totalCount, int change, DateTime timestamp, string message, TimerTraceList traces)
