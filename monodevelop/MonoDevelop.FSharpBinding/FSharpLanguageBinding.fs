@@ -115,7 +115,7 @@ type FSharpLanguageBinding() =
               pars.GenerateTailCalls <- false
           let releaseAtt = options.GetAttribute ("Release")
           if (System.String.Compare ("True", releaseAtt, StringComparison.OrdinalIgnoreCase) = 0) then
-              pars.DebugSymbols <- true
+              pars.DebugSymbols <- false
               pars.Optimize <- true
               pars.GenerateTailCalls <- true
       // TODO: set up the documentation file to be AssemblyName.xml by default (but how do we get AssemblyName here?)
