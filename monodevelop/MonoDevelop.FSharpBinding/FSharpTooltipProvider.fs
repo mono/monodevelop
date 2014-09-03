@@ -19,7 +19,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 [<AutoOpen>]
 module FSharpTypeExt =
-    let isOperator (name: string) =
+    let isOperatorOrActivePattern (name: string) =
             if name.StartsWith "( " && name.EndsWith " )" && name.Length > 4 then
                 name.Substring (2, name.Length - 4) |> String.forall (fun c -> c <> ' ')
             else false
@@ -30,6 +30,9 @@ module FSharpTypeExt =
             if typ.HasTypeDefinition then getAbbreviatedType typ
             else fsharpType
         else fsharpType
+
+    let isConstructor (func: FSharpMemberFunctionOrValue) =
+        func.DisplayName = ".ctor"
 
     let isReferenceCell (fsharpType: FSharpType) = 
         let ty = getAbbreviatedType fsharpType
@@ -53,34 +56,39 @@ type ToolTips =
   ///A empty tip
 | EmptyTip
 
+[<AutoOpen>]
 module Highlight =
+    type HighlightType =
+    | Symbol | Keyword | UserType | Number
+
     let getColourScheme () =
         Highlighting.SyntaxModeService.GetColorStyle (IdeApp.Preferences.ColorScheme)
 
     let hl str (style: Highlighting.ChunkStyle) =
         let color = getColourScheme().GetForeground (style) |> GtkUtil.ToGdkColor
-        let  colorString = HelperMethods.GetColorString (color)
-        "<span foreground=\"" + colorString + "\">" + str + "</span>"
+        let colorString = HelperMethods.GetColorString (color)
+        sprintf """<span foreground="%s">%s</span>""" colorString str
 
-    let asSymbol s =
+    let asType t s =
         let cs = getColourScheme ()
-        hl s cs.KeywordOperators
-
-    let asKeyword k =
-        let cs = getColourScheme ()
-        hl k cs.KeywordTypes
-    
-    let asUserType u =
-        let cs = getColourScheme ()
-        hl u cs.UserTypes
+        match t with
+        | Symbol -> hl s cs.KeywordOperators
+        | Keyword -> hl s cs.KeywordTypes
+        | UserType -> hl s cs.UserTypes
+        | Number -> hl s cs.Number
 
 [<AutoOpen>]
 module NewTooltips =
 
     let escapeText = GLib.Markup.EscapeText
 
-    /// Add two strings with a space between
-    let (++) a b = a + " " + b
+    /// Concat two strings with a space between if both a and b are not IsNullOrWhiteSpace
+    let (++) (a:string) (b:string) =
+        match String.IsNullOrEmpty a, String.IsNullOrEmpty b with
+        | true, true -> ""
+        | false, true -> a
+        | true, false -> b
+        | false, false -> a + " " + b
 
     let getSegFromSymbolUse (editor:TextEditor) (symbolUse:FSharpSymbolUse)  =
         let startOffset = editor.Document.LocationToOffset(symbolUse.RangeAlternate.StartLine, symbolUse.RangeAlternate.StartColumn)
@@ -104,69 +112,139 @@ module NewTooltips =
                 | None -> XmlDoc.EmptyDoc
             else Lookup(xmlDocSig, symbolUse.Symbol.Assembly.FileName)
 
+    let getUnioncaseSignature displayContext (unionCase:FSharpUnionCase) =
+        if unionCase.UnionCaseFields.Count > 0 then
+           let typeList =
+              unionCase.UnionCaseFields
+              |> Seq.map (fun unionField -> unionField.Name ++ asType Symbol ":" ++ asType UserType (escapeText (unionField.FieldType.Format displayContext)))
+              |> String.concat (asType Symbol " * " )
+           unionCase.Name ++ asType Keyword "of" ++ typeList
+         else unionCase.Name
+
+    let getEntitySignature displayContext (fse: FSharpEntity) =
+        let modifier =
+            match fse.Accessibility with
+            | a when a.IsInternal -> asType Keyword "internal "
+            | a when a.IsPrivate -> asType Keyword "private "
+            | _ -> ""
+
+        let typeName =
+            match fse with
+            | _ when fse.IsFSharpModule -> "module"
+            | _ when fse.IsEnum         -> "enum"
+            | _ when fse.IsValueType    -> "struct"
+            | _                         -> "type"
+
+        let enumtip () =
+            asType Symbol " =" + "\n" + 
+            asType Symbol "|" ++
+            (fse.FSharpFields
+            |> Seq.filter (fun f -> not f.IsCompilerGenerated)
+            |> Seq.map (fun field -> match field.LiteralValue with
+                                     | Some lv -> field.Name + asType Symbol " = " + asType Number (string lv)
+                                     | None -> field.Name )
+            |> String.concat ("\n" + asType Symbol "| " ) )
+
+
+        let uniontip () = 
+            asType Symbol " =" + "\n" + 
+            asType Symbol "|" ++
+            (fse.UnionCases 
+            |> Seq.map (getUnioncaseSignature displayContext)
+            |> String.concat ("\n" + asType Symbol "| " ) )
+                                 
+        let typeDisplay = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
+        let fullName = "\n\nFull name: " + fse.FullName
+        match fse.IsFSharpUnion, fse.IsEnum with
+        | true, false -> typeDisplay + uniontip () + fullName
+        | false, true -> typeDisplay + enumtip () + fullName
+        | _ -> typeDisplay + fullName
+
+    let getFuncSignature displayContext (func: FSharpMemberFunctionOrValue) =
+        let functionName =
+            if isConstructor func then func.EnclosingEntity.DisplayName
+            else func.DisplayName
+
+        let modifiers =
+            let accessibility =
+                match func.Accessibility with
+                | a when a.IsInternal -> asType Keyword "internal"
+                | a when a.IsPrivate -> asType Keyword "private"
+                | _ -> ""
+
+            let modifier =
+                //F# types are prefixed with new, should non F# types be too for consistancy?
+                if isConstructor func then
+                    if func.EnclosingEntity.IsFSharp then "new" ++ accessibility
+                    else accessibility
+                elif func.IsMember then 
+                    if func.IsInstanceMember then
+                        if func.IsDispatchSlot then "abstract member" ++ accessibility
+                        else "member" ++ accessibility
+                    else "static member" ++ accessibility
+                else
+                    if func.InlineAnnotation = FSharpInlineAnnotation.AlwaysInline then "val" ++ accessibility ++ "inline"
+                    elif func.IsInstanceMember then "val" ++ accessibility
+                    else "val" ++ accessibility //does this need to be static prefixed?
+            modifier
+
+        let argInfos =
+            func.CurriedParameterGroups 
+            |> Seq.map Seq.toList 
+            |> Seq.toList 
+
+        let retType = asType UserType (escapeText(func.ReturnParameter.Type.Format displayContext))
+
+        let padLength = 
+            let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
+            match allLengths with
+            | [] -> 0
+            | l -> l |> List.max
+
+        match argInfos with
+        | [] ->
+            //When does this occur, val type within  module?
+            asType Keyword modifiers ++ functionName ++ asType Symbol ":" ++ retType
+                   
+        | [[]] ->
+            //A ctor with () parameters seems to be a list with an empty list
+            asType Keyword modifiers ++ functionName ++ asType Symbol "() :" ++ retType 
+        | many ->
+                let allParams =
+                    many
+                    |> List.map(fun listOfParams ->
+                                    listOfParams
+                                    |> List.map(fun p -> "   " + p.DisplayName.PadRight (padLength) + asType Symbol ":" ++ asType UserType (escapeText (p.Type.Format displayContext)))
+                                    |> String.concat (asType Symbol " *" ++ "\n"))
+                    |> String.concat (asType Symbol " ->" + "\n") 
+                let typeArguments =
+                    allParams +  "\n   " + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
+                asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
+
+    let getValSignature displayContext (v:FSharpMemberFunctionOrValue) =
+        let retType = asType UserType (escapeText(v.ReturnParameter.Type.Format displayContext))
+        let prefix = 
+            if v.IsMutable then asType Keyword "val" ++ asType Keyword "mutable"
+            else asType Keyword "val"
+        prefix ++ v.DisplayName ++ asType Symbol ":" ++ retType
+
+    let getFieldSignature displayContext (field: FSharpField) =
+        let retType = asType UserType (escapeText(field.FieldType.Format displayContext))
+        match field.LiteralValue with
+        | Some lv -> field.DisplayName ++ asType Symbol ":" ++ retType ++ asType Symbol "=" ++ asType Number (string lv)
+        | None ->
+            let prefix = 
+                if field.IsMutable then asType Keyword "val" ++ asType Keyword "mutable"
+                else asType Keyword "val"
+            prefix ++ field.DisplayName ++ asType Symbol ":" ++ retType
+
     let getTooltipFromSymbol (symbolUse:FSharpSymbolUse option) editor (backUpSig: Lazy<_>) =
         match symbolUse with
         | Some symbolUse -> 
             match symbolUse.Symbol with
             | :? FSharpEntity as fse ->
                 try
-                    let displayName = fse.DisplayName
-
-                    let modifier = match fse.Accessibility with
-                                   | a when a.IsInternal -> Highlight.asKeyword "internal "
-                                   | a when a.IsPrivate -> Highlight.asKeyword "private "
-                                   | _ -> ""
-
-                    let attributes =
-                        // Maybe search for modifier attributes like abstract, sealed and append them above the type:
-                        // [<Abstract>]
-                        // type Test = ...
-                        String.Join ("\n", fse.Attributes 
-                                           |> Seq.map (fun a -> let name = a.AttributeType.DisplayName.Replace("Attribute", "")
-                                                                let parameters = String.Join(", ",  a.ConstructorArguments |> Seq.filter (fun ca -> ca :? string ) |> Seq.cast<string>)
-                                                                if String.IsNullOrWhiteSpace parameters then "[<" + name + ">]"
-                                                                else "[<" + name + "( " + parameters + " )" + ">]" ) 
-                                           |> Seq.toArray)
-
-                    let signature =
-                        let typeName =
-                            match fse with
-                            | _ when fse.IsFSharpModule -> "module"
-                            | _ when fse.IsEnum         -> "enum"
-                            | _ when fse.IsValueType    -> "struct"
-                            | _                         -> "type"
-
-                        let enumtip () =
-                            Highlight.asSymbol " =" + "\n" + 
-                            Highlight.asSymbol "|" ++
-                            (fse.FSharpFields
-                            |> Seq.filter (fun f -> not f.IsCompilerGenerated)
-                            |> Seq.map (fun field -> field.Name) //TODO Fix FSC to expose enum filed literals: field.Name + (hl " = " cs.KeywordOperators) + hl field.LiteralValue cs.UserTypesValueTypes*)
-                            |> String.concat ("\n" + Highlight.asSymbol "| " ) )
-           
-
-                        let uniontip () = 
-                            Highlight.asSymbol " =" + "\n" + 
-                            Highlight.asSymbol "|" ++
-                            (fse.UnionCases 
-                            |> Seq.map (fun unionCase -> 
-                                            if unionCase.UnionCaseFields.Count > 0 then
-                                               let typeList =
-                                                  unionCase.UnionCaseFields
-                                                  |> Seq.map (fun unionField -> unionField.Name ++ Highlight.asSymbol ":" ++ Highlight.asUserType (escapeText (unionField.FieldType.Format symbolUse.DisplayContext)))
-                                                  |> String.concat (Highlight.asSymbol " * " )
-                                               unionCase.Name ++ Highlight.asKeyword "of" ++ typeList
-                                             else unionCase.Name)
-
-                            |> String.concat ("\n" + Highlight.asSymbol "| " ) )
-                                                 
-                        let typeDisplay = modifier + Highlight.asKeyword typeName ++ Highlight.asUserType displayName
-                        let fullName = "\n\nFull name: " + fse.FullName
-                        match fse.IsFSharpUnion, fse.IsEnum with
-                        | true, false -> typeDisplay + uniontip () + fullName
-                        | false, true -> typeDisplay + enumtip () + fullName
-                        | _ -> typeDisplay + fullName
-
+                    let signature = getEntitySignature symbolUse.DisplayContext fse
                     ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
                 with exn -> ToolTips.EmptyTip
 
@@ -174,87 +252,48 @@ module NewTooltips =
                 try
                 if func.CompiledName = ".ctor" then 
                     if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
-                        //TODO: Add ValueType
-                        ToolTips.EmptyTip
+                        //ValueTypes
+                        let signature = getFuncSignature symbolUse.DisplayContext func
+                        ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
+                        //ToolTips.EmptyTip
                     else
-                        //TODO: Add ReferenceType
-                        ToolTips.EmptyTip
+                        //ReferenceType constructor
+                        let signature = getFuncSignature symbolUse.DisplayContext func
+                        ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
+                        //ToolTips.EmptyTip
 
                 elif func.FullType.IsFunctionType && not func.IsPropertyGetterMethod && not func.IsPropertySetterMethod && not symbolUse.IsFromComputationExpression then 
-                    if isOperator func.DisplayName then
-                        //TODO: Add operators, the text will look like:
-                        // val ( symbol ) : x:string -> y:string -> string
-                        // Full name: Name.Blah.( symbol )
-                        // Note: (In the current compiler tooltips a closure defined symbol will be missing the named types and the full name)
-                        ToolTips.EmptyTip
+                    if isOperatorOrActivePattern func.DisplayName then
+                        //Active pattern or operator
+                        let signature = getFuncSignature symbolUse.DisplayContext func
+                        ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
                     else
                         //TODO: Add closure/nested functions
                         if not func.IsModuleValueOrMember then
-                            //represents a closure or nested function
+                            //represents a closure or nested function, needs FCS support
                             ToolTips.EmptyTip
                         else
-                            let signature =
-
-                                let backupSignature = func.FullType.Format symbolUse.DisplayContext
-                                let argInfos =
-                                    func.CurriedParameterGroups 
-                                    |> Seq.map Seq.toList 
-                                    |> Seq.toList 
-
-                                let retType = Highlight.asUserType (escapeText(func.ReturnParameter.Type.Format symbolUse.DisplayContext))
-
-                                //example of building up the parameters using Display name and Type
-                                let signature =
-                                    let padLength = 
-                                        let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
-                                        match allLengths with
-                                        | [] -> 0
-                                        | l -> l |> List.max
-
-                                    match argInfos with
-                                    | [] -> retType //When does this occur, val type within  module?
-                                    | [[]] -> retType //A ctor with () parameters seems to be a list with an empty list
-                                    | [[single]] -> "   " + single.DisplayName + Highlight.asSymbol ":" ++ Highlight.asUserType (escapeText (single.Type.Format symbolUse.DisplayContext))
-                                                    + "\n   " +  Highlight.asSymbol "->" ++ retType
-                                    | many ->
-                                        let allParams =
-                                            many
-                                            |> List.map(fun listOfParams ->
-
-                                                            listOfParams
-                                                            |> List.map(fun (p:FSharpParameter) ->
-                                                                            "   " + p.DisplayName.PadRight (padLength) + Highlight.asSymbol ":" ++ Highlight.asUserType (escapeText (p.Type.Format symbolUse.DisplayContext)))
-                                                                            |> String.concat (Highlight.asSymbol " *" ++ "\n"))
-                                            |> String.concat (Highlight.asSymbol " ->" + "\n") 
-                                        allParams +  "\n   " + (String.replicate (max (padLength-1) 0) " ") +  Highlight.asSymbol "->" ++ retType
-
-                                let modifiers = 
-                                    if func.IsMember then 
-                                        if func.IsInstanceMember then
-                                            if func.IsDispatchSlot then "abstract member"
-                                            else "member"
-                                        else "static member"
-                                    else
-                                        if func.InlineAnnotation = FSharpInlineAnnotation.AlwaysInline then "inline val"
-                                        elif func.IsInstanceMember then "val"
-                                        else "val" //does this need to be static prefixed?
-
-                                Highlight.asKeyword modifiers ++ func.DisplayName ++ Highlight.asSymbol ":" + "\n" + signature
-
+                            let signature = getFuncSignature symbolUse.DisplayContext func
                             ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)                            
 
                 else
                     //val name : Type
-                    let signature =
-                            let retType = Highlight.asUserType (escapeText(func.ReturnParameter.Type.Format symbolUse.DisplayContext))
-                            let prefix = 
-                                if func.IsMutable then Highlight.asKeyword "val" ++ Highlight.asKeyword "mutable"
-                                else Highlight.asKeyword "val"
-                            prefix ++ func.DisplayName ++ Highlight.asSymbol ":" ++ retType
-
+                    let signature = getValSignature symbolUse.DisplayContext func
                     ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
                 with exn -> ToolTips.EmptyTip
 
+            | :? FSharpField as fsf ->
+                let signature = getFieldSignature symbolUse.DisplayContext fsf
+                ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
+
+            | :? FSharpUnionCase as uc ->
+                let signature = getUnioncaseSignature symbolUse.DisplayContext uc
+                ToolTip(signature, getSummaryFromSymbol symbolUse backUpSig, getSegFromSymbolUse editor symbolUse)
+
+            | :? FSharpActivePatternCase as apc ->
+                //Theres not enough information to build this
+                ToolTips.EmptyTip
+               
             | _ -> ToolTips.EmptyTip
 
         | None -> ToolTips.EmptyTip
@@ -345,7 +384,7 @@ type FSharpTooltipProvider() =
                             return Tooltip tooltipItem
                     //If theres no match or previous cached result generate a new tooltipitem
                     | Some(_)
-                    | None -> let tooltipItem = TooltipItem ((signature, summary), textSeg)
+                    | None -> let tooltipItem = TooltipItem((signature, summary), textSeg)
                               lastResult <- Some(tooltipItem)
                               return Tooltip tooltipItem
                | EmptyTip ->
