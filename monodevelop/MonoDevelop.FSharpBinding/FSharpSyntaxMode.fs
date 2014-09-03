@@ -344,22 +344,25 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     let handleConfigurationChanged(_) =
         for doc in IdeApp.Workbench.Documents do
             let data = doc.Editor
-            if (data <> null && doc.Editor <> null) then
+            if data <> null then
                 // Force Syntax Mode Reparse
                 if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
                     let sm = data.Document.SyntaxMode :?> SyntaxMode
                     sm.UpdateDocumentHighlighting()
                     SyntaxModeService.WaitUpdate(data.Document)
-                doc.Editor.Parent.TextViewMargin.PurgeLayoutCache()
+                data.Parent.TextViewMargin.PurgeLayoutCache()
                 doc.ReparseDocument()
-                doc.Editor.Parent.QueueDraw()
+                data.Parent.QueueDraw()
 
     let getAndProcessSymbols (pd:ParseAndCheckResults) =
         async {let! symbols = pd.GetAllUsesOfAllSymbolsInFile()
                do symbolsInFile <- symbols
-               do Gtk.Application.Invoke (fun _ _ -> document.Editor.Parent.TextViewMargin.PurgeLayoutCache ()
-                                                     document.Editor.Parent.QueueDraw())}
-
+               if document <> null &&
+                  document.Editor <> null &&
+                  document.Editor.Parent <> null &&
+                  document.Editor.Parent.TextViewMargin <> null
+               then Gtk.Application.Invoke (fun _ _ -> document.Editor.Parent.TextViewMargin.PurgeLayoutCache ()
+                                                       document.Editor.Parent.QueueDraw())}
     let handleDocumentParsed(_) =
         if document <> null && not document.IsProjectContextInUpdate && semanticHighlightingEnabled then
             let localParsedDocument = document.ParsedDocument
