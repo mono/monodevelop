@@ -169,6 +169,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					p = null;
 				}
 
+				Environment.CurrentDirectory = Path.GetDirectoryName (file);
+
 				if (p == null) {
 					p = new Project (buildEngine.Engine);
 					var content = buildEngine.GetUnsavedProjectContent (pc.ProjectFile);
