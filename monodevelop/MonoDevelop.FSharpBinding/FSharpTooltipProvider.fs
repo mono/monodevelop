@@ -161,35 +161,9 @@ module NewTooltips =
         | _ -> typeDisplay + fullName
 
     let getFuncSignature displayContext (func: FSharpMemberFunctionOrValue) =
-        let backupSignature = func.FullType.Format displayContext
-        let argInfos =
-            func.CurriedParameterGroups 
-            |> Seq.map Seq.toList 
-            |> Seq.toList 
-
-        let retType = asType UserType (escapeText(func.ReturnParameter.Type.Format displayContext))
-
-        //example of building up the parameters using Display name and Type
-        let signature =
-            let padLength = 
-                let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
-                match allLengths with
-                | [] -> 0
-                | l -> l |> List.max
-
-            match argInfos with
-            | [] -> "   " + retType //When does this occur, val type within  module?
-            | [[]] -> "   " + retType //A ctor with () parameters seems to be a list with an empty list
-            | many ->
-                let allParams =
-                    many
-                    |> List.map(fun listOfParams ->
-                                    listOfParams
-                                    |> List.map(fun (p:FSharpParameter) -> "   " + p.DisplayName.PadRight (padLength) + asType Symbol ":" ++ asType UserType (escapeText (p.Type.Format displayContext)))
-                                    |> String.concat (asType Symbol " *" ++ "\n"))
-                    |> String.concat (asType Symbol " ->" + "\n") 
-                allParams +  "\n   " + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
-
+        let functionName =
+            if isConstructor func then func.EnclosingEntity.DisplayName
+            else func.DisplayName
 
         let modifiers =
             let accessibility =
@@ -213,10 +187,39 @@ module NewTooltips =
                     elif func.IsInstanceMember then "val" ++ accessibility
                     else "val" ++ accessibility //does this need to be static prefixed?
             modifier
-        let functionName =
-            if isConstructor func then func.EnclosingEntity.DisplayName
-            else func.DisplayName
-        asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + signature
+
+        let argInfos =
+            func.CurriedParameterGroups 
+            |> Seq.map Seq.toList 
+            |> Seq.toList 
+
+        let retType = asType UserType (escapeText(func.ReturnParameter.Type.Format displayContext))
+
+        let padLength = 
+            let allLengths = argInfos |> List.concat |> List.map (fun p -> p.DisplayName.Length)
+            match allLengths with
+            | [] -> 0
+            | l -> l |> List.max
+
+        match argInfos with
+        | [] ->
+            //When does this occur, val type within  module?
+            asType Keyword modifiers ++ functionName ++ asType Symbol ":" ++ retType
+                   
+        | [[]] ->
+            //A ctor with () parameters seems to be a list with an empty list
+            asType Keyword modifiers ++ functionName ++ asType Symbol "() :" ++ retType 
+        | many ->
+                let allParams =
+                    many
+                    |> List.map(fun listOfParams ->
+                                    listOfParams
+                                    |> List.map(fun p -> "   " + p.DisplayName.PadRight (padLength) + asType Symbol ":" ++ asType UserType (escapeText (p.Type.Format displayContext)))
+                                    |> String.concat (asType Symbol " *" ++ "\n"))
+                    |> String.concat (asType Symbol " ->" + "\n") 
+                let typeArguments =
+                    allParams +  "\n   " + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
+                asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
 
     let getValSignature displayContext (v:FSharpMemberFunctionOrValue) =
         let retType = asType UserType (escapeText(v.ReturnParameter.Type.Format displayContext))
