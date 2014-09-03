@@ -10,6 +10,7 @@ open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
 open ICSharpCode.NRefactory.TypeSystem.Implementation
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.CompilerBinding
 
 /// MD/XS extension for highlighting the usages of a symbol within the current buffer.
 type HighlightUsagesExtension() as this =
