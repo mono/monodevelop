@@ -10,7 +10,7 @@ open System.IO
 open System.Diagnostics
 open System.Text.RegularExpressions
 
-let FSharpVersion = "5.4.1"
+let FSharpVersion = "5.6.0"
 
 let UnixPaths = 
     [ "/usr/lib/monodevelop"
