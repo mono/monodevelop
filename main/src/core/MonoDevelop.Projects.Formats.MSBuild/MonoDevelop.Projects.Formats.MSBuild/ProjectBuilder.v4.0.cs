@@ -179,6 +179,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (content == null)
 					p = engine.LoadProject (file);
 				else {
+					Environment.CurrentDirectory = Path.GetDirectoryName (file);
 					p = engine.LoadProject (new XmlTextReader (new StringReader (content)));
 					p.FullPath = file;
 				}
@@ -188,7 +189,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				p.SetProperty ("Platform", platform);
 			else
 				p.SetProperty ("Platform", "");
-			
 			return p;
 		}
 
