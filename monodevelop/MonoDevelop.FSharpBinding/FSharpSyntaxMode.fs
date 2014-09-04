@@ -6,6 +6,7 @@ open MonoDevelop.Ide
 open MonoDevelop.Core
 open Mono.TextEditor
 open Mono.TextEditor.Highlighting
+open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
 
@@ -108,31 +109,60 @@ open MonoDevelop.FSharp.FSharpSymbolHelper
 module internal Patterns =
     type TokenSymbol = 
         {
-            TokenColor: TokenColorKind; 
+            TokenInfo : TokenInformation;
             SymbolUse: FSharpSymbolUse option
             ExtraColorInfo: (Microsoft.FSharp.Compiler.Range.range * TokenColorKind) option
         }
 
     let (|Keyword|_|) ts =
-        if (ts.TokenColor) = TokenColorKind.Keyword || 
+        if (ts.TokenInfo.ColorClass) = TokenColorKind.Keyword || 
            (ts.ExtraColorInfo.IsSome && (snd ts.ExtraColorInfo.Value) = TokenColorKind.Keyword)  then Some(Keyword)
         else None
 
     let (|Comment|_|) ts =
-        if ts.TokenColor = TokenColorKind.Comment then Some Comment
+        if ts.TokenInfo.ColorClass = TokenColorKind.Comment then Some Comment
         else None
 
     let (|StringLiteral|_|) ts =
-        if ts.TokenColor = TokenColorKind.String then Some StringLiteral
+        if ts.TokenInfo.ColorClass = TokenColorKind.String then Some StringLiteral
         else None
 
     let (|NumberLiteral|_|) ts =
-        if ts.TokenColor = TokenColorKind.Number then Some NumberLiteral
+        if ts.TokenInfo.ColorClass = TokenColorKind.Number then Some NumberLiteral
         else None
 
     let (|PreprocessorKeyword|_|) ts =
-        if ts.TokenColor = TokenColorKind.PreprocessorKeyword then Some PreprocessorKeyword
+        if ts.TokenInfo.ColorClass = TokenColorKind.PreprocessorKeyword then Some PreprocessorKeyword
         else None
+
+    let (|Punctuation|_|) (ts:TokenSymbol) =
+        let token = Parser.tokenTagToTokenId ts.TokenInfo.Tag
+        match token with
+        | Parser.tokenId.TOKEN_PLUS_MINUS_OP
+        | Parser.tokenId.TOKEN_MINUS
+        | Parser.tokenId.TOKEN_STAR
+        | Parser.tokenId.TOKEN_INFIX_STAR_DIV_MOD_OP
+        | Parser.tokenId.TOKEN_PERCENT_OP
+        | Parser.tokenId.TOKEN_INFIX_AT_HAT_OP
+        | Parser.tokenId.TOKEN_QMARK
+        | Parser.tokenId.TOKEN_COLON
+        | Parser.tokenId.TOKEN_EQUALS
+        | Parser.tokenId.TOKEN_SEMICOLON
+        | Parser.tokenId.TOKEN_COMMA
+        | Parser.tokenId.TOKEN_DOT
+        | Parser.tokenId.TOKEN_BAR -> Some Punctuation
+        | _ -> None
+
+    let (|PunctuationBrackets|_|) (ts:TokenSymbol) =
+        let token = Parser.tokenTagToTokenId ts.TokenInfo.Tag
+        match token with
+        | Parser.tokenId.TOKEN_LPAREN
+        | Parser.tokenId.TOKEN_RPAREN
+        | Parser.tokenId.TOKEN_LBRACK
+        | Parser.tokenId.TOKEN_RBRACK
+        | Parser.tokenId.TOKEN_LBRACE
+        | Parser.tokenId.TOKEN_RBRACE -> Some PunctuationBrackets
+        | _ -> None
 
     let private isIdentifier =
         function
@@ -147,7 +177,7 @@ module internal Patterns =
         | _ -> true
 
     let (|Identifier|_|) ts =
-        match isIdentifier ts.TokenColor with
+        match isIdentifier ts.TokenInfo.ColorClass with
         | true -> Identifier Some ts.SymbolUse
         | false -> None
 
@@ -245,7 +275,7 @@ module internal Patterns =
         | _ -> None
 
     let (|ComputationExpression|_|) ts =
-        if isIdentifier ts.TokenColor then
+        if isIdentifier ts.TokenInfo.ColorClass then
             match ts.SymbolUse with
             | Some symbolUse ->
                 match symbolUse.IsFromComputationExpression with
@@ -255,7 +285,7 @@ module internal Patterns =
         else None
 
     let (|UnusedCode|_|) ts =
-        if ts.TokenColor = TokenColorKind.InactiveCode then Some UnusedCode
+        if ts.TokenInfo.ColorClass = TokenColorKind.InactiveCode then Some UnusedCode
         else None
 
     let isAbstractBlockSpan (span: Span) =
@@ -387,7 +417,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                 extraColourInfo
                 |> Array.tryFind (fun (rng, _) -> rng.StartLine = lineNumber && rng.StartColumn = token.LeftColumn)
 
-        let tokenSymbol = { TokenSymbol.TokenColor = token.ColorClass; SymbolUse = symbol; ExtraColorInfo = extraColor }
+        let tokenSymbol = { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
         let chunkStyle =
             match tokenSymbol with
             | UnusedCode -> style.ExcludedCode
@@ -396,6 +426,8 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | Comment -> style.CommentsSingleLine
             | StringLiteral -> style.String
             | NumberLiteral -> style.Number
+            | PunctuationBrackets -> style.PunctuationForBrackets
+            | Punctuation -> style.Punctuation
             | Module
             | ActivePatternCase
             | Record
