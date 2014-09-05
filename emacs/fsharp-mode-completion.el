@@ -97,7 +97,7 @@ display in a help buffer instead.")
   (fsharp-ac--log str)
   (process-send-string proc str))
 
-(defun fsharp-ac-parse-current-buffer ()
+(defun fsharp-ac-parse-current-buffer (&optional sync)
   (if (> (buffer-modified-tick) fsharp-ac-last-parsed-ticks)
       (save-restriction
 	(let ((file (expand-file-name (buffer-file-name))))
@@ -105,8 +105,9 @@ display in a help buffer instead.")
 	  (fsharp-ac--log (format "Parsing \"%s\"\n" file))
 	  (process-send-string
 	   fsharp-ac-completion-process
-	   (format "parse \"%s\"\n%s\n<<EOF>>\n"
+	   (format "parse \"%s\" %s\n%s\n<<EOF>>\n"
 		   file
+                   (if sync " sync" "")
 		   (buffer-substring-no-properties (point-min) (point-max)))))
 	(setq fsharp-ac-last-parsed-ticks (buffer-modified-tick)))))
 

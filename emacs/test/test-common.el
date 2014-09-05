@@ -33,8 +33,7 @@
             (process-buffer (proc) "*fsharp-complete*")
             (process-mark (proc) (point-max))
             (fsharp-ac-parse-current-buffer () t)
-            (log-to-proc-buf (p s))
-            )
+            (log-to-proc-buf (p s)))
      ,@body))
 
 (defun should-match (regex str)
