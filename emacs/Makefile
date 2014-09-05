@@ -76,7 +76,7 @@ integration-test : $(ac_exe) packages
 	HOME=$(tmp_d) ;\
 	$(emacs) $(load_files) $(load_integration_tests) $(emacs_opts)
 
-test-all : unit-test integration-test
+test-all : unit-test integration-test byte-compile
 
 packages :
 	HOME=$(tmp_d) ;\

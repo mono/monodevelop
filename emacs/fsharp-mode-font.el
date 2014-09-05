@@ -60,8 +60,6 @@
   (set-face-background 'Stop "Red")
   (make-face 'Doc)
   (set-face-foreground 'Doc "Red")
-  (setq font-lock-stop-face 'Stop)
-  (setq font-lock-doccomment-face 'Doc)
 ))
 
 (defconst fsharp-access-control-regexp

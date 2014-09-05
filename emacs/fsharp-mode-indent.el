@@ -25,8 +25,8 @@
 
 (require 'comint)
 (require 'custom)
-(require 'cl)
 (require 'compile)
+(require 'fsharp-mode)
 
 
 ;; user definable variables
@@ -276,20 +276,6 @@ i.e. the limit on how far back to scan."
      ((nth 4 state) 'comment)
      (t nil))))
 
-;; XEmacs has a built-in function that should make this much quicker.
-;; In this case, lim is ignored
-(defun fsharp-fast-in-literal (&optional lim)
-  "Fast version of `fsharp-in-literal-p', used only by XEmacs.
-Optional LIM is ignored."
-  ;; don't have to worry about context == 'block-comment
-  (buffer-syntactic-context))
-
-(if (fboundp 'buffer-syntactic-context)
-    (defalias 'fsharp-in-literal-p 'fsharp-fast-in-literal))
-
-
-
-
 ;; electric characters
 (defun fsharp-outdent-p ()
   "Returns non-nil if the current line should dedent one level."
@@ -297,19 +283,6 @@ Optional LIM is ignored."
     (progn (back-to-indentation)
            (looking-at fsharp-outdent-re))
 ))
-
-;;     (and (progn (back-to-indentation)
-;;              (looking-at fsharp-outdent-re))
-;;       ;; short circuit infloop on illegal construct
-;;       (not (bobp))
-;;       (progn (forward-line -1)
-;;              (fsharp-goto-initial-line)
-;;              (back-to-indentation)
-;;              (while (or (looking-at fsharp-blank-or-comment-re)
-;;                         (bobp))
-;;                (backward-to-indentation 1))
-;;              (not (looking-at fsharp-no-outdent-re)))
-;;       )))
 
 (defun fsharp-electric-colon (arg)
   "Insert a colon.
@@ -1272,15 +1245,6 @@ pleasant."
   (fsharp-keep-region-active))
 
 
-
-(defun fsharp-describe-mode ()
-  "Dump long form of Fsharp-mode docs."
-  (interactive)
-  (fsharp-dump-help-string "Major mode for editing Fsharp files.
-Knows about Fsharp indentation, tokens, comments and continuation lines.
-Paragraphs are separated by blank lines only.
-
-FIXME"))
 
 (require 'info-look)
 ;; The info-look package does not always provide this function (it

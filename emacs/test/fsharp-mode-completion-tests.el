@@ -102,9 +102,8 @@
   (declare (indent 2))
   `(check ,(concat "check project loading " desc)
      (stubbing-process-functions
-      (flet ((fsharp-ac/start-process ())
-             (process-send-string (proc cmd))
-             (file-exists-p (_) ,exists))
+      (noflet ((fsharp-ac/start-process ())
+               (file-exists-p (_) ,exists))
         ,@body))))
 
 (check-project-loading "returns nil if not fsproj"
@@ -127,21 +126,17 @@ Stubs out functions that call on the ac process."
   (declare (indent 1))
   `(check ,(concat "process handler " desc)
      (setq major-mode 'fsharp-mode)
-       (flet ((log-to-proc-buf (p s))
-              (fsharp-ac-parse-current-buffer () t)
-              (process-send-string   (p s))
-              (fsharp-ac-can-make-request () t)
-              (expand-file-name (x &rest _) x)
-              (process-buffer (proc) "*fsharp-complete*")
-              (process-mark (proc) (point-max)))
-         ,@body)))
+     (stubbing-process-functions
+      (noflet ((fsharp-ac-can-make-request () t)
+               (expand-file-name (x &rest _) x))
+         ,@body))))
 
 (defmacro stub-fn (sym var &rest body)
   "Stub the given unary function, with the argument to the
 function bound to VAR in BODY. "
   (declare (indent 2))
   `(let (,var)
-     (flet ((,sym (x &rest xs) (setq ,var x)))
+     (noflet ((,sym (x &rest xs) (setq ,var x)))
        ,@body)))
 
 (check-handler "prints message on error"
@@ -157,7 +152,7 @@ function bound to VAR in BODY. "
 
 (check-handler "uses popup in terminal if tooltip is requested"
   (let ((fsharp-ac-use-popup t))
-    (flet ((display-graphic-p () nil))
+    (noflet ((display-graphic-p () nil))
       (stub-fn popup-tip tip
         (fsharp-ac/show-tooltip-at-point)
         (fsharp-ac-filter-output nil tooltip-msg)
@@ -165,7 +160,7 @@ function bound to VAR in BODY. "
 
 (check-handler "uses pos-tip in GUI if tooltip is requested"
   (let ((fsharp-ac-use-popup t))
-    (flet ((display-graphic-p () t))
+    (noflet ((display-graphic-p () t))
       (stub-fn pos-tip-show tip
         (fsharp-ac/show-tooltip-at-point)
         (fsharp-ac-filter-output nil tooltip-msg)

@@ -25,13 +25,15 @@
 
 (require 's)
 (require 'dash)
-(require 'fsharp-mode-indent)
 (require 'auto-complete)
 (require 'json)
 
 (autoload 'pos-tip-fill-string "pos-tip")
 (autoload 'pos-tip-show "pos-tip")
 (autoload 'popup-tip "popup")
+
+(declare-function fsharp-doc/format-for-minibuffer "fsharp-doc.el" (str))
+(declare-function fsharp-mode/find-fsproj "fsharp-mode.el" (dir-or-file))
 
 ;;; User-configurable variables
 
