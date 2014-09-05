@@ -46,7 +46,7 @@ type FSharpFormatter()  =
                 SpaceAroundDelimiter = format.SpaceAroundDelimiter
                 SpaceBeforeArgument = format.SpaceBeforeArgument
                 SpaceBeforeColon = format.SpaceBeforeColon 
-                SemicolonAtEndOfLine = format.SemicolonAtEndOfLine }
+                SemicolonAtEndOfLine = false }
         | _, null ->
             { FormatConfig.Default with
                 PageWidth = textStylePolicy.FileWidth
@@ -63,7 +63,7 @@ type FSharpFormatter()  =
                 SpaceAroundDelimiter = format.SpaceAroundDelimiter
                 SpaceBeforeArgument = format.SpaceBeforeArgument
                 SpaceBeforeColon = format.SpaceBeforeColon 
-                SemicolonAtEndOfLine = format.SemicolonAtEndOfLine }
+                SemicolonAtEndOfLine = false }
     
     let trimIfNeeded (input:string) (output:string) =
         let trimLinefeed = not <|  input.EndsWith("\n")
