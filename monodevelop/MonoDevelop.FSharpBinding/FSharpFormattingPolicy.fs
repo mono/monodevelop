@@ -44,10 +44,10 @@ type FSharpFormattingSettings() =
     [<LocalizedDisplayName ("Space before colon")>]
     member val SpaceBeforeColon = true with get, set
 
-    [<ItemProperty>]
-    [<LocalizedCategory ("Syntax")>]
-    [<LocalizedDisplayName ("Semicolon at End of Line")>]
-    member val SemicolonAtEndOfLine = false with get, set
+//    [<ItemProperty>]
+//    [<LocalizedCategory ("Syntax")>]
+//    [<LocalizedDisplayName ("Semicolon at End of Line")>]
+//    member val SemicolonAtEndOfLine = false with get, set
 
     member x.Clone() =
         x.MemberwiseClone() :?> FSharpFormattingSettings
