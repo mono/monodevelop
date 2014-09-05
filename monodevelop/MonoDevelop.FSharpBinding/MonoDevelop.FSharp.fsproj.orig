@@ -334,6 +334,12 @@
     <None Include="Templates\Xamarin.iOS\Project\Common\Info_Universal.Storyboard.plist.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\ExtensionAppDelegate.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\Common\Conversions.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Templates\Xamarin.iOS\Project\LibraryProject.xpt.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -352,9 +358,20 @@
     <None Include="Templates\Xamarin.iOS\Project\UnitTests\UnitTestAppDelegate.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates/FSharp-templates.xml">
+    <None Include="Templates\Xamarin.iOS\Project\CustomKeyboardExtension\Info.plist.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\Xamarin.iOS/Project\CustomKeyboardExtension\KeyboardViewController.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Xamarin.iOS\Project\CustomKeyboardExtension\Project.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <None Include="Templates\FSharp-templates.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
     <Compile Include="PowerPack\CodeDomVisitor.fs" />
     <Compile Include="PowerPack\CodeDomGenerator.fs" />
     <Compile Include="PowerPack\CodeProvider.fs" />
@@ -368,7 +385,7 @@
     <Compile Include="Services\NRefactory.fs" />
     <Compile Include="Services\NRefactoryCodeActionSource.fs" />
     <Compile Include="Services\FSharpIndentationTracker.fs" />
-	<Compile Include="FSharpSymbolHelper.fs" />
+	  <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
     <Compile Include="FSharpLanguageBinding.fs" />
@@ -386,14 +403,12 @@
     <Compile Include="FSharpFormatter.fs" />
     <Compile Include="FSharpFormattingPanelWidget.fs" />
     <Compile Include="FSharpFormattingPolicyPanel.fs" />
-	<Compile Include="FSharpSyntaxMode.fs" />
-	<Compile Include="FSharpHighlightUsagesExtension.fs" />
-	<EmbeddedResource Include="FSharpSyntaxMode.xml" />
+	  <Compile Include="FSharpSyntaxMode.fs" />
+	  <Compile Include="FSharpHighlightUsagesExtension.fs" />
+	  <EmbeddedResource Include="FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
     <EmbeddedResource Include="FSharpStylePolicy.xml" />
-    <EmbeddedResource Include="FSharpBinding.addin.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="FSharpBinding.addin.xml" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

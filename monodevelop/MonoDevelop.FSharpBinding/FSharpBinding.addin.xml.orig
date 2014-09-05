@@ -104,6 +104,8 @@
     <Import file="Templates/Xamarin.iOS/Project/Common/Info_Universal.Storyboard.plist.xml" />
     <Import file="Templates/Xamarin.iOS/Project/Common/Entitlements.plist.xml" />
     <Import file="Templates/Xamarin.iOS/Project/Common/Default-568h.png" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/Conversions.fs" />
+    <Import file="Templates/Xamarin.iOS/Project/Common/ExtensionAppDelegate.fs" />
     <Import file="Templates/Xamarin.iOS/Project/Empty/AppDelegate.fs" />
     <Import file="Templates/Xamarin.iOS/Project/Empty/ProjectIPad.xpt.xml" />
     <Import file="Templates/Xamarin.iOS/Project/Empty/ProjectIPhone.xpt.xml" />
@@ -118,6 +120,9 @@
     <Import file="Templates/Xamarin.iOS/Project/LibraryProject.xpt.xml" />
     <Import file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestAppDelegate.fs" />
     <Import file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestsProject.xpt.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/CustomKeyboardExtension/Info.plist.xml" />
+    <Import file="Templates/Xamarin.iOS/Project/CustomKeyboardExtension/KeyboardViewController.fs" />
+    <Import file="Templates/Xamarin.iOS/Project/CustomKeyboardExtension/Project.xpt.xml" />
 
     <!-- Code templates -->
     <Import file = "Templates/FSharp-templates.xml" />
@@ -439,6 +444,7 @@
         <ProjectTemplate file="Templates/Xamarin.iOS/Project/SingleView/ProjectUniversal.xpt.xml"/>
         <ProjectTemplate file="Templates/Xamarin.iOS/Project/LibraryProject.xpt.xml"/>
         <ProjectTemplate file="Templates/Xamarin.iOS/Project/UnitTests/UnitTestsProject.xpt.xml"/>
+        <ProjectTemplate file="Templates/Xamarin.iOS/Project/CustomKeyboardExtension/Project.xpt.xml"/>
       </Condition>
     </Extension>
 
