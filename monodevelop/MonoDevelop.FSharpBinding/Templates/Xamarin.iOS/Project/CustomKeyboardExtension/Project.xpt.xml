@@ -1,0 +1,34 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Custom Keyboard Extension</_Name>
+		<_Category>F#/iOS/Unified API/Extensions</_Category>
+		<Icon>md-project-iphone</Icon>
+		<LanguageName>F#</LanguageName>
+		<_Description>A custom keyboard application extension.</_Description>
+	</TemplateConfiguration>
+	
+	<Actions>
+		<Open filename = "KeyboardViewController.fs"/>
+	</Actions>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "." type = "XamarinIOSAppExtension">
+			<References>
+				<Reference type="Gac" refto="System, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Xml, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="System.Core, Version=2.0.5.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e" />
+				<Reference type="Gac" refto="mscorlib" />
+				<Reference type="Gac" refto="FSharp.Core" />
+				<Reference type="Gac" refto="Xamarin.iOS" />
+			</References>
+			<Files>
+				<Directory name="Resources"/>
+				<File name="Info.plist" AddStandardHeader="False" src="Info.plist.xml" />
+				<File name="Conversions.fs" AddStandardHeader="True" src="../Common/Conversions.fs" />
+				<File name="KeyboardViewController.fs" AddStandardHeader="True" src="KeyboardViewController.fs" />
+				<File name="AppDelegate.fs" AddStandardHeader="True" src="../Common/ExtensionAppDelegate.fs" />
+			</Files>
+		</Project>
+	</Combine>
+</Template>
