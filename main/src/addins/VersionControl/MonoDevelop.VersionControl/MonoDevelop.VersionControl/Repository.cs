@@ -325,8 +325,8 @@ namespace MonoDevelop.VersionControl
 			VersionInfoQuery [] fileQueryQueueClone;
 			DirectoryInfoQuery [] directoryQueryQueueClone;
 			RecursiveDirectoryInfoQuery [] recursiveDirectoryQueryQueueClone = new RecursiveDirectoryInfoQuery[0];
-			try {
-				while (true) {
+			while (true) {
+				try {
 					lock (queryLock) {
 						if (fileQueryQueue.Count == 0 &&
 							directoryQueryQueue.Count == 0 &&
@@ -362,18 +362,15 @@ namespace MonoDevelop.VersionControl
 					}
 
 					foreach (var item in recursiveDirectoryQueryQueueClone) {
-						try {
-							item.Result = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, true);
-						} finally {
-							item.ResetEvent.Set ();
-						}
+						item.Result = OnGetDirectoryVersionInfo (item.Directory, item.GetRemoteStatus, true);
+						item.ResetEvent.Set ();
 					}
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError ("Version control status query failed", ex);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Version control status query failed", ex);
 
-				foreach (var item in recursiveDirectoryQueryQueueClone)
-					item.ResetEvent.Set ();
+					foreach (var item in recursiveDirectoryQueryQueueClone)
+						item.ResetEvent.Set ();
+				}
 			}
 			//Console.WriteLine ("RunQueries finished - " + (DateTime.Now - t).TotalMilliseconds);
 		}
