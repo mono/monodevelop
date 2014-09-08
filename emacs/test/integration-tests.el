@@ -1,41 +1,5 @@
 (require 'ert)
 
-(defun init-melpa ()
-  (setq package-archives
-        '(("melpa"       . "http://melpa.milkbox.net/packages/")))
-  (package-initialize)
-  (unless package-archive-contents
-    (package-refresh-contents)))
-
-(defun ensure-packages (packages)
-  (dolist (package packages)
-    (unless (package-installed-p package)
-      (package-install package))))
-
-(defun load-fsharp-mode ()
-  (unless (functionp 'fsharp-mode)
-    (let ((testmode (getenv "TESTMODE")))
-      (cond
-       ((eq testmode nil) ; Load from current checkout
-        (init-melpa)
-        (ensure-packages '(pos-tip popup s dash))
-
-        (push (expand-file-name "..") load-path)
-
-        (push '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist)
-        (autoload 'fsharp-mode "fsharp-mode" "Major mode for editing F# code." t)
-        (autoload 'turn-on-fsharp-doc-mode "fsharp-doc"))
-
-       ((string= testmode "melpa") ; Install from MELPA
-        (init-melpa)
-        (ensure-packages '(fsharp-mode)))
-
-       (t ; Assume `testmode` is a package file to install
-          ; TODO: Break net dependency (pos-tip) for speed?
-        (init-melpa)
-        (ensure-packages '(pos-tip popup s dash))
-        (package-install-file (expand-file-name testmode)))))))
-
 (defun wait-for-condition (fun)
   "Wait up to 5 seconds for (fun) to return non-nil"
   (with-timeout (5)
@@ -45,25 +9,42 @@
 (defun fsharp-mode-wrapper (bufs body)
   "Load fsharp-mode and make sure any completion process is killed after test"
   (unwind-protect
-      (progn (load-fsharp-mode)
-             (funcall body))
-    (sleep-for 1)
+      ; Run the actual test
+      (funcall body)
+
+    ; Clean up below
+
+    ; Close any buffer requested by the test
     (dolist (buf bufs)
       (when (get-buffer buf)
         (switch-to-buffer buf)
         (revert-buffer t t)
         (kill-buffer buf)))
+
+    ; Close any buffer associated with the loaded project
     (mapc (lambda (buf)
             (when (member (buffer-file-name buf) fsharp-ac-project-files)
+              (switch-to-buffer buf)
+              (revert-buffer t t)
               (kill-buffer buf)))
           (buffer-list))
+
+    ; Stop the fsautocomplete process and close its buffer
     (fsharp-ac/stop-process)
     (wait-for-condition (lambda () (not (fsharp-ac--process-live-p))))
     (when (fsharp-ac--process-live-p)
       (kill-process fsharp-ac-completion-process)
       (wait-for-condition (lambda () (not (fsharp-ac--process-live-p)))))
     (when (get-buffer "*fsharp-complete*")
-      (kill-buffer "*fsharp-complete*"))))
+      (kill-buffer "*fsharp-complete*"))
+
+    ; Kill the FSI process and buffer, if it was used
+    (let ((inf-fsharp-process (get-process inferior-fsharp-buffer-subname)))
+      (when inf-fsharp-process
+        (when (process-live-p inf-fsharp-process)
+          (kill-process inf-fsharp-process)
+          (wait-for-condition (lambda () (not (process-live-p
+                                          inf-fsharp-process)))))))))
 
 (defun load-project-and-wait (file)
   (fsharp-ac/load-project file)
@@ -84,7 +65,6 @@
    (lambda ()
      (find-file "Test1/Program.fs")
      (load-project-and-wait "Test1.fsproj")
-     (log-psendstr fsharp-ac-completion-process "outputmode json")
      (search-forward "X.func")
      (delete-backward-char 2)
      (auto-complete)
@@ -152,3 +132,17 @@
          (wait-for-condition (lambda () tiptext))
          (should-match "val funky : x:int -> int\n\nFull name: Script.XA.funky"
                        tiptext))))))
+
+(ert-deftest check-inf-fsharp ()
+  "Check that FSI can be used to evaluate"
+  (fsharp-mode-wrapper '("Script.fsx")
+   (lambda ()
+     (fsharp-run-process-if-needed inferior-fsharp-program)
+     (wait-for-condition (lambda () (get-buffer inferior-fsharp-buffer-name)))
+     (find-file "tmp.fsx")
+     (goto-char (point-max))
+     (insert "let myvariable = 123 + 456")
+     (fsharp-eval-phrase)
+     (switch-to-buffer inferior-fsharp-buffer-name)
+     (wait-for-condition (lambda () (search-backward "579" nil t)))
+     (should-match "579" (buffer-substring-no-properties (point-min) (point-max))))))

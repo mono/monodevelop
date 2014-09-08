@@ -76,18 +76,23 @@ integration-test : $(ac_exe) packages
 	HOME=$(tmp_d) ;\
 	$(emacs) $(load_files) $(load_integration_tests) $(emacs_opts)
 
-test-all : unit-test integration-test byte-compile
+test-all : unit-test integration-test check-compile
 
 packages :
 	HOME=$(tmp_d) ;\
 	$(emacs) $(load_files) --batch -f load-packages
 
-# Use for informal check that byte-compilation
-# is going through cleanly
 byte-compile : packages
 	HOME=$(tmp_d) ;\
 	$(emacs) -batch --eval "(package-initialize)"\
           --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
+          -f batch-byte-compile $(src_files)
+
+check-compile : packages
+	HOME=$(tmp_d) ;\
+	$(emacs) -batch --eval "(package-initialize)"\
+          --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
+	  --eval '(setq byte-compile-error-on-warn t)' \
           -f batch-byte-compile $(src_files)
 
 run : $(ac_exe) packages

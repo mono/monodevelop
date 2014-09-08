@@ -375,10 +375,12 @@ module internal Main =
 
               | Json -> prAsJson { Kind = "errors"; Data = errs }
           }
-        printMsg "INFO" "Background parsing started"
+
         match kind with
-        | Synchronous -> Async.RunSynchronously task
-        | Normal -> Async.StartImmediate task
+        | Synchronous -> printMsg "INFO" "Synchronous parsing started"
+                         Async.RunSynchronously task
+        | Normal -> printMsg "INFO" "Background parsing started"
+                    Async.StartImmediate task
 
         main { state with Files = Map.add file lines state.Files }
 

@@ -99,25 +99,8 @@ be sent from another buffer in fsharp mode.
 (defconst inferior-fsharp-buffer-name
   (concat "*" inferior-fsharp-buffer-subname "*"))
 
-;; for compatibility with xemacs 
-
-(defun fsharp-sit-for (second &optional mili redisplay)
-  (sit-for (if mili (+ second (* mili 0.001)) second) redisplay))
-
-;; To show result of evaluation at toplevel
-
-(defvar inferior-fsharp-output nil)
-(defun inferior-fsharp-signal-output (s)
-  (if (string-match "[^ ]" s) (setq inferior-fsharp-output t)))
-
-(defun inferior-fsharp-mode-output-hook ()
-  (setq comint-output-filter-functions
-        (list (function inferior-fsharp-signal-output))))
-(add-hook 'inferior-fsharp-mode-hooks 'inferior-fsharp-mode-output-hook)
-
-;; To launch fsharp whenever needed
-
 (defun fsharp-run-process-if-needed (&optional cmd)
+  "Launch fsi if needed, using CMD if supplied."
   (if (comint-check-proc inferior-fsharp-buffer-name) nil
     (if (not cmd)
         (if (comint-check-proc inferior-fsharp-buffer-name)
@@ -203,19 +186,6 @@ Input and output via buffer `*inferior-fsharp*'."
 (defvar fsharp-previous-output nil
   "tells the beginning of output in the shell-output buffer, so that the
 output can be retreived later, asynchronously.")
-
-;; wait some amount for ouput, that is, until inferior-fsharp-output is set
-;; to true. Hence, interleaves sitting for shorts delays and checking the
-;; flag. Give up after some time. Typing into the source buffer will cancel 
-;; waiting, i.e. may report 'No result yet' 
-
-(defun fsharp-wait-output (&optional before after)
-  (let ((c 1))
-    (fsharp-sit-for 0 (or before 1))
-    (let ((c 1))
-      (while (and (not inferior-fsharp-output) (< c 99) (fsharp-sit-for 0 c t))
-        (setq c (+ c 1))))
-    (fsharp-sit-for (or after 0) 1)))
 
 ;; To insert the last output from fsharp at point
 (defun fsharp-insert-last-output ()

@@ -1571,7 +1571,7 @@ This tells add-log.el how to find the current function/method/variable."
 
 ;;; fsharp-mode.el ends here
 (defun fsharp-eval-phrase ()
-  "Send current (top-level) phrase to the interactive mode"
+  "Send current phrase to the interactive mode"
   (interactive)
   (save-excursion
     (let ((p1) (p2))
@@ -1582,7 +1582,7 @@ This tells add-log.el how to find the current function/method/variable."
       (fsharp-eval-region p1 p2))))
 
 (defun fsharp-mark-phrase ()
-  "Send current (top-level) phrase to the interactive mode"
+  "Mark current phrase"
   (interactive)
   (fsharp-beginning-of-block)
   (push-mark (point))
