@@ -27,8 +27,8 @@
 using System;
 using System.Runtime.Versioning;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Serialization;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
 using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
@@ -91,15 +91,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public string GetLabel ()
 		{
 			if (UpdatedVersion != null) {
-				return GetIdText () + GetUpdatedVersionLabelText ();
-			}
-			return GetIdText ();
-		}
-
-		string GetIdText ()
-		{
-			if (!Installed || IsReinstallNeeded) {
-				return "<span color='#c99c00'>" + Id + "</span>";
+				return Id + GetUpdatedVersionLabelText ();
 			}
 			return Id;
 		}
@@ -113,17 +105,40 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IconId GetIconId ()
 		{
-			if (!Installed || IsReinstallNeeded) {
-				if (!IsInstallPending) {
-					return Stock.ReferenceWarning;
-				}
-			}
 			return Stock.Reference;
 		}
 
 		public string GetPackageVersionLabel ()
 		{
 			return GettextCatalog.GetString ("Version {0}", Version);
+		}
+
+		public TaskSeverity? GetStatusSeverity ()
+		{
+			if (!Installed || IsReinstallNeeded) {
+				if (!IsInstallPending) {
+					return TaskSeverity.Warning;
+				}
+			}
+
+			return null;
+		}
+
+		public string GetStatusMessage ()
+		{
+			if (IsInstallPending) {
+				return null;
+			} else if (!Installed) {
+				return GettextCatalog.GetString ("Package is not restored");
+			} else if (IsReinstallNeeded) {
+				return GettextCatalog.GetString ("Package needs retargeting");
+			}
+			return null;
+		}
+
+		public bool IsDisabled ()
+		{
+			return (!Installed || IsInstallPending);
 		}
 	}
 }
