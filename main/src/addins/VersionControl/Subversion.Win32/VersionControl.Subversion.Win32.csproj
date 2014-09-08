@@ -59,8 +59,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="SharpSvn, Version=1.8005.2778.15501, Culture=neutral, PublicKeyToken=d729672594885a28">
-      <HintPath>..\..\..\..\external\sharpsvn-binary\SharpSvn.dll</HintPath>
+    <Reference Include="SharpSvn">
+      <HintPath>..\..\..\..\packages\SharpSvn.1.8-x86.1.8009.3299.43\lib\net40\SharpSvn.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -124,13 +124,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\external\sharpsvn-binary\SharpPlink-Win32.svnExe">
-      <Link>SharpPlink-Win32.svnExe</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\..\..\external\sharpsvn-binary\SharpSvn-DB44-20-win32.svnDll">
-      <Link>SharpSvn-DB44-20-win32.svnDll</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
