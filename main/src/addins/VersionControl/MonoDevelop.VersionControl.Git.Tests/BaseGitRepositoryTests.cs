@@ -78,6 +78,7 @@ index e69de29..f3a3485 100644
 +++ b/testfile
 @@ -0,0 +1 @@
 +text
+\ No newline at end of file
 ";
 			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
