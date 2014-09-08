@@ -158,7 +158,7 @@ style "toggle-button" = "button" {
 
 style "menu" {
     xthickness = 0
-    ythickness = 0
+    # ythickness = 0
     font_name = "Lucida Grande 14"
 
     bg[PRELIGHT] = @selected_fg_color
