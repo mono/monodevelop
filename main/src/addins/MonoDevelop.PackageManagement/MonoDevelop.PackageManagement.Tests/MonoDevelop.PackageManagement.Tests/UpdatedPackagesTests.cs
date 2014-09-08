@@ -61,7 +61,12 @@ namespace MonoDevelop.PackageManagement.Tests
 				packageNamesUsedWhenCheckingForUpdates.AddRange (packagesNames.Select (p => (IPackageName)p));
 				return sourceRepositoryPackages.AsQueryable ();
 			};
-			updatedPackages = new UpdatedPackages (project, sourceRepository);
+			CreateUpdatedPackages (sourceRepository);
+		}
+
+		void CreateUpdatedPackages (IPackageRepository repository)
+		{
+			updatedPackages = new UpdatedPackages (project, repository);
 		}
 
 		FakePackage AddPackageToSourceRepository (string id, string version)
@@ -164,6 +169,32 @@ namespace MonoDevelop.PackageManagement.Tests
 			updatedPackages.GetUpdatedPackages (includePrerelease: false);
 
 			Assert.IsFalse (includePreleaseUsedWhenCheckingForUpdates);
+		}
+
+		[Test]
+		public void GetUpdatedPackages_OnePackageReferencedWithConstraintAndUpdatesAvailable_LatestVersionReturnedBasedOnConstraint ()
+		{
+			AddPackageReference ("Test", "1.0");
+			FakePackage package = AddPackageToSourceRepository ("Test", "2.0");
+			FakePackage [] expectedPackages = new [] {
+				package
+			};
+			AddPackageToSourceRepository ("Test", "3.0");
+			var versionSpec = new VersionSpec ();
+			versionSpec.MinVersion = new SemanticVersion ("1.0");
+			versionSpec.IsMinInclusive = true;
+			versionSpec.MaxVersion = new SemanticVersion ("2.0");
+			versionSpec.IsMaxInclusive = true;
+			var constraintProvider = new DefaultConstraintProvider ();
+			constraintProvider.AddConstraint ("Test", versionSpec);
+			project.ConstraintProvider = constraintProvider;
+			var repository = new FakePackageRepository ();
+			repository.FakePackages = sourceRepositoryPackages;
+			CreateUpdatedPackages (repository);
+
+			IEnumerable<IPackage> packages = updatedPackages.GetUpdatedPackages ();
+
+			PackageCollectionAssert.AreEqual (expectedPackages, packages);
 		}
 	}
 }

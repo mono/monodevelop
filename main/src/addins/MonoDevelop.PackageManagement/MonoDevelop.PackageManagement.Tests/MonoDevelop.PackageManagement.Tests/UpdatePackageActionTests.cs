@@ -400,6 +400,29 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsTrue (fileRemovedResult.Value);
 			Assert.IsNull (fileRemover.FileRemoved);
 		}
+
+		[Test]
+		public void Execute_PackageHasConstraint_LatestPackageIsNotUpdatedButPackageWithHighestVersionThatMatchesConstraint ()
+		{
+			CreateSolution ();
+			var constraintProvider = new DefaultConstraintProvider ();
+			var versionSpec = new VersionSpec ();
+			versionSpec.MinVersion = new SemanticVersion ("1.0");
+			versionSpec.IsMinInclusive = true;
+			versionSpec.IsMaxInclusive = true;
+			versionSpec.MaxVersion = new SemanticVersion ("2.0");
+			constraintProvider.AddConstraint ("MyPackage", versionSpec);
+			fakeProject.ConstraintProvider = constraintProvider;
+			fakeProject.AddFakePackageToSourceRepository ("MyPackage", "1.0");
+			FakePackage packageVersion2 = fakeProject.AddFakePackageToSourceRepository ("MyPackage", "2.0");
+			fakeProject.AddFakePackageToSourceRepository ("MyPackage", "3.0");
+			fakeProject.FakePackages.Add (new FakePackage ("MyPackage", "1.0"));
+			action.PackageId = "MyPackage";
+
+			action.Execute ();
+
+			Assert.AreEqual (packageVersion2, fakeProject.PackagePassedToUpdatePackage);
+		}
 	}
 }
 
