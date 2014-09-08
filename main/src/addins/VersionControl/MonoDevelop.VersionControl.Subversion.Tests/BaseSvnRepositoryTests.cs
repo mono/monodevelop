@@ -87,15 +87,6 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		{
 		}
 
-		[Test]
-		[Ignore]
-		// TODO: Fix Subversion for Unix not returning the correct value.
-		// TODO: Fix SvnSharp logic failing to generate correct URL.
-		// Tests Repository.GetTextAtRevision.
-		public void CorrectTextAtRevision ()
-		{
-		}
-
 		protected override NUnit.Framework.Constraints.IResolveConstraint IsCorrectType ()
 		{
 			return Is.InstanceOf<SubversionRepository> ();

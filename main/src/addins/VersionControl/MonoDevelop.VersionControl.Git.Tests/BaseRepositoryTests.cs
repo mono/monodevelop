@@ -534,10 +534,9 @@ namespace MonoDevelop.VersionControl.Tests
 		}
 
 		[Test]
-		// TODO: Fix Subversion for Unix not returning the correct value.
 		// TODO: Fix SvnSharp logic failing to generate correct URL.
 		// Tests Repository.GetTextAtRevision.
-		public void CorrectTextAtRevision ()
+		public virtual void CorrectTextAtRevision ()
 		{
 			string added = LocalPath + "testfile";
 			AddFile ("testfile", "text1", true, true);

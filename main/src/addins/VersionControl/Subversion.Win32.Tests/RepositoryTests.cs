@@ -103,6 +103,14 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 			base.UnlocksEntities ();
 		}
 
+		[Test]
+		[Ignore ("Url is broken.")]
+		// Tests Repository.GetTextAtRevision.
+		public override void CorrectTextAtRevision ()
+		{
+			base.CorrectTextAtRevision ();
+		}
+
 		protected override void PostUnlock ()
 		{
 			string added = LocalPath + "testfile";
