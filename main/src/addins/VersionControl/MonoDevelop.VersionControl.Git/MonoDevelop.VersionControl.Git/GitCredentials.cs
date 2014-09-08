@@ -47,9 +47,19 @@ namespace MonoDevelop.VersionControl.Git
 						Username = username,
 						Password = password
 					};
-			} /* no ssh support yet TryGetPassphrase (uri, out passphraseItem)*/
+			} else if ((types & SupportedCredentialTypes.Ssh) != 0) {
+				string username = string.Empty;
+				return new SshUserCredentials {
+					Username = username,
+				};
+			}
 
-			var cred = new UsernamePasswordCredentials ();
+			Credentials cred;
+			if ((types & SupportedCredentialTypes.UsernamePassword) != 0)
+				cred = new UsernamePasswordCredentials ();
+			else
+				cred = new SshUserCredentials ();
+
 			DispatchService.GuiSyncDispatch (delegate {
 				var dlg = new CredentialsDialog (uri, types, cred);
 				try {
@@ -60,11 +70,10 @@ namespace MonoDevelop.VersionControl.Git
 			});
 
 			if (result) {
-				if (!string.IsNullOrEmpty (cred.Password)) {
-					PasswordService.AddWebUserNameAndPassword (uri, cred.Username, cred.Password);
-				}/* else if (passphraseItem != null) {
-					PasswordService.AddWebPassword (new Uri (uri), passphraseItem);
-				}*/
+				var upcred = (UsernamePasswordCredentials)cred;
+				if (!string.IsNullOrEmpty (upcred.Password)) {
+					PasswordService.AddWebUserNameAndPassword (uri, upcred.Username, upcred.Password);
+				}
 			}
 
 			return cred;

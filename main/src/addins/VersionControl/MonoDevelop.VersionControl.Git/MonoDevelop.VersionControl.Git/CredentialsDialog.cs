@@ -49,6 +49,10 @@ namespace MonoDevelop.VersionControl.Git
 				firstEditor = CreateEntry (table, uri, "Username:", false);
 				CreateEntry (table, uri, "Password:", true);
 				break;
+			case SupportedCredentialTypes.Ssh:
+				sshcred = (SshUserCredentials)cred;
+				firstEditor = CreateEntry (table, uri, "Username:", false);
+				break;
 			}
 			table.ShowAll ();
 			Focus = firstEditor;
@@ -72,9 +76,13 @@ namespace MonoDevelop.VersionControl.Git
 				e.Text = uri.UserInfo;
 			e.Changed += delegate {
 				if (password) {
-					upcred.Password = e.Text;
+					if (upcred != null)
+						upcred.Password = e.Text;
 				} else {
-					upcred.Username = e.Text;
+					if (upcred != null)
+						upcred.Username = e.Text;
+					else
+						sshcred.Username = e.Text;
 				}
 			};
 
@@ -88,6 +96,7 @@ namespace MonoDevelop.VersionControl.Git
 		}
 
 		readonly UsernamePasswordCredentials upcred;
+		readonly SshUserCredentials sshcred;
 	}
 }
 
