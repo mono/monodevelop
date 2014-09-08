@@ -64,7 +64,7 @@ val funky : x:int -> int
 Full name: Script.XA.funky
 <<EOF>>
 DATA: declarations
-[1:0-19:0] Program
+[1:0-16:0] Program
   - [13:4-15:5] main
 [1:0-2:20] X
   - [2:6-2:20] func
@@ -80,7 +80,7 @@ DATA: declarations
   - [13:11-14:5] Terrific
 <<EOF>>
 DATA: declarations
-[3:0-10:0] Script
+[3:0-7:0] Script
 [3:0-4:21] XA
   - [4:6-4:21] funky
 <<EOF>>
