@@ -1,4 +1,4 @@
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 [6:14-6:15] ERROR Missing qualification after '.'

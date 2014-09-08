@@ -1,9 +1,9 @@
 {"Kind":"project","Data":["<absolute path removed>/test/integration/Test1Json/FileTwo.fs","<absolute path removed>/test/integration/Test1Json/Program.fs"]}
-{"Kind":"INFO","Data":"Background parsing started"}
+{"Kind":"INFO","Data":"Synchronous parsing started"}
 {"Kind":"errors","Data":[]}
-{"Kind":"INFO","Data":"Background parsing started"}
+{"Kind":"INFO","Data":"Synchronous parsing started"}
 {"Kind":"errors","Data":[]}
-{"Kind":"INFO","Data":"Background parsing started"}
+{"Kind":"INFO","Data":"Synchronous parsing started"}
 {"Kind":"errors","Data":[]}
 {"Kind":"helptext","Data":{"funky":"val funky : x:int -> int"}}
 {"Kind":"completion","Data":["funky"]}

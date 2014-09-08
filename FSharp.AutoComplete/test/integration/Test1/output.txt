@@ -2,15 +2,15 @@ DATA: project
 <absolute path removed>/test/integration/Test1/FileTwo.fs
 <absolute path removed>/test/integration/Test1/Program.fs
 <<EOF>>
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 <<EOF>>
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 <<EOF>>
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 <<EOF>>
