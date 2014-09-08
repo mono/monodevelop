@@ -27,6 +27,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -55,13 +56,18 @@ namespace MonoDevelop.PackageManagement
 		void PackageOperationMessageLogged (object sender, PackageOperationMessageLoggedEventArgs e)
 		{
 			progressMonitor.Log.WriteLine (e.Message.ToString ());
+
+			if (e.Message.Level == MessageLevel.Warning) {
+				WarningReported = true;
+			}
 		}
 
 		public void Dispose ()
 		{
 			packageEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 		}
-	}
 
+		public bool WarningReported { get; private set; }
+	}
 }
 

@@ -34,11 +34,11 @@ namespace Mono.TextEditor
 {
 	public class EmacsWordFindStrategy : WordFindStrategy
 	{
-		bool treat_;
+		bool includeUnderscore;
 		
-		public EmacsWordFindStrategy (bool treat_)
+		public EmacsWordFindStrategy (bool includeUnderscore = true)
 		{
-			this.treat_ = treat_;
+			this.includeUnderscore = includeUnderscore;
 		}
 		
 		int FindNextWordOffset (TextDocument doc, int offset, bool subword)
@@ -46,11 +46,11 @@ namespace Mono.TextEditor
 			if (offset + 1 >= doc.TextLength)
 				return doc.TextLength;
 			int result = offset + 1;
-			CC previous = SW.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
+			CC previous = SW.GetCharacterClass (doc.GetCharAt (result), subword, includeUnderscore);
 			bool inIndentifier = previous != CC.Unknown && previous != CC.Whitespace;			
 			while (result < doc.TextLength) {
 				char ch = doc.GetCharAt (result);
-				CC current = SW.GetCharacterClass (ch, subword, treat_);
+				CC current = SW.GetCharacterClass (ch, subword, includeUnderscore);
 				
 				//camelCase / PascalCase splitting
 				if (subword) {
@@ -61,7 +61,7 @@ namespace Mono.TextEditor
 					} else if (current == CC.UppercaseLetter && previous != CC.UppercaseLetter) {
 						break;
 					} else if (current == CC.LowercaseLetter && previous == CC.UppercaseLetter && result - 2 > 0
-					           && SW.GetCharacterClass (doc.GetCharAt (result - 2), subword, treat_) != CC.LowercaseLetter)
+					           && SW.GetCharacterClass (doc.GetCharAt (result - 2), subword, includeUnderscore) != CC.LowercaseLetter)
 					{
 						result--;
 						break;
@@ -90,11 +90,11 @@ namespace Mono.TextEditor
 			if (offset <= 0)
 				return 0;
 			int  result = offset - 1;
-			CC previous = SW.GetCharacterClass (doc.GetCharAt (result), subword, treat_);
+			CC previous = SW.GetCharacterClass (doc.GetCharAt (result), subword, includeUnderscore);
 			bool inIndentifier = previous != CC.Unknown && previous != CC.Whitespace;			
 			while (result > 0) {
 				char ch = doc.GetCharAt (result);
-				CC current = SW.GetCharacterClass (ch, subword, treat_);
+				CC current = SW.GetCharacterClass (ch, subword, includeUnderscore);
 				
 				//camelCase / PascalCase splitting
 				if (subword) {
@@ -107,7 +107,7 @@ namespace Mono.TextEditor
 					} else if (current == CC.UppercaseLetter && previous != CC.UppercaseLetter) {
 						break;
 					} else if (current == CC.LowercaseLetter && previous == CC.UppercaseLetter && result + 2 < doc.TextLength
-					           && SW.GetCharacterClass (doc.GetCharAt (result + 2), subword, treat_) != CC.LowercaseLetter)
+					           && SW.GetCharacterClass (doc.GetCharAt (result + 2), subword, includeUnderscore) != CC.LowercaseLetter)
 					{
 						result++;
 						break;

@@ -427,7 +427,6 @@
     <Compile Include="MonoDevelop.Core\PasswordService.cs" />
     <Compile Include="MonoDevelop.Core\IPasswordProvider.cs" />
     <Compile Include="MonoDevelop.Projects.Utility\ByteOrderMark.cs" />
-    <Compile Include="MonoDevelop.Core.Instrumentation\IInstrumentationConsumer.cs" />
     <Compile Include="MonoDevelop.Projects\PortableDotNetProject.cs" />
     <Compile Include="MonoDevelop.Core.AddIns\FilePathExtensionNode.cs" />
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\TargetsAvailableCondition.cs" />
@@ -471,6 +470,7 @@
     <Compile Include="MonoDevelop.Projects.Formats.MSBuild\IMSBuildGlobalPropertyProvider.cs" />
     <Compile Include="MonoDevelop.Projects\DotNetProjectImport.cs" />
     <Compile Include="MonoDevelop.Core.LogReporting\CrashReporter.cs" />
+    <Compile Include="MonoDevelop.Core.Instrumentation\InstrumentationConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

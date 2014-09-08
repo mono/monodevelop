@@ -740,7 +740,7 @@ namespace MonoDevelop.Ide.Gui
 		TypeSystemService.ProjectContentWrapper currentWrapper;
 		internal void SetProject (Project project)
 		{
-			if (Window.ViewContent.Project == project)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
 				return;
 			DetachExtensionChain ();
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();

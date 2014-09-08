@@ -101,10 +101,7 @@ namespace MonoDevelop.Ide
 			get { return PlatformService.Name; }
 		}
 
-		/// <summary>
-		/// Used in the text editor. Valid values are found in MonoDevelop.SourceEditor.ControlLeftRightMode in the
-		/// source editor project.
-		/// </summary>
+		[Obsolete]
 		public static string DefaultControlLeftRightBehavior {
 			get {
 				return PlatformService.DefaultControlLeftRightBehavior;

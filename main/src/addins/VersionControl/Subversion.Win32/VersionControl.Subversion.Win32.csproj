@@ -59,8 +59,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="SharpSvn, Version=1.8005.2778.15501, Culture=neutral, PublicKeyToken=d729672594885a28">
-      <HintPath>..\..\..\..\external\sharpsvn-binary\SharpSvn.dll</HintPath>
+    <Reference Include="SharpSvn">
+      <HintPath>..\..\..\..\packages\SharpSvn.1.8-x86.1.8009.3299.43\lib\net40\SharpSvn.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -89,13 +89,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
+      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
+    </PropertyGroup>
+    <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
@@ -124,11 +124,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\external\sharpsvn-binary\SharpPlink-Win32.svnExe">
+    <None Include="packages.config" />
+    <None Include="..\..\..\..\packages\SharpSvn.1.8-x86.1.8009.3299.43\lib\net40\SharpPlink-Win32.svnExe">
       <Link>SharpPlink-Win32.svnExe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\..\..\external\sharpsvn-binary\SharpSvn-DB44-20-win32.svnDll">
+    <None Include="..\..\..\..\packages\SharpSvn.1.8-x86.1.8009.3299.43\lib\net40\SharpSvn-DB44-20-win32.svnDll">
       <Link>SharpSvn-DB44-20-win32.svnDll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

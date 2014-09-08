@@ -122,7 +122,6 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\UpdateAllPackagesInSolutionTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\UserAgentGeneratorForRepositoryRequestsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithHttpClientEvents.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Tests\NuGetPackageRestoreCommandLineTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests\ReducedPackageOperationsTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestPackageHelper.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageOperationResolver.cs" />
@@ -193,7 +192,13 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests\PackagesViewModelTests.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestablePackagesViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\PageCollectionAssert.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\ExceptionThrowingPackageRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\MonoDevelopAggregateRepositoryTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\RestorePackagesActionTests.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableLocalPackageRepository.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableSolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeFileRemover.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithConstraintProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

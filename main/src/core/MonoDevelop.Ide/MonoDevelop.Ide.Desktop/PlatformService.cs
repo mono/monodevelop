@@ -55,10 +55,7 @@ namespace MonoDevelop.Ide.Desktop
 
 		public abstract string Name { get; }
 
-		/// <summary>
-		/// Used in the text editor. Valid values are found in MonoDevelop.SourceEditor.ControlLeftRightMode in the
-		/// source editor project.
-		/// </summary>
+		[Obsolete]
 		public virtual string DefaultControlLeftRightBehavior {
 			get {
 				return "MonoDevelop";

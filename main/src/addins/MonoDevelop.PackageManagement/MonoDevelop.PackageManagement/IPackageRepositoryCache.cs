@@ -35,5 +35,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		IRecentPackageRepository RecentPackageRepository { get; }
 		IPackageRepository CreateAggregateRepository();
+		IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ();
 	}
 }

@@ -75,6 +75,9 @@ namespace MonoDevelop.Ide
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
 
+			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
+			IdeApp.Customizer.Initialize ();
+
 			Counters.Initialization.BeginTiming ();
 
 			if (options.PerfLog) {
@@ -149,8 +152,7 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing Runtime");
 			Runtime.Initialize (true);
 
-
-			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
+			IdeApp.Customizer.OnCoreInitialized ();
 
 			Counters.Initialization.Trace ("Initializing theme");
 
@@ -222,7 +224,10 @@ namespace MonoDevelop.Ide
 						return 1;
 					reportedFailures = errorsList.Count;
 				}
-				
+
+				if (!CheckSCPlugin ())
+					return 1;
+
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
@@ -277,12 +282,17 @@ namespace MonoDevelop.Ide
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			StartLockupTracker ();
 			IdeApp.Run ();
+
+			IdeApp.Customizer.OnIdeShutdown ();
 			
 			// unloading services
 			if (null != socket_filename)
 				File.Delete (socket_filename);
 			lockupCheckRunning = false;
 			Runtime.Shutdown ();
+
+			IdeApp.Customizer.OnCoreShutdown ();
+
 			InstrumentationService.Stop ();
 			AddinManager.AddinLoadError -= OnAddinError;
 			
@@ -537,6 +547,35 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		bool CheckSCPlugin ()
+		{
+			if (Platform.IsMac && Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin")) {
+				string message = "SCPlugin not supported";
+				string detail = "MonoDevelop has detected that SCPlugin (scplugin.tigris.org) is installed. " +
+				                "SCPlugin is a Subversion extension for Finder that is known to cause crashes in MonoDevelop and" +
+				                "other applications running on Mac OSX 10.9 (Mavericks) or upper. Please uninstall SCPlugin " +
+				                "before proceeding.";
+				var close = new AlertButton (BrandingService.BrandApplicationName (GettextCatalog.GetString ("Close MonoDevelop")));
+				var info = new AlertButton (GettextCatalog.GetString ("More Information"));
+				var cont = new AlertButton (GettextCatalog.GetString ("Continue Anyway"));
+				while (true) {
+					var res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), info, cont, close);
+					if (res == close) {
+						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Closing."));
+						return false;
+					}
+					if (res == info)
+						DesktopService.ShowUrl ("https://bugzilla.xamarin.com/show_bug.cgi?id=21755");
+					if (res == cont) {
+						bool exists = Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin");
+						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Continuing " + (exists ? "Installed." : "Uninstalled.")));
+						return true;
+					}
+				}
+			}
+			return true;
+		}
+
 		static void SetupExceptionManager ()
 		{
 			System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (sender, e) => {
@@ -585,6 +624,8 @@ namespace MonoDevelop.Ide
 			
 			LoggingService.Initialize (options.RedirectOutput);
 
+			if (customizer == null)
+				customizer = LoadBrandingCustomizer ();
 			options.IdeCustomizer = customizer;
 
 			int ret = -1;
@@ -622,6 +663,30 @@ namespace MonoDevelop.Ide
 			LoggingService.Shutdown ();
 
 			return ret;
+		}
+
+		static IdeCustomizer LoadBrandingCustomizer ()
+		{
+			var pathsString = BrandingService.GetString ("CustomizerAssemblyPath");
+			if (string.IsNullOrEmpty (pathsString))
+				return null;
+
+			var paths = pathsString.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			var type = BrandingService.GetString ("CustomizerType");
+			if (!string.IsNullOrEmpty (type)) {
+				foreach (var path in paths) {
+					var file = BrandingService.GetFile (path.Replace ('/',Path.DirectorySeparatorChar));
+					if (File.Exists (file)) {
+						Assembly asm = Assembly.LoadFrom (file);
+						var t = asm.GetType (type, true);
+						var c = Activator.CreateInstance (t) as IdeCustomizer;
+						if (c == null)
+							throw new InvalidOperationException ("Customizer class specific in the branding file is not an IdeCustomizer subclass");
+						return c;
+					}
+				}
+			}
+			return null;
 		}
 	}
 	
