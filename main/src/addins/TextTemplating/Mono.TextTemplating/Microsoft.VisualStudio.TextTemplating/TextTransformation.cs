@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 		{
 		}
 		
-		protected internal virtual void Initialize ()
+		public virtual void Initialize ()
 		{
 		}
 		

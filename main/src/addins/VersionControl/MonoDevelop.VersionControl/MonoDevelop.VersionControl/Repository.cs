@@ -374,6 +374,8 @@ namespace MonoDevelop.VersionControl
 
 				foreach (var item in recursiveDirectoryQueryQueueClone)
 					item.ResetEvent.Set ();
+
+				queryRunning = false;
 			}
 			//Console.WriteLine ("RunQueries finished - " + (DateTime.Now - t).TotalMilliseconds);
 		}

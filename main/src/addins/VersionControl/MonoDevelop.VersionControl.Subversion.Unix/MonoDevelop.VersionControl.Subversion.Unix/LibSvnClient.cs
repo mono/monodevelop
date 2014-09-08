@@ -146,7 +146,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 
 		public abstract IntPtr client_get_wc_root (out IntPtr wcroot_abspath, string local_abspath, IntPtr ctx, IntPtr result_pool, IntPtr scratch_pool);
 
-		// TODO: Check if intptr
 		public abstract IntPtr strerror (int statcode, byte[] buf, int bufsize);
 		
 		public abstract IntPtr path_internal_style (string path, IntPtr pool);
@@ -617,8 +616,56 @@ namespace MonoDevelop.VersionControl.Subversion.Unix {
 			Locked,
 			Unlocked,
 			FailedLock,
-			FailedUnlock
-			// TODO: Add more enum data
+			FailedUnlock,
+			Exists,
+			ChangelistSet,
+			ChangelistClear,
+			ChangelistMoved,
+			MergeBegin,
+			ForeignMergeBegin,
+			UpdateReplace,
+			PropertyAdded,
+			PropertyDeleted,
+			PropertyDeletedNonexistent,
+			RevpropSet,
+			RevpropDeleted,
+			MergeCompleted,
+			TreeConflict,
+			FailedExternal,
+			UpdateStarted,
+			UpdateSkipObstruction,
+			UpdateSkipWorkingOnly,
+			UpdateSkipAccessDenied,
+			UpdateExternalRemoved,
+			UpdateShadowedAdd,
+			UpdateShadowedDelete,
+			MergeRecordInfo,
+			UpgradedPath,
+			MergeRecordInfoBegin,
+			MergeElideInfo,
+			Patch,
+			PatchAppliedHunk,
+			PatchRejectedHunk,
+			PatchHunkAlreadyApplied,
+			CommitCopied,
+			CommitCopiedReplaced,
+			UrlRedirect,
+			PathNonexistent,
+			Exclude,
+			FailedConflict,
+			FailedMissing,
+			FailedOutOfDate,
+			FailedNoParent,
+			FailedLocked,
+			FailedForbiddenByServer,
+			SkipConflicted,
+			UpdateBrokenLock,
+			FailedObstruction,
+			ConflictResolverStarting,
+			ConflictResolverDone,
+			LeftLocalModifications,
+			ForeignCopyBegin,
+			MoveBroken,
 		}
 		
 		public enum NotifyState {

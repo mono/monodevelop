@@ -218,7 +218,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			Package = Project
 				.SourceRepository
-				.FindPackage(PackageId, PackageVersion, AllowPrereleaseVersions, allowUnlisted: false);
+				.FindPackage (
+					PackageId,
+					PackageVersion,
+					Project.ConstraintProvider,
+					AllowPrereleaseVersions,
+					allowUnlisted: false);
 		}
 		
 		void ThrowPackageNotFoundError(string packageId)
@@ -233,12 +238,20 @@ namespace ICSharpCode.PackageManagement
 			return Project.IsPackageInstalled(id);
 		}
 		
-		string GetPackageId()
+		public string GetPackageId ()
 		{
 			if (Package != null) {
 				return Package.Id;
 			}
 			return PackageId;
+		}
+
+		public SemanticVersion GetPackageVersion ()
+		{
+			if (Package != null) {
+				return Package.Version;
+			}
+			return PackageVersion;
 		}
 	}
 }

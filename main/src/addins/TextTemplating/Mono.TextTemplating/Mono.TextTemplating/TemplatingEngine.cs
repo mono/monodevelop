@@ -500,7 +500,7 @@ namespace Mono.TextTemplating
 				case SegmentType.Block:
 					if (helperMode)
 						//TODO: are blocks permitted after helpers?
-						throw new ParserException ("Blocks are not permitted after helpers", seg.StartLocation);
+						pt.LogError ("Blocks are not permitted after helpers", seg.TagStartLocation);
 					st = new CodeSnippetStatement (seg.Text);
 					break;
 				case SegmentType.Expression:
