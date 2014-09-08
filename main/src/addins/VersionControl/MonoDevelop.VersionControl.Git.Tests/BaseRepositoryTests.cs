@@ -283,7 +283,7 @@ namespace MonoDevelop.VersionControl.Tests
 		public void DiffIsProper ()
 		{
 			AddFile ("testfile", null, true, true);
-			File.AppendAllText (LocalPath + "testfile", "text" + Environment.NewLine);
+			File.AppendAllText (LocalPath + "testfile", "text");
 
 			TestDiff ();
 		}
