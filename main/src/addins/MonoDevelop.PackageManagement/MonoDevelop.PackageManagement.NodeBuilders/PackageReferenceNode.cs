@@ -93,6 +93,9 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			if (UpdatedVersion != null) {
 				return Id + GetUpdatedVersionLabelText ();
 			}
+			if (IsInstallPending) {
+				return Id + GetInstallingLabelText ();
+			}
 			return Id;
 		}
 
@@ -101,6 +104,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			return String.Format (" <span color='grey'>({0} {1})</span>",
 				UpdatedVersion,
 				GettextCatalog.GetString ("available"));
+		}
+
+		string GetInstallingLabelText ()
+		{
+			return String.Format (" ({0})", GettextCatalog.GetString ("installing"));
 		}
 
 		public IconId GetIconId ()

@@ -108,6 +108,17 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
+		public void GetLabel_PackageReferenceIsPendingInstall_ReturnsPackageIdFollowedByInstallingText ()
+		{
+			CreatePackageReference (packageId: "MyPackage");
+			CreatePackageReferenceNode (installed: false, installPending: true);
+
+			string label = node.GetLabel ();
+
+			Assert.AreEqual ("MyPackage (installing)", label);
+		}
+
+		[Test]
 		public void GetIconId_PackageReferenceIsInstalled_ReturnsReferenceIcon ()
 		{
 			CreatePackageReference ();
