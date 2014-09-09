@@ -6,7 +6,7 @@
   (declare (indent 1))
   `(ert-deftest
        ,(intern (replace-regexp-in-string "[ .]" "-" desc)) ()
-     (flet ((message (&rest args)))
+     (noflet ((message (&rest args)))
        ,@body)))
 
 (defmacro using-file (path &rest body)
@@ -25,13 +25,15 @@
      ,@body))
 
 (defmacro stubbing-process-functions (&rest body)
-  `(flet ((process-live-p (p) t)
-          (start-process (&rest args))
-          (set-process-filter (&rest args))
-          (set-process-query-on-exit-flag (&rest args))
-          (process-send-string (&rest args))
-          (process-buffer (proc) "*fsharp-complete*")
-          (process-mark (proc) (point-max)))
+  `(noflet ((process-live-p (p) t)
+            (start-process (&rest args))
+            (set-process-filter (&rest args))
+            (set-process-query-on-exit-flag (&rest args))
+            (process-send-string (&rest args))
+            (process-buffer (proc) "*fsharp-complete*")
+            (process-mark (proc) (point-max))
+            (fsharp-ac-parse-current-buffer () t)
+            (log-to-proc-buf (p s)))
      ,@body))
 
 (defun should-match (regex str)
@@ -75,7 +77,7 @@
 (defconst tests-load-path
   (mapcar 'expand-file-name `(,@load-path "." ".." "./tests")))
 
-(defconst default-dependencies '(popup s dash pos-tip auto-complete))
+(defconst default-dependencies '(popup s dash pos-tip auto-complete noflet))
 
 (defun load-packages ()
   "Load package dependencies for fsharp-mode."

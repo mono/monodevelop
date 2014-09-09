@@ -1,11 +1,11 @@
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 <<EOF>>
 DATA: completion
 func
 <<EOF>>
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 [4:14-4:21] ERROR The namespace or module 'FileTwo' is not defined

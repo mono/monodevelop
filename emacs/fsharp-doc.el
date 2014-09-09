@@ -35,6 +35,7 @@
 ;;
 ;;; Code:
 
+(with-no-warnings (require 'cl))
 (require 'fsharp-mode-completion)
 
 (defvar fsharp-doc-idle-delay 0.5

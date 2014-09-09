@@ -29,6 +29,7 @@
 (require 'fsharp-mode-completion)
 (require 'fsharp-doc)
 (require 'inf-fsharp-mode)
+(require 'compile)
 
 ;;; Compilation
 
@@ -245,14 +246,6 @@ and whether it is in a project directory.")
   (setq next-error-function 'fsharp-ac/next-error)
   (add-hook 'next-error-hook 'fsharp-ac/show-error-at-point nil t)
   (add-hook 'post-command-hook 'fsharp-ac/show-error-at-point nil t)
-
-  ;; make a local copy of the menubar, so our modes don't
-  ;; change the global menubar
-  (when (and running-xemacs
-             (featurep 'menubar)
-             current-menubar)
-    (set-buffer-menubar current-menubar)
-    (add-submenu nil fsharp-mode-xemacs-menu))
 
   (setq compile-command (fsharp-mode-choose-compile-command
                          (buffer-file-name)))

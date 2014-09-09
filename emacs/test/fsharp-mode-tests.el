@@ -21,5 +21,5 @@
   (should-match "AutoComplete.sln$" (fsharp-mode/find-sln-or-fsproj test-dir)))
 
 (check "should find sln at base of repo given a file in subdir"
-  (should-match "AutoComplete.sln$" (fsharp-mode/find-sln-or-fsproj
-                                (concat test-dir "file.fs"))))
+  (should-match "AutoComplete.sln$"
+                (fsharp-mode/find-sln-or-fsproj (concat test-dir "file.fs"))))

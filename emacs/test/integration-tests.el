@@ -1,117 +1,89 @@
-(defun init-melpa ()
-  (setq package-archives
-        '(("melpa"       . "http://melpa.milkbox.net/packages/")))
-  (package-initialize)
-  (unless package-archive-contents
-    (package-refresh-contents)))
+(require 'ert)
 
-(defun ensure-packages (packages)
-  (dolist (package packages)
-    (unless (package-installed-p package)
-      (package-install package))))
-
-(defun load-fsharp-mode ()
-  (unless (functionp 'fsharp-mode)
-    (let ((testmode (getenv "TESTMODE")))
-      (cond
-       ((eq testmode nil) ; Load from current checkout
-        (init-melpa)
-        (ensure-packages '(pos-tip popup s dash))
-
-        (push (expand-file-name "..") load-path)
-
-        (push '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist)
-        (autoload 'fsharp-mode "fsharp-mode" "Major mode for editing F# code." t)
-        (autoload 'turn-on-fsharp-doc-mode "fsharp-doc"))
-
-       ((string= testmode "melpa") ; Install from MELPA
-        (init-melpa)
-        (ensure-packages '(fsharp-mode)))
-
-       (t ; Assume `testmode` is a package file to install
-          ; TODO: Break net dependency (pos-tip) for speed?
-        (init-melpa)
-        (ensure-packages '(pos-tip popup s dash))
-        (package-install-file (expand-file-name testmode)))))))
+(defun wait-for-condition (fun)
+  "Wait up to 5 seconds for (fun) to return non-nil"
+  (with-timeout (5)
+    (while (not (funcall fun))
+      (sleep-for 1))))
 
 (defun fsharp-mode-wrapper (bufs body)
   "Load fsharp-mode and make sure any completion process is killed after test"
   (unwind-protect
-      (progn (load-fsharp-mode)
-             (funcall body))
-    (sleep-for 1)
+      ; Run the actual test
+      (funcall body)
+
+    ; Clean up below
+
+    ; Close any buffer requested by the test
     (dolist (buf bufs)
       (when (get-buffer buf)
         (switch-to-buffer buf)
         (revert-buffer t t)
         (kill-buffer buf)))
+
+    ; Close any buffer associated with the loaded project
     (mapc (lambda (buf)
-	    (when (member (buffer-file-name buf) fsharp-ac-project-files)
-	      (kill-buffer buf)))
-	  (buffer-list))
+            (when (member (buffer-file-name buf) fsharp-ac-project-files)
+              (switch-to-buffer buf)
+              (revert-buffer t t)
+              (kill-buffer buf)))
+          (buffer-list))
+
+    ; Stop the fsautocomplete process and close its buffer
     (fsharp-ac/stop-process)
-    (with-timeout (5)
-      (when (fsharp-ac--process-live-p)
-        (kill-process fsharp-ac-completion-process)
-        (sleep-for 1)))
+    (wait-for-condition (lambda () (not (fsharp-ac--process-live-p))))
+    (when (fsharp-ac--process-live-p)
+      (kill-process fsharp-ac-completion-process)
+      (wait-for-condition (lambda () (not (fsharp-ac--process-live-p)))))
     (when (get-buffer "*fsharp-complete*")
-      (kill-buffer "*fsharp-complete*"))))
+      (kill-buffer "*fsharp-complete*"))
 
-(require 'ert)
+    ; Kill the FSI process and buffer, if it was used
+    (let ((inf-fsharp-process (get-process inferior-fsharp-buffer-subname)))
+      (when inf-fsharp-process
+        (when (process-live-p inf-fsharp-process)
+          (kill-process inf-fsharp-process)
+          (wait-for-condition (lambda () (not (process-live-p
+                                          inf-fsharp-process)))))))))
 
-(defconst waittime 5
-  "Seconds to wait for data from background process")
-(defconst sleeptime 1
-  "Seconds to wait for data from background process")
-
+(defun load-project-and-wait (file)
+  (fsharp-ac/load-project file)
+  (wait-for-condition (lambda () fsharp-ac-project-files)))
 
 (ert-deftest check-project-files ()
   "Check the program files are set correctly"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
      (find-file "Test1/Program.fs")
-     (accept-process-output fsharp-ac-completion-process waittime)
-     (with-timeout (waittime)
-       (while (null fsharp-ac-project-files)
-         (sleep-for 1)))
-     (should (string-match-p "Test1/Program.fs" (mapconcat 'identity fsharp-ac-project-files "")))
-     (should (string-match-p "Test1/FileTwo.fs" (mapconcat 'identity fsharp-ac-project-files ""))))))
-
+     (wait-for-condition (lambda () fsharp-ac-project-files))
+     (should-match "Test1/Program.fs" (s-join "" fsharp-ac-project-files))
+     (should-match "Test1/FileTwo.fs" (s-join "" fsharp-ac-project-files)))))
 
 (ert-deftest check-completion ()
   "Check completion-at-point works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
      (find-file "Test1/Program.fs")
-     (fsharp-ac/load-project "Test1.fsproj")
-     (while (eq nil fsharp-ac-project-files)
-       (sleep-for 1))
-     (log-psendstr fsharp-ac-completion-process "outputmode json")
+     (load-project-and-wait "Test1.fsproj")
      (search-forward "X.func")
      (delete-backward-char 2)
      (auto-complete)
      (ac-complete)
-     (accept-process-output fsharp-ac-completion-process waittime)
      (beginning-of-line)
      (should (search-forward "X.func")))))
-
 
 (ert-deftest check-gotodefn ()
   "Check jump to definition works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
      (find-file "Test1/Program.fs")
-     (fsharp-ac/load-project "Test1.fsproj")
-     (while (eq nil fsharp-ac-project-files)
-       (sleep-for 1))
+     (load-project-and-wait "Test1.fsproj")
      (search-forward "X.func")
      (backward-char 2)
-     (call-process "sleep" nil nil nil "6")
+     (fsharp-ac-parse-current-buffer t)
      (fsharp-ac/gotodefn-at-point)
-     (with-timeout (5)
-       (while (eq (point) 88)
-         (sleep-for 1)))
-     (should (eq (point) 18)))))
+     (wait-for-condition (lambda () (not (eq (point) 88))))
+     (should= (point) 18))))
 
 (ert-deftest check-tooltip ()
   "Check tooltip request works"
@@ -119,44 +91,32 @@
    (lambda ()
      (let ((tiptext)
            (fsharp-ac-use-popup t))
-       (flet ((fsharp-ac/show-popup (s) (setq tiptext s)))
+       (noflet ((fsharp-ac/show-popup (s) (setq tiptext s)))
          (find-file "Test1/Program.fs")
-         (fsharp-ac/load-project "Test1.fsproj")
-         (while (eq nil fsharp-ac-project-files)
-           (sleep-for 1))
+         (load-project-and-wait "Test1.fsproj")
          (search-forward "X.func")
          (backward-char 2)
-         (call-process "sleep" nil nil nil "3")
+         (fsharp-ac-parse-current-buffer t)
          (fsharp-ac/show-tooltip-at-point)
-         (call-process "sleep" nil nil nil "1")
-         (fsharp-ac/show-tooltip-at-point)
-         (with-timeout (5)
-           (while (eq nil tiptext)
-             (sleep-for 1)))
-         (should
-          (string-match-p "val func : x:int -> int\n\nFull name: Program.X.func"
-                          tiptext)))))))
+         (wait-for-condition (lambda () tiptext))
+         (should-match "val func : x:int -> int\n\nFull name: Program.X.func"
+                       tiptext))))))
 
 (ert-deftest check-errors ()
   "Check error underlining works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
      (find-file "Test1/Program.fs")
-     (fsharp-ac/load-project "Test1.fsproj")
-     (while (eq nil fsharp-ac-project-files)
-       (sleep-for 1))
+     (load-project-and-wait "Test1.fsproj")
      (search-forward "X.func")
      (delete-backward-char 1)
      (backward-char)
-     (fsharp-ac-parse-current-buffer)
-     (call-process "sleep" nil nil nil "3")
-     (with-timeout (5)
-       (while (eq (length (overlays-at (point))) 0)
-         (sleep-for 1)))
-     (should (eq (overlay-get (car (overlays-at (point))) 'face)
-                 'fsharp-error-face))
-     (should (string= (overlay-get (car (overlays-at (point))) 'help-echo)
-                      "Unexpected keyword 'fun' in binding. Expected incomplete structured construct at or before this point or other token.")))))
+     (fsharp-ac-parse-current-buffer t)
+     (wait-for-condition (lambda () (> (length (overlays-at (point))) 0)))
+     (should= (overlay-get (car (overlays-at (point))) 'face)
+              'fsharp-error-face)
+     (should= (overlay-get (car (overlays-at (point))) 'help-echo)
+              "Unexpected keyword 'fun' in binding. Expected incomplete structured construct at or before this point or other token."))))
 
 (ert-deftest check-script-tooltip ()
   "Check we can request a tooltip from a script"
@@ -164,18 +124,25 @@
    (lambda ()
      (let ((tiptext)
            (fsharp-ac-use-popup t))
-       (flet ((fsharp-ac/show-popup (s) (setq tiptext s)))
+       (noflet ((fsharp-ac/show-popup (s) (setq tiptext s)))
          (find-file "Test1/Script.fsx")
-         (fsharp-ac-parse-current-buffer)
-         (call-process "sleep" nil nil nil "3")
+         (fsharp-ac-parse-current-buffer t)
          (search-forward "XA.fun")
          (fsharp-ac/show-tooltip-at-point)
-         (call-process "sleep" nil nil nil "1")
-         (fsharp-ac/show-tooltip-at-point)
-         (with-timeout (waittime)
-           (while (null tiptext)
-             (accept-process-output fsharp-ac-completion-process sleeptime)))
-         (should (stringp tiptext))
-         (should
-          (string-match-p "val funky : x:int -> int\n\nFull name: Script.XA.funky"
-                          tiptext)))))))
+         (wait-for-condition (lambda () tiptext))
+         (should-match "val funky : x:int -> int\n\nFull name: Script.XA.funky"
+                       tiptext))))))
+
+(ert-deftest check-inf-fsharp ()
+  "Check that FSI can be used to evaluate"
+  (fsharp-mode-wrapper '("Script.fsx")
+   (lambda ()
+     (fsharp-run-process-if-needed inferior-fsharp-program)
+     (wait-for-condition (lambda () (get-buffer inferior-fsharp-buffer-name)))
+     (find-file "tmp.fsx")
+     (goto-char (point-max))
+     (insert "let myvariable = 123 + 456")
+     (fsharp-eval-phrase)
+     (switch-to-buffer inferior-fsharp-buffer-name)
+     (wait-for-condition (lambda () (search-backward "579" nil t)))
+     (should-match "579" (buffer-substring-no-properties (point-min) (point-max))))))

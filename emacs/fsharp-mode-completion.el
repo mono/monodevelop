@@ -25,13 +25,15 @@
 
 (require 's)
 (require 'dash)
-(require 'fsharp-mode-indent)
 (require 'auto-complete)
 (require 'json)
 
 (autoload 'pos-tip-fill-string "pos-tip")
 (autoload 'pos-tip-show "pos-tip")
 (autoload 'popup-tip "popup")
+
+(declare-function fsharp-doc/format-for-minibuffer "fsharp-doc.el" (str))
+(declare-function fsharp-mode/find-fsproj "fsharp-mode.el" (dir-or-file))
 
 ;;; User-configurable variables
 
@@ -46,11 +48,11 @@
       (otherwise (list "mono" exe)))))
 
 (defvar fsharp-ac-use-popup t
-  "Display tooltips using a popup at point. If set to nil,
-display in a help buffer instead.")
+  "Display tooltips using a popup at point.
+If set to nil, display in a help buffer instead.")
 
 (defvar fsharp-ac-intellisense-enabled t
-  "Whether autocompletion is automatically triggered on '.'")
+  "Whether autocompletion is automatically triggered on '.'.")
 
 (defface fsharp-error-face
   '((t :inherit error))
@@ -78,6 +80,9 @@ display in a help buffer instead.")
 (defvar fsharp-ac-current-helptext (make-hash-table :test 'equal))
 
 (defconst fsharp-ac--log-buf "*fsharp-debug*")
+(defconst fsharp-ac--completion-procname "fsharp-complete")
+(defconst fsharp-ac--completion-bufname
+  (concat "*" fsharp-ac--completion-procname "*"))
 
 (defun fsharp-ac--log (str)
   (when fsharp-ac-debug
@@ -95,18 +100,23 @@ display in a help buffer instead.")
   (fsharp-ac--log str)
   (process-send-string proc str))
 
-(defun fsharp-ac-parse-current-buffer ()
-  (if (> (buffer-modified-tick) fsharp-ac-last-parsed-ticks)
-      (save-restriction
-	(let ((file (expand-file-name (buffer-file-name))))
-	  (widen)
-	  (fsharp-ac--log (format "Parsing \"%s\"\n" file))
-	  (process-send-string
-	   fsharp-ac-completion-process
-	   (format "parse \"%s\"\n%s\n<<EOF>>\n"
-		   file
-		   (buffer-substring-no-properties (point-min) (point-max)))))
-	(setq fsharp-ac-last-parsed-ticks (buffer-modified-tick)))))
+(defun fsharp-ac-parse-current-buffer (&optional force-sync)
+  "The optional FORCE-SYNC argument is for testing purposes.
+When used, the buffer is parsed even if it has not changed
+   since the last request"
+  (when (or (> (buffer-modified-tick) fsharp-ac-last-parsed-ticks)
+            force-sync)
+    (save-restriction
+      (let ((file (expand-file-name (buffer-file-name))))
+        (widen)
+        (fsharp-ac--log (format "Parsing \"%s\"\n" file))
+        (process-send-string
+         fsharp-ac-completion-process
+         (format "parse \"%s\" %s\n%s\n<<EOF>>\n"
+                 file
+                 (if force-sync " sync" "")
+                 (buffer-substring-no-properties (point-min) (point-max)))))
+      (setq fsharp-ac-last-parsed-ticks (buffer-modified-tick)))))
 
 (defun fsharp-ac-parse-file (file)
   (with-current-buffer (find-file-noselect file)
@@ -126,7 +136,7 @@ display in a help buffer instead.")
 ;;; File Parsing and loading
 
 (defun fsharp-ac/load-project (file)
-  "Load the specified F# file as a project"
+  "Load the specified fsproj FILE as a project."
   (interactive
   ;; Prompt user for an fsproj, searching for a default.
    (let* ((proj (fsharp-mode/find-fsproj buffer-file-name))
@@ -145,7 +155,7 @@ display in a help buffer instead.")
     file))
 
 (defun fsharp-ac/load-file (file)
-  "Start the compiler binding for an individual F# script."
+  "Start the compiler binding for an individual F# script FILE."
   (when (fsharp-ac--script-file-p file)
     (if (file-exists-p file)
         (when (not (fsharp-ac--process-live-p))
@@ -182,7 +192,7 @@ display in a help buffer instead.")
                         (* 1000 fsharp-ac-blocking-timeout))))
 
 (defun fsharp-ac--process-live-p ()
-  "Check whether the background process is live"
+  "Check whether the background process is live."
   (and fsharp-ac-completion-process
        (process-live-p fsharp-ac-completion-process)))
 
@@ -196,7 +206,7 @@ display in a help buffer instead.")
       (kill-process fsharp-ac-completion-process))))
 
 (defun fsharp-ac/start-process ()
-  "Launch the F# completion process in the background"
+  "Launch the F# completion process in the background."
   (interactive)
 
   (when (fsharp-ac--process-live-p)
@@ -211,7 +221,7 @@ display in a help buffer instead.")
      (message "Failed to start fsautocomplete. Disabling intellisense."))))
 
 (defun fsharp-ac--process-sentinel (process event)
-  "Default sentinel used by `fsharp-ac--configure-proc"
+  "Default sentinel used by `fsharp-ac--configure-proc`."
   (when (memq (process-status process) '(exit signal))
     (when fsharp-ac-idle-timer
       (cancel-timer fsharp-ac-idle-timer))
@@ -229,7 +239,9 @@ display in a help buffer instead.")
 
 (defun fsharp-ac--configure-proc ()
   (let ((proc (let (process-connection-type)
-                (apply 'start-process "fsharp-complete" "*fsharp-complete*"
+                (apply 'start-process
+                       fsharp-ac--completion-procname
+                       fsharp-ac--completion-bufname
                        fsharp-ac-complete-command))))
     (sleep-for 0.1)
     (if (process-live-p proc)
@@ -305,7 +317,7 @@ display in a help buffer instead.")
 
 (defconst fsharp-ac--ident
   (rx (one-or-more (not (any ".` \t\r\n"))))
-  "Regexp for normal identifiers")
+  "Regexp for normal identifiers.")
 
 ; Note that this regexp is not 100% correct.
 ; Allowable characters are defined using unicode
@@ -319,7 +331,7 @@ display in a help buffer instead.")
          (not (any "`\n\r\t"))
          (seq "`" (not (any "`\n\r\t")))))
        "``"))
-  "Regexp for raw identifiers")
+  "Regexp for raw identifiers.")
 
 (defconst fsharp-ac--rawIdResidue
   (rx (seq
@@ -329,7 +341,7 @@ display in a help buffer instead.")
          (not (any "`\n\r\t"))
          (seq "`" (not (any "`\n\r\t")))))
        string-end))
-  "Regexp for residues starting with backticks")
+  "Regexp for residues starting with backticks.")
 
 (defconst fsharp-ac--dottedIdentNormalResidue
   (rx-to-string
@@ -340,7 +352,7 @@ display in a help buffer instead.")
            "."))
          (group (zero-or-more (not (any ".` \t\r\n"))))
          string-end))
-  "Regexp for a dotted ident with a standard residue")
+  "Regexp for a dotted ident with a standard residue.")
 
 (defconst fsharp-ac--dottedIdentRawResidue
   (rx-to-string `(seq (zero-or-more
@@ -349,7 +361,7 @@ display in a help buffer instead.")
                             (regexp ,fsharp-ac--rawIdent))
                         "."))
                       (group (regexp ,fsharp-ac--rawIdResidue))))
-  "Regexp for a dotted ident with a raw residue")
+  "Regexp for a dotted ident with a raw residue.")
 
 (defun fsharp-ac--residue ()
   (let ((result
@@ -394,7 +406,7 @@ The current buffer must be an F# file that exists on disk."
                                  (current-column))))
 
 (defun fsharp-ac/gotodefn-at-point ()
-  "Find the point of declaration of the symbol at point and goto it"
+  "Find the point of declaration of the symbol at point and goto it."
   (interactive)
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
@@ -447,7 +459,7 @@ The current buffer must be an F# file that exists on disk."
 (defvar fsharp-ac-errors)
 
 (defvar fsharp-ac-last-parsed-ticks 0
-  "BUFFER's tick counter, when the file was parsed")
+  "BUFFER's tick counter, when the file was parsed.")
 
 (defun fsharp-ac--parse-current-file ()
   (when (fsharp-ac-can-make-request)
@@ -466,7 +478,7 @@ The current buffer must be an F# file that exists on disk."
       (point))))
 
 (defun fsharp-ac-parse-errors (data)
-  "Extract the errors from the given process response. Returns a list of fsharp-error."
+  "Extract the errors from the given process response DATA. Return a list of fsharp-error."
   (save-match-data
     (let (parsed)
       (dolist (err data parsed)
@@ -526,7 +538,7 @@ The current buffer must be an F# file that exists on disk."
 ;;; be called directly by users.
 
 (defun fsharp-ac-message-safely (format-string &rest args)
-  "Calls MESSAGE only if it is desirable to do so."
+  "Call MESSAGE with FORMAT-STRING and ARGS only if it is desirable to do so."
   (when (equal major-mode 'fsharp-mode)
     (unless (or (active-minibuffer-window) cursor-in-echo-area)
       (apply 'message format-string args))))
@@ -607,7 +619,7 @@ around to the start of the buffer."
              (message "Error: F# completion process produced malformed JSON"))))))))
 
 (defun fsharp-ac-filter-output (proc str)
-  "Filter output from the completion process and handle appropriately."
+  "Filter STR from the completion process PROC and handle appropriately."
   (with-current-buffer (process-buffer proc)
     (save-excursion
       (goto-char (process-mark proc))
