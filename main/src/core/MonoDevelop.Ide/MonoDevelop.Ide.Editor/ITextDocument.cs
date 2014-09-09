@@ -91,6 +91,10 @@ namespace MonoDevelop.Ide.Editor
 		/// Creates an immutable snapshot of this document.
 		/// </summary>
 		IReadonlyTextDocument CreateDocumentSnapshot();
+
+		event EventHandler<LineEventArgs> LineChanged;
+		event EventHandler<LineEventArgs> LineInserted;
+		event EventHandler<LineEventArgs> LineRemoved;
 	}
 
 	public static class DocumentExtensions

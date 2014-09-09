@@ -48,6 +48,23 @@ namespace MonoDevelop.SourceEditor.Wrappers
 			this.document = document;
 			this.document.TextReplaced += HandleTextReplaced;
 			this.document.TextReplacing += HandleTextReplacing;
+			this.document.LineChanged += delegate(object sender, Mono.TextEditor.LineEventArgs e) {
+				var handler = LineChanged;
+				if (handler != null)
+					handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+			};
+
+			this.document.LineInserted += delegate(object sender, Mono.TextEditor.LineEventArgs e) {
+				var handler = LineInserted;
+				if (handler != null)
+					handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+			};
+
+			this.document.LineRemoved += delegate(object sender, Mono.TextEditor.LineEventArgs e) {
+				var handler = LineRemoved;
+				if (handler != null)
+					handler (this, new MonoDevelop.Ide.Editor.LineEventArgs (new DocumentLineWrapper (e.Line)));
+			};
 		}
 
 		void HandleTextReplacing (object sender, DocumentChangeEventArgs e)
@@ -199,6 +216,9 @@ namespace MonoDevelop.SourceEditor.Wrappers
 				return document.IsInAtomicUndo;
 			}
 		}
+		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineChanged;
+		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineInserted;
+		public event EventHandler<MonoDevelop.Ide.Editor.LineEventArgs> LineRemoved;
 
 		#endregion
 
