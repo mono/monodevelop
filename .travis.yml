@@ -1,5 +1,8 @@
 language: emacs-lisp
 
+matrix:
+  fast_finish: true
+
 before_install:
   - sudo add-apt-repository -y "deb http://archive.ubuntu.com/ubuntu/ trusty main universe"
   - sudo add-apt-repository -y ppa:cassou/emacs
@@ -7,7 +10,6 @@ before_install:
 
 install:
   - sudo apt-get install -yq libpango-1.0-0
-  - sudo apt-get install -yq emacs24 emacs24-el
   - sudo apt-get install -yq emacs24 emacs24-el emacs24-common-non-dfsg
   - sudo apt-get install -yq mono-complete
   - sudo apt-get install -yq fsharp
