@@ -2022,6 +2022,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			#endregion
+
+			public override string ToString ()
+			{
+				return string.Format ("[UnresolvedAssemblyProxy: FileName={0}]", FileName);
+			}
 		}
 
 		internal class LazyAssemblyLoader : IUnresolvedAssembly
