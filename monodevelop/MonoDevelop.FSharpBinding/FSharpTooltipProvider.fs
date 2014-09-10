@@ -101,6 +101,8 @@ module NewTooltips =
             | :? FSharpMemberFunctionOrValue as func -> func.XmlDoc, func.XmlDocSig
             | :? FSharpEntity as fse -> fse.XmlDoc, fse.XmlDocSig
             | :? FSharpField as fsf -> fsf.XmlDoc, fsf.XmlDocSig
+            | :? FSharpUnionCase as fsu -> fsu.XmlDoc, fsu.XmlDocSig
+            | :? FSharpGenericParameter as gp -> gp.XmlDoc, ""
             | _ -> ResizeArray() :> IList<_>, ""
 
         if xmlDoc.Count > 0 then Full (String.Join( "\n", xmlDoc |> Seq.map escapeText))
