@@ -39,4 +39,4 @@
 [submodule "main/external/xwt"]
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
-	branch = xamarin-mac
+	branch = xammac-unified
