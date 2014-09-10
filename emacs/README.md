@@ -189,17 +189,21 @@ the following to your `init.el` may be a good start:
 
 `fsharp-mode` is still under development, so you may encounter some issues. Please report them so we can improve things! Either open an issue on [Github](https://github.com/fsharp/fsharpbinding/) with the label `Emacs`, or email the [mailing list](http://groups.google.com/group/fsharp-opensource).
 
-### `*fsharp-complete*`
-
-The buffer `*fsharp-complete*` contains partial messages received from the background process, before they form complete JSON objects.
-
 ### `fsharp-ac-debug`
 
 If you set the variable `fsharp-ac-debug` to a non-`nil` value, e.g. `(setq fsharp-ac-debug 0)`, then some debug output will be seen in the buffer `*fsharp-debug*`. Setting `fsharp-ac-debug` to an 1 or 2 will cause a truncated or complete copy of communication between Emacs and the background intellisense process to be logged in `*fsharp-debug*`. This can make things rather slow, but would be useful for bug reports.
 
-### `Error: F# completion process produced malformed JSON`
+### `Error: F# completion process produced malformed JSON.`
 
 This is probably the result of the background intellisense process crashing and printing a stacktrace in plain text. Please report the crash, preferably with how to reproduce, and the contents of the `*fsharp-complete*` buffer.
+
+### `Error: background intellisense process not running.`
+
+You have requested some intellisense information (such as completions or a tooltip), but the background process is not running. The most common cause of this is that a standard `.fs` file is being visited in the current buffer, but a `.fsproj` project file was not found in the same directory. Try loading one with <kbd>C-c C-p</kbd>.
+
+### `Error: this file is not part of the loaded project.`
+
+In this case you have requested intellisense for the visited file, which is a standard `.fs` file *not* included in the current loaded project. This mode can currently only provide intellisense for one project at a time. Try loading the appropriate project with <kbd>C-c C-p</kbd>.
 
 ### Windows completion menu performance
 

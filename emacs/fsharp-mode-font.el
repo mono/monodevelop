@@ -77,7 +77,7 @@
 (defconst fsharp-constructor-regexp "^\\s-*\\<\\(new\\) *(.*)[^=]*=")
 (defconst fsharp-type-def-regexp 
   (format "^\\s-*\\<\\(?:type\\|inherit\\)\\s-+%s\\([A-Za-z0-9_'.]+\\)" 
-		  fsharp-access-control-regexp))
+                  fsharp-access-control-regexp))
 (defconst fsharp-var-or-arg-regexp "\\<\\([A-Za-z_][A-Za-z0-9_']*\\)\\>")
 (defconst fsharp-explicit-field-regexp
   (format "^\\s-*\\(?:val\\|abstract\\)\\s-*\\(?:mutable\\s-+\\)?%s\\([A-Za-z_][A-Za-z0-9_']*\\)\\s-*:\\s-*\\([A-Za-z_][A-Za-z0-9_'<> \t]*\\)" fsharp-access-control-regexp))
@@ -166,7 +166,7 @@
     ;; being rendered in variable face
     (2 font-lock-negation-char-face nil t))
   `(,(format "^\\s-*\\<\\(let\\|use\\|override\\|member\\|and\\|\\(?:%snew\\)\\)\\>"
-			 fsharp-access-control-regexp)
+                         fsharp-access-control-regexp)
     (0 font-lock-keyword-face) ; let binding and function arguments
     (,fsharp-var-or-arg-regexp
      (,fsharp-var-pre-form) nil
@@ -182,8 +182,8 @@
      (,fsharp-var-pre-form) nil
      (1 font-lock-variable-name-face nil t)))
   `(,fsharp-explicit-field-regexp
-	(1 font-lock-variable-name-face)
-	(2 font-lock-type-face))
+        (1 font-lock-variable-name-face)
+        (2 font-lock-type-face))
 
   ;; open namespace
   '("\\<open\s\\([A-Za-z0-9_.]+\\)" 1 font-lock-type-face)
