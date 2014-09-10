@@ -608,6 +608,44 @@ namespace Mono.TextTemplating
 			};
 			if (!settings.IncludePreprocessingHelpers)
 				initializeMeth.Attributes |= MemberAttributes.Override;
+
+			//if preprocessed, pass the extension and encoding to the host
+			if (settings.IsPreprocessed && settings.HostSpecific) {
+				var hostProp = new CodePropertyReferenceExpression (new CodeThisReferenceExpression (), "Host");
+				var statements = new List<CodeStatement> ();
+
+				if (!string.IsNullOrEmpty (settings.Extension)) {
+					statements.Add (new CodeExpressionStatement (new CodeMethodInvokeExpression (
+						hostProp,
+						"SetFileExtension",
+						new CodePrimitiveExpression (settings.Extension)
+					)));
+				}
+
+				if (settings.Encoding != null) {
+					statements.Add (new CodeExpressionStatement (new CodeMethodInvokeExpression (
+						hostProp,
+						"SetOutputEncoding",
+						new CodeMethodInvokeExpression(
+							new CodeTypeReferenceExpression (typeof(Encoding)),
+							"GetEncoding",
+							new CodePrimitiveExpression (settings.Encoding.CodePage),
+							new CodePrimitiveExpression(true)
+						)
+					)));
+				}
+
+				if (statements.Count > 0) {
+					initializeMeth.Statements.Add (new CodeConditionStatement (
+						new CodeBinaryOperatorExpression (
+							hostProp,
+							CodeBinaryOperatorType.IdentityInequality,
+							new CodePrimitiveExpression (null)
+						),
+						statements.ToArray()
+					));
+				}
+			}
 			
 			//pre-init code from processors
 			foreach (var processor in settings.DirectiveProcessors.Values) {
