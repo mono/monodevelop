@@ -38,5 +38,5 @@
 	url = git://github.com/mono/nuget-binary.git
 [submodule "main/external/xwt"]
 	path = main/external/xwt
-	url = git@github.com:xamarin/xwt
+	url = git://github.com/mono/xwt
 	branch = xamarin-mac
