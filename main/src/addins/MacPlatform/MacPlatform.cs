@@ -776,8 +776,6 @@ namespace MonoDevelop.MacIntegration
 			child.Realize ();
 			NSWindow overlay = GtkQuartz.GetWindow (child);
 			overlay.SetExcludedFromWindowsMenu (true);
-			overlay.StyleMask = NSWindowStyle.Borderless;
-			overlay.Level = NSWindowLevel.Status;
 			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
 		}
 	}

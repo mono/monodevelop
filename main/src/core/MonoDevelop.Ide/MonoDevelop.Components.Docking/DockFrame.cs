@@ -915,6 +915,7 @@ namespace MonoDevelop.Components.Docking
 				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
 				win.SkipTaskbarHint = true;
 				win.Decorated = false;
+				win.TypeHint = Gdk.WindowTypeHint.Toolbar;
 				aframe.ContainerWindow = win;
 				win.Add (aframe);
 				aframe.Show ();
