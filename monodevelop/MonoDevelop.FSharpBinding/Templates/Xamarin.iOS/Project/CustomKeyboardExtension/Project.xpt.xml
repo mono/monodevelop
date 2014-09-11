@@ -25,9 +25,9 @@
 			<Files>
 				<Directory name="Resources"/>
 				<File name="Info.plist" AddStandardHeader="False" src="Info.plist.xml" />
-				<File name="Conversions.fs" AddStandardHeader="True" src="../Common/Conversions.fs" />
-				<File name="KeyboardViewController.fs" AddStandardHeader="True" src="KeyboardViewController.fs" />
-				<File name="AppDelegate.fs" AddStandardHeader="True" src="../Common/ExtensionAppDelegate.fs" />
+				<UnformattedFile name="Conversions.fs" AddStandardHeader="True" src="../Common/Conversions.fs" />
+				<UnformattedFile name="KeyboardViewController.fs" AddStandardHeader="True" src="KeyboardViewController.fs" />
+				<UnformattedFile name="AppDelegate.fs" AddStandardHeader="True" src="../Common/ExtensionAppDelegate.fs" />
 			</Files>
 		</Project>
 	</Combine>

@@ -405,6 +405,7 @@
     <Compile Include="FSharpFormattingPolicyPanel.fs" />
 	  <Compile Include="FSharpSyntaxMode.fs" />
 	  <Compile Include="FSharpHighlightUsagesExtension.fs" />
+    <Compile Include="UnformattedTextFileDescriptionTemplate.fs" />
 	  <EmbeddedResource Include="FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
     <EmbeddedResource Include="FSharpStylePolicy.xml" />

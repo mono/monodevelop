@@ -179,6 +179,10 @@
     <FileFilter id="F#" insertbefore="AllFiles" _label="F# Source Files" extensions="*.fs;*.fsi;*.fsx;*.fsscript"/>
   </Extension>
 
+  <Extension path = "/MonoDevelop/Ide/FileTemplateTypes">
+    <FileTemplateType name = "UnformattedFile" class = "MonoDevelop.FSharp.UnformattedTextFileDescriptionTemplate"/>
+  </Extension>
+
   <Extension path="/MonoDevelop/Ide/FileTemplates">
     <FileTemplate id="EmptyFSharpSource" file="Templates/EmptyFSharpSource.xft.xml"/>
     <FileTemplate id="EmptyFSharpScript" file="Templates/EmptyFSharpScript.xft.xml"/>
