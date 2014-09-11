@@ -912,7 +912,7 @@ namespace MonoDevelop.Components.Docking
 			}
 
 			if (Platform.IsMac) {
-				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
+				var win = new Gtk.Window (Gtk.WindowType.Popup);
 				win.SkipTaskbarHint = true;
 				win.Decorated = false;
 				aframe.ContainerWindow = win;
@@ -920,8 +920,10 @@ namespace MonoDevelop.Components.Docking
 				aframe.Show ();
 				var p = this.GetScreenCoordinates (new Gdk.Point (x, y));
 				win.Move (p.X, p.Y);
-				win.Show ();
+				win.Opacity = 0.0;
 				Ide.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
+				win.Show ();
+				win.Opacity = 1.0;
 			} else {
 				AddTopLevel (aframe, x, y);
 				aframe.AnimateShow ();

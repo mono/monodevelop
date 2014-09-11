@@ -772,12 +772,10 @@ namespace MonoDevelop.MacIntegration
 
 		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
 		{
-			NSWindow w = GtkQuartz.GetWindow (parent);
 			child.Realize ();
+
+			NSWindow w = GtkQuartz.GetWindow (parent);
 			NSWindow overlay = GtkQuartz.GetWindow (child);
-			overlay.SetExcludedFromWindowsMenu (true);
-			overlay.StyleMask = NSWindowStyle.Borderless;
-			overlay.Level = NSWindowLevel.Status;
 			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
 		}
 	}
