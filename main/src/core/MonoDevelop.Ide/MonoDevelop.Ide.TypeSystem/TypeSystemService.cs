@@ -160,7 +160,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 	public static class TypeSystemService
 	{
-		const string CurrentVersion = "1.1.7";
+		const string CurrentVersion = "1.1.8";
 		static readonly List<TypeSystemParserNode> parsers;
 		static string[] filesSkippedInParseThread = new string[0];
 
@@ -2022,6 +2022,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			#endregion
+
+			public override string ToString ()
+			{
+				return string.Format ("[UnresolvedAssemblyProxy: FileName={0}]", FileName);
+			}
 		}
 
 		internal class LazyAssemblyLoader : IUnresolvedAssembly

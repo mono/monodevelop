@@ -67,14 +67,18 @@ namespace MonoDevelop.CSharp
 		Mono.TextEditor.Caret caret;
 		CSharpCompletionTextEditorExtension ext;
 
-		List<DotNetProject> ownerProjects;
+		List<DotNetProject> ownerProjects = new List<DotNetProject> ();
 
 		public override void Initialize ()
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			isPathSet = false;
-			UpdateOwnerProjects ();
-			UpdatePath (null, null);
+			// Delay the execution of UpdateOwnerProjects since it may end calling Document.AttachToProject,
+			// which shouldn't be called while the extension chain is being initialized.
+			Gtk.Application.Invoke (delegate {
+				UpdateOwnerProjects ();
+				UpdatePath (null, null);
+			});
 			caret = Document.Editor.Caret;
 			caret.PositionChanged += UpdatePath;
 			ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();

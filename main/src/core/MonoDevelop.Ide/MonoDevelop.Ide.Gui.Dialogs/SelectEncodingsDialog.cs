@@ -32,40 +32,10 @@ using Gtk;
 using MonoDevelop.Core;
 using System.Text;
 using System.Collections.Generic;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.Ide
 {
-	public static class SelectedEncodings
-	{
-		static int[] conversionEncodings = null;
-		public static int[] ConversionEncodings {
-			get {
-				if (conversionEncodings == null) {
-					string propertyEncodings = PropertyService.Get ("MonoDevelop.Ide.SelectEncodingsDialog.ConversionEncodings", string.Join (",", DefaultEncodings));
-					try {
-						conversionEncodings = propertyEncodings.Split (',').Select (e => int.Parse (e.Trim ())).ToArray ();
-					} catch (Exception) {
-						conversionEncodings = DefaultEncodings;
-					}
-				}
-
-				return conversionEncodings;
-			}
-			set {
-				conversionEncodings = value;
-				PropertyService.Set ("MonoDevelop.Ide.SelectEncodingsDialog.ConversionEncodings", string.Join (",", value));
-				Console.WriteLine ("set to:" + string.Join (",", value));
-			}
-		}
-		
-		const int ISO_8859_15 = 28605;
-		public readonly static int[] DefaultEncodings = new int[] { 
-			Encoding.UTF8.CodePage,
-			ISO_8859_15,
-			Encoding.Unicode.CodePage
-		};
-	}
-	
 	internal partial class SelectEncodingsDialog: Gtk.Dialog
 	{
 		ListStore storeAvail;
@@ -86,13 +56,12 @@ namespace MonoDevelop.Ide
 				listSelected.AppendColumn ("Encoding", new Gtk.CellRendererText (), "text", 1);
 				
 				foreach (var e in Encoding.GetEncodings ()) {
-					//					if (!((IList)TextEncoding.ConversionEncodings).Contains (e))
 					var enc = e.GetEncoding ();
 					storeAvail.AppendValues (enc.EncodingName, enc.WebName, e.CodePage);
 				}
 				
-				foreach (var e in SelectedEncodings.ConversionEncodings) {
-					var enc = Encoding.GetEncoding (e);
+				foreach (var e in TextEncoding.ConversionEncodings) {
+					var enc = Encoding.GetEncoding (e.CodePage);
 					storeSelected.AppendValues (enc.EncodingName, enc.WebName, enc.CodePage);
 				}
 			} catch (Exception  ex) {
@@ -115,7 +84,7 @@ namespace MonoDevelop.Ide
 					list.Add (enc);
 				} while (storeSelected.IterNext (ref iter));
 			}
-			SelectedEncodings.ConversionEncodings = list.ToArray ();
+			TextEncoding.ConversionEncodings = list.Select ((id) => TextEncoding.GetEncoding (id)).ToArray ();
 		}
 		
 		protected void OnAddClicked (object ob, EventArgs args)

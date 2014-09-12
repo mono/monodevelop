@@ -28,10 +28,18 @@ using System;
 namespace MonoDevelop.Core.Instrumentation
 {
 	[Mono.Addins.TypeExtensionPoint]
-	public interface IInstrumentationConsumer
+	public abstract class InstrumentationConsumer
 	{
-		bool SupportsCounter (Counter counter);
-		void ConsumeValue (Counter counter, CounterValue value);
+		public abstract bool SupportsCounter (Counter counter);
+
+		public virtual void ConsumeValue (Counter counter, CounterValue value)
+		{
+		}
+
+		public virtual IDisposable BeginTimer (TimerCounter counter, CounterValue value)
+		{
+			return null;
+		}
 	}
 }
 

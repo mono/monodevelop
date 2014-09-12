@@ -225,7 +225,7 @@ namespace MonoDevelop.Ide
 			TypeSystemService.TrackFileChanges = true;
 			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
-			Customizer.Initialize ();
+			Customizer.OnIdeInitialized ();
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");

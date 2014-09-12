@@ -169,7 +169,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageReferenceNode referenceNode = nodes.FirstOrDefault ();
 			Assert.AreEqual (1, nodes.Count);
 			Assert.IsFalse (referenceNode.Installed);
-			Assert.AreEqual ("<span color='#c99c00'>MyPackage</span>", referenceNode.GetLabel ());
+			Assert.AreEqual ("MyPackage", referenceNode.GetLabel ());
 		}
 
 		[Test]
@@ -200,8 +200,9 @@ namespace MonoDevelop.PackageManagement.Tests
 			PackageReferenceNode referenceNode = nodes.FirstOrDefault ();
 			Assert.AreEqual (1, nodes.Count);
 			Assert.AreEqual ("1.2", referenceNode.UpdatedVersion.ToString ());
-			Assert.AreEqual ("<span color='#c99c00'>MyPackage</span> <span color='grey'>(1.2 available)</span>", referenceNode.GetLabel ());
-			Assert.AreEqual (Stock.ReferenceWarning, referenceNode.GetIconId ());
+			Assert.AreEqual ("MyPackage <span color='grey'>(1.2 available)</span>", referenceNode.GetLabel ());
+			Assert.AreEqual (Stock.Reference, referenceNode.GetIconId ());
+			Assert.IsTrue (referenceNode.IsDisabled ());
 		}
 	}
 }

@@ -59,10 +59,18 @@ namespace MonoDevelop.AnalysisCore
 	{
 		protected override void Update (CommandInfo info)
 		{
-			MonoDevelop.Ide.Gui.Document document;
-			IList<FixableResult> results;
-			info.Enabled = FixOperationsHandler.GetFixes (out document, out results)
-			    && results.Any (r => FixOperationsHandler.GetActions (document, r).Any ());
+			var doc = MonoDevelop.Ide.IdeApp.Workbench.ActiveDocument;
+			if (doc == null || doc.Editor == null) {
+				info.Enabled = false;
+				return;
+			}
+			var codeActionExtension = doc.GetContent <CodeActionEditorExtension> ();
+			if (codeActionExtension == null) {
+				info.Enabled = false;
+				return;
+			}
+			var fixes = codeActionExtension.GetCurrentFixes ();
+			info.Enabled = fixes.Any ();
 		}
 		
 		protected override void Run ()

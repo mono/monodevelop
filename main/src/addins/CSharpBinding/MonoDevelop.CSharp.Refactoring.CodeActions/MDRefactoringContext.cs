@@ -235,7 +235,7 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (sharedResolver == null)
 					return null;
 				return new MDRefactoringContext (document, sharedResolver, loc, cancellationToken);
-			}, TaskContinuationOptions.ExecuteSynchronously);
+			});
 		}
 
 		internal MDRefactoringContext (Document document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
