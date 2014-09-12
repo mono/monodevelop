@@ -77,6 +77,12 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@rm -rf tarballs/external	
 	@echo Decompressing monodevelop-$(PACKAGE_VERSION).tar.bz2
 	@cd tarballs && tar xvjf monodevelop-$(PACKAGE_VERSION).tar.bz2
+	@mozroots --import --machine --sync
+	@yes | certmgr -ssl -m https://go.microsoft.com
+	@yes | certmgr -ssl -m https://nugetgallery.blob.core.windows.net
+	@yes | certmgr -ssl -m https://nuget.org
+	@cd main/src/addins/AspNet && mono ../../../external/nuget-binary/NuGet.exe restore -SolutionDirectory ../../.. -verbosity detailed
+	@cp -R main/packages tarballs/monodevelop-$(PACKAGE_VERSION)
 	@cp version.config tarballs/monodevelop-$(PACKAGE_VERSION)
 	@cd main && make buildinfo
 	@cp main/build/bin/buildinfo tarballs/monodevelop-$(PACKAGE_VERSION)/
