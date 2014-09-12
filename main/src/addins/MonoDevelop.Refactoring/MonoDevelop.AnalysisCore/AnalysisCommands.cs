@@ -65,6 +65,10 @@ namespace MonoDevelop.AnalysisCore
 				return;
 			}
 			var codeActionExtension = doc.GetContent <CodeActionEditorExtension> ();
+			if (codeActionExtension == null) {
+				info.Enabled = false;
+				return;
+			}
 			var fixes = codeActionExtension.GetCurrentFixes ();
 			info.Enabled = fixes.Any ();
 		}
