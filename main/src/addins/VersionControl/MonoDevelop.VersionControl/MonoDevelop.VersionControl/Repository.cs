@@ -372,10 +372,27 @@ namespace MonoDevelop.VersionControl
 			} catch (Exception ex) {
 				LoggingService.LogError ("Version control status query failed", ex);
 
+				//Release all items in current batch
 				foreach (var item in recursiveDirectoryQueryQueueClone)
 					item.ResetEvent.Set ();
 
-				queryRunning = false;
+				lock (queryLock) {
+					queryRunning = false;
+						
+					fileQueryQueue.Clear ();
+					filesInQueryQueue.Clear ();
+
+					directoriesInQueryQueue.Clear ();
+					directoryQueryQueue.Clear ();
+
+					recursiveDirectoryQueryQueueClone = recursiveDirectoryQueryQueue.ToArray ();
+					recursiveDirectoriesInQueryQueue.Clear ();
+					recursiveDirectoryQueryQueue.Clear ();
+				}
+
+				//Release newly pending
+				foreach (var item in recursiveDirectoryQueryQueueClone)
+					item.ResetEvent.Set ();
 			}
 			//Console.WriteLine ("RunQueries finished - " + (DateTime.Now - t).TotalMilliseconds);
 		}
