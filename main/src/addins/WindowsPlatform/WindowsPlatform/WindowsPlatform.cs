@@ -66,21 +66,22 @@ namespace MonoDevelop.Platform
 		public override void Initialize ()
 		{
 			// Only initialize elements for Win7+.
-			if (TaskbarManager.IsPlatformSupported)
+			if (TaskbarManager.IsPlatformSupported) {
 				TaskbarManager.Instance.ApplicationId = BrandingService.ProfileDirectoryName + "." + IdeApp.Version;
+			}
 		}
-		
+
 		public override void SetGlobalProgressBar (double progress)
 		{
 			if (!TaskbarManager.IsPlatformSupported)
 				return;
 
+			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
 			if (progress == 1) {
-				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress);
+				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress, handle);
 			} else {
-				if (progress == 0)
-					TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Normal);
-				TaskbarManager.Instance.SetProgressValue ((int)(progress * 100f), 100);
+				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Normal, handle);
+				TaskbarManager.Instance.SetProgressValue ((int)(progress * 100f), 100, handle);
 			}
 		}
 
@@ -89,7 +90,8 @@ namespace MonoDevelop.Platform
 			if (!TaskbarManager.IsPlatformSupported)
 				return;
 
-			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Error);
+			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
+			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Error, handle);
 		}
 
 		public override object GetFileAttributes (string fileName)
