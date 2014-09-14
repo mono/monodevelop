@@ -78,7 +78,8 @@ namespace MonoDevelop.Platform
 			if (progress == 1) {
 				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress);
 			} else {
-				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Normal);
+				if (progress == 0)
+					TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Normal);
 				TaskbarManager.Instance.SetProgressValue ((int)(progress * 100f), 100);
 			}
 		}
