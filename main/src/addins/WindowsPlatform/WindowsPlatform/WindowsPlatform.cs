@@ -73,7 +73,7 @@ namespace MonoDevelop.Platform
 
 		void ResetGlobalProgressState (object sender, EventArgs e)
 		{
-			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
+			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
 			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress, handle);
 			IdeApp.FocusIn -= ResetGlobalProgressState;
 		}
@@ -83,7 +83,7 @@ namespace MonoDevelop.Platform
 			if (!TaskbarManager.IsPlatformSupported)
 				return;
 
-			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
+			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
 			if (progress == 1.0) {
 				if (IdeApp.HasInputFocus)
 					ResetGlobalProgressState (null, null);
@@ -101,8 +101,8 @@ namespace MonoDevelop.Platform
 		{
 			if (!TaskbarManager.IsPlatformSupported)
 				return;
-
-			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
+				
+			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
 			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Indeterminate, handle);
 		}
 
@@ -111,7 +111,7 @@ namespace MonoDevelop.Platform
 			if (!TaskbarManager.IsPlatformSupported)
 				return;
 
-			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
+			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
 			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Error, handle);
 			TaskbarManager.Instance.SetProgressValue (1, 1, handle);
 		}
