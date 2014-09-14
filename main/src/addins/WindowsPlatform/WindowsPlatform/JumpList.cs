@@ -105,7 +105,7 @@ namespace MonoDevelop.Platform
 			ProcessModule monoDevelopAssembly = Process.GetCurrentProcess ().MainModule;
 			string exePath = monoDevelopAssembly.FileName;
 			string executeString = exePath + " %1";
-			string progId = MonoDevelop.Core.BrandingService.ProfileDirectoryName + "." + IdeApp.Version;
+			string progId = Taskbar.TaskbarManager.Instance.ApplicationId;
 
 			RegistryKey progIdKey = Registry.ClassesRoot.OpenSubKey (progId + @"\shell\Open\Command", false);
 			if (progIdKey == null) {
