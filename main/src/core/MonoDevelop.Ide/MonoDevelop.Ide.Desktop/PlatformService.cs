@@ -61,7 +61,19 @@ namespace MonoDevelop.Ide.Desktop
 				return "MonoDevelop";
 			}
 		}
+
+		public virtual void Initialize ()
+		{
+		}
 		
+		public virtual void SetGlobalProgressBar (double progress)
+		{
+		}
+
+		public virtual void ShowGlobalProgressBarError ()
+		{
+		}
+
 		public virtual void OpenFile (string filename)
 		{
 			Process.Start (filename);
