@@ -66,7 +66,8 @@ namespace MonoDevelop.Ide.Gui
 			if (!UnknownWork) {
 				statusBar.SetProgressFraction (GlobalWork);
 				DesktopService.SetGlobalProgress (GlobalWork);
-			}
+			} else
+				DesktopService.ShowGlobalProgressIndeterminate ();
 			RunPendingEvents ();
 		}
 		
@@ -113,7 +114,7 @@ namespace MonoDevelop.Ide.Gui
 				statusBar.Dispose ();
 			}
 
-			DesktopService.SetGlobalProgress (1);
+			DesktopService.SetGlobalProgress (GlobalWork);
 
 			base.OnCompleted ();
 		}

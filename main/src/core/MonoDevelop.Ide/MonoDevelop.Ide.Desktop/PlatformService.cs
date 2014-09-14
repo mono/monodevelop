@@ -65,12 +65,16 @@ namespace MonoDevelop.Ide.Desktop
 		public virtual void Initialize ()
 		{
 		}
-		
+
 		public virtual void SetGlobalProgressBar (double progress)
 		{
 		}
 
 		public virtual void ShowGlobalProgressBarError ()
+		{
+		}
+
+		public virtual void ShowGlobalProgressBarIndeterminate ()
 		{
 		}
 

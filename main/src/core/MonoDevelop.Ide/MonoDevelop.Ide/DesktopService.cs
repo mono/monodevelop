@@ -93,6 +93,11 @@ namespace MonoDevelop.Ide
 			platformService.SetGlobalProgressBar (progress);
 		}
 
+		public static void ShowGlobalProgressIndeterminate ()
+		{
+			platformService.ShowGlobalProgressBarIndeterminate ();
+		}
+
 		public static void ShowGlobalProgressError ()
 		{
 			platformService.ShowGlobalProgressBarError ();

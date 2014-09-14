@@ -71,18 +71,39 @@ namespace MonoDevelop.Platform
 			}
 		}
 
+		void ResetGlobalProgressState (object sender, EventArgs e)
+		{
+			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
+			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress, handle);
+			IdeApp.FocusIn -= ResetGlobalProgressState;
+		}
+
 		public override void SetGlobalProgressBar (double progress)
 		{
 			if (!TaskbarManager.IsPlatformSupported)
 				return;
 
 			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
-			if (progress == 1) {
-				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress, handle);
+			if (progress == 1.0) {
+				if (IdeApp.HasInputFocus)
+					ResetGlobalProgressState (null, null);
+				else {
+					TaskbarManager.Instance.SetProgressValue ((int)(progress * 100f), 100, handle);
+					IdeApp.FocusIn += ResetGlobalProgressState;
+				}
 			} else {
 				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Normal, handle);
 				TaskbarManager.Instance.SetProgressValue ((int)(progress * 100f), 100, handle);
 			}
+		}
+
+		public override void ShowGlobalProgressBarIndeterminate ()
+		{
+			if (!TaskbarManager.IsPlatformSupported)
+				return;
+
+			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
+			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Indeterminate, handle);
 		}
 
 		public override void ShowGlobalProgressBarError ()
@@ -92,6 +113,7 @@ namespace MonoDevelop.Platform
 
 			IntPtr handle = GdkWin32.HgdiobjGet (MessageService.RootWindow.GdkWindow);
 			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Error, handle);
+			TaskbarManager.Instance.SetProgressValue (1, 1, handle);
 		}
 
 		public override object GetFileAttributes (string fileName)
