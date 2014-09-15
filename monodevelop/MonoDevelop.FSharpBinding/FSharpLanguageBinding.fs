@@ -41,25 +41,29 @@ type FSharpLanguageBinding() =
   static let LanguageName = "F#"
 
   let provider = lazy new CodeDom.FSharpCodeProvider()
+  let langServ = MDLanguageService.Instance
     
   let invalidateProjectFile(project:Project) =
     match project with
     | :? DotNetProject as dnp when dnp.LanguageName = LanguageName ->
         let projectFilename, files, args, framework = MonoDevelop.getCheckerArgsFromProject(dnp, IdeApp.Workspace.ActiveConfiguration)
-        let options = MDLanguageService.Instance.GetProjectCheckerOptions(projectFilename, files, args, framework)
-        MDLanguageService.Instance.InvalidateConfiguration(options)
+        let options = langServ.GetProjectCheckerOptions(projectFilename, files, args, framework)
+        langServ.InvalidateConfiguration(options)
     | _ -> ()
     
   let invalidateAll (args:#ProjectFileEventInfo seq) =
     for projectFileEvent in args do 
         if CompilerArguments.supportedExtension(Path.GetExtension(projectFileEvent.ProjectFile.FilePath.ToString())) then
-            invalidateProjectFile(projectFileEvent.Project) 
+            invalidateProjectFile(projectFileEvent.Project)
+
+  let eventDisposer =
+      ResizeArray<IDisposable> ()
             
   // ------------------------------------------------------------------------------------------
   // Watch for changes that trigger a reparse, but only if we're running within the IDE context
   // and not from mdtool or something like it.
   do if IdeApp.IsInitialized then
-    // Register handler that will reparse when the active configuration is changes
+      // Register handler that will reparse when the active configuration is changes
       IdeApp.Workspace.ActiveConfigurationChanged.Add(fun _ -> 
              for doc in IdeApp.Workbench.Documents do
                  if doc.Editor <> null && CompilerArguments.supportedExtension(Path.GetExtension(doc.FileName.ToString())) then 
@@ -74,12 +78,12 @@ type FSharpLanguageBinding() =
 
       //Add events to invalidate FCS if anything imprtant to do with configuration changes
       //e.g. Files added/removed/renamed, or references added/removed      
-      IdeApp.Workspace.FileAddedToProject.Add(invalidateAll)
-      IdeApp.Workspace.FileRemovedFromProject.Add(invalidateAll)
-      IdeApp.Workspace.FileRenamedInProject.Add(invalidateAll)
-      IdeApp.Workspace.ReferenceAddedToProject.Add(fun r -> invalidateProjectFile(r.Project))
-      IdeApp.Workspace.ReferenceRemovedFromProject.Add(fun r -> invalidateProjectFile(r.Project))
-      IdeApp.Workspace.SolutionUnloaded.Add(fun _ -> MDLanguageService.Instance.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients())
+      IdeApp.Workspace.FileAddedToProject.Subscribe(invalidateAll) |> eventDisposer.Add
+      IdeApp.Workspace.FileRemovedFromProject.Subscribe(invalidateAll) |> eventDisposer.Add
+      IdeApp.Workspace.FileRenamedInProject.Subscribe(invalidateAll) |> eventDisposer.Add
+      IdeApp.Workspace.ReferenceAddedToProject.Subscribe(fun r -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
+      IdeApp.Workspace.ReferenceRemovedFromProject.Subscribe(fun r -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
+      IdeApp.Workspace.SolutionUnloaded.Subscribe(fun _ -> langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()) |> eventDisposer.Add
 
     
   // ----------------------------------------------------------------------------
@@ -136,3 +140,8 @@ type FSharpLanguageBinding() =
       [| ClrVersion.Net_2_0; ClrVersion.Net_4_0; ClrVersion.Net_4_5;  ClrVersion.Clr_2_1 |]
 
     override x.ProjectStockIcon = "md-project"
+
+  interface IDisposable with
+    member x.Dispose () = 
+      for disp in eventDisposer do
+        disp.Dispose ()
