@@ -372,9 +372,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
 
-    <Compile Include="PowerPack\CodeDomVisitor.fs" />
-    <Compile Include="PowerPack\CodeDomGenerator.fs" />
-    <Compile Include="PowerPack\CodeProvider.fs" />
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
     <Compile Include="Services\TooltipHelpers.fs" />
