@@ -43,8 +43,7 @@ module FSharpSyntaxModeInternals =
 
     type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string list) =
         inherit SyntaxMode.SpanParser(mode, spanStack)
-        do
-            LoggingService.LogInfo("Creating FSharpSpanParser()")
+        do LoggingService.LogDebug ("Creating FSharpSpanParser()")
 
         member private this.ScanPreProcessorElse(i: byref<int>) =
             if not (spanStack |> contains (fun span -> span.GetType() = typeof<IfBlockSpan>)) then
@@ -342,9 +341,10 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
     let mutable symbolsInFile: FSharpSymbolUse[] option = None
 
-    let HandlePropertyChanged (eventArgs: PropertyChangedEventArgs) =
-        if eventArgs.Key = "EnableSemanticHighlighting" then
-            semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true)
+    let handlePropertyChanged =
+        EventHandler<PropertyChangedEventArgs>
+            (fun o eventArgs -> if eventArgs.Key = "EnableSemanticHighlighting" then
+                                    semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true))
 
     let getDefineSymbols (project: MonoDevelop.Projects.Project option) =
         [ let workspace = IdeApp.Workspace
@@ -371,18 +371,20 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
 
     let sourceTokenizer= SourceTokenizer(getDefineSymbols project, document.FileName.FileName)
 
-    let handleConfigurationChanged(_) =
-        for doc in IdeApp.Workbench.Documents do
-            let data = doc.Editor
-            if data <> null then
-                // Force Syntax Mode Reparse
-                if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
-                    let sm = data.Document.SyntaxMode :?> SyntaxMode
-                    sm.UpdateDocumentHighlighting()
-                    SyntaxModeService.WaitUpdate(data.Document)
-                data.Parent.TextViewMargin.PurgeLayoutCache()
-                doc.ReparseDocument()
-                data.Parent.QueueDraw()
+    let handleConfigurationChanged =
+        EventHandler
+            (fun o e ->
+                for doc in IdeApp.Workbench.Documents do
+                    let data = doc.Editor
+                    if data <> null then
+                        // Force Syntax Mode Reparse
+                        if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
+                            let sm = data.Document.SyntaxMode :?> SyntaxMode
+                            sm.UpdateDocumentHighlighting()
+                            SyntaxModeService.WaitUpdate(data.Document)
+                        data.Parent.TextViewMargin.PurgeLayoutCache()
+                        doc.ReparseDocument()
+                        data.Parent.QueueDraw())
 
     let getAndProcessSymbols (pd:ParseAndCheckResults) =
         async {let! symbols = pd.GetAllUsesOfAllSymbolsInFile()
@@ -393,13 +395,15 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                   document.Editor.Parent.TextViewMargin <> null
                then Gtk.Application.Invoke (fun _ _ -> document.Editor.Parent.TextViewMargin.PurgeLayoutCache ()
                                                        document.Editor.Parent.QueueDraw())}
-    let handleDocumentParsed(_) =
-        if document <> null && not document.IsProjectContextInUpdate && semanticHighlightingEnabled then
-            let localParsedDocument = document.ParsedDocument
-            if localParsedDocument <> null then
-                localParsedDocument.Ast 
-                |> tryCast<ParseAndCheckResults>
-                |> Option.iter (getAndProcessSymbols >> Async.Start)
+    let handleDocumentParsed =
+        EventHandler
+            (fun _ _ ->
+                if document <> null && not document.IsProjectContextInUpdate && semanticHighlightingEnabled then
+                    let localParsedDocument = document.ParsedDocument
+                    if localParsedDocument <> null then
+                        localParsedDocument.Ast 
+                        |> tryCast<ParseAndCheckResults>
+                        |> Option.iter (getAndProcessSymbols >> Async.Start))
 
     let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Microsoft.FSharp.Compiler.Range.range * TokenColorKind)[] option) (token: TokenInformation) =
         let symbol =
@@ -450,13 +454,8 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                              | _         -> None) 0L
         |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
 
-    let getLexedChunks (style,line: DocumentLine,offset, lineText, extraColorInfo) =
-        getLexedTokens(style,line,offset,lineText,extraColorInfo)
-
     do
-        LoggingService.LogInfo("Creating FSharpSyntaxMode()")
-        PropertyService.PropertyChanged.Add HandlePropertyChanged
-        document.DocumentParsed.Add(handleDocumentParsed)
+        LoggingService.LogDebug ("Creating FSharpSyntaxMode()")
         let provider = ResourceStreamProvider(this.GetType().Assembly, "FSharpSyntaxMode.xml")
         use reader = provider.Open()
         let baseMode = SyntaxMode.Read(reader)
@@ -466,12 +465,17 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         this.spans <- baseMode.Spans
         this.matches <- baseMode.Matches
         this.prevMarker <- baseMode.PrevMarker
-        this.SemanticRules <-  ResizeArray<_>(baseMode.SemanticRules)
+        this.SemanticRules <- ResizeArray<_>(baseMode.SemanticRules)
         this.keywordTable <- baseMode.keywordTable
         this.properties <- baseMode.Properties
         this.keywords <- baseMode.keywords
-        if IdeApp.Workspace <> null then
-            IdeApp.Workspace.ActiveConfigurationChanged.Add handleConfigurationChanged
+
+    let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
+    let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
+    let configHandler =
+        if IdeApp.Workspace <> null
+        then Some <| IdeApp.Workspace.ActiveConfigurationChanged.Subscribe handleConfigurationChanged
+        else None
 
     override this.CreateSpanParser(line, spanStack) =
         let ss =
@@ -493,9 +497,15 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             match (this.Document, line, offset, length, style) with
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
             | PreProcessorCode _ -> base.GetChunks(style,line,offset,length)
-            | OtherCode (_,lineText) when semanticHighlightingEnabled -> getLexedChunks(style,line,offset,lineText,extraColorInfo)
+            | OtherCode (_,lineText) when semanticHighlightingEnabled -> getLexedTokens(style,line,offset,lineText,extraColorInfo)
             | _ -> base.GetChunks(style,line,offset,length)
         with
             | exn ->
                 LoggingService.LogError("Error in FSharpSyntaxMode.GetChunks", exn)
                 base.GetChunks(style,line,offset,length)
+
+    interface IDisposable with
+        member x.Dispose () =
+            propertyChangedHandler.Dispose ()
+            documentParsedHandler.Dispose ()
+            configHandler |> Option.iter (fun ch -> ch.Dispose ())
