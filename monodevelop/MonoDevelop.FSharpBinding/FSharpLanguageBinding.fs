@@ -9,7 +9,7 @@ open MonoDevelop.Core
 open MonoDevelop.Ide
 open MonoDevelop.Ide.Gui.Content
 open MonoDevelop.Projects
-open Microsoft.FSharp.Compiler
+open FSharp.Compiler
 open FSharp.CompilerBinding
 open System.Linq
 open MonoDevelop.Projects.Formats.MSBuild

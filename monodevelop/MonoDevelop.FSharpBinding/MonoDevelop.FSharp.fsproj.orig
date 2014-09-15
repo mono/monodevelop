@@ -372,9 +372,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
 
-    <Compile Include="PowerPack\CodeDomVisitor.fs" />
-    <Compile Include="PowerPack\CodeDomGenerator.fs" />
-    <Compile Include="PowerPack\CodeProvider.fs" />
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
     <Compile Include="Services\TooltipHelpers.fs" />
@@ -506,6 +503,9 @@
     </Reference>
     <Reference Include="FantomasLib">
       <HintPath>packages\Fantomas.1.4.0\lib\FantomasLib.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Compiler.CodeDom">
+      <HintPath>packages\FSharp.Compiler.CodeDom.0.9.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
