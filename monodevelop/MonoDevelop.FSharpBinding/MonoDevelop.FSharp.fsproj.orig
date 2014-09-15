@@ -507,6 +507,9 @@
     <Reference Include="FantomasLib">
       <HintPath>packages\Fantomas.1.4.0\lib\FantomasLib.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Compiler.CodeDom">
+      <HintPath>packages\FSharp.Compiler.CodeDom.0.9.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>
