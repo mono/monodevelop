@@ -313,17 +313,21 @@ type FSharpTooltipProvider() =
 
     // Keep the last result and tooltip window cached
     let mutable lastResult = None : TooltipItem option
+    static let mutable lastWindow = None : TooltipInformationWindow option
 
-    static let mutable lastWindow = None
-   
+    //keep the last enterNotofy handler so we can remove the handler as a new TipWindow is created
+    let mutable enterNotify = None : IDisposable option
+
     let killTooltipWindow() =
-       match lastWindow with
-       | Some(w:TooltipInformationWindow) -> w.Destroy()
-       | None -> ()
+       lastWindow |> Option.iter (fun w -> w.Destroy())
+       enterNotify |> Option.iter (fun en -> en.Dispose ())
+
 
     let isSupported fileName= 
         [|".fs";".fsi";".fsx";".fsscript"|] 
         |> Array.exists ((=) (Path.GetExtension fileName))
+
+
 
     override x.GetItem (editor, offset) =
       try
@@ -482,7 +486,7 @@ type FSharpTooltipProvider() =
                    // editor.SetSelection(item.ItemSegment.Offset, item.ItemSegment.EndOffset)
                
                    tipWindow.ShowPopup(positionWidget, caret, MonoDevelop.Components.PopupPosition.Top)
-                   tipWindow.EnterNotifyEvent.Add(fun _ -> editor.HideTooltip (false))
+                   enterNotify <- Some (tipWindow.EnterNotifyEvent.Subscribe(fun _ -> editor.HideTooltip (false)))
                    //cache last window shown
                    lastWindow <- Some(tipWindow)
                    lastResult <- Some(item)
