@@ -1083,14 +1083,18 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
 			{
+				LazyProjectLoader lazyProjectLoader;
 				lock (updateContentLock) {
-					var lazyProjectLoader = Content as LazyProjectLoader;
+					lazyProjectLoader = Content as LazyProjectLoader;
 					if (lazyProjectLoader != null) {
 						lazyProjectLoader.ContextTask.Wait ();
 					}
 					Content = updateFunc (Content);
 					ClearCachedCompilations ();
 					WasChanged = true;
+					if (lazyProjectLoader != null && !(Content is LazyProjectLoader)) {
+						RunLoadActions ();
+					}
 				}
 			}
 
@@ -1299,7 +1303,6 @@ namespace MonoDevelop.Ide.TypeSystem
 							return context;
 						} finally {
 							this.wrapper.EndLoadOperation ();
-							this.wrapper.RunLoadActions ();
 						}
 					});
 				}
@@ -2825,8 +2828,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (token.IsCancellationRequested) {
 				return;
 			}
+//			Console.WriteLine ("add modified file check for :" + project.Name);
 			content.RunWhenLoaded (delegate(IProjectContent cnt) {
 				try {
+//					Console.WriteLine ("check for " + project.Name);
 					content.BeginLoadOperation ();
 					var modifiedFiles = new List<ProjectFile> ();
 					var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
