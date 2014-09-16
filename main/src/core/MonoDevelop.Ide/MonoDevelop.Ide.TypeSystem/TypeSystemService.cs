@@ -1033,11 +1033,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void RunWhenLoaded (Action<IProjectContent> act)
 			{
 				lock (updateContentLock) {
-					if (_content is LazyProjectLoader) {
-						if (loadActions != null) {
-							loadActions.Add (act);
+					var lazyProjectLoader = _content as LazyProjectLoader;
+					if (loadActions != null) {
+						lock (loadActions) {
+							if (lazyProjectLoader != null && !lazyProjectLoader.ContextTask.IsCompleted) {
+								if (loadActions != null) {
+									loadActions.Add (act);
+								}
+								return;
+							}
 						}
-						return;
 					}
 				}
 				act (Content);
@@ -1069,10 +1074,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				if (loadActions == null)
 					return;
-				var actions = loadActions.ToArray ();
-				loadActions = null;
-				foreach (var action in actions)
-					action (Content);
+				lock (loadActions) {
+					var actions = loadActions.ToArray ();
+					loadActions = null;
+					foreach (var action in actions)
+						action (Content);
+				}
 			}
 
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
@@ -1224,7 +1231,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					throw new ArgumentNullException ("project");
 				this.Project = project;
 				var lazyProjectLoader = new LazyProjectLoader (this);
-				lazyProjectLoader.ContextTask.ContinueWith (delegate { RunLoadActions (); }, TaskContinuationOptions.OnlyOnRanToCompletion);
 				this.Content = lazyProjectLoader;
 			}
 
@@ -1283,6 +1289,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							return context;
 						} finally {
 							this.wrapper.EndLoadOperation ();
+							this.wrapper.RunLoadActions ();
 						}
 					});
 				}
