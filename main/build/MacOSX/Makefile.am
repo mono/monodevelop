@@ -14,7 +14,7 @@ BUNDLE_VERSION=$(shell $(MD_CONFIGURE) get-version)
 
 CLEANFILES = render.exe
 #DISTCLEANFILES =
-EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.exe
+EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
 all: app
 
