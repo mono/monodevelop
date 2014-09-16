@@ -54,6 +54,12 @@ type Location =
     Column: int
   }
 
+type ProjectResponse =
+  {
+    Files: List<string>
+    Output: string
+  }
+
 type SeverityConverter() =
   inherit JsonConverter()
 
@@ -392,9 +398,10 @@ module internal Main =
               let files =
                 [ for f in ProjectParser.getFiles p do
                     yield IO.Path.Combine(ProjectParser.getDirectory p, f) ]
+              let targetFilename = ProjectParser.getOutput p
               match state.OutputMode with
               | Text -> printAgent.WriteLine(sprintf "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files))
-              | Json -> prAsJson { Kind = "project"; Data = files }
+              | Json -> prAsJson { Kind = "project"; Data = { Files = files; Output = targetFilename } }
               main { state with Project = Some p }
           | None   -> printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
                       main state

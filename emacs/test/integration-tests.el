@@ -57,7 +57,8 @@
      (find-file "Test1/Program.fs")
      (wait-for-condition (lambda () fsharp-ac-project-files))
      (should-match "Test1/Program.fs" (s-join "" fsharp-ac-project-files))
-     (should-match "Test1/FileTwo.fs" (s-join "" fsharp-ac-project-files)))))
+     (should-match "Test1/FileTwo.fs" (s-join "" fsharp-ac-project-files))
+     (should-match "Test1/bin/Debug/Test1.exe" fsharp-ac--output-file))))
 
 (ert-deftest check-completion ()
   "Check completion-at-point works"

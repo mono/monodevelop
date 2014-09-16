@@ -60,6 +60,9 @@ and whether it is in a project directory.")
 (defvar fsharp-mode-map nil
   "Keymap used in fsharp mode.")
 
+(defvar fsharp-run-executable-file-history nil
+  "History of executable commands run.")
+
 (unless fsharp-mode-map
   (setq fsharp-mode-map (make-sparse-keymap))
   (if running-xemacs
@@ -353,10 +356,25 @@ whole string."
       (buffer-substring-no-properties begin end))))
 
 (defun fsharp-run-executable-file ()
+  "Execute a file with specified arguments. If a project is
+currently loaded and the output is a .exe file (stored in
+FSHARP-AC--OUTPUT-FILE), then this will be used as a default. If
+the current system is not Windows then the command string will be
+passed to `mono'."
   (interactive)
-  (let ((name (buffer-file-name)))
-    (if (string-match "^\\(.*\\)\\.\\(fs\\|fsi\\)$" name)
-        (shell-command (concat (match-string 1 name) ".exe")))))
+  (let* ((default (if (and fsharp-ac--output-file
+                           (s-equals? "exe"
+                                      (downcase (file-name-extension fsharp-ac--output-file))))
+                      (if fsharp-ac-using-mono
+                          (s-concat "mono " fsharp-ac--output-file)
+                        fsharp-ac--output-file)
+                    ""))
+         (cmd (read-from-minibuffer "Run: "
+                                    default
+                                    nil
+                                    nil
+                                    'fsharp-run-executable-file-history)))
+    (start-process-shell-command cmd nil cmd)))
 
 ;;; Project
 

@@ -47,7 +47,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Module1.fs" />
+    <Compile Include="ProjectReferenceTests.fs" />
+    <Compile Include="ProjectOutputTests.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\FSharp.AutoComplete.fsproj">
