@@ -1249,18 +1249,29 @@ namespace MonoDevelop.Ide.TypeSystem
 						return contextTask;
 					}
 				}
-
+				object contentLock = new object ();
+				IProjectContent contentWithReferences;
 				public IProjectContent Content {
 					get {
-						if (References != null)
-							return contextTask.Result.AddAssemblyReferences (References); 
-						return contextTask.Result;
+						lock (contentLock) {
+							if (References != null) {
+								return contentWithReferences ?? (contentWithReferences = contextTask.Result.AddAssemblyReferences (References)); 
+							}
+							return contextTask.Result;
+						}
 					}
 				}
 
+				List<IAssemblyReference> references;
 				public List<IAssemblyReference> References {
-					get;
-					set;
+					get {
+						return references;
+					}
+					set {
+						lock (contentLock) {
+							references = value;
+						}
+					}
 				}
 
 				public LazyProjectLoader (ProjectContentWrapper wrapper)
