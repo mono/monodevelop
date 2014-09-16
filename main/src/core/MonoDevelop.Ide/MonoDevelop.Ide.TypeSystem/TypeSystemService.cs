@@ -1037,9 +1037,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					if (loadActions != null) {
 						lock (loadActions) {
 							if (lazyProjectLoader != null && !lazyProjectLoader.ContextTask.IsCompleted) {
-								if (loadActions != null) {
-									loadActions.Add (act);
-								}
+								loadActions.Add (act);
 								return;
 							}
 						}
@@ -1074,12 +1072,13 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				if (loadActions == null)
 					return;
+				Action<IProjectContent>[] actions;
 				lock (loadActions) {
-					var actions = loadActions.ToArray ();
+					actions = loadActions.ToArray ();
 					loadActions = null;
-					foreach (var action in actions)
-						action (Content);
 				}
+				foreach (var action in actions)
+					action (Content);
 			}
 
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
