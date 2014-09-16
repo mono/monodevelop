@@ -3,6 +3,48 @@ open System
 open System.Reflection
 open Microsoft.FSharp.Compiler.SourceCodeServices
 
+[<AutoOpen>]
+module FSharpTypeExt =
+    let isOperatorOrActivePattern (name: string) =
+            if name.StartsWith "( " && name.EndsWith " )" && name.Length > 4 then
+                name.Substring (2, name.Length - 4) |> String.forall (fun c -> c <> ' ')
+            else false
+
+    let rec getAbbreviatedType (fsharpType: FSharpType) =
+        if fsharpType.IsAbbreviation then
+            let typ = fsharpType.AbbreviatedType
+            if typ.HasTypeDefinition then getAbbreviatedType typ
+            else fsharpType
+        else fsharpType
+
+    let isConstructor (func: FSharpMemberFunctionOrValue) =
+        func.CompiledName = ".ctor"
+
+    let isReferenceCell (fsharpType: FSharpType) = 
+        let ty = getAbbreviatedType fsharpType
+        ty.HasTypeDefinition && ty.TypeDefinition.IsFSharpRecord && ty.TypeDefinition.FullName = "Microsoft.FSharp.Core.FSharpRef`1"
+    
+    type FSharpType with
+        member x.IsReferenceCell =
+            isReferenceCell x
+        
+        member this.NonAbbreviatedTypeName = 
+            if this.IsAbbreviation then this.AbbreviatedType.NonAbbreviatedTypeName
+            else this.TypeDefinition.FullName
+
+        member this.NonAbbreviatedType =
+            Type.GetType(this.NonAbbreviatedTypeName)
+
+    type Type with
+        member this.PublicInstanceMembers =
+            this.GetMembers(BindingFlags.Instance ||| BindingFlags.FlattenHierarchy ||| BindingFlags.Public)
+
+    type MemberInfo with
+        member this.DeclaringTypeValue =
+            match this with
+            | :? MethodInfo as mi -> mi.GetBaseDefinition().DeclaringType
+            | _ -> this.DeclaringType
+
 module CorePatterns =
     let (|ActivePatternCase|_|) (symbol : FSharpSymbol) =
         match symbol with
@@ -53,13 +95,42 @@ module ExtendedPatterns =
     let (|Class|_|) symbol =
         match symbol with
         | CorePatterns.Entity symbol when symbol.IsClass -> Some(Class)
-        | CorePatterns.MemberFunctionOrValue symbol when symbol.DisplayName =".ctor" -> Some(Class)
+        | CorePatterns.MemberFunctionOrValue symbol when
+            symbol.IsImplicitConstructor || isConstructor symbol -> Some(Class)
         | _ -> None
 
     let (|Delegate|_|) symbol =
         match symbol with
         | CorePatterns.Entity symbol when symbol.IsDelegate -> Some(Delegate)
         | _ -> None
+
+    let (|Event|_|) symbol =
+        match symbol with
+        | CorePatterns.MemberFunctionOrValue symbol when symbol.IsEvent -> Some(Event)
+        | _ -> None
+
+    let (|Property|_|) symbol =
+        match symbol with
+        | CorePatterns.MemberFunctionOrValue symbol when
+            symbol.IsProperty || symbol.IsPropertyGetterMethod || symbol.IsPropertySetterMethod -> Some(Property)
+        | _ -> None
+
+    let (|Function|Operator|Pattern|ClosureOrNested|Val|Unknown|) (symbolUse:FSharpSymbolUse) =
+        match symbolUse.Symbol with
+        | CorePatterns.MemberFunctionOrValue symbol
+            when not (isConstructor symbol) ->
+                if symbol.FullType.IsFunctionType 
+                    && not symbol.IsPropertyGetterMethod 
+                    && not symbol.IsPropertySetterMethod 
+                    && not symbolUse.IsFromComputationExpression then 
+                    if FSharpTypeExt.isOperatorOrActivePattern symbol.DisplayName then
+                        if symbolUse.IsFromPattern then Pattern
+                        else Operator
+                    else
+                        if not symbol.IsModuleValueOrMember then ClosureOrNested
+                        else Function                            
+                else Val
+        | _ -> Unknown
 
     let (|Enum|_|) symbol =
         match symbol with
@@ -95,21 +166,3 @@ module ExtendedPatterns =
         match symbol with
         | CorePatterns.Entity symbol when symbol.IsValueType -> Some(ValueType)
         | _ -> None
-
-type FSharpType with
-    member this.NonAbbreviatedTypeName = 
-        if this.IsAbbreviation then this.AbbreviatedType.NonAbbreviatedTypeName
-        else this.TypeDefinition.FullName
-
-    member this.NonAbbreviatedType =
-        Type.GetType(this.NonAbbreviatedTypeName)
-
-type Type with
-    member this.PublicInstanceMembers =
-        this.GetMembers(BindingFlags.Instance ||| BindingFlags.FlattenHierarchy ||| BindingFlags.Public)
-
-type MemberInfo with
-    member this.DeclaringTypeValue =
-        match this with
-        | :? MethodInfo as mi -> mi.GetBaseDefinition().DeclaringType
-        | _ -> this.DeclaringType
