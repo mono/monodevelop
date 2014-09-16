@@ -149,7 +149,23 @@ module internal Patterns =
         | Parser.tokenId.TOKEN_SEMICOLON
         | Parser.tokenId.TOKEN_COMMA
         | Parser.tokenId.TOKEN_DOT
-        | Parser.tokenId.TOKEN_BAR -> Some Punctuation
+        | Parser.tokenId.TOKEN_DOT_DOT
+        | Parser.tokenId.TOKEN_INT32_DOT_DOT
+        | Parser.tokenId.TOKEN_UNDERSCORE
+        | Parser.tokenId.TOKEN_BAR
+        | Parser.tokenId.TOKEN_BAR_RBRACK
+        | Parser.tokenId.TOKEN_LBRACK_LESS
+        | Parser.tokenId.TOKEN_COLON_GREATER
+        | Parser.tokenId.TOKEN_COLON_QMARK_GREATER
+        | Parser.tokenId.TOKEN_COLON_QMARK
+        | Parser.tokenId.TOKEN_INFIX_BAR_OP
+        | Parser.tokenId.TOKEN_INFIX_COMPARE_OP
+        | Parser.tokenId.TOKEN_COLON_COLON
+        | Parser.tokenId.TOKEN_AMP_AMP
+        | Parser.tokenId.TOKEN_PREFIX_OP
+        | Parser.tokenId.TOKEN_COLON_EQUALS
+        | Parser.tokenId.TOKEN_BAR_BAR
+            -> Some Punctuation
         | _ -> None
 
     let (|PunctuationBrackets|_|) (ts:TokenSymbol) =
@@ -160,7 +176,13 @@ module internal Patterns =
         | Parser.tokenId.TOKEN_LBRACK
         | Parser.tokenId.TOKEN_RBRACK
         | Parser.tokenId.TOKEN_LBRACE
-        | Parser.tokenId.TOKEN_RBRACE -> Some PunctuationBrackets
+        | Parser.tokenId.TOKEN_RBRACE 
+        | Parser.tokenId.TOKEN_LBRACK_LESS
+        | Parser.tokenId.TOKEN_GREATER_RBRACK
+        | Parser.tokenId.TOKEN_LESS
+        | Parser.tokenId.TOKEN_GREATER
+        | Parser.tokenId.TOKEN_LBRACK_BAR
+        | Parser.tokenId.TOKEN_BAR_RBRACK -> Some PunctuationBrackets
         | _ -> None
 
     let private isIdentifier =
@@ -175,14 +197,17 @@ module internal Patterns =
         | TokenColorKind.UpperIdentifier -> false
         | _ -> true
 
-    let (|Identifier|_|) ts =
-        match isIdentifier ts.TokenInfo.ColorClass with
-        | true -> Identifier Some ts.SymbolUse
-        | false -> None
-
     let (|IdentifierSymbol|_|) ts =
+        if isIdentifier ts.TokenInfo.ColorClass && ts.SymbolUse.IsSome then
+            IdentifierSymbol(ts.SymbolUse.Value) |> Some
+        else None
+
+    let (|Namespace|_|) ts =
         match ts with
-        | Identifier symbolUse when symbolUse.IsSome -> IdentifierSymbol(symbolUse.Value) |> Some
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | ExtendedPatterns.Namespace -> Some Namespace
+            | _ -> None
         | _ -> None
 
     let (|Class|_|) ts =
@@ -190,6 +215,55 @@ module internal Patterns =
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
             | ExtendedPatterns.Class -> Some Class
+            | _ -> None
+        | _ -> None
+
+    let (|Property|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | ExtendedPatterns.Property -> Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+
+    let (|Field|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | CorePatterns.Field _ -> Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+
+    let (|Function|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse with
+            | ExtendedPatterns.Function
+            | ExtendedPatterns.ClosureOrNested ->  Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+
+    let (|Val|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse with
+            | ExtendedPatterns.Val -> Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+
+    let (|Delegate|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | ExtendedPatterns.Delegate -> Some Delegate
+            | _ -> None
+        | _ -> None
+
+    let (|Event|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse ->
+            match symbolUse.Symbol with
+            | ExtendedPatterns.Event -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
@@ -276,11 +350,8 @@ module internal Patterns =
     let (|ComputationExpression|_|) ts =
         if isIdentifier ts.TokenInfo.ColorClass then
             match ts.SymbolUse with
-            | Some symbolUse ->
-                match symbolUse.IsFromComputationExpression with
-                | true -> Some(ComputationExpression)
-                | false -> None
-            | None -> None
+            | Some symbolUse when symbolUse.IsFromComputationExpression -> Some ComputationExpression
+            | _ -> None
         else None
 
     let (|UnusedCode|_|) ts =
@@ -412,14 +483,14 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | None -> None
             | Some(symbols) ->
                 symbols
-                |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.StartColumn = token.LeftColumn)
+                |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
 
         let extraColor =
             match extraColorInfo with
             | None -> None
             | Some(extraColourInfo) ->
                 extraColourInfo
-                |> Array.tryFind (fun (rng, _) -> rng.StartLine = lineNumber && rng.StartColumn = token.LeftColumn)
+                |> Array.tryFind (fun (rng, _) -> rng.StartLine = lineNumber && rng.EndColumn = token.RightColumn+1)
 
         let tokenSymbol = { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
         let chunkStyle =
@@ -432,14 +503,15 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | NumberLiteral -> style.Number
             | PunctuationBrackets -> style.PunctuationForBrackets
             | Punctuation -> style.Punctuation
-            | Module
-            | ActivePatternCase
-            | Record
-            | Union
-            | TypeAbbreviation
-            | Class -> style.UserTypes
-            | UnionCase
-            | Enum -> style.UserTypesEnums
+            | Module|ActivePatternCase|Record|Union|TypeAbbreviation|Class -> style.UserTypes
+            | Namespace -> style.KeywordNamespace
+            | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
+            | Field fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
+            | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
+            | Val fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
+            | UnionCase | Enum -> style.UserTypesEnums
+            | Delegate -> style.UserTypesDelegatess
+            | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
             | Interface -> style.UserTypesInterfaces
             | ValueType -> style.UserTypesValueTypes
             | PreprocessorKeyword -> style.Preprocessor

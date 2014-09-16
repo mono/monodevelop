@@ -16,31 +16,7 @@ open MonoDevelop.Ide.CodeCompletion
 open Gdk
 open MonoDevelop.Components
 open Microsoft.FSharp.Compiler.SourceCodeServices
-
-[<AutoOpen>]
-module FSharpTypeExt =
-    let isOperatorOrActivePattern (name: string) =
-            if name.StartsWith "( " && name.EndsWith " )" && name.Length > 4 then
-                name.Substring (2, name.Length - 4) |> String.forall (fun c -> c <> ' ')
-            else false
-
-    let rec getAbbreviatedType (fsharpType: FSharpType) =
-        if fsharpType.IsAbbreviation then
-            let typ = fsharpType.AbbreviatedType
-            if typ.HasTypeDefinition then getAbbreviatedType typ
-            else fsharpType
-        else fsharpType
-
-    let isConstructor (func: FSharpMemberFunctionOrValue) =
-        func.DisplayName = ".ctor"
-
-    let isReferenceCell (fsharpType: FSharpType) = 
-        let ty = getAbbreviatedType fsharpType
-        ty.HasTypeDefinition && ty.TypeDefinition.IsFSharpRecord && ty.TypeDefinition.FullName = "Microsoft.FSharp.Core.FSharpRef`1"
-    
-    type FSharpType with
-        member x.IsReferenceCell =
-            isReferenceCell x
+open MonoDevelop.FSharp.FSharpSymbolHelper
 
 type XmlDoc =
   ///A full xmldoc tooltip
