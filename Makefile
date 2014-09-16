@@ -82,6 +82,11 @@ dist: update_submodules remove-stale-tarballs dist-recursive
 	@cd main && make buildinfo
 	@cp main/build/bin/buildinfo tarballs/monodevelop-$(PACKAGE_VERSION)/
 	@echo Generating merged tarball
+	@find tarballs/monodevelop-$(PACKAGE_VERSION)/ -type f -a \
+		\( -name \*.exe -o \
+		-name \*.dll -o \
+		-name \*.mdb \) \
+		-delete
 	@cd tarballs && tar -cjf monodevelop-$(PACKAGE_VERSION).tar.bz2 monodevelop-$(PACKAGE_VERSION)
 	@cd tarballs && rm -rf monodevelop-$(PACKAGE_VERSION)
 
