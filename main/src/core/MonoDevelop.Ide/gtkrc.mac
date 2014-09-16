@@ -266,6 +266,11 @@ style "combo-box" = "default"
     }
 }
 
+style "wizard-dialog"
+{
+    GtkDialog::content-area-border = 0
+}
+
 style "combo-box-entry" = "combo-box"
 {
     engine "xamarin" {
@@ -388,6 +393,7 @@ widget_class "<GtkDialog>.<GtkVBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-b
 widget_class "<GtkDialog>.<GtkVBox>.<GtkHBox>.<GtkButtonBox>.<GtkButton>*" style "dialog-button"
 widget "*.toggleFindInFiles" style "toggle-button"
 widget "*.toggleReplaceInFiles" style "toggle-button"
+widget "wizard_dialog" style "wizard-dialog"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"
