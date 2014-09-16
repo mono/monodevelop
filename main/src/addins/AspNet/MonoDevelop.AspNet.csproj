@@ -493,6 +493,6 @@
       <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
       <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
     </PropertyGroup>
-    <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
+    <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
   </Target>
 </Project>
