@@ -103,11 +103,11 @@ If set to nil, display in a help buffer instead.")
 (defun fsharp-ac-parse-current-buffer (&optional force-sync)
   "The optional FORCE-SYNC argument is for testing purposes.
 When used, the buffer is parsed even if it has not changed
-   since the last request"
-  (when (or (> (buffer-modified-tick) fsharp-ac-last-parsed-ticks)
+since the last request."
+  (when (or (/= (buffer-chars-modified-tick) fsharp-ac-last-parsed-ticks)
             force-sync)
     (save-restriction
-      (let ((file (expand-file-name (buffer-file-name))))
+      (let ((file (file-truename (buffer-file-name))))
         (widen)
         (fsharp-ac--log (format "Parsing \"%s\"\n" file))
         (process-send-string
@@ -116,7 +116,7 @@ When used, the buffer is parsed even if it has not changed
                  file
                  (if force-sync " sync" "")
                  (buffer-substring-no-properties (point-min) (point-max)))))
-      (setq fsharp-ac-last-parsed-ticks (buffer-modified-tick)))))
+      (setq fsharp-ac-last-parsed-ticks (buffer-chars-modified-tick)))))
 
 (defun fsharp-ac-parse-file (file)
   (with-current-buffer (find-file-noselect file)
@@ -151,7 +151,7 @@ When used, the buffer is parsed even if it has not changed
     ;; Load given project.
     (when (fsharp-ac--process-live-p)
       (log-psendstr fsharp-ac-completion-process
-                    (format "project \"%s\"\n" (expand-file-name file))))
+                    (format "project \"%s\"\n" (file-truename file))))
     file))
 
 (defun fsharp-ac/load-file (file)
@@ -171,10 +171,17 @@ When used, the buffer is parsed even if it has not changed
        (file-exists-p file)
        (string-match-p (rx "." "fsproj" eol) file)))
 
+(defun fsharp-ac--fs-file-p (file)
+  (and file
+       (s-equals? "fs" (downcase (file-name-extension file)))))
+
 (defun fsharp-ac--script-file-p (file)
   (and file
        (string-match-p (rx (or "fsx" "fsscript"))
-                       (file-name-extension file))))
+                       (downcase (file-name-extension file)))))
+
+(defun fsharp-ac--in-project-p (file)
+  (member file fsharp-ac-project-files))
 
 (defun fsharp-ac--reset ()
   (setq fsharp-ac-project-files nil
@@ -202,7 +209,7 @@ When used, the buffer is parsed even if it has not changed
   (when (fsharp-ac--process-live-p)
     (log-psendstr fsharp-ac-completion-process "quit\n")
     (sleep-for 1)
-    (when (and fsharp-ac-completion-process (process-live-p fsharp-ac-completion-process))
+    (when (fsharp-ac--process-live-p)
       (kill-process fsharp-ac-completion-process))))
 
 (defun fsharp-ac/start-process ()
@@ -226,16 +233,16 @@ When used, the buffer is parsed even if it has not changed
     (when fsharp-ac-idle-timer
       (cancel-timer fsharp-ac-idle-timer))
     (mapc (lambda (buf)
-	    (with-current-buffer buf
-	      (when (eq major-mode 'fsharp-mode)
-		(setq fsharp-ac-last-parsed-ticks 0)
-		(fsharp-ac-clear-errors))))
-	  (buffer-list))
+            (with-current-buffer buf
+              (when (eq major-mode 'fsharp-mode)
+                (setq fsharp-ac-last-parsed-ticks 0)
+                (fsharp-ac-clear-errors))))
+          (buffer-list))
     (setq fsharp-ac-status 'idle
-	  fsharp-ac-completion-process nil
-	  fsharp-ac-project-files nil
-	  fsharp-ac-idle-timer nil
-	  fsharp-ac-verbose nil)))
+          fsharp-ac-completion-process nil
+          fsharp-ac-project-files nil
+          fsharp-ac-idle-timer nil
+          fsharp-ac-verbose nil)))
 
 (defun fsharp-ac--configure-proc ()
   (let ((proc (let (process-connection-type)
@@ -246,8 +253,8 @@ When used, the buffer is parsed even if it has not changed
     (sleep-for 0.1)
     (if (process-live-p proc)
         (progn
-	  (set-process-sentinel proc #'fsharp-ac--process-sentinel)
-	  (set-process-coding-system proc 'utf-8-auto)
+          (set-process-sentinel proc #'fsharp-ac--process-sentinel)
+          (set-process-coding-system proc 'utf-8-auto)
           (set-process-filter proc 'fsharp-ac-filter-output)
           (set-process-query-on-exit-flag proc nil)
           (setq fsharp-ac-status 'idle
@@ -304,7 +311,7 @@ When used, the buffer is parsed even if it has not changed
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
       "completion"
-      (expand-file-name (buffer-file-name (current-buffer)))
+      (file-truename (buffer-file-name))
       (line-number-at-pos)
       (current-column)))
 
@@ -375,17 +382,31 @@ When used, the buffer is parsed even if it has not changed
                              fsharp-ac--dottedIdentNormalResidue))))))))
     result))
 
-(defun fsharp-ac-can-make-request ()
+(defun fsharp-ac-can-make-request (&optional quiet)
   "Test whether it is possible to make a request with the compiler binding.
 The current buffer must be an F# file that exists on disk."
-  (let ((file (buffer-file-name)))
-    (and file
-         (fsharp-ac--process-live-p)
-         (not ac-completing)
-         (eq fsharp-ac-status 'idle)
-         (or (member (file-truename file) fsharp-ac-project-files)
-             (string-match-p (rx (or "fsx" "fsscript"))
-                             (file-name-extension file))))))
+  (let ((file (file-truename (buffer-file-name))))
+    (cond
+     ((null file)
+      (unless quiet
+        (fsharp-ac-message-safely "Error: buffer not visiting a file."))
+      nil)
+
+     ((not (fsharp-ac--process-live-p))
+      (unless quiet
+        (fsharp-ac-message-safely "Error: background intellisense process not running."))
+      nil)
+
+     ((and (fsharp-ac--fs-file-p file)
+           (not (fsharp-ac--in-project-p file)))
+
+      (unless quiet
+        (fsharp-ac-message-safely "Error: this file is not part of the loaded project."))
+      nil)
+
+     (t
+      (and (eq fsharp-ac-status 'idle)
+           (not ac-completing))))))
 
 (defvar fsharp-ac-awaiting-tooltip nil)
 
@@ -395,13 +416,15 @@ The current buffer must be an F# file that exists on disk."
   (setq fsharp-ac-awaiting-tooltip t)
   (fsharp-ac/show-typesig-at-point))
 
-(defun fsharp-ac/show-typesig-at-point ()
-  "Display the type signature for the F# symbol at POINT."
+(defun fsharp-ac/show-typesig-at-point (&optional quiet)
+  "Display the type signature for the F# symbol at POINT. Pass
+on QUIET to FSHARP-AC-CAN-MAKE-REQUEST. This is a bit of hack to
+prevent usage errors being displayed by FSHARP-DOC-MODE."
   (interactive)
-  (when (fsharp-ac-can-make-request)
+  (when (fsharp-ac-can-make-request quiet)
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request "tooltip"
-                                 (expand-file-name (buffer-file-name))
+                                 (file-truename (buffer-file-name))
                                  (line-number-at-pos)
                                  (current-column))))
 
@@ -411,7 +434,7 @@ The current buffer must be an F# file that exists on disk."
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
     (fsharp-ac-send-pos-request "finddecl"
-                                (expand-file-name (buffer-file-name))
+                                (file-truename (buffer-file-name))
                                 (line-number-at-pos)
                                 (current-column))))
 
@@ -430,7 +453,7 @@ The current buffer must be an F# file that exists on disk."
   (when (or (not (eq (string-to-char ".") (char-before)))
             (not ac-completing))
     (self-insert-command 1))
-  (fsharp-ac/complete-at-point))
+  (fsharp-ac/complete-at-point t))
 
 
 (defun fsharp-ac/electric-backspace ()
@@ -444,9 +467,9 @@ The current buffer must be an F# file that exists on disk."
 (define-key ac-completing-map
   (kbd ".") 'self-insert-command)
 
-(defun fsharp-ac/complete-at-point ()
+(defun fsharp-ac/complete-at-point (&optional quiet)
   (interactive)
-  (when (and (fsharp-ac-can-make-request)
+  (when (and (fsharp-ac-can-make-request quiet)
            (eq fsharp-ac-status 'idle)
            fsharp-ac-intellisense-enabled)
       (fsharp-ac--ac-start)))
@@ -462,7 +485,8 @@ The current buffer must be an F# file that exists on disk."
   "BUFFER's tick counter, when the file was parsed.")
 
 (defun fsharp-ac--parse-current-file ()
-  (when (fsharp-ac-can-make-request)
+  (when (and (eq major-mode 'fsharp-mode)
+             (fsharp-ac-can-make-request t))
     (fsharp-ac-parse-current-buffer))
   ; Perform some emergency fixup if things got out of sync
   (when (not ac-completing)
@@ -539,7 +563,7 @@ The current buffer must be an F# file that exists on disk."
 
 (defun fsharp-ac-message-safely (format-string &rest args)
   "Call MESSAGE with FORMAT-STRING and ARGS only if it is desirable to do so."
-  (when (equal major-mode 'fsharp-mode)
+  (when (eq major-mode 'fsharp-mode)
     (unless (or (active-minibuffer-window) cursor-in-echo-area)
       (apply 'message format-string args))))
 
@@ -616,7 +640,7 @@ around to the start of the buffer."
                   msg))
             (error
              (fsharp-ac--log (format "Malformed JSON: %s" (buffer-substring-no-properties (point-min) (point-max))))
-             (message "Error: F# completion process produced malformed JSON"))))))))
+             (message "Error: F# completion process produced malformed JSON."))))))))
 
 (defun fsharp-ac-filter-output (proc str)
   "Filter STR from the completion process PROC and handle appropriately."
@@ -667,7 +691,7 @@ around to the start of the buffer."
 
 (defun fsharp-ac-handle-errors (data)
   "Display error overlays and set buffer-local error variables for error navigation."
-  (when (equal major-mode 'fsharp-mode)
+  (when (eq major-mode 'fsharp-mode)
     (unless (or (active-minibuffer-window) cursor-in-echo-area)
       (fsharp-ac-clear-errors)
       (let ((errs (fsharp-ac-parse-errors data)))
@@ -679,7 +703,7 @@ around to the start of the buffer."
 has requested a popup tooltip, display a popup. Otherwise,
 display a short summary in the minibuffer."
   ;; Do not display if the current buffer is not an fsharp buffer.
-  (when (equal major-mode 'fsharp-mode)
+  (when (eq major-mode 'fsharp-mode)
     (unless (or (active-minibuffer-window) cursor-in-echo-area)
       (if fsharp-ac-awaiting-tooltip
           (progn

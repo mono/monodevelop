@@ -26,11 +26,12 @@
 
 (defmacro stubbing-process-functions (&rest body)
   `(noflet ((process-live-p (p) t)
+            (fsharp-ac--process-live-p () t)
             (start-process (&rest args))
             (set-process-filter (&rest args))
             (set-process-query-on-exit-flag (&rest args))
             (process-send-string (&rest args))
-            (process-buffer (proc) "*fsharp-complete*")
+            (process-buffer (proc) fsharp-ac--completion-bufname)
             (process-mark (proc) (point-max))
             (fsharp-ac-parse-current-buffer () t)
             (log-to-proc-buf (p s)))

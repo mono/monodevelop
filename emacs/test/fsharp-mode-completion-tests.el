@@ -127,8 +127,8 @@ Stubs out functions that call on the ac process."
   `(check ,(concat "process handler " desc)
      (setq major-mode 'fsharp-mode)
      (stubbing-process-functions
-      (noflet ((fsharp-ac-can-make-request () t)
-               (expand-file-name (x &rest _) x))
+      (noflet ((fsharp-ac-can-make-request (&optional _) t)
+               (file-truename (x &rest _) x))
          ,@body))))
 
 (defmacro stub-fn (sym var &rest body)
@@ -209,4 +209,96 @@ function bound to VAR in BODY. "
 (check-residue "raw residue, raw previous" "System.``Hello Console``.``Wr$ it.eL" "``Wr$ it.eL")
 (check-residue "raw residue, trailing dot" "System.Console.``WriteL." "``WriteL.")
 
+;;; Warnings when intellisense requests made without bg process
 
+(check "no error message in a script if bg process running"
+ (stubbing-process-functions
+  (stub-fn message msg
+   (using-temp-file "test.fsx"
+    (fsharp-ac-can-make-request)
+    (should (null msg))))))
+
+(check "error message in a script if no bg process running"
+ (stubbing-process-functions
+  (stub-fn message msg
+   (noflet ((fsharp-ac--process-live-p ()))
+     (using-temp-file "test.fsx"
+       (fsharp-ac-can-make-request)
+       (should-match "not running" msg))))))
+
+(check "no error message in a script if no bg process running and quiet mode selected"
+ (stubbing-process-functions
+  (stub-fn message msg
+   (noflet ((fsharp-ac--process-live-p ()))
+     (using-temp-file "test.fsx"
+       (fsharp-ac-can-make-request t)
+       (should (null msg)))))))
+
+(check "no error message if project file loaded"
+  (let ((f (concat fs-file-dir "Program.fs")))
+    (stubbing-process-functions
+     (stub-fn fsharp-ac-message-safely msg
+       (using-file f
+         (noflet ((fsharp-ac--in-project-p (file) t))
+           (fsharp-ac-can-make-request)
+           (should (null msg))))))))
+
+(check "error message if no project file loaded"
+  (let ((f (concat fs-file-dir "Program.fs")))
+    (stubbing-process-functions
+     (stub-fn fsharp-ac-message-safely msg
+       (using-file f
+         (noflet ((fsharp-ac--in-project-p (file)))
+           (fsharp-ac-can-make-request)
+           (should-match "not part of the loaded project" msg)))))))
+
+(check "no error message if failed request from doc mode"
+  (stubbing-process-functions
+   (stub-fn message msg
+     (noflet ((fsharp-ac--process-live-p ()))
+       (using-temp-file "test.fsx"
+         (fsharp-doc-show-tooltip)
+         (should (null msg)))))))
+
+(check "no error message if failed request from parsing"
+  (stubbing-process-functions
+   (stub-fn message msg
+     (noflet ((fsharp-ac--process-live-p ()))
+       (using-temp-file "test.fsx"
+         (fsharp-ac--parse-current-file)
+         (should (null msg)))))))
+
+(check "no error message if failed request from electric dot"
+  (stubbing-process-functions
+   (stub-fn message msg
+     (noflet ((fsharp-ac--process-live-p ()))
+       (using-temp-file "test.fsx"
+         (fsharp-ac/electric-dot)
+         (should (null msg)))))))
+
+;;; Only parse if the file has changed
+
+(check "do not reparse if file has not changed"
+  (let ((counter 0))
+    (noflet ((process-send-string (_ _) (setq counter (+ counter 1)))
+             (process-live-p (p) t)
+              (fsharp-ac--process-live-p () t)
+              (start-process (&rest args))
+              (set-process-filter (&rest args))
+              (set-process-query-on-exit-flag (&rest args))
+;              (process-send-string (&rest args))
+              (process-buffer (proc) fsharp-ac--completion-bufname)
+              (process-mark (proc) (point-max))
+              ;(fsharp-ac-parse-current-buffer () t)
+              (log-to-proc-buf (p s)))
+       (using-temp-file "test.fsx"
+         (should= counter 0)
+         (fsharp-ac-parse-current-buffer)
+         (should= counter 1)
+         (fsharp-ac-parse-current-buffer)
+         (should= counter 1)
+         (insert "let x = 1\n")
+         (fsharp-ac-parse-current-buffer)
+         (should= counter 2)
+         (fsharp-ac-parse-current-buffer)
+         (should= counter 2)))))

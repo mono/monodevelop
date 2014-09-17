@@ -123,7 +123,7 @@ Otherwise, request a tooltip from the completion process."
                 (active-minibuffer-window)
                 cursor-in-echo-area)
       (setq fsharp-doc-prevpoint (point))
-      (fsharp-ac/show-typesig-at-point))))
+      (fsharp-ac/show-typesig-at-point t))))
 
 (provide 'fsharp-doc)
 
