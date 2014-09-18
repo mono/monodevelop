@@ -614,6 +614,11 @@ namespace MonoDevelop.SourceEditor
 				messageBubbleCache = null;
 			}
 		}
+
+		protected virtual string ProcessSaveText (string text)
+		{
+			return text;
+		}
 		
 		public override void Save (string fileName)
 		{
@@ -694,7 +699,7 @@ namespace MonoDevelop.SourceEditor
 				try {
 					var writeEncoding = encoding;
 					var writeBom = hadBom;
-					var writeText = Document.Text;
+					var writeText = ProcessSaveText (Document.Text);
 					if (writeEncoding == null) {
 						if (this.encoding != null) {
 							writeEncoding = this.encoding;
@@ -821,6 +826,11 @@ namespace MonoDevelop.SourceEditor
 			Load (fileName, loadEncoding);
 		}
 
+		protected virtual string ProcessLoadText (string text)
+		{
+			return text;
+		}
+
 		public void Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
 			// Handle the "reload" case.
@@ -848,6 +858,7 @@ namespace MonoDevelop.SourceEditor
 					encoding = loadEncoding;
 					text = TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
+				text = ProcessLoadText (text);
 				if (reload) {
 					Document.Replace (0, Document.TextLength, text);
 					Document.DiffTracker.Reset ();
