@@ -162,9 +162,10 @@ namespace MonoDevelop.VersionControl.Views
 			scroller.VscrollbarPolicy = PolicyType.Automatic;
 			filelist.RowActivated += OnRowActivated;
 			filelist.DiffLineActivated += OnDiffLineActivated;
+			filelist.CommitSelectionToggled += OnCommitSelectionToggled;
 
 			cellToggle = new CellRendererToggle();
-			cellToggle.Toggled += new ToggledHandler(OnCommitToggledHandler);
+			cellToggle.Toggled += new ToggledHandler(OnCommitCellToggled);
 			var crc = new CellRendererImage ();
 			crc.StockId = "vc-comment";
 			colCommit = new TreeViewColumn ();
@@ -409,13 +410,14 @@ namespace MonoDevelop.VersionControl.Views
 				filelist.DoPopupMenu = null;
 				filelist.RowActivated -= OnRowActivated;
 				filelist.DiffLineActivated -= OnDiffLineActivated;
+				filelist.CommitSelectionToggled -= OnCommitSelectionToggled;
 				filelist.TestExpandRow -= OnTestExpandRow;
 				filelist.Selection.Changed -= OnCursorChanged;
 				filelist.Destroy ();
 				filelist = null;
 			}
 			if (cellToggle != null) {
-				cellToggle.Toggled -= OnCommitToggledHandler;
+				cellToggle.Toggled -= OnCommitCellToggled;
 				cellToggle.Destroy ();
 				cellToggle = null;
 			}
@@ -710,11 +712,8 @@ namespace MonoDevelop.VersionControl.Views
 			OnOpen (null, null);
 		}
 
-		void OnCommitToggledHandler(object o, ToggledArgs args) {
-			TreeIter pos;
-			if (!filestore.GetIterFromString (out pos, args.Path))
-				return;
-
+		void ToggleCommitStatus(TreeIter pos)
+		{
 			string localpath = (string) filestore.GetValue (pos, ColFullPath);
 
 			if (changeSet.ContainsFile (localpath)) {
@@ -726,6 +725,20 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			filestore.SetValue (pos, ColCommit, changeSet.ContainsFile (localpath));
 			UpdateSelectionStatus ();
+		}
+
+		void OnCommitSelectionToggled (object sender, EventArgs e)
+		{
+			filelist.Selection.SelectedForeach((model, path, iter) => ToggleCommitStatus(iter)); 
+		}
+
+		void OnCommitCellToggled(object o, ToggledArgs args) 
+		{
+			TreeIter pos;
+			if (!filestore.GetIterFromString (out pos, args.Path))
+				return;
+
+			ToggleCommitStatus (pos);
 		}
 
 		VersionInfo GetVersionInfo (string file)
@@ -1134,6 +1147,32 @@ namespace MonoDevelop.VersionControl.Views
 	{
 		const Gdk.ModifierType selectionModifiers = Gdk.ModifierType.ShiftMask | Gdk.ModifierType.ControlMask;
 
+		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
+		{
+			if (evnt.Key == Gdk.Key.Right || evnt.Key == Gdk.Key.KP_Right) {
+				Selection.SelectedForeach ((model, path, iter) => ExpandRow (path, true));
+				return true;
+			}
+
+			if (evnt.Key == Gdk.Key.Left || evnt.Key == Gdk.Key.KP_Left) {
+				Selection.SelectedForeach ((model, path, iter) => CollapseRow (path));
+				return true;
+			}
+
+			if (evnt.Key == Gdk.Key.space && CommitSelectionToggled != null) {
+				CommitSelectionToggled (this, EventArgs.Empty);
+				return true;
+			}
+
+			if (evnt.Key == Gdk.Key.Return || evnt.Key == Gdk.Key.KP_Enter) {
+				if (DiffLineActivated != null)
+					DiffLineActivated (this, EventArgs.Empty);
+				return true;
+			}
+
+			return base.OnKeyPressEvent (evnt);
+		}
+
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			bool keepPos = false;
@@ -1228,5 +1267,6 @@ namespace MonoDevelop.VersionControl.Views
 
 		public Action<Gdk.EventButton> DoPopupMenu;
 		public event EventHandler DiffLineActivated;
+		public event EventHandler CommitSelectionToggled;
 	}
 }
