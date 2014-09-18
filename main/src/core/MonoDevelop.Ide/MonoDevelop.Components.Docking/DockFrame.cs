@@ -830,14 +830,36 @@ namespace MonoDevelop.Components.Docking
 			return null;
 		}
 		
-		internal void AddTopLevel (DockFrameTopLevel w, int x, int y)
+		internal void AddTopLevel (DockFrameTopLevel w, int x, int y, int width, int height)
 		{
-			w.Parent = this;
 			w.X = x;
 			w.Y = y;
-			Requisition r = w.SizeRequest ();
-			w.Allocation = new Gdk.Rectangle (Allocation.X + x, Allocation.Y + y, r.Width, r.Height);
-			topLevels.Add (w);
+
+			if (Platform.IsMac) {
+				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
+				win.AcceptFocus = false;
+				win.SkipTaskbarHint = true;
+				win.Decorated = false;
+				win.TypeHint = Gdk.WindowTypeHint.Toolbar;
+				w.ContainerWindow = win;
+				w.Size = new Size (width, height);
+				win.Add (w);
+				w.Show ();
+				var p = this.GetScreenCoordinates (new Gdk.Point (x, y));
+				win.Opacity = 0.0;
+				win.Move (p.X, p.Y);
+				win.Resize (width, height);
+				win.Show ();
+				Ide.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
+				win.AcceptFocus = true;
+				win.Opacity = 1.0;
+			} else {
+				w.Parent = this;
+				w.Size = new Size (width, height);
+				Requisition r = w.SizeRequest ();
+				w.Allocation = new Gdk.Rectangle (Allocation.X + x, Allocation.Y + y, r.Width, r.Height);
+				topLevels.Add (w);
+			}
 		}
 		
 		internal void RemoveTopLevel (DockFrameTopLevel w)
@@ -892,18 +914,18 @@ namespace MonoDevelop.Components.Docking
 			Gdk.Size sLeft = GetBarFrameSize (dockBarLeft);
 			Gdk.Size sRgt = GetBarFrameSize (dockBarRight);
 
-			int x,y;
+			int x,y,w,h;
 			if (bar == dockBarLeft || bar == dockBarRight) {
-				aframe.HeightRequest = Allocation.Height - sTop.Height - sBot.Height;
-				aframe.WidthRequest = size;
+				h = Allocation.Height - sTop.Height - sBot.Height;
+				w = size;
 				y = sTop.Height;
 				if (bar == dockBarLeft)
 					x = sLeft.Width;
 				else
 					x = Allocation.Width - size - sRgt.Width;
 			} else {
-				aframe.WidthRequest = Allocation.Width - sLeft.Width - sRgt.Width;
-				aframe.HeightRequest = size;
+				w = Allocation.Width - sLeft.Width - sRgt.Width;
+				h = size;
 				x = sLeft.Width;
 				if (bar == dockBarTop)
 					y = sTop.Height;
@@ -911,22 +933,9 @@ namespace MonoDevelop.Components.Docking
 					y = Allocation.Height - size - sBot.Height;
 			}
 
-			if (Platform.IsMac) {
-				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
-				win.SkipTaskbarHint = true;
-				win.Decorated = false;
-				win.TypeHint = Gdk.WindowTypeHint.Toolbar;
-				aframe.ContainerWindow = win;
-				win.Add (aframe);
-				aframe.Show ();
-				var p = this.GetScreenCoordinates (new Gdk.Point (x, y));
-				win.Move (p.X, p.Y);
-				win.Show ();
-				Ide.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
-			} else {
-				AddTopLevel (aframe, x, y);
-				aframe.AnimateShow ();
-			}
+			AddTopLevel (aframe, x, y, w, h);
+			aframe.AnimateShow ();
+
 			return aframe;
 		}
 		

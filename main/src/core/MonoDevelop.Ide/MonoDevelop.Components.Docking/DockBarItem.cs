@@ -301,7 +301,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			UnscheduleAutoShow ();
 			if (autoShowFrame != null) {
-				size = autoShowFrame.Size;
+				size = autoShowFrame.PadSize;
 				hiddenFrame = autoShowFrame;
 				autoShowFrame.Hidden += delegate {
 					hiddenFrame = null;
