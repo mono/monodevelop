@@ -50,7 +50,10 @@ type FSharpResolverProvider() =
                         | FindDeclFailureReason.NoSourceCode      -> LoggingService.LogWarning "Declaration not found: No Source Code"
                         | FindDeclFailureReason.ProvidedType(t)   -> LoggingService.LogWarning("Declaration not found: ProvidedType {0}", t)
                         | FindDeclFailureReason.ProvidedMember(m) -> LoggingService.LogWarning("Declaration not found: ProvidedMember {0}", m)
-                        DomRegion.Empty
+                        match fsSymbolUse.Symbol.Assembly.FileName with
+                        | None -> DomRegion.Empty
+                        | Some filename -> DomRegion(filename, 0, 0)
+
                 // This is the NRefactory symbol for the item - the Region is used for goto-definition
                 let lastIdent = match FSharp.CompilerBinding.Parsing.findLongIdents(col, lineStr) with
                                 | Some(_, identIsland) -> Seq.last identIsland
