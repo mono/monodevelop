@@ -221,10 +221,10 @@ namespace MonoDevelop.Components.DockNotebook
 			if (pagesHistory.Count > 0)
 				CurrentTab = pagesHistory [0];
 			else {
-				if (lastClosed < pages.Count)
-					CurrentTab = pages [lastClosed];
+				if (lastClosed + 1 < pages.Count)
+					CurrentTab = pages [lastClosed + 1];
 				else
-					CurrentTab = pages [pages.Count - 1];
+					CurrentTab = pages [lastClosed - 1];
 			}
 		}
 
@@ -344,8 +344,10 @@ namespace MonoDevelop.Components.DockNotebook
 			if (animate)
 				tabStrip.StartCloseAnimation ((DockNotebookTab)tab);
 			pagesHistory.Remove (tab);
-			if (page == CurrentTabIndex)
-				SelectLastActiveTab (page + 1);
+			if (pages.Count == 1)
+				CurrentTab = null;
+			else if (page == CurrentTabIndex)
+				SelectLastActiveTab (page);
 			pages.RemoveAt (page);
 			UpdateIndexes (page);
 			tabStrip.Update ();
