@@ -762,6 +762,7 @@ namespace MonoDevelop.SourceEditor
 			string text = null;
 			if (content != null) {
 				text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out encoding, out hadBom);
+				text = ProcessLoadText (text);
 				Document.Text = text;
 			}
 			this.CreateDocumentParsedHandler ();
