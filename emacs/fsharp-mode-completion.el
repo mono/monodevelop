@@ -37,15 +37,22 @@
 
 ;;; User-configurable variables
 
+(defvar fsharp-ac-using-mono
+  (case system-type
+    ((windows-nt cygwin msdos) nil)
+    (otherwise t))
+  "Whether the .NET runtime in use is mono. Defaults to `nil' for
+  Microsoft platforms (including Cygwin), `t' for all *nix.")
+
 (defvar fsharp-ac-executable "fsautocomplete.exe")
 
 (defvar fsharp-ac-complete-command
   (let ((exe (or (executable-find fsharp-ac-executable)
                  (concat (file-name-directory (or load-file-name buffer-file-name))
                          "bin/" fsharp-ac-executable))))
-    (case system-type
-      (windows-nt (list exe))
-      (otherwise (list "mono" exe)))))
+    (if fsharp-ac-using-mono
+        (list "mono" exe)
+      (list exe))))
 
 (defvar fsharp-ac-use-popup t
   "Display tooltips using a popup at point.
@@ -74,6 +81,7 @@ If set to nil, display in a help buffer instead.")
 (defvar fsharp-ac-status 'idle)
 (defvar fsharp-ac-completion-process nil)
 (defvar fsharp-ac-project-files nil)
+(defvar fsharp-ac--output-file nil)
 (defvar fsharp-ac-idle-timer nil)
 (defvar fsharp-ac-verbose nil)
 (defvar fsharp-ac-current-candidate nil)
@@ -185,6 +193,7 @@ since the last request."
 
 (defun fsharp-ac--reset ()
   (setq fsharp-ac-project-files nil
+        fsharp-ac--output-file nil
         fsharp-ac-status 'idle
         fsharp-ac-current-candidate nil)
   (clrhash fsharp-ac-current-helptext)
@@ -241,6 +250,7 @@ since the last request."
     (setq fsharp-ac-status 'idle
           fsharp-ac-completion-process nil
           fsharp-ac-project-files nil
+          fsharp-ac--output-file nil
           fsharp-ac-idle-timer nil
           fsharp-ac-verbose nil)))
 
@@ -258,6 +268,7 @@ since the last request."
           (set-process-filter proc 'fsharp-ac-filter-output)
           (set-process-query-on-exit-flag proc nil)
           (setq fsharp-ac-status 'idle
+                fsharp-ac--output-file nil
                 fsharp-ac-project-files nil)
           (with-current-buffer (process-buffer proc)
             (delete-region (point-min) (point-max)))
@@ -730,8 +741,11 @@ display a short summary in the minibuffer."
         (princ str)))))
 
 (defun fsharp-ac-handle-project (data)
-  (setq fsharp-ac-project-files (-map 'file-truename data))
-  (fsharp-ac-parse-file (car (last fsharp-ac-project-files))))
+  (let ((files (gethash "Files" data))
+        (output (gethash "Output" data)))
+    (setq fsharp-ac--output-file output)
+    (setq fsharp-ac-project-files (-map 'file-truename files))
+    (fsharp-ac-parse-file (car (last fsharp-ac-project-files)))))
 
 (defun fsharp-ac-handle-process-error (str)
   (unless (s-matches? "Could not get type information" str)

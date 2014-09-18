@@ -51,6 +51,13 @@ module ProjectParser =
     | "v4.5" -> FSharpTargetFramework.NET_4_5
     | _      -> FSharpTargetFramework.NET_4_5
 
+  let getOutput (p: ProjectResolver) : string =
+    let b = p.project.Build("GetTargetPath")
+
+    IO.Path.Combine(getDirectory p,
+                    (p.project.GetEvaluatedProperty "OutDir"),
+                    (p.project.GetEvaluatedProperty "TargetFileName"))
+
   // We really want the output of ResolveAssemblyReferences. However, this
   // needs as input ChildProjectReferences, which is populated by
   // ResolveProjectReferences. For some reason ResolveAssemblyReferences
