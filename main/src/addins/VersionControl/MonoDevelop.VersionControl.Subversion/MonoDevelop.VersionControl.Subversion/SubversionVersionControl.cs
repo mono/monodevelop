@@ -23,8 +23,6 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 
 		public abstract SubversionBackend CreateBackend ();
-		
-		public abstract string GetPathUrl (FilePath path);
 
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{

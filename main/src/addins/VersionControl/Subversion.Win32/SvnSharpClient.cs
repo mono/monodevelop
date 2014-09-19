@@ -41,15 +41,6 @@ namespace SubversionAddinWindows
 			return new SvnSharpBackend ();
 		}
 
-		public override string GetPathUrl (FilePath path)
-		{
-			Uri u;
-			lock (client.Value)
-				u = client.Value.GetUriFromWorkingCopy (path);
-
-			return u != null ? u.ToString () : null;
-		}
-
 		public override bool IsInstalled
 		{
 			get

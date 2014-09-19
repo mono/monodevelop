@@ -186,26 +186,6 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return new UnixSvnBackend ();
 		}
 
-		public override string GetPathUrl (FilePath path)
-		{
-			if (path == FilePath.Null)
-				throw new ArgumentNullException();
-
-			IntPtr ret = IntPtr.Zero;
-			IntPtr localpool = newpool (IntPtr.Zero);
-			try {
-				string npath = NormalizePath (path, localpool);
-				CheckError (Svn.client_url_from_path (ref ret, npath, localpool));
-			} finally {
-				Apr.pool_destroy (localpool);
-			}
-
-			if (ret == IntPtr.Zero)
-				return null;
-
-			return Marshal.PtrToStringAnsi (ret);
-		}
-
 		public override string GetDirectoryDotSvn (FilePath path)
 		{
 			if (Pre_1_7)
