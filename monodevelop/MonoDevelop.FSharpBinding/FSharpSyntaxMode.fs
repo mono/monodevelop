@@ -545,9 +545,8 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
     let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
     let configHandler =
-        if IdeApp.Workspace <> null
-        then Some <| IdeApp.Workspace.ActiveConfigurationChanged.Subscribe handleConfigurationChanged
-        else None
+        maybe { let! workspace = IdeApp.Workspace |> Option.ofNull
+                return workspace.ActiveConfigurationChanged.Subscribe handleConfigurationChanged }
 
     override this.CreateSpanParser(line, spanStack) =
         let ss =
@@ -563,9 +562,11 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     override this.GetChunks(style, line, offset, length) =
         try
             let extraColorInfo =
-                if (document <> null && document.ParsedDocument <> null) then 
-                    (document.ParsedDocument.Ast :?> ParseAndCheckResults).GetExtraColorizations() 
-                else None
+                maybe { let! document = Option.ofNull document
+                        let! parsedDocument = Option.ofNull document.ParsedDocument
+                        let! pc = tryCast<ParseAndCheckResults> document.ParsedDocument.Ast
+                        return! pc.GetExtraColorizations() }
+
             match (this.Document, line, offset, length, style) with
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
             | PreProcessorCode _ -> base.GetChunks(style,line,offset,length)
