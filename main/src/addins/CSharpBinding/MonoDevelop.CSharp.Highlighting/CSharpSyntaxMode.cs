@@ -281,6 +281,54 @@ namespace MonoDevelop.CSharp.Highlighting
 				}
 				tree.AddStyle (startOffset, endOffset, color);
 			}
+
+			public override void VisitSimpleType (SimpleType simpleType)
+			{
+				var identifierToken = simpleType.IdentifierToken;
+				VisitChildrenUntil(simpleType, identifierToken);
+				var resolveResult = resolver.Resolve (simpleType, cancellationToken);
+				if (resolveResult.Type.Namespace == "System") {
+					switch (resolveResult.Type.Name) {
+					case "nfloat":
+					case "nint":
+					case "nuint":
+						Colorize(identifierToken, "Keyword(Type)");
+						break;
+					default:
+						Colorize (identifierToken, resolveResult);
+						break;
+					}
+				} else {
+					Colorize (identifierToken, resolveResult);
+				}
+				VisitChildrenAfter(simpleType, identifierToken);
+			}
+
+			public override void VisitIdentifierExpression (IdentifierExpression identifierExpression)
+			{
+				var identifier = identifierExpression.IdentifierToken;
+				VisitChildrenUntil(identifierExpression, identifier);
+				if (isInAccessorContainingValueParameter && identifierExpression.Identifier == "value") {
+					Colorize(identifier, valueKeywordColor);
+				} else {
+					var resolveResult = resolver.Resolve (identifierExpression, cancellationToken);
+					if (resolveResult.Type.Namespace == "System") {
+						switch (resolveResult.Type.Name) {
+						case "nfloat":
+						case "nint":
+						case "nuint":
+							Colorize(identifier, "Keyword(Type)");
+							break;
+						default:
+							Colorize (identifier, resolveResult);
+							break;
+						}
+					} else {
+						Colorize (identifier, resolveResult);
+					}
+				}
+				VisitChildrenAfter(identifierExpression, identifier);
+			}
 		}
 
 		class QuickTaskVisitor : DepthFirstAstVisitor

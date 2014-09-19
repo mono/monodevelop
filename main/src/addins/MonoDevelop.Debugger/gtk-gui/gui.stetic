@@ -336,7 +336,10 @@
                   <widget class="Gtk.Label" id="labelMethod">
                     <property name="MemberName" />
                     <property name="Xalign">0</property>
-                    <property name="LabelProp">&lt;mehtod&gt;</property>
+                    <property name="LabelProp">&lt;method&gt;</property>
+                    <property name="Wrap">True</property>
+                    <property name="Selectable">True</property>
+                    <property name="MaxWidthChars">120</property>
                   </widget>
                   <packing>
                     <property name="Position">1</property>

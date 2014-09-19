@@ -279,7 +279,7 @@ update_environment (const char *resourcesDir, const char *app)
 	push_env ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig");
 	
 	/* Enable the use of stuff bundled into the app bundle */
-	if ((v2 = str_append (resourcesDir, "/share/pkgconfig"))) {
+	if ((v2 = str_append (resourcesDir, "/lib/pkgconfig"))) {
 		if ((v1 = str_append (resourcesDir, "/lib/pkgconfig:"))) {
 			if ((value = str_append (v1, v2))) {
 				push_env ("PKG_CONFIG_PATH", value);

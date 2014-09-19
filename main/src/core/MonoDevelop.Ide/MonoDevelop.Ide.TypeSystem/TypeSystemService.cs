@@ -1033,11 +1033,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			public void RunWhenLoaded (Action<IProjectContent> act)
 			{
 				lock (updateContentLock) {
-					if (_content is LazyProjectLoader) {
-						if (loadActions != null) {
-							loadActions.Add (act);
+					var lazyProjectLoader = _content as LazyProjectLoader;
+					if (loadActions != null) {
+						lock (loadActions) {
+							if (lazyProjectLoader != null && !lazyProjectLoader.ContextTask.IsCompleted) {
+								loadActions.Add (act);
+								return;
+							}
 						}
-						return;
 					}
 				}
 				act (Content);
@@ -1069,22 +1072,29 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				if (loadActions == null)
 					return;
-				var actions = loadActions.ToArray ();
-				loadActions = null;
+				Action<IProjectContent>[] actions;
+				lock (loadActions) {
+					actions = loadActions.ToArray ();
+					loadActions = null;
+				}
 				foreach (var action in actions)
 					action (Content);
 			}
 
 			public void UpdateContent (Func<IProjectContent, IProjectContent> updateFunc)
 			{
+				LazyProjectLoader lazyProjectLoader;
 				lock (updateContentLock) {
-					var lazyProjectLoader = Content as LazyProjectLoader;
+					lazyProjectLoader = Content as LazyProjectLoader;
 					if (lazyProjectLoader != null) {
 						lazyProjectLoader.ContextTask.Wait ();
 					}
 					Content = updateFunc (Content);
 					ClearCachedCompilations ();
 					WasChanged = true;
+					if (lazyProjectLoader != null && !(Content is LazyProjectLoader)) {
+						RunLoadActions ();
+					}
 				}
 			}
 
@@ -1224,7 +1234,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					throw new ArgumentNullException ("project");
 				this.Project = project;
 				var lazyProjectLoader = new LazyProjectLoader (this);
-				lazyProjectLoader.ContextTask.ContinueWith (delegate { RunLoadActions (); }, TaskContinuationOptions.OnlyOnRanToCompletion);
 				this.Content = lazyProjectLoader;
 			}
 
@@ -1244,18 +1253,29 @@ namespace MonoDevelop.Ide.TypeSystem
 						return contextTask;
 					}
 				}
-
+				object contentLock = new object ();
+				IProjectContent contentWithReferences;
 				public IProjectContent Content {
 					get {
-						if (References != null)
-							return contextTask.Result.AddAssemblyReferences (References); 
-						return contextTask.Result;
+						lock (contentLock) {
+							if (References != null) {
+								return contentWithReferences ?? (contentWithReferences = contextTask.Result.AddAssemblyReferences (References)); 
+							}
+							return contextTask.Result;
+						}
 					}
 				}
 
+				List<IAssemblyReference> references;
 				public List<IAssemblyReference> References {
-					get;
-					set;
+					get {
+						return references;
+					}
+					set {
+						lock (contentLock) {
+							references = value;
+						}
+					}
 				}
 
 				public LazyProjectLoader (ProjectContentWrapper wrapper)
@@ -2022,6 +2042,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			#endregion
+
+			public override string ToString ()
+			{
+				return string.Format ("[UnresolvedAssemblyProxy: FileName={0}]", FileName);
+			}
 		}
 
 		internal class LazyAssemblyLoader : IUnresolvedAssembly
@@ -2803,8 +2828,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (token.IsCancellationRequested) {
 				return;
 			}
+//			Console.WriteLine ("add modified file check for :" + project.Name);
 			content.RunWhenLoaded (delegate(IProjectContent cnt) {
 				try {
+//					Console.WriteLine ("check for " + project.Name);
 					content.BeginLoadOperation ();
 					var modifiedFiles = new List<ProjectFile> ();
 					var oldFileNewFile = new List<Tuple<ProjectFile, IUnresolvedFile>> ();
