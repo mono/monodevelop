@@ -97,6 +97,10 @@ namespace MonoDevelop.Components.Docking
 				return !OverlayWidgetVisible;
 			}
 		}
+
+		internal bool UseWindowsForTopLevelFrames {
+			get { return Platform.IsMac; }
+		}
 		
 		/// <summary>
 		/// Compactness level of the gui, from 1 (not compact) to 5 (very compact).
@@ -835,7 +839,7 @@ namespace MonoDevelop.Components.Docking
 			w.X = x;
 			w.Y = y;
 
-			if (Platform.IsMac) {
+			if (UseWindowsForTopLevelFrames) {
 				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
 				win.AcceptFocus = false;
 				win.SkipTaskbarHint = true;

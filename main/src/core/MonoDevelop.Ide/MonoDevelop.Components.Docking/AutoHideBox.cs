@@ -59,7 +59,7 @@ namespace MonoDevelop.Components.Docking
 		bool disposed;
 		bool insideGrip;
 		
-		const int gripSize = 8;
+		int gripSize = 8;
 		
 		public AutoHideBox (DockFrame frame, DockItem item, Gtk.PositionType pos, int size): base (frame)
 		{
@@ -73,11 +73,22 @@ namespace MonoDevelop.Components.Docking
 			Box fr;
 			CustomFrame cframe = new CustomFrame ();
 			switch (pos) {
-				case PositionType.Left: cframe.SetMargins (0, 0, 1, 1); break;
-				case PositionType.Right: cframe.SetMargins (0, 0, 1, 1); break;
-				case PositionType.Top: cframe.SetMargins (1, 1, 0, 0); break;
-				case PositionType.Bottom: cframe.SetMargins (1, 1, 0, 0); break;
+			case PositionType.Left: cframe.SetMargins (0, 0, 1, 1); break;
+			case PositionType.Right: cframe.SetMargins (0, 0, 1, 1); break;
+			case PositionType.Top: cframe.SetMargins (1, 1, 0, 0); break;
+			case PositionType.Bottom: cframe.SetMargins (1, 1, 0, 0); break;
 			}
+
+			if (frame.UseWindowsForTopLevelFrames) {
+				// When using a top level window on mac, clicks on the first 4 pixels next to the border
+				// are not detected. To avoid confusing the user (since the resize cursor is shown), 
+				// we make the resize drag area smaller.
+				switch (pos) {
+				case PositionType.Left: cframe.SetPadding (0, 0, 0, 4); gripSize = 4; break;
+				case PositionType.Right: cframe.SetPadding (0, 0, 4, 0); gripSize = 4; break;
+				}
+			}
+
 			EventBox sepBox = new EventBox ();
 			cframe.Add (sepBox);
 			
@@ -128,7 +139,7 @@ namespace MonoDevelop.Components.Docking
 			sepBox.EnterNotifyEvent += delegate { insideGrip = true; sepBox.QueueDraw (); };
 			sepBox.LeaveNotifyEvent += delegate { insideGrip = false; sepBox.QueueDraw (); };
 		}
-		
+
 		public bool Disposed {
 			get { return disposed; }
 			set { disposed = value; }

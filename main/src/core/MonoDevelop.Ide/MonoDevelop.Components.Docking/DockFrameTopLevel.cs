@@ -32,6 +32,7 @@
 
 using System;
 using Gtk;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -129,8 +130,7 @@ namespace MonoDevelop.Components.Docking
 					repositionRequested = true;
 					Application.Invoke (delegate {
 						var pos = frame.GetScreenCoordinates (new Gdk.Point (x, y));
-						ContainerWindow.Move (pos.X, pos.Y);
-						ContainerWindow.Resize (width, height);
+						DesktopService.PlaceWindow (ContainerWindow, pos.X, pos.Y, width, height);
 						repositionRequested = false;
 					});
 				}
