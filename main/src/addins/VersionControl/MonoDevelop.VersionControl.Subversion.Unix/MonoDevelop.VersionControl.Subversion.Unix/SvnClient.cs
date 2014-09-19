@@ -11,6 +11,7 @@ using svn_revnum_t = System.IntPtr;
 using size_t = System.Int32;
 using off_t = System.Int64;
 using MonoDevelop.Projects.Text;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Subversion.Unix
 {
@@ -77,6 +78,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return error.message;
 			else {
 				byte[] buf = new byte [300];
+				// Caller will handle the lock.
 				Svn.strerror (error.apr_err, buf, buf.Length);
 				return Encoding.UTF8.GetString (buf);
 			}
@@ -86,16 +88,25 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			IntPtr p;
 
+			// Caller will handle the lock.
 			Apr.pool_create_ex (out p, parent, IntPtr.Zero, IntPtr.Zero);
 			if (p == IntPtr.Zero)
 				throw new InvalidOperationException ("Could not create an APR pool.");
 			return p;
+		}
+
+		internal static void destroypool (IntPtr pool)
+		{
+			// Caller will handle lock.
+			if (pool != IntPtr.Zero)
+				Apr.pool_destroy (pool);
 		}
 		
 		public static string NormalizePath (string pathOrUrl, IntPtr localpool)
 		{
 			if (pathOrUrl == null)
 				return null;
+			// Caller will handle the lock.
 			IntPtr res = Svn.path_internal_style (pathOrUrl, localpool);
 			return Marshal.PtrToStringAnsi (res);
 		}
@@ -129,7 +140,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public static string GetVersion ()
 		{
-			IntPtr ptr = Svn.client_version ();
+			IntPtr ptr;
+			lock (Svn)
+				ptr = Svn.client_version ();
 			LibSvnClient.svn_version_t ver = (LibSvnClient.svn_version_t)Marshal.PtrToStructure (ptr, typeof(LibSvnClient.svn_version_t));
 			return ver.major + "." + ver.minor + "." + ver.patch;
 		}
@@ -240,13 +253,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return SvnClient.newpool (parent);
 		}
 
+		static void destroypool (IntPtr pool)
+		{
+			SvnClient.destroypool (pool);
+		}
+
 		bool disposed;
 		readonly IntPtr auth_baton;
 		readonly IntPtr pool;
 		readonly IntPtr ctx;
-
-		readonly object sync = new object();
-		bool inProgress;
 
 		IProgressMonitor updatemonitor;
 		ArrayList updateFileList;
@@ -274,109 +289,113 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 		public UnixSvnBackend ()
 		{
-			// Allocate the APR pool and the SVN client context.
-			pool = newpool (IntPtr.Zero);
+			lock (svn) {
+				// Allocate the APR pool and the SVN client context.
+				pool = newpool (IntPtr.Zero);
 
-			// Make sure the config directory is properly created.
-			// If the config directory and specifically the subdirectories
-			// for the authentication providers don't exist, authentication
-			// data won't be saved and no error is given.
-			svn.config_ensure (null, pool);
+				// Make sure the config directory is properly created.
+				// If the config directory and specifically the subdirectories
+				// for the authentication providers don't exist, authentication
+				// data won't be saved and no error is given.
+				svn.config_ensure (null, pool);
 
-			// Load user and system configuration
-			svn.config_get_config (ref config_hash, null, pool);
+				// Load user and system configuration
+				svn.config_get_config (ref config_hash, null, pool);
 
-			if (svn.client_create_context (out ctx, pool) != IntPtr.Zero)
-				throw new InvalidOperationException ("Could not create a Subversion client context.");
+				if (svn.client_create_context (out ctx, pool) != IntPtr.Zero)
+					throw new InvalidOperationException ("Could not create a Subversion client context.");
 			
-			// Set the callbacks on the client context structure.
-			notify_func = new LibSvnClient.svn_wc_notify_func2_t (svn_wc_notify_func_t_impl);
-			Marshal.WriteIntPtr (ctx,
-			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "NotifyFunc2"),
-			                     Marshal.GetFunctionPointerForDelegate (notify_func));
-			log_func = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
-			Marshal.WriteIntPtr (ctx,
-			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "LogMsgFunc"),
-			                     Marshal.GetFunctionPointerForDelegate (log_func));
-			progress_func = new LibSvnClient.svn_ra_progress_notify_func_t (svn_ra_progress_notify_func_t_impl);
-			Marshal.WriteIntPtr (ctx,
-			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "progress_func"),
-			                     Marshal.GetFunctionPointerForDelegate (progress_func));
-			cancel_func = new LibSvnClient.svn_cancel_func_t (svn_cancel_func_t_impl);
-			Marshal.WriteIntPtr (ctx,
-			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "cancel_func"),
-			                     Marshal.GetFunctionPointerForDelegate (cancel_func));
-
-			Marshal.WriteIntPtr (ctx,
-			                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "config"),
-			                     config_hash);
-
-			if (!SvnClient.Pre_1_7) {
-				IntPtr scratch = newpool (IntPtr.Zero);
-				svn.wc_context_create (out wc_ctx, IntPtr.Zero, pool, scratch);
+				// Set the callbacks on the client context structure.
+				notify_func = new LibSvnClient.svn_wc_notify_func2_t (svn_wc_notify_func_t_impl);
 				Marshal.WriteIntPtr (ctx,
-				                     (int) Marshal.OffsetOf (typeof (LibSvnClient.svn_client_ctx_t), "wc_ctx"),
-				                     wc_ctx);
-				apr.pool_destroy (scratch);
+				                     (int)Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "NotifyFunc2"),
+				                     Marshal.GetFunctionPointerForDelegate (notify_func));
+				log_func = new LibSvnClient.svn_client_get_commit_log_t (svn_client_get_commit_log_impl);
+				Marshal.WriteIntPtr (ctx,
+				                     (int)Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "LogMsgFunc"),
+				                     Marshal.GetFunctionPointerForDelegate (log_func));
+				progress_func = new LibSvnClient.svn_ra_progress_notify_func_t (svn_ra_progress_notify_func_t_impl);
+				Marshal.WriteIntPtr (ctx,
+				                     (int)Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "progress_func"),
+				                     Marshal.GetFunctionPointerForDelegate (progress_func));
+				cancel_func = new LibSvnClient.svn_cancel_func_t (svn_cancel_func_t_impl);
+				Marshal.WriteIntPtr (ctx,
+				                     (int)Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "cancel_func"),
+				                     Marshal.GetFunctionPointerForDelegate (cancel_func));
+
+				Marshal.WriteIntPtr (ctx,
+				                     (int)Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "config"),
+				                     config_hash);
+
+				if (!SvnClient.Pre_1_7) {
+					IntPtr scratch = newpool (IntPtr.Zero);
+					svn.wc_context_create (out wc_ctx, IntPtr.Zero, pool, scratch);
+					Marshal.WriteIntPtr (ctx,
+					                     (int)Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "wc_ctx"),
+					                     wc_ctx);
+					apr.pool_destroy (scratch);
+				}
+
+				IntPtr providers = apr.array_make (pool, 16, IntPtr.Size);
+				IntPtr item;
+			
+				// The main disk-caching auth providers, for both
+				// 'username/password' creds and 'username' creds.
+			
+				item = apr.array_push (providers);
+				svn.client_get_simple_provider (item, pool);
+
+				item = apr.array_push (providers);
+				svn.client_get_username_provider (item, pool);
+			
+				// The server-cert, client-cert, and client-cert-password providers
+			
+				item = apr.array_push (providers);
+				svn.client_get_ssl_server_trust_file_provider (item, pool);
+			
+				item = apr.array_push (providers);
+				svn.client_get_ssl_client_cert_file_provider (item, pool);
+			
+				item = apr.array_push (providers);
+				svn.client_get_ssl_client_cert_pw_file_provider (item, pool);
+
+				// Two basic prompt providers: username/password, and just username.
+
+				item = apr.array_push (providers);
+				svn.client_get_simple_prompt_provider (item, OnAuthSimplePromptCallback, IntPtr.Zero, 2, pool);
+			
+				item = apr.array_push (providers);
+				svn.client_get_username_prompt_provider (item, OnAuthUsernamePromptCallback, IntPtr.Zero, 2, pool);
+			
+				// Three ssl prompt providers, for server-certs, client-certs,
+				// and client-cert-passphrases.
+			
+				item = apr.array_push (providers);
+				svn.client_get_ssl_server_trust_prompt_provider (item, OnAuthSslServerTrustPromptCallback, IntPtr.Zero, pool);
+			
+				item = apr.array_push (providers);
+				svn.client_get_ssl_client_cert_prompt_provider (item, OnAuthSslClientCertPromptCallback, IntPtr.Zero, 2, pool);
+			
+				item = apr.array_push (providers);
+				svn.client_get_ssl_client_cert_pw_prompt_provider (item, OnAuthSslClientCertPwPromptCallback, IntPtr.Zero, 2, pool);
+
+				// Create the authentication baton			
+				svn.auth_open (out auth_baton, providers, pool);
+
+				Marshal.WriteIntPtr (ctx,
+				                     (int)Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "auth_baton"),
+				                     auth_baton);
 			}
-
-			IntPtr providers = apr.array_make (pool, 16, IntPtr.Size);
-			IntPtr item;
-			
-			// The main disk-caching auth providers, for both
-			// 'username/password' creds and 'username' creds.
-			
-			item = apr.array_push (providers);
-			svn.client_get_simple_provider (item, pool);
-
-			item = apr.array_push (providers);
-			svn.client_get_username_provider (item, pool);
-			
-			// The server-cert, client-cert, and client-cert-password providers
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_server_trust_file_provider (item, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_file_provider (item, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_pw_file_provider (item, pool);
-
-			// Two basic prompt providers: username/password, and just username.
-
-			item = apr.array_push (providers);
-			svn.client_get_simple_prompt_provider (item, OnAuthSimplePromptCallback, IntPtr.Zero, 2, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_username_prompt_provider (item, OnAuthUsernamePromptCallback, IntPtr.Zero, 2, pool);
-			
-			// Three ssl prompt providers, for server-certs, client-certs,
-			// and client-cert-passphrases.
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_server_trust_prompt_provider (item, OnAuthSslServerTrustPromptCallback, IntPtr.Zero, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_prompt_provider (item, OnAuthSslClientCertPromptCallback, IntPtr.Zero, 2, pool);
-			
-			item = apr.array_push (providers);
-			svn.client_get_ssl_client_cert_pw_prompt_provider (item, OnAuthSslClientCertPwPromptCallback, IntPtr.Zero, 2, pool);
-
-			// Create the authentication baton			
-			svn.auth_open (out auth_baton, providers, pool);
-
-			Marshal.WriteIntPtr (ctx,
-			                     (int) Marshal.OffsetOf (typeof(LibSvnClient.svn_client_ctx_t), "auth_baton"),
-			                     auth_baton);
 		}
 		
 		public void Dispose ()
 		{
-			if (!disposed) {
-				if (apr != null)
-					apr.pool_destroy(pool);
-				disposed = true;
+			lock (svn) {
+				if (!disposed) {
+					if (apr != null)
+						apr.pool_destroy (pool);
+					disposed = true;
+				}
 			}
 		}
 		
@@ -520,12 +539,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
-			IntPtr localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			List<DirectoryEntry> items = new List<DirectoryEntry> ();
 
 			try {
 				IntPtr hash;
-				
+
+				localpool = TryStartOperation (null);
 				url = NormalizePath (url, localpool);
 				
 				CheckError (svn.client_ls (out hash, url, ref revision,
@@ -552,8 +572,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					items.Add (dent);
 				}
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 			
 			return items;
@@ -568,8 +587,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			ArrayList ret = new ArrayList ();
 			
 			StatusCollector collector = new StatusCollector (ret);
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				string pathorurl = NormalizePath (path, localpool);
 				CheckError (svn.client_status (IntPtr.Zero, pathorurl, ref revision,
 				                               collector.Func,
@@ -584,8 +604,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				if (e.ErrorCode != 155007 && e.ErrorCode != 155008)
 					throw;
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 
 			List<VersionInfo> nodes = new List<VersionInfo>();
@@ -605,8 +624,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			List<SvnRevision> ret = new List<SvnRevision> ();
 			IntPtr strptr = IntPtr.Zero;
 
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				IntPtr first = apr.array_push (array);
 				string pathorurl = NormalizePath (path, localpool);
@@ -621,8 +641,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			} finally {
 				if (strptr != IntPtr.Zero)
 					Marshal.FreeHGlobal (strptr);
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 			
 			return ret;
@@ -649,13 +668,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			Annotation[] annotations = new Annotation [numAnnotations];
 			AnnotationCollector collector = new AnnotationCollector (annotations);
 
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				string path = NormalizePath (file.FullPath, localpool);
 				CheckError (svn.client_blame (path, ref revisionStart, ref revisionEnd, collector.Func, IntPtr.Zero, ctx, localpool));
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 			
 			return annotations;
@@ -695,8 +714,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 			LibSvnClient.Rev revision = (LibSvnClient.Rev) rev;
 			
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				pathorurl = NormalizePath (pathorurl, localpool);
 				StreamCollector collector = new StreamCollector (stream);
 				IntPtr svnstream = svn.stream_create (IntPtr.Zero, localpool);
@@ -705,8 +725,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				// Otherwise, it will use Head as peg and it will throw exceptions.
 				CheckError (svn.client_cat2 (svnstream, pathorurl, ref revision, ref revision, ctx, localpool), 195007);
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -718,15 +737,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			updateFileList = new ArrayList ();
 			
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Head;
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				string pathorurl = NormalizePath (path, localpool);
 				IntPtr result = Marshal.AllocHGlobal (IntPtr.Size);
 				CheckError (svn.client_update (result, pathorurl, ref rev, recurse, ctx, localpool));
 				Marshal.FreeHGlobal (result);
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 
 				foreach (string file in updateFileList)
 					FileService.NotifyFileChanged (file, true);
@@ -740,8 +759,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (paths == null || monitor == null)
 				throw new ArgumentNullException();
 
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				// Put each item into an APR array.
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				foreach (string path in paths) {
@@ -752,8 +772,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			
 				CheckError (svn.client_revert (array, recurse, ctx, localpool));
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -763,13 +782,13 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				string pathorurl = NormalizePath (path, localpool);
 				CheckError (svn.client_add3 (pathorurl, recurse, true, false, ctx, localpool));
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -783,8 +802,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.Rev rev = (LibSvnClient.Rev) revision;
 			
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				// Using Uri here because the normalization method doesn't remove the redundant port number when using https
 				url = NormalizePath (new Uri(url).ToString(), localpool);
 				string npath = NormalizePath (path, localpool);
@@ -796,8 +816,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				if (Directory.Exists (path.ParentDirectory))
 					FileService.DeleteDirectory (path.ParentDirectory);
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -807,8 +826,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException();
 
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				// Put each item into an APR array.
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				foreach (string path in paths) {
@@ -829,8 +849,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				}
 			} finally {
 				commitmessage = null;
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -840,8 +859,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				// Put each item into an APR array.
 				IntPtr array = apr.array_make (localpool, paths.Length, IntPtr.Size);
 				foreach (string path in paths) {
@@ -856,8 +876,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				CheckError (svn.client_mkdir2 (ref commit_info, array, ctx, localpool));
 			} finally {	
 				commitmessage = null;
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -867,8 +886,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				throw new ArgumentNullException ();
 
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				// Put each item into an APR array.
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				//foreach (string path in paths) {
@@ -880,8 +900,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				CheckError (svn.client_delete (ref commit_info, array, force, ctx, localpool));
 			} finally {
 				commitmessage = null;
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -894,23 +913,24 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 			nb = new notify_baton ();
 			IntPtr commit_info = IntPtr.Zero;
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				string nsrcPath = NormalizePath (srcPath, localpool);
 				string ndestPath = NormalizePath (destPath, localpool);
 				CheckError (svn.client_move (ref commit_info, nsrcPath, ref revision,
 				                             ndestPath, force, ctx, localpool));
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
 		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths)
 		{
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				foreach (string path in paths) {
 					string npath = NormalizePath (path, localpool);
@@ -924,17 +944,17 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				if (paths.Length != lockFileList.Count)
 					throw new SubversionException ("Lock operation failed.");
 			} finally {
-				apr.pool_destroy (localpool);
 				lockFileList = null;
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 		
 		public override void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths)
 		{
 			nb = new notify_baton ();
-			var localpool = TryStartOperation (monitor);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (monitor);
 				IntPtr array = apr.array_make (localpool, 0, IntPtr.Size);
 				foreach (string path in paths) {
 					string npath = NormalizePath (path, localpool);
@@ -948,9 +968,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				if (paths.Length != lockFileList.Count)
 					throw new SubversionException ("Lock operation failed.");
 			} finally {
-				apr.pool_destroy (localpool);
 				lockFileList = null;
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -964,8 +983,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.Rev revision1 = (LibSvnClient.Rev) rev1;
 			LibSvnClient.Rev revision2 = (LibSvnClient.Rev) rev2;
 			
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				IntPtr options = apr.array_make (localpool, 0, IntPtr.Size);
 				
 				fout = Path.GetTempFileName ();
@@ -1001,8 +1021,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 						FileService.DeleteFile (fout);
 				} catch {
 				} finally {
-					apr.pool_destroy (localpool);
-					TryEndOperation ();
+					TryEndOperation (localpool);
 				}
 			}
 		}
@@ -1020,8 +1039,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		
 		private void Merge (string path, LibSvnClient.Rev revision1, LibSvnClient.Rev revision2)
 		{
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				path = NormalizePath (path, localpool);
 				LibSvnClient.Rev working = LibSvnClient.Rev.Working;
 				CheckError (svn.client_merge_peg2 (path, 
@@ -1034,8 +1054,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				                                   ctx, localpool));
 			}
 			finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -1050,8 +1069,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.svn_string_t new_props;
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
 
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				foreach (var path in paths) {
 					new_path = NormalizePath (path, localpool);
 					CheckError (svn.client_propget (out result, "svn:ignore", Path.GetDirectoryName (new_path),
@@ -1071,8 +1091,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					CheckError (svn.client_propset ("svn:ignore", props_ptr, Path.GetDirectoryName (new_path), false, localpool));
 				}
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -1089,8 +1108,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			int index;
 			string props_str;
 
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				foreach (var path in paths) {
 					new_path = NormalizePath (path, localpool);
 					CheckError (svn.client_propget (out result, "svn:ignore", Path.GetDirectoryName (new_path),
@@ -1113,8 +1133,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					CheckError (svn.client_propset ("svn:ignore", props_ptr, Path.GetDirectoryName (new_path), false, localpool));
 				}
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -1129,8 +1148,9 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			LibSvnClient.svn_string_t new_props;
 			LibSvnClient.Rev rev = LibSvnClient.Rev.Working;
 
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
 				new_path = NormalizePath (file, localpool);
 				CheckError (svn.client_propget (out result, "svn:needs-lock", new_path,
 					ref rev, false, ctx, localpool));
@@ -1143,8 +1163,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				}
 				return props.Length != 0;
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 		}
 
@@ -1172,32 +1191,19 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			return IntPtr.Zero;
 		}
 
-		string oldStacktrace = String.Empty;
 		IntPtr TryStartOperation (IProgressMonitor monitor)
 		{
-			lock (sync) {
-				if (inProgress) {
-					var se = new SubversionException ("Another Subversion operation is already in progress.");
-					se.Data.Add ("OldStacktrace", oldStacktrace);
-					se.Data.Add ("CurrentStackTrace", Environment.StackTrace);
-					throw se;
-				}
-				oldStacktrace = Environment.StackTrace;
-				inProgress = true;
-				updatemonitor = monitor;
-				progressData = new ProgressData ();
-				return newpool (pool);
-			}
+			Monitor.Enter (svn);
+			updatemonitor = monitor;
+			progressData = new ProgressData ();
+			return newpool (pool);
 		}
 
-		void TryEndOperation ()
+		void TryEndOperation (IntPtr pool)
 		{
-			lock (sync) {
-				if (!inProgress)
-					throw new SubversionException ("No Subversion operation is in progress.");
-				inProgress = false;
-				updatemonitor = null;
-			}
+			destroypool (pool);
+			updatemonitor = null;
+			Monitor.Exit (svn);
 		}
 
 		static VersionInfo CreateNode (LibSvnClient.StatusEnt ent, Repository repo) 
@@ -1525,9 +1531,11 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				return String.Empty;
 
 			IntPtr result;
-			IntPtr scratch = newpool (pool);
-			var localpool = TryStartOperation (null);
+			IntPtr scratch = IntPtr.Zero;
+			IntPtr localpool = IntPtr.Zero;
 			try {
+				localpool = TryStartOperation (null);
+				scratch = newpool (pool);
 				string new_path = NormalizePath (path.FullPath, localpool);
 				SubversionException e = CheckErrorNoThrow (svn.client_get_wc_root (out result, new_path, ctx, localpool, scratch), null);
 				if (e != null) {
@@ -1553,9 +1561,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				}
 				return Marshal.PtrToStringAnsi (result);
 			} finally {
-				apr.pool_destroy (localpool);
-				apr.pool_destroy (scratch);
-				TryEndOperation ();
+				destroypool (scratch);
+				TryEndOperation (localpool);
 
 				if (TooOld)
 					WorkingCopyFormatPrompt (false, null);
@@ -1572,15 +1579,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			if (!Upgrading || path.IsNullOrEmpty)
 				return;
 
-			var localpool = TryStartOperation (null);
+			IntPtr localpool = IntPtr.Zero;
 			bool tryParent = false;
 			try {
+				localpool = TryStartOperation (null);
 				CheckError (svn.client_upgrade (path, ctx, localpool));
 			} catch (Exception e) {
 				tryParent = true;
 			} finally {
-				apr.pool_destroy (localpool);
-				TryEndOperation ();
+				TryEndOperation (localpool);
 			}
 
 			if (tryParent)
@@ -1653,7 +1660,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					apr.hash_this (item, out nameptr, out namelen, out val);
 					
 					string name = Marshal.PtrToStringAnsi (nameptr);
-					LibSvnClient.svn_log_changed_path_t ch = (LibSvnClient.svn_log_changed_path_t) Marshal.PtrToStructure (val, typeof (LibSvnClient.svn_log_changed_path_t));
+					LibSvnClient.svn_log_changed_path_t ch = (LibSvnClient.svn_log_changed_path_t) Marshal.PtrToStructure (val, typeof(LibSvnClient.svn_log_changed_path_t));
 					item = apr.hash_next (item);
 					
 					RevisionAction ac;
