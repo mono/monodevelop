@@ -1981,6 +1981,39 @@
     <EmbeddedResource Include="icons\light\project-status-error-16%402x.png">
       <LogicalName>project-status-error-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-android-16%402x.png">
+      <LogicalName>platform-android-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-cross-platform-16.png">
+      <LogicalName>platform-cross-platform-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-cross-platform-16%402x.png">
+      <LogicalName>platform-cross-platform-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-ios-16.png">
+      <LogicalName>platform-ios-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-ios-16%402x.png">
+      <LogicalName>platform-ios-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-mac-16.png">
+      <LogicalName>platform-mac-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-mac-16%402x.png">
+      <LogicalName>platform-mac-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-other-16.png">
+      <LogicalName>platform-other-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-other-16%402x.png">
+      <LogicalName>platform-other-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\platform-android-16.png">
+      <LogicalName>platform-android-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\template-default-background.png">
+      <LogicalName>template-default-background-light.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -2779,6 +2812,19 @@
     <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectConfiguration.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\SolutionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateCategory.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateWizard.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\WizardPage.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\INewProjectController.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\NewProjectController.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkNewProjectDialogBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\INewProjectDialogBackend.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkNewProjectDialogBackend.UI.cs">
+      <DependentUpon>GtkNewProjectDialogBackend.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.Ide.Projects\TemplateCellRendererText.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

@@ -617,10 +617,12 @@ namespace MonoDevelop.Ide
 		
 		public void NewSolution (string defaultTemplate)
 		{
-			NewProjectDialog pd = new NewProjectDialog (null, true, null);
-			if (defaultTemplate != null)
-				pd.SelectTemplate (defaultTemplate);
-			MessageService.ShowCustomDialog (pd);
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.Show ();
+//			NewProjectDialog pd = new NewProjectDialog (null, true, null);
+//			if (defaultTemplate != null)
+//				pd.SelectTemplate (defaultTemplate);
+//			MessageService.ShowCustomDialog (pd);
 		}
 		
 		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace)
