@@ -40,10 +40,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="NUnit">
-      <HintPath>..\..\..\..\lib\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\..\packages\NUnit\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="FsUnit">
-      <HintPath>..\..\..\..\lib\FsUnit.1.1.1.0\Lib\Net40\FsUnit.NUnit.dll</HintPath>
+      <HintPath>..\..\..\packages\FsUnit\Lib\Net40\FsUnit.NUnit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

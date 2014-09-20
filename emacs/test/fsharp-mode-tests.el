@@ -17,9 +17,25 @@
 (check "should not find fsharp project if none present"
   (should-not (fsharp-mode/find-sln-or-fsproj "/bin/")))
 
-(check "should find sln at base of repo given a subdir"
-  (should-match "AutoComplete.sln$" (fsharp-mode/find-sln-or-fsproj test-dir)))
+(check "should find fsproj in test project directory"
+  (should-match "Test1.fsproj"
+                (fsharp-mode/find-sln-or-fsproj fs-file-dir)))
 
-(check "should find sln at base of repo given a file in subdir"
-  (should-match "AutoComplete.sln$"
-                (fsharp-mode/find-sln-or-fsproj (concat test-dir "file.fs"))))
+(check "should prefer sln to fsproj"
+  (should-match "bar.sln"
+                (fsharp-mode/find-sln-or-fsproj (concat test-dir
+                                                        "FindSlnData/"))))
+
+(check "should find closest sln"
+  (should-match "foo.sln"
+                (fsharp-mode/find-sln-or-fsproj (concat test-dir
+                                                        "FindSlnData/"
+                                                        "sln/"))))
+
+(check "should find sln in parent dir"
+  (should-match "bar.sln"
+                (fsharp-mode/find-sln-or-fsproj (concat test-dir
+                                                        "FindSlnData/"
+                                                        "noproj/"
+                                                        "test.fs"))))
+

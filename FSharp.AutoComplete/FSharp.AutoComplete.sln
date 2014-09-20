@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FSharp.CompilerBinding", "FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj", "{88F6940F-D300-474C-B2A7-E2ECD5B04B57}"
+Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FSharp.CompilerBinding", "..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj", "{88F6940F-D300-474C-B2A7-E2ECD5B04B57}"
 EndProject
-Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FSharp.AutoComplete", "FSharp.AutoComplete\FSharp.AutoComplete.fsproj", "{B6AB4EF3-8F60-41A1-AB0C-851A6DEB169E}"
+Project("{4925A630-B079-445d-BCD4-3A9C94FE9307}") = "FSharp.AutoComplete", "FSharp.AutoComplete.fsproj", "{B6AB4EF3-8F60-41A1-AB0C-851A6DEB169E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,7 +29,7 @@ Global
 		{B6AB4EF3-8F60-41A1-AB0C-851A6DEB169E}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = FSharp.AutoComplete\FSharp.AutoComplete.fsproj
+		StartupItem = FSharp.AutoComplete.fsproj
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -33,7 +33,7 @@
     
     <PropertyGroup Condition=" '$(OS)' != 'Windows_NT'">
         <!-- We need to launch nuget.exe with the mono command if we're not on windows -->
-        <NuGetToolsPath>$(SolutionDir)lib\nuget</NuGetToolsPath>
+        <NuGetToolsPath>$(SolutionDir)..\lib\nuget</NuGetToolsPath>
         <PackagesConfig>packages.config</PackagesConfig>
     </PropertyGroup>
     

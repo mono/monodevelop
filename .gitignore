@@ -27,7 +27,7 @@ FSharp.AutoComplete/test/integration/RawIdTest/DesignTimeURIs/
 FSharp.AutoComplete/test/integration/RawIdTest/FreebaseSchema/
 FSharp.AutoComplete/test/integration/RawIdTest/WorldBankSchema/
 FSharp.AutoComplete/test/unit/TestResult.xml
-/packages
+FSharp.AutoComplete/packages
 
 # Emacs
 *.elc

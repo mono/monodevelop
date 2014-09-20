@@ -3,28 +3,28 @@
 cd `dirname $0`
 NUGET="nuget/NuGet.exe"
 
-if [[ ! -d "../../../lib/NUnit.2.6.1" ]];
+if [[ ! -d "../../../lib/NUnit" ]];
 then
     pushd ../../../lib
-    mono $NUGET install nunit -Version 2.6.1
+    mono $NUGET install nunit -Version 2.6.3 -ExcludeVersion
     popd
 fi
 
-if [[ ! -d "../../../lib/NUnit.Runners.2.6.1" ]];
+if [[ ! -d "../../../lib/NUnit.Runners" ]];
 then
     pushd ../../../lib
-    mono $NUGET install nunit.runners -Version 2.6.1
+    mono $NUGET install nunit.runners -Version 2.6.3 -ExcludeVersion
     popd
 fi
 
-if [[ ! -d "../../../lib/FsUnit.1.1.1.0" ]];
+if [[ ! -d "../../../lib/FsUnit" ]];
 then
     pushd ../../../lib
-    mono $NUGET install fsunit -Version 1.1.1.0
+    mono $NUGET install fsunit -Version 1.3.0.1 -ExcludeVersion
     popd
 fi
 
 xbuild ProjectLoading/ProjectParserTests.fsproj
-mono ../../../lib/NUnit.Runners.2.6.1/tools/nunit-console-x86.exe \
+mono ../../../lib/NUnit.Runners/tools/nunit-console-x86.exe \
      ProjectLoading/bin/Debug/ProjectParserTests.dll
 
