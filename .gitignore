@@ -18,15 +18,15 @@ repository/*
 =======
 *~
 pack/*
-lib/NUnit.*
-lib/FsUnit.*
+lib/NUnit*
+lib/FsUnit
 
 FSharp.AutoComplete/test/integration/RawIdTest/FSharp.Data
 FSharp.AutoComplete/test/integration/RawIdTest/Zlib.Portable
 FSharp.AutoComplete/test/integration/RawIdTest/DesignTimeURIs/
 FSharp.AutoComplete/test/integration/RawIdTest/FreebaseSchema/
 FSharp.AutoComplete/test/integration/RawIdTest/WorldBankSchema/
-FSharp.AutoComplete/test/unit/TestResult.xml
+FSharp.AutoComplete/test/unit/build
 FSharp.AutoComplete/packages
 
 # Emacs

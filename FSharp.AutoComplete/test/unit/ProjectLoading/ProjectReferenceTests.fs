@@ -8,14 +8,14 @@ open System.IO
 
 [<Test>]
 let TestProjectLibraryResolution () =
-  let p  = ProjectParser.load "../../data/Test1.fsproj"
+  let p  = ProjectParser.load "../ProjectLoading/data/Test1.fsproj"
   Option.isSome p |> should be True
   let rs = ProjectParser.getReferences p.Value
   rs |> should haveLength 4
 
 [<Test>]
 let Test2ndLevelDepsResolution () =
-  let p  = ProjectParser.load "../../data/Test2.fsproj"
+  let p  = ProjectParser.load "../ProjectLoading/data/Test2.fsproj"
   Option.isSome p |> should be True
   let rs = ProjectParser.getReferences p.Value
   rs |> should haveLength 6

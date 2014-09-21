@@ -15,9 +15,9 @@ install:
   - sudo apt-get install -yq fsharp
 
 script:
-  - make -C FSharp.AutoComplete
-  - make -C FSharp.AutoComplete unit-test
-  - make -C FSharp.AutoComplete integration-test
+  - FSharp.AutoComplete/fake BuildDebug
+  - FSharp.AutoComplete/fake UnitTest
+  - FSharp.AutoComplete/fake IntegrationTest
   - make -C emacs test
   - make -C emacs integration-test
   - make -C emacs check-compile
