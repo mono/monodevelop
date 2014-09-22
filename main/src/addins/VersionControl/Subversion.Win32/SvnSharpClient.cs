@@ -41,14 +41,6 @@ namespace SubversionAddinWindows
 			return new SvnSharpBackend ();
 		}
 
-		public override string GetPathUrl (FilePath path)
-		{
-			lock (client) {
-				Uri u = client.Value.GetUriFromWorkingCopy (path);
-				return u != null ? u.ToString () : null;
-			}
-		}
-
 		public override bool IsInstalled
 		{
 			get
@@ -69,7 +61,8 @@ namespace SubversionAddinWindows
 		{
 			string wc_path;
 			try {
-				wc_path = client.Value.GetWorkingCopyRoot (path.FullPath);
+				lock (client.Value)
+					wc_path = client.Value.GetWorkingCopyRoot (path.FullPath);
 				return wc_path;
 			} catch (SvnException e) {
 				switch (e.SvnErrorCode) {
@@ -98,7 +91,8 @@ namespace SubversionAddinWindows
 			try {
 				// This outputs the contents of the base revision
 				// of a file to a stream.
-				client.Write (new SvnPathTarget (sourcefile), data);
+				lock (client)
+					client.Write (new SvnPathTarget (sourcefile), data);
 				return TextFile.ReadFile (sourcefile, data).Text;
 			} catch (SvnIllegalTargetException e) {
 				// This occurs when we don't have a base file for
@@ -250,7 +244,9 @@ namespace SubversionAddinWindows
 		public override string GetTextAtRevision (string repositoryPath, Revision revision, string rootPath)
 		{
 			var ms = new MemoryStream ();
-			SvnUriTarget target = client.GetUriFromWorkingCopy (rootPath);
+			SvnUriTarget target;
+			lock (client)
+				target = client.GetUriFromWorkingCopy (rootPath);
 			// Redo path link.
 			repositoryPath = repositoryPath.TrimStart (new [] { '/' });
 			foreach (var segment in target.Uri.Segments) {
@@ -279,7 +275,8 @@ namespace SubversionAddinWindows
 
 		public override string GetVersion ()
 		{
-			return SvnClient.Version.ToString ();
+			lock (client)
+				return SvnClient.Version.ToString ();
 		}
 
 		public override IEnumerable<DirectoryEntry> ListUrl (string url, bool recurse, SvnRevision rev)
@@ -299,18 +296,18 @@ namespace SubversionAddinWindows
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
 			lock (client) 
 				client.List (target, args, delegate (object o, SvnListEventArgs a) {
-				if (string.IsNullOrEmpty (a.Path))
-					return;
-				var de = new DirectoryEntry ();
-				de.CreatedRevision = ToBaseRevision (a.Entry.Revision).Rev;
-				de.HasProps = a.Entry.HasProperties;
-				de.IsDirectory = a.Entry.NodeKind == SvnNodeKind.Directory;
-				de.LastAuthor = a.Entry.Author;
-				de.Name = a.Path;
-				de.Size = a.Entry.FileSize;
-				de.Time = a.Entry.Time;
-				list.Add (de);
-			});
+					if (string.IsNullOrEmpty (a.Path))
+						return;
+					var de = new DirectoryEntry ();
+					de.CreatedRevision = ToBaseRevision (a.Entry.Revision).Rev;
+					de.HasProps = a.Entry.HasProperties;
+					de.IsDirectory = a.Entry.NodeKind == SvnNodeKind.Directory;
+					de.LastAuthor = a.Entry.Author;
+					de.Name = a.Path;
+					de.Size = a.Entry.FileSize;
+					de.Time = a.Entry.Time;
+					list.Add (de);
+				});
 			return list;
 		}
 
@@ -521,7 +518,8 @@ namespace SubversionAddinWindows
 			var args = new SvnUpdateArgs ();
 			BindMonitor (monitor);
 			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
-			client.Update (path, args);
+			lock (client)
+				client.Update (path, args);
 		}
 
 		public override void Ignore (FilePath[] paths)
@@ -558,7 +556,8 @@ namespace SubversionAddinWindows
 			var target = new SvnPathTarget (file, SharpSvn.SvnRevision.Base);
 			var data = new MemoryStream ();
 			int numAnnotations = 0;
-			client.Write (target, data);
+			lock (client)
+				client.Write (target, data);
 
 			using (var reader = new StreamReader (data)) {
 				reader.BaseStream.Seek (0, SeekOrigin.Begin);
@@ -571,7 +570,11 @@ namespace SubversionAddinWindows
 			args.Start = GetRevision (revStart);
 			args.End = GetRevision (revEnd);
 
-			if (client.GetBlame (target, args, out list)) {
+			bool success;
+			lock (client) {
+				success = client.GetBlame (target, args, out list);
+			}
+			if (success) {
 				var annotations = new Annotation [numAnnotations];
 				foreach (var annotation in list) {
 					if (annotation.LineNumber < annotations.Length)
