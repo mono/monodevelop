@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Projects
 
 			Modal = true;
 			Name = "NewProjectDialog";
-			Title = Catalog.GetString ("New Solution");
+			Title = Catalog.GetString ("New Project");
 			WindowPosition = WindowPosition.CenterOnParent;
 			TransientFor = IdeApp.Workbench.RootWindow;
 
