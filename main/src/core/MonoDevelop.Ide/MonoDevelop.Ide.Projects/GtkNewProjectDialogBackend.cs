@@ -341,7 +341,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 			var config = new ProjectConfiguration () {
-				Location = "~/Projects",
+				Location = IdeApp.ProjectOperations.ProjectsDefaultPath,
 				ProjectFileExtension = ".csproj"
 			};
 			projectConfigurationWidget.Load (config);
