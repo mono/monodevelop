@@ -282,31 +282,31 @@ namespace MonoDevelop.Ide.Projects
 
 		void MoveToNextPage ()
 		{
-//			SolutionTemplate template = GetSelectedTemplate ();
-//			if (template == null)
-//				return;
-//
-//			if (projectConfigurationWidget == centreVBox.Children [0]) {
-//				Destroy ();
-//				return;
-//			}
-//
-//			Widget widget = GetNextPageWidget (template);
-//
-//			centreVBox.Remove (centreVBox.Children [0]);
-//			widget.Show ();
-//			centreVBox.PackStart (widget, true, true, 0);
-//
-//			if (widget is WizardPage) {
-//				topBannerLabel.Text = ((WizardPage)widget).Title;
-//			} else {
-//				topBannerLabel.Text = configureYourProjectBannerText;
-//			}
-//
-//			previousButton.Sensitive = true;
-//			if (widget == projectConfigurationWidget) {
-//				nextButton.Label = Catalog.GetString ("Create");
-//			}
+			SolutionTemplate template = GetSelectedTemplate ();
+			if (template == null)
+				return;
+
+			if (projectConfigurationWidget == centreVBox.Children [0]) {
+				Destroy ();
+				return;
+			}
+
+			Widget widget = GetNextPageWidget (template);
+
+			centreVBox.Remove (centreVBox.Children [0]);
+			widget.Show ();
+			centreVBox.PackStart (widget, true, true, 0);
+
+			if (widget is WizardPage) {
+				//topBannerLabel.Text = ((WizardPage)widget).Title;
+			} else {
+				topBannerLabel.Text = configureYourProjectBannerText;
+			}
+
+			previousButton.Sensitive = true;
+			if (widget == projectConfigurationWidget) {
+				nextButton.Label = Catalog.GetString ("Create");
+			}
 		}
 
 		void MoveToPreviousPage ()
@@ -327,26 +327,26 @@ namespace MonoDevelop.Ide.Projects
 			nextButton.Label = Catalog.GetString ("Next");
 		}
 
-//		Widget GetNextPageWidget (SolutionTemplate template)
-//		{
-//			currentPage++;
+		Widget GetNextPageWidget (SolutionTemplate template)
+		{
+			currentPage++;
 
-//			if (template.HasWizard) {
-//				wizard = controller.CreateTemplateWizard (template.Wizard);
-//				if (wizard != null) {
-//					WizardPage page = wizard.GetPage (currentPage);
-//					if (page != null) {
-//						return page;
-//					}
-//				}
-//			}
-//			var config = new ProjectConfiguration () {
-//				Location = "~/Projects",
-//				ProjectFileExtension = ".csproj"
-//			};
-//			projectConfigurationWidget.Load (config);
-//			return projectConfigurationWidget;
-//		}
+			if (template.HasWizard) {
+				wizard = controller.CreateTemplateWizard (template.Wizard);
+				if (wizard != null) {
+					WizardPage page = wizard.GetPage (currentPage);
+					if (page != null) {
+					//	return page;
+					}
+				}
+			}
+			var config = new ProjectConfiguration () {
+				Location = "~/Projects",
+				ProjectFileExtension = ".csproj"
+			};
+			projectConfigurationWidget.Load (config);
+			return projectConfigurationWidget;
+		}
 
 		Widget GetPreviousPageWidget (Widget existingWidget)
 		{

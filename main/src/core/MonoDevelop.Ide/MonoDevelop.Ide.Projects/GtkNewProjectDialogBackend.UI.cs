@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Projects
 		Gtk.Image templateImage;
 		Label templateNameLabel;
 		Label templateDescriptionLabel;
-//		ProjectConfigurationWidget projectConfigurationWidget;
+		GtkProjectConfigurationWidget projectConfigurationWidget;
 		TemplateCellRendererText templateTextRenderer;
 
 		void Build ()
@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Projects
 			WindowPosition = WindowPosition.CenterOnParent;
 			TransientFor = IdeApp.Workbench.RootWindow;
 
-//			projectConfigurationWidget = new ProjectConfigurationWidget ();
+			projectConfigurationWidget = new GtkProjectConfigurationWidget ();
 
 			// Top banner of dialog.
 			var topLabelEventBox = new EventBox ();
