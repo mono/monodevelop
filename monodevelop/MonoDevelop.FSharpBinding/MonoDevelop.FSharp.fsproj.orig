@@ -487,7 +487,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>packages\FSharp.Compiler.Service.0.0.61\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>packages\FSharp.Compiler.Service.0.0.62\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
@@ -502,7 +502,7 @@
       <HintPath>packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="FantomasLib">
-      <HintPath>packages\Fantomas.1.4.0\lib\FantomasLib.dll</HintPath>
+      <HintPath>packages\Fantomas.1.5.0\lib\FantomasLib.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.CodeDom">
       <HintPath>packages\FSharp.Compiler.CodeDom.0.9.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
