@@ -1,5 +1,5 @@
 ﻿//
-// NewProjectDialogController.cs
+// TemplatingService.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,53 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
 using System.Collections.Generic;
-using System.Linq;
-using MonoDevelop.Ide.Templates;
+using Mono.Addins;
+using MonoDevelop.Ide.Codons;
 
-namespace MonoDevelop.Ide.Projects
+namespace MonoDevelop.Ide.Templates
 {
-	/// <summary>
-	/// To be renamed to NewProjectDialog
-	/// </summary>
-	public class NewProjectDialogController : INewProjectDialogController
+	public class TemplatingService
 	{
-		List<TemplateCategory> templateCategories;
+		List<TemplateCategory> projectTemplateCategories = new List<TemplateCategory> ();
 
-		public NewProjectDialogController ()
+		public TemplatingService ()
 		{
-			LoadTemplateCategories ();
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateCategories", OnExtensionChanged);
 		}
 
-		public void Show ()
+		void OnExtensionChanged (object sender, ExtensionNodeEventArgs args)
 		{
-			INewProjectDialogBackend dialog = CreateNewProjectDialog ();
-			dialog.RegisterController (this);
-			dialog.ShowDialog ();
-		}
-
-		INewProjectDialogBackend CreateNewProjectDialog ()
-		{
-			return new GtkNewProjectDialogBackend ();
-		}
-
-		public IEnumerable<TemplateCategory> TemplateCategories {
-			get { return templateCategories; }
-		}
-
-		void LoadTemplateCategories ()
-		{
-			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories ().ToList ();
-		}
-
-		public TemplateWizard CreateTemplateWizard (string id)
-		{
-			if (id == "Xamarin.Forms.Template.Wizard") {
-			//	return new XamarinFormsTemplateWizard ();
+			var codon = (TemplateCategoryCodon)args.ExtensionNode;
+			if (args.Change == ExtensionChange.Add) {
+				projectTemplateCategories.Add (codon.ToTemplateCategory ());
+			} else {
+				projectTemplateCategories.RemoveAll (category => category.Id == codon.Id);
 			}
-			return null;
+		}
+
+		public IEnumerable<TemplateCategory> GetProjectTemplateCategories ()
+		{
+			return projectTemplateCategories;
 		}
 	}
 }

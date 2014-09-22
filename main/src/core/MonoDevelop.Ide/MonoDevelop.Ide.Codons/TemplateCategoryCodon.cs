@@ -1,5 +1,5 @@
 ﻿//
-// NewProjectDialogController.cs
+// TemplateCategoryCodon.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,53 +23,35 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
-using System.Collections.Generic;
-using System.Linq;
+using Mono.Addins;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Core;
+using System.Linq;
 
-namespace MonoDevelop.Ide.Projects
+namespace MonoDevelop.Ide.Codons
 {
-	/// <summary>
-	/// To be renamed to NewProjectDialog
-	/// </summary>
-	public class NewProjectDialogController : INewProjectDialogController
+	[ExtensionNode (Description="A template category.")]
+	internal class TemplateCategoryCodon : ExtensionNode
 	{
-		List<TemplateCategory> templateCategories;
+		[NodeAttribute("name", "Name of the template.")]
+		string name;
 
-		public NewProjectDialogController ()
+		[NodeAttribute("icon", "Icon for the template.")]
+		string icon;
+
+		public TemplateCategory ToTemplateCategory ()
 		{
-			LoadTemplateCategories ();
+			var category = new TemplateCategory (Id, GettextCatalog.GetString (name), icon);
+			AddChildren (category);
+			return category;
 		}
 
-		public void Show ()
+		void AddChildren (TemplateCategory category)
 		{
-			INewProjectDialogBackend dialog = CreateNewProjectDialog ();
-			dialog.RegisterController (this);
-			dialog.ShowDialog ();
-		}
-
-		INewProjectDialogBackend CreateNewProjectDialog ()
-		{
-			return new GtkNewProjectDialogBackend ();
-		}
-
-		public IEnumerable<TemplateCategory> TemplateCategories {
-			get { return templateCategories; }
-		}
-
-		void LoadTemplateCategories ()
-		{
-			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories ().ToList ();
-		}
-
-		public TemplateWizard CreateTemplateWizard (string id)
-		{
-			if (id == "Xamarin.Forms.Template.Wizard") {
-			//	return new XamarinFormsTemplateWizard ();
+			foreach (var childCodon in ChildNodes.OfType<TemplateCategoryCodon> ()) {
+				category.AddCategory (childCodon.ToTemplateCategory ());
 			}
-			return null;
 		}
 	}
 }

@@ -38,6 +38,23 @@ namespace MonoDevelop.Ide.Templates
 			Id = id;
 			Name = name;
 			IconId = iconId;
+
+			AddDummyTemplates ();
+		}
+
+		void AddDummyTemplates ()
+		{
+			var template = new SolutionTemplate ("blank-app-portable", "Blank App (Xamarin.Forms Portable)", "md-project") { // FIXME: VV: Retina
+				Description = "Blank App (Xamarin.Forms Portable). More text and some more. Blah, blah, blah, blah, more text that should wrap. More and more. More and even more",
+				LargeImageId = "template-default-background-light.png",
+				Wizard = "Xamarin.Forms.Template.Wizard"
+			};
+			AddTemplate (template);
+			template = new SolutionTemplate ("blank-app-shared", "Blank App (Xamarin.Forms Shared)", "md-project") { // FIXME: VV: Retina
+				Description = "Blank App (Xamarin.Forms Shared)",
+				LargeImageId = "template-default-background-light.png"
+			};
+			AddTemplate (template);
 		}
 
 		public string Id { get; private set; }

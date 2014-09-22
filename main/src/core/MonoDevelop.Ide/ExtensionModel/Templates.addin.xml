@@ -30,6 +30,15 @@
 	<ExtensionNode name="PackageRepository" type="MonoDevelop.Ide.Templates.PackageRepositoryNode" />
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplateCategories" name = "Project template top level categories">
+	<Description>Project template categories to be shown in the New Project dialog.</Description>
+	<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.TemplateCategoryCodon">
+		<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.TemplateCategoryCodon">
+			<ExtensionNode name="Category" type="MonoDevelop.Ide.Codons.TemplateCategoryCodon" />
+		</ExtensionNode>
+	</ExtensionNode>
+</ExtensionPoint>
+
 <Extension path = "/MonoDevelop/Ide/FileTemplates">
 	<FileTemplate id = "EmptyClass" resource = "EmptyClass.xft.xml"/>
 	<FileTemplate id = "EmptyEnum" resource = "EmptyEnum.xft.xml"/>
@@ -62,6 +71,58 @@
 	<ProjectTemplate id = "MonoDevelop.BlankSolution" resource = "BlankCombine.xpt.xml"/>
 	<ProjectTemplate id = "MonoDevelop.Workspace" resource = "Workspace.xpt.xml"/>
 	<ProjectTemplate id = "MonoDevelop.GenericProject" resource = "GenericProject.xpt.xml"/>
+</Extension>
+
+<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
+	<Category id="crossplat" name="Cross-Platform" icon="md-platform-cross-platform">
+		<Category id="crossplat-app" name="App">
+			<Category id="crossplat-app-general" name="General" />
+		</Category>
+		<Category id="crossplat-library" name="Library">
+			<Category id="crossplat-library-general" name="General" />
+		</Category>
+		<Category id="crossplat-tests" name="Tests">
+			<Category id="crossplat-tests-general" name="General" />
+		</Category>
+	</Category>
+	<Category id="ios" name="iOS" icon="md-platform-ios">
+		<Category id="ios-app" name="App">
+			<Category id="ios-app-general" name="General" />
+		</Category>
+		<Category id="ios-library" name="Library">
+			<Category id="ios-library-general" name="General" />
+		</Category>
+		<Category id="ios-tests" name="Tests">
+			<Category id="ios-tests-general" name="General" />
+		</Category>
+	</Category>
+	<Category id="android" name="Android" icon="md-platform-android">
+		<Category id="android-app" name="App">
+			<Category id="android-app-general" name="General" />
+		</Category>
+		<Category id="android-library" name="Library">
+			<Category id="android-library-general" name="General" />
+		</Category>
+		<Category id="android-tests" name="Tests">
+			<Category id="android-tests-general" name="General" />
+		</Category>
+	</Category>
+	<Category id="osx" name="OS X" icon="md-platform-mac">
+		<Category id="osx-app" name="App">
+			<Category id="osx-app-general" name="General" />
+		</Category>
+		<Category id="osx-library" name="Library">
+			<Category id="osx-library-general" name="General" />
+		</Category>
+	</Category>
+	<Category id="other" name="Other" icon="md-platform-other">
+		<Category id="other-aspnet" name="ASP.NET">
+			<Category id="other-aspnet-general" name="General" />
+		</Category>
+		<Category id="other-misc" name="Miscellaneous">
+			<Category id="other-misc-general" name="General" />
+		</Category>
+	</Category>
 </Extension>
 
 </ExtensionModel>
