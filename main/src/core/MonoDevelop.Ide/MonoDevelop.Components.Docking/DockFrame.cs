@@ -526,11 +526,30 @@ namespace MonoDevelop.Components.Docking
 			DockLayout dl;
 			if (!layouts.TryGetValue (layoutName, out dl))
 				return false;
-			
+
+			var focus = GetActiveWidget ();
+
 			container.LoadLayout (dl);
+
+			if (focus != null && focus.IsRealized && focus.Visible)
+				DockItem.SetFocus (focus);
+
 			return true;
 		}
-		
+
+		Gtk.Widget GetActiveWidget ()
+		{
+			Gtk.Widget widget = this;
+			while (widget is Gtk.Container) {
+				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
+				if (child != null)
+					widget = child;
+				else
+					break;
+			}
+			return widget;
+		}
+
 		public void CreateLayout (string name)
 		{
 			CreateLayout (name, false);
