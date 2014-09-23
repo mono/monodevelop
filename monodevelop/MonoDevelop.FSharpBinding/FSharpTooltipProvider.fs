@@ -17,6 +17,7 @@ open Gdk
 open MonoDevelop.Components
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp.FSharpSymbolHelper
+open ExtCore.Control
 
 type XmlDoc =
   ///A full xmldoc tooltip
@@ -78,6 +79,7 @@ module NewTooltips =
             | :? FSharpEntity as fse -> fse.XmlDoc, fse.XmlDocSig
             | :? FSharpField as fsf -> fsf.XmlDoc, fsf.XmlDocSig
             | :? FSharpUnionCase as fsu -> fsu.XmlDoc, fsu.XmlDocSig
+            | :? FSharpActivePatternCase as apc -> apc.XmlDoc, apc.XmlDocSig
             | :? FSharpGenericParameter as gp -> gp.XmlDoc, ""
             | _ -> ResizeArray() :> IList<_>, ""
 

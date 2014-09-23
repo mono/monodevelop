@@ -5,12 +5,12 @@
 open System
 
 [<RequireQualifiedAccess>]
-module Seq =
+module internal Seq =
     let tryHead s =
         if Seq.isEmpty s then None else Some (Seq.head s)
 
 [<RequireQualifiedAccess>]
-module Option =
+module internal Option =
     let inline ofNull value =
         if obj.ReferenceEquals(value, null) then None else Some value
 
@@ -38,7 +38,7 @@ module Option =
 
 // Async helper functions copied from https://github.com/jack-pappas/ExtCore/blob/master/ExtCore/ControlCollections.Async.fs
 [<RequireQualifiedAccess>]
-module Async =
+module internal Async =
     /// Transforms an Async value using the specified function.
     [<CompiledName("Map")>]
     let map (mapping : 'T -> 'U) (value : Async<'T>) : Async<'U> =
@@ -70,7 +70,7 @@ module Async =
 /// Maybe computation expression builder, copied from ExtCore library
 /// https://github.com/jack-pappas/ExtCore/blob/master/ExtCore/Control.fs
 [<Sealed>]
-type MaybeBuilder () =
+type internal MaybeBuilder () =
     // 'T -> M<'T>
     member inline x.Return value: 'T option =
         Some value
@@ -129,7 +129,7 @@ type MaybeBuilder () =
 
 
 [<Sealed>]
-type AsyncMaybeBuilder () =
+type internal AsyncMaybeBuilder () =
     // 'T -> M<'T>
     member (*inline*) x.Return value : Async<'T option> = Some value |> async.Return
 
@@ -189,7 +189,7 @@ type AsyncMaybeBuilder () =
                     body enum.Current)))
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module AsyncMaybe =
+module internal AsyncMaybe =
     let liftMaybe (maybe: Option<'T>) : Async<_ option> =
         async { return maybe }
 
@@ -197,7 +197,7 @@ module AsyncMaybe =
         async |> Async.map Some
 
 [<RequireQualifiedAccess>]
-module String =
+module internal String =
     let lowerCaseFirstChar (str: string) =
         match str with
         | null -> null
@@ -223,7 +223,7 @@ module String =
                | index -> str.Substring (0, str.Length - index.Length), Some (int index)
 
 [<AutoOpen; CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
-module Pervasive =
+module internal Pervasive =
     let inline (===) a b = LanguagePrimitives.PhysicalEquality a b
     let inline debug msg = Printf.kprintf System.Diagnostics.Debug.WriteLine msg
     let inline fail msg = Printf.kprintf System.Diagnostics.Debug.Fail msg
