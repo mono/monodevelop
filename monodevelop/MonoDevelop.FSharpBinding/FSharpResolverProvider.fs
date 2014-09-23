@@ -5,7 +5,6 @@
 namespace MonoDevelop.FSharp
 
 open System
-open FSharp.CompilerBinding
 open MonoDevelop.Core
 open MonoDevelop.Ide.Gui
 open MonoDevelop.Ide.Gui.Content
@@ -13,6 +12,7 @@ open ICSharpCode.NRefactory
 open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open ExtCore.Control
 
 /// Resolves locations to NRefactory symbols and ResolveResult objects.
 type FSharpResolverProvider() =
@@ -33,12 +33,12 @@ type FSharpResolverProvider() =
 
         let results =
             asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout, framework)
+                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, FSharp.CompilerBinding.AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout, framework)
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
                 let! fsSymbolUse = tyRes.GetSymbol(line, col, lineStr)
-                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> AsyncMaybe.liftAsync
+                let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.map Some
                 let domRegion =
                     match findDeclarationResult with
                     | FindDeclResult.DeclFound(m) ->
