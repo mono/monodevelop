@@ -167,13 +167,14 @@ namespace SubversionAddinWindows
 			SslFailure acceptedFailures;
 			bool save;
 
-			var certInfo = new CertficateInfo ();
-			certInfo.AsciiCert = e.CertificateValue;
-			certInfo.Fingerprint = e.Fingerprint;
-			certInfo.HostName = e.CommonName;
-			certInfo.IssuerName = e.Issuer;
-			certInfo.ValidFrom = e.ValidFrom;
-			certInfo.ValidUntil = e.ValidUntil;
+			var certInfo = new CertficateInfo {
+				AsciiCert = e.CertificateValue,
+				Fingerprint = e.Fingerprint,
+				HostName = e.CommonName,
+				IssuerName = e.Issuer,
+				ValidFrom = e.ValidFrom,
+				ValidUntil = e.ValidUntil,
+			};
 
 			e.Cancel = !SslServerTrustAuthenticationPrompt (e.Realm, (SslFailure) (uint) e.Failures, e.MaySave, certInfo, out acceptedFailures, out save);
 
@@ -201,21 +202,23 @@ namespace SubversionAddinWindows
 
 		public override void Add (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
-			var args = new SvnAddArgs ();
+			var args = new SvnAddArgs {
+				Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty,
+			};
 			BindMonitor (monitor);
-			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty;
 			lock (client)
 				client.Add (path, args);
 		}
 
 		public override void Checkout (string url, FilePath path, Revision rev, bool recurse, IProgressMonitor monitor)
 		{
-			var args = new SvnCheckOutArgs ();
+			var args = new SvnCheckOutArgs {
+				Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty,
+			};
 			BindMonitor (monitor);
-			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Empty;
 			lock (client) {
 				try {
-					client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path);
+					client.CheckOut (new SvnUriTarget (url, GetRevision (rev)), path, args);
 				} catch (SvnOperationCanceledException) {
 					if (Directory.Exists (path.ParentDirectory))
 						FileService.DeleteDirectory (path.ParentDirectory);
@@ -225,18 +228,20 @@ namespace SubversionAddinWindows
 
 		public override void Commit (FilePath[] paths, string message, IProgressMonitor monitor)
 		{
-			var args = new SvnCommitArgs ();
+			var args = new SvnCommitArgs {
+				LogMessage = message,
+			};
 			BindMonitor (monitor);
-			args.LogMessage = message;
 			lock (client) 
 				client.Commit (paths.ToStringArray (), args);
 		}
 
 		public override void Delete (FilePath path, bool force, IProgressMonitor monitor)
 		{
-			var args = new SvnDeleteArgs ();
+			var args = new SvnDeleteArgs {
+				Force = force,
+			};
 			BindMonitor (monitor);
-			args.Force = force;
 			lock (client) 
 				client.Delete (path, args);
 		}
@@ -289,24 +294,25 @@ namespace SubversionAddinWindows
 			return List (new SvnPathTarget (path, GetRevision (rev)), recurse);
 		}
 
-		IEnumerable<DirectoryEntry> List (SvnTarget target, bool recurse)
+		static IEnumerable<DirectoryEntry> List (SvnTarget target, bool recurse)
 		{
 			var list = new List<DirectoryEntry> ();
-			var args = new SvnListArgs ();
-			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
+			var args = new SvnListArgs {
+				Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children,
+			};
 			lock (client) 
 				client.List (target, args, delegate (object o, SvnListEventArgs a) {
 					if (string.IsNullOrEmpty (a.Path))
 						return;
-					var de = new DirectoryEntry ();
-					de.CreatedRevision = ToBaseRevision (a.Entry.Revision).Rev;
-					de.HasProps = a.Entry.HasProperties;
-					de.IsDirectory = a.Entry.NodeKind == SvnNodeKind.Directory;
-					de.LastAuthor = a.Entry.Author;
-					de.Name = a.Path;
-					de.Size = a.Entry.FileSize;
-					de.Time = a.Entry.Time;
-					list.Add (de);
+					list.Add (new DirectoryEntry {
+						CreatedRevision = ToBaseRevision (a.Entry.Revision).Rev,
+						HasProps = a.Entry.HasProperties,
+						IsDirectory = a.Entry.NodeKind == SvnNodeKind.Directory,
+						LastAuthor = a.Entry.Author,
+						Name = a.Path,
+						Size = a.Entry.FileSize,
+						Time = a.Entry.Time,
+					});
 				});
 			return list;
 		}
@@ -314,16 +320,16 @@ namespace SubversionAddinWindows
 		public override IEnumerable<SvnRevision> Log (Repository repo, FilePath path, SvnRevision revisionStart, SvnRevision revisionEnd)
 		{
 			var list = new List<SvnRevision> ();
-			var args = new SvnLogArgs ();
-			args.Range = new SvnRevisionRange (GetRevision (revisionStart), GetRevision (revisionEnd));
+			var args = new SvnLogArgs {
+				Range = new SvnRevisionRange (GetRevision (revisionStart), GetRevision (revisionEnd)),
+			};
 			lock (client) 
 				client.Log (path, args, delegate (object o, SvnLogEventArgs a) {
 					var paths = new List<RevisionPath> ();
 					foreach (SvnChangeItem item in a.ChangedPaths) {
 						paths.Add (new RevisionPath (item.Path, ConvertRevisionAction (item.Action), ""));
 					}
-					var r = new SvnRevision (repo, (int) a.Revision, a.Time, a.Author, a.LogMessage, paths.ToArray ());
-					list.Add (r);
+					list.Add (new SvnRevision (repo, (int) a.Revision, a.Time, a.Author, a.LogMessage, paths.ToArray ()));
 				});
 			return list;
 		}
@@ -341,22 +347,24 @@ namespace SubversionAddinWindows
 
 		public override void Mkdir (string[] paths, string message, IProgressMonitor monitor)
 		{
-			var args = new SvnCreateDirectoryArgs ();
-			args.CreateParents = true;
+			var args = new SvnCreateDirectoryArgs {
+				CreateParents = true,
+				LogMessage = message,
+			};
 			BindMonitor (monitor);
 			var uris = new List<Uri> ();
 			foreach (string path in paths)
 				uris.Add (new Uri (path));
-			args.LogMessage = message;
 			lock (client) 
 				client.RemoteCreateDirectories (uris, args);
 		}
 
 		public override void Move (FilePath srcPath, FilePath destPath, SvnRevision rev, bool force, IProgressMonitor monitor)
 		{
-			var args = new SvnMoveArgs ();
+			var args = new SvnMoveArgs {
+				Force = force,
+			};
 			BindMonitor (monitor);
-			args.Force = force;
 			lock (client) 
 				client.Move (srcPath, destPath, args);
 		}
@@ -365,22 +373,25 @@ namespace SubversionAddinWindows
 		{
 			var t1 = new SvnPathTarget (path1, GetRevision (revision1));
 			var t2 = new SvnPathTarget (path2, GetRevision (revision2));
-			var args = new SvnDiffArgs ();
-			args.Depth = recursive ? SvnDepth.Infinity : SvnDepth.Children;
-			var ms = new MemoryStream ();
-			lock (client) 
-				client.Diff (t1, t2, args, ms);
-			ms.Position = 0;
-			using (var sr = new StreamReader (ms)) {
-				return sr.ReadToEnd ();
+			var args = new SvnDiffArgs {
+				Depth = recursive ? SvnDepth.Infinity : SvnDepth.Children,
+			};
+			using (var ms = new MemoryStream ()) {
+				lock (client)
+					client.Diff (t1, t2, args, ms);
+				ms.Position = 0;
+				using (var sr = new StreamReader (ms)) {
+					return sr.ReadToEnd ();
+				}
 			}
 		}
 
 		public override void Revert (FilePath[] paths, bool recurse, IProgressMonitor monitor)
 		{
-			var args = new SvnRevertArgs ();
+			var args = new SvnRevertArgs {
+				Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children,
+			};
 			BindMonitor (monitor);
-			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
 			lock (client) 
 				client.Revert (paths.ToStringArray (), args);
 		}
@@ -407,11 +418,12 @@ namespace SubversionAddinWindows
 		public override IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus)
 		{
 			var list = new List<VersionInfo> ();
-			var args = new SvnStatusArgs ();
-			args.Revision = GetRevision (revision);
-			args.Depth = descendDirs ? SvnDepth.Infinity : SvnDepth.Children;
-			args.RetrieveAllEntries = !changedItemsOnly;
-			args.RetrieveRemoteStatus = remoteStatus;
+			var args = new SvnStatusArgs {
+				Revision = GetRevision (revision),
+				Depth = descendDirs ? SvnDepth.Infinity : SvnDepth.Children,
+				RetrieveAllEntries = !changedItemsOnly,
+				RetrieveRemoteStatus = remoteStatus,
+			};
 			lock (client) {
 				try {
 					client.Status (path, args, (o, a) => list.Add (CreateVersionInfo (repo, a)));
@@ -496,28 +508,31 @@ namespace SubversionAddinWindows
 
 		public override void Lock (IProgressMonitor monitor, string comment, bool stealLock, params FilePath[] paths)
 		{
-			var args = new SvnLockArgs ();
+			var args = new SvnLockArgs {
+				Comment = comment,
+				StealLock = stealLock,
+			};
 			BindMonitor (monitor);
-			args.Comment = comment;
-			args.StealLock = stealLock;
 			lock (client) 
 				client.Lock (paths.ToStringArray (), args);
 		}
 
 		public override void Unlock (IProgressMonitor monitor, bool breakLock, params FilePath[] paths)
 		{
-			var args = new SvnUnlockArgs ();
+			var args = new SvnUnlockArgs {
+				BreakLock = breakLock,
+			};
 			BindMonitor (monitor);
-			args.BreakLock = breakLock;
 			lock (client) 
 				client.Unlock (paths.ToStringArray (), args);
 		}
 
 		public override void Update (FilePath path, bool recurse, IProgressMonitor monitor)
 		{
-			var args = new SvnUpdateArgs ();
+			var args = new SvnUpdateArgs {
+				Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children,
+			};
 			BindMonitor (monitor);
-			args.Depth = recurse ? SvnDepth.Infinity : SvnDepth.Children;
 			lock (client)
 				client.Update (path, args);
 		}
@@ -554,21 +569,23 @@ namespace SubversionAddinWindows
 				throw new ArgumentNullException ();
 
 			var target = new SvnPathTarget (file, SharpSvn.SvnRevision.Base);
-			var data = new MemoryStream ();
 			int numAnnotations = 0;
-			lock (client)
-				client.Write (target, data);
+			using (var data = new MemoryStream ()) {
+				lock (client)
+					client.Write (target, data);
 
-			using (var reader = new StreamReader (data)) {
-				reader.BaseStream.Seek (0, SeekOrigin.Begin);
-				while (reader.ReadLine () != null)
-					numAnnotations++;
+				using (var reader = new StreamReader (data)) {
+					reader.BaseStream.Seek (0, SeekOrigin.Begin);
+					while (reader.ReadLine () != null)
+						numAnnotations++;
+				}
 			}
 
 			System.Collections.ObjectModel.Collection<SvnBlameEventArgs> list;
-			var args = new SvnBlameArgs ();
-			args.Start = GetRevision (revStart);
-			args.End = GetRevision (revEnd);
+			var args = new SvnBlameArgs {
+				Start = GetRevision (revStart),
+				End = GetRevision (revEnd),
+			};
 
 			bool success;
 			lock (client) {
