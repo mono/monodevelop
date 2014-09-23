@@ -12,6 +12,7 @@ open ICSharpCode.NRefactory
 open ICSharpCode.NRefactory.Semantics
 open ICSharpCode.NRefactory.TypeSystem
 open Microsoft.FSharp.Compiler.SourceCodeServices
+open FSharp.CompilerBinding
 open ExtCore.Control
 
 /// Resolves locations to NRefactory symbols and ResolveResult objects.
@@ -33,7 +34,7 @@ type FSharpResolverProvider() =
 
         let results =
             asyncMaybe {
-                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, FSharp.CompilerBinding.AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout, framework)
+                let! tyRes = MDLanguageService.Instance.GetTypedParseResultWithTimeout (projFile, doc.FileName.FullPath.ToString(), docText, files, args, AllowStaleResults.MatchingSource, ServiceSettings.blockingTimeout, framework)
                 LoggingService.LogInfo "ResolverProvider: Getting declaration location"
                 // Get the declaration location from the language service
                 let line, col, lineStr = MonoDevelop.getLineInfoFromOffset(offset, doc.Editor.Document)
