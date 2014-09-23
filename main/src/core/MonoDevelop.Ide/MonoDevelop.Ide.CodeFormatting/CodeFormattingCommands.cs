@@ -69,7 +69,11 @@ namespace MonoDevelop.Ide.CodeFormatting
 					formatter.OnTheFlyFormat (doc, 0, doc.Editor.Length);
 				}
 			} else {
-				doc.Editor.Replace (0, doc.Editor.Text.Length, formatter.FormatText (doc.Project.Policies, doc.Editor.Text));
+				string formattedText = formatter.FormatText (doc.Project.Policies, doc.Editor.Text);
+				if (formattedText == null)
+					return;
+
+				doc.Editor.Replace (0, doc.Editor.Text.Length, formattedText);
 			}
 			doc.Editor.Document.CommitUpdateAll ();
 		}
