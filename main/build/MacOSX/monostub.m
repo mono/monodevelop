@@ -263,7 +263,7 @@ launcher_variable (const char *app_name)
 }
 
 static void
-update_environment (const char *resourcesDir, const char *app)
+update_environment (const char* macosDir, const char *resourcesDir, const char *app)
 {
 	char *value, *v1, *v2;
 	char *variable;
@@ -390,7 +390,7 @@ int main (int argc, char **argv)
 		basename++;
 	
 	if (is_launcher (basename)) {
-		update_environment ([[appDir stringByAppendingPathComponent:@"Contents/Resources"] UTF8String], basename);
+		update_environment ([[appDir stringByAppendingPathComponent:@"Contents/MacOS"] UTF8String], [[appDir stringByAppendingPathComponent:@"Contents/Resources"] UTF8String], basename);
 		[pool drain];
 		
 		return execv (argv[0], argv);
