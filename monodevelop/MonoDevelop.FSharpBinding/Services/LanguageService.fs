@@ -19,6 +19,14 @@ open ExtCore
 open ExtCore.Caching
 open ExtCore.Control
 
+module Option =
+    let tryCast<'a> (o: obj): 'a option = 
+        match o with
+        | null -> None
+        | :? 'a as a -> Some a
+        | _ -> Printf.kprintf System.Diagnostics.Debug.Fail "Cannot cast %O to %O" (o.GetType()) typeof<'a>.Name
+               None
+
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter =
 
@@ -248,8 +256,8 @@ module internal MonoDevelop =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let fileName = project.FileName.ToString()
         let arguments =
-            maybe {let! projConfig = project.GetConfiguration(config) |> FSharp.CompilerBinding.Pervasive.tryCast<DotNetProjectConfiguration>
-                   let! fsconfig = projConfig.CompilationParameters |> FSharp.CompilerBinding.Pervasive.tryCast<FSharpCompilerParameters>
+            maybe {let! projConfig = project.GetConfiguration(config) |> Option.tryCast<DotNetProjectConfiguration>
+                   let! fsconfig = projConfig.CompilationParameters |> Option.tryCast<FSharpCompilerParameters>
                    let args = CompilerArguments.generateCompilerOptions(project,
                                                                         fsconfig,
                                                                         None,
