@@ -17,6 +17,7 @@ open Gdk
 open MonoDevelop.Components
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open MonoDevelop.FSharp.FSharpSymbolHelper
+open ExtCore.Control
 
 type XmlDoc =
   ///A full xmldoc tooltip
