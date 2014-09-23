@@ -110,7 +110,7 @@ module internal Patterns =
         {
             TokenInfo : TokenInformation;
             SymbolUse: FSharpSymbolUse option
-            ExtraColorInfo: (Microsoft.FSharp.Compiler.Range.range * TokenColorKind) option
+            ExtraColorInfo: (Range.range * TokenColorKind) option
         }
 
     let (|Keyword|_|) ts =
@@ -476,7 +476,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                         |> tryCast<ParseAndCheckResults>
                         |> Option.iter (getAndProcessSymbols >> Async.Start))
 
-    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Microsoft.FSharp.Compiler.Range.range * TokenColorKind)[] option) (token: TokenInformation) =
+    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Range.range * TokenColorKind)[] option) (token: TokenInformation) =
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with
