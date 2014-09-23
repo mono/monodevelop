@@ -507,6 +507,9 @@
     <Reference Include="FSharp.Compiler.CodeDom">
       <HintPath>packages\FSharp.Compiler.CodeDom.0.9.1\lib\net40\FSharp.Compiler.CodeDom.dll</HintPath>
     </Reference>
+    <Reference Include="ExtCore">
+      <HintPath>packages\ExtCore.0.8.42\lib\net40\ExtCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>
