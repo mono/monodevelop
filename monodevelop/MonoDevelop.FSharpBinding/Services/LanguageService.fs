@@ -15,35 +15,40 @@ open MonoDevelop.Ide
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.CompilerBinding
+open ExtCore
+open ExtCore.Caching
+open ExtCore.Control
 
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter =
 
-  /// A standard memoization function
-  let memoize f =
-      let d = new Collections.Generic.Dictionary<_,_>(HashIdentity.Structural)
-      fun x -> if d.ContainsKey x then d.[x] else let res = f x in d.[x] <- res; res
+  ///lru based memoize
+  let memoize f n =
+      let lru = ref (LruCache.create n)
+      fun x -> match (!lru).TryFind x with
+               | Some entry, cache ->
+                   lru := cache
+                   entry
+               | None, cache ->
+                   let res = f x
+                   lru := cache.Add (x, res)
+                   LoggingService.LogInfo <| sprintf "cache contains %i entries\n%A" (!lru).Count ( (!lru).ToArray () |> Array.map (fst >> Path.GetFileName))
+                   res
 
-  /// Memoize the objects that manage access to XML files.
+  /// Memoize the objects that manage access to XML files, keeping only 20 most used
   // @todo consider if this needs to be a weak table in some way
   let xmlDocProvider =
       memoize (fun x ->
-          try ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x)
-          with exn -> null)
+          try Some (ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x))
+          with exn -> None) 20u
 
-  let tryExists s = try if File.Exists s then Some s else None with _ -> None
+  let tryExt file ext = Option.condition File.Exists (Path.ChangeExtension(file,ext))
 
   /// Return the XmlDocumentationProvider for an assembly
   let findXmlDocProviderForAssembly file  =
-      maybe {let! xmlFile =
-                match tryExists (Path.ChangeExtension(file,"xml")) with
-                | Some x -> Some x
-                | None -> tryExists (Path.ChangeExtension(file,"XML"))
-             let docReader = xmlDocProvider xmlFile
-             if docReader = null then return! None
-             else return docReader}
-
+      maybe {let! xmlFile = Option.coalesce (tryExt file "xml") (tryExt file "XML")
+             return! xmlDocProvider xmlFile }
+            
   let findXmlDocProviderForEntity (file, key:string)  =
       maybe {let! docReader = findXmlDocProviderForAssembly file
              let doc = docReader.GetDocumentation key
@@ -243,8 +248,8 @@ module internal MonoDevelop =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let fileName = project.FileName.ToString()
         let arguments =
-            maybe {let! projConfig = project.GetConfiguration(config) |> tryCast<DotNetProjectConfiguration>
-                   let! fsconfig = projConfig.CompilationParameters |> tryCast<FSharpCompilerParameters>
+            maybe {let! projConfig = project.GetConfiguration(config) |> FSharp.CompilerBinding.Pervasive.tryCast<DotNetProjectConfiguration>
+                   let! fsconfig = projConfig.CompilationParameters |> FSharp.CompilerBinding.Pervasive.tryCast<FSharpCompilerParameters>
                    let args = CompilerArguments.generateCompilerOptions(project,
                                                                         fsconfig,
                                                                         None,
