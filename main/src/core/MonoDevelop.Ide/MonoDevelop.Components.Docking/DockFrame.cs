@@ -531,6 +531,7 @@ namespace MonoDevelop.Components.Docking
 
 			container.LoadLayout (dl);
 
+			// Keep the currently focused widget when switching layouts
 			if (focus != null && focus.IsRealized && focus.Visible)
 				DockItem.SetFocus (focus);
 
