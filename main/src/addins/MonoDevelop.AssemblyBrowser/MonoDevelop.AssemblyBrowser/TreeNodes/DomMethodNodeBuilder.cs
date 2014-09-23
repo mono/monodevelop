@@ -130,20 +130,14 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public static List<ReferenceSegment> Decompile (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
 		{
+			var context = new DecompilerContext (module);
+			var source = new CancellationTokenSource ();
+			context.CancellationToken = source.Token;
+			context.CurrentType = currentType;
+			context.Settings = settings;
 			try {
-
-				var context = new DecompilerContext (module);
-				var source = new CancellationTokenSource ();
-				
-				context.CancellationToken = source.Token;
-				context.CurrentType = currentType;
-				
-				context.Settings = settings;
-				
-				AstBuilder astBuilder = new AstBuilder (context);
-				
+				var astBuilder = new AstBuilder (context);
 				setData (astBuilder);
-				
 				astBuilder.RunTransformations (o => false);
 				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
 				var output = new ColoredCSharpFormatter (data.Document);
@@ -151,7 +145,20 @@ namespace MonoDevelop.AssemblyBrowser
 				output.SetDocumentData ();
 				return output.ReferencedSegments;
 			} catch (Exception e) {
-				data.Text = "Decompilation failed: \n" + e;
+				// exception  -> try to decompile without method bodies
+				try {
+					var astBuilder = new AstBuilder (context);
+					astBuilder.DecompileMethodBodies = false;
+					setData (astBuilder);
+					astBuilder.RunTransformations (o => false);
+					GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
+					var output = new ColoredCSharpFormatter (data.Document);
+					astBuilder.GenerateCode (output);
+					output.SetDocumentData ();
+					data.Document.Insert (data.Document.TextLength, "/* body decompilation failed: \n" + e + " */"); 
+				} catch (Exception e2) {
+					data.Text = "/* fallback decompilation failed: \n" + e2 +"*/";
+				}
 			}
 			return null;
 		}

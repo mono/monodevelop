@@ -349,7 +349,7 @@ namespace MonoDevelop.MacIntegration
 								if (!Int32.TryParse (qs ["column"], out column))
 									column = 1;
 
-								return new FileOpenInformation (fileUri.AbsolutePath,
+								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath),
 									line, column, OpenDocumentOptions.DefaultInternal);
 							} catch (Exception ex) {
 								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);

@@ -307,6 +307,8 @@ namespace MonoDevelop.Ide
 		{
 			if (Platform.IsWindows)
 				return;
+			if (!string.Equals (Environment.GetEnvironmentVariable ("MD_LOCKUP_TRACKER"), "ON", StringComparison.OrdinalIgnoreCase))
+				return;
 			GLib.Timeout.Add (2000, () => {
 				lastIdle = DateTime.Now;
 				return true;

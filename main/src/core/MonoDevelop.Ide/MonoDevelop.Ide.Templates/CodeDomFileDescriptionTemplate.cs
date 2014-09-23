@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			
-			int offset = doc.GetLine (realStartLine).Offset;
+			int offset = doc.GetLine (Math.Max(Mono.TextEditor.DocumentLocation.MinLine, realStartLine)).Offset;
 			return doc.GetTextAt (offset, doc.TextLength - offset);
 		}
 
