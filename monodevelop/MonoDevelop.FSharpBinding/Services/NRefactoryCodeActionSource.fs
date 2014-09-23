@@ -41,11 +41,15 @@ type ImplementInterfaceCodeAction(doc:TextDocument, interfaceData: InterfaceData
        match interfaceData with
        | InterfaceData.Interface _ -> (doc.GetLineIndent fsSymbolUse.RangeAlternate.StartLine).Length
        | InterfaceData.ObjExpr _   -> 
-          tokens |> Array.tryPick (fun (t: TokenInformation) ->
-                  if t.CharClass = TokenCharKind.Keyword && 
-                     t.LeftColumn < startCol &&
-                     t.TokenName = "NEW" then Some t.LeftColumn else None) 
-                 |> Option.getOrElse startCol
+          let foundToken =
+              tokens
+              |> Array.tryPick (fun t -> if t.CharClass = TokenCharKind.Keyword && t.LeftColumn < startCol && t.TokenName = "NEW"
+                                         then Some t.LeftColumn else None) 
+
+          match foundToken with
+          | Some s -> s
+          | None -> startCol
+
     let hasWith = 
         tokens |> Array.tryPick (fun (t: TokenInformation) ->
                   if t.CharClass = TokenCharKind.Keyword && 
