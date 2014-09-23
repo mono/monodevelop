@@ -9,6 +9,7 @@ open Mono.TextEditor.Highlighting
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
+open ExtCore.Control
 
 module FSharpSyntaxModeInternals =
     let contains predicate sequence =
@@ -436,7 +437,9 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         if doc <> null && doc.Project <> null then Some doc.Project else
         let view = doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView>()
         if view <> null && view.Project <> null then Some view.Project
-        else IdeApp.Workspace.GetProjectsContainingFile(doc.FileName.ToString()) |> Seq.tryHead
+        else let projects = IdeApp.Workspace.GetProjectsContainingFile(doc.FileName.ToString())
+             if Seq.isEmpty projects then None
+             else Seq.head projects |> Some
 
     let project = getProject document
 
@@ -473,7 +476,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                     let localParsedDocument = document.ParsedDocument
                     if localParsedDocument <> null then
                         localParsedDocument.Ast 
-                        |> tryCast<ParseAndCheckResults>
+                        |> Option.tryCast<ParseAndCheckResults>
                         |> Option.iter (getAndProcessSymbols >> Async.Start))
 
     let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Range.range * TokenColorKind)[] option) (token: TokenInformation) =
@@ -564,7 +567,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             let extraColorInfo =
                 maybe { let! document = Option.ofNull document
                         let! parsedDocument = Option.ofNull document.ParsedDocument
-                        let! pc = tryCast<ParseAndCheckResults> document.ParsedDocument.Ast
+                        let! pc = Option.tryCast<ParseAndCheckResults> document.ParsedDocument.Ast
                         return! pc.GetExtraColorizations() }
 
             match (this.Document, line, offset, length, style) with
