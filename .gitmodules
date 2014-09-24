@@ -40,3 +40,6 @@
 	path = main/external/xwt
 	url = git://github.com/mono/xwt
 	branch = xammac-unified
+[submodule "main/external/monomac"]
+	path = main/external/monomac
+	url = git://github.com/mono/monomac.git
