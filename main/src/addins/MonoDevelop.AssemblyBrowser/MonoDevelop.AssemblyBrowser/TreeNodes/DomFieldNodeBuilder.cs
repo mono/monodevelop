@@ -92,7 +92,15 @@ namespace MonoDevelop.AssemblyBrowser
 			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
 		}
-		
+
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		{
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+				return null;
+			var field = CecilLoader.GetCecilObject ((IUnresolvedField)navigator.DataItem);
+			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), field.DeclaringType, b => b.AddField (field));
+		}
+
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			var field = (IUnresolvedField)navigator.DataItem;
