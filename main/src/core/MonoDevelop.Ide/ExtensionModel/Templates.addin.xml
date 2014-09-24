@@ -75,52 +75,52 @@
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
 	<Category id="crossplat" name="Cross-Platform" icon="md-platform-cross-platform">
-		<Category id="crossplat-app" name="App">
-			<Category id="crossplat-app-general" name="General" />
+		<Category id="app" name="App">
+			<Category id="general" name="General" />
 		</Category>
-		<Category id="crossplat-library" name="Library">
-			<Category id="crossplat-library-general" name="General" />
+		<Category id="library" name="Library">
+			<Category id="general" name="General" />
 		</Category>
-		<Category id="crossplat-tests" name="Tests">
-			<Category id="crossplat-tests-general" name="General" />
+		<Category id="tests" name="Tests">
+			<Category id="general" name="General" />
 		</Category>
 	</Category>
 	<Category id="ios" name="iOS" icon="md-platform-ios">
-		<Category id="ios-app" name="App">
-			<Category id="ios-app-general" name="General" />
+		<Category id="app" name="App">
+			<Category id="general" name="General" />
 		</Category>
-		<Category id="ios-library" name="Library">
-			<Category id="ios-library-general" name="General" />
+		<Category id="library" name="Library">
+			<Category id="general" name="General" />
 		</Category>
-		<Category id="ios-tests" name="Tests">
-			<Category id="ios-tests-general" name="General" />
+		<Category id="tests" name="Tests">
+			<Category id="general" name="General" />
 		</Category>
 	</Category>
 	<Category id="android" name="Android" icon="md-platform-android">
-		<Category id="android-app" name="App">
-			<Category id="android-app-general" name="General" />
+		<Category id="app" name="App">
+			<Category id="general" name="General" />
 		</Category>
-		<Category id="android-library" name="Library">
-			<Category id="android-library-general" name="General" />
+		<Category id="library" name="Library">
+			<Category id="general" name="General" />
 		</Category>
-		<Category id="android-tests" name="Tests">
-			<Category id="android-tests-general" name="General" />
+		<Category id="tests" name="Tests">
+			<Category id="general" name="General" />
 		</Category>
 	</Category>
 	<Category id="osx" name="OS X" icon="md-platform-mac">
-		<Category id="osx-app" name="App">
-			<Category id="osx-app-general" name="General" />
+		<Category id="app" name="App">
+			<Category id="general" name="General" />
 		</Category>
-		<Category id="osx-library" name="Library">
-			<Category id="osx-library-general" name="General" />
+		<Category id="library" name="Library">
+			<Category id="general" name="General" />
 		</Category>
 	</Category>
 	<Category id="other" name="Other" icon="md-platform-other">
-		<Category id="other-aspnet" name="ASP.NET">
-			<Category id="other-aspnet-general" name="General" />
+		<Category id="aspnet" name="ASP.NET">
+			<Category id="general" name="General" />
 		</Category>
-		<Category id="other-misc" name="Miscellaneous">
-			<Category id="other-misc-general" name="General" />
+		<Category id="misc" name="Miscellaneous">
+			<Category id="general" name="General" />
 		</Category>
 	</Category>
 </Extension>
