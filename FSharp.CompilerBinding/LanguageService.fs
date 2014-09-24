@@ -38,8 +38,8 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
 
     static member Empty = ParseAndCheckResults(None)
 
-    /// Get declarations at the current location in the specified document
-    /// (used to implement dot-completion in 'FSharpTextEditorCompletion.fs')
+    /// Get declarations at the current location in the specified document and the long ident residue
+    /// e.g. The incomplete ident One.Two.Th will return Th
     member x.GetDeclarations(line, col, lineStr) = 
         match infoOpt with 
         | None -> None
@@ -52,6 +52,19 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
                  Async.RunSynchronously (checkResults.GetDeclarationsAlternate(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
                                          timeout = ServiceSettings.maximumTimeout )
              Some (results, residue)
+            with :? TimeoutException as e -> None
+
+    /// Get the symbols for declarations at the current location in the specified document and the long ident residue
+    /// e.g. The incomplete ident One.Two.Th will return Th
+    member x.GetDeclarationSymbols(line, col, lineStr) = 
+        match infoOpt with 
+        | None -> None
+        | Some (checkResults, parseResults) -> 
+            let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
+            Debug.WriteLine (sprintf "GetDeclarationSymbols: '%A', '%s'" longName residue)
+            // Get items & generate output
+            try Some (checkResults.GetDeclarationSymbols (Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
+                      |> Async.RunSynchronously, residue)
             with :? TimeoutException as e -> None
 
     /// Get the tool-tip to be displayed at the specified offset (relatively
