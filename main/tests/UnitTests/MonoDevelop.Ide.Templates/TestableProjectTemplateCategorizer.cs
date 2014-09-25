@@ -1,5 +1,5 @@
 ﻿//
-// TemplateCategoryCodon.cs
+// TestableProjectTemplateCategorizer.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,49 +23,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System.Collections.Generic;
 
-using Mono.Addins;
-using MonoDevelop.Ide.Templates;
-using MonoDevelop.Core;
-using System.Linq;
-
-namespace MonoDevelop.Ide.Codons
+namespace MonoDevelop.Ide.Templates
 {
-	[ExtensionNode (Description="A template category.")]
-	internal class TemplateCategoryCodon : ExtensionNode
+	public class TestableProjectTemplateCategorizer : ProjectTemplateCategorizer
 	{
-		[NodeAttribute("name", "Name of the template.")]
-		string name;
-
-		[NodeAttribute("icon", "Icon for the template.")]
-		string icon;
-
-		[NodeAttribute ("default", "Category is the default for templates.")]
-		string isDefault;
-
-		public TemplateCategory ToTemplateCategory ()
+		public TestableProjectTemplateCategorizer (IEnumerable<TemplateCategory> categories)
+			: base (categories)
 		{
-			var category = new TemplateCategory (Id, GettextCatalog.GetString (name), icon);
-			category.IsDefault = IsDefaultCategory ();
-
-			AddChildren (category);
-			return category;
 		}
 
-		bool IsDefaultCategory ()
-		{
-			bool result = false;
-			if (bool.TryParse (isDefault, out result)) {
-				return result;
-			}
-			return false;
-		}
+		public List<string> WarningsLogged = new List<string> ();
 
-		void AddChildren (TemplateCategory category)
+		protected override void LogWarning (string message)
 		{
-			foreach (var childCodon in ChildNodes.OfType<TemplateCategoryCodon> ()) {
-				category.AddCategory (childCodon.ToTemplateCategory ());
-			}
+			WarningsLogged.Add (message);
 		}
 	}
 }

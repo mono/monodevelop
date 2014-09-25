@@ -39,6 +39,11 @@
 	</ExtensionNode>
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplatingProviders" name = "Project templating providers">
+	<Description>Project template providers can load templates and generate projects from the templates.</Description>
+	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.IProjectTemplatingProvider" />
+</ExtensionPoint>
+
 <Extension path = "/MonoDevelop/Ide/FileTemplates">
 	<FileTemplate id = "EmptyClass" resource = "EmptyClass.xft.xml"/>
 	<FileTemplate id = "EmptyEnum" resource = "EmptyEnum.xft.xml"/>
@@ -120,9 +125,13 @@
 			<Category id="general" name="General" />
 		</Category>
 		<Category id="misc" name="Miscellaneous">
-			<Category id="general" name="General" />
+			<Category id="general" name="General" default="true" />
 		</Category>
 	</Category>
+</Extension>
+
+<Extension path="/MonoDevelop/Ide/ProjectTemplatingProviders">
+	<Class id="MonoDevelop.ProjectTemplatingProvider" class="MonoDevelop.Ide.Templates.ProjectTemplatingProvider" />
 </Extension>
 
 </ExtensionModel>

@@ -2831,6 +2831,11 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.GtkProjectConfigurationWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplatingService.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\TemplateCategoryCodon.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCategorizer.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\DefaultSolutionTemplate.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\IProjectTemplatingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatingProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateCategoryPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

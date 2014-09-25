@@ -1,5 +1,5 @@
 ﻿//
-// TemplateCategoryCodon.cs
+// TemplateCategoryPath.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,48 +24,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Mono.Addins;
-using MonoDevelop.Ide.Templates;
-using MonoDevelop.Core;
-using System.Linq;
+using System.Collections.Generic;
 
-namespace MonoDevelop.Ide.Codons
+namespace MonoDevelop.Ide.Templates
 {
-	[ExtensionNode (Description="A template category.")]
-	internal class TemplateCategoryCodon : ExtensionNode
+	public class TemplateCategoryPath
 	{
-		[NodeAttribute("name", "Name of the template.")]
-		string name;
+		string categoryPath = string.Empty;
+		string[] parts;
 
-		[NodeAttribute("icon", "Icon for the template.")]
-		string icon;
-
-		[NodeAttribute ("default", "Category is the default for templates.")]
-		string isDefault;
-
-		public TemplateCategory ToTemplateCategory ()
+		public TemplateCategoryPath (string categoryPath)
 		{
-			var category = new TemplateCategory (Id, GettextCatalog.GetString (name), icon);
-			category.IsDefault = IsDefaultCategory ();
-
-			AddChildren (category);
-			return category;
+			if (!string.IsNullOrEmpty (categoryPath)) {
+				this.categoryPath = categoryPath;
+			}
 		}
 
-		bool IsDefaultCategory ()
+		public IEnumerable<string> GetParts ()
 		{
-			bool result = false;
-			if (bool.TryParse (isDefault, out result)) {
-				return result;
+			if (parts == null) {
+				parts = categoryPath.Split ('/');
 			}
-			return false;
+			return parts;
 		}
 
-		void AddChildren (TemplateCategory category)
+		public override string ToString ()
 		{
-			foreach (var childCodon in ChildNodes.OfType<TemplateCategoryCodon> ()) {
-				category.AddCategory (childCodon.ToTemplateCategory ());
-			}
+			return categoryPath;
 		}
 	}
 }

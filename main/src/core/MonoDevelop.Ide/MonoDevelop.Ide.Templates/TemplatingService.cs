@@ -33,13 +33,15 @@ namespace MonoDevelop.Ide.Templates
 	public class TemplatingService
 	{
 		List<TemplateCategory> projectTemplateCategories = new List<TemplateCategory> ();
+		List<IProjectTemplatingProvider> templateProviders = new List<IProjectTemplatingProvider> ();
 
 		public TemplatingService ()
 		{
-			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateCategories", OnExtensionChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateCategories", OnTemplateCategoriesChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplatingProviders", OnTemplatingProvidersChanged);
 		}
 
-		void OnExtensionChanged (object sender, ExtensionNodeEventArgs args)
+		void OnTemplateCategoriesChanged (object sender, ExtensionNodeEventArgs args)
 		{
 			var codon = (TemplateCategoryCodon)args.ExtensionNode;
 			if (args.Change == ExtensionChange.Add) {
@@ -49,9 +51,23 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
+		void OnTemplatingProvidersChanged (object sender, ExtensionNodeEventArgs args)
+		{
+			var provider = args.ExtensionObject as IProjectTemplatingProvider;
+			if (args.Change == ExtensionChange.Add) {
+				templateProviders.Add (provider);
+			} else {
+				templateProviders.Remove (provider);
+			}
+		}
+
 		public IEnumerable<TemplateCategory> GetProjectTemplateCategories ()
 		{
-			return projectTemplateCategories;
+			var templateCategorizer = new ProjectTemplateCategorizer (projectTemplateCategories);
+			foreach (IProjectTemplatingProvider provider in templateProviders) {
+				templateCategorizer.CategorizeTemplates (provider.GetTemplates ());
+			}
+			return templateCategorizer.GetCategorizedTemplates ();
 		}
 	}
 }

@@ -33,33 +33,18 @@ namespace MonoDevelop.Ide.Templates
 		List<TemplateCategory> categories = new List<TemplateCategory> ();
 		List<SolutionTemplate> templates = new List<SolutionTemplate> ();
 
-		public TemplateCategory (string id, string name, string iconId)
+		public TemplateCategory (string id, string name, string iconId, bool isDefault = false)
 		{
 			Id = id;
 			Name = name;
 			IconId = iconId;
-
-			AddDummyTemplates ();
-		}
-
-		void AddDummyTemplates ()
-		{
-			var template = new SolutionTemplate ("blank-app-portable", "Blank App (Xamarin.Forms Portable)", "md-project") { // FIXME: VV: Retina
-				Description = "Blank App (Xamarin.Forms Portable). More text and some more. Blah, blah, blah, blah, more text that should wrap. More and more. More and even more",
-				LargeImageId = "template-default-background-light.png",
-				Wizard = "Xamarin.Forms.Template.Wizard"
-			};
-			AddTemplate (template);
-			template = new SolutionTemplate ("blank-app-shared", "Blank App (Xamarin.Forms Shared)", "md-project") { // FIXME: VV: Retina
-				Description = "Blank App (Xamarin.Forms Shared)",
-				LargeImageId = "template-default-background-light.png"
-			};
-			AddTemplate (template);
+			IsDefault = isDefault;
 		}
 
 		public string Id { get; private set; }
 		public string Name { get; private set; }
 		public string IconId { get; private set; }
+		public bool IsDefault { get; set; }
 
 		public void AddCategory (TemplateCategory category)
 		{
@@ -77,6 +62,22 @@ namespace MonoDevelop.Ide.Templates
 		public void AddTemplate (SolutionTemplate template)
 		{
 			templates.Add (template);
+		}
+
+		public TemplateCategory Clone ()
+		{
+			var clone = new TemplateCategory (Id, Name, IconId) {
+				IsDefault = IsDefault
+			};
+			foreach (TemplateCategory child in categories) {
+				clone.AddCategory (child.Clone ());
+			}
+			return clone;
+		}
+
+		public bool IsMatch (string category)
+		{
+			return Id == category;
 		}
 	}
 }

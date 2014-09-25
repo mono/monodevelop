@@ -1,5 +1,5 @@
 ﻿//
-// TemplateCategoryCodon.cs
+// ProjectTemplateProvider.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,48 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Mono.Addins;
-using MonoDevelop.Ide.Templates;
-using MonoDevelop.Core;
+using System.Collections.Generic;
 using System.Linq;
 
-namespace MonoDevelop.Ide.Codons
+namespace MonoDevelop.Ide.Templates
 {
-	[ExtensionNode (Description="A template category.")]
-	internal class TemplateCategoryCodon : ExtensionNode
+	public class ProjectTemplatingProvider : IProjectTemplatingProvider
 	{
-		[NodeAttribute("name", "Name of the template.")]
-		string name;
-
-		[NodeAttribute("icon", "Icon for the template.")]
-		string icon;
-
-		[NodeAttribute ("default", "Category is the default for templates.")]
-		string isDefault;
-
-		public TemplateCategory ToTemplateCategory ()
+		public IEnumerable<SolutionTemplate> GetTemplates ()
 		{
-			var category = new TemplateCategory (Id, GettextCatalog.GetString (name), icon);
-			category.IsDefault = IsDefaultCategory ();
-
-			AddChildren (category);
-			return category;
-		}
-
-		bool IsDefaultCategory ()
-		{
-			bool result = false;
-			if (bool.TryParse (isDefault, out result)) {
-				return result;
-			}
-			return false;
-		}
-
-		void AddChildren (TemplateCategory category)
-		{
-			foreach (var childCodon in ChildNodes.OfType<TemplateCategoryCodon> ()) {
-				category.AddCategory (childCodon.ToTemplateCategory ());
-			}
+			return ProjectTemplate.ProjectTemplates
+				.Select (template => new DefaultSolutionTemplate (template))
+				.ToList ();
 		}
 	}
 }
