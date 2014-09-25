@@ -256,46 +256,8 @@ module SymbolTooltips =
            unionCase.Name ++ asType Keyword "of" ++ typeList
          else unionCase.Name
 
-    let getEntitySignature displayContext (fse: FSharpEntity) =
-        let modifier =
-            match fse.Accessibility with
-            | a when a.IsInternal -> asType Keyword "internal "
-            | a when a.IsPrivate -> asType Keyword "private "
-            | _ -> ""
-
-        let typeName =
-            match fse with
-            | _ when fse.IsFSharpModule -> "module"
-            | _ when fse.IsEnum         -> "enum"
-            | _ when fse.IsValueType    -> "struct"
-            | _                         -> "type"
-
-        let enumtip () =
-            asType Symbol " =" + "\n" + 
-            asType Symbol "|" ++
-            (fse.FSharpFields
-            |> Seq.filter (fun f -> not f.IsCompilerGenerated)
-            |> Seq.map (fun field -> match field.LiteralValue with
-                                     | Some lv -> field.Name + asType Symbol " = " + asType Number (string lv)
-                                     | None -> field.Name )
-            |> String.concat ("\n" + asType Symbol "| " ) )
-
-
-        let uniontip () = 
-            asType Symbol " =" + "\n" + 
-            asType Symbol "|" ++
-            (fse.UnionCases 
-            |> Seq.map (getUnioncaseSignature displayContext)
-            |> String.concat ("\n" + asType Symbol "| " ) )
-                                 
-        let typeDisplay = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
-        let fullName = "\n\nFull name: " + fse.FullName
-        match fse.IsFSharpUnion, fse.IsEnum with
-        | true, false -> typeDisplay + uniontip () + fullName
-        | false, true -> typeDisplay + enumtip () + fullName
-        | _ -> typeDisplay + fullName
-
-    let getFuncSignature displayContext (func: FSharpMemberFunctionOrValue) =
+    let getFuncSignature displayContext (func: FSharpMemberFunctionOrValue) indent signatureOnly =
+        let indent = String.replicate indent " "
         let functionName =
             if isConstructor func then func.EnclosingEntity.DisplayName
             else func.DisplayName
@@ -339,22 +301,71 @@ module SymbolTooltips =
         match argInfos with
         | [] ->
             //When does this occur, val type within  module?
-            asType Keyword modifiers ++ functionName ++ asType Symbol ":" ++ retType
+            if signatureOnly then retType
+            else asType Keyword modifiers ++ functionName ++ asType Symbol ":" ++ retType
                    
         | [[]] ->
             //A ctor with () parameters seems to be a list with an empty list
-            asType Keyword modifiers ++ functionName ++ asType Symbol "() :" ++ retType 
+            if signatureOnly then retType
+            else asType Keyword modifiers ++ functionName ++ asType Symbol "() :" ++ retType 
         | many ->
                 let allParams =
                     many
                     |> List.map(fun listOfParams ->
                                     listOfParams
-                                    |> List.map(fun p -> "   " + p.DisplayName.PadRight (padLength) + asType Symbol ":" ++ asType UserType (escapeText (p.Type.Format displayContext)))
+                                    |> List.map(fun p -> indent + p.DisplayName.PadRight (padLength) + asType Symbol ":" ++ asType UserType (escapeText (p.Type.Format displayContext)))
                                     |> String.concat (asType Symbol " *" ++ "\n"))
                     |> String.concat (asType Symbol " ->" + "\n") 
                 let typeArguments =
-                    allParams +  "\n   " + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
-                asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
+                    allParams +  "\n" + indent + (String.replicate (max (padLength-1) 0) " ") +  asType Symbol "->" ++ retType
+                if signatureOnly then typeArguments
+                else asType Keyword modifiers ++ functionName ++ asType Symbol ":" + "\n" + typeArguments
+
+    let getEntitySignature displayContext (fse: FSharpEntity) =
+        let modifier =
+            match fse.Accessibility with
+            | a when a.IsInternal -> asType Keyword "internal "
+            | a when a.IsPrivate -> asType Keyword "private "
+            | _ -> ""
+
+        let typeName =
+            match fse with
+            | _ when fse.IsFSharpModule -> "module"
+            | _ when fse.IsEnum         -> "enum"
+            | _ when fse.IsValueType    -> "struct"
+            | _                         -> "type"
+
+        let enumtip () =
+            asType Symbol " =" + "\n" + 
+            asType Symbol "|" ++
+            (fse.FSharpFields
+            |> Seq.filter (fun f -> not f.IsCompilerGenerated)
+            |> Seq.map (fun field -> match field.LiteralValue with
+                                     | Some lv -> field.Name + asType Symbol " = " + asType Number (string lv)
+                                     | None -> field.Name )
+            |> String.concat ("\n" + asType Symbol "| " ) )
+
+        let uniontip () = 
+            asType Symbol " =" + "\n" + 
+            asType Symbol "|" ++
+            (fse.UnionCases 
+            |> Seq.map (getUnioncaseSignature displayContext)
+            |> String.concat ("\n" + asType Symbol "| " ) )
+
+        let delegateTip () =
+            let invoker =
+                fse.MembersFunctionsAndValues |> Seq.find (fun f -> f.DisplayName = "Invoke")
+            let invokerSig = getFuncSignature FSharpDisplayContext.Empty invoker 6 true
+            asType Symbol " =" + "\n" +
+            "   " + asType Keyword "delegate" + " of\n" + invokerSig
+                                 
+        let typeDisplay = modifier + asType Keyword typeName ++ asType UserType fse.DisplayName
+        let fullName = "\n\nFull name: " + fse.FullName
+        match fse.IsFSharpUnion, fse.IsEnum, fse.IsDelegate with
+        | true, false, false -> typeDisplay + uniontip () + fullName
+        | false, true, false -> typeDisplay + enumtip () + fullName
+        | false, false, true -> typeDisplay + delegateTip () + fullName
+        | _ -> typeDisplay + fullName
 
     let getValSignature displayContext (v:FSharpMemberFunctionOrValue) =
         let retType = asType UserType (escapeText(v.ReturnParameter.Type.Format displayContext))
@@ -386,17 +397,17 @@ module SymbolTooltips =
             if isConstructor func then 
                 if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
                     //ValueTypes
-                    let signature = getFuncSignature symbolUse.DisplayContext func
+                    let signature = getFuncSignature symbolUse.DisplayContext func 3 false
                     ToolTip(signature, getSummaryFromSymbol func backUpSig)
                 else
                     //ReferenceType constructor
-                    let signature = getFuncSignature symbolUse.DisplayContext func
+                    let signature = getFuncSignature symbolUse.DisplayContext func 3 false
                     ToolTip(signature, getSummaryFromSymbol func backUpSig)
 
             elif func.FullType.IsFunctionType && not func.IsPropertyGetterMethod && not func.IsPropertySetterMethod && not symbolUse.IsFromComputationExpression then 
                 if isOperatorOrActivePattern func.DisplayName then
                     //Active pattern or operator
-                    let signature = getFuncSignature symbolUse.DisplayContext func
+                    let signature = getFuncSignature symbolUse.DisplayContext func 3 false
                     ToolTip(signature, getSummaryFromSymbol func backUpSig)
                 else
                     //closure/nested functions
@@ -406,7 +417,7 @@ module SymbolTooltips =
                         let summary = getSummaryFromSymbol func backUpSig
                         ToolTip(signature, summary)
                     else
-                        let signature = getFuncSignature symbolUse.DisplayContext func
+                        let signature = getFuncSignature symbolUse.DisplayContext func 3 false
                         ToolTip(signature, getSummaryFromSymbol func backUpSig)                            
 
             else
@@ -442,17 +453,17 @@ module SymbolTooltips =
             if isConstructor func then 
                 if func.EnclosingEntity.IsValueType || func.EnclosingEntity.IsEnum then
                     //ValueTypes
-                    let signature = getFuncSignature displayContext func
+                    let signature = getFuncSignature displayContext func 3 false
                     ToolTip(signature, getSummaryFromSymbol func backUpSig)
                 else
                     //ReferenceType constructor
-                    let signature = getFuncSignature displayContext func
+                    let signature = getFuncSignature displayContext func 3 false
                     ToolTip(signature, getSummaryFromSymbol func backUpSig)
 
             elif func.FullType.IsFunctionType && not func.IsPropertyGetterMethod && not func.IsPropertySetterMethod (*&& not symbolUse.IsFromComputationExpression*) then 
                 if isOperatorOrActivePattern func.DisplayName then
                     //Active pattern or operator
-                    let signature = getFuncSignature displayContext func
+                    let signature = getFuncSignature displayContext func 3 false
                     ToolTip(signature, getSummaryFromSymbol func backUpSig)
                 else
                     //closure/nested functions
@@ -462,7 +473,7 @@ module SymbolTooltips =
                         let summary = getSummaryFromSymbol func backUpSig
                         ToolTip(signature, summary)
                     else
-                        let signature = getFuncSignature displayContext func
+                        let signature = getFuncSignature displayContext func 3 false
                         ToolTip(signature, getSummaryFromSymbol func backUpSig)                            
 
             else
