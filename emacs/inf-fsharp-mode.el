@@ -35,11 +35,19 @@
   "*If true, display the inferior fsharp buffer when evaluating expressions.")
 
 (defvar inferior-fsharp-program
-  (case system-type
-    (windows-nt "fsi.exe")
-    (otherwise "fsharpi --readline-"))
+  (if fsharp-ac-using-mono
+      "fsharpi --readline-"
+    (let* ((programfiles (file-name-as-directory
+                          (car (-drop-while 'not
+                                            (list (getenv "ProgramFiles(x86)")
+                                                  (getenv "ProgramFiles")
+                                                  "C:\\Program Files (x86)")))))
+           (searchdirs (--map (concat programfiles it)
+                                '("Microsoft SDKs/F#/3.1/Framework/v4.0"
+                                  "Microsoft SDKs/F#/3.0/Framework/v4.0")))
+           (exec-path (append searchdirs exec-path)))
+    (concat "\"" (executable-find "fsi.exe") "\"")))
   "*Program name for invoking an inferior fsharp from Emacs.")
-
 
 ;; End of User modifiable variables
 

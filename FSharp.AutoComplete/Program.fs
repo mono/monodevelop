@@ -275,7 +275,7 @@ module internal CommandInput =
 type internal State =
   {
     Files : Map<string,string[]>
-    Project : Option<ProjectParser.ProjectResolver>
+    Project : Option<IProjectParser>
     OutputMode : OutputMode
     HelpText : Map<String, ToolTipText>
   }
@@ -341,7 +341,7 @@ module internal Main =
       let projFile, files, args, framework =
           match state.Project with
           | None -> file, [|file|], [||], FSharpTargetFramework.NET_4_0
-          | Some p -> ProjectParser.getFileName p, ProjectParser.getFiles p, ProjectParser.getOptions p, ProjectParser.getFrameworkVersion p
+          | Some p -> p.FileName, p.GetFiles, p.GetOptions, p.FrameworkVersion
       text, projFile, files, args, framework
 
     // Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
@@ -360,7 +360,7 @@ module internal Main =
         let projFile, files, args, framework =
           match state.Project with
           | None -> file, [|file|], [||], FSharpTargetFramework.NET_4_0
-          | Some p -> ProjectParser.getFileName p, ProjectParser.getFiles p, ProjectParser.getOptions p, ProjectParser.getFrameworkVersion p
+          | Some p -> p.FileName, p.GetFiles, p.GetOptions, p.FrameworkVersion
 
         let task =
           async {
@@ -393,18 +393,19 @@ module internal Main =
     | Project file ->
         // Load project file and store in state
         if File.Exists file then
-          match ProjectParser.load file with
-          | Some p -> 
+            match ProjectParser.load file with
+            | Some p ->
               let files =
-                [ for f in ProjectParser.getFiles p do
-                    yield IO.Path.Combine(ProjectParser.getDirectory p, f) ]
-              let targetFilename = ProjectParser.getOutput p
+                  [ for f in p.GetFiles do
+                      yield IO.Path.Combine(p.Directory, f) ]
+              let targetFilename = p.Output
               match state.OutputMode with
               | Text -> printAgent.WriteLine(sprintf "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files))
               | Json -> prAsJson { Kind = "project"; Data = { Files = files; Output = targetFilename } }
               main { state with Project = Some p }
-          | None   -> printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
-                      main state
+            | None ->
+               printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
+               main state
         else
           printMsg "ERROR" (sprintf "File '%s' does not exist" file)
           main state

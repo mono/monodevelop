@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -45,6 +45,8 @@
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <ItemGroup>
+    <Compile Include="ProjectFileTests.fs" />
+    <Compile Include="ProjectLoadingTests.fs" />
     <Compile Include="ProjectReferenceTests.fs" />
     <Compile Include="ProjectOutputTests.fs" />
     <Content Include="app.config" />
@@ -67,6 +69,10 @@
     <ProjectReference Include="..\..\..\FSharp.AutoComplete.fsproj">
       <Project>{b6ab4ef3-8f60-41a1-ab0c-851a6deb169e}</Project>
       <Name>FSharp.AutoComplete</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj">
+      <Project>{88F6940F-D300-474C-B2A7-E2ECD5B04B57}</Project>
+      <Name>FSharp.CompilerBinding</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

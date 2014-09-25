@@ -11,7 +11,8 @@ all: ~/.config/.mono/certs
 clean:
 	-rm -fr bin
 	-rm -fr ../FSharp.CompilerBinding/bin
-	-rm -fr ../packages
+	-rm -fr packages
+	-rm -rf test/unit/build
 
 unit-test: all
 	test/unit/runtests.sh

@@ -1,5 +1,8 @@
+matrix:
+  fast_finish: true
 install:
-  - cinst Emacs
+  - ps: Start-FileDownload "http://downloads.sourceforge.net/project/emacs-bin/snapshots/emacs-trunk-20140915-050944-w32-bin.7z"
+  - ps: 7z x emacs-trunk-20140915-050944-w32-bin.7z -oemacs-local | FIND /V "ing  "
 build_script:
-  - ps: FSharp.AutoComplete\fake.cmd Test
+  - cmd: FSharp.AutoComplete\fake.cmd Test
 test: off

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -61,9 +61,13 @@
     <Compile Include="Debug.fs" />
     <Compile Include="Options.fs" />
     <Compile Include="TipFormatter.fs" />
+    <Compile Include="IProjectParser.fs" />
+    <Compile Include="MonoProjectParser.fs" />
+    <Compile Include="DotNetProjectParser.fs" />
     <Compile Include="ProjectParser.fs" />
     <Compile Include="Program.fs" />
     <None Include="packages.config" />
+    <None Include="build.fsx" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

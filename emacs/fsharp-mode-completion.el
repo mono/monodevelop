@@ -743,7 +743,7 @@ display a short summary in the minibuffer."
 (defun fsharp-ac-handle-project (data)
   (let ((files (gethash "Files" data))
         (output (gethash "Output" data)))
-    (setq fsharp-ac--output-file output)
+    (setq fsharp-ac--output-file (file-truename output))
     (setq fsharp-ac-project-files (-map 'file-truename files))
     (fsharp-ac-parse-file (car (last fsharp-ac-project-files)))))
 
