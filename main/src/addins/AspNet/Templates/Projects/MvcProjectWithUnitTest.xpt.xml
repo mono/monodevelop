@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>ASP.NET MVC Project with Unit Tests</_Name>
-		<_Category>C#/ASP.NET</_Category>
+		<_Category>other/aspnet/general</_Category>
 		<Icon>md-project-web</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an ASP.NET MVC Web Project with a Unit Test Project.</_Description>
