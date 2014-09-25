@@ -125,6 +125,7 @@
 			<Category id="general" name="General" />
 		</Category>
 		<Category id="misc" name="Miscellaneous">
+			<Category id="generic" name="Generic" />
 			<Category id="general" name="General" default="true" />
 		</Category>
 	</Category>
