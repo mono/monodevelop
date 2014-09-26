@@ -620,10 +620,8 @@ namespace MonoDevelop.Ide
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
 			newProjectDialog.Show ();
-//			NewProjectDialog pd = new NewProjectDialog (null, true, null);
 //			if (defaultTemplate != null)
 //				pd.SelectTemplate (defaultTemplate);
-//			MessageService.ShowCustomDialog (pd);
 		}
 		
 		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace)
@@ -633,16 +631,15 @@ namespace MonoDevelop.Ide
 		
 		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace, string defaultItemId)
 		{
-			NewProjectDialog npdlg = new NewProjectDialog (null, false, parentWorkspace.BaseDirectory);
-			npdlg.SelectTemplate (defaultItemId);
-			try {
-				if (MessageService.RunCustomDialog (npdlg) == (int) Gtk.ResponseType.Ok && npdlg.NewItem != null) {
-					parentWorkspace.Items.Add ((WorkspaceItem) npdlg.NewItem);
-					Save (parentWorkspace);
-					return (WorkspaceItem) npdlg.NewItem;
-				}
-			} finally {
-				npdlg.Destroy ();
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.BasePath = parentWorkspace.BaseDirectory;
+
+//			npdlg.SelectTemplate (defaultItemId);
+
+			if (newProjectDialog.Show () && newProjectDialog.NewItem != null) {
+				parentWorkspace.Items.Add ((WorkspaceItem)newProjectDialog.NewItem);
+				Save (parentWorkspace);
+				return (WorkspaceItem)newProjectDialog.NewItem;
 			}
 			return null;
 		}
@@ -687,7 +684,6 @@ namespace MonoDevelop.Ide
 		{
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
 			var newProjectDialog = new NewProjectDialogController ();
-			newProjectDialog.OpenSolution = false;
 			newProjectDialog.ParentFolder = parentFolder;
 			newProjectDialog.BasePath = basePath;
 
