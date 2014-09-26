@@ -2,8 +2,14 @@
 // ProjectConfiguration.cs
 //
 // Author:
+//       Todd Berman  <tberman@off.net>
+//       Lluis Sanchez Gual <lluis@novell.com>
+//       Viktoria Dudka  <viktoriad@remobjects.com>
 //       Matt Ward <matt.ward@xamarin.com>
 //
+// Copyright (c) 2004 Todd Berman
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2009 RemObjects Software
 // Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,6 +33,7 @@
 
 using System;
 using System.Text;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -59,6 +66,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		public bool CreateProjectDirectoryInsideSolutionDirectory { get; set; }
+		public bool CreateSolution { get; set; }
 
 		public bool UseGit { get; set; }
 		public bool CreateGitIgnoreFile { get; set; }
@@ -95,6 +103,24 @@ namespace MonoDevelop.Ide.Templates
 				sb.Append (c);
 			}
 			return sb.ToString ();
+		}
+
+		public bool IsValid ()
+		{
+			string solution = SolutionName;
+			string name     = ProjectName;
+			string location = ProjectLocation;
+
+			if (solution.Equals ("")) solution = name; //This was empty when adding after first combine
+
+			return !((CreateSeparateSolutionDirectory && !FileService.IsValidPath (solution)) ||
+				!FileService.IsValidFileName (name) ||
+				name.IndexOf (' ') >= 0 ||
+				!FileService.IsValidPath (location));
+		}
+
+		bool CreateSeparateSolutionDirectory {
+			get { return CreateSolution && CreateProjectDirectoryInsideSolutionDirectory; }
 		}
 	}
 }

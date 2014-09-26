@@ -57,6 +57,11 @@ namespace MonoDevelop.Ide.Projects
 			MessageService.ShowCustomDialog (this);
 		}
 
+		public void CloseDialog ()
+		{
+			Destroy ();
+		}
+
 		public void RegisterController (INewProjectDialogController controller)
 		{
 			this.controller = controller;
@@ -289,7 +294,6 @@ namespace MonoDevelop.Ide.Projects
 			if (projectConfigurationWidget == centreVBox.Children [0]) {
 				controller.SelectedTemplate = template;
 				controller.Create ();
-				Destroy ();
 				return;
 			}
 

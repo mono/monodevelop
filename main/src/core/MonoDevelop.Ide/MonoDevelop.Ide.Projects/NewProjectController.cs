@@ -49,6 +49,7 @@ namespace MonoDevelop.Ide.Projects
 	public class NewProjectDialogController : INewProjectDialogController
 	{
 		List<TemplateCategory> templateCategories;
+		INewProjectDialogBackend dialog;
 
 		ProjectConfiguration projectConfiguration = new ProjectConfiguration () {
 			CreateProjectDirectoryInsideSolutionDirectory = true,
@@ -61,7 +62,6 @@ namespace MonoDevelop.Ide.Projects
 		public SolutionFolder ParentFolder { get; set; }
 		public string BasePath { get; set; }
 
-		bool newSolution;
 		ProcessedTemplateResult processedTemplate;
 		SolutionItem currentEntry;
 		bool disposeNewItem = true;
@@ -73,10 +73,10 @@ namespace MonoDevelop.Ide.Projects
 
 		public bool Show ()
 		{
-			newSolution = ParentFolder == null;
+			projectConfiguration.CreateSolution = ParentFolder == null;
 			SetDefaultLocation ();
 
-			INewProjectDialogBackend dialog = CreateNewProjectDialog ();
+			dialog = CreateNewProjectDialog ();
 			dialog.RegisterController (this);
 			dialog.ShowDialog ();
 
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Projects
 //			}
 
 			// New combines (not added to parent combines) already have the project as child.
-			if (!newSolution) {
+			if (!projectConfiguration.CreateSolution) {
 				// Make sure the new item is saved before adding. In this way the
 				// version control add-in will be able to put it under version control.
 				if (currentEntry is SolutionEntityItem) {
@@ -210,6 +210,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			IsNewItemCreated = true;
+			dialog.CloseDialog ();
 		}
 
 		bool CreateProject ()
@@ -233,35 +234,23 @@ namespace MonoDevelop.Ide.Projects
 //				//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
 //			}
 
-//			string solution = txt_subdirectory.Text;
-//			string name     = txt_name.Text;
-			string location = projectConfiguration.ProjectLocation;
-//
-//			if(solution.Equals("")) solution = name; //This was empty when adding after first combine
-//
-//			if (
-//				(CreateSolutionDirectory &&
-//					!FileService.IsValidPath (solution)) || 
-//				!FileService.IsValidFileName(name) ||
-//				name.IndexOf (' ') >= 0 ||
-//				!FileService.IsValidPath(location))
-//			{
-//				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'."));
-//				return false;
-//			}
-//
-//			if (parentFolder != null && parentFolder.ParentSolution.FindProjectByName (name) != null) {
-//				MessageService.ShowError (GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
-//				return false;
-//			}
+			if (!projectConfiguration.IsValid ()) {
+				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'."));
+				return false;
+			}
+
+			if (ParentFolder != null && ParentFolder.ParentSolution.FindProjectByName (projectConfiguration.ProjectName) != null) {
+				MessageService.ShowError (GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
+				return false;
+			}
 
 //			PropertyService.Set (
 //				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir",
 //				CreateSolutionDirectory);
 
-//			if (templateView.CurrentlySelected == null || name.Length == 0)
-//				return false;
-//
+			if (SelectedTemplate == null || projectConfiguration.ProjectName.Length == 0)
+				return false;
+
 			ProcessedTemplateResult result = null;
 
 			try {
@@ -272,12 +261,12 @@ namespace MonoDevelop.Ide.Projects
 						return false;
 				}
 
-				Directory.CreateDirectory (location);
+				Directory.CreateDirectory (projectConfiguration.ProjectLocation);
 			} catch (IOException) {
-				MessageService.ShowError (GettextCatalog.GetString ("Could not create directory {0}. File already exists.", location));
+				MessageService.ShowError (GettextCatalog.GetString ("Could not create directory {0}. File already exists.", projectConfiguration.ProjectLocation));
 				return false;
 			} catch (UnauthorizedAccessException) {
-				MessageService.ShowError (GettextCatalog.GetString ("You do not have permission to create to {0}", location));
+				MessageService.ShowError (GettextCatalog.GetString ("You do not have permission to create to {0}", projectConfiguration.ProjectLocation));
 				return false;
 			}
 

@@ -29,6 +29,7 @@ namespace MonoDevelop.Ide.Projects
 	public interface INewProjectDialogBackend
 	{
 		void ShowDialog ();
+		void CloseDialog ();
 		void RegisterController (INewProjectDialogController controller);
 	}
 }
