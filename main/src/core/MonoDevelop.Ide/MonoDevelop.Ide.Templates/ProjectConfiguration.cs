@@ -84,7 +84,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public string SolutionLocation {
 			get {
-				if (CreateProjectDirectoryInsideSolutionDirectory)
+				if (CreateSeparateSolutionDirectory)
 					return Path.Combine (Location, GetValidDir (SolutionName));
 				else
 					return Path.Combine (Location, GetValidDir (ProjectName));
@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.Templates
 		public string ProjectLocation {
 			get {
 				string path = Location;
-				if (CreateProjectDirectoryInsideSolutionDirectory)
+				if (CreateSeparateSolutionDirectory)
 					path = Path.Combine (path, GetValidDir (SolutionName));
 
 				return Path.Combine (path, GetValidDir (ProjectName));
