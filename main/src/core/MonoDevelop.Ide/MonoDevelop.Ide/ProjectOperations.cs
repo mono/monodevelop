@@ -686,9 +686,13 @@ namespace MonoDevelop.Ide
 		public SolutionItem CreateProject (SolutionFolder parentFolder)
 		{
 			string basePath = parentFolder != null ? parentFolder.BaseDirectory : null;
-			NewProjectDialog npdlg = new NewProjectDialog (parentFolder, false, basePath);
-			if (MessageService.ShowCustomDialog (npdlg) == (int)Gtk.ResponseType.Ok) {
-				var item = npdlg.NewItem as SolutionItem;
+			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.OpenSolution = false;
+			newProjectDialog.ParentFolder = parentFolder;
+			newProjectDialog.BasePath = basePath;
+
+			if (newProjectDialog.Show ()) {
+				var item = newProjectDialog.NewItem as SolutionItem;
 				if ((item is Project) && ProjectCreated != null)
 					ProjectCreated (this, new ProjectCreatedEventArgs (item as Project));
 				return item;

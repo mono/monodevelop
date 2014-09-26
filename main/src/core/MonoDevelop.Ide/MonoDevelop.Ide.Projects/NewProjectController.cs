@@ -52,17 +52,18 @@ namespace MonoDevelop.Ide.Projects
 
 		ProjectConfiguration projectConfiguration = new ProjectConfiguration () {
 			CreateProjectDirectoryInsideSolutionDirectory = true,
-			Location = IdeApp.ProjectOperations.ProjectsDefaultPath,
 			ProjectFileExtension = ".csproj"
 		};
 
 		public bool OpenSolution { get; set; }
+		public bool IsNewItemCreated { get; private set; }
+		public IWorkspaceFileObject NewItem { get; private set; }
+		public SolutionFolder ParentFolder { get; set; }
+		public string BasePath { get; set; }
 
 		bool newSolution;
 		ProcessedTemplateResult processedTemplate;
 		SolutionItem currentEntry;
-		SolutionFolder parentFolder;
-		IWorkspaceFileObject newItem;
 		bool disposeNewItem = true;
 
 		public NewProjectDialogController ()
@@ -70,16 +71,27 @@ namespace MonoDevelop.Ide.Projects
 			LoadTemplateCategories ();
 		}
 
-		public void Show ()
+		public bool Show ()
 		{
-			newSolution = parentFolder == null;
+			newSolution = ParentFolder == null;
+			SetDefaultLocation ();
 
 			INewProjectDialogBackend dialog = CreateNewProjectDialog ();
 			dialog.RegisterController (this);
 			dialog.ShowDialog ();
 
-			if (disposeNewItem && newItem != null)
-				newItem.Dispose ();
+			if (disposeNewItem && NewItem != null)
+				NewItem.Dispose ();
+
+			return IsNewItemCreated;
+		}
+
+		void SetDefaultLocation ()
+		{
+			if (BasePath == null)
+				BasePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
+
+			projectConfiguration.Location = FileService.ResolveFullPath (BasePath);
 		}
 
 		INewProjectDialogBackend CreateNewProjectDialog ()
@@ -122,17 +134,17 @@ namespace MonoDevelop.Ide.Projects
 
 				Solution parentSolution = null;
 
-				if (parentFolder == null) {
-					WorkspaceItem item = (WorkspaceItem) newItem;
+				if (ParentFolder == null) {
+					WorkspaceItem item = (WorkspaceItem) NewItem;
 					parentSolution = item as Solution;
 					if (parentSolution != null) {
 						if (parentSolution.RootFolder.Items.Count > 0)
 							currentEntry = parentSolution.RootFolder.Items [0] as SolutionItem;
-						parentFolder = parentSolution.RootFolder;
+						ParentFolder = parentSolution.RootFolder;
 					}
 				} else {
-					SolutionItem item = (SolutionItem) newItem;
-					parentSolution = parentFolder.ParentSolution;
+					SolutionItem item = (SolutionItem) NewItem;
+					parentSolution = ParentFolder.ParentSolution;
 					currentEntry = item;
 				}
 
@@ -165,19 +177,19 @@ namespace MonoDevelop.Ide.Projects
 				if (currentEntry is SolutionEntityItem) {
 					// Inherit the file format from the solution
 					SolutionEntityItem eitem = (SolutionEntityItem) currentEntry;
-					eitem.FileFormat = parentFolder.ParentSolution.FileFormat;
+					eitem.FileFormat = ParentFolder.ParentSolution.FileFormat;
 					IdeApp.ProjectOperations.Save (eitem);
 				}
-				parentFolder.AddItem (currentEntry, true);
+				ParentFolder.AddItem (currentEntry, true);
 			}
 
 //			if (notebook.Page == 1)
 //				featureList.ApplyFeatures ();
 
-			if (parentFolder != null)
-				IdeApp.ProjectOperations.Save (parentFolder.ParentSolution);
+			if (ParentFolder != null)
+				IdeApp.ProjectOperations.Save (ParentFolder.ParentSolution);
 			else
-				IdeApp.ProjectOperations.Save (newItem);
+				IdeApp.ProjectOperations.Save (NewItem);
 
 			if (OpenSolution) {
 				var op = OpenCreatedSolution (processedTemplate); // FIXME
@@ -193,11 +205,11 @@ namespace MonoDevelop.Ide.Projects
 				// The item is not a solution being opened, so it is going to be added to
 				// an existing item. In this case, it must not be disposed by the dialog.
 				disposeNewItem = false;
-				if (parentFolder != null)
-					InstallProjectTemplatePackages (parentFolder.ParentSolution);
+				if (ParentFolder != null)
+					InstallProjectTemplatePackages (ParentFolder.ParentSolution);
 			}
 
-//			Respond (ResponseType.Ok);
+			IsNewItemCreated = true;
 		}
 
 		bool CreateProject ()
@@ -269,15 +281,15 @@ namespace MonoDevelop.Ide.Projects
 				return false;
 			}
 
-			if (newItem != null) {
-				newItem.Dispose ();
-				newItem = null;
+			if (NewItem != null) {
+				NewItem.Dispose ();
+				NewItem = null;
 			}
 
 			try {
-				result = IdeApp.Services.TemplatingService.ProcessTemplate (SelectedTemplate, projectConfiguration, parentFolder);
-				newItem = result.WorkspaceItem;
-				if (newItem == null)
+				result = IdeApp.Services.TemplatingService.ProcessTemplate (SelectedTemplate, projectConfiguration, ParentFolder);
+				NewItem = result.WorkspaceItem;
+				if (NewItem == null)
 					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
