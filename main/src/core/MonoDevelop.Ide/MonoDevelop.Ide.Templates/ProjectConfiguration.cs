@@ -32,6 +32,7 @@
 //
 
 using System;
+using System.IO;
 using System.Text;
 using MonoDevelop.Core;
 
@@ -61,6 +62,16 @@ namespace MonoDevelop.Ide.Templates
 			get { return ProjectName + ProjectFileExtension; }
 		}
 
+		public string GetValidProjectName ()
+		{
+			return GetValidDir (ProjectName);
+		}
+
+		public string GetValidSolutionName ()
+		{
+			return GetValidDir (SolutionName);
+		}
+
 		public string SolutionFileName {
 			get { return SolutionName + ".sln"; }
 		}
@@ -74,9 +85,9 @@ namespace MonoDevelop.Ide.Templates
 		public string SolutionLocation {
 			get {
 				if (CreateProjectDirectoryInsideSolutionDirectory)
-					return System.IO.Path.Combine (Location, GetValidDir (SolutionName));
+					return Path.Combine (Location, GetValidDir (SolutionName));
 				else
-					return System.IO.Path.Combine (Location, GetValidDir (ProjectName));
+					return Path.Combine (Location, GetValidDir (ProjectName));
 			}
 		}
 
@@ -84,9 +95,9 @@ namespace MonoDevelop.Ide.Templates
 			get {
 				string path = Location;
 				if (CreateProjectDirectoryInsideSolutionDirectory)
-					path = System.IO.Path.Combine (path, GetValidDir (SolutionName));
+					path = Path.Combine (path, GetValidDir (SolutionName));
 
-				return System.IO.Path.Combine (path, GetValidDir (ProjectName));
+				return Path.Combine (path, GetValidDir (ProjectName));
 			}
 		}
 
@@ -96,9 +107,9 @@ namespace MonoDevelop.Ide.Templates
 			var sb = new StringBuilder ();
 			for (int n = 0; n < name.Length; n++) {
 				char c = name [n];
-				if (Array.IndexOf (System.IO.Path.GetInvalidPathChars(), c) != -1)
+				if (Array.IndexOf (Path.GetInvalidPathChars(), c) != -1)
 					continue;
-				if (c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar || c == System.IO.Path.VolumeSeparatorChar)
+				if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar || c == Path.VolumeSeparatorChar)
 					continue;
 				sb.Append (c);
 			}

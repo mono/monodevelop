@@ -145,10 +145,10 @@ namespace MonoDevelop.Ide.Projects
 
 		public void UpdateProjectName ()
 		{
-			string projectName = projectConfiguration.ProjectName;
+			string projectName = projectConfiguration.GetValidProjectName ();
 			string projectFileName = projectConfiguration.ProjectFileName;
 
-			if (String.IsNullOrEmpty (projectConfiguration.ProjectName)) {
+			if (String.IsNullOrEmpty (projectName)) {
 				projectName = "Project";
 				projectFileName = projectName + projectFileName;
 			}
@@ -158,7 +158,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public void UpdateSolutionName ()
 		{
-			string solutionName = projectConfiguration.SolutionName;
+			string solutionName = projectConfiguration.GetValidSolutionName ();
 			string solutionFileName = projectConfiguration.SolutionFileName;
 
 			if (String.IsNullOrEmpty (solutionName)) {
