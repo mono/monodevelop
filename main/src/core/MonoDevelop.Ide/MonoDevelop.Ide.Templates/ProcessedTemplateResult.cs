@@ -1,5 +1,5 @@
-//
-// INewProjectDialogController.cs
+﻿//
+// ProcessedTemplateResult.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,22 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
 using System.Collections.Generic;
-using MonoDevelop.Ide.Templates;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Ide.Projects
+namespace MonoDevelop.Ide.Templates
 {
-	public interface INewProjectDialogController
+	public abstract class ProcessedTemplateResult
 	{
-		IEnumerable<TemplateCategory> TemplateCategories { get; }
-		SolutionTemplate SelectedTemplate { get; set; }
-		ProjectConfiguration ProjectConfiguration { get; }
+		public IWorkspaceFileObject WorkspaceItem { get; protected set; }
+		public string SolutionFileName { get; protected set; }
+		public string ProjectBasePath { get; protected set; }
 
-		TemplateWizard CreateTemplateWizard (string id);
+		public abstract IEnumerable<string> Actions { get; }
 
-		void Create ();
+		public abstract bool HasPackages ();
+
+		public abstract IList<PackageReferencesForCreatedProject> PackageReferences { get; }
 	}
 }
 

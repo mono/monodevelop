@@ -618,6 +618,7 @@ namespace MonoDevelop.Ide
 		public void NewSolution (string defaultTemplate)
 		{
 			var newProjectDialog = new NewProjectDialogController ();
+			newProjectDialog.OpenSolution = true;
 			newProjectDialog.Show ();
 //			NewProjectDialog pd = new NewProjectDialog (null, true, null);
 //			if (defaultTemplate != null)

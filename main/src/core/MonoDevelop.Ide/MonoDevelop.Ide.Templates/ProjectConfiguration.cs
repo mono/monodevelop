@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Text;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -61,6 +62,40 @@ namespace MonoDevelop.Ide.Templates
 
 		public bool UseGit { get; set; }
 		public bool CreateGitIgnoreFile { get; set; }
+
+		public string SolutionLocation {
+			get {
+				if (CreateProjectDirectoryInsideSolutionDirectory)
+					return System.IO.Path.Combine (Location, GetValidDir (SolutionName));
+				else
+					return System.IO.Path.Combine (Location, GetValidDir (ProjectName));
+			}
+		}
+
+		public string ProjectLocation {
+			get {
+				string path = Location;
+				if (CreateProjectDirectoryInsideSolutionDirectory)
+					path = System.IO.Path.Combine (path, GetValidDir (SolutionName));
+
+				return System.IO.Path.Combine (path, GetValidDir (ProjectName));
+			}
+		}
+
+		string GetValidDir (string name)
+		{
+			name = name.Trim ();
+			var sb = new StringBuilder ();
+			for (int n = 0; n < name.Length; n++) {
+				char c = name [n];
+				if (Array.IndexOf (System.IO.Path.GetInvalidPathChars(), c) != -1)
+					continue;
+				if (c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar || c == System.IO.Path.VolumeSeparatorChar)
+					continue;
+				sb.Append (c);
+			}
+			return sb.ToString ();
+		}
 	}
 }
 

@@ -287,6 +287,8 @@ namespace MonoDevelop.Ide.Projects
 				return;
 
 			if (projectConfigurationWidget == centreVBox.Children [0]) {
+				controller.SelectedTemplate = template;
+				controller.Create ();
 				Destroy ();
 				return;
 			}
@@ -340,11 +342,8 @@ namespace MonoDevelop.Ide.Projects
 					}
 				}
 			}
-			var config = new ProjectConfiguration () {
-				Location = IdeApp.ProjectOperations.ProjectsDefaultPath,
-				ProjectFileExtension = ".csproj"
-			};
-			projectConfigurationWidget.Load (config);
+
+			projectConfigurationWidget.Load (controller.ProjectConfiguration);
 			return projectConfigurationWidget;
 		}
 

@@ -25,12 +25,16 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
 	public interface IProjectTemplatingProvider
 	{
 		IEnumerable<SolutionTemplate> GetTemplates ();
+
+		bool CanProcessTemplate (SolutionTemplate template);
+		ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, ProjectConfiguration config, SolutionFolder parentFolder);
 	}
 }
 

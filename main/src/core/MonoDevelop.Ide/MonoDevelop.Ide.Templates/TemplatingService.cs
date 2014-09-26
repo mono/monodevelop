@@ -25,8 +25,10 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -68,6 +70,20 @@ namespace MonoDevelop.Ide.Templates
 				templateCategorizer.CategorizeTemplates (provider.GetTemplates ());
 			}
 			return templateCategorizer.GetCategorizedTemplates ();
+		}
+
+		public ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, ProjectConfiguration config, SolutionFolder parentFolder)
+		{
+			IProjectTemplatingProvider provider = GetTemplatingProviderForTemplate (template);
+			if (provider != null) {
+				return provider.ProcessTemplate (template, config, parentFolder);
+			}
+			return null;
+		}
+
+		IProjectTemplatingProvider GetTemplatingProviderForTemplate (SolutionTemplate template)
+		{
+			return templateProviders.FirstOrDefault (provider => provider.CanProcessTemplate (template));
 		}
 	}
 }

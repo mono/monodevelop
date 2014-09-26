@@ -1,5 +1,5 @@
-//
-// INewProjectDialogController.cs
+﻿//
+// DefaultProcessedTemplateResult.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,22 +23,38 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
 using System.Collections.Generic;
-using MonoDevelop.Ide.Templates;
+using MonoDevelop.Projects;
 
-namespace MonoDevelop.Ide.Projects
+namespace MonoDevelop.Ide.Templates
 {
-	public interface INewProjectDialogController
+	internal class DefaultProcessedTemplateResult : ProcessedTemplateResult
 	{
-		IEnumerable<TemplateCategory> TemplateCategories { get; }
-		SolutionTemplate SelectedTemplate { get; set; }
-		ProjectConfiguration ProjectConfiguration { get; }
+		readonly ProjectTemplate template;
 
-		TemplateWizard CreateTemplateWizard (string id);
+		internal DefaultProcessedTemplateResult (ProjectTemplate template, IWorkspaceFileObject itemCreated, string projectBasePath)
+		{
+			this.template = template;
+			WorkspaceItem = itemCreated;
+			SolutionFileName = template.CreatedSolutionName;
+			ProjectBasePath = projectBasePath;
+		}
 
-		void Create ();
+		public override bool HasPackages ()
+		{
+			return template.HasPackages ();
+		}
+
+		public override IList<PackageReferencesForCreatedProject> PackageReferences {
+			get {
+				return template.PackageReferencesForCreatedProjects;
+			}
+		}
+
+		public override IEnumerable<string> Actions {
+			get { return template.Actions; }
+		}
 	}
 }
 

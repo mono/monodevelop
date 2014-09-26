@@ -59,6 +59,14 @@ namespace MonoDevelop.Ide.Templates
 		IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 		private ProjectCreateInformation createdProjectInformation = null;
 
+		internal string CreatedSolutionName {
+			get { return createdSolutionName; }
+		}
+
+		internal IEnumerable<string> Actions {
+			get { return actions; }
+		}
+
 		private SolutionDescriptor solutionDescriptor = null;
 		public SolutionDescriptor SolutionDescriptor
 		{

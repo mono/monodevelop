@@ -38,6 +38,10 @@ namespace MonoDevelop.Ide.Templates
 			Description = template.Description;
 			Category = template.Category;
 		}
+
+		internal ProjectTemplate Template {
+			get { return template; }
+		}
 	}
 }
 

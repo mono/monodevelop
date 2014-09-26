@@ -2,8 +2,14 @@
 // ProjectTemplateProvider.cs
 //
 // Author:
+//       Todd Berman  <tberman@off.net>
+//       Lluis Sanchez Gual <lluis@novell.com>
+//       Viktoria Dudka  <viktoriad@remobjects.com>
 //       Matt Ward <matt.ward@xamarin.com>
 //
+// Copyright (c) 2004 Todd Berman
+// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2009 RemObjects Software
 // Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +32,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Projects;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -36,6 +44,41 @@ namespace MonoDevelop.Ide.Templates
 			return ProjectTemplate.ProjectTemplates
 				.Select (template => new DefaultSolutionTemplate (template))
 				.ToList ();
+		}
+
+		public bool CanProcessTemplate (SolutionTemplate template)
+		{
+			return template is DefaultSolutionTemplate;
+		}
+
+		public ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, ProjectConfiguration config, SolutionFolder parentFolder)
+		{
+			return ProcessTemplate ((DefaultSolutionTemplate)template, config, parentFolder);
+		}
+
+		ProcessedTemplateResult ProcessTemplate (DefaultSolutionTemplate template, ProjectConfiguration config, SolutionFolder parentFolder)
+		{
+			IWorkspaceFileObject newItem = null;
+			ProjectCreateInformation cinfo = CreateProjectCreateInformation (config, parentFolder);
+
+			if (parentFolder == null)
+				newItem = template.Template.CreateWorkspaceItem (cinfo);
+			else
+				newItem = template.Template.CreateProject (parentFolder, cinfo);
+
+			return new DefaultProcessedTemplateResult (template.Template, newItem, cinfo.ProjectBasePath);
+		}
+
+		ProjectCreateInformation CreateProjectCreateInformation (ProjectConfiguration config, SolutionFolder parentFolder)
+		{
+			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
+			cinfo.SolutionPath = FileService.ResolveFullPath (config.SolutionLocation);
+			cinfo.ProjectBasePath = FileService.ResolveFullPath (config.ProjectLocation);
+			cinfo.ProjectName = config.ProjectName;
+			cinfo.SolutionName = config.SolutionName; //CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
+			cinfo.ParentFolder = parentFolder;
+			cinfo.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
+			return cinfo;
 		}
 	}
 }

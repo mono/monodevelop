@@ -2836,6 +2836,8 @@
     <Compile Include="MonoDevelop.Ide.Templates\IProjectTemplatingProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplatingProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateCategoryPath.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\ProcessedTemplateResult.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\DefaultProcessedTemplateResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
