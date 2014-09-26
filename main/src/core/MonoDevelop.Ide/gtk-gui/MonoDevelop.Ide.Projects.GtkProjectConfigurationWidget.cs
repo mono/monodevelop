@@ -114,7 +114,7 @@ namespace MonoDevelop.Ide.Projects
 			this.createProjectWithinSolutionDirectoryCheckBox = new global::Gtk.CheckButton ();
 			this.createProjectWithinSolutionDirectoryCheckBox.CanFocus = true;
 			this.createProjectWithinSolutionDirectoryCheckBox.Name = "createProjectWithinSolutionDirectoryCheckBox";
-			this.createProjectWithinSolutionDirectoryCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Create a project within the solution directory.");
+			this.createProjectWithinSolutionDirectoryCheckBox.Label = global::Mono.Unix.Catalog.GetString ("Create a project directory within the solution directory.");
 			this.createProjectWithinSolutionDirectoryCheckBox.Active = true;
 			this.createProjectWithinSolutionDirectoryCheckBox.DrawIndicator = true;
 			this.createProjectWithinSolutionDirectoryCheckBox.UseUnderline = true;
