@@ -619,9 +619,8 @@ namespace MonoDevelop.Ide
 		{
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.OpenSolution = true;
+			newProjectDialog.SelectedTemplateId = defaultTemplate;
 			newProjectDialog.Show ();
-//			if (defaultTemplate != null)
-//				pd.SelectTemplate (defaultTemplate);
 		}
 		
 		public WorkspaceItem AddNewWorkspaceItem (Workspace parentWorkspace)
@@ -633,8 +632,7 @@ namespace MonoDevelop.Ide
 		{
 			var newProjectDialog = new NewProjectDialogController ();
 			newProjectDialog.BasePath = parentWorkspace.BaseDirectory;
-
-//			npdlg.SelectTemplate (defaultItemId);
+			newProjectDialog.SelectedTemplateId = defaultItemId;
 
 			if (newProjectDialog.Show () && newProjectDialog.NewItem != null) {
 				parentWorkspace.Items.Add ((WorkspaceItem)newProjectDialog.NewItem);

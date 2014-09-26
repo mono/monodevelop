@@ -33,6 +33,7 @@ namespace MonoDevelop.Ide.Projects
 	public interface INewProjectDialogController
 	{
 		IEnumerable<TemplateCategory> TemplateCategories { get; }
+		TemplateCategory SelectedSecondLevelCategory { get; }
 		SolutionTemplate SelectedTemplate { get; set; }
 		ProjectConfiguration ProjectConfiguration { get; }
 

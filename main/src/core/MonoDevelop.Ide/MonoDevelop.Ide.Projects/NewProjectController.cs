@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide.Projects
 		public IWorkspaceFileObject NewItem { get; private set; }
 		public SolutionFolder ParentFolder { get; set; }
 		public string BasePath { get; set; }
+		public string SelectedTemplateId { get; set; }
 
 		ProcessedTemplateResult processedTemplate;
 		SolutionItem currentEntry;
@@ -75,6 +76,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			projectConfiguration.CreateSolution = ParentFolder == null;
 			SetDefaultLocation ();
+			SelectTemplate ();
 
 			dialog = CreateNewProjectDialog ();
 			dialog.RegisterController (this);
@@ -103,6 +105,7 @@ namespace MonoDevelop.Ide.Projects
 			get { return templateCategories; }
 		}
 
+		public TemplateCategory SelectedSecondLevelCategory { get; private set; }
 		public SolutionTemplate SelectedTemplate { get; set; }
 
 		public ProjectConfiguration ProjectConfiguration {
@@ -112,6 +115,29 @@ namespace MonoDevelop.Ide.Projects
 		void LoadTemplateCategories ()
 		{
 			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories ().ToList ();
+		}
+
+		void SelectTemplate ()
+		{
+			foreach (TemplateCategory topLevelCategory in templateCategories) {
+				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories) {
+					foreach (TemplateCategory thirdLevelCategory in secondLevelCategory.Categories) {
+						SolutionTemplate matchedTemplate = thirdLevelCategory
+							.Templates
+							.FirstOrDefault (MatchesSelectedTemplateId);
+						if (matchedTemplate != null) {
+							SelectedSecondLevelCategory = secondLevelCategory;
+							SelectedTemplate = matchedTemplate;
+							return;
+						}
+					}
+				}
+			}
+		}
+
+		bool MatchesSelectedTemplateId (SolutionTemplate template)
+		{
+			return (SelectedTemplateId == null) || (template.Id == SelectedTemplateId);
 		}
 
 		public TemplateWizard CreateTemplateWizard (string id)

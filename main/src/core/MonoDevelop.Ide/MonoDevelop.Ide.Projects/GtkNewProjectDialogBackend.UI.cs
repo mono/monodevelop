@@ -225,6 +225,7 @@ namespace MonoDevelop.Ide.Projects
 
 			Show ();
 
+			templatesTreeView.HasFocus = true;
 			VBox.BorderWidth = 0;
 		}
 

@@ -66,7 +66,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			this.controller = controller;
 			LoadTemplates ();
-			SelectFirstSubTemplateCategory ();
+			SelectTemplateDefinedbyController ();
 		}
 
 		void SetTemplateTextCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
@@ -269,11 +269,57 @@ namespace MonoDevelop.Ide.Projects
 			return null;
 		}
 
+		void SelectTemplateDefinedbyController ()
+		{
+			if (controller.SelectedSecondLevelCategory == null) {
+				SelectFirstSubTemplateCategory ();
+				return;
+			}
+
+			SelectTemplateCategory (controller.SelectedSecondLevelCategory);
+
+			if (controller.SelectedTemplate != null) {
+				SelectTemplate (controller.SelectedTemplate);
+			}
+		}
+
 		void SelectFirstSubTemplateCategory ()
 		{
 			TreeIter iter = TreeIter.Zero;
 			if (templateCategoriesListStore.IterNthChild (out iter, 1)) {
 				templateCategoriesTreeView.Selection.SelectIter (iter);
+			}
+		}
+
+		void SelectTemplateCategory (TemplateCategory category)
+		{
+			TreeIter iter = TreeIter.Zero;
+			if (!templateCategoriesListStore.GetIterFirst (out iter)) {
+				return;
+			}
+
+			while (templateCategoriesListStore.IterNext (ref iter)) {
+				var currentCategory = templateCategoriesListStore.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
+				if (currentCategory == category) {
+					templateCategoriesTreeView.Selection.SelectIter (iter);
+					break;
+				}
+			}
+		}
+
+		void SelectTemplate (SolutionTemplate template)
+		{
+			TreeIter iter = TreeIter.Zero;
+			if (!templatesListStore.GetIterFirst (out iter)) {
+				return;
+			}
+
+			while (templatesListStore.IterNext (ref iter)) {
+				var currentTemplate = templatesListStore.GetValue (iter, TemplateColumn) as SolutionTemplate;
+				if (currentTemplate == template) {
+					templatesTreeView.Selection.SelectIter (iter);
+					break;
+				}
 			}
 		}
 
