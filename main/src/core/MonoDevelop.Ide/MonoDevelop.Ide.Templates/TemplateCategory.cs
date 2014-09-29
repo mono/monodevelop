@@ -61,7 +61,12 @@ namespace MonoDevelop.Ide.Templates
 
 		public void AddTemplate (SolutionTemplate template)
 		{
-			templates.Add (template);
+			SolutionTemplate groupTemplate = templates.Find (t => t.IsGroupMatch (template));
+			if (groupTemplate != null) {
+				groupTemplate.AddGroupTemplate (template);
+			} else {
+				templates.Add (template);
+			}
 		}
 
 		public TemplateCategory Clone ()

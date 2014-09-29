@@ -85,6 +85,12 @@ namespace MonoDevelop.Ide.Templates
 			get { return id; }
 		}
 
+		private string groupId;
+		public string GroupId
+		{
+			get { return groupId; }
+		}
+
 		private string category;
 		public string Category
 		{
@@ -201,6 +207,10 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlConfiguration ["Icon"] != null) {
 				this.icon = ImageService.GetStockId (addin, xmlConfiguration ["Icon"].InnerText, Gtk.IconSize.Dnd);
+			}
+
+			if (xmlConfiguration ["_GroupId"] != null) {
+				this.groupId = xmlConfiguration ["_GroupId"].InnerText;
 			}
 
 			if (xmlDocument.DocumentElement ["Combine"] == null) {

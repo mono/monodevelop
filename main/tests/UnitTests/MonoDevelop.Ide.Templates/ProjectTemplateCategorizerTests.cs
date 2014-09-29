@@ -151,6 +151,29 @@ namespace MonoDevelop.Ide.Templates
 			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
 			Assert.That (generalCategory.Templates.ToList (), Contains.Item (template));
 		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoConsoleProjectTemplatesWithDifferentLanguagesInSameCategory_TemplatesCombinedIntoOneGroup ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "F#";
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate template = generalCategory.Templates.FirstOrDefault ();
+			Assert.That (template.AvailableLanguages, Contains.Item ("C#"));
+			Assert.That (template.AvailableLanguages, Contains.Item ("F#"));
+			Assert.AreEqual (template1, template.GetTemplate ("C#"));
+			Assert.AreEqual (template2, template.GetTemplate ("F#"));
+			Assert.AreEqual (1, generalCategory.Templates.Count ());
+		}
 	}
 }
 

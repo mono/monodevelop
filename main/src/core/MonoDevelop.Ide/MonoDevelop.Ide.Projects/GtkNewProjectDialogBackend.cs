@@ -104,11 +104,12 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddLanguageMenuItems (Menu menu, SolutionTemplate template)
 		{
-			foreach (string language in template.AvailableLanguages) {
+			foreach (string language in template.AvailableLanguages.OrderBy (item => item)) {
 				var menuItem = new MenuItem (language);
 				menuItem.Activated += (o, e) => {
 					templateTextRenderer.SelectedLanguage = language;
 					templatesTreeView.QueueDraw ();
+					ShowSelectedTemplate ();
 				};
 				menu.Append (menuItem);
 			}
@@ -229,7 +230,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			ClearSelectedTemplateInformation ();
 
-			SolutionTemplate template = GetSelectedTemplate ();
+			SolutionTemplate template = GetSelectedTemplateForSelectedLanguage ();
 			if (template != null) {
 				ShowTemplate (template);
 			}
@@ -240,6 +241,19 @@ namespace MonoDevelop.Ide.Projects
 		void ClearSelectedTemplateInformation ()
 		{
 			templateVBox.Visible = false;
+		}
+
+		SolutionTemplate GetSelectedTemplateForSelectedLanguage ()
+		{
+			SolutionTemplate template = GetSelectedTemplate ();
+			if (template != null) {
+				SolutionTemplate languageTemplate = template.GetTemplate (templateTextRenderer.SelectedLanguage);
+				if (languageTemplate != null) {
+					return languageTemplate;
+				}
+			}
+
+			return template;
 		}
 
 		SolutionTemplate GetSelectedTemplate ()
@@ -333,7 +347,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void MoveToNextPage ()
 		{
-			SolutionTemplate template = GetSelectedTemplate ();
+			SolutionTemplate template = GetSelectedTemplateForSelectedLanguage ();
 			if (template == null)
 				return;
 

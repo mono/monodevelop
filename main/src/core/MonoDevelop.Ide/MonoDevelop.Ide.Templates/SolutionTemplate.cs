@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -36,14 +37,14 @@ namespace MonoDevelop.Ide.Templates
 
 		string largeImageId;
 		string language;
+		List<string> availableLanguages = new List<string> ();
+		List<SolutionTemplate> groupedTemplates = new List<SolutionTemplate> ();
 
 		public SolutionTemplate (string id, string name, string iconId)
 		{
 			Id = id;
 			Name = name;
 			IconId = iconId;
-
-			AvailableLanguages = new List<string> ();
 		}
 
 		public string Id { get; private set; }
@@ -52,14 +53,38 @@ namespace MonoDevelop.Ide.Templates
 		public string Description { get; set; }
 		public string Category { get; set; }
 
+		/// <summary>
+		/// Allows templates to be grouped together in the New Project dialog.
+		/// </summary>
+		public string GroupId { get; set; }
+
+		public bool HasGroupId {
+			get { return !String.IsNullOrEmpty (GroupId); }
+		}
+
 		public string Language {
 			get { return language; }
 			set {
 				language = value;
 				if (!String.IsNullOrEmpty (value)) {
-					AvailableLanguages.Add (language);
+					availableLanguages.Add (language);
 				}
 			}
+		}
+
+		public void AddGroupTemplate (SolutionTemplate template)
+		{
+			groupedTemplates.Add (template);
+			availableLanguages.Add (template.Language);
+		}
+
+		public SolutionTemplate GetTemplate (string language)
+		{
+			if (this.language == language) {
+				return this;
+			}
+
+			return groupedTemplates.FirstOrDefault (template => template.Language == language);
 		}
 
 		public string LargeImageId {
@@ -78,11 +103,21 @@ namespace MonoDevelop.Ide.Templates
 			get { return !String.IsNullOrEmpty (Wizard); }
 		}
 
-		public IList<string> AvailableLanguages { get; private set; }
+		public IList<string> AvailableLanguages {
+			get { return availableLanguages; }
+		}
 
 		public override string ToString ()
 		{
 			return String.Format ("[Template: Id={0}, Name={1}, Category={2}]", Id, Name, Category);
+		}
+
+		public bool IsGroupMatch (SolutionTemplate template)
+		{
+			if (template.HasGroupId && HasGroupId) {
+				return String.Equals (GroupId, template.GroupId, StringComparison.OrdinalIgnoreCase);
+			}
+			return false;
 		}
 	}
 }
