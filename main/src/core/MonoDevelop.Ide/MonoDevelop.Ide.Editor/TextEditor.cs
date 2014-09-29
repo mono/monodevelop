@@ -387,7 +387,7 @@ namespace MonoDevelop.Ide.Editor
 		public void SetCaretLocation (int line, int col, bool usePulseAnimation = false)
 		{
 			CaretLocation = new DocumentLocation (line, col);
-			ScrollTo (CaretLocation);
+			CenterTo (CaretLocation);
 			if (usePulseAnimation)
 				StartCaretPulseAnimation ();
 		}
