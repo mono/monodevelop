@@ -453,6 +453,9 @@ namespace MonoDevelop.VersionControl
 
 		static void OnFileAdded (object s, ProjectFileEventArgs e)
 		{
+			if (ConfigurationDontAddRemoveByDefault)
+				return;
+
 			FileUpdateEventArgs vargs = new FileUpdateEventArgs ();
 			IProgressMonitor monitor = null;
 			try {
@@ -534,6 +537,9 @@ namespace MonoDevelop.VersionControl
 		
 		static void OnEntryAdded (object o, SolutionItemEventArgs args)
 		{
+			if (ConfigurationDontAddRemoveByDefault)
+				return;
+
 			if (args is SolutionItemChangeEventArgs && ((SolutionItemChangeEventArgs) args).Reloading)
 				return;
 
@@ -656,6 +662,11 @@ namespace MonoDevelop.VersionControl
 		internal static bool SessionSolutionDisabled {
 			get;
 			private set;
+		}
+
+		internal static bool ConfigurationDontAddRemoveByDefault {
+			get { return GetConfiguration ().DontAddRemoveByDefault; }
+			set { GetConfiguration ().DontAddRemoveByDefault = value; }
 		}
 		
 		static public IEnumerable<Repository> GetRepositories ()

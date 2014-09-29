@@ -15,5 +15,8 @@ namespace MonoDevelop.VersionControl
 
 		[ItemProperty]
 		public bool Disabled;
+
+		[ItemProperty]
+		public bool DontAddRemoveByDefault;
 	}
 }

@@ -52,9 +52,14 @@ namespace MonoDevelop.VersionControl
 		
 		public override void MoveFile (FilePath source, FilePath dest)
 		{
+			Repository srcRepo = GetRepository (source);
+			if (VersionControlService.ConfigurationDontAddRemoveByDefault) {
+				base.MoveFile (source, dest);
+				srcRepo.NotifyFileChanged (source);
+				return;
+			}
 			IProgressMonitor monitor = new NullProgressMonitor ();
 
-			Repository srcRepo = GetRepository (source);
 			Repository dstRepo = GetRepository (dest);
 			
 			if (dstRepo != null && dstRepo.CanMoveFilesFrom (srcRepo, source, dest))
@@ -78,12 +83,21 @@ namespace MonoDevelop.VersionControl
 		public override void DeleteFile (FilePath file)
 		{
 			Repository repo = GetRepository (file);
+			if (VersionControlService.ConfigurationDontAddRemoveByDefault) {
+				base.DeleteFile (file);
+				repo.ClearCachedVersionInfo (file);
+				return;
+			}
 			repo.DeleteFile (file, true, new NullProgressMonitor (), false);
 		}
 		
 		public override void CreateDirectory (FilePath path)
 		{
 			Repository repo = GetRepository (path);
+			if (VersionControlService.ConfigurationDontAddRemoveByDefault) {
+				base.CreateDirectory (path);
+				return;
+			}
 			repo.ClearCachedVersionInfo (path);
 			System.IO.Directory.CreateDirectory (path);
 			repo.Add (path, false, new NullProgressMonitor ());
@@ -91,9 +105,14 @@ namespace MonoDevelop.VersionControl
 		
 		public override void MoveDirectory (FilePath sourcePath, FilePath destPath)
 		{
-			IProgressMonitor monitor = new NullProgressMonitor ();
-			
 			Repository srcRepo = GetRepository (sourcePath);
+			if (VersionControlService.ConfigurationDontAddRemoveByDefault) {
+				base.MoveDirectory (sourcePath, destPath);
+				srcRepo.ClearCachedVersionInfo (sourcePath);
+				return;
+			}
+			IProgressMonitor monitor = new NullProgressMonitor ();
+
 			Repository dstRepo = GetRepository (destPath);
 			
 			if (dstRepo.CanMoveFilesFrom (srcRepo, sourcePath, destPath))
@@ -106,6 +125,10 @@ namespace MonoDevelop.VersionControl
 
 		public override void DeleteDirectory (FilePath path)
 		{
+			if (VersionControlService.ConfigurationDontAddRemoveByDefault) {
+				base.DeleteDirectory (path);
+				return;
+			}
 			Repository repo = GetRepository (path);
 			repo.DeleteDirectory (path, true, new NullProgressMonitor (), false);
 		}

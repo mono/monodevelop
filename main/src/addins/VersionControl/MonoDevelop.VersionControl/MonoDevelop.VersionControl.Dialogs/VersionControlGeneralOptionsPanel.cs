@@ -33,6 +33,7 @@ namespace MonoDevelop.VersionControl
 	public class VersionControlGeneralOptionsPanel : OptionsPanel
 	{
 		Xwt.CheckBox disableVersionControl;
+		Xwt.CheckBox addRemoveByDefault;
 
 		public override Gtk.Widget CreatePanelWidget ()
 		{
@@ -44,6 +45,10 @@ namespace MonoDevelop.VersionControl
 				Active = VersionControlService.ConfigurationGlobalDisabled,
 			};
 			box.PackStart (disableVersionControl);
+			addRemoveByDefault = new Xwt.CheckBox (GettextCatalog.GetString ("Don't add and remove files automatically")) {
+				Active = VersionControlService.ConfigurationDontAddRemoveByDefault,
+			};
+			box.PackStart (addRemoveByDefault);
 			box.Show ();
 			return box.ToGtkWidget ();
 		}
@@ -51,6 +56,7 @@ namespace MonoDevelop.VersionControl
 		public override void ApplyChanges ()
 		{
 			VersionControlService.ConfigurationGlobalDisabled = disableVersionControl.Active;
+			VersionControlService.ConfigurationDontAddRemoveByDefault = addRemoveByDefault.Active;
 			VersionControlService.SaveConfiguration ();
 		}
 	}
