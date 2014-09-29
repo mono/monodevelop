@@ -7,10 +7,11 @@
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
 		<_Category>other/misc/general</_Category>
-		<Icon>md-project</Icon>
+		<Icon>md-project-console</Icon>
 		<LanguageName>IL</LanguageName>
 		<_Description>IL Console Project</_Description>
 		<DefaultFilename>ILConsoleProject</DefaultFilename>
+		<_GroupId>md-project-console</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

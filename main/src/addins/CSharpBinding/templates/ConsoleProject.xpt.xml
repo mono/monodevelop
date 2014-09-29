@@ -11,6 +11,7 @@
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a new C# console project.</_Description>
 		<DefaultFilename>ConsoleProject</DefaultFilename>
+		<_GroupId>md-project-console</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

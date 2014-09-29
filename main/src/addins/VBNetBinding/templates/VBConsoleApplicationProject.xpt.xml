@@ -11,6 +11,7 @@
 		<LanguageName>VBNet</LanguageName>
 		<_Description>Create a console VB.Net project</_Description>
 		<DefaultFilename>ConsoleVBProject</DefaultFilename>
+		<_GroupId>md-project-console</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

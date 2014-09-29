@@ -9,6 +9,7 @@
 		<_Description>Creates an NUnit library</_Description>
 		<LanguageName>C#,VBNet</LanguageName>
 		<DefaultFilename>NUnitProject</DefaultFilename>
+		<_GroupId>md-nunit-library</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

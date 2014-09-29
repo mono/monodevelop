@@ -11,6 +11,7 @@
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# project.</_Description>
 		<DefaultFilename>EmptyProject</DefaultFilename>
+		<_GroupId>md-empty-project</_GroupId>
 	</TemplateConfiguration>
 	
 	<Combine name = "${ProjectName}" directory = ".">
