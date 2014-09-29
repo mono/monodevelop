@@ -74,45 +74,46 @@ namespace MonoDevelop.Ide.Projects
 		{
 			base.Render (window, widget, background_area, cell_area, expose_area, flags);
 
-			if ((Template == null) || !Template.AvailableLanguages.Any ()) {
+			if ((Template == null) || !Template.AvailableLanguages.Any () || !IsTemplateRowSelected (widget, flags)) {
 				return;
 			}
 
-			StateType stateType = GetState (widget, flags);
+			using (var ctx = CairoHelper.Create (window)) {
+				using (var layout = new Pango.Layout (widget.PangoContext)) {
 
-			if (stateType == StateType.Selected) {
+					int textHeight = 0;
+					int textWidth = 0;
 
-				using (var ctx = CairoHelper.Create (window)) {
-					using (var layout = new Pango.Layout (widget.PangoContext)) {
+					SetMarkup (layout, GetSelectedLanguage ());
+					layout.GetPixelSize (out textWidth, out textHeight);
 
-						int textHeight = 0;
-						int textWidth = 0;
+					languageRect = GetLanguageButtonRectangle (window, widget, cell_area, textHeight, textWidth);
 
-						SetMarkup (layout, GetSelectedLanguage ());
-						layout.GetPixelSize (out textWidth, out textHeight);
+					RoundBorder (ctx, languageRect.X + 0.5, languageRect.Y + 0.5, languageRect.Width - 1, languageRect.Height - 1);
+					SetSourceColor (ctx, LanguageButtonBackgroundColor.ToCairoColor ());
+					ctx.Fill ();
 
-						languageRect = GetLanguageButtonRectangle (window, widget, cell_area, textHeight, textWidth);
+					int languageTextX = languageRect.X + languageLeftHandPadding;
+					if (!TemplateHasMultipleLanguages ()) {
+						languageTextX = languageRect.X + (languageRect.Width - textWidth) / 2;
+					}
+					int languageTextY = languageRect.Y + (languageRect.Height - textHeight) / 2;
 
-						RoundBorder (ctx, languageRect.X + 0.5, languageRect.Y + 0.5, languageRect.Width - 1, languageRect.Height - 1);
-						SetSourceColor (ctx, LanguageButtonBackgroundColor.ToCairoColor ());
-						ctx.Fill ();
+					window.DrawLayout (widget.Style.TextGC (StateType.Normal), languageTextX, languageTextY, layout);
 
-						int languageTextX = languageRect.X + languageLeftHandPadding;
-						if (!TemplateHasMultipleLanguages ()) {
-							languageTextX = languageRect.X + (languageRect.Width - textWidth) / 2;
-						}
-						int languageTextY = languageRect.Y + (languageRect.Height - textHeight) / 2;
-
-						window.DrawLayout (widget.Style.TextGC (StateType.Normal), languageTextX, languageTextY, layout);
-
-						if (TemplateHasMultipleLanguages ()) {
-							int triangleX = languageTextX + textWidth + languageRightHandPadding;
-							int triangleY = languageRect.Y + (languageRect.Height - dropdownTriangleHeight) / 2;
-							DrawTriangle (ctx, triangleX, triangleY);
-						}
+					if (TemplateHasMultipleLanguages ()) {
+						int triangleX = languageTextX + textWidth + languageRightHandPadding;
+						int triangleY = languageRect.Y + (languageRect.Height - dropdownTriangleHeight) / 2;
+						DrawTriangle (ctx, triangleX, triangleY);
 					}
 				}
 			}
+		}
+
+		static bool IsTemplateRowSelected (Widget widget, CellRendererState flags)
+		{
+			StateType stateType = GetState (widget, flags);
+			return (stateType == StateType.Selected) || (stateType == StateType.Active);
 		}
 
 		static StateType GetState (Widget widget, CellRendererState flags)
