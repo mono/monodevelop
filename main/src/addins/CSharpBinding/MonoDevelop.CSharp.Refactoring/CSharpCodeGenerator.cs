@@ -165,6 +165,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			var doc = IdeApp.Workbench.GetDocument (part.Region.FileName);
 			ctx = new CSharpTypeResolveContext (implementingType.Compilation.MainAssembly, null, implementingType, null);
 			options.DocumentContext = doc;
+			options.Editor = doc.Editor;
 
 			if (member is IUnresolvedMethod)
 				return GenerateCode ((IMethod) ((IUnresolvedMethod)member).CreateResolved (ctx), options);
@@ -183,11 +184,13 @@ namespace MonoDevelop.CSharp.Refactoring
 		                                                                      bool explicitDeclaration)
 		{
 			SetIndentTo (part);
+			var document = IdeApp.Workbench.GetDocument (part.Region.FileName);
 			var options = new CodeGenerationOptions () {
 				ExplicitDeclaration = explicitDeclaration,
 				ImplementingType = implementingType,
 				Part = part,
-				DocumentContext = IdeApp.Workbench.GetDocument (part.Region.FileName)
+				DocumentContext = document,
+				Editor = document.Editor
 			};
 			if (member is IMethod)
 				return GenerateCode ((IMethod)member, options);
