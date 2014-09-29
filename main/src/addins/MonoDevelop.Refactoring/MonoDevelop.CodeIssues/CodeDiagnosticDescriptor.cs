@@ -38,7 +38,7 @@ namespace MonoDevelop.CodeIssues
 		readonly Type codeIssueType;
 		readonly NRefactoryCodeDiagnosticAnalyzerAttribute nrefactoryAttr;
 
-		IDiagnosticAnalyzer instance;
+		DiagnosticAnalyzer instance;
 
 		/// <summary>
 		/// Gets the identifier string.
@@ -146,10 +146,10 @@ namespace MonoDevelop.CodeIssues
 		/// <summary>
 		/// Gets the roslyn code action provider.
 		/// </summary>
-		public IDiagnosticAnalyzer GetProvider ()
+		public DiagnosticAnalyzer GetProvider ()
 		{
 			if (instance == null)
-				instance = (IDiagnosticAnalyzer)Activator.CreateInstance(codeIssueType);
+				instance = (DiagnosticAnalyzer)Activator.CreateInstance(codeIssueType);
 
 			return instance;
 		}

@@ -337,12 +337,12 @@ namespace MonoDevelop.CodeActions
 
 		void AddFix (Menu menu, ref int mnemonic, CodeAction action)
 		{
-			var escapedLabel = action.Description.Replace ("_", "__");
+			var escapedLabel = action.Title.Replace ("_", "__");
 			var label = (mnemonic <= 10) ? "_" + (mnemonic++ % 10) + " " + escapedLabel : "  " + escapedLabel;
 			var thisInstanceMenuItem = new MenuItem (label);
 			thisInstanceMenuItem.Activated += new ContextActionRunner (action, Editor, DocumentContext, currentSmartTagBegin).Run;
 			thisInstanceMenuItem.Activated += delegate {
-				ConfirmUsage (action.Description);
+				ConfirmUsage (action.Title);
 				menu.Destroy ();
 			};
 			menu.Add (thisInstanceMenuItem);

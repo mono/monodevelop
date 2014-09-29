@@ -36,6 +36,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using MonoDevelop.CodeActions;
 using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore.Gui;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -51,7 +53,18 @@ namespace MonoDevelop.CodeIssues
 			var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
 			try {
 				var options = new AnalyzerOptions(new Microsoft.CodeAnalysis.AdditionalStream[0], new Dictionary<string, string> ());
-				return AnalyzerDriver.GetDiagnostics (model, CodeDiagnosticService.GetCodeIssues (language).Select (issue => issue.GetProvider ()), options, cancellationToken).Select (diagnostic => new DiagnosticResult(diagnostic));
+				var providers = CodeDiagnosticService.GetCodeIssues (language).Select (issue => issue.GetProvider ());
+
+				var driver = new AnalyzerDriver<SyntaxKind>(
+					System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers),
+					node => node.CSharpKind(),
+					options,
+					CancellationToken.None
+				);
+				model = model.WithEventQueue(driver.CompilationEventQueue);
+				model.GetDiagnostics().Count();
+
+				return driver.GetDiagnosticsAsync().Result.Select (diagnostic => new DiagnosticResult(diagnostic));
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while running diagnostics.", e); 
 				return Enumerable.Empty<Result> ();

@@ -47,11 +47,15 @@ namespace MonoDevelop.CodeIssues
 			var analyzers = new List<CodeDiagnosticDescriptor> ();
 			var codeFixes = new List<CodeFixDescriptor> ();
 			
-			foreach (var type in typeof (ICSharpCode.NRefactory6.CSharp.IssueCategories).Assembly.GetTypes ()) {
-				var analyzerAttr = (ExportDiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(ExportDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
+			var asm = typeof(ICSharpCode.NRefactory6.CSharp.IssueCategories).Assembly;
+			foreach (var type in asm.GetTypes ()) {
+				var analyzerAttr = (DiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(DiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 				var nrefactoryAnalyzerAttribute = (NRefactoryCodeDiagnosticAnalyzerAttribute)type.GetCustomAttributes(typeof(NRefactoryCodeDiagnosticAnalyzerAttribute), false).FirstOrDefault ();
 				if (analyzerAttr != null) {
-					analyzers.Add (new CodeDiagnosticDescriptor (analyzerAttr.Name, analyzerAttr.Languages, type, nrefactoryAnalyzerAttribute));
+					DiagnosticAnalyzer analyzer = (DiagnosticAnalyzer)Activator.CreateInstance (type);
+					foreach (var diag in analyzer.SupportedDiagnostics) {
+						analyzers.Add (new CodeDiagnosticDescriptor (diag.Title, new [] { "C#" }, type, nrefactoryAnalyzerAttribute));
+					}
 				}
 				
 				var codeFixAttr = (ExportCodeFixProviderAttribute)type.GetCustomAttributes(typeof(ExportCodeFixProviderAttribute), false).FirstOrDefault ();
