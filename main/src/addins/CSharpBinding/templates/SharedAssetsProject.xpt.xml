@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Shared Project</_Name>
-		<_Category>C#</_Category>
+		<_Category>other/misc/general</_Category>
 		<Icon>md-project-shared-assets</Icon>
 		<_Description>Creates a project that allows sharing files between projects</_Description>
 		<DefaultFilename>Shared</DefaultFilename>

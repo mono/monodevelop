@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
                 <_Name>Empty Project</_Name>
-                <_Category>VBNet</_Category>
+                <_Category>other/misc/general</_Category>
                 <Icon>md-project</Icon>
                 <LanguageName>VBNet</LanguageName>
                 <_Description>Creates an empty VB.Net solution.</_Description>
