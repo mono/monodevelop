@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using Gtk;
 using Mono.Unix;
 using MonoDevelop.Components;
@@ -78,20 +79,19 @@ namespace MonoDevelop.Ide.Projects
 		[GLib.ConnectBefore]
 		void TemplatesTreeViewButtonPressed (object o, ButtonPressEventArgs args)
 		{
+			SolutionTemplate template = GetSelectedTemplate ();
+			if ((template == null) || (template.AvailableLanguages.Count <= 1)) {
+				return;
+			}
+
 			if (templateTextRenderer.IsLanguageButtonPressed (args.Event)) {
-
-				SolutionTemplate template = GetSelectedTemplate ();
-				if (template == null) {
-					return;
-				}
-
 				var menu = new Menu ();
 				menu.AttachToWidget (this, null);
 				AddLanguageMenuItems (menu, template);
 				menu.ModifyBg (StateType.Normal, TemplateCellRendererText.LanguageButtonBackgroundColor);
 				menu.ShowAll ();
 
-				MenuPositionFunc posFunc = (Gtk.Menu m, out int x, out int y, out bool pushIn) => {
+				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {
 					Gdk.Rectangle rect = templateTextRenderer.GetLanguageRect ();
 					Gdk.Rectangle screenRect = GtkUtil.ToScreenCoordinates (templatesTreeView, templatesTreeView.ParentWindow, rect);
 					x = screenRect.X;

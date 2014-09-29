@@ -25,9 +25,10 @@
 // THE SOFTWARE.
 //
 
+using System;
+using System.Linq;
 using Gdk;
 using Gtk;
-using System;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Templates;
 
@@ -41,13 +42,23 @@ namespace MonoDevelop.Ide.Projects
 		Rectangle languageRect;
 		int dropdownTriangleWidth = 8;
 		int dropdownTriangleHeight = 5;
-		const int languagueButtonRightHandEdgePadding = 10;
+		const int languageButtonRightHandEdgePadding = 10;
 		const int dropdownTriangleRightHandPadding = 8;
 		const int languageRightHandPadding = 4;
 		const int languageLeftHandPadding = 9;
 
+		int minLanguageRectWidth;
+
 		public SolutionTemplate Template { get; set; }
 		public string SelectedLanguage { get; set; }
+
+		public TemplateCellRendererText ()
+		{
+			minLanguageRectWidth = languageLeftHandPadding +
+				dropdownTriangleWidth +
+				dropdownTriangleRightHandPadding +
+				languageRightHandPadding + 10;
+		}
 
 		public bool IsLanguageButtonPressed (EventButton button)
 		{
@@ -63,7 +74,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			base.Render (window, widget, background_area, cell_area, expose_area, flags);
 
-			if (Template == null) {
+			if ((Template == null) || !Template.AvailableLanguages.Any ()) {
 				return;
 			}
 
@@ -77,8 +88,8 @@ namespace MonoDevelop.Ide.Projects
 						int textHeight = 0;
 						int textWidth = 0;
 
-						SetMarkup (layout, SelectedLanguage);
-						layout.GetPixelSize (out textHeight, out textWidth);
+						SetMarkup (layout, GetSelectedLanguage ());
+						layout.GetPixelSize (out textWidth, out textHeight);
 
 						languageRect = GetLanguageButtonRectangle (window, widget, cell_area, textHeight, textWidth);
 
@@ -86,14 +97,19 @@ namespace MonoDevelop.Ide.Projects
 						SetSourceColor (ctx, LanguageButtonBackgroundColor.ToCairoColor ());
 						ctx.Fill ();
 
-						int lanuageTextX = languageRect.X + languageLeftHandPadding;
+						int languageTextX = languageRect.X + languageLeftHandPadding;
+						if (!TemplateHasMultipleLanguages ()) {
+							languageTextX = languageRect.X + (languageRect.Width - textWidth) / 2;
+						}
 						int languageTextY = languageRect.Y + (languageRect.Height - textHeight) / 2;
 
-						window.DrawLayout (widget.Style.TextGC (StateType.Normal), lanuageTextX, languageTextY, layout);
+						window.DrawLayout (widget.Style.TextGC (StateType.Normal), languageTextX, languageTextY, layout);
 
-						int triangleX = lanuageTextX + textWidth + languageRightHandPadding;
-						int triangleY = languageRect.Y + (languageRect.Height - dropdownTriangleHeight) / 2;
-						DrawTriangle (ctx, triangleX, triangleY);
+						if (TemplateHasMultipleLanguages ()) {
+							int triangleX = languageTextX + textWidth + languageRightHandPadding;
+							int triangleY = languageRect.Y + (languageRect.Height - dropdownTriangleHeight) / 2;
+							DrawTriangle (ctx, triangleX, triangleY);
+						}
 					}
 				}
 			}
@@ -113,6 +129,17 @@ namespace MonoDevelop.Ide.Projects
 			return stateType;
 		}
 
+		string GetSelectedLanguage ()
+		{
+			if (!Template.AvailableLanguages.Any ()) {
+				return String.Empty;
+			} else if (Template.AvailableLanguages.Contains (SelectedLanguage)) {
+				return SelectedLanguage;
+			}
+
+			return Template.AvailableLanguages.First ();
+		}
+
 		void SetMarkup (Pango.Layout layout, string text)
 		{
 			string markup = "<span size='smaller'>" + text + "</span>";
@@ -122,13 +149,24 @@ namespace MonoDevelop.Ide.Projects
 		Rectangle GetLanguageButtonRectangle (Drawable window, Widget widget, Rectangle cell_area, int textHeight, int textWidth)
 		{
 			int languageRectangleHeight = cell_area.Height - 10;
-			int languageRectangleWidth = textWidth + languageLeftHandPadding + languageRightHandPadding + dropdownTriangleWidth + dropdownTriangleRightHandPadding;
+			int languageRectangleWidth = textWidth + languageLeftHandPadding;
+			if (TemplateHasMultipleLanguages ()) {
+				languageRectangleWidth += languageRightHandPadding + dropdownTriangleWidth + dropdownTriangleRightHandPadding;
+			} else {
+				languageRectangleWidth += languageLeftHandPadding;
+				languageRectangleWidth = Math.Max (languageRectangleWidth, minLanguageRectWidth);
+			}
 
 			var dy = (cell_area.Height - languageRectangleHeight) / 2 - 1;
 			var y = cell_area.Y + dy;
-			var x = widget.Allocation.Width - languageRectangleWidth - languagueButtonRightHandEdgePadding;
+			var x = widget.Allocation.Width - languageRectangleWidth - languageButtonRightHandEdgePadding;
 
 			return new Rectangle (x, y, languageRectangleWidth, languageRectangleHeight);
+		}
+
+		bool TemplateHasMultipleLanguages ()
+		{
+			return Template.AvailableLanguages.Count > 1;
 		}
 
 		void DrawTriangle (Cairo.Context ctx, int x, int y)
