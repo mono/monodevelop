@@ -169,6 +169,9 @@ namespace MonoDevelop.Components.Docking
 				lastFrameSize = args.Allocation.Size;
 				if (autoShowFrame != null)
 					bar.Frame.UpdateSize (bar, autoShowFrame);
+
+				UnscheduleAutoHide ();
+				AutoHide (false);
 			}
 		}
 		
