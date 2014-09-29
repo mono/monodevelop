@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Templates
 
 			Description = template.Description;
 			Category = template.Category;
+			Language = template.LanguageName;
 		}
 
 		internal ProjectTemplate Template {

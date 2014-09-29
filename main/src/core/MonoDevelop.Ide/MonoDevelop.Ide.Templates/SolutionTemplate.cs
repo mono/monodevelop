@@ -35,6 +35,7 @@ namespace MonoDevelop.Ide.Templates
 		public static readonly string DefaultLargeImageId = "template-default-background-light.png";
 
 		string largeImageId;
+		string language;
 
 		public SolutionTemplate (string id, string name, string iconId)
 		{
@@ -43,8 +44,6 @@ namespace MonoDevelop.Ide.Templates
 			IconId = iconId;
 
 			AvailableLanguages = new List<string> ();
-			AvailableLanguages.Add ("C#");
-			AvailableLanguages.Add ("F#");
 		}
 
 		public string Id { get; private set; }
@@ -52,6 +51,16 @@ namespace MonoDevelop.Ide.Templates
 		public string IconId { get; private set; }
 		public string Description { get; set; }
 		public string Category { get; set; }
+
+		public string Language {
+			get { return language; }
+			set {
+				language = value;
+				if (!String.IsNullOrEmpty (value)) {
+					AvailableLanguages.Add (language);
+				}
+			}
+		}
 
 		public string LargeImageId {
 			get {
