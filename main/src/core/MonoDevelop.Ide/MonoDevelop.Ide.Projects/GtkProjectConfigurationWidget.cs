@@ -24,8 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.IO;
 using Gtk;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Core;
+using MonoDevelop.Components;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -50,6 +53,7 @@ namespace MonoDevelop.Ide.Projects
 			solutionNameTextBox.Changed += (sender, e) => OnSolutionNameTextBoxChanged ();
 			createGitIgnoreFileCheckBox.Clicked += (sender, e) => OnCreateGitIgnoreFileCheckBoxClicked ();
 			createProjectWithinSolutionDirectoryCheckBox.Clicked += (sender, e) => OnCreateProjectWithinSolutionDirectoryCheckBoxClicked ();
+			browseButton.Clicked += (sender, e) => BrowseButtonClicked ();
 		}
 
 		void OnLocationTextBoxChanged ()
@@ -80,6 +84,46 @@ namespace MonoDevelop.Ide.Projects
 		{
 			projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory = createProjectWithinSolutionDirectoryCheckBox.Active;
 			projectFolderPreviewWidget.ShowSolutionFolderNode (projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+		}
+
+		void BrowseButtonClicked ()
+		{
+			FilePath startingFolder = GetStartingFolder ();
+			FilePath selectedFolder = BrowseForFolder (startingFolder);
+			if (selectedFolder != null) {
+				locationTextBox.Text = selectedFolder;
+			}
+		}
+
+		FilePath GetStartingFolder ()
+		{
+			try {
+				FilePath folder = locationTextBox.Text;
+
+				if (!folder.IsNullOrEmpty && !folder.IsDirectory) {
+					folder = folder.ParentDirectory;
+					if (!folder.IsNullOrEmpty && !folder.IsDirectory)
+						folder = FilePath.Null;
+				}
+				return folder;
+
+			} catch (FileNotFoundException) {
+			}
+
+			return FilePath.Null;
+		}
+
+		FilePath BrowseForFolder (FilePath startingFolder)
+		{
+			var dialog = new SelectFolderDialog ();
+			if (startingFolder != null)
+				dialog.CurrentFolder = startingFolder;
+
+			dialog.TransientFor = Toplevel as Window;
+
+			if (dialog.Run ())
+				return dialog.SelectedFile;
+			return null;
 		}
 
 		public void Load (ProjectConfiguration projectConfiguration)
