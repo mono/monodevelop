@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Templates
 		public string Name { get; private set; }
 		public string IconId { get; private set; }
 		public bool IsDefault { get; set; }
+		public bool IsTopLevel { get; set; }
 
 		public void AddCategory (TemplateCategory category)
 		{
@@ -72,7 +73,8 @@ namespace MonoDevelop.Ide.Templates
 		public TemplateCategory Clone ()
 		{
 			var clone = new TemplateCategory (Id, Name, IconId) {
-				IsDefault = IsDefault
+				IsDefault = IsDefault,
+				IsTopLevel = IsTopLevel
 			};
 			foreach (TemplateCategory child in categories) {
 				clone.AddCategory (child.Clone ());

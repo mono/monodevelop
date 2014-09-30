@@ -52,6 +52,13 @@ namespace MonoDevelop.Ide.Codons
 			return category;
 		}
 
+		public TemplateCategory ToTopLevelTemplateCategory ()
+		{
+			TemplateCategory category = ToTemplateCategory ();
+			category.IsTopLevel = true;
+			return category;
+		}
+
 		bool IsDefaultCategory ()
 		{
 			bool result = false;

@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Projects
 			templateTextRenderer.SelectedLanguage = "C#";
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
+			templateCategoriesTreeView.Selection.SelectFunction = TemplateCategoriesTreeViewSelection;
 			templatesTreeView.Selection.Changed += TemplatesTreeViewSelectionChanged;
 			templatesTreeView.ButtonPressEvent += TemplatesTreeViewButtonPressed;
 			templatesTreeView.Selection.SelectFunction = TemplatesTreeViewSelection;
@@ -120,11 +121,24 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
+		bool TemplateCategoriesTreeViewSelection (TreeSelection selection, TreeModel model, TreePath path, bool path_currently_selected)
+		{
+			TreeIter iter;
+			if (model.GetIter (out iter, path)) {
+				var category = model.GetValue (iter, TemplateCategoryColumn) as TemplateCategory;
+				if (category.IsTopLevel) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		bool TemplatesTreeViewSelection (TreeSelection selection, TreeModel model, TreePath path, bool path_currently_selected)
 		{
 			TreeIter iter;
 			if (model.GetIter (out iter, path)) {
-				var template = templatesListStore.GetValue (iter, TemplateColumn) as SolutionTemplate;
+				var template = model.GetValue (iter, TemplateColumn) as SolutionTemplate;
 				if (template == null) {
 					return false;
 				}

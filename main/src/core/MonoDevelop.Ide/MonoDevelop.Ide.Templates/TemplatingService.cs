@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Templates
 		{
 			var codon = (TemplateCategoryCodon)args.ExtensionNode;
 			if (args.Change == ExtensionChange.Add) {
-				projectTemplateCategories.Add (codon.ToTemplateCategory ());
+				projectTemplateCategories.Add (codon.ToTopLevelTemplateCategory ());
 			} else {
 				projectTemplateCategories.RemoveAll (category => category.Id == codon.Id);
 			}
