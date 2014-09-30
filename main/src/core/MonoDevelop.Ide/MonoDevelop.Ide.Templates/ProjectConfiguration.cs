@@ -97,7 +97,10 @@ namespace MonoDevelop.Ide.Templates
 				if (CreateSeparateSolutionDirectory)
 					path = Path.Combine (path, GetValidDir (SolutionName));
 
-				return Path.Combine (path, GetValidDir (ProjectName));
+				if (CreateSeparateProjectDirectory)
+					return Path.Combine (path, GetValidDir (ProjectName));
+
+				return path;
 			}
 		}
 
@@ -132,6 +135,10 @@ namespace MonoDevelop.Ide.Templates
 
 		bool CreateSeparateSolutionDirectory {
 			get { return CreateSolution && CreateProjectDirectoryInsideSolutionDirectory; }
+		}
+
+		bool CreateSeparateProjectDirectory {
+			get { return CreateProjectDirectoryInsideSolutionDirectory || CreateSolution; }
 		}
 	}
 }

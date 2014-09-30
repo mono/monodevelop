@@ -256,6 +256,7 @@
     <Compile Include="MonoDevelop.Projects\WebProjectTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCategorizerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TestableProjectTemplateCategorizer.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\FinalProjectConfigurationTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
