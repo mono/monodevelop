@@ -794,7 +794,7 @@ namespace MonoDevelop.MacIntegration
 			r.Y = desktopBounds.Height - r.Y - r.Height;
 			if (desktopBounds.Y < 0)
 				r.Y += desktopBounds.Y;
-			return new RectangleF (r.X, r.Y, r.Width, r.Height);
+			return new RectangleF (desktopBounds.X + r.X, r.Y, r.Width, r.Height);
 		}
 
 		static Gdk.Rectangle CalcDesktopBounds ()
