@@ -316,5 +316,20 @@ namespace MonoDevelop.Ide
 		{
 			return PlatformService.IsModalDialogRunning ();
 		}
+
+		internal static void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			PlatformService.AddChildWindow (parent, child);
+		}
+
+		internal static void RemoveChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			PlatformService.RemoveChildWindow (parent, child);
+		}
+
+		internal static void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		{
+			PlatformService.PlaceWindow (window, x, y, width, height);
+		}
 	}
 }

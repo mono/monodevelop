@@ -514,6 +514,7 @@ namespace MonoDevelop.Ide
 		public bool AllowApplyToAll { get; set; }
 		public int DefaultButton { get; set; }
 		public CancellationToken CancellationToken { get; private set; }
+		public bool UseMarkup { get; set; }
 		
 		public void AddOption (string id, string text, bool setByDefault)
 		{

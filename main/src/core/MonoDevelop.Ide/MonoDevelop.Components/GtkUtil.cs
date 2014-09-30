@@ -155,6 +155,18 @@ namespace MonoDevelop.Components
 			}
 		}
 
+		public static Gdk.Point GetScreenCoordinates (this Gtk.Widget w, Gdk.Point p)
+		{
+			if (w.ParentWindow == null)
+				return Gdk.Point.Zero;
+			int x, y;
+			w.ParentWindow.GetOrigin (out x, out y);
+			var a = w.Allocation;
+			x += a.X;
+			y += a.Y;
+			return new Gdk.Point (x + p.X, y + p.Y);
+		}
+
 		public static void EnableAutoTooltips (this Gtk.TreeView tree)
 		{
 			TreeViewTooltipsData data = new TreeViewTooltipsData ();
