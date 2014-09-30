@@ -70,19 +70,20 @@ namespace MonoDevelop.Ide.Projects
 
 		public NewProjectDialogController ()
 		{
-			finalConfigurationPage = new FinalProjectConfigurationPage (projectConfiguration);
 			LoadTemplateCategories ();
 		}
 
 		public bool Show ()
 		{
 			projectConfiguration.CreateSolution = ParentFolder == null;
-			finalConfigurationPage.ParentFolder = ParentFolder;
 			SetDefaultLocation ();
 			SelectTemplate ();
 
+			CreateFinalConfigurationPage ();
+
 			dialog = CreateNewProjectDialog ();
 			dialog.RegisterController (this);
+
 			dialog.ShowDialog ();
 
 			if (disposeNewItem && NewItem != null)
@@ -102,6 +103,15 @@ namespace MonoDevelop.Ide.Projects
 		INewProjectDialogBackend CreateNewProjectDialog ()
 		{
 			return new GtkNewProjectDialogBackend ();
+		}
+
+		void CreateFinalConfigurationPage ()
+		{
+			finalConfigurationPage = new FinalProjectConfigurationPage (projectConfiguration);
+			finalConfigurationPage.ParentFolder = ParentFolder;
+			finalConfigurationPage.IsValidChanged += (sender, e) => {
+				dialog.CanMoveToNextPage = finalConfigurationPage.IsValid;
+			};
 		}
 
 		public IEnumerable<TemplateCategory> TemplateCategories {

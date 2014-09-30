@@ -63,6 +63,11 @@ namespace MonoDevelop.Ide.Projects
 			Destroy ();
 		}
 
+		public bool CanMoveToNextPage {
+			get { return nextButton.Sensitive; }
+			set { nextButton.Sensitive = value; }
+		}
+
 		public void RegisterController (INewProjectDialogController controller)
 		{
 			this.controller = controller;
@@ -235,7 +240,7 @@ namespace MonoDevelop.Ide.Projects
 				ShowTemplate (template);
 			}
 
-			nextButton.Sensitive = (template != null);
+			CanMoveToNextPage = (template != null);
 		}
 
 		void ClearSelectedTemplateInformation ()
@@ -372,6 +377,7 @@ namespace MonoDevelop.Ide.Projects
 			previousButton.Sensitive = true;
 			if (widget == projectConfigurationWidget) {
 				nextButton.Label = Catalog.GetString ("Create");
+				CanMoveToNextPage = false;
 			}
 		}
 

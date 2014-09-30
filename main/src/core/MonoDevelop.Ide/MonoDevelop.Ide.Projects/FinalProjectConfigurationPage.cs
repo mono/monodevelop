@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using MonoDevelop.Ide.Templates;
 using SolutionFolder = MonoDevelop.Projects.SolutionFolder;
 
@@ -32,6 +33,7 @@ namespace MonoDevelop.Ide.Projects
 	public class FinalProjectConfigurationPage
 	{
 		ProjectConfiguration config;
+		bool valid;
 
 		public FinalProjectConfigurationPage (ProjectConfiguration config)
 		{
@@ -42,12 +44,18 @@ namespace MonoDevelop.Ide.Projects
 
 		public string Location {
 			get { return config.Location; }
-			set { config.Location = value; }
+			set {
+				config.Location = value;
+				CheckIsValid ();
+			}
 		}
 
 		public string ProjectName {
 			get { return config.ProjectName; }
-			set { config.ProjectName = value; }
+			set {
+				config.ProjectName = value;
+				CheckIsValid ();
+			}
 		}
 
 		public string SolutionName {
@@ -57,7 +65,10 @@ namespace MonoDevelop.Ide.Projects
 				}
 				return config.SolutionName;
 			}
-			set { config.SolutionName = value; }
+			set {
+				config.SolutionName = value;
+				CheckIsValid ();
+			}
 		}
 
 		public string ProjectFileName {
@@ -105,6 +116,32 @@ namespace MonoDevelop.Ide.Projects
 
 		public bool IsUseGitEnabled {
 			get { return config.CreateSolution; }
+		}
+
+		void CheckIsValid ()
+		{
+			IsValid = (!IsProjectNameEnabled || !String.IsNullOrEmpty (config.ProjectName)) &&
+				(!IsSolutionNameEnabled || !String.IsNullOrEmpty (config.SolutionName)) &&
+				!String.IsNullOrEmpty (config.Location);
+		}
+
+		public bool IsValid {
+			get { return valid; }
+			set {
+				if (valid != value) {
+					valid = value;
+					OnIsValidChanged ();
+				}
+			}
+		}
+
+		public event EventHandler IsValidChanged;
+
+		void OnIsValidChanged ()
+		{
+			if (IsValidChanged != null) {
+				IsValidChanged (this, new EventArgs ());
+			}
 		}
 	}
 }

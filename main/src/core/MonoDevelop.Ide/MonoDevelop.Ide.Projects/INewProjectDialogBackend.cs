@@ -31,6 +31,7 @@ namespace MonoDevelop.Ide.Projects
 		void ShowDialog ();
 		void CloseDialog ();
 		void RegisterController (INewProjectDialogController controller);
+		bool CanMoveToNextPage { get; set; }
 	}
 }
 
