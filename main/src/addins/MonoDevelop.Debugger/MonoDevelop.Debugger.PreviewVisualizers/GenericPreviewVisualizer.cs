@@ -29,7 +29,7 @@ using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.PreviewVisualizers
 {
-	class GenericPreviewVisualizer : PreviewVisualizer
+	public class GenericPreviewVisualizer : PreviewVisualizer
 	{
 		#region implemented abstract members of PreviewVisualizer
 

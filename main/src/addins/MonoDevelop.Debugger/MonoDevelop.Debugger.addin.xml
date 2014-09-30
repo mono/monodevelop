@@ -49,27 +49,6 @@
 		<Type class="MonoDevelop.Debugger.Visualizer.CStringVisualizer" />
 	</Extension>
 
-	<Extension path="/MonoDevelop/Debugging/DebugValueConverters">
-		<Type class="MonoDevelop.Debugger.Converters.ColorsConverters" />
-		<Type class="MonoDevelop.Debugger.Converters.SizesConverters" />
-		<Type class="MonoDevelop.Debugger.Converters.RectanglesConverters" />
-		<Type class="MonoDevelop.Debugger.Converters.ImageConverter" />
-		<Type class="MonoDevelop.Debugger.Converters.LocationConverters" />
-		<Type class="MonoDevelop.Debugger.Converters.BezierPathConverter" />
-	</Extension>
-
-	<Extension path="/MonoDevelop/Debugging/InlineVisualizers">
-		<Type class="MonoDevelop.Debugger.InlineVisualizers.ColorInlineVisualizer" />
-	</Extension>
-
-	<Extension path="/MonoDevelop/Debugging/PreviewVisualizers">
-		<Type class="MonoDevelop.Debugger.PreviewVisualizers.SizeAndRectanglePreviewVisualizer" />
-		<Type class="MonoDevelop.Debugger.PreviewVisualizers.ColorPreviewVisualizer" />
-		<Type class="MonoDevelop.Debugger.PreviewVisualizers.ImagePreviewVisualizer" />
-		<Type class="MonoDevelop.Debugger.PreviewVisualizers.LocationPreviewVisualizer" />
-		<Type class="MonoDevelop.Debugger.PreviewVisualizers.BezierPathPreviewVisualizer" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/Ide/StartupHandlers">
 		<Class class="MonoDevelop.Debugger.Initializer" />
 	</Extension>

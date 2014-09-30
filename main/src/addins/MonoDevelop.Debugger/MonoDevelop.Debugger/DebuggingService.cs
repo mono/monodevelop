@@ -212,7 +212,7 @@ namespace MonoDevelop.Debugger
 			return GetPreviewVisualizer (val) != null;
 		}
 
-		internal static DebugValueConverter<T> GetGetConverter<T> (ObjectValue val)
+		public static DebugValueConverter<T> GetGetConverter<T> (ObjectValue val)
 		{
 			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/DebugValueConverters", true)) {
 				var cv = v as DebugValueConverter<T>;
@@ -223,12 +223,12 @@ namespace MonoDevelop.Debugger
 			return null;
 		}
 
-		internal static bool HasGetConverter<T> (ObjectValue val)
+		public static bool HasGetConverter<T> (ObjectValue val)
 		{
 			return GetGetConverter<T> (val) != null;
 		}
 
-		internal static DebugValueConverter<T> GetSetConverter<T> (ObjectValue val)
+		public static DebugValueConverter<T> GetSetConverter<T> (ObjectValue val)
 		{
 			foreach (object v in AddinManager.GetExtensionObjects ("/MonoDevelop/Debugging/DebugValueConverters", true)) {
 				var cv = v as DebugValueConverter<T>;
@@ -239,7 +239,7 @@ namespace MonoDevelop.Debugger
 			return null;
 		}
 
-		internal static bool HasSetConverter<T> (ObjectValue val)
+		public static bool HasSetConverter<T> (ObjectValue val)
 		{
 			return GetSetConverter<T> (val) != null;
 		}
