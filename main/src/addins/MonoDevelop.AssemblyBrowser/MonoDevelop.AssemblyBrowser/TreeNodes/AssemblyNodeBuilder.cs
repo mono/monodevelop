@@ -176,7 +176,21 @@ namespace MonoDevelop.AssemblyBrowser
 					b.AddAssembly (compilationUnit, true);
 			});
 		}
-		
+
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		{
+			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
+			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);
+			if (compilationUnit == null) {
+				LoggingService.LogError ("Can't get cecil object for assembly:" + assembly);
+				return new List<ReferenceSegment> ();
+			}
+			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), null, b => {
+				if (b != null)
+					b.AddAssembly (compilationUnit, true);
+			});
+		}
+
 		public string GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			return null;
