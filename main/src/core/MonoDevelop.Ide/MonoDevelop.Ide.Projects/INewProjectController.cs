@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Projects
 		IEnumerable<TemplateCategory> TemplateCategories { get; }
 		TemplateCategory SelectedSecondLevelCategory { get; }
 		SolutionTemplate SelectedTemplate { get; set; }
-		ProjectConfiguration ProjectConfiguration { get; }
+		FinalProjectConfigurationPage FinalConfiguration { get; }
 
 		TemplateWizard CreateTemplateWizard (string id);
 

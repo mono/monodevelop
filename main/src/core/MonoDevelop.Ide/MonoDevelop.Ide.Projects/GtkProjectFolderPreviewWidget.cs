@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 		TreeIter solutionNode;
 		TreeIter gitIgnoreNode;
 
-		ProjectConfiguration projectConfiguration;
+		FinalProjectConfigurationPage projectConfiguration;
 
 		public GtkProjectFolderPreviewWidget ()
 		{
@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Projects
 			folderTreeView.AppendColumn (column);
 		}
 
-		public void Load (ProjectConfiguration projectConfiguration)
+		public void Load (FinalProjectConfigurationPage projectConfiguration)
 		{
 			this.projectConfiguration = projectConfiguration;
 			folderTreeStore.Clear ();
@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public void ShowSolutionFolderNode (bool show)
 		{
-			if (projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory) {
+			if (show) {
 				if (!ShowingSolutionFolderNode ()) {
 					folderTreeStore.Clear ();
 					AddProjectWithSolutionDirectoryToTree ();

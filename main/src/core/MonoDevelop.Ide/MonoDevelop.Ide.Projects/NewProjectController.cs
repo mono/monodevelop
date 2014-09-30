@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		List<TemplateCategory> templateCategories;
 		INewProjectDialogBackend dialog;
+		FinalProjectConfigurationPage finalConfigurationPage;
 
 		ProjectConfiguration projectConfiguration = new ProjectConfiguration () {
 			CreateProjectDirectoryInsideSolutionDirectory = true,
@@ -69,12 +70,14 @@ namespace MonoDevelop.Ide.Projects
 
 		public NewProjectDialogController ()
 		{
+			finalConfigurationPage = new FinalProjectConfigurationPage (projectConfiguration);
 			LoadTemplateCategories ();
 		}
 
 		public bool Show ()
 		{
 			projectConfiguration.CreateSolution = ParentFolder == null;
+			finalConfigurationPage.ParentFolder = ParentFolder;
 			SetDefaultLocation ();
 			SelectTemplate ();
 
@@ -108,8 +111,8 @@ namespace MonoDevelop.Ide.Projects
 		public TemplateCategory SelectedSecondLevelCategory { get; private set; }
 		public SolutionTemplate SelectedTemplate { get; set; }
 
-		public ProjectConfiguration ProjectConfiguration {
-			get { return projectConfiguration; }
+		public FinalProjectConfigurationPage FinalConfiguration {
+			get { return finalConfigurationPage; }
 		}
 
 		void LoadTemplateCategories ()

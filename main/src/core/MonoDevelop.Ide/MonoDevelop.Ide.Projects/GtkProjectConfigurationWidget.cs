@@ -27,15 +27,15 @@
 using System.IO;
 using Gtk;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Projects
 {
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class GtkProjectConfigurationWidget : Gtk.Bin
 	{
-		ProjectConfiguration projectConfiguration;
+		FinalProjectConfigurationPage projectConfiguration;
 
 		public GtkProjectConfigurationWidget ()
 		{
@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Projects
 			return null;
 		}
 
-		public void Load (ProjectConfiguration projectConfiguration)
+		public void Load (FinalProjectConfigurationPage projectConfiguration)
 		{
 			this.projectConfiguration = projectConfiguration;
 			LoadWidget ();
@@ -136,6 +136,12 @@ namespace MonoDevelop.Ide.Projects
 		{
 			projectFolderPreviewWidget.Load (projectConfiguration);
 			locationTextBox.Text = projectConfiguration.Location;
+			solutionNameTextBox.Text = projectConfiguration.SolutionName;
+
+			solutionNameTextBox.Sensitive = projectConfiguration.IsSolutionNameEnabled;
+			projectNameTextBox.Sensitive = projectConfiguration.IsProjectNameEnabled;
+			useGitCheckBox.Sensitive = projectConfiguration.IsUseGitEnabled;
+			createGitIgnoreFileCheckBox.Sensitive = projectConfiguration.IsGitIgnoreEnabled;
 		}
 	}
 }

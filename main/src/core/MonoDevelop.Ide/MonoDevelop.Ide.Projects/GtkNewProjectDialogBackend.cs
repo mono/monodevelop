@@ -407,7 +407,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
-			projectConfigurationWidget.Load (controller.ProjectConfiguration);
+			projectConfigurationWidget.Load (controller.FinalConfiguration);
 			return projectConfigurationWidget;
 		}
 
