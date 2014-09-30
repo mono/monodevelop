@@ -39,5 +39,6 @@ namespace MonoDevelop.AssemblyBrowser
 		string GetDocumentationMarkup (ITreeNavigator navigator);
 		List<ReferenceSegment> Disassemble (TextEditorData data, ITreeNavigator navigator);
 		List<ReferenceSegment> Decompile (TextEditorData data, ITreeNavigator navigator, bool publicOnly);
+		List<ReferenceSegment> GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly);
 	}
 }

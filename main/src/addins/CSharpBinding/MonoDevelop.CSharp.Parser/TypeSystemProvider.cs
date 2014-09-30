@@ -84,7 +84,13 @@ namespace MonoDevelop.CSharp.Parser
 			result.ParsedFile = pf;
 			result.Add (GetSemanticTags (unit));
 
-			result.CreateRefactoringContext = (doc, token) => MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, token).Result;
+			result.CreateRefactoringContext = delegate (MonoDevelop.Ide.Gui.Document doc, System.Threading.CancellationToken token) {
+				var task = MDRefactoringContext.Create (doc, doc.Editor.Caret.Location, token);
+				task.Wait (5000, token);
+				if (!task.IsCompleted)
+					return null;
+				return task.Result;
+			};
 			result.CreateRefactoringContextWithEditor = (data, resolver, token) => new MDRefactoringContext ((DotNetProject)project, data, result, (CSharpAstResolver)resolver, TextLocation.Empty, token);
 
 			if (storeAst) {

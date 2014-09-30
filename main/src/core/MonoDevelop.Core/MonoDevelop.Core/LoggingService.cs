@@ -59,6 +59,8 @@ namespace MonoDevelop.Core
 		// Thirdparameter shows if the exception is fatal or not
 		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccured;
 
+		static List<CrashReporter> customCrashReporters = new List<CrashReporter> ();
+
 		static LoggingService ()
 		{
 			var consoleLogger = new ConsoleLogger ();
@@ -172,6 +174,18 @@ namespace MonoDevelop.Core
 			RestoreOutputRedirection ();
 		}
 
+		public static void RegisterCrashReporter (CrashReporter reporter)
+		{
+			lock (customCrashReporters)
+				customCrashReporters.Add (reporter);
+		}
+
+		public static void UnregisterCrashReporter (CrashReporter reporter)
+		{
+			lock (customCrashReporters)
+				customCrashReporters.Remove (reporter);
+		}
+
 		internal static void ReportUnhandledException (Exception ex, bool willShutDown)
 		{
 			ReportUnhandledException (ex, willShutDown, false, null);
@@ -201,8 +215,10 @@ namespace MonoDevelop.Core
 				if (ReportCrashes.HasValue && !ReportCrashes.Value)
 					return;
 
-				foreach (var cr in AddinManager.GetExtensionObjects<CrashReporter> (true))
-					cr.ReportCrash (ex, willShutDown, tags);
+				lock (customCrashReporters) {
+					foreach (var cr in customCrashReporters.Concat (AddinManager.GetExtensionObjects<CrashReporter> (true)))
+						cr.ReportCrash (ex, willShutDown, tags);
+				}
 
 				//ensure we don't lose the setting
 				if (ReportCrashes != oldReportCrashes) {

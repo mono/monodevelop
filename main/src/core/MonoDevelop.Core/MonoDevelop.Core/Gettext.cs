@@ -84,6 +84,8 @@ namespace MonoDevelop.Core
 					// MD is located at $prefix/lib/monodevelop/bin
 					// adding "../../.." should give us $prefix
 					string prefix = Path.Combine (Path.Combine (Path.Combine (location, ".."), ".."), "..");
+					if (Platform.IsMac)
+						prefix = Path.Combine (prefix, "..", "MacOS");
 					//normalise it
 					prefix = Path.GetFullPath (prefix);
 					//catalogue is installed to "$prefix/share/locale" by default

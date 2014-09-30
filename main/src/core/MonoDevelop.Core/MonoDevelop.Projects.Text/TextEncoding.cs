@@ -121,11 +121,20 @@ namespace MonoDevelop.Projects.Text
 				PropertyService.SaveProperties ();
 			}
 		}
-		
+
 		public static TextEncoding GetEncoding (string id)
 		{
 			foreach (TextEncoding e in SupportedEncodings) {
 				if (e.Id == id)
+					return e;
+			}
+			return null;
+		}
+
+		public static TextEncoding GetEncoding (int codePage)
+		{
+			foreach (TextEncoding e in SupportedEncodings) {
+				if (e.CodePage == codePage)
 					return e;
 			}
 			return null;

@@ -64,6 +64,8 @@ namespace MonoDevelop.Debugger.Win32
 
 		public override bool IsEnum (EvaluationContext ctx, object val)
 		{
+			if (!(val is CorValRef))
+				return false;
 			CorType type = (CorType) GetValueType (ctx, val);
 			return IsEnum (ctx, type);
 		}

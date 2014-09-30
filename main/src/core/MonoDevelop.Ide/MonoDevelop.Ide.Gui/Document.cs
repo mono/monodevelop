@@ -740,7 +740,7 @@ namespace MonoDevelop.Ide.Gui
 		TypeSystemService.ProjectContentWrapper currentWrapper;
 		internal void SetProject (Project project)
 		{
-			if (Window.ViewContent.Project == project)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
 				return;
 			DetachExtensionChain ();
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
@@ -768,9 +768,7 @@ namespace MonoDevelop.Ide.Gui
 				var wrapper = TypeSystemService.GetProjectContentWrapper (project);
 				wrapper.Loaded += HandleInLoadChanged;
 				currentWrapper = wrapper;
-				RunWhenLoaded (delegate {
-					currentWrapper.RequestLoad ();
-				});
+				currentWrapper.RequestLoad ();
 			}
 			StartReparseThread ();
 		}

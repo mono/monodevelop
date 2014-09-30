@@ -60,6 +60,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			};
 
 			this.Name = name;
+
+			ConstraintProvider = NullConstraintProvider.Instance;
 		}
 
 		public FakeUninstallPackageAction FakeUninstallPackageAction;
@@ -254,6 +256,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			FakeSourceRepository.AddFakePackage (packageId);
 		}
 
+		public FakePackage AddFakePackageToSourceRepository (string packageId, string version)
+		{
+			return FakeSourceRepository.AddFakePackageWithVersion (packageId, version);
+		}
+
 		public void UpdatePackages (UpdatePackagesAction action)
 		{
 		}
@@ -370,6 +377,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException ();
 		}
+
+		public IPackageConstraintProvider ConstraintProvider { get; set; }
 	}
 }
 
