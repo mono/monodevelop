@@ -755,13 +755,13 @@ namespace MonoDevelop.MacIntegration
 			base.PlaceWindow (window, x, y, width, height);
 		}
 
-		static RectangleF FromDesktopRect (Gdk.Rectangle r)
+		static CGRect FromDesktopRect (Gdk.Rectangle r)
 		{
 			var desktopBounds = CalcDesktopBounds ();
 			r.Y = desktopBounds.Height - r.Y - r.Height;
 			if (desktopBounds.Y < 0)
 				r.Y += desktopBounds.Y;
-			return new RectangleF (desktopBounds.X + r.X, r.Y, r.Width, r.Height);
+			return new CGRect (desktopBounds.X + r.X, r.Y, r.Width, r.Height);
 		}
 
 		static Gdk.Rectangle CalcDesktopBounds ()
