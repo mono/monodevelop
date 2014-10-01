@@ -70,8 +70,8 @@ namespace MonoDevelop.Ide.Projects
 		void Build ()
 		{
 			BorderWidth = 0;
-			DefaultWidth = 990;
-			DefaultHeight = 610;
+			WidthRequest = 990;
+			HeightRequest = 610;
 
 			Modal = true;
 			Name = "NewProjectDialog";
@@ -227,6 +227,7 @@ namespace MonoDevelop.Ide.Projects
 
 			templatesTreeView.HasFocus = true;
 			VBox.BorderWidth = 0;
+			Resizable = false;
 		}
 
 		TreeViewColumn CreateTemplateCategoriesTreeViewColumn ()
