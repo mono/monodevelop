@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using ICSharpCode.PackageManagement;
 using NuGet;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -62,7 +63,12 @@ namespace MonoDevelop.PackageManagement
 
 		public ISettings LoadSettings ()
 		{
-			return LoadSettings (GetSolutionDirectory ());
+			try {
+				return LoadSettings (GetSolutionDirectory ());
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Unable to load NuGet.Config file.", ex);
+			}
+			return NullSettings.Instance;
 		}
 
 		string GetSolutionDirectory ()
