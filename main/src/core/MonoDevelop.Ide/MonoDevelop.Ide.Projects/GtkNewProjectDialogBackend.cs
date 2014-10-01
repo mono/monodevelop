@@ -228,10 +228,12 @@ namespace MonoDevelop.Ide.Projects
 					null);
 
 				foreach (SolutionTemplate template in subCategory.Templates) {
-					templatesListStore.AppendValues (
-						GetIcon (GetTemplateIconId (template), IconSize.Dnd),
-						template.Name,
-						template);
+					if (template.HasProjects || controller.IsNewSolution) {
+						templatesListStore.AppendValues (
+							GetIcon (GetTemplateIconId (template), IconSize.Dnd),
+							template.Name,
+							template);
+					}
 				}
 			}
 		}

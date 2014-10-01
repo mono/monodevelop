@@ -39,6 +39,8 @@ namespace MonoDevelop.Ide.Templates
 			Category = template.Category;
 			Language = template.LanguageName;
 			GroupId = template.GroupId;
+
+			HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
 		}
 
 		internal ProjectTemplate Template {

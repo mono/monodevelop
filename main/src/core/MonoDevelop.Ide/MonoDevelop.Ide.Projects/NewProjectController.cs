@@ -64,6 +64,10 @@ namespace MonoDevelop.Ide.Projects
 		public string BasePath { get; set; }
 		public string SelectedTemplateId { get; set; }
 
+		public bool IsNewSolution {
+			get { return projectConfiguration.CreateSolution; }
+		}
+
 		ProcessedTemplateResult processedTemplate;
 		SolutionItem currentEntry;
 		bool disposeNewItem = true;

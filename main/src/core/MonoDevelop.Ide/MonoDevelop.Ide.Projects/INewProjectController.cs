@@ -36,6 +36,7 @@ namespace MonoDevelop.Ide.Projects
 		TemplateCategory SelectedSecondLevelCategory { get; }
 		SolutionTemplate SelectedTemplate { get; set; }
 		FinalProjectConfigurationPage FinalConfiguration { get; }
+		bool IsNewSolution { get; }
 
 		TemplateWizard CreateTemplateWizard (string id);
 
