@@ -1,3 +1,4 @@
+
 <ExtensionModel>
 
 <ExtensionPoint path = "/MonoDevelop/Ide/FileTemplates" name = "File templates">
@@ -92,13 +93,21 @@
 	</Category>
 	<Category id="ios" name="iOS" icon="md-platform-ios">
 		<Category id="app" name="App">
-			<Category id="general" name="General" />
+			<Category id="classic-ipad" name="Classic API - iPad" />
+			<Category id="classic-iphone" name="Classic API - iPhone" />
+			<Category id="classic-universal" name="Classic API - Universal" />
+			<Category id="unified-extensions" name="Unified API - Extensions" />
+			<Category id="unified-ipad" name="Unified API - iPad" />
+			<Category id="unified-iphone" name="Unified API - iPhone" />
+			<Category id="unified-universal" name="Unified API - Universal" />
 		</Category>
 		<Category id="library" name="Library">
-			<Category id="general" name="General" />
+			<Category id="classic" name="Classic API" />
+			<Category id="unified" name="Unified API" />
 		</Category>
 		<Category id="tests" name="Tests">
-			<Category id="general" name="General" />
+			<Category id="classic" name="Classic API" />
+			<Category id="unified" name="Unified API" />
 		</Category>
 	</Category>
 	<Category id="android" name="Android" icon="md-platform-android">
@@ -114,10 +123,14 @@
 	</Category>
 	<Category id="osx" name="OS X" icon="md-platform-mac">
 		<Category id="app" name="App">
-			<Category id="general" name="General" />
+			<Category id="classic" name="Classic API" />
+			<Category id="unified" name="Unified API" />
+			<Category id="monomac" name="MonoMac (Open Source)" />
 		</Category>
 		<Category id="library" name="Library">
-			<Category id="general" name="General" />
+			<Category id="classic" name="Classic API" />
+			<Category id="unified" name="Unified API" />
+			<Category id="monomac" name="MonoMac (Open Source)" />
 		</Category>
 	</Category>
 	<Category id="other" name="Other" icon="md-platform-other">
