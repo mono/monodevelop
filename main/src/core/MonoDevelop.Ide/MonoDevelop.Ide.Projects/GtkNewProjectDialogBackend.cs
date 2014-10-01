@@ -229,11 +229,19 @@ namespace MonoDevelop.Ide.Projects
 
 				foreach (SolutionTemplate template in subCategory.Templates) {
 					templatesListStore.AppendValues (
-						GetIcon (template.IconId, IconSize.Dnd),
+						GetIcon (GetTemplateIconId (template), IconSize.Dnd),
 						template.Name,
 						template);
 				}
 			}
+		}
+
+		static string GetTemplateIconId (SolutionTemplate template)
+		{
+			if (!String.IsNullOrEmpty (template.IconId)) {
+				return template.IconId;
+			}
+			return "md-project";
 		}
 
 		static Gdk.Pixbuf GetIcon (string id, IconSize size)
