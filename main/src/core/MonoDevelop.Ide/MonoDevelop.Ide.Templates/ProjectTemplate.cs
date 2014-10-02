@@ -139,7 +139,11 @@ namespace MonoDevelop.Ide.Templates
 			get { return wizardPath; }
 		}
 
-
+		private string fileExtension;
+		public string FileExtension
+		{
+			get { return fileExtension; }
+		}
 
 		//constructors
 		static ProjectTemplate ()
@@ -211,6 +215,10 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlConfiguration ["_GroupId"] != null) {
 				this.groupId = xmlConfiguration ["_GroupId"].InnerText;
+			}
+
+			if (xmlConfiguration ["_FileExtension"] != null) {
+				this.fileExtension = xmlConfiguration ["_FileExtension"].InnerText;
 			}
 
 			if (xmlDocument.DocumentElement ["Combine"] == null) {

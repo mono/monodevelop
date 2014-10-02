@@ -53,8 +53,7 @@ namespace MonoDevelop.Ide.Projects
 		FinalProjectConfigurationPage finalConfigurationPage;
 
 		ProjectConfiguration projectConfiguration = new ProjectConfiguration () {
-			CreateProjectDirectoryInsideSolutionDirectory = true,
-			ProjectFileExtension = ".csproj"
+			CreateProjectDirectoryInsideSolutionDirectory = true
 		};
 
 		public bool OpenSolution { get; set; }

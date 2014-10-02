@@ -437,6 +437,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
+			controller.FinalConfiguration.ProjectFileExtension = template.ProjectFileExtension;
 			projectConfigurationWidget.Load (controller.FinalConfiguration);
 			return projectConfigurationWidget;
 		}

@@ -37,6 +37,7 @@ namespace MonoDevelop.Ide.Templates
 
 		string largeImageId;
 		string language;
+		string projectFileExtension;
 		List<string> availableLanguages = new List<string> ();
 		List<SolutionTemplate> groupedTemplates = new List<SolutionTemplate> ();
 
@@ -72,6 +73,16 @@ namespace MonoDevelop.Ide.Templates
 					availableLanguages.Add (language);
 				}
 			}
+		}
+
+		public string ProjectFileExtension {
+			get {
+				if (!String.IsNullOrEmpty (projectFileExtension)) {
+					return projectFileExtension;
+				}
+				return GetProjectFileExtensionForLanguage (language);
+			}
+			set { projectFileExtension = value; }
 		}
 
 		public void AddGroupTemplate (SolutionTemplate template)
@@ -120,6 +131,20 @@ namespace MonoDevelop.Ide.Templates
 				return String.Equals (GroupId, template.GroupId, StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
+		}
+
+		static string GetProjectFileExtensionForLanguage (string language)
+		{
+			switch (language) {
+			case "C#":
+				return ".csproj";
+			case "VBNet":
+				return ".vbproj";
+			case "IL":
+				return ".ilproj";
+			default:
+				return ".proj";
+			}
 		}
 	}
 }

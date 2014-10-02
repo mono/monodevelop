@@ -41,6 +41,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public SolutionFolder ParentFolder { get; set; }
+		public string ProjectFileExtension { get; set; }
 
 		public string Location {
 			get { return config.Location; }
@@ -72,7 +73,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public string ProjectFileName {
-			get { return config.ProjectName + config.ProjectFileExtension; }
+			get { return config.ProjectName + ProjectFileExtension; }
 		}
 
 		public string SolutionFileName {
@@ -135,7 +136,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public string DefaultPreviewProjectFileName {
-			get { return "Project.csproj"; }
+			get { return "Project" + ProjectFileExtension; }
 		}
 
 		void CheckIsValid ()

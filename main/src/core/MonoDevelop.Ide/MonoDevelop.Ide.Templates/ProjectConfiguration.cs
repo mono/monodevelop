@@ -46,7 +46,6 @@ namespace MonoDevelop.Ide.Templates
 		{
 			SolutionName = String.Empty;
 			Location = String.Empty;
-			ProjectFileExtension = String.Empty;
 
 			CreateProjectDirectoryInsideSolutionDirectory = true;
 
@@ -64,7 +63,6 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		public string ProjectFileExtension { get; set; }
 		public string SolutionName { get; set; }
 		public string Location { get; set; }
 
