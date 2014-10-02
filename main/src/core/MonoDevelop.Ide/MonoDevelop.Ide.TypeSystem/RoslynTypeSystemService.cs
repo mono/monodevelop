@@ -171,6 +171,10 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public static DocumentId GetDocument (MonoDevelop.Projects.Project project, string fileName)
 		{
+			if (project == null)
+				throw new ArgumentNullException ("project");
+			if (fileName == null)
+				throw new ArgumentNullException ("fileName");
 			var w = Workspace;
 			var projectId = w.GetProjectId (project);
 			return w.GetDocumentId (projectId, fileName);

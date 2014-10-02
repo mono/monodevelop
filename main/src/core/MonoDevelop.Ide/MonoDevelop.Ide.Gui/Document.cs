@@ -798,7 +798,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void EnsureAnalysisDocumentIsOpen ()
 		{
-			if (analysisDocument == null) {
+			if (analysisDocument == null && Project != null) {
 				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
 				if (analysisDocument != null)
 					RoslynTypeSystemService.Workspace.InformDocumentOpen (analysisDocument, Editor);
