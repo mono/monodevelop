@@ -421,6 +421,7 @@ namespace MonoDevelop.Ide.Projects
 
 			previousButton.Sensitive = (wizard != null);
 			nextButton.Label = Catalog.GetString ("Next");
+			nextButton.Sensitive = true;
 		}
 
 		Widget GetNextPageWidget (SolutionTemplate template)
