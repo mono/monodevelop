@@ -43,6 +43,13 @@ namespace MonoDevelop.Ide.Projects
 		public SolutionFolder ParentFolder { get; set; }
 		public string ProjectFileExtension { get; set; }
 
+		public bool HasProjects {
+			get { return !config.IsNewSolutionWithoutProjects; }
+			set {
+				config.IsNewSolutionWithoutProjects = !value;
+			}
+		}
+
 		public string Location {
 			get { return config.Location; }
 			set {
@@ -104,11 +111,15 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public bool IsProjectNameEnabled {
-			get { return true; }
+			get { return HasProjects; }
 		}
 
 		public bool IsSolutionNameEnabled {
 			get { return config.CreateSolution; }
+		}
+
+		public bool IsCreateProjectDirectoryInsideSolutionDirectoryEnabled {
+			get { return HasProjects; }
 		}
 
 		public bool IsGitIgnoreEnabled {

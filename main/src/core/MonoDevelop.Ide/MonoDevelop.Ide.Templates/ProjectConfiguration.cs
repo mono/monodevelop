@@ -78,6 +78,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public bool CreateProjectDirectoryInsideSolutionDirectory { get; set; }
 		public bool CreateSolution { get; set; }
+		public bool IsNewSolutionWithoutProjects { get; set; }
 
 		public bool UseGit { get; set; }
 		public bool CreateGitIgnoreFile { get; set; }
@@ -121,20 +122,36 @@ namespace MonoDevelop.Ide.Templates
 
 		public bool IsValid ()
 		{
+			return !HasErrors ();
+		}
+
+		bool HasErrors ()
+		{
 			string solution = SolutionName;
 			string name     = ProjectName;
+
+			if (!FileService.IsValidPath (Location)) {
+				return true;
+			}
+
+			if (CreateSeparateSolutionDirectory && !FileService.IsValidPath (solution)) {
+				return true;
+			} else if (IsNewSolutionWithoutProjects) {
+				return false;
+			}
+
 			string location = ProjectLocation;
 
-			if (solution.Equals ("")) solution = name; //This was empty when adding after first combine
-
-			return !((CreateSeparateSolutionDirectory && !FileService.IsValidPath (solution)) ||
-				!FileService.IsValidFileName (name) ||
+			return !FileService.IsValidFileName (name) ||
 				name.IndexOf (' ') >= 0 ||
-				!FileService.IsValidPath (location));
+				!FileService.IsValidPath (location);
 		}
 
 		bool CreateSeparateSolutionDirectory {
-			get { return CreateSolution && CreateProjectDirectoryInsideSolutionDirectory; }
+			get {
+				return (CreateSolution && CreateProjectDirectoryInsideSolutionDirectory) ||
+					IsNewSolutionWithoutProjects;
+			}
 		}
 
 		bool CreateSeparateProjectDirectory {

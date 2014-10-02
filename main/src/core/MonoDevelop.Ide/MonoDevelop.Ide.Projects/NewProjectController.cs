@@ -290,9 +290,6 @@ namespace MonoDevelop.Ide.Projects
 //				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir",
 //				CreateSolutionDirectory);
 
-			if (SelectedTemplate == null || projectConfiguration.ProjectName.Length == 0)
-				return false;
-
 			ProcessedTemplateResult result = null;
 
 			try {

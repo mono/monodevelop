@@ -24,8 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using NUnit.Framework;
 using System.IO;
+using System.Linq;
+using NUnit.Framework;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -109,6 +110,120 @@ namespace MonoDevelop.Ide.Templates
 			config.CreateSolution = false;
 
 			AssertPathsAreEqual (@"d:\projects", config.ProjectLocation);
+		}
+
+		[Test]
+		public void NewSolutionWithoutAnyProjects ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "MySolution";
+			config.CreateProjectDirectoryInsideSolutionDirectory = false;
+			config.CreateSolution = true;
+			config.IsNewSolutionWithoutProjects = true;
+
+			AssertPathsAreEqual (@"d:\projects\MySolution", config.SolutionLocation);
+			AssertPathsAreEqual (@"d:\projects\MySolution", config.ProjectLocation);
+		}
+
+		[Test]
+		public void NewSolutionWithoutAnyProjectsAndDoNotCreateProjectDirectoryInsideSolutionDirectory ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "MySolution";
+			config.CreateProjectDirectoryInsideSolutionDirectory = true;
+			config.CreateSolution = true;
+			config.IsNewSolutionWithoutProjects = true;
+
+			AssertPathsAreEqual (@"d:\projects\MySolution", config.SolutionLocation);
+			AssertPathsAreEqual (@"d:\projects\MySolution", config.ProjectLocation);
+		}
+
+		[Test]
+		public void EmptyProjectNameAndLocationIsNotValid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a";
+			config.ProjectName = string.Empty;
+			config.Location = string.Empty;
+
+			bool result = config.IsValid ();
+
+			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public void ProjectNameAndSolutionNameAndLocationAreNotEmptyIsValid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a";
+			config.ProjectName = "b";
+
+			bool result = config.IsValid ();
+
+			Assert.IsTrue (result);
+		}
+
+		[Test]
+		public void EmptyProjectNameIsNotValid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a";
+			config.ProjectName = string.Empty;
+
+			bool result = config.IsValid ();
+
+			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public void ProjectNameWithSpacesIsNotValid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a";
+			config.ProjectName = "a b";
+
+			bool result = config.IsValid ();
+
+			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public void EmptyProjectNameWhenCreatingOnlySolutionIsValid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a";
+			config.ProjectName = string.Empty;
+			config.IsNewSolutionWithoutProjects = true;
+
+			bool result = config.IsValid ();
+
+			Assert.IsTrue (result);
+		}
+
+		[Test]
+		public void SolutionNameWithInvalidCharactersWhenCreatingSolutionOnlyIsNotValid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a" + Path.GetInvalidPathChars ().First ();
+			config.ProjectName = string.Empty;
+			config.IsNewSolutionWithoutProjects = true;
+
+			bool result = config.IsValid ();
+
+			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public void SolutionLocationWithInvalidCharactersWhenCreatingSolutionOnlyIsNotValid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a";
+			config.Location = config.Location + Path.GetInvalidPathChars ().First ();
+			config.IsNewSolutionWithoutProjects = true;
+
+			bool result = config.IsValid ();
+
+			Assert.IsFalse (result);
 		}
 	}
 }

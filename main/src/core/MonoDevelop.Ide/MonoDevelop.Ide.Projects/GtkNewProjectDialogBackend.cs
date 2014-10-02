@@ -438,6 +438,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
+			controller.FinalConfiguration.HasProjects = template.HasProjects;
 			controller.FinalConfiguration.ProjectFileExtension = template.ProjectFileExtension;
 			projectConfigurationWidget.Load (controller.FinalConfiguration);
 			return projectConfigurationWidget;
