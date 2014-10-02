@@ -47,6 +47,7 @@ namespace MonoDevelop.Ide.Projects
 			get { return !config.IsNewSolutionWithoutProjects; }
 			set {
 				config.IsNewSolutionWithoutProjects = !value;
+				CheckIsValid ();
 			}
 		}
 

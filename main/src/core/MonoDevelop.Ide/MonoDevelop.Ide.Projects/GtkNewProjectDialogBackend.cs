@@ -401,7 +401,7 @@ namespace MonoDevelop.Ide.Projects
 			previousButton.Sensitive = true;
 			if (widget == projectConfigurationWidget) {
 				nextButton.Label = Catalog.GetString ("Create");
-				CanMoveToNextPage = false;
+				CanMoveToNextPage = controller.FinalConfiguration.IsValid;
 			}
 		}
 
