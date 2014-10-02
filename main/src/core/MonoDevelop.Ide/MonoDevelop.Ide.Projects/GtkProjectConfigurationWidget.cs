@@ -137,6 +137,7 @@ namespace MonoDevelop.Ide.Projects
 		void LoadWidget ()
 		{
 			projectFolderPreviewWidget.Load (projectConfiguration);
+			solutionNameLabel.Text = GetSolutionNameLabel ();
 			locationTextBox.Text = projectConfiguration.Location;
 			solutionNameTextBox.Text = projectConfiguration.SolutionName;
 
@@ -145,6 +146,14 @@ namespace MonoDevelop.Ide.Projects
 			createProjectWithinSolutionDirectoryCheckBox.Sensitive = projectConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled;
 			useGitCheckBox.Sensitive = projectConfiguration.IsUseGitEnabled;
 			createGitIgnoreFileCheckBox.Sensitive = projectConfiguration.IsGitIgnoreEnabled;
+		}
+
+		string GetSolutionNameLabel ()
+		{
+			if (projectConfiguration.IsWorkspace) {
+				return GettextCatalog.GetString ("Workspace Name");
+			}
+			return GettextCatalog.GetString ("Solution Name");
 		}
 	}
 }

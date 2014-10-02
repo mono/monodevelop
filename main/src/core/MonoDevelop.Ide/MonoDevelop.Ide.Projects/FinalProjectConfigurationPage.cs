@@ -32,7 +32,10 @@ namespace MonoDevelop.Ide.Projects
 {
 	public class FinalProjectConfigurationPage
 	{
+		static readonly string WorkplaceTemplateId = "MonoDevelop.Workspace";
+
 		ProjectConfiguration config;
+		SolutionTemplate template;
 		bool valid;
 
 		public FinalProjectConfigurationPage (ProjectConfiguration config)
@@ -41,11 +44,26 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public SolutionFolder ParentFolder { get; set; }
-		public string ProjectFileExtension { get; set; }
+
+		public string ProjectFileExtension {
+			get { return template.ProjectFileExtension; }
+		}
+
+		public SolutionTemplate Template {
+			get { return template; }
+			set {
+				template = value;
+				HasProjects = template.HasProjects;
+			}
+		}
+
+		public bool IsWorkspace {
+			get { return template.Id == WorkplaceTemplateId; }
+		}
 
 		public bool HasProjects {
 			get { return !config.IsNewSolutionWithoutProjects; }
-			set {
+			private set {
 				config.IsNewSolutionWithoutProjects = !value;
 				CheckIsValid ();
 			}
@@ -85,7 +103,15 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public string SolutionFileName {
-			get { return config.SolutionName + ".sln"; }
+			get { return config.SolutionName + GetSolutionFileExtension (); }
+		}
+
+		string GetSolutionFileExtension ()
+		{
+			if (IsWorkspace) {
+				return ".mdw";
+			}
+			return ".sln";
 		}
 
 		public string GetValidProjectName ()
@@ -136,11 +162,21 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public string DefaultPreviewSolutionName {
-			get { return "Solution"; }
+			get {
+				if (IsWorkspace) {
+					return "Workspace";
+				}
+				return "Solution";
+			}
 		}
 
 		public string DefaultPreviewSolutionFileName {
-			get { return "Solution.sln"; }
+			get {
+				if (IsWorkspace) {
+					return "Workspace.mdw";
+				}
+				return "Solution.sln";
+			}
 		}
 
 		public string DefaultPreviewProjectName {

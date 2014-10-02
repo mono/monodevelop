@@ -395,7 +395,7 @@ namespace MonoDevelop.Ide.Projects
 			if (widget is WizardPage) {
 				//topBannerLabel.Text = ((WizardPage)widget).Title;
 			} else {
-				topBannerLabel.Text = configureYourProjectBannerText;
+				ShowFinalConfigurationPageBanner ();
 			}
 
 			previousButton.Sensitive = true;
@@ -403,6 +403,21 @@ namespace MonoDevelop.Ide.Projects
 				nextButton.Label = Catalog.GetString ("Create");
 				CanMoveToNextPage = controller.FinalConfiguration.IsValid;
 			}
+		}
+
+		void ShowFinalConfigurationPageBanner ()
+		{
+			topBannerLabel.Text = GetFinalConfigurationPageBannerText ();
+		}
+
+		string GetFinalConfigurationPageBannerText ()
+		{
+			if (controller.FinalConfiguration.IsWorkspace) {
+				return configureYourWorkspaceBannerText;
+			} else if (controller.FinalConfiguration.HasProjects) {
+				return configureYourProjectBannerText;
+			}
+			return configureYourSolutionBannerText;
 		}
 
 		void MoveToPreviousPage ()
@@ -438,8 +453,7 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
-			controller.FinalConfiguration.HasProjects = template.HasProjects;
-			controller.FinalConfiguration.ProjectFileExtension = template.ProjectFileExtension;
+			controller.FinalConfiguration.Template = template;
 			projectConfigurationWidget.Load (controller.FinalConfiguration);
 			return projectConfigurationWidget;
 		}

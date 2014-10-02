@@ -26,8 +26,8 @@
 
 using Gdk;
 using Gtk;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
-using Mono.Unix;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -42,8 +42,10 @@ namespace MonoDevelop.Ide.Projects
 		Color templateSectionSeparatorColor = new Gdk.Color (208, 208, 208);
 		Color selectedRowBackgroundColor = new Color (19, 112, 216);
 
-		string chooseTemplateBannerText =  Catalog.GetString ("Choose a template for your new project");
-		string configureYourProjectBannerText = Catalog.GetString ("Configure your new project");
+		string chooseTemplateBannerText =  GettextCatalog.GetString ("Choose a template for your new project");
+		string configureYourProjectBannerText = GettextCatalog.GetString ("Configure your new project");
+		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
+		string configureYourSolutionBannerText = GettextCatalog.GetString ("Configure your new solution");
 
 		VBox centreVBox;
 		HBox templatesHBox;
@@ -75,7 +77,7 @@ namespace MonoDevelop.Ide.Projects
 
 			Modal = true;
 			Name = "NewProjectDialog";
-			Title = Catalog.GetString ("New Project");
+			Title = GettextCatalog.GetString ("New Project");
 			WindowPosition = WindowPosition.CenterOnParent;
 			TransientFor = IdeApp.Workbench.RootWindow;
 
@@ -207,13 +209,13 @@ namespace MonoDevelop.Ide.Projects
 			previousNextButtonBox.Layout = ButtonBoxStyle.End;
 
 			previousButton = new Button ();
-			previousButton.Label = Catalog.GetString ("Previous");
+			previousButton.Label = GettextCatalog.GetString ("Previous");
 			previousButton.Sensitive = false;
 			previousNextButtonBox.PackEnd (previousButton);
 
 			// Next button - bottom right.
 			nextButton = new Button ();
-			nextButton.Label = Catalog.GetString ("Next");
+			nextButton.Label = GettextCatalog.GetString ("Next");
 			previousNextButtonBox.PackEnd (nextButton);
 
 			// Remove default button action area.
