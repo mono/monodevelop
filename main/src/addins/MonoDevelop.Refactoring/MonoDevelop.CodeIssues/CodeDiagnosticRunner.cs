@@ -49,22 +49,42 @@ namespace MonoDevelop.CodeIssues
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
 
-			var model = input.GetCompilationAsync (cancellationToken).Result;
+			var compilation = input.GetCompilationAsync (cancellationToken).Result;
 			var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
 			try {
-				var options = new AnalyzerOptions(new Microsoft.CodeAnalysis.AdditionalStream[0], new Dictionary<string, string> ());
-				var providers = CodeDiagnosticService.GetCodeIssues (language).Select (issue => issue.GetProvider ());
-
+				var options = new AnalyzerOptions(new AdditionalStream[0], new Dictionary<string, string> ());
+				var providers = new List<DiagnosticAnalyzer> ();
+				var alreadyAdded = new HashSet<Type>();
+				foreach (var issue in CodeDiagnosticService.GetCodeIssues (language)) {
+					if (alreadyAdded.Contains (issue.CodeIssueType))
+						continue;
+					alreadyAdded.Add (issue.CodeIssueType);
+					var provider = issue.GetProvider ();
+					providers.Add (provider);
+					Console.WriteLine ("add:"+ issue.CodeIssueType);
+				}
 				var driver = new AnalyzerDriver<SyntaxKind>(
 					System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers),
 					node => node.CSharpKind(),
 					options,
 					CancellationToken.None
 				);
-				model = model.WithEventQueue(driver.CompilationEventQueue);
-				model.GetDiagnostics().Count();
+				compilation = compilation.WithEventQueue (driver.CompilationEventQueue);
+				var model = compilation.GetSemanticModel (input.AnalysisDocument.GetSyntaxTreeAsync ().Result);
+				model.GetDiagnostics ();
+				model.GetSyntaxDiagnostics ();
+				model.GetDeclarationDiagnostics ();
+				model.GetMethodBodyDiagnostics ();
 
-				return driver.GetDiagnosticsAsync().Result.Select (diagnostic => new DiagnosticResult(diagnostic));
+				var diagnosticList = driver.GetDiagnosticsAsync ().Result;
+				return diagnosticList
+					.Where (d => !string.IsNullOrEmpty (d.Description))
+					.Select (diagnostic => {
+						var res = new DiagnosticResult(diagnostic);
+						var line = analysisDocument.Editor.GetLineByOffset (res.Region.Start);
+//						Console.WriteLine (diagnostic.Id + "/" + res.Region +"/" + analysisDocument.Editor.GetTextAt (line));
+						return res;
+					});
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while running diagnostics.", e); 
 				return Enumerable.Empty<Result> ();

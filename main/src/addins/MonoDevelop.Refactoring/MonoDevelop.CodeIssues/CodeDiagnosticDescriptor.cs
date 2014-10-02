@@ -49,6 +49,12 @@ namespace MonoDevelop.CodeIssues
 			}
 		}
 
+		public Type CodeIssueType {
+			get {
+				return codeIssueType;
+			}
+		}
+
 		/// <summary>
 		/// Gets the display name for this issue.
 		/// </summary>
