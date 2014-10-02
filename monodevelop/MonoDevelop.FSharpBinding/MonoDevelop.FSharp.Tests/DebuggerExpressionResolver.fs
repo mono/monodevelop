@@ -26,8 +26,10 @@ let localTwo = localOne.PropertyOne"""
     let createDoc (text:string)=
         let workbenchWindow = TestWorkbenchWindow()
         let viewContent = new TestViewContent()
-
-        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = FilePath("test.fsproj"))
+        let filePath = match Platform.IsWindows with
+                       | true -> FilePath(@"C:\Temp\test.fsproj")
+                       | _ -> FilePath("test.fsproj")
+        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = filePath)
         let projectConfig = project.AddNewConfiguration("Debug")
 
         TypeSystemService.LoadProject (project) |> ignore
@@ -35,20 +37,22 @@ let localTwo = localOne.PropertyOne"""
         viewContent.Project <- project
 
         workbenchWindow.SetViewContent(viewContent)
-        viewContent.ContentName <- "/users/a.fs"
+
+        viewContent.ContentName <- "a.fs"
         viewContent.GetTextEditorData().Document.MimeType <- "text/x-fsharp"
         let doc = Document(workbenchWindow)
 
         (viewContent :> IEditableTextBuffer).Text <- text
         (viewContent:> IEditableTextBuffer).CursorPosition <- 0
 
-        let pfile = doc.Project.AddFile("/users/a.fs")
+        let pfile = doc.Project.AddFile("a.fs")
 
         let textEditorCompletion = new FSharpTextEditorCompletion()
         textEditorCompletion.Initialize(doc)
         viewContent.Contents.Add(textEditorCompletion)
 
-        try doc.UpdateParseDocument() |> ignore
+        try 
+            doc.UpdateParseDocument() |> ignore
         with exn -> Diagnostics.Debug.WriteLine(exn.ToString())
         doc
 

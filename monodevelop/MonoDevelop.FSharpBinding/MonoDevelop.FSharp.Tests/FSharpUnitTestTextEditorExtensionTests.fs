@@ -58,8 +58,10 @@ module Test =
     let createDoc (text:string) references =
         let workbenchWindow = TestWorkbenchWindow()
         let viewContent = new TestViewContent()
-
-        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = FilePath("test.fsproj"))
+        let filePath = match Platform.IsWindows with
+                       | true -> FilePath(@"C:\Temp\test.fsproj")
+                       | _ -> FilePath("test.fsproj")
+        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = filePath)
         project.References.AddRange references
         let projectConfig = project.AddNewConfiguration("Debug")
 
@@ -68,14 +70,14 @@ module Test =
         viewContent.Project <- project
 
         workbenchWindow.SetViewContent(viewContent)
-        viewContent.ContentName <- "/users/a.fs"
+        viewContent.ContentName <- "a.fs"
         viewContent.GetTextEditorData().Document.MimeType <- "text/x-fsharp"
         let doc = Document(workbenchWindow)
         let textBuf = viewContent :> IEditableTextBuffer 
         textBuf.Text <- text
         textBuf.CursorPosition <- 0
 
-        let pfile = doc.Project.AddFile("/users/a.fs")
+        let pfile = doc.Project.AddFile("a.fs")
 
         let textEditorCompletion = new FSharpTextEditorCompletion()
         textEditorCompletion.Initialize(doc)
@@ -96,8 +98,8 @@ module Test =
     [<Test>]
     member x.``Basic Test covering normal and double quoted tests in a test fixture`` () =
         let testExtension = createDoc normalAndDoubleTick [nunitRef]
-
-        match testExtension.GatherUnitTests() |> Seq.toList with
+        let res = testExtension.GatherUnitTests() |> Seq.toList
+        match res with
         | [fixture;t1;t2] -> 
             fixture.IsFixture |> should equal true
             fixture.UnitTestIdentifier |> should equal "A+Test"

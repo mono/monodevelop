@@ -84,13 +84,23 @@ type FSharpParser() =
 
             let filePathOpt = 
                 // TriggerParse will work only for full paths
+                
+                
                 if IO.Path.IsPathRooted(fileName) then Some(fileName)
                 else 
-                    let doc = IdeApp.Workbench.ActiveDocument
-                    if doc <> null then 
-                        let file = doc.FileName.FullPath.ToString()
-                        if file = "" then None else Some file
-                    else None
+                    let workBench = IdeApp.Workbench
+                    if (workBench <> null) then
+                        
+                        let doc = workBench.ActiveDocument
+                        if doc <> null then 
+                            let file = doc.FileName.FullPath.ToString()
+                            if file = "" then None else Some file
+                        else None
+                    else 
+                        let filePaths = proj.GetItemFiles(true)
+                        let res = filePaths |> Seq.find(fun t -> t.FileName = fileName)
+                        Some(res.FullPath.ToString())
+                        
 
             match filePathOpt with
             | None -> ()

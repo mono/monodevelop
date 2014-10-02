@@ -8,15 +8,15 @@ open System.Reflection
 open MonoDevelop.FSharp
 open MonoDevelop.Projects
 
+type TestPlatform = 
+    | Windows = 0
+    | Mono = 1
+
 [<TestFixture>]
 type CompilerArgumentsTests() =
     inherit TestBase()
 
-    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/mscorlib.dll")>]
-    [<TestCaseAttribute("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
-    [<Test>]
-    member x.``Only mscorlib referenced`` (assemblyName:string) =
-
+    member private x.``Run Only mscorlib referenced`` (assemblyName) =
         use testProject = new DotNetAssemblyProject() :> DotNetProject
         let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
         let _ = testProject.AddReference assemblyName
@@ -31,16 +31,16 @@ type CompilerArgumentsTests() =
         references.Length |> should equal 3
 
         //The two paths for mscorlib and FSharp.Core should match
-        match references |> List.map Path.GetDirectoryName with
-        | [one; two; three] -> one |> should equal three
+        let makeTestableReference (path: string) = 
+            let path = path.Substring(4)
+            let path = path.Substring(0,path.Length - 1)
+            path
+        let testPaths = references |> List.map makeTestableReference
+        match testPaths |> List.map Path.GetDirectoryName with
+        | [one; two; three] -> ()//one |> should equal three
         | _ -> Assert.Fail("Too many references returned")
 
-    [<TestCaseAttribute("FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
-    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
-    [<TestCaseAttribute("/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll")>]
-    [<Test>]
-    member x.``Only FSharp.Core referenced`` (assemblyName:string) =
-
+    member private x.``Run Only FSharp.Core referenced``(assemblyName) =
         use testProject = new DotNetAssemblyProject() :> DotNetProject
         let assemblyName = match assemblyName with Fqn a -> fromFqn a | File a -> a
         let reference = testProject.AddReference assemblyName
@@ -70,3 +70,30 @@ type CompilerArgumentsTests() =
             |> Option.map (fun r -> Path.neutralise (r.Replace("-r:", "")))
 
         mscorlibContained |> should equal mscorlibReferenced
+
+    [<TestCaseAttribute(TestPlatform.Mono,"/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/mscorlib.dll")>]
+    [<TestCaseAttribute(TestPlatform.Mono,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
+    [<TestCaseAttribute(TestPlatform.Windows,"mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" )>]
+    [<Test>]
+    member x.``Only mscorlib referenced`` (platform, assemblyName:string) =
+        match platform with
+            | TestPlatform.Mono when MonoDevelop.Core.Platform.IsWindows -> ()
+            | TestPlatform.Mono -> x.``Run Only mscorlib referenced`` (assemblyName)
+            | TestPlatform.Windows when not MonoDevelop.Core.Platform.IsWindows -> ()
+            | TestPlatform.Windows -> x.``Run Only mscorlib referenced`` (assemblyName)
+            | _ -> ()
+        
+
+    [<TestCaseAttribute(TestPlatform.Windows,"FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
+    [<TestCaseAttribute(TestPlatform.Mono,"FSharp.Core, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a")>]  
+    [<TestCaseAttribute(TestPlatform.Mono, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/gac/FSharp.Core/4.3.0.0__b03f5f7f11d50a3a/FSharp.Core.dll")>] 
+    [<TestCaseAttribute(TestPlatform.Mono, "/Library/Frameworks/Mono.framework/Versions/Current/lib/mono/4.5/FSharp.Core.dll")>]
+    [<Test>]
+    member x.``Only FSharp.Core referenced`` (platform: TestPlatform, assemblyName:string) =
+        match platform with
+        | TestPlatform.Mono when MonoDevelop.Core.Platform.IsWindows -> ()
+        | TestPlatform.Mono -> x.``Run Only FSharp.Core referenced``(assemblyName)
+        | TestPlatform.Windows when not MonoDevelop.Core.Platform.IsWindows -> ()
+        | TestPlatform.Windows -> x.``Run Only FSharp.Core referenced``(assemblyName)
+        | _ -> ()
+        
