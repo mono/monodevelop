@@ -11,6 +11,7 @@
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a Gtk# 2.0 project.</_Description>
 		<DefaultFilename>GtkSharpProject</DefaultFilename>
+		<_GroupId>md-gtk-project</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
