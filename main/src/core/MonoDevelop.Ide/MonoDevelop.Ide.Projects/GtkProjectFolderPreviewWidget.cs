@@ -91,7 +91,9 @@ namespace MonoDevelop.Ide.Projects
 		{
 			folderTreeStore.Clear ();
 			if (projectConfiguration.IsNewSolution) {
-				if (projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory) {
+				if (!projectConfiguration.HasProjects) {
+					AddSolutionToTree ();
+				} else if (projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory) {
 					AddProjectWithSolutionDirectoryToTree ();
 				} else {
 					AddProjectWithNoSolutionDirectoryToTree ();
@@ -155,8 +157,23 @@ namespace MonoDevelop.Ide.Projects
 			solutionNode = TreeIter.Zero;
 		}
 
+		void AddSolutionToTree ()
+		{
+			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
+
+			solutionFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, projectConfiguration.DefaultPreviewSolutionName);
+			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, fileImage, projectConfiguration.DefaultPreviewSolutionFileName);
+
+			projectFolderNode = TreeIter.Zero;
+			gitIgnoreNode = TreeIter.Zero;
+			projectNode = TreeIter.Zero;
+		}
+
 		TreeIter AddGitIgnoreToTree ()
 		{
+			if (projectFolderNode.Equals (TreeIter.Zero)) {
+				return TreeIter.Zero;
+			}
 			return folderTreeStore.InsertWithValues (projectFolderNode, 0, fileImage, ".gitignore");
 		}
 
@@ -167,7 +184,9 @@ namespace MonoDevelop.Ide.Projects
 
 		void UpdateTextColumn (TreeIter iter, string value)
 		{
-			folderTreeStore.SetValue (iter, TextColumn, value);
+			if (!iter.Equals (TreeIter.Zero)) {
+				folderTreeStore.SetValue (iter, TextColumn, value);
+			}
 		}
 
 		public void UpdateProjectName ()
