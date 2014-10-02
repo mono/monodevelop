@@ -134,7 +134,9 @@ namespace MonoDevelop.CSharp
 				var method = semanticModel.GetDeclaredSymbol (node);
 				if (method == null)
 					return;
-				var parentClass = (ClassDeclarationSyntax)node.Parent;
+				var parentClass = node.Parent as ClassDeclarationSyntax;
+				if (parentClass == null)
+					return;
 				UnitTestLocation test = null;
 				foreach (var attr in method.GetAttributes ()) {
 					if (attr.AttributeClass.GetFullName () == "NUnit.Framework.TestAttribute") {
