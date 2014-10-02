@@ -139,6 +139,20 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		[Test]
+		public void NewSolutionWithoutAnyProjectsWithProjectNameSpecifiedAndCreateProjectDirectoryInsideSolutionDirectory ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "MySolution";
+			config.CreateProjectDirectoryInsideSolutionDirectory = true;
+			config.CreateSolution = true;
+			config.ProjectName = "MyProject";
+			config.IsNewSolutionWithoutProjects = true;
+
+			AssertPathsAreEqual (@"d:\projects\MySolution", config.SolutionLocation);
+			AssertPathsAreEqual (@"d:\projects\MySolution", config.ProjectLocation);
+		}
+
+		[Test]
 		public void EmptyProjectNameAndLocationIsNotValid ()
 		{
 			CreateProjectConfig (@"d:\projects");

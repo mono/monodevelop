@@ -94,6 +94,10 @@ namespace MonoDevelop.Ide.Templates
 
 		public string ProjectLocation {
 			get {
+				if (IsNewSolutionWithoutProjects) {
+					return SolutionLocation;
+				}
+
 				string path = Location;
 				if (CreateSeparateSolutionDirectory)
 					path = Path.Combine (path, GetValidDir (SolutionName));
