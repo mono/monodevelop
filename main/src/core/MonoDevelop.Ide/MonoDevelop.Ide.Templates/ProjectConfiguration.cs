@@ -40,9 +40,10 @@ namespace MonoDevelop.Ide.Templates
 {
 	public class ProjectConfiguration
 	{
+		string projectName = String.Empty;
+
 		public ProjectConfiguration ()
 		{
-			ProjectName = String.Empty;
 			SolutionName = String.Empty;
 			Location = String.Empty;
 			ProjectFileExtension = String.Empty;
@@ -53,7 +54,16 @@ namespace MonoDevelop.Ide.Templates
 			UseGit = true;
 		}
 
-		public string ProjectName { get; set; }
+		public string ProjectName {
+			get { return projectName; }
+			set {
+				if (CreateSolution && (projectName == SolutionName)) {
+					SolutionName = value;
+				}
+				projectName = value;
+			}
+		}
+
 		public string ProjectFileExtension { get; set; }
 		public string SolutionName { get; set; }
 		public string Location { get; set; }

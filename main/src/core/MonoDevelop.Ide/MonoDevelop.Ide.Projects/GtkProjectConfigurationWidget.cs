@@ -65,7 +65,9 @@ namespace MonoDevelop.Ide.Projects
 		void OnProjectNameTextBoxChanged ()
 		{
 			projectConfiguration.ProjectName = projectNameTextBox.Text;
+			solutionNameTextBox.Text = projectConfiguration.SolutionName;
 			projectFolderPreviewWidget.UpdateProjectName ();
+			projectFolderPreviewWidget.UpdateSolutionName ();
 		}
 
 		void OnSolutionNameTextBoxChanged ()
