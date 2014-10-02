@@ -68,10 +68,6 @@ namespace MonoDevelop.Ide.Templates
 		public string SolutionName { get; set; }
 		public string Location { get; set; }
 
-		public string ProjectFileName {
-			get { return ProjectName + ProjectFileExtension; }
-		}
-
 		public string GetValidProjectName ()
 		{
 			return GetValidDir (ProjectName);
@@ -80,10 +76,6 @@ namespace MonoDevelop.Ide.Templates
 		public string GetValidSolutionName ()
 		{
 			return GetValidDir (SolutionName);
-		}
-
-		public string SolutionFileName {
-			get { return SolutionName + ".sln"; }
 		}
 
 		public bool CreateProjectDirectoryInsideSolutionDirectory { get; set; }

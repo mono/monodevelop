@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Projects
 		void OnCreateProjectWithinSolutionDirectoryCheckBoxClicked ()
 		{
 			projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory = createProjectWithinSolutionDirectoryCheckBox.Active;
-			projectFolderPreviewWidget.ShowSolutionFolderNode (projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			projectFolderPreviewWidget.Refresh ();
 		}
 
 		void BrowseButtonClicked ()

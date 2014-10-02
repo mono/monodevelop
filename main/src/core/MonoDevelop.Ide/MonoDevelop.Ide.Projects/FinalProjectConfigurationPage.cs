@@ -72,11 +72,11 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public string ProjectFileName {
-			get { return config.ProjectFileName; }
+			get { return config.ProjectName + config.ProjectFileExtension; }
 		}
 
 		public string SolutionFileName {
-			get { return config.SolutionFileName; }
+			get { return config.SolutionName + ".sln"; }
 		}
 
 		public string GetValidProjectName ()
@@ -116,6 +116,26 @@ namespace MonoDevelop.Ide.Projects
 
 		public bool IsUseGitEnabled {
 			get { return config.CreateSolution; }
+		}
+
+		public bool IsNewSolution {
+			get { return config.CreateSolution; }
+		}
+
+		public string DefaultPreviewSolutionName {
+			get { return "Solution"; }
+		}
+
+		public string DefaultPreviewSolutionFileName {
+			get { return "Solution.sln"; }
+		}
+
+		public string DefaultPreviewProjectName {
+			get { return "Project"; }
+		}
+
+		public string DefaultPreviewProjectFileName {
+			get { return "Project.csproj"; }
 		}
 
 		void CheckIsValid ()

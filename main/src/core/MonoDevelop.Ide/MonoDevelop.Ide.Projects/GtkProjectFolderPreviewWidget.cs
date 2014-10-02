@@ -84,24 +84,41 @@ namespace MonoDevelop.Ide.Projects
 		public void Load (FinalProjectConfigurationPage projectConfiguration)
 		{
 			this.projectConfiguration = projectConfiguration;
+			Refresh ();
+		}
+
+		public void Refresh ()
+		{
 			folderTreeStore.Clear ();
-			AddProjectWithSolutionDirectoryToTree ();
+			if (projectConfiguration.IsNewSolution) {
+				if (projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory) {
+					AddProjectWithSolutionDirectoryToTree ();
+				} else {
+					AddProjectWithNoSolutionDirectoryToTree ();
+				}
+			} else {
+				if (projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory) {
+					AddProjectWithNoSolutionDirectoryToTree ();
+				} else {
+					AddProjectWithNoProjectDirectoryToTree ();
+				}
+			}
+
+			UpdateTreeValues ();
+
+			folderTreeView.ExpandAll ();
 		}
 
 		void AddProjectWithSolutionDirectoryToTree ()
 		{
 			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
 
-			solutionFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, "Solution");
-			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, fileImage, "Solution.sln");
+			solutionFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, projectConfiguration.DefaultPreviewSolutionName);
+			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, fileImage, projectConfiguration.DefaultPreviewSolutionFileName);
 
-			projectFolderNode = folderTreeStore.AppendValues (solutionFolderNode, folderImage, "Project");
+			projectFolderNode = folderTreeStore.AppendValues (solutionFolderNode, folderImage, projectConfiguration.DefaultPreviewProjectName);
 			gitIgnoreNode = AddGitIgnoreToTree ();
-			projectNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, "Project.csproj");
-
-			UpdateTreeValues ();
-
-			folderTreeView.ExpandAll ();
+			projectNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, projectConfiguration.DefaultPreviewProjectFileName);
 		}
 
 		void UpdateTreeValues ()
@@ -116,16 +133,26 @@ namespace MonoDevelop.Ide.Projects
 		{
 			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
 
-			projectFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, "Project");
+			projectFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, projectConfiguration.DefaultPreviewProjectName);
 			gitIgnoreNode = AddGitIgnoreToTree ();
-			projectNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, "Project.csproj");
+			projectNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, projectConfiguration.DefaultPreviewProjectFileName);
 
 			solutionFolderNode = TreeIter.Zero;
-			solutionNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, "Solution.sln");
+			solutionNode = TreeIter.Zero;
+			if (projectConfiguration.IsNewSolution) {
+				solutionNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, projectConfiguration.DefaultPreviewSolutionFileName);
+			}
+		}
 
-			UpdateTreeValues ();
+		void AddProjectWithNoProjectDirectoryToTree ()
+		{
+			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
 
-			folderTreeView.ExpandAll ();
+			projectFolderNode = TreeIter.Zero;
+			projectNode = folderTreeStore.AppendValues (locationNode, fileImage, projectConfiguration.DefaultPreviewProjectFileName);
+
+			solutionFolderNode = TreeIter.Zero;
+			solutionNode = TreeIter.Zero;
 		}
 
 		TreeIter AddGitIgnoreToTree ()
@@ -149,7 +176,7 @@ namespace MonoDevelop.Ide.Projects
 			string projectFileName = projectConfiguration.ProjectFileName;
 
 			if (String.IsNullOrEmpty (projectName)) {
-				projectName = "Project";
+				projectName = projectConfiguration.DefaultPreviewProjectName;
 				projectFileName = projectName + projectFileName;
 			}
 			UpdateTextColumn (projectFolderNode, projectName);
@@ -162,7 +189,7 @@ namespace MonoDevelop.Ide.Projects
 			string solutionFileName = projectConfiguration.SolutionFileName;
 
 			if (String.IsNullOrEmpty (solutionName)) {
-				solutionName = "Solution";
+				solutionName = projectConfiguration.DefaultPreviewSolutionName;
 				solutionFileName = solutionName + solutionFileName;
 			}
 
@@ -174,7 +201,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public void ShowGitIgnoreFile ()
 		{
-			if (projectConfiguration.CreateGitIgnoreFile) {
+			if (projectConfiguration.IsGitIgnoreEnabled && projectConfiguration.CreateGitIgnoreFile) {
 				if (gitIgnoreNode.Equals (TreeIter.Zero)) {
 					gitIgnoreNode = AddGitIgnoreToTree ();
 				}
@@ -187,21 +214,6 @@ namespace MonoDevelop.Ide.Projects
 		bool ShowingSolutionFolderNode ()
 		{
 			return !solutionFolderNode.Equals (TreeIter.Zero);
-		}
-
-		public void ShowSolutionFolderNode (bool show)
-		{
-			if (show) {
-				if (!ShowingSolutionFolderNode ()) {
-					folderTreeStore.Clear ();
-					AddProjectWithSolutionDirectoryToTree ();
-				}
-			} else {
-				if (ShowingSolutionFolderNode ()) {
-					folderTreeStore.Clear ();
-					AddProjectWithNoSolutionDirectoryToTree ();
-				}
-			}
 		}
 	}
 }
