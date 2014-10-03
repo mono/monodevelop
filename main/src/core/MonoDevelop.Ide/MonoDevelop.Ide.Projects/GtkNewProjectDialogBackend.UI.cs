@@ -59,9 +59,11 @@ namespace MonoDevelop.Ide.Projects
 		ListStore templateCategoriesListStore =
 			new ListStore(typeof (Pixbuf), typeof (string), typeof(TemplateCategory));
 		TreeView templatesTreeView;
+		const int TemplateNameColumn = 0;
+		const int TemplateIconColumn = 1;
 		const int TemplateColumn = 2;
 		ListStore templatesListStore =
-			new ListStore(typeof (Pixbuf), typeof (string), typeof(SolutionTemplate));
+			new ListStore(typeof (string), typeof (Pixbuf), typeof(SolutionTemplate));
 		VBox templateVBox;
 		Gtk.Image templateImage;
 		Label templateNameLabel;
@@ -254,16 +256,13 @@ namespace MonoDevelop.Ide.Projects
 		{
 			var column = new TreeViewColumn ();
 
-			var iconRenderer = new CellRendererPixbuf ();
-			column.PackStart (iconRenderer, false);
-			iconRenderer.CellBackgroundGdk = templateListBackgroundColor;
-			column.AddAttribute (iconRenderer, "pixbuf", column: 0);
-
 			templateTextRenderer = new TemplateCellRendererText ();
+			templateTextRenderer.Xpad = 17;
+			templateTextRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			templateTextRenderer.CellBackgroundGdk = templateListBackgroundColor;
 
 			column.PackStart (templateTextRenderer, true);
-			column.AddAttribute (templateTextRenderer, "markup", column: 1);
+			column.AddAttribute (templateTextRenderer, "markup", column: 0);
 
 			column.SetCellDataFunc (templateTextRenderer, SetTemplateTextCellData);
 

@@ -42,15 +42,18 @@ namespace MonoDevelop.Ide.Projects
 		Rectangle languageRect;
 		int dropdownTriangleWidth = 8;
 		int dropdownTriangleHeight = 5;
-		const int languageButtonRightHandEdgePadding = 10;
 		const int dropdownTriangleRightHandPadding = 8;
 		const int languageRightHandPadding = 4;
 		const int languageLeftHandPadding = 9;
+		const int iconTextPadding = 10;
+		const int groupTemplateHeadingYPadding = 4;
 
 		int minLanguageRectWidth;
 
 		public SolutionTemplate Template { get; set; }
 		public string SelectedLanguage { get; set; }
+		public Pixbuf TemplateIcon { get; set; }
+		public string TemplateCategory { get; set; }
 
 		public TemplateCellRendererText ()
 		{
@@ -70,16 +73,32 @@ namespace MonoDevelop.Ide.Projects
 			return languageRect;
 		}
 
+		public override void GetSize (Widget widget, ref Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+		{
+			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+			if (TemplateIcon != null) {
+				height = TemplateIcon.Height + ((int)Ypad * 2);
+			} else {
+				height += 2 * groupTemplateHeadingYPadding;
+			}
+		}
+
 		protected override void Render (Drawable window, Widget widget, Rectangle background_area, Rectangle cell_area, Rectangle expose_area, CellRendererState flags)
 		{
-			base.Render (window, widget, background_area, cell_area, expose_area, flags);
-
-			if ((Template == null) || !Template.AvailableLanguages.Any () || !IsTemplateRowSelected (widget, flags)) {
+			if (Template == null) {
+				DrawTemplateCategoryText (window, widget, cell_area, flags);
 				return;
 			}
 
 			using (var ctx = CairoHelper.Create (window)) {
 				using (var layout = new Pango.Layout (widget.PangoContext)) {
+
+					Rectangle iconRect = DrawIcon (window, widget, cell_area, flags);
+
+					if (!Template.AvailableLanguages.Any () || !IsTemplateRowSelected (widget, flags)) {
+						DrawTemplateNameText (window, widget, cell_area, iconRect, Rectangle.Zero, flags);
+						return;
+					}
 
 					int textHeight = 0;
 					int textWidth = 0;
@@ -88,6 +107,8 @@ namespace MonoDevelop.Ide.Projects
 					layout.GetPixelSize (out textWidth, out textHeight);
 
 					languageRect = GetLanguageButtonRectangle (window, widget, cell_area, textHeight, textWidth);
+
+					DrawTemplateNameText (window, widget, cell_area, iconRect, languageRect, flags);
 
 					RoundBorder (ctx, languageRect.X + 0.5, languageRect.Y + 0.5, languageRect.Width - 1, languageRect.Height - 1);
 					SetSourceColor (ctx, LanguageButtonBackgroundColor.ToCairoColor ());
@@ -107,6 +128,57 @@ namespace MonoDevelop.Ide.Projects
 						DrawTriangle (ctx, triangleX, triangleY);
 					}
 				}
+			}
+		}
+
+		void DrawTemplateCategoryText (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
+		{
+			StateType state = GetState (widget, flags);
+
+			using (var layout = new Pango.Layout (widget.PangoContext)) {
+
+				layout.Ellipsize = Pango.EllipsizeMode.End;
+				int textPixelWidth = widget.Allocation.Width - ((int)Xpad * 2);
+				layout.Width = (int)(textPixelWidth * Pango.Scale.PangoScale);
+
+				layout.SetMarkup (TemplateCategory);
+
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+
+				int textX = cell_area.X + (int)Xpad;
+				int textY = cell_area.Y + (cell_area.Height - h) / 2 + groupTemplateHeadingYPadding;
+				window.DrawLayout (widget.Style.TextGC (state), textX, textY, layout);
+			}
+		}
+
+		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
+		{
+			StateType state = GetState (widget, flags);
+			var iconRect = new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, TemplateIcon.Width, TemplateIcon.Height);
+
+			window.DrawPixbuf (widget.Style.BackgroundGC (state), TemplateIcon, 0, 0, iconRect.X, iconRect.Y, iconRect.Width, iconRect.Height, RgbDither.None, 0, 0);
+
+			return iconRect;
+		}
+
+		void DrawTemplateNameText (Drawable window, Widget widget, Rectangle cell_area, Rectangle iconRect, Rectangle languageRect, CellRendererState flags)
+		{
+			StateType state = GetState (widget, flags);
+
+			using (var layout = new Pango.Layout (widget.PangoContext)) {
+
+				layout.Ellipsize = Pango.EllipsizeMode.End;
+				int textPixelWidth = widget.Allocation.Width - ((int)Xpad * 2) - iconRect.Width - iconTextPadding - languageRect.Width;
+				layout.Width = (int)(textPixelWidth * Pango.Scale.PangoScale);
+
+				layout.SetText (GLib.Markup.EscapeText (Template.Name));
+
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+				int textY = cell_area.Y + (cell_area.Height - h) / 2;
+
+				window.DrawLayout (widget.Style.TextGC (state), iconRect.Right + iconTextPadding, textY, layout);
 			}
 		}
 
@@ -160,7 +232,7 @@ namespace MonoDevelop.Ide.Projects
 
 			var dy = (cell_area.Height - languageRectangleHeight) / 2 - 1;
 			var y = cell_area.Y + dy;
-			var x = widget.Allocation.Width - languageRectangleWidth - languageButtonRightHandEdgePadding;
+			var x = widget.Allocation.Width - languageRectangleWidth - (int)Xpad;
 
 			return new Rectangle (x, y, languageRectangleWidth, languageRectangleHeight);
 		}

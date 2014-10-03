@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using Gtk;
+using Gdk;
 using Mono.Unix;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Templates;
@@ -80,6 +81,8 @@ namespace MonoDevelop.Ide.Projects
 		{
 			var template = (SolutionTemplate)model.GetValue (it, TemplateColumn);
 			templateTextRenderer.Template = template;
+			templateTextRenderer.TemplateIcon = model.GetValue (it, TemplateIconColumn) as Pixbuf;
+			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateNameColumn) as string;
 		}
 
 		[GLib.ConnectBefore]
@@ -223,15 +226,15 @@ namespace MonoDevelop.Ide.Projects
 		{
 			foreach (TemplateCategory subCategory in category.Categories) {
 				templatesListStore.AppendValues (
-					null,
 					MarkupTopLevelCategoryName (subCategory.Name),
+					null,
 					null);
 
 				foreach (SolutionTemplate template in subCategory.Templates) {
 					if (template.HasProjects || controller.IsNewSolution) {
 						templatesListStore.AppendValues (
-							GetIcon (GetTemplateIconId (template), IconSize.Dnd),
 							template.Name,
+							GetIcon (GetTemplateIconId (template), IconSize.Dnd),
 							template);
 					}
 				}
