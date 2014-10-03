@@ -360,7 +360,7 @@ int main (int argc, char **argv)
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"3.0.7";
+	NSString *req_mono_version = @"3.8";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
 
