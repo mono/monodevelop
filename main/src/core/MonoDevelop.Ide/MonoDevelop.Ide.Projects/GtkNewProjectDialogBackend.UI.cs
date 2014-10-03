@@ -71,7 +71,7 @@ namespace MonoDevelop.Ide.Projects
 		Label templateNameLabel;
 		Label templateDescriptionLabel;
 		GtkProjectConfigurationWidget projectConfigurationWidget;
-		TemplateCellRendererText templateTextRenderer;
+		GtkTemplateCellRenderer templateTextRenderer;
 		GtkTemplateCategoryCellRenderer categoryTextRenderer;
 
 		void Build ()
@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			var column = new TreeViewColumn ();
 
-			templateTextRenderer = new TemplateCellRendererText ();
+			templateTextRenderer = new GtkTemplateCellRenderer ();
 			templateTextRenderer.Xpad = 17;
 			templateTextRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			templateTextRenderer.CellBackgroundGdk = templateListBackgroundColor;

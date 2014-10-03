@@ -2824,7 +2824,6 @@
     <Compile Include="MonoDevelop.Ide.Projects\GtkNewProjectDialogBackend.UI.cs">
       <DependentUpon>GtkNewProjectDialogBackend.cs</DependentUpon>
     </Compile>
-    <Compile Include="MonoDevelop.Ide.Projects\TemplateCellRendererText.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\GtkProjectFolderPreviewWidget.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.GtkProjectFolderPreviewWidget.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\GtkProjectConfigurationWidget.cs" />
@@ -2840,6 +2839,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\DefaultProcessedTemplateResult.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\FinalProjectConfigurationPage.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\GtkTemplateCategoryCellRenderer.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkTemplateCellRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

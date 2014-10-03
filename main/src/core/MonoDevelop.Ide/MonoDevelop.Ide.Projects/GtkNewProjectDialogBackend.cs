@@ -104,7 +104,7 @@ namespace MonoDevelop.Ide.Projects
 				var menu = new Menu ();
 				menu.AttachToWidget (this, null);
 				AddLanguageMenuItems (menu, template);
-				menu.ModifyBg (StateType.Normal, TemplateCellRendererText.LanguageButtonBackgroundColor);
+				menu.ModifyBg (StateType.Normal, GtkTemplateCellRenderer.LanguageButtonBackgroundColor);
 				menu.ShowAll ();
 
 				MenuPositionFunc posFunc = (Menu m, out int x, out int y, out bool pushIn) => {

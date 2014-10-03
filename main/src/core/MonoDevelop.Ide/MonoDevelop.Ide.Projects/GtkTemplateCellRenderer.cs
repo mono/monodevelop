@@ -34,7 +34,7 @@ using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public class TemplateCellRendererText : CellRendererText
+	public class GtkTemplateCellRenderer : CellRendererText
 	{
 		public static Color LanguageButtonBackgroundColor = new Color (247, 247, 247);
 
@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Projects
 		public Pixbuf TemplateIcon { get; set; }
 		public string TemplateCategory { get; set; }
 
-		public TemplateCellRendererText ()
+		public GtkTemplateCellRenderer ()
 		{
 			minLanguageRectWidth = languageLeftHandPadding +
 				dropdownTriangleWidth +
