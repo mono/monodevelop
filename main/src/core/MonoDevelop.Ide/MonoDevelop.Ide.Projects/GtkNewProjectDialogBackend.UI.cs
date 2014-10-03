@@ -55,9 +55,11 @@ namespace MonoDevelop.Ide.Projects
 		Label topBannerLabel;
 
 		TreeView templateCategoriesTreeView;
+		const int TemplateCategoryNameColumn = 0;
+		const int TemplateCategoryIconColumn = 1;
 		const int TemplateCategoryColumn = 2;
 		ListStore templateCategoriesListStore =
-			new ListStore(typeof (Pixbuf), typeof (string), typeof(TemplateCategory));
+			new ListStore(typeof (string), typeof (Pixbuf), typeof(TemplateCategory));
 		TreeView templatesTreeView;
 		const int TemplateNameColumn = 0;
 		const int TemplateIconColumn = 1;
@@ -70,6 +72,7 @@ namespace MonoDevelop.Ide.Projects
 		Label templateDescriptionLabel;
 		GtkProjectConfigurationWidget projectConfigurationWidget;
 		TemplateCellRendererText templateTextRenderer;
+		GtkTemplateCategoryCellRenderer categoryTextRenderer;
 
 		void Build ()
 		{
@@ -238,16 +241,15 @@ namespace MonoDevelop.Ide.Projects
 		{
 			var column = new TreeViewColumn ();
 
-			var iconRenderer = new CellRendererPixbuf ();
-			column.PackStart (iconRenderer, false);
-			iconRenderer.CellBackgroundGdk = categoriesBackgroundColor;
-			column.AddAttribute (iconRenderer, "pixbuf", column: 0);
+			categoryTextRenderer = new GtkTemplateCategoryCellRenderer ();
+			categoryTextRenderer.Xpad = 17;
+			categoryTextRenderer.Ypad = 0;
+			categoryTextRenderer.CellBackgroundGdk = categoriesBackgroundColor;
 
-			var textRenderer = new CellRendererText ();
-			textRenderer.CellBackgroundGdk = categoriesBackgroundColor;
+			column.PackStart (categoryTextRenderer, true);
+			column.AddAttribute (categoryTextRenderer, "markup", column: 0);
 
-			column.PackStart (textRenderer, true);
-			column.AddAttribute (textRenderer, "markup", column: 1);
+			column.SetCellDataFunc (categoryTextRenderer, SetTemplateCategoryCellData);
 
 			return column;
 		}

@@ -2839,6 +2839,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\ProcessedTemplateResult.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\DefaultProcessedTemplateResult.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\FinalProjectConfigurationPage.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\GtkTemplateCategoryCellRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

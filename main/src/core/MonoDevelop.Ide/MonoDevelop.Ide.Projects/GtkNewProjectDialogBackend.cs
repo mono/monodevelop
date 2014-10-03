@@ -77,6 +77,13 @@ namespace MonoDevelop.Ide.Projects
 			SelectTemplateDefinedbyController ();
 		}
 
+		void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
+		{
+			categoryTextRenderer.Category = (TemplateCategory)model.GetValue (it, TemplateCategoryColumn);
+			categoryTextRenderer.CategoryIcon = model.GetValue (it, TemplateCategoryIconColumn) as Pixbuf;
+			categoryTextRenderer.CategoryName = model.GetValue (it, TemplateCategoryNameColumn) as string;
+		}
+
 		void SetTemplateTextCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
 			var template = (SolutionTemplate)model.GetValue (it, TemplateColumn);
@@ -174,9 +181,12 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddTopLevelTemplateCategory (TemplateCategory category)
 		{
+			Pixbuf icon = GetIcon (category.IconId, IconSize.Menu);
+			categoryTextRenderer.CategoryIconWidth = icon.Width;
+
 			templateCategoriesListStore.AppendValues (
-				GetIcon (category.IconId, IconSize.Menu),
 				MarkupTopLevelCategoryName (category.Name),
+				icon,
 				category);
 
 			foreach (TemplateCategory subCategory in category.Categories) {
@@ -187,8 +197,8 @@ namespace MonoDevelop.Ide.Projects
 		void AddSubTemplateCategory (TemplateCategory category)
 		{
 			templateCategoriesListStore.AppendValues (
-				null,
 				category.Name,
+				null,
 				category);
 		}
 
