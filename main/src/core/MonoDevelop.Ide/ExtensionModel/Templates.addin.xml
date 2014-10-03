@@ -80,7 +80,7 @@
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-	<Category id="crossplat" name="Cross-Platform" icon="md-platform-cross-platform">
+	<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform">
 		<Category id="app" name="App">
 			<Category id="general" name="General" />
 		</Category>

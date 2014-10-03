@@ -36,8 +36,8 @@ namespace MonoDevelop.Ide.Projects
 		Color bannerBackgroundColor = new Color (119, 130, 140);
 		Color bannerLineColor = new Color (112, 122, 131);
 		Color whiteColor = new Color (255, 255, 255);
-		Color categoriesBackgroundColor = new Color (227, 227, 227);
-		Color templateListBackgroundColor = new Color (242, 242, 242);
+		Color categoriesBackgroundColor = new Color (225, 228, 232);
+		Color templateListBackgroundColor = new Color (240, 240, 240);
 		Color templateBackgroundColor = new Color (255, 255, 255);
 		Color templateSectionSeparatorColor = new Gdk.Color (208, 208, 208);
 		Color selectedRowBackgroundColor = new Color (19, 112, 216);
@@ -72,8 +72,8 @@ namespace MonoDevelop.Ide.Projects
 		void Build ()
 		{
 			BorderWidth = 0;
-			WidthRequest = 990;
-			HeightRequest = 610;
+			WidthRequest = 901;
+			HeightRequest = 564;
 
 			Modal = true;
 			Name = "NewProjectDialog";
@@ -85,7 +85,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Top banner of dialog.
 			var topLabelEventBox = new EventBox ();
-			topLabelEventBox.HeightRequest = 56;
+			topLabelEventBox.HeightRequest = 52;
 			topLabelEventBox.ModifyBg (StateType.Normal, bannerBackgroundColor);
 			topLabelEventBox.ModifyFg (StateType.Normal, whiteColor);
 			topLabelEventBox.BorderWidth = 0;
@@ -117,7 +117,7 @@ namespace MonoDevelop.Ide.Projects
 			// Template categories.
 			var templateCategoriesVBox = new VBox ();
 			templateCategoriesVBox.BorderWidth = 0;
-			templateCategoriesVBox.WidthRequest = 242;
+			templateCategoriesVBox.WidthRequest = 220;
 			var templateCategoriesScrolledWindow = new ScrolledWindow ();
 			templateCategoriesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
 
@@ -136,7 +136,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Templates.
 			var templatesVBox = new VBox ();
-			templatesVBox.WidthRequest = 242;
+			templatesVBox.WidthRequest = 220;
 			templatesHBox.PackStart (templatesVBox, false, false, 0);
 			var templatesScrolledWindow = new ScrolledWindow ();
 			templatesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
