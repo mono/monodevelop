@@ -1203,6 +1203,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			destroypool (pool);
 			updatemonitor = null;
+			progressData.LogTimer.Dispose ();
+			progressData = null;
 			Monitor.Exit (svn);
 		}
 
@@ -1319,10 +1321,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 
 			long totalProgress = total;
-			if (totalProgress != -1 && currentProgress >= totalProgress) {
-				progressData.LogTimer.Dispose ();
+			if (totalProgress != -1 && currentProgress >= totalProgress)
 				return;
-			}
 
 			progressData.Remainder += currentProgress % 1024;
 			if (progressData.Remainder >= 1024) {
