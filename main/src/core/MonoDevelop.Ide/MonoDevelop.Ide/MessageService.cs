@@ -37,23 +37,6 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide
 {
-	public class AlertButtonEventArgs : EventArgs
-	{
-		public bool CloseDialog {
-			get;
-			set;
-		}
-
-		public AlertButtonEventArgs (bool closeDialog)
-		{
-			CloseDialog = closeDialog;
-		}
-
-		public AlertButtonEventArgs () : this (true)
-		{
-		}
-	}
-
 	public class AlertButton 
 	{
 		public static AlertButton Ok      = new AlertButton (Gtk.Stock.Ok, true);
@@ -83,23 +66,11 @@ namespace MonoDevelop.Ide
 		public string Label { get; set; }
 		public string Icon { get; set; }
 		public bool IsStockButton { get; set; }
-		public bool CloseDialog { get; private set; }
-		public delegate void AlertButtonClickedHandler (AlertButtonEventArgs args);
-		public event EventHandler<AlertButtonEventArgs> OnClicked;
-
-		internal void NotifyClicked ()
-		{
-			var args = new AlertButtonEventArgs (CloseDialog);
-			if (OnClicked != null)
-				OnClicked (this, args);
-			CloseDialog = args.CloseDialog;
-		}
 		
 		public AlertButton (string label, string icon)
 		{
 			this.Label = label;
 			this.Icon = icon;
-			this.CloseDialog = true;
 		}
 		
 		public AlertButton (string label) : this (label, null)
