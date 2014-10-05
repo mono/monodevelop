@@ -171,10 +171,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					break;
 				}
 			}
-
-			resultButton.NotifyClicked ();
-			if (resultButton.CloseDialog)
-				this.Destroy ();
+			this.Destroy ();
 		}
 	}
 }
