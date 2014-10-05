@@ -72,6 +72,7 @@ namespace MonoDevelop.Debugger
 				openButton.Label = "Open";
 				openButton.Relief = ReliefStyle.Half;
 				openButton.Clicked += delegate {
+					PreviewWindowManager.DestroyWindow ();
 					DebuggingService.ShowValueVisualizer (val);
 				};
 				var hbox = new HBox ();
