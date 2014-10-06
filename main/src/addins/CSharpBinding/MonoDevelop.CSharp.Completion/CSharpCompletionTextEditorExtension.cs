@@ -72,7 +72,11 @@ namespace MonoDevelop.CSharp.Completion
 				return doc.Editor;
 			}
 		}
-		
+
+		protected virtual IProjectContent ProjectContent {
+			get { return Document.GetProjectContext (); }
+		}
+
 		SyntaxTree unit;
 		static readonly SyntaxTree emptyUnit = new SyntaxTree ();
 		SyntaxTree Unit {
@@ -377,7 +381,7 @@ namespace MonoDevelop.CSharp.Completion
 				data.Document,
 				CreateContextProvider (),
 				completionDataFactory,
-				Document.GetProjectContext (),
+				ProjectContent,
 				ctx
 			);
 			completionDataFactory.Engine = engine;
@@ -450,7 +454,7 @@ namespace MonoDevelop.CSharp.Completion
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
-				Document.GetProjectContext (),
+				ProjectContent,
 				ctx
 				);
 			List<string> list;
@@ -616,7 +620,7 @@ namespace MonoDevelop.CSharp.Completion
 					TextEditorData.Document,
 					CreateContextProvider (),
 					this,
-					Document.GetProjectContext (),
+					ProjectContent,
 					ctx
 				);
 				return engine.GetParameterDataProvider (completionContext.TriggerOffset, completionChar) as ParameterDataProvider;
@@ -663,7 +667,7 @@ namespace MonoDevelop.CSharp.Completion
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
-				Document.GetProjectContext (),
+				ProjectContent,
 				ctx
 			);
 			engine.SetOffset (TextEditorData.Caret.Offset);
@@ -680,7 +684,7 @@ namespace MonoDevelop.CSharp.Completion
 				TextEditorData.Document,
 				CreateContextProvider (),
 				this,
-				Document.GetProjectContext (),
+				ProjectContent,
 				ctx
 			);
 			List<string> list;
