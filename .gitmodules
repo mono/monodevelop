@@ -26,6 +26,7 @@
 [submodule "main/external/mono-addins"]
 	path = main/external/mono-addins
 	url = git://github.com/mono/mono-addins.git
+	branch = fix-update-disables
 [submodule "main/external/ikvm"]
 	path = main/external/ikvm
 	url = git://github.com/mono/ikvm-fork.git
