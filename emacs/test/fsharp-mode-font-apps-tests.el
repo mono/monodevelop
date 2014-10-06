@@ -34,13 +34,10 @@
 
 ;;; Code:
 
-(defvar fsharp-mode-face-test-apps-file-name load-file-name
-  "The file name of this file.")
+(require 'faceup)
 
-(defun fsharp-mode-face-test-apps-file-name ()
-  "The filename of this source file."
-  (or fsharp-mode-face-test-apps-file-name
-      (symbol-file 'fsharp-mode-face-test-apps-file-name)))
+(defvar fsharp-mode-face-test-apps-file-name (faceup-this-file-directory)
+  "The file name of this file.")
 
 (defun fsharp-mode-face-test-apps (file)
   "Test that FILE is fontifies as the .faceup file describes.
@@ -48,15 +45,12 @@
 FILE is interpreted as relative to this source directory."
   (faceup-test-font-lock-file 'fsharp-mode
                               (concat
-                               (file-name-directory
-                                (fsharp-mode-face-test-apps-file-name))
+                               fsharp-mode-face-test-apps-file-name
                                file)))
-
 (faceup-defexplainer fsharp-mode-face-test-apps)
 
 
 (ert-deftest fsharp-mode-face-file-test ()
-  (require 'faceup)
   (should (fsharp-mode-face-test-apps "apps/FQuake3/NativeMappings.fs"))
   (should (fsharp-mode-face-test-apps "apps/FSharp.Compatibility/Format.fs")))
 
