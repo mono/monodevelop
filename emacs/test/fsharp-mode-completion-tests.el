@@ -13,7 +13,7 @@
     "A message for jumping to a definition in another file")
 
 (check "jumping to local definition should not change buffer"
-  (let ((f (concat fs-file-dir "Program.fs")))
+  (let ((f (file-truename (concat fs-file-dir "Program.fs"))))
     (stubbing-process-functions
      (using-file f
                  (fsharp-ac-filter-output nil finddeclstr1)
@@ -27,7 +27,7 @@
 
 (check "jumping to definition in another file should open that file"
   (let ((f1 (concat fs-file-dir "Program.fs"))
-        (f2 (concat fs-file-dir "FileTwo.fs")))
+        (f2 (file-truename (concat fs-file-dir "FileTwo.fs"))))
       (stubbing-process-functions
        (using-file f1
          (fsharp-ac-filter-output nil finddeclstr2)

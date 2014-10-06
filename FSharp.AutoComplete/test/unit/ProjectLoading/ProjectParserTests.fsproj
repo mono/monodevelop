@@ -9,8 +9,11 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ProjectParserTests</RootNamespace>
     <AssemblyName>ProjectParserTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <Name>ProjectParserTests</Name>
     <UsePartialTypes>False</UsePartialTypes>
+    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
@@ -34,30 +37,44 @@
     <DocumentationFile>bin\Release\ProjectParserTests.XML</DocumentationFile>
     <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '10.0' OR '$(VisualStudioVersion)' == '11.0'">
+    <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+  </PropertyGroup>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
+  <ItemGroup>
+    <Compile Include="ProjectFileTests.fs" />
+    <Compile Include="ProjectLoadingTests.fs" />
+    <Compile Include="ProjectReferenceTests.fs" />
+    <Compile Include="ProjectOutputTests.fs" />
+    <Content Include="app.config" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core" />
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="NUnit">
-      <HintPath>..\..\..\..\lib\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="FsUnit">
-      <HintPath>..\..\..\..\lib\FsUnit.1.1.1.0\Lib\Net40\FsUnit.NUnit.dll</HintPath>
+      <HintPath>..\..\..\packages\FsUnit.1.3.0.1\Lib\Net40\FsUnit.NUnit.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ProjectReferenceTests.fs" />
-    <Compile Include="ProjectOutputTests.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\FSharp.AutoComplete.fsproj">
       <Project>{b6ab4ef3-8f60-41a1-ab0c-851a6deb169e}</Project>
       <Name>FSharp.AutoComplete</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\FSharp.CompilerBinding\FSharp.CompilerBinding.fsproj">
+      <Project>{88F6940F-D300-474C-B2A7-E2ECD5B04B57}</Project>
+      <Name>FSharp.CompilerBinding</Name>
+    </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">

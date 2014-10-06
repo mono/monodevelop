@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cd `dirname $0`
+
+FAKE="packages/FAKE/tools/FAKE.exe"
+
+if [[ ! -e ~/.config/.mono/certs ]];
+then
+    mozroots --import --sync --quiet
+fi
+
+if [[ ! -e $FAKE ]];
+then
+    mono ../lib/nuget/NuGet.exe "Install" "FAKE" "-OutputDirectory" "packages" "-ExcludeVersion"
+fi
+
+mono $FAKE "$@"
+

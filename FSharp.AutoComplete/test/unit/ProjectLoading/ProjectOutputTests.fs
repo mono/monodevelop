@@ -8,9 +8,9 @@ open System.IO
 
 [<Test>]
 let TestProjectLibraryResolution () =
-  let p  = ProjectParser.load "../../data/Test1.fsproj"
+  let p = ProjectParser.load "../ProjectLoading/data/Test1.fsproj"
   Option.isSome p |> should be True
-  let fs = ProjectParser.getOutput p.Value
-  fs |> should equal (Path.GetFullPath "../../data/bin/Debug/Test1.dll")
+  let fs = p.Value.Output
+  fs |> should equal (Path.GetFullPath "../ProjectLoading/data/bin/Debug/Test1.dll")
 
 

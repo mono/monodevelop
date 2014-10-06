@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,13 +11,15 @@
     <AssemblyName>Test2</AssemblyName>
     <Name>Test2</Name>
     <UsePartialTypes>False</UsePartialTypes>
+    <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
+    <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <Tailcalls>False</Tailcalls>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>Test2\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -27,7 +29,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <Tailcalls>True</Tailcalls>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>Test2\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -35,13 +37,12 @@
     <DebugSymbols>False</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+    </Reference>
     <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="NDesk.Options">
-      <HintPath>..\..\..\..\..\lib\ndesk-options\NDesk.Options.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Test2File2.fs" />
@@ -53,8 +54,19 @@
       <Name>Test1</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
-  <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '11.0'">
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">

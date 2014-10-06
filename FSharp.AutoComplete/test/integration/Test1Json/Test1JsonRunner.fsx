@@ -35,5 +35,5 @@ p.declarations "Script.fsx"
 Threading.Thread.Sleep(1000)
 p.send "quit\n"
 let output = p.finalOutput ()
-File.WriteAllText("output.txt", output)
+File.WriteAllText("output.json", output)
 
