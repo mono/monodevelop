@@ -28,10 +28,8 @@ using System;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -140,9 +138,19 @@ namespace MonoDevelop.PackageManagement
 		{
 			DispatchService.GuiDispatch (() => {
 				foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
+					projectInSolution.RefreshProjectBuilder ();
 					projectInSolution.DotNetProject.RefreshReferenceStatus ();
+					ReconnectAssemblyReferences (projectInSolution.DotNetProject);
 				}
 			});
+		}
+
+		void ReconnectAssemblyReferences (DotNetProject dotNetProject)
+		{
+			var projectWrapper = TypeSystemService.GetProjectContentWrapper (dotNetProject);
+			if (projectWrapper != null) {
+				projectWrapper.ReconnectAssemblyReferences ();
+			}
 		}
 	}
 }
