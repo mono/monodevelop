@@ -816,8 +816,11 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		MonoDevelop.Ide.Gui.Document ownerDocument;
+		protected MonoDevelop.Ide.Gui.Document OwnerDocument {
+			get { return ownerDocument; }
+		}
 
-		void HandleDocumentParsed (object sender, EventArgs e)
+		protected virtual void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			widget.UpdateParsedDocument (ownerDocument.ParsedDocument);
 		}		
