@@ -77,8 +77,8 @@
 (defconst fsharp-constructor-regexp "^\\s-*\\<\\(new\\) *(.*)[^=]*=")
 (defconst fsharp-type-def-regexp 
   (format "^\\s-*\\<\\(?:type\\|inherit\\)\\s-+%s\\([A-Za-z0-9_'.]+\\)" 
-                  fsharp-access-control-regexp))
-(defconst fsharp-var-or-arg-regexp "\\<\\([A-Za-z_][A-Za-z0-9_']*\\)\\>")
+          fsharp-access-control-regexp))
+(defconst fsharp-var-or-arg-regexp "\\_<\\([A-Za-z_][A-Za-z0-9_']*\\)\\_>")
 (defconst fsharp-explicit-field-regexp
   (format "^\\s-*\\(?:val\\|abstract\\)\\s-*\\(?:mutable\\s-+\\)?%s\\([A-Za-z_][A-Za-z0-9_']*\\)\\s-*:\\s-*\\([A-Za-z_][A-Za-z0-9_'<> \t]*\\)" fsharp-access-control-regexp))
 
@@ -105,15 +105,26 @@
 
 (defconst fsharp-font-lock-keywords
   (list
-   ;; Preprocessor directives
    (cons (regexp-opt
-          '(;; Preprocessor directives
+          '(;; Sections in brackets refer to the F# 3.0 specification
+
+            ;; Preprocessor directives (3.3)
             "#if" "#else" "#endif"
 
-            ;; FSI directives
-            "#load" "#r" "#I" "#quit" "#time" "#help"
+            ;; Compiler directives (12.4)
+            "#nowarn" "#load" "#r" "#reference" "#I"
+            "#Include" "#q" "#quit" "#time" "#help"
 
-            ;; F# keywords
+            ;; Lexical matters (18.4)
+            "#indent"
+
+            ;; Line Directives (3.9)
+            "#line"
+
+            ;; Identifier replacements (3.11)
+            "__SOURCE_DIRECTORY__" "__SOURCE_FILE__" "__LINE__"
+
+            ;; F# keywords (3.4)
             "abstract" "and" "as" "assert" "base" "begin"
             "class" "default" "delegate" "do" "done"
             "downcast" "downto" "elif" "else" "end"
@@ -165,7 +176,7 @@
     ;; 'default'. use this to prevent generic type arguments from
     ;; being rendered in variable face
     (2 font-lock-negation-char-face nil t))
-  `(,(format "^\\s-*\\<\\(let\\|use\\|override\\|member\\|and\\|\\(?:%snew\\)\\)\\>"
+  `(,(format "^\\s-*\\<\\(let\\|use\\|override\\|member\\|and\\|\\(?:%snew\\)\\)\\_>"
                          fsharp-access-control-regexp)
     (0 font-lock-keyword-face) ; let binding and function arguments
     (,fsharp-var-or-arg-regexp
@@ -189,10 +200,10 @@
   '("\\<open\s\\([A-Za-z0-9_.]+\\)" 1 font-lock-type-face)
 
   ;; module/namespace
-  '("\\<\\(?:module\\|namespace\\)\s\\([A-Za-z0-9_.]+\\)" 1 font-lock-type-face)
+  '("\\_<\\(?:module\\|namespace\\)\s\\([A-Za-z0-9_.]+\\)" 1 font-lock-type-face)
 
 ;labels (and open)
-   '("\\<\\(assert\\|open\\|include\\|module\\|namespace\\|extern\\|void\\)\\>\\|[~][ (]*[a-z][a-zA-Z0-9_']*"
+   '("\\_<\\(assert\\|open\\|include\\|module\\|namespace\\|extern\\|void\\)\\_>\\|[~][ (]*[a-z][a-zA-Z0-9_']*"
      . font-lock-variable-name-face)
    ;; (cons (concat
    ;;        "\\<\\(asr\\|false\\|land\\|lor\\|lsl\\|lsr\\|lxor"

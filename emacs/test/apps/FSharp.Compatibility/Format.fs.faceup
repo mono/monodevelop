@@ -50,7 +50,7 @@
     «x:(* to do something only if this very line has been broken *)»
     | Pp_if_newline
     «x:(* opening a tag name *)»
-    | Pp_«v:open»_tag «k:of» tag
+    | Pp_open_tag «k:of» tag
     «x:(* closing the most recently opened tag *)»
     | Pp_close_tag
 
@@ -119,9 +119,9 @@
 
 «x:(* The formatter specific tag handling functions. *)»
 «k:type» «t:formatter_tag_functions» = {
-    mark_«v:open»_tag : «t:tag »-> string;
+    mark_open_tag : «t:tag »-> string;
     mark_close_tag : «t:tag »-> string;
-    print_«v:open»_tag : «t:tag »-> unit;
+    print_open_tag : «t:tag »-> unit;
     print_close_tag : «t:tag »-> unit;
   }
 
@@ -170,9 +170,9 @@
     «m:/// »«x:Are tags marked?
 »    «k:mutable» pp_mark_tags : bool;
     «m:/// »«x:Find opening and closing markers of tags.
-»    «k:mutable» pp_mark_«v:open»_tag : tag -> string;
+»    «k:mutable» pp_mark_open_tag : tag -> string;
     «k:mutable» pp_mark_close_tag : «t:tag »-> string;
-    «k:mutable» pp_print_«v:open»_tag : «t:tag »-> unit;
+    «k:mutable» pp_print_open_tag : «t:tag »-> unit;
     «k:mutable» pp_print_close_tag : «t:tag »-> unit;
     «m:/// »«x:The pretty-printer queue.
 »    «k:mutable» pp_queue : pp_queue_elem queue
@@ -393,8 +393,8 @@
             | Pp_vbox -> break_new_line state off width
             | Pp_hbox -> break_same_line state n)
        | [] -> ())
-  | «x:(* No opened block. *)» Pp_«v:open»_tag tag_name ->
-      «k:let» «v:marker» = state.pp_mark_«v:open»_tag tag_name
+  | «x:(* No opened block. *)» Pp_open_tag tag_name ->
+      «k:let» «v:marker» = state.pp_mark_open_tag tag_name
       «k:in»
         (pp_output_string state marker;
          state.pp_mark_stack <- tag_name :: state.pp_mark_stack)
@@ -487,7 +487,7 @@
                   state.pp_scan_stack <- t)
                «k:else» ()
            | Pp_text _ | Pp_stab | Pp_tbegin _ | Pp_tend | Pp_end |
-               Pp_newline | Pp_if_newline | Pp_«v:open»_tag _ | Pp_close_tag ->
+               Pp_newline | Pp_if_newline | Pp_open_tag _ | Pp_close_tag ->
                ())
   | «x:(* scan_push is only used for breaks and boxes. *)» [] -> ()
   
@@ -516,7 +516,7 @@
      «k:else» ())
   
 «x:(* The box which is always opened. *)»
-«k:let» «f:pp_open_sys_box» «v:state» = pp_«v:open»_box_gen state 0 Pp_hovbox
+«k:let» «f:pp_open_sys_box» «v:state» = pp_open_box_gen state 0 Pp_hovbox
   
 «x:(* Close a block, setting sizes of its sub blocks. *)»
 «k:let» «f:pp_close_box» «v:state» () =
@@ -537,12 +537,12 @@
   («k:if» state.pp_print_tags
    «k:then»
      (state.pp_tag_stack <- tag_name :: state.pp_tag_stack;
-      state.pp_print_«v:open»_tag tag_name)
+      state.pp_print_open_tag tag_name)
    «k:else» ();
    «k:if» state.pp_mark_tags
    «k:then»
      pp_enqueue state
-       { elem_size = size_of_int 0; token = Pp_«v:open»_tag tag_name; length = 0;
+       { elem_size = size_of_int 0; token = Pp_open_tag tag_name; length = 0;
        }
    «k:else» ())
   
@@ -575,9 +575,9 @@
   
 «k:let» «f:pp_get_formatter_tag_functions» «v:state» () =
   {
-    mark_«v:open»_tag = state.pp_mark_«v:open»_tag;
+    mark_open_tag = state.pp_mark_open_tag;
     mark_close_tag = state.pp_mark_close_tag;
-    print_«v:open»_tag = state.pp_print_«v:open»_tag;
+    print_open_tag = state.pp_print_open_tag;
     print_close_tag = state.pp_print_close_tag;
   }
   
@@ -585,12 +585,12 @@
                                    {
                                      «v:mark_open_tag» = mot;
                                      mark_close_tag = mct;
-                                     print_«v:open»_tag = pot;
+                                     print_open_tag = pot;
                                      print_close_tag = pct
                                    } =
-  (state.pp_mark_«v:open»_tag <- mot;
+  (state.pp_mark_open_tag <- mot;
    state.pp_mark_close_tag <- mct;
-   state.pp_print_«v:open»_tag <- pot;
+   state.pp_print_open_tag <- pot;
    state.pp_print_close_tag <- pct)
   
 «x:(* Initialize pretty-printer. *)»
@@ -604,7 +604,7 @@
    state.pp_current_indent <- 0;
    state.pp_curr_depth <- 0;
    state.pp_space_left <- state.pp_margin;
-   pp_«v:open»_sys_box state)
+   pp_open_sys_box state)
   
 «x:(* Flushing pretty-printer queue. *)»
 «k:let» «f:pp_flush_queue» «v:state» «v:b» =
@@ -643,11 +643,11 @@
     pp_print_as state 1 (string c)
   
 «x:(* Opening boxes. *)»
-«k:let» «k:rec» «f:pp_open_hbox» «v:state» () = pp_«v:open»_box_gen state 0 Pp_hbox
-«k:and» «f:pp_open_vbox» «v:state» «v:indent» = pp_«v:open»_box_gen state indent Pp_vbox
-«k:and» «f:pp_open_hvbox» «v:state» «v:indent» = pp_«v:open»_box_gen state indent Pp_hvbox
-«k:and» «f:pp_open_hovbox» «v:state» «v:indent» = pp_«v:open»_box_gen state indent Pp_hovbox
-«k:and» «f:pp_open_box» «v:state» «v:indent» = pp_«v:open»_box_gen state indent Pp_box
+«k:let» «k:rec» «f:pp_open_hbox» «v:state» () = pp_open_box_gen state 0 Pp_hbox
+«k:and» «f:pp_open_vbox» «v:state» «v:indent» = pp_open_box_gen state indent Pp_vbox
+«k:and» «f:pp_open_hvbox» «v:state» «v:indent» = pp_open_box_gen state indent Pp_hvbox
+«k:and» «f:pp_open_hovbox» «v:state» «v:indent» = pp_open_box_gen state indent Pp_hovbox
+«k:and» «f:pp_open_box» «v:state» «v:indent» = pp_open_box_gen state indent Pp_box
   
 «x:(* Print a new line after printing all queued text
    (same for print_flush but without a newline). *)»
@@ -903,9 +903,9 @@
          pp_out_spaces = i;
          pp_print_tags = «k:false»;
          pp_mark_tags = «k:false»;
-         pp_mark_«v:open»_tag = default_pp_mark_«v:open»_tag;
+         pp_mark_open_tag = default_pp_mark_open_tag;
          pp_mark_close_tag = default_pp_mark_close_tag;
-         pp_print_«v:open»_tag = default_pp_print_«v:open»_tag;
+         pp_print_open_tag = default_pp_print_open_tag;
          pp_print_close_tag = default_pp_print_close_tag;
          pp_queue = pp_q;
        })
@@ -939,13 +939,13 @@
   Basic functions on the standard formatter
 
  **************************************************************)»
-«k:let» «k:rec» «v:open_hbox» = pp_«v:open»_hbox std_formatter
-«k:and» «v:open_vbox» = pp_«v:open»_vbox std_formatter
-«k:and» «v:open_hvbox» = pp_«v:open»_hvbox std_formatter
-«k:and» «v:open_hovbox» = pp_«v:open»_hovbox std_formatter
-«k:and» «v:open_box» = pp_«v:open»_box std_formatter
+«k:let» «k:rec» «v:open_hbox» = pp_open_hbox std_formatter
+«k:and» «v:open_vbox» = pp_open_vbox std_formatter
+«k:and» «v:open_hvbox» = pp_open_hvbox std_formatter
+«k:and» «v:open_hovbox» = pp_open_hovbox std_formatter
+«k:and» «v:open_box» = pp_open_box std_formatter
 «k:and» «v:close_box» = pp_close_box std_formatter
-«k:and» «v:open_tag» = pp_«v:open»_tag std_formatter
+«k:and» «v:open_tag» = pp_open_tag std_formatter
 «k:and» «v:close_tag» = pp_close_tag std_formatter
 «k:and» «v:print_as» = pp_print_as std_formatter
 «k:and» «v:print_string» = pp_print_string std_formatter
@@ -960,7 +960,7 @@
 «k:and» «v:print_flush» = pp_print_flush std_formatter
 «k:and» «v:print_newline» = pp_print_newline std_formatter
 «k:and» «v:print_if_newline» = pp_print_if_newline std_formatter
-«k:and» «v:open_tbox» = pp_«v:open»_tbox std_formatter
+«k:and» «v:open_tbox» = pp_open_tbox std_formatter
 «k:and» «v:close_tbox» = pp_close_tbox std_formatter
 «k:and» «v:print_tbreak» = pp_print_tbreak std_formatter
 «k:and» «v:set_tab» = pp_set_tab std_formatter
@@ -1090,9 +1090,9 @@
                  «k:then» invalid_format fmt i
                  «k:else»
                    («k:match» Sformat.get fmt i «k:with»
-                    | «s:'['» -> do_pp_«v:open»_box ppf n (succ i)
+                    | «s:'['» -> do_pp_open_box ppf n (succ i)
                     | «s:']'» -> (pp_close_box ppf (); doprn n (succ i))
-                    | «s:'{'» -> do_pp_«v:open»_tag ppf n (succ i)
+                    | «s:'{'» -> do_pp_open_tag ppf n (succ i)
                     | «s:'}'» -> (pp_close_tag ppf (); doprn n (succ i))
                     | «s:' '» -> (pp_print_space ppf (); doprn n (succ i))
                     | «s:','» -> (pp_print_cut ppf (); doprn n (succ i))
@@ -1122,7 +1122,7 @@
          «k:else» printer ppf;
          doprn n i)
       «k:and» «f:cont_f» «v:n» «v:i» = (pp_print_flush ppf (); doprn n i)
-      «k:and» «f:cont_m» «v:n» «v:sfmt» «v:i» = kprintf (Obj.magic («k:fun» _ -> doprn n i)) sfmt
+      «k:and» «f:cont_m» «v:n» «v:sfmt» «v:i» = kprintf (Obj.magic («k:fun» «v:_» -> doprn n i)) sfmt
       «k:and» «f:get_int» «v:n» «v:i» «v:c» =
         «k:if» i >= len
         «k:then» invalid_integer fmt i
@@ -1131,10 +1131,10 @@
            | «s:' '» -> get_int n (succ i) c
            | «s:'%'» ->
                «k:let» «k:rec» «f:cont_s» «v:n» «v:s» «v:i» = c (format_int_of_string fmt i s) n i
-               «k:and» «f:cont_a» _«v:n» _«v:printer» _«v:arg» «v:i» = invalid_integer fmt i
-               «k:and» «f:cont_t» _«v:n» _«v:printer» «v:i» = invalid_integer fmt i
-               «k:and» «f:cont_f» _«v:n» «v:i» = invalid_integer fmt i
-               «k:and» «f:cont_m» _«v:n» _«v:sfmt» «v:i» = invalid_integer fmt i
+               «k:and» «f:cont_a» «v:_n» «v:_printer» «v:_arg» «v:i» = invalid_integer fmt i
+               «k:and» «f:cont_t» «v:_n» «v:_printer» «v:i» = invalid_integer fmt i
+               «k:and» «f:cont_f» «v:_n» «v:i» = invalid_integer fmt i
+               «k:and» «f:cont_m» «v:_n» «v:_sfmt» «v:i» = invalid_integer fmt i
                «k:in»
                  Tformat.scan_format fmt v n i cont_s cont_a cont_t cont_f
                    cont_m
@@ -1225,9 +1225,9 @@
                      «k:then» (Obj.magic printer : «t:unit »-> string) ()
                      «k:else» exstring («k:fun» «v:ppf» () -> printer ppf) ()
                    «k:in» get (s :: s0 :: accu) n i i
-                 «k:and» «f:cont_f» _«v:n» «v:i» =
+                 «k:and» «f:cont_f» «v:_n» «v:i» =
                    format_invalid_arg «s:"bad tag name specification"» fmt i
-                 «k:and» «f:cont_m» _«v:n» _«v:sfmt» «v:i» =
+                 «k:and» «f:cont_m» «v:_n» «v:_sfmt» «v:i» =
                    format_invalid_arg «s:"bad tag name specification"» fmt i
                  «k:in»
                    Tformat.scan_format fmt v n j cont_s cont_a cont_t cont_f
@@ -1250,26 +1250,26 @@
            | _c -> (pp_print_space ppf (); doprn n i))
       «k:and» «f:do_pp_open_box» «v:ppf» «v:n» «v:i» =
         «k:if» i >= len
-        «k:then» (pp_«v:open»_box_gen ppf 0 Pp_box; doprn n i)
+        «k:then» (pp_open_box_gen ppf 0 Pp_box; doprn n i)
         «k:else»
           («k:match» Sformat.get fmt i «k:with»
            | «s:'<'» ->
                «k:let» («v:kind», «v:i») = get_box_kind (succ i) «k:in»
                «k:let» «f:got_size» «v:size» «v:n» «v:i» =
-                 (pp_«v:open»_box_gen ppf (int_of_size size) kind;
+                 (pp_open_box_gen ppf (int_of_size size) kind;
                   doprn n (skip_gt i))
                «k:in» get_int n i got_size
-           | _c -> (pp_«v:open»_box_gen ppf 0 Pp_box; doprn n i))
+           | _c -> (pp_open_box_gen ppf 0 Pp_box; doprn n i))
       «k:and» «f:do_pp_open_tag» «v:ppf» «v:n» «v:i» =
         «k:if» i >= len
-        «k:then» (pp_«v:open»_tag ppf «s:""»; doprn n i)
+        «k:then» (pp_open_tag ppf «s:""»; doprn n i)
         «k:else»
           («k:match» Sformat.get fmt i «k:with»
            | «s:'<'» ->
                «k:let» «f:got_name» «v:tag_name» «v:n» «v:i» =
-                 (pp_«v:open»_tag ppf tag_name; doprn n (skip_gt i))
+                 (pp_open_tag ppf tag_name; doprn n (skip_gt i))
                «k:in» get_tag_name n (succ i) got_name
-           | _c -> (pp_«v:open»_tag ppf «s:""»; doprn n i))
+           | _c -> (pp_open_tag ppf «s:""»; doprn n i))
       «k:in» doprn (Sformat.index_of_int 0) 0
     «k:in» Tformat.kapr kpr fmt
   «k:in» kprintf
@@ -1279,9 +1279,9 @@
   Defining [fprintf] and various flavors of [fprintf].
 
  **************************************************************)»
-«k:let» «f:kfprintf» «v:k» «v:ppf» = mkprintf «k:false» («k:fun» _ -> ppf) k
+«k:let» «f:kfprintf» «v:k» «v:ppf» = mkprintf «k:false» («k:fun» «v:_» -> ppf) k
   
-«k:let» «f:ikfprintf» «v:k» «v:ppf» = Tformat.kapr («k:fun» _ _ -> Obj.magic (k ppf))
+«k:let» «f:ikfprintf» «v:k» «v:ppf» = Tformat.kapr («k:fun» «v:_» «v:_» -> Obj.magic (k ppf))
   
 «k:let» «f:fprintf» «v:ppf» = kfprintf ignore ppf
   
@@ -1294,7 +1294,7 @@
 «k:let» «f:ksprintf» «v:k» =
   «k:let» «v:b» = Buffer.create 512 «k:in»
   «k:let» «f:k» «v:ppf» = k (string_out b ppf)
-  «k:in» mkprintf «k:true» («k:fun» _ -> formatter_of_buffer b) k
+  «k:in» mkprintf «k:true» («k:fun» «v:_» -> formatter_of_buffer b) k
   
 «k:let» «f:sprintf» «v:fmt» = ksprintf («k:fun» «v:s» -> s) fmt
   
@@ -1303,7 +1303,7 @@
   Deprecated stuff.
 
  **************************************************************)»
-«k:let» «f:kbprintf» «v:k» «v:b» = mkprintf «k:false» («k:fun» _ -> formatter_of_buffer b) k
+«k:let» «f:kbprintf» «v:k» «v:b» = mkprintf «k:false» («k:fun» «v:_» -> formatter_of_buffer b) k
   
 «x:(* Deprecated error prone function bprintf. *)»
 «k:let» «f:bprintf» «v:b» = «k:let» «f:k» ppf = pp_flush_queue ppf «k:false» «k:in» kbprintf k b
@@ -1312,5 +1312,5 @@
 «k:let» «v:kprintf» = ksprintf
   
 «x:(* Output everything left in the pretty printer queue at end of execution. *)»
-«k:let» _ = at_exit print_flush
+«k:let» «v:_» = at_exit print_flush
   

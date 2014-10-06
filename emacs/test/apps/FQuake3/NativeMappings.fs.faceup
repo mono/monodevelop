@@ -20,8 +20,8 @@ Copyright (C) 1999-2005 Id Software, Inc.
 *)»
 
 «m:// »«x:Disable native interop warnings
-»#«v:nowarn» «s:"9"»
-#«v:nowarn» «s:"51"»
+»«k:#nowarn» «s:"9"»
+«k:#nowarn» «s:"51"»
 
 «k:namespace» «v:Engine».«v:Native»
 

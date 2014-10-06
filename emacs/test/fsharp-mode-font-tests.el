@@ -1,4 +1,4 @@
-;;; fsharp-mode-font-apps-tests.el --- Regression test for FSharp font lock
+;;; fsharp-mode-font-tests.el --- Regression test for FSharp font lock
 
 ;; Keywords: faces languages
 ;; Created: 2014-09-13
@@ -36,7 +36,7 @@
 
 (require 'faceup)
 
-(defvar fsharp-mode-face-test-apps-file-name (faceup-this-file-directory)
+(defvar fsharp-mode-face-test-file-name (faceup-this-file-directory)
   "The file name of this file.")
 
 (defun fsharp-mode-face-test-apps (file)
@@ -45,13 +45,23 @@
 FILE is interpreted as relative to this source directory."
   (faceup-test-font-lock-file 'fsharp-mode
                               (concat
-                               fsharp-mode-face-test-apps-file-name
+                               fsharp-mode-face-test-file-name
                                file)))
 (faceup-defexplainer fsharp-mode-face-test-apps)
 
 
 (ert-deftest fsharp-mode-face-file-test ()
-  (should (fsharp-mode-face-test-apps "apps/FQuake3/NativeMappings.fs"))
-  (should (fsharp-mode-face-test-apps "apps/FSharp.Compatibility/Format.fs")))
+  (let ((coding-system-for-read 'utf-8))
+    (should (fsharp-mode-face-test-apps "apps/FQuake3/NativeMappings.fs"))
+    (should (fsharp-mode-face-test-apps "apps/FSharp.Compatibility/Format.fs"))))
 
-;;; fsharp-mode-font-apps-tests.el ends here
+
+(defun fsharp-font-lock-test (faceup)
+  (faceup-test-font-lock-string 'fsharp-mode faceup))
+(faceup-defexplainer fsharp-font-lock-test)
+
+(ert-deftest fsharp-mode-face-test-snippets ()
+  (should (fsharp-font-lock-test "«k:let» «v:x» = is a keyword"))
+  (should (fsharp-font-lock-test "«k:open» «t:FSharp.Charting»")))
+
+;;; fsharp-mode-font-tests.el ends here

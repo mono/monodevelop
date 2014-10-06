@@ -18,7 +18,8 @@
     (dolist (buf bufs)
       (when (get-buffer buf)
         (switch-to-buffer buf)
-        (revert-buffer t t)
+        (when (file-exists-p buffer-file-name)
+          (revert-buffer t t))
         (kill-buffer buf)))
 
     ; Close any buffer associated with the loaded project
@@ -54,7 +55,7 @@
   "Check the program files are set correctly"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (find-file "Test1/Program.fs")
+     (find-file "test/Test1/Program.fs")
      (wait-for-condition (lambda () fsharp-ac-project-files))
      (should-match "Test1/Program.fs" (s-join "" fsharp-ac-project-files))
      (should-match "Test1/FileTwo.fs" (s-join "" fsharp-ac-project-files))
@@ -64,7 +65,7 @@
   "Check completion-at-point works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (find-file "Test1/Program.fs")
+     (find-file "test/Test1/Program.fs")
      (load-project-and-wait "Test1.fsproj")
      (search-forward "X.func")
      (delete-backward-char 2)
@@ -77,7 +78,7 @@
   "Check jump to definition works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (find-file "Test1/Program.fs")
+     (find-file "test/Test1/Program.fs")
      (load-project-and-wait "Test1.fsproj")
      (search-forward "X.func")
      (backward-char 2)
@@ -93,7 +94,7 @@
      (let ((tiptext)
            (fsharp-ac-use-popup t))
        (noflet ((fsharp-ac/show-popup (s) (setq tiptext s)))
-         (find-file "Test1/Program.fs")
+         (find-file "test/Test1/Program.fs")
          (load-project-and-wait "Test1.fsproj")
          (search-forward "X.func")
          (backward-char 2)
@@ -107,7 +108,7 @@
   "Check error underlining works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (find-file "Test1/Program.fs")
+     (find-file "test/Test1/Program.fs")
      (load-project-and-wait "Test1.fsproj")
      (search-forward "X.func")
      (delete-backward-char 1)
@@ -126,7 +127,7 @@
      (let ((tiptext)
            (fsharp-ac-use-popup t))
        (noflet ((fsharp-ac/show-popup (s) (setq tiptext s)))
-         (find-file "Test1/Script.fsx")
+         (find-file "test/Test1/Script.fsx")
          (fsharp-ac-parse-current-buffer t)
          (search-forward "XA.fun")
          (fsharp-ac/show-tooltip-at-point)
@@ -136,7 +137,7 @@
 
 (ert-deftest check-inf-fsharp ()
   "Check that FSI can be used to evaluate"
-  (fsharp-mode-wrapper '("Script.fsx")
+  (fsharp-mode-wrapper '("tmp.fsx")
    (lambda ()
      (fsharp-run-process-if-needed inferior-fsharp-program)
      (wait-for-condition (lambda () (get-buffer inferior-fsharp-buffer-name)))

@@ -16,7 +16,8 @@
      (find-file ,path)
      (unwind-protect
          (progn ,@body)
-       (kill-buffer))))
+       (set-buffer-modified-p nil)
+       (kill-this-buffer))))
 
 (defmacro using-temp-file (name &rest body)
   "Create a temporary file that will be deleted after executing BODY forms"
@@ -78,22 +79,43 @@
 (defconst tests-load-path
   (mapcar 'expand-file-name `(,@load-path "." ".." "./tests")))
 
-(defconst default-dependencies '(popup s dash pos-tip auto-complete noflet))
+(defconst default-dependencies '(popup s dash pos-tip auto-complete noflet faceup))
 
 (defun load-packages ()
   "Load package dependencies for fsharp-mode."
   (init-melpa)
   (mapc 'require-package default-dependencies))
 
-(defun run-fsharp-tests ()
-  "Configure the environment for running tests, then execute tests.
-When run interactively, this will run all current ert tests.
-When running tests in batch mode, tests should be loaded as -l arguments to emacs."
+(defun run-fsharp-tests (&optional files)
+  "Configure the environment for running tests, then execute
+tests. If FILES is specified, load each member of the list to
+search for tests. If FILES is nil then use all files matching the
+glob emacs/test/*test.el."
+  (interactive)
+  (let ((test-files (if files files fsharp-test-files)))
+    (mapc 'load-file test-files)
+    (if noninteractive
+        (ert-run-tests-batch-and-exit)
+      (ert-run-tests-interactively t))))
+
+(defconst fsharp-test-files
+  (directory-files
+   (file-name-directory (or load-file-name buffer-file-name))
+   t
+   ".*tests\.el")
+  "All the files ending in 'tests.el' in the emacs/test directory.")
+
+(defun run-fsharp-unit-tests ()
   (interactive)
   (configure-fsharp-tests)
-  (if noninteractive
-      (ert-run-tests-batch-and-exit)
-    (ert-run-tests-interactively t)))
+  (run-fsharp-tests
+   (--remove (s-match "integration-tests.el" it) fsharp-test-files)))
+
+(defun run-fsharp-integration-tests ()
+  (interactive)
+  (configure-fsharp-tests)
+  (run-fsharp-tests   
+   (--filter (s-match "integration-tests.el" it) fsharp-test-files)))
 
 ;;; Configuration
 
