@@ -110,10 +110,8 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 		
-		public ICompilation Compilation {
-			get {
-				return document.Compilation;
-			}
+		public virtual ICompilation Compilation {
+			get { return Project != null ? TypeSystemService.GetCompilation (Project) : ProjectContent.CreateCompilation (); }
 		}
 		
 		public MonoDevelop.Projects.Project Project {
@@ -171,7 +169,7 @@ namespace MonoDevelop.CSharp.Completion
 			var parsedDocument = document.ParsedDocument;
 			if (parsedDocument != null) {
 				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
-				this.UnresolvedFileCompilation = Document.Compilation;
+				this.UnresolvedFileCompilation = Compilation;
 				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
 				if (addEventHandlersInInitialization)
 					document.Editor.Caret.PositionChanged += HandlePositionChanged;
@@ -258,7 +256,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			this.Unit = newDocument.GetAst<SyntaxTree> ();
 			this.CSharpUnresolvedFile = newDocument.ParsedFile as CSharpUnresolvedFile;
-			this.UnresolvedFileCompilation = Document.Compilation;
+			this.UnresolvedFileCompilation = Compilation;
 			if (TypeSegmentTreeUpdated != null)
 				TypeSegmentTreeUpdated (this, EventArgs.Empty);
 		}
@@ -643,7 +641,7 @@ namespace MonoDevelop.CSharp.Completion
 			var result = new List<string> ();
 			while (scope != null) {
 				result.Add (scope.NamespaceName);
-				var ctx = CSharpUnresolvedFile.GetResolver (Document.Compilation, scope.Region.Begin);
+				var ctx = CSharpUnresolvedFile.GetResolver (Compilation, scope.Region.Begin);
 				foreach (var u in scope.Usings) {
 					var ns = u.ResolveNamespace (ctx);
 					if (ns == null)
