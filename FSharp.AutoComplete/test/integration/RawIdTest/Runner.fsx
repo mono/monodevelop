@@ -11,15 +11,16 @@ open System
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
 File.Delete "output.txt"
 
-if not (File.Exists "FSharp.Data/lib/net40/FSharp.Data.dll") then
-  installNuGetPkg "FSharp.Data" "2.0.3"
-
 let p = new FSharpAutoCompleteWrapper()
 
-p.parse "Test.fsx"
-p.completion "Test.fsx" 12 4
-p.completion "Test.fsx" 14 14
-p.completion "Test.fsx" 16 15
+p.parse "Test-Module.fsx"
+p.parse "Test-Class.fsx"
+p.completion "Test-Module.fsx" 9 2
+p.completion "Test-Module.fsx" 11 12
+p.completion "Test-Module.fsx" 13 13
+p.completion "Test-Class.fsx" 9 2
+p.completion "Test-Class.fsx" 11 12
+p.completion "Test-Class.fsx" 13 13
 p.send "quit\n"
 let output = p.finalOutput ()
 File.WriteAllText("output.txt", output)
