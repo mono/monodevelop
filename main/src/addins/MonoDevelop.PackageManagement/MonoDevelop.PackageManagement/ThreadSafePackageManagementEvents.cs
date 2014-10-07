@@ -283,5 +283,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			return unsafeEvents.OnFileRemoving (path);
 		}
+
+		public event EventHandler<PackageRestoredEventArgs> PackageRestored {
+			add { unsafeEvents.PackageRestored += value; }
+			remove { unsafeEvents.PackageRestored -= value; }
+		}
+
+		public void OnPackageRestored (IPackage package)
+		{
+			unsafeEvents.OnPackageRestored (package);
+		}
 	}
 }

@@ -174,5 +174,14 @@ namespace ICSharpCode.PackageManagement
 			}
 			return true;
 		}
+
+		public event EventHandler<PackageRestoredEventArgs> PackageRestored;
+
+		public void OnPackageRestored (IPackage package)
+		{
+			if (PackageRestored != null) {
+				PackageRestored (this, new PackageRestoredEventArgs (package));
+			}
+		}
 	}
 }
