@@ -38,11 +38,7 @@ namespace MonoDevelop.HexEditor
 {
 	public class HexEditorVisualizer : ValueVisualizer
 	{
-		Mono.MHex.HexEditor hexEditor;
-
-		public HexEditorVisualizer ()
-		{
-		}
+		Mono.MHex.HexEditorDebugger hexEditor;
 
 		#region IValueVisualizer implementation
 
@@ -87,7 +83,7 @@ namespace MonoDevelop.HexEditor
 
 			IBuffer buffer = null;
 
-			hexEditor = new Mono.MHex.HexEditor ();
+			hexEditor = new Mono.MHex.HexEditorDebugger ();
 
 			if (val.TypeName != "string") {
 				var raw = (RawValueArray) val.GetRawValue (options);
