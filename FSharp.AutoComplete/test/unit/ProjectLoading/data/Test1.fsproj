@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <Tailcalls>False</Tailcalls>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>Test1\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -29,7 +29,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <Tailcalls>True</Tailcalls>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>Test1\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>

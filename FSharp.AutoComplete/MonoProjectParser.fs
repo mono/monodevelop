@@ -60,8 +60,7 @@ type MonoProjectParser private (p: Project) =
            let fsproj = Path.Combine(x.Directory, i.FinalItemSpec)
            match MonoProjectParser.Load fsproj with
            | None -> ()
-           | Some cp -> yield Path.Combine(Path.GetDirectoryName x.Output,
-                                           Path.GetFileName cp.Output) |]
+           | Some cp -> yield "-r:" + cp.Output |]
 
     member x.GetOptions =
       let getprop s = p.GetEvaluatedProperty s

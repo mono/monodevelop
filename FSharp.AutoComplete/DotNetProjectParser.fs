@@ -70,8 +70,7 @@ type DotNetProjectParser private (p: ProjectInstance) =
          for cp in p.GetItems("ProjectReference") do
            match DotNetProjectParser.Load (cp.GetMetadataValue("FullPath")) with
            | None -> ()
-           | Some p' -> yield Path.Combine(Path.GetDirectoryName (x :> IProjectParser).Output,
-                                           Path.GetFileName p'.Output)
+           | Some p' -> yield "-r:" + p'.Output
       |]
 
     member x.GetOptions =

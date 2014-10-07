@@ -19,5 +19,9 @@ let Test2ndLevelDepsResolution () =
   Option.isSome p |> should be True
   let rs = p.Value.GetReferences
   rs |> should haveLength 5
-  let test1ok = Array.exists (fun (s:string) -> s.Replace("\\", "/").EndsWith("data/Test2/bin/Debug/Test1.dll")) rs
-  test1ok |> should be True
+
+  for r in rs do
+    r |> should startWith "-r:"
+
+  let subProjectStr = "data/Test1/bin/Debug/Test1.dll".Replace('/',Path.DirectorySeparatorChar)
+  Seq.last rs |> should endWith subProjectStr

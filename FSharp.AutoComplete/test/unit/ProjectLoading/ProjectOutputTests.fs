@@ -11,6 +11,6 @@ let TestProjectLibraryResolution () =
   let p = ProjectParser.load "../ProjectLoading/data/Test1.fsproj"
   Option.isSome p |> should be True
   let fs = p.Value.Output
-  fs |> should equal (Path.GetFullPath "../ProjectLoading/data/bin/Debug/Test1.dll")
+  fs |> should equal (Path.GetFullPath "../ProjectLoading/data/Test1/bin/Debug/Test1.dll")
 
 
