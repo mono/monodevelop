@@ -107,13 +107,16 @@ namespace MonoDevelop.PackageManagement
 
 		void RestorePackages (IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
 		{
-			var action = new RestorePackagesAction (solution, packageManagementEvents);
-			if (project != null) {
-				action.Project = project;
+			var msbuildTargetsMonitor = new MSBuildTargetsRestoredMonitor (packageManagementEvents);
+			using (msbuildTargetsMonitor) {
+				var action = new RestorePackagesAction (solution, packageManagementEvents);
+				if (project != null) {
+					action.Project = project;
+				}
+				action.Execute ();
 			}
-			action.Execute ();
 
-			RefreshProjectReferences ();
+			RefreshProjectReferences (msbuildTargetsMonitor.AnyMSBuildTargetsRestored);
 			ForceCreationOfSharedRepositoriesConfigFile ();
 
 			progressMonitor.ReportSuccess (progressMessage.Success);
@@ -134,13 +137,19 @@ namespace MonoDevelop.PackageManagement
 		/// Refresh all projects even though we may have only restored packages for one project since
 		/// the packages may be used in other projects.
 		/// </summary>
-		void RefreshProjectReferences ()
+		void RefreshProjectReferences (bool refreshMSBuildTargets)
 		{
 			DispatchService.GuiDispatch (() => {
 				foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
-					projectInSolution.RefreshProjectBuilder ();
+					if (refreshMSBuildTargets) {
+						projectInSolution.RefreshProjectBuilder ();
+					}
+
 					projectInSolution.DotNetProject.RefreshReferenceStatus ();
-					ReconnectAssemblyReferences (projectInSolution.DotNetProject);
+
+					if (refreshMSBuildTargets) {
+						ReconnectAssemblyReferences (projectInSolution.DotNetProject);
+					}
 				}
 			});
 		}

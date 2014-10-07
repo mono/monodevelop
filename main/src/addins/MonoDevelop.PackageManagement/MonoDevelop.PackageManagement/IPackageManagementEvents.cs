@@ -50,6 +50,7 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<FileEventArgs> FileChanged;
 		event EventHandler<FileRemovingEventArgs> FileRemoving;
 		event EventHandler UpdatedPackagesAvailable;
+		event EventHandler<PackageRestoredEventArgs> PackageRestored;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
@@ -65,5 +66,6 @@ namespace ICSharpCode.PackageManagement
 		void OnFileChanged(string path);
 		void OnUpdatedPackagesAvailable ();
 		bool OnFileRemoving (string path);
+		void OnPackageRestored (IPackage package);
 	}
 }

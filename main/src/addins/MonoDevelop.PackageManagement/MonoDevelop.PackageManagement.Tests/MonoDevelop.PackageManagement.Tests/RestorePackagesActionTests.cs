@@ -43,6 +43,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		FakePackageRepositoryFactory packageRepositoryCache;
 		PackageManagementEvents packageEvents;
 		List<PackageOperationMessage> messagesLogged;
+		List<PackageRestoredEventArgs> packageRestoredEvents;
 
 		void CreateSolution ()
 		{
@@ -110,6 +111,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			List<string> allMessages = messagesLogged.Select (message => message.ToString ()).ToList ();
 			Assert.That (allMessages, Has.No.ContainsSubstring (expectedMessage));
+		}
+
+		void CapturePackageRestoredEvents ()
+		{
+			packageRestoredEvents = new List<PackageRestoredEventArgs> ();
+			packageEvents.PackageRestored += (sender, e) => {
+				packageRestoredEvents.Add (e);
+			};
 		}
 
 		[Test]
@@ -316,6 +325,40 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual (1, packageManagerFactory.FakePackageManager.PackagesInstalled.Count);
 			Assert.AreEqual ("MyPackage1", packageManagerFactory.FakePackageManager.PackagePassedToInstallPackage.Id);
+		}
+
+		[Test]
+		public void Execute_ProjectHasOneUnrestoredPackage_PackageRestoredEventFiredForPackage ()
+		{
+			FakePackageManagementProject project = CreateSolutionWithOneProject ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			FakePackage package = AddPackageToPriorityRepository ("MyPackage", "1.0");
+			CreateAction ();
+			CapturePackageRestoredEvents ();
+			var dotNetProject = new FakeDotNetProject ();
+			dotNetProject.Name = "MyProject";
+			solution.FakeProjectsToReturnFromGetProject.Add ("MyProject", project);
+			action.Project = dotNetProject;
+
+			action.Execute ();
+
+			PackageRestoredEventArgs eventArgs = packageRestoredEvents [0];
+			Assert.AreEqual (package, eventArgs.Package);
+		}
+
+		[Test]
+		public void Execute_SolutionHasOneProjectWithOneUnrestoredPackage_PackageRestoredEventFiredForPackage ()
+		{
+			FakePackageManagementProject project = CreateSolutionWithOneProject ();
+			project.AddPackageReference ("MyPackage", "1.0");
+			FakePackage package = AddPackageToPriorityRepository ("MyPackage", "1.0");
+			CreateAction ();
+			CapturePackageRestoredEvents ();
+
+			action.Execute ();
+
+			PackageRestoredEventArgs eventArgs = packageRestoredEvents [0];
+			Assert.AreEqual (package, eventArgs.Package);
 		}
 	}
 }
