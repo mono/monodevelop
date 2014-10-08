@@ -25,6 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.CodeCompletion;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -50,30 +53,135 @@ namespace MonoDevelop.CSharp.Completion
 			};
 		}
 		
-		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (Microsoft.CodeAnalysis.IFieldSymbol field)
+		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateEnumMemberCompletionData (IFieldSymbol field)
 		{
 			return new RoslynSymbolCompletionData (ext, field, field.Type.Name + "." + field.Name);
 		}
 		
+		class FormatItemCompletionData : MonoDevelop.Ide.CodeCompletion.CompletionData
+		{
+			string format;
+			string description;
+			object example;
+
+			public FormatItemCompletionData (string format, string description, object example)
+			{
+				this.format = format;
+				this.description = description;
+				this.example = example;
+			}
+
+
+			public override string DisplayText {
+				get {
+					return format;
+				}
+			}
+			public override string GetDisplayDescription (bool isSelected)
+			{
+				return "- <span foreground=\"darkgray\" size='small'>" + description + "</span>";
+			}
+
+
+			string rightSideDescription = null;
+			public override string GetRightSideDescription (bool isSelected)
+			{
+				if (rightSideDescription == null) {
+					try {
+						rightSideDescription = "<span size='small'>" + string.Format ("{0:" +format +"}", example) +"</span>";
+					} catch (Exception e) {
+						rightSideDescription = "";
+						LoggingService.LogError ("Format error.", e);
+					}
+				}
+				return rightSideDescription;
+			}
+
+			public override string CompletionText {
+				get {
+					return format;
+				}
+			}
+
+			public override int CompareTo (object obj)
+			{
+				return 0;
+			}
+		}
+
 		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateFormatItemCompletionData (string format, string description, object example)
 		{
-			throw new NotImplementedException ();
+			return new FormatItemCompletionData (format, description, example);
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateXmlDocCompletionData (string tag, string description, string tagInsertionText)
+		class XmlDocCompletionData : CompletionData//, IListData
 		{
-			throw new NotImplementedException ();
+			readonly CSharpCompletionTextEditorExtension ext;
+			readonly string title;
+			/*
+			#region IListData implementation
+
+			CSharpCompletionDataList list;
+			public CSharpCompletionDataList List {
+				get {
+					return list;
+				}
+				set {
+					list = value;
+				}
+			}
+
+			#endregion*/
+
+			public XmlDocCompletionData (CSharpCompletionTextEditorExtension ext, string title, string description, string insertText) : base (title, "md-keyword", description, insertText ?? title)
+			{
+				this.ext = ext;
+				this.title = title;
+			}
+
+//			public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+//			{
+//				var sig = new SignatureMarkupCreator (ext.Editor, ext.DocumentContext, ext.Editor.CaretOffset);
+//				sig.BreakLineAfterReturnType = smartWrap;
+//				return sig.GetKeywordTooltip (title, null);
+//			}
+
+
+			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+			{
+				var currentWord = GetCurrentWord (window);
+				var text = CompletionText;
+				if (keyChar != '>')
+					text += ">";
+				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
+			}
 		}
 
-		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (Microsoft.CodeAnalysis.ISymbol symbol)
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateXmlDocCompletionData (string title, string description, string insertText)
+		{
+			return new XmlDocCompletionData (ext, title, description, insertText);
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (ISymbol symbol)
 		{
 			return new RoslynSymbolCompletionData (ext, symbol);
 		}
 		
-		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (Microsoft.CodeAnalysis.ISymbol symbol, string text)
+		ICSharpCode.NRefactory6.CSharp.Completion.ISymbolCompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateSymbolCompletionData (ISymbol symbol, string text)
 		{
 			return new RoslynSymbolCompletionData (ext, symbol, text);
 		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreateNewOverrideCompletionData(int declarationBegin, ITypeSymbol currentType, ISymbol m)
+		{
+			return new CreateOverrideCompletionData (ext, declarationBegin, currentType, m);
+		}
+
+		ICSharpCode.NRefactory6.CSharp.Completion.ICompletionData ICSharpCode.NRefactory6.CSharp.Completion.ICompletionDataFactory.CreatePartialCompletionData(int declarationBegin, ITypeSymbol currentType, IMethodSymbol method)
+		{
+			return new CreatePartialCompletionData (ext, declarationBegin, currentType, method);
+		}
+
 		#endregion
 	}
 }

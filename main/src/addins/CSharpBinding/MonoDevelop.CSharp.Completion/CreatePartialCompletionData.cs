@@ -1,9 +1,10 @@
-// NewOverrideCompletionData.cs
+//
+// CreatePartialCompletionData.cs
 //
 // Author:
-//   Mike Krüger <mkrueger@novell.com>
+//       Mike Krüger <mkrueger@xamarin.com>
 //
-// Copyright (c) 2008 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2014 Xamarin Inc. (http://xamarin.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,49 +23,26 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
-using System;
 using System.Linq;
-using System.Text;
 using MonoDevelop.Ide.CodeCompletion;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory.CSharp;
-using ICSharpCode.NRefactory.TypeSystem;
-using MonoDevelop.Ide.TypeSystem;
+using Microsoft.CodeAnalysis;
 
 namespace MonoDevelop.CSharp.Completion
 {
-	/*class NewOverrideCompletionData : CompletionData
+	class CreatePartialCompletionData : RoslynSymbolCompletionData
 	{
-		CSharpCompletionTextEditorExtension ext;
-		IMember member;
-		static Ambience ambience = new CSharpAmbience ();
-		int    declarationBegin;
-		IUnresolvedTypeDefinition  type;
-		
+		readonly int declarationBegin;
+
 		public bool GenerateBody { get; set; }
 
-		public override TooltipInformation CreateTooltipInformation (bool smartWrap)
+		public CreatePartialCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, ISymbol member) : base (ext, member)
 		{
-			return MemberCompletionData.CreateTooltipInformation (ext, null, member, smartWrap);
-		}
-
-		public NewOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, IUnresolvedTypeDefinition type, IMember member) : base (null)
-		{
-			this.ext = ext;
-			this.type   = type;
-			this.member = member;
-			
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
-			this.Icon = member.GetStockIcon ();
-			this.DisplayText = ambience.GetString (member, OutputFlags.IncludeParameters | OutputFlags.IncludeParameterName | OutputFlags.IncludeGenerics | OutputFlags.HideExtensionsParameter| OutputFlags.IncludeAccessor);
-			this.CompletionText = member.SymbolKind == SymbolKind.Indexer ? "this" : member.Name;
 		}
-		
+
+		/*
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
 		{
 			var editor = ext.Editor;
@@ -113,6 +91,6 @@ namespace MonoDevelop.CSharp.Completion
 			} else {
 				editor.CaretOffset = targetCaretPosition;
 			}
-		}
-	}*/
+		}*/
+	}
 }
