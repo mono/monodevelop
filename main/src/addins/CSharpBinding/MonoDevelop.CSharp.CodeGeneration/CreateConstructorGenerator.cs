@@ -144,7 +144,7 @@ namespace MonoDevelop.CodeGeneration
 						overridenConstructor.Body.Statements.Add (new ExpressionStatement (assign));
 					}
 
-					yield return overridenConstructor.ToString (Options.FormattingOptions);
+					yield return overridenConstructor.ToString ();
 				}
 				if (gotConstructorOverrides)
 					yield break;
@@ -162,7 +162,7 @@ namespace MonoDevelop.CodeGeneration
 					constructorDeclaration.Body.Statements.Add (new ExpressionStatement (assign));
 				}
 				
-				yield return constructorDeclaration.ToString (Options.FormattingOptions);
+				yield return constructorDeclaration.ToString ();
 			}
 		}
 	}

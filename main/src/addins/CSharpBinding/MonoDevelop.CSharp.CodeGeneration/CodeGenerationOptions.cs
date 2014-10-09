@@ -36,6 +36,8 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Simplification;
 using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -74,13 +76,14 @@ namespace MonoDevelop.CodeGeneration
 			}
 		}
 		
-		public ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions FormattingOptions {
+		public OptionSet FormattingOptions {
 			get {
 				var doc = DocumentContext;
 				var policyParent = doc.Project != null ? doc.Project.Policies : null;
 				var types = DesktopService.GetMimeTypeInheritanceChain (Editor.MimeType);
 				var codePolicy = policyParent != null ? policyParent.Get<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
-				return codePolicy.CreateOptions ();
+				var textPolicy = policyParent != null ? policyParent.Get<TextStylePolicy> (types) : MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy> (types);
+				return codePolicy.CreateOptions (textPolicy);
 			}
 		}
 

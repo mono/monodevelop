@@ -24,11 +24,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory.CSharp;
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Extension;
+using ICSharpCode.NRefactory6.CSharp;
 
 namespace MonoDevelop.CSharp.Formatting
 {

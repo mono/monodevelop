@@ -342,24 +342,24 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			result.Append (CSharpAmbience.FilterName (evt.Name));
 			if (options.ExplicitDeclaration) {
-				AppendBraceStart (result, Policy.EventBraceStyle);
+				AppendBraceStart (result, BraceStyle.EndOfLine /* Policy.EventBraceStyle*/);
 				AppendIndent (result);
 				result.Append ("add");
-				AppendBraceStart (result, Policy.EventAddBraceStyle);
+				AppendBraceStart (result, BraceStyle.EndOfLine /* Policy.EventAddBraceStyle */);
 				AppendIndent (result);
 				result.Append ("// TODO");
 				AppendLine (result);
-				AppendBraceEnd (result, Policy.EventAddBraceStyle);
+				AppendBraceEnd (result, BraceStyle.EndOfLine  /*Policy.EventAddBraceStyle */);
 				
 				AppendIndent (result);
 				result.Append ("remove");
-				AppendBraceStart (result, Policy.EventRemoveBraceStyle);
+				AppendBraceStart (result, BraceStyle.EndOfLine /* Policy.EventRemoveBraceStyle */);
 				AppendIndent (result);
 				result.Append ("// TODO");
 				AppendLine (result);
 				
-				AppendBraceEnd (result, Policy.EventRemoveBraceStyle);
-				AppendBraceEnd (result, Policy.EventBraceStyle);
+				AppendBraceEnd (result, BraceStyle.EndOfLine  /* Policy.EventRemoveBraceStyle*/);
+				AppendBraceEnd (result, BraceStyle.EndOfLine  /* Policy.EventBraceStyle */);
 			} else {
 				result.Append (";");
 			}
@@ -373,7 +373,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			bodyStartOffset = result.Length;
 			result.Append ("throw new ");
 			result.Append (options.GetShortType ("System", "NotImplementedException"));
-			if (Policy.BeforeMethodCallParentheses)
+			if (Policy.SpaceAfterMethodCallName)
 				result.Append (" ");
 			result.Append ("();");
 			bodyEndOffset = result.Length;
@@ -396,7 +396,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			result.Append ("throw new ");
 			result.Append (options.GetShortType ("System", "NotImplementedException"));
 
-			if (Policy.BeforeMethodCallParentheses)
+			if (Policy.SpaceAfterMethodCallName)
 				result.Append (" ");
 			result.Append ("();");
 
@@ -430,7 +430,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				result.Append (">");
 			}
-			if (Policy.BeforeMethodDeclarationParentheses)
+			if (Policy.SpacingAfterMethodDeclarationName)
 				result.Append (" ");
 			result.Append ("(");
 			AppendParameterList (result, options, method.Parameters);
@@ -488,12 +488,12 @@ namespace MonoDevelop.CSharp.Refactoring
 			if (options.ImplementingType.Kind == TypeKind.Interface) {
 				result.Append (";");
 			} else {
-				AppendBraceStart (result, Policy.MethodBraceStyle);
+				AppendBraceStart (result, BraceStyle.EndOfLine /*  Policy.MethodBraceStyle*/);
 				if (method.Name == "ToString" && (method.Parameters == null || method.Parameters.Count == 0) && method.ReturnType != null/* && method.ReturnType.FullName == "System.String"*/) {
 					AppendIndent (result);
 					bodyStartOffset = result.Length;
 					result.Append ("return string.Format");
-					if (Policy.BeforeMethodDeclarationParentheses)
+					if (Policy.SpaceAfterMethodCallName)
 						result.Append (" ");
 					result.Append ("(\"[");
 					result.Append (options.ImplementingType.Name);
@@ -582,7 +582,7 @@ namespace MonoDevelop.CSharp.Refactoring
 							result.Append ("return ");
 						result.Append ("base.");
 						result.Append (CSharpAmbience.FilterName (method.Name));
-						if (Policy.BeforeMethodCallParentheses)
+						if (Policy.SpaceAfterMethodCallName)
 							result.Append (" ");
 						result.Append ("(");
 						for (int i = 0; i < method.Parameters.Count; i++) {
@@ -603,7 +603,7 @@ namespace MonoDevelop.CSharp.Refactoring
 					bodyEndOffset = result.Length;
 					AppendLine (result);
 				}
-				AppendBraceEnd (result, Policy.MethodBraceStyle);
+				AppendBraceEnd (result, BraceStyle.EndOfLine /* Policy.MethodBraceStyle*/);
 			}
 			return new CodeGeneratorMemberResult (result.ToString (), bodyStartOffset, bodyEndOffset);
 		}
@@ -750,7 +750,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				}
 				result.Append (CSharpAmbience.FilterName (property.Name));
 			}
-			AppendBraceStart (result, Policy.PropertyBraceStyle);
+			AppendBraceStart (result, BraceStyle.EndOfLine /*Policy.PropertyBraceStyle*/);
 			if (property.CanGet) {
 				int bodyStartOffset, bodyEndOffset;
 				AppendIndent (result);
@@ -758,7 +758,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (options.ImplementingType.Kind == TypeKind.Interface) {
 					result.AppendLine (";");
 				} else {
-					AppendBraceStart (result, Policy.PropertyGetBraceStyle);
+					AppendBraceStart (result, BraceStyle.EndOfLine /*Policy.PropertyGetBraceStyle */);
 					if (IsMonoTouchModelMember (property)) {
 						AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
 					} else if (property.IsAbstract || property.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
@@ -779,7 +779,7 @@ namespace MonoDevelop.CSharp.Refactoring
 						bodyEndOffset = result.Length;
 						AppendLine (result);
 					}
-					AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
+					AppendBraceEnd (result, BraceStyle.EndOfLine /* Policy.PropertyGetBraceStyle */);
 					AppendLine (result);
 					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
 				}
@@ -792,7 +792,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				if (options.ImplementingType.Kind == TypeKind.Interface) {
 					result.AppendLine (";");
 				} else {
-					AppendBraceStart (result, Policy.PropertyGetBraceStyle);
+					AppendBraceStart (result, BraceStyle.EndOfLine /* Policy.PropertyGetBraceStyle */);
 					if (IsMonoTouchModelMember (property)) {
 						AppendMonoTouchTodo (result, options, out bodyStartOffset, out bodyEndOffset);
 					} else if (property.IsAbstract || property.DeclaringTypeDefinition.Kind == TypeKind.Interface) {
@@ -813,12 +813,12 @@ namespace MonoDevelop.CSharp.Refactoring
 						bodyEndOffset = result.Length;
 						AppendLine (result);
 					}
-					AppendBraceEnd (result, Policy.PropertyGetBraceStyle);
+					AppendBraceEnd (result, BraceStyle.EndOfLine /* Policy.PropertyGetBraceStyle */);
 					AppendLine (result);
 					regions.Add (new CodeGeneratorBodyRegion (bodyStartOffset, bodyEndOffset));
 				}
 			}
-			AppendBraceEnd (result, Policy.PropertyBraceStyle);
+			AppendBraceEnd (result, BraceStyle.EndOfLine /* Policy.PropertyBraceStyle */);
 			return new CodeGeneratorMemberResult (result.ToString (), regions);
 		}
 		
@@ -931,7 +931,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			int lines = 0;
 			
 			if (InsertUsingAfter (node)) {
-				lines = policy.BlankLinesBeforeUsings + 1;
+				lines = 1;
 				while (lines-- > 0) {
 					text.Append (editor.EolMarker);
 				}
@@ -947,7 +947,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				offset = Math.Max (0, editor.LocationToOffset (loc));
 			}
 			
-			lines = policy.BlankLinesAfterUsings;
+			lines = 1;
 			lines -= CountBlankLines (editor, editor.OffsetToLineNumber (offset) + 1);
 			if (lines > 0)
 				text.Append (editor.EolMarker);
@@ -982,7 +982,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			int lines = 0;
 			
 			if (InsertUsingAfter (node)) {
-				lines = policy.BlankLinesBeforeUsings + 1;
+				lines = 1;
 				while (lines-- > 0) {
 					text.Append (editor.EolMarker);
 				}
@@ -1003,7 +1003,7 @@ namespace MonoDevelop.CSharp.Refactoring
 			}
 			offset = editor.LocationToOffset (loc);
 			
-			lines = policy.BlankLinesAfterUsings;
+			lines = 1;
 			lines -= CountBlankLines (editor, editor.OffsetToLineNumber (offset) + 1);
 			if (lines > 0)
 				text.Append (editor.EolMarker);
@@ -1020,8 +1020,8 @@ namespace MonoDevelop.CSharp.Refactoring
 //				formatter.Indentation = indentLevel;
 				var formatter = new TextWriterTokenWriter (stringWriter);
 				stringWriter.NewLine = editor.EolMarker;
-				
-				var visitor = new CSharpOutputVisitor (formatter, context.GetFormattingOptions ());
+
+				var visitor = new CSharpOutputVisitor (formatter, null /* TODO: BROKEN DUE ROSLYN PORT (note: that code should be unused) */ );
 				node.AcceptVisitor (visitor);
 				return stringWriter.ToString ();
 			}
@@ -1037,11 +1037,12 @@ namespace MonoDevelop.CSharp.Refactoring
 		
 		public override void CompleteStatement (MonoDevelop.Ide.Gui.Document doc)
 		{
-			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
-			int newOffset;
-			if (fixer.TryFix (new DocumentWrapper (doc.Editor), doc.Editor.CaretOffset, out newOffset)) {
-				doc.Editor.CaretOffset = newOffset;
-			}
+			//  TODO: BROKEN DUE ROSLYN PORT - needs to be ported to NR6
+//			var fixer = new ConstructFixer (doc.GetFormattingOptions (), doc.Editor.CreateNRefactoryTextEditorOptions ());
+//			int newOffset;
+//			if (fixer.TryFix (new DocumentWrapper (doc.Editor), doc.Editor.CaretOffset, out newOffset)) {
+//				doc.Editor.CaretOffset = newOffset;
+//			}
 		}
 	}
 }

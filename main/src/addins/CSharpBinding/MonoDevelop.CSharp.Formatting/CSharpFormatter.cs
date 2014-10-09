@@ -32,7 +32,6 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects.Policies;
 using System.Linq;
 using MonoDevelop.Ide.CodeFormatting;
-using ICSharpCode.NRefactory.CSharp;
 using MonoDevelop.Core;
 using MonoDevelop.CSharp.Refactoring;
 using MonoDevelop.Ide.Editor;
@@ -41,6 +40,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Formatting;
 using MonoDevelop.Ide.TypeSystem;
+using ICSharpCode.NRefactory6.CSharp;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -61,7 +62,8 @@ namespace MonoDevelop.CSharp.Formatting
 
 			try {
 				var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
-				var tracker = new CSharpIndentEngine (new DocumentWrapper (data), data.CreateNRefactoryTextEditorOptions (),  policy.CreateOptions ());
+				var textpolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+				var tracker = new CSharpIndentEngine (IdeApp.Workbench.ActiveDocument.AnalysisDocument, policy.CreateOptions (textpolicy));
 
 				tracker.Update (lineSegment.Offset);
 				for (int i = lineSegment.Offset; i < lineSegment.Offset + lineSegment.Length; i++) {
@@ -91,7 +93,8 @@ namespace MonoDevelop.CSharp.Formatting
 		public static string FormatText (CSharpFormattingPolicy policy, TextStylePolicy textPolicy, string mimeType, string input, int startOffset, int endOffset)
 		{
 			var inputTree = CSharpSyntaxTree.ParseText (SourceText.From (input));
-			var doc = Formatter.Format (inputTree.GetRoot (), new TextSpan (startOffset, endOffset - startOffset), RoslynTypeSystemService.Workspace);
+
+			var doc = Formatter.Format (inputTree.GetRoot (), new TextSpan (startOffset, endOffset - startOffset), RoslynTypeSystemService.Workspace, policy.CreateOptions (textPolicy));
 			var result = doc.ToFullString ();
 			return result.Substring (startOffset, endOffset + result.Length - input.Length);
 		}

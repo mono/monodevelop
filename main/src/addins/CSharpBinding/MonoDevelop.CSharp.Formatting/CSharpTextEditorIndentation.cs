@@ -46,12 +46,13 @@ using Atk;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.CSharp.NRefactoryWrapper;
 using MonoDevelop.Projects;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	class CSharpTextEditorIndentation : TextEditorExtension
 	{
-		internal CacheIndentEngine stateTracker;
+		internal ICSharpCode.NRefactory6.CSharp.CacheIndentEngine stateTracker;
 		int cursorPositionBeforeKeyPress;
 
 		readonly IEnumerable<string> types = DesktopService.GetMimeTypeInheritanceChain (CSharpFormatter.MimeType);
@@ -151,12 +152,12 @@ namespace MonoDevelop.CSharp.Formatting
 
 		void HandleTextOptionsChanged (object sender, EventArgs e)
 		{
-			var policy = Policy.CreateOptions ();
 			var options = Editor.CreateNRefactoryTextEditorOptions ();
+			var policy = Policy.CreateOptions (Editor.Options);
 			options.IndentBlankLines = true;
-			IStateMachineIndentEngine indentEngine;
+			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
 			try {
-				var csharpIndentEngine = new CSharpIndentEngine (new DocumentWrapper (Editor), options, policy);
+				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (DocumentContext.AnalysisDocument, policy);
 				//csharpIndentEngine.EnableCustomIndentLevels = true;
 				foreach (var symbol in GetDefinedSymbols (DocumentContext.Project)) {
 					csharpIndentEngine.DefineSymbol (symbol);
@@ -164,9 +165,9 @@ namespace MonoDevelop.CSharp.Formatting
 				indentEngine = csharpIndentEngine;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while creating the c# indentation engine", ex);
-				indentEngine = new NullIStateMachineIndentEngine (new DocumentWrapper (Editor));
+				indentEngine = new ICSharpCode.NRefactory6.CSharp.NullIStateMachineIndentEngine (DocumentContext.AnalysisDocument);
 			}
-			stateTracker = new CacheIndentEngine (indentEngine);
+			stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
 			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {
 				Editor.SetIndentationTracker (null);
 			} else {
@@ -177,7 +178,7 @@ namespace MonoDevelop.CSharp.Formatting
 			if (indentationDisabled) {
 				Editor.SetTextPasteHandler (null);
 			} else {
-				Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, options, policy));
+				Editor.SetTextPasteHandler (new CSharpTextPasteHandler (this, stateTracker, policy));
 			}
 		}
 
@@ -299,7 +300,7 @@ namespace MonoDevelop.CSharp.Formatting
 			textEditorData.ReplaceText (offset, endOffset - offset, newText);
 		}
 
-		internal IStateMachineIndentEngine StateTracker { get { return stateTracker; } }
+		internal ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine StateTracker { get { return stateTracker; } }
 
 		public bool DoInsertTemplate ()
 		{
@@ -717,7 +718,7 @@ namespace MonoDevelop.CSharp.Formatting
 				reIndent = true;
 				break;
 			case '\n':
-				if (FixLineStart (Editor, stateTracker, stateTracker.Location.Line))
+				if (FixLineStart (Editor, stateTracker, Editor.OffsetToLineNumber (stateTracker.Offset)))
 					return;
 				//newline always reindents unless it's had special handling
 				reIndent = true;
@@ -727,7 +728,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		internal bool wasInStringLiteral;
 
-		public bool FixLineStart (TextEditor textEditorData, IStateMachineIndentEngine stateTracker, int lineNumber)
+		public bool FixLineStart (TextEditor textEditorData, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine stateTracker, int lineNumber)
 		{
 			if (lineNumber > 1) {
 				var line = textEditorData.GetLine (lineNumber);

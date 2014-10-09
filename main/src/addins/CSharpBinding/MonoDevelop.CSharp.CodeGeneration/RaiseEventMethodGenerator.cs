@@ -131,7 +131,7 @@ namespace MonoDevelop.CodeGeneration
 						}
 					};
 
-					yield return methodDeclaration.ToString (Options.FormattingOptions);
+					yield return methodDeclaration.ToString ();
 				}
 			}
 		}

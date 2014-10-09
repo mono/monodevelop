@@ -33,13 +33,19 @@ using System.Text;
 using System.Linq;
 using MonoDevelop.Projects.Policies;
 using ICSharpCode.NRefactory.CSharp;
+using Microsoft.CodeAnalysis.Options;
+using MonoDevelop.Ide.TypeSystem;
+using MonoDevelop.Ide.Gui.Content;
+using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor;
 
 namespace MonoDevelop.CSharp.Formatting
 {
-	[PolicyType ("C# formatting")]
+	[PolicyType ("C# formatting (roslyn)")]
 	public class CSharpFormattingPolicy : IEquatable<CSharpFormattingPolicy>
 	{
-		readonly CSharpFormattingOptions options = FormattingOptionsFactory.CreateMono ();
+		OptionSet options;
 		
 		public string Name {
 			get;
@@ -53,1602 +59,461 @@ namespace MonoDevelop.CSharp.Formatting
 		
 		public CSharpFormattingPolicy Clone ()
 		{
-			return new CSharpFormattingPolicy (options.Clone ());
+			return new CSharpFormattingPolicy (options);
 		}
 
-		public CSharpFormattingOptions CreateOptions ()
+		public static OptionSet Apply (OptionSet options, TextStylePolicy policy)
 		{
-			return options;
+			var result = options;
+			if (policy != null) {
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.IndentationSize, LanguageNames.CSharp, policy.IndentWidth);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.NewLine, LanguageNames.CSharp, policy.GetEolMarker ());
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.TabSize, LanguageNames.CSharp, policy.TabWidth);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabs, LanguageNames.CSharp, !policy.TabsToSpaces);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabOnlyForIndentation, LanguageNames.CSharp, !policy.TabsToSpaces);
+			}
+			return result;
 		}
-		
+
+		public static OptionSet Apply (OptionSet options, ITextEditorOptions policy)
+		{
+			var result = options;
+			if (policy != null) {
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.IndentationSize, LanguageNames.CSharp, policy.IndentationSize);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.NewLine, LanguageNames.CSharp, policy.DefaultEolMarker);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.SmartIndent, LanguageNames.CSharp, FormattingOptions.IndentStyle.Smart);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.TabSize, LanguageNames.CSharp, policy.TabSize);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabs, LanguageNames.CSharp, !policy.TabsToSpaces);
+				result = result.WithChangedOption (Microsoft.CodeAnalysis.Formatting.FormattingOptions.UseTabOnlyForIndentation, LanguageNames.CSharp, !policy.TabsToSpaces);
+			}
+			return result;
+		}
+
+		public OptionSet CreateOptions (TextStylePolicy policy)
+		{
+			return Apply (options, policy);
+		}
+
+		public OptionSet CreateOptions (ITextEditorOptions policy)
+		{
+			return Apply (options, policy);
+		}
+
 		static CSharpFormattingPolicy ()
 		{
 			if (!PolicyService.InvariantPolicies.ReadOnly)
 				 PolicyService.InvariantPolicies.Set<CSharpFormattingPolicy> (new CSharpFormattingPolicy (), "text/x-csharp");
 		}
 		
-		protected CSharpFormattingPolicy (CSharpFormattingOptions options)
+		protected CSharpFormattingPolicy (OptionSet options)
 		{
 			this.options = options;
 		}
-		
-		
-		#region Indentation
-		[ItemProperty]
-		public bool IndentNamespaceBody {
+
+		#region Indent options
+		public bool IndentBlock {
 			get {
-				return options.IndentNamespaceBody;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentBlock);
 			}
 			set {
-				options.IndentNamespaceBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentClassBody {
-			get {
-				return options.IndentClassBody;
-			}
-			set {
-				options.IndentClassBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentInterfaceBody {
-			get {
-				return options.IndentInterfaceBody;
-			}
-			set {
-				options.IndentInterfaceBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentStructBody {
-			get {
-				return options.IndentStructBody;
-			}
-			set {
-				options.IndentStructBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentEnumBody {
-			get {
-				return options.IndentEnumBody;
-			}
-			set {
-				options.IndentEnumBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentMethodBody {
-			get {
-				return options.IndentMethodBody;
-			}
-			set {
-				options.IndentMethodBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentPropertyBody {
-			get {
-				return options.IndentPropertyBody;
-			}
-			set {
-				options.IndentPropertyBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentEventBody {
-			get {
-				return options.IndentEventBody;
-			}
-			set {
-				options.IndentEventBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentBlocks {
-			get {
-				return options.IndentBlocks;
-			}
-			set {
-				options.IndentBlocks = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentSwitchBody {
-			get {
-				return options.IndentSwitchBody;
-			}
-			set {
-				options.IndentSwitchBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentCaseBody {
-			get {
-				return options.IndentCaseBody;
-			}
-			set {
-				options.IndentCaseBody = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IndentBreakStatements {
-			get {
-				return options.IndentBreakStatements;
-			}
-			set {
-				options.IndentBreakStatements = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentBlock, value);
 			}
 		}
 
-		[ItemProperty]
-		public bool IndentBlocksInsideExpressions {
+		public bool IndentBraces {
 			get {
-				return options.IndentBlocksInsideExpressions;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentBraces);
 			}
 			set {
-				options.IndentBlocksInsideExpressions = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AlignEmbeddedStatements {
-			get {
-				return options.AlignEmbeddedStatements;
-			}
-			set {
-				options.AlignEmbeddedStatements = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentBraces, value);
 			}
 		}
 
-		[ItemProperty]
-		public PropertyFormatting SimplePropertyFormatting {
+		public bool IndentSwitchSection {
 			get {
-				return options.SimplePropertyFormatting;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentSwitchSection);
 			}
 			set {
-				options.SimplePropertyFormatting = value;
-			}
-		}
-
-		[ItemProperty]
-		public PropertyFormatting AutoPropertyFormatting {
-			get {
-				return options.AutoPropertyFormatting;
-			}
-			set {
-				options.AutoPropertyFormatting = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentSwitchSection, value);
 			}
 		}
 
-		[ItemProperty]
-		public bool IndentPreprocessorDirectives {
+		public bool IndentSwitchCaseSection {
 			get {
-				return options.IndentPreprocessorDirectives;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentSwitchCaseSection);
 			}
 			set {
-				options.IndentPreprocessorDirectives = value;
-			}
-		}
-		#endregion
-		
-		#region Braces
-		[ItemProperty]
-		public BraceStyle NamespaceBraceStyle {
-			get {
-				return options.NamespaceBraceStyle;
-			}
-			set {
-				options.NamespaceBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle ClassBraceStyle {
-			get {
-				return options.ClassBraceStyle;
-			}
-			set {
-				options.ClassBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle InterfaceBraceStyle {
-			get {
-				return options.InterfaceBraceStyle;
-			}
-			set {
-				options.InterfaceBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle StructBraceStyle {
-			get {
-				return options.StructBraceStyle;
-			}
-			set {
-				options.StructBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle EnumBraceStyle {
-			get {
-				return options.EnumBraceStyle;
-			}
-			set {
-				options.EnumBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle MethodBraceStyle {
-			get {
-				return options.MethodBraceStyle;
-			}
-			set {
-				options.MethodBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle AnonymousMethodBraceStyle {
-			get {
-				return options.AnonymousMethodBraceStyle;
-			}
-			set {
-				options.AnonymousMethodBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle ConstructorBraceStyle {
-			get {
-				return options.ConstructorBraceStyle;
-			}
-			set {
-				options.ConstructorBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle DestructorBraceStyle {
-			get {
-				return options.DestructorBraceStyle;
-			}
-			set {
-				options.DestructorBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle PropertyBraceStyle {
-			get {
-				return options.PropertyBraceStyle;
-			}
-			set {
-				options.PropertyBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle PropertyGetBraceStyle {
-			get {
-				return options.PropertyGetBraceStyle;
-			}
-			set {
-				options.PropertyGetBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle PropertySetBraceStyle {
-			get {
-				return options.PropertySetBraceStyle;
-			}
-			set {
-				options.PropertySetBraceStyle = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentSwitchCaseSection, value);
 			}
 		}
 
-		[ItemProperty]
-		public PropertyFormatting SimpleGetBlockFormatting {
+		public Microsoft.CodeAnalysis.CSharp.Formatting.LabelPositionOptions LabelPositioning {
 			get {
-				return options.SimpleGetBlockFormatting;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.LabelPositioning);
 			}
 			set {
-				options.SimpleGetBlockFormatting = value;
-			}
-		}
-
-		[ItemProperty]
-		public PropertyFormatting SimpleSetBlockFormatting {
-			get {
-
-				return options.SimpleSetBlockFormatting;
-			}
-			set {
-				options.SimpleSetBlockFormatting = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle EventBraceStyle {
-			get {
-				return options.EventBraceStyle;
-			}
-			set {
-				options.EventBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle EventAddBraceStyle {
-			get {
-				return options.EventAddBraceStyle;
-			}
-			set {
-				options.EventAddBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle EventRemoveBraceStyle {
-			get {
-				return options.EventRemoveBraceStyle;
-			}
-			set {
-				options.EventRemoveBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AllowEventAddBlockInline {
-			get {
-				return options.AllowEventAddBlockInline;
-			}
-			set {
-				options.AllowEventAddBlockInline = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AllowEventRemoveBlockInline {
-			get {
-				return options.AllowEventRemoveBlockInline;
-			}
-			set {
-				options.AllowEventRemoveBlockInline = value;
-			}
-		}
-		
-		[ItemProperty]
-		public BraceStyle StatementBraceStyle {
-			get {
-				return options.StatementBraceStyle;
-			}
-			set {
-				options.StatementBraceStyle = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AllowIfBlockInline {
-			get {
-				return options.AllowIfBlockInline;
-			}
-			set {
-				options.AllowIfBlockInline = value;
-			}
-		}
-		
-		#endregion
-
-		#region NewLines
-		[ItemProperty]
-		public NewLinePlacement ElseNewLinePlacement {
-			get {
-				return options.ElseNewLinePlacement;
-			}
-			set {
-				options.ElseNewLinePlacement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public NewLinePlacement ElseIfNewLinePlacement {
-			get {
-				return options.ElseIfNewLinePlacement;
-			}
-			set {
-				options.ElseIfNewLinePlacement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public NewLinePlacement CatchNewLinePlacement {
-			get {
-				return options.CatchNewLinePlacement;
-			}
-			set {
-				options.CatchNewLinePlacement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public NewLinePlacement FinallyNewLinePlacement {
-			get {
-				return options.FinallyNewLinePlacement;
-			}
-			set {
-				options.FinallyNewLinePlacement = value;
-			}
-		}
-		
-		[ItemProperty]
-		public NewLinePlacement WhileNewLinePlacement {
-			get {
-				return options.WhileNewLinePlacement;
-			}
-			set {
-				options.WhileNewLinePlacement = value;
-			}
-		}
-
-		[ItemProperty]
-		public NewLinePlacement EmbeddedStatementPlacement {
-			get {
-				return options.EmbeddedStatementPlacement;
-			}
-			set {
-				options.EmbeddedStatementPlacement = value;
-			}
-		}
-
-
-		
-		[ItemProperty]
-		public Wrapping ArrayInitializerWrapping {
-			get {
-				return options.ArrayInitializerWrapping;
-			}
-			set {
-				options.ArrayInitializerWrapping = value;
-			}
-		}
-
-	[ItemProperty]
-		public BraceStyle ArrayInitializerBraceStyle {
-			get {
-				return options.ArrayInitializerBraceStyle;
-			}
-			set {
-				options.ArrayInitializerBraceStyle = value;
-			}
-		}
-
-		[ItemProperty]
-		public bool KeepCommentsAtFirstColumn {
-			get {
-				return options.KeepCommentsAtFirstColumn;
-			}
-			set {
-				options.KeepCommentsAtFirstColumn = value;
-			}
-		}
-
-		#endregion
-		
-		#region Spaces
-		// Methods
-		[ItemProperty]
-		public bool BeforeMethodDeclarationParentheses {
-			get {
-				return options.SpaceBeforeMethodDeclarationParentheses;
-			}
-			set {
-				options.SpaceBeforeMethodDeclarationParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BetweenEmptyMethodDeclarationParentheses {
-			get {
-				return options.SpaceBetweenEmptyMethodDeclarationParentheses;
-			}
-			set {
-				options.SpaceBetweenEmptyMethodDeclarationParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BeforeMethodDeclarationParameterComma {
-			get {
-				return options.SpaceBeforeMethodDeclarationParameterComma;
-			}
-			set {
-				options.SpaceBeforeMethodDeclarationParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AfterMethodDeclarationParameterComma {
-			get {
-				return options.SpaceAfterMethodDeclarationParameterComma;
-			}
-			set {
-				options.SpaceAfterMethodDeclarationParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinMethodDeclarationParentheses {
-			get {
-				return options.SpaceWithinMethodDeclarationParentheses;
-			}
-			set {
-				options.SpaceWithinMethodDeclarationParentheses = value;
-			}
-		}
-		
-		// Method calls
-		[ItemProperty]
-		public bool BeforeMethodCallParentheses {
-			get {
-				return options.SpaceBeforeMethodCallParentheses;
-			}
-			set {
-				options.SpaceBeforeMethodCallParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BetweenEmptyMethodCallParentheses {
-			get {
-				return options.SpaceBetweenEmptyMethodCallParentheses;
-			}
-			set {
-				options.SpaceBetweenEmptyMethodCallParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BeforeMethodCallParameterComma {
-			get {
-				return options.SpaceBeforeMethodCallParameterComma;
-			}
-			set {
-				options.SpaceBeforeMethodCallParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AfterMethodCallParameterComma {
-			get {
-				return options.SpaceAfterMethodCallParameterComma;
-			}
-			set {
-				options.SpaceAfterMethodCallParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinMethodCallParentheses {
-			get {
-				return options.SpaceWithinMethodCallParentheses;
-			}
-			set {
-				options.SpaceWithinMethodCallParentheses = value;
-			}
-		}
-		
-		// fields
-		
-		[ItemProperty]
-		public bool BeforeFieldDeclarationComma {
-			get {
-				return options.SpaceBeforeFieldDeclarationComma;
-			}
-			set {
-				options.SpaceBeforeFieldDeclarationComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AfterFieldDeclarationComma {
-			get {
-				return options.SpaceAfterFieldDeclarationComma;
-			}
-			set {
-				options.SpaceAfterFieldDeclarationComma = value;
-			}
-		}
-		
-		// local variables
-		
-		[ItemProperty]
-		public bool BeforeLocalVariableDeclarationComma {
-			get {
-				return options.SpaceBeforeLocalVariableDeclarationComma;
-			}
-			set {
-				options.SpaceBeforeLocalVariableDeclarationComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AfterLocalVariableDeclarationComma {
-			get {
-				return options.SpaceAfterLocalVariableDeclarationComma;
-			}
-			set {
-				options.SpaceAfterLocalVariableDeclarationComma = value;
-			}
-		}
-		
-		// constructors
-		
-		[ItemProperty]
-		public bool BeforeConstructorDeclarationParentheses {
-			get {
-				return options.SpaceBeforeConstructorDeclarationParentheses;
-			}
-			set {
-				options.SpaceBeforeConstructorDeclarationParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BetweenEmptyConstructorDeclarationParentheses {
-			get {
-				return options.SpaceBetweenEmptyConstructorDeclarationParentheses;
-			}
-			set {
-				options.SpaceBetweenEmptyConstructorDeclarationParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BeforeConstructorDeclarationParameterComma {
-			get {
-				return options.SpaceBeforeConstructorDeclarationParameterComma;
-			}
-			set {
-				options.SpaceBeforeConstructorDeclarationParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AfterConstructorDeclarationParameterComma {
-			get {
-				return options.SpaceAfterConstructorDeclarationParameterComma;
-			}
-			set {
-				options.SpaceAfterConstructorDeclarationParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinConstructorDeclarationParentheses {
-			get {
-				return options.SpaceWithinConstructorDeclarationParentheses;
-			}
-			set {
-				options.SpaceWithinConstructorDeclarationParentheses = value;
-			}
-		}
-
-		[ItemProperty]
-		public NewLinePlacement NewLineBeforeConstructorInitializerColon {
-			get {
-				return options.NewLineBeforeConstructorInitializerColon;
-			}
-			set {
-				options.NewLineBeforeConstructorInitializerColon = value;
-			}
-		}
-
-		[ItemProperty]
-		public NewLinePlacement NewLineAfterConstructorInitializerColon {
-			get {
-				return options.NewLineAfterConstructorInitializerColon;
-			}
-			set {
-				options.NewLineAfterConstructorInitializerColon = value;
-			}
-		}
-
-		// indexer
-		[ItemProperty]
-		public bool BeforeIndexerDeclarationBracket {
-			get {
-				return options.SpaceBeforeIndexerDeclarationBracket;
-			}
-			set {
-				options.SpaceBeforeIndexerDeclarationBracket = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinIndexerDeclarationBracket {
-			get {
-				return options.SpaceWithinIndexerDeclarationBracket;
-			}
-			set {
-				options.SpaceWithinIndexerDeclarationBracket = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BeforeIndexerDeclarationParameterComma {
-			get {
-				return options.SpaceBeforeIndexerDeclarationParameterComma;
-			}
-			set {
-				options.SpaceBeforeIndexerDeclarationParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AfterIndexerDeclarationParameterComma {
-			get {
-				return options.SpaceAfterIndexerDeclarationParameterComma;
-			}
-			set {
-				options.SpaceAfterIndexerDeclarationParameterComma = value;
-			}
-		}
-		
-		// delegates
-		
-		[ItemProperty]
-		public bool BeforeDelegateDeclarationParentheses {
-			get {
-				return options.SpaceBeforeDelegateDeclarationParentheses;
-			}
-			set {
-				options.SpaceBeforeDelegateDeclarationParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BetweenEmptyDelegateDeclarationParentheses {
-			get {
-				return options.SpaceBetweenEmptyDelegateDeclarationParentheses;
-			}
-			set {
-				options.SpaceBetweenEmptyDelegateDeclarationParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BeforeDelegateDeclarationParameterComma {
-			get {
-				return options.SpaceBeforeDelegateDeclarationParameterComma;
-			}
-			set {
-				options.SpaceBeforeDelegateDeclarationParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AfterDelegateDeclarationParameterComma {
-			get {
-				return options.SpaceAfterDelegateDeclarationParameterComma;
-			}
-			set {
-				options.SpaceAfterDelegateDeclarationParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinDelegateDeclarationParentheses {
-			get {
-				return options.SpaceWithinDelegateDeclarationParentheses;
-			}
-			set {
-				options.SpaceWithinDelegateDeclarationParentheses = value;
-			}
-		}
-		
-		
-		[ItemProperty]
-		public bool NewParentheses {
-			get {
-				return options.SpaceBeforeNewParentheses;
-			}
-			set {
-				options.SpaceBeforeNewParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool IfParentheses {
-			get {
-				return options.SpaceBeforeIfParentheses;
-			}
-			set {
-				options.SpaceBeforeIfParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WhileParentheses {
-			get {
-				return options.SpaceBeforeWhileParentheses;
-			}
-			set {
-				options.SpaceBeforeWhileParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool ForParentheses {
-			get {
-				return options.SpaceBeforeForParentheses;
-			}
-			set {
-				options.SpaceBeforeForParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool ForeachParentheses {
-			get {
-				return options.SpaceBeforeForeachParentheses;
-			}
-			set {
-				options.SpaceBeforeForeachParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool CatchParentheses {
-			get {
-				return options.SpaceBeforeCatchParentheses;
-			}
-			set {
-				options.SpaceBeforeCatchParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool SwitchParentheses {
-			get {
-				return options.SpaceBeforeSwitchParentheses;
-			}
-			set {
-				options.SpaceBeforeSwitchParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool LockParentheses {
-			get {
-				return options.SpaceBeforeLockParentheses;
-			}
-			set {
-				options.SpaceBeforeLockParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool UsingParentheses {
-			get {
-				return options.SpaceBeforeUsingParentheses;
-			}
-			set {
-				options.SpaceBeforeUsingParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundAssignmentParentheses {
-			get {
-				return options.SpaceAroundAssignment;
-			}
-			set {
-				options.SpaceAroundAssignment = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundLogicalOperatorParentheses {
-			get {
-				return options.SpaceAroundLogicalOperator;
-			}
-			set {
-				options.SpaceAroundLogicalOperator = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundEqualityOperatorParentheses {
-			get {
-				return options.SpaceAroundEqualityOperator;
-			}
-			set {
-				options.SpaceAroundEqualityOperator = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundRelationalOperatorParentheses {
-			get {
-				return options.SpaceAroundRelationalOperator;
-			}
-			set {
-				options.SpaceAroundRelationalOperator = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundBitwiseOperatorParentheses {
-			get {
-				return options.SpaceAroundBitwiseOperator;
-			}
-			set {
-				options.SpaceAroundBitwiseOperator = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundAdditiveOperatorParentheses {
-			get {
-				return options.SpaceAroundAdditiveOperator;
-			}
-			set {
-				options.SpaceAroundAdditiveOperator = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundMultiplicativeOperatorParentheses {
-			get {
-				return options.SpaceAroundMultiplicativeOperator;
-			}
-			set {
-				options.SpaceAroundMultiplicativeOperator = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundShiftOperatorParentheses {
-			get {
-				return options.SpaceAroundShiftOperator;
-			}
-			set {
-				options.SpaceAroundShiftOperator = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AroundNullCoalescingOperator {
-			get {
-				return options.SpaceAroundNullCoalescingOperator;
-			}
-			set {
-				options.SpaceAroundNullCoalescingOperator = value;
-			}
-		}
-
-		[ItemProperty]
-		public bool SpaceAfterUnsafeAddressOfOperator {
-			get {
-				return options.SpaceAfterUnsafeAddressOfOperator;
-			}
-			set {
-				options.SpaceAfterUnsafeAddressOfOperator = value;
-			}
-		}
-
-
-		[ItemProperty]
-		public bool SpaceAfterUnsafeAsteriskOfOperator {
-			get {
-				return options.SpaceAfterUnsafeAsteriskOfOperator;
-			}
-			set {
-				options.SpaceAfterUnsafeAsteriskOfOperator = value;
-			}
-		}
-
-		[ItemProperty]
-		public bool SpaceAroundUnsafeArrowOperator {
-			get {
-				return options.SpaceAroundUnsafeArrowOperator;
-			}
-			set {
-				options.SpaceAroundUnsafeArrowOperator = value;
-			}
-		}
-
-		[ItemProperty]
-		public bool WithinParentheses {
-			get {
-				return options.SpacesWithinParentheses;
-			}
-			set {
-				options.SpacesWithinParentheses = value;
-			}
-		}
-		
-		
-		[ItemProperty]
-		public bool WithinIfParentheses {
-			get {
-				return options.SpacesWithinIfParentheses;
-			}
-			set {
-				options.SpacesWithinIfParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinWhileParentheses {
-			get {
-				return options.SpacesWithinWhileParentheses;
-			}
-			set {
-				options.SpacesWithinWhileParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinForParentheses {
-			get {
-				return options.SpacesWithinForParentheses;
-			}
-			set {
-				options.SpacesWithinForParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinForEachParentheses {
-			get {
-				return options.SpacesWithinForeachParentheses;
-			}
-			set {
-				options.SpacesWithinForeachParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinCatchParentheses {
-			get {
-				return options.SpacesWithinCatchParentheses;
-			}
-			set {
-				options.SpacesWithinCatchParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinSwitchParentheses {
-			get {
-				return options.SpacesWithinSwitchParentheses;
-			}
-			set {
-				options.SpacesWithinSwitchParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinLockParentheses {
-			get {
-				return options.SpacesWithinLockParentheses;
-			}
-			set {
-				options.SpacesWithinLockParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinUsingParentheses {
-			get {
-				return options.SpacesWithinUsingParentheses;
-			}
-			set {
-				options.SpacesWithinUsingParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinCastParentheses {
-			get {
-				return options.SpacesWithinCastParentheses;
-			}
-			set {
-				options.SpacesWithinCastParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinSizeOfParentheses {
-			get {
-				return options.SpacesWithinSizeOfParentheses;
-			}
-			set {
-				options.SpacesWithinSizeOfParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BeforeSizeOfParentheses {
-			get {
-				return options.SpaceBeforeSizeOfParentheses;
-			}
-			set {
-				options.SpaceBeforeSizeOfParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinTypeOfParentheses {
-			get {
-				return options.SpacesWithinTypeOfParentheses;
-			}
-			set {
-				options.SpacesWithinTypeOfParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinNewParentheses {
-			get {
-				return options.SpacesWithinNewParentheses;
-			}
-			set {
-				options.SpacesWithinNewParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BetweenEmptyNewParentheses {
-			get {
-				return options.SpacesBetweenEmptyNewParentheses;
-			}
-			set {
-				options.SpacesBetweenEmptyNewParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BeforeNewParameterComma {
-			get {
-				return options.SpaceBeforeNewParameterComma;
-			}
-			set {
-				options.SpaceBeforeNewParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool AfterNewParameterComma {
-			get {
-				return options.SpaceAfterNewParameterComma;
-			}
-			set {
-				options.SpaceAfterNewParameterComma = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool BeforeTypeOfParentheses {
-			get {
-				return options.SpaceBeforeTypeOfParentheses;
-			}
-			set {
-				options.SpaceBeforeTypeOfParentheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool WithinCheckedExpressionParantheses {
-			get {
-				return options.SpacesWithinCheckedExpressionParantheses;
-			}
-			set {
-				options.SpacesWithinCheckedExpressionParantheses = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool ConditionalOperatorBeforeConditionSpace {
-			get {
-				return options.SpaceBeforeConditionalOperatorCondition;
-			}
-			set {
-				options.SpaceBeforeConditionalOperatorCondition = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool ConditionalOperatorAfterConditionSpace {
-			get {
-				return options.SpaceAfterConditionalOperatorCondition;
-			}
-			set {
-				options.SpaceAfterConditionalOperatorCondition = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool ConditionalOperatorBeforeSeparatorSpace {
-			get {
-				return options.SpaceBeforeConditionalOperatorSeparator;
-			}
-			set {
-				options.SpaceBeforeConditionalOperatorSeparator = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool ConditionalOperatorAfterSeparatorSpace {
-			get {
-				return options.SpaceAfterConditionalOperatorSeparator;
-			}
-			set {
-				options.SpaceAfterConditionalOperatorSeparator = value;
-			}
-		}
-		
-		// brackets
-		[ItemProperty]
-		public bool SpacesWithinBrackets {
-			get {
-				return options.SpacesWithinBrackets;
-			}
-			set {
-				options.SpacesWithinBrackets = value;
-			}
-		}
-		[ItemProperty]
-		public bool SpacesBeforeBrackets {
-			get {
-				return options.SpacesBeforeBrackets;
-			}
-			set {
-				options.SpacesBeforeBrackets = value;
-			}
-		}
-		[ItemProperty]
-		public bool BeforeBracketComma {
-			get {
-				return options.SpaceBeforeBracketComma;
-			}
-			set {
-				options.SpaceBeforeBracketComma = value;
-			}
-		}
-		[ItemProperty]
-		public bool AfterBracketComma {
-			get {
-				return options.SpaceAfterBracketComma;
-			}
-			set {
-				options.SpaceAfterBracketComma = value;
-			}
-		}
-		
-		
-		[ItemProperty]
-		public bool SpacesBeforeForSemicolon {
-			get {
-				return options.SpaceBeforeForSemicolon;
-			}
-			set {
-				options.SpaceBeforeForSemicolon = value;
-			}
-		}
-
-		[ItemProperty]
-		public bool SpaceBeforeSemicolon {
-			get {
-				return options.SpaceBeforeSemicolon;
-			}
-			set {
-				options.SpaceBeforeSemicolon = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool SpacesAfterForSemicolon {
-			get {
-				return options.SpaceAfterForSemicolon;
-			}
-			set {
-				options.SpaceAfterForSemicolon = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool SpacesAfterTypecast {
-			get {
-				return options.SpaceAfterTypecast;
-			}
-			set {
-				options.SpaceAfterTypecast = value;
-			}
-		}
-		
-		[ItemProperty]
-		public bool SpacesBeforeArrayDeclarationBrackets {
-			get {
-				return options.SpaceBeforeArrayDeclarationBrackets;
-			}
-			set {
-				options.SpaceBeforeArrayDeclarationBrackets = value;
-			}
-		}
-		#endregion
-		
-		#region Blank Lines
-		[ItemProperty]
-		public int BlankLinesBeforeUsings {
-			get {
-				return options.MinimumBlankLinesBeforeUsings;
-			}
-			set {
-				options.MinimumBlankLinesBeforeUsings = value;
-			}
-		}
-		
-		[ItemProperty]
-		public int BlankLinesAfterUsings {
-			get {
-				return options.MinimumBlankLinesAfterUsings;
-			}
-			set {
-				options.MinimumBlankLinesAfterUsings = value;
-			}
-		}
-		
-		[ItemProperty]
-		public int BlankLinesBeforeFirstDeclaration {
-			get {
-				return options.MinimumBlankLinesBeforeFirstDeclaration;
-			}
-			set {
-				options.MinimumBlankLinesBeforeFirstDeclaration = value;
-			}
-		}
-		
-		[ItemProperty]
-		public int BlankLinesBetweenTypes {
-			get {
-				return options.MinimumBlankLinesBetweenTypes;
-			}
-			set {
-				options.MinimumBlankLinesBetweenTypes = value;
-			}
-		}
-		
-		[ItemProperty]
-		public int BlankLinesBetweenFields {
-			get {
-				return options.MinimumBlankLinesBetweenFields;
-			}
-			set {
-				options.MinimumBlankLinesBetweenFields = value;
-			}
-		}
-		
-		[ItemProperty]
-		public int BlankLinesBetweenEventFields {
-			get {
-				return options.MinimumBlankLinesBetweenEventFields;
-			}
-			set {
-				options.MinimumBlankLinesBetweenEventFields = value;
-			}
-		}
-		
-		[ItemProperty]
-		public int BlankLinesBetweenMembers {
-			get {
-				return options.MinimumBlankLinesBetweenMembers;
-			}
-			set {
-				options.MinimumBlankLinesBetweenMembers = value;
-			}
-		}
-
-		[ItemProperty]
-		public int BlankLinesAroundRegion {
-			get {
-				return options.MinimumBlankLinesAroundRegion;
-			}
-			set {
-				options.MinimumBlankLinesAroundRegion = value;
-			}
-		}
-
-		[ItemProperty]
-		public int BlankLinesInsideRegion {
-			get {
-				return options.MinimumBlankLinesInsideRegion;
-			}
-			set {
-				options.MinimumBlankLinesInsideRegion = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.LabelPositioning, value);
 			}
 		}
 		#endregion
 
-		#region Wrapping
-		[ItemProperty]
-		public Wrapping MethodCallArgumentWrapping {
+		#region New line options
+
+		public bool NewLinesForBracesInTypes {
 			get {
-				return options.MethodCallArgumentWrapping;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInTypes);
 			}
 			set {
-				options.MethodCallArgumentWrapping = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInTypes, value);
 			}
 		}
 
-		[ItemProperty]
-		public NewLinePlacement NewLineAferMethodCallOpenParentheses {
+		public bool NewLinesForBracesInMethods {
 			get {
-				return options.NewLineAferMethodCallOpenParentheses;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInMethods);
 			}
 			set {
-				options.NewLineAferMethodCallOpenParentheses = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInMethods, value);
 			}
 		}
 
-		[ItemProperty]
-		public NewLinePlacement MethodCallClosingParenthesesOnNewLine {
+		public bool NewLinesForBracesInAnonymousMethods {
 			get {
-				return options.MethodCallClosingParenthesesOnNewLine;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInAnonymousMethods);
 			}
 			set {
-				options.MethodCallClosingParenthesesOnNewLine = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInAnonymousMethods, value);
+			}
+		}
+			
+		public bool NewLinesForBracesInControlBlocks {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInControlBlocks);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInControlBlocks, value);
 			}
 		}
 
-		[ItemProperty]
-		public bool AlignToFirstMethodCallArgument {
+		public bool NewLinesForBracesInAnonymousTypes {
 			get {
-				return options.AlignToFirstMethodCallArgument;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInAnonymousTypes);
 			}
 			set {
-				options.AlignToFirstMethodCallArgument = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInAnonymousTypes, value);
 			}
 		}
 
-		[ItemProperty]
-		public Wrapping MethodDeclarationParameterWrapping {
+		public bool NewLinesForBracesInObjectInitializers {
 			get {
-				return options.MethodDeclarationParameterWrapping;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInObjectInitializers);
 			}
 			set {
-				options.MethodDeclarationParameterWrapping = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInObjectInitializers, value);
 			}
 		}
 
-		[ItemProperty]
-		public NewLinePlacement NewLineAferMethodDeclarationOpenParentheses {
+		public bool NewLinesForBracesInLambdaExpressionBody {
 			get {
-				return options.NewLineAferMethodDeclarationOpenParentheses;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInLambdaExpressionBody);
 			}
 			set {
-				options.NewLineAferMethodDeclarationOpenParentheses = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInLambdaExpressionBody, value);
 			}
 		}
 
-		[ItemProperty]
-		public NewLinePlacement MethodDeclarationClosingParenthesesOnNewLine {
+		public bool NewLineForElse {
 			get {
-				return options.MethodDeclarationClosingParenthesesOnNewLine;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForElse);
 			}
 			set {
-				options.MethodDeclarationClosingParenthesesOnNewLine = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForElse, value);
+			}
+		}
+			
+		public bool NewLineForCatch {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForCatch);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForCatch, value);
 			}
 		}
 
-		[ItemProperty]
-		public bool AlignToFirstMethodDeclarationParameter {
+		public bool NewLineForFinally {
 			get {
-				return options.AlignToFirstMethodDeclarationParameter;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForFinally);
 			}
 			set {
-				options.AlignToFirstMethodDeclarationParameter = value;
-			}
-		}
-	
-		[ItemProperty]
-		public Wrapping IndexerDeclarationParameterWrapping {
-			get {
-				return options.IndexerDeclarationParameterWrapping;
-			}
-			set {
-				options.IndexerDeclarationParameterWrapping = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForFinally, value);
 			}
 		}
 
-		[ItemProperty]
-		public NewLinePlacement NewLineAferIndexerDeclarationOpenBracket {
+		public bool NewLineForMembersInObjectInit {
 			get {
-				return options.NewLineAferIndexerDeclarationOpenBracket;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForMembersInObjectInit);
 			}
 			set {
-				options.NewLineAferIndexerDeclarationOpenBracket = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForMembersInObjectInit, value);
 			}
 		}
 
-		[ItemProperty]
-		public NewLinePlacement IndexerDeclarationClosingBracketOnNewLine {
+		public bool NewLineForMembersInAnonymousTypes {
 			get {
-				return options.IndexerDeclarationClosingBracketOnNewLine;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForMembersInAnonymousTypes);
 			}
 			set {
-				options.IndexerDeclarationClosingBracketOnNewLine = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForMembersInAnonymousTypes, value);
 			}
 		}
 
-		[ItemProperty]
-		public bool AlignToFirstIndexerDeclarationParameter {
+		public bool NewLineForClausesInQuery {
 			get {
-				return options.AlignToFirstIndexerDeclarationParameter;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForClausesInQuery);
 			}
 			set {
-				options.AlignToFirstIndexerDeclarationParameter = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForClausesInQuery, value);
+			}
+		}
+		#endregion
+
+		#region Spacing options
+
+		public bool SpacingAfterMethodDeclarationName {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacingAfterMethodDeclarationName);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacingAfterMethodDeclarationName, value);
 			}
 		}
 
-		[ItemProperty]
-		public Wrapping IndexerArgumentWrapping {
+		public bool SpaceWithinMethodDeclarationParenthesis {
 			get {
-				return options.IndexerArgumentWrapping;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinMethodDeclarationParenthesis);
 			}
 			set {
-				options.IndexerArgumentWrapping = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinMethodDeclarationParenthesis, value);
 			}
 		}
 
-		[ItemProperty]
-		public NewLinePlacement NewLineAferIndexerOpenBracket {
+		public bool SpaceBetweenEmptyMethodDeclarationParentheses {
 			get {
-				return options.NewLineAferIndexerOpenBracket;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptyMethodDeclarationParentheses);
 			}
 			set {
-				options.NewLineAferIndexerOpenBracket = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptyMethodDeclarationParentheses, value);
 			}
 		}
 
-		[ItemProperty]
-		public NewLinePlacement IndexerClosingBracketOnNewLine {
+		public bool SpaceAfterMethodCallName {
 			get {
-				return options.IndexerClosingBracketOnNewLine;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterMethodCallName);
 			}
 			set {
-				options.IndexerClosingBracketOnNewLine = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterMethodCallName, value);
 			}
 		}
 
-		[ItemProperty]
-		public bool AlignToFirstIndexerArgument {
+		public bool SpaceWithinMethodCallParentheses {
 			get {
-				return options.AlignToFirstIndexerArgument;
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinMethodCallParentheses);
 			}
 			set {
-				options.AlignToFirstIndexerArgument = value;
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinMethodCallParentheses, value);
+			}
+		}
+
+		public bool SpaceBetweenEmptyMethodCallParentheses {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptyMethodCallParentheses);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptyMethodCallParentheses, value);
+			}
+		}
+
+		public bool SpaceAfterControlFlowStatementKeyword {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterControlFlowStatementKeyword);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterControlFlowStatementKeyword, value);
+			}
+		}
+
+		public bool SpaceWithinExpressionParentheses {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinExpressionParentheses);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinExpressionParentheses, value);
+			}
+		}
+
+		public bool SpaceWithinCastParentheses {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinCastParentheses);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinCastParentheses, value);
+			}
+		}
+
+		public bool SpaceWithinOtherParentheses {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinOtherParentheses);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinOtherParentheses, value);
+			}
+		}
+
+		public bool SpaceAfterCast {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterCast);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterCast, value);
+			}
+		}
+
+		public bool SpacesIgnoreAroundVariableDeclaration {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacesIgnoreAroundVariableDeclaration);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacesIgnoreAroundVariableDeclaration, value);
+			}
+		}
+
+		public bool SpaceBeforeOpenSquareBracket {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeOpenSquareBracket);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeOpenSquareBracket, value);
+			}
+		}
+
+		public bool SpaceBetweenEmptySquareBrackets {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptySquareBrackets);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptySquareBrackets, value);
+			}
+		}
+
+		public bool SpaceWithinSquareBrackets {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinSquareBrackets);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinSquareBrackets, value);
+			}
+		}
+
+		public bool SpaceAfterColonInBaseTypeDeclaration {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterColonInBaseTypeDeclaration);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterColonInBaseTypeDeclaration, value);
+			}
+		}
+
+		public bool SpaceAfterComma {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterComma);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterComma, value);
+			}
+		}
+
+		public bool SpaceAfterDot {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterDot);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterDot, value);
+			}
+		}
+
+		public bool SpaceAfterSemicolonsInForStatement {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterSemicolonsInForStatement);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterSemicolonsInForStatement, value);
+			}
+		}
+
+		public bool SpaceBeforeColonInBaseTypeDeclaration {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeColonInBaseTypeDeclaration);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeColonInBaseTypeDeclaration, value);
+			}
+		}
+
+		public bool SpaceBeforeComma {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeComma);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeComma, value);
+			}
+		}
+
+		public bool SpaceBeforeDot {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeDot);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeDot, value);
+			}
+		}
+
+		public bool SpaceBeforeSemicolonsInForStatement {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeSemicolonsInForStatement);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeSemicolonsInForStatement, value);
+			}
+		}
+
+		public Microsoft.CodeAnalysis.CSharp.Formatting.BinaryOperatorSpacingOptions SpacingAroundBinaryOperator {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacingAroundBinaryOperator);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacingAroundBinaryOperator, value);
+			}
+		}
+		#endregion
+
+		#region Wrapping options
+
+		public bool WrappingPreserveSingleLine {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.WrappingPreserveSingleLine);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.WrappingPreserveSingleLine, value);
+			}
+		}
+
+		public bool WrappingKeepStatementsOnSingleLine {
+			get {
+				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.WrappingKeepStatementsOnSingleLine);
+			}
+			set {
+				options = options.WithChangedOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.WrappingKeepStatementsOnSingleLine, value);
 			}
 		}
 
@@ -1656,7 +521,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public CSharpFormattingPolicy ()
 		{
-			this.options = FormattingOptionsFactory.CreateMono ();
+			this.options = RoslynTypeSystemService.Workspace.Options;
 		}
 		
 		public static CSharpFormattingPolicy Load (FilePath selectedFile)

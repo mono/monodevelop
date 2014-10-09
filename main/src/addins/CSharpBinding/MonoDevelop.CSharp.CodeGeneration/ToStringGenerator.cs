@@ -122,7 +122,7 @@ namespace MonoDevelop.CodeGeneration
 							)
 						)
 					} 
-				}.ToString (Options.FormattingOptions);
+				}.ToString ();
 			}
 		}
 	}

@@ -28,17 +28,19 @@ using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.CodeCompletion;
 using ICSharpCode.NRefactory.Utils;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MonoDevelop.CSharp.Formatting
 {
 	class CSharpTextPasteHandler : TextPasteHandler
 	{
-		readonly ICSharpCode.NRefactory.Editor.ITextPasteHandler engine;
+		readonly ICSharpCode.NRefactory6.CSharp.ITextPasteHandler engine;
 		readonly CSharpTextEditorIndentation indent;
 
-		public CSharpTextPasteHandler (CSharpTextEditorIndentation indent, ICSharpCode.NRefactory.CSharp.IStateMachineIndentEngine decoratedEngine, ICSharpCode.NRefactory.CSharp.TextEditorOptions textEditorOptions, ICSharpCode.NRefactory.CSharp.CSharpFormattingOptions formattingOptions)
+		public CSharpTextPasteHandler (CSharpTextEditorIndentation indent, ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine decoratedEngine, OptionSet formattingOptions)
 		{
-			this.engine = new ICSharpCode.NRefactory.CSharp.TextPasteIndentEngine (decoratedEngine, textEditorOptions, formattingOptions);
+			this.engine = new ICSharpCode.NRefactory6.CSharp.TextPasteIndentEngine (decoratedEngine, formattingOptions);
 			this.indent = indent;
 		}
 
@@ -49,7 +51,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		public override byte[] GetCopyData (int offset, int length)
 		{
-			return engine.GetCopyData (new Segment (offset, length));
+			return engine.GetCopyData (new TextSpan (offset, length));
 		}
 
 		class Segment : ICSharpCode.NRefactory.Editor.ISegment
