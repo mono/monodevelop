@@ -3,6 +3,8 @@ using Gtk#.
 
 See http://www.monodevelop.com for more info.  
 
+[![Build Status](http://jenkins.mono-project.com/job/test-monodevelop-mainline/badge/icon)](http://jenkins.mono-project.com/job/test-monodevelop-mainline/)
+
 Directory organization
 ----------------------
 
