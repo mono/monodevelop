@@ -34,7 +34,7 @@ namespace MonoDevelop.CodeIssues
 	{
 		readonly Type codeFixProviderType;
 		readonly ExportCodeFixProviderAttribute attribute;
-		ICodeFixProvider instance;
+		CodeFixProvider instance;
 
 		public string Name {
 			get {
@@ -58,10 +58,10 @@ namespace MonoDevelop.CodeIssues
 			this.attribute = attribute;
 		}
 		
-		public ICodeFixProvider GetCodeFixProvider ()
+		public CodeFixProvider GetCodeFixProvider ()
 		{
 			if (instance == null)
-				instance = (ICodeFixProvider)Activator.CreateInstance(codeFixProviderType);
+				instance = (CodeFixProvider)Activator.CreateInstance(codeFixProviderType);
 
 			return instance;
 		}

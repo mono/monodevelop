@@ -61,15 +61,16 @@ namespace MonoDevelop.CodeIssues
 					alreadyAdded.Add (issue.CodeIssueType);
 					var provider = issue.GetProvider ();
 					providers.Add (provider);
-					Console.WriteLine ("add:"+ issue.CodeIssueType);
 				}
-				var driver = new AnalyzerDriver<SyntaxKind>(
+			
+				var driver = AnalyzerDriver<SyntaxKind>.Create(
+					compilation,
 					System.Collections.Immutable.ImmutableArray<DiagnosticAnalyzer>.Empty.AddRange(providers),
-					node => node.CSharpKind(),
 					options,
+					out compilation,
 					CancellationToken.None
 				);
-				compilation = compilation.WithEventQueue (driver.CompilationEventQueue);
+
 				var model = compilation.GetSemanticModel (input.AnalysisDocument.GetSyntaxTreeAsync ().Result);
 				model.GetDiagnostics ();
 				model.GetSyntaxDiagnostics ();

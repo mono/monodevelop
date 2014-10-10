@@ -191,7 +191,7 @@ namespace MonoDevelop.CodeActions
 
 							List<CodeAction> fixes;
 							try {
-								fixes = provider.GetFixesAsync (ad, span, diagnosticsAtCaret, token).Result.ToList ();
+								fixes = provider.GetFixesAsync (new CodeFixContext (ad, span, diagnosticsAtCaret, token)).Result.ToList ();
 							} catch (Exception ex) {
 								LoggingService.LogError ("Error while getting refactorings from code fix provider " + cfp.Name, ex); 
 								continue;

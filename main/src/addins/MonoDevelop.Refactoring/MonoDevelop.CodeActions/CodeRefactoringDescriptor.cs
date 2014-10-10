@@ -38,7 +38,7 @@ namespace MonoDevelop.CodeActions
 		readonly Type codeActionType;
 		readonly ExportCodeRefactoringProviderAttribute attr;
 
-		ICodeRefactoringProvider instance;
+		CodeRefactoringProvider instance;
 
 		/// <summary>
 		/// Gets the identifier string.
@@ -85,10 +85,10 @@ namespace MonoDevelop.CodeActions
 		/// <summary>
 		/// Gets the roslyn code action provider.
 		/// </summary>
-		public ICodeRefactoringProvider GetProvider ()
+		public CodeRefactoringProvider GetProvider ()
 		{
 			if (instance == null)
-				instance = (ICodeRefactoringProvider)Activator.CreateInstance (codeActionType);
+				instance = (CodeRefactoringProvider)Activator.CreateInstance (codeActionType);
 			return instance;
 		}
 

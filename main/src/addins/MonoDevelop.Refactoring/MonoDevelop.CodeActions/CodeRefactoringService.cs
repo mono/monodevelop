@@ -73,7 +73,7 @@ namespace MonoDevelop.CodeActions
 			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(editor.MimeType))) {
 				IEnumerable<CodeAction> refactorings;
 				try {
-					refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (analysisDocument, span, cancellationToken);
+					refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (new CodeRefactoringContext (analysisDocument, span, cancellationToken));
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting refactorings from " + descriptor.IdString, e); 
 					continue;
