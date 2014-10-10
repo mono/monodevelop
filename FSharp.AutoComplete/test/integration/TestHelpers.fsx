@@ -48,7 +48,7 @@ let installNuGetPkg s v =
 
   p.StartInfo.FileName <- IO.Path.Combine(__SOURCE_DIRECTORY__,
                                           "../../../lib/nuget/NuGet.exe")
-  p.StartInfo.Arguments  <- " install -ExcludeVersion -Version " + v + " " + s
+  p.StartInfo.Arguments <- " install -ExcludeVersion -Version " + v + " " + s
   p.StartInfo.UseShellExecute <- false
   p.Start () |> ignore
   if not (p.WaitForExit(5 * 60 * 1000)) then
