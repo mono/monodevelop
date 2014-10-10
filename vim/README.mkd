@@ -4,7 +4,7 @@ Syntax and indent files have been copied from [fsharp-vim](http://github.com/kon
 
 Requires vim compiled with python support. 
 
-This software is still alpha quality and was adapted from http://github.com/timrobinson/fsharp-vim. The current aim is to provide a good experience for fsx scripting. Project support is limited to a single project per vim instance.
+This software is still alpha quality and was adapted from http://github.com/timrobinson/fsharp-vim. The current aim is to provide a good experience for fsx scripting. On opening an fs or fsi file any project file found in the same directory will be parsed. Multiple projects are supported. 
 
 ###Installing 
 
@@ -30,10 +30,11 @@ The plugin will automatically parse the current file 750ms after entering 'norma
 
 ###Commands
 
-* :Interactive will execute the current selection inside fsi (if found) or the whole file if not in visual mode.
-* :ParseProject will reparse all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
-* leader\<t\> will echo the type of the expression currently pointed to by the cursor.
-* leader\<r\> will parse the current file and highlight any errors and add them to the loclist.
+* `:Interactive` will execute the current selection inside fsi (if found) or the whole file if not in visual mode.
+* `:ParseProject` will reparse all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
+* `:BuildProject` calls xbuild on the fsproj for the current file (if any).
+* `leader\<t\>` will echo the type of the expression currently pointed to by the cursor.
+* `leader\<r\>` will parse the current file and highlight any errors and add them to the loclist.
 
 
 
