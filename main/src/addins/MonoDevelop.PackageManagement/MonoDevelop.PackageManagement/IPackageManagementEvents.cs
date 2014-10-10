@@ -56,7 +56,7 @@ namespace ICSharpCode.PackageManagement
 		void OnPackageOperationsFinished();
 		void OnPackageOperationError(Exception ex);
 		bool OnAcceptLicenses(IEnumerable<IPackage> packages);
-		void OnParentPackageInstalled(IPackage package, IPackageManagementProject project);
+		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations);
 		void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project);
 		void OnParentPackagesUpdated(IEnumerable<IPackage> packages);
 		void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args);
@@ -67,5 +67,8 @@ namespace ICSharpCode.PackageManagement
 		void OnUpdatedPackagesAvailable ();
 		bool OnFileRemoving (string path);
 		void OnPackageRestored (IPackage package);
+
+		[Obsolete]
+		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);
 	}
 }

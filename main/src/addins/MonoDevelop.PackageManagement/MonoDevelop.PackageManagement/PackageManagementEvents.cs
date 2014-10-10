@@ -83,7 +83,14 @@ namespace ICSharpCode.PackageManagement
 				ParentPackageInstalled(this, new ParentPackageOperationEventArgs(package, project));
 			}
 		}
-		
+
+		public void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations)
+		{
+			if (ParentPackageInstalled != null) {
+				ParentPackageInstalled (this, new ParentPackageOperationEventArgs(package, project, operations));
+			}
+		}
+
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
 		
 		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)

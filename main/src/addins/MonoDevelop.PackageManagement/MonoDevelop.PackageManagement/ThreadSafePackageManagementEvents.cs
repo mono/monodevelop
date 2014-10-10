@@ -195,7 +195,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			unsafeEvents.OnParentPackageInstalled(package, project);
 		}
-		
+
+		public void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations)
+		{
+			unsafeEvents.OnParentPackageInstalled (package, project, operations);
+		}
+
 		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
 		{
 			unsafeEvents.OnParentPackageUninstalled(package, project);
