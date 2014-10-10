@@ -274,8 +274,8 @@ module internal CommandInput =
 /// Represents current state
 type internal State =
   {
-    Files : Map<string,string[]>
-    Project : Option<IProjectParser>
+    Files : Map<string,string[]> //filename -> lines
+    Projects : Map<string, IProjectParser> 
     OutputMode : OutputMode
     HelpText : Map<String, ToolTipText>
   }
@@ -299,7 +299,7 @@ module internal Main =
 
    member x.Quit() = agent.PostAndReply(fun ch -> Choice2Of2 ch)
 
-  let initialState = { Files = Map.empty; Project = None; OutputMode = Text; HelpText = Map.empty }
+  let initialState = { Files = Map.empty; Projects = Map.empty; OutputMode = Text; HelpText = Map.empty }
 
   let printAgent = new PrintingAgent()
 
@@ -337,9 +337,11 @@ module internal Main =
       ok
 
     let getoptions file =
-      let text = String.concat "\n" state.Files.[file]
+      let text = state.Files.[file]
+      let project = Map.tryFind file state.Projects
+      let text = String.concat "\n" text
       let projFile, files, args, framework =
-          match state.Project with
+          match project with
           | None -> file, [|file|], [||], FSharpTargetFramework.NET_4_0
           | Some p -> p.FileName, p.GetFiles, p.GetOptions, p.FrameworkVersion
       text, projFile, files, args, framework
@@ -357,8 +359,9 @@ module internal Main =
         let lines = readInput [] |> Array.ofList
         let text = String.concat "\n" lines
         let file = Path.GetFullPath file
+        let project = Map.tryFind file state.Projects
         let projFile, files, args, framework =
-          match state.Project with
+          match project with
           | None -> file, [|file|], [||], FSharpTargetFramework.NET_4_0
           | Some p -> p.FileName, p.GetFiles, p.GetOptions, p.FrameworkVersion
 
@@ -388,24 +391,27 @@ module internal Main =
         | Normal -> printMsg "INFO" "Background parsing started"
                     Async.StartImmediate task
 
+
         main { state with Files = Map.add file lines state.Files }
 
     | Project file ->
         // Load project file and store in state
         if File.Exists file then
-            match ProjectParser.load file with
-            | Some p ->
+          match ProjectParser.load file with
+          | Some p -> 
               let files =
-                  [ for f in p.GetFiles do
-                      yield IO.Path.Combine(p.Directory, f) ]
+                [ for f in p.GetFiles do
+                    yield IO.Path.Combine(p.Directory, f) ]
               let targetFilename = p.Output
               match state.OutputMode with
               | Text -> printAgent.WriteLine(sprintf "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files))
               | Json -> prAsJson { Kind = "project"; Data = { Files = files; Output = targetFilename } }
-              main { state with Project = Some p }
-            | None ->
-               printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
-               main state
+              let projects = 
+                files
+                |> List.fold (fun s f -> Map.add f p s) state.Projects
+              main { state with Projects = projects }
+          | None   -> printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
+                      main state
         else
           printMsg "ERROR" (sprintf "File '%s' does not exist" file)
           main state

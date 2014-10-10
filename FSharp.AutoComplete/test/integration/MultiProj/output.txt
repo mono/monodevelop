@@ -1,0 +1,144 @@
+DATA: project
+E:\code\kjnilsson\fsharpbinding\FSharp.AutoComplete\test\integration\MultiProj\Proj1\Ops.fs
+E:\code\kjnilsson\fsharpbinding\FSharp.AutoComplete\test\integration\MultiProj\Proj1\Program.fs
+<<EOF>>
+INFO: Synchronous parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+INFO: Synchronous parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+DATA: completion
+Equals
+GetHashCode
+GetType
+Terrific
+ToString
+<<EOF>>
+DATA: completion
+Bar
+Foo
+NewObjectType
+Qux
+add
+addition
+<<EOF>>
+DATA: completion
+func
+<<EOF>>
+DATA: completion
+Bar
+Foo
+NewObjectType
+Qux
+add
+addition
+<<EOF>>
+DATA: project
+E:\code\kjnilsson\fsharpbinding\FSharp.AutoComplete\test\integration\MultiProj\Proj2\Core.fs
+E:\code\kjnilsson\fsharpbinding\FSharp.AutoComplete\test\integration\MultiProj\Proj2\Program.fs
+<<EOF>>
+INFO: Synchronous parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+INFO: Synchronous parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+DATA: completion
+Equals
+GetHashCode
+GetType
+Terrifying
+ToString
+<<EOF>>
+DATA: completion
+Bar
+Foo
+NewObjectType
+Qux
+add
+addition
+<<EOF>>
+DATA: completion
+func
+<<EOF>>
+DATA: completion
+Bar
+Foo
+NewObjectType
+Qux
+add
+addition
+<<EOF>>
+INFO: Synchronous parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+INFO: Synchronous parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+DATA: completion
+Equals
+GetHashCode
+GetType
+Terrific
+ToString
+<<EOF>>
+DATA: completion
+Bar
+Foo
+NewObjectType
+Qux
+add
+addition
+<<EOF>>
+DATA: completion
+func
+<<EOF>>
+DATA: completion
+Bar
+Foo
+NewObjectType
+Qux
+add
+addition
+<<EOF>>
+INFO: Synchronous parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+INFO: Synchronous parsing started
+<<EOF>>
+DATA: errors
+<<EOF>>
+DATA: completion
+Equals
+GetHashCode
+GetType
+Terrifying
+ToString
+<<EOF>>
+DATA: completion
+Bar
+Foo
+NewObjectType
+Qux
+add
+addition
+<<EOF>>
+DATA: completion
+func
+<<EOF>>
+DATA: completion
+Bar
+Foo
+NewObjectType
+Qux
+add
+addition
+<<EOF>>
