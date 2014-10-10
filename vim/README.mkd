@@ -1,0 +1,40 @@
+##F# support for Vim (fsharpbindings-vim)
+
+Syntax and indent files have been copied from [fsharp-vim](http://github.com/kongo2002/fsharp-vim) with kind permissions from [kongo2002](https://github.com/kongo2002).
+
+Requires vim compiled with python support. 
+
+This software is still alpha quality and was adapted from http://github.com/timrobinson/fsharp-vim. The current aim is to provide a good experience for fsx scripting. On opening an fs or fsi file any project file found in the same directory will be parsed. Multiple projects are supported. 
+
+###Installing 
+
+#####OSX and linux
+
+1. Install [pathogen](https://github.com/tpope/vim-pathogen)
+
+2. Run *make install* inside the vim directory. This will copy the necessary contents to your ~/.vim/bundle directory.
+
+#####Windows
+
+1. Install [pathogen](https://github.com/tpope/vim-pathogen)
+
+2. TODO (You can manually copy the required files to you bundle directory.)
+
+###Usage
+
+Opening either `*.fs`, `*.fsi` or `*.fsx` files should trigger syntax highlighting and other depending runtime files as well.
+
+Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [supertab](https://github.com/ervandew/supertab))
+
+The plugin will automatically parse the current file 750ms after entering 'normal' mode following an edit. It will add signs in the margin, underline errors in the text and populate the location list with error details. (:lope to open the loclist). 
+
+###Commands
+
+* `:Interactive` will execute the current selection inside fsi (if found) or the whole file if not in visual mode.
+* `:ParseProject` will reparse all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
+* `:BuildProject` calls xbuild on the fsproj for the current file (if any).
+* `leader\<t\>` will echo the type of the expression currently pointed to by the cursor.
+* `leader\<r\>` will parse the current file and highlight any errors and add them to the loclist.
+
+
+
