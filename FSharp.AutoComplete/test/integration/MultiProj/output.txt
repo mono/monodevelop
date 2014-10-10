@@ -1,6 +1,6 @@
 DATA: project
-E:\code\kjnilsson\fsharpbinding\FSharp.AutoComplete\test\integration\MultiProj\Proj1\Ops.fs
-E:\code\kjnilsson\fsharpbinding\FSharp.AutoComplete\test\integration\MultiProj\Proj1\Program.fs
+<absolute path removed>/test/integration/MultiProj/Proj1/Ops.fs
+<absolute path removed>/test/integration/MultiProj/Proj1/Program.fs
 <<EOF>>
 INFO: Synchronous parsing started
 <<EOF>>
@@ -37,8 +37,8 @@ add
 addition
 <<EOF>>
 DATA: project
-E:\code\kjnilsson\fsharpbinding\FSharp.AutoComplete\test\integration\MultiProj\Proj2\Core.fs
-E:\code\kjnilsson\fsharpbinding\FSharp.AutoComplete\test\integration\MultiProj\Proj2\Program.fs
+<absolute path removed>/test/integration/MultiProj/Proj2/Core.fs
+<absolute path removed>/test/integration/MultiProj/Proj2/Program.fs
 <<EOF>>
 INFO: Synchronous parsing started
 <<EOF>>
