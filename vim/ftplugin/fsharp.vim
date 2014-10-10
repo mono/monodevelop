@@ -195,21 +195,25 @@ endfunction
 
 
 function! ShowErrors()
-    let errs = pyeval('fsautocomplete.errors(vim.current.buffer.name, True, vim.current.buffer)')
-    let lerrs = s:convertToLocList(errs)
-    call setloclist(0, lerrs)
-    execute "sign unplace *"
-    call clearmatches()
-    for e in lerrs
-        "place signs
-        if e['type'] == "E"
-            execute "sign place 1 line=" . e['lnum'] . " name=fserr file=" . expand("%:p")
-            call matchadd('FError', e['pattern'])
-        else
-            execute "sign place 1 line=" . e['lnum'] . " name=fswarn file=" . expand("%:p")
-            call matchadd('FWarn', e['pattern'])
-        endif
-    endfor
+    try
+        let errs = pyeval('fsautocomplete.errors(vim.current.buffer.name, True, vim.current.buffer)')
+        let lerrs = s:convertToLocList(errs)
+        call setloclist(0, lerrs)
+        execute "sign unplace *"
+        call clearmatches()
+        for e in lerrs
+            "place signs
+            if e['type'] == "E"
+                execute "sign place 1 line=" . e['lnum'] . " name=fserr file=" . expand("%:p")
+                call matchadd('FError', e['pattern'])
+            else
+                execute "sign place 1 line=" . e['lnum'] . " name=fswarn file=" . expand("%:p")
+                call matchadd('FWarn', e['pattern'])
+            endif
+        endfor
+    catch
+        echo "failed to parse file"
+    endtry
 endfunction
 
 function! fsharp#Balloon()
