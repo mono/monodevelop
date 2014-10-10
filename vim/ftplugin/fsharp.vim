@@ -57,8 +57,8 @@ augroup END
 
 com! -buffer -range=% Interactive call s:launchInteractive(<line1>, <line2>)
 com! -buffer LogFile call s:printLogFile()
-com! -buffer -nargs=* ParseProject call s:parseProject(<f-args>) 
-com! -buffer -nargs=* BuildProject call s:buildProject(<f-args>) 
+com! -buffer -nargs=* -complete=file ParseProject call s:parseProject(<f-args>) 
+com! -buffer -nargs=* -complete=file BuildProject call s:buildProject(<f-args>) 
 
 highlight FError gui=undercurl guisp='red'
 highlight FWarn gui=undercurl guisp='gray'
