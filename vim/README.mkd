@@ -24,7 +24,7 @@ This software is still alpha quality and was adapted from http://github.com/timr
 
 Opening either `*.fs`, `*.fsi` or `*.fsx` files should trigger syntax highlighting and other depending runtime files as well.
 
-Omnicomplete triggers the fsharp autocomplete process. (suggestion: intall [supertab](https://github.com/ervandew/supertab))
+Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [supertab](https://github.com/ervandew/supertab))
 
 The plugin will automatically parse the current file 750ms after entering 'normal' mode following an edit. It will add signs in the margin, underline errors in the text and populate the location list with error details. (:lope to open the loclist). 
 

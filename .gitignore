@@ -15,6 +15,7 @@ repository/*
 *.cache
 *.swp
 *.swo
+*.swn
 *.pyc
 *.orig
 =======

@@ -24,7 +24,6 @@ if('.fs' == ext or '.fsi' == ext):
     if(len(projs)):
         proj_file = os.path.join(dir, projs[0])
         fsautocomplete.project(proj_file)
-        #print "found project file %s" % proj_file
 EOF
 
 let s:cpo_save = &cpo
@@ -58,8 +57,8 @@ augroup END
 
 com! -buffer -range=% Interactive call s:launchInteractive(<line1>, <line2>)
 com! -buffer LogFile call s:printLogFile()
-com! -buffer ParseProject call s:parseProject() 
-com! -buffer BuildProject call s:buildProject() 
+com! -buffer -nargs=* ParseProject call s:parseProject(<f-args>) 
+com! -buffer -nargs=* BuildProject call s:buildProject(<f-args>) 
 
 highlight FError gui=undercurl guisp='red'
 highlight FWarn gui=undercurl guisp='gray'
@@ -110,18 +109,28 @@ print fsautocomplete.logfiledir
 EOF
 endfunction
 
-function! s:parseProject()
+function! s:parseProject(...)
+if a:0 > 0
+python << EOF
+fsautocomplete.project(vim.eval("a:1"))
+EOF
+else
 python << EOF
 if(proj_file):
     fsautocomplete.project(proj_file)
 EOF
+endif
 endfunction
 
 
-function! s:buildProject()
+function! s:buildProject(...)
     try
-        let pn = pyeval('proj_file')
-        :execute '!xbuild ' . pn
+        if a:0 > 0
+            :execute '!xbuild ' . a:1
+        else
+            let pn = pyeval('proj_file')
+            :execute '!xbuild ' . pn
+        endif
     catch
         echo "failed to execute build"
     endtry
