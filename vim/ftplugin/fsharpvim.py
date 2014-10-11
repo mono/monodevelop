@@ -49,6 +49,7 @@ class FSAutoComplete:
 
 
         self.completion = Interaction(self.p, 3, self.logfile)
+        self._finddecl = Interaction(self.p, 3, self.logfile)
         self._tooltip = Interaction(self.p, 1, self.logfile)
         self._helptext = Interaction(self.p, 1, self.logfile)
         self._errors = Interaction(self.p, 3, self.logfile)
@@ -79,6 +80,8 @@ class FSAutoComplete:
                 self._errors.update(parsed['Data'])
             elif parsed['Kind'] == "project":
                 self._project.update(parsed['Data'])
+            elif parsed['Kind'] == "finddecl":
+                self._finddecl.update(parsed['Data'])
         
     def help(self):
         self.send("help\n")
@@ -110,12 +113,17 @@ class FSAutoComplete:
             msg = filter(lambda(line): 
                     line.lower().find(base.lower()) != -1, msg)
 
+        msg.sort(key=lambda x: x.startswith(base), reverse=True)
         msg = map(lambda(line): 
                 {'word': line, 
                  'info': self.helptext(line),
                  'menu': ""}, msg)
 
         return msg
+
+    def finddecl(self, fn, line, column):
+        msg = self._finddecl.send('finddecl "%s" %d %d\n' % (fn, line, column))
+        return str(msg['File']), str(msg['Line']), str(msg['Column'])
 
     def errors(self, fn, full, lines):
         self.logfile.write('errors: fn = %s\n' % fn)
