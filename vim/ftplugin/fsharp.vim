@@ -171,7 +171,7 @@ else:
     vim.command('echo "%s"' % first)
 EOF
 endfunction
-
+"
 "probable loclist format
 "{'lnum': 2, 'bufnr': 1, 'col': 1, 'valid': 1, 'vcol': 1, 'nr': -1, 'type': 'W', 'pattern': '', 'text': 'Expected an assignment or functi on call and instead saw an expression.'}
 
@@ -230,7 +230,11 @@ endfunction
 
 function! fsharp#Complete(findstart, base)
     let line = getline('.')
-    let idx = col('.')
+    let idx = col('.') - 1 "1-indexed
+    "if there are trailing characters move one further back
+    if len(line) >= idx
+        let idx -= 1
+    endif
     while idx > 0
         let c = line[idx]
         if c == ' ' || c == '.'
