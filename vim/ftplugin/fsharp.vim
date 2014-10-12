@@ -26,13 +26,13 @@ if('.fs' == ext or '.fsi' == ext):
         proj_file = os.path.join(dir, projs[0])
         fsautocomplete.project(proj_file)
 EOF
-"echo "fsharp: ready to rok"
 
 let b:errs = []
 let s:cpo_save = &cpo
 set cpo&vim
 
 setl updatetime=750
+
 " enable syntax based folding
 setl fdm=syntax
 
@@ -50,12 +50,12 @@ augroup fsharp
     autocmd!
     "remove scratch buffer after selection
     "autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
-    autocmd InsertLeave *.fs* if pumvisible() == 0|pclose|endif
+    autocmd InsertLeave  *.fs* if pumvisible() == 0|pclose|endif
 
-    autocmd InsertLeave *.fs* call OnInsertLeave() 
-    autocmd TextChanged *.fs* call OnTextChanged()
+    autocmd InsertLeave  *.fs* call OnInsertLeave() 
+    autocmd TextChanged  *.fs* call OnTextChanged()
     autocmd TextChangedI *.fs* call OnTextChanged()
-    autocmd CursorHold *.fs* call OnCursorHold()
+    autocmd CursorHold   *.fs* call OnCursorHold()
 augroup END
 
 com! -buffer -range=% Interactive call s:launchInteractive(<line1>, <line2>)
