@@ -4,7 +4,6 @@ if exists('b:did_ftplugin')
     finish
 endif
 let b:did_ftplugin = 1
-echo "fsharp: initializing autocomplete server..."
 python <<EOF
 import vim
 import os
@@ -14,6 +13,8 @@ from fsharpvim import FSAutoComplete,Statics
 if(Statics.fsac == None):
     Statics.fsac = FSAutoComplete(fsharp_dir)
 fsautocomplete = Statics.fsac
+b = vim.current.buffer
+fsautocomplete.parse(b.name, True, b)
 proj_file = None
 #find project file if any - assumes fsproj file will be in the same directory as the fs or fsi file
 file_name = vim.current.buffer.name
@@ -25,7 +26,7 @@ if('.fs' == ext or '.fsi' == ext):
         proj_file = os.path.join(dir, projs[0])
         fsautocomplete.project(proj_file)
 EOF
-echo "fsharp: ready to rok"
+"echo "fsharp: ready to rok"
 
 let b:errs = []
 let s:cpo_save = &cpo
@@ -43,14 +44,14 @@ setl comments=s0:*\ -,m0:*\ \ ,ex0:*),s1:(*,mb:*,ex:*),:\/\/\/,:\/\/
 nnoremap <leader>e :call ShowErrors()<cr>
 nnoremap <leader>t :call TypeCheck()<cr>
 nnoremap <leader>i :call GetInfo()<cr>
+nnoremap <leader>d :call FindDecl()<cr>
 
 augroup fsharp
     autocmd!
     "remove scratch buffer after selection
     "autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
     autocmd InsertLeave *.fs* if pumvisible() == 0|pclose|endif
-    "parse file when entering Normal mode after an edit.
-    "this may not be fast enough for large files.
+
     autocmd InsertLeave *.fs* call OnInsertLeave() 
     autocmd TextChanged *.fs* call OnTextChanged()
     autocmd TextChangedI *.fs* call OnTextChanged()
@@ -184,6 +185,8 @@ else:
     vim.command('echo "%s"' % first)
 EOF
 endfunction
+
+
 "
 "probable loclist format
 "{'lnum': 2, 'bufnr': 1, 'col': 1, 'valid': 1, 'vcol': 1, 'nr': -1, 'type': 'W', 'pattern': '', 'text': 'Expected an assignment or functi on call and instead saw an expression.'}
@@ -289,4 +292,16 @@ endfunction
 
 let &cpo = s:cpo_save
 
+if exists('*FindDecl')
+    finish
+endif
+function! FindDecl()
+python << EOF
+b = vim.current.buffer
+fsautocomplete.parse(b.name, True, b)
+row, col = vim.current.window.cursor
+f, l, c = fsautocomplete.finddecl(b.name, row, col)
+vim.command('tabnew +%s %s' % (l, f))
+EOF
+endfunction
 " vim: sw=4 et sts=4
