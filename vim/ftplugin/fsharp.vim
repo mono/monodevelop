@@ -4,7 +4,7 @@ if exists('b:did_ftplugin')
     finish
 endif
 let b:did_ftplugin = 1
-
+echo "fsharp: initializing autocomplete server..."
 python <<EOF
 import vim
 import os
@@ -25,7 +25,9 @@ if('.fs' == ext or '.fsi' == ext):
         proj_file = os.path.join(dir, projs[0])
         fsautocomplete.project(proj_file)
 EOF
+echo "fsharp: ready to rok"
 
+let b:errs = []
 let s:cpo_save = &cpo
 set cpo&vim
 
@@ -40,7 +42,7 @@ setl comments=s0:*\ -,m0:*\ \ ,ex0:*),s1:(*,mb:*,ex:*),:\/\/\/,:\/\/
 
 nnoremap <leader>e :call ShowErrors()<cr>
 nnoremap <leader>t :call TypeCheck()<cr>
-
+nnoremap <leader>i :call GetInfo()<cr>
 
 augroup fsharp
     autocmd!
@@ -155,6 +157,17 @@ function! TextChange()
     call clearmatches()
 endfunction
 
+function! GetInfo()
+    let line = line('.')
+    let c = col('.') 
+    let err = s:findErrorByPos(line, c)
+    if empty(err) == 0
+        echo err['text']
+    else
+        call TypeCheck()
+    endif
+endfunction
+
 function! TypeCheck()
 python << EOF
 b = vim.current.buffer
@@ -177,11 +190,21 @@ endfunction
 
 "fsautocomplete format
 "{"StartLine":4,"StartLineAlternate":5,"EndLine":4,"EndLineAlternate":5,"StartColumn":0,"EndColumn":4,"Severity":"Error","Message":"The value or constructor 'asdf' is not defined","Subcategory":"typecheck","FileName":"/Users/karlnilsson/code/kjnilsson/fsharp-vim/test.fsx"}
+function! s:findErrorByPos(line, col)
+    for e in b:errs
+        if e['lnum'] == a:line
+            if e['col'] < a:col && e['ecol'] >= a:col
+                return e
+            endif
+        endif
+    endfor
+    return {}
+endfunction
 
 function! s:convertToLocList(errs)
     let result = []
     for e in a:errs
-        :call add(result, 
+        call add(result, 
                     \{'lnum': e['StartLineAlternate'], 
                     \'col': e['StartColumn'],
                     \'ecol': e['EndColumn'],
@@ -197,11 +220,11 @@ endfunction
 function! ShowErrors()
     try
         let errs = pyeval('fsautocomplete.errors(vim.current.buffer.name, True, vim.current.buffer)')
-        let lerrs = s:convertToLocList(errs)
-        call setloclist(0, lerrs)
+        let b:errs = s:convertToLocList(errs)
+        call setloclist(0, b:errs)
         execute "sign unplace *"
         call clearmatches()
-        for e in lerrs
+        for e in b:errs
             "place signs
             if e['type'] == "E"
                 execute "sign place 1 line=" . e['lnum'] . " name=fserr file=" . expand("%:p")
@@ -217,6 +240,10 @@ function! ShowErrors()
 endfunction
 
 function! fsharp#Balloon()
+    let err = s:findErrorByPos(v:beval_lnum, v:beval_col)
+    if empty(err) == 0
+        return err['text']
+    else
 python << EOF
 b = vim.current.buffer
 fsautocomplete.parse(b.name, True, b)
@@ -226,6 +253,7 @@ if(res != None or res != ""):
 else:
     print "failed to get ballon tip"
 EOF
+    endif
 endfunction
 
 function! fsharp#Complete(findstart, base)
