@@ -44,7 +44,7 @@ setl comments=s0:*\ -,m0:*\ \ ,ex0:*),s1:(*,mb:*,ex:*),:\/\/\/,:\/\/
 nnoremap <leader>e :call ShowErrors()<cr>
 nnoremap <leader>t :call TypeCheck()<cr>
 nnoremap <leader>i :call GetInfo()<cr>
-nnoremap <leader>d :call FindDecl()<cr>
+nnoremap <leader>d :call GotoDecl()<cr>
 
 augroup fsharp
     autocmd!
@@ -292,16 +292,35 @@ endfunction
 
 let &cpo = s:cpo_save
 
-if exists('*FindDecl')
+if exists('*GotoDecl')
     finish
 endif
-function! FindDecl()
+function! GotoDecl()
 python << EOF
 b = vim.current.buffer
+w = vim.current.window
 fsautocomplete.parse(b.name, True, b)
 row, col = vim.current.window.cursor
-f, l, c = fsautocomplete.finddecl(b.name, row, col)
-vim.command('tabnew +%s %s' % (l, f))
+res = fsautocomplete.finddecl(b.name, row, col)
+if(res == None):
+    vim.command('echo "declaration not found"')
+else:
+    f, l, c = res 
+    if(b.name == f): #declared within same file
+        w.cursor = int(l), int(c)
+    else:
+        found = False
+        for tp in vim.tabpages:
+            #print 'f %s %s' % (f, tp.window.buffer.name)
+            if (tp.window.buffer.name == f):
+                tp.window.cursor = int(l), int(c)
+                vim.command('normal %igt' % tp.number) 
+                found = True
+                break
+        if(not found):
+            vim.command('tabnew +%s %s' % (l, f))
+            last_tp = vim.tabpages[len(vim.tabpages)-1]
+            last_tp.window.cursor = int(l), int(c)
 EOF
 endfunction
 " vim: sw=4 et sts=4
