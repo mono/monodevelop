@@ -49,7 +49,7 @@ class FSAutoComplete:
 
 
         self.completion = Interaction(self.p, 3, self.logfile)
-        self._finddecl = Interaction(self.p, 3, self.logfile)
+        self._finddecl = Interaction(self.p, 1, self.logfile)
         self._tooltip = Interaction(self.p, 1, self.logfile)
         self._helptext = Interaction(self.p, 1, self.logfile)
         self._errors = Interaction(self.p, 3, self.logfile)
@@ -123,7 +123,10 @@ class FSAutoComplete:
 
     def finddecl(self, fn, line, column):
         msg = self._finddecl.send('finddecl "%s" %d %d\n' % (fn, line, column))
-        return str(msg['File']), str(msg['Line']), str(msg['Column'])
+        if(msg != None):
+            return str(msg['File']), str(msg['Line']), str(msg['Column'])
+        else:
+            return None
 
     def errors(self, fn, full, lines):
         self.logfile.write('errors: fn = %s\n' % fn)

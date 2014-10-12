@@ -34,7 +34,6 @@ The plugin will automatically parse the current file 750ms after entering 'norma
 * `:ParseProject` will reparse all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
 * `:BuildProject` calls xbuild on the fsproj for the current file (if any).
 * `leader\<t\>` will echo the type of the expression currently pointed to by the cursor.
+* `leader\<i\>` will echo the warning/error details or the type of the expression currently pointed to by the cursor.
 * `leader\<r\>` will parse the current file and highlight any errors and add them to the loclist.
-
-
-
+* `leader\<d\>` go to declaration. Will open a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.  

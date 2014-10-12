@@ -4,7 +4,6 @@ if exists('b:did_ftplugin')
     finish
 endif
 let b:did_ftplugin = 1
-
 python <<EOF
 import vim
 import os
@@ -14,6 +13,8 @@ from fsharpvim import FSAutoComplete,Statics
 if(Statics.fsac == None):
     Statics.fsac = FSAutoComplete(fsharp_dir)
 fsautocomplete = Statics.fsac
+b = vim.current.buffer
+fsautocomplete.parse(b.name, True, b)
 proj_file = None
 #find project file if any - assumes fsproj file will be in the same directory as the fs or fsi file
 file_name = vim.current.buffer.name
@@ -26,10 +27,12 @@ if('.fs' == ext or '.fsi' == ext):
         fsautocomplete.project(proj_file)
 EOF
 
+let b:errs = []
 let s:cpo_save = &cpo
 set cpo&vim
 
 setl updatetime=750
+
 " enable syntax based folding
 setl fdm=syntax
 
@@ -40,19 +43,19 @@ setl comments=s0:*\ -,m0:*\ \ ,ex0:*),s1:(*,mb:*,ex:*),:\/\/\/,:\/\/
 
 nnoremap <leader>e :call ShowErrors()<cr>
 nnoremap <leader>t :call TypeCheck()<cr>
-
+nnoremap <leader>i :call GetInfo()<cr>
+nnoremap <leader>d :call GotoDecl()<cr>
 
 augroup fsharp
     autocmd!
     "remove scratch buffer after selection
     "autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
-    autocmd InsertLeave *.fs* if pumvisible() == 0|pclose|endif
-    "parse file when entering Normal mode after an edit.
-    "this may not be fast enough for large files.
-    autocmd InsertLeave *.fs* call OnInsertLeave() 
-    autocmd TextChanged *.fs* call OnTextChanged()
+    autocmd InsertLeave  *.fs* if pumvisible() == 0|pclose|endif
+
+    autocmd InsertLeave  *.fs* call OnInsertLeave() 
+    autocmd TextChanged  *.fs* call OnTextChanged()
     autocmd TextChangedI *.fs* call OnTextChanged()
-    autocmd CursorHold *.fs* call OnCursorHold()
+    autocmd CursorHold   *.fs* call OnCursorHold()
 augroup END
 
 com! -buffer -range=% Interactive call s:launchInteractive(<line1>, <line2>)
@@ -155,6 +158,17 @@ function! TextChange()
     call clearmatches()
 endfunction
 
+function! GetInfo()
+    let line = line('.')
+    let c = col('.') 
+    let err = s:findErrorByPos(line, c)
+    if empty(err) == 0
+        echo err['text']
+    else
+        call TypeCheck()
+    endif
+endfunction
+
 function! TypeCheck()
 python << EOF
 b = vim.current.buffer
@@ -171,17 +185,29 @@ else:
     vim.command('echo "%s"' % first)
 EOF
 endfunction
+
+
 "
 "probable loclist format
 "{'lnum': 2, 'bufnr': 1, 'col': 1, 'valid': 1, 'vcol': 1, 'nr': -1, 'type': 'W', 'pattern': '', 'text': 'Expected an assignment or functi on call and instead saw an expression.'}
 
 "fsautocomplete format
 "{"StartLine":4,"StartLineAlternate":5,"EndLine":4,"EndLineAlternate":5,"StartColumn":0,"EndColumn":4,"Severity":"Error","Message":"The value or constructor 'asdf' is not defined","Subcategory":"typecheck","FileName":"/Users/karlnilsson/code/kjnilsson/fsharp-vim/test.fsx"}
+function! s:findErrorByPos(line, col)
+    for e in b:errs
+        if e['lnum'] == a:line
+            if e['col'] < a:col && e['ecol'] >= a:col
+                return e
+            endif
+        endif
+    endfor
+    return {}
+endfunction
 
 function! s:convertToLocList(errs)
     let result = []
     for e in a:errs
-        :call add(result, 
+        call add(result, 
                     \{'lnum': e['StartLineAlternate'], 
                     \'col': e['StartColumn'],
                     \'ecol': e['EndColumn'],
@@ -197,11 +223,11 @@ endfunction
 function! ShowErrors()
     try
         let errs = pyeval('fsautocomplete.errors(vim.current.buffer.name, True, vim.current.buffer)')
-        let lerrs = s:convertToLocList(errs)
-        call setloclist(0, lerrs)
+        let b:errs = s:convertToLocList(errs)
+        call setloclist(0, b:errs)
         execute "sign unplace *"
         call clearmatches()
-        for e in lerrs
+        for e in b:errs
             "place signs
             if e['type'] == "E"
                 execute "sign place 1 line=" . e['lnum'] . " name=fserr file=" . expand("%:p")
@@ -217,6 +243,10 @@ function! ShowErrors()
 endfunction
 
 function! fsharp#Balloon()
+    let err = s:findErrorByPos(v:beval_lnum, v:beval_col)
+    if empty(err) == 0
+        return err['text']
+    else
 python << EOF
 b = vim.current.buffer
 fsautocomplete.parse(b.name, True, b)
@@ -226,6 +256,7 @@ if(res != None or res != ""):
 else:
     print "failed to get ballon tip"
 EOF
+    endif
 endfunction
 
 function! fsharp#Complete(findstart, base)
@@ -261,4 +292,35 @@ endfunction
 
 let &cpo = s:cpo_save
 
+if exists('*GotoDecl')
+    finish
+endif
+function! GotoDecl()
+python << EOF
+b = vim.current.buffer
+w = vim.current.window
+fsautocomplete.parse(b.name, True, b)
+row, col = vim.current.window.cursor
+res = fsautocomplete.finddecl(b.name, row, col)
+if(res == None):
+    vim.command('echo "declaration not found"')
+else:
+    f, l, c = res 
+    if(b.name == f): #declared within same file
+        w.cursor = int(l), int(c)
+    else:
+        found = False
+        for tp in vim.tabpages:
+            #print 'f %s %s' % (f, tp.window.buffer.name)
+            if (tp.window.buffer.name == f):
+                tp.window.cursor = int(l), int(c)
+                vim.command('normal %igt' % tp.number) 
+                found = True
+                break
+        if(not found):
+            vim.command('tabnew +%s %s' % (l, f))
+            last_tp = vim.tabpages[len(vim.tabpages)-1]
+            last_tp.window.cursor = int(l), int(c)
+EOF
+endfunction
 " vim: sw=4 et sts=4
