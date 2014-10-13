@@ -41,6 +41,7 @@ namespace MonoDevelop.Debugger.Viewers
 		public ValueVisualizerDialog ()
 		{
 			this.Build ();
+			this.Modal = true;
 		}
 		
 		public void Show (ObjectValue val)
