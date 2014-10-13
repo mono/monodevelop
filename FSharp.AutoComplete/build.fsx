@@ -112,9 +112,7 @@ module Emacs =
   let srcFiles = !! (emacsd + "*.el")
 
   let testd = emacsd + "test/"
-  let integrationTests = !! (testd + "/integration-tests.el")
   let utils = !! (testd + "/test-common.el")
-  let unitTests = !! (testd + "*tests.el") -- (testd + "/integration-tests.el")
 
   let tmpd = emacsd + "tmp/"
   let bind = emacsd + "bin/"
@@ -123,8 +121,6 @@ module Emacs =
     match buildServer with
     | AppVeyor -> Path.GetFullPath "../emacs-local/bin/emacs.exe"
     | _ -> @"emacs"
-
-  let opts = "--batch -f run-fsharp-tests"
 
   let compileOpts =
     sprintf """--batch --eval "(package-initialize)" --eval "(add-to-list 'load-path \"%s\")" --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile %s"""
@@ -142,20 +138,17 @@ Target "EmacsTest" (fun _ ->
   Environment.SetEnvironmentVariable("HOME", Path.GetFullPath Emacs.tmpd)
 
   let loadFiles = Emacs.makeLoad Emacs.utils
-  let loadUnitTests = Emacs.makeLoad Emacs.unitTests
-  let loadIntegrationTests = Emacs.makeLoad Emacs.integrationTests
+
+  let tests =
+    [ yield Emacs.exe, loadFiles + " --batch -f run-fsharp-unit-tests"
+      // AppVeyor doesn't currently run the integration tests
+      if buildServer <> AppVeyor then
+        yield Emacs.exe, loadFiles + " --batch -f run-fsharp-integration-tests"
+      yield Emacs.exe, Emacs.compileOpts ]
 
   ProcessTestRunner.RunConsoleTests
     (fun p -> { p with WorkingDir = Emacs.emacsd })
-    [ Emacs.exe, String.concat " " [loadFiles; loadUnitTests; Emacs.opts]
-      Emacs.exe, Emacs.compileOpts ]
-
-  match buildServer with
-  | AppVeyor -> () // Not current functional
-  | _ ->
-    ProcessTestRunner.RunConsoleTests
-      (fun p -> { p with WorkingDir = Emacs.testd })
-      [ Emacs.exe, String.concat " " [loadFiles; loadIntegrationTests; Emacs.opts] ]
+    tests
 
   Environment.SetEnvironmentVariable("HOME", home)
 )

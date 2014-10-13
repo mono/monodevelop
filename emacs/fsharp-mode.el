@@ -250,10 +250,11 @@ and whether it is in a project directory.")
   (add-hook 'next-error-hook 'fsharp-ac/show-error-at-point nil t)
   (add-hook 'post-command-hook 'fsharp-ac/show-error-at-point nil t)
 
-  (setq compile-command (fsharp-mode-choose-compile-command
-                         (buffer-file-name)))
+  (let ((file (buffer-file-name)))
+    (when file
+      (setq compile-command (fsharp-mode-choose-compile-command file))
+      (fsharp-mode--load-with-binding file)))
 
-  (fsharp-mode--load-with-binding (buffer-file-name))
   (turn-on-fsharp-doc-mode)
   (run-hooks 'fsharp-mode-hook))
 

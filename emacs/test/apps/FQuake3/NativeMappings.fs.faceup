@@ -1,0 +1,280 @@
+«x:(*
+Copyright (C) 2013 William F. Smith
+
+This program is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation; either version 2 of the License,
+or (at your option) any later version.
+
+This program is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+Derivative of Quake III Arena source:
+Copyright (C) 1999-2005 Id Software, Inc.
+*)»
+
+«m:// »«x:Disable native interop warnings
+»«k:#nowarn» «s:"9"»
+«k:#nowarn» «s:"51"»
+
+«k:namespace» «v:Engine».«v:Native»
+
+«k:open» «v:System»
+«k:open» «v:System».«v:IO»
+«k:open» «v:System».«v:Runtime».«v:InteropServices»
+«k:open» «v:Microsoft».«v:FSharp».«v:NativeInterop»
+«k:open» «v:FSharp».«v:Game».«v:Math»
+«k:open» «v:Engine».«v:Core»
+«k:open» «v:Engine».«v:Net»
+«k:open» «v:Engine».«v:FileSystem»
+«k:open» «v:Engine».«v:NativeInterop»
+«k:open» «v:FQuake3».«v:Math»
+«k:open» «v:FQuake3».«v:Md3»
+
+«m:/// »«x:Used to prevent massive copying of large immutable data.
+»«k:module» «k:private» «v:Cache» =
+    «k:let» «k:mutable» «v:md3Map» = Map.empty<nativeint, Md3>
+
+«k:module» «t:Boolean» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<qboolean>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        «k:match» native «k:with»
+        | qboolean.qtrue -> «k:true»
+        | _ -> «k:false»
+
+    «k:let» «k:inline» «f:toNativeByPtr» («v:ptr»: «t:nativeptr»«n:<qboolean>») («v:value»: «t:bool») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        native <- «k:if» value «k:then» qboolean.qtrue «k:else» qboolean.qfalse
+
+        NativePtr.write ptr native
+
+    «k:let» «k:inline» «f:toNative» («v:value»: «t:bool») =
+        «k:if» value «k:then» qboolean.qtrue «k:else» qboolean.qfalse
+
+«k:module» «t:Vec2» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<vec2_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        vec2 (native.value, native.value1)
+
+    «k:let» «k:inline» «f:toNativeByPtr» («v:ptr»: «t:nativeptr»«n:<vec2_t>») («v:v»: «t:vec2») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        native.value <- v.X
+        native.value1 <- v.Y
+
+        NativePtr.write ptr native  
+
+«k:module» «t:Vec3» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<vec3_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        vec3 (native.value, native.value1, native.value2)
+
+    «k:let» «k:inline» «f:toNativeByPtr» («v:ptr»: «t:nativeptr»«n:<vec3_t>») («v:v»: «t:vec3») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        native.value <- v.X
+        native.value1 <- v.Y
+        native.value2 <- v.Z
+
+        NativePtr.write ptr native   
+        
+«k:module» «t:Vec4» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<vec4_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        vec4 (native.value, native.value1, native.value2, native.value3)
+
+    «k:let» «k:inline» «f:toNativeByPtr» («v:ptr»: «t:nativeptr»«n:<vec4_t>») («v:v»: «t:vec4») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        native.value <- v.X
+        native.value1 <- v.Y
+        native.value2 <- v.Z
+        native.value3 <- v.W
+
+        NativePtr.write ptr native  
+
+«k:module» «t:Mat4» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<single>») =
+        mat4 (
+            (NativePtr.get ptr 0),
+            (NativePtr.get ptr 1),
+            (NativePtr.get ptr 2),
+            (NativePtr.get ptr 3),
+            (NativePtr.get ptr 4),
+            (NativePtr.get ptr 5),
+            (NativePtr.get ptr 6),
+            (NativePtr.get ptr 7),
+            (NativePtr.get ptr 8),
+            (NativePtr.get ptr 9),
+            (NativePtr.get ptr 10),
+            (NativePtr.get ptr 11),
+            (NativePtr.get ptr 12),
+            (NativePtr.get ptr 13),
+            (NativePtr.get ptr 14),
+            (NativePtr.get ptr 15)
+        )
+
+    «k:let» «k:inline» «f:toNativeByPtr» («v:ptr»: «t:nativeptr»«n:<single>») («v:m»: «t:mat4») =
+        NativePtr.set ptr 0 m.[0, 0]
+        NativePtr.set ptr 1 m.[0, 1]
+        NativePtr.set ptr 2 m.[0, 2]
+        NativePtr.set ptr 3 m.[0, 3]
+        NativePtr.set ptr 4 m.[1, 0]
+        NativePtr.set ptr 5 m.[1, 1]
+        NativePtr.set ptr 6 m.[1, 2]
+        NativePtr.set ptr 7 m.[1, 3]
+        NativePtr.set ptr 8 m.[2, 0]
+        NativePtr.set ptr 9 m.[2, 1]
+        NativePtr.set ptr 10 m.[2, 2]
+        NativePtr.set ptr 11 m.[2, 3]
+        NativePtr.set ptr 12 m.[3, 0]
+        NativePtr.set ptr 13 m.[3, 1]
+        NativePtr.set ptr 14 m.[3, 2]
+        NativePtr.set ptr 15 m.[3, 3]
+
+«k:module» «t:Cvar» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<cvar_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        {
+            Name = NativePtr.toStringAnsi native.name;
+            String = NativePtr.toStringAnsi native.string;
+            ResetString = NativePtr.toStringAnsi native.resetString;
+            LatchedString = NativePtr.toStringAnsi native.latchedString;
+            Flags = native.flags;
+            IsModified = Boolean.ofNativePtr &&native.modified;
+            ModificationCount = native.modificationCount;
+            Value = native.value;
+            Integer = native.integer;
+        }
+
+«k:module» «t:Bounds» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<vec3_t>») =
+        Bounds (
+            Vec3.ofNativePtr <| NativePtr.add ptr 0,
+            Vec3.ofNativePtr <| NativePtr.add ptr 1)
+
+    «k:let» «k:inline» «f:toNativeByPtr» («v:ptr»: «t:nativeptr»«n:<vec3_t>») («v:bounds»: «t:Bounds») =
+        «k:let» «k:mutable» «v:nativeX» = NativePtr.get ptr 0
+        «k:let» «k:mutable» «v:nativeY» = NativePtr.get ptr 1
+
+        Vec3.toNativeByPtr &&nativeX bounds.Min
+        Vec3.toNativeByPtr &&nativeY bounds.Max
+
+        NativePtr.set ptr 0 nativeX
+        NativePtr.set ptr 1 nativeY
+
+«k:module» «t:Message» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<msg_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        {
+            IsAllowedOverflow = Boolean.ofNativePtr &&native.allowoverflow;
+            IsOverflowed = Boolean.ofNativePtr &&native.overflowed;
+            IsOutOfBand = Boolean.ofNativePtr &&native.oob;
+            Data = Seq.ofNativePtrArray native.cursize native.data;
+            MaxSize = native.maxsize;
+            ReadCount = native.readcount;
+            Bit = native.bit;
+        }
+
+«k:module» «t:IPAddress» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<byte>») =
+        {
+            Octet1 = NativePtr.get ptr 0;
+            Octet2 = NativePtr.get ptr 1;
+            Octet3 = NativePtr.get ptr 2;
+            Octet4 = NativePtr.get ptr 3;
+        }
+
+«k:module» «t:Address» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<netadr_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        {
+            Type = enum<AddressType> (int native.type');
+            IP = IPAddress.ofNativePtr &&native.ip
+            Port = native.port;
+        }
+
+«k:module» «t:Md3Frame» =
+    «k:let» «k:inline» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<md3Frame_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        {
+            Bounds = Bounds.ofNativePtr &&native.bounds;
+            LocalOrigin = Vec3.ofNativePtr &&native.localOrigin;
+            Radius = native.radius;
+            Name = NativePtr.toStringAnsi &&native.name;
+        }
+
+«k:module» «t:Md3» =
+    «k:let» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<md3Header_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        «k:let» «v:hash» = NativePtr.toNativeInt ptr
+
+        «k:match» Map.tryFind hash Cache.md3Map «k:with»
+        | Some x -> x
+        | None ->
+
+        «k:let» «v:bytes» = Array.zeroCreate<byte> native.ofsEnd
+        Marshal.Copy (NativePtr.toNativeInt ptr, bytes, 0, native.ofsEnd)
+        «k:let» «v:md3» = FQuake3.Utils.Md3.parse bytes
+        Cache.md3Map <- Map.add hash md3 Cache.md3Map
+        md3
+
+«k:module» «t:DirectoryInfo» =
+    «k:let» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<directory_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        «k:let» «v:path» = NativePtr.toStringAnsi &&native.path
+        «k:let» «v:name» = NativePtr.toStringAnsi &&native.gamedir
+
+        DirectoryInfo (Path.Combine (path, name))
+
+«k:module» «t:Pak» =
+    «k:let» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<pack_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        {
+            FileInfo = FileInfo (NativePtr.toStringAnsi &&native.pakFilename);
+            Checksum = native.checksum;
+            PureChecksum = native.checksum;
+            FileCount = native.numfiles;
+        }
+
+«k:module» «t:ServerPakChecksum» =
+    «k:let» «f:createFrom_fs_serverPaks» («v:size»: «t:int») («v:ptr»: «t:nativeptr»«n:<int>») =
+        «k:match» NativePtr.isValid ptr «k:with»
+        | «k:false» -> []
+        | _ -> NativePtr.toList size ptr
+
+«k:module» «t:SearchPath» =
+    «k:let» «f:ofNativePtr» («v:ptr»: «t:nativeptr»«n:<searchpath_t>») =
+        «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+
+        {
+            DirectoryInfo = Option.ofNativePtr DirectoryInfo.ofNativePtr native.directory
+        }
+
+    «k:let» «f:convertFrom_fs_searchpaths» («v:ptr»: «t:nativeptr»«n:<searchpath_t>») =
+        «k:let» «k:rec» «f:f» («v:searchPaths»: «t:SearchPath list») («v:ptr»: «t:nativeptr»«n:<searchpath_t>») =
+            «k:match» NativePtr.isValid ptr «k:with»
+            | «k:false» -> searchPaths
+            | _ ->
+            «k:let» «k:mutable» «v:native» = NativePtr.read ptr
+            f (ofNativePtr ptr :: searchPaths) (native.next)
+
+        f [] ptr
