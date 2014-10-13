@@ -26,7 +26,7 @@ The CI builds are handled by a [FAKE script](FSharp.AutoComplete/build.fsx), whi
 
 See [.travis.yml](.travis.yml) for details.
 
-### AppVeyor [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/plirrv4behpjrqo8)](https://ci.appveyor.com/project/rneatherway/fsharpbinding-243)
+### AppVeyor [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/y1s7nje31qi1j8ed)](https://ci.appveyor.com/project/fsgit/fsharpbinding)
 
 The configuration is contained in [appveyor.yml](appveyor.yml). Currently the emacs integration tests do not run successfully on AppVeyor and are excluded by the FAKE script.
 
