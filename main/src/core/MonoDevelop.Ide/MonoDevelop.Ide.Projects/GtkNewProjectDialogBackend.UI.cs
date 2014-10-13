@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Projects
 			HeightRequest = 564;
 
 			Modal = true;
-			Name = "NewProjectDialog";
+			Name = "wizard_dialog";
 			Title = GettextCatalog.GetString ("New Project");
 			WindowPosition = WindowPosition.CenterOnParent;
 			TransientFor = IdeApp.Workbench.RootWindow;
@@ -233,7 +233,6 @@ namespace MonoDevelop.Ide.Projects
 			Show ();
 
 			templatesTreeView.HasFocus = true;
-			VBox.BorderWidth = 0;
 			Resizable = false;
 		}
 
