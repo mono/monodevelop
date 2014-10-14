@@ -311,16 +311,18 @@ namespace MonoDevelop.Ide.Projects
 		{
 			templateNameLabel.Markup = MarkupTopLevelCategoryName (template.Name);
 			templateDescriptionLabel.Text = template.Description;
-			templateImage.Pixbuf = FromResource (template.LargeImageId);
+			templateImage.Pixbuf = FromResource (template.LargeImageId, templateImage.WidthRequest, templateImage.HeightRequest);
 			templateVBox.Visible = true;
 			templateVBox.ShowAll ();
 		}
 
-		Gdk.Pixbuf FromResource (string id)
+		Gdk.Pixbuf FromResource (string id, int maxWidth, int maxHeight)
 		{
 			var image = Xwt.Drawing.Image.FromResource (id);
 			if (image != null) {
-				return image.ToPixbuf ();
+				Xwt.Drawing.Image resizedImage = image.WithBoxSize (new Xwt.Size (maxWidth, maxHeight));
+				image.Dispose ();
+				return resizedImage.ToPixbuf ();
 			}
 			return null;
 		}

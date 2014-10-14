@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Projects
 
 			// Templates.
 			var templatesVBox = new VBox ();
-			templatesVBox.WidthRequest = 220;
+			templatesVBox.WidthRequest = 400;
 			templatesHBox.PackStart (templatesVBox, false, false, 0);
 			var templatesScrolledWindow = new ScrolledWindow ();
 			templatesScrolledWindow.HscrollbarPolicy = PolicyType.Never;
@@ -163,28 +163,27 @@ namespace MonoDevelop.Ide.Projects
 			templatesHBox.PackStart (templateEventBox, true, true, 0);
 			templateVBox = new VBox ();
 			templateVBox.Visible = false;
+			templateVBox.BorderWidth = 20;
+			templateVBox.Spacing = 10;
 			templateEventBox.Add (templateVBox);
 
 			// Template large image.
 			templateImage = new Gtk.Image ();
-			templateImage.HeightRequest = 300;
-			templateVBox.PackStart (templateImage, false, false, 20);
+			templateImage.HeightRequest = 150;
+			templateImage.WidthRequest = 150;
+			templateVBox.PackStart (templateImage, false, false, 10);
 
 			// Template description.
-			var templateNameHBox = new HBox ();
 			templateNameLabel = new Label ();
-			templateNameHBox.PackStart (templateNameLabel, false, false, 40);
-			var templateNamePaddingLabel = new Label ();
-			templateNameHBox.PackStart (templateNamePaddingLabel, true, true, 0);
-			templateVBox.PackStart (templateNameHBox, false, false, 0);
-			var templateDescriptionHBox = new HBox ();
+			templateNameLabel.WidthRequest = 240;
+			templateNameLabel.Wrap = true;
+			templateNameLabel.Xalign = 0;
+			templateVBox.PackStart (templateNameLabel, false, false, 0);
 			templateDescriptionLabel = new Label ();
+			templateDescriptionLabel.WidthRequest = 240;
 			templateDescriptionLabel.Wrap = true;
-			templateDescriptionLabel.WidthRequest = 400;
-			templateDescriptionHBox.PackStart (templateDescriptionLabel, false, false, 40);
-			var templateDescriptionPaddingLabel = new Label ();
-			templateDescriptionHBox.PackStart (templateDescriptionPaddingLabel, true, true, 0);
-			templateVBox.PackStart (templateDescriptionHBox, true, true, 10);
+			templateDescriptionLabel.Xalign = 0;
+			templateVBox.PackStart (templateDescriptionLabel, false, false, 0);
 			templateVBox.PackStart (new Label (), true, true, 0);
 
 			// Template - button separator.

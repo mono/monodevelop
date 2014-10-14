@@ -337,7 +337,7 @@ namespace MonoDevelop.Ide.Projects
 			this.previewProjectFolderVBox.BorderWidth = ((uint)(20));
 			// Container child previewProjectFolderVBox.Gtk.Box+BoxChild
 			this.projectFolderPreviewWidget = new global::MonoDevelop.Ide.Projects.GtkProjectFolderPreviewWidget ();
-			this.projectFolderPreviewWidget.WidthRequest = 250;
+			this.projectFolderPreviewWidget.WidthRequest = 240;
 			this.projectFolderPreviewWidget.Events = ((global::Gdk.EventMask)(256));
 			this.projectFolderPreviewWidget.Name = "projectFolderPreviewWidget";
 			this.previewProjectFolderVBox.Add (this.projectFolderPreviewWidget);
