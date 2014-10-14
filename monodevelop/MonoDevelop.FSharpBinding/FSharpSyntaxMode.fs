@@ -15,6 +15,47 @@ module FSharpSyntaxModeInternals =
     let contains predicate sequence =
         sequence |> Seq.exists predicate
 
+    [<Literal>]
+    let tripleString = "\"\"\""
+    [<Literal>]
+    let verbatimString = "@\""
+    [<Literal>]
+    let normalString = "\""
+    [<Literal>]
+    let escapeString = "\\\""
+    [<Literal>]
+    let openBlockComment = "(*"
+    [<Literal>]
+    let closeBlockComment = "*)"
+
+    type AbstractStringSpan() =
+        inherit Span()
+        do 
+            base.Color <- "String"
+            base.Rule <- "String"
+
+    type StringSpan() =
+        inherit AbstractStringSpan()
+
+    type CommentSpan() =
+        inherit Span()
+        do
+            base.Color <- "Comment"
+            base.Rule <- "Comment"
+
+    type LineCommentSpan() =
+        inherit CommentSpan()
+        do
+            base.StopAtEol <- true
+
+    type PreprocessorSpan() =
+        inherit Span()
+        do 
+            base.StopAtEol <- true
+            base.TagColor <- "Preprocessor"
+            base.Rule <- "Preprocessor"
+            
+
     type AbstractBlockSpan () =
         inherit Span()
         let mutable disabled = false
@@ -42,10 +83,88 @@ module FSharpSyntaxModeInternals =
     type ElseBlockSpan() =
         inherit AbstractBlockSpan(Begin = Regex("#else"))
 
+    type SpanParserState =  
+        | General
+        | TripleString
+        | String
+        | Comment
+
+    let (|FoundTripleStringBegin|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(tripleString) && state <> TripleString) then
+            let newState = TripleString
+            let spanBegin = StringSpan(),i,len
+            let newi = i+3
+            FoundTripleStringBegin(newState, spanBegin, newi) |> Some
+        else
+            None
+
+    let (|FoundTripleStringEnd|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(tripleString) && state = TripleString) then
+            let newState = General
+            let spanEnd = curSpan, i, len
+            let newi = i+3
+            FoundTripleStringEnd(newState, spanEnd, newi) |> Some
+        else
+            None
+            
+    let (|FoundVerbatimStringBegin|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(verbatimString) && state = General) then
+            let newState = String
+            let spanBegin = StringSpan(),i,len
+            let newi = i+2
+            FoundVerbatimStringBegin(newState, spanBegin, newi) |> Some
+        else
+            None     
+            
+    let (|FoundNormalStringBegin|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(normalString) && state = General) then
+            let newState = String
+            let spanBegin = StringSpan(),i,len
+            let newi = i
+            FoundNormalStringBegin(newState, spanBegin, newi) |> Some
+        else
+            None 
+
+    let (|FoundEscapeString|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(escapeString) && (state = String || state=TripleString)) then
+            FoundEscapeString |> Some
+        else
+            None
+            
+    let (|FoundNormalStringEnd|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(normalString) && state = String) then
+            let newState = General
+            let spanEnd = curSpan, i, len
+            let newi = i
+            FoundNormalStringEnd(newState, spanEnd, newi) |> Some
+        else
+            None
+
+    let (|FoundBlockCommentBegin|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(openBlockComment) && state = General) then
+            let newState = Comment
+            let spanBegin = CommentSpan(),i,len
+            let newi = i+2
+            FoundBlockCommentBegin(newState, spanBegin, newi) |> Some
+        else
+            None 
+            
+    let (|FoundBlockCommentEnd|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(closeBlockComment) && state = Comment) then
+            let newState = General
+            let spanEnd = curSpan, i, len
+            let newi = i+2
+            FoundBlockCommentEnd(newState, spanEnd, newi) |> Some
+        else
+            None
+    
+
     type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string list) =
         inherit SyntaxMode.SpanParser(mode, spanStack)
         do LoggingService.LogDebug ("Creating FSharpSpanParser()")
-
+        
+        
+        member val private State = General with get, set
         member private this.ScanPreProcessorElse(i: byref<int>) =
             if not (spanStack |> contains (fun span -> span.GetType() = typeof<IfBlockSpan>)) then
                 i <- i + "#else".Length
@@ -69,12 +188,42 @@ module FSharpSyntaxModeInternals =
             this.FoundSpanBegin.Invoke(span, i,len)
             i <- i + endIdx
 
+        member private this.SpanBegin(newState,spanBegin, newi, i:byref<int>) =
+            this.FoundSpanBegin.Invoke(spanBegin)
+            this.State <- newState
+            i <- newi
+
+        member private this.SpanEnd(newState,spanEnd, newi, i:byref<int>) =
+            this.FoundSpanEnd.Invoke(spanEnd)
+            this.State <- newState
+            i <- newi
+
         override this.ScanSpan( i) : bool =
             try 
                 let textOffset = i - this.StartOffset
                 let currentText = this.CurText
-                if (textOffset < this.CurText.Length && this.CurRule.Name <> "Comment" &&
-                    this.CurRule.Name <> "String" && this.CurRule.Name <> "VerbatimString" &&
+                let endIdx = this.CurText.Length
+                let len = endIdx - textOffset
+                let subText = currentText.Substring(textOffset)
+                match (subText, this.CurSpan, this.State, i,len) with
+                | FoundTripleStringBegin (newState,spanBegin, newi) ->
+                    this.SpanBegin(newState,spanBegin,newi,&i)
+                | FoundTripleStringEnd (newState,spanEnd,newi) ->
+                    this.SpanEnd(newState,spanEnd,newi,&i)
+                | FoundVerbatimStringBegin (newState,spanBegin, newi) ->
+                    this.SpanBegin(newState,spanBegin,newi,&i)
+                | FoundEscapeString -> i <- i + 1
+                | FoundNormalStringBegin (newState, spanBegin, newi) ->
+                    this.SpanBegin(newState,spanBegin,newi,&i)
+                | FoundNormalStringEnd(newState,spanEnd,newi) ->
+                    this.SpanEnd(newState,spanEnd,newi,&i)
+                | FoundBlockCommentBegin(newState,spanBegin,newi) ->
+                    this.SpanBegin(newState,spanBegin,newi, &i)
+                | FoundBlockCommentEnd(newState,spanEnd,newi) ->
+                    this.SpanEnd(newState,spanEnd,newi, &i)
+                | _ ->()
+                if (textOffset < this.CurText.Length && this.State <> Comment &&
+                    this.State <> String &&
                     this.CurText.[textOffset] = '#' && this.IsFirstNonWsChar(textOffset)) then
 
                     if currentText.Substring(textOffset).StartsWith("#else") then
@@ -90,14 +239,22 @@ module FSharpSyntaxModeInternals =
                         this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
                         this.FoundSpanEnd.Invoke(span, i + textOffset + 6,0)
                         true
-                    elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
+                    elif (this.CurSpan = null || (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code")) then
+                        let spanLength = 
+                            match currentText.Substring(textOffset).IndexOf(Environment.NewLine) with
+                            | -1 -> currentText.Substring(textOffset).Length
+                            | value -> value
+                        this.FoundSpanBegin.Invoke(PreprocessorSpan(), i + textOffset,spanLength)
+                        i <- i + spanLength
                         base.ScanSpan(&i)
                     else
                         false
                 elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
-                    base.ScanSpan(&i)
+                    false
+                    //base.ScanSpan(&i)
                 else
-                    base.ScanSpan(&i)
+                    false
+                    //base.ScanSpan(&i)
             with
             | exn -> 
                 LoggingService.LogError("An error occurred in FSharpSpanParser.ScanSpan", exn)
@@ -386,7 +543,8 @@ module internal Patterns =
 
     let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument,line: DocumentLine,offset,length, style: Highlighting.ColorScheme) =
         let docText = document.GetTextAt(offset,length)
-        if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
+        //if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
+        if docText.StartsWith("#") then
             PreProcessorCode style.Preprocessor.Name
         elif (hasSpans(line)) then
             if not (lineStartsWithAbstractBlockSpan line.StartSpan)  then
@@ -522,28 +680,21 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         let chunks = Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
         chunks
 
+    let scanToken (tokenizer:LineTokenizer) s =
+        match tokenizer.ScanToken(s) with
+         | Some t, s -> Some(t,s)
+         | _ -> None
+
     let getLexedTokens (style, line:DocumentLine, offset, lineText, extraColorInfo) =
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
-        Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
-                             | Some t, s -> Some(t,s)
-                             | _         -> None) 0L
-        |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
+        let tokens = 
+            Seq.unfold (scanToken tokenizer) 0L
+            |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
+            |> List.ofSeq
+        tokens |> Seq.ofList
 
     do
         LoggingService.LogDebug ("Creating FSharpSyntaxMode()")
-        let provider = ResourceStreamProvider(this.GetType().Assembly, "FSharpSyntaxMode.xml")
-        use reader = provider.Open()
-        let baseMode = SyntaxMode.Read(reader)
-        let rules = baseMode.Rules
-        this.rules <- ResizeArray<_>(rules)
-        this.keywords <- ResizeArray<_>(baseMode.Keywords)
-        this.spans <- baseMode.Spans
-        this.matches <- baseMode.Matches
-        this.prevMarker <- baseMode.PrevMarker
-        this.SemanticRules <- ResizeArray<_>(baseMode.SemanticRules)
-        this.keywordTable <- baseMode.keywordTable
-        this.properties <- baseMode.Properties
-        this.keywords <- baseMode.keywords
 
     let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
     let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
@@ -573,7 +724,13 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             match (this.Document, line, offset, length, style) with
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
             | PreProcessorCode _ -> base.GetChunks(style,line,offset,length)
-            | OtherCode (_,lineText) when semanticHighlightingEnabled -> getLexedTokens(style,line,offset,lineText,extraColorInfo)
+            | OtherCode (_,lineText) when semanticHighlightingEnabled -> 
+                let tokens = getLexedTokens(style,line,offset,lineText,extraColorInfo)
+                if (tokens |> Seq.isEmpty || (tokens |> Seq.last).EndOffset < offset + lineText.Length ) then
+                    base.GetChunks(style,line,offset,length)
+                else
+                    tokens
+            | CommentCode styleName -> Seq.singleton(Chunk(offset,length, styleName ))
             | _ -> base.GetChunks(style,line,offset,length)
         with
             | exn ->

@@ -23,39 +23,6 @@ type DebuggerExpressionResolver() =
 let localOne = TestOne()
 let localTwo = localOne.PropertyOne"""
 
-    let createDoc (text:string)=
-        let workbenchWindow = TestWorkbenchWindow()
-        let viewContent = new TestViewContent()
-        let filePath = match Platform.IsWindows with
-                       | true -> FilePath(@"C:\Temp\test.fsproj")
-                       | _ -> FilePath("test.fsproj")
-        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = filePath)
-        let projectConfig = project.AddNewConfiguration("Debug")
-
-        TypeSystemService.LoadProject (project) |> ignore
-
-        viewContent.Project <- project
-
-        workbenchWindow.SetViewContent(viewContent)
-
-        viewContent.ContentName <- "a.fs"
-        viewContent.GetTextEditorData().Document.MimeType <- "text/x-fsharp"
-        let doc = Document(workbenchWindow)
-
-        (viewContent :> IEditableTextBuffer).Text <- text
-        (viewContent:> IEditableTextBuffer).CursorPosition <- 0
-
-        let pfile = doc.Project.AddFile("a.fs")
-
-        let textEditorCompletion = new FSharpTextEditorCompletion()
-        textEditorCompletion.Initialize(doc)
-        viewContent.Contents.Add(textEditorCompletion)
-
-        try 
-            doc.UpdateParseDocument() |> ignore
-        with exn -> Diagnostics.Debug.WriteLine(exn.ToString())
-        doc
-
     let getBasicOffset expr =
         let startOffset = content.IndexOf (expr, StringComparison.Ordinal)
         startOffset + (expr.Length / 2)
@@ -76,7 +43,7 @@ let localTwo = localOne.PropertyOne"""
     [<TestFixtureSetUp>]
     override x.Setup() =
         base.Setup()
-        doc <- createDoc(content)
+        doc <- fst (TestHelpers.createDoc(content) [])
 
     
     [<Test>]

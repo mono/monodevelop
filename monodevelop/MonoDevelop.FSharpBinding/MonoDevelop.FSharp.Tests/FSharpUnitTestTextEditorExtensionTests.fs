@@ -56,33 +56,7 @@ module Test =
         ProjectReference (ReferenceType.Assembly, __SOURCE_DIRECTORY__ ++ @"../packages/NUnit.2.6.2/lib/nunit.framework.dll" )
 
     let createDoc (text:string) references =
-        let workbenchWindow = TestWorkbenchWindow()
-        let viewContent = new TestViewContent()
-        let filePath = match Platform.IsWindows with
-                       | true -> FilePath(@"C:\Temp\test.fsproj")
-                       | _ -> FilePath("test.fsproj")
-        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = filePath)
-        project.References.AddRange references
-        let projectConfig = project.AddNewConfiguration("Debug")
-
-        TypeSystemService.LoadProject (project) |> ignore
-
-        viewContent.Project <- project
-
-        workbenchWindow.SetViewContent(viewContent)
-        viewContent.ContentName <- "a.fs"
-        viewContent.GetTextEditorData().Document.MimeType <- "text/x-fsharp"
-        let doc = Document(workbenchWindow)
-        let textBuf = viewContent :> IEditableTextBuffer 
-        textBuf.Text <- text
-        textBuf.CursorPosition <- 0
-
-        let pfile = doc.Project.AddFile("a.fs")
-
-        let textEditorCompletion = new FSharpTextEditorCompletion()
-        textEditorCompletion.Initialize(doc)
-
-        viewContent.Contents.Add(textEditorCompletion)
+        let doc,viewContent = TestHelpers.createDoc(text) references
         let test = new FSharpUnitTestTextEditorExtension()
         test.Initialize (doc)
         viewContent.Contents.Add (test)
