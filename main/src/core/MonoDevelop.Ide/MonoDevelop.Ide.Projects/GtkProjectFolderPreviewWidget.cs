@@ -136,7 +136,6 @@ namespace MonoDevelop.Ide.Projects
 			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
 
 			projectFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, projectConfiguration.DefaultPreviewProjectName);
-			gitIgnoreNode = AddGitIgnoreToTree ();
 			projectNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, projectConfiguration.DefaultPreviewProjectFileName);
 
 			solutionFolderNode = TreeIter.Zero;
@@ -144,6 +143,8 @@ namespace MonoDevelop.Ide.Projects
 			if (projectConfiguration.IsNewSolution) {
 				solutionNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, projectConfiguration.DefaultPreviewSolutionFileName);
 			}
+
+			gitIgnoreNode = AddGitIgnoreToTree ();
 		}
 
 		void AddProjectWithNoProjectDirectoryToTree ()
@@ -171,10 +172,11 @@ namespace MonoDevelop.Ide.Projects
 
 		TreeIter AddGitIgnoreToTree ()
 		{
-			if (projectFolderNode.Equals (TreeIter.Zero)) {
-				return TreeIter.Zero;
+			TreeIter parent = solutionFolderNode;
+			if (parent.Equals (TreeIter.Zero)) {
+				parent = projectFolderNode;
 			}
-			return folderTreeStore.InsertWithValues (projectFolderNode, 0, fileImage, ".gitignore");
+			return folderTreeStore.InsertWithValues (parent, 0, fileImage, ".gitignore");
 		}
 
 		public void UpdateLocation ()
@@ -220,11 +222,11 @@ namespace MonoDevelop.Ide.Projects
 
 		public void ShowGitIgnoreFile ()
 		{
-			if (projectConfiguration.IsGitIgnoreEnabled && projectConfiguration.CreateGitIgnoreFile) {
+			if (projectConfiguration.IsGitIgnoreEnabled && projectConfiguration.CreateGitIgnoreFile && projectConfiguration.IsNewSolution) {
 				if (gitIgnoreNode.Equals (TreeIter.Zero)) {
 					gitIgnoreNode = AddGitIgnoreToTree ();
 				}
-			} else {
+			} else if (!gitIgnoreNode.Equals (TreeIter.Zero)) {
 				folderTreeStore.Remove (ref gitIgnoreNode);
 				gitIgnoreNode = TreeIter.Zero;
 			}
