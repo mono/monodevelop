@@ -178,6 +178,7 @@ namespace MonoDevelop.Ide.Projects
 			templateNameLabel.WidthRequest = 240;
 			templateNameLabel.Wrap = true;
 			templateNameLabel.Xalign = 0;
+			templateNameLabel.Markup = MarkupTopLevelCategoryName ("TemplateName");
 			templateVBox.PackStart (templateNameLabel, false, false, 0);
 			templateDescriptionLabel = new Label ();
 			templateDescriptionLabel.WidthRequest = 240;
