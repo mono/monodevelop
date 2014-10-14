@@ -48,6 +48,11 @@ namespace MonoDevelop.Ide.Projects
 	/// </summary>
 	public class NewProjectDialogController : INewProjectDialogController
 	{
+		string chooseTemplateBannerText =  GettextCatalog.GetString ("Choose a template for your new project");
+		string configureYourProjectBannerText = GettextCatalog.GetString ("Configure your new project");
+		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
+		string configureYourSolutionBannerText = GettextCatalog.GetString ("Configure your new solution");
+
 		List<TemplateCategory> templateCategories;
 		INewProjectDialogBackend dialog;
 		FinalProjectConfigurationPage finalConfigurationPage;
@@ -73,6 +78,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public NewProjectDialogController ()
 		{
+			SelectedLanguage = "C#";
 			LoadTemplateCategories ();
 		}
 
@@ -123,6 +129,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public TemplateCategory SelectedSecondLevelCategory { get; private set; }
 		public SolutionTemplate SelectedTemplate { get; set; }
+		public string SelectedLanguage { get; set; }
 
 		public FinalProjectConfigurationPage FinalConfiguration {
 			get { return finalConfigurationPage; }
@@ -162,6 +169,78 @@ namespace MonoDevelop.Ide.Projects
 			//	return new XamarinFormsTemplateWizard ();
 			}
 			return null;
+		}
+
+		public SolutionTemplate GetSelectedTemplateForSelectedLanguage ()
+		{
+			if (SelectedTemplate != null) {
+				SolutionTemplate languageTemplate = SelectedTemplate.GetTemplate (SelectedLanguage);
+				if (languageTemplate != null) {
+					return languageTemplate;
+				}
+			}
+
+			return SelectedTemplate;
+		}
+
+		public string BannerText {
+			get {
+				if (IsLastPage) {
+					return GetFinalConfigurationPageBannerText ();
+				}
+				return chooseTemplateBannerText;
+			}
+		}
+
+		string GetFinalConfigurationPageBannerText ()
+		{
+			if (FinalConfiguration.IsWorkspace) {
+				return configureYourWorkspaceBannerText;
+			} else if (FinalConfiguration.HasProjects) {
+				return configureYourProjectBannerText;
+			}
+			return configureYourSolutionBannerText;
+		}
+
+		public bool CanMoveToNextPage {
+			get {
+				if (IsLastPage) {
+					return finalConfigurationPage.IsValid;
+				}
+				return (SelectedTemplate != null);
+			}
+		}
+
+		public bool CanMoveToPreviousPage {
+			get { return !IsFirstPage; }
+		}
+
+		public string NextButtonText {
+			get {
+				if (IsLastPage) {
+					return GettextCatalog.GetString ("Create");
+				}
+				return GettextCatalog.GetString ("Next");
+			}
+		}
+
+		public bool IsFirstPage { get; private set; }
+		public bool IsLastPage { get; private set; }
+
+		public void MoveToNextPage ()
+		{
+			IsFirstPage = false;
+			IsLastPage = true;
+
+			if (IsLastPage) {
+				FinalConfiguration.Template = GetSelectedTemplateForSelectedLanguage ();
+			}
+		}
+
+		public void MoveToPreviousPage ()
+		{
+			IsFirstPage = true;
+			IsLastPage = false;
 		}
 
 		public void Create ()
@@ -315,7 +394,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			try {
-				result = IdeApp.Services.TemplatingService.ProcessTemplate (SelectedTemplate, projectConfiguration, ParentFolder);
+				result = IdeApp.Services.TemplatingService.ProcessTemplate (GetSelectedTemplateForSelectedLanguage (), projectConfiguration, ParentFolder);
 				NewItem = result.WorkspaceItem;
 				if (NewItem == null)
 					return false;

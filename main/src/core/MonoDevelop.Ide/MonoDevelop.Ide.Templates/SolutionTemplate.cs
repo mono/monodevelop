@@ -45,8 +45,16 @@ namespace MonoDevelop.Ide.Templates
 		{
 			Id = id;
 			Name = name;
-			IconId = iconId;
+			IconId = UseDefaultIconIdIfNullOrEmpty (iconId);
 			HasProjects = true;
+		}
+
+		static string UseDefaultIconIdIfNullOrEmpty (string iconId)
+		{
+			if (String.IsNullOrEmpty (iconId)) {
+				return "md-project";
+			}
+			return iconId;
 		}
 
 		public string Id { get; private set; }

@@ -42,11 +42,6 @@ namespace MonoDevelop.Ide.Projects
 		Color templateSectionSeparatorColor = new Gdk.Color (208, 208, 208);
 		Color selectedRowBackgroundColor = new Color (19, 112, 216);
 
-		string chooseTemplateBannerText =  GettextCatalog.GetString ("Choose a template for your new project");
-		string configureYourProjectBannerText = GettextCatalog.GetString ("Configure your new project");
-		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
-		string configureYourSolutionBannerText = GettextCatalog.GetString ("Configure your new solution");
-
 		VBox centreVBox;
 		HBox templatesHBox;
 		Button cancelButton;
@@ -101,7 +96,6 @@ namespace MonoDevelop.Ide.Projects
 			topBannerBottomEdgeLineEventBox.BorderWidth = 0;
 
 			topBannerLabel = new Label ();
-			topBannerLabel.Text = chooseTemplateBannerText;
 			Pango.FontDescription font = topBannerLabel.Style.FontDescription.Copy ();
 			font.Size = (int)(font.Size * 1.8);
 			topBannerLabel.ModifyFont (font);

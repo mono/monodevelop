@@ -35,8 +35,22 @@ namespace MonoDevelop.Ide.Projects
 		IEnumerable<TemplateCategory> TemplateCategories { get; }
 		TemplateCategory SelectedSecondLevelCategory { get; }
 		SolutionTemplate SelectedTemplate { get; set; }
+		string SelectedLanguage { get; set; }
 		FinalProjectConfigurationPage FinalConfiguration { get; }
 		bool IsNewSolution { get; }
+
+		SolutionTemplate GetSelectedTemplateForSelectedLanguage ();
+
+		bool CanMoveToNextPage { get; }
+		bool CanMoveToPreviousPage { get; }
+
+		string NextButtonText { get; }
+		string BannerText { get; }
+
+		void MoveToPreviousPage ();
+		void MoveToNextPage ();
+		bool IsFirstPage { get; }
+		bool IsLastPage { get; }
 
 		TemplateWizard CreateTemplateWizard (string id);
 

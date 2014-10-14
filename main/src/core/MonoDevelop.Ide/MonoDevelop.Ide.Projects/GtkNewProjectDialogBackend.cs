@@ -28,7 +28,6 @@ using System;
 using System.Linq;
 using Gtk;
 using Gdk;
-using Mono.Unix;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Templates;
 
@@ -43,7 +42,6 @@ namespace MonoDevelop.Ide.Projects
 		public GtkNewProjectDialogBackend ()
 		{
 			this.Build ();
-			templateTextRenderer.SelectedLanguage = "C#";
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
 			templateCategoriesTreeView.Selection.SelectFunction = TemplateCategoriesTreeViewSelection;
@@ -73,6 +71,9 @@ namespace MonoDevelop.Ide.Projects
 		public void RegisterController (INewProjectDialogController controller)
 		{
 			this.controller = controller;
+			templateTextRenderer.SelectedLanguage = controller.SelectedLanguage;
+			topBannerLabel.Text = controller.BannerText;
+
 			LoadTemplates ();
 			SelectTemplateDefinedbyController ();
 		}
@@ -124,6 +125,7 @@ namespace MonoDevelop.Ide.Projects
 				var menuItem = new MenuItem (language);
 				menuItem.Activated += (o, e) => {
 					templateTextRenderer.SelectedLanguage = language;
+					controller.SelectedLanguage = language;
 					templatesTreeView.QueueDraw ();
 					ShowSelectedTemplate ();
 				};
@@ -164,6 +166,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void TemplatesTreeViewSelectionChanged (object sender, EventArgs e)
 		{
+			controller.SelectedTemplate = GetSelectedTemplate ();
 			ShowSelectedTemplate ();
 		}
 
@@ -244,19 +247,11 @@ namespace MonoDevelop.Ide.Projects
 					if (template.HasProjects || controller.IsNewSolution) {
 						templatesListStore.AppendValues (
 							template.Name,
-							GetIcon (GetTemplateIconId (template), IconSize.Dnd),
+							GetIcon (template.IconId, IconSize.Dnd),
 							template);
 					}
 				}
 			}
-		}
-
-		static string GetTemplateIconId (SolutionTemplate template)
-		{
-			if (!String.IsNullOrEmpty (template.IconId)) {
-				return template.IconId;
-			}
-			return "md-project";
 		}
 
 		static Gdk.Pixbuf GetIcon (string id, IconSize size)
@@ -272,30 +267,17 @@ namespace MonoDevelop.Ide.Projects
 		{
 			ClearSelectedTemplateInformation ();
 
-			SolutionTemplate template = GetSelectedTemplateForSelectedLanguage ();
+			SolutionTemplate template = controller.GetSelectedTemplateForSelectedLanguage ();
 			if (template != null) {
 				ShowTemplate (template);
 			}
 
-			CanMoveToNextPage = (template != null);
+			CanMoveToNextPage = controller.CanMoveToNextPage;
 		}
 
 		void ClearSelectedTemplateInformation ()
 		{
 			templateVBox.Visible = false;
-		}
-
-		SolutionTemplate GetSelectedTemplateForSelectedLanguage ()
-		{
-			SolutionTemplate template = GetSelectedTemplate ();
-			if (template != null) {
-				SolutionTemplate languageTemplate = template.GetTemplate (templateTextRenderer.SelectedLanguage);
-				if (languageTemplate != null) {
-					return languageTemplate;
-				}
-			}
-
-			return template;
 		}
 
 		SolutionTemplate GetSelectedTemplate ()
@@ -391,15 +373,16 @@ namespace MonoDevelop.Ide.Projects
 
 		void MoveToNextPage ()
 		{
-			SolutionTemplate template = GetSelectedTemplateForSelectedLanguage ();
-			if (template == null)
-				return;
-
-			if (projectConfigurationWidget == centreVBox.Children [0]) {
-				controller.SelectedTemplate = template;
+			if (controller.IsLastPage) {
 				controller.Create ();
 				return;
 			}
+
+			controller.MoveToNextPage ();
+
+			SolutionTemplate template = controller.GetSelectedTemplateForSelectedLanguage ();
+			if (template == null)
+				return;
 
 			Widget widget = GetNextPageWidget (template);
 
@@ -409,34 +392,19 @@ namespace MonoDevelop.Ide.Projects
 
 			if (widget is WizardPage) {
 				//topBannerLabel.Text = ((WizardPage)widget).Title;
-			} else {
-				ShowFinalConfigurationPageBanner ();
 			}
 
-			previousButton.Sensitive = true;
-			if (widget == projectConfigurationWidget) {
-				nextButton.Label = Catalog.GetString ("Create");
-				CanMoveToNextPage = controller.FinalConfiguration.IsValid;
-			}
-		}
+			topBannerLabel.Text = controller.BannerText;
 
-		void ShowFinalConfigurationPageBanner ()
-		{
-			topBannerLabel.Text = GetFinalConfigurationPageBannerText ();
-		}
-
-		string GetFinalConfigurationPageBannerText ()
-		{
-			if (controller.FinalConfiguration.IsWorkspace) {
-				return configureYourWorkspaceBannerText;
-			} else if (controller.FinalConfiguration.HasProjects) {
-				return configureYourProjectBannerText;
-			}
-			return configureYourSolutionBannerText;
+			previousButton.Sensitive = controller.CanMoveToPreviousPage;
+			nextButton.Label = controller.NextButtonText;
+			CanMoveToNextPage = controller.CanMoveToNextPage;
 		}
 
 		void MoveToPreviousPage ()
 		{
+			controller.MoveToPreviousPage ();
+
 			Widget widget = GetPreviousPageWidget (centreVBox.Children [0]);
 			widget.Show ();
 
@@ -446,12 +414,12 @@ namespace MonoDevelop.Ide.Projects
 			if (widget is WizardPage) {
 //				topBannerLabel.Text = ((WizardPage)widget).Title;
 			} else {
-				topBannerLabel.Text = chooseTemplateBannerText;
+				topBannerLabel.Text = controller.BannerText;
 			}
 
-			previousButton.Sensitive = (wizard != null);
-			nextButton.Label = Catalog.GetString ("Next");
-			nextButton.Sensitive = true;
+			previousButton.Sensitive = controller.CanMoveToPreviousPage;
+			nextButton.Label = controller.NextButtonText;
+			CanMoveToNextPage = controller.CanMoveToNextPage;
 		}
 
 		Widget GetNextPageWidget (SolutionTemplate template)
@@ -468,7 +436,6 @@ namespace MonoDevelop.Ide.Projects
 				}
 			}
 
-			controller.FinalConfiguration.Template = template;
 			projectConfigurationWidget.Load (controller.FinalConfiguration);
 			return projectConfigurationWidget;
 		}
