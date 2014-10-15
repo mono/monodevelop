@@ -658,7 +658,7 @@ namespace MonoDevelop.Ide.Editor
 
 		public int GetVirtualIndentationColumn (int lineNumber)
 		{
-			if (lineNumber < 1 || lineNumber >= LineCount)
+			if (lineNumber < 1 || lineNumber > LineCount)
 				throw new ArgumentOutOfRangeException ("lineNumber");
 			return 1 + textEditorImpl.GetVirtualIndentationString (lineNumber).Length;
 		}
