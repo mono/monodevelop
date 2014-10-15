@@ -92,7 +92,7 @@ endif
 let b:shouldParse = 1
 
 function! OnCursorHold ()
-    if b:shouldParse 
+    if exists("b:shouldParse") && b:shouldParse
         call ShowErrors()
         let b:shouldParse = 0
     endif
