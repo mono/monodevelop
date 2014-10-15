@@ -158,7 +158,7 @@ namespace MonoDevelop.CSharp.Formatting
 			options.IndentBlankLines = true;
 			ICSharpCode.NRefactory6.CSharp.IStateMachineIndentEngine indentEngine;
 			try {
-				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (DocumentContext.AnalysisDocument, policy);
+				var csharpIndentEngine = new ICSharpCode.NRefactory6.CSharp.CSharpIndentEngine (Editor, policy);
 				//csharpIndentEngine.EnableCustomIndentLevels = true;
 				foreach (var symbol in GetDefinedSymbols (DocumentContext.Project)) {
 					csharpIndentEngine.DefineSymbol (symbol);
@@ -166,7 +166,7 @@ namespace MonoDevelop.CSharp.Formatting
 				indentEngine = csharpIndentEngine;
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while creating the c# indentation engine", ex);
-				indentEngine = new ICSharpCode.NRefactory6.CSharp.NullIStateMachineIndentEngine (DocumentContext.AnalysisDocument);
+				indentEngine = new ICSharpCode.NRefactory6.CSharp.NullIStateMachineIndentEngine (Editor);
 			}
 			stateTracker = new ICSharpCode.NRefactory6.CSharp.CacheIndentEngine (indentEngine);
 			if (DefaultSourceEditorOptions.Instance.IndentStyle == IndentStyle.Auto) {

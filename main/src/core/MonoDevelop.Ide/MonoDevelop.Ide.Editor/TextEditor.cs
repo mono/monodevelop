@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Extensions;
 using System.Linq;
 using MonoDevelop.Components;
 using System.ComponentModel;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -953,6 +954,11 @@ namespace MonoDevelop.Ide.Editor
 			if (segment == null)
 				throw new ArgumentNullException ("segment");
 			return textEditorImpl.GetPangoMarkup (segment.Offset, segment.Length);
+		}
+
+		public static implicit operator Microsoft.CodeAnalysis.Text.SourceText (TextEditor editor)
+		{
+			return new MonoDevelopSourceText (editor);
 		}
 	}
 }
