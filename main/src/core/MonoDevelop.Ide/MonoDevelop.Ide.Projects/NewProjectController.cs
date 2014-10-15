@@ -56,6 +56,7 @@ namespace MonoDevelop.Ide.Projects
 		List<TemplateCategory> templateCategories;
 		INewProjectDialogBackend dialog;
 		FinalProjectConfigurationPage finalConfigurationPage;
+		TemplateWizardProvider wizardProvider;
 
 		ProjectConfiguration projectConfiguration = new ProjectConfiguration () {
 			CreateProjectDirectoryInsideSolutionDirectory = true
@@ -79,6 +80,7 @@ namespace MonoDevelop.Ide.Projects
 		public NewProjectDialogController ()
 		{
 			SelectedLanguage = "C#";
+			IsFirstPage = true;
 			LoadTemplateCategories ();
 		}
 
@@ -89,6 +91,7 @@ namespace MonoDevelop.Ide.Projects
 			SelectTemplate ();
 
 			CreateFinalConfigurationPage ();
+			CreateWizardProvider ();
 
 			dialog = CreateNewProjectDialog ();
 			dialog.RegisterController (this);
@@ -120,6 +123,14 @@ namespace MonoDevelop.Ide.Projects
 			finalConfigurationPage.ParentFolder = ParentFolder;
 			finalConfigurationPage.IsValidChanged += (sender, e) => {
 				dialog.CanMoveToNextPage = finalConfigurationPage.IsValid;
+			};
+		}
+
+		void CreateWizardProvider ()
+		{
+			wizardProvider = new TemplateWizardProvider ();
+			wizardProvider.CanMoveToNextPageChanged += (sender, e) => {
+				dialog.CanMoveToNextPage = wizardProvider.CanMoveToNextPage;
 			};
 		}
 
@@ -163,14 +174,6 @@ namespace MonoDevelop.Ide.Projects
 			return (SelectedTemplateId == null) || (template.Id == SelectedTemplateId);
 		}
 
-		public TemplateWizard CreateTemplateWizard (string id)
-		{
-			if (id == "Xamarin.Forms.Template.Wizard") {
-			//	return new XamarinFormsTemplateWizard ();
-			}
-			return null;
-		}
-
 		public SolutionTemplate GetSelectedTemplateForSelectedLanguage ()
 		{
 			if (SelectedTemplate != null) {
@@ -187,6 +190,8 @@ namespace MonoDevelop.Ide.Projects
 			get {
 				if (IsLastPage) {
 					return GetFinalConfigurationPageBannerText ();
+				} else if (IsWizardPage) {
+					return wizardProvider.CurrentWizardPage.Title;
 				}
 				return chooseTemplateBannerText;
 			}
@@ -206,6 +211,8 @@ namespace MonoDevelop.Ide.Projects
 			get {
 				if (IsLastPage) {
 					return finalConfigurationPage.IsValid;
+				} else if (IsWizardPage) {
+					return wizardProvider.CanMoveToNextPage;
 				}
 				return (SelectedTemplate != null);
 			}
@@ -227,9 +234,23 @@ namespace MonoDevelop.Ide.Projects
 		public bool IsFirstPage { get; private set; }
 		public bool IsLastPage { get; private set; }
 
+		public bool IsWizardPage {
+			get { return wizardProvider.HasWizard && !IsFirstPage && !IsLastPage; }
+		}
+
 		public void MoveToNextPage ()
 		{
-			IsFirstPage = false;
+			if (IsFirstPage) {
+				IsFirstPage = false;
+
+				SolutionTemplate template = GetSelectedTemplateForSelectedLanguage ();
+				if (wizardProvider.MoveToFirstPage (template)) {
+					return;
+				}
+			} else if (wizardProvider.MoveToNextPage ()) {
+				return;
+			}
+
 			IsLastPage = true;
 
 			if (IsLastPage) {
@@ -239,6 +260,15 @@ namespace MonoDevelop.Ide.Projects
 
 		public void MoveToPreviousPage ()
 		{
+			if (IsWizardPage) {
+				if (wizardProvider.MoveToPreviousPage ()) {
+					return;
+				}
+			} else if (IsLastPage && wizardProvider.HasWizard) {
+				IsLastPage = false;
+				return;
+			}
+
 			IsFirstPage = true;
 			IsLastPage = false;
 		}
@@ -332,6 +362,16 @@ namespace MonoDevelop.Ide.Projects
 
 			IsNewItemCreated = true;
 			dialog.CloseDialog ();
+			wizardProvider.Dispose ();
+		}
+
+		public WizardPage CurrentWizardPage {
+			get {
+				if (IsFirstPage || IsLastPage) {
+					return null;
+				}
+				return wizardProvider.CurrentWizardPage;
+			}
 		}
 
 		bool CreateProject ()

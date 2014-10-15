@@ -51,8 +51,9 @@ namespace MonoDevelop.Ide.Projects
 		void MoveToNextPage ();
 		bool IsFirstPage { get; }
 		bool IsLastPage { get; }
+		bool IsWizardPage { get; }
 
-		TemplateWizard CreateTemplateWizard (string id);
+		WizardPage CurrentWizardPage { get; }
 
 		void Create ();
 	}

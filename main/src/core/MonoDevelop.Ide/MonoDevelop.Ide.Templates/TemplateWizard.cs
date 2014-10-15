@@ -29,6 +29,8 @@ namespace MonoDevelop.Ide.Templates
 {
 	public abstract class TemplateWizard
 	{
+		public abstract string Id { get; }
+
 		//public abstract void RegisterHost (TemplateWizardHost host);
 
 		public abstract WizardPage GetPage (int pageNumber);
@@ -37,6 +39,10 @@ namespace MonoDevelop.Ide.Templates
 		// This is called when the user clicks the Create button on the last page.
 		// This can be used to remove projects that are not required.
 		//public virtual void BeforeGeneration () { }
+
+		public virtual int TotalPages {
+			get { return 1; }
+		}
 	}
 }
 

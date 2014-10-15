@@ -2840,6 +2840,7 @@
     <Compile Include="MonoDevelop.Ide.Projects\FinalProjectConfigurationPage.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\GtkTemplateCategoryCellRenderer.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\GtkTemplateCellRenderer.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateWizardProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

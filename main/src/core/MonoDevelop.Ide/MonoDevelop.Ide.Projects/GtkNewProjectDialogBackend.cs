@@ -36,8 +36,6 @@ namespace MonoDevelop.Ide.Projects
 	public partial class GtkNewProjectDialogBackend : INewProjectDialogBackend
 	{
 		INewProjectDialogController controller;
-		int currentPage;
-		TemplateWizard wizard;
 
 		public GtkNewProjectDialogBackend ()
 		{
@@ -384,15 +382,11 @@ namespace MonoDevelop.Ide.Projects
 			if (template == null)
 				return;
 
-			Widget widget = GetNextPageWidget (template);
+			Widget widget = GetWidgetToDisplay ();
 
 			centreVBox.Remove (centreVBox.Children [0]);
-			widget.Show ();
+			widget.ShowAll ();
 			centreVBox.PackStart (widget, true, true, 0);
-
-			if (widget is WizardPage) {
-				//topBannerLabel.Text = ((WizardPage)widget).Title;
-			}
 
 			topBannerLabel.Text = controller.BannerText;
 
@@ -405,56 +399,29 @@ namespace MonoDevelop.Ide.Projects
 		{
 			controller.MoveToPreviousPage ();
 
-			Widget widget = GetPreviousPageWidget (centreVBox.Children [0]);
-			widget.Show ();
+			Widget widget = GetWidgetToDisplay ();
+			widget.ShowAll ();
 
 			centreVBox.Remove (centreVBox.Children [0]);
 			centreVBox.PackStart (widget, true, true, 0);
 
-			if (widget is WizardPage) {
-//				topBannerLabel.Text = ((WizardPage)widget).Title;
-			} else {
-				topBannerLabel.Text = controller.BannerText;
-			}
+			topBannerLabel.Text = controller.BannerText;
 
 			previousButton.Sensitive = controller.CanMoveToPreviousPage;
 			nextButton.Label = controller.NextButtonText;
 			CanMoveToNextPage = controller.CanMoveToNextPage;
 		}
 
-		Widget GetNextPageWidget (SolutionTemplate template)
+		Widget GetWidgetToDisplay ()
 		{
-			currentPage++;
-
-			if (template.HasWizard) {
-				wizard = controller.CreateTemplateWizard (template.Wizard);
-				if (wizard != null) {
-					WizardPage page = wizard.GetPage (currentPage);
-					if (page != null) {
-					//	return page;
-					}
-				}
+			if (controller.IsFirstPage) {
+				return templatesHBox;
+			} else if (controller.IsLastPage) {
+				projectConfigurationWidget.Load (controller.FinalConfiguration);
+				return projectConfigurationWidget;
+			} else {
+				return controller.CurrentWizardPage;
 			}
-
-			projectConfigurationWidget.Load (controller.FinalConfiguration);
-			return projectConfigurationWidget;
-		}
-
-		Widget GetPreviousPageWidget (Widget existingWidget)
-		{
-			currentPage--;
-
-//			if (existingWidget == projectConfigurationWidget) {
-//				if (wizard != null) {
-//					WizardPage page = wizard.GetPage (currentPage);
-//					if (page != null) {
-//						return page;
-//					}
-//				}
-//			}
-
-			wizard = null;
-			return templatesHBox;
 		}
 	}
 }

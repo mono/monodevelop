@@ -36,11 +36,13 @@ namespace MonoDevelop.Ide.Templates
 	{
 		List<TemplateCategory> projectTemplateCategories = new List<TemplateCategory> ();
 		List<IProjectTemplatingProvider> templateProviders = new List<IProjectTemplatingProvider> ();
+		List<TemplateWizard> projectTemplateWizards = new List<TemplateWizard> ();
 
 		public TemplatingService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateCategories", OnTemplateCategoriesChanged);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplatingProviders", OnTemplatingProvidersChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateWizards", OnProjectTemplateWizardsChanged);
 		}
 
 		void OnTemplateCategoriesChanged (object sender, ExtensionNodeEventArgs args)
@@ -60,6 +62,16 @@ namespace MonoDevelop.Ide.Templates
 				templateProviders.Add (provider);
 			} else {
 				templateProviders.Remove (provider);
+			}
+		}
+
+		void OnProjectTemplateWizardsChanged (object sender, ExtensionNodeEventArgs args)
+		{
+			var wizard = args.ExtensionObject as TemplateWizard;
+			if (args.Change == ExtensionChange.Add) {
+				projectTemplateWizards.Add (wizard);
+			} else {
+				projectTemplateWizards.Remove (wizard);
 			}
 		}
 
@@ -84,6 +96,11 @@ namespace MonoDevelop.Ide.Templates
 		IProjectTemplatingProvider GetTemplatingProviderForTemplate (SolutionTemplate template)
 		{
 			return templateProviders.FirstOrDefault (provider => provider.CanProcessTemplate (template));
+		}
+
+		public TemplateWizard GetWizard (string id)
+		{
+			return projectTemplateWizards.FirstOrDefault (wizard => wizard.Id == id);
 		}
 	}
 }

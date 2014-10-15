@@ -25,18 +25,37 @@
 // THE SOFTWARE.
 //
 
+using System;
+using MonoDevelop.Components;
+
 namespace MonoDevelop.Ide.Templates
 {
-	public abstract class WizardPage// : Gtk.Bin
+	public abstract class WizardPage : Control
 	{
+		bool canMoveToNextPage = true;
+
 		// Enables/disables the Next button. 
-		//public bool CanMoveToNextPage { get; }
+		public bool CanMoveToNextPage {
+			get { return canMoveToNextPage; }
+			set {
+				if (canMoveToNextPage != value) {
+					canMoveToNextPage = value;
+					OnCanMoveToNextPageChanged ();
+				}
+			}
+		}
 
-		//public event CanMoveToNextPageChanged;
+		public event EventHandler CanMoveToNextPageChanged;
 
-		public string Title { get; protected set; }
+		protected void OnCanMoveToNextPageChanged ()
+		{
+			var handler = CanMoveToNextPageChanged;
+			if (handler != null) {
+				handler (this, new EventArgs ());
+			}
+		}
 
-		public bool HasNextPage { get; protected set; }
+		public abstract string Title { get; }
 
 		// Called when a page is made active. This allows the wizard to update its UI 
 		// if the user moved from another page which may have changed some values.
@@ -48,11 +67,6 @@ namespace MonoDevelop.Ide.Templates
 		public virtual void Deactivated ()
 		{
 		}
-
-		// Disposed when the dialog is disposed.
-//		public override void Dispose ()
-//		{
-//		}
 	}
 }
 

@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Templates
 			Language = template.LanguageName;
 			GroupId = template.GroupId;
 			ProjectFileExtension = template.FileExtension;
+			Wizard = template.WizardPath;
 
 			HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
 		}

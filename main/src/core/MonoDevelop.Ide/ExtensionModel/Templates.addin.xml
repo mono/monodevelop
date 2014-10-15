@@ -45,6 +45,11 @@
 	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.IProjectTemplatingProvider" />
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/ProjectTemplateWizards" name = "Project template wizards">
+	<Description>Project template wizards to be used by the New Project dialog.</Description>
+	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.TemplateWizard" />
+</ExtensionPoint>
+
 <Extension path = "/MonoDevelop/Ide/FileTemplates">
 	<FileTemplate id = "EmptyClass" resource = "EmptyClass.xft.xml"/>
 	<FileTemplate id = "EmptyEnum" resource = "EmptyEnum.xft.xml"/>
