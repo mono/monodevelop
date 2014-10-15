@@ -134,7 +134,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string fullName = namspace.Length > 0 ? namspace + "." + name : name;
 			
 			var type = SyntaxFactory.ClassDeclaration (name)
-				.AddBaseListTypes (SyntaxFactory.ParseTypeName ("Gtk.ActionGroup"));
+				.AddBaseListTypes (SyntaxFactory.SimpleBaseType (SyntaxFactory.ParseTypeName ("Gtk.ActionGroup")));
 			
 			// Generate the constructor. It contains the call that builds the widget.
 			var members = new SyntaxList<MemberDeclarationSyntax> ();
