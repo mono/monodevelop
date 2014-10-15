@@ -7,6 +7,7 @@ import json
 import threading
 class Statics:
     fsac = None
+    locations = []
 
 class Interaction:
     def __init__(self, proc, timeOut, logfile):
@@ -124,7 +125,7 @@ class FSAutoComplete:
     def finddecl(self, fn, line, column):
         msg = self._finddecl.send('finddecl "%s" %d %d\n' % (fn, line, column))
         if(msg != None):
-            return str(msg['File']), str(msg['Line']), str(msg['Column'])
+            return str(msg['File']), (int(str(msg['Line'])), int(str(msg['Column'])))
         else:
             return None
 

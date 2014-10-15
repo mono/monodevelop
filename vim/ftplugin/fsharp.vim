@@ -10,6 +10,7 @@ import os
 fsharp_dir = vim.eval("expand('<sfile>:p:h')")
 sys.path.append(fsharp_dir)
 from fsharpvim import FSAutoComplete,Statics
+import pyvim
 if(Statics.fsac == None):
     Statics.fsac = FSAutoComplete(fsharp_dir)
 fsautocomplete = Statics.fsac
@@ -45,6 +46,7 @@ nnoremap <leader>e :call ShowErrors()<cr>
 nnoremap <leader>t :call TypeCheck()<cr>
 nnoremap <leader>i :call GetInfo()<cr>
 nnoremap <leader>d :call GotoDecl()<cr>
+nnoremap <leader>c :call GoBackFromDecl()<cr>
 
 augroup fsharp
     autocmd!
@@ -295,6 +297,22 @@ let &cpo = s:cpo_save
 if exists('*GotoDecl')
     finish
 endif
+
+function! GoBackFromDecl()
+python << EOF
+b = vim.current.buffer
+w = vim.current.window
+try:
+    f, cur = Statics.locations.pop()
+    if(b.name == f): #declared within same file
+        w.cursor = cur 
+    else:
+        pyvim.jump(f, cur)
+except: 
+    print "no more locations"    
+EOF
+endfunction
+
 function! GotoDecl()
 python << EOF
 b = vim.current.buffer
@@ -302,25 +320,16 @@ w = vim.current.window
 fsautocomplete.parse(b.name, True, b)
 row, col = vim.current.window.cursor
 res = fsautocomplete.finddecl(b.name, row, col)
+#append location
+Statics.locations.append((b.name, w.cursor))
 if(res == None):
     vim.command('echo "declaration not found"')
 else:
-    f, l, c = res 
+    f, cur = res 
     if(b.name == f): #declared within same file
-        w.cursor = int(l), int(c)
+        w.cursor = cur 
     else:
-        found = False
-        for tp in vim.tabpages:
-            #print 'f %s %s' % (f, tp.window.buffer.name)
-            if (tp.window.buffer.name == f):
-                tp.window.cursor = int(l), int(c)
-                vim.command('normal %igt' % tp.number) 
-                found = True
-                break
-        if(not found):
-            vim.command('tabnew +%s %s' % (l, f))
-            last_tp = vim.tabpages[len(vim.tabpages)-1]
-            last_tp.window.cursor = int(l), int(c)
+        pyvim.jump(f, cur)
 EOF
 endfunction
 " vim: sw=4 et sts=4
