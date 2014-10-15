@@ -37,29 +37,29 @@ using Microsoft.CodeAnalysis.Host.Mef;
 using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
+using Microsoft.CodeAnalysis.Host;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
 	public class MonoDevelopWorkspace : Workspace
 	{
-		readonly static MefHostServices services;
-			
-		readonly MetadataFileReferenceProvider referenceProvider = new MetadataFileReferenceProvider ();
+		readonly static HostServices services = Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultHost;
 
 		MonoDevelop.Projects.Solution currentMonoDevelopSolution;
 
 		static MonoDevelopWorkspace ()
 		{
-			try {
-				services = MefHostServices.Create(new [] { 
-					typeof(MefHostServices).Assembly,
-					typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly
-				});
-				LoggingService.LogInfo (services.GetExports<object> ().Count () + " roslyn services registered.");
-			} catch (Exception e) {
-				LoggingService.LogError ("Can't create host services", e); 
-				services = MefHostServices.Create(new Assembly[0]);
-			}
+
+//			try {
+//				services = MefHostServices.Create(new [] { 
+//					typeof(MefHostServices).Assembly,
+//					typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions).Assembly
+//				});
+//				LoggingService.LogInfo (services.GetExports<object> ().Count () + " roslyn services registered.");
+//			} catch (Exception e) {
+//				LoggingService.LogError ("Can't create host services", e); 
+//				services = MefHostServices.Create(new Assembly[0]);
+//			}
 		}
 
 		public MonoDevelopWorkspace () : base (services, "MonoDevelopWorkspace")
@@ -277,7 +277,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					                netProject.TargetFramework
 				                );
 				if (corLibRef != null) {
-					yield return referenceProvider.GetReference (corLibRef.Location, MetadataReferenceProperties.Assembly);
+					yield return MetadataReference.CreateFromFile (corLibRef.Location, MetadataReferenceProperties.Assembly);
 				}
 			}
 
@@ -288,7 +288,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				} else {
 					fileName = Path.GetFullPath (file);
 				}
-				yield return referenceProvider.GetReference (fileName, MetadataReferenceProperties.Assembly);
+				yield return MetadataReference.CreateFromFile (fileName, MetadataReferenceProperties.Assembly);
 			}
 		}
 

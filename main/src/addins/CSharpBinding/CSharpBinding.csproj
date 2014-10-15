@@ -209,18 +209,6 @@
     <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\MonoCSharpPolicy.xml">
       <LogicalName>MonoCSharpPolicy.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\SharpDevelopCSharpPolicy.xml">
-      <LogicalName>SharpDevelopCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\WhitesmithsCSharpPolicy.xml">
-      <LogicalName>WhitesmithsCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUCSharpPolicy.xml">
-      <LogicalName>GNUCSharpPolicy.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.CSharp.Formatting\policies\GNUTextStylePolicy.xml">
-      <LogicalName>GNUTextStylePolicy.xml</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="templates\PortableLibrary.xpt.xml">
       <LogicalName>PortableLibrary.xpt.xml</LogicalName>
     </EmbeddedResource>

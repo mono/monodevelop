@@ -170,20 +170,11 @@ namespace MonoDevelop.CSharp.Project
 				null,
 				null,
 				null,
-				0,
-				0,
 				Microsoft.CodeAnalysis.Platform.AnyCpu,
 				ReportDiagnostic.Default,
 				WarningLevel,
 				null,
-				false,
-				SubsystemVersion.None,
-				null,
-				true,
-				null,
-				null,
-				null,
-				null
+				false
 			);
 		}
 

@@ -104,14 +104,8 @@
     <Reference Include="System.Collections.Immutable">
       <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Collections.Immutable.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
-      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp">
       <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
@@ -126,6 +120,18 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' ">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces.Desktop">
+      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.CSharp.Workspaces.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\external\roslyn\Binaries\Debug\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel">
+      <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Composition.AttributedModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -189,11 +195,11 @@
       <Name>IKVM.Reflection</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory6.CSharp.csproj">
-      <Project>{7E891659-45F3-42B5-B940-A728780CCAE9}</Project>
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
       <Name>ICSharpCode.NRefactory6.CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\NRefactory6\ICSharpCode.NRefactory.CSharp.Refactoring\ICSharpCode.NRefactory6.CSharp.Refactoring.csproj">
-      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
+      <Project>{2A705FC6-1A9E-4941-9E47-254D79F2D9D5}</Project>
       <Name>ICSharpCode.NRefactory6.CSharp.Refactoring</Name>
     </ProjectReference>
   </ItemGroup>

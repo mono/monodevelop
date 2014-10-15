@@ -121,7 +121,8 @@ namespace MonoDevelop.CSharp.Formatting
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-
+			Console.WriteLine ("saved!");
+			new CSharpFormattingPolicy (RoslynTypeSystemService.Workspace.Options).Save ("/tmp/options.txt");
 
 			if (Editor != null) {
 				Editor.OptionsChanged += HandleTextOptionsChanged;

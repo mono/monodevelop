@@ -106,12 +106,13 @@ namespace MonoDevelop.CSharp.Formatting
 				 PolicyService.InvariantPolicies.Set<CSharpFormattingPolicy> (new CSharpFormattingPolicy (), "text/x-csharp");
 		}
 		
-		protected CSharpFormattingPolicy (OptionSet options)
+		public CSharpFormattingPolicy (OptionSet options)
 		{
 			this.options = options;
 		}
 
 		#region Indent options
+		[ItemProperty]
 		public bool IndentBlock {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentBlock);
@@ -121,6 +122,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool IndentBraces {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentBraces);
@@ -130,6 +132,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool IndentSwitchSection {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentSwitchSection);
@@ -139,6 +142,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool IndentSwitchCaseSection {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.IndentSwitchCaseSection);
@@ -148,6 +152,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public Microsoft.CodeAnalysis.CSharp.Formatting.LabelPositionOptions LabelPositioning {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.LabelPositioning);
@@ -160,6 +165,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		#region New line options
 
+		[ItemProperty]
 		public bool NewLinesForBracesInTypes {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInTypes);
@@ -169,6 +175,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLinesForBracesInMethods {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInMethods);
@@ -178,6 +185,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLinesForBracesInAnonymousMethods {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInAnonymousMethods);
@@ -187,6 +195,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 			
+		[ItemProperty]
 		public bool NewLinesForBracesInControlBlocks {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInControlBlocks);
@@ -196,6 +205,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLinesForBracesInAnonymousTypes {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInAnonymousTypes);
@@ -205,6 +215,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLinesForBracesInObjectInitializers {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInObjectInitializers);
@@ -214,6 +225,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLinesForBracesInLambdaExpressionBody {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLinesForBracesInLambdaExpressionBody);
@@ -223,6 +235,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLineForElse {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForElse);
@@ -232,6 +245,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 			
+		[ItemProperty]
 		public bool NewLineForCatch {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForCatch);
@@ -241,6 +255,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLineForFinally {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForFinally);
@@ -250,6 +265,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLineForMembersInObjectInit {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForMembersInObjectInit);
@@ -259,6 +275,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLineForMembersInAnonymousTypes {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForMembersInAnonymousTypes);
@@ -268,6 +285,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool NewLineForClausesInQuery {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.NewLineForClausesInQuery);
@@ -280,6 +298,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		#region Spacing options
 
+		[ItemProperty]
 		public bool SpacingAfterMethodDeclarationName {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacingAfterMethodDeclarationName);
@@ -289,6 +308,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceWithinMethodDeclarationParenthesis {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinMethodDeclarationParenthesis);
@@ -298,6 +318,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceBetweenEmptyMethodDeclarationParentheses {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptyMethodDeclarationParentheses);
@@ -307,6 +328,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceAfterMethodCallName {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterMethodCallName);
@@ -316,6 +338,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceWithinMethodCallParentheses {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinMethodCallParentheses);
@@ -325,6 +348,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceBetweenEmptyMethodCallParentheses {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptyMethodCallParentheses);
@@ -334,6 +358,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceAfterControlFlowStatementKeyword {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterControlFlowStatementKeyword);
@@ -343,6 +368,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceWithinExpressionParentheses {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinExpressionParentheses);
@@ -352,6 +378,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceWithinCastParentheses {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinCastParentheses);
@@ -361,6 +388,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceWithinOtherParentheses {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinOtherParentheses);
@@ -370,6 +398,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceAfterCast {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterCast);
@@ -379,6 +408,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpacesIgnoreAroundVariableDeclaration {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacesIgnoreAroundVariableDeclaration);
@@ -388,6 +418,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceBeforeOpenSquareBracket {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeOpenSquareBracket);
@@ -397,6 +428,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceBetweenEmptySquareBrackets {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBetweenEmptySquareBrackets);
@@ -406,6 +438,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceWithinSquareBrackets {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceWithinSquareBrackets);
@@ -415,6 +448,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceAfterColonInBaseTypeDeclaration {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterColonInBaseTypeDeclaration);
@@ -424,6 +458,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceAfterComma {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterComma);
@@ -433,6 +468,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceAfterDot {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterDot);
@@ -442,6 +478,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceAfterSemicolonsInForStatement {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceAfterSemicolonsInForStatement);
@@ -451,6 +488,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceBeforeColonInBaseTypeDeclaration {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeColonInBaseTypeDeclaration);
@@ -460,6 +498,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceBeforeComma {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeComma);
@@ -469,6 +508,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceBeforeDot {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeDot);
@@ -478,6 +518,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool SpaceBeforeSemicolonsInForStatement {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpaceBeforeSemicolonsInForStatement);
@@ -487,6 +528,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public Microsoft.CodeAnalysis.CSharp.Formatting.BinaryOperatorSpacingOptions SpacingAroundBinaryOperator {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.SpacingAroundBinaryOperator);
@@ -499,6 +541,7 @@ namespace MonoDevelop.CSharp.Formatting
 
 		#region Wrapping options
 
+		[ItemProperty]
 		public bool WrappingPreserveSingleLine {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.WrappingPreserveSingleLine);
@@ -508,6 +551,7 @@ namespace MonoDevelop.CSharp.Formatting
 			}
 		}
 
+		[ItemProperty]
 		public bool WrappingKeepStatementsOnSingleLine {
 			get {
 				return options.GetOption (Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions.WrappingKeepStatementsOnSingleLine);
@@ -572,10 +616,14 @@ namespace MonoDevelop.CSharp.Formatting
 				writer.WriteAttributeString ("name", Name);
 				foreach (PropertyInfo info in typeof (CSharpFormattingPolicy).GetProperties ()) {
 					if (info.GetCustomAttributes (false).Any (o => o.GetType () == typeof(ItemPropertyAttribute))) {
-						writer.WriteStartElement ("Property");
+						writer.WriteStartElement (info.Name);
+						writer.WriteValue (info.GetValue (this, null).ToString ());
+						writer.WriteEndElement ();
+
+						/*						writer.WriteStartElement ("Property");
 						writer.WriteAttributeString ("name", info.Name);
 						writer.WriteAttributeString ("value", info.GetValue (this, null).ToString ());
-						writer.WriteEndElement ();
+						writer.WriteEndElement ();*/
 					}
 				}
 				writer.WriteEndElement ();
