@@ -70,10 +70,15 @@ namespace MonoDevelop.CodeActions
 			var actions = new List<Tuple<CodeRefactoringDescriptor, CodeAction>> ();
 			if (analysisDocument == null)
 				return actions;
+			var ctx = new CodeRefactoringContext (analysisDocument, span, cancellationToken);
+			var root = await doc.AnalysisDocument.GetSyntaxRootAsync ();
+			if (ctx.Span.End > root.Span.End)
+				return actions;
+
 			foreach (var descriptor in GetCodeActions (CodeRefactoringService.MimeTypeToLanguage(editor.MimeType))) {
 				IEnumerable<CodeAction> refactorings;
 				try {
-					refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (new CodeRefactoringContext (analysisDocument, span, cancellationToken));
+					refactorings = await descriptor.GetProvider ().GetRefactoringsAsync (ctx);
 				} catch (Exception e) {
 					LoggingService.LogError ("Error while getting refactorings from " + descriptor.IdString, e); 
 					continue;
