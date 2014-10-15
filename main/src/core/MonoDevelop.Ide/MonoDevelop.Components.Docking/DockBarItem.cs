@@ -347,7 +347,7 @@ namespace MonoDevelop.Components.Docking
 					if (it.ShowingContextMemu)
 						return true;
 					// Don't hide the item if it has the focus. Try again later.
-					if (it.Widget.FocusChild != null && !force && ((Gtk.Window)autoShowFrame.Toplevel).HasToplevelFocus)
+					if (it.Widget.FocusChild != null && !force && autoShowFrame != null && ((Gtk.Window)autoShowFrame.Toplevel).HasToplevelFocus)
 						return true;
 					// Don't hide the item if the mouse pointer is still inside the window. Try again later.
 					int px, py;

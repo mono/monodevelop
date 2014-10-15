@@ -83,7 +83,14 @@ namespace ICSharpCode.PackageManagement
 				ParentPackageInstalled(this, new ParentPackageOperationEventArgs(package, project));
 			}
 		}
-		
+
+		public void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations)
+		{
+			if (ParentPackageInstalled != null) {
+				ParentPackageInstalled (this, new ParentPackageOperationEventArgs(package, project, operations));
+			}
+		}
+
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
 		
 		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
@@ -173,6 +180,15 @@ namespace ICSharpCode.PackageManagement
 				return !eventArgs.IsCancelled;
 			}
 			return true;
+		}
+
+		public event EventHandler<PackageRestoredEventArgs> PackageRestored;
+
+		public void OnPackageRestored (IPackage package)
+		{
+			if (PackageRestored != null) {
+				PackageRestored (this, new PackageRestoredEventArgs (package));
+			}
 		}
 	}
 }

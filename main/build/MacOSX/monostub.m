@@ -270,7 +270,7 @@ update_environment (const char* macosDir, const char *resourcesDir, const char *
 	char buf[32];
 	
 	/* CommandLineTools are needed for OSX 10.9+ */
-	v1 = "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:";
+	v1 = "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib:";
 	v1 = str_append (v1, macosDir);
 	v1 = str_append (v1, "/lib/monodevelop/bin/");
 	push_env ("DYLD_FALLBACK_LIBRARY_PATH", v1);
@@ -363,7 +363,7 @@ int main (int argc, char **argv)
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"3.0.7";
+	NSString *req_mono_version = @"3.8";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
 

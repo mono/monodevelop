@@ -3,6 +3,8 @@ using Gtk#.
 
 See http://www.monodevelop.com for more info.  
 
+[![Build Status](http://jenkins.mono-project.com/job/test-monodevelop-mainline/badge/icon)](http://jenkins.mono-project.com/job/test-monodevelop-mainline/)
+
 Directory organization
 ----------------------
 
@@ -39,6 +41,7 @@ There are two variables you can set when running `configure`:
   * `stable`: builds the MonoDevelop core and some stable extra add-ins.
   * `core`: builds the MonoDevelop core only.
   * `all`: builds everything
+  * `mac`: builds for Mac OS X
   * You can also create your own profile by adding a file to the profiles
 directory containing a list of the directories to build.
 
@@ -66,8 +69,8 @@ Packaging for OS X
 
 To package MonoDevelop for OS X in a convenient MonoDevelop.app
 file, just do this after MonoDevelop has finished building (with
-`make`):
-`cd main/build/MacOSX ; make MonoDevelop.app`
+`make`): `cd main/build/MacOSX ; make`.
+You can run MonoDevelop: `open MonoDevelop.app` or build dmg package: `./make-dmg-bundle.sh`
 
 Dependencies
 ------------

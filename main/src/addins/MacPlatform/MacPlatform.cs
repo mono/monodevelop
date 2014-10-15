@@ -733,8 +733,12 @@ namespace MonoDevelop.MacIntegration
 		{
 			var toplevels = GtkQuartz.GetToplevels ();
 
-			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal)
-				&& !t.Key.DebugDescription.StartsWith ("<NSStatusBarWindow", StringComparison.Ordinal));
+			// When we're looking for modal windows that don't belong to GTK, exclude
+			// NSStatusBarWindow (which is visible on Mavericks when we're in fullscreen) and
+			// NSToolbarFullscreenWindow (which is visible on Yosemite in fullscreen).
+			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) &&
+				!(t.Key.DebugDescription.StartsWith("<NSStatusBarWindow", StringComparison.Ordinal) ||
+				  t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal)));
 		}
 
 		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)

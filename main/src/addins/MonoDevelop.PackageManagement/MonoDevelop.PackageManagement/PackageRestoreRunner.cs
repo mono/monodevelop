@@ -28,10 +28,8 @@ using System;
 using System.Linq;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core.ProgressMonitoring;
+using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -109,13 +107,16 @@ namespace MonoDevelop.PackageManagement
 
 		void RestorePackages (IProgressMonitor progressMonitor, ProgressMonitorStatusMessage progressMessage)
 		{
-			var action = new RestorePackagesAction (solution, packageManagementEvents);
-			if (project != null) {
-				action.Project = project;
+			var msbuildTargetsMonitor = new MSBuildTargetsRestoredMonitor (packageManagementEvents);
+			using (msbuildTargetsMonitor) {
+				var action = new RestorePackagesAction (solution, packageManagementEvents);
+				if (project != null) {
+					action.Project = project;
+				}
+				action.Execute ();
 			}
-			action.Execute ();
 
-			RefreshProjectReferences ();
+			RefreshProjectReferences (msbuildTargetsMonitor.AnyMSBuildTargetsRestored);
 			ForceCreationOfSharedRepositoriesConfigFile ();
 
 			progressMonitor.ReportSuccess (progressMessage.Success);
@@ -136,13 +137,29 @@ namespace MonoDevelop.PackageManagement
 		/// Refresh all projects even though we may have only restored packages for one project since
 		/// the packages may be used in other projects.
 		/// </summary>
-		void RefreshProjectReferences ()
+		void RefreshProjectReferences (bool refreshMSBuildTargets)
 		{
 			DispatchService.GuiDispatch (() => {
 				foreach (IDotNetProject projectInSolution in solution.GetDotNetProjects ()) {
+					if (refreshMSBuildTargets) {
+						projectInSolution.RefreshProjectBuilder ();
+					}
+
 					projectInSolution.DotNetProject.RefreshReferenceStatus ();
+
+					if (refreshMSBuildTargets) {
+						ReconnectAssemblyReferences (projectInSolution.DotNetProject);
+					}
 				}
 			});
+		}
+
+		void ReconnectAssemblyReferences (DotNetProject dotNetProject)
+		{
+			var projectWrapper = TypeSystemService.GetProjectContentWrapper (dotNetProject);
+			if (projectWrapper != null) {
+				projectWrapper.ReconnectAssemblyReferences ();
+			}
 		}
 	}
 }

@@ -1269,5 +1269,13 @@ namespace MonoDevelop.Projects
 			importsAdded.Clear ();
 			importsRemoved.Clear ();
 		}
+
+		public void RefreshProjectBuilder ()
+		{
+			var handler = ItemHandler as MSBuildProjectHandler;
+			if (handler != null) {
+				handler.RefreshProjectBuilder ();
+			}
+		}
 	}
 }

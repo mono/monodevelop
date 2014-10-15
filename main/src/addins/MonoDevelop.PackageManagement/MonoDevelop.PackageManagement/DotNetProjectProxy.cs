@@ -112,6 +112,11 @@ namespace MonoDevelop.PackageManagement
 		{
 			return DotNetProject == project.DotNetProject;
 		}
+
+		public void RefreshProjectBuilder ()
+		{
+			DotNetProject.RefreshProjectBuilder ();
+		}
 	}
 }
 
