@@ -2149,9 +2149,12 @@ namespace MonoDevelop.Ide
 		{
 			foreach (var doc in IdeApp.Workbench.Documents) {
 				if (doc.FileName == filePath) {
+					var content = doc.GetContent <MonoDevelop.Ide.Gui.Content.IEncodedTextContent> (); 
+					var theEncoding = content != null ? content.SourceEncoding : null;
+
 					isOpen = true;
 					hadBom = false;
-					encoding = Encoding.Default;
+					encoding = theEncoding ?? Encoding.Default;
 					return doc.Editor;
 				}
 			}
