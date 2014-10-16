@@ -46,7 +46,7 @@ nnoremap <leader>e :call ShowErrors()<cr>
 nnoremap <leader>t :call TypeCheck()<cr>
 nnoremap <leader>i :call GetInfo()<cr>
 nnoremap <leader>d :call GotoDecl()<cr>
-nnoremap <leader>c :call GoBackFromDecl()<cr>
+nnoremap <leader>s :call GoBackFromDecl()<cr>
 
 augroup fsharp
     autocmd!
