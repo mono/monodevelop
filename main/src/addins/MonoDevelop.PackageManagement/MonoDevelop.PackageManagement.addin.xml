@@ -8,14 +8,19 @@
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
 		<Command
+			id = "MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
+			_description = "Add NuGet packages to the project"
+			_label = "Add NuGet _Packages..."
+			defaultHandler = "MonoDevelop.PackageManagement.Commands.AddPackagesHandler" />
+		<Command
 			id = "MonoDevelop.PackageManagement.Commands.AddPackages"
 			_description = "Add packages to the project"
 			_label = "Add _Packages..."
 			defaultHandler = "MonoDevelop.PackageManagement.Commands.AddPackagesHandler" />
 		<Command
 			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
-			_description = "Restore missing packages"
-			_label = "_Restore Packages"
+			_description = "Restore missing NuGet packages"
+			_label = "_Restore NuGet Packages"
 			defaultHandler = "MonoDevelop.PackageManagement.Commands.RestorePackagesHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.Restore"
@@ -41,8 +46,8 @@
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProjectHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
-			_description="Update all packages in the solution"
-			_label="_Update Packages"
+			_description="Update all NuGet packages in the solution"
+			_label="_Update NuGet Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
@@ -53,7 +58,7 @@
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
 		<CommandItem
-			id="MonoDevelop.PackageManagement.Commands.AddPackages"
+			id="MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
 			insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 			insertbefore="ExportSeparator" />
 		<CommandItem
@@ -92,7 +97,7 @@
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="Project">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages"
+				id="MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
 				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
 				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
 		</Condition>
