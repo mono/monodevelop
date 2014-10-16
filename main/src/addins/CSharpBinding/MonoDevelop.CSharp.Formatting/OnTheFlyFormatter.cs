@@ -43,6 +43,7 @@ using ICSharpCode.NRefactory.Editor;
 using MonoDevelop.CSharp.NRefactoryWrapper;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
+using MonoDevelop.Ide.Gui.Content;
 
 namespace MonoDevelop.CSharp.Formatting
 {
@@ -100,7 +101,10 @@ namespace MonoDevelop.CSharp.Formatting
 			using (var undo = editor.OpenUndoGroup (/*OperationType.Format*/)) {
 				try {
 					var syntaxTree = context.AnalysisDocument.GetSyntaxTreeAsync ().Result;
-					var doc = Formatter.FormatAsync (context.AnalysisDocument, span).Result;
+					var policy = policyParent.Get<CSharpFormattingPolicy> (mimeTypeChain);
+					var textPolicy = policyParent.Get<TextStylePolicy> (mimeTypeChain);
+
+					var doc = Formatter.FormatAsync (context.AnalysisDocument, span, policy.CreateOptions (textPolicy)).Result;
 					var newTree = doc.GetSyntaxTreeAsync ().Result;
 					foreach (var change in newTree.GetChanges (syntaxTree).OrderByDescending (c => c.Span.Start) ) {
 						editor.ReplaceText (change.Span.Start, change.Span.Length, change.NewText);
