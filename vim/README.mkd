@@ -18,7 +18,7 @@ This software is still alpha quality and was adapted from http://github.com/timr
 
 1. Install [pathogen](https://github.com/tpope/vim-pathogen)
 
-2. TODO (You can manually copy the required files to you bundle directory.)
+2. TODO (You can manually copy the required files to you bundle directory after building FSharp.AutoComplete in Visual Studio.)
 
 ###Usage
 
@@ -30,10 +30,12 @@ The plugin will automatically parse the current file 750ms after entering 'norma
 
 ###Commands
 
-* `:Interactive` will execute the current selection inside fsi (if found) or the whole file if not in visual mode.
-* `:ParseProject` will reparse all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
+* `:Interactive` executes the current selection inside fsi (if found) or the whole file if not in visual mode.
+* `:ParseProject` reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
 * `:BuildProject` calls xbuild on the fsproj for the current file (if any).
-* `leader\<t\>` will echo the type of the expression currently pointed to by the cursor.
-* `leader\<i\>` will echo the warning/error details or the type of the expression currently pointed to by the cursor.
-* `leader\<r\>` will parse the current file and highlight any errors and add them to the loclist.
-* `leader\<d\>` go to declaration. Will open a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.  
+* `leader<t>` echoes the type of the expression currently pointed to by the cursor.
+* `leader<i>` echoes warning/error details or the type of the expression currently pointed to by the cursor.
+* `leader<r>` parses the current file, highlights any errors and adds them to the loclist.
+* `leader<d>` _go to declaration_. Opens a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.  
+* `leader<s>` takes you back from where _go to declaration_ was triggered. 
+
