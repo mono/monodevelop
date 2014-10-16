@@ -43,6 +43,8 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Ide.Editor.Highlighting;
 using Mono.TextEditor.Highlighting;
+using MonoDevelop.Ide.Gui.Content;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace MonoDevelop.AssemblyBrowser
 {
@@ -193,7 +195,7 @@ namespace MonoDevelop.AssemblyBrowser
 				LockStatement = true,
 				AsyncAwait = true,
 				ShowXmlDocumentation = true,
-				CSharpFormattingOptions = codePolicy.CreateOptions (),
+				CSharpFormattingOptions = FormattingOptionsFactory.CreateMono (),
 				HideNonPublicMembers = publicOnly
 			};
 		}
