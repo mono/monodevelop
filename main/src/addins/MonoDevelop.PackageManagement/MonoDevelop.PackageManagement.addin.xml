@@ -57,18 +57,11 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
-		<CommandItem
-			id="MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
-			insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
-			insertbefore="ExportSeparator" />
-		<CommandItem
-			id = "MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
-			insertafter="MonoDevelop.PackageManagement.Commands.AddPackages"
-			insertbefore="ExportSeparator" />
-		<CommandItem
-			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
-			insertafter="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
-			insertbefore="ExportSeparator" />
+		<SeparatorItem insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.AddNuGetPackages" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.RestorePackages" />
+		<SeparatorItem />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
