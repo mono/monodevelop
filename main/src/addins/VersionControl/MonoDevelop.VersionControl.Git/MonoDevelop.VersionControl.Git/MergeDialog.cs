@@ -29,6 +29,7 @@ using Gtk;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -38,6 +39,7 @@ namespace MonoDevelop.VersionControl.Git
 		readonly GitRepository repo;
 		string currentSel;
 		string currentType;
+		string currentRemote;
 		readonly bool rebasing;
 		
 		public MergeDialog (GitRepository repo, bool rebasing)
@@ -50,11 +52,11 @@ namespace MonoDevelop.VersionControl.Git
 			store = new TreeStore (typeof(string), typeof(Xwt.Drawing.Image), typeof (string), typeof(string));
 			tree.Model = store;
 			
-			CellRendererImage crp = new CellRendererImage ();
-			TreeViewColumn col = new TreeViewColumn ();
+			var crp = new CellRendererImage ();
+			var col = new TreeViewColumn ();
 			col.PackStart (crp, false);
 			col.AddAttribute (crp, "image", 1);
-			CellRendererText crt = new CellRendererText ();
+			var crt = new CellRendererText ();
 			col.PackStart (crt, true);
 			col.AddAttribute (crt, "text", 2);
 			tree.AppendColumn (col);
@@ -75,6 +77,10 @@ namespace MonoDevelop.VersionControl.Git
 		public string SelectedBranch {
 			get { return currentSel; }
 		}
+
+		public string RemoteName {
+			get { return currentRemote; }
+		}
 		
 		public bool StageChanges {
 			get { return checkStage.Active; }
@@ -90,6 +96,13 @@ namespace MonoDevelop.VersionControl.Git
 			if (tree.Selection.GetSelected (out it)) {
 				currentSel = (string) store.GetValue (it, 0);
 				currentType = (string) store.GetValue (it, 3);
+				if (IsRemote) {
+					TreeIter it2;
+					store.IterParent (out it2, it);
+					currentRemote = (string)store.GetValue (it2, 2);
+				} else {
+					currentRemote = null;
+				}
 			}
 			else
 				currentSel = null;
@@ -102,11 +115,11 @@ namespace MonoDevelop.VersionControl.Git
 			
 			foreach (Branch b in repo.GetBranches ())
 				store.AppendValues (b.Name, ImageService.GetIcon ("vc-branch", IconSize.Menu), b.Name, "branch");
-			
+
 			foreach (string t in repo.GetTags ())
 				store.AppendValues (t, ImageService.GetIcon ("vc-tag", IconSize.Menu), t, "tag");
 			
-			foreach (RemoteSource r in repo.GetRemotes ()) {
+			foreach (Remote r in repo.GetRemotes ()) {
 				TreeIter it = store.AppendValues (null, ImageService.GetIcon ("vc-repository", IconSize.Menu), r.Name, null);
 				foreach (string b in repo.GetRemoteBranches (r.Name))
 					store.AppendValues (it, r.Name + "/" + b, ImageService.GetIcon ("vc-branch", IconSize.Menu), b, "remote");

@@ -61,6 +61,7 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 +++ testfile	(working copy)
 @@ -0,0 +1 @@
 +text
+\ No newline at end of file
 ";
 			Assert.AreEqual (difftext, Repo.GenerateDiff (LocalPath + "testfile", Repo.GetVersionInfo (LocalPath + "testfile", VersionInfoQueryFlags.IgnoreCache)).Content.Replace ("\n", "\r\n"));
 		}
@@ -100,6 +101,14 @@ namespace MonoDevelop.VersionControl.Subversion.Tests
 		public override void UnlocksEntities ()
 		{
 			base.UnlocksEntities ();
+		}
+
+		[Test]
+		[Ignore ("Url is broken.")]
+		// Tests Repository.GetTextAtRevision.
+		public override void CorrectTextAtRevision ()
+		{
+			base.CorrectTextAtRevision ();
 		}
 
 		protected override void PostUnlock ()

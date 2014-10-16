@@ -23,99 +23,80 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System.Linq;
-using System.Collections.Generic;
 using Gtk;
-using NGit.Transport;
+using System;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
-	partial class CredentialsDialog : Gtk.Dialog
+	partial class CredentialsDialog : Dialog
 	{
-		readonly CredentialItem.YesNoType singleYesNoCred;
-		
-		public CredentialsDialog (URIish uri, IEnumerable<CredentialItem> credentials)
+		uint r;
+		public CredentialsDialog (Uri uri, SupportedCredentialTypes type, Credentials cred)
 		{
 			this.Build ();
 			
-			labelTop.Text = string.Format (labelTop.Text, uri.ToString ());
+			labelTop.Text = string.Format (labelTop.Text, uri);
 			
-			Gtk.Table table = new Gtk.Table (0, 0, false);
+			var table = new Table (0, 0, false);
 			table.ColumnSpacing = 6;
 			vbox.PackStart (table, true, true, 0);
-			
-			uint r = 0;
+
 			Widget firstEditor = null;
-			foreach (CredentialItem c in credentials) {
-				Label lab = new Label (c.GetPromptText () + ":");
-				lab.Xalign = 0;
-				table.Attach (lab, 0, 1, r, r + 1);
-				Table.TableChild tc = (Table.TableChild) table [lab];
-				tc.XOptions = AttachOptions.Shrink;
-				
-				Widget editor = null;
-				
-				if (c is CredentialItem.YesNoType) {
-					CredentialItem.YesNoType cred = (CredentialItem.YesNoType) c;
-					if (credentials.Count (i => i is CredentialItem.YesNoType) == 1) {
-						singleYesNoCred = cred;
-						buttonOk.Hide ();
-						buttonYes.Show ();
-						buttonNo.Show ();
-						// Remove the last colon
-						lab.Text = lab.Text.Substring (0, lab.Text.Length - 1);
-					}
-					else {
-						CheckButton btn = new CheckButton ();
-						editor = btn;
-						btn.Toggled += delegate {
-							cred.SetValue (btn.Active);
-						};
-					}
-				}
-				else if (c is CredentialItem.StringType || c is CredentialItem.CharArrayType) {
-					CredentialItem cred = c;
-					Entry e = new Entry ();
-					editor = e;
-					e.ActivatesDefault = true;
-					if (cred.IsValueSecure ())
-						e.Visibility = false;
-					e.Changed += delegate {
-						if (cred is CredentialItem.StringType)
-							((CredentialItem.StringType)cred).SetValue (e.Text);
-						else
-							((CredentialItem.CharArrayType)cred).SetValue (e.Text.ToCharArray ());
-					};
-					
-					if (c is CredentialItem.Username)
-						e.Text = uri.GetUser () ?? "";
-				}
-				if (editor != null) {
-					table.Attach (editor, 1, 2, r, r + 1);
-					tc = (Table.TableChild) table [lab];
-					tc.XOptions = AttachOptions.Fill;
-					if (firstEditor == null)
-						firstEditor = editor;
-				}
-				
-				r++;
+			switch (type) {
+			case SupportedCredentialTypes.UsernamePassword:
+				upcred = (UsernamePasswordCredentials)cred;
+				firstEditor = CreateEntry (table, uri, "Username:", false);
+				CreateEntry (table, uri, "Password:", true);
+				break;
+			case SupportedCredentialTypes.Ssh:
+				sshcred = (SshUserCredentials)cred;
+				firstEditor = CreateEntry (table, uri, "Username:", false);
+				break;
 			}
 			table.ShowAll ();
 			Focus = firstEditor;
 			Default = buttonOk;
 		}
-		
-		protected virtual void OnButtonYesClicked (object sender, System.EventArgs e)
+
+		Widget CreateEntry (Table table, Uri uri, string text, bool password)
 		{
-			singleYesNoCred.SetValue (true);
-			Respond (ResponseType.Ok);
+			var lab = new Label (text);
+			lab.Xalign = 0;
+			table.Attach (lab, 0, 1, r, r + 1);
+			var tc = (Table.TableChild)table [lab];
+			tc.XOptions = AttachOptions.Shrink;
+
+			var e = new Entry ();
+			Widget editor = e;
+			e.ActivatesDefault = true;
+			if (password)
+				e.Visibility = false;
+			else
+				e.Text = uri.UserInfo;
+			e.Changed += delegate {
+				if (password) {
+					if (upcred != null)
+						upcred.Password = e.Text;
+				} else {
+					if (upcred != null)
+						upcred.Username = e.Text;
+					else
+						sshcred.Username = e.Text;
+				}
+			};
+
+			if (editor != null) {
+				table.Attach (editor, 1, 2, r, r + 1);
+				tc = (Table.TableChild)table [lab];
+				tc.XOptions = AttachOptions.Fill;
+			}
+			r++;
+			return editor;
 		}
-		
-		protected virtual void OnButtonNoClicked (object sender, System.EventArgs e)
-		{
-			singleYesNoCred.SetValue (false);
-			Respond (ResponseType.Cancel);
-		}
+
+		readonly UsernamePasswordCredentials upcred;
+		readonly SshUserCredentials sshcred;
 	}
 }
 

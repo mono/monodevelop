@@ -31,6 +31,7 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide.ProgressMonitoring;
 using System.Threading;
+using LibGit2Sharp;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -86,7 +87,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (repo == null)
 				return;
 
-			IWorkspaceObject wob = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
+			var wob = IdeApp.ProjectOperations.CurrentSelectedItem as IWorkspaceObject;
 			if (wob == null)
 				return;
 			if (((wob is WorkspaceItem) && ((WorkspaceItem)wob).ParentWorkspace == null) ||
@@ -130,17 +131,15 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			var stashes = Repository.GetStashes ();
-			NewStashDialog dlg = new NewStashDialog ();
+			var dlg = new NewStashDialog ();
 			try {
 				if (MessageService.RunCustomDialog (dlg) == (int) Gtk.ResponseType.Ok) {
 					string comment = dlg.Comment;
-					MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+					var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 					var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 					ThreadPool.QueueUserWorkItem (delegate {
 						try {
-							using (var gm = new GitMonitor (monitor))
-								stashes.Create (gm, comment);
+							Repository.CreateStash (monitor, comment);
 						} catch (Exception ex) {
 							MessageService.ShowException (ex);
 						}
@@ -160,15 +159,11 @@ namespace MonoDevelop.VersionControl.Git
 	{
 		protected override void Run ()
 		{
-			var stashes = Repository.GetStashes ();
-			MessageDialogProgressMonitor monitor = new MessageDialogProgressMonitor (true, false, false, true);
+			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
 			var statusTracker = IdeApp.Workspace.GetFileStatusTracker ();
 			ThreadPool.QueueUserWorkItem (delegate {
 				try {
-					NGit.Api.MergeCommandResult result;
-					using (var gm = new GitMonitor (monitor))
-						result = stashes.Pop (gm);
-					GitService.ReportStashResult (monitor, result);
+					GitService.ReportStashResult (Repository.PopStash (monitor));
 				} catch (Exception ex) {
 					MessageService.ShowException (ex);
 				}
