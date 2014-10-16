@@ -25,23 +25,30 @@
 // THE SOFTWARE.
 //
 
+using MonoDevelop.Projects;
+
 namespace MonoDevelop.Ide.Templates
 {
 	public abstract class TemplateWizard
 	{
 		public abstract string Id { get; }
 
-		//public abstract void RegisterHost (TemplateWizardHost host);
-
 		public abstract WizardPage GetPage (int pageNumber);
-
-		// Allow wizard to run any steps just before the projects are generated from the templates.
-		// This is called when the user clicks the Create button on the last page.
-		// This can be used to remove projects that are not required.
-		//public virtual void BeforeGeneration () { }
 
 		public virtual int TotalPages {
 			get { return 1; }
+		}
+
+		ProjectCreateParameters parameters;
+
+		public ProjectCreateParameters Parameters {
+			get {
+				if (parameters == null) {
+					parameters = new ProjectCreateParameters ();
+				}
+				return parameters;
+			}
+			set { parameters = value; }
 		}
 	}
 }

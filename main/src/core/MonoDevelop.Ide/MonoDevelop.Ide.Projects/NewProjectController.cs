@@ -243,8 +243,8 @@ namespace MonoDevelop.Ide.Projects
 			if (IsFirstPage) {
 				IsFirstPage = false;
 
-				SolutionTemplate template = GetSelectedTemplateForSelectedLanguage ();
-				if (wizardProvider.MoveToFirstPage (template)) {
+				FinalConfiguration.Template = GetSelectedTemplateForSelectedLanguage ();
+				if (wizardProvider.MoveToFirstPage (FinalConfiguration.Template, finalConfigurationPage.Parameters)) {
 					return;
 				}
 			} else if (wizardProvider.MoveToNextPage ()) {
@@ -252,10 +252,6 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			IsLastPage = true;
-
-			if (IsLastPage) {
-				FinalConfiguration.Template = GetSelectedTemplateForSelectedLanguage ();
-			}
 		}
 
 		public void MoveToPreviousPage ()

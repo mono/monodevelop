@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -74,7 +75,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		public bool MoveToFirstPage (SolutionTemplate template)
+		public bool MoveToFirstPage (SolutionTemplate template, ProjectCreateParameters parameters)
 		{
 			Reset ();
 
@@ -88,6 +89,7 @@ namespace MonoDevelop.Ide.Templates
 				return false;
 			}
 
+			CurrentWizard.Parameters = parameters;
 			IsFirstPage = true;
 			CurrentPageNumber++;
 			CurrentWizardPage = CurrentWizard.GetPage (CurrentPageNumber);

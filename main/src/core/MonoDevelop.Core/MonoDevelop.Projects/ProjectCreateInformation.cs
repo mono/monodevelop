@@ -63,10 +63,12 @@ namespace MonoDevelop.Projects
 		public SolutionFolder ParentFolder { get; set; }
 		
 		public ConfigurationSelector ActiveConfiguration { get; set; }
-		
+
+		public ProjectCreateParameters Parameters { get; set; }
 
 		public ProjectCreateInformation ()
 		{
+			Parameters = new ProjectCreateParameters ();
 		}
 
 		public ProjectCreateInformation (ProjectCreateInformation projectCreateInformation)
@@ -77,6 +79,7 @@ namespace MonoDevelop.Projects
 			projectBasePath = projectCreateInformation.ProjectBasePath;
 			ParentFolder = projectCreateInformation.ParentFolder;
 			ActiveConfiguration = projectCreateInformation.ActiveConfiguration;
+			Parameters = projectCreateInformation.Parameters;
 		}
 	}
 }

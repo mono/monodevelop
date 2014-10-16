@@ -26,6 +26,7 @@
 
 using System;
 using MonoDevelop.Ide.Templates;
+using ProjectCreateParameters = MonoDevelop.Projects.ProjectCreateParameters;
 using SolutionFolder = MonoDevelop.Projects.SolutionFolder;
 
 namespace MonoDevelop.Ide.Projects
@@ -45,6 +46,10 @@ namespace MonoDevelop.Ide.Projects
 
 		public SolutionFolder ParentFolder { get; set; }
 
+		public ProjectCreateParameters Parameters {
+			get { return config.Parameters; }
+		}
+
 		public string ProjectFileExtension {
 			get { return template.ProjectFileExtension; }
 		}
@@ -54,6 +59,7 @@ namespace MonoDevelop.Ide.Projects
 			set {
 				template = value;
 				HasProjects = template.HasProjects;
+				config.Parameters.Clear ();
 			}
 		}
 

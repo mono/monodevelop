@@ -75,9 +75,10 @@ namespace MonoDevelop.Ide.Templates
 			cinfo.SolutionPath = FileService.ResolveFullPath (config.SolutionLocation);
 			cinfo.ProjectBasePath = FileService.ResolveFullPath (config.ProjectLocation);
 			cinfo.ProjectName = config.ProjectName;
-			cinfo.SolutionName = config.SolutionName; //CreateSolutionDirectory ? txt_subdirectory.Text : txt_name.Text;
+			cinfo.SolutionName = config.SolutionName;
 			cinfo.ParentFolder = parentFolder;
 			cinfo.ActiveConfiguration = IdeApp.Workspace.ActiveConfiguration;
+			cinfo.Parameters = config.Parameters;
 			return cinfo;
 		}
 	}

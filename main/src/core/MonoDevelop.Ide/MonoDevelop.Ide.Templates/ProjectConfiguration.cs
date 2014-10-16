@@ -35,6 +35,7 @@ using System;
 using System.IO;
 using System.Text;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -51,6 +52,8 @@ namespace MonoDevelop.Ide.Templates
 
 			CreateGitIgnoreFile = true;
 			UseGit = true;
+
+			Parameters = new ProjectCreateParameters ();
 		}
 
 		public string ProjectName {
@@ -161,6 +164,8 @@ namespace MonoDevelop.Ide.Templates
 		bool CreateSeparateProjectDirectory {
 			get { return CreateProjectDirectoryInsideSolutionDirectory || CreateSolution; }
 		}
+
+		public ProjectCreateParameters Parameters { get; private set; }
 	}
 }
 

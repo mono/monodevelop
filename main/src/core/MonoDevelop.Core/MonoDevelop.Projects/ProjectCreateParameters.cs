@@ -1,5 +1,5 @@
 ﻿//
-// WizardPage.cs
+// ProjectCreateParameters.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -23,50 +23,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
+using System.Collections.Generic;
 
-using System;
-using MonoDevelop.Components;
-
-namespace MonoDevelop.Ide.Templates
+namespace MonoDevelop.Projects
 {
-	public abstract class WizardPage : Control
+	public class ProjectCreateParameters
 	{
-		bool canMoveToNextPage = true;
+		Dictionary<string, string> parameters;
 
-		// Enables/disables the Next button. 
-		public bool CanMoveToNextPage {
-			get { return canMoveToNextPage; }
+		public ProjectCreateParameters ()
+		{
+			Clear ();
+		}
+
+		public void Clear ()
+		{
+			parameters = new Dictionary<string, string> ();
+		}
+
+		public string this [string name] {
+			get {
+				string result;
+				if (parameters.TryGetValue (name, out result)) {
+					return result;
+				}
+				return string.Empty;
+			}
 			set {
-				if (canMoveToNextPage != value) {
-					canMoveToNextPage = value;
-					OnCanMoveToNextPageChanged ();
+				parameters [name] = value;
+			}
+		}
+
+		public bool GetBoolean (string name, bool defaultValue = false)
+		{
+			string value = this [name];
+			if (!string.IsNullOrEmpty (value)) {
+				bool result;
+				if (bool.TryParse (value, out result)) {
+					return result;
 				}
 			}
+			return defaultValue;
 		}
-
-		public event EventHandler CanMoveToNextPageChanged;
-
-		protected void OnCanMoveToNextPageChanged ()
-		{
-			var handler = CanMoveToNextPageChanged;
-			if (handler != null) {
-				handler (this, new EventArgs ());
-			}
-		}
-
-		public abstract string Title { get; }
-
-//		// Called when a page is made active. This allows the wizard to update its UI 
-//		// if the user moved from another page which may have changed some values.
-//		public virtual void Activated ()
-//		{
-//		}
-//
-//		// Called when another page is displayed just before the next page is displayed.
-//		public virtual void Deactivated ()
-//		{
-//		}
 	}
 }
 
