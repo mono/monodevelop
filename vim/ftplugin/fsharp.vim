@@ -76,6 +76,11 @@ sign define fswarn text=>> texthl=FWarnSign
 " make ftplugin undo-able
 let b:undo_ftplugin = 'setl fo< cms< com< fdm<'
 
+" clear signs, matches and loclist
+execute "sign unplace *"
+call clearmatches()
+call setloclist(0, b:errs)
+
 let s:candidates = [ 'fsi',
             \ 'fsi.exe',
             \ 'fsharpi',

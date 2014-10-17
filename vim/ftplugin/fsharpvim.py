@@ -5,6 +5,7 @@ import tempfile
 import unittest
 import json
 import threading
+
 class Statics:
     fsac = None
     locations = []
