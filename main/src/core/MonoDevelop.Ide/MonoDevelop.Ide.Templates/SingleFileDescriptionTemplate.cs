@@ -259,11 +259,10 @@ namespace MonoDevelop.Ide.Templates
 		// project and language parameters are optional
 		public virtual Stream CreateFileContent (SolutionItem policyParent, Project project, string language, string fileName, string identifier)
 		{
-			Dictionary<string, string> tags = new Dictionary<string, string> ();
 			ModifyTags (policyParent, project, language, identifier, fileName, ref tags);
 			
-			string content = CreateContent (project, tags, language);
-			content = StringParserService.Parse (content, tags);
+			string content = CreateContent (project, Tags, language);
+			content = StringParserService.Parse (content, Tags);
 			string mime = DesktopService.GetMimeTypeForUri (fileName);
 			CodeFormatter formatter = !string.IsNullOrEmpty (mime) ? CodeFormatterService.GetFormatter (mime) : null;
 			

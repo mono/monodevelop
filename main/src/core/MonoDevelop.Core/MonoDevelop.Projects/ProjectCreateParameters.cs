@@ -23,6 +23,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System.Collections.Generic;
 
 namespace MonoDevelop.Projects
@@ -39,6 +40,13 @@ namespace MonoDevelop.Projects
 		public void Clear ()
 		{
 			parameters = new Dictionary<string, string> ();
+		}
+
+		public void MergeTo (IDictionary<string, string> other)
+		{
+			foreach (KeyValuePair<string, string> parameter in parameters) {
+				other [parameter.Key] = parameter.Value;
+			}
 		}
 
 		public string this [string name] {

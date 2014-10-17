@@ -100,5 +100,12 @@ namespace MonoDevelop.Ide.Templates
 		{
 			return true;
 		}
+
+		protected Dictionary<string, string> tags = new Dictionary<string, string> ();
+
+		public Dictionary<string, string> Tags {
+			get { return tags; }
+			set { tags = value; }
+		}
 	}
 }

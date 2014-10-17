@@ -174,7 +174,9 @@ namespace MonoDevelop.Ide.Templates
 
 			foreach (FileDescriptionTemplate fileTemplate in files) {
 				try {
+					projectCreateInformation.Parameters.MergeTo (fileTemplate.Tags);
 					fileTemplate.AddToProject (policyParent, project, defaultLanguage, project.BaseDirectory, null);
+					fileTemplate.Tags.Clear ();
 				} catch (Exception ex) {
 					if (!IdeApp.IsInitialized)
 						throw;

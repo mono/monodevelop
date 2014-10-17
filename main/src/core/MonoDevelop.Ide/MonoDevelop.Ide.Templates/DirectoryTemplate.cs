@@ -98,9 +98,10 @@ namespace MonoDevelop.Ide.Templates
 					addedSomething = true;
 			}
 			
-			foreach (FileDescriptionTemplate t in templates)
+			foreach (FileDescriptionTemplate t in templates) {
+				t.Tags = Tags;
 				addedSomething |= t.AddToProject (policyParent, project, language, directory, name);
-			
+			}
 			return addedSomething;
 		}
 	}
