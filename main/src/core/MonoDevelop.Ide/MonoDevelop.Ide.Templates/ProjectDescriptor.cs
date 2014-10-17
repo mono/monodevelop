@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide.Templates
 			return packageReferences;
 		}
 
-		bool ShouldCreateProject (ProjectCreateInformation projectCreateInformation)
+		public bool ShouldCreateProject (ProjectCreateInformation projectCreateInformation)
 		{
 			if (String.IsNullOrEmpty (createCondition))
 				return true;

@@ -272,7 +272,7 @@ namespace MonoDevelop.Ide.Templates
 			if (solutionDescriptor.EntryDescriptors.Length == 0)
 				throw new InvalidOperationException ("Solution template doesn't have any project templates");
 
-			ISolutionItemDescriptor descriptor = solutionDescriptor.EntryDescriptors [0];
+			ISolutionItemDescriptor descriptor = GetFirstEntryDescriptor (solutionDescriptor, cInfo);;
 			SolutionEntityItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
 			descriptor.InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
 
@@ -281,6 +281,20 @@ namespace MonoDevelop.Ide.Templates
 			this.createdProjectInformation = cInfo;
 
 			return solutionEntryItem;
+		}
+
+		static ISolutionItemDescriptor GetFirstEntryDescriptor (SolutionDescriptor solutionDescriptor, ProjectCreateInformation cInfo)
+		{
+			foreach (ISolutionItemDescriptor descriptor in solutionDescriptor.EntryDescriptors) {
+				var projectDescriptor = descriptor as ProjectDescriptor;
+				if ((projectDescriptor != null) && !projectDescriptor.ShouldCreateProject (cInfo)) {
+					// Skip.
+				} else {
+					return descriptor;
+				}
+			}
+
+			return solutionDescriptor.EntryDescriptors [0];
 		}
 
 		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
