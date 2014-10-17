@@ -1,4 +1,4 @@
-{"Kind":"project","Data":{"Files":["<absolute path removed>/test/integration/Test1Json/FileTwo.fs","<absolute path removed>/test/integration/Test1Json/Program.fs"],"Output":"<absolute path removed>/test/integration/Test1Json/bin/Debug/Test1.exe"}}
+{"Kind":"project","Data":{"Files":["<absolute path removed>/test/integration/Test1Json/FileTwo.fs","<absolute path removed>/test/integration/Test1Json/Program.fs"],"Output":"<absolute path removed>/test/integration/Test1Json/bin/Debug/Test1.exe","References":["<absolute path removed>/FSharp.Core.dll","<absolute path removed>/System.Core.dll","<absolute path removed>/System.dll","<absolute path removed>/mscorlib.dll"],"Framework":"v4.0"}}
 {"Kind":"INFO","Data":"Synchronous parsing started"}
 {"Kind":"errors","Data":[]}
 {"Kind":"INFO","Data":"Synchronous parsing started"}

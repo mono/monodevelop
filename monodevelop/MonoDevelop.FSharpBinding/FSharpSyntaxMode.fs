@@ -109,30 +109,30 @@ open MonoDevelop.FSharp.FSharpSymbolHelper
 module internal Patterns =
     type TokenSymbol = 
         {
-            TokenInfo : TokenInformation;
+            TokenInfo : FSharpTokenInfo;
             SymbolUse: FSharpSymbolUse option
-            ExtraColorInfo: (Range.range * TokenColorKind) option
+            ExtraColorInfo: (Range.range * FSharpTokenColorKind) option
         }
 
     let (|Keyword|_|) ts =
-        if (ts.TokenInfo.ColorClass) = TokenColorKind.Keyword || 
-           (ts.ExtraColorInfo.IsSome && (snd ts.ExtraColorInfo.Value) = TokenColorKind.Keyword)  then Some(Keyword)
+        if (ts.TokenInfo.ColorClass) = FSharpTokenColorKind.Keyword || 
+           (ts.ExtraColorInfo.IsSome && (snd ts.ExtraColorInfo.Value) = FSharpTokenColorKind.Keyword)  then Some(Keyword)
         else None
 
     let (|Comment|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.Comment then Some Comment
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.Comment then Some Comment
         else None
 
     let (|StringLiteral|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.String then Some StringLiteral
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.String then Some StringLiteral
         else None
 
     let (|NumberLiteral|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.Number then Some NumberLiteral
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.Number then Some NumberLiteral
         else None
 
     let (|PreprocessorKeyword|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.PreprocessorKeyword then Some PreprocessorKeyword
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.PreprocessorKeyword then Some PreprocessorKeyword
         else None
 
     let (|Punctuation|_|) (ts:TokenSymbol) =
@@ -188,14 +188,14 @@ module internal Patterns =
 
     let private isIdentifier =
         function
-        | TokenColorKind.Identifier
-        | TokenColorKind.UpperIdentifier -> true
+        | FSharpTokenColorKind.Identifier
+        | FSharpTokenColorKind.UpperIdentifier -> true
         | _ -> false
 
     let isSimpleToken tck =
         match tck with
-        | TokenColorKind.Identifier
-        | TokenColorKind.UpperIdentifier -> false
+        | FSharpTokenColorKind.Identifier
+        | FSharpTokenColorKind.UpperIdentifier -> false
         | _ -> true
 
     let (|IdentifierSymbol|_|) ts =
@@ -356,7 +356,7 @@ module internal Patterns =
         else None
 
     let (|UnusedCode|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.InactiveCode then Some UnusedCode
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.InactiveCode then Some UnusedCode
         else None
 
     let isAbstractBlockSpan (span: Span) =
@@ -479,7 +479,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                         |> Option.tryCast<ParseAndCheckResults>
                         |> Option.iter (getAndProcessSymbols >> Async.Start))
 
-    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Range.range * TokenColorKind)[] option) (token: TokenInformation) =
+    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Range.range * FSharpTokenColorKind)[] option) (token: FSharpTokenInfo) =
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with

@@ -12,7 +12,7 @@ open Microsoft.FSharp.Compiler.SourceCodeServices
 
 let private buildFormatComment cmt (sb:StringBuilder) =
   match cmt with
-  | XmlCommentText(s) -> sb.AppendLine(s)
+  | FSharpXmlDoc.Text s -> sb.AppendLine(s)
   // For 'XmlCommentSignature' we could get documentation from 'xml'
   // files, but I'm not sure whether these are available on Mono
   | _ -> sb
@@ -22,10 +22,10 @@ let private buildFormatComment cmt (sb:StringBuilder) =
 // int in bold (so that no overload is highlighted)
 let private buildFormatElement isSingle el (sb:StringBuilder) =
   match el with
-  | ToolTipElementNone -> sb
-  | ToolTipElement(it, comment) ->
+  | FSharpToolTipElement.None -> sb
+  | FSharpToolTipElement.Single(it, comment) ->
       sb.AppendLine(it) |> buildFormatComment comment
-  | ToolTipElementGroup(items) ->
+  | FSharpToolTipElement.Group(items) ->
       let items, msg =
         if items.Length > 10 then
           (items |> Seq.take 10 |> List.ofSeq),
@@ -36,13 +36,13 @@ let private buildFormatElement isSingle el (sb:StringBuilder) =
       for (it, comment) in items do
         sb.AppendLine(it) |> buildFormatComment comment |> ignore
       if msg <> null then sb.AppendFormat(msg) else sb
-  | ToolTipElementCompositionError(err) ->
+  | FSharpToolTipElement.CompositionError(err) ->
       sb.Append("Composition error: " + err)
 
 let private buildFormatTip tip (sb:StringBuilder) =
   match tip with
-  | ToolTipText([single]) -> sb |> buildFormatElement true single
-  | ToolTipText(its) ->
+  | FSharpToolTipText([single]) -> sb |> buildFormatElement true single
+  | FSharpToolTipText(its) ->
       sb.AppendLine("Multiple items") |> ignore
       its |> Seq.mapi (fun i it -> i = 0, it) |> Seq.fold (fun sb (first, item) ->
         if not first then sb.AppendLine("\n--------------------\n") |> ignore

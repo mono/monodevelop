@@ -62,10 +62,10 @@ type FSharpParser() =
             sb.ToString()
     
     /// Format errors for the given line (if there are multiple, we collapse them into a single one)
-    let formatError (error : ErrorInfo) = 
+    let formatError (error : FSharpErrorInfo) = 
         // Single error for this line
         let errorType = 
-            if error.Severity = Severity.Error then ErrorType.Error
+            if error.Severity = FSharpErrorSeverity.Error then ErrorType.Error
             else ErrorType.Warning
         Error(errorType, wrapText error.Message 80, DomRegion(error.StartLineAlternate, error.StartColumn + 1, error.EndLineAlternate, error.EndColumn + 1))
 
@@ -117,7 +117,7 @@ type FSharpParser() =
                 //Set code folding regions, GetNavigationItems may throw in some situations
                 try 
                     let regions = 
-                        let processDecl (decl : SourceCodeServices.DeclarationItem) = 
+                        let processDecl (decl : SourceCodeServices.FSharpNavigationDeclarationItem) = 
                             let m = decl.Range
                             FoldingRegion(decl.Name, DomRegion(m.StartLine, m.StartColumn + 1, m.EndLine, m.EndColumn + 1))
                         seq {for toplevel in results.GetNavigationItems() do

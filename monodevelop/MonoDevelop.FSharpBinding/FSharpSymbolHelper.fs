@@ -21,7 +21,7 @@ module FSharpTypeExt =
             else fsharpType
         else fsharpType
 
-    let isConstructor (func: FSharpMemberFunctionOrValue) =
+    let isConstructor (func: FSharpMemberOrFunctionOrValue) =
         func.CompiledName = ".ctor"
 
     let isReferenceCell (fsharpType: FSharpType) = 
@@ -73,7 +73,7 @@ module CorePatterns =
 
     let (|MemberFunctionOrValue|_|) (symbol : FSharpSymbol) =
         match symbol with
-        | :? FSharpMemberFunctionOrValue as func -> MemberFunctionOrValue(func) |> Some
+        | :? FSharpMemberOrFunctionOrValue as func -> MemberFunctionOrValue(func) |> Some
         | _ -> None
 
     let (|Parameter|_|) (symbol : FSharpSymbol) = 
@@ -228,7 +228,7 @@ module SymbolTooltips =
     let getSummaryFromSymbol (symbol:FSharpSymbol) (backupSig: Lazy<Option<string * string>> option) =
         let xmlDoc, xmlDocSig = 
             match symbol with
-            | :? FSharpMemberFunctionOrValue as func -> func.XmlDoc, func.XmlDocSig
+            | :? FSharpMemberOrFunctionOrValue as func -> func.XmlDoc, func.XmlDocSig
             | :? FSharpEntity as fse -> fse.XmlDoc, fse.XmlDocSig
             | :? FSharpField as fsf -> fsf.XmlDoc, fsf.XmlDocSig
             | :? FSharpUnionCase as fsu -> fsu.XmlDoc, fsu.XmlDocSig
@@ -256,7 +256,7 @@ module SymbolTooltips =
            unionCase.Name ++ asType Keyword "of" ++ typeList
          else unionCase.Name
 
-    let getFuncSignature displayContext (func: FSharpMemberFunctionOrValue) indent signatureOnly =
+    let getFuncSignature displayContext (func: FSharpMemberOrFunctionOrValue) indent signatureOnly =
         let indent = String.replicate indent " "
         let functionName =
             if isConstructor func then func.EnclosingEntity.DisplayName
@@ -367,7 +367,7 @@ module SymbolTooltips =
         | false, false, true -> typeDisplay + delegateTip () + fullName
         | _ -> typeDisplay + fullName
 
-    let getValSignature displayContext (v:FSharpMemberFunctionOrValue) =
+    let getValSignature displayContext (v:FSharpMemberOrFunctionOrValue) =
         let retType = asType UserType (escapeText(v.ReturnParameter.Type.Format displayContext))
         let prefix = 
             if v.IsMutable then asType Keyword "val" ++ asType Keyword "mutable"

@@ -61,10 +61,6 @@
     <Compile Include="Debug.fs" />
     <Compile Include="Options.fs" />
     <Compile Include="TipFormatter.fs" />
-    <Compile Include="IProjectParser.fs" />
-    <Compile Include="MonoProjectParser.fs" />
-    <Compile Include="DotNetProjectParser.fs" />
-    <Compile Include="ProjectParser.fs" />
     <Compile Include="Program.fs" />
     <None Include="packages.config" />
     <None Include="build.fsx" />
@@ -74,11 +70,6 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Numerics" />
-    <Reference Include="Microsoft.Build" />
-    <Reference Include="Microsoft.Build.Engine" />
-    <Reference Include="Microsoft.Build.Framework" />
-    <Reference Include="Microsoft.Build.Tasks.v4.0" />
-    <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="NDesk.Options">
       <HintPath>..\lib\ndesk-options\NDesk.Options.dll</HintPath>
     </Reference>
@@ -93,7 +84,7 @@
       <Name>FSharp.CompilerBinding</Name>
     </ProjectReference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.62\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.71\lib\net45\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the

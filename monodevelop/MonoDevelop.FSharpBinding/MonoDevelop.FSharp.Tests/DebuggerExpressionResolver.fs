@@ -60,7 +60,7 @@ let localTwo = localOne.PropertyOne"""
         let debugResolver =
             doc.GetContents<obj>()
             |> Seq.cast<IDebuggerExpressionResolver> 
-            |> Seq.tryHead
+            |> (fun s -> if Seq.isEmpty s then None else Some (Seq.head s))
         
         match debugResolver with
         | Some resolver -> 

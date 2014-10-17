@@ -35,8 +35,8 @@ type internal FSharpMemberCompletionData(name, getTip, glyph) =
 
     let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon glyph))
 
-    new (name, datatip:ToolTipText, glyph) = new FSharpMemberCompletionData(name, (fun () -> datatip), glyph)
-    new (mi:Declaration) =  new FSharpMemberCompletionData(mi.Name, (fun () -> mi.DescriptionText), mi.Glyph)
+    new (name, datatip:FSharpToolTipText, glyph) = new FSharpMemberCompletionData(name, (fun () -> datatip), glyph)
+    new (mi:FSharpDeclaration) =  new FSharpMemberCompletionData(mi.Name, (fun () -> mi.DescriptionText), mi.Glyph)
 
     override x.Description = name //description.Value   // this is not used
     override x.Icon = icon.Value
@@ -44,29 +44,29 @@ type internal FSharpMemberCompletionData(name, getTip, glyph) =
     /// Check if the datatip has multiple overloads
     override x.HasOverloads = 
         match getTip() with 
-        | ToolTipText [xs] ->
+        | FSharpToolTipText [xs] ->
             match xs with 
-            | ToolTipElementGroup ttg -> true 
+            | FSharpToolTipElement.Group ttg -> true 
             | _ -> false
-        | ToolTipText list -> true
+        | FSharpToolTipText list -> true
 
     /// Split apart the elements into separate overloads
     override x.OverloadedData =
         match getTip() with 
-        | ToolTipText xs -> 
+        | FSharpToolTipText xs -> 
             seq{for tooltipElement in xs do
                 match tooltipElement with
-                | ToolTipElement(a, b) -> yield FSharpMemberCompletionData(name, ToolTipText[tooltipElement], glyph) :> _
-                | ToolTipElementGroup(items) ->
+                | FSharpToolTipElement.Single(a, b) -> yield FSharpMemberCompletionData(name, FSharpToolTipText[tooltipElement], glyph) :> _
+                | FSharpToolTipElement.Group(items) ->
                   let overloads =
                       items 
-                      |> Seq.map (fun args -> FSharpMemberCompletionData(name, ToolTipText[ToolTipElement(args)], glyph)) 
+                      |> Seq.map (fun args -> FSharpMemberCompletionData(name, FSharpToolTipText[FSharpToolTipElement.Single(args)], glyph)) 
                       |> Seq.cast
                   yield! overloads
-                | ToolTipElementCompositionError error ->
+                | FSharpToolTipElement.CompositionError error ->
                     //show the composition error in the tip, hiding it makes it more difficult to diagnose
-                    yield FSharpMemberCompletionData(name, ToolTipText[ToolTipElement(error,XmlCommentNone)], 0) :> _
-                | ToolTipElementNone -> () }
+                    yield FSharpMemberCompletionData(name, FSharpToolTipText[FSharpToolTipElement.Single(error,FSharpXmlDoc.None)], 0) :> _
+                | FSharpToolTipElement.None -> () }
 
 
     override x.AddOverload (data: ICompletionData) = ()//not currently called
@@ -97,7 +97,7 @@ type internal FSharpErrorCompletionData(exn:exn) =
     override x.Icon =  new MonoDevelop.Core.IconId("md-event")
 
 /// Provide information to the 'method overloads' windows that comes up when you type '('
-type ParameterDataProvider(nameStart: int, name, meths : MethodGroupItem array) = 
+type ParameterDataProvider(nameStart: int, name, meths : FSharpMethodGroupItem array) = 
     inherit MonoDevelop.Ide.CodeCompletion.ParameterDataProvider (nameStart)
     override x.Count = meths.Length
         /// Returns the markup to use to represent the specified method overload

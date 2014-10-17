@@ -10,9 +10,9 @@ There is a [FAKE script](build.fsx) with chain-loaders for [*nix](fake) and [Win
 
 On Linux and OSX, there is a legacy [Makefile](Makefile), which is a bit quicker to run (the overhead of running launching FSI for Fake is a few seconds). For the moment this supports all the same functionality that the FAKE script does, but this will not likely continue to be the case.
 
-The [unit tests](unit) are simply constructed using NUnit and FSUnit. Just extend the existing project, or add a new one at the same depth and the FAKE script will pick it up.
-
 The [integration tests](integration) use a simple strategy of running a scripted session with `fsautocomplete.exe` and then comparing the output with that saved in the repository. This requires careful checking when the test is first constructed. On later runs, absolute paths are removed using regular expressions to ensure that the tests are machine-independent.
+
+There are not currently any unit tests, the previously tested functionality of project parsing has been moved upstream to [FSharp.Compiler.Service](https://github.com/fsharp/FSharp.Compiler.Service). The tests were simply constructed using NUnit and FSUnit. If a new test is required, you can look back through the history for the `unit` directory and use that structure.
 
 ## Communication protocol
 

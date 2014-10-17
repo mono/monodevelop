@@ -51,7 +51,7 @@ type FSharpUnitTestTextEditorExtension() =
                     symbols 
                     |> Array.filter
                         (fun s -> match s.Symbol with
-                                  | :? FSharpMemberFunctionOrValue as fom -> 
+                                  | :? FSharpMemberOrFunctionOrValue as fom -> 
                                         fom.Attributes
                                         |> Seq.exists (hasAttributeNamed "NUnit.Framework.TestAttribute")
                                   | :? FSharpEntity as fse ->
@@ -63,7 +63,7 @@ type FSharpUnitTestTextEditorExtension() =
                                        let range = symbolUse.RangeAlternate
                                        let test = AbstractUnitTestTextEditorExtension.UnitTestLocation(range.StartLine)
                                        match symbolUse.Symbol with
-                                       | :? FSharpMemberFunctionOrValue as func -> 
+                                       | :? FSharpMemberOrFunctionOrValue as func -> 
                                             let typeName = func.EnclosingEntity.QualifiedName
                                             let methName = func.CompiledName
                                             let isIgnored = func.Attributes |> Seq.exists (hasAttributeNamed "NUnit.Framework.IgnoreAttribute")

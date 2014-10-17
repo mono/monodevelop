@@ -170,8 +170,8 @@ module internal TipFormatter =
   /// Format some of the data returned by the F# compiler
   let private buildFormatComment cmt =
     match cmt with
-    | XmlCommentText(s) -> Tooltips.getTooltip Styles.simpleMarkup <| s.Trim()
-    | XmlCommentSignature(file,key) ->
+    | FSharpXmlDoc.Text(s) -> Tooltips.getTooltip Styles.simpleMarkup <| s.Trim()
+    | FSharpXmlDoc.XmlDocFileSignature(file,key) ->
         match findDocForEntity (file, key) with
         | None -> String.Empty
         | Some doc -> Tooltips.getTooltip Styles.simpleMarkup doc
@@ -181,14 +181,14 @@ module internal TipFormatter =
   let private buildFormatElement el =
     let signatureB, commentB = StringBuilder(), StringBuilder()
     match el with
-    | ToolTipElementNone -> ()
-    | ToolTipElement(it, comment) ->
+    | FSharpToolTipElement.None -> ()
+    | FSharpToolTipElement.Single(it, comment) ->
         Debug.WriteLine("DataTipElement: " + it)
         signatureB.Append(GLib.Markup.EscapeText (it)) |> ignore
         let html = buildFormatComment comment
         if not (String.IsNullOrWhiteSpace html) then
             commentB.Append(html) |> ignore
-    | ToolTipElementGroup(items) ->
+    | FSharpToolTipElement.Group(items) ->
         let items, msg =
           if items.Length > 10 then
             (items |> Seq.take 10 |> List.ofSeq), sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10)
@@ -203,7 +203,7 @@ module internal TipFormatter =
                   commentB.AppendLine(html) |> ignore
                   commentB.Append(GLib.Markup.EscapeText "\n")  |> ignore )
         if msg <> null then signatureB.Append(msg) |> ignore
-    | ToolTipElementCompositionError(err) ->
+    | FSharpToolTipElement.CompositionError(err) ->
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
     signatureB.ToString().Trim(), commentB.ToString().Trim()
 
@@ -212,7 +212,7 @@ module internal TipFormatter =
   // TODO: Use the current projects policy to get line length
   // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to:
   // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
-  let formatTip (ToolTipText(list)) =
+  let formatTip (FSharpToolTipText(list)) =
       [ for item in list ->
           let signature, summary = buildFormatElement item
           signature, summary ]
@@ -220,9 +220,9 @@ module internal TipFormatter =
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =
     match comment with
-    | XmlCommentText(s) -> Tooltips.getParameterTip Styles.simpleMarkup s paramName
-    // For 'XmlCommentSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
-    | XmlCommentSignature(file,key) ->
+    | FSharpXmlDoc.Text(s) -> Tooltips.getParameterTip Styles.simpleMarkup s paramName
+    // For 'FSharpXmlDoc.XmlDocFileSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
+    | FSharpXmlDoc.XmlDocFileSignature(file,key) ->
         maybe {let! docReader = findXmlDocProviderForAssembly file
                let doc = docReader.GetDocumentation(key)
                if String.IsNullOrEmpty doc then return! None else
@@ -233,13 +233,13 @@ module internal TipFormatter =
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromElement paramName element =
       match element with
-      | ToolTipElementNone -> None
-      | ToolTipElement (it, comment) -> extractParamTipFromComment paramName comment
-      | ToolTipElementGroup items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
-      | ToolTipElementCompositionError err -> None
+      | FSharpToolTipElement.None -> None
+      | FSharpToolTipElement.Single (it, comment) -> extractParamTipFromComment paramName comment
+      | FSharpToolTipElement.Group items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
+      | FSharpToolTipElement.CompositionError err -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
-  let extractParamTip paramName (ToolTipText elements) =
+  let extractParamTip paramName (FSharpToolTipText elements) =
       List.tryPick (extractParamTipFromElement paramName) elements
 
 
