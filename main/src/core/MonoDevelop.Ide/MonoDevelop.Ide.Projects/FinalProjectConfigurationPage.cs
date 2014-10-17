@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide.Projects
 				template = value;
 				HasProjects = template.HasProjects;
 				config.Parameters.Clear ();
+				config.Parameters ["CreateSolution"] = (ParentFolder == null).ToString ();
 			}
 		}
 
