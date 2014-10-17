@@ -165,7 +165,8 @@ Target "All" id
   ==> "BuildDebug"
   ==> "IntegrationTest"
 
-"BuildEmacs"
+"RestorePackages"
+  ==> "BuildEmacs"
   ==> "EmacsTest"
 
 "EmacsTest" ==> "Test"
