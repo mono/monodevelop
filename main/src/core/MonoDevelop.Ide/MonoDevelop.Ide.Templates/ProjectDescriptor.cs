@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Templates
 		private string name;
 		private string type;
 		private string directory;
+		private string createCondition;
 
 		private List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate> ();
 		private List<SingleFileDescriptionTemplate> resources = new List<SingleFileDescriptionTemplate> ();
@@ -61,6 +62,7 @@ namespace MonoDevelop.Ide.Templates
 
 			projectDescriptor.name = xmlElement.GetAttribute ("name");
 			projectDescriptor.directory = xmlElement.GetAttribute ("directory");
+			projectDescriptor.createCondition = xmlElement.GetAttribute ("if");
 
 			projectDescriptor.type = xmlElement.GetAttribute ("type");
 			if (String.IsNullOrEmpty (projectDescriptor.type))
@@ -126,6 +128,10 @@ namespace MonoDevelop.Ide.Templates
 				LoggingService.LogError ("Could not create project of type '" + type + "'. Project skipped");
 				return null;
 			}
+
+			if (!ShouldCreateProject (projectCreateInformation))
+				return null;
+
 			Project project = Services.ProjectService.CreateProject (type, projectCreateInformation, projectOptions);
 			return project;
 		}
@@ -238,6 +244,14 @@ namespace MonoDevelop.Ide.Templates
 		public IList<ProjectTemplatePackageReference> GetPackageReferences ()
 		{
 			return packageReferences;
+		}
+
+		bool ShouldCreateProject (ProjectCreateInformation projectCreateInformation)
+		{
+			if (String.IsNullOrEmpty (createCondition))
+				return true;
+
+			return projectCreateInformation.Parameters.GetBoolean (createCondition, true);
 		}
 	}
 }
