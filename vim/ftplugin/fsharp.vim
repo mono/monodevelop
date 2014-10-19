@@ -59,6 +59,7 @@ augroup fsharp
     autocmd TextChangedI *.fs[ix]\\\{0,1\} call OnTextChanged()
     autocmd CursorHold   *.fs[ix]\\\{0,1\} call OnCursorHold()
     autocmd BufLeave     *.fs[ix]\\\{0,1\} call OnBufLeave()
+    autocmd BufEnter     *.fs[ix]\\\{0,1\} call OnBufEnter()
 augroup END
 
 com! -buffer -range=% Interactive call s:launchInteractive(<line1>, <line2>)
@@ -108,6 +109,10 @@ function! OnTextChanged()
 endfunction
 
 function! OnInsertLeave()
+endfunction
+
+function! OnBufEnter()
+    call ShowErrors()
 endfunction
 
 function! OnBufLeave()
