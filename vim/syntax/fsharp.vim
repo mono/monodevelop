@@ -1,6 +1,6 @@
 " Vim syntax file
 " Language:     F#
-" Last Change:  Thu 07 Mar 2013 10:44:27 PM CET
+" Last Change:  Sun 19 Oct 2014 11:11:44 PM CEST
 " Maintainer:   Gregor Uhlenheuer <kongo2002@googlemail.com>
 "
 " Note:         This syntax file is a complete rewrite of the original version
@@ -182,15 +182,6 @@ syn region   fsharpAttrib matchgroup=fsharpAttribute start="\[<" end=">]"
 " regions
 syn region   fsharpRegion matchgroup=fsharpPreCondit start="\%(end\)\@<!region.*$"
             \ end="endregion" fold contains=ALL contained
-
-" omnicomplete
-setlocal omnifunc=fsharp#Complete
-
-" balloons - only works in GUI
-if has("balloon_eval")
-    setlocal ballooneval
-    setlocal balloonexpr=fsharp#Balloon()
-endif
 
 if version >= 508 || !exists("did_fs_syntax_inits")
     if version < 508
