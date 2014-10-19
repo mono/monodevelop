@@ -58,6 +58,7 @@ augroup fsharp
     autocmd TextChanged  *.fs* call OnTextChanged()
     autocmd TextChangedI *.fs* call OnTextChanged()
     autocmd CursorHold   *.fs* call OnCursorHold()
+    autocmd BufLeave     *.fs* call OnBufLeave()
 augroup END
 
 com! -buffer -range=% Interactive call s:launchInteractive(<line1>, <line2>)
@@ -76,10 +77,6 @@ sign define fswarn text=>> texthl=FWarnSign
 " make ftplugin undo-able
 let b:undo_ftplugin = 'setl fo< cms< com< fdm<'
 
-" clear signs, matches and loclist
-execute "sign unplace *"
-call clearmatches()
-call setloclist(0, b:errs)
 
 let s:candidates = [ 'fsi',
             \ 'fsi.exe',
@@ -112,6 +109,20 @@ endfunction
 
 function! OnInsertLeave()
 endfunction
+
+function! OnBufLeave()
+    call ClearErrorDetails()
+endfunction
+
+" clear signs, matches and loclist
+function! ClearErrorDetails()
+    execute "sign unplace *"
+    call clearmatches()
+    call setloclist(0, b:errs)
+endfunction
+
+"call the function on BufEnter
+call ClearErrorDetails()
 
 function! s:printLogFile()
 python << EOF
