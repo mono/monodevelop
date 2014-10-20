@@ -40,7 +40,7 @@ if '.fs' == ext or '.fsi' == ext:
         fsautocomplete.project(proj_file)
 EOF
 
-    nnoremap <buffer> <leader>i :call fsharpbinding#python#TypeCheck()<cr>
+    nnoremap <buffer> <leader>t :call fsharpbinding#python#TypeCheck()<cr>
     nnoremap <buffer> <leader>d :call fsharpbinding#python#GotoDecl()<cr>
     nnoremap <buffer> <leader>s :call fsharpbinding#python#GoBackFromDecl()<cr>
 
