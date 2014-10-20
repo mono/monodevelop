@@ -230,7 +230,7 @@ namespace MonoDevelop.Ide.Templates
 			string dir = StringParserService.Parse (directory, substitution);
 			projectCreateInformation.ProjectBasePath = Path.Combine (projectCreateInformation.SolutionPath, dir);
 
-			if (!Directory.Exists (projectCreateInformation.ProjectBasePath))
+			if (ShouldCreateProject (projectCreateInformation) && !Directory.Exists (projectCreateInformation.ProjectBasePath))
 				Directory.CreateDirectory (projectCreateInformation.ProjectBasePath);
 
 			return projectCreateInformation;
