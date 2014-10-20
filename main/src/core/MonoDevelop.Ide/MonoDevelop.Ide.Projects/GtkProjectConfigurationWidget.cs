@@ -26,7 +26,6 @@
 
 using System.IO;
 using Gtk;
-using MonoDevelop.Ide.Templates;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
 
@@ -139,6 +138,7 @@ namespace MonoDevelop.Ide.Projects
 			projectFolderPreviewWidget.Load (projectConfiguration);
 			solutionNameLabel.Text = GetSolutionNameLabel ();
 			locationTextBox.Text = projectConfiguration.Location;
+			projectNameTextBox.Text = projectConfiguration.ProjectName;
 			solutionNameTextBox.Text = projectConfiguration.SolutionName;
 
 			solutionNameTextBox.Sensitive = projectConfiguration.IsSolutionNameEnabled;

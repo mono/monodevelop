@@ -219,6 +219,11 @@ namespace MonoDevelop.Ide.Projects
 				IsValidChanged (this, new EventArgs ());
 			}
 		}
+
+		public void UpdateFromParameters ()
+		{
+			ProjectName = Parameters ["ProjectName"];
+		}
 	}
 }
 

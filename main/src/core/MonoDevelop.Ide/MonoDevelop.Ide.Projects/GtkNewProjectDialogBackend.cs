@@ -417,6 +417,7 @@ namespace MonoDevelop.Ide.Projects
 			if (controller.IsFirstPage) {
 				return templatesHBox;
 			} else if (controller.IsLastPage) {
+				controller.FinalConfiguration.UpdateFromParameters ();
 				projectConfigurationWidget.Load (controller.FinalConfiguration);
 				return projectConfigurationWidget;
 			} else {
