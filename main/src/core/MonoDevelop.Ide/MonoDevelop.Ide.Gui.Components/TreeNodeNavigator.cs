@@ -453,11 +453,11 @@ namespace MonoDevelop.Ide.Gui.Components.Internal
 				}
 				MoveToPosition (pos);
 			}
+		}
 
-			NodeInfo GetStoreNodeInfo ()
-			{
-				return (NodeInfo) store.GetValue (currentIter, 0);
-			}
+		NodeInfo GetStoreNodeInfo ()
+		{
+			return (NodeInfo) store.GetValue (currentIter, 0);
 		}
 	}
 }
