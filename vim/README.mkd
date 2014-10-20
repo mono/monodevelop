@@ -59,7 +59,7 @@ set updatetime=500
 
 augroup fsharp_au
   au!
-  au CursorHold * SyntasticCheck
+  au CursorHold *.fs,*.fsi,*.fsx SyntasticCheck
 augroup END
 ~~~
 
