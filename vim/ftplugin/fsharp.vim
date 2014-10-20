@@ -1,6 +1,6 @@
 " Vim filetype plugin
 " Language:     F#
-" Last Change:  Thu 23 Oct 2014 08:39:34 PM CEST
+" Last Change:  Thu 23 Oct 2014 08:39:53 PM CEST
 " Maintainer:   Gregor Uhlenheuer <kongo2002@googlemail.com>
 
 if exists('b:did_ftplugin')
@@ -47,6 +47,13 @@ EOF
     com! -buffer LogFile call fsharpbinding#python#LoadLogFile()
     com! -buffer -nargs=* -complete=file ParseProject call fsharpbinding#python#ParseProject(<f-args>)
     com! -buffer -nargs=* -complete=file BuildProject call fsharpbinding#python#BuildProject(<f-args>)
+
+    augroup fsharpbindings_au
+        au!
+        " closing the scratch window after leaving insert mode
+        " is common practice
+        au InsertLeave *.fs? if pumvisible() == 0|pclose|endif
+    augroup END
 
     " omnicomplete
     setlocal omnifunc=fsharpbinding#python#Complete
