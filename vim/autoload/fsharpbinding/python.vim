@@ -1,6 +1,6 @@
 " Vim autoload functions
 " Language:     F#
-" Last Change:  Mon 20 Oct 2014 07:58:27 PM CEST
+" Last Change:  Mon 20 Oct 2014 08:21:43 PM CEST
 " Maintainer:   Gregor Uhlenheuer <kongo2002@googlemail.com>
 
 if exists('g:loaded_autoload_fsharpbinding_python')
@@ -66,22 +66,10 @@ endfunction
 
 
 " probable loclist format
-" {'lnum': 2, 'bufnr': 1, 'col': 1, 'valid': 1, 'vcol': 1, 'nr': -1, 'type': 'W', 'pattern': '', 'text': 'Expected an assignment or functi on call and instead saw an expression.'}
+" {'lnum': 2, 'bufnr': 1, 'col': 1, 'valid': 1, 'vcol': 1, 'nr': -1, 'type': 'W', 'pattern': '', 'text': 'Expected an assignment or function call and instead saw an expression.'}
 
 " fsautocomplete format
 " {"StartLine":4,"StartLineAlternate":5,"EndLine":4,"EndLineAlternate":5,"StartColumn":0,"EndColumn":4,"Severity":"Error","Message":"The value or constructor 'asdf' is not defined","Subcategory":"typecheck","FileName":"/Users/karlnilsson/code/kjnilsson/fsharp-vim/test.fsx"}
-function! s:findErrorByPos(line, col)
-    for e in b:errs
-        if e['lnum'] == a:line
-            if e['col'] < a:col && e['ecol'] >= a:col
-                return e
-            endif
-        endif
-    endfor
-    return {}
-endfunction
-
-
 function! fsharpbinding#python#FindErrors()
     let result = []
     let buf = bufnr('%')
@@ -90,13 +78,12 @@ function! fsharpbinding#python#FindErrors()
         for e in errs
             call add(result,
                 \{'lnum': e['StartLineAlternate'],
-                \'col': e['StartColumn'],
-                \'ecol': e['EndColumn'],
-                \'type': e['Severity'][0],
-                \'text': e['Message'],
-                \'pattern': '\%' . e['StartLineAlternate'] . 'l\%>' . e['StartColumn'] .  'c\%<' . (e['EndColumn'] + 1) . 'c',
-                \'bufnr': buf,
-                \'valid': 1 })
+                \ 'col': e['StartColumn'],
+                \ 'type': e['Severity'][0],
+                \ 'text': e['Message'],
+                \ 'hl': '\%' . e['StartLineAlternate'] . 'l\%>' . e['StartColumn'] .  'c\%<' . (e['EndColumn'] + 1) . 'c',
+                \ 'bufnr': buf,
+                \ 'valid': 1 })
         endfor
     catch
         echohl WarningMsg "failed to parse file"
