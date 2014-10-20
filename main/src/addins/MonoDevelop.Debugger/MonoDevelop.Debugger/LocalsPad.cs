@@ -26,7 +26,6 @@
 //
 
 using System;
-using System.Linq;
 using Mono.Debugging.Client;
 using System.Collections.Generic;
 
@@ -116,9 +115,9 @@ namespace MonoDevelop.Debugger
 					return false;
 
 				return true;
-			} else {
-				return a.SourceLocation.MethodName.Equals (z.SourceLocation.MethodName, StringComparison.Ordinal);
 			}
+
+			return a.SourceLocation.MethodName.Equals (z.SourceLocation.MethodName, StringComparison.Ordinal);
 		}
 	}
 }

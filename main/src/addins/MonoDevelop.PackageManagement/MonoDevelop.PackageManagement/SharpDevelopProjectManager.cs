@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -52,6 +53,12 @@ namespace ICSharpCode.PackageManagement
 			IPackage installedPackage = LocalRepository.FindPackage(package.Id);
 			return (installedPackage != null) &&
 				(installedPackage.Version < package.Version);
+		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			var repository = LocalRepository as PackageReferenceRepository;
+			return repository.ReferenceFile.GetPackageReferences ();
 		}
 	}
 }

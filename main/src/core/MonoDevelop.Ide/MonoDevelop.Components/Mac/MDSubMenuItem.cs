@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if MAC
 using AppKit;
 using MonoDevelop.Components.Commands;
 using System.Linq;
@@ -54,3 +55,4 @@ namespace MonoDevelop.Components.Mac
 		}
 	}
 }
+#endif

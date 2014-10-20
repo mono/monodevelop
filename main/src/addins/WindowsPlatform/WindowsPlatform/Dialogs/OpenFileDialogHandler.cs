@@ -54,7 +54,7 @@ namespace MonoDevelop.Platform
 			if (data.Action == FileChooserAction.Open)
 				dialog = new CustomCommonOpenFileDialog ();
 			else
-				dialog = new CommonSaveFileDialog ();
+				dialog = new CustomCommonSaveFileDialog ();
 
 			SelectFileDialogHandler.SetCommonFormProperties (data, dialog);
 
@@ -94,6 +94,7 @@ namespace MonoDevelop.Platform
 				dialog.Controls.Add (group);
 
 				if (IdeApp.Workspace.IsOpen) {
+					viewerCombo.SelectedIndexChanged += (o, e) => closeSolution.Visible = ((ViewerComboItem)viewerCombo.Items[viewerCombo.SelectedIndex]).Viewer == null;
 					var group2 = new CommonFileDialogGroupBox ();
 
 					// "Close current workspace" is too long and splits the text on 2 lines.
@@ -128,7 +129,9 @@ namespace MonoDevelop.Platform
 			if (viewerCombo != null) {
 				if (closeSolution != null)
 					data.CloseCurrentWorkspace = closeSolution.Visible && closeSolution.IsChecked;
-				data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items [viewerCombo.SelectedIndex]).Viewer;
+				int index = viewerCombo.SelectedIndex;
+				if (index != -1)
+					data.SelectedViewer = ((ViewerComboItem)viewerCombo.Items [index]).Viewer;
 			}
 
 			return true;
@@ -176,15 +179,10 @@ namespace MonoDevelop.Platform
 				i = 1;
 			}
 
-			var encodings = TextEncoding.ConversionEncodings;
-			foreach (var e in encodings) {
-				var mdEnc = TextEncoding.SupportedEncodings.FirstOrDefault (t => t.CodePage == e.CodePage);
-				string name = mdEnc != null
-					? mdEnc.Name + " (" + mdEnc.Id + ")"
-					: e.Name + " (" + e.Id + ")"; 
-				var item = new EncodingComboItem (Encoding.GetEncoding (e.CodePage), name);
-				combo.Items.Add (item);
-				if (e.Equals (selectedEncoding))
+			int j = 1;
+			foreach (var e in TextEncoding.ConversionEncodings) {
+				combo.Items.Add (new EncodingComboItem (Encoding.GetEncoding (e.CodePage), string.Format ("{0} ({1})", e.Name, e.Id)));
+				if (selectedEncoding != null && e.CodePage == selectedEncoding.WindowsCodePage)
 					combo.SelectedIndex = i;
 				i++;
 			}
@@ -195,13 +193,17 @@ namespace MonoDevelop.Platform
 
 		class EncodingComboItem : CommonFileDialogComboBoxItem
 		{
+			Encoding encoding;
+
 			public EncodingComboItem (Encoding encoding, string label) : base (label)
 			{
-				Encoding = encoding;
+				this.encoding = encoding;
 			}
 
 			public Encoding Encoding {
-				get; private set;
+				get {
+					return encoding;
+				}
 			}
 		}
 

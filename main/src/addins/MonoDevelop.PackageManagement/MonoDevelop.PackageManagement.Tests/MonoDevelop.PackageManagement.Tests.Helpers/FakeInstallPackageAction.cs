@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
 {
@@ -37,13 +39,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		}
 
 		public FakeInstallPackageAction (IPackageManagementProject project)
-			: base (project, null)
+			: this (project, null)
 		{
 		}
 
 		public FakeInstallPackageAction (IPackageManagementProject project, IPackageManagementEvents packageManagementEvents)
 			: base (project, packageManagementEvents)
 		{
+			Operations = new List<PackageOperation> ();
+			Logger = new FakeLogger ();
 		}
 
 		public bool IsExecuteCalled;

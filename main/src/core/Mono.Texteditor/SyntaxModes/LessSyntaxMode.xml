@@ -44,7 +44,7 @@
 		<End>}</End>
 	</Span>
 	
-	<Match color="Keyword(Constants)">\s*@+[a-zA-Z\-]+\s*</Match>
+	<Match color="Keyword(Constants)" ignorecase="True">\s*@+[a-zA-Z\-]+\s*</Match>
 		
 	<Span color="String" rule="String" stopateol="true" escape='\'>
 		<Begin>"</Begin>
@@ -60,7 +60,7 @@
 
 	<Rule name="Ruleset">
 	
-		<Match color="Keyword(Constants)">\s*@+[a-zA-Z\-]+\s*</Match>
+		<Match color="Keyword(Constants)" ignorecase="True">\s*@+[a-zA-Z\-]+\s*</Match>
 		
 		<Span color="String" rule="String" stopateol="true" escape='\'>
 			<Begin>"</Begin>

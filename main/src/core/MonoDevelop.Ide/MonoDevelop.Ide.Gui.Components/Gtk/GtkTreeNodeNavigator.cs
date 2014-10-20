@@ -1,4 +1,4 @@
-﻿//
+//
 // GtkTreeNodeNavigator.cs
 //
 // Author:
@@ -178,18 +178,25 @@ namespace MonoDevelop.Ide.Gui.Components.Internal
 
 		protected override void OnUpdate (NodeAttributes ats, NodeInfo nodeInfo)
 		{
-			SetNodeInfo (currentIter, nodeInfo);
+			bool isNew = false;
+
+			var ni = (NodeInfo)store.GetValue (currentIter, ExtensibleTreeView.NodeInfoColumn);
+			if (ni == null || ni.IsShared) {
+				ni = new NodeInfo ();
+				isNew = true;
+			}
+			else
+				ni.Reset ();
+
+			if (isNew)
+				store.SetValue (currentIter, ExtensibleTreeView.NodeInfoColumn, ni);
+			else
+				store.EmitRowChanged (store.GetPath (currentIter), currentIter);
 		}
 
 		void SetNodeInfo (Gtk.TreeIter it, NodeInfo nodeInfo)
 		{
-			store.SetValue (it, ExtensibleTreeGtkBackend.TextColumn, nodeInfo.Label);
-			store.SetValue (it, ExtensibleTreeGtkBackend.OpenIconColumn, nodeInfo.Icon ?? CellRendererImage.NullImage);
-			store.SetValue (it, ExtensibleTreeGtkBackend.ClosedIconColumn, nodeInfo.ClosedIcon ?? CellRendererImage.NullImage);
-			store.SetValue (it, ExtensibleTreeGtkBackend.OverlayBottomLeftColumn, nodeInfo.OverlayBottomLeft ?? CellRendererImage.NullImage);
-			store.SetValue (it, ExtensibleTreeGtkBackend.OverlayBottomRightColumn, nodeInfo.OverlayBottomRight ?? CellRendererImage.NullImage);
-			store.SetValue (it, ExtensibleTreeGtkBackend.OverlayTopLeftColumn, nodeInfo.OverlayTopLeft ?? CellRendererImage.NullImage);
-			store.SetValue (it, ExtensibleTreeGtkBackend.OverlayTopRightColumn, nodeInfo.OverlayTopRight ?? CellRendererImage.NullImage);
+			store.SetValue (it, ExtensibleTreeGtkBackend.NodeInfoColumn, nodeInfo);
 			pad.Tree.QueueDraw ();
 		}
 
@@ -255,9 +262,9 @@ namespace MonoDevelop.Ide.Gui.Components.Internal
 		{
 			Gtk.TreeIter it;
 			if (!isRoot)
-				it = store.AppendValues (currentIter, "", null, null, dataObject, chain, false);
+				it = store.AppendValues (currentIter, nodeInfo, dataObject, chain, filled, false);
 			else
-				it = store.AppendValues ("", null, null, dataObject, chain, false);
+				it = store.AppendValues (nodeInfo, dataObject, chain, filled, false);
 
 			BuildNode (it, chain, ats, dataObject, nodeInfo, filled);
 			InitIter (it, dataObject);
@@ -317,7 +324,7 @@ namespace MonoDevelop.Ide.Gui.Components.Internal
 
 		protected override string StoredNodeName {
 			get {
-				return GetStoreValue (ExtensibleTreeGtkBackend.TextColumn) as string;
+				return GetStoreNodeInfo ().Label;
 			}
 		}
 
@@ -347,6 +354,11 @@ namespace MonoDevelop.Ide.Gui.Components.Internal
 		object GetStoreValue (int column)
 		{
 			return store.GetValue (currentIter, column);
+		}
+
+		NodeInfo GetStoreNodeInfo ()
+		{
+			return (NodeInfo) store.GetValue (currentIter, 0);
 		}
 	}
 }

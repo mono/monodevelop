@@ -46,6 +46,8 @@ namespace MonoDevelop.CSharp
 		{
 			IdeApp.Workspace.FileAddedToProject -= HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject -= HandleProjectChanged;
+			IdeApp.Workspace.WorkspaceItemUnloaded -= HandleWorkspaceItemUnloaded;
+			IdeApp.Workspace.WorkspaceItemLoaded -= HandleWorkspaceItemLoaded;;
 
 			if (caret != null) {
 				caret.PositionChanged -= UpdatePath;
@@ -65,20 +67,46 @@ namespace MonoDevelop.CSharp
 		Mono.TextEditor.Caret caret;
 		CSharpCompletionTextEditorExtension ext;
 
-		List<DotNetProject> ownerProjects;
+		List<DotNetProject> ownerProjects = new List<DotNetProject> ();
 
 		public override void Initialize ()
 		{
 			CurrentPath = new PathEntry[] { new PathEntry (GettextCatalog.GetString ("No selection")) { Tag = null } };
 			isPathSet = false;
-			UpdateOwnerProjects ();
-			UpdatePath (null, null);
+			// Delay the execution of UpdateOwnerProjects since it may end calling Document.AttachToProject,
+			// which shouldn't be called while the extension chain is being initialized.
+			Gtk.Application.Invoke (delegate {
+				UpdateOwnerProjects ();
+				UpdatePath (null, null);
+			});
 			caret = Document.Editor.Caret;
 			caret.PositionChanged += UpdatePath;
 			ext = Document.GetContent<CSharpCompletionTextEditorExtension> ();
 			ext.TypeSegmentTreeUpdated += HandleTypeSegmentTreeUpdated;
 			IdeApp.Workspace.FileAddedToProject += HandleProjectChanged;
 			IdeApp.Workspace.FileRemovedFromProject += HandleProjectChanged;
+			IdeApp.Workspace.WorkspaceItemUnloaded += HandleWorkspaceItemUnloaded;
+			IdeApp.Workspace.WorkspaceItemLoaded += HandleWorkspaceItemLoaded;;
+		}
+
+		void HandleWorkspaceItemLoaded (object sender, WorkspaceItemEventArgs e)
+		{
+			if (ownerProjects != null)
+				return;
+			UpdateOwnerProjects (e.Item.GetAllProjects ().OfType<DotNetProject> ());
+		}
+
+		void HandleWorkspaceItemUnloaded (object sender, WorkspaceItemEventArgs e)
+		{
+			if (ownerProjects == null)
+				return;
+			foreach (var p in e.Item.GetAllProjects ().OfType<DotNetProject> ()) {
+				ownerProjects.Remove (p); 
+			}
+			if (ownerProjects.Count == 0) {
+				ownerProjects = null;
+				Document.AttachToProject (null);
+			}
 		}
 
 		void HandleProjectChanged (object sender, ProjectFileEventArgs e)
@@ -92,9 +120,9 @@ namespace MonoDevelop.CSharp
 			UpdatePath (null, null);
 		}
 
-		void UpdateOwnerProjects ()
+		void UpdateOwnerProjects (IEnumerable<DotNetProject> allProjects)
 		{
-			var projects = new HashSet<DotNetProject> (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ().Where (p => p.IsFileInProject (Document.FileName)));
+			var projects = new HashSet<DotNetProject> (allProjects.Where (p => p.IsFileInProject (Document.FileName)));
 			if (ownerProjects == null || !projects.SetEquals (ownerProjects)) {
 				ownerProjects = projects.OrderBy (p => p.Name).ToList ();
 				var dnp = Document.Project as DotNetProject;
@@ -106,6 +134,11 @@ namespace MonoDevelop.CSharp
 						Document.AttachToProject (pp);
 				}
 			}
+		}
+
+		void UpdateOwnerProjects ()
+		{
+			UpdateOwnerProjects (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ());
 			if (Document.Project == null && ownerProjects.Count > 0)
 				Document.AttachToProject (ownerProjects[0]);
 		}
@@ -216,6 +249,17 @@ namespace MonoDevelop.CSharp
 						while (type.Parent is TypeDeclaration) {
 							type = type.Parent as TypeDeclaration;
 							sb.Insert (0, type.Name + ".");
+						}
+						return sb.ToString ();
+					}
+					var delegateDecl = node as DelegateDeclaration;
+					if (delegateDecl != null) {
+						var sb = new StringBuilder ();
+						sb.Append (delegateDecl.Name);
+						var parentType = delegateDecl.Parent as TypeDeclaration;
+						while (parentType != null) {
+							sb.Insert (0, parentType.Name + ".");
+							parentType = parentType.Parent as TypeDeclaration;
 						}
 						return sb.ToString ();
 					}
@@ -470,7 +514,7 @@ namespace MonoDevelop.CSharp
 
 			var curType = (EntityDeclaration)unit.GetNodeAt (loc, n => n is TypeDeclaration || n is DelegateDeclaration);
 
-			var curProject = ownerProjects.Count > 1 ? Document.Project : null;
+			var curProject = ownerProjects != null && ownerProjects.Count > 1 ? Document.Project : null;
 
 			var segMember = compExt.GetMemberAt (caretOffset);
 			if (segMember != null) {
@@ -501,7 +545,7 @@ namespace MonoDevelop.CSharp
 
 			var result = new List<PathEntry> ();
 
-			if (ownerProjects.Count > 1) {
+			if (ownerProjects != null && ownerProjects.Count > 1) {
 				// Current project if there is more than one
 				result.Add (new PathEntry (ImageService.GetIcon (Document.Project.StockIcon, Gtk.IconSize.Menu), GLib.Markup.EscapeText (Document.Project.Name)) { Tag = Document.Project });
 			}

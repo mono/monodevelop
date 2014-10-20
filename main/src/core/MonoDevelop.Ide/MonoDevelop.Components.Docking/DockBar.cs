@@ -146,13 +146,17 @@ namespace MonoDevelop.Components.Docking
 		
 		internal void UpdateVisibility ()
 		{
-			filler.Visible = (Frame.CompactGuiLevel < 3);
-			int visibleCount = 0;
-			foreach (Gtk.Widget w in box.Children) {
-				if (w.Visible)
-					visibleCount++;
+			if (Frame.OverlayWidgetVisible) {
+				Visible = false;
+			} else {
+				filler.Visible = (Frame.CompactGuiLevel < 3);
+				int visibleCount = 0;
+				foreach (Gtk.Widget w in box.Children) {
+					if (w.Visible)
+						visibleCount++;
+				}
+				Visible = alwaysVisible || filler.Visible || visibleCount > 0;
 			}
-			Visible = alwaysVisible || filler.Visible || visibleCount > 0;
 		}
 		
 		internal void RemoveItem (DockBarItem it)

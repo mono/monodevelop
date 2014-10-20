@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if MAC
 using System;
 using System.Linq;
 using AppKit;
@@ -174,3 +175,4 @@ namespace MonoDevelop.Components.Mac
 		void Update (MDMenu parent, ref NSMenuItem lastSeparator, ref int index);
 	}
 }
+#endif

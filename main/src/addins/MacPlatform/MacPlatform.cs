@@ -65,10 +65,6 @@ namespace MonoDevelop.MacIntegration
 
 		Lazy<Dictionary<string, string>> mimemap;
 
-		//this is a BCD value of the form "xxyz", where x = major, y = minor, z = bugfix
-		//eg. 0x1071 = 10.7.1
-		int systemVersion;
-
 		public MacPlatformService ()
 		{
 			if (IntPtr.Size == 8)
@@ -80,9 +76,10 @@ namespace MonoDevelop.MacIntegration
 
 			timer.BeginTiming ();
 
-			systemVersion = Carbon.Gestalt ("sysv");
+			var dir = Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location);
 
-			ObjCRuntime.Dlfcn.dlopen ("/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib", 0);
+			if (ObjCRuntime.Dlfcn.dlopen (Path.Combine (dir, "libxammac.dylib"), 0) == IntPtr.Zero)
+				LoggingService.LogFatalError ("Unable to load libxammac");
 
 			mimemap = new Lazy<Dictionary<string, string>> (LoadMimeMapAsync);
 
@@ -352,7 +349,7 @@ namespace MonoDevelop.MacIntegration
 								if (!Int32.TryParse (qs ["column"], out column))
 									column = 1;
 
-								return new FileOpenInformation (fileUri.AbsolutePath,
+								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath),
 									line, column, OpenDocumentOptions.DefaultInternal);
 							} catch (Exception ex) {
 								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);
@@ -496,7 +493,7 @@ namespace MonoDevelop.MacIntegration
 		protected override Xwt.Drawing.Image OnGetIconForFile (string filename)
 		{
 			//this only works on MacOS 10.6.0 and greater
-			if (systemVersion < 0x1060)
+			if (MacSystemInformation.OsVersion < MacSystemInformation.SnowLeopard)
 				return base.OnGetIconForFile (filename);
 
 			NSImage icon = null;
@@ -736,8 +733,49 @@ namespace MonoDevelop.MacIntegration
 		{
 			var toplevels = GtkQuartz.GetToplevels ();
 
-			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal)
-				&& !t.Key.DebugDescription.StartsWith ("<NSStatusBarWindow", StringComparison.Ordinal));
+			// When we're looking for modal windows that don't belong to GTK, exclude
+			// NSStatusBarWindow (which is visible on Mavericks when we're in fullscreen) and
+			// NSToolbarFullscreenWindow (which is visible on Yosemite in fullscreen).
+			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) &&
+				!(t.Key.DebugDescription.StartsWith("<NSStatusBarWindow", StringComparison.Ordinal) ||
+				  t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal)));
+		}
+
+		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			NSWindow w = GtkQuartz.GetWindow (parent);
+			child.Realize ();
+			NSWindow overlay = GtkQuartz.GetWindow (child);
+			overlay.SetExcludedFromWindowsMenu (true);
+			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
+		}
+
+		public override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		{
+			NSWindow w = GtkQuartz.GetWindow (window);
+			var dr = FromDesktopRect (new Gdk.Rectangle (x, y, width, height));
+			var r = w.FrameRectFor (dr);
+			w.SetFrame (r, true);
+			base.PlaceWindow (window, x, y, width, height);
+		}
+
+		static CGRect FromDesktopRect (Gdk.Rectangle r)
+		{
+			var desktopBounds = CalcDesktopBounds ();
+			r.Y = desktopBounds.Height - r.Y - r.Height;
+			if (desktopBounds.Y < 0)
+				r.Y += desktopBounds.Y;
+			return new CGRect (desktopBounds.X + r.X, r.Y, r.Width, r.Height);
+		}
+
+		static Gdk.Rectangle CalcDesktopBounds ()
+		{
+			var desktopBounds = new Gdk.Rectangle ();
+			foreach (var s in NSScreen.Screens) {
+				var r = s.Frame;
+				desktopBounds = desktopBounds.Union (new Gdk.Rectangle ((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height));
+			}
+			return desktopBounds;
 		}
 	}
 }

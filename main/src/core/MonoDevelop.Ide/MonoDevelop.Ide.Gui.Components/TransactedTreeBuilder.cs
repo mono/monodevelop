@@ -642,7 +642,8 @@ namespace MonoDevelop.Ide.Gui.Components.Internal
 
 		void UpdateNode (TreeNode n, NodeBuilder[] chain, NodeAttributes ats, object dataObject)
 		{
-			n.NodeInfo = frontend.GetNodeInfo (this, chain, dataObject);
+			var ni = new NodeInfo ();
+			n.NodeInfo = TreeBuilder.GetNodeInfo (ni, tree, this, chain, dataObject);
 
 			if (chain != null && chain.Length > 0)
 				n.Name = ((TypeNodeBuilder)chain[0]).GetNodeName (this, n.DataItem);

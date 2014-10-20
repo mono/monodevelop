@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -47,12 +48,15 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
 		event EventHandler PackagesRestored;
 		event EventHandler<FileEventArgs> FileChanged;
+		event EventHandler<FileRemovingEventArgs> FileRemoving;
+		event EventHandler UpdatedPackagesAvailable;
+		event EventHandler<PackageRestoredEventArgs> PackageRestored;
 
 		void OnPackageOperationsStarting();
 		void OnPackageOperationsFinished();
 		void OnPackageOperationError(Exception ex);
 		bool OnAcceptLicenses(IEnumerable<IPackage> packages);
-		void OnParentPackageInstalled(IPackage package, IPackageManagementProject project);
+		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations);
 		void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project);
 		void OnParentPackagesUpdated(IEnumerable<IPackage> packages);
 		void OnPackageOperationMessageLogged(MessageLevel level, string message, params object[] args);
@@ -60,5 +64,11 @@ namespace ICSharpCode.PackageManagement
 		FileConflictResolution OnResolveFileConflict(string message);
 		void OnPackagesRestored();
 		void OnFileChanged(string path);
+		void OnUpdatedPackagesAvailable ();
+		bool OnFileRemoving (string path);
+		void OnPackageRestored (IPackage package);
+
+		[Obsolete]
+		void OnParentPackageInstalled (IPackage package, IPackageManagementProject project);
 	}
 }

@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.PackageManagement;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using NuGet;
 
@@ -35,18 +37,81 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	public class ProjectPackagesFolderNode
 	{
-		DotNetProject project;
+		IDotNetProject project;
+		IUpdatedPackagesInSolution updatedPackagesInSolution;
+		List<PackageReference> packageReferences;
 
 		public ProjectPackagesFolderNode (DotNetProject project)
+			: this (new DotNetProjectProxy (project), PackageManagementServices.UpdatedPackagesInSolution)
+		{
+		}
+
+		public ProjectPackagesFolderNode (
+			IDotNetProject project,
+			IUpdatedPackagesInSolution updatedPackagesInSolution)
 		{
 			this.project = project;
+			this.updatedPackagesInSolution = updatedPackagesInSolution;
 		}
 
 		public DotNetProject Project {
-			get { return project; }
+			get { return project.DotNetProject; }
 		}
 
-		IEnumerable<PackageReference> GetPackageReferences ()
+		public IconId Icon {
+			get { return Stock.OpenReferenceFolder; }
+		}
+
+		public IconId ClosedIcon {
+			get { return Stock.ClosedReferenceFolder; }
+		}
+
+		public string GetLabel ()
+		{
+			return GettextCatalog.GetString ("Packages") + GetUpdatedPackagesCountLabel ();
+		}
+
+		string GetUpdatedPackagesCountLabel ()
+		{
+			int count = GetUpdatedPackagesCount ();
+			if (count == 0) {
+				return String.Empty;
+			}
+
+			return " <span color='grey'>" + GetUpdatedPackagesCountLabel (count) + "</span>";
+		}
+
+		string GetUpdatedPackagesCountLabel (int count)
+		{
+			return string.Format ("({0} {1})", count, GetUpdateText (count));
+		}
+
+		string GetUpdateText (int count)
+		{
+			if (count > 1) {
+				return GettextCatalog.GetString ("updates");
+			}
+			return GettextCatalog.GetString ("update");
+		}
+
+		int GetUpdatedPackagesCount ()
+		{
+			return updatedPackagesInSolution
+				.GetUpdatedPackages (project)
+				.GetPackages ()
+				.Count ();
+		}
+
+		IEnumerable<PackageReference> PackageReferences {
+			get {
+				if (packageReferences == null) {
+					packageReferences = GetPackageReferences ().ToList ();
+				}
+				return packageReferences;
+			}
+		}
+
+		protected virtual IEnumerable<PackageReference> GetPackageReferences ()
 		{
 			if (project.HasPackages ()) {
 				var packageReferenceFile = new PackageReferenceFile (project.GetPackagesConfigFilePath ());
@@ -57,12 +122,22 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		public IEnumerable<PackageReferenceNode> GetPackageReferencesNodes ()
 		{
-			return GetPackageReferences ().Select (reference => CreatePackageReferenceNode (reference));
+			UpdatedPackagesInProject updatedPackages = updatedPackagesInSolution.GetUpdatedPackages (project);
+			return PackageReferences.Select (reference => CreatePackageReferenceNode (reference, updatedPackages));
 		}
 
-		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference)
+		PackageReferenceNode CreatePackageReferenceNode (PackageReference reference, UpdatedPackagesInProject updatedPackages)
 		{
-			return new PackageReferenceNode (reference, reference.IsPackageInstalled (project));
+			return new PackageReferenceNode (
+				reference,
+				IsPackageInstalled (reference),
+				false,
+				updatedPackages.GetUpdatedPackage (reference.Id));
+		}
+
+		protected virtual bool IsPackageInstalled (PackageReference reference)
+		{
+			return reference.IsPackageInstalled (project.DotNetProject);
 		}
 	}
 }

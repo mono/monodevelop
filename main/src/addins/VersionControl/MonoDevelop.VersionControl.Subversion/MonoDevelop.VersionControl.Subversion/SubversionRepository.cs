@@ -198,10 +198,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
-			List<FilePath> list = new List<FilePath> ();
-			foreach (ChangeSetItem it in changeSet.Items)
-				list.Add (it.LocalPath);
-			Svn.Commit (list.ToArray (), changeSet.GlobalComment, monitor);
+			Svn.Commit (changeSet.Items.Select (it => it.LocalPath).ToArray (), changeSet.GlobalComment, monitor);
 		}
 
 		void CreateDirectory (string[] paths, string message, IProgressMonitor monitor)
@@ -293,10 +290,10 @@ namespace MonoDevelop.VersionControl.Subversion
 		public string Root {
 			get {
 				try {
-					UriBuilder ub = new UriBuilder (Url);
-					ub.Path = string.Empty;
-					ub.Query = string.Empty;
-					return ub.ToString ();
+					return new UriBuilder (Url) {
+						Path = string.Empty,
+						Query = string.Empty
+					}.ToString ();
 				} catch {
 					return string.Empty;
 				}
@@ -325,13 +322,15 @@ namespace MonoDevelop.VersionControl.Subversion
 			
 			VersionInfo srcInfo = GetVersionInfo (localSrcPath, VersionInfoQueryFlags.IgnoreCache);
 			if (srcInfo != null && srcInfo.HasLocalChange (VersionStatus.ScheduledAdd)) {
-				// If the file is scheduled to add, cancel it, move the file, and schedule to add again
-				Revert (localSrcPath, false, monitor);
-				if (!destIsVersioned)
+				// Subversion automatically detects the rename and moves the new file accordingly.
+				if (!destIsVersioned) {
 					MakeDirVersioned (Path.GetDirectoryName (localDestPath), monitor);
-				base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
-				if (!destIsVersioned)
-					Add (localDestPath, false, monitor);
+					Svn.Move (localSrcPath, localDestPath, force, monitor);
+				} else {
+					base.OnMoveFile (localSrcPath, localDestPath, force, monitor);
+					if (!destIsVersioned)
+						Add (localDestPath, false, monitor);
+				}
 			} else {
 				if (!destIsVersioned && IsVersioned (localSrcPath)) {
 					MakeDirVersioned (Path.GetDirectoryName (localDestPath), monitor);

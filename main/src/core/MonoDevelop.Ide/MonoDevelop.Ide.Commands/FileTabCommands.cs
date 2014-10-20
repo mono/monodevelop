@@ -34,22 +34,48 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Commands
 {
 	public enum FileTabCommands
 	{
+		CloseAll,
 		CloseAllButThis,
 		CopyPathName,
 		ToggleMaximize,
 		ReopenClosedTab,
 	}
 	
+	class CloseAllHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active == null)
+				return;
+			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
+			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
+				var w1 = (SdiWorkspaceWindow) doc.Window;
+				if (w1.TabControl == activeNotebook)
+					doc.Close ();
+			}
+		}
+	}
+	
 	class CloseAllButThisHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			IdeApp.Workbench.CloseAllDocuments (true);
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active == null)
+				return;
+			var activeNotebook = ((SdiWorkspaceWindow)active.Window).TabControl;
+			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
+				var w1 = (SdiWorkspaceWindow) doc.Window;
+				if (w1.TabControl == activeNotebook && doc != active)
+					doc.Close ();
+			}
 		}
 	}
 	

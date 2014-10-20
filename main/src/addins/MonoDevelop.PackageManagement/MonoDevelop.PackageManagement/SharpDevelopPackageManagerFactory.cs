@@ -42,7 +42,7 @@ namespace ICSharpCode.PackageManagement
 			: this(
 				new SharpDevelopPackageRepositoryFactory(),
 				new SharpDevelopProjectSystemFactory(),
-				new PackageManagementOptions())
+				PackageManagementServices.Options)
 		{
 		}
 		
@@ -79,6 +79,17 @@ namespace ICSharpCode.PackageManagement
 		IProjectSystem CreateProjectSystem(DotNetProject project)
 		{
 			return projectSystemFactory.CreateProjectSystem(project);
+		}
+
+		public IPackageManager CreatePackageManager (
+			IPackageRepository sourceRepository,
+			ISolutionPackageRepository solutionPackageRepository)
+		{
+			return new PackageManager (
+				sourceRepository,
+				solutionPackageRepository.PackagePathResolver,
+				solutionPackageRepository.FileSystem,
+				solutionPackageRepository.Repository);
 		}
 	}
 }

@@ -1,0 +1,524 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>MonoDevelop.AspNet</AssemblyName>
+    <RootNamespace>MonoDevelop.AspNet</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\build\AddIns\AspNet</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <DefineConstants>DEBUG</DefineConstants>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\AspNet\MonoDevelop.AspNet.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\..\..\build\AddIns\AspNet</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Execution>
+      <Execution clr-version="Net_2_0" />
+    </Execution>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>1591;1573</NoWarn>
+    <DocumentationFile>..\..\..\build\AddIns\AspNet\MonoDevelop.AspNet.xml</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
+      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
+      <Name>MonoDevelop.Ide</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
+      <Project>{A2329308-3751-4DBD-9A75-5F7B8B024625}</Project>
+      <Name>Mono.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
+      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
+      <Name>MonoDevelop.SourceEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
+      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
+      <Name>ICSharpCode.NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
+      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
+      <Name>ICSharpCode.NRefactory.CSharp</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
+      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
+      <Name>Mono.Addins</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
+      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
+      <Name>Mono.Debugging</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
+      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
+      <Name>Xwt</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\TextTemplating\MonoDevelop.TextTemplating\MonoDevelop.TextTemplating.csproj">
+      <Project>{8CCA39DD-8412-4547-BE7F-0C3D3ACC6FAC}</Project>
+      <Name>MonoDevelop.TextTemplating</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\TextTemplating\Mono.TextTemplating\Mono.TextTemplating.csproj">
+      <Project>{A2364D6A-00EF-417C-80A6-815726C70032}</Project>
+      <Name>Mono.TextTemplating</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Reference Include="System.Web.Razor">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.2.0.30506.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Condition="!Exists('$(SolutionDir)\..\.git')" Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Web.Mvc">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.4.0.30506.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\Xml\MonoDevelop.Xml.csproj">
+      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
+      <Name>MonoDevelop.Xml</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\MonoDevelop.AspNet.addin.xml">
+      <LogicalName>MonoDevelop.AspNet.addin.xml</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Html\HtmlSchemaService.cs" />
+    <Compile Include="Html\HtmlSchema.cs" />
+    <Compile Include="Html\DocTypeExtensionNode.cs" />
+    <Compile Include="Html\DocTypeCompletionData.cs" />
+    <Compile Include="Html\HtmlParser.cs" />
+    <Compile Include="Html\ElementTypes.cs" />
+    <Compile Include="Razor\Parser\RazorSymbols.cs" />
+    <Compile Include="Razor\Parser\RazorUtils.cs" />
+    <Compile Include="Razor\RazorSyntaxMode.cs" />
+    <Compile Include="Razor\RazorCSharpFormatter.cs" />
+    <Compile Include="Razor\EditorParserFixed\BackgroundParser.cs" />
+    <Compile Include="Razor\EditorParserFixed\CommonResources.Designer.cs" />
+    <Compile Include="Razor\EditorParserFixed\DisposableAction.cs" />
+    <Compile Include="Razor\EditorParserFixed\RazorEditorParser.cs" />
+    <Compile Include="Razor\EditorParserFixed\RazorEditorTrace.cs" />
+    <Compile Include="Razor\EditorParserFixed\RazorResources.Designer.cs" />
+    <Compile Include="Projects\AspMvcProject.cs" />
+    <Compile Include="Projects\AspMvcProjectConfiguration.cs" />
+    <Compile Include="Projects\AspNetAppProject.cs" />
+    <Compile Include="Projects\AspNetAppProjectBinding.cs" />
+    <Compile Include="Projects\AspNetAppProjectConfiguration.cs" />
+    <Compile Include="Projects\AspNetMSBuildImportProvider.cs" />
+    <Compile Include="WebForms\MasterContentFileDescriptionTemplate.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\AddinInfo.cs" />
+    <Compile Include="WebForms\ILanguageCompletionBuilder.cs" />
+    <Compile Include="Html\HtmlEditorExtension.cs" />
+    <Compile Include="Html\Parser\HtmlClosingTagState.cs" />
+    <Compile Include="Html\Parser\HtmlScriptBodyState.cs" />
+    <Compile Include="Html\Parser\HtmlTagState.cs" />
+    <Compile Include="Projects\MvcTextTemplateHost.cs" />
+    <Compile Include="Html\BaseHtmlEditorExtension.cs" />
+    <Compile Include="Razor\Parser\RazorCodeBlockState.cs" />
+    <Compile Include="Razor\Parser\RazorCodeFragmentState.cs" />
+    <Compile Include="Razor\Parser\RazorCommentState.cs" />
+    <Compile Include="Razor\Parser\RazorDirectiveState.cs" />
+    <Compile Include="Razor\Parser\RazorExpressionState.cs" />
+    <Compile Include="Razor\Parser\RazorSpeculativeState.cs" />
+    <Compile Include="Razor\Parser\RazorState.cs" />
+    <Compile Include="Razor\Parser\RazorStatementState.cs" />
+    <Compile Include="Razor\Parser\StateEngineService.cs" />
+    <Compile Include="Razor\IRazorCompletionBuilder.cs" />
+    <Compile Include="Razor\RazorCompletion.cs" />
+    <Compile Include="Razor\RazorCSharpEditorExtension.cs" />
+    <Compile Include="Projects\WebSubtype.cs" />
+    <Compile Include="Execution\AspNetExecutionCommand.cs" />
+    <Compile Include="Execution\AspNetExecutionHandler.cs" />
+    <Compile Include="Execution\LineInterceptingTextWriter.cs" />
+    <Compile Include="Execution\XspParameters.cs" />
+    <Compile Include="Execution\BrowserLauncher.cs" />
+    <Compile Include="Execution\XspOptionsPanel.cs" />
+    <Compile Include="Execution\XspOptionsPanelWidget.cs" />
+    <Compile Include="Execution\XspBrowserLauncherConsole.cs" />
+    <Compile Include="Html\HtmlPathCompletion.cs" />
+    <Compile Include="WebForms\WebFormsEditorExtension.cs" />
+    <Compile Include="WebForms\WebFormsSyntaxMode.cs" />
+    <Compile Include="WebForms\WebFormsToolboxLoader.cs" />
+    <Compile Include="WebForms\WebFormsToolboxNode.cs" />
+    <Compile Include="WebForms\WebFormsMemberListBuilder.cs" />
+    <Compile Include="WebForms\WebFormsRegistrationCache.cs" />
+    <Compile Include="WebForms\WebFormsToolboxProvider.cs" />
+    <Compile Include="WebForms\WebFormsCodeBehind.cs" />
+    <Compile Include="WebForms\WebFormsCodeBehindTypeNameCache.cs" />
+    <Compile Include="WebForms\Parser\WebFormsAttributeValueState.cs" />
+    <Compile Include="WebForms\Parser\WebFormsServerCommentState.cs" />
+    <Compile Include="WebForms\Parser\WebFormsDirectiveState.cs" />
+    <Compile Include="WebForms\Parser\WebFormsDirectiveAttributeState.cs" />
+    <Compile Include="WebForms\Parser\WebFormsExpressionState.cs" />
+    <Compile Include="WebForms\Dom\WebFormsDirective.cs" />
+    <Compile Include="WebForms\Dom\WebFormsExpression.cs" />
+    <Compile Include="WebForms\Dom\WebFormsRenderExpression.cs" />
+    <Compile Include="WebForms\Dom\WebFormsHtmlEncodedExpression.cs" />
+    <Compile Include="WebForms\Dom\WebFormsBindingExpression.cs" />
+    <Compile Include="WebForms\Dom\WebFormsResourceExpression.cs" />
+    <Compile Include="WebForms\Dom\WebFormsServerComment.cs" />
+    <Compile Include="WebForms\Dom\WebFormsDomExtensions.cs" />
+    <Compile Include="WebForms\Dom\WebFormsRenderBlock.cs" />
+    <Compile Include="Razor\Dom\RazorComment.cs" />
+    <Compile Include="Razor\Dom\RazorCodeFragment.cs" />
+    <Compile Include="Razor\Dom\RazorCodeBlock.cs" />
+    <Compile Include="Razor\Dom\RazorDirective.cs" />
+    <Compile Include="Razor\Dom\RazorStatement.cs" />
+    <Compile Include="Razor\Dom\RazorImplicitExpression.cs" />
+    <Compile Include="Razor\Dom\RazorExplicitExpression.cs" />
+    <Compile Include="Razor\Dom\RazorExpression.cs" />
+    <Compile Include="WebForms\WebFormsDirectiveCompletion.cs" />
+    <Compile Include="Razor\Parser\RazorOutlineNode.cs" />
+    <Compile Include="Commands\AddControllerDialog.cs" />
+    <Compile Include="Commands\AddViewDialog.cs" />
+    <Compile Include="Commands\AspNetCommands.cs" />
+    <Compile Include="Commands\GoToViewCommandHandler.cs" />
+    <Compile Include="Commands\AddViewFromControllerCommandHandler.cs" />
+    <Compile Include="Commands\GoToControllerCommandHandler.cs" />
+    <Compile Include="Commands\MvcCommandsCommonHandler.cs" />
+    <Compile Include="ProjectPad\AspNetFolderNodeBuilderExtension.cs" />
+    <Compile Include="ProjectPad\AspNetFolderNodeCommandHandler.cs" />
+    <Compile Include="ProjectPad\AspNetProjectNodeBuilderExtension.cs" />
+    <Compile Include="ProjectPad\AspNetProjectNodeCommandHandler.cs" />
+    <Compile Include="Razor\Generator\FileUtil.cs" />
+    <Compile Include="Razor\Generator\MarkupRewriter.cs" />
+    <Compile Include="Razor\Generator\PreprocessedAttributeBlockCodeGenerator.cs" />
+    <Compile Include="Razor\Generator\PreprocessedAttributeRewriter.cs" />
+    <Compile Include="Razor\Generator\PreprocessedCSharpRazorCodeParser.cs" />
+    <Compile Include="Razor\Generator\PreprocessedDynamicAttributeBlockCodeGenerator.cs" />
+    <Compile Include="Razor\Generator\PreprocessedLiteralAttributeCodeGenerator.cs" />
+    <Compile Include="Razor\Generator\PreprocessedRazorHost.cs" />
+    <Compile Include="Razor\Generator\PreprocessedTemplateCodeTransformer.cs" />
+    <Compile Include="Razor\Generator\RazorTemplatePreprocessor.cs" />
+    <Compile Include="Razor\Generator\RazorWriterHelper.cs" />
+    <Compile Include="Razor\Generator\RewritingRazorTemplateEngine.cs" />
+    <Compile Include="Projects\AspNetMvcFileTemplateCondition.cs" />
+    <Compile Include="WebForms\WebFormsParser.cs" />
+    <Compile Include="WebForms\WebFormsParsedDocument.cs" />
+    <Compile Include="WebForms\WebFormsPageInfo.cs" />
+    <Compile Include="WebForms\SuggestedHandlerCompletionData.cs" />
+    <Compile Include="Razor\Parser\RazorRootState.cs" />
+    <Compile Include="WebForms\Parser\WebFormsRootState.cs" />
+    <Compile Include="Razor\RazorCSharpParser.cs" />
+    <Compile Include="Razor\RazorCSharpParsedDocument.cs" />
+    <Compile Include="Razor\RazorPageInfo.cs" />
+    <Compile Include="WebForms\WebFormsTypeContext.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile.am" />
+    <None Include="packages.config" />
+    <None Include="Razor\Razor-templates.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CodeTemplates\CSharp\AddController\ControllerWithEmptyReadAndWriteActions.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CodeTemplates\CSharp\AddController\Empty.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CodeTemplates\CSharp\AddView\Aspx\Empty.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="CodeTemplates\CSharp\AddView\Razor\Empty.tt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\Controller.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\GlobalAsax.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\LayoutPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\PartialViewPageRazor.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\UserControl.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\ViewContentPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\ViewMasterPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\ViewPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\ViewPageRazor.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\WebConfigApp.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Mvc\WebConfigViews.xft.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebConfig-Application.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebConfig-SubDir.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\GlobalAsax-Empty.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\GlobalAsax-CodeBehind.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\MasterPage-CodeBehind.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\MasterPage-Empty.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\NestedMasterPage.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebContentForm.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebControl-Empty.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebForm-CodeBehind.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\NestedMasterPage-CodeBehind.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebControl-CodeBehind.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebForm-Empty.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebHandler-CodeBehind.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebService-Empty.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebService-CodeBehind.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebHandler-Empty.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WebForms\WebContentForm-CodeBehind.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\PreprocessedRazorTemplate.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MvcCommon\_Layout.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MvcCommon\_ViewStart.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MvcCommon\Error.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MvcCommon\HomeController.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MvcCommon\HomeControllerTest.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MvcCommon\Index.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MvcCommon\ViewPageRazor.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\MvcProjectWithUnitTest.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\MvcProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\EmptyProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\EmptyMvcProject.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\MvcRazorProject.xpt.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\MvcRazorProjectWithUnitTest.xpt.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\Projects\WebApplication.xpt.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\Microsoft.AspNet.Mvc.4.0.30506.0\lib\net40\System.Web.Mvc.dll">
+      <Link>System.Web.Mvc.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\Microsoft.AspNet.Razor.2.0.30506.0\lib\net40\System.Web.Razor.dll">
+      <Link>System.Web.Razor.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.Helpers.dll">
+      <Link>System.Web.Helpers.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.Deployment.dll">
+      <Link>System.Web.WebPages.Deployment.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.dll">
+      <Link>System.Web.WebPages.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.Razor.dll">
+      <Link>System.Web.WebPages.Razor.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Html\Schemas\readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Html\Schemas\W3C-License.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Html\Schemas\xhtml1-frameset.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Html\Schemas\xhtml1-strict.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Html\Schemas\xhtml1-transitional.xsd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="FileName" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="WebForms\" />
+    <Folder Include="Razor\" />
+    <Folder Include="Templates\WebForms\" />
+    <Folder Include="Projects\" />
+    <Folder Include="Properties\" />
+    <Folder Include="Html\Parser\" />
+    <Folder Include="Html\Schemas\" />
+    <Folder Include="Execution\" />
+    <Folder Include="WebForms\Dom\" />
+    <Folder Include="Razor\Dom\" />
+    <Folder Include="Commands\" />
+    <Folder Include="ProjectPad\" />
+    <Folder Include="Templates\Projects\" />
+  </ItemGroup>
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
+      <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
+    </PropertyGroup>
+    <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
+  </Target>
+</Project>

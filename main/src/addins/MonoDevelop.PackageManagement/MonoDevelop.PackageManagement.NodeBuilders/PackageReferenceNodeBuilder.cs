@@ -56,15 +56,11 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 		public override void BuildNode (ITreeBuilder treeBuilder, object dataObject, NodeInfo nodeInfo)
 		{
 			var packageReferenceNode = (PackageReferenceNode)dataObject;
-			nodeInfo.Label = packageReferenceNode.Name;
-			nodeInfo.Icon = Context.GetIcon (Stock.Reference);
-
-			if (!packageReferenceNode.Installed) {
-				nodeInfo.Label = "<span color='#c99c00'>" + packageReferenceNode.Name + "</span>";
-				if (!packageReferenceNode.IsInstallPending) {
-					nodeInfo.Icon = Context.GetIcon (Stock.ReferenceWarning);
-				}
-			}
+			nodeInfo.Label = packageReferenceNode.GetLabel ();
+			nodeInfo.Icon = Context.GetIcon (packageReferenceNode.GetIconId ());
+			nodeInfo.StatusSeverity = packageReferenceNode.GetStatusSeverity ();
+			nodeInfo.StatusMessage = packageReferenceNode.GetStatusMessage ();
+			nodeInfo.DisabledStyle = packageReferenceNode.IsDisabled ();
 		}
 	}
 }

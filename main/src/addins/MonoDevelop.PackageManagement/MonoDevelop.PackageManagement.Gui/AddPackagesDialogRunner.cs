@@ -39,7 +39,11 @@ namespace MonoDevelop.PackageManagement
 
 				bool configurePackageSources = false;
 				do {
-					configurePackageSources = ShowAddPackagesDialog (initialSearch);
+					using (AddPackagesDialog dialog = CreateDialog (initialSearch)) {
+						dialog.ShowWithParent ();
+						configurePackageSources = dialog.ShowPreferencesForPackageSources;
+						initialSearch = dialog.SearchText;
+					}
 					if (configurePackageSources) {
 						ShowPreferencesForPackageSources ();
 					}
@@ -47,14 +51,6 @@ namespace MonoDevelop.PackageManagement
 
 			} catch (Exception ex) {
 				MessageService.ShowException (ex);
-			}
-		}
-
-		bool ShowAddPackagesDialog (string initialSearch)
-		{
-			using (AddPackagesDialog dialog = CreateDialog (initialSearch)) {
-				dialog.ShowWithParent ();
-				return dialog.ShowPreferencesForPackageSources;
 			}
 		}
 

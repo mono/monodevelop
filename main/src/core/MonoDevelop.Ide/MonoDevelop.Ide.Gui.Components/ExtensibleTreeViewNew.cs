@@ -1,4 +1,4 @@
-﻿//
+//
 // ExtensibleTreeView.cs
 //
 // Author:
@@ -1366,7 +1366,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			return nodeInfo;
 		}
 
-		CommandEntrySet IExtensibleTreeViewFrontend.CreateContextMenu ()
+		CommandEntrySet IExtensibleTreeViewFrontend ()
 		{
 			return OnCreateContextMenu ();
 		}

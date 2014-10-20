@@ -36,5 +36,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		void SetGlobalProperties (IDictionary<string, string> properties);
 		IProjectBuilder LoadProject (string projectFile);
 		void UnloadProject (IProjectBuilder pb);
+		void Ping ();
 	}
 }

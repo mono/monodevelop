@@ -246,7 +246,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						WriteDataItem (writer, data);
 						writer.WriteLine ("\tEndProjectSection");
 					}
-					if (item.ItemDependencies.Count > 0) {
+					if (item.ItemDependencies.Count > 0 || handler.UnresolvedProjectDependencies != null) {
 						writer.WriteLine ("\tProjectSection(ProjectDependencies) = postProject");
 						foreach (var dep in item.ItemDependencies)
 							writer.WriteLine ("\t\t{0} = {0}", dep.ItemId);
@@ -319,7 +319,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					SolutionEntityItem p = cce.Item;
 
 					// Don't save configurations for shared projects
-					if (!p.SupportsBuild ())
+					if (!p.SupportsConfigurations ())
 						continue;
 					
                     // <ProjectGuid>...</ProjectGuid> in some Visual Studio generated F# project files 
@@ -813,9 +813,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 							throw new UnknownSolutionItemTypeException (projTypeGuid);
 						}
 					} else {
-						var uitem = new UnknownSolutionItem () {
-							FileName = projectPath,
-							UnloadedEntry = true
+						var uitem = new UnloadedSolutionItem () {
+							FileName = projectPath
 						};
 						var h = new MSBuildHandler (projTypeGuid, projectGuid) {
 							Item = uitem,
@@ -906,7 +905,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 
 			// Resolve project dependencies
-			foreach (var it in items.OfType<SolutionEntityItem> ()) {
+			foreach (var it in items.Values.OfType<SolutionEntityItem> ()) {
 				MSBuildHandler handler = (MSBuildHandler) it.ItemHandler;
 				if (handler.UnresolvedProjectDependencies != null) {
 					foreach (var id in handler.UnresolvedProjectDependencies.ToArray ()) {
@@ -1073,7 +1072,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				}
 
 				SolutionEntityItem item;
-				if (slnData.ItemsByGuid.TryGetValue (projGuid, out item) && item.SupportsBuild ()) {
+				if (slnData.ItemsByGuid.TryGetValue (projGuid, out item) && item.SupportsConfigurations ()) {
 					string key = projGuid + "." + slnConfig;
 					SolutionConfigurationEntry combineConfigEntry = null;
 					if (cache.ContainsKey (key)) {

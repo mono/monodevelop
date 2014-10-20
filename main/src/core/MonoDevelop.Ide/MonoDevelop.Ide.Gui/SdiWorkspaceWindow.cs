@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Components.DockNotebook;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -55,7 +56,7 @@ namespace MonoDevelop.Ide.Gui
 		Dictionary<IBaseViewContent,DocumentToolbar> documentToolbars = new Dictionary<IBaseViewContent, DocumentToolbar> ();
 
 		VBox box;
-		IDockNotebookTab tab;
+		DockNotebookTab tab;
 		Widget tabPage;
 		DockNotebook tabControl;
 		
@@ -67,11 +68,28 @@ namespace MonoDevelop.Ide.Gui
 		
 		bool show_notification = false;
 
+		uint present_timeout = 0;
+
 		ViewCommandHandlers commandHandler;
 
 		public event EventHandler ViewsChanged;
+		
+		public DockNotebook TabControl {
+			get {
+				return this.tabControl;
+			}
+		}
+		
+		internal void SetDockNotebook (DockNotebook tabControl, DockNotebookTab tabLabel)
+		{
+			this.tabControl = tabControl;
+			this.tab = tabLabel;
+			this.tabPage = content.Control;
+			SetTitleEvent(null, null);
+			SetDockNotebookTabTitle ();
+		}
 
-		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, IDockNotebookTab tabLabel) : base ()
+		public SdiWorkspaceWindow (DefaultWorkbench workbench, IViewContent content, DockNotebook tabControl, DockNotebookTab tabLabel) : base ()
 		{
 			this.workbench = workbench;
 			this.tabControl = tabControl;
@@ -103,7 +121,7 @@ namespace MonoDevelop.Ide.Gui
 			Add (box);
 			
 			SetTitleEvent(null, null);
-			
+
 			commandHandler = new ViewCommandHandlers (this);
 		}
 
@@ -121,7 +139,7 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 		
-		internal IDockNotebookTab TabLabel {
+		internal DockNotebookTab TabLabel {
 			get { return tab; }
 		}
 		
@@ -138,6 +156,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		public ExtensionContext ExtensionContext {
 			get { return extensionContext; }
+		}
+
+		protected override bool OnWidgetEvent (Gdk.Event evt)
+		{
+			if (evt.Type == Gdk.EventType.ButtonRelease)
+				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
+
+			return base.OnWidgetEvent (evt);
 		}
 		
 		protected virtual void OnDocumentChanged (EventArgs e)
@@ -234,12 +260,67 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void SelectWindow()
 		{
+			var window = tabControl.Toplevel as Gtk.Window;
+			if (window != null)
+				window.Present ();
+
+			// The tab change must be done now to ensure that the content is created
+			// before exiting this method.
 			tabControl.CurrentTabIndex = tab.Index;
-			if (tabControl.FocusChild != null) {
-				tabControl.FocusChild.GrabFocus ();
-			} else {
+
+			// Focus the tab in the next iteration since presenting the window may take some time
+			Application.Invoke (delegate {
+				DockNotebook.ActiveNotebook = tabControl;
 				DeepGrabFocus (this.ActiveViewContent.Control);
+			});
+		}
+
+		public bool CanMoveToNextNotebook ()
+		{
+			return TabControl.GetNextNotebook () != null || (TabControl.Container.AllowRightInsert && TabControl.TabCount > 1);
+		}
+
+		public bool CanMoveToPreviousNotebook ()
+		{
+			return TabControl.GetPreviousNotebook () != null || (TabControl.Container.AllowLeftInsert && TabControl.TabCount > 1);
+		}
+
+		public void MoveToNextNotebook ()
+		{
+			var nextNotebook = TabControl.GetNextNotebook ();
+			if (nextNotebook == null) {
+				if (TabControl.Container.AllowRightInsert) {
+					TabControl.RemoveTab (tab.Index, true);
+					TabControl.Container.InsertRight (this);
+					SelectWindow ();
+				}
+				return;
 			}
+
+			TabControl.RemoveTab (tab.Index, true);
+			var newTab = nextNotebook.AddTab ();
+			newTab.Content = this;
+			SetDockNotebook (nextNotebook, newTab);
+			SelectWindow ();
+		}
+
+		public void MoveToPreviousNotebook ()
+		{
+			var nextNotebook = TabControl.GetPreviousNotebook ();
+			if (nextNotebook == null) {
+				if (TabControl.Container.AllowLeftInsert) {
+					TabControl.RemoveTab (tab.Index, true);
+					TabControl.Container.InsertLeft (this);
+					SelectWindow ();
+				}
+				return;
+			}
+
+			TabControl.RemoveTab (tab.Index, true);
+			var newTab = nextNotebook.AddTab ();
+			newTab.Content = this;
+			SetDockNotebook (nextNotebook, newTab);
+			SelectWindow ();
 		}
 		
 		static void DeepGrabFocus (Gtk.Widget widget)
@@ -276,6 +357,7 @@ namespace MonoDevelop.Ide.Gui
 				box.PackStart (toolbar.Container, false, false, 0);
 				box.ReorderChild (toolbar.Container, 0);
 				toolbar.Visible = (targetView == ActiveViewContent);
+				PathWidgetEnabled = !toolbar.Visible;
 			}
 			return toolbar;
 		}
@@ -377,7 +459,7 @@ namespace MonoDevelop.Ide.Gui
 			if (args.Cancel)
 				return false;
 			
-			workbench.RemoveTab (tab.Index, animate);
+			workbench.RemoveTab (tabControl, tab.Index, animate);
 
 			OnClosed (args);
 
@@ -387,6 +469,10 @@ namespace MonoDevelop.Ide.Gui
 
 		protected override void OnDestroyed ()
 		{
+			if (present_timeout != 0) {
+				GLib.Source.Remove (present_timeout);
+			}
+
 			base.OnDestroyed ();
 			if (viewContents != null) {
 				foreach (IAttachableViewContent sv in SubViewContents) {
@@ -569,6 +655,12 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			pathDoc.PathChanged += HandlePathChange;
 			this.pathDoc = pathDoc;
+
+			// If a toolbar is already being shown, we don't show the pathbar yet
+			DocumentToolbar toolbar;
+			if (documentToolbars.TryGetValue (ActiveViewContent, out toolbar) && toolbar.Visible)
+				return;
+
 			PathWidgetEnabled = true;
 			pathBar.SetPath (pathDoc.CurrentPath);
 		}
@@ -585,7 +677,8 @@ namespace MonoDevelop.Ide.Gui
 		void HandlePathChange (object sender, MonoDevelop.Ide.Gui.Content.DocumentPathChangedEventArgs args)
 		{
 			var pathDoc = (MonoDevelop.Ide.Gui.Content.IPathedDocument) sender;
-			pathBar.SetPath (pathDoc.CurrentPath);
+			if (pathBar != null)
+				pathBar.SetPath (pathDoc.CurrentPath);
 //			pathBar.SetActive (pathDoc.SelectedIndex);
 		}
 		
@@ -641,11 +734,15 @@ namespace MonoDevelop.Ide.Gui
 				pathedDocument = (IPathedDocument) viewContents[newIndex].GetContent (typeof(IPathedDocument));
 			}
 
-			if (pathedDocument != null)
+			var toolbarVisible = false;
+			foreach (var t in documentToolbars) {
+				toolbarVisible = ActiveViewContent == t.Key;
+				t.Value.Container.Visible = toolbarVisible;
+			}
+
+			if (pathedDocument != null && !toolbarVisible)
 				AttachToPathedDocument (pathedDocument);
 
-			foreach (var t in documentToolbars)
-				t.Value.Container.Visible = ActiveViewContent == t.Key;
 			if (subViewContent != null)
 				subViewContent.Selected ();
 
@@ -659,6 +756,14 @@ namespace MonoDevelop.Ide.Gui
 		
 		object ICommandDelegatorRouter.GetDelegatedCommandTarget ()
 		{
+			// If command checks are flowing through this view, it means the view's notebook
+			// is the active notebook.
+			if (!(Toplevel is Gtk.Window))
+				return null;
+
+			if (((Gtk.Window)Toplevel).HasToplevelFocus)
+				DockNotebook.ActiveNotebook = (SdiDragNotebook)Parent.Parent;
+
 			Gtk.Widget w = content as Gtk.Widget;
 			if (w != this.tabPage) {
 				// Route commands to the view
@@ -666,31 +771,37 @@ namespace MonoDevelop.Ide.Gui
 			} else
 				return null;
 		}
+
+		void SetDockNotebookTabTitle ()
+		{
+			tab.Text = Title;
+			tab.Notify = show_notification;
+			tab.Dirty = content.IsDirty;
+			if (content.ContentName != null && content.ContentName != "") {
+				tab.Tooltip = content.ContentName;
+			}
+			try {
+				if (content.StockIconId != null) {
+					tab.Icon = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
+				}
+				else
+					if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] {
+						'*',
+						'+'
+					}) == -1) {
+						tab.Icon = DesktopService.GetIconForFile (content.ContentName, Gtk.IconSize.Menu);
+					}
+			}
+			catch (Exception ex) {
+				LoggingService.LogError (ex.ToString ());
+				tab.Icon = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
+			}
+		}
 		
 		protected virtual void OnTitleChanged(EventArgs e)
 		{
 			fileTypeCondition.SetFileName (content.ContentName ?? content.UntitledName);
-
-			tab.Text = Title;
-			tab.Notify = show_notification;
-			tab.Dirty = content.IsDirty;
-			
-			if (content.ContentName != null && content.ContentName != "") {
-				tab.Tooltip = content.ContentName;
-			}
-
-			try {
-				if (content.StockIconId != null ) {
-					tab.Icon = ImageService.GetIcon (content.StockIconId, IconSize.Menu);
-				}
-				else if (content.ContentName != null && content.ContentName.IndexOfAny (new char[] { '*', '+'}) == -1) {
-					tab.Icon = DesktopService.GetIconForFile (content.ContentName, Gtk.IconSize.Menu);
-				}
-			} catch (Exception ex) {
-				LoggingService.LogError (ex.ToString ());
-				tab.Icon = DesktopService.GetIconForType ("gnome-fs-regular", Gtk.IconSize.Menu);
-			}
-
+			SetDockNotebookTabTitle ();
 			if (TitleChanged != null) {
 				TitleChanged(this, e);
 			}

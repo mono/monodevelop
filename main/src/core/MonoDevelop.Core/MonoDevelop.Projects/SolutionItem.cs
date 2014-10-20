@@ -176,6 +176,8 @@ namespace MonoDevelop.Projects
 				return parentSolution; 
 			}
 			internal set {
+				if (parentSolution != null && parentSolution != value)
+					NotifyUnboundFromSolution (true);
 				parentSolution = value;
 				NotifyBoundToSolution (true);
 			}
@@ -363,6 +365,9 @@ namespace MonoDevelop.Projects
 				return parentFolder;
 			}
 			internal set {
+				if (parentFolder != null && parentFolder.ParentSolution != null && (value == null || value.ParentSolution != parentFolder.ParentSolution))
+					NotifyUnboundFromSolution (false);
+
 				parentFolder = value;
 				if (internalChildren != null) {
 					internalChildren.ParentFolder = value;
@@ -383,16 +388,32 @@ namespace MonoDevelop.Projects
 				var items = folder.GetItemsWithoutCreating ();
 				if (items != null) {
 					foreach (var item in items) {
-						item.NotifyBoundToSolution (includeInternalChildren);
+						item.NotifyBoundToSolution (true);
 					}
 				}
 			}
 			if (includeInternalChildren && internalChildren != null) {
-				internalChildren.NotifyBoundToSolution (includeInternalChildren);
+				internalChildren.NotifyBoundToSolution (true);
 			}
 			OnBoundToSolution ();
 		}
 
+		void NotifyUnboundFromSolution (bool includeInternalChildren)
+		{
+			var folder = this as SolutionFolder;
+			if (folder != null) {
+				var items = folder.GetItemsWithoutCreating ();
+				if (items != null) {
+					foreach (var item in items) {
+						item.NotifyUnboundFromSolution (true);
+					}
+				}
+			}
+			if (includeInternalChildren && internalChildren != null) {
+				internalChildren.NotifyUnboundFromSolution (true);
+			}
+			OnUnboundFromSolution ();
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="MonoDevelop.Projects.SolutionItem"/> has been disposed.
@@ -1094,7 +1115,17 @@ namespace MonoDevelop.Projects
 			yield break;
 		}
 
+		/// <summary>
+		/// Called just after this item is bound to a solution
+		/// </summary>
 		protected virtual void OnBoundToSolution ()
+		{
+		}
+
+		/// <summary>
+		/// Called just before this item is removed from a solution (ParentSolution is still valid when this method is called)
+		/// </summary>
+		protected virtual void OnUnboundFromSolution ()
 		{
 		}
 

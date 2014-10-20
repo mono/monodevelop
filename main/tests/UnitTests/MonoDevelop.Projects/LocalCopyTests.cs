@@ -214,6 +214,10 @@ namespace MonoDevelop.Projects
 			var p = (DotNetProject)sol.Items [0];
 
 			var ar = p.References.First (r => r.Reference.Contains ("gtk"));
+			
+			if (!ar.Package.IsGacPackage)
+				Assert.Ignore ("This test only works with gtk-sharp as a GAC package.");
+
 			Assert.AreEqual (false, ar.LocalCopy);
 			ar.LocalCopy = true;
 			Assert.AreEqual (true, ar.LocalCopy);

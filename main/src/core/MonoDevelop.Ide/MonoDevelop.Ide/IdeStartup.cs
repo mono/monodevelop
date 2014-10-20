@@ -75,6 +75,9 @@ namespace MonoDevelop.Ide
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
 
+			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
+			IdeApp.Customizer.Initialize ();
+
 			Counters.Initialization.BeginTiming ();
 
 			if (options.PerfLog) {
@@ -149,10 +152,9 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing Runtime");
 			Runtime.Initialize (true);
 
+			IdeApp.Customizer.OnCoreInitialized ();
 
-			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
-
-			Counters.Initialization.Trace ("Initializing theme and splash window");
+			Counters.Initialization.Trace ("Initializing theme");
 
 			DefaultTheme = Gtk.Settings.Default.ThemeName;
 			string theme = IdeApp.Preferences.UserInterfaceTheme;
@@ -161,25 +163,8 @@ namespace MonoDevelop.Ide
 			ValidateGtkTheme (ref theme);
 			if (theme != DefaultTheme)
 				Gtk.Settings.Default.ThemeName = theme;
-
 			
-			//don't show the splash screen on the Mac, so instead we get the expected "Dock bounce" effect
-			//this also enables the Mac platform service to subscribe to open document events before the GUI loop starts.
-			if (Platform.IsMac)
-				options.NoSplash = true;
-			
-			IProgressMonitor monitor = null;
-			if (!options.NoSplash) {
-				try {
-					monitor = new SplashScreenForm ();
-					((SplashScreenForm)monitor).ShowAll ();
-				} catch (Exception ex) {
-					LoggingService.LogError ("Failed to create splash screen", ex);
-				}
-			}
-			if (monitor == null) {
-				monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
-			}
+			IProgressMonitor monitor = new MonoDevelop.Core.ProgressMonitoring.ConsoleProgressMonitor ();
 			
 			monitor.BeginTask (GettextCatalog.GetString ("Starting {0}", BrandingService.ApplicationName), 2);
 
@@ -234,16 +219,15 @@ namespace MonoDevelop.Ide
 				ImageService.Initialize ();
 				
 				if (errorsList.Count > 0) {
-					if (monitor is SplashScreenForm)
-						((SplashScreenForm)monitor).Hide ();
 					AddinLoadErrorDialog dlg = new AddinLoadErrorDialog ((AddinError[]) errorsList.ToArray (typeof(AddinError)), false);
 					if (!dlg.Run ())
 						return 1;
-					if (monitor is SplashScreenForm)
-						((SplashScreenForm)monitor).Show ();
 					reportedFailures = errorsList.Count;
 				}
-				
+
+				if (!CheckSCPlugin ())
+					return 1;
+
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
@@ -298,12 +282,17 @@ namespace MonoDevelop.Ide
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			StartLockupTracker ();
 			IdeApp.Run ();
+
+			IdeApp.Customizer.OnIdeShutdown ();
 			
 			// unloading services
 			if (null != socket_filename)
 				File.Delete (socket_filename);
 			lockupCheckRunning = false;
 			Runtime.Shutdown ();
+
+			IdeApp.Customizer.OnCoreShutdown ();
+
 			InstrumentationService.Stop ();
 			AddinManager.AddinLoadError -= OnAddinError;
 			
@@ -317,6 +306,8 @@ namespace MonoDevelop.Ide
 		static void StartLockupTracker ()
 		{
 			if (Platform.IsWindows)
+				return;
+			if (!string.Equals (Environment.GetEnvironmentVariable ("MD_LOCKUP_TRACKER"), "ON", StringComparison.OrdinalIgnoreCase))
 				return;
 			GLib.Timeout.Add (2000, () => {
 				lastIdle = DateTime.Now;
@@ -558,6 +549,35 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		bool CheckSCPlugin ()
+		{
+			if (Platform.IsMac && Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin")) {
+				string message = "SCPlugin not supported";
+				string detail = "MonoDevelop has detected that SCPlugin (scplugin.tigris.org) is installed. " +
+				                "SCPlugin is a Subversion extension for Finder that is known to cause crashes in MonoDevelop and" +
+				                "other applications running on Mac OSX 10.9 (Mavericks) or upper. Please uninstall SCPlugin " +
+				                "before proceeding.";
+				var close = new AlertButton (BrandingService.BrandApplicationName (GettextCatalog.GetString ("Close MonoDevelop")));
+				var info = new AlertButton (GettextCatalog.GetString ("More Information"));
+				var cont = new AlertButton (GettextCatalog.GetString ("Continue Anyway"));
+				while (true) {
+					var res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), info, cont, close);
+					if (res == close) {
+						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Closing."));
+						return false;
+					}
+					if (res == info)
+						DesktopService.ShowUrl ("https://bugzilla.xamarin.com/show_bug.cgi?id=21755");
+					if (res == cont) {
+						bool exists = Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin");
+						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Continuing " + (exists ? "Installed." : "Uninstalled.")));
+						return true;
+					}
+				}
+			}
+			return true;
+		}
+
 		static void SetupExceptionManager ()
 		{
 			System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (sender, e) => {
@@ -606,6 +626,8 @@ namespace MonoDevelop.Ide
 			
 			LoggingService.Initialize (options.RedirectOutput);
 
+			if (customizer == null)
+				customizer = LoadBrandingCustomizer ();
 			options.IdeCustomizer = customizer;
 
 			int ret = -1;
@@ -644,6 +666,30 @@ namespace MonoDevelop.Ide
 
 			return ret;
 		}
+
+		static IdeCustomizer LoadBrandingCustomizer ()
+		{
+			var pathsString = BrandingService.GetString ("CustomizerAssemblyPath");
+			if (string.IsNullOrEmpty (pathsString))
+				return null;
+
+			var paths = pathsString.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			var type = BrandingService.GetString ("CustomizerType");
+			if (!string.IsNullOrEmpty (type)) {
+				foreach (var path in paths) {
+					var file = BrandingService.GetFile (path.Replace ('/',Path.DirectorySeparatorChar));
+					if (File.Exists (file)) {
+						Assembly asm = Assembly.LoadFrom (file);
+						var t = asm.GetType (type, true);
+						var c = Activator.CreateInstance (t) as IdeCustomizer;
+						if (c == null)
+							throw new InvalidOperationException ("Customizer class specific in the branding file is not an IdeCustomizer subclass");
+						return c;
+					}
+				}
+			}
+			return null;
+		}
 	}
 	
 	public class MonoDevelopOptions
@@ -656,9 +702,9 @@ namespace MonoDevelop.Ide
 		
 		Mono.Options.OptionSet GetOptionSet ()
 		{
-			return new Mono.Options.OptionSet () {
-				{ "no-splash", "Do not display splash screen.", s => NoSplash = true },
-				{ "ipc-tcp", "Use the Tcp channel for inter-process comunication.", s => IpcTcp = true },
+			return new Mono.Options.OptionSet {
+				{ "no-splash", "Do not display splash screen (deprecated).", s => {} },
+				{ "ipc-tcp", "Use the Tcp channel for inter-process communication.", s => IpcTcp = true },
 				{ "new-window", "Do not open in an existing instance of " + BrandingService.ApplicationName, s => NewWindow = true },
 				{ "h|?|help", "Show help", s => ShowHelp = true },
 				{ "perf-log", "Enable performance counter logging", s => PerfLog = true },
@@ -691,7 +737,6 @@ namespace MonoDevelop.Ide
 			return opt;
 		}
 		
-		public bool NoSplash { get; set; }
 		public bool IpcTcp { get; set; }
 		public bool NewWindow { get; set; }
 		public bool ShowHelp { get; set; }

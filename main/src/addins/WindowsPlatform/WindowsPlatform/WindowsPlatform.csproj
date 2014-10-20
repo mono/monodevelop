@@ -87,9 +87,7 @@
     <Compile Include="Dialogs\SelectFileDialogHandler.cs" />
     <Compile Include="Dialogs\OpenFileDialogHandler.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Enums.cs" />
     <Compile Include="GdkWin32.cs" />
-    <Compile Include="structs.cs" />
     <Compile Include="Win32.cs" />
     <Compile Include="WindowsPlatform.cs" />
     <Compile Include="RecentFiles.cs" />
@@ -101,6 +99,7 @@
     <Compile Include="AddinInfo.cs" />
     <Compile Include="CustomDialogs\CustomCommonOpenFileDialog.cs" />
     <Compile Include="CustomDialogs\CustomCommonFileDialogComboBox.cs" />
+    <Compile Include="CustomDialogs\CustomCommonSaveFileDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WindowsPlatform.addin.xml">

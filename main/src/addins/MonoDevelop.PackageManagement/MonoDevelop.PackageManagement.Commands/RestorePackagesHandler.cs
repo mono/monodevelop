@@ -42,7 +42,9 @@ namespace MonoDevelop.PackageManagement.Commands
 		protected override void Run ()
 		{
 			var runner = new PackageRestoreRunner ();
-			runner.Run ();
+			DispatchService.BackgroundDispatch (() => {
+				runner.Run ();
+			});
 		}
 
 		protected override void Update (CommandInfo info)

@@ -20,12 +20,13 @@ obj/
 /local-libs
 /main/build/tests
 /main/monodevelop_version
-/main/tests/TestResult.xml
+/main/tests/TestResult*.xml
 /main/tests/Ide.Tests/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi/bin
 /main/src/addins/MonoDevelop.Debugger.Win32/CorApi2/bin
 /main/src/core/MonoDevelop.Core/BuildVariables.cs
 /scripts/configure.exe
+/main/packages
 
 #VS writes these sometimes even when it doesn't change anything
 /main/_UpgradeReport_Files
@@ -49,6 +50,7 @@ autom4te.cache/
 *.tar.gz
 tarballs/
 test-results/
+Thumbs.db
 
 #Mac bundle stuff
 *.dmg
@@ -77,7 +79,7 @@ test-results/
 /main/man/Makefile
 /main/build/MacOSX/Makefile
 /main/build/Makefile
-main/external/Makefile
+/main/external/Makefile
 /main/contrib/Makefile
 /main/contrib/Mono.Cecil/Makefile
 /main/contrib/ICSharpCode.NRefactory.CSharp/Makefile
@@ -86,8 +88,6 @@ main/external/Makefile
 /main/po/Makefile
 /main/src/Makefile
 /main/src/addins/AspNet/Makefile
-/main/src/addins/AspNet/MonoDevelop.AspNet.Mvc/Makefile
-/main/src/addins/AspNet/MonoDevelop.AspNet/Makefile
 /main/src/addins/CBinding/Makefile
 /main/src/addins/CSharpBinding/AspNet/Makefile
 /main/src/addins/CSharpBinding/Autotools/Makefile
@@ -122,7 +122,7 @@ main/external/Makefile
 /main/src/addins/MonoDevelop.RegexToolkit/Makefile
 /main/src/addins/MonoDevelop.SourceEditor2/Makefile
 /main/src/addins/MonoDevelop.WebReferences/Makefile
-/main/src/addins/MonoDevelop.XmlEditor/Makefile
+/main/src/addins/Xml/Makefile
 /main/src/addins/MonoDeveloperExtensions/Makefile
 /main/src/addins/MonoDeveloperExtensions/NUnit/Makefile
 /main/src/addins/NUnit/Makefile

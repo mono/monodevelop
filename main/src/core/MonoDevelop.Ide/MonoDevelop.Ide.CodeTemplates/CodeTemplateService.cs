@@ -138,6 +138,17 @@ namespace MonoDevelop.Ide.CodeTemplates
 				writer.Close ();
 			}
 		}
+
+		public static void DeleteTemplate (CodeTemplate template)
+		{
+			try {
+				var fileName = Path.Combine (TemplatePath, template.Shortcut + ".template.xml");
+				if (File.Exists (fileName))
+					File.Delete (fileName);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while removing template file", e);
+			}
+		}
 		
 		public static void SaveTemplate (CodeTemplate template)
 		{

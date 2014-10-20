@@ -45,20 +45,24 @@ namespace ICSharpCode.PackageManagement
 		
 		public override IEnumerable<UpdatePackageAction> CreateActions()
 		{
-			GetProjects();
 			foreach (IPackage package in GetPackages()) {
-				foreach (IPackageManagementProject project in projects) {
+				foreach (IPackageManagementProject project in Projects) {
 					yield return CreateAction(project, package);
 				}
 			}
 		}
-		
-		void GetProjects()
-		{
-			projects = new List<IPackageManagementProject>();
-			projects.AddRange(solution.GetProjects(sourceRepository));
+
+		public IEnumerable<IPackageManagementProject> Projects {
+			get {
+				if (projects == null) {
+					projects = solution
+						.GetProjects(sourceRepository)
+						.ToList ();
+				}
+				return projects;
+			}
 		}
-		
+
 		IEnumerable<IPackage> GetPackages()
 		{
 			return solution.GetPackagesInReverseDependencyOrder();

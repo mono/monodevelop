@@ -37,64 +37,73 @@ namespace ICSharpCode.PackageManagement
 	public class UpdatedPackages
 	{
 		IPackageRepository sourceRepository;
-		IQueryable<IPackage> installedPackages;
-		
-		public UpdatedPackages(
+		List<IPackageName> installedPackages;
+		IPackageConstraintProvider constraintProvider;
+
+		public UpdatedPackages (
 			IPackageManagementProject project,
 			IPackageRepository aggregateRepository)
-			: this(
-				project.GetPackages(),
-				aggregateRepository)
+			: this (
+				project.GetPackageReferences (),
+				aggregateRepository,
+				project.ConstraintProvider)
 		{
 		}
-		
+
+		public UpdatedPackages (
+			IEnumerable<PackageReference> packageReferences,
+			IPackageRepository aggregrateRepository,
+			IPackageConstraintProvider constraintProvider)
+		{
+			installedPackages = packageReferences
+				.Select (packageReference => new PackageName (packageReference.Id, packageReference.Version))
+				.Select (packageReference => (IPackageName)packageReference)
+				.ToList ();
+
+			this.sourceRepository = aggregrateRepository;
+			this.constraintProvider = constraintProvider;
+		}
+
 		public UpdatedPackages(
 			IQueryable<IPackage> installedPackages,
 			IPackageRepository aggregrateRepository)
 		{
-			this.installedPackages = installedPackages;
-			this.sourceRepository = aggregrateRepository;
 		}
-		
+
 		public string SearchTerms { get; set; }
-		
-		public IEnumerable<IPackage> GetUpdatedPackages(bool includePrerelease = false)
+
+		public IEnumerable<IPackage> GetUpdatedPackages (bool includePrerelease = false)
 		{
-			IQueryable<IPackage> localPackages = installedPackages;
-			localPackages = FilterPackages(localPackages);
-			IEnumerable<IPackage> distinctLocalPackages = DistinctPackages(localPackages);
-			return GetUpdatedPackages(sourceRepository, distinctLocalPackages, includePrerelease);
+			List<IPackageName> localPackages = installedPackages;
+			IEnumerable<IPackageName> distinctLocalPackages = DistinctPackages (localPackages);
+			return GetUpdatedPackages (distinctLocalPackages, includePrerelease);
 		}
-		
-		IQueryable<IPackage> GetInstalledPackages()
-		{
-			return installedPackages;
-		}
-		
-		IQueryable<IPackage> FilterPackages(IQueryable<IPackage> localPackages)
-		{
-			return localPackages.Find(SearchTerms);
-		}
-		
+
 		/// <summary>
 		/// If we have jQuery 1.6 and 1.7 then return just jquery 1.6
 		/// </summary>
-		IEnumerable<IPackage> DistinctPackages(IQueryable<IPackage> localPackages)
+		IEnumerable<IPackageName> DistinctPackages (List<IPackageName> packages)
 		{
-			List<IPackage> packages = localPackages.ToList();
-			if (packages.Any()) {
-				packages.Sort(PackageComparer.Version);
-				return packages.Distinct<IPackage>(PackageEqualityComparer.Id).ToList();
+			if (packages.Any ()) {
+				packages.Sort ((x, y) => x.Version.CompareTo (y.Version));
+				return packages.Distinct<IPackageName> (PackageEqualityComparer.Id).ToList ();
 			}
 			return packages;
 		}
-		
-		IEnumerable<IPackage> GetUpdatedPackages(
-			IPackageRepository sourceRepository,
-			IEnumerable<IPackage> localPackages,
+
+		IEnumerable<IPackage> GetUpdatedPackages (
+			IEnumerable<IPackageName> localPackages,
 			bool includePrelease)
 		{
-			return sourceRepository.GetUpdates(localPackages, includePrelease, false);
+			IEnumerable<IVersionSpec> constraints = localPackages
+				.Select (package => constraintProvider.GetConstraint (package.Id));
+
+			return sourceRepository.GetUpdates (
+				localPackages,
+				includePrelease,
+				false,
+				null,
+				constraints);
 		}
 	}
 }

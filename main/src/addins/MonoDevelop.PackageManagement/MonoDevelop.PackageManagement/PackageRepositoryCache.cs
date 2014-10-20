@@ -29,6 +29,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using MonoDevelop.PackageManagement;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -40,16 +41,29 @@ namespace ICSharpCode.PackageManagement
 		PackageManagementOptions options;
 		IList<RecentPackageInfo> recentPackages;
 		IRecentPackageRepository recentPackageRepository;
+		IPackageRepository machineCache;
 		ConcurrentDictionary<string, IPackageRepository> repositories =
 			new ConcurrentDictionary<string, IPackageRepository>();
 		
 		public PackageRepositoryCache (
 			PackageManagementOptions options,
+			IPackageRepository machineCache,
 			ISharpDevelopPackageRepositoryFactory factory)
 		{
 			this.options = options;
+			this.machineCache = machineCache;
 			this.factory = factory;
 			this.recentPackages = options.RecentPackages;
+		}
+
+		public PackageRepositoryCache (
+			PackageManagementOptions options,
+			ISharpDevelopPackageRepositoryFactory factory)
+			: this (
+				options,
+				MachineCache.Default,
+				factory)
+		{
 		}
 		
 		public PackageRepositoryCache (PackageManagementOptions options)
@@ -119,7 +133,7 @@ namespace ICSharpCode.PackageManagement
 		IEnumerable<IPackageRepository> CreateAllEnabledRepositories()
 		{
 			foreach (PackageSource source in PackageSources.GetEnabledPackageSources ()) {
-				yield return CreateRepository(source.Source);
+				yield return CreateRepositoryIgnoringFailures (source.Source);
 			}
 		}
 
@@ -159,6 +173,24 @@ namespace ICSharpCode.PackageManagement
 				recentPackageRepository = factory.CreateRecentPackageRepository(recentPackages, aggregateRepository);
 			}
 			return recentPackageRepository;
+		}
+
+		public IPackageRepository CreateAggregateWithPriorityMachineCacheRepository ()
+		{
+			return new PriorityPackageRepository (machineCache, CreateAggregateRepository ());
+		}
+
+		IPackageRepository CreateRepositoryIgnoringFailures (string packageSource)
+		{
+			try {
+				return CreateRepository (packageSource);
+			} catch (Exception ex) {
+				// Deliberately caching the failing package source so the
+				// AggregateRepository only reports its failure once.
+				var repository = new FailingPackageRepository (packageSource, ex);
+				repositories.TryAdd(packageSource, repository);
+				return repository;
+			}
 		}
 	}
 }

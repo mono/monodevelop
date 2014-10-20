@@ -111,6 +111,12 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			return Disassemble (data, navigator);
 		}
+
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		{
+			return Disassemble (data, navigator);
+		}
+
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			return null;

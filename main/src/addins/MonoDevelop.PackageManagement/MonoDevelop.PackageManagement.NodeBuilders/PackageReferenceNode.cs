@@ -25,25 +25,42 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Serialization;
-using NuGet;
 using System.Runtime.Versioning;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement.NodeBuilders
 {
 	public class PackageReferenceNode
 	{
-		public PackageReferenceNode (PackageReference packageReference, bool installed, bool pending = false)
+		public PackageReferenceNode (
+			PackageReference packageReference,
+			bool installed,
+			bool pending = false,
+			IPackageName updatedPackage = null)
 		{
 			PackageReference = packageReference;
 			Installed = installed;
 			IsInstallPending = pending;
+
+			UpdatedVersion = GetUpdatedPackageVersion (updatedPackage);
+			IsReinstallNeeded = packageReference.RequireReinstallation;
+		}
+
+		SemanticVersion GetUpdatedPackageVersion (IPackageName updatedPackage)
+		{
+			if (updatedPackage != null) {
+				return updatedPackage.Version;
+			}
+			return null;
 		}
 
 		public PackageReference PackageReference { get; private set; }
 		public bool Installed { get; private set; }
 		public bool IsInstallPending { get; private set; }
+		public bool IsReinstallNeeded { get; private set; }
 
 		public string Name {
 			get { return PackageReference.Id; }
@@ -57,6 +74,8 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			get { return PackageReference.Version; }
 		}
 
+		public SemanticVersion UpdatedVersion { get; private set; }
+
 		public bool IsDevelopmentDependency {
 			get { return PackageReference.IsDevelopmentDependency; }
 		}
@@ -69,9 +88,65 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 			get { return PackageReference.VersionConstraint; }
 		}
 
+		public string GetLabel ()
+		{
+			if (UpdatedVersion != null) {
+				return Id + GetUpdatedVersionLabelText ();
+			}
+			if (IsInstallPending) {
+				return Id + GetInstallingLabelText ();
+			}
+			return Id;
+		}
+
+		string GetUpdatedVersionLabelText ()
+		{
+			return String.Format (" <span color='grey'>({0} {1})</span>",
+				UpdatedVersion,
+				GettextCatalog.GetString ("available"));
+		}
+
+		string GetInstallingLabelText ()
+		{
+			return String.Format (" ({0})", GettextCatalog.GetString ("installing"));
+		}
+
+		public IconId GetIconId ()
+		{
+			return Stock.Reference;
+		}
+
 		public string GetPackageVersionLabel ()
 		{
 			return GettextCatalog.GetString ("Version {0}", Version);
+		}
+
+		public TaskSeverity? GetStatusSeverity ()
+		{
+			if (!Installed || IsReinstallNeeded) {
+				if (!IsInstallPending) {
+					return TaskSeverity.Warning;
+				}
+			}
+
+			return null;
+		}
+
+		public string GetStatusMessage ()
+		{
+			if (IsInstallPending) {
+				return null;
+			} else if (!Installed) {
+				return GettextCatalog.GetString ("Package is not restored");
+			} else if (IsReinstallNeeded) {
+				return GettextCatalog.GetString ("Package needs retargeting");
+			}
+			return null;
+		}
+
+		public bool IsDisabled ()
+		{
+			return (!Installed || IsInstallPending);
 		}
 	}
 }

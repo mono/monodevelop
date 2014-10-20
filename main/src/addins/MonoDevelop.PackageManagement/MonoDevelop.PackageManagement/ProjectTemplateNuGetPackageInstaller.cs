@@ -60,17 +60,29 @@ namespace MonoDevelop.PackageManagement
 
 		public override void Run (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
-			List<InstallPackageAction> installPackageActions = CreateInstallPackageActions (solution, packageReferencesForCreatedProjects);
+			List<IPackageAction> installPackageActions = CreatePackageActions (solution, packageReferencesForCreatedProjects);
+			if (!installPackageActions.Any ())
+				return;
+
 			ProgressMonitorStatusMessage progressMessage = ProgressMonitorStatusMessageFactory.CreateInstallingProjectTemplatePackagesMessage ();
 			backgroundPackageActionRunner.Run (progressMessage, installPackageActions);
 		}
 
-		List<InstallPackageAction> CreateInstallPackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		List<IPackageAction> CreatePackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
 		{
-			var installPackageActions = new List<InstallPackageAction> ();
+			List<IPackageAction> actions = CreateInstallPackageActions (solution, packageReferencesForCreatedProjects);
+			if (actions.Any () && PackageManagementServices.Options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled) {
+				actions.Add (new CheckForUpdatedPackagesAction ());
+			}
+			return actions;
+		}
+
+		List<IPackageAction> CreateInstallPackageActions (Solution solution, IList<PackageReferencesForCreatedProject> packageReferencesForCreatedProjects)
+		{
+			var installPackageActions = new List<IPackageAction> ();
 
 			foreach (PackageReferencesForCreatedProject packageReferences in packageReferencesForCreatedProjects) {
-				var project = solution.GetAllProjects ().First (p => p.Name == packageReferences.ProjectName) as DotNetProject;
+				var project = solution.GetAllProjects ().FirstOrDefault (p => p.Name == packageReferences.ProjectName) as DotNetProject;
 				if (project != null) {
 					installPackageActions.AddRange (CreateInstallPackageActions (project, packageReferences));
 				}
