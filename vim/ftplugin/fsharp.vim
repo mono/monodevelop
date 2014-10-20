@@ -52,13 +52,14 @@ augroup fsharp
     autocmd!
     "remove scratch buffer after selection
     "autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
-    autocmd InsertLeave  *.fs* if pumvisible() == 0|pclose|endif
+    autocmd InsertLeave  *.fs[ix]\\\{0,1\} if pumvisible() == 0|pclose|endif
 
-    autocmd InsertLeave  *.fs* call OnInsertLeave() 
-    autocmd TextChanged  *.fs* call OnTextChanged()
-    autocmd TextChangedI *.fs* call OnTextChanged()
-    autocmd CursorHold   *.fs* call OnCursorHold()
-    autocmd BufLeave     *.fs* call OnBufLeave()
+    autocmd InsertLeave  *.fs[ix]\\\{0,1\} call OnInsertLeave() 
+    autocmd TextChanged  *.fs[ix]\\\{0,1\} call OnTextChanged()
+    autocmd TextChangedI *.fs[ix]\\\{0,1\} call OnTextChanged()
+    autocmd CursorHold   *.fs[ix]\\\{0,1\} call OnCursorHold()
+    autocmd BufLeave     *.fs[ix]\\\{0,1\} call OnBufLeave()
+    autocmd BufEnter     *.fs[ix]\\\{0,1\} call OnBufEnter()
 augroup END
 
 com! -buffer -range=% Interactive call s:launchInteractive(<line1>, <line2>)
@@ -96,7 +97,7 @@ endif
 let b:shouldParse = 1
 
 function! OnCursorHold ()
-    if exists("b:shouldParse") && b:shouldParse
+    if b:shouldParse
         call ShowErrors()
         let b:shouldParse = 0
     endif
@@ -108,6 +109,10 @@ function! OnTextChanged()
 endfunction
 
 function! OnInsertLeave()
+endfunction
+
+function! OnBufEnter()
+    call ShowErrors()
 endfunction
 
 function! OnBufLeave()
