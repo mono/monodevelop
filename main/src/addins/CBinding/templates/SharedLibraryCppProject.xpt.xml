@@ -12,6 +12,7 @@
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple shared library C++ project.</_Description>
 		<DefaultFilename>SharedLibraryCppProject</DefaultFilename>
+		<_GroupId>md-shared-library-project</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

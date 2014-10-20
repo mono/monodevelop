@@ -12,6 +12,7 @@
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple static library C++ project.</_Description>
 		<DefaultFilename>StaticLibraryCppProject</DefaultFilename>
+		<_GroupId>md-static-library-project</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

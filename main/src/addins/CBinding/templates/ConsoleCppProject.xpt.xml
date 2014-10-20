@@ -12,6 +12,7 @@
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple hello world C++ project.</_Description>
 		<DefaultFilename>ConsoleCppProject</DefaultFilename>
+		<_GroupId>md-project-console</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

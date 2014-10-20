@@ -12,6 +12,7 @@
 		<LanguageName>Objective C</LanguageName>
 		<_Description>Creates simple hello world Objective C project.</_Description>
 		<DefaultFilename>ConsoleObjCProject</DefaultFilename>
+		<_GroupId>md-project-console</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

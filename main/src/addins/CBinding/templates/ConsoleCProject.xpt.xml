@@ -12,6 +12,7 @@
 		<LanguageName>C</LanguageName>
 		<_Description>Creates simple hello world C project.</_Description>
 		<DefaultFilename>ConsoleCProject</DefaultFilename>
+		<_GroupId>md-project-console</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->
