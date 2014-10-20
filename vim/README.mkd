@@ -63,6 +63,19 @@ augroup fsharp_au
 augroup END
 ~~~
 
+###Settings
+
+You can enable *debug-mode* in order to inspect the fsautocomplete behavior by
+setting the global vim variable `g:fsharpbinding_debug` to a non-zero value:
+
+~~~.vim
+let g:fsharpbinding_debug = 1
+~~~
+
+This will create two log files `log.txt` and `log2.txt` in your temporary folder
+(i.e. `/tmp/`).
+
+
 [syntastic]: https://github.com/scrooloose/syntastic
 [airline]: https://github.com/bling/vim-airline
 [pathogen]: https://github.com/tpope/vim-pathogen
