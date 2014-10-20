@@ -1,6 +1,6 @@
 " Vim filetype plugin
 " Language:     F#
-" Last Change:  Thu 23 Oct 2014 08:38:31 PM CEST
+" Last Change:  Thu 23 Oct 2014 08:39:04 PM CEST
 " Maintainer:   Gregor Uhlenheuer <kongo2002@googlemail.com>
 
 if exists('b:did_ftplugin')
@@ -39,7 +39,7 @@ if '.fs' == ext or '.fsi' == ext:
         fsautocomplete.project(proj_file)
 EOF
 
-    nnoremap <buffer> <leader>i :call fsharpbinding#python#GetInfo()<cr>
+    nnoremap <buffer> <leader>i :call fsharpbinding#python#TypeCheck()<cr>
     nnoremap <buffer> <leader>d :call fsharpbinding#python#GotoDecl()<cr>
     nnoremap <buffer> <leader>s :call fsharpbinding#python#GoBackFromDecl()<cr>
 

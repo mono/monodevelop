@@ -1,6 +1,6 @@
 " Vim autoload functions
 " Language:     F#
-" Last Change:  Mon 20 Oct 2014 12:20:30 AM CEST
+" Last Change:  Mon 20 Oct 2014 07:58:27 PM CEST
 " Maintainer:   Gregor Uhlenheuer <kongo2002@googlemail.com>
 
 if exists('g:loaded_autoload_fsharpbinding_python')
@@ -44,18 +44,6 @@ function! fsharpbinding#python#BuildProject(...)
     catch
         echo "failed to execute build"
     endtry
-endfunction
-
-
-function! fsharpbinding#python#GetInfo()
-    let line = line('.')
-    let c = col('.')
-    let err = s:findErrorByPos(line, c)
-    if empty(err) == 0
-        echo err['text']
-    else
-        call fsharpbinding#python#TypeCheck()
-    endif
 endfunction
 
 
