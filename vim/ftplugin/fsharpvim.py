@@ -11,35 +11,45 @@ class Statics:
     locations = []
 
 class Interaction:
-    def __init__(self, proc, timeOut, logfile):
+    def __init__(self, proc, timeOut, logfile = None):
         self.data = None
         self.event = threading.Event()
         self.proc = proc
-        self.logfile = logfile
         self._timeOut = timeOut
+        self.logfile = logfile
+        self.debug = not logfile is None
 
     def _write(self, txt):
-        self.logfile.write("> " + txt)
-        self.logfile.flush()
         self.proc.stdin.write(txt)
+
+        if self.debug:
+            self.logfile.write("> " + txt)
+            self.logfile.flush()
 
     def send(self, command):
         self.data = None
         self.event.clear()
         self._write(command)
         self.event.wait(self._timeOut)
-        self.logfile.write('msg received %s\n' % self.data)
+
+        if self.debug:
+            self.logfile.write('msg received %s\n' % self.data)
+
         return self.data
 
-    #only on worker thread
+    # only on worker thread
     def update(self, data):
-        self.data = data 
+        self.data = data
         self.event.set()
 
 class FSAutoComplete:
-    def __init__(self, dir):
-        self.logfiledir = tempfile.gettempdir() + "/log.txt"
-        self.logfile = open(self.logfiledir, "w")
+    def __init__(self, dir, debug = False):
+        if debug:
+            self.logfiledir = tempfile.gettempdir() + "/log.txt"
+            self.logfile = open(self.logfiledir, "w")
+        else:
+            self.logfile = None
+
         command = ['mono', dir + '/bin/fsautocomplete.exe']
         opts = { 'stdin': PIPE, 'stdout': PIPE, 'universal_newlines': True }
         try:
@@ -47,8 +57,8 @@ class FSAutoComplete:
         except WindowsError:
             self.p = Popen(command[1:], **opts)
 
+        self.debug = debug
         self.switch_to_json()
-
 
         self.completion = Interaction(self.p, 3, self.logfile)
         self._finddecl = Interaction(self.p, 1, self.logfile)
@@ -61,16 +71,27 @@ class FSAutoComplete:
         self.worker.daemon = True
         self.worker.start()
 
+    def __log(self, msg):
+        if self.debug:
+            self.logfile.write(msg)
+
     def send(self, txt):
-        self.logfile.write("> " + txt)
-        self.logfile.flush()
+        if self.debug:
+            self.logfile.write("> " + txt)
+            self.logfile.flush()
+
         self.p.stdin.write(txt)
 
     def work(self,_):
-        self.logfile2 = open(tempfile.gettempdir() + "/log2.txt", "w")
+        if self.debug:
+            self.logfile2 = open(tempfile.gettempdir() + "/log2.txt", "w")
+
         while True:
             data = self.p.stdout.readline()
-            self.logfile2.write("::work read: %s" % data)
+
+            if self.debug:
+                self.logfile2.write("::work read: %s" % data)
+
             parsed = json.loads(data)
             if parsed['Kind'] == "completion":
                 self.completion.update(parsed['Data'])
@@ -84,7 +105,7 @@ class FSAutoComplete:
                 self._project.update(parsed['Data'])
             elif parsed['Kind'] == "finddecl":
                 self._finddecl.update(parsed['Data'])
-        
+
     def help(self):
         self.send("help\n")
 
@@ -104,20 +125,25 @@ class FSAutoComplete:
     def quit(self):
         self.send("quit\n")
         self.p.wait()
-        self.logfile.close()
+
+        if self.debug:
+            self.logfile.close()
 
     def complete(self, fn, line, column, base):
-        self.logfile.write('complete: base = %s\n' % base)
+        self.__log('complete: base = %s\n' % base)
+
         msg = self.completion.send('completion "%s" %d %d\n' % (fn, line, column))
-        self.logfile.write('msg received %s\n' % msg)
+
+        self.__log('msg received %s\n' % msg)
         msg = map(str, msg)
+
         if base != '':
-            msg = filter(lambda(line): 
+            msg = filter(lambda(line):
                     line.lower().find(base.lower()) != -1, msg)
 
         msg.sort(key=lambda x: x.startswith(base), reverse=True)
-        msg = map(lambda(line): 
-                {'word': line, 
+        msg = map(lambda(line):
+                {'word': line,
                  'info': self.helptext(line),
                  'menu': ""}, msg)
 
@@ -125,29 +151,29 @@ class FSAutoComplete:
 
     def finddecl(self, fn, line, column):
         msg = self._finddecl.send('finddecl "%s" %d %d\n' % (fn, line, column))
-        if(msg != None):
+        if msg != None:
             return str(msg['File']), (int(str(msg['Line'])), int(str(msg['Column'])))
         else:
             return None
 
     def errors(self, fn, full, lines):
-        self.logfile.write('errors: fn = %s\n' % fn)
+        self.__log('errors: fn = %s\n' % fn)
         fulltext = "full" if full else ""
         self.send("parse \"%s\" %s\n" % (fn, fulltext))
         for line in lines:
             self.send(line + "\n")
         msg = self._errors.send("<<EOF>>\n")
         return msg
-    
+
     def tooltip(self, fn, line, column):
         msg = self._tooltip.send('tooltip "%s" %d %d 500\n' % (fn, line, column))
-        if(msg != None):
+        if msg != None:
             return str(msg)
         else:
-            return "" 
+            return ""
 
     def helptext(self, candidate):
-        msg = self._helptext.send('helptext %s\n' % candidate) 
+        msg = self._helptext.send('helptext %s\n' % candidate)
         return str(msg[candidate])
 
 class FSharpVimFixture(unittest.TestCase):
@@ -167,4 +193,4 @@ class FSharpVimFixture(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main() 
+    unittest.main()

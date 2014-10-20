@@ -1,6 +1,6 @@
 " Vim filetype plugin
 " Language:     F#
-" Last Change:  Thu 23 Oct 2014 08:39:04 PM CEST
+" Last Change:  Thu 23 Oct 2014 08:39:34 PM CEST
 " Maintainer:   Gregor Uhlenheuer <kongo2002@googlemail.com>
 
 if exists('b:did_ftplugin')
@@ -23,7 +23,8 @@ from fsharpvim import FSAutoComplete,Statics
 import pyvim
 
 if Statics.fsac == None:
-    Statics.fsac = FSAutoComplete(fsharp_dir)
+    debug = vim.eval("get(g:, 'fsharpbinding_debug', 0)") != '0'
+    Statics.fsac = FSAutoComplete(fsharp_dir, debug)
 fsautocomplete = Statics.fsac
 b = vim.current.buffer
 fsautocomplete.parse(b.name, True, b)
