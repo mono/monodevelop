@@ -186,6 +186,27 @@ namespace MonoDevelop.Ide.Projects
 			return SelectedTemplate;
 		}
 
+		SolutionTemplate GetTemplateForProcessing ()
+		{
+			if (SelectedTemplate.HasCondition) {
+				string language = GetLanguageForTemplateProcessing ();
+				SolutionTemplate template = SelectedTemplate.GetTemplate (language, finalConfigurationPage.Parameters);
+				if (template != null) {
+					return template;
+				}
+				throw new ApplicationException (String.Format ("No template found matching condition '{0}'.", SelectedTemplate.Condition));
+			}
+			return GetSelectedTemplateForSelectedLanguage ();
+		}
+
+		string GetLanguageForTemplateProcessing ()
+		{
+			if (SelectedTemplate.AvailableLanguages.Contains (SelectedLanguage)) {
+				return SelectedLanguage;
+			}
+			return SelectedTemplate.Language;
+		}
+
 		public string BannerText {
 			get {
 				if (IsLastPage) {
@@ -430,7 +451,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			try {
-				result = IdeApp.Services.TemplatingService.ProcessTemplate (GetSelectedTemplateForSelectedLanguage (), projectConfiguration, ParentFolder);
+				result = IdeApp.Services.TemplatingService.ProcessTemplate (GetTemplateForProcessing (), projectConfiguration, ParentFolder);
 				NewItem = result.WorkspaceItem;
 				if (NewItem == null)
 					return false;

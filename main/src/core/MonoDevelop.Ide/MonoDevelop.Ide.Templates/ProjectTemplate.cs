@@ -91,6 +91,12 @@ namespace MonoDevelop.Ide.Templates
 			get { return groupId; }
 		}
 
+		private string condition;
+		public string Condition
+		{
+			get { return condition; }
+		}
+
 		private string category;
 		public string Category
 		{
@@ -215,6 +221,7 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlConfiguration ["_GroupId"] != null) {
 				this.groupId = xmlConfiguration ["_GroupId"].InnerText;
+				this.condition = xmlConfiguration ["_GroupId"].GetAttribute ("condition");
 			}
 
 			if (xmlConfiguration ["_FileExtension"] != null) {

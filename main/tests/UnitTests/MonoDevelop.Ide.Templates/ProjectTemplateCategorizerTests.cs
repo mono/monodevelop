@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -102,6 +103,13 @@ namespace MonoDevelop.Ide.Templates
 				.IsDefault = true;
 		}
 
+		ProjectCreateParameters CreateParameters (string name, string value)
+		{
+			var parameters = new ProjectCreateParameters ();
+			parameters [name] = value;
+			return parameters;
+		}
+
 		[Test]
 		public void GetCategorizedTemplates_OneTemplateOneCategoryNoCategoryMatch_LogsWarning ()
 		{
@@ -173,6 +181,94 @@ namespace MonoDevelop.Ide.Templates
 			Assert.AreEqual (template1, template.GetTemplate ("C#"));
 			Assert.AreEqual (template2, template.GetTemplate ("F#"));
 			Assert.AreEqual (1, generalCategory.Templates.Count ());
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoConsoleProjectTemplatesWithSameLanguageInSameGroup_TemplatesCombinedIntoOneGroupWarningLoggedAboutDuplicateLanguageOneLanguageShown ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "C#";
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate template = generalCategory.Templates.FirstOrDefault ();
+			Assert.That (template.AvailableLanguages, Contains.Item ("C#"));
+			Assert.AreEqual (1, template.AvailableLanguages.Count);
+			Assert.AreEqual (1, generalCategory.Templates.Count ());
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateOneCategoryWithGroupCondition_TemplateFilteredUsingTemplateParameters ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+			template.GroupId = "console";
+			template.Language = "C#";
+			template.Condition = "Device=MyDevice";
+			ProjectCreateParameters parameters = CreateParameters ("Device", "MyDevice");
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			SolutionTemplate matchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			parameters.Clear ();
+			SolutionTemplate noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.AreEqual (template, matchedTemplate);
+			Assert.IsNull (noMatchedTemplate);
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoTemplatesWithGroupCondition_TemplateFilteredUsingTemplateParameters ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template1 = AddTemplate ("template-id1", "android/app/general");
+			template1.GroupId = "console";
+			template1.Language = "C#";
+			template1.Condition = "Device=IPhone";
+			SolutionTemplate template2 = AddTemplate ("template-id2", "android/app/general");
+			template2.GroupId = "console";
+			template2.Language = "C#";
+			template2.Condition = "Device=IPad";
+			ProjectCreateParameters parameters = CreateParameters ("Device", "IPad");
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			SolutionTemplate matchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			parameters.Clear ();
+			SolutionTemplate noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.AreEqual (template2, matchedTemplate);
+			Assert.IsNull (noMatchedTemplate);
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateOneCategoryWithGroupConditionContainingExtraWhitespace_TemplateFilteredUsingTemplateParameters ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+			template.GroupId = "console";
+			template.Language = "C#";
+			template.Condition = " Device = MyDevice ";
+			ProjectCreateParameters parameters = CreateParameters ("Device", "MyDevice");
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			SolutionTemplate matchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.AreEqual (template, matchedTemplate);
 		}
 	}
 }

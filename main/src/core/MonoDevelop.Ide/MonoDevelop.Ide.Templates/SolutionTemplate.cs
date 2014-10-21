@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -40,6 +41,7 @@ namespace MonoDevelop.Ide.Templates
 		string projectFileExtension;
 		List<string> availableLanguages = new List<string> ();
 		List<SolutionTemplate> groupedTemplates = new List<SolutionTemplate> ();
+		TemplateCondition condition = TemplateCondition.Null;
 
 		public SolutionTemplate (string id, string name, string iconId)
 		{
@@ -73,6 +75,20 @@ namespace MonoDevelop.Ide.Templates
 			get { return !String.IsNullOrEmpty (GroupId); }
 		}
 
+		/// <summary>
+		/// Allows a template to be selected conditionally.
+		/// </summary>
+		public string Condition {
+			get { return condition.ToString (); }
+			set {
+				condition = new TemplateCondition (value);
+			}
+		}
+
+		public bool HasCondition {
+			get { return !String.IsNullOrEmpty (Condition); }
+		}
+
 		public string Language {
 			get { return language; }
 			set {
@@ -96,16 +112,29 @@ namespace MonoDevelop.Ide.Templates
 		public void AddGroupTemplate (SolutionTemplate template)
 		{
 			groupedTemplates.Add (template);
-			availableLanguages.Add (template.Language);
+
+			if (!availableLanguages.Contains (template.Language)) {
+				availableLanguages.Add (template.Language);
+			}
 		}
 
 		public SolutionTemplate GetTemplate (string language)
 		{
-			if (this.language == language) {
+			return GetTemplate (template => template.Language == language);
+		}
+
+		public SolutionTemplate GetTemplate (string language, ProjectCreateParameters parameters)
+		{
+			return GetTemplate (template => template.IsMatch (language, parameters));
+		}
+
+		public SolutionTemplate GetTemplate (Predicate<SolutionTemplate> predicate)
+		{
+			if (predicate (this)) {
 				return this;
 			}
 
-			return groupedTemplates.FirstOrDefault (template => template.Language == language);
+			return groupedTemplates.FirstOrDefault (template => predicate (template));
 		}
 
 		public string LargeImageId {
@@ -139,6 +168,11 @@ namespace MonoDevelop.Ide.Templates
 				return String.Equals (GroupId, template.GroupId, StringComparison.OrdinalIgnoreCase);
 			}
 			return false;
+		}
+
+		bool IsMatch (string language, ProjectCreateParameters parameters)
+		{
+			return (this.language == language) && !condition.IsExcluded (parameters);
 		}
 
 		static string GetProjectFileExtensionForLanguage (string language)

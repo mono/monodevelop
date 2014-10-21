@@ -39,6 +39,7 @@ namespace MonoDevelop.Ide.Templates
 			Category = template.Category;
 			Language = template.LanguageName;
 			GroupId = template.GroupId;
+			Condition = template.Condition;
 			ProjectFileExtension = template.FileExtension;
 			Wizard = template.WizardPath;
 
