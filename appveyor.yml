@@ -1,8 +1,10 @@
+environment:
+  EMACSBIN: emacs-24.4.1-bin%28i686-pc-mingw32%29.7z
 matrix:
   fast_finish: true
 install:
-  - ps: Start-FileDownload "http://downloads.sourceforge.net/project/emacs-bin/releases/emacs-24.4.1-bin%28i686-pc-mingw32%29.7z"
-  - ps: 7z x emacs-trunk-20140915-050944-w32-bin.7z -oemacs-local | FIND /V "ing  "
+  - ps: Start-FileDownload "http://downloads.sourceforge.net/project/emacs-bin/releases/$env:EMACSBIN"
+  - ps: 7z x $env:EMACSBIN -oemacs-local | FIND /V "ing  "
 build_script:
   - cmd: FSharp.AutoComplete\fake.cmd Test
 test: off
