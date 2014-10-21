@@ -458,8 +458,8 @@ namespace MonoDevelop.VersionControl
 
 		public void Update (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			OnUpdate (localPaths, recurse, monitor);
 			ClearCachedVersionInfo (localPaths);
+			OnUpdate (localPaths, recurse, monitor);
 		}
 		
 		protected abstract void OnUpdate (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
@@ -546,8 +546,8 @@ namespace MonoDevelop.VersionControl
 
 		public void Add (FilePath[] localPaths, bool recurse, IProgressMonitor monitor)
 		{
-			OnAdd (localPaths, recurse, monitor);
 			ClearCachedVersionInfo (localPaths);
+			OnAdd (localPaths, recurse, monitor);
 		}
 
 		protected abstract void OnAdd (FilePath[] localPaths, bool recurse, IProgressMonitor monitor);
