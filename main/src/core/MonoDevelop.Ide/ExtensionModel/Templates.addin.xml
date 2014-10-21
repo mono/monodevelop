@@ -98,13 +98,8 @@
 	</Category>
 	<Category id="ios" name="iOS" icon="md-platform-ios">
 		<Category id="app" name="App">
-			<Category id="classic-ipad" name="Classic API - iPad" />
-			<Category id="classic-iphone" name="Classic API - iPhone" />
-			<Category id="classic-universal" name="Classic API - Universal" />
-			<Category id="unified-extensions" name="Unified API - Extensions" />
-			<Category id="unified-ipad" name="Unified API - iPad" />
-			<Category id="unified-iphone" name="Unified API - iPhone" />
-			<Category id="unified-universal" name="Unified API - Universal" />
+			<Category id="classic" name="Classic API" />
+			<Category id="unified" name="Unified API" />
 		</Category>
 		<Category id="library" name="Library">
 			<Category id="classic" name="Classic API" />
