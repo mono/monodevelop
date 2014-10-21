@@ -71,26 +71,14 @@ namespace MonoDevelop.Platform
 			}
 		}
 
-		void ResetGlobalProgressState (object sender, EventArgs e)
-		{
-			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
-			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress, handle);
-			IdeApp.FocusIn -= ResetGlobalProgressState;
-		}
-
 		public override void SetGlobalProgressBar (double progress)
 		{
 			if (!TaskbarManager.IsPlatformSupported)
 				return;
 
 			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
-			if (progress == 1.0) {
-				if (IdeApp.HasInputFocus)
-					ResetGlobalProgressState (null, null);
-				else {
-					TaskbarManager.Instance.SetProgressValue ((int)(progress * 100f), 100, handle);
-					IdeApp.FocusIn += ResetGlobalProgressState;
-				}
+			if (progress >= 1.0) {
+				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress, handle);
 			} else {
 				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Normal, handle);
 				TaskbarManager.Instance.SetProgressValue ((int)(progress * 100f), 100, handle);
