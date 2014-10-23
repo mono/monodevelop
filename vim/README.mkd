@@ -2,23 +2,34 @@
 
 Syntax and indent files have been copied from [fsharp-vim](http://github.com/kongo2002/fsharp-vim) with kind permissions from [kongo2002](https://github.com/kongo2002).
 
-Requires vim compiled with python support. 
+Requires vim compiled with python support.
 
-This software is still alpha quality and was adapted from http://github.com/timrobinson/fsharp-vim. The current aim is to provide a good experience for fsx scripting. On opening an fs or fsi file any project file found in the same directory will be parsed. Multiple projects are supported. 
+This software is still alpha quality and was adapted from http://github.com/timrobinson/fsharp-vim. The current aim is to provide a good experience for fsx scripting. On opening an fs or fsi file any project file found in the same directory will be parsed. Multiple projects are supported.
 
-###Installing 
+###Installing
 
 #####OSX and linux
 
-1. Install [pathogen](https://github.com/tpope/vim-pathogen)
+1. Install [pathogen][pathogen]
 
 2. Run *make install* inside the vim directory. This will copy the necessary contents to your ~/.vim/bundle directory.
 
 #####Windows
 
-1. Install [pathogen](https://github.com/tpope/vim-pathogen)
+1. Install [pathogen][pathogen]
 
 2. TODO (You can manually copy the required files to you bundle directory after building FSharp.AutoComplete in Visual Studio.)
+
+#####Syntastic
+
+The fsharpbindings for vim utilize the [syntastic][syntastic] plugin in order to
+supply interactive syntax and type checking. You may want to install that plugin
+in order to get all of the fsharpbindings functionality.
+
+Moreover you benefit from additional [syntastic][syntastic] features like
+optional integration in your status bar (i.e. [vim-airline][airline]).
+
+All you have to do is to install [syntastic][syntastic] in your vim runtime path.
 
 ###Usage
 
@@ -26,16 +37,45 @@ Opening either `*.fs`, `*.fsi` or `*.fsx` files should trigger syntax highlighti
 
 Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [supertab](https://github.com/ervandew/supertab))
 
-The plugin will automatically parse the current file 750ms after entering 'normal' mode following an edit. It will add signs in the margin, underline errors in the text and populate the location list with error details. (:lope to open the loclist). 
-
 ###Commands
 
-* `:Interactive` executes the current selection inside fsi (if found) or the whole file if not in visual mode.
 * `:ParseProject` reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
 * `:BuildProject` calls xbuild on the fsproj for the current file (if any).
 * `leader<t>` echoes the type of the expression currently pointed to by the cursor.
-* `leader<i>` echoes warning/error details or the type of the expression currently pointed to by the cursor.
-* `leader<r>` parses the current file, highlights any errors and adds them to the loclist.
-* `leader<d>` _go to declaration_. Opens a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.  
-* `leader<s>` takes you back from where _go to declaration_ was triggered. 
+* `leader<d>` _go to declaration_. Opens a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.
+* `leader<s>` takes you back from where _go to declaration_ was triggered.
 
+###On-the-fly syntax checking
+
+> Interactive syntax/type checking requires [syntastic][syntastic]
+
+By default your F# files will be syntax/type checked on every open/save of a
+vim buffer.  In case you prefer your changes to be checked continuously
+*on-the-fly* you can do so with a *autocommand* in your `.vimrc` like this:
+
+~~~.vim
+" set the update interval to your preference
+set updatetime=500
+
+augroup fsharp_au
+  au!
+  au CursorHold *.fs,*.fsi,*.fsx SyntasticCheck
+augroup END
+~~~
+
+###Settings
+
+You can enable *debug-mode* in order to inspect the fsautocomplete behavior by
+setting the global vim variable `g:fsharpbinding_debug` to a non-zero value:
+
+~~~.vim
+let g:fsharpbinding_debug = 1
+~~~
+
+This will create two log files `log.txt` and `log2.txt` in your temporary folder
+(i.e. `/tmp/`).
+
+
+[syntastic]: https://github.com/scrooloose/syntastic
+[airline]: https://github.com/bling/vim-airline
+[pathogen]: https://github.com/tpope/vim-pathogen

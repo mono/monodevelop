@@ -25,17 +25,19 @@ $(ac_exe) : $(bin_d) ~/.config/.mono/certs
 
 install : $(ac_exe) $(dest_root) $(dest_bin)
 	rm -r $(dest_root)
-	mkdir -p $(dest_root)
-	mkdir -p $(dest_root)/ftplugin
-	mkdir -p $(dest_root)/ftplugin/bin
+	mkdir -p $(dest_root)/autoload/fsharpbinding
 	mkdir -p $(dest_root)/ftdetect
+	mkdir -p $(dest_root)/ftplugin/bin
 	mkdir -p $(dest_root)/syntax
-	
+	mkdir -p $(dest_root)/syntax_checkers/fsharp
+
 	cp syntax/fsharp.vim $(dest_root)/syntax
 	cp ftdetect/fsharp.vim $(dest_root)/ftdetect/fsharp.vim
 	cp ftplugin/fsharp.vim $(dest_root)/ftplugin/fsharp.vim
 	cp ftplugin/pyvim.py $(dest_root)/ftplugin/pyvim.py
 	cp ftplugin/fsharpvim.py $(dest_root)/ftplugin/fsharpvim.py
+	cp autoload/fsharpbinding/python.vim $(dest_root)/autoload/fsharpbinding/python.vim
+	cp syntax_checkers/fsharp/syntax.vim $(dest_root)/syntax_checkers/fsharp/syntax.vim
 	cp -R ftplugin/bin $(dest_root)/ftplugin
 
 $(dest_root) :; mkdir -p $(dest_root)
@@ -44,5 +46,5 @@ $(bin_d)     :; mkdir -p $(bin_d)
 
 # Cleaning
 
-clean : 
+clean :
 	rm -rf $(bin_d)
