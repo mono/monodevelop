@@ -32,6 +32,7 @@ using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Refactoring;
 using MonoDevelop.CSharp.Refactoring.CodeActions;
 using MonoDevelop.CodeGeneration;
+using MonoDevelop.CSharp.Completion;
 
 namespace MonoDevelop.CodeGeneration
 {
@@ -72,7 +73,7 @@ namespace MonoDevelop.CodeGeneration
 		public static bool HasProtocolAttribute (IType type, out string name)
 		{
 			foreach (var attrs in type.GetDefinition ().GetAttributes ()) {
-				if (attrs.AttributeType.Name == "ProtocolAttribute" && attrs.AttributeType.Namespace == "MonoTouch.Foundation") {
+				if (attrs.AttributeType.Name == "ProtocolAttribute" && MonoCSharpCompletionEngine.IsFoundationNamespace (attrs.AttributeType.Namespace)) {
 					foreach (var na in attrs.NamedArguments) {
 						if (na.Key.Name != "Name")
 							continue;
@@ -90,17 +91,17 @@ namespace MonoDevelop.CodeGeneration
 		{
 			if (member == null)
 				return null;
-			var astType = ctx.CreateShortType ("MonoTouch.Foundation", "ExportAttribute");
+			var astType = ctx.CreateShortType ("Foundation", "ExportAttribute");
 			if (astType is SimpleType) {
 				astType = new SimpleType ("Export");
 			} else {
-				astType = new MemberType (new MemberType (new SimpleType ("MonoTouch"), "Foundation"), "Export");
+				astType = new MemberType (new SimpleType ("Foundation"), "Export");
 			}
 
 			var attr = new Attribute {
 				Type = astType,
 			};
-			var exportAttribute = member.GetAttribute (new FullTypeName (new TopLevelTypeName ("MonoTouch.Foundation", "ExportAttribute"))); 
+			var exportAttribute = member.GetAttribute (new FullTypeName (new TopLevelTypeName ("Foundation", "ExportAttribute"))); 
 			if (exportAttribute == null || exportAttribute.PositionalArguments.Count == 0)
 				return null;
 			attr.Arguments.Add (new PrimitiveExpression (exportAttribute.PositionalArguments [0].ConstantValue)); 
@@ -128,7 +129,7 @@ namespace MonoDevelop.CodeGeneration
 
 		static string GetProtocol (IMember member)
 		{
-			var attr = member.Attributes.FirstOrDefault (a => a.AttributeType.Name == "ExportAttribute" && a.AttributeType.Namespace == "MonoTouch.Foundation");
+			var attr = member.Attributes.FirstOrDefault (a => a.AttributeType.Name == "ExportAttribute" && MonoCSharpCompletionEngine.IsFoundationNamespace (a.AttributeType.Namespace));
 			if (attr == null || attr.PositionalArguments.Count == 0)
 				return null;
 			return attr.PositionalArguments.First ().ConstantValue.ToString ();
@@ -180,7 +181,7 @@ namespace MonoDevelop.CodeGeneration
 							continue;
 						if (IsImplemented (type, member))
 							continue;
-						if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
+						if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" && MonoCSharpCompletionEngine.IsFoundationNamespace (a.AttributeType.Namespace)))
 							yield return member;
 					}
 					foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
@@ -190,8 +191,8 @@ namespace MonoDevelop.CodeGeneration
 							continue;
 						if (IsImplemented (type, member))
 							continue;
-						if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation") ||
-							member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
+						if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  MonoCSharpCompletionEngine.IsFoundationNamespace (a.AttributeType.Namespace)) ||
+							member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  MonoCSharpCompletionEngine.IsFoundationNamespace (a.AttributeType.Namespace)))
 							yield return member;
 					}
 				}
