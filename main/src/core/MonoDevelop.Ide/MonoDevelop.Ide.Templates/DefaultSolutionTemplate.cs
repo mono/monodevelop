@@ -43,6 +43,7 @@ namespace MonoDevelop.Ide.Templates
 			ProjectFileExtension = template.FileExtension;
 			Wizard = template.WizardPath;
 			SupportedParameters = template.SupportedParameters;
+			DefaultParameters = template.DefaultParameters;
 
 			HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
 		}

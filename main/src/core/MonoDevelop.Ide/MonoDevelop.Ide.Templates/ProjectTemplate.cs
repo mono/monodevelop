@@ -156,6 +156,11 @@ namespace MonoDevelop.Ide.Templates
 			get { return supportedParameters; }
 		}
 
+		private string defaultParameters;
+		public string DefaultParameters {
+			get { return defaultParameters; }
+		}
+
 		//constructors
 		static ProjectTemplate ()
 		{
@@ -235,6 +240,10 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlConfiguration ["_SupportedParameters"] != null) {
 				this.supportedParameters = xmlConfiguration ["_SupportedParameters"].InnerText;
+			}
+
+			if (xmlConfiguration ["_DefaultParameters"] != null) {
+				this.defaultParameters = xmlConfiguration ["_DefaultParameters"].InnerText;
 			}
 
 			if (xmlDocument.DocumentElement ["Combine"] == null) {

@@ -1,5 +1,5 @@
 ﻿//
-// TemplateCondition.cs
+// TemplateParameter.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,42 +25,33 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Projects;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class TemplateCondition
+	public class TemplateParameter
 	{
-		public static readonly TemplateCondition Null = new TemplateCondition (null);
-
-		string condition;
-		TemplateParameter parameter;
-
-		public TemplateCondition (string condition)
+		public TemplateParameter (string parameter)
 		{
-			this.condition = condition;
+			Parse (parameter);
 		}
 
-		public bool IsExcluded (ProjectCreateParameters parameters)
+		public string Name { get; private set; }
+		public string Value { get; private set; }
+		public bool IsValid { get; private set; }
+
+		void Parse (string parameter)
 		{
-			if (String.IsNullOrEmpty (condition)) {
-				return false;
+			int index = parameter.IndexOf ('=');
+			if (index <= 0) {
+				IsValid = false;
+				Name = String.Empty;
+				Value = String.Empty;
+				return;
 			}
 
-			if (parameter == null) {
-				parameter = new TemplateParameter (condition);
-				if (!parameter.IsValid) {
-					LoggingService.LogWarning ("Invalid template condition '{0}'", condition);
-				}
-			}
-
-			return !(parameters [parameter.Name] == parameter.Value);
-		}
-
-		public override string ToString ()
-		{
-			return condition;
+			IsValid = true;
+			Name = parameter.Substring (0, index).Trim ();
+			Value = parameter.Substring (index + 1).Trim ();
 		}
 	}
 }

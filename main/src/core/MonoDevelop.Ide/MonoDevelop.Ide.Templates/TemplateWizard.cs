@@ -74,6 +74,24 @@ namespace MonoDevelop.Ide.Templates
 
 			return supportedParameters.Contains (name);
 		}
+
+		public void UpdateDefaultParameters (string parameters)
+		{
+			if (String.IsNullOrEmpty (parameters)) {
+				return;
+			}
+
+			foreach (TemplateParameter parameter in GetParameters (parameters)) {
+				Parameters [parameter.Name] = parameter.Value;
+			}
+		}
+
+		IEnumerable<TemplateParameter> GetParameters (string parameters)
+		{
+			return parameters.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+				.Select (parameter => new TemplateParameter (parameter))
+				.Where (parameter => parameter.IsValid);
+		}
 	}
 }
 

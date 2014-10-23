@@ -154,6 +154,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		public string SupportedParameters { get; set; }
+		public string DefaultParameters { get; set; }
 
 		public IList<string> AvailableLanguages {
 			get { return availableLanguages; }
