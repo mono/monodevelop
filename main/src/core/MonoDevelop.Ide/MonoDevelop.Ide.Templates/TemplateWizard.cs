@@ -25,6 +25,9 @@
 // THE SOFTWARE.
 //
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
@@ -49,6 +52,27 @@ namespace MonoDevelop.Ide.Templates
 				return parameters;
 			}
 			set { parameters = value; }
+		}
+
+		List<string> supportedParameters;
+
+		public void UpdateSupportedParameters (string parameters)
+		{
+			if (String.IsNullOrEmpty (parameters)) {
+				supportedParameters = null;
+				return;
+			}
+
+			supportedParameters = parameters.Split (new [] {','}, StringSplitOptions.RemoveEmptyEntries).ToList ();
+		}
+
+		public bool IsSupportedParameter (string name)
+		{
+			if (supportedParameters == null) {
+				return true;
+			}
+
+			return supportedParameters.Contains (name);
 		}
 	}
 }

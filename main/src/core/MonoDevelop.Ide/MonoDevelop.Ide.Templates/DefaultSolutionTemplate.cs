@@ -42,6 +42,7 @@ namespace MonoDevelop.Ide.Templates
 			Condition = template.Condition;
 			ProjectFileExtension = template.FileExtension;
 			Wizard = template.WizardPath;
+			SupportedParameters = template.SupportedParameters;
 
 			HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
 		}

@@ -151,6 +151,11 @@ namespace MonoDevelop.Ide.Templates
 			get { return fileExtension; }
 		}
 
+		private string supportedParameters;
+		public string SupportedParameters {
+			get { return supportedParameters; }
+		}
+
 		//constructors
 		static ProjectTemplate ()
 		{
@@ -226,6 +231,10 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlConfiguration ["_FileExtension"] != null) {
 				this.fileExtension = xmlConfiguration ["_FileExtension"].InnerText;
+			}
+
+			if (xmlConfiguration ["_SupportedParameters"] != null) {
+				this.supportedParameters = xmlConfiguration ["_SupportedParameters"].InnerText;
 			}
 
 			if (xmlDocument.DocumentElement ["Combine"] == null) {

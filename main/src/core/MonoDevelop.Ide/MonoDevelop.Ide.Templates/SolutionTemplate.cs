@@ -153,6 +153,8 @@ namespace MonoDevelop.Ide.Templates
 			get { return !String.IsNullOrEmpty (Wizard); }
 		}
 
+		public string SupportedParameters { get; set; }
+
 		public IList<string> AvailableLanguages {
 			get { return availableLanguages; }
 		}
