@@ -62,6 +62,7 @@ namespace MonoDevelop.Ide.Projects
 		INewProjectDialogBackend dialog;
 		FinalProjectConfigurationPage finalConfigurationPage;
 		TemplateWizardProvider wizardProvider;
+		IVersionControlProjectTemplateHandler versionControlHandler;
 
 		ProjectConfiguration projectConfiguration = new ProjectConfiguration () {
 			CreateProjectDirectoryInsideSolutionDirectory = true
@@ -87,6 +88,7 @@ namespace MonoDevelop.Ide.Projects
 			SelectedLanguage = "C#";
 			IsFirstPage = true;
 			LoadTemplateCategories ();
+			GetVersionControlHandler ();
 		}
 
 		public bool Show ()
@@ -107,6 +109,13 @@ namespace MonoDevelop.Ide.Projects
 				NewItem.Dispose ();
 
 			return IsNewItemCreated;
+		}
+
+		void GetVersionControlHandler ()
+		{
+			versionControlHandler = AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/VersionControlProjectTemplateHandler", typeof(IVersionControlProjectTemplateHandler), true)
+				.Select (extensionObject => (IVersionControlProjectTemplateHandler)extensionObject)
+				.FirstOrDefault ();
 		}
 
 		void SetDefaultSettings ()
@@ -168,6 +177,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			finalConfigurationPage = new FinalProjectConfigurationPage (projectConfiguration);
 			finalConfigurationPage.ParentFolder = ParentFolder;
+			finalConfigurationPage.IsUseGitEnabled = IsNewSolution && (versionControlHandler != null);
 			finalConfigurationPage.IsValidChanged += (sender, e) => {
 				dialog.CanMoveToNextPage = finalConfigurationPage.IsValid;
 			};
@@ -541,12 +551,8 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			}
 
-			var handler = AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/VersionControlProjectTemplateHandler", typeof(IVersionControlProjectTemplateHandler), true)
-				.Select (extensionObject => (IVersionControlProjectTemplateHandler)extensionObject)
-				.FirstOrDefault ();
-
-			if (handler != null) {
-				handler.Run (projectConfiguration);
+			if (versionControlHandler != null) {
+				versionControlHandler.Run (projectConfiguration);
 			}
 		}
 	}

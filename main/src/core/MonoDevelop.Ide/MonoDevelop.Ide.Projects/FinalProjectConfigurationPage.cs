@@ -162,12 +162,10 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public bool IsGitIgnoreEnabled {
-			get { return config.CreateSolution && config.UseGit; }
+			get { return config.UseGit && IsUseGitEnabled; }
 		}
 
-		public bool IsUseGitEnabled {
-			get { return config.CreateSolution; }
-		}
+		public bool IsUseGitEnabled { get; set; }
 
 		public bool IsNewSolution {
 			get { return config.CreateSolution; }
