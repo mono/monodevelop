@@ -87,6 +87,7 @@
     <Compile Include="MonoDevelop.VersionControl.Git\MyersDiff.cs" />
     <Compile Include="MonoDevelop.VersionControl.Git\GitSelectRevisionDialog.cs" />
     <Compile Include="AddinInfo.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Git\ProjectTemplateHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\Mono.Texteditor\Mono.TextEditor.csproj">
@@ -146,6 +147,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
+    <None Include="GitIgnore.txt">
+      <Gettext-ScanForTranslations>False</Gettext-ScanForTranslations>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
