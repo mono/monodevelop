@@ -2843,6 +2843,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\TemplateWizardProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateCondition.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateParameter.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\IVersionControlProjectTemplateHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

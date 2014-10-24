@@ -359,6 +359,8 @@ namespace MonoDevelop.Ide.Projects
 			else
 				IdeApp.ProjectOperations.Save (NewItem);
 
+			CreateVersionControlItems ();
+
 			if (OpenSolution) {
 				var op = OpenCreatedSolution (processedTemplate); // FIXME
 				op.Completed += delegate {
@@ -487,6 +489,21 @@ namespace MonoDevelop.Ide.Projects
 				}
 			};
 			return asyncOperation;
+		}
+
+		void CreateVersionControlItems ()
+		{
+			if (!projectConfiguration.CreateSolution) {
+				return;
+			}
+
+			var handler = AddinManager.GetExtensionObjects ("/MonoDevelop/Ide/VersionControlProjectTemplateHandler", typeof(IVersionControlProjectTemplateHandler), true)
+				.Select (extensionObject => (IVersionControlProjectTemplateHandler)extensionObject)
+				.FirstOrDefault ();
+
+			if (handler != null) {
+				handler.Run (projectConfiguration);
+			}
 		}
 	}
 }

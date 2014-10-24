@@ -50,6 +50,10 @@
 	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.TemplateWizard" />
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/VersionControlProjectTemplateHandler">
+	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.IVersionControlProjectTemplateHandler" />
+</ExtensionPoint>
+
 <Extension path = "/MonoDevelop/Ide/FileTemplates">
 	<FileTemplate id = "EmptyClass" resource = "EmptyClass.xft.xml"/>
 	<FileTemplate id = "EmptyEnum" resource = "EmptyEnum.xft.xml"/>
