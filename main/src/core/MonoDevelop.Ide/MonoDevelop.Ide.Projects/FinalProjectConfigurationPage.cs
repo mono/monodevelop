@@ -139,6 +139,11 @@ namespace MonoDevelop.Ide.Projects
 			set { config.CreateGitIgnoreFile = value; }
 		}
 
+		public bool UseGit {
+			get { return config.UseGit; }
+			set { config.UseGit = value; }
+		}
+
 		public bool CreateProjectDirectoryInsideSolutionDirectory {
 			get { return config.CreateProjectDirectoryInsideSolutionDirectory; }
 			set { config.CreateProjectDirectoryInsideSolutionDirectory = value; }
@@ -157,7 +162,7 @@ namespace MonoDevelop.Ide.Projects
 		}
 
 		public bool IsGitIgnoreEnabled {
-			get { return config.CreateSolution; }
+			get { return config.CreateSolution && config.UseGit; }
 		}
 
 		public bool IsUseGitEnabled {

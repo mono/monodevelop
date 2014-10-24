@@ -51,6 +51,7 @@ namespace MonoDevelop.Ide.Projects
 			projectNameTextBox.Changed += (sender, e) => OnProjectNameTextBoxChanged ();
 			solutionNameTextBox.Changed += (sender, e) => OnSolutionNameTextBoxChanged ();
 			createGitIgnoreFileCheckBox.Clicked += (sender, e) => OnCreateGitIgnoreFileCheckBoxClicked ();
+			useGitCheckBox.Clicked += (sender, e) => OnUseGitCheckBoxClicked ();
 			createProjectWithinSolutionDirectoryCheckBox.Clicked += (sender, e) => OnCreateProjectWithinSolutionDirectoryCheckBoxClicked ();
 			browseButton.Clicked += (sender, e) => BrowseButtonClicked ();
 		}
@@ -78,6 +79,13 @@ namespace MonoDevelop.Ide.Projects
 		void OnCreateGitIgnoreFileCheckBoxClicked ()
 		{
 			projectConfiguration.CreateGitIgnoreFile = createGitIgnoreFileCheckBox.Active;
+			projectFolderPreviewWidget.ShowGitIgnoreFile ();
+		}
+
+		void OnUseGitCheckBoxClicked ()
+		{
+			projectConfiguration.UseGit = useGitCheckBox.Active;
+			createGitIgnoreFileCheckBox.Sensitive = projectConfiguration.IsGitIgnoreEnabled;
 			projectFolderPreviewWidget.ShowGitIgnoreFile ();
 		}
 
