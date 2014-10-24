@@ -53,6 +53,9 @@ namespace MonoDevelop.Ide.Projects
 		string configureYourWorkspaceBannerText = GettextCatalog.GetString ("Configure your new workspace");
 		string configureYourSolutionBannerText = GettextCatalog.GetString ("Configure your new solution");
 
+		const string UseGitPropertyName = "Dialogs.NewProjectDialog.UseGit";
+		const string CreateGitIgnoreFilePropertyName = "Dialogs.NewProjectDialog.CreateGitIgnoreFile";
+
 		List<TemplateCategory> templateCategories;
 		INewProjectDialogBackend dialog;
 		FinalProjectConfigurationPage finalConfigurationPage;
@@ -87,7 +90,7 @@ namespace MonoDevelop.Ide.Projects
 		public bool Show ()
 		{
 			projectConfiguration.CreateSolution = ParentFolder == null;
-			SetDefaultLocation ();
+			SetDefaultSettings ();
 			SelectTemplate ();
 
 			CreateFinalConfigurationPage ();
@@ -104,12 +107,35 @@ namespace MonoDevelop.Ide.Projects
 			return IsNewItemCreated;
 		}
 
+		void SetDefaultSettings ()
+		{
+			SetDefaultLocation ();
+			SetDefaultGitSettings ();
+		}
+
+		void UpdateDefaultSettings ()
+		{
+			UpdateDefaultGitSettings ();
+		}
+
 		void SetDefaultLocation ()
 		{
 			if (BasePath == null)
 				BasePath = IdeApp.ProjectOperations.ProjectsDefaultPath;
 
 			projectConfiguration.Location = FileService.ResolveFullPath (BasePath);
+		}
+
+		void SetDefaultGitSettings ()
+		{
+			projectConfiguration.UseGit = PropertyService.Get (UseGitPropertyName, true);
+			projectConfiguration.CreateGitIgnoreFile = PropertyService.Get (CreateGitIgnoreFilePropertyName, true);
+		}
+
+		void UpdateDefaultGitSettings ()
+		{
+			PropertyService.Set (UseGitPropertyName, projectConfiguration.UseGit);
+			PropertyService.Set (CreateGitIgnoreFilePropertyName, projectConfiguration.CreateGitIgnoreFile);
 		}
 
 		INewProjectDialogBackend CreateNewProjectDialog ()
@@ -380,6 +406,7 @@ namespace MonoDevelop.Ide.Projects
 			}
 
 			IsNewItemCreated = true;
+			UpdateDefaultSettings ();
 			dialog.CloseDialog ();
 			wizardProvider.Dispose ();
 		}

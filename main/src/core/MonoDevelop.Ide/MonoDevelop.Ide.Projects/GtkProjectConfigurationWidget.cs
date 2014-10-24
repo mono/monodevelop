@@ -153,7 +153,9 @@ namespace MonoDevelop.Ide.Projects
 			projectNameTextBox.Sensitive = projectConfiguration.IsProjectNameEnabled;
 			createProjectWithinSolutionDirectoryCheckBox.Sensitive = projectConfiguration.IsCreateProjectDirectoryInsideSolutionDirectoryEnabled;
 			useGitCheckBox.Sensitive = projectConfiguration.IsUseGitEnabled;
+			useGitCheckBox.Active = projectConfiguration.UseGit;
 			createGitIgnoreFileCheckBox.Sensitive = projectConfiguration.IsGitIgnoreEnabled;
+			createGitIgnoreFileCheckBox.Active = projectConfiguration.CreateGitIgnoreFile;
 		}
 
 		string GetSolutionNameLabel ()
