@@ -55,6 +55,8 @@ namespace MonoDevelop.Ide.Projects
 
 		const string UseGitPropertyName = "Dialogs.NewProjectDialog.UseGit";
 		const string CreateGitIgnoreFilePropertyName = "Dialogs.NewProjectDialog.CreateGitIgnoreFile";
+		const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
+		const string CreateProjectSubDirectoryInExistingSolutionPropertyName = "Dialogs.NewProjectDialog.AutoCreateProjectSubdirInExistingSolution";
 
 		List<TemplateCategory> templateCategories;
 		INewProjectDialogBackend dialog;
@@ -111,11 +113,30 @@ namespace MonoDevelop.Ide.Projects
 		{
 			SetDefaultLocation ();
 			SetDefaultGitSettings ();
+			projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory = GetDefaultCreateProjectDirectorySetting ();
+		}
+
+		bool GetDefaultCreateProjectDirectorySetting ()
+		{
+			if (IsNewSolution) {
+				return PropertyService.Get (CreateProjectSubDirectoryPropertyName, true);
+			}
+			return PropertyService.Get (CreateProjectSubDirectoryInExistingSolutionPropertyName, true);
 		}
 
 		void UpdateDefaultSettings ()
 		{
 			UpdateDefaultGitSettings ();
+			UpdateDefaultCreateProjectDirectorySetting ();
+		}
+
+		void UpdateDefaultCreateProjectDirectorySetting ()
+		{
+			if (IsNewSolution) {
+				PropertyService.Set (CreateProjectSubDirectoryPropertyName, projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			} else {
+				PropertyService.Set (CreateProjectSubDirectoryInExistingSolutionPropertyName, projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory);
+			}
 		}
 
 		void SetDefaultLocation ()
@@ -450,10 +471,6 @@ namespace MonoDevelop.Ide.Projects
 				MessageService.ShowError (GettextCatalog.GetString ("A Project with that name is already in your Project Space"));
 				return false;
 			}
-
-//			PropertyService.Set (
-//				"MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir",
-//				CreateSolutionDirectory);
 
 			ProcessedTemplateResult result = null;
 
