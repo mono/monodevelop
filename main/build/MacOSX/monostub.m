@@ -297,7 +297,7 @@ update_environment (const char *resourcesDir, const char *app)
 	push_env ("MONO_GAC_PREFIX", resourcesDir);
 	
 	if ((value = str_append (resourcesDir, "/../MacOS"))) {
-		push_env ("PATH", resourcesDir);
+		push_env ("PATH", value);
 		free (value);
 	}
 	
