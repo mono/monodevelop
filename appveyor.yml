@@ -1,5 +1,5 @@
 environment:
-  EMACSBIN: emacs-24.4-bin%28i686-pc-mingw32%29.7z
+  EMACSBIN: emacs-24.4-bin-i686-pc-mingw32.7z
 matrix:
   fast_finish: true
 install:
