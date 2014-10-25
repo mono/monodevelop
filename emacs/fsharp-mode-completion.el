@@ -417,7 +417,8 @@ The current buffer must be an F# file that exists on disk."
       nil)
 
      (t
-      (and (eq fsharp-ac-status 'idle)
+      (and (not (syntax-ppss-context (syntax-ppss)))
+           (eq fsharp-ac-status 'idle)
            (not ac-completing))))))
 
 (defvar fsharp-ac-awaiting-tooltip nil)
