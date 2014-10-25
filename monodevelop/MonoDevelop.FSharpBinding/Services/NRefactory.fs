@@ -113,7 +113,7 @@ module NRefactory =
            resolvedTypeDef :> ISymbol
 
         // Members, Module-defined functions and Module-definned values
-        | :? FSharpMemberFunctionOrValue as fsMember when fsMember.IsModuleValueOrMember && fsMember.CurriedParameterGroups.Count > 0 -> 
+        | :? FSharpMemberOrFunctionOrValue as fsMember when fsMember.IsModuleValueOrMember && fsMember.CurriedParameterGroups.Count > 0 -> 
 
            // This is more or less like the case above for entities.
            let access = Accessibility.Public

@@ -160,7 +160,7 @@ module InterfaceStubGenerator =
         else argName),
         namesWithIndices
 
-    let internal formatArgsUsage ctx hasTypeAnnotation (v: FSharpMemberFunctionOrValue) args =
+    let internal formatArgsUsage ctx hasTypeAnnotation (v: FSharpMemberOrFunctionOrValue) args =
         let isItemIndexer = (v.IsInstanceMember && v.DisplayName = "Item")
         let unit, argSep, tupSep = "()", " ", ", "
         let args, namesWithIndices =
@@ -186,10 +186,10 @@ module InterfaceStubGenerator =
 
     [<RequireQualifiedAccess; NoComparison>]
     type MemberInfo =
-        | PropertyGetSet of FSharpMemberFunctionOrValue * FSharpMemberFunctionOrValue
-        | Member of FSharpMemberFunctionOrValue
+        | PropertyGetSet of FSharpMemberOrFunctionOrValue * FSharpMemberOrFunctionOrValue
+        | Member of FSharpMemberOrFunctionOrValue
 
-    let internal getArgTypes (ctx: Context) (v: FSharpMemberFunctionOrValue) =
+    let internal getArgTypes (ctx: Context) (v: FSharpMemberOrFunctionOrValue) =
         let argInfos = v.CurriedParameterGroups |> Seq.map Seq.toList |> Seq.toList 
             
         let retType = v.ReturnParameter.Type
@@ -203,18 +203,18 @@ module InterfaceStubGenerator =
         let retType = defaultArg (retType |> Option.map (formatType ctx)) "unit"      
         argInfos, retType
 
-    let normalizePropertyName (v: FSharpMemberFunctionOrValue) =
+    let normalizePropertyName (v: FSharpMemberOrFunctionOrValue) =
         let displayName = v.DisplayName
         if (v.IsPropertyGetterMethod && displayName.StartsWith("get_")) || 
             (v.IsPropertySetterMethod && displayName.StartsWith("set_")) then
             displayName.[4..]
         else displayName
 
-    let internal isEventMember (m: FSharpMemberFunctionOrValue) =
+    let internal isEventMember (m: FSharpMemberOrFunctionOrValue) =
         m.IsEvent || hasAttribute<CLIEventAttribute> m.Attributes
     
     let internal formatMember (ctx: Context) m = 
-        let getParamArgs (argInfos: FSharpParameter list list) (ctx: Context) (v: FSharpMemberFunctionOrValue) = 
+        let getParamArgs (argInfos: FSharpParameter list list) (ctx: Context) (v: FSharpMemberOrFunctionOrValue) = 
             let args, namesWithIndices =
                 match argInfos with
                 | [[x]] when v.IsPropertyGetterMethod && x.Name.IsNone 
@@ -227,7 +227,7 @@ module InterfaceStubGenerator =
             else sprintf "(%s)" args
             , namesWithIndices
 
-        let preprocess (ctx: Context) (v: FSharpMemberFunctionOrValue) = 
+        let preprocess (ctx: Context) (v: FSharpMemberOrFunctionOrValue) = 
             let buildUsage argInfos = 
                 let parArgs, _ = getParamArgs argInfos ctx v
                 match v.IsMember, v.IsInstanceMember, v.LogicalName, v.DisplayName with
@@ -426,7 +426,7 @@ module InterfaceStubGenerator =
             Some typ.GenericArguments.[1]
         else None
 
-    let internal (|TypeOfMember|) (m: FSharpMemberFunctionOrValue) =
+    let internal (|TypeOfMember|) (m: FSharpMemberOrFunctionOrValue) =
         let typ = m.FullType
         match typ with
         | MemberFunctionType typ when m.IsProperty && m.EnclosingEntity.IsFSharp ->
@@ -449,7 +449,7 @@ module InterfaceStubGenerator =
     let internal removeWhitespace (str: string) = 
         str.Replace(" ", "")
 
-    let internal normalizeEventName (m: FSharpMemberFunctionOrValue) =
+    let internal normalizeEventName (m: FSharpMemberOrFunctionOrValue) =
         let name = m.DisplayName
         if name.StartsWith("add_") then name.[4..]
         elif name.StartsWith("remove_")  then name.[7..]
@@ -462,9 +462,9 @@ module InterfaceStubGenerator =
     ///  (3) If any symbol found, capture its member signature 
     let getImplementedMemberSignatures (getMemberByLocation: string * range -> Async<FSharpSymbolUse option>) displayContext interfaceData = 
         let formatMemberSignature (symbolUse: FSharpSymbolUse) =
-            Debug.Assert(symbolUse.Symbol :? FSharpMemberFunctionOrValue, "Only accept symbol uses of members.")
+            Debug.Assert(symbolUse.Symbol :? FSharpMemberOrFunctionOrValue, "Only accept symbol uses of members.")
             try
-                let m = symbolUse.Symbol :?> FSharpMemberFunctionOrValue
+                let m = symbolUse.Symbol :?> FSharpMemberOrFunctionOrValue
                 match m.FullType with
                 | _ when isEventMember m ->
                     // Events don't have overloads so we use only display names for comparison
@@ -532,7 +532,7 @@ module InterfaceStubGenerator =
             writer.Indent startColumn
 
             let getReturnType v = snd (getArgTypes ctx v)
-            let rec loop (members : (FSharpMemberFunctionOrValue * _) list) =
+            let rec loop (members : (FSharpMemberOrFunctionOrValue * _) list) =
                 match members with
                 // Since there is no unified source of information for properties,
                 // we try to merge getters and setters when they seem to match.

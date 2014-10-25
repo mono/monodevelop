@@ -31,7 +31,7 @@ module ServiceSettings =
 /// Wraps the result of type-checking and provides methods for implementing
 /// various IntelliSense functions (such as completion & tool tips). Provides default
 /// empty/negative results if information is missing.
-type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults) option) =
+type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpParseFileResults) option) =
     let token = Parser.tagOfToken(Parser.token.IDENT("")) 
 
     new (checkResults, parseResults) = ParseAndCheckResults(Some (checkResults, parseResults))
@@ -86,10 +86,10 @@ type ParseAndCheckResults private (infoOpt: (CheckFileResults * ParseFileResults
     member x.GetDeclarationLocation(line, col, lineStr) =
       async {
         match infoOpt with 
-        | None -> return FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
+        | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
         | Some (checkResults, parseResults) -> 
         match Parsing.findLongIdents(col, lineStr) with 
-        | None -> return FindDeclResult.DeclNotFound FindDeclFailureReason.Unknown
+        | None -> return FSharpFindDeclResult.DeclNotFound FSharpFindDeclFailureReason.Unknown
         | Some(col,identIsland) -> return! checkResults.GetDeclarationLocationAlternate(line, col, lineStr, identIsland, false)
       }
     member x.GetMethods(line, col, lineStr) =
@@ -199,7 +199,7 @@ type LanguageService(dirtyNotify) =
   // when the background typechecker has "caught up" after some other file has been changed, 
   // and its time to re-typecheck the current file.
   let checker = 
-    let checker = InteractiveChecker.Create()
+    let checker = FSharpChecker.Create()
     checker.BeforeBackgroundFileCheck.Add dirtyNotify
     checker
 
@@ -254,7 +254,7 @@ type LanguageService(dirtyNotify) =
               // Construct new typed parse result if the task succeeded
               let results =
                 match checkAnswer with
-                | CheckFileAnswer.Succeeded(checkResults) ->
+                | FSharpCheckFileAnswer.Succeeded(checkResults) ->
                     Debug.WriteLine(sprintf "LanguageService: Update typed info - HasFullTypeCheckInfo? %b" checkResults.HasFullTypeCheckInfo)
                     ParseAndCheckResults(checkResults, parseResults)
                 | _ -> 
@@ -291,18 +291,18 @@ type LanguageService(dirtyNotify) =
                                       timeout = ServiceSettings.maximumTimeout)
 
           // The InteractiveChecker resolution sometimes doesn't include FSharp.Core and other essential assemblies, so we need to include them by hand
-          if opts.ProjectOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
+          if opts.OtherOptions |> Seq.exists (fun s -> s.Contains("FSharp.Core.dll")) then opts
           else 
             // Add assemblies that may be missing in the standard assembly resolution
             Debug.WriteLine("GetScriptCheckerOptions: Adding missing core assemblies.")
             let dirs = FSharpEnvironment.getDefaultDirectories (None, targetFramework )
-            {opts with ProjectOptions = [| yield! opts.ProjectOptions
-                                           match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
-                                           | Some fn -> yield sprintf "-r:%s" fn
-                                           | None -> Debug.WriteLine("Resolution: FSharp.Core assembly resolution failed!")
-                                           match FSharpEnvironment.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
-                                           | Some fn -> yield sprintf "-r:%s" fn
-                                           | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
+            {opts with OtherOptions = [| yield! opts.OtherOptions
+                                         match FSharpEnvironment.resolveAssembly dirs "FSharp.Core" with
+                                         | Some fn -> yield sprintf "-r:%s" fn
+                                         | None -> Debug.WriteLine("Resolution: FSharp.Core assembly resolution failed!")
+                                         match FSharpEnvironment.resolveAssembly dirs "FSharp.Compiler.Interactive.Settings" with
+                                         | Some fn -> yield sprintf "-r:%s" fn
+                                         | None -> Debug.WriteLine("Resolution: FSharp.Compiler.Interactive.Settings assembly resolution failed!") |]}
         with e -> failwithf "Exception when getting check options for '%s'\n.Details: %A" fileName e
 
     // Print contents of check option for debugging purposes
@@ -319,7 +319,7 @@ type LanguageService(dirtyNotify) =
 
         {ProjectFileName = projFilename
          ProjectFileNames = files
-         ProjectOptions = args
+         OtherOptions = args
          ReferencedProjects = [| |]
          IsIncompleteTypeCheckEnvironment = false
          UseScriptResolutionRules = false   

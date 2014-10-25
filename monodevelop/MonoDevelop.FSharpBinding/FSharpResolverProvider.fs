@@ -42,15 +42,15 @@ type FSharpResolverProvider() =
                 let! findDeclarationResult = tyRes.GetDeclarationLocation(line, col, lineStr) |> Async.map Some
                 let domRegion =
                     match findDeclarationResult with
-                    | FindDeclResult.DeclFound(m) ->
+                    | FSharpFindDeclResult.DeclFound(m) ->
                         LoggingService.LogInfo("ResolverProvider: found, line = {0}, col = {1}, file = {2}", m.StartLine, m.StartColumn, m.FileName)
                         DomRegion(m.FileName,m.StartLine,m.StartColumn+1)
-                    | FindDeclResult.DeclNotFound(notfound) ->
+                    | FSharpFindDeclResult.DeclNotFound(notfound) ->
                         match notfound with
-                        | FindDeclFailureReason.Unknown           -> LoggingService.LogWarning "Declaration not found: Unknown"
-                        | FindDeclFailureReason.NoSourceCode      -> LoggingService.LogWarning "Declaration not found: No Source Code"
-                        | FindDeclFailureReason.ProvidedType(t)   -> LoggingService.LogWarning("Declaration not found: ProvidedType {0}", t)
-                        | FindDeclFailureReason.ProvidedMember(m) -> LoggingService.LogWarning("Declaration not found: ProvidedMember {0}", m)
+                        | FSharpFindDeclFailureReason.Unknown           -> LoggingService.LogWarning "Declaration not found: Unknown"
+                        | FSharpFindDeclFailureReason.NoSourceCode      -> LoggingService.LogWarning "Declaration not found: No Source Code"
+                        | FSharpFindDeclFailureReason.ProvidedType(t)   -> LoggingService.LogWarning("Declaration not found: ProvidedType {0}", t)
+                        | FSharpFindDeclFailureReason.ProvidedMember(m) -> LoggingService.LogWarning("Declaration not found: ProvidedMember {0}", m)
                         match fsSymbolUse.Symbol.Assembly.FileName with
                         | None -> DomRegion.Empty
                         | Some filename -> DomRegion(filename, 0, 0)

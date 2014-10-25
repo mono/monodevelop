@@ -18,7 +18,7 @@ type FSharpPathExtension() =
     let mutable currentPath = [||]
     let mutable subscriptions = []
     member x.Document = base.Document
-    member x.GetEntityMarkup(node: DeclarationItem) =
+    member x.GetEntityMarkup(node: FSharpNavigationDeclarationItem) =
         let prefix = match node.Kind with
                      | NamespaceDecl-> "Namespace: "
                      | ModuleFileDecl -> "ModuleFile: "
@@ -132,7 +132,7 @@ and FSharpDataProvider(ext:FSharpPathExtension, tag) =
             for decl in navitems do
                 if decl.Declaration.Name.StartsWith(filter) then
                     memberList.Add(decl.Declaration)
-        | :? TopLevelDeclaration as tld ->
+        | :? FSharpNavigationTopLevelDeclaration as tld ->
             for item in tld.Nested do
                  memberList.Add(item)
         | _ -> ()

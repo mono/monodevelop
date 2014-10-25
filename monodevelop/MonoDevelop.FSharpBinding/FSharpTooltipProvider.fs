@@ -74,19 +74,19 @@ type FSharpTooltipProvider() =
                let backupSig = 
                    Some(lazy
                            match tip with
-                           | Some (ToolTipText xs, (_,_)) when xs.Length > 0 ->
+                           | Some (FSharpToolTipText xs, (_,_)) when xs.Length > 0 ->
                                let first = xs.Head    
                                match first with
-                               | ToolTipElement (name, xmlComment) ->
+                               | FSharpToolTipElement.Single (name, xmlComment) ->
                                     match xmlComment with
-                                    | XmlCommentSignature (key, file) -> Some (file, key)
+                                    | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
                                     | _ -> None
-                               | ToolTipElementGroup tts when tts.Length > 0 ->
+                               | FSharpToolTipElement.Group tts when tts.Length > 0 ->
                                    let name, xmlComment = tts.Head
                                    match xmlComment with
-                                   | XmlCommentSignature (key, file) -> Some (file, key)
+                                   | FSharpXmlDoc.XmlDocFileSignature (key, file) -> Some (file, key)
                                    | _ -> None
-                               | ToolTipElementCompositionError _ -> None
+                               | FSharpToolTipElement.CompositionError _ -> None
                                | _ -> None
                            | _ -> None)
 
@@ -118,14 +118,14 @@ type FSharpTooltipProvider() =
                    let! tip = parseAndCheckResults.GetToolTip(line, col, lineStr)
                    match tip with
                    | None -> return NoToolTipText
-                   | Some (ToolTipText(elems),_) when elems |> List.forall (function ToolTipElementNone -> true | _ -> false) -> return NoToolTipData
+                   | Some (FSharpToolTipText(elems),_) when elems |> List.forall (function FSharpToolTipElement.None -> true | _ -> false) -> return NoToolTipData
                    | Some(tiptext,(col1,col2)) -> 
                        LoggingService.LogInfo "TooltipProvider: Got data"
                        //check to see if the last result is the same tooltipitem, if so return the previous tooltipitem
                        match lastResult with
                        | Some(tooltipItem) when
-                           tooltipItem.Item :? ToolTipText && 
-                           tooltipItem.Item :?> ToolTipText = tiptext && 
+                           tooltipItem.Item :? FSharpToolTipText && 
+                           tooltipItem.Item :?> FSharpToolTipText = tiptext && 
                            tooltipItem.ItemSegment = TextSegment(editor.LocationToOffset (line, col1 + 1), col2 - col1) ->
                                return Tooltip tooltipItem
                        //If theres no match or previous cached result generate a new tooltipitem
@@ -149,7 +149,7 @@ type FSharpTooltipProvider() =
         //At the moment as the new tooltips are unfinished we have two types here
         // ToolTipText for the old tooltips and (string * XmlDoc) for the new tooltips
         match item.Item with 
-        | :? ToolTipText as titem ->
+        | :? FSharpToolTipText as titem ->
             let tooltip = TipFormatter.formatTip(titem)
             let (signature, comment) = 
                 match tooltip with

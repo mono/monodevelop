@@ -14,8 +14,6 @@ Target "RestorePackages" (fun _ ->
 
 let buildDir = "./bin/Debug/"
 let buildReleaseDir = "./bin/Release/"
-let unitTestDir  = "./test/unit/"
-let unitTestBuildDir  = unitTestDir + "build"
 let integrationTestDir = "./test/integration/"
 
 Target "BuildDebug" (fun _ ->
@@ -26,22 +24,6 @@ Target "BuildDebug" (fun _ ->
 Target "BuildRelease" (fun _ ->
   MSBuildRelease buildReleaseDir "Build" ["./FSharp.AutoComplete.fsproj"]
   |> Log "Build-Output: "
-)
-
-Target "BuildUnitTest" (fun _ ->
-  !! (unitTestDir + "/*/*.fsproj")
-    |> MSBuildDebug unitTestBuildDir "Build"
-    |> Log "TestBuild-Output: "
-)
-
-Target "UnitTest" (fun _ ->
-  !! (unitTestBuildDir + "/*Tests.dll")
-    |> NUnit (fun p ->
-      {p with
-         DisableShadowCopy = true
-         Framework = "v4.0.30319"
-         ToolName = "nunit-console-x86.exe"
-         OutputFile = unitTestBuildDir + "/TestResults.xml"})
 )
 
 let integrationTests =
@@ -65,14 +47,20 @@ let runIntegrationTest (fn: string) : bool =
         lines.[i] <- Regex.Replace(lines.[i],
                                    "/.*?FSharp.AutoComplete/test/(.*?(\"|$))",
                                    "<absolute path removed>/test/$1")
+        lines.[i] <- Regex.Replace(lines.[i],
+                                   "\"/[^\"]*?/([^\"/]*?\.dll\")",
+                                    "\"<absolute path removed>/$1")
       else
         if Path.GetExtension fn = ".json" then
           lines.[i] <- Regex.Replace(lines.[i].Replace(@"\\", "/"),
-                                     "[A-Z]:/.*?FSharp.AutoComplete/test/(.*?(\"|$))",
+                                     "[a-zA-Z]:/.*?FSharp.AutoComplete/test/(.*?(\"|$))",
                                      "<absolute path removed>/test/$1")
+          lines.[i] <- Regex.Replace(lines.[i],
+                                     "\"[a-zA-Z]:/[^\"]*?/([^\"/]*?\.dll\")",
+                                     "\"<absolute path removed>/$1")
         else
           lines.[i] <- Regex.Replace(lines.[i].Replace('\\','/'),
-                                     "[A-Z]:/.*?FSharp.AutoComplete/test/(.*?(\"|$))",
+                                     "[a-zA-Z]:/.*?FSharp.AutoComplete/test/(.*?(\"|$))",
                                      "<absolute path removed>/test/$1")
 
     // Write manually to ensure \n line endings on all platforms
@@ -154,12 +142,9 @@ Target "EmacsTest" (fun _ ->
 )
 
 
+Target "Build" id
 Target "Test" id
 Target "All" id
-
-"RestorePackages"
-  ==> "BuildUnitTest"
-  ==> "UnitTest"
 
 "RestorePackages"
   ==> "BuildDebug"
@@ -170,7 +155,6 @@ Target "All" id
   ==> "EmacsTest"
 
 "EmacsTest" ==> "Test"
-"UnitTest" ==> "Test"
 "IntegrationTest" ==> "Test"
 
 "BuildDebug" ==> "All"
