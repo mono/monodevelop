@@ -417,7 +417,8 @@ The current buffer must be an F# file that exists on disk."
       nil)
 
      (t
-      (and (eq fsharp-ac-status 'idle)
+      (and (not (syntax-ppss-context (syntax-ppss)))
+           (eq fsharp-ac-status 'idle)
            (not ac-completing))))))
 
 (defvar fsharp-ac-awaiting-tooltip nil)
@@ -457,20 +458,23 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
         (ac-auto-show-menu t))
     (apply 'ac-start ac-start-args)))
 
-
 (defun fsharp-ac/electric-dot ()
   (interactive)
   (when ac-completing
     (ac-complete))
-  (when (or (not (eq (string-to-char ".") (char-before)))
-            (not ac-completing))
-    (self-insert-command 1))
-  (fsharp-ac/complete-at-point t))
+
+  (let ((residue (fsharp-ac--residue))
+        (pt (point)))
+    (when (or (not (eq ?. (char-before)))
+              (not ac-completing))
+      (self-insert-command 1))
+    (unless (eq pt residue)
+      (fsharp-ac/complete-at-point t))))
 
 
 (defun fsharp-ac/electric-backspace ()
   (interactive)
-  (when (eq (char-before) (string-to-char "."))
+  (when (eq (char-before) ?.)
     (ac-stop))
   (delete-char -1))
 
