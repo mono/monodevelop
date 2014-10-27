@@ -58,6 +58,7 @@ namespace MonoDevelop.Ide.Projects
 		const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
 		const string CreateProjectSubDirectoryInExistingSolutionPropertyName = "Dialogs.NewProjectDialog.AutoCreateProjectSubdirInExistingSolution";
 		const string LastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.LastSelectedCategoryPath";
+		const string SelectedLanguagePropertyName = "Dialogs.NewProjectDialog.SelectedLanguage";
 
 		List<TemplateCategory> templateCategories;
 		INewProjectDialogBackend dialog;
@@ -95,7 +96,6 @@ namespace MonoDevelop.Ide.Projects
 
 		public NewProjectDialogController ()
 		{
-			SelectedLanguage = "C#";
 			IsFirstPage = true;
 			LoadTemplateCategories ();
 			GetVersionControlHandler ();
@@ -132,6 +132,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			SetDefaultLocation ();
 			SetDefaultGitSettings ();
+			SelectedLanguage = PropertyService.Get (SelectedLanguagePropertyName, "C#");
 			projectConfiguration.CreateProjectDirectoryInsideSolutionDirectory = GetDefaultCreateProjectDirectorySetting ();
 		}
 
@@ -147,6 +148,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			UpdateDefaultGitSettings ();
 			UpdateDefaultCreateProjectDirectorySetting ();
+			PropertyService.Set (SelectedLanguagePropertyName, SelectedLanguage);
 			DefaultSelectedCategoryPath = GetSelectedCategoryPath ();
 		}
 
