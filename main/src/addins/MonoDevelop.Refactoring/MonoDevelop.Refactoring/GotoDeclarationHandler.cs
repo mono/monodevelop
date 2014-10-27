@@ -54,8 +54,10 @@ namespace MonoDevelop.Refactoring
 			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
 			var entity = item as INamedElement;
 			if (entity != null) {
+				var solutionsToSearch = GetSolutionsToSearch ();
+
 				Task.Factory.StartNew (() => {
-					entity = CheckIfDefinedInOtherOpenSolution (entity);
+					entity = CheckIfDefinedInOtherOpenSolution (entity, solutionsToSearch);
 					Xwt.Application.Invoke (() => IdeApp.ProjectOperations.JumpToDeclaration (entity));
 				});
 			} else {
@@ -63,6 +65,26 @@ namespace MonoDevelop.Refactoring
 				if (v != null)
 					IdeApp.ProjectOperations.JumpToDeclaration (v);
 			}
+		}
+
+		/// <summary>
+		/// Gets an array of opened solutions to search, except for the current active solution.
+		/// </summary>
+		static Solution[] GetSolutionsToSearch ()
+		{
+			// build up an array of solutions to search in case the entity is not in the current solution
+			if (IdeApp.Workspace != null) {
+				// do we have workspace? check the workspace for solution items
+				var currentSolution = IdeApp.ProjectOperations.CurrentSelectedSolution;
+
+				var workspace = IdeApp.Workspace.Items.OfType<Workspace> ().FirstOrDefault ();
+				if (workspace != null)
+					return workspace.Items.OfType<Solution> ().Where(s => s != currentSolution).ToArray ();
+				else
+					return IdeApp.Workspace.Items.OfType<Solution> ().Where(s => s != currentSolution).ToArray ();
+			}
+
+			return new Solution[0];
 		}
 
 		/// <summary>
@@ -87,50 +109,33 @@ namespace MonoDevelop.Refactoring
 		/// Provides support for going to the source code definition of an element instead of the Assembly Browser.
 		/// Returns the original entity if no suitable open solution was found
 		/// </summary>
-		static INamedElement CheckIfDefinedInOtherOpenSolution (INamedElement entity)
+		static INamedElement CheckIfDefinedInOtherOpenSolution (INamedElement entity, Solution[] solutionsToSearch)
 		{
 			var ex = entity as IEntity;
 
 			if (ex != null && ex.Region.IsEmpty) {
 				// the entity was not found as a file in the current solution (no region)
 				// let's see if we can find in another open solution
+				foreach (var solution in solutionsToSearch) {
+					var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+					using (monitor) {
+						monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
 
-				if (IdeApp.Workspace != null) {
-					Solution[] solutions;
+						var assemblies = GetAllAssemblies (solution);
+						var tg = new TypeGraph (assemblies);
+						var node = tg.GetNode (ex.DeclaringTypeDefinition); 
+						if (node != null) {
+							// look for the member that we're after
+							var foundMember = node.TypeDefinition.Members.FirstOrDefault (x => x.FullName == entity.FullName);
 
-					// do we have workspace? check the workspace for solution items
-					var workspace = IdeApp.Workspace.Items.OfType<Workspace> ().FirstOrDefault ();
-					if (workspace != null) 
-						solutions = workspace.Items.OfType<Solution> ().ToArray ();
-					else 
-						solutions = IdeApp.Workspace.Items.OfType<Solution> ().ToArray ();
+							if (foundMember != null)
+								return foundMember;
 
-					foreach (var solution in solutions) {
-						// skip the current solution
-						if (IdeApp.ProjectOperations.CurrentSelectedSolution == solution)
-							continue;
-
-						var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-						using (monitor) {
-							monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
-
-							var assemblies = GetAllAssemblies (solution);
-							var tg = new TypeGraph (assemblies);
-							var node = tg.GetNode (ex.DeclaringTypeDefinition); 
-							if (node != null) {
-								// look for the member that we're after
-								var foundMember = node.TypeDefinition.Members.FirstOrDefault (x => x.FullName == entity.FullName);
-
-								if (foundMember != null)
-									return foundMember;
-
-								// fall back to just the type, at least we're part way there
-								return node.TypeDefinition;
-							}
-
-							monitor.EndTask ();
+							// fall back to just the type, at least we're part way there
+							return node.TypeDefinition;
 						}
 
+						monitor.EndTask ();
 					}
 				}
 			}
