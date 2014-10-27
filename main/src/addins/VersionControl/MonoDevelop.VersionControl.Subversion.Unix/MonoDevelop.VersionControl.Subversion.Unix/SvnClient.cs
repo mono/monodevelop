@@ -1523,8 +1523,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				lockFileList.Add (file);
 		}
 
-		bool Upgrading;
-		bool TooOld;
+		static bool Upgrading;
+		static bool TooOld;
 		internal string GetDirectoryDotSvnInternal (FilePath path)
 		{
 			if (Upgrading || TooOld)
