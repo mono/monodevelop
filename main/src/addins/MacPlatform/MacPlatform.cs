@@ -786,6 +786,9 @@ namespace MonoDevelop.MacIntegration
 
 		public override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
 		{
+			if (window.GdkWindow == null)
+				return; // Not yet realized
+
 			NSWindow w = GtkQuartz.GetWindow (window);
 			var dr = FromDesktopRect (new Gdk.Rectangle (x, y, width, height));
 			var r = w.FrameRectFor (dr);
