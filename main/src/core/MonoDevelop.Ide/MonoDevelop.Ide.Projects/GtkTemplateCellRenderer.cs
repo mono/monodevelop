@@ -52,7 +52,7 @@ namespace MonoDevelop.Ide.Projects
 
 		public SolutionTemplate Template { get; set; }
 		public string SelectedLanguage { get; set; }
-		public Pixbuf TemplateIcon { get; set; }
+		public Xwt.Drawing.Image TemplateIcon { get; set; }
 		public string TemplateCategory { get; set; }
 
 		public GtkTemplateCellRenderer ()
@@ -77,7 +77,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 			if (TemplateIcon != null) {
-				height = TemplateIcon.Height + ((int)Ypad * 2);
+				height = (int)TemplateIcon.Height + ((int)Ypad * 2);
 			} else {
 				height += 2 * groupTemplateHeadingYPadding;
 			}
@@ -155,9 +155,11 @@ namespace MonoDevelop.Ide.Projects
 		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
 			StateType state = GetState (widget, flags);
-			var iconRect = new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, TemplateIcon.Width, TemplateIcon.Height);
+			var iconRect = new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, (int)TemplateIcon.Width, (int)TemplateIcon.Height);
 
-			window.DrawPixbuf (widget.Style.BackgroundGC (state), TemplateIcon, 0, 0, iconRect.X, iconRect.Y, iconRect.Width, iconRect.Height, RgbDither.None, 0, 0);
+			using (var ctx = CairoHelper.Create (window)) {
+				ctx.DrawImage (widget, TemplateIcon, iconRect.X, iconRect.Y);
+			}
 
 			return iconRect;
 		}

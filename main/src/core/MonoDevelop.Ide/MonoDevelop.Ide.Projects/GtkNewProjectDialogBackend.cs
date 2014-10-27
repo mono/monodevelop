@@ -79,7 +79,7 @@ namespace MonoDevelop.Ide.Projects
 		void SetTemplateCategoryCellData (TreeViewColumn col, CellRenderer renderer, TreeModel model, TreeIter it)
 		{
 			categoryTextRenderer.Category = (TemplateCategory)model.GetValue (it, TemplateCategoryColumn);
-			categoryTextRenderer.CategoryIcon = model.GetValue (it, TemplateCategoryIconColumn) as Pixbuf;
+			categoryTextRenderer.CategoryIcon = model.GetValue (it, TemplateCategoryIconColumn) as Xwt.Drawing.Image;
 			categoryTextRenderer.CategoryName = model.GetValue (it, TemplateCategoryNameColumn) as string;
 		}
 
@@ -87,7 +87,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			var template = (SolutionTemplate)model.GetValue (it, TemplateColumn);
 			templateTextRenderer.Template = template;
-			templateTextRenderer.TemplateIcon = model.GetValue (it, TemplateIconColumn) as Pixbuf;
+			templateTextRenderer.TemplateIcon = model.GetValue (it, TemplateIconColumn) as Xwt.Drawing.Image;
 			templateTextRenderer.TemplateCategory = model.GetValue (it, TemplateNameColumn) as string;
 		}
 
@@ -182,8 +182,8 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddTopLevelTemplateCategory (TemplateCategory category)
 		{
-			Pixbuf icon = GetIcon (category.IconId, IconSize.Menu);
-			categoryTextRenderer.CategoryIconWidth = icon.Width;
+			Xwt.Drawing.Image icon = GetIcon (category.IconId, IconSize.Menu);
+			categoryTextRenderer.CategoryIconWidth = (int)icon.Width;
 
 			templateCategoriesListStore.AppendValues (
 				MarkupTopLevelCategoryName (category.Name),
@@ -252,13 +252,9 @@ namespace MonoDevelop.Ide.Projects
 			}
 		}
 
-		static Gdk.Pixbuf GetIcon (string id, IconSize size)
+		static Xwt.Drawing.Image GetIcon (string id, IconSize size)
 		{
-			Xwt.Drawing.Image image = ImageService.GetIcon (id, size);
-			if (image != null) {
-				return image.ToPixbuf ();
-			}
-			return null;
+			return ImageService.GetIcon (id, size);
 		}
 
 		void ShowSelectedTemplate ()

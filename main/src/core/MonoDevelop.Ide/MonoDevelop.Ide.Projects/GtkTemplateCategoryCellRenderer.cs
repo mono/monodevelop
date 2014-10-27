@@ -24,9 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using Gdk;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Projects
 	{
 		public TemplateCategory Category { get; set; }
 		public string CategoryName { get; set; }
-		public Pixbuf CategoryIcon { get; set; }
+		public Xwt.Drawing.Image CategoryIcon { get; set; }
 		public int CategoryIconWidth { get; set; }
 
 		const int topLevelTemplateHeadingYPadding = 8;
@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 			if (CategoryIcon != null) {
-				height = CategoryIcon.Height + ((int)Ypad * 2) + (2 * topLevelTemplateHeadingYPadding);
+				height = (int)CategoryIcon.Height + ((int)Ypad * 2) + (2 * topLevelTemplateHeadingYPadding);
 			}
 		}
 
@@ -88,11 +88,12 @@ namespace MonoDevelop.Ide.Projects
 		Rectangle DrawIcon (Drawable window, Widget widget, Rectangle cell_area, CellRendererState flags)
 		{
 			StateType state = GetState (widget, flags);
-			int iconY = cell_area.Y + ((cell_area.Height - CategoryIcon.Height) / 2) + topLevelTemplateHeadingYOffset;
-			var iconRect = new Rectangle (cell_area.X + (int)Xpad, iconY, CategoryIcon.Width, CategoryIcon.Height);
+			int iconY = cell_area.Y + ((cell_area.Height - (int)CategoryIcon.Height) / 2) + topLevelTemplateHeadingYOffset;
+			var iconRect = new Rectangle (cell_area.X + (int)Xpad, iconY, (int)CategoryIcon.Width, (int)CategoryIcon.Height);
 
-			window.DrawPixbuf (widget.Style.BackgroundGC (state), CategoryIcon, 0, 0, iconRect.X, iconRect.Y, iconRect.Width, iconRect.Height, RgbDither.None, 0, 0);
-
+			using (var ctx = CairoHelper.Create (window)) {
+				ctx.DrawImage (widget, CategoryIcon, iconRect.X, iconRect.Y);
+			}
 			return iconRect;
 		}
 

@@ -54,13 +54,13 @@ namespace MonoDevelop.Ide.Projects
 		const int TemplateCategoryIconColumn = 1;
 		const int TemplateCategoryColumn = 2;
 		ListStore templateCategoriesListStore =
-			new ListStore(typeof (string), typeof (Pixbuf), typeof(TemplateCategory));
+			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(TemplateCategory));
 		TreeView templatesTreeView;
 		const int TemplateNameColumn = 0;
 		const int TemplateIconColumn = 1;
 		const int TemplateColumn = 2;
 		ListStore templatesListStore =
-			new ListStore(typeof (string), typeof (Pixbuf), typeof(SolutionTemplate));
+			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
 		VBox templateVBox;
 		Gtk.Image templateImage;
 		Label templateNameLabel;
