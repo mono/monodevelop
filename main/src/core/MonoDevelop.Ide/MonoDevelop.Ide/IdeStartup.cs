@@ -75,6 +75,9 @@ namespace MonoDevelop.Ide
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
 
+			//ensure native libs initialized before we hit anything that p/invokes
+			Platform.Initialize ();
+
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
 			IdeApp.Customizer.Initialize ();
 
@@ -86,9 +89,6 @@ namespace MonoDevelop.Ide
 				InstrumentationService.StartAutoSave (logFile, 1000);
 			}
 
-			//ensure native libs initialized before we hit anything that p/invokes
-			Platform.Initialize ();
-			
 			Counters.Initialization.Trace ("Initializing GTK");
 			if (Platform.IsWindows && !CheckWindowsGtk ())
 				return 1;
