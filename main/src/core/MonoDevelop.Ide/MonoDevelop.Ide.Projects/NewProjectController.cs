@@ -57,6 +57,7 @@ namespace MonoDevelop.Ide.Projects
 		const string CreateGitIgnoreFilePropertyName = "Dialogs.NewProjectDialog.CreateGitIgnoreFile";
 		const string CreateProjectSubDirectoryPropertyName = "MonoDevelop.Core.Gui.Dialogs.NewProjectDialog.AutoCreateProjectSubdir";
 		const string CreateProjectSubDirectoryInExistingSolutionPropertyName = "Dialogs.NewProjectDialog.AutoCreateProjectSubdirInExistingSolution";
+		const string LastSelectedCategoryPropertyName = "Dialogs.NewProjectDialog.LastSelectedCategoryPath";
 
 		List<TemplateCategory> templateCategories;
 		INewProjectDialogBackend dialog;
@@ -74,6 +75,15 @@ namespace MonoDevelop.Ide.Projects
 		public SolutionFolder ParentFolder { get; set; }
 		public string BasePath { get; set; }
 		public string SelectedTemplateId { get; set; }
+
+		string DefaultSelectedCategoryPath {
+			get {
+				return PropertyService.Get<string> (LastSelectedCategoryPropertyName, null);
+			}
+			set {
+				PropertyService.Set (LastSelectedCategoryPropertyName, value);
+			}
+		}
 
 		public bool IsNewSolution {
 			get { return projectConfiguration.CreateSolution; }
@@ -95,7 +105,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			projectConfiguration.CreateSolution = ParentFolder == null;
 			SetDefaultSettings ();
-			SelectTemplate ();
+			SelectDefaultTemplate ();
 
 			CreateFinalConfigurationPage ();
 			CreateWizardProvider ();
@@ -137,6 +147,25 @@ namespace MonoDevelop.Ide.Projects
 		{
 			UpdateDefaultGitSettings ();
 			UpdateDefaultCreateProjectDirectorySetting ();
+			DefaultSelectedCategoryPath = GetSelectedCategoryPath ();
+		}
+
+		string GetSelectedCategoryPath ()
+		{
+			foreach (TemplateCategory topLevelCategory in templateCategories) {
+				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories) {
+					foreach (TemplateCategory thirdLevelCategory in secondLevelCategory.Categories) {
+						SolutionTemplate matchedTemplate = thirdLevelCategory
+							.Templates
+							.FirstOrDefault (template => template == SelectedTemplate);
+						if (matchedTemplate != null) {
+							return String.Format ("{0}/{1}", topLevelCategory.Id, secondLevelCategory.Id);
+						}
+					}
+				}
+			}
+
+			return null;
 		}
 
 		void UpdateDefaultCreateProjectDirectorySetting ()
@@ -208,14 +237,60 @@ namespace MonoDevelop.Ide.Projects
 			templateCategories = IdeApp.Services.TemplatingService.GetProjectTemplateCategories ().ToList ();
 		}
 
-		void SelectTemplate ()
+		void SelectDefaultTemplate ()
 		{
-			foreach (TemplateCategory topLevelCategory in templateCategories) {
-				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories) {
+			if (SelectedTemplateId != null) {
+				SelectTemplate (SelectedTemplateId);
+			} else if (DefaultSelectedCategoryPath != null) {
+				SelectFirstTemplateInCategory (DefaultSelectedCategoryPath);
+			}
+
+			if (SelectedSecondLevelCategory == null) {
+				SelectFirstAvailableTemplate ();
+			}
+		}
+
+		void SelectTemplate (string templateId)
+		{
+			SelectTemplate (template => template.Id == templateId);
+		}
+
+		void SelectFirstAvailableTemplate ()
+		{
+			SelectTemplate (template => true);
+		}
+
+		void SelectFirstTemplateInCategory (string categoryPath)
+		{
+			List<string> parts = new TemplateCategoryPath (categoryPath).GetParts ().ToList ();
+			if (parts.Count < 2) {
+				return;
+			}
+
+			string topLevelCategoryId = parts [0];
+			string secondLevelCategoryId = parts [1];
+			SelectTemplate (
+				template => true,
+				category => category.Id == topLevelCategoryId,
+				category => category.Id == secondLevelCategoryId);
+		}
+
+		void SelectTemplate (Func<SolutionTemplate, bool> isTemplateMatch)
+		{
+			SelectTemplate (isTemplateMatch, category => true, category => true);
+		}
+
+		void SelectTemplate (
+			Func<SolutionTemplate, bool> isTemplateMatch,
+			Func<TemplateCategory, bool> isTopLevelCategoryMatch,
+			Func<TemplateCategory, bool> isSecondLevelCategoryMatch)
+		{
+			foreach (TemplateCategory topLevelCategory in templateCategories.Where (isTopLevelCategoryMatch)) {
+				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories.Where (isSecondLevelCategoryMatch)) {
 					foreach (TemplateCategory thirdLevelCategory in secondLevelCategory.Categories) {
 						SolutionTemplate matchedTemplate = thirdLevelCategory
 							.Templates
-							.FirstOrDefault (MatchesSelectedTemplateId);
+							.FirstOrDefault (isTemplateMatch);
 						if (matchedTemplate != null) {
 							SelectedSecondLevelCategory = secondLevelCategory;
 							SelectedTemplate = matchedTemplate;
@@ -224,11 +299,6 @@ namespace MonoDevelop.Ide.Projects
 					}
 				}
 			}
-		}
-
-		bool MatchesSelectedTemplateId (SolutionTemplate template)
-		{
-			return (SelectedTemplateId == null) || (template.Id == SelectedTemplateId);
 		}
 
 		public SolutionTemplate GetSelectedTemplateForSelectedLanguage ()
