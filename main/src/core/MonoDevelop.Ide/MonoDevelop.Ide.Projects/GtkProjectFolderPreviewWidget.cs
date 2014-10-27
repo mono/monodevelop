@@ -187,7 +187,7 @@ namespace MonoDevelop.Ide.Projects
 		void UpdateTextColumn (TreeIter iter, string value)
 		{
 			if (!iter.Equals (TreeIter.Zero)) {
-				folderTreeStore.SetValue (iter, TextColumn, value);
+				folderTreeStore.SetValue (iter, TextColumn, GLib.Markup.EscapeText (value));
 			}
 		}
 

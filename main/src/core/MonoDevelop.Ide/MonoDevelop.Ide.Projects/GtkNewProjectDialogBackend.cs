@@ -198,14 +198,14 @@ namespace MonoDevelop.Ide.Projects
 		void AddSubTemplateCategory (TemplateCategory category)
 		{
 			templateCategoriesListStore.AppendValues (
-				category.Name,
+				GLib.Markup.EscapeText (category.Name),
 				null,
 				category);
 		}
 
 		static string MarkupTopLevelCategoryName (string name)
 		{
-			return "<span font_weight='bold' size='larger'>" + name + "</span>";
+			return "<span font_weight='bold' size='larger'>" + GLib.Markup.EscapeText (name) + "</span>";
 		}
 
 		void ShowTemplatesForSelectedCategory ()
