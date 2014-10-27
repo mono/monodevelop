@@ -309,6 +309,8 @@ namespace MonoDevelop.Ide.Projects
 
 		void SelectTemplateDefinedbyController ()
 		{
+			SolutionTemplate selectedTemplate = controller.SelectedTemplate;
+
 			if (controller.SelectedSecondLevelCategory == null) {
 				SelectFirstSubTemplateCategory ();
 				return;
@@ -316,8 +318,8 @@ namespace MonoDevelop.Ide.Projects
 
 			SelectTemplateCategory (controller.SelectedSecondLevelCategory);
 
-			if (controller.SelectedTemplate != null) {
-				SelectTemplate (controller.SelectedTemplate);
+			if (selectedTemplate != null) {
+				SelectTemplate (selectedTemplate);
 			}
 		}
 
