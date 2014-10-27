@@ -691,7 +691,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 			type="radio|array"
 			_label = "Window List" />
-
+			<!--
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically"
 			defaultHandler = "MonoDevelop.Ide.Commands.SplitWindowVertically"
 			_label = "Split _Vertically" />
@@ -705,7 +705,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.SwitchSplitWindow"
 			shortcut = "Control|M"
 			_label = "_Switch Between Splits" />
-
+			-->
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchNextDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.SwitchNextDocument"
 			shortcut = "Control|Tab"
