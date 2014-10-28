@@ -112,7 +112,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
-		string GetValidDir (string name)
+		static string GetValidDir (string name)
 		{
 			name = name.Trim ();
 			var sb = new StringBuilder ();
@@ -166,6 +166,12 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		public ProjectCreateParameters Parameters { get; private set; }
+
+		public static string GenerateValidProjectName (string name)
+		{
+			string validName = GetValidDir (name);
+			return validName.Replace (" ", String.Empty);
+		}
 	}
 }
 
