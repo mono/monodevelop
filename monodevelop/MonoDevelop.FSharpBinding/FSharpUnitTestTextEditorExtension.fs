@@ -18,7 +18,7 @@ type FSharpUnitTestTextEditorExtension() =
         let sb = Text.StringBuilder(32)
         sb.Append "(" |> ignore
         tc.ConstructorArguments 
-        |> Seq.iteri (fun i arg ->
+        |> Seq.iteri (fun i (_,arg) ->
             if i > 0 then sb.Append ", " |> ignore
             match arg with
             | :? string as s -> sb.AppendFormat ("\"{0}\"", s) |> ignore

@@ -36,7 +36,7 @@ type internal FSharpMemberCompletionData(name, getTip, glyph) =
     let icon = lazy (MonoDevelop.Core.IconId(ServiceUtils.getIcon glyph))
 
     new (name, datatip:FSharpToolTipText, glyph) = new FSharpMemberCompletionData(name, (fun () -> datatip), glyph)
-    new (mi:FSharpDeclaration) =  new FSharpMemberCompletionData(mi.Name, (fun () -> mi.DescriptionText), mi.Glyph)
+    new (mi:FSharpDeclarationListItem) =  new FSharpMemberCompletionData(mi.Name, (fun () -> mi.DescriptionText), mi.Glyph)
 
     override x.Description = name //description.Value   // this is not used
     override x.Icon = icon.Value
