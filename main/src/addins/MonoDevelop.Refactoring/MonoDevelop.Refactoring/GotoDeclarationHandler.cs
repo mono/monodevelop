@@ -39,6 +39,7 @@ using MonoDevelop.Projects;
 using System.Collections.Generic;
 using MonoDevelop.Ide.TypeSystem;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace MonoDevelop.Refactoring
 {
@@ -54,10 +55,12 @@ namespace MonoDevelop.Refactoring
 			object item = CurrentRefactoryOperationsHandler.GetItem (doc, out resolveResoult);
 			var entity = item as INamedElement;
 			if (entity != null) {
-				var solutionsToSearch = GetSolutionsToSearch ();
+				// determine the list of solutions and projects outside of the background thread
+				var solutionsToSearch = GetSolutionsToSearch (entity);
+				var solutions = GetSolutionProjects (solutionsToSearch.ToList ());
 
 				Task.Factory.StartNew (() => {
-					entity = CheckIfDefinedInOtherOpenSolution (entity, solutionsToSearch);
+					entity = CheckIfDefinedInOtherOpenSolution (entity, solutions);
 					Xwt.Application.Invoke (() => IdeApp.ProjectOperations.JumpToDeclaration (entity));
 				});
 			} else {
@@ -68,10 +71,23 @@ namespace MonoDevelop.Refactoring
 		}
 
 		/// <summary>
-		/// Gets an array of opened solutions to search, except for the current active solution.
+		/// Determines if the given entity has been resolved to a source file
 		/// </summary>
-		static Solution[] GetSolutionsToSearch ()
+		static bool EntityResolvesToSourceFile (INamedElement entity) 
 		{
+			var ex = entity as IEntity;
+			return ex != null && !ex.Region.IsEmpty;
+		}
+
+		/// <summary>
+		/// Gets an array of opened solutions to search, except for the current active solution.
+		/// Returns an empty set if the entity already resolves to a source file.
+		/// </summary>
+		static Solution[] GetSolutionsToSearch (INamedElement entity)
+		{
+			if (EntityResolvesToSourceFile (entity))
+				return new Solution[0];
+
 			// build up an array of solutions to search in case the entity is not in the current solution
 			if (IdeApp.Workspace != null) {
 				// do we have workspace? check the workspace for solution items
@@ -87,14 +103,23 @@ namespace MonoDevelop.Refactoring
 			return new Solution[0];
 		}
 
+		static Dictionary<Solution, ReadOnlyCollection<Project>> GetSolutionProjects (List<Solution> solutions) 
+		{
+			var dict = new Dictionary<Solution, ReadOnlyCollection<Project>> ();
+			foreach (var solution in solutions) {
+				dict.Add (solution, solution.GetAllProjects ());
+			}
+			return dict;
+		}
+
 		/// <summary>
 		/// Gets a set of all the assemblies that are built from the given solution
 		/// </summary>
-		static HashSet<IAssembly> GetAllAssemblies (Solution solution)
+		static HashSet<IAssembly> GetAllAssemblies (ReadOnlyCollection<Project> projects)
 		{
 			var assemblies = new HashSet<IAssembly> ();
 
-			foreach (var project in solution.GetAllProjects ()) {
+			foreach (var project in projects) {
 				var comp = TypeSystemService.GetCompilation (project);
 				if (comp == null)
 					continue;
@@ -109,19 +134,19 @@ namespace MonoDevelop.Refactoring
 		/// Provides support for going to the source code definition of an element instead of the Assembly Browser.
 		/// Returns the original entity if no suitable open solution was found
 		/// </summary>
-		static INamedElement CheckIfDefinedInOtherOpenSolution (INamedElement entity, Solution[] solutionsToSearch)
+		static INamedElement CheckIfDefinedInOtherOpenSolution (INamedElement entity, Dictionary<Solution, ReadOnlyCollection<Project>> solutionsToSearch)
 		{
 			var ex = entity as IEntity;
 
-			if (ex != null && ex.Region.IsEmpty) {
-				// the entity was not found as a file in the current solution (no region)
-				// let's see if we can find in another open solution
+			if (ex != null) {
+				// if there are solutions to search it means that the entity we were looking for was not resolved to a source file
+				// we will look in other open solutions
 				foreach (var solution in solutionsToSearch) {
 					var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 					using (monitor) {
 						monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
 
-						var assemblies = GetAllAssemblies (solution);
+						var assemblies = GetAllAssemblies (solution.Value);
 						var tg = new TypeGraph (assemblies);
 						var node = tg.GetNode (ex.DeclaringTypeDefinition); 
 						if (node != null) {
