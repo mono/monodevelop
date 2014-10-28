@@ -28,7 +28,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Projects;
+using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -37,12 +39,14 @@ namespace MonoDevelop.Ide.Templates
 		List<TemplateCategory> projectTemplateCategories = new List<TemplateCategory> ();
 		List<IProjectTemplatingProvider> templateProviders = new List<IProjectTemplatingProvider> ();
 		List<TemplateWizard> projectTemplateWizards = new List<TemplateWizard> ();
+		List<ImageCodon> projectTemplateImages = new List<ImageCodon> ();
 
 		public TemplatingService ()
 		{
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateCategories", OnTemplateCategoriesChanged);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplatingProviders", OnTemplatingProvidersChanged);
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/ProjectTemplateWizards", OnProjectTemplateWizardsChanged);
+			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/TemplateImages", OnTemplateImagesChanged);
 		}
 
 		void OnTemplateCategoriesChanged (object sender, ExtensionNodeEventArgs args)
@@ -75,6 +79,16 @@ namespace MonoDevelop.Ide.Templates
 			}
 		}
 
+		void OnTemplateImagesChanged (object sender, ExtensionNodeEventArgs args)
+		{
+			var codon = args.ExtensionNode as ImageCodon;
+			if (args.Change == ExtensionChange.Add) {
+				projectTemplateImages.Add (codon);
+			} else {
+				projectTemplateImages.Remove (codon);
+			}
+		}
+
 		public IEnumerable<TemplateCategory> GetProjectTemplateCategories ()
 		{
 			var templateCategorizer = new ProjectTemplateCategorizer (projectTemplateCategories);
@@ -101,6 +115,16 @@ namespace MonoDevelop.Ide.Templates
 		public TemplateWizard GetWizard (string id)
 		{
 			return projectTemplateWizards.FirstOrDefault (wizard => wizard.Id == id);
+		}
+
+		public Image LoadTemplateImage (string imageId)
+		{
+			ImageCodon imageCodon = projectTemplateImages.FirstOrDefault (codon => codon.Id == imageId);
+
+			if (imageCodon != null) {
+				return Image.FromStream (imageCodon.Addin.GetResource (imageCodon.Resource));
+			}
+			return null;
 		}
 	}
 }

@@ -2011,7 +2011,7 @@
     <EmbeddedResource Include="icons\light\platform-android-16.png">
       <LogicalName>platform-android-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="icons\light\template-default-background.png">
+    <EmbeddedResource Include="MonoDevelop.Ide.Templates\template-default-background.png">
       <LogicalName>template-default-background-light.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
@@ -2845,6 +2845,7 @@
     <Compile Include="MonoDevelop.Ide.Templates\TemplateParameter.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\IVersionControlProjectTemplateHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateImageProvider.cs" />
+    <Compile Include="MonoDevelop.Ide.Codons\ImageCodon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

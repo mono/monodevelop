@@ -54,6 +54,11 @@
 	<ExtensionNode name="Class" objectType="MonoDevelop.Ide.Templates.IVersionControlProjectTemplateHandler" />
 </ExtensionPoint>
 
+<ExtensionPoint path = "/MonoDevelop/Ide/TemplateImages" name = "Project template images">
+	<Description>Images to be used by project templates.</Description>
+	<ExtensionNode name="Image" type="MonoDevelop.Ide.Codons.ImageCodon" />
+</ExtensionPoint>
+
 <Extension path = "/MonoDevelop/Ide/FileTemplates">
 	<FileTemplate id = "EmptyClass" resource = "EmptyClass.xft.xml"/>
 	<FileTemplate id = "EmptyEnum" resource = "EmptyEnum.xft.xml"/>
@@ -150,6 +155,10 @@
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplatingProviders">
 	<Class id="MonoDevelop.ProjectTemplatingProvider" class="MonoDevelop.Ide.Templates.ProjectTemplatingProvider" />
+</Extension>
+
+<Extension path="/MonoDevelop/Ide/TemplateImages">
+	<Image id="md-project-template-default" resource="template-default-background.png" />
 </Extension>
 
 </ExtensionModel>

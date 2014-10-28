@@ -45,7 +45,7 @@ namespace MonoDevelop.Ide.Templates
 
 		void LoadDefaultTemplateImage ()
 		{
-			defaultImage = Image.FromResource (SolutionTemplate.DefaultImageId);
+			defaultImage = IdeApp.Services.TemplatingService.LoadTemplateImage (SolutionTemplate.DefaultImageId);
 			if (defaultImage != null) {
 				images [SolutionTemplate.DefaultImageId] = defaultImage;
 			}
@@ -74,6 +74,10 @@ namespace MonoDevelop.Ide.Templates
 				}
 
 				image = GetImageFile (template);
+				if (image == null) {
+					image = GetImageFromId (template.ImageId);
+				}
+
 				if (image == null) {
 					image = defaultImage;
 				}
@@ -111,6 +115,15 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 			return null;
+		}
+
+		Image GetImageFromId (string imageId)
+		{
+			Image image = IdeApp.Services.TemplatingService.LoadTemplateImage (imageId);
+			if (image != null) {
+				images [imageId] = image;
+			}
+			return image;
 		}
 	}
 }

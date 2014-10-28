@@ -1,5 +1,5 @@
 ﻿//
-// DefaultSolutionTemplate.cs
+// ImageCodon.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -24,34 +24,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace MonoDevelop.Ide.Templates
+using Mono.Addins;
+
+namespace MonoDevelop.Ide.Codons
 {
-	internal class DefaultSolutionTemplate : SolutionTemplate
+	[ExtensionNode (Description="An image.")]
+	internal class ImageCodon : ExtensionNode
 	{
-		readonly ProjectTemplate template;
+		[NodeAttribute ("resource", "Name of the resource where the image is stored.")]
+		string resource;
 
-		internal DefaultSolutionTemplate (ProjectTemplate template)
-			: base (template.Id, template.Name, template.Icon.ToString ())
-		{
-			this.template = template;
-
-			Description = template.Description;
-			Category = template.Category;
-			Language = template.LanguageName;
-			GroupId = template.GroupId;
-			Condition = template.Condition;
-			ProjectFileExtension = template.FileExtension;
-			Wizard = template.WizardPath;
-			SupportedParameters = template.SupportedParameters;
-			DefaultParameters = template.DefaultParameters;
-			ImageId = template.ImageId;
-			ImageFile = template.ImageFile;
-
-			HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
-		}
-
-		internal ProjectTemplate Template {
-			get { return template; }
+		public string Resource {
+			get { return resource; }
 		}
 	}
 }

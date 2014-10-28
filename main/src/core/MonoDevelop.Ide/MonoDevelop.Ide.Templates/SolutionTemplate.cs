@@ -34,7 +34,7 @@ namespace MonoDevelop.Ide.Templates
 {
 	public class SolutionTemplate
 	{
-		public static readonly string DefaultImageId = "template-default-background-light.png";
+		public static readonly string DefaultImageId = "md-project-template-default";
 
 		string imageId;
 		string language;

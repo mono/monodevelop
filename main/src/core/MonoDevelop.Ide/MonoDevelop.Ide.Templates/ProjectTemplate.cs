@@ -161,6 +161,11 @@ namespace MonoDevelop.Ide.Templates
 			get { return defaultParameters; }
 		}
 
+		private string imageId;
+		public string ImageId {
+			get { return imageId; }
+		}
+
 		private string imageFile;
 		public string ImageFile {
 			get { return imageFile; }
@@ -253,6 +258,7 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlConfiguration ["Image"] != null) {
 				XmlElement imageElement = xmlConfiguration ["Image"];
+				imageId = imageElement.GetAttribute ("id");
 				imageFile = imageElement.GetAttribute ("file");
 				if (!String.IsNullOrEmpty (imageFile)) {
 					imageFile = Path.Combine (codon.BaseDirectory, imageFile);
