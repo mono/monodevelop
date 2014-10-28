@@ -11,6 +11,7 @@ SDK_PATH=$(shell xcrun --sdk macosx10.8 --show-sdk-path)
 
 PACKAGE_UPDATE_ID=$(shell $(MD_CONFIGURE) get-releaseid)
 BUNDLE_VERSION=$(shell $(MD_CONFIGURE) get-version)
+XAMARIN_MAC=/Library/Frameworks/Xamarin.Mac.framework/Versions/Current/
 
 CLEANFILES = render.exe
 #DISTCLEANFILES =
@@ -24,20 +25,32 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
-monostub: monostub.m $(MONOSTUB_EXTRA_SOURCES)
+monostub: monostub.m
 	gcc -Wall -mmacosx-version-min=10.6 -m32 -o $@ $^ -framework AppKit -isysroot $(SDK_PATH)
+
+native-init.o: native-init.m
+	clang -Wall -c -mmacosx-version-min=10.6 -m32 -o $@ $^ -isysroot $(SDK_PATH) -I$(XAMARIN_MAC)/include
+
+native-init.a: native-init.o
+	xcrun libtool -static -o $@ $^
 
 clean-local:
 	rm -rf MonoDevelop.app
 	rm -f MonoDevelop*.dmg
 
-app: monostub
+app: monostub native-init.a
 	@echo ""
 	@echo "Creating directories in app bundle"
 	@echo ""
 	mkdir -p $(MAC_APP_DIR)/Contents/{MacOS,Resources}
 	mkdir -p $(MAC_APP_DIR)/Contents/MacOS/share
 	mkdir -p $(MAC_APP_LIB_DIR)
+
+	@echo ""
+	@echo "Building the native executable"
+	@echo ""
+
+	$(XAMARIN_MAC)/bin/mmp --output $(abspath $(MAC_APP_DIR)/../) --name $(APP_NAME) --no-root-assembly --profile=xammac --link_flags="-force_load native-init.a" --use-system-mono --arch i386
 
 #	@echo ""
 #	@echo "Copying install prefix into app bundle"
@@ -77,7 +90,6 @@ app: monostub
 	@echo ""
 	@echo "Copying launch scripts into app bundle"
 	@echo ""
-	cp monostub $(MACOS)/MonoDevelop
 	cp monostub $(MACOS)/mdtool
 
 # Remove addins that don't work on OSX
@@ -100,6 +112,9 @@ app: monostub
 	  $(MAC_APP_LIB_DIR)/bin/repository-cache* \
 	  $(MAC_APP_LIB_DIR)/bin/addins-setup.config \
 	  $(MAC_APP_LIB_DIR)/AddIns/MonoDevelop.TextTemplating/Mono.TextTemplating.Tests*
+
+	@# Do not include libxammac.dylib since we're using mmp
+	rm $(MAC_APP_DIR)/Contents/Resources/lib/monodevelop/bin/libxammac.dylib
 
 # add extras known to work on Mac, if they exist
 	@echo ""
