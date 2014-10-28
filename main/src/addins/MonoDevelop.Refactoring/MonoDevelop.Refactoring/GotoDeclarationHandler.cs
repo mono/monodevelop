@@ -113,17 +113,21 @@ namespace MonoDevelop.Refactoring
 		}
 
 		/// <summary>
-		/// Gets a set of all the assemblies that are built from the given solution
+		/// Gets a set of assemblies from the given solutions that match the assembly name. These assemblies are possible candidate assembles
+		/// that the type we are looking for could be defined in.
 		/// </summary>
-		static HashSet<IAssembly> GetAllAssemblies (ReadOnlyCollection<Project> projects)
+		static HashSet<IAssembly> GetCandidateAssemblies (Dictionary<Solution, ReadOnlyCollection<Project>> solutionsToSearch, string assemblyName)
 		{
 			var assemblies = new HashSet<IAssembly> ();
 
-			foreach (var project in projects) {
-				var comp = TypeSystemService.GetCompilation (project);
-				if (comp == null)
-					continue;
-				assemblies.Add (comp.MainAssembly);
+			foreach (var solution in solutionsToSearch) {
+				foreach (var project in solution.Value) {
+					var comp = TypeSystemService.GetCompilation (project);
+					if (comp == null || comp.MainAssembly.AssemblyName != assemblyName)
+						continue;
+
+					assemblies.Add (comp.MainAssembly);
+				}
 			}
 
 			return assemblies;
@@ -141,27 +145,35 @@ namespace MonoDevelop.Refactoring
 			if (ex != null) {
 				// if there are solutions to search it means that the entity we were looking for was not resolved to a source file
 				// we will look in other open solutions
-				foreach (var solution in solutionsToSearch) {
-					var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
-					using (monitor) {
-						monitor.BeginTask (GettextCatalog.GetString ("Building type graph in solution ..."), 1); 
+				var monitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
+				using (monitor) {
+					monitor.BeginTask (GettextCatalog.GetString ("Searching ..."), 1); 
 
-						var assemblies = GetAllAssemblies (solution.Value);
-						var tg = new TypeGraph (assemblies);
-						var node = tg.GetNode (ex.DeclaringTypeDefinition); 
-						if (node != null) {
-							// look for the member that we're after
-							var foundMember = node.TypeDefinition.Members.FirstOrDefault (x => x.FullName == entity.FullName);
+					var assemblies = GetCandidateAssemblies (solutionsToSearch, ex.ParentAssembly.AssemblyName);
 
-							if (foundMember != null)
-								return foundMember;
+					foreach (var assembly in assemblies) {
+						if (ex.DeclaringTypeDefinition != null) {
+							var foundType = assembly.GetTypeDefinition (ex.DeclaringTypeDefinition.FullTypeName);
+							if (foundType != null) {
+								var foundMember = foundType.Members.FirstOrDefault (x => x.ReflectionName == entity.ReflectionName);
 
-							// fall back to just the type, at least we're part way there
-							return node.TypeDefinition;
+								if (foundMember != null) {
+									return foundMember;
+								}
+				
+								return foundType;
+							}
+						} else {
+							var typeDef = ex as ITypeDefinition;
+							if (typeDef != null) {
+								var foundType = assembly.GetTypeDefinition (typeDef.FullTypeName);
+								if (foundType != null)
+									return foundType;
+							}
 						}
-
-						monitor.EndTask ();
 					}
+
+					monitor.EndTask ();
 				}
 			}
 
