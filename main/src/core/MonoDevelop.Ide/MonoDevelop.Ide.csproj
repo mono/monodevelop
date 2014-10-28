@@ -2012,7 +2012,7 @@
       <LogicalName>platform-android-light-16.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="MonoDevelop.Ide.Templates\template-default-background.png">
-      <LogicalName>template-default-background-light.png</LogicalName>
+      <LogicalName>template-default-background.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
