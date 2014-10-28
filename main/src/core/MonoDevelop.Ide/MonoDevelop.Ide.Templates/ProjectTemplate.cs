@@ -161,6 +161,11 @@ namespace MonoDevelop.Ide.Templates
 			get { return defaultParameters; }
 		}
 
+		private string imageFile;
+		public string ImageFile {
+			get { return imageFile; }
+		}
+
 		//constructors
 		static ProjectTemplate ()
 		{
@@ -244,6 +249,14 @@ namespace MonoDevelop.Ide.Templates
 
 			if (xmlConfiguration ["_DefaultParameters"] != null) {
 				this.defaultParameters = xmlConfiguration ["_DefaultParameters"].InnerText;
+			}
+
+			if (xmlConfiguration ["Image"] != null) {
+				XmlElement imageElement = xmlConfiguration ["Image"];
+				imageFile = imageElement.GetAttribute ("file");
+				if (!String.IsNullOrEmpty (imageFile)) {
+					imageFile = Path.Combine (codon.BaseDirectory, imageFile);
+				}
 			}
 
 			if (xmlDocument.DocumentElement ["Combine"] == null) {

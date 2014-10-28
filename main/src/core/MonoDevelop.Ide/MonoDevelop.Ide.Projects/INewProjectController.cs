@@ -27,6 +27,7 @@
 
 using System.Collections.Generic;
 using MonoDevelop.Ide.Templates;
+using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -56,6 +57,8 @@ namespace MonoDevelop.Ide.Projects
 		WizardPage CurrentWizardPage { get; }
 
 		void Create ();
+
+		Image GetImage (SolutionTemplate template);
 	}
 }
 

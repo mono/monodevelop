@@ -287,17 +287,16 @@ namespace MonoDevelop.Ide.Projects
 		{
 			templateNameLabel.Markup = MarkupTopLevelCategoryName (template.Name);
 			templateDescriptionLabel.Text = template.Description;
-			templateImage.Pixbuf = FromResource (template.LargeImageId, templateImage.WidthRequest, templateImage.HeightRequest);
+			templateImage.Pixbuf = GetImage (template, templateImage.WidthRequest, templateImage.HeightRequest);
 			templateVBox.Visible = true;
 			templateVBox.ShowAll ();
 		}
 
-		Gdk.Pixbuf FromResource (string id, int maxWidth, int maxHeight)
+		Gdk.Pixbuf GetImage (SolutionTemplate template, int maxWidth, int maxHeight)
 		{
-			var image = Xwt.Drawing.Image.FromResource (id);
+			Xwt.Drawing.Image image = controller.GetImage (template);
 			if (image != null) {
 				Xwt.Drawing.Image resizedImage = image.WithBoxSize (new Xwt.Size (maxWidth, maxHeight));
-				image.Dispose ();
 				return resizedImage.ToPixbuf ();
 			}
 			return null;

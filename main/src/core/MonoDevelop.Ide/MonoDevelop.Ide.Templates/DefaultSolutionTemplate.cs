@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Templates
 			Wizard = template.WizardPath;
 			SupportedParameters = template.SupportedParameters;
 			DefaultParameters = template.DefaultParameters;
+			ImageFile = template.ImageFile;
 
 			HasProjects = (template.SolutionDescriptor.EntryDescriptors.Length > 0);
 		}

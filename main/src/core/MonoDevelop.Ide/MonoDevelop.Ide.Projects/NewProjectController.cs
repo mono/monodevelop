@@ -40,6 +40,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
 using ProjectConfiguration = MonoDevelop.Ide.Templates.ProjectConfiguration;
+using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Projects
 {
@@ -65,6 +66,7 @@ namespace MonoDevelop.Ide.Projects
 		FinalProjectConfigurationPage finalConfigurationPage;
 		TemplateWizardProvider wizardProvider;
 		IVersionControlProjectTemplateHandler versionControlHandler;
+		TemplateImageProvider imageProvider = new TemplateImageProvider ();
 
 		ProjectConfiguration projectConfiguration = new ProjectConfiguration () {
 			CreateProjectDirectoryInsideSolutionDirectory = true
@@ -512,6 +514,7 @@ namespace MonoDevelop.Ide.Projects
 			UpdateDefaultSettings ();
 			dialog.CloseDialog ();
 			wizardProvider.Dispose ();
+			imageProvider.Dispose ();
 		}
 
 		public WizardPage CurrentWizardPage {
@@ -626,6 +629,11 @@ namespace MonoDevelop.Ide.Projects
 			if (versionControlHandler != null) {
 				versionControlHandler.Run (projectConfiguration);
 			}
+		}
+
+		public Image GetImage (SolutionTemplate template)
+		{
+			return imageProvider.GetImage (template);
 		}
 	}
 }

@@ -34,9 +34,9 @@ namespace MonoDevelop.Ide.Templates
 {
 	public class SolutionTemplate
 	{
-		public static readonly string DefaultLargeImageId = "template-default-background-light.png";
+		public static readonly string DefaultImageId = "template-default-background-light.png";
 
-		string largeImageId;
+		string imageId;
 		string language;
 		string projectFileExtension;
 		List<string> availableLanguages = new List<string> ();
@@ -137,14 +137,20 @@ namespace MonoDevelop.Ide.Templates
 			return groupedTemplates.FirstOrDefault (template => predicate (template));
 		}
 
-		public string LargeImageId {
+		public string ImageId {
 			get {
-				if (String.IsNullOrEmpty (largeImageId)) {
-					return DefaultLargeImageId;
+				if (String.IsNullOrEmpty (imageId)) {
+					return DefaultImageId;
 				}
-				return largeImageId;
+				return imageId;
 			}
-			set { largeImageId = value; }
+			set { imageId = value; }
+		}
+
+		public string ImageFile { get; set; }
+
+		public bool HasImageFile {
+			get { return !String.IsNullOrEmpty (ImageFile); }
 		}
 
 		public string Wizard { get; set; }
