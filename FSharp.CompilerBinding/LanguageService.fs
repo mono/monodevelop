@@ -49,7 +49,7 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             // Get items & generate output
             try
              let results =
-                 Async.RunSynchronously (checkResults.GetDeclarationsAlternate(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
+                 Async.RunSynchronously (checkResults.GetDeclarationListInfo(Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false),
                                          timeout = ServiceSettings.maximumTimeout )
              Some (results, residue)
             with :? TimeoutException as e -> None
@@ -63,7 +63,7 @@ type ParseAndCheckResults private (infoOpt: (FSharpCheckFileResults * FSharpPars
             let longName,residue = Parsing.findLongIdentsAndResidue(col, lineStr)
             Debug.WriteLine (sprintf "GetDeclarationSymbols: '%A', '%s'" longName residue)
             // Get items & generate output
-            try Some (checkResults.GetDeclarationSymbols (Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
+            try Some (checkResults.GetDeclarationListSymbols (Some parseResults, line, col, lineStr, longName, residue, fun (_,_) -> false)
                       |> Async.RunSynchronously, residue)
             with :? TimeoutException as e -> None
 

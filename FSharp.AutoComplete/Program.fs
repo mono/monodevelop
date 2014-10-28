@@ -483,9 +483,9 @@ module internal Main =
                       main state
                   | Json ->
 
-                      let ds = List.sortBy (fun (d: FSharpDeclaration) -> d.Name)
+                      let ds = List.sortBy (fun (d: FSharpDeclarationListItem) -> d.Name)
                                  [ for d in decls.Items do yield d ]
-                      match List.tryFind (fun (d: FSharpDeclaration) -> d.Name.StartsWith residue) ds with
+                      match List.tryFind (fun (d: FSharpDeclarationListItem) -> d.Name.StartsWith residue) ds with
                       | None -> ()
                       | Some d -> let tip = TipFormatter.formatTip d.DescriptionText
                                   let helptext = Map.add d.Name tip Map.empty
@@ -495,7 +495,7 @@ module internal Main =
                                  Data = [ for d in decls.Items do yield d.Name ] }
 
                       let helptext =
-                        Seq.fold (fun m (d: FSharpDeclaration) -> Map.add d.Name d.DescriptionText m) Map.empty decls.Items
+                        Seq.fold (fun m (d: FSharpDeclarationListItem) -> Map.add d.Name d.DescriptionText m) Map.empty decls.Items
 
                       main { state with HelpText = helptext }
               | None -> 

@@ -148,6 +148,7 @@ Target "All" id
 
 "RestorePackages"
   ==> "BuildDebug"
+  ==> "Build"
   ==> "IntegrationTest"
 
 "RestorePackages"
