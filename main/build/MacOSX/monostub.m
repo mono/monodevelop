@@ -321,7 +321,7 @@ is_launcher (const char *app)
 	if (!(launcher && *launcher))
 		return 1;
 	
-	sprintf (buf, "%ld", (long) getpid ());
+	sprintf (buf, "%ld", (long) getppid ());
 	
 	return !strcmp (launcher, buf);
 }
