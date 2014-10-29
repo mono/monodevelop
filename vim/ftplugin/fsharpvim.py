@@ -8,6 +8,7 @@ import threading
 
 class Statics:
     fsac = None
+    fsi = None
     locations = []
 
 class Interaction:
