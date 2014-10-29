@@ -11,6 +11,7 @@
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# class library</_Description>
 		<DefaultFilename>EmptyLibrary</DefaultFilename>
+		<_GroupId>md-project-library</_GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
