@@ -262,24 +262,55 @@ update_environment (const char *contentsDir, const char *app)
 	if ((value = str_append (contentsDir, "/Resources/lib/pkgconfig:/Library/Frameworks/Mono.framework/External/pkgconfig"))) {
 		if (push_env ("PKG_CONFIG_PATH", value))
 			updated = YES;
+		
 		free (value);
 	}
 	
 	if ((value = str_append (contentsDir, "/Resources/lib"))) {
 		if (push_env ("DYLD_FALLBACK_LIBRARY_PATH", value))
 			updated = YES;
+		
 		free (value);
 	}
 
 	if ((value = str_append (contentsDir, "/Resources"))) {
 		if (push_env ("MONO_GAC_PREFIX", value))
 			updated = YES;
+		
 		free (value);
 	}
 	
 	if ((value = str_append (contentsDir, "/MacOS"))) {
-		if (push_env ("PATH", value))
-			updated = YES;
+		char *compat;
+		
+		// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
+		// and older versions of mtouch relied on this broken behavior.
+		if ((compat = str_append (contentsDir, "/Resources"))) {
+			size_t compatlen = strlen (compat);
+			size_t valuelen = strlen (value);
+			char *combined;
+			
+			if ((combined = (char *) malloc (compatlen + valuelen + 2))) {
+				memcpy (combined, compat, compatlen);
+				combined[compatlen] = ':';
+				strcpy (combined + compatlen + 1, value);
+
+				if (push_env ("PATH", combined))
+					updated = YES;
+				
+				free (combined);
+			} else {
+				// if we can't combine them, set the old (incorrect) compat value
+				if (push_env ("PATH", compat))
+					updated = YES;
+			}
+			
+			free (compat);
+		} else {
+			if (push_env ("PATH", value))
+				updated = YES;
+		}
+		
 		free (value);
 	}
 
