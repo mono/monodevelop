@@ -263,7 +263,7 @@ launcher_variable (const char *app_name)
 }
 
 static void
-update_environment (const char *resourcesDir, const char *app)
+update_environment (const char *contentsDir, const char *app)
 {
 	char *value, *v1, *v2;
 	char *variable;
@@ -276,8 +276,8 @@ update_environment (const char *resourcesDir, const char *app)
 	push_env ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig");
 	
 	/* Enable the use of stuff bundled into the app bundle */
-	if ((v2 = str_append (resourcesDir, "/lib/pkgconfig"))) {
-		if ((v1 = str_append (resourcesDir, "/lib/pkgconfig:"))) {
+	if ((v2 = str_append (contentsDir, "/Resources/lib/pkgconfig"))) {
+		if ((v1 = str_append (contentsDir, "/Resources/lib/pkgconfig:"))) {
 			if ((value = str_append (v1, v2))) {
 				push_env ("PKG_CONFIG_PATH", value);
 				free (value);
@@ -289,14 +289,17 @@ update_environment (const char *resourcesDir, const char *app)
 		free (v2);
 	}
 	
-	if ((value = str_append (resourcesDir, "/lib"))) {
+	if ((value = str_append (contentsDir, "/Resources/lib"))) {
 		push_env ("DYLD_FALLBACK_LIBRARY_PATH", value);
 		free (value);
 	}
+
+	if ((value = str_append (contentsDir, "/Resources"))) {
+		push_env ("MONO_GAC_PREFIX", value);
+		free (value);
+	}
 	
-	push_env ("MONO_GAC_PREFIX", resourcesDir);
-	
-	if ((value = str_append (resourcesDir, "/../MacOS"))) {
+	if ((value = str_append (contentsDir, "/MacOS"))) {
 		push_env ("PATH", value);
 		free (value);
 	}
@@ -387,7 +390,7 @@ int main (int argc, char **argv)
 		basename++;
 	
 	if (is_launcher (basename)) {
-		update_environment ([[appDir stringByAppendingPathComponent:@"Contents/Resources"] UTF8String], basename);
+		update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String], basename);
 		[pool drain];
 		
 		return execv (argv[0], argv);
