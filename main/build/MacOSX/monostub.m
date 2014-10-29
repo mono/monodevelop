@@ -382,10 +382,13 @@ int main (int argc, char **argv)
 		basename++;
 	
 	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
+		printf ("Updated the environment.\n");
 		[pool drain];
 		
 		return execv (argv[0], argv);
 	}
+
+	printf ("Running main app.\n");
 	
 	if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {
 		limit.rlim_cur = MIN (limit.rlim_max, 1024);
