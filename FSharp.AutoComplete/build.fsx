@@ -15,6 +15,7 @@ Target "RestorePackages" (fun _ ->
 let buildDir = "./bin/Debug/"
 let buildReleaseDir = "./bin/Release/"
 let integrationTestDir = "./test/integration/"
+let emacsBinDir = "../emacs/"
 
 Target "BuildDebug" (fun _ ->
   MSBuildDebug buildDir "Build" ["./FSharp.AutoComplete.fsproj"]
@@ -91,7 +92,7 @@ Target "IntegrationTest" (fun _ ->
 
 
 Target "BuildEmacs" (fun _ ->
-  MSBuildDebug "../emacs/bin" "Build" ["./FSharp.AutoComplete.fsproj"]
+  MSBuildDebug emacsBinDir "Build" ["./FSharp.AutoComplete.fsproj"]
   |> Log "Build-Output: "
 )
 
@@ -141,6 +142,9 @@ Target "EmacsTest" (fun _ ->
   Environment.SetEnvironmentVariable("HOME", home)
 )
 
+Target "Clean" (fun _ ->
+  CleanDirs [ buildDir; buildReleaseDir; emacsBinDir ]
+)
 
 Target "Build" id
 Target "Test" id
