@@ -609,9 +609,7 @@ namespace MonoDevelop.CodeActions
 
 		internal List<CodeAction> GetCurrentFixes ()
 		{
-			if (currentSmartTag == null)
-				return RefactoringService.GetValidActions (document, document.Editor.Caret.Location).Result.ToList ();
-			return currentSmartTag.fixes;
+			return currentSmartTag == null ? emptyList : currentSmartTag.fixes;
 		}
 	}
 }
