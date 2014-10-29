@@ -39,11 +39,19 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 
 ###Commands
 
+#####General
 * `:ParseProject` reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
 * `:BuildProject` calls xbuild on the fsproj for the current file (if any).
 * `leader<t>` echoes the type of the expression currently pointed to by the cursor.
 * `leader<d>` _go to declaration_. Opens a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.
 * `leader<s>` takes you back from where _go to declaration_ was triggered.
+
+#####FSharp Interactive
+* `:FsiEval` evaluates an fsharp expression in the fsi 
+* `:FsiReset` resets the current fsharp interactive
+* `:FsiRead` displays any lines written by the fsi but not yet output as vim messages 
+* `Alt-Enter` Send either the current selection or the current line to the fsharp interactive and echoes the output.
+* `Ctrl-Alt-Enter` Send either the current selection or the current line to the fsharp interactive but does not output the result as vim messages.
 
 ###On-the-fly syntax checking
 
