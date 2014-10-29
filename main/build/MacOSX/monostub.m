@@ -211,14 +211,19 @@ get_mono_env_options (int *count)
 static bool
 push_env (const char *variable, const char *value)
 {
-	size_t len = strlen (value);
 	const char *current;
+	size_t len;
+	char *buf;
 	
 	if ((current = getenv (variable)) && *current) {
+		len = strlen (value);
+		
 		if (!strncmp (current, value, len) && (current[len] == ':' || current[len] == '\0'))
 			return NO;
 		
-		char *buf = malloc (len + strlen (current) + 2);
+		if (!(buf = malloc (len + strlen (current) + 2)))
+			return NO;
+		
 		memcpy (buf, value, len);
 		buf[len] = ':';
 		strcpy (buf + len + 1, current);
@@ -248,10 +253,9 @@ str_append (const char *base, const char *append)
 }
 
 static bool
-update_environment (const char *contentsDir, const char *app)
+update_environment (const char *contentsDir)
 {
 	bool updated = NO;
-	char buf[32];
 	char *value;
 
 	/* CommandLineTools are needed for OSX 10.9+ */
@@ -290,7 +294,7 @@ update_environment (const char *contentsDir, const char *app)
 			size_t valuelen = strlen (value);
 			char *combined;
 			
-			if ((combined = (char *) malloc (compatlen + valuelen + 2))) {
+			if ((combined = malloc (compatlen + valuelen + 2))) {
 				memcpy (combined, compat, compatlen);
 				combined[compatlen] = ':';
 				strcpy (combined + compatlen + 1, value);
@@ -377,7 +381,7 @@ int main (int argc, char **argv)
 	else
 		basename++;
 	
-	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String], basename)) {
+	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
 		[pool drain];
 		
 		return execv (argv[0], argv);
