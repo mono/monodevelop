@@ -100,8 +100,10 @@ namespace MonoDevelop.CodeIssues
 			rootGroup = new IssueGroup (groupingProvider, "root group");
 			var groupingProviderControl = new GroupingProviderChainControl (rootGroup, groupingProviders);
 			buttonRow.PackStart (groupingProviderControl);
-			
-			PackStart (buttonRow);
+
+			PackStart (new ScrollView(buttonRow){
+				HeightRequest = 48
+			});
 
 			store = new TreeStore (textField, nodeField);
 			view.DataSource = store;
