@@ -26,18 +26,17 @@ if Statics.fsac == None:
     debug = vim.eval("get(g:, 'fsharpbinding_debug', 0)") != '0'
     Statics.fsac = FSAutoComplete(fsharp_dir, debug)
 fsautocomplete = Statics.fsac
-b = vim.current.buffer
-fsautocomplete.parse(b.name, True, b)
 proj_file = None
 #find project file if any - assumes fsproj file will be in the same directory as the fs or fsi file
-file_name = vim.current.buffer.name
-x,ext = os.path.splitext(file_name)
+b = vim.current.buffer
+x,ext = os.path.splitext(b.name)
 if '.fs' == ext or '.fsi' == ext:
-    dir = os.path.dirname(os.path.realpath(file_name))
+    dir = os.path.dirname(os.path.realpath(b.name))
     projs = filter(lambda f: '.fsproj' == os.path.splitext(f)[1], os.listdir(dir))
     if len(projs):
         proj_file = os.path.join(dir, projs[0])
         fsautocomplete.project(proj_file)
+fsautocomplete.parse(b.name, True, b)
 EOF
 
     nnoremap <buffer> <leader>t :call fsharpbinding#python#TypeCheck()<cr>
