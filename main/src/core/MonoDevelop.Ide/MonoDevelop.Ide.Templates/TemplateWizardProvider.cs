@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -33,6 +34,8 @@ namespace MonoDevelop.Ide.Templates
 	public class TemplateWizardProvider
 	{
 		WizardPage currentWizardPage;
+
+		List<WizardPage> cachedWizardPages = new List<WizardPage> ();
 
 		public bool IsFirstPage { get; private set; }
 		public bool IsLastPage { get; private set; }
@@ -83,7 +86,7 @@ namespace MonoDevelop.Ide.Templates
 				return false;
 			}
 
-			CurrentWizard = IdeApp.Services.TemplatingService.GetWizard (template.Wizard);
+			CurrentWizard = GetWizard (template.Wizard);
 			if (CurrentWizard == null) {
 				LoggingService.LogError ("Unable to find project template wizard '{0}'.", template.Wizard);
 				return false;
@@ -93,12 +96,29 @@ namespace MonoDevelop.Ide.Templates
 			CurrentWizard.UpdateSupportedParameters (template.SupportedParameters);
 			CurrentWizard.UpdateDefaultParameters (template.DefaultParameters);
 			IsFirstPage = true;
-			CurrentPageNumber++;
-			CurrentWizardPage = CurrentWizard.GetPage (CurrentPageNumber);
+			CurrentPageNumber = 1;
+			CurrentWizardPage = GetCurrentWizardPage ();
 
 			IsLastPage = CurrentWizard.TotalPages == 1;
 
 			return true;
+		}
+
+		WizardPage GetCurrentWizardPage ()
+		{
+			if (cachedWizardPages.Count >= CurrentPageNumber) {
+				return cachedWizardPages [CurrentPageNumber - 1];
+			}
+			WizardPage page = CurrentWizard.GetPage (CurrentPageNumber);
+			if (page != null) {
+				cachedWizardPages.Add (page);
+			}
+			return page;
+		}
+
+		protected virtual TemplateWizard GetWizard (string id)
+		{
+			return IdeApp.Services.TemplatingService.GetWizard (id);
 		}
 
 		void Reset ()
@@ -108,6 +128,17 @@ namespace MonoDevelop.Ide.Templates
 			CurrentWizardPage = null;
 			IsFirstPage = false;
 			IsLastPage = false;
+
+			DisposeWizardPages ();
+		}
+
+		void DisposeWizardPages ()
+		{
+			foreach (WizardPage page in cachedWizardPages) {
+				page.Dispose ();
+			}
+
+			cachedWizardPages.Clear ();
 		}
 
 		public bool MoveToNextPage ()
@@ -117,7 +148,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			CurrentPageNumber++;
-			CurrentWizardPage = CurrentWizard.GetPage (CurrentPageNumber);
+			CurrentWizardPage = GetCurrentWizardPage ();
 
 			IsFirstPage = false;
 			IsLastPage = (CurrentPageNumber == CurrentWizard.TotalPages);
@@ -132,7 +163,7 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			CurrentPageNumber--;
-			CurrentWizardPage = CurrentWizard.GetPage (CurrentPageNumber);
+			CurrentWizardPage = GetCurrentWizardPage ();
 			IsFirstPage = (CurrentPageNumber == 1);
 			IsLastPage = false;
 
@@ -141,8 +172,7 @@ namespace MonoDevelop.Ide.Templates
 
 		public void Dispose ()
 		{
-			// Wizard pages should be cached and disposed.
-			CurrentWizardPage = null;
+			Reset ();
 		}
 	}
 }

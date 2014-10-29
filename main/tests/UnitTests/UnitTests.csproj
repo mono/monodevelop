@@ -257,6 +257,10 @@
     <Compile Include="MonoDevelop.Ide.Templates\ProjectTemplateCategorizerTests.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TestableProjectTemplateCategorizer.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\FinalProjectConfigurationTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateWizardProviderTests.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TestableWizardPage.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizard.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TestableTemplateWizardProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\md.targets" />
