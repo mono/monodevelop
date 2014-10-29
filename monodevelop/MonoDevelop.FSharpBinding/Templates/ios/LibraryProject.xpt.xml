@@ -2,10 +2,11 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>iOS Library Project</_Name>
-		<_Category>F#/iOS/Classic API</_Category>
+		<_Category>ios/library/classic</_Category>
 		<Icon>md-project-library</Icon>
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates a iOS library project.</_Description>
+		<_GroupId>md-library-project-ios-classic</_GroupId>
 	</TemplateConfiguration>
 	
 	<Actions>

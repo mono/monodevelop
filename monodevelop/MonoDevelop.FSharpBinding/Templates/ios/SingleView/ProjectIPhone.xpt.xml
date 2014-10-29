@@ -2,10 +2,13 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Single View Application</_Name>
-		<_Category>F#/iOS/Classic API/iPhone</_Category>
+		<_Category>ios/app/classic</_Category>
 		<Icon>md-project-iphone</Icon>
 		<LanguageName>F#</LanguageName>
-		<_Description>Single view application project for iPhone.</_Description>
+		<_Description>Single view application project for iPhone and iPad with storyboard support.</_Description>
+		<Wizard>MonoDevelop.IPhone.ProjectTemplateWizard</Wizard>
+		<_GroupId condition="Device=IPhone">md-single-view-ios-classic</_GroupId>
+		<_DefaultParameters>MinimumOSVersion=7.0</_DefaultParameters>
 	</TemplateConfiguration>
 	
 	<Actions>

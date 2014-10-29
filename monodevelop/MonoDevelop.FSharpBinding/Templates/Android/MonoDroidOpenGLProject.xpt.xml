@@ -2,10 +2,12 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Android OpenGL Application</_Name>
-		<_Category>F#/Android</_Category>
+		<_Category>android/app/general</_Category>
 		<Icon>monodroid-project</Icon>
 		<LanguageName>F#</LanguageName>
+		<Wizard>MonoDevelop.MonoDroid.ProjectTemplateWizard</Wizard>
 		<_Description>Creates an Android project that uses OpenGL.</_Description>
+		<_GroupId>monodroid-opengl-project</_GroupId>
 	</TemplateConfiguration>
 	
 	<Actions>
@@ -54,6 +56,7 @@
 				</Directory>
 				<Directory name="Assets">
 					<RawFile name="AboutAssets.txt" src="MonoDroidApplication/AboutAssets.txt" />
+					<File name="AndroidManifest.xml" src="MonoDroidApplication/AndroidManifest.xml" />
 				</Directory>
 				<File name="GLView1.fs" src="OpenGLApplication/GLView1.fs" />
 				<File name="MainActivity.fs" src="OpenGLApplication/MainActivity.fs" />

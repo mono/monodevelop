@@ -2,10 +2,12 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Empty Project</_Name>
-		<_Category>F#/iOS/Classic API/iPhone</_Category>
+		<_Category>ios/app/classic</_Category>
 		<Icon>md-project-iphone</Icon>
 		<LanguageName>F#</LanguageName>
-		<_Description>Empty project for iPhone.</_Description>
+		<Wizard>MonoDevelop.IPhone.ProjectTemplateWizard</Wizard>
+		<_GroupId condition="Device=IPhone">md-empty-ios-classic</_GroupId>
+		<_DefaultParameters>MinimumOSVersion=7.0</_DefaultParameters>
 	</TemplateConfiguration>
 	
 	<Actions>

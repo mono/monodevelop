@@ -3,11 +3,12 @@
 
   <!-- Template Header -->
   <TemplateConfiguration>
-    <_Name>F# ASP.NET MVC 4 (Razor)</_Name>
+    <_Name>ASP.NET MVC Razor Project</_Name>
     <Icon>md-project-web</Icon>
     <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views.</_Description>
-    <_Category>F#/ASP.NET</_Category>
+    <_Category>other/aspnet/general</_Category>
     <LanguageName>F#</LanguageName>
+    <_GroupId>md-mvc-razor-project</_GroupId>
   </TemplateConfiguration>
 
 	<!-- Actions -->

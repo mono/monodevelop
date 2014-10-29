@@ -2,10 +2,11 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Android Unit Test Project</_Name>
-		<_Category>F#/Android</_Category>
+		<_Category>android/tests/general</_Category>
 		<Icon>monodroid-project</Icon>
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates an Android Unit Test Application.</_Description>
+		<_GroupId>monodroid-unit-test-project</_GroupId>
 	</TemplateConfiguration>
 	
 	<Actions>
