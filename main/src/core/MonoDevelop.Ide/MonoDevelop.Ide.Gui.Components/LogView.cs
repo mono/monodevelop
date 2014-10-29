@@ -273,6 +273,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		void HideSearchBox ()
 		{
 			Remove (searchBox);
+			textEditorControl.GrabFocus ();
 		}
 
 		[CommandHandler (SearchCommands.Find)]
