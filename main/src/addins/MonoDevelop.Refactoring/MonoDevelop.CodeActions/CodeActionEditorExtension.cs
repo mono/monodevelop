@@ -607,6 +607,7 @@ namespace MonoDevelop.CodeActions
 			currentSmartTag.Popup ();
 		}
 
+		static readonly List<CodeAction> emptyList = new List<CodeAction> ();
 		internal List<CodeAction> GetCurrentFixes ()
 		{
 			return currentSmartTag == null ? emptyList : currentSmartTag.fixes;
