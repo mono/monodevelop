@@ -41,7 +41,7 @@ using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public class LogView : MonoDevelop.Components.CompactScrolledWindow
+	public class LogView : Gtk.VBox
 	{
 		TextBuffer buffer;
 		TextView textEditorControl;
@@ -129,9 +129,9 @@ namespace MonoDevelop.Ide.Gui.Components
 				return base.OnButtonPressEvent (evnt);
 			}
 		}
-		VBox vbox = new VBox ();
 		HBox searchBox = new HBox ();
 		MonoDevelop.Components.SearchEntry searchEntry = new MonoDevelop.Components.SearchEntry ();
+		MonoDevelop.Components.CompactScrolledWindow scrollView = new MonoDevelop.Components.CompactScrolledWindow ();
 
 		public LogView ()
 		{
@@ -139,9 +139,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			textEditorControl = new LogTextView (buffer);
 			textEditorControl.Editable = false;
 			
-			ShadowType = ShadowType.None;
-			vbox.PackEnd (textEditorControl, true, true, 0);
-			Add (vbox);
+			scrollView.ShadowType = ShadowType.None;
+			scrollView.Add (textEditorControl);
+			PackEnd (scrollView, true, true, 0);
 
 			bold = new TextTag ("bold");
 			bold.Weight = Weight.Bold;
@@ -265,14 +265,14 @@ namespace MonoDevelop.Ide.Gui.Components
 		void ShowSearchBox ()
 		{
 			UpdateSearchEntrySearchPattern ();
-			vbox.PackStart (searchBox, false, true, 0);
+			PackStart (searchBox, false, true, 0);
 			searchBox.ShowAll ();
 			searchEntry.Entry.GrabFocus ();
 		}
 
 		void HideSearchBox ()
 		{
-			vbox.Remove (searchBox);
+			Remove (searchBox);
 		}
 
 		[CommandHandler (SearchCommands.Find)]
@@ -523,7 +523,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				buffer.Delete (ref start, ref end);
 			}
 
-			bool scrollToEnd = Vadjustment.Value >= Vadjustment.Upper - 2 * Vadjustment.PageSize;
+			bool scrollToEnd = scrollView.Vadjustment.Value >= scrollView.Vadjustment.Upper - 2 * scrollView.Vadjustment.PageSize;
 			TextIter it = buffer.EndIter;
 
 			if (extraTag != null)
