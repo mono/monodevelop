@@ -232,6 +232,8 @@ push_env (const char *variable, const char *value)
 	} else {
 		setenv (variable, value, 1);
 	}
+
+	//printf ("Updated the %s environment variable.\n", variable);
 	
 	return YES;
 }
@@ -258,20 +260,17 @@ update_environment (const char *contentsDir)
 	bool updated = NO;
 	char *value;
 	
-	/* CommandLineTools are needed for OSX 10.9+ */
-	if (push_env ("DYLD_FALLBACK_LIBRARY_PATH", "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib"))
-		updated = YES;
-	
-	/* Enable the use of stuff bundled into the app bundle and the Mono "External" directory */
-	if ((value = str_append (contentsDir, "/Resources/lib/pkgconfig:/Library/Frameworks/Mono.framework/External/pkgconfig"))) {
-		if (push_env ("PKG_CONFIG_PATH", value))
+	/* Inject our Resources/lib dir, Mono's lib dir, and CommandLineTool's lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
+	if ((value = str_append (contentsDir, "/Resources/lib:/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib"))) {
+		if (push_env ("DYLD_FALLBACK_LIBRARY_PATH", value))
 			updated = YES;
 		
 		free (value);
 	}
 	
-	if ((value = str_append (contentsDir, "/Resources/lib"))) {
-		if (push_env ("DYLD_FALLBACK_LIBRARY_PATH", value))
+	/* Enable the use of stuff bundled into the app bundle and the Mono "External" directory */
+	if ((value = str_append (contentsDir, "/Resources/lib/pkgconfig:/Library/Frameworks/Mono.framework/External/pkgconfig"))) {
+		if (push_env ("PKG_CONFIG_PATH", value))
 			updated = YES;
 		
 		free (value);
@@ -382,13 +381,13 @@ int main (int argc, char **argv)
 		basename++;
 	
 	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
-		printf ("Updated the environment.\n");
+		//printf ("Updated the environment.\n");
 		[pool drain];
 		
 		return execv (argv[0], argv);
 	}
 
-	printf ("Running main app.\n");
+	//printf ("Running main app.\n");
 	
 	if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {
 		limit.rlim_cur = MIN (limit.rlim_max, 1024);
