@@ -58,9 +58,10 @@ namespace MonoDevelop.Refactoring
 				// determine the list of solutions and projects outside of the background thread
 				var solutionsToSearch = GetSolutionsToSearch (entity);
 				var solutions = GetSolutionProjects (solutionsToSearch.ToList ());
+				var conf = IdeApp.Workspace.ActiveConfiguration;
 
 				Task.Factory.StartNew (() => {
-					entity = CheckIfDefinedInOtherOpenSolution (entity, solutions);
+					entity = CheckIfDefinedInOtherOpenSolution (entity, conf,  solutions);
 					Xwt.Application.Invoke (() => IdeApp.ProjectOperations.JumpToDeclaration (entity));
 				});
 			} else {
@@ -116,17 +117,22 @@ namespace MonoDevelop.Refactoring
 		/// Gets a set of assemblies from the given solutions that match the assembly name. These assemblies are possible candidate assembles
 		/// that the type we are looking for could be defined in.
 		/// </summary>
-		static HashSet<IAssembly> GetCandidateAssemblies (Dictionary<Solution, ReadOnlyCollection<Project>> solutionsToSearch, string assemblyName)
+		static HashSet<IAssembly> GetCandidateAssemblies (ConfigurationSelector conf, Dictionary<Solution, ReadOnlyCollection<Project>> solutionsToSearch, string assemblyName)
 		{
 			var assemblies = new HashSet<IAssembly> ();
 
 			foreach (var solution in solutionsToSearch) {
 				foreach (var project in solution.Value) {
-					var comp = TypeSystemService.GetCompilation (project);
-					if (comp == null || comp.MainAssembly.AssemblyName != assemblyName)
-						continue;
 
-					assemblies.Add (comp.MainAssembly);
+					var outputFiles = project.GetOutputFiles (conf);
+
+					if (outputFiles.Any (f => ((string)f.FullPath).Equals (assemblyName, System.StringComparison.OrdinalIgnoreCase))) {
+						var comp = TypeSystemService.GetCompilation (project);
+						if (comp == null)
+							continue;
+
+						assemblies.Add (comp.MainAssembly);
+					}
 				}
 			}
 
@@ -138,7 +144,7 @@ namespace MonoDevelop.Refactoring
 		/// Provides support for going to the source code definition of an element instead of the Assembly Browser.
 		/// Returns the original entity if no suitable open solution was found
 		/// </summary>
-		static INamedElement CheckIfDefinedInOtherOpenSolution (INamedElement entity, Dictionary<Solution, ReadOnlyCollection<Project>> solutionsToSearch)
+		static INamedElement CheckIfDefinedInOtherOpenSolution (INamedElement entity, ConfigurationSelector conf, Dictionary<Solution, ReadOnlyCollection<Project>> solutionsToSearch)
 		{
 			var ex = entity as IEntity;
 
@@ -149,7 +155,7 @@ namespace MonoDevelop.Refactoring
 				using (monitor) {
 					monitor.BeginTask (GettextCatalog.GetString ("Searching ..."), 1); 
 
-					var assemblies = GetCandidateAssemblies (solutionsToSearch, ex.ParentAssembly.AssemblyName);
+					var assemblies = GetCandidateAssemblies (conf, solutionsToSearch, ex.ParentAssembly.UnresolvedAssembly.Location);
 
 					foreach (var assembly in assemblies) {
 						if (ex.DeclaringTypeDefinition != null) {
