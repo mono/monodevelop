@@ -18,6 +18,7 @@ class FSharpInteractive:
         #except WindowsError:
          #   self.p = Popen(command[1:], **opts)
 
+        self.should_work = True
         self.lines = Queue.Queue()
         self.worker = threading.Thread(target=self._work, args=[])
         self.worker.daemon = True
@@ -29,6 +30,7 @@ class FSharpInteractive:
 
     def shutdown(self):
         print "shutting down fsi"
+        self.should_work = False
         self.p.kill()
 
     def send(self, txt):
@@ -64,11 +66,11 @@ class FSharpInteractive:
         return self.lines.get(True, 0.5)
 
     def _work(self):
-        while(True):
+        while(self.should_work):
             l = self.p.stdout.readline()
             self.lines.put(l, True)
 
     def _err_work(self):
-        while(True):
+        while(self.should_work):
             l = self.p.stderr.readline()
             self.lines.put(l, True)
