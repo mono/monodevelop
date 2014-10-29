@@ -525,7 +525,7 @@ module internal Main =
               main state
           
           | FindDeclaration ->
-            let declarations = tyRes.GetDeclarationLocation(line + 1,col,lineStr)
+            let declarations = tyRes.GetDeclarationLocation(line,col,lineStr)
                                |> Async.RunSynchronously
             match declarations with
             | FSharpFindDeclResult.DeclNotFound _ -> printMsg "ERROR" "Could not find declaration"
