@@ -81,5 +81,13 @@ namespace MonoDevelop.Projects
 			ActiveConfiguration = projectCreateInformation.ActiveConfiguration;
 			Parameters = projectCreateInformation.Parameters;
 		}
+
+		public bool ShouldCreate (string createCondition)
+		{
+			if (string.IsNullOrEmpty (createCondition))
+				return true;
+
+			return Parameters.GetBoolean (createCondition, true);
+		}
 	}
 }

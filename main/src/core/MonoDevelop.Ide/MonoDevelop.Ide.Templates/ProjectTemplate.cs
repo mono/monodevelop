@@ -320,7 +320,7 @@ namespace MonoDevelop.Ide.Templates
 			SolutionEntityItem solutionEntryItem = descriptor.CreateItem (cInfo, this.languagename);
 			descriptor.InitializeItem (policyParent, cInfo, this.languagename, solutionEntryItem);
 
-			SavePackageReferences (solutionEntryItem, descriptor);
+			SavePackageReferences (solutionEntryItem, descriptor, cInfo);
 
 			this.createdProjectInformation = cInfo;
 
@@ -341,11 +341,11 @@ namespace MonoDevelop.Ide.Templates
 			return solutionDescriptor.EntryDescriptors [0];
 		}
 
-		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor)
+		void SavePackageReferences (SolutionEntityItem solutionEntryItem, ISolutionItemDescriptor descriptor, ProjectCreateInformation cInfo)
 		{
 			packageReferencesForCreatedProjects = new List<PackageReferencesForCreatedProject> ();
 			if ((solutionEntryItem is Project) && (descriptor is ProjectDescriptor)) {
-				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences ());
+				var projectPackageReferences = new PackageReferencesForCreatedProject (((Project)solutionEntryItem).Name, ((ProjectDescriptor)descriptor).GetPackageReferences (cInfo));
 				packageReferencesForCreatedProjects.Add (projectPackageReferences);
 			}
 		}

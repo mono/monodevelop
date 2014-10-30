@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.Templates
                     }
 
 					if ((info is Project) && (solutionItemDesc is ProjectDescriptor)) {
-						workspaceItemCreatedInfo.AddPackageReferenceForCreatedProject ((Project)info, (ProjectDescriptor)solutionItemDesc);
+						workspaceItemCreatedInfo.AddPackageReferenceForCreatedProject ((Project)info, (ProjectDescriptor)solutionItemDesc, projectCreateInformation);
 					}
                     solution.RootFolder.Items.Add (info);
 					if (startupProject == info.Name)

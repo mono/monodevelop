@@ -241,17 +241,22 @@ namespace MonoDevelop.Ide.Templates
 			return packageReferences.Any ();
 		}
 
+		[Obsolete]
 		public IList<ProjectTemplatePackageReference> GetPackageReferences ()
 		{
 			return packageReferences;
 		}
 
+		public IList<ProjectTemplatePackageReference> GetPackageReferences (ProjectCreateInformation projectCreateInformation)
+		{
+			return packageReferences
+				.Where (packageReference => projectCreateInformation.ShouldCreate (packageReference.CreateCondition))
+				.ToList ();
+		}
+
 		public bool ShouldCreateProject (ProjectCreateInformation projectCreateInformation)
 		{
-			if (String.IsNullOrEmpty (createCondition))
-				return true;
-
-			return projectCreateInformation.Parameters.GetBoolean (createCondition, true);
+			return projectCreateInformation.ShouldCreate (createCondition);
 		}
 	}
 }
