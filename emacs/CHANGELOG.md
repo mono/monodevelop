@@ -1,3 +1,10 @@
+## 1.4.1 (2014-10-30)
+
+Incorporate FSharp.AutoComplete version 0.13.1, which contains a fix for goto definition.
+
+Bugfixes:
+  - #787: Correct off-by-one error in fsac goto definition
+
 ## 1.4.0 (2014-10-26)
 
 The main feature of this release is that the project parsing logic has
