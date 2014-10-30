@@ -90,10 +90,15 @@ namespace MonoDevelop.Components
 
 		public new string Path {
 			get {
-				FilePath path = pathEntry.Text;
-				if (path.IsAbsolute || path.IsNullOrEmpty || string.IsNullOrEmpty (DefaultPath))
-					return path;
-				return path.ToAbsolute (DefaultPath);
+				try {
+					FilePath path = pathEntry.Text;
+					if (path.IsAbsolute || path.IsNullOrEmpty || string.IsNullOrEmpty (DefaultPath))
+						return path;
+					return path.ToAbsolute (DefaultPath);
+				} catch {
+					// If path conversion fails for some reason, return the plain text
+					return pathEntry.Text;
+				}
 			}
 			set {
 				loading = true;

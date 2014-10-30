@@ -50,7 +50,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		ProjectFileRenamedEventHandler fileRenamedHandler;
 		ProjectFileEventHandler filePropertyChangedHandler;
 		SolutionItemModifiedEventHandler projectChanged;
-		
+		EventHandler<FileEventArgs> deletedHandler;
+
 		public override Type NodeDataType {
 			get { return typeof(Project); }
 		}
@@ -66,13 +67,14 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			filePropertyChangedHandler = (ProjectFileEventHandler) DispatchService.GuiDispatch (new ProjectFileEventHandler (OnFilePropertyChanged));
 			fileRenamedHandler = (ProjectFileRenamedEventHandler) DispatchService.GuiDispatch (new ProjectFileRenamedEventHandler (OnRenameFile));
 			projectChanged = (SolutionItemModifiedEventHandler) DispatchService.GuiDispatch (new SolutionItemModifiedEventHandler (OnProjectModified));
-			
+			deletedHandler = (EventHandler<FileEventArgs>) DispatchService.GuiDispatch (new EventHandler<FileEventArgs> (OnSystemFileDeleted));
+
 			IdeApp.Workspace.FileAddedToProject += fileAddedHandler;
 			IdeApp.Workspace.FileRemovedFromProject += fileRemovedHandler;
 			IdeApp.Workspace.FileRenamedInProject += fileRenamedHandler;
 			IdeApp.Workspace.FilePropertyChangedInProject += filePropertyChangedHandler;
-			
 			IdeApp.Workspace.ActiveConfigurationChanged += IdeAppWorkspaceActiveConfigurationChanged;
+			FileService.FileRemoved += deletedHandler;
 		}
 
 		public override void Dispose ()
@@ -82,6 +84,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			IdeApp.Workspace.FileRenamedInProject -= fileRenamedHandler;
 			IdeApp.Workspace.FilePropertyChangedInProject -= filePropertyChangedHandler;
 			IdeApp.Workspace.ActiveConfigurationChanged -= IdeAppWorkspaceActiveConfigurationChanged;
+			FileService.FileRemoved -= deletedHandler;
 		}
 
 		public override void OnNodeAdded (object dataObject)
@@ -200,6 +203,23 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				RemoveFile (e.ProjectFile, e.Project);
 		}
 		
+		void OnSystemFileDeleted (object sender, FileEventArgs args)
+		{
+			if (!args.Any (f => f.IsDirectory))
+				return;
+
+			// When a folder is deleted, we need to remove all references in the tree, for all projects
+			ITreeBuilder tb = Context.GetTreeBuilder ();
+			var dirs = args.Where (d => d.IsDirectory).Select (d => d.FileName).ToArray ();
+
+			foreach (var p in IdeApp.Workspace.GetAllProjects ()) {
+				foreach (var dir in dirs) {
+					if (tb.MoveToObject (new ProjectFolder (dir, p)) && tb.MoveToParent ())
+						tb.UpdateAll ();
+				}
+			}
+		}
+
 		void AddFile (ProjectFile file, Project project)
 		{
 			ITreeBuilder tb = Context.GetTreeBuilder ();
