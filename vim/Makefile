@@ -36,6 +36,7 @@ install : $(ac_exe) $(dest_root) $(dest_bin)
 	cp ftplugin/fsharp.vim $(dest_root)/ftplugin/fsharp.vim
 	cp ftplugin/pyvim.py $(dest_root)/ftplugin/pyvim.py
 	cp ftplugin/fsharpvim.py $(dest_root)/ftplugin/fsharpvim.py
+	cp ftplugin/fsi.py $(dest_root)/ftplugin/fsi.py
 	cp autoload/fsharpbinding/python.vim $(dest_root)/autoload/fsharpbinding/python.vim
 	cp syntax_checkers/fsharp/syntax.vim $(dest_root)/syntax_checkers/fsharp/syntax.vim
 	cp -R ftplugin/bin $(dest_root)/ftplugin

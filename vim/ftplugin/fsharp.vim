@@ -11,6 +11,20 @@ let b:did_ftplugin = 1
 let s:cpo_save = &cpo
 set cpo&vim
 
+let s:candidates = [ 'fsi',
+            \ 'fsi.exe',
+            \ 'fsharpi',
+            \ 'fsharpi.exe' ]
+
+if !exists('g:fsharp_interactive_bin')
+    let g:fsharp_interactive_bin = ''
+    for c in s:candidates
+        if executable(c)
+            let g:fsharp_interactive_bin = c
+        endif
+    endfor
+endif
+
 " check for python support
 if has('python')
     python <<EOF
@@ -20,12 +34,17 @@ fsharp_dir = vim.eval("expand('<sfile>:p:h')")
 sys.path.append(fsharp_dir)
 
 from fsharpvim import FSAutoComplete,Statics
+from fsi import FSharpInteractive 
 import pyvim
 
 if Statics.fsac == None:
     debug = vim.eval("get(g:, 'fsharpbinding_debug', 0)") != '0'
     Statics.fsac = FSAutoComplete(fsharp_dir, debug)
+if Statics.fsi == None:
+    debug = vim.eval("get(g:, 'fsharpbinding_debug', 0)") != '0'
+    Statics.fsi = FSharpInteractive(vim.eval('g:fsharp_interactive_bin'))
 fsautocomplete = Statics.fsac
+fsi = Statics.fsi
 proj_file = None
 #find project file if any - assumes fsproj file will be in the same directory as the fs or fsi file
 b = vim.current.buffer
@@ -46,6 +65,16 @@ EOF
     com! -buffer LogFile call fsharpbinding#python#LoadLogFile()
     com! -buffer -nargs=* -complete=file ParseProject call fsharpbinding#python#ParseProject(<f-args>)
     com! -buffer -nargs=* -complete=file BuildProject call fsharpbinding#python#BuildProject(<f-args>)
+    
+    "fsi
+    com! -buffer FsiRead call fsharpbinding#python#FsiPurge()
+    com! -buffer FsiReset call fsharpbinding#python#FsiReset(g:fsharp_interactive_bin)
+    com! -buffer -nargs=1 FsiEval call fsharpbinding#python#FsiEval(<q-args>)
+
+    nnoremap  :<C-u>call fsharpbinding#python#FsiSendLine()<cr>
+    vnoremap  :<C-u>call fsharpbinding#python#FsiSendSel()<cr>
+    nnoremap <C-> :<C-u>call fsharpbinding#python#FsiSendLineSilent()<cr>
+    vnoremap <C-> :<C-u>call fsharpbinding#python#FsiSendSelSilent()<cr>
 
     augroup fsharpbindings_au
         au!

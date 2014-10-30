@@ -11,6 +11,17 @@ let g:loaded_autoload_fsharpbinding_python = 1
 let s:cpo_save = &cpo
 set cpo&vim
 
+" taken from: http://stackoverflow.com/questions/1533565/how-to-get-visually-selected-text-in-vimscript
+function! s:get_visual_selection()
+  " Why is this not a built-in Vim script function?!
+  let [lnum1, col1] = getpos("'<")[1:2]
+  let [lnum2, col2] = getpos("'>")[1:2]
+  let lines = getline(lnum1, lnum2)
+  let lines[-1] = lines[-1][: col2 - (&selection == 'inclusive' ? 1 : 2)]
+  let lines[0] = lines[0][col1 - 1:]
+  return join(lines, "\n")
+endfunction
+
 
 function! fsharpbinding#python#LoadLogFile()
 python << EOF
@@ -164,6 +175,63 @@ else:
 EOF
 endfunction
 
+function! fsharpbinding#python#FsiPurge()
+    let prelude = pyeval('fsi.purge()')
+    for l in l:prelude
+        echom l
+    endfor
+endfunction
+
+function! fsharpbinding#python#FsiReset(fsi_path)
+    python << EOF
+fsi.shutdown()
+Statics.fsi = FSharpInteractive(vim.eval('a:fsi_path'))
+fsi = Statics.fsi
+EOF
+    echo "fsi reset"
+endfunction
+
+function! fsharpbinding#python#FsiSend(text)
+python << EOF
+fsi.send(vim.eval('a:text'))
+EOF
+endfunction
+
+function! fsharpbinding#python#FsiEval(text)
+    try
+    "clear anything in the buffer
+        call fsharpbinding#python#FsiPurge()
+        call fsharpbinding#python#FsiSend(a:text)
+        let lines = pyeval('fsi.read_until_prompt()')
+        for l in lines
+            echom l
+        endfor
+    catch
+        echohl WarningMsg "fsi eval failure" 
+    endtry
+endfunction
+
+function! fsharpbinding#python#FsiSendLine()
+    let text = getline('.')
+    call fsharpbinding#python#FsiEval(text)
+    exec "normal" "j"
+endfunction
+
+function! fsharpbinding#python#FsiSendLineSilent()
+    let text = getline('.')
+    call fsharpbinding#python#FsiSend(text)
+    exec "normal" "j"
+endfunction
+
+function! fsharpbinding#python#FsiSendSel()
+    let text = s:get_visual_selection()
+    call fsharpbinding#python#FsiEval(text)
+endfunction
+
+function! fsharpbinding#python#FsiSendSelSilent()
+    let text = s:get_visual_selection()
+    call fsharpbinding#python#FsiSend(text)
+endfunction
 
 let &cpo = s:cpo_save
 unlet s:cpo_save
