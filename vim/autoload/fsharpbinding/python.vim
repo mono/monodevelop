@@ -164,7 +164,7 @@ row, col = vim.current.window.cursor
 res = fsautocomplete.finddecl(b.name, row, col)
 Statics.locations.append((b.name, w.cursor))
 if res == None:
-    vim.command('echoe "declaration not found"')
+    vim.command('echo "declaration not found"')
 else:
     f, cur = res
     # declared within same file
