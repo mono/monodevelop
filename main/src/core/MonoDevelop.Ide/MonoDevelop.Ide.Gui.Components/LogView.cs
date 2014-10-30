@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.Gui.Components
 		static StringComparison GetComparer ()
 		{
 			if (PropertyService.Get ("AutoSetPatternCasing", true)) {
-				if (currentSearchPattern.Any (Char.IsUpper))
+				if (currentSearchPattern != null && currentSearchPattern.Any (Char.IsUpper))
 					return StringComparison.Ordinal;
 			}
 
@@ -295,6 +295,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		[CommandHandler (SearchCommands.FindNext)]
 		void FindNext ()
 		{
+			if (string.IsNullOrEmpty (currentSearchPattern))
+				return;
 			int searchPosition = buffer.CursorPosition;
 			TextIter start;
 			TextIter end;
@@ -328,6 +330,8 @@ namespace MonoDevelop.Ide.Gui.Components
 		[CommandHandler (SearchCommands.FindPrevious)]
 		void FindPrev ()
 		{
+			if (string.IsNullOrEmpty (currentSearchPattern))
+				return;
 			int searchPosition = buffer.CursorPosition;
 			TextIter start;
 			TextIter end;
