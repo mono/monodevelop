@@ -540,6 +540,7 @@ namespace MonoDevelop.Ide
 				Items.Add (item);
 
 			} catch (Exception ex) {
+				LoggingService.LogError ("Load operation failed", ex);
 				monitor.ReportError ("Load operation failed.", ex);
 				
 				// Don't use 'finally' to dispose the monitor, since it has to be disposed later
