@@ -44,8 +44,9 @@ namespace MonoDevelop.Ide.Gui
 		StatusBarContext statusBar;
 		Pad statusSourcePad;
 		
-		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad)
+		public StatusProgressMonitor (string title, string iconName, bool showErrorDialogs, bool showTaskTitles, bool lockGui, Pad statusSourcePad): base (Runtime.MainSynchronizationContext)
 		{
+
 			this.lockGui = lockGui;
 			this.showErrorDialogs = showErrorDialogs;
 			this.showTaskTitles = showTaskTitles;
