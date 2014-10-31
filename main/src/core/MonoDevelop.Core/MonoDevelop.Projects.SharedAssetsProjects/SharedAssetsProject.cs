@@ -36,7 +36,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
-	[RegisterProjectType ("{D954291E-2A0B-460D-934E-DC6B0785DB48}", Extension="shproj", Alias="SharedAssetsProject")]
+	[ExportProjectType ("{D954291E-2A0B-460D-934E-DC6B0785DB48}", Extension="shproj", Alias="SharedAssetsProject")]
 	public class SharedAssetsProject: Project, IDotNetFileContainer
 	{
 		Solution currentSolution;

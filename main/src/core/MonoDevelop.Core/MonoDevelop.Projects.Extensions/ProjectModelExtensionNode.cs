@@ -28,7 +28,7 @@ using Mono.Addins;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[ExtensionNode (ExtensionAttributeType = typeof(RegisterProjectModelExtensionAttribute))]
+	[ExtensionNode (ExtensionAttributeType = typeof(ExportProjectModelExtensionAttribute))]
 	public class ProjectModelExtensionNode: TypeExtensionNode
 	{
 		public virtual bool CanHandleObject (object ob)

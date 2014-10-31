@@ -194,7 +194,7 @@ namespace MonoDevelop.Core
 						OnEndTask (t.Name, t.TotalWork, t.StepWork);
 				}
 			} else
-				throw new InvalidOperationException ("Task not started");
+				LoggingService.LogError ("Task not started");
 
 			ReportProgressChanged ();
 
@@ -529,7 +529,11 @@ namespace MonoDevelop.Core
 
 		void ReportProgressChanged ()
 		{
-			OnProgressChanged ();
+			if (context != null)
+				context.Post ((o) => OnProgressChanged (), null);
+			else
+				OnProgressChanged ();
+
 			if (parentMonitor != null)
 				parentMonitor.ReportProgressChanged ();
 		}

@@ -1,5 +1,5 @@
 ﻿//
-// RegisterDotNetProject.cs
+// RegisterProjectModelExtensionAttribute.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -23,23 +23,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
-	public class RegisterDotNetProjectTypeAttribute: RegisterProjectTypeAttribute
+	public class ExportProjectModelExtensionAttribute: CustomExtensionAttribute
 	{
-		protected RegisterDotNetProjectTypeAttribute ()
-		{
-		}
-
-		public RegisterDotNetProjectTypeAttribute ([NodeAttribute ("guid")] string guid, [NodeAttribute("language")] string language): base (guid)
-		{
-		}
-
-		[NodeAttribute ("language", Required=true)]
-		public string Language { get; set; }
 	}
 }
 

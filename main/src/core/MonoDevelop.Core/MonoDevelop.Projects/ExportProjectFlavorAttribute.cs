@@ -1,5 +1,5 @@
 ﻿//
-// MSBuildProjectTypeAttribute.cs
+// ProjectFlavorTypeAttribute.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -24,22 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using MonoDevelop.Core;
-using System.Threading.Tasks;
-using MonoDevelop.Projects.Formats.MSBuild;
+using System.Linq;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
-	public class RegisterProjectTypeAttribute: RegisterSolutionItemTypeAttribute
+	public class ExportProjectFlavorAttribute: ExportProjectModelExtensionAttribute
 	{
-		protected RegisterProjectTypeAttribute ()
+		internal ExportProjectFlavorAttribute ()
 		{
 		}
 
-		public RegisterProjectTypeAttribute ([NodeAttribute ("guid")] string guid): base (guid)
+		public ExportProjectFlavorAttribute ([NodeAttribute ("guid")] string guid)
 		{
+			Guid = guid;
 		}
+
+		[NodeAttribute ("guid", Description = "GUID of the extension. The extension will be loaded if the project has this GUID in the project type GUID list. " +
+			"If not specified, the extension will be applied to all projects.")]
+		public string Guid { get; set; }
 	}
 }
 

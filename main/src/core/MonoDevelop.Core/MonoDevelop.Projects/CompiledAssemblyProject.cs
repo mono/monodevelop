@@ -40,6 +40,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects
 {
+	[ExportProjectType ("{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}")]
 	public class CompiledAssemblyProject: Project, IAssemblyProject
 	{
 		TargetFramework targetFramework;
@@ -60,7 +61,7 @@ namespace MonoDevelop.Projects
 			}
 		}
 
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			return new ProjectConfiguration (name);
 		}

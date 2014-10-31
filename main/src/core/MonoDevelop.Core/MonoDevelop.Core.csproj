@@ -471,17 +471,17 @@
     <Compile Include="MonoDevelop.Projects\SolutionItemFactory.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ProjectMigrationHandler.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ProjectMigrationHandlerNode.cs" />
-    <Compile Include="MonoDevelop.Projects\RegisterProjectModelExtensionAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects\RegisterProjectFlavorAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects\RegisterSolutionItemTypeAttribute.cs" />
-    <Compile Include="MonoDevelop.Projects\RegisterDotNetProject.cs" />
-    <Compile Include="MonoDevelop.Projects\RegisterProjectAttribute.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\SolutionItemTypeNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\ProjectTypeNode.cs" />
     <Compile Include="MonoDevelop.Projects.Extensions\DotNetProjectTypeNode.cs" />
     <Compile Include="MonoDevelop.Projects\ProjectExtension.cs" />
     <Compile Include="MonoDevelop.Core\ProgressMonitor.cs" />
     <Compile Include="MonoDevelop.Core.ProgressMonitoring\ProjectLoadProgressMonitor.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportProjectModelExtensionAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportSolutionItemTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportProjectFlavorAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportProjectTypeAttribute.cs" />
+    <Compile Include="MonoDevelop.Projects\ExportDotNetProjectTypeAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

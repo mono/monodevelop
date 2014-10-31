@@ -48,7 +48,6 @@ namespace MonoDevelop.Projects
 	public class ProjectService
 	{
 		DataContext dataContext = new DataContext ();
-		ArrayList projectBindings = new ArrayList ();
 		ProjectServiceExtension defaultExtensionChain;
 		DefaultProjectServiceExtension extensionChainTerminator = new DefaultProjectServiceExtension ();
 		
@@ -83,7 +82,6 @@ namespace MonoDevelop.Projects
 			AddinManager.AddExtensionNodeHandler (FileFormatsExtensionPath, OnFormatExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (SerializableClassesExtensionPath, OnSerializableExtensionChanged);
 			AddinManager.AddExtensionNodeHandler (ExtendedPropertiesExtensionPath, OnPropertiesExtensionChanged);
-			AddinManager.AddExtensionNodeHandler (ProjectBindingsExtensionPath, OnProjectsExtensionChanged);
 			AddinManager.ExtensionChanged += OnExtensionChanged;
 			
 			defaultFormat = formatManager.GetFileFormat (MSBuildProjectService.DefaultFormat);
@@ -564,12 +562,6 @@ namespace MonoDevelop.Projects
 			
 			if (DataContextChanged != null)
 				DataContextChanged (this, EventArgs.Empty);
-		}
-		
-		void OnProjectsExtensionChanged (object s, ExtensionNodeEventArgs args)
-		{
-			if (args.Change == ExtensionChange.Add)
-				projectBindings.Add (args.ExtensionNode);
 		}
 		
 		void OnExtensionChanged (object s, ExtensionEventArgs args)

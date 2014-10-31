@@ -97,7 +97,7 @@ namespace MonoDevelop.Projects
 			});
 		}
 
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			return new ProjectConfiguration (name);
 		}

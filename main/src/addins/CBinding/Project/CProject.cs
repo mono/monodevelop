@@ -64,7 +64,7 @@ namespace CBinding
 		GotoDeclaration,
 	}
 
-	[RegisterProjectType ("{2857B73E-F847-4B02-9238-064979017E93}", Extension="cproj", Alias="C/C++")]
+	[ExportProjectType ("{2857B73E-F847-4B02-9238-064979017E93}", Extension="cproj", Alias="C/C++")]
 	public class CProject : Project, IDeployable
 	{
 		[ItemProperty ("Compiler", ValueType = typeof(CCompiler))]
@@ -393,7 +393,7 @@ namespace CBinding
 			return conf.OutputDirectory.Combine (conf.CompiledOutputName);
 		}
 		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			CProjectConfiguration conf = new CProjectConfiguration ();
 			

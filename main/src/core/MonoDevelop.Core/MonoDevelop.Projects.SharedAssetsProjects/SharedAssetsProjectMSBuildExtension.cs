@@ -32,7 +32,7 @@ using MonoDevelop.Projects.Formats.MSBuild;
 
 namespace MonoDevelop.Projects.SharedAssetsProjects
 {
-	[RegisterProjectModelExtension]
+	[ExportProjectModelExtension]
 	class SharedAssetsProjectMSBuildExtension: DotNetProjectExtension
 	{
 		internal protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)

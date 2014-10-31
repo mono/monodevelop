@@ -1,5 +1,5 @@
 ﻿//
-// RegisterProjectModelExtensionAttribute.cs
+// MSBuildProjectTypeAttribute.cs
 //
 // Author:
 //       Lluis Sanchez Gual <lluis@xamarin.com>
@@ -23,14 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
+using MonoDevelop.Projects.Formats.MSBuild;
 using Mono.Addins;
 
 namespace MonoDevelop.Projects
 {
-	public class RegisterProjectModelExtensionAttribute: CustomExtensionAttribute
+	public class ExportProjectTypeAttribute: ExportSolutionItemTypeAttribute
 	{
+		protected ExportProjectTypeAttribute ()
+		{
+		}
+
+		public ExportProjectTypeAttribute ([NodeAttribute ("guid")] string guid): base (guid)
+		{
+		}
 	}
 }
 

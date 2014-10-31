@@ -35,7 +35,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[ExtensionNode (ExtensionAttributeType=typeof(RegisterDotNetProjectTypeAttribute))]
+	[ExtensionNode (ExtensionAttributeType=typeof(ExportDotNetProjectTypeAttribute))]
 	public class DotNetProjectTypeNode: ProjectTypeNode
 	{
 		[NodeAttribute (Required=true)]

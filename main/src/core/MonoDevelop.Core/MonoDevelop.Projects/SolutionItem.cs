@@ -1050,11 +1050,16 @@ namespace MonoDevelop.Projects
 			return CreateConfiguration (name);
 		}
 
-		public virtual SolutionItemConfiguration CreateConfiguration (string name)
+		public SolutionItemConfiguration CreateConfiguration (string name)
 		{
 			return ItemExtension.OnCreateConfiguration (name);
 		}
 		
+		protected virtual SolutionItemConfiguration OnCreateConfiguration (string name)
+		{
+			return new SolutionItemConfiguration (name);
+		}
+
 		void OnConfigurationAddedToCollection (object ob, ConfigurationEventArgs args)
 		{
 			NotifyModified ("Configurations");
@@ -1257,7 +1262,7 @@ namespace MonoDevelop.Projects
 
 			internal protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 			{
-				return new SolutionItemConfiguration (name);
+				return Item.OnCreateConfiguration (name);
 			}
 
 			internal protected override string[] SupportedPlatforms {

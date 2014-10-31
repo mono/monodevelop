@@ -31,7 +31,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects
 {
-	public class RegisterSolutionItemTypeAttribute: CustomExtensionAttribute
+	public class ExportSolutionItemTypeAttribute: CustomExtensionAttribute
 	{
 		[NodeAttribute ("guid", Required=true)]
 		public string Guid { get; set; }
@@ -49,11 +49,11 @@ namespace MonoDevelop.Projects
 			get { return ((TypeExtensionNode)ExtensionNode).TypeName; }
 		}
 
-		protected RegisterSolutionItemTypeAttribute ()
+		protected ExportSolutionItemTypeAttribute ()
 		{
 		}
 
-		public RegisterSolutionItemTypeAttribute ([NodeAttribute ("guid")] string guid)
+		public ExportSolutionItemTypeAttribute ([NodeAttribute ("guid")] string guid)
 		{
 			Guid = guid;
 		}

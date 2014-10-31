@@ -66,7 +66,7 @@ namespace MonoDevelop.Autotools
 		}
 	}
 
-	[RegisterProjectModelExtension]
+	[ExportProjectModelExtension]
 	public class MakefileProjectExtension: ProjectExtension
 	{
 		MakefileData data;

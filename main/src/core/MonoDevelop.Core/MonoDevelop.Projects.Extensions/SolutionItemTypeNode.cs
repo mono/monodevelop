@@ -36,7 +36,7 @@ using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[ExtensionNode (ExtensionAttributeType=typeof(RegisterSolutionItemTypeAttribute))]
+	[ExtensionNode (ExtensionAttributeType=typeof(ExportSolutionItemTypeAttribute))]
 	public abstract class SolutionItemTypeNode: ExtensionNode
 	{
 		[NodeAttribute (Required=true)]

@@ -42,8 +42,8 @@ namespace MonoDevelop.Projects
 		{
 			Configurations.Add (CreateConfiguration ("Default"));
 		}
-		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			GenericProjectConfiguration conf = new GenericProjectConfiguration (name);
 			return conf;

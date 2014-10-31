@@ -67,7 +67,7 @@ namespace MonoDevelop.NUnit
 			}
 		}
 		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			NUnitAssemblyGroupProjectConfiguration conf = new NUnitAssemblyGroupProjectConfiguration ();
 			conf.Name = name;

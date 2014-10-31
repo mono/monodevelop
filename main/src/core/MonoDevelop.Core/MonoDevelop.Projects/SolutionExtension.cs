@@ -36,6 +36,12 @@ namespace MonoDevelop.Projects
 	{
 		SolutionExtension next;
 
+		internal protected override void InitializeChain (ChainedExtension next)
+		{
+			base.InitializeChain (next);
+			this.next = FindNextImplementation<SolutionExtension> (next);
+		}
+
 		protected Solution Solution {
 			get { return (Solution) base.Item; }
 		}

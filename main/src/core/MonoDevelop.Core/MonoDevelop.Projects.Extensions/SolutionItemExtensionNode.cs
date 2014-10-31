@@ -29,7 +29,7 @@ using System.Linq;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[ExtensionNode (ExtensionAttributeType = typeof(RegisterProjectFlavorAttribute))]
+	[ExtensionNode (ExtensionAttributeType = typeof(ExportProjectFlavorAttribute))]
 	public class SolutionItemExtensionNode: ProjectModelExtensionNode
 	{
 		[NodeAttribute (Description = "GUID of the extension. The extension will be loaded if the project has this GUID in the project type GUID list. " +

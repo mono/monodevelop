@@ -11,7 +11,7 @@ namespace MonoDevelop.Autotools
 		{
 		}
 		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			MakefileProjectConfiguration conf = new MakefileProjectConfiguration ();
 			conf.Name = name;

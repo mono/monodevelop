@@ -223,7 +223,7 @@ namespace MonoDevelop.Gettext
 			OnTranslationRemoved (EventArgs.Empty);
 		}
 		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			return new TranslationProjectConfiguration (name);
 		}

@@ -34,7 +34,7 @@ namespace MonoDevelop.Deployment
 			get { return packages; }
 		}
 		
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			PackagingProjectConfiguration conf = new PackagingProjectConfiguration ();
 			conf.Name = name;

@@ -886,7 +886,7 @@ namespace MonoDevelop.Projects
 			return binding;
 		}
 
-		public override SolutionItemConfiguration CreateConfiguration (string name)
+		protected override SolutionItemConfiguration OnCreateConfiguration (string name)
 		{
 			DotNetProjectConfiguration conf = new DotNetProjectConfiguration (name);
 			string dir;

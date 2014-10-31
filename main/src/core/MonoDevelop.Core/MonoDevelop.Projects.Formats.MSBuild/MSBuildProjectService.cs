@@ -885,7 +885,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		}
 	}
 	
-	[RegisterProjectType (MSBuildProjectService.GenericItemGuid, Extension="mdproj")]
+	[ExportProjectType (MSBuildProjectService.GenericItemGuid, Extension="mdproj")]
 	class GenericItemFactory: SolutionItemFactory
 	{
 		public override Task<SolutionItem> CreateItem (string fileName, string typeGuid)

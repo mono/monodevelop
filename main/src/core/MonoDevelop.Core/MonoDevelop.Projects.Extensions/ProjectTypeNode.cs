@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.Extensions
 {
-	[ExtensionNode (ExtensionAttributeType=typeof(RegisterProjectTypeAttribute))]
+	[ExtensionNode (ExtensionAttributeType=typeof(ExportProjectTypeAttribute))]
 	public class ProjectTypeNode: SolutionItemTypeNode
 	{
 		public override async Task<SolutionItem> CreateSolutionItem (ProgressMonitor monitor, string fileName, string typeGuid)
