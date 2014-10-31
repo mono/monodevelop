@@ -34,6 +34,7 @@ namespace MonoDevelop.Projects
 
 		internal protected override void InitializeChain (ChainedExtension next)
 		{
+			base.InitializeChain (next);
 			this.next = FindNextImplementation<WorkspaceObjectExtension> (next);
 		}
 
@@ -50,7 +51,17 @@ namespace MonoDevelop.Projects
 			Initialize ();
 		}
 
+		/// <summary>
+		/// Invoked just after creation the extension chain of the object
+		/// </summary>
 		internal protected virtual void Initialize ()
+		{
+		}
+
+		/// <summary>
+		/// Invoked after all extensions have been initialized
+		/// </summary>
+		internal protected virtual void OnExtensionChainCreated ()
 		{
 		}
 

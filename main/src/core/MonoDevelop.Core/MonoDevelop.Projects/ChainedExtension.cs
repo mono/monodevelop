@@ -33,17 +33,29 @@ namespace MonoDevelop.Projects
 	public class ChainedExtension: IDisposable
 	{
 		ChainedExtension nextInChain;
+		ExtensionChain chain;
 
-		internal protected static T FindNextImplementation<T> (ChainedExtension next) where T:class
+		internal static T CreateChain<T> (ChainedExtension next) where T:ChainedExtension, new()
+		{
+			var first = new T ();
+			first.nextInChain = ChainedExtension.FindNextImplementation<T> (next);
+			return first;
+		}
+
+		internal protected static T FindNextImplementation<T> (ChainedExtension next) where T:ChainedExtension
+		{
+			return (T)FindNextImplementation (typeof(T), next);
+		}
+
+		internal static ChainedExtension FindNextImplementation (Type type, ChainedExtension next)
 		{
 			if (next == null)
 				return null;
 
-			var nextT = next as T;
-			if (nextT == null)
-				return FindNextImplementation<T> (next.nextInChain);
+			if (!type.IsInstanceOfType (next))
+				return FindNextImplementation (type, next.nextInChain);
 
-			foreach (var m in typeof(T).GetMembers (BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
+			foreach (var m in type.GetMembers (BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
 				MethodInfo method = m as MethodInfo;
 				if (method == null) {
 					var prop = m as PropertyInfo;
@@ -57,16 +69,17 @@ namespace MonoDevelop.Projects
 					var tm = next.GetType ().GetMethod (method.Name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, method.GetParameters ().Select (p=>p.ParameterType).ToArray (), null);
 					if (tm == null)
 						continue;
-					if (tm.DeclaringType != typeof(T))
-						return nextT;
+					if (tm.DeclaringType != type)
+						return next;
 				}
 			}
 
-			return FindNextImplementation<T> (next.nextInChain);
+			return FindNextImplementation (type, next.nextInChain);
 		}
 
-		internal void Init (ChainedExtension next)
+		internal void InitChain (ExtensionChain chain, ChainedExtension next)
 		{
+			this.chain = chain;
 			nextInChain = next;
 			InitializeChain (next);
 		}
@@ -88,6 +101,8 @@ namespace MonoDevelop.Projects
 
 		public virtual void Dispose ()
 		{
+			if (chain != null)
+				chain.DisposeExtension (this);
 		}
 	}
 }

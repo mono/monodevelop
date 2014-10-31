@@ -224,6 +224,8 @@ namespace MonoDevelop.Projects
 			extensionChain = ExtensionChain.Create (extensions.ToArray ());
 			foreach (var e in extensions)
 				e.Init (this);
+			foreach (var e in extensions)
+				e.OnExtensionChainCreated ();
 		}
 
 		protected virtual IEnumerable<WorkspaceObjectExtension> CreateDefaultExtensions ()

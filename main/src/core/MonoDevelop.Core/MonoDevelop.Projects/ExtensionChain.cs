@@ -35,18 +35,22 @@ namespace MonoDevelop.Projects
 
 		public static ExtensionChain Create<T> (T[] extensions) where T:ChainedExtension
 		{
+			var c = new ExtensionChain ();
+
 			for (int n = extensions.Length - 2; n >= 0; n--)
-				extensions [n].Init (extensions [n + 1]);
-			return new ExtensionChain {
-				first = extensions[0]
-			};
+				extensions [n].InitChain (c, extensions [n + 1]);
+
+			c.first = extensions [0];
+			return c;
 		}
 
-		public T GetExtension<T> () where T:ChainedExtension
+		public T GetExtension<T> () where T:ChainedExtension, new()
 		{
 			ChainedExtension e;
 			if (!chains.TryGetValue (typeof(T), out e)) {
-				chains [typeof(T)] = e = ChainedExtension.FindNextImplementation<T> (first);
+				e = new T ();
+				e.InitChain (this, ChainedExtension.FindNextImplementation<T> (first));
+				chains [typeof(T)] = e;
 			}
 			return (T)e;
 		}
@@ -58,6 +62,22 @@ namespace MonoDevelop.Projects
 				yield return e;
 				e = e.Next;
 			}
+		}
+
+		internal void DisposeExtension (ChainedExtension ext)
+		{
+			var e = first;
+			var extensions = new List<ChainedExtension> ();
+			while (e != null) {
+				if (e != ext)
+					extensions.Add (e);
+				e = e.Next;
+			}
+			for (int n = extensions.Count - 2; n >= 0; n--)
+				extensions [n].InitChain (this, extensions [n + 1]);
+			first = extensions [0];
+			foreach (var fex in chains)
+				fex.Value.InitChain (this, ChainedExtension.FindNextImplementation (fex.Key, first));
 		}
 
 		public void Dispose ()
