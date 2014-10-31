@@ -703,10 +703,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}*/
 				Gtk.Notebook nb = new Notebook ();
 				nb.Show ();
-				Gtk.Label blab = new Gtk.Label (GettextCatalog.GetString ("General"));
-				blab.Show ();
-				box.BorderWidth = 9;
-				nb.InsertPage (box, blab, -1);
+				if (box.Children.Length > 0) {
+					Gtk.Label blab = new Gtk.Label (GettextCatalog.GetString ("General"));
+					blab.Show ();
+					box.BorderWidth = 9;
+					nb.InsertPage (box, blab, -1);
+				}
 				foreach (PanelInstance pi in tabPanels) {
 					Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString (pi.Node.Label));
 					lab.Show ();
