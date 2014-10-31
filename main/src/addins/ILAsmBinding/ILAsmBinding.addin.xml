@@ -22,7 +22,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<DotNetProject  language="IL" extension="ilproj" guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}"/>
+		<DotNetProjectType  language="IL" extension="ilproj" guid="{B4EC64DC-6D44-11DD-AAB0-C9A155D89593}"/>
 	</Extension>
 	
 </ExtensionModel>

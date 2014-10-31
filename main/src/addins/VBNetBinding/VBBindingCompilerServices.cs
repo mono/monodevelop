@@ -55,7 +55,7 @@ namespace MonoDevelop.VBNetBinding {
 		static Regex regexError = new Regex (@"^\s*((?<file>.*)\s?\((?<line>\d*)(,(?<column>\d*))?\) : )?(?<level>\w+) :? ?(?<number>[^:]*): (?<message>.*)$",
 		                                     RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 		
-		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProjectExtension projectparameters, string outputFileName)
+		string GenerateOptions (DotNetProjectConfiguration configuration, VBCompilerParameters compilerparameters, VBProject projectparameters, string outputFileName)
 		{
 			DotNetProject project = (DotNetProject) configuration.ParentItem;
 			StringBuilder sb = new StringBuilder ();
@@ -195,7 +195,7 @@ namespace MonoDevelop.VBNetBinding {
 			if (compilerparameters == null)
 				compilerparameters = new VBCompilerParameters ();
 			
-			var projectparameters = configuration.ParentItem.GetService<VBProjectExtension> ();
+			var projectparameters = (VBProject) configuration.ParentItem;
 
 			string exe = configuration.CompiledOutputName;
 			string responseFileName = Path.GetTempFileName();

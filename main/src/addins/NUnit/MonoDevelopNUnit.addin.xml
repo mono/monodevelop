@@ -183,7 +183,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
-		<ProjectExtension class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
+		<Class class = "MonoDevelop.NUnit.NUnitProjectServiceExtension" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/SerializableClasses">

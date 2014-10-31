@@ -77,13 +77,6 @@
 		<ExtensionNode name="Migration" type="MonoDevelop.Core.AddIns.UserDataMigrationNode" />
 	</ExtensionPoint>
 	
-	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectBindings" name = "Project bindings">
-		<Description>Project bindings</Description>
-		<ExtensionNode name="ProjectBinding" type="MonoDevelop.Projects.Extensions.ProjectBindingCodon">
-			<Description>A project binding. The specified class must implement MonoDevelop.Projects.IProjectBinding.</Description>
-		</ExtensionNode>	
-	</ExtensionPoint>
-
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/FileFormats" name = "Solution file format handlers">
 		<Description>File format handlers for workspaces, solutions and projects</Description>
 		<ExtensionNode name="FileFormat" type="MonoDevelop.Projects.Extensions.FileFormatNode">
@@ -120,8 +113,8 @@
 
 	<ExtensionPoint path = "/MonoDevelop/ProjectModel/ProjectModelExtensions" name = "Project model extensions">
 		<Description>Project model extensions</Description>
-		<ExtensionNode name="ObjectExtension" type="MonoDevelop.Projects.Extensions.ProjectModelExtensionNode">
-			<Description>A subclass of WorkspaceObjectmExtension.</Description>
+		<ExtensionNode name="Class" type="MonoDevelop.Projects.Extensions.ProjectModelExtensionNode">
+			<Description>A subclass of WorkspaceObjectExtension.</Description>
 		</ExtensionNode>
 		<ExtensionNode name="ProjectFlavor" type="MonoDevelop.Projects.Extensions.SolutionItemExtensionNode">
 			<Description>A subclass of ProjectExtension.</Description>
@@ -232,12 +225,6 @@
 		<Application id = "project-export" class = "MonoDevelop.Projects.ProjectConvertTool" description = "Project conversion tool"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id = "DotNet" class = "MonoDevelop.Projects.DotNetProjectBinding" />
-		<ProjectBinding id = "GenericProject" class = "MonoDevelop.Projects.GenericProjectBinding" />
-		<ProjectBinding id = "SharedAssetsProject" class = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectBinding" />
-	</Extension>
-	  
 	<Extension path = "/MonoDevelop/ProjectModel/FileFormats">
 		<FileFormat id = "MSBuild08" 
 			class = "MonoDevelop.Projects.Formats.MSBuild.MSBuildFileFormatVS08"
@@ -286,17 +273,10 @@
 		<PolicySet id="Invariant" _name="Invariant" visible="false"/>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/MSBuildItemTypes">
-		<MSBuildProject guid = "{8BC9CEB9-8B4A-11D0-8D11-00A0C91BC942}"
-			type = "MonoDevelop.Projects.CompiledAssemblyProject"
-			handlerType = "MonoDevelop.Projects.Formats.MSBuild.CompiledAssemblyProjectMSBuildHandler" />
-		<MSBuildProject guid = "{D954291E-2A0B-460D-934E-DC6B0785DB48}"
-			type = "MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProject"
-			extension = "shproj" />
-	</Extension>
-
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
-		<ProjectExtension class="MonoDevelop.Projects.SharedAssetsProjects.SharedAssetsProjectMSBuildExtension"/>
+		<Class id="InitialStep" class = "MonoDevelop.Projects.WorkspaceObjectExtension" />
+		<Class id="MidStep" class = "MonoDevelop.Projects.WorkspaceObjectExtension" />
+		<Class id="FinalStep" class = "MonoDevelop.Projects.WorkspaceObjectExtension" />
 	</Extension>
 
 

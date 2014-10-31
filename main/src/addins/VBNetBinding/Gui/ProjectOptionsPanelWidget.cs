@@ -38,9 +38,8 @@ namespace MonoDevelop.VBNetBinding
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ProjectOptionsPanelWidget : Gtk.Bin
 	{
-		DotNetProject project;
-		VBProjectExtension parameters;
-		
+		VBProject project;
+
 		public ProjectOptionsPanelWidget (MonoDevelop.Projects.Project project)
 		{
 			Gtk.ListStore store;
@@ -48,9 +47,8 @@ namespace MonoDevelop.VBNetBinding
 
 			this.Build();
 
-			this.project = (DotNetProject) project;
-			parameters = this.project.GetService<VBProjectExtension> ();
-			
+			this.project = (VBProject) project;
+
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
 			store.AppendValues (GettextCatalog.GetString ("Executable"));
@@ -71,7 +69,7 @@ namespace MonoDevelop.VBNetBinding
 			store.AppendValues ("Console");
 			txtMyType.Model = store;
 			txtMyType.TextColumn = 0;
-			switch (parameters.MyType) {
+			switch (this.project.MyType) {
 			case "WindowsForms":
 				txtMyType.Active = 0;
 				break;
@@ -85,7 +83,7 @@ namespace MonoDevelop.VBNetBinding
 			case "":
 				break;
 			default:
-				txtMyType.AppendText (parameters.MyType);
+				txtMyType.AppendText (this.project.MyType);
 				txtMyType.Active = 3;
 				break;
 			}
@@ -97,7 +95,7 @@ namespace MonoDevelop.VBNetBinding
 			cmbOptionCompare.Model = store;
 			cmbOptionCompare.PackStart (cr, true);
 			cmbOptionCompare.AddAttribute (cr, "text", 0);
-			cmbOptionCompare.Active = parameters.BinaryOptionCompare ? 0 : 1;
+			cmbOptionCompare.Active = this.project.BinaryOptionCompare ? 0 : 1;
 				
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
@@ -106,7 +104,7 @@ namespace MonoDevelop.VBNetBinding
 			cmbOptionExplicit.Model = store;
 			cmbOptionExplicit.PackStart (cr, true);
 			cmbOptionExplicit.AddAttribute (cr, "text", 0);
-			cmbOptionExplicit.Active = parameters.OptionExplicit ? 0 : 1;
+			cmbOptionExplicit.Active = this.project.OptionExplicit ? 0 : 1;
 			
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
@@ -115,7 +113,7 @@ namespace MonoDevelop.VBNetBinding
 			cmbOptionInfer.Model = store;
 			cmbOptionInfer.PackStart (cr, true);
 			cmbOptionInfer.AddAttribute (cr, "text", 0);
-			cmbOptionInfer.Active = parameters.OptionInfer ? 0 : 1;
+			cmbOptionInfer.Active = this.project.OptionInfer ? 0 : 1;
 			
 			cr = new Gtk.CellRendererText ();
 			store = new Gtk.ListStore (typeof (string));
@@ -124,11 +122,11 @@ namespace MonoDevelop.VBNetBinding
 			cmbOptionStrict.Model = store;
 			cmbOptionStrict.PackStart (cr, true);
 			cmbOptionStrict.AddAttribute (cr, "text", 0);
-			cmbOptionStrict.Active = parameters.OptionStrict ? 0 : 1;
+			cmbOptionStrict.Active = this.project.OptionStrict ? 0 : 1;
 
 			// Codepage
 			string foundEncoding = null;
-			string currentCodepage = parameters.CodePage;
+			string currentCodepage = this.project.CodePage;
 			foreach (TextEncoding e in TextEncoding.SupportedEncodings) {
 				if (e.CodePage == -1)
 					continue;
@@ -141,21 +139,21 @@ namespace MonoDevelop.VBNetBinding
 			else if (!string.IsNullOrEmpty (currentCodepage))
 				cmbCodePage.Entry.Text = currentCodepage;
 			
-			entryMainClass.Entry.Text = parameters.StartupObject;
-			iconEntry.Path = parameters.ApplicationIcon;
+			entryMainClass.Entry.Text = this.project.StartupObject;
+			iconEntry.Path = this.project.ApplicationIcon;
 		}
 		
 		public void StorePanelContents ()
 		{
-			parameters.BinaryOptionCompare = cmbOptionCompare.ActiveText == "Binary";
-			parameters.OptionExplicit = cmbOptionExplicit.ActiveText == "On";
-			parameters.OptionInfer = cmbOptionInfer.ActiveText == "On";
-			parameters.OptionStrict = cmbOptionStrict.ActiveText == "On";
-			parameters.MyType = txtMyType.ActiveText;
-			parameters.StartupObject = entryMainClass.ActiveText;
-			parameters.CodePage = cmbCodePage.Entry.Text;
-			parameters.ApplicationIcon = iconEntry.Path;
-			this.project.CompileTarget = (CompileTarget) compileTargetCombo.Active;
+			project.BinaryOptionCompare = cmbOptionCompare.ActiveText == "Binary";
+			project.OptionExplicit = cmbOptionExplicit.ActiveText == "On";
+			project.OptionInfer = cmbOptionInfer.ActiveText == "On";
+			project.OptionStrict = cmbOptionStrict.ActiveText == "On";
+			project.MyType = txtMyType.ActiveText;
+			project.StartupObject = entryMainClass.ActiveText;
+			project.CodePage = cmbCodePage.Entry.Text;
+			project.ApplicationIcon = iconEntry.Path;
+			project.CompileTarget = (CompileTarget) compileTargetCombo.Active;
 		}
 	}
 }

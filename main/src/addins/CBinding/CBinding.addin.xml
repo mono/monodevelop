@@ -84,10 +84,6 @@
 		</MimeType>
 	</Extension>
 	
-	<Extension path = "/MonoDevelop/ProjectModel/ProjectBindings">
-		<ProjectBinding id = "CProject" class = "CBinding.CProjectBinding"/>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/ProjectModel/LanguageBindings">
 		<LanguageBinding
 			id = "C"
@@ -201,7 +197,7 @@
 		<DataType class = "CBinding.GppCompiler"/>
 		<DataType class = "CBinding.Package"/>
 	</Extension>
-
+	
 <!-- Current Autotools AddIn is very .NET specific
 	<Module>
 	    <Runtime>

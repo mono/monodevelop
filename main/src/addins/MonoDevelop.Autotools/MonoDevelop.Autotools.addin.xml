@@ -31,7 +31,7 @@
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Condition id="Platform" value="!windows">
-			<ProjectExtension class = "MonoDevelop.Autotools.MakefileProjectExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
+			<Class class = "MonoDevelop.Autotools.MakefileProjectExtension" id="MakefileProjectServiceExtension" insertafter="FinalStep"/>
 		</Condition>
 	</Extension>
 

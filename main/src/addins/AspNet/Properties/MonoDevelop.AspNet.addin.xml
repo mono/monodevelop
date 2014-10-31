@@ -179,19 +179,19 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
-		<ProjectExtension
+		<ProjectFlavor
 			guid="{603C0E0B-DB56-11DC-BE95-000D561079B0}"
 			type="MonoDevelop.AspNet.Projects.AspMvc1ProjectExtension" />
-		<ProjectExtension
+		<ProjectFlavor
 			guid="{F85E285D-A4E0-4152-9332-AB1D724D3325}"
 			type="MonoDevelop.AspNet.Projects.AspMvc2ProjectExtension" />
-		<ProjectExtension
+		<ProjectFlavor
 			guid="{E53F8FEA-EAE0-44A6-8774-FFD645390401}"
 			type="MonoDevelop.AspNet.Projects.AspMvc3ProjectExtension" />
-		<ProjectExtension
+		<ProjectFlavor
 			guid="{E3E379DF-F4C6-4180-9B81-6769533ABE47}"
 			type="MonoDevelop.AspNet.Projects.AspMvc4ProjectExtension" />
-		<ProjectExtension
+		<ProjectFlavor
 			id="MonoDevelop.AspNet.Projects.AspNetAppProjectExtension"
 			guid="{349C5851-65DF-11DA-9384-00065B846F21}"
 			type="MonoDevelop.AspNet.Projects.AspNetAppProjectExtension" />

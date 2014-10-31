@@ -147,7 +147,7 @@
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
-		<ProjectExtension class = "MonoDevelop.GtkCore.GuiBuilder.GtkProjectServiceExtension"  insertafter="MidStep"/>
+		<Class class = "MonoDevelop.GtkCore.GuiBuilder.GtkProjectServiceExtension"  insertafter="MidStep"/>
 	</Extension>
 	
 	<Extension path = "/MonoDevelop/DesignerSupport/ToolboxProviders">

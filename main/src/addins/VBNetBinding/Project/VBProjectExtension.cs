@@ -30,7 +30,7 @@ using MonoDevelop.Core.Serialization;
 
 namespace MonoDevelop.VBNetBinding
 {
-	public class VBProjectExtension: DotNetProjectExtension
+	class VBProject: DotNetProject
 	{
 		[ItemProperty ("OptionInfer", DefaultValue="Off")]
 		string optionInfer = "Off";
@@ -96,22 +96,22 @@ namespace MonoDevelop.VBNetBinding
 			set { codePage = value ?? string.Empty; }
 		}
 
-		protected override void Initialize ()
+		protected override void OnInitialize ()
 		{
-			base.Initialize ();
-			Project.DefaultNamespaceIsImplicit = true;
+			base.OnInitialize ();
+			DefaultNamespaceIsImplicit = true;
 		}
 
 		protected override void OnReadProject (MonoDevelop.Core.ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			base.OnReadProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().ReadObjectProperties (this, typeof(VBProjectExtension));
+			msproject.GetGlobalPropertyGroup ().ReadObjectProperties (this, typeof(VBProject));
 		}
 
 		protected override void OnWriteProject (MonoDevelop.Core.ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			base.OnWriteProject (monitor, msproject);
-			msproject.GetGlobalPropertyGroup ().WriteObjectProperties (this, typeof(VBProjectExtension));
+			msproject.GetGlobalPropertyGroup ().WriteObjectProperties (this, typeof(VBProject));
 		}
 	}
 }
