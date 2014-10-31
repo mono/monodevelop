@@ -562,6 +562,18 @@
     <EmbeddedResource Include="icons\light\project-32%402x.png">
       <LogicalName>project-light-32@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-64.png">
+      <LogicalName>project-light-64.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-64%402x.png">
+      <LogicalName>project-light-64@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-128.png">
+      <LogicalName>project-light-128.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-128%402x.png">
+      <LogicalName>project-light-128@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\project-console-overlay-32.png">
       <LogicalName>project-console-overlay-light-32.png</LogicalName>
     </EmbeddedResource>
@@ -618,6 +630,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="icons\light\solution-32%402x.png">
       <LogicalName>solution-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\solution-64.png">
+      <LogicalName>solution-light-64.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\solution-64%402x.png">
+      <LogicalName>solution-light-64@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\solution-128.png">
+      <LogicalName>solution-light-128.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\solution-128%402x.png">
+      <LogicalName>solution-light-128@2x.png</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="icons\solution-folder-new-16.png">
       <LogicalName>solution-folder-new-16.png</LogicalName>
