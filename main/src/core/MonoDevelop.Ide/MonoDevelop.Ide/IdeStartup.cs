@@ -343,6 +343,11 @@ namespace MonoDevelop.Ide
 						gtkrc += "-vista";
 				} else if (Platform.IsMac) {
 					gtkrc += ".mac";
+
+					var osv = Platform.OSVersion;
+					if (osv.Major == 10 && osv.Minor >= 10) {
+						gtkrc += "-yosemite";
+					}
 				}
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine (gtkrc));
 			}
