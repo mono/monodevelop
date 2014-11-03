@@ -274,7 +274,7 @@ namespace MonoDevelop.Components.Docking
 				GLib.Timeout.Add (200, delegate {
 					// Using a small delay because AutoShow uses an animation and setting focus may
 					// not work until the item is visible
-					if (autoShowFrame != null && autoShowFrame.ContainerWindow != (Gtk.Window)Toplevel)
+					if (autoShowFrame != null && autoShowFrame.ContainerWindow != null && autoShowFrame.ContainerWindow != (Gtk.Window)Toplevel)
 						autoShowFrame.ContainerWindow.Present ();
 					it.SetFocus ();
 					ScheduleAutoHide (false);
