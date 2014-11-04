@@ -105,7 +105,7 @@ namespace MonoDevelop.MacIntegration
 					var wrapperButton = new AlertButtonWrapper (nsbutton, data.Message, button, alert);
 					wrappers.Add (wrapperButton);
 					nsbutton.Target = wrapperButton;
-					nsbutton.Action = new MonoMac.ObjCRuntime.Selector ("buttonActivatedAction:");
+					nsbutton.Action = new ObjCRuntime.Selector ("buttonActivatedAction:");
 				}
 				
 				
@@ -190,7 +190,7 @@ namespace MonoDevelop.MacIntegration
 		readonly NSButton nsbutton;
 		readonly MessageDescription message;
 		readonly AlertButton alertButton;
-		readonly MonoMac.ObjCRuntime.Selector oldAction;
+		readonly ObjCRuntime.Selector oldAction;
 		readonly NSAlert alert;
 		public AlertButtonWrapper (NSButton nsbutton, MessageDescription message, AlertButton alertButton, NSAlert alert)
 		{
