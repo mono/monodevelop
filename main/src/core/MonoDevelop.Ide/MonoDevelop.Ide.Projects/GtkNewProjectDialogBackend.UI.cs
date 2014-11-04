@@ -90,6 +90,11 @@ namespace MonoDevelop.Ide.Projects
 			topLabelEventBox.ModifyFg (StateType.Normal, whiteColor);
 			topLabelEventBox.BorderWidth = 0;
 
+			var topBannerTopEdgeLineEventBox = new EventBox ();
+			topBannerTopEdgeLineEventBox.HeightRequest = 1;
+			topBannerTopEdgeLineEventBox.ModifyBg (StateType.Normal, bannerLineColor);
+			topBannerTopEdgeLineEventBox.BorderWidth = 0;
+
 			var topBannerBottomEdgeLineEventBox = new EventBox ();
 			topBannerBottomEdgeLineEventBox.HeightRequest = 1;
 			topBannerBottomEdgeLineEventBox.ModifyBg (StateType.Normal, bannerLineColor);
@@ -104,6 +109,7 @@ namespace MonoDevelop.Ide.Projects
 			topLabelHBox.PackStart (topBannerLabel, false, false, 20);
 			topLabelEventBox.Add (topLabelHBox);
 
+			VBox.PackStart (topBannerTopEdgeLineEventBox, false, false, 0);
 			VBox.PackStart (topLabelEventBox, false, false, 0);
 			VBox.PackStart (topBannerBottomEdgeLineEventBox, false, false, 0);
 
