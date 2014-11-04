@@ -1087,14 +1087,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				LazyProjectLoader lazyProjectLoader;
 				lock (updateContentLock) {
-					lazyProjectLoader = Content as LazyProjectLoader;
+					lazyProjectLoader = _content as LazyProjectLoader;
 					if (lazyProjectLoader != null) {
 						lazyProjectLoader.ContextTask.Wait ();
 					}
-					Content = updateFunc (Content);
+					_content = updateFunc (_content);
 					ClearCachedCompilations ();
 					WasChanged = true;
-					if (lazyProjectLoader != null && !(Content is LazyProjectLoader)) {
+					if (lazyProjectLoader != null && !(_content is LazyProjectLoader)) {
 						RunLoadActions ();
 					}
 				}

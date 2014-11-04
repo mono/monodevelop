@@ -235,7 +235,7 @@ style "notebook" = "default"
 
 style "wizard-dialog"
 {
-    GtkDialog::content-area-border =
+    GtkDialog::content-area-border = 0
 }
 
 style "radio-button" = "default"

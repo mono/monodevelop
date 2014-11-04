@@ -298,4 +298,7 @@
 		<Complete id="Other" language="Other" commitOnSpace="True" commitChars="{}[]().,:;+-*/%&amp;|^!~=&lt;&gt;?@#'&quot;\"/>
 	</Extension>
 	
+	<Extension path = "/MonoDevelop/ProjectModel/ExtendedProperties">
+		<ItemProperty class = "MonoDevelop.Projects.ProjectReference" name = "ReferenceOutputAssembly" type = "System.Boolean" />
+	</Extension>
 </ExtensionModel>
