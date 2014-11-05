@@ -204,7 +204,7 @@
         { "name":"User Variable Usage", "fore":"black" },
         { "name":"User Variable Declaration", "fore":"black" },
 
-        { "name":"Syntax Error", "fore":"white", "back":"scarletred3" },
+        { "name":"Syntax Error", "fore":"scarletred1" },
 
         { "name":"String Format Items", "fore":"chocolate2" },
 

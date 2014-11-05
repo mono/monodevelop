@@ -31,6 +31,7 @@ using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using System.Threading;
+using MonoDevelop.Core.ProgressMonitoring;
 
 namespace MonoDevelop.PackageManagement
 {

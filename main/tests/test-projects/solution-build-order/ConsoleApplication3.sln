@@ -49,9 +49,6 @@ Global
 		{D98AE4E1-382B-4E3C-8F1D-6DDC469392FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D98AE4E1-382B-4E3C-8F1D-6DDC469392FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = ConsoleApplication3\ConsoleApplication3.csproj
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

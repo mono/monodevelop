@@ -52,7 +52,7 @@ namespace MonoDevelop.Projects
 			// The item is unknown, but we still want to read/write its configurations
 			return true;
 		}
-		
+
 		public override FilePath FileName {
 			get { return fileName; }
 			set {

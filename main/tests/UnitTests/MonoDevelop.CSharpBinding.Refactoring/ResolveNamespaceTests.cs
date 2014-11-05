@@ -56,8 +56,9 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 
 			project.FileName = "test.csproj";
 
-			TypeSystemService.LoadProject (project);
-			TypeSystemService.GetProjectContentWrapper (project).ReconnectAssemblyReferences (); 
+			var wrapper = TypeSystemService.LoadProject (project);
+			wrapper.EnsureReferencesAreLoaded ();
+			wrapper.ReconnectAssemblyReferences (); 
 			content.Project = project;
 
 			tww.ViewContent = content;

@@ -29,133 +29,311 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 
 using Gtk;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.Text;
+using MonoDevelop.Ide.Gui.Dialogs;
+using MonoDevelop.Components.Extensions;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace MonoDevelop.Ide.Projects
 {
 	internal class AssemblyReferencePanel : VBox, IReferencePanel
 	{
 		SelectReferenceDialog selectDialog;
-		FileChooserWidget chooser;
-		Gtk.Label detailsLabel;
-		Gtk.Button addButton;
-		
+		ListStore store = null;
+		private TreeView treeView = null;
+		StringMatcher stringMatcher;
+		List<AssemblyInfo> assemblies = new List<AssemblyInfo> ();
+		FilePath basePath;
+		FilePath baseSolutionPath;
+
+		class AssemblyInfo
+		{
+			public AssemblyInfo (FilePath file)
+			{
+				this.File = file.CanonicalPath;
+				try {
+					Version = new AssemblyName (SystemAssemblyService.GetAssemblyName (file)).Version.ToString ();
+				} catch {
+					Version = "";
+				}
+			}
+			
+			public FilePath File;
+			public string Version;
+			public bool Selected;
+		}
+
+		const int ColName = 0;
+		const int ColVersion = 1;
+		const int ColAssemblyInfo = 2;
+		const int ColSelected = 3;
+		const int ColPath = 4;
+		const int ColIcon = 5;
+		const int ColMatchRank = 6;
+
 		public AssemblyReferencePanel (SelectReferenceDialog selectDialog)
 		{
-			this.selectDialog = selectDialog;
-			
-			chooser = new FileChooserWidget (FileChooserAction.Open, "");
-			chooser.SetCurrentFolder (Environment.GetFolderPath (Environment.SpecialFolder.Personal));
-			chooser.SelectMultiple = true;
-
-			// this should only allow dll's and exe's
-			FileFilter filter = new FileFilter ();
-			filter.Name = GettextCatalog.GetString ("Assemblies");
-			filter.AddPattern ("*.[Dd][Ll][Ll]");
-			filter.AddPattern ("*.[Ee][Xx][Ee]");
-			chooser.AddFilter (filter);
-			chooser.FileActivated += new EventHandler (SelectReferenceDialog);
-			chooser.SelectionChanged += HandleChooserSelectionChanged;
-			chooser.BorderWidth = 6;
-
-			PackStart (chooser, true, true, 0);
-			
-			HeaderBox hbox = new HeaderBox (1, 0, 0, 0);
-			hbox.GradientBackground = true;
-			hbox.SetPadding (6,6,6,6);
-			
-			HBox box = new HBox ();
-			detailsLabel = new Label ();
-			detailsLabel.Xalign = 0;
-			detailsLabel.Ellipsize = Pango.EllipsizeMode.End;
-			box.PackStart (detailsLabel, true, true, 0);
-			addButton = new Gtk.Button (Gtk.Stock.Add);
-			box.PackEnd (addButton, false, false, 0);
-			hbox.Add (box);
-			PackStart (hbox, false, false, 0);
-			
-			addButton.Clicked += SelectReferenceDialog;
-			
 			Spacing = 6;
-			ShowAll();
+			this.selectDialog = selectDialog;
+
+			store = new ListStore (typeof (string), typeof (string), typeof (AssemblyInfo), typeof (bool), typeof (string), typeof(IconId), typeof(int));
+			treeView = new TreeView (store);
+
+			TreeViewColumn firstColumn = new TreeViewColumn ();
+			CellRendererToggle tog_render = new CellRendererToggle ();
+			tog_render.Toggled += AddReference;
+			firstColumn.PackStart (tog_render, false);
+			firstColumn.AddAttribute (tog_render, "active", ColSelected);
+
+			treeView.AppendColumn (firstColumn);
+
+			TreeViewColumn secondColumn = new TreeViewColumn ();
+			secondColumn.Title = GettextCatalog.GetString ("Assembly");
+			CellRendererImage crp = new CellRendererImage ();
+			secondColumn.PackStart (crp, false);
+			secondColumn.AddAttribute (crp, "icon-id", ColIcon);
+
+			CellRendererText text_render = new CellRendererText ();
+			secondColumn.PackStart (text_render, true);
+			secondColumn.AddAttribute (text_render, "markup", ColName);
+
+			treeView.AppendColumn (secondColumn);
+
+			treeView.AppendColumn (GettextCatalog.GetString ("Version"), new CellRendererText (), "markup", ColVersion);
+			treeView.AppendColumn (GettextCatalog.GetString ("Path"), new CellRendererText (), "text", ColPath);
+
+			treeView.Columns[1].Resizable = true;
+
+			store.SetSortColumnId (0, SortType.Ascending);
+			store.SetSortFunc (0, new TreeIterCompareFunc (Sort));
+
+			ScrolledWindow sc = new ScrolledWindow ();
+			sc.ShadowType = Gtk.ShadowType.In;
+			sc.Add (treeView);
+			PackStart (sc, true, true, 0);
+
+			var but = new Gtk.Button (GettextCatalog.GetString ("Browse..."));
+			but.Clicked += HandleClicked;
+			var hbox = new Gtk.HBox ();
+			hbox.PackEnd (but, false, false, 0);
+			PackStart (hbox, false, false, 0);
+
+			ShowAll ();
+			BorderWidth = 6;
 		}
+
+		private int Sort (TreeModel model, TreeIter left, TreeIter right)
+		{
+			int result = 0;
+
+			if (stringMatcher != null) {
+				result = ((int)model.GetValue (right, ColMatchRank)).CompareTo ((int)model.GetValue (left, ColMatchRank));
+				if (result != 0)
+					return result;
+			}
+
+			result = String.Compare ((string)model.GetValue (left, 0), (string)model.GetValue (right, 0), StringComparison.InvariantCultureIgnoreCase);
+
+			if (result != 0)
+				return result;
+
+			return String.Compare ((string)model.GetValue (left, ColVersion), (string)model.GetValue (right, ColVersion), StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		void HandleClicked (object sender, EventArgs e)
+		{
+			var dlg = new OpenFileDialog (GettextCatalog.GetString ("Select Assembly"), FileChooserAction.Open);
+//			dlg.AddFilter (GettextCatalog.GetString ("Assemblies"), "*.[Dd][Ll][Ll]", "*.[Ee][Xx][Ee]");
+			dlg.AddFilter (GettextCatalog.GetString ("Assemblies"), "*.dll", "*.exe");
+			dlg.CurrentFolder = basePath;
+
+			if (dlg.Run ()) {
+				basePath = dlg.CurrentFolder;
+				foreach (string file in dlg.SelectedFiles) {
+					var fn = new FilePath (file).CanonicalPath;
+					var asm = assemblies.FirstOrDefault (a => a.File.Equals (fn));
+					if (asm != null) {
+						if (!asm.Selected) {
+							asm.Selected = true;
+							AddReference (file);
+						}
+						continue;
+					}
+
+					bool isAssembly = true;
+					try	{
+						SystemAssemblyService.GetAssemblyName (System.IO.Path.GetFullPath (file));
+					} catch {
+						isAssembly = false;
+					}
+
+					if (isAssembly) {
+						assemblies.Add (new AssemblyInfo (file) { Selected = true });
+						AddReference (file);
+						if (IsExternalAssembly (file))
+							selectDialog.RegisterFileReference (file);
+						else if (!IsNuGetAssembly (file))
+							selectDialog.RegisterFileReference (file, project.ParentSolution.FileName);
+					} else {
+						MessageService.ShowError (GettextCatalog.GetString ("File '{0}' is not a valid .Net Assembly", file));
+					}
+				}
+				Reset ();
+			}
+		}
+
+		FilePath nugetDir;
+		DotNetProject project;
 		
 		public void SetProject (DotNetProject configureProject)
 		{
-			SetBasePath (configureProject.BaseDirectory);
+			this.project = configureProject;
+			assemblies.Clear ();
+
+			nugetDir = configureProject.ParentSolution.ItemDirectory.Combine ("packages");
+
+			foreach (var asm in selectDialog.GetRecentFileReferences (project.ParentSolution.FileName)) {
+				if (File.Exists (asm))
+					assemblies.Add (new AssemblyInfo (asm));
+			}
+
+			foreach (var pr in configureProject.ParentSolution.GetAllItems<DotNetProject> ().SelectMany (p => p.References).Where (r => r.ReferenceType == ReferenceType.Assembly && !string.IsNullOrEmpty (r.HintPath))) {
+				var file = new FilePath (pr.HintPath).CanonicalPath;
+				if (File.Exists (file) && !IsNuGetAssembly (file) && !assemblies.Any (a => a.File.Equals (file)))
+					assemblies.Add (new AssemblyInfo (pr.HintPath));
+			}
+
+			basePath = configureProject.BaseDirectory;
+			Reset ();
 		}
 		
+		bool IsNuGetAssembly (FilePath p)
+		{
+			return p.IsChildPathOf (nugetDir);
+		}
+
+		bool IsExternalAssembly (FilePath p)
+		{
+			return !p.IsChildPathOf (project.ParentSolution.BaseDirectory) && !p.IsChildPathOf (project.ParentSolution.ItemDirectory);
+		}
+
 		public void SignalRefChange (ProjectReference refInfo, bool newState)
 		{
+			if (refInfo.ReferenceType == ReferenceType.Assembly && !string.IsNullOrEmpty (refInfo.HintPath)) {
+				var path = new FilePath (refInfo.HintPath).CanonicalPath;
+				var asm = assemblies.FirstOrDefault (a => a.File.Equals (path));
+				if (asm != null)
+					asm.Selected = newState;
+				else if (newState)
+					assemblies.Add (new AssemblyInfo (refInfo.HintPath) { Selected = true });
+				Reset ();
+			}
 		}
 		
 		public void SetFilter (string filter)
 		{
+			if (!string.IsNullOrEmpty (filter))
+				stringMatcher = StringMatcher.GetMatcher (filter, false);
+			else
+				stringMatcher = null;
+			Reset ();
 		}
 		
-		public void SetBasePath (string path)
+		public void Reset ()
 		{
-			chooser.SetCurrentFolder (path);
-		}
-		
-		void SelectReferenceDialog(object sender, EventArgs e)
-		{
-			string[] selectedFiles = new string[chooser.Filenames.Length];
-			chooser.Filenames.CopyTo(selectedFiles, 0);
-		
-			foreach (string file in selectedFiles) {
-				bool isAssembly = true;
-				try	{
-					SystemAssemblyService.GetAssemblyName (System.IO.Path.GetFullPath (file));
-				} catch {
-					isAssembly = false;
-				}
-			
-				if (isAssembly) {
-					selectDialog.AddReference (new ProjectReference (ReferenceType.Assembly, file));
-					selectDialog.RegisterFileReference (file);
+			store.Clear ();
+
+			foreach (var asm in assemblies) {
+
+				int matchRank = 0;
+				string name, version;
+
+				if (stringMatcher != null) {
+					string txt = asm.File.FileName + " " + asm.Version;
+					if (!stringMatcher.CalcMatchRank (txt, out matchRank))
+						continue;
+					int[] match = stringMatcher.GetMatch (txt);
+					name = GetMatchMarkup (treeView, asm.File.FileName, match, 0);
+					version = GetMatchMarkup (treeView, asm.Version, match, asm.File.FileName.Length + 1);
 				} else {
-					MessageService.ShowError (GettextCatalog.GetString ("File '{0}' is not a valid .Net Assembly", file));
+					name = GLib.Markup.EscapeText (asm.File.FileName);
+					version = GLib.Markup.EscapeText (asm.Version);
 				}
+
+				store.AppendValues (name, 
+					version, 
+					asm, 
+					asm.Selected, 
+					asm.File.ToString (), 
+					MonoDevelop.Ide.Gui.Stock.OpenFolder,
+					matchRank);
 			}
 		}
 
-		void HandleChooserSelectionChanged (object sender, EventArgs e)
+		internal static string GetMatchMarkup (Gtk.Widget widget, string text, int[] matches, int startIndex)
 		{
-			if (chooser.Filenames.Length == 0) {
-				detailsLabel.Text = "";
-				addButton.Sensitive = false;
-				return;
+			StringBuilder result = new StringBuilder ();
+			int lastPos = 0;
+			var color = Mono.TextEditor.HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
+				widget.Style.Text (StateType.Normal), 3)[2];
+			for (int n=0; n < matches.Length; n++) {
+				int pos = matches[n] - startIndex;
+				if (pos < 0 || pos >= text.Length)
+					continue;
+				if (pos - lastPos > 0)
+					result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, pos - lastPos)));
+				result.Append ("<span foreground=\"");
+				result.Append (color.ToPangoString ());
+				result.Append ("\">");
+				result.Append (GLib.Markup.EscapeText (text[pos].ToString ()));
+				result.Append ("</span>");
+				lastPos = pos + 1;
 			}
-		
-			bool allAssemblies = true;
-			foreach (string file in chooser.Filenames) {
-				try	{
-					SystemAssemblyService.GetAssemblyName (System.IO.Path.GetFullPath (file));
-				} catch {
-					allAssemblies = false;
-					break;
-				}
+			if (lastPos < text.Length)
+				result.Append (GLib.Markup.EscapeText (text.Substring (lastPos, text.Length - lastPos)));
+			return result.ToString ();
+		}
+
+		public void AddReference (object sender, Gtk.ToggledArgs e)
+		{
+			Gtk.TreeIter iter;
+			store.GetIterFromString (out iter, e.Path);
+			var ainfo = (AssemblyInfo)store.GetValue (iter, ColAssemblyInfo);
+			string fullName = (string)store.GetValue (iter, ColPath);
+			if (!(bool)store.GetValue (iter, ColSelected)) {
+				store.SetValue (iter, ColSelected, true);
+				ainfo.Selected = true;
+				AddReference (fullName);
 			}
-			
-			if (!allAssemblies) {
-				detailsLabel.Text = "";
-				addButton.Sensitive = false;
-				return;
+			else {
+				store.SetValue (iter, ColSelected, false);
+				ainfo.Selected = false;
+				RemoveReference (fullName);
+
+				// Ensure that this file is kept in the recents list, so it can be added later on
+				if (IsExternalAssembly (fullName))
+					selectDialog.RegisterFileReference (fullName);
+				else if (!IsNuGetAssembly (fullName))
+					selectDialog.RegisterFileReference (fullName, project.ParentSolution.FileName);
 			}
-			
-			if (chooser.Filenames.Length == 1) {
-				string aname = SystemAssemblyService.GetAssemblyName (chooser.Filenames[0]);
-				detailsLabel.Text = aname;
-			} else {
-				detailsLabel.Text = GettextCatalog.GetString ("{0} Assemblies selected", chooser.Filenames.Length);
-			}
-			addButton.Sensitive = true;
+		}
+
+		void AddReference (FilePath path)
+		{
+			selectDialog.AddReference (new ProjectReference (ReferenceType.Assembly, path));
+		}
+
+		void RemoveReference (FilePath path)
+		{
+			selectDialog.RemoveReference (ReferenceType.Assembly, path.FileNameWithoutExtension);
 		}
 	}
 }

@@ -177,6 +177,7 @@ namespace project1 {
 			TypeSystemService.UnloadProject (project2); 
 		}
 
+		[Ignore("Unreliable")]
 		[Test]
 		public void TestCollectForExternalReference ()
 		{

@@ -195,7 +195,12 @@ namespace ICSharpCode.PackageManagement
 		{
 			unsafeEvents.OnParentPackageInstalled(package, project);
 		}
-		
+
+		public void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations)
+		{
+			unsafeEvents.OnParentPackageInstalled (package, project, operations);
+		}
+
 		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
 		{
 			unsafeEvents.OnParentPackageUninstalled(package, project);
@@ -282,6 +287,16 @@ namespace ICSharpCode.PackageManagement
 		public bool OnFileRemoving (string path)
 		{
 			return unsafeEvents.OnFileRemoving (path);
+		}
+
+		public event EventHandler<PackageRestoredEventArgs> PackageRestored {
+			add { unsafeEvents.PackageRestored += value; }
+			remove { unsafeEvents.PackageRestored -= value; }
+		}
+
+		public void OnPackageRestored (IPackage package)
+		{
+			unsafeEvents.OnPackageRestored (package);
 		}
 	}
 }

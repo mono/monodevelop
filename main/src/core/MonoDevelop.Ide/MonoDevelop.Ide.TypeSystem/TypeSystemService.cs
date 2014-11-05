@@ -393,9 +393,11 @@ namespace MonoDevelop.Ide.TypeSystem
 						var file = pcnt._content.GetFile (fileName);
 						if (file != null) {
 							var newResult = parser.Parse (false, fileName, new StringReader (content), pcnt.Project);
-							pcnt.UpdateContent (c => c.AddOrUpdateFiles (newResult.ParsedFile));
-							pcnt.InformFileRemoved (new ParsedFileEventArgs (file));
-							pcnt.InformFileAdded (new ParsedFileEventArgs (newResult.ParsedFile));
+							if ((newResult.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable) {
+								pcnt.UpdateContent (c => c.AddOrUpdateFiles (newResult.ParsedFile));
+								pcnt.InformFileRemoved (new ParsedFileEventArgs (file));
+								pcnt.InformFileAdded (new ParsedFileEventArgs (newResult.ParsedFile));
+							}
 						}
 					}
 				}
@@ -1085,14 +1087,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			{
 				LazyProjectLoader lazyProjectLoader;
 				lock (updateContentLock) {
-					lazyProjectLoader = Content as LazyProjectLoader;
+					lazyProjectLoader = _content as LazyProjectLoader;
 					if (lazyProjectLoader != null) {
 						lazyProjectLoader.ContextTask.Wait ();
 					}
-					Content = updateFunc (Content);
+					_content = updateFunc (_content);
 					ClearCachedCompilations ();
 					WasChanged = true;
-					if (lazyProjectLoader != null && !(Content is LazyProjectLoader)) {
+					if (lazyProjectLoader != null && !(_content is LazyProjectLoader)) {
 						RunLoadActions ();
 					}
 				}
@@ -2669,7 +2671,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							return;
 						parsedFiles.Add (Tuple.Create (parsedDocument, Context._content.GetFile (fileName))); 
 					}
-					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedFiles.Select (p => p.Item1.ParsedFile)));
+					Context.UpdateContent (c => c.AddOrUpdateFiles (parsedFiles.Where (f => (f.Item1.Flags & ParsedDocumentFlags.NonSerializable) != ParsedDocumentFlags.NonSerializable).Select (p => p.Item1.ParsedFile)));
 					foreach (var file in parsedFiles) {
 						if (token.IsCancellationRequested)
 							return;

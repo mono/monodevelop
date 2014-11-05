@@ -493,5 +493,30 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.AreEqual ("Test Package contains PowerShell scripts which will not be run.", messageLogged);
 		}
+
+		[Test]
+		public void Execute_PackageAndPackageRepositoryPassed_PackageInstallNotificationRaisedWithProject ()
+		{
+			CreateAction ();
+			IPackageManagementProject project = null;
+			packageManagementEvents.ParentPackageInstalled += (sender, e) => project = e.Project;
+
+			installPackageHelper.InstallTestPackage ();
+
+			Assert.AreEqual (fakeProject, project);
+		}
+
+		[Test]
+		public void Execute_InstallHasPackageOperations_PackageInstallNotificationRaisedWithPackageOperations ()
+		{
+			CreateAction ();
+			installPackageHelper.AddPackageInstallOperation ();
+			IEnumerable<PackageOperation> actualOperations = null;
+			packageManagementEvents.ParentPackageInstalled += (sender, e) => actualOperations = e.Operations;
+
+			installPackageHelper.InstallTestPackage ();
+
+			CollectionAssert.AreEqual (action.Operations, actualOperations);
+		}
 	}
 }

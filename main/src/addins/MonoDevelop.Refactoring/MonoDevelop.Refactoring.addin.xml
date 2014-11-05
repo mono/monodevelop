@@ -161,15 +161,13 @@
 	
 	<!-- Options panels -->
 	
-	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/SourceCode">
-		<Section id="C#" _label="C#" icon="md-prefs-csharp">
-			<Section id="CodeIssuePanel" _label="Code Rules" fill="true" class="MonoDevelop.CodeIssues.CodeIssuePanel" icon="md-prefs-code-rules" />
-			<Section id="CodeActions" _label="Code Actions" fill="true" class="MonoDevelop.CodeActions.CodeActionPanel" icon="md-prefs-code-actions" />
-		</Section>
-	</Extension>
-	
 	<Extension path = "/MonoDevelop/Ide/GlobalOptionsDialog/TextEditor">
-		<Section id="Analysis" _label="Source Analysis" fill="true" class="MonoDevelop.AnalysisCore.Gui.AnalysisOptionsPanel" icon="md-prefs-code-analysis" />
+		<Section id="Analysis" _label="Source Analysis" fill="true" class="MonoDevelop.AnalysisCore.Gui.AnalysisOptionsPanel" icon="md-prefs-code-analysis" >
+			<Section id="C#" _label="C#" icon="md-prefs-csharp">
+				<Panel id="CodeIssuePanel" _label="Code Rules" fill="true" class="MonoDevelop.CodeIssues.CodeIssuePanel" grouping="Tab" icon="md-prefs-code-rules" />
+				<Panel id="CodeActions" _label="Code Actions" fill="true" class="MonoDevelop.CodeActions.CodeActionPanel" grouping="Tab" icon="md-prefs-code-actions" />
+			</Section>
+		</Section>
 	</Extension>
 	
 	<!-- Extensions to the addin points defined by this addin -->

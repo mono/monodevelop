@@ -768,6 +768,12 @@ namespace MonoDevelop.Projects
 			}
 		}
 
+		public void RefreshProjectBuilder ()
+		{
+			if (projectBuilder != null)
+				projectBuilder.Refresh ();
+		}
+
 		#endregion
 
 		/// <summary>Whether to use the MSBuild engine for the specified item.</summary>

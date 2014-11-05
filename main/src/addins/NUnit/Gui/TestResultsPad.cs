@@ -44,6 +44,7 @@ using System.Text.RegularExpressions;
 using MonoDevelop.Components;
 using System.Threading;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Fonts;
 
 namespace MonoDevelop.NUnit
 {
@@ -116,7 +117,7 @@ namespace MonoDevelop.NUnit
 			// Failures tree
 			failuresTreeView = new MonoDevelop.Ide.Gui.Components.PadTreeView ();
 			failuresTreeView.HeadersVisible = false;
-			failuresStore = new TreeStore (typeof(Xwt.Drawing.Image), typeof(string), typeof(object), typeof(string), typeof(int));
+			failuresStore = new TreeStore (typeof(Xwt.Drawing.Image), typeof(string), typeof(object), typeof(string), typeof(int), typeof(int));
 			var pr = new CellRendererImage ();
 			CellRendererText tr = new CellRendererText ();
 			TreeViewColumn col = new TreeViewColumn ();
@@ -133,6 +134,7 @@ namespace MonoDevelop.NUnit
 			book.Pack1 (sw, true, true);
 			
 			outputView = new MonoDevelop.Ide.Gui.Components.LogView.LogTextView ();
+			outputView.ModifyFont (FontService.MonospaceFont);
 			outputView.Editable = false;
 			bold = new TextTag ("bold");
 			bold.Weight = Pango.Weight.Bold;
@@ -363,7 +365,9 @@ namespace MonoDevelop.NUnit
 			errorMessage = message;
 			AddErrorMessage ();
 		}
-		
+		const int ErrorMessage = 1;
+		const int StackTrace = 2;
+
 		public void AddErrorMessage ()
 		{
 			string msg = GettextCatalog.GetString ("Internal error");
@@ -406,7 +410,7 @@ namespace MonoDevelop.NUnit
 				string fileName;
 				int lineNumber;
 				TryParseLocationFromStackTrace (line, out fileName, out lineNumber);
-				failuresStore.AppendValues (row, null, Escape (line), test, fileName, lineNumber);
+				failuresStore.AppendValues (row, null, Escape (line), test, fileName, lineNumber, StackTrace);
 			}
 		}
 		
@@ -486,8 +490,26 @@ namespace MonoDevelop.NUnit
 				var last = test.GetLastResult ();
 				if (last == null)
 					return;
+
+				Gtk.TreeModel foo;
+				Gtk.TreeIter iter;
+				if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
+					return;
+
+				int type = (int)failuresStore.GetValue (iter, 5);
+
 				var clipboard = Clipboard.Get (Gdk.Atom.Intern ("CLIPBOARD", false));
-				clipboard.Text = last.StackTrace;
+				switch (type) {
+				case ErrorMessage:
+					clipboard.Text = last.Message;
+					break;
+				case StackTrace:
+					clipboard.Text = last.StackTrace;
+					break;
+				default:
+					clipboard.Text = last.Message + Environment.NewLine + "Stack trace:" + Environment.NewLine + last.StackTrace;
+					break;
+				}
 			}
 		}
 
@@ -562,7 +584,7 @@ namespace MonoDevelop.NUnit
 			Gtk.TreeIter iter;
 			if (!failuresTreeView.Selection.GetSelected (out foo, out iter))
 				return null;
-				
+
 			UnitTest t = (UnitTest)failuresStore.GetValue (iter, 2);
 			return t;
 		}
@@ -623,13 +645,14 @@ namespace MonoDevelop.NUnit
 					return;
 				string file = test.SourceCodeLocation != null ? test.SourceCodeLocation.FileName + ":" + test.SourceCodeLocation.Line : null;
 				TreeIter testRow = failuresStore.AppendValues (TestStatusIcon.Failure, Escape (test.FullName), test, file);
-				bool hasMessage = result.Message != null && result.Message.Length > 0;
+				bool hasMessage = !string.IsNullOrEmpty (result.Message);
+
 				if (hasMessage)
-					failuresStore.AppendValues (testRow, null, Escape (result.Message), test);
-				if (result.StackTrace != null && result.StackTrace.Length > 0) {
+					failuresStore.AppendValues (testRow, null, "<span font='" + FontService.MonospaceFontName + "'>"+Escape (result.Message) + "</span>", test, null, 0, ErrorMessage);
+				if (!string.IsNullOrEmpty (result.StackTrace)) {
 					TreeIter row = testRow;
 					if (hasMessage)
-						row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), test);
+						row = failuresStore.AppendValues (testRow, null, GettextCatalog.GetString ("Stack Trace"), test, null, 0, StackTrace);
 					AddStackTrace (row, result.StackTrace, test);
 				}
 				failuresTreeView.ScrollToCell (failuresStore.GetPath (testRow), null, false, 0, 0);

@@ -36,6 +36,7 @@ namespace MonoDevelop.PackageManagement
 	public class RestorePackagesAction : IPackageAction
 	{
 		IPackageManagementSolution solution;
+		IPackageManagementEvents packageManagementEvents;
 		ISolutionPackageRepository solutionPackageRepository;
 		IPackageRepositoryCache repositoryCache;
 		IPackageManagerFactory packageManagerFactory;
@@ -66,6 +67,7 @@ namespace MonoDevelop.PackageManagement
 			IPackageManagerFactory packageManagerFactory)
 		{
 			this.solution = solution;
+			this.packageManagementEvents = packageManagementEvents;
 			this.repositoryCache = repositoryCache;
 			this.packageManagerFactory = packageManagerFactory;
 
@@ -168,6 +170,8 @@ namespace MonoDevelop.PackageManagement
 					ignoreDependencies: true,
 					allowPrereleaseVersions: true,
 					ignoreWalkInfo: true);
+
+				packageManagementEvents.OnPackageRestored (package);
 			}
 		}
 

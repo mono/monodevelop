@@ -63,6 +63,15 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public bool IsPackageConsoleShown;
 		public ProgressMonitor ProgressMonitorPassedToShowPackageConsole;
+
+		protected override void ReconnectAssemblyReferences (IPackageManagementProject project)
+		{
+			ProjectsPassedToReconnectAssemblyReferences.Add (project);
+			IsTypeSystemRefreshed = true;
+		}
+
+		public List<IPackageManagementProject> ProjectsPassedToReconnectAssemblyReferences = new List<IPackageManagementProject> ();
+		public bool IsTypeSystemRefreshed;
 	}
 }
 

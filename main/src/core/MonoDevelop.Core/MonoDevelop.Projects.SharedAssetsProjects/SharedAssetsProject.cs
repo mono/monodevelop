@@ -42,7 +42,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		Solution currentSolution;
 		IDotNetLanguageBinding languageBinding;
 		string languageName;
-		string projitemsFile;
+		FilePath projItemsPath;
 
 		public SharedAssetsProject ()
 		{
@@ -76,7 +76,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			base.OnReadProject (monitor, msproject);
 
 			var doc = msproject.Document;
-			projitemsFile = null;
+			string projitemsFile = null;
 			foreach (var no in doc.DocumentElement.ChildNodes) {
 				var im = no as XmlElement;
 				if (im != null && im.LocalName == "Import" && im.GetAttribute ("Label") == "Shared") {
@@ -90,10 +90,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			// TODO: load the type from msbuild
 			LanguageName = "C#";
 
-			projitemsFile = Path.Combine (Path.GetDirectoryName (msproject.FileName), projitemsFile);
+			projItemsPath = Path.Combine (Path.GetDirectoryName (msproject.FileName), projitemsFile);
 
 			MSBuildProject p = new MSBuildProject ();
-			p.Load (projitemsFile);
+			p.Load (projItemsPath);
 
 			var cp = p.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
 			if (cp != null)
@@ -133,10 +133,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			else
 				msproject.ToolsVersion = "2.0";
 
-			if (projitemsFile == null)
-				projitemsFile = Path.ChangeExtension (FileName, ".projitems");
-			if (File.Exists (projitemsFile)) {
-				projitemsProject.Load (projitemsFile);
+			if (projItemsPath == FilePath.Null)
+				projItemsPath = Path.ChangeExtension (FileName, ".projitems");
+			if (File.Exists (projItemsPath)) {
+				projitemsProject.Load (projItemsPath);
 			} else {
 				IMSBuildPropertySet grp = projitemsProject.AddNewPropertyGroup (true);
 				grp.SetValue ("MSBuildAllProjects", "$(MSBuildAllProjects);$(MSBuildThisFileFullPath)");
@@ -158,7 +158,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			foreach (var it in msproject.GetAllItems ().ToArray ())
 				msproject.RemoveItem (it);
 
-			projitemsProject.Save (projitemsFile);
+			projitemsProject.Save (projItemsPath);
 		}
 
 		protected override IEnumerable<FilePath> OnGetItemFiles (bool includeReferencedFiles)
@@ -178,10 +178,10 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		public FilePath ProjItemsPath {
 			get {
-				return projitemsFile != null ? (FilePath) projitemsFile : FileName.ChangeExtension (".projitems");
+				return !projItemsPath.IsNull ? projItemsPath : FileName.ChangeExtension (".projitems");
 			}
 			set {
-				projitemsFile = value;
+				projItemsPath = value;
 			}
 		}
 

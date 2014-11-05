@@ -102,7 +102,7 @@ namespace MonoDevelop.AssemblyBrowser
 			if (fileName == null)
 				return;
 			var builder = (AssemblyReferenceNodeBuilder)this.CurrentNode.TypeNodeBuilder;
-			builder.Widget.AddReferenceByFileName (fileName, true);
+			builder.Widget.AddReferenceByFileName (fileName);
 		}
 	}
 

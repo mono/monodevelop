@@ -69,6 +69,11 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
+		internal static bool IsFoundationNamespace (string ns )
+		{
+			return (ns == "MonoTouch.Foundation" || ns == "Foundation");
+		}
+
 		IEnumerable<IMember> GetProtocolMembers (IType curType)
 		{
 			foreach (var t in curType.DirectBaseTypes) {
@@ -81,15 +86,15 @@ namespace MonoDevelop.CSharp.Completion
 				foreach (var member in protocolType.GetMethods (null, GetMemberOptions.IgnoreInheritedMembers)) {
 					if (member.ImplementedInterfaceMembers.Any () || member.IsAbstract || !member.IsVirtual)
 						continue;
-					if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation")) {
+					if (member.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" && IsFoundationNamespace (a.AttributeType.Namespace))) {
 						yield return member;
 					}
 				}
 				foreach (var member in protocolType.GetProperties (null, GetMemberOptions.IgnoreInheritedMembers)) {
 					if (member.ImplementedInterfaceMembers.Any () || member.IsAbstract || !member.IsVirtual)
 						continue;
-					if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation") ||
-						member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  a.AttributeType.Namespace == "MonoTouch.Foundation"))
+					if (member.CanGet && member.Getter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  IsFoundationNamespace (a.AttributeType.Namespace)) ||
+						member.CanSet && member.Setter.Attributes.Any (a => a.AttributeType.Name == "ExportAttribute" &&  IsFoundationNamespace (a.AttributeType.Namespace)))
 						yield return member;
 				}
 			}

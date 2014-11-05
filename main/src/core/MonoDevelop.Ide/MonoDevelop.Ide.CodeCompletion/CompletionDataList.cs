@@ -68,6 +68,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 	public class CompletionDataList : List<ICompletionData>, ICompletionDataList
 	{
 		public bool IsSorted { get; set; }
+		public IComparer<ICompletionData> Comparer { get; set; }
 		
 		public bool AutoCompleteUniqueMatch { get; set; }
 		public string DefaultCompletionString { get; set; }

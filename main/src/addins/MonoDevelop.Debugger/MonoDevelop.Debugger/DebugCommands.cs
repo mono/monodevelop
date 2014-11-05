@@ -718,8 +718,12 @@ namespace MonoDevelop.Debugger
 
 			try {
 				DebuggingService.SetNextStatement (doc.FileName, doc.Editor.Caret.Line, doc.Editor.Caret.Column);
-			} catch (NotSupportedException) {
-				MessageService.ShowError ("Unable to set the next statement to this location.");
+			} catch (Exception e) {
+				if (e is NotSupportedException || e.InnerException is NotSupportedException) {
+					MessageService.ShowError ("Unable to set the next statement to this location.");
+				} else {
+					throw;
+				}
 			}
 		}
 	}

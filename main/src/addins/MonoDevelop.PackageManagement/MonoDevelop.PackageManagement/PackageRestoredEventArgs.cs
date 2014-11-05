@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetProject.cs
+// PackageRestoredEventArgs.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,28 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IDotNetProject : IProject
+	public class PackageRestoredEventArgs : EventArgs
 	{
-		event EventHandler<ProjectModifiedEventArgs> Modified;
+		public PackageRestoredEventArgs (IPackage package)
+		{
+			Package = package;
+		}
 
-		DotNetProject DotNetProject { get; }
-		TargetFrameworkMoniker TargetFrameworkMoniker { get; }
-		string DefaultNamespace { get; }
-		ProjectReferenceCollection References { get; }
-		ProjectFileCollection Files { get; }
-
-		void AddFile (ProjectFile projectFile);
-		string GetDefaultBuildAction (string fileName);
-		bool IsFileInProject (string fileName);
-		void AddImportIfMissing (string name, string condition);
-		void RemoveImport (string name);
-		bool Equals (IDotNetProject project);
-		void RefreshProjectBuilder ();
+		public IPackage Package { get; set; }
 	}
 }
 

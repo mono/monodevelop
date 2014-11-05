@@ -31,6 +31,7 @@ using ICSharpCode.PackageManagement;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using NuGet;
+using MonoDevelop.Ide.TypeSystem;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -43,6 +44,7 @@ namespace MonoDevelop.PackageManagement
 		IFileConflictResolver fileConflictResolver = new FileConflictResolver ();
 		string currentProgressOperation;
 		List<FileEventArgs> fileChangedEvents = new List<FileEventArgs> ();
+		List<IPackageManagementProject> projectsRequiringTypeSystemRefresh = new List<IPackageManagementProject> ();
 
 		public PackageManagementEventsMonitor (
 			ProgressMonitor progressMonitor,
@@ -57,18 +59,21 @@ namespace MonoDevelop.PackageManagement
 			packageManagementEvents.ResolveFileConflict += ResolveFileConflict;
 			packageManagementEvents.AcceptLicenses += AcceptLicenses;
 			packageManagementEvents.FileChanged += FileChanged;
+			packageManagementEvents.ParentPackageInstalled += PackageInstalled;
 			progressProvider.ProgressAvailable += ProgressAvailable;
 		}
-			
+
 		public void Dispose ()
 		{
 			progressProvider.ProgressAvailable -= ProgressAvailable;
+			packageManagementEvents.ParentPackageInstalled -= PackageInstalled;
 			packageManagementEvents.FileChanged -= FileChanged;
 			packageManagementEvents.AcceptLicenses -= AcceptLicenses;
 			packageManagementEvents.ResolveFileConflict -= ResolveFileConflict;
 			packageManagementEvents.PackageOperationMessageLogged -= PackageOperationMessageLogged;
 
 			NotifyFilesChanged ();
+			RefreshTypeSystem ();
 		}
 
 		void ResolveFileConflict(object sender, ResolveFileConflictEventArgs e)
@@ -193,6 +198,39 @@ namespace MonoDevelop.PackageManagement
 		protected virtual void ShowPackageConsole (ProgressMonitor progressMonitor)
 		{
 			progressMonitor.ShowPackageConsole ();
+		}
+
+		void RefreshTypeSystem ()
+		{
+			foreach (IPackageManagementProject project in projectsRequiringTypeSystemRefresh) {
+				ReconnectAssemblyReferences (project);
+			}
+		}
+
+		protected virtual void ReconnectAssemblyReferences (IPackageManagementProject project)
+		{
+			var projectWrapper = TypeSystemService.GetProjectContentWrapper (project.DotNetProject);
+			if (projectWrapper != null) {
+				projectWrapper.ReconnectAssemblyReferences ();
+			}
+		}
+
+		void PackageInstalled (object sender, ParentPackageOperationEventArgs e)
+		{
+			if (ShouldRefreshTypeSystemForProject (e)) {
+				projectsRequiringTypeSystemRefresh.Add (e.Project);
+			}
+		}
+
+		bool ShouldRefreshTypeSystemForProject (ParentPackageOperationEventArgs e)
+		{
+			return e.Operations.Any (operation => IsInstallingMSBuildFiles (operation));
+		}
+
+		bool IsInstallingMSBuildFiles (PackageOperation operation)
+		{
+			return (operation.Action == PackageAction.Install) &&
+				operation.Package.GetBuildFiles ().Any ();
 		}
 	}
 }

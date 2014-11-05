@@ -45,7 +45,7 @@ namespace MonoDevelop.Components.Mac
 		}
 
 		[Export (MDMenuItem.ActionSelName)]
-		public void Run ()
+		public void Run (NSObject dummy)
 		{
 			MonoDevelop.Ide.DesktopService.ShowUrl (lce.Url);
 		}

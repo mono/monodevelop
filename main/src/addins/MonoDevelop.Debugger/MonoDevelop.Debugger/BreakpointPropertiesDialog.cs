@@ -77,7 +77,7 @@ namespace MonoDevelop.Debugger
 
 		// Text entries
 		readonly TextEntry entryFunctionName = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.Object.ToString") };
-		readonly TextEntry entryLocationFile = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. ./monodevelop/main/src/addins/YCombinator.cs:515:16") };
+		readonly TextEntry entryLocationFile = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. Program.cs:15:5") };
 		readonly TextEntryWithCodeCompletion entryExceptionType = new TextEntryWithCodeCompletion (){ PlaceholderText = GettextCatalog.GetString ("e.g. System.InvalidOperationException") };
 		readonly TextEntry entryConditionalExpression = new TextEntry (){ PlaceholderText = GettextCatalog.GetString ("e.g. colorName == \"Red\"") };
 		readonly TextEntry entryPrintExpression = new TextEntry () { PlaceholderText = GettextCatalog.GetString ("e.g. Value of 'name' is {name}") };

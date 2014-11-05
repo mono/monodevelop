@@ -238,6 +238,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			lastChildPath = path;
 			string basePath = Path.GetDirectoryName (path);
 			
+			if (string.IsNullOrEmpty (basePath))
+				return null;
+
 			if (basePath == project.BaseDirectory)
 				return Context.GetTreeBuilder (project);
 				
