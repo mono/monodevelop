@@ -1643,6 +1643,24 @@
     <EmbeddedResource Include="icons\light\done-16%402x.png">
       <LogicalName>done-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\done-24.png">
+      <LogicalName>done-light-24.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\done-24%402x.png">
+      <LogicalName>done-light-24@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\done-32.png">
+      <LogicalName>done-light-32.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\done-32%402x.png">
+      <LogicalName>done-light-32@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\done-48.png">
+      <LogicalName>done-light-48.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\done-48%402x.png">
+      <LogicalName>done-light-48@2x.png</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="icons\light\edit-16.png">
       <LogicalName>edit-light-16.png</LogicalName>
     </EmbeddedResource>

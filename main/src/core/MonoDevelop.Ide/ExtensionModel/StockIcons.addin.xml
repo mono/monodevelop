@@ -36,7 +36,6 @@
 
   <!-- GTK icons redefined -->
 	<StockIcon stockid="gtk-add" resource="add-light-16.png" size="Menu" />
-	<StockIcon stockid="gtk-apply" resource="done-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-cancel" resource="remove-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-clear" resource="clear-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-close" resource="remove-light-16.png" size="Menu" />
@@ -54,7 +53,6 @@
 	<StockIcon stockid="gtk-media-play" resource="media-play-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-missing-image" resource="missing-image-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-new" resource="add-light-16.png" size="Menu" />
-	<StockIcon stockid="gtk-ok" resource="done-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-open" resource="open-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-properties" resource="properties-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-refresh" resource="refresh-light-16.png" size="Menu" />
@@ -88,7 +86,6 @@
 	<StockIcon stockid="md-delete" resource="remove-light-16.png" size="Menu" />
 	<StockIcon stockid="md-disclose-arrow-down" resource="disclose-arrow-down-light-16.png" size="Menu" />
 	<StockIcon stockid="md-disclose-arrow-up" resource="disclose-arrow-up-light-16.png" size="Menu" />
-	<StockIcon stockid="md-done" resource="done-light-16.png" size="Menu" />
 	<StockIcon stockid="md-empty-file-icon" resource="file-generic-light-16.png" size="Menu" />
 	<StockIcon stockid="md-enum" resource="element-enumeration-light-16.png" size="Menu" />
 	<StockIcon stockid="md-enum-file" resource="file-enumeration-light-32.png" size="Dnd" />
@@ -192,6 +189,27 @@
 	<StockIcon stockid="md-xml-file-icon" resource="file-xml-light-32.png" size="Dnd" />
 
 	<!-- All sizes icons -->
+	<StockIcon stockid="gtk-apply" resource="done-light-16.png" />
+	<StockIcon stockid="gtk-apply" resource="done-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-apply" resource="done-light-24.png" size="Button" />
+	<StockIcon stockid="gtk-apply" resource="done-light-24.png" size="LargeToolbar" />
+	<StockIcon stockid="gtk-apply" resource="done-light-32.png" size="Dnd" />
+	<StockIcon stockid="gtk-apply" resource="done-light-48.png" size="Dialog" />
+	
+	<StockIcon stockid="gtk-ok" resource="done-light-16.png" />
+	<StockIcon stockid="gtk-ok" resource="done-light-16.png" size="Menu" />
+	<StockIcon stockid="gtk-ok" resource="done-light-24.png" size="Button" />
+	<StockIcon stockid="gtk-ok" resource="done-light-24.png" size="LargeToolbar" />
+	<StockIcon stockid="gtk-ok" resource="done-light-32.png" size="Dnd" />
+	<StockIcon stockid="gtk-ok" resource="done-light-48.png" size="Dialog" />
+	
+	<StockIcon stockid="md-done" resource="done-light-16.png" />
+	<StockIcon stockid="md-done" resource="done-light-16.png" size="Menu" />
+	<StockIcon stockid="md-done" resource="done-light-24.png" size="Button" />
+	<StockIcon stockid="md-done" resource="done-light-24.png" size="LargeToolbar" />
+	<StockIcon stockid="md-done" resource="done-light-32.png" size="Dnd" />
+	<StockIcon stockid="md-done" resource="done-light-48.png" size="Dialog" />
+	
 	<StockIcon stockid="gtk-dialog-error" resource="error-light-16.png" />
 	<StockIcon stockid="gtk-dialog-error" resource="error-light-16.png" size="Menu" />
 	<StockIcon stockid="gtk-dialog-error" resource="error-light-24.png" size="Button" />
