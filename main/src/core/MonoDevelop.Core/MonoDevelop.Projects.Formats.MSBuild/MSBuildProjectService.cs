@@ -170,6 +170,16 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
 		}
 
+		internal static Project CreateProject (string typeGuid, params string[] flavorGuids)
+		{
+			foreach (var node in GetItemTypeNodes ().OfType<ProjectTypeNode> ()) {
+				if (node.Guid.Equals (typeGuid, StringComparison.OrdinalIgnoreCase)) {
+					return node.CreateProject (typeGuid, flavorGuids);
+				}
+			}
+			throw new InvalidOperationException ("Unknown project type: " + typeGuid);
+		}
+
 		internal static SolutionItem CreateSolutionItem (string type, ProjectCreateInformation info, System.Xml.XmlElement projectOptions)
 		{
 			foreach (var node in GetItemTypeNodes ()) {
@@ -179,7 +189,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			throw new InvalidOperationException ("Unknown project type: " + type);
 		}
 
-/*		internal static bool CanMigrateFlavor (string[] guids)
+/* TODO NPM
+		internal static bool CanMigrateFlavor (string[] guids)
 		{
 
 		}

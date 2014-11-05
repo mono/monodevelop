@@ -99,6 +99,7 @@ namespace MonoDevelop.Projects
 			static object theLock = new object ();
 			public MSBuildProject Project { get; set; }
 			public string TypeGuid { get; set; }
+			public string[] FlavorGuids { get; set; }
 
 			internal static void LockContext (MSBuildProject p, string typeGuid)
 			{
@@ -106,6 +107,14 @@ namespace MonoDevelop.Projects
 				Current = new CreationContext ();
 				Current.Project = p;
 				Current.TypeGuid = typeGuid;
+			}
+
+			internal static void LockContext (string typeGuid, string[] flavorGuids)
+			{
+				Monitor.Enter (theLock);
+				Current = new CreationContext ();
+				Current.TypeGuid = typeGuid;
+				Current.FlavorGuids = flavorGuids;
 			}
 
 			internal static void UnlockContext ()
@@ -127,20 +136,24 @@ namespace MonoDevelop.Projects
 					throw new InvalidOperationException ("Extension chain already created for this object");
 
 				TypeGuid = CreationContext.Current.TypeGuid;
+
+				string projectTypeGuids;
 				this.sourceProject = CreationContext.Current.Project;
 
-				IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
-				string projectTypeGuids = globalGroup.GetValue ("ProjectTypeGuids");
-
-				if (projectTypeGuids != null) {
-					var subtypeGuids = new List<string> ();
-					foreach (string guid in projectTypeGuids.Split (';')) {
-						string sguid = guid.Trim ();
-						if (sguid.Length > 0 && string.Compare (sguid, CreationContext.Current.TypeGuid, StringComparison.OrdinalIgnoreCase) != 0)
-							subtypeGuids.Add (guid);
+				if (this.sourceProject != null) {
+					IMSBuildPropertySet globalGroup = sourceProject.GetGlobalPropertyGroup ();
+					projectTypeGuids = globalGroup.GetValue ("ProjectTypeGuids");
+					if (projectTypeGuids != null) {
+						var subtypeGuids = new List<string> ();
+						foreach (string guid in projectTypeGuids.Split (';')) {
+							string sguid = guid.Trim ();
+							if (sguid.Length > 0 && string.Compare (sguid, CreationContext.Current.TypeGuid, StringComparison.OrdinalIgnoreCase) != 0)
+								subtypeGuids.Add (guid);
+						}
+						flavorGuids = subtypeGuids.ToArray ();
 					}
-					flavorGuids = subtypeGuids.ToArray ();
-				}
+				} else
+					flavorGuids = CreationContext.Current.FlavorGuids;
 			}
 		}
 

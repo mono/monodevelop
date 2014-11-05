@@ -446,10 +446,15 @@ namespace MonoDevelop.Projects
 			return true;
 		}
 		
-		public DotNetProject CreateDotNetProject (string language)
+		public DotNetProject CreateDotNetProject (string language, params string[] typeGuids)
 		{
 			string typeGuid = MSBuildProjectService.GetLanguageGuid (language);
-			return (DotNetProject) MSBuildProjectService.CreateSolutionItem (typeGuid);
+			return (DotNetProject) MSBuildProjectService.CreateProject (typeGuid, typeGuids);
+		}
+
+		public Project CreateProject (string typeGuid, params string[] typeGuids)
+		{
+			return MSBuildProjectService.CreateProject (typeGuid, typeGuids);
 		}
 
 		public Project CreateProject (string typeAlias, ProjectCreateInformation info, XmlElement projectOptions)

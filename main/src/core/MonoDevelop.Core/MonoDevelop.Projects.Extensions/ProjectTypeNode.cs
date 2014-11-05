@@ -41,6 +41,7 @@ namespace MonoDevelop.Projects.Extensions
 
 			if (!string.IsNullOrEmpty (fileName)) {
 				p = await MSBuildProject.LoadAsync (fileName);
+				// TODO NPM
 //				if (MSBuildProjectService.CanMigrateFlavor (p.ProjectTypeGuids))
 //					await MSBuildProjectService.MigrateFlavor (monitor, fileName, typeGuid, this, p);
 			}
@@ -57,6 +58,16 @@ namespace MonoDevelop.Projects.Extensions
 					Project.CreationContext.UnlockContext ();
 			}
 		}	
+
+		public virtual Project CreateProject (string typeGuid, params string[] flavorGuids)
+		{
+			try {
+				Project.CreationContext.LockContext (typeGuid, flavorGuids);
+				return (Project) CreateSolutionItem (new ProgressMonitor (), null, typeGuid).Result;
+			} finally {
+				Project.CreationContext.UnlockContext ();
+			}
+		}
 	}
 }
 
