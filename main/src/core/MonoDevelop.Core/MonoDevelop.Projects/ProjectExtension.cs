@@ -69,9 +69,28 @@ namespace MonoDevelop.Projects
 			return next.OnGetSupportsTarget (target);
 		}
 
+		internal protected virtual void OnGetDefaultImports (List<string> imports)
+		{
+			next.OnGetDefaultImports (imports);
+		}
+
 		internal protected virtual void OnGetProjectTypes (HashSet<string> types)
 		{
 			next.OnGetProjectTypes (types);
+		}
+
+		/// <summary>
+		/// Called just after the MSBuild project is loaded but before it is evaluated.
+		/// </summary>
+		/// <param name="project">The project</param>
+		/// <remarks>
+		/// Subclasses can override this method to transform the MSBuild project before it is evaluated.
+		/// For example, it can be used to add or remove imports, or to set custom values for properties.
+		/// Changes done in the MSBuild files are not saved.
+		/// </remarks>
+		internal protected virtual void OnPrepareForEvaluation (MSBuildProject project)
+		{
+			next.OnPrepareForEvaluation (project);
 		}
 
 		internal protected virtual void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)

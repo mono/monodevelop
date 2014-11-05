@@ -36,7 +36,7 @@ namespace MonoDevelop.NUnit
 	{
 		protected override Task OnExecute (MonoDevelop.Core.ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			if (base.OnGetCanExecute (context, configuration)) {
+			if (Project.CanExecute (context, configuration)) {
 				// It is executable by default
 				return base.OnExecute (monitor, context, configuration);
 			}

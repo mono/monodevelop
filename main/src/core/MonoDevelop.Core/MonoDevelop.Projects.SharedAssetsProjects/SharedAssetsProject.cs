@@ -60,6 +60,17 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 			DefaultNamespace = projectCreateInfo.ProjectName;
 		}
 
+		protected override void OnPrepareForEvaluation (MSBuildProject project)
+		{
+			base.OnPrepareForEvaluation (project);
+
+			// Remove code sharing imports. Mono doesn't have them and we don't really need them to load the project in the IDE
+			foreach (var im in project.Imports.ToArray ()) {
+				if (im.Project.Contains (".CodeSharing."))
+					project.RemoveImport (im);
+			}
+		}
+
 		protected override void OnReadProject (ProgressMonitor monitor, MSBuildProject msproject)
 		{
 			base.OnReadProject (monitor, msproject);

@@ -160,7 +160,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			string xml = File.ReadAllText (file);
 			
 			doc.LoadXml (xml);
-			Evaluate ();
 		}
 		
 		class ProjectWriter : StringWriter

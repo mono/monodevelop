@@ -52,7 +52,12 @@ namespace MonoDevelop.CSharp.Project
 		public CSharpProject ()
 		{
 			Initialize (this);
-			DefaultImports.Add ("$(MSBuildBinPath)\\Microsoft.CSharp.targets");
+		}
+
+		protected override void OnGetDefaultImports (List<string> imports)
+		{
+			base.OnGetDefaultImports (imports);
+			imports.Add ("$(MSBuildBinPath)\\Microsoft.CSharp.targets");
 		}
 
 		public string MainClass {
@@ -95,7 +100,7 @@ namespace MonoDevelop.CSharp.Project
 		{
 			if (t == typeof(IResourceHandler))
 				return resourceHandler;
-			return base.GetService (t);
+			return base.OnGetService (t);
 		}
 
 		protected override void OnWriteProject (ProgressMonitor monitor, MSBuildProject msproject)

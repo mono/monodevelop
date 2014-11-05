@@ -66,7 +66,7 @@ namespace MonoDevelop.Projects
 		string schemaVersion;
 		bool modifiedInMemory;
 
-		List<string> defaultImports = new List<string> ();
+		List<string> defaultImports;
 
 		protected Project ()
 		{
@@ -163,7 +163,18 @@ namespace MonoDevelop.Projects
 		}
 
 		public List<string> DefaultImports {
-			get { return defaultImports; }
+			get {
+				if (defaultImports == null) {
+					var list = new List<string> ();
+					ProjectExtension.OnGetDefaultImports (list);
+					defaultImports = list;
+				}
+				return defaultImports; 
+			}
+		}
+
+		protected virtual void OnGetDefaultImports (List<string> imports)
+		{
 		}
 
 		public string ToolsVersion { get; private set; }
@@ -203,18 +214,35 @@ namespace MonoDevelop.Projects
 			return Task.Factory.StartNew (delegate {
 				if (p == null)
 					p = MSBuildProject.LoadAsync (FileName).Result;
+
 				IMSBuildPropertySet globalGroup = p.GetGlobalPropertyGroup ();
 				// Avoid crash if there is not global group
 				if (globalGroup == null)
 					p.AddNewPropertyGroup (false);
 
+				ProjectExtension.OnPrepareForEvaluation (p);
+
 				try {
 					ProjectExtensionUtil.BeginLoadOperation ();
+					p.Evaluate ();
 					ReadProject (monitor, p);
 				} finally {
 					ProjectExtensionUtil.EndLoadOperation ();
 				}
 			});
+		}
+
+		/// <summary>
+		/// Called just after the MSBuild project is loaded but before it is evaluated.
+		/// </summary>
+		/// <param name="project">The project</param>
+		/// <remarks>
+		/// Subclasses can override this method to transform the MSBuild project before it is evaluated.
+		/// For example, it can be used to add or remove imports, or to set custom values for properties.
+		/// Changes done in the MSBuild files are not saved.
+		/// </remarks>
+		protected virtual void OnPrepareForEvaluation (MSBuildProject project)
+		{
 		}
 
 		internal protected override Task OnSave (ProgressMonitor monitor)
@@ -2409,6 +2437,11 @@ namespace MonoDevelop.Projects
 			internal protected override void OnWriteConfiguration (ProgressMonitor monitor, ProjectConfiguration config, IMSBuildPropertySet grp)
 			{
 				Project.OnWriteConfiguration (monitor, config, grp);
+			}
+
+			internal protected override void OnGetDefaultImports (List<string> imports)
+			{
+				Project.OnGetDefaultImports (imports);
 			}
 		}
 	}
