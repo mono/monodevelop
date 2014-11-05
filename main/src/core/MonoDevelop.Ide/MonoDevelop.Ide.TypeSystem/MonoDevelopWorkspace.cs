@@ -38,6 +38,8 @@ using MonoDevelop.Ide.Tasks;
 using System.Threading.Tasks;
 using MonoDevelop.Ide.Editor;
 using Microsoft.CodeAnalysis.Host;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MonoDevelop.Ide.TypeSystem
 {
@@ -327,16 +329,36 @@ namespace MonoDevelop.Ide.TypeSystem
 				activate
 			)); 
 		}
-
+		List<MonoDevelopSourceTextContainer> openDocuments = new List<MonoDevelopSourceTextContainer>();
 		internal void InformDocumentOpen (DocumentId documentId, ITextDocument editor)
 		{
 			var document = CurrentSolution.GetDocument (documentId);
 			if (document == null)
 				return;
-			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (editor);
+			var monoDevelopSourceTextContainer = new MonoDevelopSourceTextContainer (documentId, editor);
+			lock (openDocuments) {
+				openDocuments.Add (monoDevelopSourceTextContainer);
+			}
 			OnDocumentOpened (documentId, monoDevelopSourceTextContainer); 
 		}
-		
+
+		protected override void OnDocumentTextChanged (Document document)
+		{
+			base.OnDocumentTextChanged (document);
+		}
+
+		protected override void OnDocumentClosing (DocumentId documentId)
+		{
+			base.OnDocumentClosing (documentId);
+			lock (openDocuments) {
+				var openDoc = openDocuments.FirstOrDefault (d => d.Id == documentId);
+				if (openDoc != null) {
+					openDoc.TextChanged -= HandleTextChanged;
+					openDocuments.Remove (openDoc);
+				}
+			}
+		}
+
 //		internal override bool CanChangeActiveContextDocument {
 //			get {
 //				return true;

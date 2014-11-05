@@ -133,6 +133,9 @@
     <Reference Include="System.Composition.AttributedModel">
       <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Composition.AttributedModel.dll</HintPath>
     </Reference>
+    <Reference Include="System.Composition.Runtime">
+      <HintPath>..\..\..\external\roslyn\Binaries\Debug\System.Composition.Runtime.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">

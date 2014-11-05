@@ -79,9 +79,14 @@ namespace MonoDevelop.Ide.TypeSystem
 	class MonoDevelopSourceTextContainer : SourceTextContainer
 	{
 		readonly ITextDocument document;
+		public DocumentId Id {
+			get;
+			private set;
+		}
 
-		public MonoDevelopSourceTextContainer (ITextDocument document)
+		public MonoDevelopSourceTextContainer (DocumentId documentId, ITextDocument document)
 		{
+			this.Id = documentId;
 			this.document = document;
 			this.document.TextChanging += HandleTextReplacing;
 			this.document.TextChanged += HandleTextReplaced;
