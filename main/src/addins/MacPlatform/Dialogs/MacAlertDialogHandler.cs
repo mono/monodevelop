@@ -105,7 +105,7 @@ namespace MonoDevelop.MacIntegration
 					var wrapperButton = new AlertButtonWrapper (nsbutton, data.Message, button, alert);
 					wrappers.Add (wrapperButton);
 					nsbutton.Target = wrapperButton;
-					nsbutton.Action = new MonoMac.ObjCRuntime.Selector ("buttonActivatedAction:");
+					nsbutton.Action = new MonoMac.ObjCRuntime.Selector ("buttonActivatedAction");
 				}
 				
 				
@@ -201,7 +201,7 @@ namespace MonoDevelop.MacIntegration
 			oldAction = nsbutton.Action;
 		}
 
-		[Export ("buttonActivatedAction:")]
+		[Export ("buttonActivatedAction")]
 		void ButtonActivatedAction ()
 		{
 			bool close = message.NotifyClicked (alertButton);
