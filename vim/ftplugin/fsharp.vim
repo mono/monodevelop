@@ -31,6 +31,7 @@ if has('python')
 import vim
 import os
 fsharp_dir = vim.eval("expand('<sfile>:p:h')")
+file_dir = vim.eval("expand('%:p:h')")
 sys.path.append(fsharp_dir)
 
 from fsharpvim import FSAutoComplete,Statics
@@ -45,6 +46,8 @@ if Statics.fsi == None:
     Statics.fsi = FSharpInteractive(vim.eval('g:fsharp_interactive_bin'))
 fsautocomplete = Statics.fsac
 fsi = Statics.fsi
+fsi.cd(file_dir)
+print "file_dir:" + file_dir
 proj_file = None
 #find project file if any - assumes fsproj file will be in the same directory as the fs or fsi file
 b = vim.current.buffer
