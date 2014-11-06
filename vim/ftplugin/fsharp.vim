@@ -47,7 +47,6 @@ if Statics.fsi == None:
 fsautocomplete = Statics.fsac
 fsi = Statics.fsi
 fsi.cd(file_dir)
-print "file_dir:" + file_dir
 proj_file = None
 #find project file if any - assumes fsproj file will be in the same directory as the fs or fsi file
 b = vim.current.buffer
