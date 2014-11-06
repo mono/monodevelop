@@ -3,6 +3,8 @@
 " Last Change:  Thu 23 Oct 2014 08:39:53 PM CEST
 " Maintainer:   Gregor Uhlenheuer <kongo2002@googlemail.com>
 
+"todo: provider solution context for project builds
+
 if exists('b:did_ftplugin')
     finish
 endif

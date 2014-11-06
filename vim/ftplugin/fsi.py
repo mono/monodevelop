@@ -33,6 +33,9 @@ class FSharpInteractive:
         self.should_work = False
         self.p.kill()
 
+    def set_loc(self, path, line_num):
+        self.p.stdin.write("#" + str(line_num) + " @\"" + path + "\"\n")
+            
     def send(self, txt):
         self.p.stdin.write(txt + ";;\n")
 

@@ -31,6 +31,7 @@ endfunction
 
 
 function! fsharpbinding#python#ParseProject(...)
+    execute 'wa'
     if a:0 > 0
     python << EOF
 fsautocomplete.project(vim.eval("a:1"))
@@ -46,6 +47,7 @@ endfunction
 
 function! fsharpbinding#python#BuildProject(...)
     try
+        execute 'wa'
         if a:0 > 0
             execute '!xbuild ' . a:1
         else
@@ -193,6 +195,9 @@ endfunction
 
 function! fsharpbinding#python#FsiSend(text)
 python << EOF
+path = vim.current.buffer.name
+(row, col) = vim.current.window.cursor
+fsi.set_loc(path, row)
 fsi.send(vim.eval('a:text'))
 EOF
 endfunction
