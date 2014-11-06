@@ -6,4 +6,9 @@ style "default" {
 
 style "dialog-button" {
     fg[ACTIVE] = @selected_fg_color
+    font_name = "Helvetica Neue 13"
+}
+
+style "button" {
+    font_name = "Helvetica Neue 13"
 }
