@@ -3,3 +3,7 @@ include "gtkrc.mac"
 style "default" {
     font_name = "Helvetica Neue 13"
 }
+
+style "dialog-button" {
+    fg[ACTIVE] = @selected_fg_color
+}
