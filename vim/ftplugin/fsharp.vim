@@ -46,7 +46,6 @@ if Statics.fsi == None:
     Statics.fsi = FSharpInteractive(vim.eval('g:fsharp_interactive_bin'))
 fsautocomplete = Statics.fsac
 fsi = Statics.fsi
-fsi.cd(file_dir)
 proj_file = None
 #find project file if any - assumes fsproj file will be in the same directory as the fs or fsi file
 b = vim.current.buffer

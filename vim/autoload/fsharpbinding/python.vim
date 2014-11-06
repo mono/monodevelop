@@ -195,8 +195,10 @@ endfunction
 
 function! fsharpbinding#python#FsiSend(text)
 python << EOF
+file_dir = vim.eval("expand('%:p:h')")
 path = vim.current.buffer.name
 (row, col) = vim.current.window.cursor
+fsi.cd(file_dir)
 fsi.set_loc(path, row)
 fsi.send(vim.eval('a:text'))
 EOF

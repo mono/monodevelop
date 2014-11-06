@@ -59,7 +59,7 @@ class FSharpInteractive:
     def read_until_prompt(self):
         output = []
         try:
-            l = self.lines.get(True, 60) #is one minute enough?
+            l = self.lines.get(True, 10) #is one minute enough?
             if 'SERVER-PROMPT>' in l:
                 return output
             output.append(str(l).rstrip())
