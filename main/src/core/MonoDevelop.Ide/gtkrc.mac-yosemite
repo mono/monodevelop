@@ -12,3 +12,11 @@ style "dialog-button" {
 style "button" {
     font_name = "Helvetica Neue 13"
 }
+
+style "menu" {
+    font_name = "Helvetica Neue 14"
+}
+
+style "combo-box-menu" {
+    font_name = "Helvetica Neue 12"
+}
