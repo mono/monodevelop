@@ -42,14 +42,12 @@ class FSharpInteractive:
     def cd(self, path):
         self.p.stdin.write("System.IO.Directory.SetCurrentDirectory(@\"" + path + "\");;\n")
         self.p.stdin.write("#silentCd @\"" + path + "\";;\n")
-        items = self.purge()
-        return
 
     def purge(self):
         items = []
         while(True):
             try:
-                l = self.read_one().rstrip()
+                l = self.lines.get(False).rstrip()
                 if 'SERVER-PROMPT>' not in l:
                     items.append(l)
             except:
@@ -59,7 +57,7 @@ class FSharpInteractive:
     def read_until_prompt(self):
         output = []
         try:
-            l = self.lines.get(True, 10) #is one minute enough?
+            l = self.lines.get(True, 10) #wait longer for first - this assumes there will be a resonse.
             if 'SERVER-PROMPT>' in l:
                 return output
             output.append(str(l).rstrip())

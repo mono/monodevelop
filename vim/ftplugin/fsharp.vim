@@ -81,6 +81,7 @@ EOF
         au!
         " closing the scratch window after leaving insert mode
         " is common practice
+        au BufEnter *.fs,*.fsi,*.fsx call fsharpbinding#python#OnBufEnter() "fsi.cd
         au InsertLeave *.fs? if pumvisible() == 0|pclose|endif
     augroup END
 
