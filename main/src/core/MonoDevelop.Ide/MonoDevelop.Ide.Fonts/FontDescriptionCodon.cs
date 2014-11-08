@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Fonts
 				if (MonoDevelop.Core.Platform.IsWindows)
 					return string.IsNullOrEmpty (fontDescriptionWindows) ? fontDescription : fontDescriptionWindows;
 				if (MonoDevelop.Core.Platform.IsMac) {
-					if (MonoDevelop.Core.Platform.OSVersion.Major == 10 && MonoDevelop.Core.Platform.OSVersion.Minor >= 10) {
+					if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
 						if (!string.IsNullOrEmpty (fontDescriptionMacYosemite)) {
 							return fontDescriptionMacYosemite;
 						}
