@@ -644,36 +644,23 @@ namespace MonoDevelop.Ide
 			options.IdeCustomizer = customizer;
 
 			int ret = -1;
-			bool retry = false;
-			do {
-				try {
-					var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
-					if (!Platform.IsMac && !Platform.IsWindows)
-						exename = exename.ToLower ();
-					Runtime.SetProcessName (exename);
-					var app = new IdeStartup ();
-					ret = app.Run (options);
-					break;
-				} catch (Exception ex) {
-					if (!retry && AddinManager.IsInitialized) {
-						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.", ex);
-						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
-						LoggingService.LogInfo ("Addin registry rebuilt. Restarting {0}.", BrandingService.ApplicationName);
-						retry = true;
-					} else {
-						LoggingService.LogFatalError (
-							string.Format (
-								"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
-								"may not be properly installed in the GAC.",
-								BrandingService.ApplicationName
-							), ex);
-						retry = false;
-					}
-				} finally {
-					Runtime.Shutdown ();
-				}
+			try {
+				var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
+				if (!Platform.IsMac && !Platform.IsWindows)
+					exename = exename.ToLower ();
+				Runtime.SetProcessName (exename);
+				var app = new IdeStartup ();
+				ret = app.Run (options);
+			} catch (Exception ex) {
+				LoggingService.LogFatalError (
+					string.Format (
+						"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
+						"may not be properly installed in the GAC.",
+						BrandingService.ApplicationName
+					), ex);
+			} finally {
+				Runtime.Shutdown ();
 			}
-			while (retry);
 
 			LoggingService.Shutdown ();
 
