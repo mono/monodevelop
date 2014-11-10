@@ -385,7 +385,7 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(new|in|as|if|then|else|elif|for|begin|end|match|with|type|inherit|null|do)\b</string>
+					<string>\b(new|in|as|if|then|else|elif|for|begin|end|match|with|when|type|inherit|null|do)\b</string>
 					<key>name</key>
 					<string>keyword.other.fsharp</string>
 				</dict>
