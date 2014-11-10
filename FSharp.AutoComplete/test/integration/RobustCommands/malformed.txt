@@ -1,2 +1,0 @@
-ERROR: Project file '<absolute path removed>/test/integration/RobustCommands/Malformed.fsproj' is invalid
-<<EOF>>

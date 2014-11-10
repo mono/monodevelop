@@ -418,7 +418,7 @@ module internal Main =
               |> List.fold (fun s f -> Map.add f p s) state.Projects
             main { state with Projects = projects }
           with e ->
-            printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
+            printMsg "ERROR" (sprintf "Project file '%s' is invalid: '%s'" file e.Message)
             main state
         else
           printMsg "ERROR" (sprintf "File '%s' does not exist" file)
