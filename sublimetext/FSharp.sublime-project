@@ -29,14 +29,6 @@
 		{
 			"follow_symlinks": true,
 			"path": "."
-		},
-		{
-			"follow_symlinks": true,
-			"path": "./FSharp"
-		},
-		{
-			"follow_symlinks": true,
-			"path": "./FSharp_Tests"
 		}
 	]
 }
