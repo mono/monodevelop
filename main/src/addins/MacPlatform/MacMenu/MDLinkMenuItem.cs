@@ -24,9 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoMac.AppKit;
+using AppKit;
 using MonoDevelop.Components.Commands;
-using MonoMac.Foundation;
+using Foundation;
 
 namespace MonoDevelop.MacIntegration.MacMenu
 {
@@ -44,7 +44,7 @@ namespace MonoDevelop.MacIntegration.MacMenu
 		}
 
 		[Export (MDMenuItem.ActionSelName)]
-		public void Run ()
+		public void Run (NSObject dummy)
 		{
 			MonoDevelop.Ide.DesktopService.ShowUrl (lce.Url);
 		}
