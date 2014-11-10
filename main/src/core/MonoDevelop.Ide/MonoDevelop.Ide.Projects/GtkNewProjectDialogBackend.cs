@@ -205,6 +205,11 @@ namespace MonoDevelop.Ide.Projects
 
 		static string MarkupTopLevelCategoryName (string name)
 		{
+			return "<span font_weight='bold'>" + GLib.Markup.EscapeText (name) + "</span>";
+		}
+
+		static string MarkupTemplateName (string name)
+		{
 			return "<span font_weight='bold' size='larger'>" + GLib.Markup.EscapeText (name) + "</span>";
 		}
 
@@ -285,7 +290,7 @@ namespace MonoDevelop.Ide.Projects
 
 		void ShowTemplate (SolutionTemplate template)
 		{
-			templateNameLabel.Markup = MarkupTopLevelCategoryName (template.Name);
+			templateNameLabel.Markup = MarkupTemplateName (template.Name);
 			templateDescriptionLabel.Text = template.Description;
 			templateImage.Pixbuf = GetImage (template, templateImage.WidthRequest, templateImage.HeightRequest);
 			templateVBox.Visible = true;
