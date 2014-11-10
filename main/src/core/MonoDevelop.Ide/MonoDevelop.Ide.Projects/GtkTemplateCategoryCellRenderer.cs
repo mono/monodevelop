@@ -40,8 +40,8 @@ namespace MonoDevelop.Ide.Projects
 
 		const int topLevelTemplateHeadingYPadding = 8;
 		const int topLevelTemplateHeadingYOffset = 5;
-		const int topLevelIconTextXPadding = 7;
-		const int iconTextXPadding = 2;
+		const int topLevelIconTextXPadding = 6;
+		const int iconTextXPadding = 1;
 
 		public override void GetSize (Widget widget, ref Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
