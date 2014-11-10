@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.Projects
 
 					DrawTemplateNameText (window, widget, cell_area, iconRect, languageRect, flags);
 
-					RoundBorder (ctx, languageRect.X + 0.5, languageRect.Y + 0.5, languageRect.Width - 1, languageRect.Height - 1);
+					RoundBorder (ctx, languageRect.X, languageRect.Y, languageRect.Width, languageRect.Height);
 					SetSourceColor (ctx, LanguageButtonBackgroundColor.ToCairoColor ());
 					ctx.Fill ();
 
