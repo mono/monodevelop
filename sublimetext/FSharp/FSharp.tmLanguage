@@ -34,6 +34,10 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#characters</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>#strings</string>
 		</dict>
 		<dict>
@@ -147,22 +151,24 @@
 					<key>patterns</key>
 					<array>
 						<dict>
-							<key>match</key>
-							<string>\\$[ \t]*</string>
 							<key>name</key>
-							<string>punctuation.separator.string.ignore-eol.fsharp</string>
+							<string>constant.character.fsharp</string>
 						</dict>
 						<dict>
-							<key>match</key>
-							<string>\\([\\""ntbr]|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8})</string>
-							<key>name</key>
-							<string>constant.character.string.escape.fsharp</string>
+							<key>include</key>
+							<string>#string-escapes</string>
 						</dict>
 						<dict>
+							<key>captures</key>
+							<dict>
+								<key>1</key>
+								<dict>
+									<key>name</key>
+									<string>invalid.illegal.escape.fsharp</string>
+								</dict>
+							</dict>
 							<key>match</key>
-							<string>\\(?![\\'ntbr]|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8}).</string>
-							<key>name</key>
-							<string>invalid.illeagal.character.string.fsharp</string>
+							<string>.([^']*)</string>
 						</dict>
 					</array>
 				</dict>
@@ -215,6 +221,12 @@
 			<array>
 				<dict>
 					<key>match</key>
+					<string>\b(true|false)\b</string>
+					<key>name</key>
+					<string>constant.language.boolean.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
 					<string>\(\)</string>
 					<key>name</key>
 					<string>constant.language.unit.fsharp</string>
@@ -238,6 +250,75 @@
 			<key>patterns</key>
 			<array>
 				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>storage.type.function.fsharp</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.assignment.fsharp</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>\b(let!?)\s+([_a-zA-Z][a-zA-Z_]*)\s+(=)</string>
+					<key>name</key>
+					<string>meta.expression.fsharp</string>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>(let)\s+(\(\|)</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>storage.type.function.fsharp</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(=)|$</string>
+					<key>endCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.operator.assignment.fsharp</string>
+						</dict>
+					</dict>
+					<key>name</key>
+					<string>meta.active-expression.fsharp</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>captures</key>
+							<dict>
+								<key>1</key>
+								<dict>
+									<key>name</key>
+									<string>constant.other.fsharp</string>
+								</dict>
+								<key>3</key>
+								<dict>
+									<key>name</key>
+									<string>constant.other.fsharp</string>
+								</dict>
+							</dict>
+							<key>match</key>
+							<string>([a-zA-Z0-9_]+?)(\|\))|([a-zA-Z0-9_]+?)(\|)</string>
+							<key>name</key>
+							<string>meta.active-expression.fsharp</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#variables</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
 					<key>begin</key>
 					<string>\b(val|val|let|and|member|override|use)\s?(rec|inline|mutable)?(\s+\(?([a-zA-Z.\|_][a-zA-Z0-9.|_]*)\)?\w*)\b</string>
 					<key>beginCaptures</key>
@@ -245,7 +326,7 @@
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>keyword.other.binding.fsharp</string>
+							<string>storage.type.function.fsharp</string>
 						</dict>
 						<key>2</key>
 						<dict>
@@ -259,13 +340,13 @@
 						</dict>
 					</dict>
 					<key>end</key>
-					<string>=|$</string>
+					<string>(=)|$</string>
 					<key>endCaptures</key>
 					<dict>
 						<key>1</key>
 						<dict>
 							<key>name</key>
-							<string>punctuation.separator.function.type-constraint.fsharp</string>
+							<string>keyword.operator.assignment.fsharp</string>
 						</dict>
 					</dict>
 					<key>name</key>
@@ -279,33 +360,8 @@
 					</array>
 				</dict>
 				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.other.binding.fsharp</string>
-						</dict>
-						<key>2</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.other.function-recursive.fsharp</string>
-						</dict>
-						<key>4</key>
-						<dict>
-							<key>name</key>
-							<string>constant.language.unit.fsharp</string>
-						</dict>
-						<key>5</key>
-						<dict>
-							<key>name</key>
-							<string>constant.language.ignored.fsharp</string>
-						</dict>
-					</dict>
-					<key>match</key>
-					<string>\b(let)\s+((\(\))|(_))\s+=</string>
-					<key>name</key>
-					<string>meta.expression.fsharp</string>
+					<key>include</key>
+					<string>#sequences</string>
 				</dict>
 			</array>
 		</dict>
@@ -323,15 +379,39 @@
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>\b(new|in|as|if|then|else|elif|for|begin|end|match|with|type|inherit|true|false|null|do)\b</string>
+					<string>\byield!?</string>
 					<key>name</key>
 					<string>keyword.other.fsharp</string>
 				</dict>
 				<dict>
 					<key>match</key>
-					<string>(\|&gt;|\|?&gt;|\-&gt;|\&lt;\-|:&gt;|:|\[|\]|\;|\||_)</string>
+					<string>\b(new|in|as|if|then|else|elif|for|begin|end|match|with|when|type|inherit|null|do)\b</string>
+					<key>name</key>
+					<string>keyword.other.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\+|-|/|%|\*\*|\*</string>
+					<key>name</key>
+					<string>keyword.arithmetic.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>=|&gt;=|&lt;=|&lt;&gt;|&lt;|&gt;</string>
+					<key>name</key>
+					<string>keyword.comparison.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(\|&gt;|\|\?&gt;|\-&gt;|\&lt;\-|:&gt;|:|\[|\]|\;|_|&amp;&amp;)</string>
 					<key>name</key>
 					<string>entity.name</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\|</string>
+					<key>name</key>
+					<string>keyword.other.fsharp</string>
 				</dict>
 			</array>
 		</dict>
@@ -553,10 +633,164 @@
 				</dict>
 			</array>
 		</dict>
+		<key>sequences</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>(seq)(?=\s+\{)</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>storage.type.fsharp</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(\})</string>
+					<key>name</key>
+					<string>meta.sequence.definition.fsharp</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>include</key>
+							<string>$self</string>
+						</dict>
+					</array>
+				</dict>
+			</array>
+		</dict>
+		<key>string-escapes</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>\\[bnrt\\"']</string>
+					<key>name</key>
+					<string>constant.character.escape.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\\(u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8})</string>
+					<key>name</key>
+					<string>constant.character.escape.unicode-sequence.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>\\.</string>
+					<key>name</key>
+					<string>invalid.illegal.character.string.fsharp</string>
+				</dict>
+			</array>
+		</dict>
+		<key>string-format-specs</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>%[-\+0 #]?[bcsdiuxXoeEfFgGeEMOAat]</string>
+					<key>name</key>
+					<string>constant.character.format.specification.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(%\+A)</string>
+					<key>name</key>
+					<string>constant.character.format.specification.fsharp</string>
+				</dict>
+			</array>
+		</dict>
 		<key>strings</key>
 		<dict>
 			<key>patterns</key>
 			<array>
+				<dict>
+					<key>begin</key>
+					<string>(""")</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.definition.string.begin.fsharp</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(""")</string>
+					<key>endCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.definition.string.end.fsharp</string>
+						</dict>
+					</dict>
+					<key>name</key>
+					<string>string.quoted.triple.fsharp</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>match</key>
+							<string>\\$[ \t]*</string>
+							<key>name</key>
+							<string>punctuation.separator.string.ignore-eol.fsharp</string>
+						</dict>
+						<dict>
+							<key>match</key>
+							<string>\\([\\'ntbr]|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8})</string>
+							<key>name</key>
+							<string>constant.character.string.escape.fsharp</string>
+						</dict>
+						<dict>
+							<key>match</key>
+							<string>\\(?![\\'ntbr]|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8}).</string>
+							<key>name</key>
+							<string>invalid.illeagal.character.string.fsharp</string>
+						</dict>
+					</array>
+				</dict>
+				<dict>
+					<key>begin</key>
+					<string>(@)(")</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.other.fsharp</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.definition.string.begin.fsharp</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>(?&lt;!")(")(?=[^"])</string>
+					<key>endCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>punctuation.definition.string.end.fsharp</string>
+						</dict>
+					</dict>
+					<key>name</key>
+					<string>string.quoted.double.verbatim.fsharp</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>match</key>
+							<string>("")</string>
+							<key>name</key>
+							<string>constant.character.escape.fsharp</string>
+						</dict>
+					</array>
+				</dict>
 				<dict>
 					<key>begin</key>
 					<string>(?=[^\\])(")</string>
@@ -583,22 +817,18 @@
 					<key>patterns</key>
 					<array>
 						<dict>
+							<key>include</key>
+							<string>#string-escapes</string>
+						</dict>
+						<dict>
+							<key>include</key>
+							<string>#string-format-specs</string>
+						</dict>
+						<dict>
 							<key>match</key>
 							<string>\\$[ \t]*</string>
 							<key>name</key>
 							<string>punctuation.separator.string.ignore-eol.fsharp</string>
-						</dict>
-						<dict>
-							<key>match</key>
-							<string>\\([\\'ntbr]|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8})</string>
-							<key>name</key>
-							<string>constant.character.string.escape.fsharp</string>
-						</dict>
-						<dict>
-							<key>match</key>
-							<string>\\(?![\\'ntbr]|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8}).</string>
-							<key>name</key>
-							<string>invalid.illeagal.character.string.fsharp</string>
 						</dict>
 					</array>
 				</dict>
@@ -634,6 +864,12 @@
 					<string>\(\)</string>
 					<key>name</key>
 					<string>variable.parameter.unit.fsharp</string>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>(?&lt;=:)[a-zA-Z]\w*</string>
+					<key>name</key>
+					<string>entity.other.attribute-name.tag.storage.fsharp</string>
 				</dict>
 				<dict>
 					<key>match</key>
