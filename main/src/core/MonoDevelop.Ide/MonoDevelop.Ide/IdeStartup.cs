@@ -233,9 +233,17 @@ namespace MonoDevelop.Ide
 
 				Counters.Initialization.Trace ("Initializing IdeApp");
 				IdeApp.Initialize (monitor);
-				
+
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");
+
+				// load previous combine
+				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile) {
+					var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+					if (proj != null)
+						IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
+				}
+
 				IdeApp.OpenFiles (startupInfo.RequestedFileList);
 				
 				monitor.Step (1);
