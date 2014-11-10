@@ -35,8 +35,8 @@ namespace MonoDevelop.Ide.Projects
 	[System.ComponentModel.ToolboxItem (true)]
 	public partial class GtkProjectFolderPreviewWidget : Gtk.Bin
 	{
-		Pixbuf folderImage;
-		Pixbuf fileImage;
+		const string FolderIconId = "md-open-folder";
+		const string FileIconId = "md-empty-file-icon";
 
 		const int TextColumn = 1;
 		TreeStore folderTreeStore;
@@ -51,9 +51,6 @@ namespace MonoDevelop.Ide.Projects
 
 		public GtkProjectFolderPreviewWidget ()
 		{
-			folderImage = ImageService.GetIcon ("md-open-folder", IconSize.Menu).ToPixbuf ();
-			fileImage = ImageService.GetIcon ("md-empty-file-icon", IconSize.Menu).ToPixbuf ();
-
 			this.Build ();
 			folderTreeView.ModifyBase (Gtk.StateType.Normal, new Gdk.Color (229, 233, 239));
 
@@ -62,16 +59,16 @@ namespace MonoDevelop.Ide.Projects
 
 		void CreateFolderTreeViewColumns ()
 		{
-			folderTreeStore = new TreeStore (typeof(Pixbuf), typeof(string));
+			folderTreeStore = new TreeStore (typeof(string), typeof(string));
 			folderTreeView.Model = folderTreeStore;
 			folderTreeView.ShowExpanders = false;
 			folderTreeView.LevelIndentation = 10;
 			folderTreeView.CanFocus = false;
 
 			var column = new TreeViewColumn ();
-			var iconRenderer = new CellRendererPixbuf ();
+			var iconRenderer = new CellRendererImage ();
 			column.PackStart (iconRenderer, false);
-			column.AddAttribute (iconRenderer, "pixbuf", column: 0);
+			column.AddAttribute (iconRenderer, "stock-id", column: 0);
 
 			var textRenderer = new CellRendererText ();
 			textRenderer.Ellipsize = Pango.EllipsizeMode.Middle;
@@ -113,14 +110,14 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddProjectWithSolutionDirectoryToTree ()
 		{
-			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
+			locationNode = folderTreeStore.AppendValues (FolderIconId, string.Empty);
 
-			solutionFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, projectConfiguration.DefaultPreviewSolutionName);
-			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, fileImage, projectConfiguration.DefaultPreviewSolutionFileName);
+			solutionFolderNode = folderTreeStore.AppendValues (locationNode, FolderIconId, projectConfiguration.DefaultPreviewSolutionName);
+			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, FileIconId, projectConfiguration.DefaultPreviewSolutionFileName);
 
-			projectFolderNode = folderTreeStore.AppendValues (solutionFolderNode, folderImage, projectConfiguration.DefaultPreviewProjectName);
+			projectFolderNode = folderTreeStore.AppendValues (solutionFolderNode, FolderIconId, projectConfiguration.DefaultPreviewProjectName);
 			gitIgnoreNode = AddGitIgnoreToTree ();
-			projectNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, projectConfiguration.DefaultPreviewProjectFileName);
+			projectNode = folderTreeStore.AppendValues (projectFolderNode, FileIconId, projectConfiguration.DefaultPreviewProjectFileName);
 		}
 
 		void UpdateTreeValues ()
@@ -133,15 +130,15 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddProjectWithNoSolutionDirectoryToTree ()
 		{
-			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
+			locationNode = folderTreeStore.AppendValues (FolderIconId, string.Empty);
 
-			projectFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, projectConfiguration.DefaultPreviewProjectName);
-			projectNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, projectConfiguration.DefaultPreviewProjectFileName);
+			projectFolderNode = folderTreeStore.AppendValues (locationNode, FolderIconId, projectConfiguration.DefaultPreviewProjectName);
+			projectNode = folderTreeStore.AppendValues (projectFolderNode, FileIconId, projectConfiguration.DefaultPreviewProjectFileName);
 
 			solutionFolderNode = TreeIter.Zero;
 			solutionNode = TreeIter.Zero;
 			if (projectConfiguration.IsNewSolution) {
-				solutionNode = folderTreeStore.AppendValues (projectFolderNode, fileImage, projectConfiguration.DefaultPreviewSolutionFileName);
+				solutionNode = folderTreeStore.AppendValues (projectFolderNode, FileIconId, projectConfiguration.DefaultPreviewSolutionFileName);
 			}
 
 			gitIgnoreNode = AddGitIgnoreToTree ();
@@ -149,10 +146,10 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddProjectWithNoProjectDirectoryToTree ()
 		{
-			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
+			locationNode = folderTreeStore.AppendValues (FolderIconId, string.Empty);
 
 			projectFolderNode = TreeIter.Zero;
-			projectNode = folderTreeStore.AppendValues (locationNode, fileImage, projectConfiguration.DefaultPreviewProjectFileName);
+			projectNode = folderTreeStore.AppendValues (locationNode, FileIconId, projectConfiguration.DefaultPreviewProjectFileName);
 
 			solutionFolderNode = TreeIter.Zero;
 			solutionNode = TreeIter.Zero;
@@ -160,10 +157,10 @@ namespace MonoDevelop.Ide.Projects
 
 		void AddSolutionToTree ()
 		{
-			locationNode = folderTreeStore.AppendValues (folderImage, string.Empty);
+			locationNode = folderTreeStore.AppendValues (FolderIconId, string.Empty);
 
-			solutionFolderNode = folderTreeStore.AppendValues (locationNode, folderImage, projectConfiguration.DefaultPreviewSolutionName);
-			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, fileImage, projectConfiguration.DefaultPreviewSolutionFileName);
+			solutionFolderNode = folderTreeStore.AppendValues (locationNode, FolderIconId, projectConfiguration.DefaultPreviewSolutionName);
+			solutionNode = folderTreeStore.AppendValues (solutionFolderNode, FileIconId, projectConfiguration.DefaultPreviewSolutionFileName);
 
 			projectFolderNode = TreeIter.Zero;
 			gitIgnoreNode = TreeIter.Zero;
@@ -176,7 +173,7 @@ namespace MonoDevelop.Ide.Projects
 			if (parent.Equals (TreeIter.Zero)) {
 				parent = projectFolderNode;
 			}
-			return folderTreeStore.InsertWithValues (parent, 0, fileImage, ".gitignore");
+			return folderTreeStore.InsertWithValues (parent, 0, FileIconId, ".gitignore");
 		}
 
 		public void UpdateLocation ()
