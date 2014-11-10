@@ -258,7 +258,7 @@ namespace MonoDevelop.Ide.Projects
 			var column = new TreeViewColumn ();
 
 			templateTextRenderer = new GtkTemplateCellRenderer ();
-			templateTextRenderer.Xpad = 17;
+			templateTextRenderer.Xpad = 14;
 			templateTextRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			templateTextRenderer.CellBackgroundGdk = templateListBackgroundColor;
 

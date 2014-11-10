@@ -45,8 +45,9 @@ namespace MonoDevelop.Ide.Projects
 		const int dropdownTriangleRightHandPadding = 8;
 		const int languageRightHandPadding = 4;
 		const int languageLeftHandPadding = 9;
-		const int iconTextPadding = 10;
+		const int iconTextPadding = 9;
 		const int groupTemplateHeadingYPadding = 4;
+		const int categoryTextPaddingX = 4;
 
 		int minLanguageRectWidth;
 
@@ -146,7 +147,7 @@ namespace MonoDevelop.Ide.Projects
 				int w, h;
 				layout.GetPixelSize (out w, out h);
 
-				int textX = cell_area.X + (int)Xpad;
+				int textX = cell_area.X + (int)Xpad + categoryTextPaddingX;
 				int textY = cell_area.Y + (cell_area.Height - h) / 2 + groupTemplateHeadingYPadding;
 				window.DrawLayout (widget.Style.TextGC (state), textX, textY, layout);
 			}
