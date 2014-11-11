@@ -70,7 +70,7 @@ def find_file_by_extension(start, extension):
     if os.path.dirname(start) == start:
         return
 
-    return find_file(os.path.dirname(start), extension)
+    return find_file_by_extension(os.path.dirname(start), extension)
 
 
 def find_file(start, fname):
