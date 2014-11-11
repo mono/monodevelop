@@ -2,10 +2,23 @@
 	"build_systems":
 	[
 		{
-			"name": "FSharp: Debug",
+			"name": "Run",
 			"working_dir": "${project_path}/FSharp",
 			"shell_cmd": "./build.sh",
-			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\bin\\Build.ps1\"" }
+			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\bin\\Build.ps1\"" },
+
+			"variants": [
+				{
+					"name": "FSharp: Test (All)",
+					"target": "run_fsharp_tests",
+				},
+
+				{
+					"name": "FSharp: Test (This File Only)",
+					"target": "run_fsharp_tests",
+					"active_file_only": true
+				}
+			]
 		}
 	],
 
