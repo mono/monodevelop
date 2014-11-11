@@ -1287,7 +1287,7 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = ResolveSymbolicLink (value.CanonicalPath);
+				fileName = value.CanonicalPath;
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}
@@ -1337,36 +1337,6 @@ namespace MonoDevelop.Ide.Gui
 				this.Options |= OpenDocumentOptions.BringToFront;
 			} else {
 				this.Options &= ~OpenDocumentOptions.BringToFront;
-			}
-		}
-
-		static FilePath ResolveSymbolicLink (FilePath fileName)
-		{
-			if (fileName.IsEmpty)
-				return fileName;
-			try {
-				var alreadyVisted = new HashSet<FilePath> ();
-				while (true) {
-					if (alreadyVisted.Contains (fileName)) {
-						LoggingService.LogError ("Cyclic links detected: " + fileName);
-						return FilePath.Empty;
-					}
-					alreadyVisted.Add (fileName);
-					var linkInfo = new Mono.Unix.UnixSymbolicLinkInfo (fileName);
-					if (linkInfo.IsSymbolicLink && linkInfo.HasContents) {
-						FilePath contentsPath = linkInfo.ContentsPath;
-						if (contentsPath.IsAbsolute) {
-							fileName = linkInfo.ContentsPath;
-						} else {
-							fileName = fileName.ParentDirectory.Combine (contentsPath);
-						}
-						fileName = fileName.CanonicalPath;
-						continue;
-					}
-					return ResolveSymbolicLink (fileName.ParentDirectory).Combine (fileName.FileName).CanonicalPath;
-				}
-			} catch (Exception) {
-				return fileName;
 			}
 		}
 	}

@@ -432,7 +432,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			StringBuilder ret = new StringBuilder (70);
 			StringBuilder parameterBuilder = new StringBuilder ();
 			StringBuilder exceptions = new StringBuilder ();
-			
 			exceptions.AppendLine (options.FormatHeading (GettextCatalog.GetString ("Exceptions:")));
 			//		ret.Append ("<small>");
 			int paramCount = 0, exceptionCount = 0, summaryEnd = -1;
@@ -509,6 +508,8 @@ namespace MonoDevelop.Ide.TypeSystem
 									parameterBuilder.Append ("</b>");
 								parameterBuilder.Append (":</i> ");
 								parameterBuilder.Append (body);
+							} else {
+								return null;
 							}
 							break;
 						case "value":

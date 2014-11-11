@@ -80,8 +80,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (buffer != null)
 				return buffer.ToString ();
 			var doc = SearchDocument ();
-			if (doc != null) 
+			if (doc != null && doc.Editor != null) {
 				return doc.Editor.Text;
+			}
 			try {
 				if (!File.Exists (FileName))
 					return null;

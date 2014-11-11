@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.NUnit</AssemblyName>
     <RootNamespace>MonoDevelop.NUnit</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -254,6 +255,6 @@
       <NuGet>$(SolutionDir)\external\nuget-binary\NuGet.exe</NuGet>
       <NuGet Condition="$(OS)=='Unix'">mono $(NuGet)</NuGet>
     </PropertyGroup>
-    <Exec Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
+    <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
   </Target>
 </Project>

@@ -8,7 +8,7 @@
     <ProjectGuid>{3058BC46-070F-4492-BDC9-40E0ED0D53D8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Database.Sql.Sybase</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <RootNamespace>MonoDevelop.Database.Sql.Sybase</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

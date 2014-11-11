@@ -288,14 +288,6 @@ namespace MonoDevelop.Ide
 				initializedEvent = null;
 			}
 			
-			// load previous combine
-			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
-				var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
-				if (proj != null) { 
-					IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
-				}
-			}
-			
 			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
 			MonoDevelop.Projects.HelpService.AsyncInitialize ();
 			

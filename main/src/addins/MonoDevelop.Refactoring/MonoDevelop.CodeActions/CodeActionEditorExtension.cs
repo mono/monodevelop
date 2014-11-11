@@ -610,8 +610,6 @@ namespace MonoDevelop.CodeActions
 		static readonly List<CodeAction> emptyList = new List<CodeAction> ();
 		internal List<CodeAction> GetCurrentFixes ()
 		{
-			if (QuickTaskStrip.EnableFancyFeatures && currentSmartTag == null)
-				return RefactoringService.GetValidActions (document, document.Editor.Caret.Location).Result.ToList ();
 			return currentSmartTag == null ? emptyList : currentSmartTag.fixes;
 		}
 	}

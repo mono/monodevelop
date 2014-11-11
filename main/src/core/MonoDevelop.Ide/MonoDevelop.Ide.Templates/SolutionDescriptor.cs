@@ -117,7 +117,12 @@ namespace MonoDevelop.Ide.Templates
 				}
             }
 
-            workspaceItem.Name = StringParserService.Parse (name, new string[,] { {"ProjectName", projectCreateInformation.SolutionName} });
+			var substitution = new string[,] { { "ProjectName", projectCreateInformation.SolutionName } };
+            workspaceItem.Name = StringParserService.Parse (name, substitution);
+			string newStartupProjectName = startupProject;
+			if (newStartupProjectName != null) {
+				newStartupProjectName = StringParserService.Parse (startupProject, substitution);
+			}
 
             workspaceItem.SetLocation (projectCreateInformation.SolutionPath, workspaceItem.Name);
 
@@ -174,7 +179,7 @@ namespace MonoDevelop.Ide.Templates
 						workspaceItemCreatedInfo.AddPackageReferenceForCreatedProject ((Project)info, (ProjectDescriptor)solutionItemDesc, projectCreateInformation);
 					}
                     solution.RootFolder.Items.Add (info);
-					if (startupProject == info.Name)
+					if (newStartupProjectName == info.Name)
 						solution.StartupItem = info;
                 }
             }

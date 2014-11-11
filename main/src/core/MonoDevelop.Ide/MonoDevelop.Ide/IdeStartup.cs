@@ -75,6 +75,9 @@ namespace MonoDevelop.Ide
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
 
+			//ensure native libs initialized before we hit anything that p/invokes
+			Platform.Initialize ();
+
 			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
 			IdeApp.Customizer.Initialize ();
 
@@ -86,9 +89,6 @@ namespace MonoDevelop.Ide
 				InstrumentationService.StartAutoSave (logFile, 1000);
 			}
 
-			//ensure native libs initialized before we hit anything that p/invokes
-			Platform.Initialize ();
-			
 			Counters.Initialization.Trace ("Initializing GTK");
 			if (Platform.IsWindows && !CheckWindowsGtk ())
 				return 1;
@@ -233,9 +233,17 @@ namespace MonoDevelop.Ide
 
 				Counters.Initialization.Trace ("Initializing IdeApp");
 				IdeApp.Initialize (monitor);
-				
+
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");
+
+				// load previous combine
+				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile) {
+					var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+					if (proj != null)
+						IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
+				}
+
 				IdeApp.OpenFiles (startupInfo.RequestedFileList);
 				
 				monitor.Step (1);
@@ -307,6 +315,8 @@ namespace MonoDevelop.Ide
 		{
 			if (Platform.IsWindows)
 				return;
+			if (!string.Equals (Environment.GetEnvironmentVariable ("MD_LOCKUP_TRACKER"), "ON", StringComparison.OrdinalIgnoreCase))
+				return;
 			GLib.Timeout.Add (2000, () => {
 				lastIdle = DateTime.Now;
 				return true;
@@ -341,6 +351,11 @@ namespace MonoDevelop.Ide
 						gtkrc += "-vista";
 				} else if (Platform.IsMac) {
 					gtkrc += ".mac";
+
+					var osv = Platform.OSVersion;
+					if (osv.Major == 10 && osv.Minor >= 10) {
+						gtkrc += "-yosemite";
+					}
 				}
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine (gtkrc));
 			}
@@ -629,36 +644,23 @@ namespace MonoDevelop.Ide
 			options.IdeCustomizer = customizer;
 
 			int ret = -1;
-			bool retry = false;
-			do {
-				try {
-					var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
-					if (!Platform.IsMac && !Platform.IsWindows)
-						exename = exename.ToLower ();
-					Runtime.SetProcessName (exename);
-					var app = new IdeStartup ();
-					ret = app.Run (options);
-					break;
-				} catch (Exception ex) {
-					if (!retry && AddinManager.IsInitialized) {
-						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.", ex);
-						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
-						LoggingService.LogInfo ("Addin registry rebuilt. Restarting {0}.", BrandingService.ApplicationName);
-						retry = true;
-					} else {
-						LoggingService.LogFatalError (
-							string.Format (
-								"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
-								"may not be properly installed in the GAC.",
-								BrandingService.ApplicationName
-							), ex);
-						retry = false;
-					}
-				} finally {
-					Runtime.Shutdown ();
-				}
+			try {
+				var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
+				if (!Platform.IsMac && !Platform.IsWindows)
+					exename = exename.ToLower ();
+				Runtime.SetProcessName (exename);
+				var app = new IdeStartup ();
+				ret = app.Run (options);
+			} catch (Exception ex) {
+				LoggingService.LogFatalError (
+					string.Format (
+						"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
+						"may not be properly installed in the GAC.",
+						BrandingService.ApplicationName
+					), ex);
+			} finally {
+				Runtime.Shutdown ();
 			}
-			while (retry);
 
 			LoggingService.Shutdown ();
 

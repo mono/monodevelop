@@ -113,6 +113,10 @@ namespace MonoDevelop.Refactoring.Rename
 					entry.Text = member.Name;
 				}
 				//				fileName = member.Region.FileName;
+			} else if (options.SelectedItem is IType) {
+				var lvar = (IType)options.SelectedItem;
+				entry.Text = lvar.Name;
+				//				this.fileName = lvar.Region.FileName;
 			} else if (options.SelectedItem is ITypeParameter) {
 				var lvar = (ITypeParameter)options.SelectedItem;
 				entry.Text = lvar.Name;

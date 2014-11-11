@@ -25,12 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using MonoMac.AppKit;
+using AppKit;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using System.Text;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
+using Foundation;
+using ObjCRuntime;
 using System.Collections.Generic;
 
 namespace MonoDevelop.MacIntegration.MacMenu

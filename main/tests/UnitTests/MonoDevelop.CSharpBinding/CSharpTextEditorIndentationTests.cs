@@ -394,6 +394,29 @@ namespace MonoDevelop.CSharpBinding
 			CheckOutput (data, "namespace Foo\n{\n\tpublic class Bar\n\t{\n\t\tvoid Test()\r\n\t\t{\r\n\t\t\t/* foo\n\t\t\t * $\n\t\t}\n\t}\n}\n");
 		}
 
+
+		/// <summary>
+		/// Bug 23109 - Semicolon is put at the end of line instead at the position of cursor
+		/// </summary>
+		[Test]
+		public void TestBug23109 ()
+		{
+			TestGuessSemicolonInsertionOffset ("int i = 400$~ DelayMax / DelayMin; // 1 s", false);
+		}
+
+		[Test]
+		public void TestBug23109_CorrectCase ()
+		{
+			TestGuessSemicolonInsertionOffset ("int i = 400$ DelayMax / DelayMin~ // 1 s");
+		}
+
+		[Test]
+		public void TestBlockComment ()
+		{
+			TestGuessSemicolonInsertionOffset ("int i = 400$~ DelayMax / DelayMin; /* 1 s", false);
+		}
+
+
 		/// <summary>
 		/// Bug 17766 - Decreasing tab on single line bounces back to formatting spot.
 		/// </summary>

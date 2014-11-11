@@ -10,6 +10,7 @@
     <AssemblyName>MonoDevelop</AssemblyName>
     <RootNamespace>MonoDevelop.Startup</RootNamespace>
     <ApplicationIcon>..\..\..\theme-icons\Windows\monodevelop.ico</ApplicationIcon>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>

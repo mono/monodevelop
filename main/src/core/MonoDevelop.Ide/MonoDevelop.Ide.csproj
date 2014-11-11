@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MonoDevelop.Ide</AssemblyName>
     <RootNamespace>MonoDevelop.Ide</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -100,8 +101,8 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Design" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="MonoMac" Condition=" '$(Configuration)' == 'DebugMac' ">
-      <HintPath>..\..\..\external\monomac\src\MonoMac.dll</HintPath>
+    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' ">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -2846,6 +2847,17 @@
     <Compile Include="MonoDevelop.Ide.Templates\IVersionControlProjectTemplateHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateImageProvider.cs" />
     <Compile Include="MonoDevelop.Ide.Codons\ImageCodon.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDLinkMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenu.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDServicesMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\MDSubMenuItem.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Messaging.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\ObjcHelper.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\Util.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
+    <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2895,6 +2907,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="gtkrc.mac">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="gtkrc.mac-yosemite">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="gtkrc">
