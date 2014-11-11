@@ -284,7 +284,8 @@ fi
 configure_packages
 [ $? -eq 1 ] && exit 1
 
-echo -n "SUBDIRS = " > config.make
+echo "PROFILE = $profile" > config.make
+echo -n "SUBDIRS = " >> config.make
 
 echo Configuration Summary
 echo ---------------------
