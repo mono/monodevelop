@@ -259,6 +259,7 @@ namespace MonoDevelop.Ide.Projects
 
 			templateTextRenderer = new GtkTemplateCellRenderer ();
 			templateTextRenderer.Xpad = 14;
+			templateTextRenderer.Ypad = 0;
 			templateTextRenderer.Ellipsize = Pango.EllipsizeMode.End;
 			templateTextRenderer.CellBackgroundGdk = templateListBackgroundColor;
 

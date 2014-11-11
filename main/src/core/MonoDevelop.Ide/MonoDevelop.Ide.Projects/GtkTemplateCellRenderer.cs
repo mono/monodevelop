@@ -46,7 +46,8 @@ namespace MonoDevelop.Ide.Projects
 		const int languageRightHandPadding = 4;
 		const int languageLeftHandPadding = 9;
 		const int iconTextPadding = 9;
-		const int groupTemplateHeadingYPadding = 4;
+		const int groupTemplateHeadingTotalYPadding = 19;
+		const int groupTemplateHeadingYOffset = 7;
 		const int categoryTextPaddingX = 4;
 
 		int minLanguageRectWidth;
@@ -80,7 +81,7 @@ namespace MonoDevelop.Ide.Projects
 			if (TemplateIcon != null) {
 				height = (int)TemplateIcon.Height + ((int)Ypad * 2);
 			} else {
-				height += 2 * groupTemplateHeadingYPadding;
+				height += groupTemplateHeadingTotalYPadding;
 			}
 		}
 
@@ -148,7 +149,7 @@ namespace MonoDevelop.Ide.Projects
 				layout.GetPixelSize (out w, out h);
 
 				int textX = cell_area.X + (int)Xpad + categoryTextPaddingX;
-				int textY = cell_area.Y + (cell_area.Height - h) / 2 + groupTemplateHeadingYPadding;
+				int textY = cell_area.Y + (cell_area.Height - h) / 2 + groupTemplateHeadingYOffset;
 				window.DrawLayout (widget.Style.TextGC (state), textX, textY, layout);
 			}
 		}
@@ -224,7 +225,7 @@ namespace MonoDevelop.Ide.Projects
 
 		Rectangle GetLanguageButtonRectangle (Drawable window, Widget widget, Rectangle cell_area, int textHeight, int textWidth)
 		{
-			int languageRectangleHeight = cell_area.Height - 10;
+			int languageRectangleHeight = cell_area.Height - 8;
 			int languageRectangleWidth = textWidth + languageLeftHandPadding;
 			if (TemplateHasMultipleLanguages ()) {
 				languageRectangleWidth += languageRightHandPadding + dropdownTriangleWidth + dropdownTriangleRightHandPadding;
