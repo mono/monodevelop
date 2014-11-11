@@ -32,6 +32,9 @@ FSharp.AutoComplete/packages
 emacs/deps
 emacs/tmp
 
+# Sublime Text
+*.sublime-workspace
+
 .DS_Store
 
 monodevelop/Makefile

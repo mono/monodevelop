@@ -5,14 +5,7 @@
 			"name": "FSharp: Debug",
 			"working_dir": "${project_path}/FSharp",
 			"shell_cmd": "./build.sh",
-			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\FSharp\\bin\\Build.ps1\"" }
-		},
-
-		{
-			"name": "FSharp: Release",
-			"working_dir": "${project_path}/FSharp",
-			"shell_cmd": "./build.sh --release release",
-			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\FSharp\\bin\\Build.ps1\" -release -dontupload" }
+			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\bin\\Build.ps1\"" }
 		}
 	],
 
