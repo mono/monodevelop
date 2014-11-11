@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects.Extensions
 		
 		public ItemTypeCondition ()
 		{
+			aliases = new Dictionary<string, string> ();
 		}
 		
 		public ItemTypeCondition (Type objType): this (objType, null)

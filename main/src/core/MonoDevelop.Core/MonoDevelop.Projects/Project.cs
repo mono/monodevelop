@@ -2462,6 +2462,11 @@ namespace MonoDevelop.Projects
 			{
 				Project.OnGetDefaultImports (imports);
 			}
+
+			internal protected override void OnPrepareForEvaluation (MSBuildProject project)
+			{
+				Project.OnPrepareForEvaluation (project);
+			}
 		}
 	}
 

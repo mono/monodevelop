@@ -94,6 +94,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 			MSBuildProject p = new MSBuildProject ();
 			p.Load (projItemsPath);
+			p.Evaluate ();
 
 			var cp = p.PropertyGroups.FirstOrDefault (g => g.Label == "Configuration");
 			if (cp != null)

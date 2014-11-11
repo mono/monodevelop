@@ -41,7 +41,7 @@
 			<Condition id="ItemType" value="DotNetAssemblyProject">
 				<Panel id = "RuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.RuntimeOptionsPanel"/>
 			</Condition>
-			<Condition id="ItemType" value="PortableDotNetProject">
+			<Condition id="FlavorType" value="PortableDotNetProjectFlavor">
 				<Panel id = "PortableRuntimeOptionsPanel" _label = "Runtime Options" class = "MonoDevelop.Ide.Projects.OptionPanels.PortableRuntimeOptionsPanel"/>
 			</Condition>
 			<Condition id="ItemType" value="Solution">
@@ -51,7 +51,7 @@
 				<Panel id = "MSBuildOptionsPanel" _label = "Build" class = "MonoDevelop.Ide.Projects.OptionPanels.CombineMSBuildOptions"/>
 			</Condition>
 		</Section>
-		<Condition id="ItemType" value="SolutionEntityItem">
+		<Condition id="ItemType" value="SolutionItem">
 			<Section id = "CustomCommands" _label = "Custom Commands" fill = "true" class = "MonoDevelop.Ide.Projects.OptionPanels.BuildCustomCommandPanel" icon = "md-prefs-generic" />
 		</Condition>
 		<Condition id="ItemType" value="Project">

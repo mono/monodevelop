@@ -217,7 +217,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			try {
 				Engine e = new Engine ();
 				MSProject project = new MSProject (e);
-				project.Load (FileName);
+				project.FullFileName = FileName;
+				project.LoadXml (doc.OuterXml);
 				SyncBuildProject (project);
 			} catch (Exception ex) {
 				// If the project can't be evaluated don't crash
