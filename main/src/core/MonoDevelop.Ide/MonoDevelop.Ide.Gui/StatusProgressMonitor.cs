@@ -64,8 +64,11 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (showTaskTitles)
 				statusBar.ShowMessage (icon, CurrentTaskName);
-			if (!ProgressIsUnknown)
+			if (!ProgressIsUnknown) {
 				statusBar.SetProgressFraction (Progress);
+				DesktopService.SetGlobalProgress (Progress);
+			} else
+				DesktopService.ShowGlobalProgressIndeterminate ();
 			DispatchService.RunPendingEvents ();
 		}
 		
@@ -94,7 +97,9 @@ namespace MonoDevelop.Ide.Gui
 					} else if (SuccessMessages.Length == 0) {
 						statusBar.ShowWarning (Warnings [Warnings.Length - 1]);
 					}
-					
+
+					DesktopService.ShowGlobalProgressError ();
+
 					base.OnCompleted ();
 					
 					if (showErrorDialogs)
@@ -109,6 +114,8 @@ namespace MonoDevelop.Ide.Gui
 				statusBar.StatusSourcePad = statusSourcePad;
 				statusBar.Dispose ();
 			}
+
+			DesktopService.SetGlobalProgress (Progress);
 
 			base.OnCompleted ();
 		}

@@ -51,6 +51,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Components.Extensions;
+using MonoDevelop.Ide.Desktop;
 
 namespace MonoDevelop.Ide
 {
@@ -233,10 +234,19 @@ namespace MonoDevelop.Ide
 
 				Counters.Initialization.Trace ("Initializing IdeApp");
 				IdeApp.Initialize (monitor);
-				
+
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");
-				IdeApp.OpenFiles (startupInfo.RequestedFileList);
+
+				// load previous combine
+				RecentFile openedProject = null;
+				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile) {
+					openedProject = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+					if (openedProject != null)
+						IdeApp.Workspace.OpenWorkspaceItem (openedProject.FileName).ContinueWith ((t) => IdeApp.OpenFiles (startupInfo.RequestedFileList));
+				}
+				if (openedProject == null)
+					IdeApp.OpenFiles (startupInfo.RequestedFileList);
 				
 				monitor.Step (1);
 			
@@ -636,36 +646,23 @@ namespace MonoDevelop.Ide
 			options.IdeCustomizer = customizer;
 
 			int ret = -1;
-			bool retry = false;
-			do {
-				try {
-					var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
-					if (!Platform.IsMac && !Platform.IsWindows)
-						exename = exename.ToLower ();
-					Runtime.SetProcessName (exename);
-					var app = new IdeStartup ();
-					ret = app.Run (options);
-					break;
-				} catch (Exception ex) {
-					if (!retry && AddinManager.IsInitialized) {
-						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.", ex);
-						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
-						LoggingService.LogInfo ("Addin registry rebuilt. Restarting {0}.", BrandingService.ApplicationName);
-						retry = true;
-					} else {
-						LoggingService.LogFatalError (
-							string.Format (
-								"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
-								"may not be properly installed in the GAC.",
-								BrandingService.ApplicationName
-							), ex);
-						retry = false;
-					}
-				} finally {
-					Runtime.Shutdown ();
-				}
+			try {
+				var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
+				if (!Platform.IsMac && !Platform.IsWindows)
+					exename = exename.ToLower ();
+				Runtime.SetProcessName (exename);
+				var app = new IdeStartup ();
+				ret = app.Run (options);
+			} catch (Exception ex) {
+				LoggingService.LogFatalError (
+					string.Format (
+						"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
+						"may not be properly installed in the GAC.",
+						BrandingService.ApplicationName
+					), ex);
+			} finally {
+				Runtime.Shutdown ();
 			}
-			while (retry);
 
 			LoggingService.Shutdown ();
 

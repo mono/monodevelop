@@ -63,6 +63,10 @@ namespace MonoDevelop.Projects
 
 		public ProjectItemFlags Flags { get; set; }
 
+		public bool IsHidden {
+			get { return (Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden; }
+		}
+
 		internal protected virtual void Read (Project project, IMSBuildItemEvaluated buildItem)
 		{
 			ItemName = buildItem.Name;

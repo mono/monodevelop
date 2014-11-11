@@ -125,7 +125,7 @@ namespace MonoDevelop.Ide.FindInFiles
 					results.SetComplete ();
 				});
 
-				var allProjectFiles = IdeApp.Workspace.GetAllProjects ().SelectMany (project => project.Files).Where (f => filterOptions.NameMatches (f.Name)).Select (f => new Tuple<Project,string>(f.Project,f.Name)).ToArray ();
+				var allProjectFiles = IdeApp.Workspace.GetAllProjects ().SelectMany (project => project.Files).Where (f => !f.IsHidden && filterOptions.NameMatches (f.Name)).Select (f => new Tuple<Project,string>(f.Project,f.Name)).ToArray ();
 				await Task.Factory.StartNew (delegate {
 					foreach (var ft in allProjectFiles.Where (f => File.Exists (f.Item2))) {
 						var file = ft.Item2;
@@ -171,7 +171,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			if (IdeApp.Workspace.IsOpen) {
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				var alreadyVisited = new HashSet<string> ();
-				var allFiles = project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name)).Select (f => f.Name).ToArray ();
+				var allFiles = project.Files.Where (f => !f.IsHidden && filterOptions.NameMatches (f.Name) && File.Exists (f.Name)).Select (f => f.Name).ToArray ();
 				return Task.Factory.StartNew (delegate {
 					foreach (string file in allFiles) {
 						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file))

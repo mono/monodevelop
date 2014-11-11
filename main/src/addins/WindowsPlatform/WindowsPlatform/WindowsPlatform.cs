@@ -42,6 +42,8 @@ using System.Diagnostics;
 using MonoDevelop.Core.Execution;
 using System.Text;
 using MonoDevelop.Core;
+using Microsoft.WindowsAPICodePack.Taskbar;
+using MonoDevelop.Ide;
 
 namespace MonoDevelop.Platform
 {
@@ -60,7 +62,48 @@ namespace MonoDevelop.Platform
 		public override string Name {
 			get { return "Windows"; }
 		}
-		
+
+		public override void Initialize ()
+		{
+			// Only initialize elements for Win7+.
+			if (TaskbarManager.IsPlatformSupported) {
+				TaskbarManager.Instance.ApplicationId = BrandingService.ProfileDirectoryName + "." + IdeApp.Version;
+			}
+		}
+
+		public override void SetGlobalProgressBar (double progress)
+		{
+			if (!TaskbarManager.IsPlatformSupported)
+				return;
+
+			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
+			if (progress >= 1.0) {
+				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress, handle);
+			} else {
+				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Normal, handle);
+				TaskbarManager.Instance.SetProgressValue ((int)(progress * 100f), 100, handle);
+			}
+		}
+
+		public override void ShowGlobalProgressBarIndeterminate ()
+		{
+			if (!TaskbarManager.IsPlatformSupported)
+				return;
+				
+			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
+			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Indeterminate, handle);
+		}
+
+		public override void ShowGlobalProgressBarError ()
+		{
+			if (!TaskbarManager.IsPlatformSupported)
+				return;
+
+			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
+			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Error, handle);
+			TaskbarManager.Instance.SetProgressValue (1, 1, handle);
+		}
+
 		public override object GetFileAttributes (string fileName)
 		{
 			return null;

@@ -61,6 +61,7 @@ namespace MonoDevelop.Ide
 				platformService = new DefaultPlatformService ();
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
+			PlatformService.Initialize ();
 			if (PlatformService.CanOpenTerminal)
 				Runtime.ProcessService.SetExternalConsoleHandler (PlatformService.StartConsoleProcess);
 			
@@ -86,6 +87,21 @@ namespace MonoDevelop.Ide
 					nativeToolkit = platformService.LoadNativeToolkit ();
 				return nativeToolkit;
 			}
+		}
+
+		public static void SetGlobalProgress (double progress)
+		{
+			platformService.SetGlobalProgressBar (progress);
+		}
+
+		public static void ShowGlobalProgressIndeterminate ()
+		{
+			platformService.ShowGlobalProgressBarIndeterminate ();
+		}
+
+		public static void ShowGlobalProgressError ()
+		{
+			platformService.ShowGlobalProgressBarError ();
 		}
 
 		public static IEnumerable<DesktopApplication> GetApplications (string filename)
