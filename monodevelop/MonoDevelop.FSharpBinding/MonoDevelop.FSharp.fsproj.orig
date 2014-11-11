@@ -72,306 +72,12 @@
   <Target Name="AfterClean">
     <RemoveDir Directories="$(OutputPath)\packages" />
   </Target>
+  <Import Project="templates.targets" />
   <ItemGroup>
-    <None Include="Templates/EmptyFSharpSource.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/EmptyFSharpScript.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/EmptyFSharpSignature.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/FSharpNUnitTestType.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/FSharpConsoleProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/FSharpLibraryProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/FSharpTutorialProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/FSharpGtkProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/AssemblyInfo.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/FSharpProjectMvc4Razor.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/FSharpProjectMvc4Razor.windows.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/FSharpNUnitLibraryProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacApplicationDocumentManifest.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacApplicationManifest.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacPlist.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacProjectEmpty.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/XamMac/XamMacWindowWithControllerXib.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacApplicationDocumentManifest.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacApplicationManifest.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacPlist.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacProjectEmpty.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/MonoMac/MonoMac/MonoMacWindowWithControllerXib.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidActivity.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplicationProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplicationProjectLv12.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplicationProjectLv15.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidBroadcastReceiver.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidClass.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidFragment.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidInterface.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidLibraryProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidOpenGLProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidUnitTestProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidView.xft.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/UnitTestProject/MainActivity.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/UnitTestProject/TestsSample.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/OpenGLApplication/GLView1.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/OpenGLApplication/Main.axml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/OpenGLApplication/MainActivity.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/OpenGLApplication/Resource.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/AboutAssets.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/AboutResources.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/AssemblyInfo.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/Icon-hd.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/Icon-ld.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/Icon-md.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/Main.axml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/MainActivity.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/Android/MonoDroidApplication/Resource.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/LibraryProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Common/Default-568h.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Common/Info_iPad.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Common/Info_iPad.Storyboard.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Common/Info_iPhone.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Common/Info_iPhone.Storyboard.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Common/Info_Universal.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Common/Info_Universal.Storyboard.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Common/Entitlements.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Empty/AppDelegate.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Empty/ProjectIPad.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Empty/ProjectIPhone.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/Empty/ProjectUniversal.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/SingleView/ProjectIPad.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/SingleView/ProjectIPhone.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/SingleView/ProjectUniversal.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/SingleView/Common/AppDelegate.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/SingleView/IPad/ViewController.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/SingleView/IPhone/ViewController.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates/ios/SingleView/Universal/ViewController.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\UnitTests\UnitTestsProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\SingleView\ProjectIPad.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\SingleView\ProjectIPhone.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\SingleView\ProjectUniversal.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Empty\AppDelegate.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Empty\ProjectIPad.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Empty\ProjectIPhone.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Empty\ProjectUniversal.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Default-568h.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Entitlements.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Info_iPad.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Info_iPad.Storyboard.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Info_iPhone.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Info_iPhone.Storyboard.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Info_Universal.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Info_Universal.Storyboard.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\ExtensionAppDelegate.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\Common\Conversions.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\LibraryProject.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\SingleView\Common\AppDelegate.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\SingleView\IPad\ViewController.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\SingleView\IPhone\ViewController.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\SingleView\Universal\ViewController.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\UnitTests\UnitTestAppDelegate.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\CustomKeyboardExtension\Info.plist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS/Project\CustomKeyboardExtension\KeyboardViewController.fs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Templates\Xamarin.iOS\Project\CustomKeyboardExtension\Project.xpt.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-
-    <None Include="Templates\FSharp-templates.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-
+    <Compile Include="Services\Utils.fs" />
+    <Compile Include="Services\OrderAssemblyReferences.fs" />
+    <Compile Include="Services\CodeGeneration.fs" />
+    <Compile Include="Services\InterfaceStubGenerator.fs" />
     <Compile Include="Services\Parameters.fs" />
     <Compile Include="Services\CompilerArguments.fs" />
     <Compile Include="Services\TooltipHelpers.fs" />
@@ -382,7 +88,7 @@
     <Compile Include="Services\NRefactory.fs" />
     <Compile Include="Services\NRefactoryCodeActionSource.fs" />
     <Compile Include="Services\FSharpIndentationTracker.fs" />
-	  <Compile Include="FSharpSymbolHelper.fs" />
+    <Compile Include="FSharpSymbolHelper.fs" />
     <Compile Include="FSharpInteractivePad.fs" />
     <Compile Include="FSharpOptionsPanels.fs" />
     <Compile Include="FSharpLanguageBinding.fs" />
@@ -400,10 +106,10 @@
     <Compile Include="FSharpFormatter.fs" />
     <Compile Include="FSharpFormattingPanelWidget.fs" />
     <Compile Include="FSharpFormattingPolicyPanel.fs" />
-	  <Compile Include="FSharpSyntaxMode.fs" />
-	  <Compile Include="FSharpHighlightUsagesExtension.fs" />
+    <Compile Include="FSharpSyntaxMode.fs" />
+    <Compile Include="FSharpHighlightUsagesExtension.fs" />
     <Compile Include="UnformattedTextFileDescriptionTemplate.fs" />
-	  <EmbeddedResource Include="FSharpSyntaxMode.xml" />
+    <EmbeddedResource Include="FSharpSyntaxMode.xml" />
     <EmbeddedResource Include="FSharpFormattingPolicy.xml" />
     <EmbeddedResource Include="FSharpStylePolicy.xml" />
     <EmbeddedResource Include="FSharpBinding.addin.xml" />
@@ -487,7 +193,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>packages\FSharp.Compiler.Service.0.0.73\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>packages\FSharp.Compiler.Service.0.0.73\lib\net45\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>

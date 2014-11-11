@@ -54,15 +54,11 @@
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />
   -->
   <ItemGroup>
-    <Compile Include="CodeGeneration.fs" />
-    <Compile Include="Utils.fs" />
     <Compile Include="Digraph.fs" />
-    <Compile Include="OrderAssemblyReferences.fs" />
     <Compile Include="CompilerLocationUtils.fs" />
     <Compile Include="Parser.fs" />
     <None Include="packages.config" />
     <Compile Include="LanguageService.fs" />
-    <Compile Include="InterfaceStubGenerator.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
@@ -76,6 +72,9 @@
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
       <HintPath>$(SolutionDir)\packages\FSharp.Compiler.Service.0.0.73\lib\net45\FSharp.Compiler.Service.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core">
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
