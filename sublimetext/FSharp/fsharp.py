@@ -52,10 +52,7 @@ def process_resp(data):
         return
 
     if data['Kind'] == 'INFO' and data['Data']:
-        panel = OutputPanel (name='fs.out')
-        panel.write (str(data))
-        panel.write ("\n")
-        panel.show()
+        print(str(data))
         return
 
     if data['Kind'] == 'declarations' and data['Data']:
