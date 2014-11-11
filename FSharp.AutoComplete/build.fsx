@@ -15,7 +15,7 @@ Target "RestorePackages" (fun _ ->
 let buildDir = "./bin/Debug/"
 let buildReleaseDir = "./bin/Release/"
 let integrationTestDir = "./test/integration/"
-let emacsBinDir = "../emacs/"
+let emacsBinDir = "../emacs/bin/"
 
 Target "BuildDebug" (fun _ ->
   MSBuildDebug buildDir "Build" ["./FSharp.AutoComplete.fsproj"]
