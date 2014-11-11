@@ -395,8 +395,8 @@ type FSharpTextEditorCompletion() =
 
   interface IDebuggerExpressionResolver with
     member x.ResolveExpression(editor, doc, offset, startOffset) =
-
-        let resolveResult, dom = doc.GetLanguageItem(offset)
+        let resolver = TextEditorResolverService.GetProvider(doc.Editor.MimeType)
+        let resolveResult, dom = resolver.GetLanguageItem(doc,offset)
         match resolveResult.GetSymbol() with
         //we are only going to process FSharpResolvedVariable types all other types will not be resolved.
         //This will cause the tooltip to be displayed as usual for member lookups etc.  

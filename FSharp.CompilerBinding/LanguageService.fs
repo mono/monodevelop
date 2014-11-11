@@ -242,7 +242,6 @@ type LanguageService(dirtyNotify) =
               let! (fileName, source, options, reply: AsyncReplyChannel<_> ) = mbox.Receive()
               
               let fileName = fixFileName(fileName)            
-              
               Debug.WriteLine("Worker: Request received, fileName = {0}, parsing...", box fileName)
               let! parseResults = checker.ParseFileInProject(fileName, source, options) 
                 

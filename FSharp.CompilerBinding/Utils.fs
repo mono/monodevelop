@@ -5,7 +5,7 @@
 open System
 
 [<RequireQualifiedAccess>]
-module internal Seq =
+module Seq =
     let tryHead s =
         if Seq.isEmpty s then None else Some (Seq.head s)
 

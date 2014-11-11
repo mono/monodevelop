@@ -8,6 +8,8 @@ open MonoDevelop.Core.Assemblies
 open MonoDevelop.Ide
 open MonoDevelop.Ide.TypeSystem
 open MonoDevelop.Projects
+open FSharp.CompilerBinding
+open MonoDevelop.Ide.Gui
 
 [<AutoOpen>]
 module Path =
@@ -65,3 +67,4 @@ type TestBase() =
         TypeSystemService.TrackFileChanges <- true
         DesktopService.Initialize ()
         Services.ProjectService.DefaultTargetFramework <- Runtime.SystemAssemblyService.GetTargetFramework (TargetFrameworkMoniker.NET_4_5)
+        
