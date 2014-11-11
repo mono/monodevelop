@@ -1,3 +1,17 @@
+## 1.4.2 (2014-10-30)
+
+Incorporate FSharp.AutoComplete version 0.13.2, which returns more information if the project parsing fails.
+
+Features:
+  - #811: Return exception message on project parsing fail
+
+## 1.4.1 (2014-10-30)
+
+Incorporate FSharp.AutoComplete version 0.13.1, which contains a fix for goto definition.
+
+Bugfixes:
+  - #787: Correct off-by-one error in fsac goto definition
+
 ## 1.4.0 (2014-10-26)
 
 The main feature of this release is that the project parsing logic has
