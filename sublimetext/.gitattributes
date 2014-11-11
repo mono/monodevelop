@@ -1,0 +1,10 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+text=auto
+
+# These files need to have LF as line terminator, even on Windows.
+*.tmSnippet text eol=lf
+*.*tmLanguage text eol=lf
+messages.json text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
