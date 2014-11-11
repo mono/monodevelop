@@ -32,3 +32,37 @@ class ProjectResponse (object):
     def output(self):
        return self.content ['Data']['References']
 
+
+class TopLevelDeclaration(object):
+  def __init__(self, data):
+    self.data = data
+
+  @property
+  def first_location(self):
+    col = self.data['BodyRange']['Item1']['Column']
+    row = self.data['BodyRange']['Item1']['Line']
+    return (row - 1, col)
+
+  @property
+  def name(self):
+    return self.data['Name']
+
+  def __str__(self):
+    return 'Declaration({0})<{1},{2}>'.format(self.name, *self.first_location)
+
+  def to_menu_data(self):
+    return [self.name, 'fs_go_to_location', {'loc': list(self.first_location)}]
+
+
+class DeclarationsResponse(object):
+    def __init__(self, data):
+        self.data = data
+
+    @property
+    def declarations(self):
+       for decl in self.data['Data'][0]['Nested']:
+          yield TopLevelDeclaration (decl)
+
+    def __str__(self):
+       return '<DeclarationsList>'
+

@@ -17,6 +17,7 @@ from FSharp.fsac.request import ParseRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import ProjectResponse
+from FSharp.fsac.response import DeclarationsResponse
 from FSharp.sublime_plugin_lib import PluginLogger
 from FSharp.sublime_plugin_lib.panels import OutputPanel
 
@@ -82,10 +83,10 @@ def process_resp(data):
         return
 
     if data['Kind'] == 'declarations' and data['Data']:
-        panel = OutputPanel (name='fs.out')
-        panel.write (str(data))
-        panel.write ("\n")
-        panel.show()
+        decls = DeclarationsResponse(data)
+        its = [decl.to_menu_data() for decl in decls.declarations]
+        w = sublime.active_window()
+        w.run_command ('fs_show_menu', {'items': its})
         return
 
 class fs_run_fsac(sublime_plugin.WindowCommand):
@@ -139,6 +140,29 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
 
     def do_compiler_location(self):
         editor_context.fsac.send_request(CompilerLocationRequest())
+
+
+class fs_go_to_location (sublime_plugin.WindowCommand):
+    def run(self, loc):
+        v = self.window.active_view ()
+        pt = v.text_point(*loc)
+        v.sel ().clear ()
+        v.sel ().add (sublime.Region (pt))
+        v.show_at_center(pt)
+
+
+class fs_show_menu(sublime_plugin.WindowCommand):
+    def run(self, items):
+        self.items = items
+        self.names = names = [name for (name, _, _) in items]
+        self.window.show_quick_panel(self.names, self.on_done)
+
+    def on_done(self, idx):
+        if idx == -1:
+            return
+        _, cmd, args = self.items[idx]
+        if cmd:
+            self.window.run_command (cmd, args or {})
 
 
 class fs_show_options(sublime_plugin.WindowCommand):
