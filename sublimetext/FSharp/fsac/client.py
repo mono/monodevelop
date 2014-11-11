@@ -4,6 +4,7 @@ import json
 
 from .server import requests_queue
 from .server import responses_queue
+from .server import _internal_comm
 
 from FSharp.sublime_plugin_lib import PluginLogger
 
@@ -11,7 +12,7 @@ from FSharp.sublime_plugin_lib import PluginLogger
 _logger = PluginLogger(__name__)
 
 
-def read_reqs(responses, req_proc):
+def read_reqs(responses, messages, req_proc):
     """Reads responses from server and forwards them to @req_proc.
     """
     while True:
@@ -22,7 +23,7 @@ def read_reqs(responses, req_proc):
                 break
 
             try:
-                if actions.get(block=False) == STOP_SIGNAL:
+                if messages.get(block=False) == STOP_SIGNAL:
                     print ('asked to stop; complying')
                     break
             except:
@@ -41,7 +42,9 @@ class FsacClient(object):
         self.requests = requests_queue
         self.server = server
 
-        threading.Thread(target=read_reqs, args=(responses_queue, req_proc)).start()
+        threading.Thread(target=read_reqs, args=(responses_queue,
+                                                 _internal_comm,
+                                                 req_proc)).start()
 
     def stop(self):
         self.server.stop()

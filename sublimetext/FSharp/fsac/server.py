@@ -12,8 +12,8 @@ PATH_TO_FSAC = os.path.join(os.path.dirname(__file__),
 
 
 requests_queue = queue.Queue()
-actions_queue = queue.Queue()
 responses_queue = queue.Queue()
+_internal_comm = queue.Queue()
 
 STOP_SIGNAL = '__STOP'
 
@@ -26,9 +26,9 @@ def request_reader(server):
             req = requests_queue.get(block=True, timeout=5)
 
             try:
-                if actions_queue.get(block=False) == STOP_SIGNAL:
+                if _internal_comm.get(block=False) == STOP_SIGNAL:
                     print('asked to exit; complying')
-                    actions_queue.put(STOP_SIGNAL)
+                    _internal_comm.put(STOP_SIGNAL)
                     break
             except:
                 pass
@@ -51,9 +51,9 @@ def response_reader(server):
                 break
 
             try:
-                if actions_queue.get(block=False) == STOP_SIGNAL:
+                if _internal_comm.get(block=False) == STOP_SIGNAL:
                     print('asked to exit; complying')
-                    actions_queue.put(STOP_SIGNAL)
+                    _internal_comm.put(STOP_SIGNAL)
                     break
             except:
                 pass
@@ -76,7 +76,7 @@ class FsacServer(object):
         threading.Thread (target=response_reader, args=(self,)).start ()
 
     def stop(self):
-        self.actions_queue.put(STOP_SIGNAL)
+        self._internal_comm.put(STOP_SIGNAL)
         self.prco.stdin.close()
 
 

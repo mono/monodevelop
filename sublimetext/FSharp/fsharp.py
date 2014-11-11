@@ -7,17 +7,16 @@ import sublime_plugin
 
 import os
 
-from FSharp.fsac import server
-from FSharp.fsac.client import FsacClient
 from FSharp.fsac.request import AdHocRequest
-from FSharp.fsac.request import CompilerLocationRequest
 from FSharp.fsac.request import DataRequest
 from FSharp.fsac.request import DeclarationsRequest
 from FSharp.fsac.request import ParseRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.response import CompilerLocationResponse
-from FSharp.fsac.response import ProjectResponse
+from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
+from FSharp.fsac.response import ProjectResponse
+from FSharp.lib.editor import Editor
 from FSharp.sublime_plugin_lib import PluginLogger
 from FSharp.sublime_plugin_lib.panels import OutputPanel
 
@@ -27,29 +26,6 @@ _logger = PluginLogger (__name__)
 
 def plugin_unloaded():
     editor_context.fsac.stop()
-
-
-class Editor(object):
-    """Global editor state.
-    """
-    def __init__(self, resp_proc):
-        _logger.info ('starting fsac server...')
-        self.fsac = FsacClient(server.start(), resp_proc)
-        self.compilers_path = None
-        self.project_file = None
-        self.fsac.send_request (CompilerLocationRequest())
-
-    @property
-    def compiler_path(self):
-        if self.compilers_path is None:
-            return None
-        return os.path.join(self.compilers_path, 'fsc.exe')
-
-    @property
-    def interpreter_path(self):
-        if self.compilers_path is None:
-            return None
-        return os.path.join(self.compilers_path, 'fsi.exe')
 
 
 def process_resp(data):
