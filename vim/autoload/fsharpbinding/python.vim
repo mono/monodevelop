@@ -31,6 +31,7 @@ endfunction
 
 
 function! fsharpbinding#python#ParseProject(...)
+    execute 'wa'
     if a:0 > 0
     python << EOF
 fsautocomplete.project(vim.eval("a:1"))
@@ -46,6 +47,7 @@ endfunction
 
 function! fsharpbinding#python#BuildProject(...)
     try
+        execute 'wa'
         if a:0 > 0
             execute '!xbuild ' . a:1
         else
@@ -175,6 +177,13 @@ else:
 EOF
 endfunction
 
+function! fsharpbinding#python#OnBufEnter()
+python << EOF
+file_dir = vim.eval("expand('%:p:h')")
+fsi.cd(file_dir)
+EOF
+endfunction
+
 function! fsharpbinding#python#FsiPurge()
     let prelude = pyeval('fsi.purge()')
     for l in l:prelude
@@ -193,6 +202,11 @@ endfunction
 
 function! fsharpbinding#python#FsiSend(text)
 python << EOF
+#file_dir = vim.eval("expand('%:p:h')")
+path = vim.current.buffer.name
+(row, col) = vim.current.window.cursor
+#fsi.cd(file_dir)
+fsi.set_loc(path, row)
 fsi.send(vim.eval('a:text'))
 EOF
 endfunction

@@ -33,14 +33,21 @@ class FSharpInteractive:
         self.should_work = False
         self.p.kill()
 
+    def set_loc(self, path, line_num):
+        self.p.stdin.write("#" + str(line_num) + " @\"" + path + "\"\n")
+            
     def send(self, txt):
         self.p.stdin.write(txt + ";;\n")
+
+    def cd(self, path):
+        self.p.stdin.write("System.IO.Directory.SetCurrentDirectory(@\"" + path + "\");;\n")
+        self.p.stdin.write("#silentCd @\"" + path + "\";;\n")
 
     def purge(self):
         items = []
         while(True):
             try:
-                l = self.read_one().rstrip()
+                l = self.lines.get(False).rstrip()
                 if 'SERVER-PROMPT>' not in l:
                     items.append(l)
             except:
@@ -50,7 +57,7 @@ class FSharpInteractive:
     def read_until_prompt(self):
         output = []
         try:
-            l = self.lines.get(True, 60) #is one minute enough?
+            l = self.lines.get(True, 10) #wait longer for first - this assumes there will be a resonse.
             if 'SERVER-PROMPT>' in l:
                 return output
             output.append(str(l).rstrip())

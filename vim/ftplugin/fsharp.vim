@@ -31,6 +31,7 @@ if has('python')
 import vim
 import os
 fsharp_dir = vim.eval("expand('<sfile>:p:h')")
+file_dir = vim.eval("expand('%:p:h')")
 sys.path.append(fsharp_dir)
 
 from fsharpvim import FSAutoComplete,Statics
@@ -80,6 +81,7 @@ EOF
         au!
         " closing the scratch window after leaving insert mode
         " is common practice
+        au BufEnter *.fs,*.fsi,*.fsx call fsharpbinding#python#OnBufEnter() "fsi.cd
         au InsertLeave *.fs? if pumvisible() == 0|pclose|endif
     augroup END
 
