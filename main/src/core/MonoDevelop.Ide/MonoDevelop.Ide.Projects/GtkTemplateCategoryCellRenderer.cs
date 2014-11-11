@@ -38,16 +38,17 @@ namespace MonoDevelop.Ide.Projects
 		public Xwt.Drawing.Image CategoryIcon { get; set; }
 		public int CategoryIconWidth { get; set; }
 
-		const int topLevelTemplateHeadingYPadding = 8;
-		const int topLevelTemplateHeadingYOffset = 5;
+		const int topLevelTemplateHeadingTotalYPadding = 23;
+		const int topLevelTemplateHeadingYOffset = 4;
 		const int topLevelIconTextXPadding = 6;
 		const int iconTextXPadding = 1;
+		const int iconYOffset = -1;
 
 		public override void GetSize (Widget widget, ref Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 		{
 			base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 			if (CategoryIcon != null) {
-				height = (int)CategoryIcon.Height + ((int)Ypad * 2) + (2 * topLevelTemplateHeadingYPadding);
+				height = (int)CategoryIcon.Height + ((int)Ypad * 2) + topLevelTemplateHeadingTotalYPadding;
 			}
 		}
 
@@ -68,7 +69,7 @@ namespace MonoDevelop.Ide.Projects
 
 		Rectangle GetIconRect (Rectangle cell_area)
 		{
-			return new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad, CategoryIconWidth, CategoryIconWidth);
+			return new Rectangle (cell_area.X + (int)Xpad, cell_area.Y + (int)Ypad + iconYOffset, CategoryIconWidth, CategoryIconWidth);
 		}
 
 		static StateType GetState (Widget widget, CellRendererState flags)
