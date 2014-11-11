@@ -56,8 +56,6 @@
     <Import file = "Templates/Android/MonoDroidApplication/Icon-md.png" />
     <Import file = "Templates/Android/MonoDroidApplication/Main.axml" />
     <Import file = "Templates/Android/MonoDroidApplicationProject.xpt.xml" />
-    <Import file = "Templates/Android/MonoDroidApplicationProjectLv12.xpt.xml" />
-    <Import file = "Templates/Android/MonoDroidApplicationProjectLv15.xpt.xml" />
     <Import file = "Templates/Android/MonoDroidBroadcastReceiver.xft.xml" />
     <Import file = "Templates/Android/MonoDroidClass.xft.xml" />
     <Import file = "Templates/Android/MonoDroidFragment.xft.xml" />
@@ -388,8 +386,6 @@
     <Extension path="/MonoDevelop/Ide/ProjectTemplates">
       <ProjectTemplate id="FSharp.MonoDroidLibraryProject" file ="Templates/Android/MonoDroidLibraryProject.xpt.xml" />
       <ProjectTemplate id="FSharp.MonoDroidApplicationProject" file ="Templates/Android/MonoDroidApplicationProject.xpt.xml"/>
-      <ProjectTemplate id="FSharp.MonoDroidApplicationLv12Project" file ="Templates/Android/MonoDroidApplicationProjectLv12.xpt.xml"/>
-      <ProjectTemplate id="FSharp.MonoDroidApplicationLv15Project" file ="Templates/Android/MonoDroidApplicationProjectLv15.xpt.xml"/>
       <ProjectTemplate id="FSharp.MonoDroidOpenGLProject" file ="Templates/Android/MonoDroidOpenGLProject.xpt.xml"/>
       <ProjectTemplate id="FSharp.MonoDroidUnitTestProject" file ="Templates/Android/MonoDroidUnitTestProject.xpt.xml"/>
     </Extension>
