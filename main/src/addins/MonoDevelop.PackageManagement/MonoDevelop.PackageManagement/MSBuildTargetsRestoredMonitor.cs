@@ -1,5 +1,5 @@
 ﻿//
-// IDotNetProject.cs
+// MSBuildTargetsRestoredMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@xamarin.com>
@@ -25,28 +25,40 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core.Assemblies;
-using MonoDevelop.Projects;
+using System.Linq;
+using ICSharpCode.PackageManagement;
+using NuGet;
 
 namespace MonoDevelop.PackageManagement
 {
-	public interface IDotNetProject : IProject
+	public class MSBuildTargetsRestoredMonitor : IDisposable
 	{
-		event EventHandler<ProjectModifiedEventArgs> Modified;
+		IPackageManagementEvents packageManagementEvents;
 
-		DotNetProject DotNetProject { get; }
-		TargetFrameworkMoniker TargetFrameworkMoniker { get; }
-		string DefaultNamespace { get; }
-		ProjectReferenceCollection References { get; }
-		ProjectFileCollection Files { get; }
+		public MSBuildTargetsRestoredMonitor (IPackageManagementEvents packageManagementEvents)
+		{
+			this.packageManagementEvents = packageManagementEvents;
+			this.packageManagementEvents.PackageRestored += PackageRestored;
+		}
 
-		void AddFile (ProjectFile projectFile);
-		string GetDefaultBuildAction (string fileName);
-		bool IsFileInProject (string fileName);
-		void AddImportIfMissing (string name, string condition);
-		void RemoveImport (string name);
-		bool Equals (IDotNetProject project);
-		void RefreshProjectBuilder ();
+		void PackageRestored (object sender, PackageRestoredEventArgs e)
+		{
+			if (PackageHasMSBuildTargetsFile (e.Package)) {
+				AnyMSBuildTargetsRestored = true;
+			}
+		}
+
+		bool PackageHasMSBuildTargetsFile (IPackage package)
+		{
+			return package.GetBuildFiles ().Any ();
+		}
+
+		public void Dispose ()
+		{
+			this.packageManagementEvents.PackageRestored -= PackageRestored;
+		}
+
+		public bool AnyMSBuildTargetsRestored { get; private set; }
 	}
 }
 

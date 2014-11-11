@@ -373,7 +373,7 @@ namespace MonoDevelop.CSharp.Parser
 			case Tokenizer.PreprocessorDirective.Endregion:
 				if (regions.Count > 0) {
 					var start = regions.Pop ();
-					DomRegion dr = new DomRegion (start.Line, loc.Column, directive.EndLine, directive.EndCol);
+					DomRegion dr = new DomRegion (start.Line, start.Col, directive.EndLine, directive.EndCol);
 					result.Add (new FoldingRegion (start.Arg, dr, FoldType.UserRegion, true));
 				}
 				break;

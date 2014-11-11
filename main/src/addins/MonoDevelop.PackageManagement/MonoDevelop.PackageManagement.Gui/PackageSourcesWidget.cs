@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
-using Gdk;
 using Gtk;
 using ICSharpCode.PackageManagement;
-using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 
@@ -224,11 +222,17 @@ namespace MonoDevelop.PackageManagement
 		{
 			viewModel.IsEditingSelectedPackageSource = false;
 			using (var dialog = new AddPackageSourceDialog (viewModel)) {
-				if (dialog.ShowWithParent () == Xwt.Command.Ok) {
+				if (ShowDialogWithParent (dialog) == Xwt.Command.Ok) {
 					UpdateSelectedPackageSource ();
 				}
 				UpdateEnabledButtons ();
 			}
+		}
+
+		Xwt.Command ShowDialogWithParent (AddPackageSourceDialog dialog)
+		{
+			Xwt.WindowFrame parent = Xwt.Toolkit.CurrentEngine.WrapWindow (Toplevel);
+			return dialog.Run (parent);
 		}
 
 		void UpdateSelectedPackageSource ()
@@ -245,7 +249,7 @@ namespace MonoDevelop.PackageManagement
 		{
 			viewModel.IsEditingSelectedPackageSource = true;
 			using (var dialog = new AddPackageSourceDialog (viewModel)) {
-				dialog.ShowWithParent ();
+				ShowDialogWithParent (dialog);
 				UpdateEnabledButtons ();
 			}
 		}

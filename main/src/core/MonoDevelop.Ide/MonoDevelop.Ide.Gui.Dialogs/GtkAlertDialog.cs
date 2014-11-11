@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	/// </summary>
 	internal class GtkAlertDialog : Gtk.Dialog
 	{
+		MessageDescription message;
 		AlertButton resultButton = null;
 		AlertButton[] buttons;
 		
@@ -87,6 +88,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Init ();
 			this.buttons = message.Buttons.ToArray ();
+			this.message = message;
 
 			Modal = true;
 
@@ -176,7 +178,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					break;
 				}
 			}
-			this.Destroy ();
+			bool close = message.NotifyClicked (resultButton);
+			if (close)
+				this.Destroy ();
 		}
 	}
 }

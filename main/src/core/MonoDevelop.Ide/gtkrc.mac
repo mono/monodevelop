@@ -379,7 +379,7 @@ class "GtkScrollbar" style "scrollbar"
 class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
-class "GtkButton" style "button"
+class "GtkButton" style "dialog-button"
 class "GtkToggleButton" style "toggle-button"
 
 class "GtkScale" style "scale"
@@ -417,7 +417,7 @@ widget_class "*.<GtkComboBoxEntry>.<GtkEntry>" style "entry"
 widget_class "*.<GtkComboBoxText>.<GtkToggleButton>" style "button"
 widget_class "*.<GtkComboBoxEntry>.<GtkToggleButton>" style "button"
 #widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "entry"
-#widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "button"
+#widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "dialog-button"
 widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
 
 # Comboboxes within toolbars

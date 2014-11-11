@@ -199,6 +199,7 @@
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\TestableSolutionPackageRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakeFileRemover.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Tests.Helpers\FakePackageRepositoryWithConstraintProvider.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Tests\MSBuildTargetsRestoredMonitorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

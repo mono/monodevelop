@@ -45,6 +45,38 @@
 			<true/>
 		</dict>
 		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sketchcs</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/x-xamarin-cs-sketch</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>C# Sketch File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>sketchfs</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>application/x-xamarin-fs-sketch</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>F# Sketch File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>CFBundleTypeName</key>
 			<string>Source Code</string>
 			<key>CFBundleTypeRole</key>

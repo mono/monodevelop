@@ -912,7 +912,7 @@ namespace MonoDevelop.Ide.Gui
 				window.ViewContent.Project = null;
 		}
 		
-		void OnDocumentParsed (EventArgs e)
+		protected virtual void OnDocumentParsed (EventArgs e)
 		{
 			EventHandler handler = this.DocumentParsed;
 			if (handler != null)

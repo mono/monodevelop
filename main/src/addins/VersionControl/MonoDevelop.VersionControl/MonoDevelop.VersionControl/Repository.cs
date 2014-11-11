@@ -167,12 +167,14 @@ namespace MonoDevelop.VersionControl
 				LoggingService.LogError ("VersionControl returned {0} items for {1}", infos.Length, localPath);
 				LoggingService.LogError ("The infos were: {0}", string.Join (" ::: ", infos.Select (i => i.LocalPath)));
 			}
-			try {
+			// HACK: This was slowing down the IDE a lot in case in the eventuality of submodules.
+			return infos [0];
+			/*try {
 				return infos.Single ();
 			} catch (InvalidOperationException) {
 				// Workaround for #17216.
 				return infos [0];
-			}
+			}*/
 		}
 		
 		/// <summary>

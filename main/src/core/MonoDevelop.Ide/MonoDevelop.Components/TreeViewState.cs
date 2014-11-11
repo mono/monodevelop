@@ -34,9 +34,9 @@ namespace MonoDevelop.Components
 {
 	public class TreeViewState
 	{
+		List<NodeInfo> state;
 		TreeView tree;
 		int idColumn;
-		List<NodeInfo> state;
 		
 		class NodeInfo {
 			public object Id;
@@ -53,109 +53,125 @@ namespace MonoDevelop.Components
 		
 		public void Save ()
 		{
-			TreeIter it;
+			TreeIter iter;
+
 			state = new List<NodeInfo> ();
-			if (!tree.Model.GetIterFirst (out it))
+			if (!tree.Model.GetIterFirst (out iter))
 				return;
-			Save (state, it);
+
+			Save (state, iter);
 		}
 		
-		void Save (List<NodeInfo> info, TreeIter it)
+		void Save (ICollection<NodeInfo> collection, TreeIter iter)
 		{
 			do {
-				object id = tree.Model.GetValue (it, idColumn);
-				NodeInfo ni = new NodeInfo ();
-				ni.Id = id;
-				ni.Expanded = tree.GetRowExpanded (tree.Model.GetPath (it));
-				ni.Selected = tree.Selection.IterIsSelected (it);
-				info.Add (ni);
-				TreeIter cit;
-				if (tree.Model.IterChildren (out cit, it)) {
-					ni.ChildInfo = new List<NodeInfo> ();
-					Save (ni.ChildInfo, cit);
+				TreeIter child;
+
+				var node = new NodeInfo {
+					Expanded = tree.GetRowExpanded (tree.Model.GetPath (iter)),
+					Selected = tree.Selection.IterIsSelected (iter),
+					Id = tree.Model.GetValue (iter, idColumn)
+				};
+
+				collection.Add (node);
+
+				if (tree.Model.IterChildren (out child, iter)) {
+					node.ChildInfo = new List<NodeInfo> ();
+					Save (node.ChildInfo, child);
 				}
-			}
-			while (tree.Model.IterNext (ref it));
+			} while (tree.Model.IterNext (ref iter));
 		}
 		
 		public void Load ()
 		{
 			if (state == null)
 				throw new InvalidOperationException ("State not saved");
-			TreeIter it;
-			if (!tree.Model.GetIterFirst (out it))
+
+			TreeIter iter;
+			if (!tree.Model.GetIterFirst (out iter))
 				return;
-			Load (state, it);
+
+			Load (state, iter);
 			state = null;
 		}
 		
-		void Load (List<NodeInfo> info, TreeIter it)
+		void Load (List<NodeInfo> info, TreeIter iter)
 		{
-			bool oneSelected = false;
+			var nodes = new Dictionary<NodeInfo, TreeIter> ();
 			var infoCopy = new List<NodeInfo> (info);
-			Dictionary<NodeInfo,TreeIter> nodes = new Dictionary<NodeInfo, TreeIter> ();
+			bool oneSelected = false;
+
 			do {
-				object id = tree.Model.GetValue (it, idColumn);
+				object id = tree.Model.GetValue (iter, idColumn);
 				NodeInfo ni = ExtractNodeInfo (info, id);
+
 				if (ni != null) {
-					nodes [ni] = it;
+					nodes[ni] = iter;
+
 					if (ni.Expanded)
-						tree.ExpandRow (tree.Model.GetPath (it), false);
+						tree.ExpandRow (tree.Model.GetPath (iter), false);
 					else
-						tree.CollapseRow (tree.Model.GetPath (it));
+						tree.CollapseRow (tree.Model.GetPath (iter));
+
 					if (ni.Selected) {
 						oneSelected = true;
-						tree.Selection.SelectIter (it);
+						tree.Selection.SelectIter (iter);
+					} else {
+						tree.Selection.UnselectIter (iter);
 					}
-					else
-						tree.Selection.UnselectIter (it);
-					
+
 					if (ni.ChildInfo != null) {
-						TreeIter cit;
-						if (tree.Model.IterChildren (out cit, it))
-							Load (ni.ChildInfo, cit);
+						TreeIter child;
+
+						if (tree.Model.IterChildren (out child, iter))
+							Load (ni.ChildInfo, child);
 					}
 				}
-			}
-			while (tree.Model.IterNext (ref it));
+			} while (tree.Model.IterNext (ref iter));
 			
 			// If this tree level had a selected node and this node has been deleted, then
 			// try to select and adjacent node
 			if (!oneSelected) {
 				// 'info' contains the nodes that have not been inserted
 				if (info.Any (n => n.Selected)) {
-					NodeInfo an = FindAdjacentNode (infoCopy, nodes, info[0]);
-					if (an != null) {
-						it = nodes [an];
-						tree.Selection.SelectIter (it);
+					NodeInfo adjacent = FindAdjacentNode (infoCopy, nodes, info[0]);
+
+					if (adjacent != null) {
+						iter = nodes [adjacent];
+						tree.Selection.SelectIter (iter);
 					}
 				}
 			}
 		}
 		
-		NodeInfo FindAdjacentNode (List<NodeInfo> infos, Dictionary<NodeInfo,TreeIter> nodes, NodeInfo referenceNode)
+		static NodeInfo FindAdjacentNode (IList<NodeInfo> infos, IDictionary<NodeInfo,TreeIter> nodes, NodeInfo referenceNode)
 		{
-			int i = infos.IndexOf (referenceNode);
-			for (int n=i; n<infos.Count; n++) {
-				if (nodes.ContainsKey (infos[n]))
-					return infos[n];
+			int index = infos.IndexOf (referenceNode);
+
+			for (int i = index; i < infos.Count; i++) {
+				if (nodes.ContainsKey (infos[i]))
+					return infos[i];
 			}
-			for (int n=i-1; n>=0; n--) {
-				if (nodes.ContainsKey (infos[n]))
-					return infos[n];
+
+			for (int i = index - 1; i >= 0; i--) {
+				if (nodes.ContainsKey (infos[i]))
+					return infos[i];
 			}
+
 			return null;
 		}
 		
-		NodeInfo ExtractNodeInfo (List<NodeInfo> info, object id)
+		static NodeInfo ExtractNodeInfo (IList<NodeInfo> info, object id)
 		{
-			for (int n=0; n<info.Count; n++) {
-				NodeInfo ni = (NodeInfo) info [n];
+			for (int i = 0; i < info.Count; i++) {
+				var ni = info[i];
+
 				if (object.Equals (ni.Id, id)) {
-					info.RemoveAt (n);
+					info.RemoveAt (i);
 					return ni;
 				}
 			}
+
 			return null;
 		}
 	}

@@ -213,6 +213,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			}
 		}
 
+		public void RefreshProjectBuilder ()
+		{
+			if (projectBuilder != null) {
+				projectBuilder.Refresh ();
+			}
+		}
+
 		public override void Dispose ()
 		{
 			base.Dispose ();
