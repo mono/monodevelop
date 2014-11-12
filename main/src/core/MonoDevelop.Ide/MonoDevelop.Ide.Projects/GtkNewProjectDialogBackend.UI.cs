@@ -73,7 +73,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			BorderWidth = 0;
 			WidthRequest = 901;
-			HeightRequest = 594;
+			HeightRequest = 632;
 
 			Modal = true;
 			Name = "wizard_dialog";

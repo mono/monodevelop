@@ -143,7 +143,13 @@
 		</Category>
 	</Category>
 	<Category id="other" name="Other" icon="md-platform-other">
+		<Category id="net" name=".NET">
+			<Category id="general" name="General" />
+		</Category>
 		<Category id="aspnet" name="ASP.NET">
+			<Category id="general" name="General" />
+		</Category>
+		<Category id="c" name="C/C++">
 			<Category id="general" name="General" />
 		</Category>
 		<Category id="misc" name="Miscellaneous">
