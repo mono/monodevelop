@@ -1,4 +1,5 @@
 [
+    {"keys": ["f12"], "command": "fs_run_fsac", "args": { "cmd": "finddecl"}},
 	{"keys": ["ctrl+.", "ctrl+."], "command": "fs_show_options"},
 	{"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel", "args": {"panel": "output.fs.out", "toggle": true}}
 ]
