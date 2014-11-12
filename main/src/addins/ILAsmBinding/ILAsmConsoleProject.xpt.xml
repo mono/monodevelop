@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Console Project</_Name>
-		<_Category>other/misc/general</_Category>
+		<_Category>other/net/general</_Category>
 		<Icon>md-project-console</Icon>
 		<LanguageName>IL</LanguageName>
 		<_Description>IL Console Project</_Description>

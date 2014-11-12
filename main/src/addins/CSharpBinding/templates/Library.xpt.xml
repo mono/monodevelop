@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Library</_Name>
-		<_Category>other/misc/general</_Category>
+		<_Category>other/net/general</_Category>
 		<Icon>md-project-library</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# class library</_Description>
