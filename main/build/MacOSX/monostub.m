@@ -254,14 +254,43 @@ str_append (const char *base, const char *append)
 	return buf;
 }
 
+static char *
+generate_fallback_path (const char *contentsDir)
+{
+	char *lib_dir;
+	char *monodevelop_bin_dir;
+	char *value;
+	char *result;
+
+	/* Inject our Resources/lib dir */
+	lib_dir = str_append (contentsDir, "/Resources/lib:");
+
+	/* Inject our Resources/lib/monodevelop/bin dir so we can load libxammac.dylib */
+	monodevelop_bin_dir = str_append (contentsDir, "/Resources/lib/monodevelop/bin:");
+
+	if (lib_dir == NULL || monodevelop_bin_dir == NULL)
+		abort ();
+
+	value = str_append (lib_dir, monodevelop_bin_dir);
+	if (value == NULL)
+		abort ();
+
+	/* Mono's lib dir, and CommandLineTool's lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
+	result = str_append (value, "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib");
+
+	free (lib_dir);
+	free (monodevelop_bin_dir);
+	free (value);
+	return result;
+}
+
 static bool
 update_environment (const char *contentsDir)
 {
 	bool updated = NO;
 	char *value;
 	
-	/* Inject our Resources/lib dir, Mono's lib dir, and CommandLineTool's lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
-	if ((value = str_append (contentsDir, "/Resources/lib:/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib"))) {
+	if ((value = generate_fallback_path (contentsDir))) {
 		if (push_env ("DYLD_FALLBACK_LIBRARY_PATH", value))
 			updated = YES;
 		
