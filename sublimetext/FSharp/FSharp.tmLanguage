@@ -336,7 +336,7 @@
 						<key>3</key>
 						<dict>
 							<key>name</key>
-							<string>variable.other.binding.fsharp</string>
+							<string>entity.name.function.fsharp</string>
 						</dict>
 					</dict>
 					<key>end</key>
@@ -869,7 +869,7 @@
 					<key>match</key>
 					<string>(?&lt;=:)[a-zA-Z]\w*</string>
 					<key>name</key>
-					<string>entity.other.attribute-name.tag.storage.fsharp</string>
+					<string>storage.type.name.fsharp</string>
 				</dict>
 				<dict>
 					<key>match</key>
