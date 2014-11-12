@@ -6,7 +6,7 @@
     <_Name>Console Project</_Name>
     <Icon>md-project-console</Icon>
     <_Description>A F# project for creating a command line application</_Description>
-    <_Category>other/misc/general</_Category>
+    <_Category>other/net/general</_Category>
     <LanguageName>F#</LanguageName>
     <_GroupId>md-project-console</_GroupId>
   </TemplateConfiguration>
