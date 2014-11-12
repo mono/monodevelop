@@ -20,6 +20,7 @@ from FSharp.fsac.response import ProjectResponse
 from FSharp.lib.editor import Editor
 from FSharp.lib.project import FSharpFile
 from FSharp.sublime_plugin_lib import PluginLogger
+from FSharp.sublime_plugin_lib.context import ContextProviderMixin
 from FSharp.sublime_plugin_lib.panels import OutputPanel
 
 
@@ -196,25 +197,13 @@ class fs_show_options(sublime_plugin.WindowCommand):
         self.window.run_command ('fs_run_fsac', {'cmd': cmd})
 
 
-class ContextProvider(sublime_plugin.EventListener):
+class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
     '''Implements contexts for .sublime-keymap files.
     '''
     def on_query_context(self, view, key, operator, operand, match_all):
         if key == 'fs_is_code_file':
             value = FSharpFile(view).is_code
             return self._check(value, operator, operand, match_all)
-
-    def _check(self, value, operator, operand, match_all):
-        if operator == sublime.OP_EQUAL:
-            if operand == True:
-                return value
-            elif operand == False:
-                return not value
-        elif operator == sublime.OP_NOT_EQUAL:
-            if operand == True:
-                return not value
-            elif operand == False:
-                return value
 
 
 _logger.debug('starting editor context...')
