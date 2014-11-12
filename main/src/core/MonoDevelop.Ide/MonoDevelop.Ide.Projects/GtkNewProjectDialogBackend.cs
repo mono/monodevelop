@@ -301,8 +301,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			Xwt.Drawing.Image image = controller.GetImage (template);
 			if (image != null) {
-				Xwt.Drawing.Image resizedImage = image.WithBoxSize (new Xwt.Size (maxWidth, maxHeight));
-				return resizedImage.ToPixbuf ();
+				return image.ToPixbuf ();
 			}
 			return null;
 		}

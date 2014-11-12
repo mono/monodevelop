@@ -164,7 +164,7 @@
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/TemplateImages">
-	<Image id="md-project-template-default" resource="template-default-background.png" />
+	<Image id="md-generic-project" resource="generic-project.png" />
 </Extension>
 
 </ExtensionModel>
