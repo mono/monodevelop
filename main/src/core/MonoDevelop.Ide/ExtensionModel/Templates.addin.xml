@@ -107,16 +107,16 @@
 	</Category>
 	<Category id="ios" name="iOS" icon="md-platform-ios">
 		<Category id="app" name="App">
-			<Category id="classic" name="Classic API" />
 			<Category id="unified" name="Unified API" />
+			<Category id="classic" name="Classic API" />
 		</Category>
 		<Category id="library" name="Library">
-			<Category id="classic" name="Classic API" />
 			<Category id="unified" name="Unified API" />
+			<Category id="classic" name="Classic API" />
 		</Category>
 		<Category id="tests" name="Tests">
-			<Category id="classic" name="Classic API" />
 			<Category id="unified" name="Unified API" />
+			<Category id="classic" name="Classic API" />
 		</Category>
 	</Category>
 	<Category id="android" name="Android" icon="md-platform-android">
@@ -132,13 +132,13 @@
 	</Category>
 	<Category id="osx" name="OS X" icon="md-platform-mac">
 		<Category id="app" name="App">
-			<Category id="classic" name="Classic API" />
 			<Category id="unified" name="Unified API" />
+			<Category id="classic" name="Classic API" />
 			<Category id="monomac" name="MonoMac (Open Source)" />
 		</Category>
 		<Category id="library" name="Library">
-			<Category id="classic" name="Classic API" />
 			<Category id="unified" name="Unified API" />
+			<Category id="classic" name="Classic API" />
 			<Category id="monomac" name="MonoMac (Open Source)" />
 		</Category>
 	</Category>
