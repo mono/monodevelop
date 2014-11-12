@@ -7,7 +7,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty Project</_Name>
-		<_Category>other/misc/general</_Category>
+		<_Category>other/c/general</_Category>
 		<Icon>md-project</Icon>
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates an empty C++ solution.</_Description>
