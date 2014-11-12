@@ -46,7 +46,7 @@ if Statics.fsi == None:
     Statics.fsi = FSharpInteractive(vim.eval('g:fsharp_interactive_bin'))
 fsautocomplete = Statics.fsac
 fsi = Statics.fsi
-proj_file = None
+
 #find project file if any - assumes fsproj file will be in the same directory as the fs or fsi file
 b = vim.current.buffer
 x,ext = os.path.splitext(b.name)
@@ -55,6 +55,7 @@ if '.fs' == ext or '.fsi' == ext:
     projs = filter(lambda f: '.fsproj' == os.path.splitext(f)[1], os.listdir(dir))
     if len(projs):
         proj_file = os.path.join(dir, projs[0])
+        b.vars["proj_file"] = proj_file
         fsautocomplete.project(proj_file)
 fsautocomplete.parse(b.name, True, b)
 EOF
@@ -66,6 +67,7 @@ EOF
     com! -buffer LogFile call fsharpbinding#python#LoadLogFile()
     com! -buffer -nargs=* -complete=file ParseProject call fsharpbinding#python#ParseProject(<f-args>)
     com! -buffer -nargs=* -complete=file BuildProject call fsharpbinding#python#BuildProject(<f-args>)
+    com! -buffer -nargs=* -complete=file RunProject call fsharpbinding#python#RunProject(<f-args>)
     
     "fsi
     com! -buffer FsiRead call fsharpbinding#python#FsiPurge()
