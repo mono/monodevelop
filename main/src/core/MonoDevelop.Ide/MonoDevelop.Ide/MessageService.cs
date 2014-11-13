@@ -340,6 +340,7 @@ namespace MonoDevelop.Ide
 			return Mono.TextEditor.GtkWorkarounds.RunDialogWithNotification (dialog);
 		}
 
+		#if MAC
 		static void HandleShown (object sender, EventArgs e)
 		{
 			var dialog = (Gtk.Window)sender;
@@ -356,7 +357,8 @@ namespace MonoDevelop.Ide
 			dialog.Unrealized += unrealizer;
 			dialog.Shown -= HandleShown;
 		}
-		
+		#endif
+
 		/// <summary>
 		/// Gets a default parent for modal dialogs.
 		/// </summary>
