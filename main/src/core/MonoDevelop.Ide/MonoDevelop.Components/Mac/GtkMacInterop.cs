@@ -33,7 +33,7 @@ using System;
 
 namespace MonoDevelop.Components.Mac
 {
-	class GtkMacInterop
+	public class GtkMacInterop
 	{
 		const string LibGdk = "libgdk-quartz-2.0.dylib";
 		const string LibGtk = "libgtk-quartz-2.0";
