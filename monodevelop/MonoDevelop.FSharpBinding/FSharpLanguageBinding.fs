@@ -81,8 +81,8 @@ type FSharpLanguageBinding() =
       IdeApp.Workspace.FileAddedToProject.Subscribe(invalidateAll) |> eventDisposer.Add
       IdeApp.Workspace.FileRemovedFromProject.Subscribe(invalidateAll) |> eventDisposer.Add
       IdeApp.Workspace.FileRenamedInProject.Subscribe(invalidateAll) |> eventDisposer.Add
-      IdeApp.Workspace.ReferenceAddedToProject.Subscribe(fun r -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
-      IdeApp.Workspace.ReferenceRemovedFromProject.Subscribe(fun r -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
+      IdeApp.Workspace.ReferenceAddedToProject.Subscribe(fun (r:ProjectReferenceEventArgs) -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
+      IdeApp.Workspace.ReferenceRemovedFromProject.Subscribe(fun (r:ProjectReferenceEventArgs) -> invalidateProjectFile(r.Project)) |> eventDisposer.Add
       IdeApp.Workspace.SolutionUnloaded.Subscribe(fun _ -> langServ.ClearLanguageServiceRootCachesAndCollectAndFinalizeAllTransients()) |> eventDisposer.Add
 
     
