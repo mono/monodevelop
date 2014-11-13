@@ -176,7 +176,7 @@ namespace MonoDevelop.Ide.Projects
 				int textPixelWidth = widget.Allocation.Width - ((int)Xpad * 2) - iconRect.Width - iconTextPadding - languageRect.Width;
 				layout.Width = (int)(textPixelWidth * Pango.Scale.PangoScale);
 
-				layout.SetText (GLib.Markup.EscapeText (Template.Name));
+				layout.SetMarkup (GLib.Markup.EscapeText (Template.Name));
 
 				int w, h;
 				layout.GetPixelSize (out w, out h);
