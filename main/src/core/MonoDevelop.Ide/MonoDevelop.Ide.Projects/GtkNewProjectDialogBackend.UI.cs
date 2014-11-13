@@ -63,7 +63,7 @@ namespace MonoDevelop.Ide.Projects
 		ListStore templatesListStore =
 			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
 		VBox templateVBox;
-		TemplateImageView templateImage;
+		ImageView templateImage;
 		Label templateNameLabel;
 		Label templateDescriptionLabel;
 		GtkProjectConfigurationWidget projectConfigurationWidget;
@@ -169,7 +169,7 @@ namespace MonoDevelop.Ide.Projects
 			templateEventBox.Add (templateVBox);
 
 			// Template large image.
-			templateImage = new TemplateImageView ();
+			templateImage = new ImageView ();
 			templateImage.HeightRequest = 150;
 			templateImage.WidthRequest = 150;
 			templateVBox.PackStart (templateImage, false, false, 10);
