@@ -27,8 +27,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Addins;
+using MonoDevelop.Components;
 using MonoDevelop.Ide.Codons;
-using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Projects;
 using Xwt.Drawing;
 
@@ -117,9 +117,14 @@ namespace MonoDevelop.Ide.Templates
 			return projectTemplateWizards.FirstOrDefault (wizard => wizard.Id == id);
 		}
 
-		internal ImageCodon GetTemplateImageCodon (string imageId)
+		public Image LoadTemplateImage (string imageId)
 		{
-			return projectTemplateImages.FirstOrDefault (codon => codon.Id == imageId);
+			ImageCodon imageCodon = projectTemplateImages.FirstOrDefault (codon => codon.Id == imageId);
+
+			if (imageCodon != null) {
+				return imageCodon.Addin.GetImageResource (imageCodon.Resource);
+			}
+			return null;
 		}
 	}
 }
