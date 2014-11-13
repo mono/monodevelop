@@ -22,6 +22,10 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#type-abbreviation</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>#constants</string>
 		</dict>
 		<dict>
@@ -850,6 +854,58 @@
 						<dict>
 							<key>include</key>
 							<string>$self</string>
+						</dict>
+					</array>
+				</dict>
+			</array>
+		</dict>
+		<key>type-abbreviation</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>begin</key>
+					<string>\s*(type)\s+</string>
+					<key>beginCaptures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.other.fsharp</string>
+						</dict>
+					</dict>
+					<key>end</key>
+					<string>$</string>
+					<key>patterns</key>
+					<array>
+						<dict>
+							<key>match</key>
+							<string>=|-&gt;</string>
+							<key>name</key>
+							<string>keyword.other.fsharp</string>
+						</dict>
+						<dict>
+							<key>begin</key>
+							<string>&lt;</string>
+							<key>end</key>
+							<string>&gt;</string>
+							<key>name</key>
+							<string>keyword.other.fsharp</string>
+							<key>patterns</key>
+							<array>
+								<dict>
+									<key>match</key>
+									<string>\'[a-zA-Z]</string>
+									<key>name</key>
+									<string>storage.type.generic.fsharp</string>
+								</dict>
+							</array>
+						</dict>
+						<dict>
+							<key>match</key>
+							<string>\'[a-zA-Z]</string>
+							<key>name</key>
+							<string>storage.type.generic.fsharp</string>
 						</dict>
 					</array>
 				</dict>
