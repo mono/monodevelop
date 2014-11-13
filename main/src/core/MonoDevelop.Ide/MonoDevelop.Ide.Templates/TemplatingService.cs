@@ -117,14 +117,9 @@ namespace MonoDevelop.Ide.Templates
 			return projectTemplateWizards.FirstOrDefault (wizard => wizard.Id == id);
 		}
 
-		public Image LoadTemplateImage (string imageId)
+		internal ImageCodon GetTemplateImageCodon (string imageId)
 		{
-			ImageCodon imageCodon = projectTemplateImages.FirstOrDefault (codon => codon.Id == imageId);
-
-			if (imageCodon != null) {
-				return Image.FromStream (imageCodon.Addin.GetResource (imageCodon.Resource));
-			}
-			return null;
+			return projectTemplateImages.FirstOrDefault (codon => codon.Id == imageId);
 		}
 	}
 }

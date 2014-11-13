@@ -2861,6 +2861,8 @@
     <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\TemplateImageView.cs" />
+    <Compile Include="MonoDevelop.Ide.Templates\TemplateImageLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

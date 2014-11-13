@@ -34,6 +34,7 @@ namespace MonoDevelop.Ide.Templates
 {
 	public class TemplateImageProvider : IDisposable
 	{
+		TemplateImageLoader loader = new TemplateImageLoader ();
 		Dictionary<string, Image> images = new Dictionary<string, Image> ();
 		Dictionary<string, Image> fileImages = new Dictionary<string, Image> ();
 		Image defaultImage;
@@ -45,7 +46,7 @@ namespace MonoDevelop.Ide.Templates
 
 		void LoadDefaultTemplateImage ()
 		{
-			defaultImage = IdeApp.Services.TemplatingService.LoadTemplateImage (SolutionTemplate.DefaultImageId);
+			defaultImage = loader.LoadImageFromResource (SolutionTemplate.DefaultImageId);
 			if (defaultImage != null) {
 				images [SolutionTemplate.DefaultImageId] = defaultImage;
 			}
@@ -107,7 +108,7 @@ namespace MonoDevelop.Ide.Templates
 		Image GetImageFile (SolutionTemplate template)
 		{
 			if (template.HasImageFile) {
-				Image image = Image.FromFile (template.ImageFile);
+				Image image = loader.LoadImageFromFile (template.ImageFile);
 
 				if (image != null) {
 					fileImages [template.Id] = image;
@@ -119,7 +120,11 @@ namespace MonoDevelop.Ide.Templates
 
 		Image GetImageFromId (string imageId)
 		{
-			Image image = IdeApp.Services.TemplatingService.LoadTemplateImage (imageId);
+			if (String.IsNullOrEmpty (imageId)) {
+				return null;
+			}
+
+			Image image = loader.LoadImageFromResource (imageId);
 			if (image != null) {
 				images [imageId] = image;
 			}

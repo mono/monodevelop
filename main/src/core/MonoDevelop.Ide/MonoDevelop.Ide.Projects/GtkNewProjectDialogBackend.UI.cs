@@ -26,6 +26,7 @@
 
 using Gdk;
 using Gtk;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 
@@ -62,7 +63,7 @@ namespace MonoDevelop.Ide.Projects
 		ListStore templatesListStore =
 			new ListStore(typeof (string), typeof (Xwt.Drawing.Image), typeof(SolutionTemplate));
 		VBox templateVBox;
-		Gtk.Image templateImage;
+		TemplateImageView templateImage;
 		Label templateNameLabel;
 		Label templateDescriptionLabel;
 		GtkProjectConfigurationWidget projectConfigurationWidget;
@@ -168,7 +169,7 @@ namespace MonoDevelop.Ide.Projects
 			templateEventBox.Add (templateVBox);
 
 			// Template large image.
-			templateImage = new Gtk.Image ();
+			templateImage = new TemplateImageView ();
 			templateImage.HeightRequest = 150;
 			templateImage.WidthRequest = 150;
 			templateVBox.PackStart (templateImage, false, false, 10);

@@ -292,18 +292,9 @@ namespace MonoDevelop.Ide.Projects
 		{
 			templateNameLabel.Markup = MarkupTemplateName (template.Name);
 			templateDescriptionLabel.Text = template.Description;
-			templateImage.Pixbuf = GetImage (template, templateImage.WidthRequest, templateImage.HeightRequest);
+			templateImage.Image = controller.GetImage (template);
 			templateVBox.Visible = true;
 			templateVBox.ShowAll ();
-		}
-
-		Gdk.Pixbuf GetImage (SolutionTemplate template, int maxWidth, int maxHeight)
-		{
-			Xwt.Drawing.Image image = controller.GetImage (template);
-			if (image != null) {
-				return image.ToPixbuf ();
-			}
-			return null;
 		}
 
 		void SelectTemplateDefinedbyController ()
