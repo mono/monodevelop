@@ -94,54 +94,6 @@
 </Extension>
 
 <Extension path="/MonoDevelop/Ide/ProjectTemplateCategories">
-	<Category id="crossplat" name="Cross-platform" icon="md-platform-cross-platform">
-		<Category id="app" name="App">
-			<Category id="general" name="General" />
-		</Category>
-		<Category id="library" name="Library">
-			<Category id="general" name="General" />
-		</Category>
-		<Category id="tests" name="Tests">
-			<Category id="general" name="General" />
-		</Category>
-	</Category>
-	<Category id="ios" name="iOS" icon="md-platform-ios">
-		<Category id="app" name="App">
-			<Category id="unified" name="Unified API" />
-			<Category id="classic" name="Classic API" />
-		</Category>
-		<Category id="library" name="Library">
-			<Category id="unified" name="Unified API" />
-			<Category id="classic" name="Classic API" />
-		</Category>
-		<Category id="tests" name="Tests">
-			<Category id="unified" name="Unified API" />
-			<Category id="classic" name="Classic API" />
-		</Category>
-	</Category>
-	<Category id="android" name="Android" icon="md-platform-android">
-		<Category id="app" name="App">
-			<Category id="general" name="General" />
-		</Category>
-		<Category id="library" name="Library">
-			<Category id="general" name="General" />
-		</Category>
-		<Category id="tests" name="Tests">
-			<Category id="general" name="General" />
-		</Category>
-	</Category>
-	<Category id="osx" name="OS X" icon="md-platform-mac">
-		<Category id="app" name="App">
-			<Category id="unified" name="Unified API" />
-			<Category id="classic" name="Classic API" />
-			<Category id="monomac" name="MonoMac (Open Source)" />
-		</Category>
-		<Category id="library" name="Library">
-			<Category id="unified" name="Unified API" />
-			<Category id="classic" name="Classic API" />
-			<Category id="monomac" name="MonoMac (Open Source)" />
-		</Category>
-	</Category>
 	<Category id="other" name="Other" icon="md-platform-other">
 		<Category id="net" name=".NET">
 			<Category id="general" name="General" />
@@ -149,11 +101,9 @@
 		<Category id="aspnet" name="ASP.NET">
 			<Category id="general" name="General" />
 		</Category>
-		<Category id="c" name="C/C++">
-			<Category id="general" name="General" />
-		</Category>
 		<Category id="misc" name="Miscellaneous">
 			<Category id="generic" name="Generic" />
+			<Category id="c" name="C/C++" />
 			<Category id="general" name="General" default="true" />
 		</Category>
 	</Category>
