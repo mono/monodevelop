@@ -270,6 +270,50 @@ namespace MonoDevelop.Ide.Templates
 			SolutionTemplate matchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
 			Assert.AreEqual (template, matchedTemplate);
 		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateOneCategoryWithGroupConditionAndParameterIsBoolean_TemplateFilteredUsingTemplateParameters ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+			template.GroupId = "console";
+			template.Language = "C#";
+			template.Condition = "SupportsSizeClasses=True";
+			ProjectCreateParameters parameters = CreateParameters ("SupportsSizeClasses", true.ToString ());
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			SolutionTemplate matchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.AreEqual (template, matchedTemplate);
+			parameters.Clear ();
+			SolutionTemplate noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.IsNull (noMatchedTemplate);
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateOneCategoryWithGroupConditionAndParameterNameAndValueHaveDifferentCase_TemplateFilteredUsingTemplateParametersIgnoringCase ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+			template.GroupId = "console";
+			template.Language = "C#";
+			template.Condition = "Device=MyDevice";
+			ProjectCreateParameters parameters = CreateParameters ("device", "mydevice");
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			SolutionTemplate matchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.AreEqual (template, matchedTemplate);
+			parameters = CreateParameters ("device", "no-match");
+			SolutionTemplate noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.IsNull (noMatchedTemplate);
+		}
 	}
 }
 

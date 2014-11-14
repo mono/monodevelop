@@ -55,7 +55,7 @@ namespace MonoDevelop.Ide.Templates
 				}
 			}
 
-			return !(parameters [parameter.Name] == parameter.Value);
+			return !String.Equals (parameters [parameter.Name], parameter.Value, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public override string ToString ()

@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace MonoDevelop.Projects
 {
@@ -39,7 +41,7 @@ namespace MonoDevelop.Projects
 
 		public void Clear ()
 		{
-			parameters = new Dictionary<string, string> ();
+			parameters = new Dictionary<string, string> (StringComparer.OrdinalIgnoreCase);
 		}
 
 		public void MergeTo (IDictionary<string, string> other)
