@@ -314,6 +314,58 @@ namespace MonoDevelop.Ide.Templates
 			SolutionTemplate noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
 			Assert.IsNull (noMatchedTemplate);
 		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateOneCategoryWithGroupConditionHavingMultipleParameterConditions_TemplateFilteredUsingAllParametersInCondition ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+			template.GroupId = "console";
+			template.Language = "C#";
+			template.Condition = "Device=MyDevice;SupportsSizeClasses=true";
+			ProjectCreateParameters parameters = CreateParameters ("Device", "MyDevice");
+			parameters ["SupportsSizeClasses"] = true.ToString ();
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			SolutionTemplate matchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.AreEqual (template, matchedTemplate);
+			parameters = CreateParameters ("Device", "MyDevice");
+			parameters ["SupportsSizeClasses"] = false.ToString ();
+			SolutionTemplate noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.IsNull (noMatchedTemplate);
+			parameters = CreateParameters ("Device", "UnknownDevice");
+			parameters ["SupportsSizeClasses"] = true.ToString ();
+			noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.IsNull (noMatchedTemplate);
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateOneCategoryWithGroupConditionHavingMultipleParameterConditionsSeparatedByComma_TemplateFilteredUsingAllParametersInCondition ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+			template.GroupId = "console";
+			template.Language = "C#";
+			template.Condition = "Device=MyDevice,SupportsSizeClasses=true";
+			ProjectCreateParameters parameters = CreateParameters ("Device", "MyDevice");
+			parameters ["SupportsSizeClasses"] = true.ToString ();
+
+			CategorizeTemplates ();
+
+			TemplateCategory generalCategory = categorizedTemplates.First ().Categories.First ().Categories.First ();
+			SolutionTemplate firstTemplate = generalCategory.Templates.FirstOrDefault ();
+			SolutionTemplate matchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.AreEqual (template, matchedTemplate);
+			parameters = CreateParameters ("Device", "MyDevice");
+			parameters ["SupportsSizeClasses"] = false.ToString ();
+			SolutionTemplate noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
+			Assert.IsNull (noMatchedTemplate);
+		}
 	}
 }
 

@@ -25,8 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MonoDevelop.Projects;
-using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -35,26 +36,28 @@ namespace MonoDevelop.Ide.Templates
 		public static readonly TemplateCondition Null = new TemplateCondition (null);
 
 		string condition;
-		TemplateParameter parameter;
+		List<TemplateParameter> templateParameters;
 
 		public TemplateCondition (string condition)
 		{
 			this.condition = condition;
 		}
 
-		public bool IsExcluded (ProjectCreateParameters parameters)
+		public bool IsExcluded (ProjectCreateParameters projectCreateParameters)
 		{
 			if (String.IsNullOrEmpty (condition)) {
 				return false;
 			}
 
-			if (parameter == null) {
-				parameter = new TemplateParameter (condition);
-				if (!parameter.IsValid) {
-					LoggingService.LogWarning ("Invalid template condition '{0}'", condition);
-				}
+			if (templateParameters == null) {
+				templateParameters = TemplateParameter.CreateParameters (condition).ToList ();
 			}
 
+			return templateParameters.Any (parameter => IsExcluded (parameter, projectCreateParameters));
+		}
+
+		bool IsExcluded (TemplateParameter parameter, ProjectCreateParameters parameters)
+		{
 			return !String.Equals (parameters [parameter.Name], parameter.Value, StringComparison.OrdinalIgnoreCase);
 		}
 

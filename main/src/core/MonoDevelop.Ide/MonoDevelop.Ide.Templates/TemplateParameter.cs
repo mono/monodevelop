@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -52,6 +54,18 @@ namespace MonoDevelop.Ide.Templates
 			IsValid = true;
 			Name = parameter.Substring (0, index).Trim ();
 			Value = parameter.Substring (index + 1).Trim ();
+		}
+
+		public static IEnumerable<TemplateParameter> CreateParameters (string condition)
+		{
+			string[] parts = condition.Split (new [] {';', ','}, StringSplitOptions.RemoveEmptyEntries);
+			foreach (string part in parts) {
+				var parameter = new TemplateParameter (part);
+				if (!parameter.IsValid) {
+					LoggingService.LogWarning ("Invalid template condition '{0}'", condition);
+				}
+				yield return parameter;
+			}
 		}
 	}
 }
