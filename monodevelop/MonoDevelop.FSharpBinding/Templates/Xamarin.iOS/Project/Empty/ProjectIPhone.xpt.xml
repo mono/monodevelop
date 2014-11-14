@@ -2,7 +2,7 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Empty Project</_Name>
-		<_Category>ios/app/unified</_Category>
+		<_Category>ios/app/general</_Category>
 		<Icon>md-project-iphone</Icon>
 		<LanguageName>F#</LanguageName>
 		<_Description>Empty project for both iPad and iPhone.</_Description>

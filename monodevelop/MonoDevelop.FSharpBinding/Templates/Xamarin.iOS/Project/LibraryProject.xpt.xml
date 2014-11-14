@@ -6,9 +6,7 @@
 		<Icon>md-project-library</Icon>
 		<LanguageName>F#</LanguageName>
 		<_GroupId>md-library-project-ios-unified</_GroupId>
-		<_Description><![CDATA[*** PREVIEW ONLY ***
-
-A Unified iOS library project.
+		<_Description><![CDATA[A Unified iOS library project.
 
 The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.
 
