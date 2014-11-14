@@ -30,6 +30,7 @@ using System.Linq;
 using Gdk;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
@@ -46,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 		const int languageRightHandPadding = 4;
 		const int languageLeftHandPadding = 9;
 		const int iconTextPadding = 9;
-		const int groupTemplateHeadingTotalYPadding = 23;
+		int groupTemplateHeadingTotalYPadding = 24;
 		const int groupTemplateHeadingYOffset = 4;
 		const int categoryTextPaddingX = 4;
 
@@ -63,6 +64,15 @@ namespace MonoDevelop.Ide.Projects
 				dropdownTriangleWidth +
 				dropdownTriangleRightHandPadding +
 				languageRightHandPadding + 10;
+
+			if (IsYosemiteOrHigher ()) {
+				groupTemplateHeadingTotalYPadding -= 1;
+			}
+		}
+
+		static bool IsYosemiteOrHigher ()
+		{
+			return Platform.IsMac && (Platform.OSVersion >= MacSystemInformation.Yosemite);
 		}
 
 		public bool IsLanguageButtonPressed (EventButton button)
