@@ -170,8 +170,8 @@ namespace MonoDevelop.Ide.Projects
 
 			// Template large image.
 			templateImage = new ImageView ();
-			templateImage.HeightRequest = 150;
-			templateImage.WidthRequest = 150;
+			templateImage.HeightRequest = 140;
+			templateImage.WidthRequest = 240;
 			templateVBox.PackStart (templateImage, false, false, 10);
 
 			// Template description.

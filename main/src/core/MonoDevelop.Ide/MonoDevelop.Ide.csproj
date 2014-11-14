@@ -2012,10 +2012,10 @@
     <EmbeddedResource Include="icons\light\platform-android-16.png">
       <LogicalName>platform-android-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Templates\generic-project.png">
+    <EmbeddedResource Include="MonoDevelop.Ide.Templates\images\generic-project.png">
       <LogicalName>generic-project.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Templates\generic-project%402x.png">
+    <EmbeddedResource Include="MonoDevelop.Ide.Templates\images\generic-project%402x.png">
       <LogicalName>generic-project@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>

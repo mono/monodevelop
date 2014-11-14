@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Projects
 		const int languageRightHandPadding = 4;
 		const int languageLeftHandPadding = 9;
 		const int iconTextPadding = 9;
-		const int groupTemplateHeadingTotalYPadding = 24;
+		const int groupTemplateHeadingTotalYPadding = 23;
 		const int groupTemplateHeadingYOffset = 4;
 		const int categoryTextPaddingX = 4;
 
