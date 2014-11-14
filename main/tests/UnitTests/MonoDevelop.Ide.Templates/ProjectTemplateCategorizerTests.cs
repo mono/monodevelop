@@ -366,6 +366,63 @@ namespace MonoDevelop.Ide.Templates
 			SolutionTemplate noMatchedTemplate = firstTemplate.GetTemplate ("C#", parameters);
 			Assert.IsNull (noMatchedTemplate);
 		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateTwoDifferentThirdLevelCategories_EmptyThirdLevelCategoryIsRemoved ()
+		{
+			TemplateCategory topLevelCategory = AddTemplateCategory ("android");
+			TemplateCategory secondLevelCategory = AddTemplateCategory ("app", topLevelCategory);
+			AddTemplateCategory ("general", secondLevelCategory);
+			AddTemplateCategory ("tests", secondLevelCategory);
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+
+			CategorizeTemplates ();
+
+			TemplateCategory appCategory = categorizedTemplates.First ().Categories.First ();
+			TemplateCategory generalCategory = appCategory.Categories.First ();
+			Assert.That (generalCategory.Templates.ToList (), Contains.Item (template));
+			Assert.AreEqual (1, categorizedTemplates.Count);
+			Assert.AreEqual (1, appCategory.Categories.Count ());
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateTwoDifferentSecondLevelCategories_EmptySecondLevelCategoryIsRemoved ()
+		{
+			TemplateCategory topLevelCategory = AddTemplateCategory ("android");
+			TemplateCategory secondLevelCategory = AddTemplateCategory ("app", topLevelCategory);
+			AddTemplateCategory ("general", secondLevelCategory);
+			secondLevelCategory = AddTemplateCategory ("tests", topLevelCategory);
+			AddTemplateCategory ("general", secondLevelCategory);
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+
+			CategorizeTemplates ();
+
+			TemplateCategory androidCategory = categorizedTemplates.First ();
+			TemplateCategory appCategory = androidCategory.Categories.First ();
+			TemplateCategory generalCategory = appCategory.Categories.First ();
+			Assert.That (generalCategory.Templates.ToList (), Contains.Item (template));
+			Assert.AreEqual (1, categorizedTemplates.Count);
+			Assert.AreEqual (1, androidCategory.Categories.Count ());
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_OneTemplateTwoTopLevelCategories_EmptyTopLevelCategoryIsRemoved ()
+		{
+			CreateCategories ("android", "app", "general");
+			CreateCategories ("ios", "app", "general");
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "android/app/general");
+
+			CategorizeTemplates ();
+
+			TemplateCategory appCategory = categorizedTemplates.First ().Categories.First ();
+			TemplateCategory generalCategory = appCategory.Categories.First ();
+			Assert.That (generalCategory.Templates.ToList (), Contains.Item (template));
+			Assert.AreEqual (1, categorizedTemplates.Count);
+			Assert.AreEqual (1, appCategory.Categories.Count ());
+		}
 	}
 }
 

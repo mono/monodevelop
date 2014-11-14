@@ -72,6 +72,7 @@ namespace MonoDevelop.Ide.Templates
 					LogNoCategoryMatch (template);
 				}
 			}
+			RemoveEmptyCategories ();
 		}
 
 		TemplateCategory GetCategory (SolutionTemplate template)
@@ -128,6 +129,15 @@ namespace MonoDevelop.Ide.Templates
 		protected virtual void LogWarning (string message)
 		{
 			LoggingService.LogWarning (message);
+		}
+
+		void RemoveEmptyCategories ()
+		{
+			foreach (TemplateCategory topLevelCategory in categories) {
+				topLevelCategory.RemoveEmptyCategories ();
+			}
+
+			categories.RemoveAll (category => !category.HasChildren ());
 		}
 	}
 }

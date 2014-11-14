@@ -24,7 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
+
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Templates
 {
@@ -85,6 +87,20 @@ namespace MonoDevelop.Ide.Templates
 		public bool IsMatch (string category)
 		{
 			return Id == category;
+		}
+
+		public void RemoveEmptyCategories ()
+		{
+			foreach (TemplateCategory child in categories) {
+				child.RemoveEmptyCategories ();
+			}
+
+			categories.RemoveAll (category => !category.HasChildren ());
+		}
+
+		public bool HasChildren ()
+		{
+			return templates.Any () || categories.Any ();
 		}
 	}
 }
