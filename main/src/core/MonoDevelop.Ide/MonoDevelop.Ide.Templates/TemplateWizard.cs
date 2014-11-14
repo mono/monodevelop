@@ -63,7 +63,10 @@ namespace MonoDevelop.Ide.Templates
 				return;
 			}
 
-			supportedParameters = parameters.Split (new [] {','}, StringSplitOptions.RemoveEmptyEntries).ToList ();
+			supportedParameters = new List<string> ();
+			foreach (string part in parameters.Split (new [] {',', ';'}, StringSplitOptions.RemoveEmptyEntries)) {
+				supportedParameters.Add (part.Trim ());
+			}
 		}
 
 		public bool IsSupportedParameter (string name)
@@ -81,15 +84,14 @@ namespace MonoDevelop.Ide.Templates
 				return;
 			}
 
-			foreach (TemplateParameter parameter in GetParameters (parameters)) {
+			foreach (TemplateParameter parameter in GetValidParameters (parameters)) {
 				Parameters [parameter.Name] = parameter.Value;
 			}
 		}
 
-		IEnumerable<TemplateParameter> GetParameters (string parameters)
+		static IEnumerable<TemplateParameter> GetValidParameters (string parameters)
 		{
-			return parameters.Split (new [] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-				.Select (parameter => new TemplateParameter (parameter))
+			return TemplateParameter.CreateParameters (parameters)
 				.Where (parameter => parameter.IsValid);
 		}
 	}

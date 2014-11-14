@@ -344,6 +344,40 @@ namespace MonoDevelop.Ide.Templates
 			Assert.IsTrue (result);
 			Assert.AreEqual (newPage, provider.CurrentWizardPage);
 		}
+
+		[Test]
+		public void MoveFirst_OneWizardPageAndTwoSupportedParametersSeparatedBySemiColons_WizardSupportedParametersUpdated ()
+		{
+			CreateProvider ();
+			template.SupportedParameters = "MySupportedParameter1; MySupportedParameter2";
+			AddOneWizardPage ();
+
+			bool result = provider.MoveToFirstPage (template, parameters);
+			bool supported1 = wizard.IsSupportedParameter ("MySupportedParameter1");
+			bool supported2 = wizard.IsSupportedParameter ("MySupportedParameter2");
+			bool notSupported = wizard.IsSupportedParameter ("Unknown");
+
+			Assert.IsTrue (result);
+			Assert.IsTrue (supported1);
+			Assert.IsTrue (supported2);
+			Assert.IsFalse (notSupported);
+		}
+
+		[Test]
+		public void MoveFirst_OneWizardPageAndTwoDefaultParametersSeparatedBySemiColons_WizardDefaultParametersUpdated ()
+		{
+			CreateProvider ();
+			template.DefaultParameters = "MyDefaultParameter1=Test1; MyDefaultParameter2=Test2";
+			AddOneWizardPage ();
+
+			bool result = provider.MoveToFirstPage (template, parameters);
+			string value1 = wizard.Parameters ["MyDefaultParameter1"];
+			string value2 = wizard.Parameters ["MyDefaultParameter2"];
+
+			Assert.IsTrue (result);
+			Assert.AreEqual ("Test1", value1);
+			Assert.AreEqual ("Test2", value2);
+		}
 	}
 }
 
