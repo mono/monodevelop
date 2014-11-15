@@ -82,7 +82,7 @@ def process_resp(data):
         # sublime.set_timeout (lambda: erase_status(v, 'fs.tooltip'), 6500)
         word = v.substr(v.word(v.sel()[0].b))
         sublime.active_window().run_command ('fs_show_data', {
-            " data": [[data['Data'],
+            "data": [[data['Data'],
             'tooltip ({})'.format(word)]]
             })
         return
