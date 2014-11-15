@@ -2,6 +2,8 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
+import sublime
+
 from FSharp.fsac import server
 from FSharp.fsac.client import FsacClient
 from FSharp.fsac.request import CompilerLocationRequest
@@ -53,3 +55,15 @@ class Editor(object):
 
     def parse_file(self, fs_file, content):
         self.fsac.send_request(ParseRequest(fs_file.path, content))
+
+    def parse_view(self, view):
+        # todo: what about unsaved files?
+        fs_file = FSharpFile(view)
+        if not fs_file.is_fsharp_file:
+            return
+        self.refresh(fs_file)
+        # todo: very inneficient
+        if fs_file.is_code:
+            content = view.substr(sublime.Region (0, view.size()))
+            self.parse_file(fs_file, content)
+

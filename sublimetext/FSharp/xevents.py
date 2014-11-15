@@ -13,15 +13,10 @@ _logger = PluginLogger (__name__)
 
 
 class ProjectTracker (sublime_plugin.EventListener):
-    def on_activated(self, view):
-        # todo: what about unsaved files?
-        fs_file = FSharpFile(view)
-        if not fs_file.is_fsharp_file:
-            return
+    def on_activated_async(self, view):
         _logger.debug ('activated file: %s', view.file_name())
-        editor_context.refresh(fs_file)
-        # todo: very inneficient
-        if fs_file.is_code:
-            content = view.substr(sublime.Region (0, view.size()))
-            editor_context.parse_file(fs_file, content)
+        editor_context.parse_view(view)
 
+    def on_modified_async(self, view):
+        # _logger.debug ('modified file: %s', view.file_name())
+        editor_context.parse_view(view)
