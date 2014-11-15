@@ -16,10 +16,12 @@ from FSharp.fsac.request import ParseRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.request import FindDeclRequest
 from FSharp.fsac.request import CompletionRequest
+from FSharp.fsac.request import TooltipRequest
 from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ProjectResponse
+from FSharp.fsac.response import ErrorInfo
 from FSharp.fsac.server import completions_queue
 from FSharp.lib.editor import Editor
 from FSharp.lib.project import FSharpFile
@@ -36,6 +38,9 @@ _logger = PluginLogger (__name__)
 
 def plugin_unloaded():
     editor_context.fsac.stop()
+
+def erase_status(view, key):
+    view.erase_status(key)
 
 
 def process_resp(data):
@@ -54,11 +59,32 @@ def process_resp(data):
         # panel.show()
         return
 
-    if data['Kind'] == 'errors' and data['Data']:
-        # panel = OutputPanel (name='fs.out')
-        # panel.write (str(data))
-        # panel.write ("\n")
-        # panel.show()
+    if data['Kind'] == 'errors':
+        # todo: enable error navigation via standart keys
+        v = sublime.active_window().active_view()
+        v.erase_regions ('fs.errs')
+        if not data['Data']:
+            return
+        v.add_regions('fs.errs',
+                      [ErrorInfo(e).to_region(v) for e in data['Data']],
+                      'invalid.illegal',
+                      'cross',
+                      sublime.DRAW_SQUIGGLY_UNDERLINE |
+                      sublime.DRAW_NO_FILL |
+                      sublime.DRAW_NO_OUTLINE
+                      )
+        return
+
+    if data['Kind'] == 'tooltip' and data['Data']:
+        # print (data)
+        v = sublime.active_window().active_view()
+        # v.set_status('fs.tooltip', data ['Data'])
+        # sublime.set_timeout (lambda: erase_status(v, 'fs.tooltip'), 6500)
+        word = v.substr(v.word(v.sel()[0].b))
+        sublime.active_window().run_command ('fs_show_data', {
+            " data": [[data['Data'],
+            'tooltip ({})'.format(word)]]
+            })
         return
 
     if data['Kind'] == 'INFO' and data['Data']:
@@ -132,6 +158,10 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
             self.do_completion()
             return
 
+        if cmd == 'tooltip':
+            self.do_tooltip()
+            return
+
     def get_active_file_name(self):
         try:
             fname = self.window.active_view ().file_name ()
@@ -199,6 +229,17 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
             WAIT_ON_COMPLETIONS = True
             self.window.run_command('auto_complete')
 
+    def do_tooltip(self):
+        fname = self.get_active_file_name ()
+        if not fname:
+            return
+
+        try:
+            (row, col) = self.get_insertion_point()
+        except TypeError as e:
+            return
+        else:
+            editor_context.fsac.send_request(TooltipRequest(fname, row + 1, col))
 
 class fs_go_to_location (sublime_plugin.WindowCommand):
     def run(self, loc):
@@ -223,13 +264,18 @@ class fs_show_menu(sublime_plugin.WindowCommand):
             self.window.run_command (cmd, args or {})
 
 
+class fs_show_data(sublime_plugin.WindowCommand):
+    def run(self, data):
+        self.window.show_quick_panel(data, None, sublime.MONOSPACE_FONT)
+
+
 class fs_show_options(sublime_plugin.WindowCommand):
     """Displays the main menu for F#.
     """
     OPTIONS = {
         'F#: Show Declarations': 'declarations',
         'F#: Go To Declaration': 'finddecl',
-        'F#: Show Completions': 'completion',
+        'F#: Show Tooltip': 'tooltip',
     }
     def run(self):
         self.window.show_quick_panel(
