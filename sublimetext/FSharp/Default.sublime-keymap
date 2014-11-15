@@ -1,5 +1,10 @@
 [
     {"keys": ["f12"], "command": "fs_run_fsac", "args": { "cmd": "finddecl"}, "context": [{ "key": "fs_is_code_file"}]},
 	{"keys": ["ctrl+.", "ctrl+."], "command": "fs_show_options"},
-	{"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel", "args": {"panel": "output.fs.out", "toggle": true}}
+    {"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel", "args": {"panel": "output.fs.out", "toggle": true}},
+    {"keys": ["ctrl+space"], "command": "fs_run_fsac", "args": { "cmd": "completion" }, "context": [{ "key": "fs_is_code_file"}]},
+    {"keys": ["."], "command": "fs_dot", "context": [
+            { "key": "fs_is_code_file"},
+            { "key": "preceding_text", "operator": "regex_contains", "operand": "\\w$"}
+        ]}
 ]

@@ -5,7 +5,9 @@
 import sublime
 import sublime_plugin
 
+import json
 import os
+import queue
 
 from FSharp.fsac.request import AdHocRequest
 from FSharp.fsac.request import DataRequest
@@ -13,15 +15,20 @@ from FSharp.fsac.request import DeclarationsRequest
 from FSharp.fsac.request import ParseRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.request import FindDeclRequest
+from FSharp.fsac.request import CompletionRequest
 from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ProjectResponse
+from FSharp.fsac.server import completions_queue
 from FSharp.lib.editor import Editor
 from FSharp.lib.project import FSharpFile
 from FSharp.sublime_plugin_lib import PluginLogger
 from FSharp.sublime_plugin_lib.context import ContextProviderMixin
 from FSharp.sublime_plugin_lib.panels import OutputPanel
+
+
+WAIT_ON_COMPLETIONS = False
 
 
 _logger = PluginLogger (__name__)
@@ -48,10 +55,10 @@ def process_resp(data):
         return
 
     if data['Kind'] == 'errors' and data['Data']:
-        panel = OutputPanel (name='fs.out')
-        panel.write (str(data))
-        panel.write ("\n")
-        panel.show()
+        # panel = OutputPanel (name='fs.out')
+        # panel.write (str(data))
+        # panel.write ("\n")
+        # panel.show()
         return
 
     if data['Kind'] == 'INFO' and data['Data']:
@@ -74,6 +81,26 @@ def process_resp(data):
         w = sublime.active_window()
         w.run_command ('fs_show_menu', {'items': its})
         return
+
+    if data['Kind'] == 'completion' and data['Data']:
+        _logger.error('unexpected "completion" results - should be handled elsewhere')
+        return
+
+
+class fs_dot(sublime_plugin.WindowCommand):
+    '''Inserts the dot character and opens the autocomplete list.
+    '''
+    def run(self):
+        view = self.window.active_view()
+        pt = view.sel()[0].b
+        view.run_command('insert', {'characters': '.'})
+        editor_context.parse_view(view)
+        view.sel().clear()
+        view.sel().add(sublime.Region(pt + 1))
+        action = lambda: self.window.run_command(
+            'fs_run_fsac', {"cmd": "completion"})
+        sublime.set_timeout(action, 75)
+
 
 class fs_run_fsac(sublime_plugin.WindowCommand):
     def run(self, cmd):
@@ -99,6 +126,10 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
 
         if cmd == 'finddecl':
             self.do_find_decl()
+            return
+
+        if cmd == 'completion':
+            self.do_completion()
             return
 
     def get_active_file_name(self):
@@ -153,6 +184,21 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         else:
             editor_context.fsac.send_request(FindDeclRequest(fname, row + 1, col))
 
+    def do_completion(self):
+        global WAIT_ON_COMPLETIONS
+        fname = self.get_active_file_name ()
+        if not fname:
+            return
+
+        try:
+            (row, col) = self.get_insertion_point()
+        except TypeError as e:
+            return
+        else:
+            editor_context.fsac.send_request(CompletionRequest(fname, row + 1, col))
+            WAIT_ON_COMPLETIONS = True
+            self.window.run_command('auto_complete')
+
 
 class fs_go_to_location (sublime_plugin.WindowCommand):
     def run(self, loc):
@@ -183,6 +229,7 @@ class fs_show_options(sublime_plugin.WindowCommand):
     OPTIONS = {
         'F#: Show Declarations': 'declarations',
         'F#: Go To Declaration': 'finddecl',
+        'F#: Show Completions': 'completion',
     }
     def run(self):
         self.window.show_quick_panel(
@@ -204,6 +251,28 @@ class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
         if key == 'fs_is_code_file':
             value = FSharpFile(view).is_code
             return self._check(value, operator, operand, match_all)
+
+
+class FSharpAutocomplete(sublime_plugin.EventListener):
+    def on_query_completions(self, view, prefix, locations):
+        global WAIT_ON_COMPLETIONS
+        if not WAIT_ON_COMPLETIONS:
+            return []
+        try:
+            data = completions_queue.get(block=True, timeout=1)
+            data = json.loads(data.decode('utf-8'))
+            return [[i, i] for i in data['Data']]
+        except:
+            return []
+        finally:
+            WAIT_ON_COMPLETIONS = False
+            def drain(q):
+                while True:
+                    try:
+                       d = q.get(block=True, timeout=3)
+                    except:
+                        break
+            sublime.set_timeout_async(lambda: drain(completions_queue), 0)
 
 
 _logger.debug('starting editor context...')
