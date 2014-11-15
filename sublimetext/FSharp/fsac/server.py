@@ -1,6 +1,7 @@
 import threading
 import queue
 import os
+import json
 
 from .pipe_server import PipeServer
 
@@ -13,6 +14,7 @@ PATH_TO_FSAC = os.path.join(os.path.dirname(__file__),
 
 requests_queue = queue.Queue()
 responses_queue = queue.Queue()
+completions_queue = queue.Queue()
 _internal_comm = queue.Queue()
 
 STOP_SIGNAL = '__STOP'
@@ -59,6 +61,10 @@ def response_reader(server):
                 pass
 
             _logger.debug('reading response: %s', data)
+            data_json = json.loads(data.decode('utf-8'))
+            if data_json['Kind'] == 'completion':
+                completions_queue.put(data)
+                continue
             responses_queue.put (data)
         except queue.Empty:
             pass
