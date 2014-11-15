@@ -2,6 +2,8 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
+import sublime
+
 
 class CompilerLocationResponse (object):
     def __init__(self, content):
@@ -66,3 +68,57 @@ class DeclarationsResponse(object):
     def __str__(self):
        return '<DeclarationsList>'
 
+
+class ErrorInfo(object):
+  def __init__(self, data):
+    self.data = data
+
+  @property
+  def start_line(self):
+    return self.data['StartLine']
+
+  @property
+  def start_line_alternate(self):
+    return self.data['StartLineAlternate']
+
+  @property
+  def end_line(self):
+    return self.data['EndLine']
+
+  @property
+  def end_line_alternate(self):
+    return self.data['EndLineAlternate']
+
+  @property
+  def start_column(self):
+    return self.data['StartColumn']
+
+  @property
+  def end_column(self):
+    return self.data['EndColumn']
+
+  @property
+  def length(self):
+    return self.end_column - self.start_column
+
+  @property
+  def severity(self):
+    return self.data['Severity']
+
+  @property
+  def message(self):
+    return self.data['Message']
+
+  @property
+  def subcategory(self):
+    return self.data['Subcategory']
+
+  @property
+  def file_name(self):
+    return self.data['FileName']
+
+  def to_region(self, view):
+    row = self.start_line
+    col = self.start_column
+    pt = view.text_point(row, col)
+    return sublime.Region(pt, pt + self.length)
