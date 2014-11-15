@@ -80,6 +80,22 @@ class CompletionRequest(Request):
             )
 
 
+class TooltipRequest(Request):
+    def __init__(self, file_name, row, col, *args, **kwargs):
+        super().__init__ (*args, **kwargs)
+        self.file_name = file_name
+        self.row = row
+        self.col = col
+
+    def __str__(self):
+        return 'tooltip "{0}" {1} {2} {3}'.format(
+            self.file_name,
+            self.row,
+            self.col,
+            self.timeout,
+            )
+
+
 class DeclarationsRequest(Request):
     def __init__(self, file_name, *args, **kwargs):
         super ().__init__ (*args, **kwargs)
