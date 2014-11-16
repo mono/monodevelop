@@ -51,6 +51,7 @@ def request_reader(requests, server, internal_msgs=_internal_comm):
                 print('*' * 80)
                 print('unhandled exception', e)
                 print('*' * 80)
+                raise
 
             if not req:
                 # Requests should always be valid, so log this but keep
@@ -68,6 +69,7 @@ def request_reader(requests, server, internal_msgs=_internal_comm):
             print('*' * 80)
             print('unhandled exception', e)
             print('*' * 80)
+            raise
 
     _logger.debug("request reader exiting...")
 
@@ -100,6 +102,7 @@ def response_reader(responses, server, internal_msgs=_internal_comm):
                 print('*' * 80)
                 print('unhandled exception', e)
                 print('*' * 80)
+                raise
 
             _logger.debug('reading response: %s', data[:140])
             # TODO: if we're decoding here, .put() the decoded data.
@@ -116,6 +119,7 @@ def response_reader(responses, server, internal_msgs=_internal_comm):
             print('*' * 80)
             print('unhandled exception', e)
             print('*' * 80)
+            raise
 
     print("response reader exiting")
 
