@@ -298,7 +298,10 @@ namespace MonoDevelop.MacIntegration
 					base[ACTIVE] = ""{0}""
 					text[SELECTED] = ""{1}""
 					text[ACTIVE] = ""{1}""
-					engine ""quartz"" {{
+					engine ""xamarin"" {{
+						roundness = 0
+						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
+						glazestyle = 1
 					}}
 				}}
 
