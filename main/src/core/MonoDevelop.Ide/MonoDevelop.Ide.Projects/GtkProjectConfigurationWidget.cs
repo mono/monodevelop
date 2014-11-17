@@ -48,6 +48,11 @@ namespace MonoDevelop.Ide.Projects
 			RegisterEvents ();
 		}
 
+		protected override void OnFocusGrabbed ()
+		{
+			projectNameTextBox.GrabFocus ();
+		}
+
 		void RegisterEvents ()
 		{
 			locationTextBox.Changed += (sender, e) => OnLocationTextBoxChanged ();

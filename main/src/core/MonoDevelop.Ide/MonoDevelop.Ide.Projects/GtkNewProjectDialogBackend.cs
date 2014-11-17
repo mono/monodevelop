@@ -27,8 +27,8 @@
 using System;
 using System.Linq;
 using Gtk;
-using Gdk;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
@@ -384,6 +384,7 @@ namespace MonoDevelop.Ide.Projects
 			centreVBox.Remove (centreVBox.Children [0]);
 			widget.ShowAll ();
 			centreVBox.PackStart (widget, true, true, 0);
+			FocusWidget (widget);
 
 			topBannerLabel.Text = controller.BannerText;
 
@@ -401,6 +402,7 @@ namespace MonoDevelop.Ide.Projects
 
 			centreVBox.Remove (centreVBox.Children [0]);
 			centreVBox.PackStart (widget, true, true, 0);
+			FocusWidget (widget);
 
 			topBannerLabel.Text = controller.BannerText;
 
@@ -420,6 +422,17 @@ namespace MonoDevelop.Ide.Projects
 			} else {
 				return controller.CurrentWizardPage;
 			}
+		}
+
+		void FocusWidget (Widget widget)
+		{
+			var widgetToFocus = widget; 
+			var commandRouter = widget as CommandRouterContainer;
+			if ((commandRouter != null) && commandRouter.Children.Any ()) {
+				widgetToFocus = commandRouter.Children [0];
+			}
+
+			widgetToFocus.GrabFocus ();
 		}
 
 		void TreeViewRowActivated (object o, RowActivatedArgs args)
