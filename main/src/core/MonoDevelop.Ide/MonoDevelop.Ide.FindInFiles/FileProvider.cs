@@ -77,6 +77,11 @@ namespace MonoDevelop.Ide.FindInFiles
 		
 		public string ReadString ()
 		{
+			return ReadString (false);
+		}
+
+		public string ReadString (bool readBinaryFiles)
+		{
 			if (buffer != null)
 				return buffer.ToString ();
 			var doc = SearchDocument ();
@@ -86,7 +91,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			try {
 				if (!File.Exists (FileName))
 					return null;
-				return TextFileUtility.GetText (FileName, out encoding, out hadBom);
+				var content = File.ReadAllBytes (FileName);
+				if (!readBinaryFiles && TextFileUtility.IsBinary (content))
+					return null;
+				return TextFileUtility.GetText (content, out encoding, out hadBom);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while opening " + FileName, e);
 				return null;
