@@ -42,6 +42,9 @@ namespace MonoDevelop.Ide.Projects
 			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (229, 233, 239));
 			projectConfigurationTableEventBox.ModifyBg (StateType.Normal, new Gdk.Color (255, 255, 255));
 
+			projectNameTextBox.ActivatesDefault = true;
+			solutionNameTextBox.ActivatesDefault = true;
+			locationTextBox.ActivatesDefault = true;
 			RegisterEvents ();
 		}
 

@@ -43,12 +43,17 @@ namespace MonoDevelop.Ide.Projects
 
 			templateCategoriesTreeView.Selection.Changed += TemplateCategoriesTreeViewSelectionChanged;
 			templateCategoriesTreeView.Selection.SelectFunction = TemplateCategoriesTreeViewSelection;
+			templateCategoriesTreeView.RowActivated += TreeViewRowActivated;
 			templatesTreeView.Selection.Changed += TemplatesTreeViewSelectionChanged;
 			templatesTreeView.ButtonPressEvent += TemplatesTreeViewButtonPressed;
 			templatesTreeView.Selection.SelectFunction = TemplatesTreeViewSelection;
+			templatesTreeView.RowActivated += TreeViewRowActivated;
 			cancelButton.Clicked += CancelButtonClicked;
 			nextButton.Clicked += (sender, e) => MoveToNextPage ();
 			previousButton.Clicked += (sender, e) => MoveToPreviousPage ();
+
+			nextButton.CanDefault = true;
+			nextButton.GrabDefault ();
 		}
 
 		public void ShowDialog ()
@@ -414,6 +419,13 @@ namespace MonoDevelop.Ide.Projects
 				return projectConfigurationWidget;
 			} else {
 				return controller.CurrentWizardPage;
+			}
+		}
+
+		void TreeViewRowActivated (object o, RowActivatedArgs args)
+		{
+			if (CanMoveToNextPage) {
+				MoveToNextPage ();
 			}
 		}
 	}
