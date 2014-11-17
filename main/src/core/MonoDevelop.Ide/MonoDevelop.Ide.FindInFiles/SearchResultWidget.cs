@@ -114,15 +114,15 @@ namespace MonoDevelop.Ide.FindInFiles
 				HeadersClickable = true,
 				RulesHint = true,
 			};
+
 			treeviewSearchResults.Selection.Mode = Gtk.SelectionMode.Multiple;
 			resultsScroll.Add (treeviewSearchResults);
-			
-			this.ShowAll ();
 
 			var projectColumn = new TreeViewColumn {
 				Resizable = true,
-				SortColumnId = 0,
+				SortColumnId = 1,
 				Title = GettextCatalog.GetString ("Project"),
+				Sizing = TreeViewColumnSizing.Fixed,
 				FixedWidth = 100
 			};
 
@@ -136,8 +136,9 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			var fileNameColumn = new TreeViewColumn {
 				Resizable = true,
-				SortColumnId = 1,
+				SortColumnId = 2,
 				Title = GettextCatalog.GetString ("File"),
+				Sizing = TreeViewColumnSizing.Fixed,
 				FixedWidth = 200
 			};
 
@@ -152,8 +153,8 @@ namespace MonoDevelop.Ide.FindInFiles
 
 			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"),
 				treeviewSearchResults.TextRenderer, ResultTextDataFunc);
-			textColumn.SortColumnId = 2;
 			textColumn.Resizable = true;
+			textColumn.Sizing = TreeViewColumnSizing.Fixed;
 			textColumn.FixedWidth = 300;
 
 			
@@ -161,11 +162,12 @@ namespace MonoDevelop.Ide.FindInFiles
 				treeviewSearchResults.TextRenderer, ResultPathDataFunc);
 			pathColumn.SortColumnId = 3;
 			pathColumn.Resizable = true;
+			pathColumn.Sizing = TreeViewColumnSizing.Fixed;
 			pathColumn.FixedWidth = 500;
 
-
-			store.SetSortFunc (0, CompareProjectFileNames);
-			store.SetSortFunc (1, CompareFileNames);
+			store.DefaultSortFunc = DefaultSortFunc;
+			store.SetSortFunc (1, CompareProjectFileNames);
+			store.SetSortFunc (2, CompareFileNames);
 			store.SetSortFunc (3, CompareFilePaths);
 
 			treeviewSearchResults.RowActivated += TreeviewSearchResultsRowActivated;
@@ -191,11 +193,13 @@ namespace MonoDevelop.Ide.FindInFiles
 			buttonPin.Clicked += ButtonPinClicked;
 			buttonPin.TooltipText = GettextCatalog.GetString ("Pin results pad");
 			toolbar.Insert (buttonPin, -1);
-			
-			store.SetSortColumnId (3, SortType.Ascending);
+
+			// store.SetSortColumnId (3, SortType.Ascending);
 			ShowAll ();
 			
 			scrolledwindowLogView.Hide ();
+			treeviewSearchResults.FixedHeightMode = true;
+
 		}
 		
 		protected override void OnRealized ()
@@ -239,6 +243,9 @@ namespace MonoDevelop.Ide.FindInFiles
 			IdeApp.Workbench.ActiveLocationList = this;
 			newStore = new ListStore (typeof (SearchResult), typeof (bool));
 			newStore.DefaultSortFunc = DefaultSortFunc;
+			newStore.SetSortFunc (1, CompareProjectFileNames);
+			newStore.SetSortFunc (2, CompareFileNames);
+			newStore.SetSortFunc (3, CompareFilePaths);
 			Reset ();
 			buttonStop.Sensitive = true;
 			treeviewSearchResults.FreezeChildNotify ();
@@ -249,10 +256,6 @@ namespace MonoDevelop.Ide.FindInFiles
 		public void EndProgress ()
 		{
 			buttonStop.Sensitive = false;
-			newStore.SetSortFunc (0, CompareProjectFileNames);
-			newStore.SetSortFunc (1, CompareFileNames);
-			newStore.SetSortFunc (2, DefaultSortFunc);
-			newStore.SetSortFunc (3, CompareFilePaths);
 			treeviewSearchResults.Model = newStore;
 
 			store.Dispose ();
