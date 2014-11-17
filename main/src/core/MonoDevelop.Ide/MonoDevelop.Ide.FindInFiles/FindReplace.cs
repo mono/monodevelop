@@ -94,7 +94,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
 				string content;
-				var results = new List<SearchResult>();
+				var results = new System.Collections.Concurrent.ConcurrentBag<SearchResult>();
 
 				Parallel.ForEach (scope.GetFiles (monitor, filter), provider => { 
 					if (monitor.IsCancelRequested)

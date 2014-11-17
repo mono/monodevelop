@@ -274,7 +274,7 @@ namespace MonoDevelop.Ide.FindInFiles
 				treeviewSearchResults.ScrollToPoint (0, 0);
 
 			ResultCount = 0;
-			documents.Clear ();
+			documents = new Dictionary<string, TextDocument> ();
 			store.Clear ();
 			labelStatus.Text = "";
 			textviewLog.Buffer.Clear ();
@@ -606,7 +606,7 @@ namespace MonoDevelop.Ide.FindInFiles
 
 
 
-		readonly Dictionary<string, TextDocument> documents = new Dictionary<string, TextDocument> ();
+		Dictionary<string, TextDocument> documents = new Dictionary<string, TextDocument> ();
 		
 		TextDocument GetDocument (SearchResult result)
 		{

@@ -80,25 +80,37 @@ namespace MonoDevelop.Ide.FindInFiles
 			return ReadString (false);
 		}
 
+		WeakReference cachedText;
+
 		public string ReadString (bool readBinaryFiles)
 		{
-			if (buffer != null)
-				return buffer.ToString ();
-			var doc = SearchDocument ();
-			if (doc != null && doc.Editor != null) {
-				return doc.Editor.Text;
+			string result = cachedText != null ? cachedText.Target as string : null;
+			if (result != null) {
+				return result;
 			}
-			try {
-				if (!File.Exists (FileName))
-					return null;
-				var content = File.ReadAllBytes (FileName);
-				if (!readBinaryFiles && TextFileUtility.IsBinary (content))
-					return null;
-				return TextFileUtility.GetText (content, out encoding, out hadBom);
-			} catch (Exception e) {
-				LoggingService.LogError ("Error while opening " + FileName, e);
-				return null;
+
+			if (buffer != null) {
+				result = buffer.ToString ();
+			} else {
+				var doc = SearchDocument ();
+				if (doc != null && doc.Editor != null) {
+					result = doc.Editor.Text;
+				} else {
+					try {
+						if (!File.Exists (FileName))
+							return null;
+						var content = File.ReadAllBytes (FileName);
+						if (!readBinaryFiles && TextFileUtility.IsBinary (content))
+							return null;
+						result = TextFileUtility.GetText (content, out encoding, out hadBom);
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while opening " + FileName, e);
+						return null;
+					}
+				}
 			}
+			cachedText = new WeakReference (result);
+			return result;
 		}
 		
 		Document SearchDocument ()
