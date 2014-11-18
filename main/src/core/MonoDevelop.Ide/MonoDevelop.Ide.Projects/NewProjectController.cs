@@ -423,51 +423,24 @@ namespace MonoDevelop.Ide.Projects
 
 		public void Create ()
 		{
-//			if (!btn_new.Sensitive)
-//				return;
-//			btn_new.Sensitive = false;
-//
-//			if (notebook.Page == 0) {
-				if (!CreateProject ())
-					return;
+			if (!CreateProject ())
+				return;
 
-				Solution parentSolution = null;
+			Solution parentSolution = null;
 
-				if (ParentFolder == null) {
-					WorkspaceItem item = (WorkspaceItem) NewItem;
-					parentSolution = item as Solution;
-					if (parentSolution != null) {
-						if (parentSolution.RootFolder.Items.Count > 0)
-							currentEntry = parentSolution.RootFolder.Items [0] as SolutionItem;
-						ParentFolder = parentSolution.RootFolder;
-					}
-				} else {
-					SolutionItem item = (SolutionItem) NewItem;
-					parentSolution = ParentFolder.ParentSolution;
-					currentEntry = item;
+			if (ParentFolder == null) {
+				WorkspaceItem item = (WorkspaceItem) NewItem;
+				parentSolution = item as Solution;
+				if (parentSolution != null) {
+					if (parentSolution.RootFolder.Items.Count > 0)
+						currentEntry = parentSolution.RootFolder.Items [0] as SolutionItem;
+					ParentFolder = parentSolution.RootFolder;
 				}
-
-//				if (btn_new.Label == Gtk.Stock.GoForward) {
-//					// There are features to show. Go to the next page
-//					if (currentEntry != null) {
-//						try {
-//							featureList.Fill (parentFolder, currentEntry, SolutionItemFeatures.GetFeatures (parentFolder, currentEntry));
-//						}
-//						catch (Exception ex) {
-//							LoggingService.LogError (ex.ToString ());
-//						}
-//					}
-//					notebook.Page++;
-//					btn_new.Sensitive = true;
-//					btn_new.Label = Gtk.Stock.Ok;
-//					return;
-//				}
-
-//			} else {
-//				// Already in fetatures page
-//				if (!featureList.Validate ())
-//					return;
-//			}
+			} else {
+				SolutionItem item = (SolutionItem) NewItem;
+				parentSolution = ParentFolder.ParentSolution;
+				currentEntry = item;
+			}
 
 			// New combines (not added to parent combines) already have the project as child.
 			if (!projectConfiguration.CreateSolution) {
@@ -481,9 +454,6 @@ namespace MonoDevelop.Ide.Projects
 				}
 				ParentFolder.AddItem (currentEntry, true);
 			}
-
-//			if (notebook.Page == 1)
-//				featureList.ApplyFeatures ();
 
 			if (ParentFolder != null)
 				IdeApp.ProjectOperations.Save (ParentFolder.ParentSolution);
@@ -528,25 +498,6 @@ namespace MonoDevelop.Ide.Projects
 
 		bool CreateProject ()
 		{
-//			if (templateView.CurrentlySelected != null) {
-//				PropertyService.Set ("Dialogs.NewProjectDialog.LastSelectedCategory",  ((ProjectTemplate)templateView.CurrentlySelected).Category);
-//				string template;
-//				// keep the old format if the language is not specified
-//				if (String.IsNullOrEmpty(templateView.CurrentlySelected.LanguageName)) {
-//					template = templateView.CurrentlySelected.Id;
-//				} else { // use the newer format with language before id
-//					template = templateView.CurrentlySelected.LanguageName + "/" + templateView.CurrentlySelected.Id;
-//				}
-//				recentTemplates.Remove (template);
-//				recentTemplates.Insert (0, template);
-//				if (recentTemplates.Count > 15)
-//					recentTemplates.RemoveAt (recentTemplates.Count - 1);
-//				string strRecent = string.Join (",", recentTemplates.ToArray ());
-//				PropertyService.Set ("Dialogs.NewProjectDialog.RecentTemplates", strRecent);
-//				PropertyService.SaveProperties ();
-//				//PropertyService.Set("Dialogs.NewProjectDialog.LargeImages", ((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked);
-//			}
-
 			if (!projectConfiguration.IsValid ()) {
 				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, '.' or '_'."));
 				return false;
