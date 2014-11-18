@@ -9,6 +9,7 @@
 		<_Name>Shared Library</_Name>
 		<_Category>other/misc/c</_Category>
 		<Icon>md-project-library</Icon>
+		<Image id="md-library-project" />
 		<LanguageName>C</LanguageName>
 		<_Description>Creates simple shared library C project.</_Description>
 		<DefaultFilename>SharedLibraryCProject</DefaultFilename>

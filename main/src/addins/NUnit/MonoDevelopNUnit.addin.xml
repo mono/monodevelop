@@ -204,4 +204,7 @@
 			name = "TestRunnerArgs" type = "System.String" external="false" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/TemplateImages">
+		<Image id="md-nunit-library-project" resource="nunit-library-project.png" />
+	</Extension>
 </ExtensionModel>

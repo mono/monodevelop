@@ -115,6 +115,13 @@
 
 <Extension path="/MonoDevelop/Ide/TemplateImages">
 	<Image id="md-generic-project" resource="generic-project.png" />
+	<Image id="md-blank-solution" resource="blank-solution.png" />
+	<Image id="md-console-project" resource="console-project.png" />
+	<Image id="md-library-project" resource="library-project.png" />
+	<Image id="md-pcl-project" resource="pcl-project.png" />
+	<Image id="md-shared-project" resource="shared-project.png" />
+	<Image id="md-workspace" resource="workspace.png" />
+	<Image id="md-gtk2-project" resource="gtk2-project.png" />
 </Extension>
 
 </ExtensionModel>

@@ -2012,11 +2012,53 @@
     <EmbeddedResource Include="icons\light\platform-android-16.png">
       <LogicalName>platform-android-light-16.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Templates\images\generic-project.png">
+    <EmbeddedResource Include="templates\images\generic-project.png">
       <LogicalName>generic-project.png</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonoDevelop.Ide.Templates\images\generic-project%402x.png">
+    <EmbeddedResource Include="templates\images\generic-project%402x.png">
       <LogicalName>generic-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\blank-solution.png">
+      <LogicalName>blank-solution.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\blank-solution%402x.png">
+      <LogicalName>blank-solution@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\console-project.png">
+      <LogicalName>console-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\console-project%402x.png">
+      <LogicalName>console-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\library-project.png">
+      <LogicalName>library-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\library-project%402x.png">
+      <LogicalName>library-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\pcl-project.png">
+      <LogicalName>pcl-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\pcl-project%402x.png">
+      <LogicalName>pcl-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\shared-project.png">
+      <LogicalName>shared-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\shared-project%402x.png">
+      <LogicalName>shared-project@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace.png">
+      <LogicalName>workspace.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\workspace%402x.png">
+      <LogicalName>workspace@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\gtk2-project.png">
+      <LogicalName>gtk2-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\gtk2-project%402x.png">
+      <LogicalName>gtk2-project@2x.png</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

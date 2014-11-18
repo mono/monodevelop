@@ -8,6 +8,7 @@
 		<_Name>Library</_Name>
 		<_Category>other/net/general</_Category>
 		<Icon>md-project-library</Icon>
+		<Image id="md-library-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty C# class library</_Description>
 		<DefaultFilename>EmptyLibrary</DefaultFilename>

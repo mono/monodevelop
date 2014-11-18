@@ -8,6 +8,7 @@
 		<_Name>Gtk# 2.0 Project</_Name>
 		<_Category>other/net/general</_Category>
 		<Icon>md-project-gui</Icon>
+		<Image id="md-gtk2-project" />
 		<LanguageName>VBNet</LanguageName>
 		<_Description>Creates a VB.NET Gtk# 2.0 project.</_Description>
 		<DefaultFilename>Gtk2VBProject</DefaultFilename>

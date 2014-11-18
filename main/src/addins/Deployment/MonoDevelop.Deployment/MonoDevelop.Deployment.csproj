@@ -194,6 +194,15 @@
     <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml">
       <LogicalName>MonoDevelop.Deployment.addin.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\packaging-project.png">
+      <LogicalName>packaging-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\packaging-project%402x.png">
+      <LogicalName>packaging-project@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="templates\images\" />
+  </ItemGroup>
 </Project>

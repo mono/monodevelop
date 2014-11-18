@@ -8,6 +8,7 @@
 		<_Name>Portable Library</_Name>
 		<_Category>other/net/general</_Category>
 		<Icon>md-project-library</Icon>
+		<Image id="md-pcl-project" />
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a C# library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
 		<DefaultFilename>PortableLibrary</DefaultFilename>

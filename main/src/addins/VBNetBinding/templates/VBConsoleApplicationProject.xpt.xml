@@ -8,6 +8,7 @@
 		<_Name>Console Project</_Name>
 		<_Category>other/net/general</_Category>
 		<Icon>md-project-console</Icon>
+		<Image id="md-console-project" />
 		<LanguageName>VBNet</LanguageName>
 		<_Description>Create a console VB.Net project</_Description>
 		<DefaultFilename>ConsoleVBProject</DefaultFilename>

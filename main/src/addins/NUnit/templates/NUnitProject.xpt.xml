@@ -6,6 +6,7 @@
 		<_Name>NUnit Library Project</_Name>
 		<_Category>other/net/general</_Category>
 		<Icon>md-project|res:project-nunit-overlay-light-32.png</Icon>
+		<Image id="md-nunit-library-project" />
 		<_Description>Creates an NUnit library</_Description>
 		<LanguageName>C#</LanguageName>
 		<DefaultFilename>NUnitProject</DefaultFilename>

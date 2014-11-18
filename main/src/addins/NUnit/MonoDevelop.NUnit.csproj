@@ -201,6 +201,12 @@
     <EmbeddedResource Include="templates\NUnitProjectVBNet.xpt.xml">
       <LogicalName>NUnitProjectVBNet.xpt.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\nunit-library-project.png">
+      <LogicalName>nunit-library-project.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="templates\images\nunit-library-project%402x.png">
+      <LogicalName>nunit-library-project@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -260,4 +266,7 @@
     </PropertyGroup>
     <Exec Condition="Exists('$(SolutionDir)\..\.git')" Command="$(NuGet) restore -SolutionDirectory $(SolutionDir)" />
   </Target>
+  <ItemGroup>
+    <Folder Include="templates\images\" />
+  </ItemGroup>
 </Project>
