@@ -279,6 +279,39 @@ namespace MonoDevelop.MacIntegration
 					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
 				};
 			}
+
+			PatchGtkTheme ();
+		}
+
+		// This will dynamically generate a gtkrc for certain widgets using system control colors.
+		void PatchGtkTheme ()
+		{
+			NSControlTint tint = NSColor.CurrentControlTint;
+			NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
+			NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+
+			string gtkrc = String.Format (@"
+				style ""treeview"" = ""default"" {{
+					GtkTreeView::odd-row-color = ""#f5f5f5""
+
+					base[SELECTED] = ""{0}""
+					base[ACTIVE] = ""{0}""
+					text[SELECTED] = ""{1}""
+					text[ACTIVE] = ""{1}""
+					engine ""xamarin"" {{
+						roundness = 0
+						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
+						glazestyle = 1
+					}}
+				}}
+
+				widget_class ""*.<GtkTreeView>*"" style ""treeview""
+				",
+				ConvertColorToHex (color),
+				ConvertColorToHex (text)
+			);
+
+			Gtk.Rc.ParseString (gtkrc);
 		}
 
 		void GlobalSetup ()
@@ -647,6 +680,24 @@ namespace MonoDevelop.MacIntegration
 				color.GetRgba (out r, out g, out b, out a);
 			}
 			return new Cairo.Color (r, g, b, a);
+		}
+
+		static string ConvertColorToHex (NSColor color)
+		{
+			nfloat r, g, b, a;
+
+			if (color.ColorSpaceName == NSColorSpace.DeviceWhite) {
+				a = 1.0f;
+				r = g = b = color.WhiteComponent;
+			} else {
+				color.GetRgba (out r, out g, out b, out a);
+			}
+
+			return String.Format ("#{0}{1}{2}",
+				((int)(r * 255)).ToString ("x2"),
+				((int)(g * 255)).ToString ("x2"),
+				((int)(b * 255)).ToString ("x2")
+			);
 		}
 
 		internal static int GetTitleBarHeight ()
