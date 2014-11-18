@@ -38,8 +38,9 @@ fsautocomplete.project(vim.eval("a:1"))
 EOF
     else
     python << EOF
-if proj_file:
-    fsautocomplete.project(proj_file)
+v = vim.current.buffer.vars
+if "proj_file" in v:
+    fsautocomplete.project(v["proj_file"])
 EOF
     endif
 endfunction
@@ -49,16 +50,36 @@ function! fsharpbinding#python#BuildProject(...)
     try
         execute 'wa'
         if a:0 > 0
-            execute '!xbuild ' . a:1
+            execute '!xbuild ' . fnameescape(a:1)
+        elseif exists('b:proj_file')
+            execute '!xbuild ' . fnameescape(b:proj_file)
         else
-            let pn = pyeval('proj_file')
-            execute '!xbuild ' . pn
+            echoe "no project file could be found"
         endif
     catch
-        echo "failed to execute build"
+        echoe "failed to execute build. ex: " v:exception
     endtry
 endfunction
 
+
+function! fsharpbinding#python#RunProject(...)
+    try
+        execute 'wa'
+        if a:0 > 0
+            execute '!mono ' . fnameescape(a:1)
+        elseif exists('b:proj_file')
+            let cmd = 'Statics.projects["' . b:proj_file . '"]["Output"]'
+            echom "runproj pre pyeval " cmd
+            let target = pyeval(cmd)
+            echom "target" target
+            execute '!mono ' . fnameescape(target)
+        else
+            echoe "no project file could be found"
+        endif
+    catch
+        echoe "failed to execute build. ex: " v:exception
+    endtry
+endfunction
 
 function! fsharpbinding#python#TypeCheck()
     python << EOF
@@ -70,7 +91,7 @@ lines = res.splitlines()
 first = ""
 if len(lines):
     first = lines[0]
-if first == 'Multiple items' or first.startswith('type'):
+if first.startswith('Multiple') or first.startswith('type'):
     vim.command('echo "%s"' % res)
 else:
     vim.command('echo "%s"' % first)
@@ -181,6 +202,9 @@ function! fsharpbinding#python#OnBufEnter()
 python << EOF
 file_dir = vim.eval("expand('%:p:h')")
 fsi.cd(file_dir)
+v = vim.current.buffer.vars
+if "proj_file" in v:
+    fsautocomplete.project(v["proj_file"])
 EOF
 endfunction
 
@@ -196,6 +220,7 @@ function! fsharpbinding#python#FsiReset(fsi_path)
 fsi.shutdown()
 Statics.fsi = FSharpInteractive(vim.eval('a:fsi_path'))
 fsi = Statics.fsi
+fsi.cd(vim.eval("expand('%:p:h')"))
 EOF
     echo "fsi reset"
 endfunction

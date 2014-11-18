@@ -10,6 +10,7 @@ class Statics:
     fsac = None
     fsi = None
     locations = []
+    projects = {} 
 
 class Interaction:
     def __init__(self, proc, timeOut, logfile = None):
@@ -103,7 +104,9 @@ class FSAutoComplete:
             elif parsed['Kind'] == "errors":
                 self._errors.update(parsed['Data'])
             elif parsed['Kind'] == "project":
-                self._project.update(parsed['Data'])
+                data = parsed['Data']
+                Statics.projects[data['Project']] = data
+                self._project.update(data)
             elif parsed['Kind'] == "finddecl":
                 self._finddecl.update(parsed['Data'])
 
@@ -145,7 +148,7 @@ class FSAutoComplete:
         msg.sort(key=lambda x: x.startswith(base), reverse=True)
         msg = map(lambda(line):
                 {'word': line,
-                 'info': self.helptext(line),
+                 'info': self.helptext(line), 
                  'menu': ""}, msg)
 
         return msg
@@ -175,7 +178,12 @@ class FSAutoComplete:
 
     def helptext(self, candidate):
         msg = self._helptext.send('helptext %s\n' % candidate)
-        return str(msg[candidate])
+        msg = str(msg[candidate])
+
+        if "'" in msg:
+            return msg
+        else:
+            return msg + " '" #HACK: - the ' appears to ensure that newlines are interpreted properly in the preview window
 
 class FSharpVimFixture(unittest.TestCase):
     def setUp(self):

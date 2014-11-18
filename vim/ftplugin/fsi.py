@@ -42,6 +42,7 @@ class FSharpInteractive:
     def cd(self, path):
         self.p.stdin.write("System.IO.Directory.SetCurrentDirectory(@\"" + path + "\");;\n")
         self.p.stdin.write("#silentCd @\"" + path + "\";;\n")
+        self.purge()
 
     def purge(self):
         items = []

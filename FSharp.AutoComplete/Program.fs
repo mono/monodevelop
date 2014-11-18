@@ -50,6 +50,7 @@ type Location =
 
 type ProjectResponse =
   {
+    Project: string
     Files: List<string>
     Output: string
     References: List<string>
@@ -409,7 +410,8 @@ module internal Main =
             match state.OutputMode with
             | Text -> printAgent.WriteLine(sprintf "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files))
             | Json -> prAsJson { Kind = "project"
-                                 Data = { Files = files
+                                 Data = { Project = file
+                                          Files = files
                                           Output = targetFilename
                                           References = List.sort p.References
                                           Framework = framework } }
