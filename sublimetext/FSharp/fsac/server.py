@@ -77,7 +77,7 @@ class FsacServer(object):
 
     def stop(self):
         self._internal_comm.put(STOP_SIGNAL)
-        self.prco.stdin.close()
+        self.proc.stdin.close()
 
 
 def start():

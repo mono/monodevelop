@@ -2,6 +2,8 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
+import os
+
 from FSharp.sublime_plugin_lib.path import find_file_by_extension
 from FSharp.sublime_plugin_lib.path import extension_equals
 
@@ -59,7 +61,7 @@ class FSharpFile (object):
 class FSharpProjectFile (object):
     def __init__(self, path):
         assert path.endswith('fsproj'), 'wrong fsproject path: %s' % path
-        self.path
+        self.path = path
         self.parent = os.path.dirname (self.path)
 
     def __eq__(self, other):
@@ -70,7 +72,7 @@ class FSharpProjectFile (object):
         return fname.startswith(self.parent)
 
     @classmethod
-    def from_path(self, path):
+    def from_path(cls, path):
         '''
         @path
           A path to a file or directory.
