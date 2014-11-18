@@ -40,7 +40,7 @@ type CorrectGuidMSBuildExtension() =
 type FSharpLanguageBinding() =
   static let LanguageName = "F#"
 
-  let provider = lazy new CodeDom.FSharpCodeProvider()
+  let provider = lazy new CodeDom.FSharpCleanCodeProvider()
   let langServ = MDLanguageService.Instance
     
   let invalidateProjectFile(project:Project) =
