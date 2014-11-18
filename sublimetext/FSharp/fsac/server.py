@@ -142,7 +142,7 @@ class FsacServer(object):
 
     def stop(self):
         self._internal_comm.put(STOP_SIGNAL)
-        self.fsac.proc.stdin.close()
+        self.fsac.stop()
 
 
 def start(path=PATH_TO_FSAC):
