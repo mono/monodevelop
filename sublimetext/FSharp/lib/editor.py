@@ -42,9 +42,12 @@ class Editor(object):
     def refresh(self, fs_file):
         assert isinstance(fs_file, FSharpFile), 'wrong argument: %s' % fs_file
         # todo: run in alternate thread
+
         if not self.project_file:
             self.project_file = FSharpProjectFile.from_path(fs_file.path)
+            self.set_project()
             return
+
         if not self.project_file.governs(fs_file.path):
             new_project_file = FSharpProjectFile.from_path(fs_file.path)
             self.project_file = new_project_file
