@@ -35,6 +35,8 @@ emacs/tmp
 # Sublime Text
 *.sublime-workspace
 
+sublimetext/FSharp/fsac/fsac/*.*
+
 .DS_Store
 
 monodevelop/Makefile

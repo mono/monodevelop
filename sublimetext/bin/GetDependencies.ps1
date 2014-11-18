@@ -1,16 +1,35 @@
 <#
 .DESCRIPTION
-    Downloads dependencies.
+    Downloads and installs dependencies.
 #>
-$script:thisDir = split-path $MyInvocation.MyCommand.Path -parent
-$script:serverDir = resolve-path((join-path $thisDir '../FSharp/fsac'))
-$script:bundledDir = resolve-path((join-path $thisDir '../FSharp/bundled'))
 
-remove-item (join-path $bundledDir '*.zip') -erroraction silentlycontinue
+[CmdletBinding()]
+param()
+
+function IsVerbose {
+    return $VerbosePreference -eq 'Continue'
+}
+
+$script:thisDir = split-path $MyInvocation.MyCommand.Path -parent
+$script:serverDir = resolve-path((join-path $thisDir '../FSharp/fsac/fsac'))
+$script:bundledDir = resolve-path((join-path $thisDir '../FSharp/fsac/fsac'))
+
+# clean up
+remove-item (join-path $bundledDir '*.*') -erroraction silentlycontinue
+
 push-location $bundledDir
-    'downloading fsautocomplete.zip...'
+    write-verbose 'downloading fsautocomplete.zip...'
     $client = new-object System.Net.WebClient
-    $client.DownloadFile('https://bitbucket.org/guillermooo/fsac/downloads/fsautocomplete.zip',
-                         "$bundledDir\fsautocomplete.zip" )
+    $client.DownloadFile('https://bitbucket.org/guillermooo/fsac/downloads/fsac.zip',
+                         "$bundledDir\fsac.zip" )
+
+    if (IsVerbose) {
+        & '7z' 'x' 'fsac.zip' '-o.'
+    }
+    else {
+        & '7z' 'x' 'fsac.zip' '-o.' > $null
+    }
+
+    remove-item 'fsac.zip'
 pop-location
-'done'
+write-verbose 'done'
