@@ -48,7 +48,8 @@ class Editor(object):
         if not self.project_file.governs(fs_file.path):
             new_project_file = FSharpProjectFile.from_path(fs_file.path)
             self.project_file = new_project_file
-        self.set_project()
+            self.set_project()
+            return
 
     def set_project(self):
         self.fsac.send_request(ProjectRequest(self.project_file.path))
