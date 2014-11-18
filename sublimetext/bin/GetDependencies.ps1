@@ -10,6 +10,14 @@ function IsVerbose {
     return $VerbosePreference -eq 'Continue'
 }
 
+function unzip {
+    param($Source, $Destination)
+    $shellApp= new-object -com "Shell.Application"
+    $archive = $shellApp.namespace($Source)
+    $dest = $shellApp.namespace($Destination)
+    $dest.copyhere($archive.items())
+}
+
 $script:thisDir = split-path $MyInvocation.MyCommand.Path -parent
 $script:serverDir = resolve-path((join-path $thisDir '../FSharp/fsac/fsac'))
 $script:bundledDir = resolve-path((join-path $thisDir '../FSharp/fsac/fsac'))
@@ -23,13 +31,10 @@ push-location $bundledDir
     $client.DownloadFile('https://bitbucket.org/guillermooo/fsac/downloads/fsac.zip',
                          "$bundledDir\fsac.zip" )
 
-    if (IsVerbose) {
-        & '7z' 'x' 'fsac.zip' '-o.'
-    }
-    else {
-        & '7z' 'x' 'fsac.zip' '-o.' > $null
-    }
-
+    write-verbose 'extracting files...'
+    unzip (get-item 'fsac.zip').fullname (get-location).providerpath
+    write-verbose 'cleaning up...'
     remove-item 'fsac.zip'
 pop-location
+
 write-verbose 'done'
