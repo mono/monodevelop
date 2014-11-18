@@ -7,32 +7,61 @@
 
     .PARAMETER Restart
     Whether to restart Sublime Text.
+
+    .PARAMETER Full
+    Whether to get dependencies too.
 #>
 [CmdletBinding()]
-param([switch]$Clean, [switch]$Restart)
+param([switch]$Clean,
+      [switch]$Restart,
+      [switch]$Full)
 
 
 $script:thisDir = split-path $MyInvocation.MyCommand.Path -parent
 
 $msg = @"
-You need to set `$global:STDataPath to Sublime Text 3's data path.
+You need to set `$global:STPackagesPath to Sublime Text 3's packages path.
 
-PS> `$STDataPath = ...
+To set global variables in PowerShell:
+
+PS> `$STPackagesPath = ...
 
 (Note this is a PowerShell variable, not an environment variable.)
 
-For more information on Sublime Text's data path, see:
-http://docs.sublimetext.info/en/latest/basic_concepts.html#the-data-directory
+To obtain Sublime Text's packages path, open Sublime Text, open the Python
+console and type in the following:
+
+    sublime.packages_path()
+
+For more information on Sublime Text's packages path, see:
+http://docs.sublimetext.info/en/latest/basic_concepts.html#the-packages-directory
 "@
 
-if (-not (test-path variable:\STDataPath) -or
-    ($global:STDataPath -eq $null) -or
-    -not (test-path $global:STDataPath)) {
+
+if (-not (test-path variable:\STPackagesPath) -or
+    ($global:STPackagesPath -eq $null) -or
+    -not (test-path $global:STPackagesPath)) {
     throw $msg
     exit 1
 }
 
-write-debug "path to Sublime Text 3 Data is: '$global:STDataPath'"
+if ($Full) {
+    push-location $thisDir
+        & .\GetDependencies.ps1
+    pop-location
+}
+
+# Check that we don't have both FSharp.sublime-package and FSharp at the same time.
+# This may cause conflicts.
+write-verbose 'checking installed packages...'
+$STInstalledPackagesPath = (resolve-path (join-path $global:STPackagesPath "..\Installed Packages"))
+$package = get-item "$STInstalledPackagesPath\FSharp.sublime-package" -erroraction silentlycontinue
+
+if ($package) {
+    throw "you can't have .../Installed Packages/FSharp.sublime-package and .../Packages/FSharp at the same time"
+}
+
+write-debug "path to Sublime Text 3 packages is: '$global:STPackagesPath'"
 
 if ($Restart) {
     try {
@@ -46,13 +75,13 @@ if ($Restart) {
     }
 }
 
-$fsharpPackageDir = "$global:STDataPath\Packages\FSharp"
+$fsharpPackageDir = "$global:STPackagesPath\FSharp"
 write-debug "target path is: $fsharpPackageDir"
 write-verbose "creating '$fsharpPackageDir' directory..."
 [void] (new-item -itemtype 'directory' $fsharpPackageDir -force -erroraction stop)
 
 if ($Clean) {
-    write-verbose "erasing '$fsharpPackageDir''s content..."
+    write-verbose "erasing content of '$fsharpPackageDir'..."
     [void] (remove-item "$fsharpPackageDir/*" -recurse -force -erroraction stop)
 }
 
