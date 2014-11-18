@@ -605,7 +605,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("{RichClass}", val.Value);
 			Assert.AreEqual ("RichClass", val.TypeName);
 
-			var richChildren = val.GetAllChildren ();
+			var richChildren = val.GetAllChildrenSync ();
 			Assert.AreEqual (13, richChildren.Length);
 			Assert.AreEqual ("publicInt1", richChildren [0].Name);
 			Assert.AreEqual ("int", richChildren [0].TypeName);
@@ -645,7 +645,7 @@ namespace MonoDevelop.Debugger.Tests
 			Assert.AreEqual ("\"stringC\"", richChildren [11].Value);
 			Assert.AreEqual ("Non-public members", richChildren [12].Name);
 
-			richChildren = richChildren [12].GetAllChildren ();
+			richChildren = richChildren [12].GetAllChildrenSync ();
 			Assert.AreEqual (12, richChildren.Length);
 			Assert.AreEqual ("privateInt1", richChildren [0].Name);
 			Assert.AreEqual ("int", richChildren [0].TypeName);
@@ -695,7 +695,7 @@ namespace MonoDevelop.Debugger.Tests
 				val = Eval ("richObject");
 				Assert.AreEqual ("{RichClass}", val.Value);
 				Assert.AreEqual ("RichClass", val.TypeName);
-				richChildren = val.GetAllChildren ();
+				richChildren = val.GetAllChildrenSync ();
 				Assert.AreEqual ("publicPropStringB", richChildren [7].Name);
 				Assert.AreEqual ("string", richChildren [7].TypeName);
 				Assert.AreEqual ("\"stringB\"", richChildren [7].Value);
@@ -1775,7 +1775,7 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.Ignore ("A newer version of the Mono runtime is required.");
 
 			val = Eval ("dict");
-			children = val.GetAllChildren ();
+			children = val.GetAllChildrenSync ();
 
 			if (AllowTargetInvokes) {
 				// AllowTargetInvokes also allows debugger proxies
@@ -1784,14 +1784,14 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("{[5, System.String[]]}", children [0].Value);
 				Assert.AreEqual ("Raw View", children [1].Name);
 
-				children = children [0].GetAllChildren ();
+				children = children [0].GetAllChildrenSync ();
 				Assert.AreEqual ("Key", children [0].Name);
 				Assert.AreEqual ("5", children [0].Value);
 				Assert.AreEqual ("int", children [0].TypeName);
 				Assert.AreEqual ("Value", children [1].Name);
 				Assert.AreEqual ("{string[2]}", children [1].Value);
 
-				children = children [1].GetAllChildren ();
+				children = children [1].GetAllChildrenSync ();
 				Assert.AreEqual ("\"a\"", children [0].Value);
 				Assert.AreEqual ("string", children [0].TypeName);
 				Assert.AreEqual ("\"b\"", children [1].Value);
@@ -1807,7 +1807,7 @@ namespace MonoDevelop.Debugger.Tests
 			}
 
 			val = Eval ("stringList");
-			children = val.GetAllChildren ();
+			children = val.GetAllChildrenSync ();
 
 			if (AllowTargetInvokes) {
 				// AllowTargetInvokes also allows debugger proxies
@@ -1829,7 +1829,7 @@ namespace MonoDevelop.Debugger.Tests
 			}
 
 			val = Eval ("alist");
-			children = val.GetAllChildren ();
+			children = val.GetAllChildrenSync ();
 
 			if (AllowTargetInvokes) {
 				// AllowTargetInvokes also allows debugger proxies
