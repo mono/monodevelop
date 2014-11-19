@@ -467,7 +467,6 @@ namespace MonoDevelop.Ide.Gui
 					Counters.OpenDocumentTimer.Trace ("Look for open document");
 					foreach (Document doc in Documents) {
 						IBaseViewContent vcFound = null;
-						int vcIndex = 0;
 
 						//search all ViewContents to see if they can "re-use" this filename
 						if (doc.Window.ViewContent.CanReuseView (info.FileName))
@@ -497,7 +496,6 @@ namespace MonoDevelop.Ide.Gui
 							
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
-								doc.Window.SwitchView (vcIndex);
 								doc.Window.SelectWindow ();
 								NavigationHistoryService.LogActiveDocument ();
 							}
