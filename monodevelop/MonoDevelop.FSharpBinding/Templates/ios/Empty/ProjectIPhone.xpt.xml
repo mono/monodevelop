@@ -4,6 +4,7 @@
 		<_Name>Empty Project</_Name>
 		<_Category>ios/app/classic</_Category>
 		<Icon>md-project-iphone</Icon>
+		<Image id="md-ios-empty-project" />
 		<LanguageName>F#</LanguageName>
 		<Wizard>MonoDevelop.IPhone.ProjectTemplateWizard</Wizard>
 		<_GroupId condition="Device=IPhone">md-empty-ios-classic</_GroupId>

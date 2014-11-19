@@ -6,6 +6,7 @@
 		<_Name>NUnit Library Project</_Name>
 		<_Category>other/net/general</_Category>
 		<Icon>md-project|res:project-nunit-overlay-light-32.png</Icon>
+		<Image id="md-nunit-library-project" />
 		<_Description>Creates an F# NUnit library</_Description>
 		<LanguageName>F#</LanguageName>
 		<DefaultFilename>NUnitProject</DefaultFilename>

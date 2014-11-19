@@ -4,6 +4,7 @@
 		<_Name>iOS Library Project</_Name>
 		<_Category>ios/library/unified</_Category>
 		<Icon>md-project-library</Icon>
+		<Image id="md-library-project" />
 		<LanguageName>F#</LanguageName>
 		<_GroupId>md-library-project-ios-unified</_GroupId>
 		<_Description><![CDATA[A Unified iOS library project.

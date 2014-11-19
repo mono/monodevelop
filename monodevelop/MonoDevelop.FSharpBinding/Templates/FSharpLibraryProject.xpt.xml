@@ -5,6 +5,7 @@
   <TemplateConfiguration>
     <_Name>Library</_Name>
     <Icon>md-project-library</Icon>
+    <Image id="md-library-project" />
     <_Description>An F# project for creating an F# library</_Description>
     <_Category>other/net/general</_Category>
     <LanguageName>F#</LanguageName>

@@ -5,6 +5,7 @@
 	<TemplateConfiguration>
 		<_Name>Empty Xamarin.Mac Project</_Name>
 		<_Category>osx/app/classic</_Category>
+		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates an empty Xamarin.Mac project.</_Description>
 		<_GroupId>md-xamarin-mac-empty-project</_GroupId>

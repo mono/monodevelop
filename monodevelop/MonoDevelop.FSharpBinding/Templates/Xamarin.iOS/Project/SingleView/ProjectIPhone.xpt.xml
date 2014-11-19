@@ -4,6 +4,7 @@
 		<_Name>Single View Application</_Name>
 		<_Category>ios/app/general</_Category>
 		<Icon>md-project-iphone</Icon>
+		<Image id="md-ios-single-view-app" />
 		<LanguageName>F#</LanguageName>
 		<Wizard>MonoDevelop.IPhone.ProjectTemplateWizard</Wizard>
 		<_GroupId condition="Device=IPhone">md-single-view-ios-unified</_GroupId>

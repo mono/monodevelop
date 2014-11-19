@@ -4,6 +4,7 @@
 		<_Name>iOS Unit Tests Project</_Name>
 		<_Category>ios/tests/unified</_Category>
 		<Icon>md-project-iphone</Icon>
+		<Image id="md-nunit-library-project" />
 		<LanguageName>F#</LanguageName>
 		<_GroupId>md-unit-tests-ios-unified</_GroupId>
 		<_Description><![CDATA[A unit test project for Unified iOS libraries and applications.

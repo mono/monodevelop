@@ -5,6 +5,7 @@
   <TemplateConfiguration>
     <_Name>F# Tutorial</_Name>
     <Icon>md-project-console</Icon>
+    <Image id="md-console-project" />
     <_Description>An F# tutorial project providing a walkthrough of the F# language</_Description>
     <_Category>other/net/general</_Category>
     <LanguageName>F#</LanguageName>

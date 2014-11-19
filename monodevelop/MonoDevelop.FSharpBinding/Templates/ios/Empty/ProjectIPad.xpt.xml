@@ -4,6 +4,7 @@
 		<_Name>Empty Project</_Name>
 		<_Category>ios/app/classic</_Category>
 		<Icon>md-project-iphone</Icon>
+		<Image id="md-ios-empty-project" />
 		<LanguageName>F#</LanguageName>
 		<_Description>Empty project for both iPad and iPhone.</_Description>
 		<Wizard>MonoDevelop.IPhone.ProjectTemplateWizard</Wizard>

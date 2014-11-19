@@ -5,6 +5,7 @@
   <TemplateConfiguration>
     <_Name>Console Project</_Name>
     <Icon>md-project-console</Icon>
+    <Image id="md-console-project" />
     <_Description>A F# project for creating a command line application</_Description>
     <_Category>other/net/general</_Category>
     <LanguageName>F#</LanguageName>

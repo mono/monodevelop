@@ -4,6 +4,7 @@
 		<_Name>Custom Keyboard Extension</_Name>
 		<_Category>ios/app/extensions</_Category>
 		<Icon>md-project-iphone</Icon>
+		<Image id="md-ios-custom-keyboard-extension" />
 		<LanguageName>F#</LanguageName>
 		<_GroupId>md-custom-keyboard-extension-ios-unified</_GroupId>
 		<_Description><![CDATA[A custom keyboard application extension.
