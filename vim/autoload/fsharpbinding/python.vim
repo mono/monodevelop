@@ -206,6 +206,13 @@ v = vim.current.buffer.vars
 if "proj_file" in v:
     fsautocomplete.project(v["proj_file"])
 EOF
+    "set makeprg
+    if !filereadable(expand("%:p:h")."/Makefile")
+        if exists('b:proj_file')
+            let &l:makeprg='xbuild ' . b:proj_file . ' /verbosity:quiet /nologo /p:Configuration=Debug'
+            setlocal errorformat=\ %#%f(%l\\\,%c):\ %m
+        endif
+    endif
 endfunction
 
 function! fsharpbinding#python#FsiPurge()
