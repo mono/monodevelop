@@ -4,11 +4,11 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty Xamarin.Mac Project</_Name>
-		<_Category>mac/app/classic</_Category>
+		<Category>mac/app/classic</Category>
 		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates an empty Xamarin.Mac project.</_Description>
-		<_GroupId>md-xamarin-mac-empty-project</_GroupId>
+		<GroupId>md-xamarin-mac-empty-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

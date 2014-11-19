@@ -7,9 +7,9 @@
     <Icon>md-project-library</Icon>
     <Image id="md-library-project" />
     <_Description>An F# project for creating an F# library</_Description>
-    <_Category>other/net/general</_Category>
+    <Category>other/net/general</Category>
     <LanguageName>F#</LanguageName>
-    <_GroupId>md-project-library</_GroupId>
+    <GroupId>md-project-library</GroupId>
   </TemplateConfiguration>
 
   <!-- Actions -->

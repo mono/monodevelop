@@ -2,12 +2,12 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Android Library Project</_Name>
-		<_Category>android/library/general</_Category>
+		<Category>android/library/general</Category>
 		<Icon>monodroid-project|md-library-overlay</Icon>
 		<Image id="md-library-project" />
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates an Android library project.</_Description>
-		<_GroupId>monodroid-library-project</_GroupId>
+		<GroupId>monodroid-library-project</GroupId>
 	</TemplateConfiguration>
 	
 	<Actions>

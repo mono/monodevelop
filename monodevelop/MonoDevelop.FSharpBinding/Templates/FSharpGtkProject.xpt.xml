@@ -5,11 +5,11 @@
 	<TemplateConfiguration>
 		<_Name>Gtk# 2.0 Project</_Name>
 		<_Description>Create an F# desktop application (using Gtk# 2.0 and .NET 4.0)</_Description>
-		<_Category>other/net/general</_Category>
+		<Category>other/net/general</Category>
 		<Icon>md-project-gui</Icon>
 		<Image id="md-gtk2-project" />
 		<LanguageName>F#</LanguageName>
-		<_GroupId>md-gtk-project</_GroupId>
+		<GroupId>md-gtk-project</GroupId>
 	</TemplateConfiguration>
 	
 	<Actions>

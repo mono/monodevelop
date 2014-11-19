@@ -2,14 +2,14 @@
 <Template>
 	<TemplateConfiguration>
 		<_Name>Empty Project</_Name>
-		<_Category>ios/app/general</_Category>
+		<Category>ios/app/general</Category>
 		<Icon>md-project-iphone</Icon>
 		<Image id="md-ios-empty-project" />
 		<LanguageName>F#</LanguageName>
 		<_Description>Empty project for both iPad and iPhone.</_Description>
 		<Wizard>MonoDevelop.IPhone.ProjectTemplateWizard</Wizard>
-		<_GroupId condition="Device=Universal">md-empty-ios-unified</_GroupId>
-		<_DefaultParameters>MinimumOSVersion=8.0</_DefaultParameters>
+		<GroupId condition="Device=Universal">md-empty-ios-unified</GroupId>
+		<DefaultParameters>MinimumOSVersion=8.0</DefaultParameters>
 	</TemplateConfiguration>
 	
 	<Actions>

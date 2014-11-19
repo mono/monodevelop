@@ -4,10 +4,10 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>MonoMac Project</_Name>
-		<_Category>mac/app/monomac</_Category>
+		<Category>mac/app/monomac</Category>
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates a MonoMac project.</_Description>
-		<_GroupId>md-monomac-project</_GroupId>
+		<GroupId>md-monomac-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

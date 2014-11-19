@@ -4,11 +4,11 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Xamarin.Mac Project</_Name>
-		<_Category>mac/app/classic</_Category>
+		<Category>mac/app/classic</Category>
 		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates a Xamarin.Mac project.</_Description>
-		<_GroupId>md-xamarin-mac-project</_GroupId>
+		<GroupId>md-xamarin-mac-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

@@ -6,9 +6,9 @@
     <_Name>ASP.NET MVC Razor Project</_Name>
     <Icon>md-project-web</Icon>
     <_Description>Creates an F# ASP.NET MVC 4 Web Project with Razor Views.</_Description>
-    <_Category>other/aspnet/general</_Category>
+    <Category>other/aspnet/general</Category>
     <LanguageName>F#</LanguageName>
-    <_GroupId>md-mvc-razor-project</_GroupId>
+    <GroupId>md-mvc-razor-project</GroupId>
   </TemplateConfiguration>
 
 	<!-- Actions -->
