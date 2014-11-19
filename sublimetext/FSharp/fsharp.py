@@ -34,9 +34,6 @@ from FSharp.sublime_plugin_lib.context import ContextProviderMixin
 from FSharp.sublime_plugin_lib.panels import OutputPanel
 
 
-WAIT_ON_COMPLETIONS = False
-
-
 _logger = logging.getLogger(__name__)
 
 
@@ -72,7 +69,7 @@ def process_resp(data):
         v.add_regions('fs.errs',
                       [ErrorInfo(e).to_region(v) for e in data['Data']],
                       'invalid.illegal',
-                      'cross',
+                      'dot',
                       sublime.DRAW_SQUIGGLY_UNDERLINE |
                       sublime.DRAW_NO_FILL |
                       sublime.DRAW_NO_OUTLINE
@@ -219,7 +216,6 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
             editor_context.fsac.send_request(FindDeclRequest(fname, row + 1, col))
 
     def do_completion(self):
-        global WAIT_ON_COMPLETIONS
         fname = self.get_active_file_name ()
         if not fname:
             return
@@ -230,7 +226,7 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
             return
         else:
             editor_context.fsac.send_request(CompletionRequest(fname, row + 1, col))
-            WAIT_ON_COMPLETIONS = True
+            FSharpAutocomplete.WAIT_ON_COMPLETIONS = True
             self.window.run_command('auto_complete')
 
     def do_tooltip(self):
@@ -304,9 +300,9 @@ class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
 
 
 class FSharpAutocomplete(sublime_plugin.EventListener):
+    WAIT_ON_COMPLETIONS = False
     def on_query_completions(self, view, prefix, locations):
-        global WAIT_ON_COMPLETIONS
-        if not WAIT_ON_COMPLETIONS:
+        if not FSharpAutocomplete.WAIT_ON_COMPLETIONS:
             return []
         try:
             data = completions_queue.get(block=True, timeout=1)
@@ -315,7 +311,7 @@ class FSharpAutocomplete(sublime_plugin.EventListener):
         except:
             return []
         finally:
-            WAIT_ON_COMPLETIONS = False
+            FSharpAutocomplete.WAIT_ON_COMPLETIONS = False
             def drain(q):
                 while True:
                     try:

@@ -11,42 +11,45 @@ from .server import _internal_comm
 _logger = logging.getLogger(__name__)
 
 
-def read_reqs(responses, messages, req_proc):
-    """Reads responses from server and forwards them to @req_proc.
+def read_responses(responses, messages, resp_proc):
+    """Reads responses from server and forwards them to @resp_proc.
     """
     while True:
         try:
             data = responses.get(block=True, timeout=5)
             if not data:
-                print ('no data to consume; exiting')
+                _logger.warning('no response data to consume; exiting')
                 break
 
             try:
                 if messages.get(block=False) == STOP_SIGNAL:
-                    print ('asked to stop; complying')
+                    _logger.info('asked to stop; complying')
                     break
             except:
                 pass
 
-            _logger.debug('request data: %s', data)
-            req_proc (json.loads(data.decode('utf-8')))
+            _logger.debug('response data read: %s', data)
+            resp_proc(json.loads(data.decode('utf-8')))
         except queue.Empty:
             pass
+
+    _logger.info('stopping reading responses')
 
 
 class FsacClient(object):
     """Client for fsac server.
     """
-    def __init__(self, server, req_proc):
+    def __init__(self, server, resp_proc):
         self.requests = requests_queue
         self.server = server
 
-        threading.Thread(target=read_reqs, args=(responses_queue,
-                                                 _internal_comm,
-                                                 req_proc)).start()
+        threading.Thread(target=read_responses, args=(responses_queue,
+                                                      _internal_comm,
+                                                      resp_proc)).start()
 
     def stop(self):
         self.server.stop()
 
     def send_request(self, request):
+        _logger.debug('sending request: %s', request)
         self.requests.put(request.encode())

@@ -34,6 +34,8 @@ class ProjectTracker (sublime_plugin.EventListener):
                 self.on_idle(view)
 
     def on_activated_async(self, view):
+        if not FSharpFile(view).is_code_file:
+            return
         _logger.debug ('activated file: %s', view.file_name())
         editor_context.parse_view(view)
 
@@ -41,5 +43,7 @@ class ProjectTracker (sublime_plugin.EventListener):
         editor_context.parse_view(view)
 
     def on_modified_async(self, view):
+        if not FSharpFile(view).is_code_file:
+            return
         # _logger.debug ('modified file: %s', view.file_name())
         self.add_edit (view)
