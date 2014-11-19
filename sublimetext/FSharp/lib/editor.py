@@ -4,17 +4,18 @@
 
 import sublime
 
+import logging
+
 from FSharp.fsac import server
 from FSharp.fsac.client import FsacClient
 from FSharp.fsac.request import CompilerLocationRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.request import ParseRequest
-from FSharp.sublime_plugin_lib import PluginLogger
 from FSharp.lib.project import FSharpFile
 from FSharp.lib.project import FSharpProjectFile
 
 
-_logger = PluginLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class Editor(object):

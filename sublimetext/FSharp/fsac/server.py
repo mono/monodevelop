@@ -1,9 +1,8 @@
 import json
+import logging
 import os
 import queue
 import threading
-
-from FSharp.sublime_plugin_lib import PluginLogger
 
 from .pipe_server import PipeServer
 
@@ -23,7 +22,7 @@ _internal_comm = queue.Queue()
 
 STOP_SIGNAL = '__STOP'
 
-_logger = PluginLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def request_reader(requests, server, internal_msgs=_internal_comm):

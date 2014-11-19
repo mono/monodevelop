@@ -8,7 +8,9 @@ import sublime_plugin
 import json
 import os
 import queue
+import logging
 
+from FSharp import logger
 from FSharp.fsac.request import AdHocRequest
 from FSharp.fsac.request import DataRequest
 from FSharp.fsac.request import DeclarationsRequest
@@ -25,7 +27,9 @@ from FSharp.fsac.response import ErrorInfo
 from FSharp.fsac.server import completions_queue
 from FSharp.lib.editor import Editor
 from FSharp.lib.project import FSharpFile
-from FSharp.sublime_plugin_lib import PluginLogger
+from FSharp.sublime_plugin_lib.context import ContextProviderMixin
+from FSharp.sublime_plugin_lib.panels import OutputPanel
+from FSharp.lib.project import FSharpFile
 from FSharp.sublime_plugin_lib.context import ContextProviderMixin
 from FSharp.sublime_plugin_lib.panels import OutputPanel
 
@@ -33,7 +37,7 @@ from FSharp.sublime_plugin_lib.panels import OutputPanel
 WAIT_ON_COMPLETIONS = False
 
 
-_logger = PluginLogger (__name__)
+_logger = logging.getLogger(__name__)
 
 
 def plugin_unloaded():

@@ -1,4 +1,5 @@
 import threading
+import logging
 import queue
 import json
 
@@ -6,10 +7,8 @@ from .server import requests_queue
 from .server import responses_queue
 from .server import _internal_comm
 
-from FSharp.sublime_plugin_lib import PluginLogger
 
-
-_logger = PluginLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def read_reqs(responses, messages, req_proc):

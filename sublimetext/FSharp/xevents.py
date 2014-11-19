@@ -2,14 +2,15 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
+import logging
+
 import sublime_plugin
 import sublime
 
 from FSharp.fsharp import editor_context
 from FSharp.lib.project import FSharpFile
-from FSharp.sublime_plugin_lib import PluginLogger
 
-_logger = PluginLogger (__name__)
+_logger = logging.getLogger(__name__)
 
 
 class ProjectTracker (sublime_plugin.EventListener):

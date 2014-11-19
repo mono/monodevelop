@@ -6,14 +6,14 @@ from subprocess import Popen
 from subprocess import PIPE
 from subprocess import TimeoutExpired
 import threading
+import logging
 
-from . import PluginLogger
 from .plat import supress_window
 from .text import clean
 from .text import decode
 
 
-_logger = PluginLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class TextFilter(object):
