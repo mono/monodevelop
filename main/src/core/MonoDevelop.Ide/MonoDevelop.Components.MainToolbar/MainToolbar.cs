@@ -462,12 +462,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void UpdateSearchEntryLabel ()
 		{
-//			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
-//			if (!string.IsNullOrEmpty (info.AccelKey)) {
-//				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
-//			} else {
-//				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
-//			}
+			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
+			if (!string.IsNullOrEmpty (info.AccelKey)) {
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
+			} else {
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
+			}
 		}
 
 		void SetDefaultSizes (int comboHeight, int height)
