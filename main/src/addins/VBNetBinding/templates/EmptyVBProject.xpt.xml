@@ -6,12 +6,12 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
                 <_Name>Empty Project</_Name>
-                <_Category>other/net/general</_Category>
+                <Category>other/net/general</Category>
                 <Icon>md-project</Icon>
                 <LanguageName>VBNet</LanguageName>
                 <_Description>Creates an empty VB.Net solution.</_Description>
                 <DefaultFilename>EmptyVBProject</DefaultFilename>
-                <_GroupId>md-empty-project</_GroupId>
+                <GroupId>md-empty-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

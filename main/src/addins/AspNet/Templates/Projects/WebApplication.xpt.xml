@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>ASP.NET Project</_Name>
-		<_Category>other/aspnet/general</_Category>
+		<Category>other/aspnet/general</Category>
 		<Icon>md-project-web</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates a new ASP.NET Web Application project.</_Description>

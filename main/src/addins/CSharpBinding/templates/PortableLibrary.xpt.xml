@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Portable Library</_Name>
-		<_Category>other/net/general</_Category>
+		<Category>other/net/general</Category>
 		<Icon>md-project-library</Icon>
 		<Image id="md-pcl-project" />
 		<LanguageName>C#</LanguageName>

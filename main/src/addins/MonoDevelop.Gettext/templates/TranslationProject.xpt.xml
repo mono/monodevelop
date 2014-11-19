@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Translation Project</_Name>
-		<_Category>other/misc/generic</_Category>
+		<Category>other/misc/generic</Category>
 		<Icon>md-project|res:gettext-overlay-32.png</Icon>
 		<_Description>Creates a translation project.</_Description>
 		<DefaultFilename>TranslationProject</DefaultFilename>

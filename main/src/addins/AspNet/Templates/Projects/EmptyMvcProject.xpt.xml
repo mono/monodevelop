@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Empty ASP.NET MVC Project</_Name>
-		<_Category>other/aspnet/general</_Category>
+		<Category>other/aspnet/general</Category>
 		<Icon>md-project-web</Icon>
 		<LanguageName>C#</LanguageName>
 		<_Description>Creates an empty ASP.NET MVC Web Project.</_Description>

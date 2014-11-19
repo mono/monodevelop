@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Generic Project</_Name>
-		<_Category>other/misc/generic</_Category>
+		<Category>other/misc/generic</Category>
 		<Icon>md-project</Icon>
 		<_Description>Creates a project which can contain any kind of file.</_Description>
 	</TemplateConfiguration>

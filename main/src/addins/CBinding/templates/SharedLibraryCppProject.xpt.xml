@@ -7,13 +7,13 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Shared Library</_Name>
-		<_Category>other/misc/c</_Category>
+		<Category>other/misc/c</Category>
 		<Icon>md-project-library</Icon>
 		<Image id="md-library-project" />
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple shared library C++ project.</_Description>
 		<DefaultFilename>SharedLibraryCppProject</DefaultFilename>
-		<_GroupId>md-shared-library-project</_GroupId>
+		<GroupId>md-shared-library-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

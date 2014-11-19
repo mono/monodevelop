@@ -7,13 +7,13 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Static Library</_Name>
-		<_Category>other/misc/c</_Category>
+		<Category>other/misc/c</Category>
 		<Icon>md-project-library</Icon>
 		<Image id="md-library-project" />
 		<LanguageName>CPP</LanguageName>
 		<_Description>Creates simple static library C++ project.</_Description>
 		<DefaultFilename>StaticLibraryCppProject</DefaultFilename>
-		<_GroupId>md-static-library-project</_GroupId>
+		<GroupId>md-static-library-project</GroupId>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

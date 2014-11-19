@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Packaging project</_Name>
-		<_Category>other/misc/generic</_Category>
+		<Category>other/misc/generic</Category>
 		<Icon>md-project-package</Icon>
 		<Image id="md-packaging-project" />
 		<_Description>Create a project which can generate packages for a solution</_Description>

@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Workspace</_Name>
-		<_Category>other/misc/generic</_Category>
+		<Category>other/misc/generic</Category>
 		<Icon>md-workspace</Icon>
 		<Image id="md-workspace" />
 		<LanguageName/>

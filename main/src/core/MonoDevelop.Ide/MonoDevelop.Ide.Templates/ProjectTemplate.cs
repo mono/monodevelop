@@ -183,11 +183,11 @@ namespace MonoDevelop.Ide.Templates
 
 			XmlElement xmlConfiguration = xmlDocument.DocumentElement ["TemplateConfiguration"];
 
-			if (xmlConfiguration ["_Category"] != null) {
-				category = addin.Localizer.GetString (xmlConfiguration ["_Category"].InnerText);
+			if (xmlConfiguration ["Category"] != null) {
+				category = xmlConfiguration ["Category"].InnerText;
 			}
 			else
-				throw new InvalidOperationException (string.Format ("_Category missing in file template {0}", codon.Id));
+				LoggingService.LogWarning (string.Format ("Category missing in project template {0}", codon.Id));
 
 
 			if (!string.IsNullOrEmpty (overrideLanguage)) {
@@ -239,21 +239,21 @@ namespace MonoDevelop.Ide.Templates
 				this.icon = ImageService.GetStockId (addin, xmlConfiguration ["Icon"].InnerText, Gtk.IconSize.Dnd);
 			}
 
-			if (xmlConfiguration ["_GroupId"] != null) {
-				this.groupId = xmlConfiguration ["_GroupId"].InnerText;
-				this.condition = xmlConfiguration ["_GroupId"].GetAttribute ("condition");
+			if (xmlConfiguration ["GroupId"] != null) {
+				this.groupId = xmlConfiguration ["GroupId"].InnerText;
+				this.condition = xmlConfiguration ["GroupId"].GetAttribute ("condition");
 			}
 
-			if (xmlConfiguration ["_FileExtension"] != null) {
-				this.fileExtension = xmlConfiguration ["_FileExtension"].InnerText;
+			if (xmlConfiguration ["FileExtension"] != null) {
+				this.fileExtension = xmlConfiguration ["FileExtension"].InnerText;
 			}
 
-			if (xmlConfiguration ["_SupportedParameters"] != null) {
-				this.supportedParameters = xmlConfiguration ["_SupportedParameters"].InnerText;
+			if (xmlConfiguration ["SupportedParameters"] != null) {
+				this.supportedParameters = xmlConfiguration ["SupportedParameters"].InnerText;
 			}
 
-			if (xmlConfiguration ["_DefaultParameters"] != null) {
-				this.defaultParameters = xmlConfiguration ["_DefaultParameters"].InnerText;
+			if (xmlConfiguration ["DefaultParameters"] != null) {
+				this.defaultParameters = xmlConfiguration ["DefaultParameters"].InnerText;
 			}
 
 			if (xmlConfiguration ["Image"] != null) {
