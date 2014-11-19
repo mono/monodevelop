@@ -40,7 +40,6 @@ using ICSharpCode.NRefactory.Semantics;
 using MonoDevelop.AnalysisCore.Fixes;
 using ICSharpCode.NRefactory.Refactoring;
 using MonoDevelop.Ide.Gui;
-using AppKit;
 
 namespace MonoDevelop.CodeActions
 {
@@ -351,23 +350,24 @@ namespace MonoDevelop.CodeActions
 			#endif
 			return true;
 		}
+		#if MAC
 
-		NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
+		AppKit.NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
 		{
-			var menu = new NSMenu ();
+			var menu = new AppKit.NSMenu ();
 			foreach (var item in entrySet.Items) {
 				if (item == FixMenuEntry.Separator) {
-					menu.AddItem (NSMenuItem.SeparatorItem);
+					menu.AddItem (AppKit.NSMenuItem.SeparatorItem);
 					continue;
 				}
 				var subMenu = item as FixMenuDescriptor;
 				if (subMenu != null) {
-					var gtkSubMenu = new NSMenuItem (item.Label.Replace ("_", ""));
+					var gtkSubMenu = new AppKit.NSMenuItem (item.Label.Replace ("_", ""));
 					gtkSubMenu.Submenu = CreateNSMenu (subMenu);
 					menu.AddItem (gtkSubMenu); 
 					continue;
 				}
-				var menuItem = new NSMenuItem (item.Label.Replace ("_", ""));
+				var menuItem = new AppKit.NSMenuItem (item.Label.Replace ("_", ""));
 				menuItem.Activated += delegate {
 					item.Action ();
 				};
@@ -375,6 +375,7 @@ namespace MonoDevelop.CodeActions
 			}
 			return menu;
 		}
+		#endif
 
 		static Menu CreateGtkMenu (FixMenuDescriptor entrySet)
 		{
