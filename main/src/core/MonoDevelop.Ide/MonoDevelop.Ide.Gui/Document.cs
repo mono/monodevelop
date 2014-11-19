@@ -976,7 +976,8 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public void DisableAutoScroll ()
 		{
-			Mono.TextEditor.Utils.FileSettingsStore.Remove (FileName);
+			if (IsFile)
+				Mono.TextEditor.Utils.FileSettingsStore.Remove (FileName);
 		}
 	}
 	
