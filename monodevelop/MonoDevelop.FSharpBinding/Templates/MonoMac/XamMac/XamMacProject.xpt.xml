@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<_Name>Xamarin.Mac Project</_Name>
-		<_Category>osx/app/classic</_Category>
+		<_Category>mac/app/classic</_Category>
 		<Image id="md-mac-application" />
 		<LanguageName>F#</LanguageName>
 		<_Description>Creates a Xamarin.Mac project.</_Description>
