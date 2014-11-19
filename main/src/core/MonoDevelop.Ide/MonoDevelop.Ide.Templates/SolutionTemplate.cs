@@ -193,6 +193,8 @@ namespace MonoDevelop.Ide.Templates
 				return ".vbproj";
 			case "IL":
 				return ".ilproj";
+			case "F#":
+				return ".fsproj";
 			default:
 				return ".proj";
 			}
