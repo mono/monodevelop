@@ -195,6 +195,10 @@ namespace MonoDevelop.Ide.Templates
 				return ".ilproj";
 			case "F#":
 				return ".fsproj";
+			case "C":
+			case "Objective C":
+			case "CPP":
+				return ".cproj";
 			default:
 				return ".proj";
 			}
