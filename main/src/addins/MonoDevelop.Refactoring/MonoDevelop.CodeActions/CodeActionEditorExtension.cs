@@ -454,9 +454,10 @@ namespace MonoDevelop.CodeActions
 					return;
 				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
 				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
-				if (args.X - x >= 0 * editor.Options.Zoom && 
-				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
-				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom) {
+				const double xAdditionalSpace = tagMarkerWidth;
+				if (args.X - x >= -xAdditionalSpace * editor.Options.Zoom && 
+					args.X - x < (tagMarkerWidth + xAdditionalSpace) * editor.Options.Zoom /*&& 
+				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom*/) {
 					result.Cursor = null;
 					Popup ();
 				} else {
