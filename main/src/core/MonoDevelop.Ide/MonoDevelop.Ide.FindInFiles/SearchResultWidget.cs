@@ -130,8 +130,10 @@ namespace MonoDevelop.Ide.FindInFiles
 			projectColumn.PackStart (projectPixbufRenderer, false);
 			projectColumn.SetCellDataFunc (projectPixbufRenderer, ResultProjectIconDataFunc);
 
-			projectColumn.PackStart (treeviewSearchResults.TextRenderer, true);
-			projectColumn.SetCellDataFunc (treeviewSearchResults.TextRenderer, ResultProjectDataFunc);
+			var renderer = treeviewSearchResults.TextRenderer;
+			renderer.Ellipsize = Pango.EllipsizeMode.End;
+			projectColumn.PackStart (renderer, true);
+			projectColumn.SetCellDataFunc (renderer, ResultProjectDataFunc);
 			treeviewSearchResults.AppendColumn (projectColumn);
 
 			var fileNameColumn = new TreeViewColumn {
@@ -146,20 +148,20 @@ namespace MonoDevelop.Ide.FindInFiles
 			fileNameColumn.PackStart (fileNamePixbufRenderer, false);
 			fileNameColumn.SetCellDataFunc (fileNamePixbufRenderer, FileIconDataFunc);
 			
-			fileNameColumn.PackStart (treeviewSearchResults.TextRenderer, true);
-			fileNameColumn.SetCellDataFunc (treeviewSearchResults.TextRenderer, FileNameDataFunc);
+			fileNameColumn.PackStart (renderer, true);
+			fileNameColumn.SetCellDataFunc (renderer, FileNameDataFunc);
 			treeviewSearchResults.AppendColumn (fileNameColumn);
 
 
 			TreeViewColumn textColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Text"),
-				treeviewSearchResults.TextRenderer, ResultTextDataFunc);
+				renderer, ResultTextDataFunc);
 			textColumn.Resizable = true;
 			textColumn.Sizing = TreeViewColumnSizing.Fixed;
 			textColumn.FixedWidth = 300;
 
 			
 			TreeViewColumn pathColumn = treeviewSearchResults.AppendColumn (GettextCatalog.GetString ("Path"),
-				treeviewSearchResults.TextRenderer, ResultPathDataFunc);
+				                            renderer, ResultPathDataFunc);
 			pathColumn.SortColumnId = 3;
 			pathColumn.Resizable = true;
 			pathColumn.Sizing = TreeViewColumnSizing.Fixed;
