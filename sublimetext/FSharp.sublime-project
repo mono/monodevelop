@@ -5,7 +5,7 @@
 			"name": "Run",
 			"working_dir": "${project_path}/FSharp",
 			"shell_cmd": "./build.sh",
-			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\bin\\Build.ps1\"" },
+			"windows": { "shell_cmd": "powershell -noninteractive -command \" & $project_path\\bin\\Build.ps1 -verbose 4>&1\"" },
 
 			"variants": [
 				{
