@@ -726,6 +726,9 @@ namespace MonoDevelop.Ide.Gui
 			subViewContent = viewContents[newIndex] as IAttachableViewContent;
 
 			DetachFromPathedDocument ();
+
+			if (Document != null)
+				Document.EnsureEditorIntialised ();
 			
 			MonoDevelop.Ide.Gui.Content.IPathedDocument pathedDocument;
 			if (newIndex < 0 || newIndex == viewContents.IndexOf (ViewContent)) {
