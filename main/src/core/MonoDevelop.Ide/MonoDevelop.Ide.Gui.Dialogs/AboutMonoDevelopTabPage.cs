@@ -95,29 +95,6 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				MarginLeft = 12
 			});
 
-			cbox = new Xwt.HBox () {
-				Spacing = 0,
-				MarginLeft = 12
-			};
-			cbox.PackStart (new Xwt.Label ("Some icons by "));
-			cbox.PackStart (new Xwt.LinkLabel () {
-				Text = string.Format ("Yusuke Kamiyamane"),
-				Uri = new Uri ("http://p.yusukekamiyamane.com")
-			});
-
-			infoBox.PackStart (cbox);
-
-			cbox = new Xwt.HBox () {
-				Spacing = 0,
-				MarginLeft = 12
-			};
-			cbox.PackStart (new Xwt.Label ("Some icons from the "));
-			cbox.PackStart (new Xwt.LinkLabel () {
-				Text = string.Format ("Silk icon set"),
-				Uri = new Uri ("http://www.famfamfam.com/")
-			});
-			infoBox.PackStart (cbox);
-
 			this.ShowAll ();
 		}
 	}
