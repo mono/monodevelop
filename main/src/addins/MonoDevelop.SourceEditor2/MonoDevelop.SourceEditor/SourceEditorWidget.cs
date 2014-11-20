@@ -70,7 +70,14 @@ namespace MonoDevelop.SourceEditor
 				return textEditor.Options;
 			}
 		}
-		
+
+
+		internal QuickTaskStrip QuickTaskStrip { 
+			get {
+				return mainsw.Strip;
+			}
+		} 
+
 		bool isDisposed;
 		
 		ParsedDocument parsedDocument;

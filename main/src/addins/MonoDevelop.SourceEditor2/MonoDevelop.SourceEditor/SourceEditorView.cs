@@ -2636,5 +2636,57 @@ namespace MonoDevelop.SourceEditor
 
 
 		#endregion
+
+
+		#region Command handlers
+		[CommandHandler (ScrollbarCommand.Top)]
+		void GotoTop ()
+		{
+			widget.QuickTaskStrip.GotoTop ();
+		}
+
+		[CommandHandler (ScrollbarCommand.Bottom)]
+		void GotoBottom ()
+		{
+			widget.QuickTaskStrip.GotoBottom ();
+		}
+
+		[CommandHandler (ScrollbarCommand.PgUp)]
+		void GotoPgUp ()
+		{
+			widget.QuickTaskStrip.GotoPgUp ();
+		}
+
+		[CommandHandler (ScrollbarCommand.PgDown)]
+		void GotoPgDown ()
+		{
+			widget.QuickTaskStrip.GotoPgDown ();
+		}	
+
+		[CommandUpdateHandler (ScrollbarCommand.ShowTasks)]
+		void UpdateShowMap (CommandInfo info)
+		{
+			widget.QuickTaskStrip.UpdateShowMap (info);
+		}
+
+		[CommandHandler (ScrollbarCommand.ShowTasks)]
+		void ShowMap ()
+		{
+			widget.QuickTaskStrip.ShowMap ();
+		}
+
+		[CommandUpdateHandler (ScrollbarCommand.ShowMinimap)]
+		void UpdateShowFull (CommandInfo info)
+		{
+			widget.QuickTaskStrip.UpdateShowFull (info);
+		}
+
+		[CommandHandler (ScrollbarCommand.ShowMinimap)]
+		void ShowFull ()
+		{
+			widget.QuickTaskStrip.ShowFull ();
+		}
+
+		#endregion
 	}
 } 
