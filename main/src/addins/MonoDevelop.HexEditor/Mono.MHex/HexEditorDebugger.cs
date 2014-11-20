@@ -35,7 +35,7 @@ namespace Mono.MHex
 			get {
 				return editor.HexEditorData;
 			}
-			set{
+			set {
 				editor.HexEditorData = value;
 			}
 		}
@@ -44,7 +44,7 @@ namespace Mono.MHex
 			get {
 				return editor.Options;
 			}
-			set{
+			set {
 				editor.Options = value;
 			}
 		}
@@ -54,13 +54,20 @@ namespace Mono.MHex
 			editor.PurgeLayoutCaches ();
 		}
 
-		HexEditor editor=new HexEditor();
+		public HexEditor Editor {
+			get {
+				return editor;
+			}
+		}
+
+		HexEditor editor = new HexEditor ();
+
 		public void Repaint ()
 		{
 			editor.Repaint ();
 		}
 
-		public HexEditorDebugger()
+		public HexEditorDebugger ()
 		{
 			var comboBox = new ComboBox ();
 			comboBox.Items.Add ("Hex 8");

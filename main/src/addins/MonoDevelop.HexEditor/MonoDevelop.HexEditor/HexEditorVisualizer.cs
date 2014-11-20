@@ -110,7 +110,7 @@ namespace MonoDevelop.HexEditor
 			}
 
 			hexEditor.HexEditorData.Buffer = buffer;
-			hexEditor.Sensitive = CanEdit (val);
+			hexEditor.Editor.Sensitive = CanEdit (val);
 
 			var xwtScrollView = new Xwt.ScrollView (hexEditor);
 			var scrollWidget = (Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (xwtScrollView);
