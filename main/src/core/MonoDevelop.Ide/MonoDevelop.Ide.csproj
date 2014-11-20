@@ -2529,7 +2529,6 @@
     <Compile Include="MonoDevelop.Ide.Projects\ProjectOptionsDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\RenameConfigDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\NewFileDialog.cs" />
-    <Compile Include="MonoDevelop.Ide.Projects\NewProjectDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AddFileDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AddMimeTypeDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Projects\AssemblyReferencePanel.cs" />
@@ -2590,7 +2589,6 @@
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.IncludeNewFilesDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewConfigurationDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewFileDialog.cs" />
-    <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.NewProjectDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\PolicyOptionsPanel.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.cs" />
     <Compile Include="gtk-gui\MonoDevelop.Ide.Projects.RenameConfigDialog.cs" />
