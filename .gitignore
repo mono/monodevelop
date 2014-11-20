@@ -36,6 +36,7 @@ emacs/tmp
 *.sublime-workspace
 
 sublimetext/FSharp/fsac/fsac/*.*
+sublimetext/plugin_dev.json
 
 .DS_Store
 
