@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 
 		void HandleTextEditorDataSelectionChanged (object sender, EventArgs e)
 		{
-			if (TextEditorData.IsSomethingSelected)
+			if (Editor.IsSomethingSelected)
 				RemoveMarkers ();
 		}
 

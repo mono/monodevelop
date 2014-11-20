@@ -282,7 +282,7 @@ namespace MonoDevelop.Ide.Projects
 		{
 			StringBuilder result = new StringBuilder ();
 			int lastPos = 0;
-			var color = Mono.TextEditor.HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
+			var color = HslColor.GenerateHighlightColors (widget.Style.Base (StateType.Normal), 
 				widget.Style.Text (StateType.Normal), 3)[2];
 			for (int n=0; n < matches.Length; n++) {
 				int pos = matches[n] - startIndex;

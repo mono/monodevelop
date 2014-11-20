@@ -1101,19 +1101,19 @@ namespace MonoDevelop.AssemblyBrowser
 			inspectEditor.SetFoldings (Enumerable.Empty<IFoldSegment> ());
 			switch (this.languageCombobox.Active) {
 			case 0:
-				inspectEditor.Options.ShowFoldMargin = true;
-				this.inspectEditor.Document.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.GetSummary (inspectEditor.GetTextEditorData (), nav, PublicApiOnly));
+				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+				this.inspectEditor.MimeType = "text/x-csharp";
+				SetReferencedSegments (builder.GetSummary (inspectEditor, nav, PublicApiOnly));
 				break;
 			case 1:
-				inspectEditor.Options.ShowFoldMargin = true;
-				this.inspectEditor.Document.MimeType = "text/x-ilasm";
-				SetReferencedSegments (builder.Disassemble (inspectEditor.GetTextEditorData (), nav));
+				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+				this.inspectEditor.MimeType = "text/x-ilasm";
+				SetReferencedSegments (builder.Disassemble (inspectEditor, nav));
 				break;
 			case 2:
-				inspectEditor.Options.ShowFoldMargin = true;
-				this.inspectEditor.Document.MimeType = "text/x-csharp";
-				SetReferencedSegments (builder.Decompile (inspectEditor.GetTextEditorData (), nav, PublicApiOnly));
+				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;
+				this.inspectEditor.MimeType = "text/x-csharp";
+				SetReferencedSegments (builder.Decompile (inspectEditor, nav, PublicApiOnly));
 				break;
 			default:
 				inspectEditor.Options = DefaultSourceEditorOptions.PlainEditor;

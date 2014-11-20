@@ -790,8 +790,8 @@ namespace MonoDevelop.Ide.Gui
 				if (IsProjectContextInUpdate) {
 					return;
 				}
-				string currentParseText = editor.Text;
-				string mimeType = editor.MimeType;
+				string currentParseText = Editor.Text;
+				string mimeType = Editor.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
 					if (IsProjectContextInUpdate)
 						return;
@@ -801,18 +801,10 @@ namespace MonoDevelop.Ide.Gui
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 						if (isClosed)
 							return;
-						TypeSystemService.AddSkippedFile (currentParseFile);
-						var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
-						Application.Invoke (delegate {
-							// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
-							if (isClosed)
-								return;
-							this.parsedDocument = currentParsedDocument;
-							OnDocumentParsed (EventArgs.Empty);
-						});
+						this.parsedDocument = currentParsedDocument;
+						OnDocumentParsed (EventArgs.Empty);
 					});
 					parseTimeout = 0;
-					return false;
 				});
 			}
 		}

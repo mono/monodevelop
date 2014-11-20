@@ -250,10 +250,10 @@ namespace MonoDevelop.Ide.Editor
 			controlLeftRightMode = new PropertyWrapper<ControlLeftRightMode> ("ControlLeftRightMode", defaultControlMode);
 			
 			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
-			if (Platform.IsWindows || controlLeftRightMode == "SharpDevelop") {
+			if (Platform.IsWindows || controlLeftRightMode.Value == ControlLeftRightMode.SharpDevelop) {
 				defaultWordNavigation = WordNavigationStyle.Windows;
 			}
-			this.WordNavigationStyle = new PropertyWrapper<ControlLeftRightMode> ("WordNavigationStyle", defaultWordNavigation);
+			this.WordNavigationStyle = new PropertyWrapper<WordNavigationStyle> ("WordNavigationStyle", defaultWordNavigation);
 			
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);

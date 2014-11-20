@@ -760,11 +760,6 @@ namespace MonoDevelop.SourceEditor
 		protected virtual void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			widget.UpdateParsedDocument (ownerDocument.ParsedDocument);
-		}		
-
-		void IEncodedTextContent.Load (string fileName, Encoding loadEncoding)
-		{
-			Load (fileName, loadEncoding);
 		}
 
 		protected virtual string ProcessLoadText (string text)

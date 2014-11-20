@@ -194,7 +194,7 @@ namespace MonoDevelop.AssemblyBrowser
 			var type = CecilLoader.GetCecilObject ((IUnresolvedTypeDefinition)navigator.DataItem);
 			if (type == null)
 				return null;
-			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.MimeType);
 			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
 			var settings = CreateDecompilerSettings (publicOnly, codePolicy);
 			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), type, builder => {

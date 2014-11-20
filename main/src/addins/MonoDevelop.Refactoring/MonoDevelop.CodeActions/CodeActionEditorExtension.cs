@@ -293,7 +293,6 @@ namespace MonoDevelop.CodeActions
 //			document.Editor.Parent.HideTooltip ();
 			if (menuAction != null)
 				menuAction (menu);
-			var container = document.Editor.Parent;
 
 			var p = Editor.LocationToPoint (currentSmartTagBegin);
 			Gtk.Widget widget = Editor;
@@ -301,7 +300,7 @@ namespace MonoDevelop.CodeActions
 				(int)p.X + widget.Allocation.X , 
 				(int)p.Y + (int)Editor.LineHeight + widget.Allocation.Y, 0, 0);
 
-			ShowFixesMenu (document.Editor.Parent, rect, menu);
+			ShowFixesMenu (widget, rect, menu);
 		}
 
 		bool ShowFixesMenu (Gtk.Widget parent, Gdk.Rectangle evt, FixMenuDescriptor entrySet)
@@ -663,13 +662,6 @@ namespace MonoDevelop.CodeActions
 			smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
 				PopupQuickFixMenu (null, menu => {
 					codeActionMenu = menu;
-					menu.MotionNotifyEvent += (o, args) => {
-						if (currentSmartTag.IsInsideWindow (args)) {
-							StartMenuCloseTimer ();
-						} else {
-							CancelMenuCloseTimer ();
-						}
-					};
 				});
 				smartTagPopupTimeoutId = 0;
 				return false;
@@ -692,7 +684,7 @@ namespace MonoDevelop.CodeActions
 		}
 
 		static readonly List<CodeAction> emptyList = new List<CodeAction> ();
-		internal List<CodeAction> GetCurrentFixes ()
+		internal IEnumerable<CodeAction> GetCurrentFixes ()
 		{
 			return currentSmartTag == null ? emptyList : Fixes;
 		}

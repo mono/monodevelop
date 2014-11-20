@@ -102,7 +102,7 @@ namespace MonoDevelop.CSharp
 			}
 			if (ownerProjects.Count == 0) {
 				ownerProjects = null;
-				Document.AttachToProject (null);
+				DocumentContext.AttachToProject (null);
 			}
 		}
 
@@ -136,8 +136,8 @@ namespace MonoDevelop.CSharp
 		void UpdateOwnerProjects ()
 		{
 			UpdateOwnerProjects (IdeApp.Workspace.GetAllSolutionItems<DotNetProject> ());
-			if (Document.Project == null && ownerProjects.Count > 0)
-				Document.AttachToProject (ownerProjects[0]);
+			if (DocumentContext.Project == null && ownerProjects.Count > 0)
+				DocumentContext.AttachToProject (ownerProjects[0]);
 		}
 
 		#region IPathedDocument implementation

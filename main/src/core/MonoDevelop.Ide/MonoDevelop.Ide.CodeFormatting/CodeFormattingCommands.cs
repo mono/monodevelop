@@ -74,7 +74,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 				if (formattedText == null || formattedText == text)
 					return;
 
-				doc.Editor.Replace (0, text.Length, formattedText);
+				doc.Editor.ReplaceText (0, text.Length, formattedText);
 			}
 		}
 	}
@@ -111,7 +111,8 @@ namespace MonoDevelop.Ide.CodeFormatting
 				} else {
 					var pol = doc.Project != null ? doc.Project.Policies : null;
 					try {
-						string text = formatter.FormatText (pol, editor.Text, selection.Offset, selection.EndOffset);
+						var editorText = editor.Text;
+						string text = formatter.FormatText (pol, editorText, selection.Offset, selection.EndOffset);
 						if (text != null && editorText.Substring (selection.Offset, selection.Length) != text) {
 							editor.ReplaceText (selection.Offset, selection.Length, text);
 						}

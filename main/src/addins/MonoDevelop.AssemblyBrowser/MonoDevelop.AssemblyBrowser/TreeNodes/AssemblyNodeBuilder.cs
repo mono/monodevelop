@@ -177,7 +177,7 @@ namespace MonoDevelop.AssemblyBrowser
 			});
 		}
 
-		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditor data, ITreeNavigator navigator, bool publicOnly)
 		{
 			var assembly = ((AssemblyLoader)navigator.DataItem).UnresolvedAssembly;
 			var compilationUnit = Widget.CecilLoader.GetCecilObject (assembly);

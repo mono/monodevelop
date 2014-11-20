@@ -1633,7 +1633,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			IList<string> ICompletionContextProvider.ConditionalSymbols {
 				get {
-					return parsedDocument.GetAst<SyntaxTree> ().ConditionalSymbols;
+					return document.ParsedDocument.GetAst<SyntaxTree> ().ConditionalSymbols;
 				}
 			}
 
@@ -1692,7 +1692,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			CSharpAstResolver ICompletionContextProvider.GetResolver (CSharpResolver resolver, AstNode rootNode)
 			{
-				return new CSharpAstResolver (resolver, rootNode, parsedDocument.ParsedFile as CSharpUnresolvedFile);
+				return new CSharpAstResolver (resolver, rootNode, document.ParsedDocument.ParsedFile as CSharpUnresolvedFile);
 			}
 		}
 	}

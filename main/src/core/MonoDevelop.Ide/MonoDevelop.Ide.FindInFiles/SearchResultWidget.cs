@@ -285,7 +285,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			foreach (var doc in documents) {
 				doc.Value.Dispose ();
 			}
-			documents = new Dictionary<string, TextDocument> ();
+			documents = new Dictionary<string, TextEditor> ();
 			store.Clear ();
 			labelStatus.Text = "";
 			textviewLog.Buffer.Clear ();
@@ -499,10 +499,6 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			pathRenderer.Markup = projectNameMarkup;
 		}
-		public static string ColorToPangoMarkup (Gdk.Color color)
-		{
-			return string.Format ("#{0:X2}{1:X2}{2:X2}", color.Red >> 8, color.Green >> 8, color.Blue >> 8);
-		}
 
 		static int TranslateIndexToUTF8 (string text, int index)
 		{
@@ -533,31 +529,28 @@ namespace MonoDevelop.Ide.FindInFiles
 				if (searchResult.Markup == null) {
 					if (searchResult.LineNumber <= 0)
 						searchResult.LineNumber = doc.OffsetToLineNumber (searchResult.Offset); 
-					DocumentLine line = doc.GetLine (searchResult.LineNumber);
+					var line = doc.GetLine (searchResult.LineNumber);
 					if (line == null) {
 						textMarkup = "Invalid line number " + searchResult.LineNumber + " from offset: " + searchResult.Offset;
 						goto end;
 					}
 					int indent = line.GetIndentation (doc).Length;
-					var data = new Mono.TextEditor.TextEditorData (doc);
-					data.ColorStyle = highlightStyle;
+					var data =TextEditorFactory.CreateNewEditor (doc);
 					var lineText = doc.GetTextAt (line.Offset + indent, line.Length - indent);
 					int col = searchResult.Offset - line.Offset - indent;
 					// search result contained part of the indent.
 					if (col + searchResult.Length < lineText.Length)
 						lineText = doc.GetTextAt (line.Offset, line.Length);
 
-					var markup = doc.SyntaxMode != null ?
-					data.GetMarkup (line.Offset + indent, line.Length - indent, true, !isSelected, false) :
-					GLib.Markup.EscapeText (lineText);
-					searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', TextEditorOptions.DefaultOptions.TabSize)));
+					var markup = data.GetPangoMarkup (line.Offset + indent, line.Length - indent);
+					searchResult.Markup = AdjustColors (markup.Replace ("\t", new string (' ', data.Options.TabSize)));
 
 					if (col >= 0) {
 						uint start;
 						uint end;
 						try {
-							start = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, col);
-							end = (uint)TextViewMargin.TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col + searchResult.Length));
+							start = (uint)TranslateIndexToUTF8 (lineText, col);
+							end = (uint)TranslateIndexToUTF8 (lineText, Math.Min (lineText.Length, col + searchResult.Length));
 						} catch (Exception e) {
 							LoggingService.LogError ("Exception while translating index to utf8 (column was:" + col + " search result length:" + searchResult.Length + " line text:" + lineText + ")", e);
 							return;
@@ -572,11 +565,11 @@ namespace MonoDevelop.Ide.FindInFiles
 
 					if (!isSelected) {
 						var searchColor = searchResult.GetBackgroundMarkerColor (highlightStyle).Color;
-						double b1 = Mono.TextEditor.HslColor.Brightness (searchColor);
-						double b2 = Mono.TextEditor.HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), (Mono.TextEditor.HslColor)highlightStyle.PlainText.Foreground));
+						double b1 = HslColor.Brightness (searchColor);
+						double b2 = HslColor.Brightness (AdjustColor (Style.Base (StateType.Normal), (HslColor)highlightStyle.PlainText.Foreground));
 						double delta = Math.Abs (b1 - b2);
 						if (delta < 0.1) {
-							Mono.TextEditor.HslColor color1 = highlightStyle.SearchResult.Color;
+							var color1 = highlightStyle.SearchResult.Color;
 							if (color1.L + 0.5 > 1.0) {
 								color1.L -= 0.5;
 							} else {
@@ -637,7 +630,7 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			textRenderer.Markup = textMarkup;
 		}
-		
+
 		static int FindPosition (string markup, int pos, out string tag)
 		{
 			bool inTag = false;

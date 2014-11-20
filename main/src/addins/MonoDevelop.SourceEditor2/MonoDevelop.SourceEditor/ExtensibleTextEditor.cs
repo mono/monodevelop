@@ -165,7 +165,6 @@ namespace MonoDevelop.SourceEditor
 			this.view = view;
 
 			Document.TextReplaced += HandleSkipCharsOnReplace;
-			TypeSystemService.ParseOperationFinished += HandleParseOperationFinished;
 			Document.SyntaxModeChanged += delegate {
 				UpdateSemanticHighlighting ();
 			};
@@ -233,8 +232,7 @@ namespace MonoDevelop.SourceEditor
 		protected override void OnDestroyed ()
 		{
 			UnregisterAdjustments ();
-			Extension = null;
-			ExtensionContext = null;
+			extensionContext = null;
 			view = null;
 			base.OnDestroyed ();
 			if (Options != null) {
