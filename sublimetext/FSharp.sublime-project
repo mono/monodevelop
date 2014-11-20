@@ -5,7 +5,7 @@
 			"name": "Run",
 			"working_dir": "${project_path}/FSharp",
 			"shell_cmd": "./build.sh",
-			"windows": { "shell_cmd": "powershell -noninteractive -command \" & $project_path\\bin\\Build.ps1 -restart\"" },
+			"windows": { "shell_cmd": "powershell -noprofile -command \" & $project_path\\bin\\Build.ps1 -verbose -restart 4>&1\"" },
 
 			"variants": [
 				{
