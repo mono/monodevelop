@@ -4,19 +4,25 @@
 
 import logging
 
-import sublime_plugin
-import sublime
-import threading
 from collections import defaultdict
+import sublime
+import sublime_plugin
+import threading
+import json
 
 from FSharp.fsharp import editor_context
+from FSharp.fsac.server import completions_queue
 from FSharp.lib.project import FSharpFile
 from FSharp.sublime_plugin_lib.sublime import after
+from FSharp.sublime_plugin_lib.context import ContextProviderMixin
+
 
 _logger = logging.getLogger(__name__)
 
 
 class ProjectTracker (sublime_plugin.EventListener):
+    '''Tracks events.
+    '''
     edits = defaultdict(int)
     edits_lock = threading.Lock()
 
@@ -37,7 +43,8 @@ class ProjectTracker (sublime_plugin.EventListener):
         if not FSharpFile(view).is_code_file:
             return
         _logger.debug ('activated file: %s', view.file_name())
-        editor_context.parse_view(view)
+        if view.is_dirty():
+            editor_context.parse_view(view)
 
     def on_idle(self, view):
         editor_context.parse_view(view)
@@ -46,4 +53,13 @@ class ProjectTracker (sublime_plugin.EventListener):
         if not FSharpFile(view).is_code_file:
             return
         # _logger.debug ('modified file: %s', view.file_name())
-        self.add_edit (view)
+        self.add_edit(view)
+
+
+class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
+    '''Implements contexts for .sublime-keymap files.
+    '''
+    def on_query_context(self, view, key, operator, operand, match_all):
+        if key == 'fs_is_code_file':
+            value = FSharpFile(view).is_code
+            return self._check(value, operator, operand, match_all)

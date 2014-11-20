@@ -24,10 +24,8 @@ from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ProjectResponse
 from FSharp.fsac.response import ErrorInfo
-from FSharp.fsac.server import completions_queue
-from FSharp.lib.editor import Editor
 from FSharp.lib.project import FSharpFile
-from FSharp.sublime_plugin_lib.context import ContextProviderMixin
+from FSharp.lib.editor import Editor
 from FSharp.sublime_plugin_lib.panels import OutputPanel
 from FSharp.lib.project import FSharpFile
 from FSharp.sublime_plugin_lib.context import ContextProviderMixin
@@ -39,6 +37,7 @@ _logger = logging.getLogger(__name__)
 
 def plugin_unloaded():
     editor_context.fsac.stop()
+
 
 def erase_status(view, key):
     view.erase_status(key)
@@ -61,7 +60,7 @@ def process_resp(data):
         return
 
     if data['Kind'] == 'errors':
-        # todo: enable error navigation via standart keys
+        # todo: enable error navigation via standard keys
         v = sublime.active_window().active_view()
         v.erase_regions ('fs.errs')
         if not data['Data']:
@@ -77,10 +76,7 @@ def process_resp(data):
         return
 
     if data['Kind'] == 'tooltip' and data['Data']:
-        # print (data)
         v = sublime.active_window().active_view()
-        # v.set_status('fs.tooltip', data ['Data'])
-        # sublime.set_timeout (lambda: erase_status(v, 'fs.tooltip'), 6500)
         word = v.substr(v.word(v.sel()[0].b))
         sublime.active_window().run_command ('fs_show_data', {
             "data": [[data['Data'],
@@ -124,8 +120,9 @@ class fs_dot(sublime_plugin.WindowCommand):
         editor_context.parse_view(view)
         view.sel().clear()
         view.sel().add(sublime.Region(pt + 1))
-        action = lambda: self.window.run_command(
-            'fs_run_fsac', {"cmd": "completion"})
+        action = lambda: self.window.run_command('fs_run_fsac', {
+            "cmd": "completion"
+            })
         sublime.set_timeout(action, 75)
 
 
@@ -241,12 +238,13 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         else:
             editor_context.fsac.send_request(TooltipRequest(fname, row + 1, col))
 
+
 class fs_go_to_location (sublime_plugin.WindowCommand):
     def run(self, loc):
-        v = self.window.active_view ()
+        v = self.window.active_view()
         pt = v.text_point(*loc)
-        v.sel ().clear ()
-        v.sel ().add (sublime.Region (pt))
+        v.sel().clear()
+        v.sel().add(sublime.Region(pt))
         v.show_at_center(pt)
 
 
@@ -274,9 +272,9 @@ class fs_show_options(sublime_plugin.WindowCommand):
     """
     OPTIONS = {
         'F#: Show Declarations': 'declarations',
-        'F#: Go To Declaration': 'finddecl',
         'F#: Show Tooltip': 'tooltip',
     }
+
     def run(self):
         self.window.show_quick_panel(
             list(sorted(fs_show_options.OPTIONS.keys())),
@@ -285,18 +283,9 @@ class fs_show_options(sublime_plugin.WindowCommand):
     def on_done(self, idx):
         if idx == -1:
             return
-        key = list (sorted (fs_show_options.OPTIONS.keys()))[idx]
+        key = list(sorted(fs_show_options.OPTIONS.keys()))[idx]
         cmd = fs_show_options.OPTIONS[key]
-        self.window.run_command ('fs_run_fsac', {'cmd': cmd})
-
-
-class ContextProvider(sublime_plugin.EventListener, ContextProviderMixin):
-    '''Implements contexts for .sublime-keymap files.
-    '''
-    def on_query_context(self, view, key, operator, operand, match_all):
-        if key == 'fs_is_code_file':
-            value = FSharpFile(view).is_code
-            return self._check(value, operator, operand, match_all)
+        self.window.run_command('fs_run_fsac', {'cmd': cmd})
 
 
 class FSharpAutocomplete(sublime_plugin.EventListener):
