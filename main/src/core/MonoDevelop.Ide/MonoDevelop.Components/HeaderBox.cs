@@ -99,7 +99,7 @@ namespace MonoDevelop.Components
 			}
 		}
 		
-		public bool GradientBackround { get; set; }
+		public bool GradientBackground { get; set; }
 
 		public Gdk.Color? BorderColor { get; set; }
 
@@ -158,7 +158,7 @@ namespace MonoDevelop.Components
 		{
 			Gdk.Rectangle rect;
 			
-			if (GradientBackround) {
+			if (GradientBackground) {
 				rect = new Gdk.Rectangle (Allocation.X, Allocation.Y, Allocation.Width, Allocation.Height);
 				var gcol = Style.Background (Gtk.StateType.Normal).ToXwtColor ();
 				

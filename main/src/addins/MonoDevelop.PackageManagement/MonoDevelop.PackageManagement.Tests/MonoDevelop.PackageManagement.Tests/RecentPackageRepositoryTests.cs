@@ -212,5 +212,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (hasRecentPackages);
 		}
+
+		[Test]
+		public void GetPackages_TwoRecentPackagesButOneIsInvalid_OnlyValidPackageIsReturned ()
+		{
+			CreateRepository ();
+			FakePackage package1 = AddOnePackageToRepository ("Test1");
+			FakePackage package2 = AddOnePackageToRepository ("Test2");
+			package2.IsValid = false;
+
+			var expectedPackages = new IPackage[] {
+				package1
+			};
+
+			PackageCollectionAssert.AreEqual (expectedPackages, repository.GetPackages ());
+		}
 	}
 }

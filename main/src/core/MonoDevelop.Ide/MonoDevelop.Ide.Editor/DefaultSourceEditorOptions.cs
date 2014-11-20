@@ -31,10 +31,18 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public enum ControlLeftRightMode {
+	[Obsolete ("Use WordNavigationStyle")]
+	public enum ControlLeftRightMode
+	{
 		MonoDevelop,
 		Emacs,
 		SharpDevelop
+	}
+
+	public enum WordNavigationStyle
+	{
+		Unix,
+		Windows
 	}
 
 	public enum LineEndingConversion {
@@ -240,6 +248,13 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			controlLeftRightMode = new PropertyWrapper<ControlLeftRightMode> ("ControlLeftRightMode", defaultControlMode);
+			
+			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
+			if (Platform.IsWindows || controlLeftRightMode == "SharpDevelop") {
+				defaultWordNavigation = WordNavigationStyle.Windows;
+			}
+			this.WordNavigationStyle = new PropertyWrapper<ControlLeftRightMode> ("WordNavigationStyle", defaultWordNavigation);
+			
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
 			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
@@ -453,6 +468,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		PropertyWrapper<ControlLeftRightMode> controlLeftRightMode;
+		[Obsolete("Use WordNavigationStyle")]
 		public ControlLeftRightMode ControlLeftRightMode {
 			get {
 				return controlLeftRightMode;
@@ -462,19 +478,29 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
+		
+		PropertyWrapper<WordNavigationStyle> wordNavigationStyle;
+		public WordNavigationStyle WordNavigationStyle {
+			get {
+				return wordNavigationStyle;
+			}
+			set {
+				if (wordNavigationStyle.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
 
 		public WordFindStrategy WordFindStrategy {
 			get {
 				if (useViModes) {
 					return WordFindStrategy.Vim;
 				}
-				switch (ControlLeftRightMode) {
-				case ControlLeftRightMode.Emacs:
-					return WordFindStrategy.Emacs;
-				case ControlLeftRightMode.SharpDevelop:
+				switch (WordNavigationStyle) {
+				case WordNavigationStyle.Windows:
 					return WordFindStrategy.SharpDevelop;
+				default:
+					return WordFindStrategy.Emacs;
 				}
-				return WordFindStrategy.MonoDevelop;
 			}
 			set {
 				throw new System.NotImplementedException ();

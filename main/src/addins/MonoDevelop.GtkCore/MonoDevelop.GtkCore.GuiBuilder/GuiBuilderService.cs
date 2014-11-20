@@ -581,7 +581,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			string mt = DesktopService.GetMimeTypeForUri (file);
 			var formatter = MonoDevelop.Ide.CodeFormatting.CodeFormatterService.GetFormatter (mt);
 			if (formatter != null)
-				content = formatter.FormatText (PolicyService.InvariantPolicies, content);
+				content = formatter.FormatText (PolicyService.InvariantPolicies, content) ?? content;
 			
 			// The project policies should be taken for generated files (windows git eol problem)
 			var pol = project.Policies.Get<TextStylePolicy> (DesktopService.GetMimeTypeForUri (file));

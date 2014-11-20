@@ -438,7 +438,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateAction ();
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
 			expectedPackage.RequireLicenseAcceptance = true;
-			var expectedPackages = new IPackage [] { expectedPackage };
 			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
 			action.PackageId = expectedPackage.Id;
 			action.PackageVersion = expectedPackage.Version;
@@ -460,7 +459,6 @@ namespace MonoDevelop.PackageManagement.Tests
 			CreateAction ();
 			FakePackage expectedPackage = fakeProject.FakeSourceRepository.AddFakePackageWithVersion ("Test", "1.0");
 			expectedPackage.RequireLicenseAcceptance = true;
-			var expectedPackages = new IPackage [] { expectedPackage };
 			var operation = new FakePackageOperation (expectedPackage, PackageAction.Install);
 			action.PackageId = expectedPackage.Id;
 			action.PackageVersion = expectedPackage.Version;
@@ -494,6 +492,31 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.Execute ();
 
 			Assert.AreEqual ("Test Package contains PowerShell scripts which will not be run.", messageLogged);
+		}
+
+		[Test]
+		public void Execute_PackageAndPackageRepositoryPassed_PackageInstallNotificationRaisedWithProject ()
+		{
+			CreateAction ();
+			IPackageManagementProject project = null;
+			packageManagementEvents.ParentPackageInstalled += (sender, e) => project = e.Project;
+
+			installPackageHelper.InstallTestPackage ();
+
+			Assert.AreEqual (fakeProject, project);
+		}
+
+		[Test]
+		public void Execute_InstallHasPackageOperations_PackageInstallNotificationRaisedWithPackageOperations ()
+		{
+			CreateAction ();
+			installPackageHelper.AddPackageInstallOperation ();
+			IEnumerable<PackageOperation> actualOperations = null;
+			packageManagementEvents.ParentPackageInstalled += (sender, e) => actualOperations = e.Operations;
+
+			installPackageHelper.InstallTestPackage ();
+
+			CollectionAssert.AreEqual (action.Operations, actualOperations);
 		}
 	}
 }

@@ -266,7 +266,11 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 			if (operationsRunning-- == 0) {
 				isDisposed = true;
 				undoGroup.Dispose ();
-				base.Dispose ();
+				try {
+					base.Dispose ();
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while disposing refactoring script", e);
+				}
 			}
 			foreach (var script in startedScripts)
 				script.Dispose ();

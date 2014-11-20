@@ -69,7 +69,12 @@ namespace MonoDevelop.Ide.CodeFormatting
 					formatter.OnTheFlyFormat (doc.Editor, doc, 0, doc.Editor.Length);
 				}
 			} else {
-				doc.Editor.Text = formatter.FormatText (doc.Project.Policies, doc.Editor.Text); 
+				var text = doc.Editor.Text;
+				string formattedText = formatter.FormatText (doc.Project.Policies, text);
+				if (formattedText == null || formattedText == text)
+					return;
+
+				doc.Editor.Replace (0, text.Length, formattedText);
 			}
 		}
 	}
@@ -107,7 +112,7 @@ namespace MonoDevelop.Ide.CodeFormatting
 					var pol = doc.Project != null ? doc.Project.Policies : null;
 					try {
 						string text = formatter.FormatText (pol, editor.Text, selection.Offset, selection.EndOffset);
-						if (text != null) {
+						if (text != null && editorText.Substring (selection.Offset, selection.Length) != text) {
 							editor.ReplaceText (selection.Offset, selection.Length, text);
 						}
 					} catch (Exception e) {

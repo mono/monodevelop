@@ -37,5 +37,6 @@ namespace ICSharpCode.PackageManagement
 		bool HasDependencies { get; }
 		DateTime? LastUpdated { get; }
 		Uri GalleryUrl { get; }
+		bool IsValid { get; }
 	}
 }

@@ -130,7 +130,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						file, false, ex.ErrorSubcategory, ex.ErrorCode, ex.ProjectFile,
 						ex.LineNumber, ex.ColumnNumber, ex.EndLineNumber, ex.EndColumnNumber,
 						ex.BaseMessage, ex.HelpKeyword);
-					logWriter.WriteLine (r.ToString ());
+					if (logWriter != null)
+						logWriter.WriteLine (r.ToString ());
 					result = new MSBuildResult (new [] { r });
 				} finally {
 					currentLogWriter = null;
@@ -178,6 +179,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				if (content == null)
 					p = engine.LoadProject (file);
 				else {
+					Environment.CurrentDirectory = Path.GetDirectoryName (file);
 					p = engine.LoadProject (new XmlTextReader (new StringReader (content)));
 					p.FullPath = file;
 				}
@@ -187,7 +189,6 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				p.SetProperty ("Platform", platform);
 			else
 				p.SetProperty ("Platform", "");
-			
 			return p;
 		}
 

@@ -59,11 +59,25 @@ using MonoDevelop.Refactoring;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.CSharp.NRefactoryWrapper;
+using System.Xml;
 
 namespace MonoDevelop.CSharp.Completion
 {
 	public class CSharpCompletionTextEditorExtension : CompletionTextEditorExtension, IParameterCompletionDataFactory, ITextEditorMemberPositionProvider, IDebuggerExpressionResolver
 	{
+/*		internal protected virtual Mono.TextEditor.TextEditorData TextEditorData {
+			get {
+				var doc = Document;
+				if (doc == null)
+					return null;
+				return doc.Editor;
+			}
+		}
+
+		protected virtual IProjectContent ProjectContent {
+			get { return Document.GetProjectContext (); }
+		}
+*/
 		SyntaxTree unit;
 		static readonly SyntaxTree emptyUnit = new SyntaxTree ();
 		SyntaxTree Unit {
@@ -134,13 +148,16 @@ namespace MonoDevelop.CSharp.Completion
 		public CSharpCompletionTextEditorExtension ()
 		{
 		}
-		
+
+		bool addEventHandlersInInitialization = true;
+
 		/// <summary>
 		/// Used in testing environment.
 		/// </summary>
 		[System.ComponentModel.Browsable(false)]
-		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc) : this ()
+		public CSharpCompletionTextEditorExtension (MonoDevelop.Ide.Gui.Document doc, bool addEventHandlersInInitialization = true) : this ()
 		{
+			this.addEventHandlersInInitialization = addEventHandlersInInitialization;
 			Initialize (doc.Editor, doc);
 		}
 		
@@ -155,7 +172,8 @@ namespace MonoDevelop.CSharp.Completion
 				Editor.CaretPositionChanged += HandlePositionChanged;
 			}
 			
-			DocumentContext.DocumentParsed += HandleDocumentParsed; 
+			if (addEventHandlersInInitialization)
+				DocumentContext.DocumentParsed += HandleDocumentParsed; 
 		}
 
 		CancellationTokenSource src = new CancellationTokenSource ();
@@ -1535,6 +1553,7 @@ namespace MonoDevelop.CSharp.Completion
 					return null;
 				return seg;
 			}
+
 			
 			
 			internal static TypeSystemSegmentTree Create (MonoDevelop.Ide.Editor.TextEditor editor, DocumentContext context)
@@ -1614,7 +1633,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			IList<string> ICompletionContextProvider.ConditionalSymbols {
 				get {
-					return document.ParsedDocument.GetAst<SyntaxTree> ().ConditionalSymbols;
+					return parsedDocument.GetAst<SyntaxTree> ().ConditionalSymbols;
 				}
 			}
 
@@ -1673,7 +1692,7 @@ namespace MonoDevelop.CSharp.Completion
 
 			CSharpAstResolver ICompletionContextProvider.GetResolver (CSharpResolver resolver, AstNode rootNode)
 			{
-				return new CSharpAstResolver (resolver, rootNode, document.ParsedDocument.ParsedFile as CSharpUnresolvedFile);
+				return new CSharpAstResolver (resolver, rootNode, parsedDocument.ParsedFile as CSharpUnresolvedFile);
 			}
 		}
 	}

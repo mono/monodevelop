@@ -587,6 +587,11 @@ namespace MonoDevelop.SourceEditor
 				messageBubbleCache = null;
 			}
 		}
+
+		protected virtual string ProcessSaveText (string text)
+		{
+			return text;
+		}
 		
 		public override void Save (FileSaveInformation fileSaveInformation)
 		{
@@ -664,7 +669,7 @@ namespace MonoDevelop.SourceEditor
 				try {
 					var writeEncoding = encoding;
 					var writeBom = hadBom;
-					var writeText = Document.Text;
+					var writeText = ProcessSaveText (Document.Text);
 					if (writeEncoding == null) {
 						if (this.encoding != null) {
 							writeEncoding = this.encoding;
@@ -723,6 +728,17 @@ namespace MonoDevelop.SourceEditor
 
 		public void InformLoadComplete ()
 		{
+		/*
+			Document.MimeType = mimeType;
+			string text = null;
+			if (content != null) {
+				text = Mono.TextEditor.Utils.TextFileUtility.GetText (content, out encoding, out hadBom);
+				text = ProcessLoadText (text);
+				Document.Text = text;
+			}
+			this.CreateDocumentParsedHandler ();
+			RunFirstTimeFoldUpdate (text);
+			*/
 			Document.InformLoadComplete ();
 		}
 		
@@ -736,12 +752,25 @@ namespace MonoDevelop.SourceEditor
 			Load (fileOpenInformation.FileName, fileOpenInformation.Encoding);
 		}
 
-		Document ownerDocument;
+		MonoDevelop.Ide.Gui.Document ownerDocument;
+		protected MonoDevelop.Ide.Gui.Document OwnerDocument {
+			get { return ownerDocument; }
+		}
 
-		void HandleDocumentParsed (object sender, EventArgs e)
+		protected virtual void HandleDocumentParsed (object sender, EventArgs e)
 		{
 			widget.UpdateParsedDocument (ownerDocument.ParsedDocument);
 		}		
+
+		void IEncodedTextContent.Load (string fileName, Encoding loadEncoding)
+		{
+			Load (fileName, loadEncoding);
+		}
+
+		protected virtual string ProcessLoadText (string text)
+		{
+			return text;
+		}
 
 		public void Load (string fileName, Encoding loadEncoding, bool reload = false)
 		{
@@ -772,6 +801,7 @@ namespace MonoDevelop.SourceEditor
 					encoding = loadEncoding;
 					text = TextFileUtility.ReadAllText (fileName, loadEncoding, out hadBom);
 				}
+				text = ProcessLoadText (text);
 				if (reload) {
 					Document.Replace (0, Document.TextLength, text);
 					Document.DiffTracker.Reset ();
@@ -1385,17 +1415,31 @@ namespace MonoDevelop.SourceEditor
 
 		public void SetCaretTo (int line, int column)
 		{
-			Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, true));
+			this.Document.RunWhenLoaded (() => {
+				PrepareToSetCaret (line, column);
+				widget.TextEditor.SetCaretTo (line, column, true);
+			});
 		}
 
 		public void SetCaretTo (int line, int column, bool highlight)
 		{
-			Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight));
+			this.Document.RunWhenLoaded (() => {
+				PrepareToSetCaret (line, column);
+				widget.TextEditor.SetCaretTo (line, column, highlight);
+			});
 		}
 		
 		public void SetCaretTo (int line, int column, bool highlight, bool centerCaret)
 		{
-			Document.RunWhenLoaded (() => widget.TextEditor.SetCaretTo (line, column, highlight, centerCaret));
+			this.Document.RunWhenLoaded (() => {
+				PrepareToSetCaret (line, column);
+				widget.TextEditor.SetCaretTo (line, column, highlight, centerCaret);
+			});
+		}
+
+		protected virtual void PrepareToSetCaret (int line, int column)
+		{
+
 		}
 
 		public void Redo ()

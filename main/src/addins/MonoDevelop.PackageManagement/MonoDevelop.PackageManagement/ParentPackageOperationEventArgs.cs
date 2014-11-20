@@ -27,6 +27,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using NuGet;
 
 namespace ICSharpCode.PackageManagement
@@ -34,12 +35,22 @@ namespace ICSharpCode.PackageManagement
 	public class ParentPackageOperationEventArgs : EventArgs
 	{
 		public ParentPackageOperationEventArgs(IPackage package, IPackageManagementProject project)
+			: this (package, project, new PackageOperation [0])
 		{
-			this.Package = package;
-			this.Project = project;
 		}
-		
+
+		public ParentPackageOperationEventArgs (
+			IPackage package,
+			IPackageManagementProject project,
+			IEnumerable<PackageOperation> operations)
+		{
+			Package = package;
+			Project = project;
+			Operations = operations;
+		}
+
 		public IPackage Package { get; private set; }
 		public IPackageManagementProject Project { get; private set; }
+		public IEnumerable<PackageOperation> Operations { get; private set; }
 	}
 }

@@ -133,6 +133,14 @@ namespace MonoDevelop.Ide.Gui
 			public static readonly int PagerTriangleSize = 6;
 			public static readonly int PagerHeight = 16;
 
+			public static readonly Cairo.Color ErrorBackgroundColor = CairoExtensions.ParseColor ("E27267");
+			public static readonly Cairo.Color WarningBackgroundColor = CairoExtensions.ParseColor ("F6C61E");
+			public static readonly Cairo.Color InformationBackgroundColor = CairoExtensions.ParseColor ("709DC9");
+
+			public static readonly Cairo.Color ErrorTextColor = CairoExtensions.ParseColor ("ffffff");
+			public static readonly Cairo.Color WarningTextColor = CairoExtensions.ParseColor ("6D5607");
+			public static readonly Cairo.Color InformationTextColor = CairoExtensions.ParseColor ("ffffff");
+
 			public static class ParamaterWindows
 			{
 				public static readonly Cairo.Color GradientStartColor = CairoExtensions.ParseColor ("fffee6");

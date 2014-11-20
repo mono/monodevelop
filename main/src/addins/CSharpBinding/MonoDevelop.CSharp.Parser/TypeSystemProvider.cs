@@ -85,9 +85,12 @@ namespace MonoDevelop.CSharp.Parser
 			result.ParsedFile = pf;
 			result.Add (GetSemanticTags (unit));
 
-
-			result.CreateRefactoringContext = (editor, caretLocation, doc, token) => {
-				return MDRefactoringContext.Create (editor, doc, caretLocation, token).Result;
+			result.CreateRefactoringContext =  (editor, caretLocation, doc, token) =>  {
+				var task = MDRefactoringContext.Create (editor, doc, caretLocation, token);
+				task.Wait (5000, token);
+				if (!task.IsCompleted)
+					return null;
+				return task.Result;
 			};
 			result.CreateRefactoringContextWithEditor = (data, loc, resolver, token) => new MDRefactoringContext ((DotNetProject)project, data, result, (CSharpAstResolver)resolver, new TextLocation (loc.Line, loc.Column), token);
 
@@ -371,7 +374,7 @@ namespace MonoDevelop.CSharp.Parser
 			case Tokenizer.PreprocessorDirective.Endregion:
 				if (regions.Count > 0) {
 					var start = regions.Pop ();
-					DomRegion dr = new DomRegion (start.Line, loc.Column, directive.EndLine, directive.EndCol);
+					DomRegion dr = new DomRegion (start.Line, start.Col, directive.EndLine, directive.EndCol);
 					result.Add (new FoldingRegion (start.Arg, dr, FoldType.UserRegion, true));
 				}
 				break;

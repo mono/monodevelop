@@ -37,7 +37,38 @@ namespace MonoDevelop.Ide.Extensions
 	/// </remarks>
 	public class IdeCustomizer
 	{
+		/// <summary>
+		/// Called just after the initializer is created
+		/// </summary>
 		internal protected virtual void Initialize ()
+		{
+		}
+
+		/// <summary>
+		/// Called when the add-in engine has been initialized
+		/// </summary>
+		internal protected virtual void OnCoreInitialized ()
+		{
+		}
+
+		/// <summary>
+		/// Called when the Ide has been initialized
+		/// </summary>
+		internal protected virtual void OnIdeInitialized ()
+		{
+		}
+
+		/// <summary>
+		/// Called after the main loop stops running
+		/// </summary>
+		internal protected virtual void OnIdeShutdown ()
+		{
+		}
+
+		/// <summary>
+		/// Called after the IDE core has been shut down
+		/// </summary>
+		internal protected virtual void OnCoreShutdown ()
 		{
 		}
 	}

@@ -55,16 +55,29 @@ namespace MonoDevelop.Ide.Desktop
 
 		public abstract string Name { get; }
 
-		/// <summary>
-		/// Used in the text editor. Valid values are found in MonoDevelop.SourceEditor.ControlLeftRightMode in the
-		/// source editor project.
-		/// </summary>
+		[Obsolete]
 		public virtual string DefaultControlLeftRightBehavior {
 			get {
 				return "MonoDevelop";
 			}
 		}
-		
+
+		public virtual void Initialize ()
+		{
+		}
+
+		public virtual void SetGlobalProgressBar (double progress)
+		{
+		}
+
+		public virtual void ShowGlobalProgressBarError ()
+		{
+		}
+
+		public virtual void ShowGlobalProgressBarIndeterminate ()
+		{
+		}
+
 		public virtual void OpenFile (string filename)
 		{
 			Process.Start (filename);
@@ -457,6 +470,20 @@ namespace MonoDevelop.Ide.Desktop
 				window.Unfullscreen ();
 				SetMainWindowDecorations (window);
 			}
+		}
+
+		public virtual void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+		}
+
+		public virtual void RemoveChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+		}
+
+		public virtual void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		{
+			window.Move (x, y);
+			window.Resize (width, height);
 		}
 	}
 }

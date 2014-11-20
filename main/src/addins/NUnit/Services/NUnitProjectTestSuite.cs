@@ -77,7 +77,7 @@ namespace MonoDevelop.NUnit
 			if (string.IsNullOrEmpty (fixtureTypeName) || string.IsNullOrEmpty (fixtureTypeName))
 				return null;
 			var ctx = TypeSystemService.GetCompilation (project);
-			var cls = ctx.MainAssembly.GetTypeDefinition (fixtureTypeNamespace, fixtureTypeName, 0);
+			var cls = ctx.MainAssembly.GetTypeDefinition (fixtureTypeNamespace ?? "", fixtureTypeName, 0);
 			if (cls == null)
 				return null;
 			

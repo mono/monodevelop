@@ -135,6 +135,16 @@ namespace MonoDevelop.AspNet.WebForms
 
  			info.Namespaces.AddRange (defaultNamespaces.Select (ns => new NamespaceRegistration (true, ns)));
 			info.Assemblies.AddRange (defaultAssemblies.Select (asm => new AssemblyRegistration (true, asm)));
+
+			// from Mono's 4.5 machine web.config
+			info.Controls.AddRange (new [] {
+				MachineControlReg ("asp", "System.Web.UI.WebControls.WebParts", "System.Web"),
+				MachineControlReg ("asp", "System.Web.UI", "System.Web.Extensions"),
+				MachineControlReg ("asp", "System.Web.UI.WebControls", "System.Web.Extensions"),
+				MachineControlReg ("asp", "System.Web.UI.WebControls.Expressions", "System.Web.Extensions"),
+				MachineControlReg ("asp", "System.Web.DynamicData", "System.Web.DynamicData"),
+				MachineControlReg ("asp", "System.Web.UI.WebControls", "System.Web.Entity"),
+			});
  			
  			return info;
  		}
@@ -170,6 +180,11 @@ namespace MonoDevelop.AspNet.WebForms
 			"System.Web.UI.WebControls",
 			"System.Web.UI.WebControls.WebParts",
 		};
+
+		static ControlRegistration MachineControlReg(string prefix, string ns, string asm)
+		{
+			return new ControlRegistration (null, true, prefix, ns, asm, null, null);
+		}
 
 		public static bool IsDefaultReference (string reference)
 		{

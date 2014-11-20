@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using MonoDevelop.Core;
 using NuGet;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
@@ -82,7 +83,14 @@ namespace ICSharpCode.PackageManagement
 				ParentPackageInstalled(this, new ParentPackageOperationEventArgs(package, project));
 			}
 		}
-		
+
+		public void OnParentPackageInstalled (IPackage package, IPackageManagementProject project, IEnumerable<PackageOperation> operations)
+		{
+			if (ParentPackageInstalled != null) {
+				ParentPackageInstalled (this, new ParentPackageOperationEventArgs(package, project, operations));
+			}
+		}
+
 		public event EventHandler<ParentPackageOperationEventArgs> ParentPackageUninstalled;
 		
 		public void OnParentPackageUninstalled(IPackage package, IPackageManagementProject project)
@@ -159,6 +167,27 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (UpdatedPackagesAvailable != null) {
 				UpdatedPackagesAvailable (this, new EventArgs ());
+			}
+		}
+
+		public event EventHandler<FileRemovingEventArgs> FileRemoving;
+
+		public bool OnFileRemoving (string path)
+		{
+			if (FileRemoving != null) {
+				var eventArgs = new FileRemovingEventArgs (path);
+				FileRemoving (this, eventArgs);
+				return !eventArgs.IsCancelled;
+			}
+			return true;
+		}
+
+		public event EventHandler<PackageRestoredEventArgs> PackageRestored;
+
+		public void OnPackageRestored (IPackage package)
+		{
+			if (PackageRestored != null) {
+				PackageRestored (this, new PackageRestoredEventArgs (package));
 			}
 		}
 	}

@@ -699,6 +699,20 @@ namespace MonoDevelop.PackageManagement.Tests
 			var expectedPackages = new FakePackage [0];
 			Assert.AreEqual (expectedPackages, packages);
 		}
+
+		[Test]
+		public void GetRepository_OpenSolution_ReturnsRepositoryForSolution ()
+		{
+			CreateSolution ();
+			var fakeSolution = new FakeSolution (@"d:\projects\MyProject\MySolution.sln");
+			fakeProjectService.OpenSolution = fakeSolution;
+
+			ISolutionPackageRepository repository = solution.GetRepository ();
+
+			Assert.IsNotNull (repository);
+			Assert.AreEqual (fakeSolutionPackageRepositoryFactory.SolutionPassedToCreateSolutionPackageRepository, fakeSolution);
+			Assert.AreEqual (fakeSolutionPackageRepositoryFactory.FakeSolutionPackageRepository, repository);
+		}
 	}
 }
 

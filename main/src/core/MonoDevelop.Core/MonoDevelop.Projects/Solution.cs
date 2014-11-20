@@ -180,7 +180,7 @@ namespace MonoDevelop.Projects
 		}
 
 		// Used by serialization only
-		[ProjectPathItemProperty ("StartupItem", DefaultValue=null)]
+		[ProjectPathItemProperty ("StartupItem", DefaultValue=null, ReadOnly=true)]
 		internal string StartupItemFileName {
 			get {
 				if (SingleStartup && StartupItem != null)
@@ -190,8 +190,8 @@ namespace MonoDevelop.Projects
 			}
 			set { startItemFileName = value; }
 		}
-		
-		[ItemProperty ("StartupItems")]
+
+		[ItemProperty ("StartupItems", ReadOnly=true)]
 		[ProjectPathItemProperty ("Item", Scope="*")]
 		internal List<string> MultiStartupItemFileNames {
 			get {
@@ -241,8 +241,26 @@ namespace MonoDevelop.Projects
 			LoadItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 		}
 
+		public override void LoadUserProperties ()
+		{
+			base.LoadUserProperties ();
+			var sitem = UserProperties.GetValue<string> ("StartupItem");
+			if (!string.IsNullOrEmpty (sitem))
+				startItemFileName = GetAbsoluteChildPath (sitem);
+
+			var sitems = UserProperties.GetValue<string[]> ("StartupItems");
+			if (sitems != null && sitems.Length > 0)
+				multiStartupItems = sitems.Select (p => (string) GetAbsoluteChildPath (p)).ToList ();
+		}
+
 		public override void SaveUserProperties ()
 		{
+			UserProperties.SetValue ("StartupItem", (string) GetRelativeChildPath (StartupItemFileName));
+			if (MultiStartupItemFileNames != null) {
+				UserProperties.SetValue ("StartupItems", MultiStartupItemFileNames.Select (p => (string)GetRelativeChildPath (p)).ToArray ());
+			} else
+				UserProperties.RemoveValue ("StartupItems");
+
 			CollectItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
 			base.SaveUserProperties ();
 			CleanItemProperties (UserProperties, RootFolder, "MonoDevelop.Ide.ItemProperties");
@@ -667,13 +685,13 @@ namespace MonoDevelop.Projects
 			SolutionEntityItem eitem = item as SolutionEntityItem;
 			if (eitem != null) {
 				eitem.NeedsReload = false;
-				if (eitem.SupportsBuild () || replacedItem != null) {
+				if (eitem.SupportsConfigurations () || replacedItem != null) {
 					if (replacedItem == null) {
 						// Register the new entry in every solution configuration
 						foreach (SolutionConfiguration conf in Configurations)
 							conf.AddItem (eitem);
 						// If there is no startup project or it is an invalid one, use the new project as startup if possible
-						if ((StartupItem == null || !StartupItem.SupportsExecute ()) && eitem.SupportsExecute ())
+						if (!Loading && (StartupItem == null || !StartupItem.SupportsExecute ()) && eitem.SupportsExecute ())
 							StartupItem = eitem;
 					} else {
 						// Reuse the configuration information of the replaced item

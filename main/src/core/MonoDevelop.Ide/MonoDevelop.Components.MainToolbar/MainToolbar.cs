@@ -145,6 +145,12 @@ namespace MonoDevelop.Components.MainToolbar
 				renderer.Visible = ci.Visible;
 				renderer.Sensitive = ci.Enabled;
 				renderer.Xpad = 3;
+
+				// it seems that once we add the ExecutionTargetGroups to the drop down then the width
+				// calculation for items needs some help in calculating the correct width
+				// doing this helps.
+				if (Platform.IsMac)
+					renderer.WidthChars = renderer.Text != null ? renderer.Text.Length : 0;
 				return;
 			}
 			renderer.Sensitive = !(target is ExecutionTargetGroup) && (target != null && target.Enabled);
@@ -185,6 +191,14 @@ namespace MonoDevelop.Components.MainToolbar
 				sb.Append (s [i]);
 			}
 			return sb.ToString ();
+		}
+
+		void DestroyPopup ()
+		{
+			if (popup != null) {
+				popup.Destroy ();
+				popup = null;
+			}
 		}
 
 		public MainToolbar ()
@@ -300,7 +314,7 @@ namespace MonoDevelop.Components.MainToolbar
 			matchEntry.Activated += (sender, e) => {
 				var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);
 				if (pattern.Pattern == null && pattern.LineNumber > 0) {
-					popup.Destroy ();
+					DestroyPopup ();
 					var doc = IdeApp.Workbench.ActiveDocument;
 					if (doc != null && doc.Editor != null) {
 						doc.Select ();
@@ -317,8 +331,7 @@ namespace MonoDevelop.Components.MainToolbar
 				if (args.Event.Key == Gdk.Key.Escape) {
 					var doc = IdeApp.Workbench.ActiveDocument;
 					if (doc != null) {
-						if (popup != null)
-							popup.Destroy ();
+						DestroyPopup ();
 						doc.Select ();
 					}
 					return;
@@ -446,12 +459,12 @@ namespace MonoDevelop.Components.MainToolbar
 
 		void UpdateSearchEntryLabel ()
 		{
-//			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
-//			if (!string.IsNullOrEmpty (info.AccelKey)) {
-//				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
-//			} else {
-//				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
-//			}
+			var info = IdeApp.CommandService.GetCommand (Commands.NavigateTo);
+			if (!string.IsNullOrEmpty (info.AccelKey)) {
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Press '{0}' to search", KeyBindingManager.BindingToDisplayLabel (info.AccelKey, false));
+			} else {
+				matchEntry.EmptyMessage = GettextCatalog.GetString ("Search solution");
+			}
 		}
 
 		void SetDefaultSizes (int comboHeight, int height)
@@ -514,8 +527,7 @@ namespace MonoDevelop.Components.MainToolbar
 		void HandleSearchEntryChanged (object sender, EventArgs e)
 		{
 			if (string.IsNullOrEmpty (matchEntry.Entry.Text)){
-				if (popup != null)
-					popup.Destroy ();
+				DestroyPopup ();
 				return;
 			}
 			var pattern = SearchPopupSearchPattern.ParsePattern (matchEntry.Entry.Text);

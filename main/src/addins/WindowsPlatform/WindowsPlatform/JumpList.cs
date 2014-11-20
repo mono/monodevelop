@@ -26,8 +26,7 @@ namespace MonoDevelop.Platform
 
 		protected override void Run ()
 		{
-			bool isWindows7 = Taskbar.TaskbarManager.IsPlatformSupported;
-			if (!isWindows7) {
+			if (!Taskbar.TaskbarManager.IsPlatformSupported) {
 				return;
 			}
 			
@@ -106,11 +105,8 @@ namespace MonoDevelop.Platform
 			ProcessModule monoDevelopAssembly = Process.GetCurrentProcess ().MainModule;
 			string exePath = monoDevelopAssembly.FileName;
 			string executeString = exePath + " %1";
-			string progId = MonoDevelop.Core.BrandingService.ProfileDirectoryName + "." + IdeApp.Version;
-			string appId = progId;
-			
-			Taskbar.TaskbarManager.Instance.ApplicationId = progId;
-			
+			string progId = Taskbar.TaskbarManager.Instance.ApplicationId;
+
 			RegistryKey progIdKey = Registry.ClassesRoot.OpenSubKey (progId + @"\shell\Open\Command", false);
 			if (progIdKey == null) {
 				return false;
@@ -128,7 +124,7 @@ namespace MonoDevelop.Platform
 					continue;
 				}
 				
-				RegistryKey openWithKey = Registry.ClassesRoot.OpenSubKey (Path.Combine (subkey, "OpenWithProgIds"));
+				RegistryKey openWithKey = Registry.ClassesRoot.OpenSubKey (Path.Combine (subkey, "OpenWithProgids"));
 				if (openWithKey == null) {
 					continue;
 				}

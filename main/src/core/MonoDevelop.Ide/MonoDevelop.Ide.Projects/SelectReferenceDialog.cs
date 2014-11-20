@@ -60,9 +60,10 @@ namespace MonoDevelop.Ide.Projects
 		CombinedBox combinedBox;
 		SearchEntry filterEntry;
 
-		List<FilePath> recentFiles;
+		Dictionary<FilePath,List<FilePath>> recentFiles;
 		bool recentFilesModified = false;
-		
+
+		static FilePath RecentAssembliesFile = UserProfile.Current.CacheDir.Combine ("RecentAssemblies2.txt");
 		const int RecentFileListSize = 75;
 		
 		const int NameColumn = 0;
@@ -124,7 +125,7 @@ namespace MonoDevelop.Ide.Projects
 		TreeIter AddAssemplyReference (ProjectReference refInfo)
 		{
 			string txt = GLib.Markup.EscapeText (System.IO.Path.GetFileName (refInfo.Reference)) + "\n";
-			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.Reference)) + "</small></span>";
+			txt += "<span color='darkgrey'><small>" + GLib.Markup.EscapeText (System.IO.Path.GetFullPath (refInfo.HintPath)) + "</small></span>";
 			return refTreeStore.AppendValues (txt, GetTypeText (refInfo), System.IO.Path.GetFullPath (refInfo.Reference), refInfo, ImageService.GetIcon ("md-empty-file-icon", IconSize.Dnd));
 		}
 
@@ -228,7 +229,7 @@ namespace MonoDevelop.Ide.Projects
 			selectedHeader.Remove (w);
 			HeaderBox header = new HeaderBox (1, 0, 1, 1);
 			header.SetPadding (6, 6, 6, 6);
-			header.GradientBackround = true;
+			header.GradientBackground = true;
 			header.Add (w);
 			selectedHeader.Add (header);
 			
@@ -368,21 +369,36 @@ namespace MonoDevelop.Ide.Projects
 			Respond (ResponseType.Ok);
 		}
 		
-		public void RegisterFileReference (FilePath file)
+		public void RegisterFileReference (FilePath file, FilePath solutionFile = default (FilePath))
 		{
 			LoadRecentFiles ();
-			if (recentFiles.Contains (file))
+
+			if (solutionFile.IsNullOrEmpty)
+				solutionFile = FilePath.Empty;
+			else
+				solutionFile = solutionFile.CanonicalPath;
+
+			List<FilePath> files;
+			if (!recentFiles.TryGetValue (solutionFile, out files))
+				files = recentFiles [solutionFile] = new List<FilePath> ();
+			if (files.Contains (file))
 				return;
 			recentFilesModified = true;
-			recentFiles.Add (file);
-			if (recentFiles.Count > RecentFileListSize)
-				recentFiles.RemoveAt (0);
+			files.Add (file);
+			if (files.Count > RecentFileListSize)
+				files.RemoveAt (0);
 		}
 		
-		public List<FilePath> GetRecentFileReferences ()
+		public IEnumerable<FilePath> GetRecentFileReferences (FilePath solutionFile = default(FilePath))
 		{
 			LoadRecentFiles ();
-			return recentFiles;
+			IEnumerable<FilePath> result = null;
+			List<FilePath> list;
+			if (recentFiles.TryGetValue (FilePath.Empty, out list))
+				result = list;
+			if (recentFiles.TryGetValue (solutionFile, out list))
+				result = result != null ? result.Concat (list) : list;
+			return result ?? new FilePath[0];
 		}
 		
 		void LoadRecentFiles ()
@@ -391,30 +407,60 @@ namespace MonoDevelop.Ide.Projects
 				return;
 			
 			recentFilesModified = false;
-			FilePath file = UserProfile.Current.CacheDir.Combine ("RecentAssemblies.txt");
-			if (File.Exists (file)) {
+			recentFiles = new Dictionary<FilePath, List<FilePath>> ();
+
+			if (File.Exists (RecentAssembliesFile)) {
 				try {
-					recentFiles = new List<FilePath> (File.ReadAllLines (file).Where (f => File.Exists (f)).Select (f => (FilePath)f));
-					return;
+					FilePath solutionPath = FilePath.Empty;
+					List<FilePath> list = new List<FilePath> ();
+					recentFiles [FilePath.Empty] = list;
+					foreach (var line in File.ReadAllLines (RecentAssembliesFile)) {
+						if (line.StartsWith ("# ", StringComparison.Ordinal)) {
+							solutionPath = (FilePath)line.Substring (2);
+							list = recentFiles [solutionPath] = new List<FilePath> ();
+							continue;
+						}
+						list.Add ((FilePath) line);
+					}
+
 				}
 				catch (Exception ex) {
 					LoggingService.LogError ("Error while loading recent assembly files list", ex);
 				}
 			}
-			recentFiles = new List<FilePath> ();
 		}
 		
 		void SaveRecentFiles ()
 		{
 			if (!recentFilesModified)
 				return;
-			FilePath file = UserProfile.Current.CacheDir.Combine ("RecentAssemblies.txt");
 			try {
-				File.WriteAllLines (file, recentFiles.ToArray ().ToStringArray ());
+				using (var sw = new StreamWriter (RecentAssembliesFile)) {
+					List<FilePath> files;
+					if (recentFiles.TryGetValue (FilePath.Empty, out files))
+						SaveRecentFiles (sw, FilePath.Empty, files);
+					foreach (var p in recentFiles.Where (e => e.Key != FilePath.Empty))
+						SaveRecentFiles (sw, p.Key, p.Value);
+				}
 			} catch (Exception ex) {
 				LoggingService.LogError ("Error while saving recent assembly files list", ex);
 			}
 			recentFilesModified = false;
+		}
+
+		void SaveRecentFiles (StreamWriter sw, FilePath solPath, List<FilePath> files)
+		{
+			var existing = files.Where (f => File.Exists (f)).ToArray ();
+			if (existing.Length == 0)
+				return;
+
+			if (!solPath.IsNullOrEmpty) {
+				if (!File.Exists (solPath))
+					return;
+				sw.WriteLine ("# " + solPath);
+			}
+			foreach (var f in existing)
+				sw.WriteLine (f);
 		}
 		
 		protected override void OnHidden ()

@@ -50,6 +50,7 @@ namespace MonoDevelop.Ide.Templates
 		string name;
 		string defaultName;
 		string defaultExtension;
+		bool defaultExtensionDefined;
 		string generatedFile;
 		bool suppressAutoOpen = false;
 		bool addStandardHeader = false;
@@ -63,6 +64,7 @@ namespace MonoDevelop.Ide.Templates
 			name = filenode.GetAttribute ("name");
 			defaultName = filenode.GetAttribute ("DefaultName");
 			defaultExtension = filenode.GetAttribute ("DefaultExtension");
+			defaultExtensionDefined = filenode.Attributes ["DefaultExtension"] != null;
 			dependsOn = filenode.GetAttribute ("DependsOn");
 			customTool = filenode.GetAttribute ("CustomTool");
 			
@@ -241,7 +243,7 @@ namespace MonoDevelop.Ide.Templates
 			
 			//give it an extension if it didn't get one (compatibility with pre-substition behaviour)
 			if (Path.GetExtension (fileName).Length == 0) {
-				if (!string.IsNullOrEmpty  (defaultExtension)) {
+				if (defaultExtensionDefined) {
 					fileName = fileName + defaultExtension;
 				}
 				else if (!string.IsNullOrEmpty  (language)) {

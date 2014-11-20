@@ -149,9 +149,11 @@
 		<Section id="General" insertbefore="Formatting" _label="General" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.GeneralOptionsPanel" icon="md-prefs-text-editor-general" />
 		<Section id="Markers" _label="Markers and Rulers" class="MonoDevelop.SourceEditor.OptionPanels.MarkerPanel" icon="md-prefs-markers-rulers" />
 		<Section id="Behavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.BehaviorPanel" icon="md-prefs-text-editor-behavior" />
-		<Section id="CompletionBehavior" _label="Completion Behavior" class="MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel" icon="md-prefs-completion-behavior" />
-		<!-- <Section id="CompletionCharacters" _label="Completion Characters" class="MonoDevelop.SourceEFditor.OptionPanels.CompletionCharactersPanel" /> -->
-		<Section id="CompletionAppearance" _label="Completion Appearance" class="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" icon="md-prefs-completion-appearance" />
+		<Section id="CodeCompletion" _label="Code Completion" icon="md-prefs-completion-behavior">
+			<Panel id="CompletionBehavior" _label="Behavior" class="MonoDevelop.SourceEditor.OptionPanels.CompletionOptionsPanel" icon="md-prefs-completion-behavior" />
+			<!-- <Section id="CompletionCharacters" _label="Completion Characters" class="MonoDevelop.SourceEditor.OptionPanels.CompletionCharactersPanel" /> -->
+			<Panel id="CompletionAppearance" _label="Appearance" class="MonoDevelop.SourceEditor.OptionPanels.CompletionAppearancePanel" icon="md-prefs-completion-appearance" />
+		</Section>
 		<Section id="SyntaxHighlighting" _label="Syntax Highlighting" fill="true" class="MonoDevelop.SourceEditor.OptionPanels.HighlightingPanel" icon="md-prefs-syntax-highlighting" />
 	</Extension>
 

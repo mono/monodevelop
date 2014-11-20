@@ -44,6 +44,7 @@ namespace MonoDevelop.Ide.Commands
 			yield return new StringTagDescription ("FilePath", "File Path");
 			yield return new StringTagDescription ("FileDir", "File Directory");
 			yield return new StringTagDescription ("FileName", "File Name");
+			yield return new StringTagDescription ("FileNamePrefix", "File Name Without Extension");
 			yield return new StringTagDescription ("FileExt", "File Extension");
 			yield return new StringTagDescription ("CurLine", "Cursor Line", false);
 			yield return new StringTagDescription ("CurColumn", "Cursor Column", false);
@@ -72,6 +73,11 @@ namespace MonoDevelop.Ide.Commands
 				case "FILENAME":
 					if (wb.ActiveDocument != null)
 						return !wb.ActiveDocument.IsFile ? String.Empty : wb.ActiveDocument.FileName.FileName;
+					return null;
+
+				case "FILENAMEPREFIX":
+					if (wb.ActiveDocument != null)
+						return !wb.ActiveDocument.IsFile ? String.Empty : wb.ActiveDocument.FileName.FileNameWithoutExtension;
 					return null;
 
 				case "FILEEXT":

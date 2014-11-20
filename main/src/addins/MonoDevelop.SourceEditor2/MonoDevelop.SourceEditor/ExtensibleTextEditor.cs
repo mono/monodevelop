@@ -150,12 +150,6 @@ namespace MonoDevelop.SourceEditor
 			Initialize (view);
 		}
 
-		void HandleParseOperationFinished (object sender, EventArgs e)
-		{
-			resolveResult = null;
-			resolveRegion = DomRegion.Empty;
-		}
-		
 		public ExtensibleTextEditor (SourceEditorView view)
 		{
 			base.Options = new StyledSourceEditorOptions (DefaultSourceEditorOptions.Instance);
@@ -238,10 +232,9 @@ namespace MonoDevelop.SourceEditor
 
 		protected override void OnDestroyed ()
 		{
-			TypeSystemService.ParseOperationFinished -= HandleParseOperationFinished;
 			UnregisterAdjustments ();
-			resolveResult = null;
-			EditorExtension = null;
+			Extension = null;
+			ExtensionContext = null;
 			view = null;
 			base.OnDestroyed ();
 			if (Options != null) {
@@ -543,28 +536,16 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 		int           oldOffset = -1;
-		ResolveResult resolveResult = null;
-		DomRegion     resolveRegion = DomRegion.Empty;
+
 		public ResolveResult GetLanguageItem (int offset, out DomRegion region)
 		{
-			// we'll cache old results.
-			if (offset == oldOffset) {
-				region = this.resolveRegion;
-				return this.resolveResult;
-			}
-			
 			oldOffset = offset;
-			
+			region = DomRegion.Empty;
+
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, out region);
-				this.resolveRegion = region;
-			} else {
-				region = DomRegion.Empty;
-				this.resolveResult = null;
-				this.resolveRegion = region;
-			}
-			
-			return this.resolveResult;
+				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, out region);
+			} 
+			return null;
 		}
 		
 		public CodeTemplateContext GetTemplateContext ()
@@ -589,12 +570,10 @@ namespace MonoDevelop.SourceEditor
 			oldOffset = offset;
 			
 			if (textEditorResolverProvider != null) {
-				this.resolveResult = textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, expression);
-			} else {
-				this.resolveResult = null;
+				return textEditorResolverProvider.GetLanguageItem (view.WorkbenchWindow.Document, offset, expression);
 			}
 	
-			return this.resolveResult;
+			return null;
 		}
 
 //		public string GetExpression (int offset)

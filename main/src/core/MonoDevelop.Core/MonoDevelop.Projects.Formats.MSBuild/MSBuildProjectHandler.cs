@@ -167,11 +167,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		{
 			// If the default runtime changes, the project builder for this project may change
 			// so it has to be created again.
-			if (projectBuilder != null) {
-				projectBuilder.Dispose ();
-				projectBuilder = null;
-			}
+			CleanupProjectBuilder ();
 		}
+
+		object builderLock = new object ();
 		
 		RemoteProjectBuilder GetProjectBuilder ()
 		{
@@ -185,21 +184,23 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			var sln = item.ParentSolution;
 			var slnFile = sln != null ? sln.FileName : null;
 
-			if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
-				if (projectBuilder != null) {
-					projectBuilder.Dispose ();
-					projectBuilder = null;
+			lock (builderLock) {
+				if (projectBuilder == null || lastBuildToolsVersion != ToolsVersion || lastBuildRuntime != runtime.Id || lastFileName != item.FileName || lastSlnFileName != slnFile) {
+					CleanupProjectBuilder ();
+					projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, item.FileName, slnFile);
+					projectBuilder.Disconnected += delegate {
+						CleanupProjectBuilder ();
+					};
+					lastBuildToolsVersion = ToolsVersion;
+					lastBuildRuntime = runtime.Id;
+					lastFileName = item.FileName;
+					lastSlnFileName = slnFile;
 				}
-				projectBuilder = MSBuildProjectService.GetProjectBuilder (runtime, ToolsVersion, item.FileName, slnFile);
-				lastBuildToolsVersion = ToolsVersion;
-				lastBuildRuntime = runtime.Id;
-				lastFileName = item.FileName;
-				lastSlnFileName = slnFile;
-			}
-			else if (modifiedInMemory) {
-				modifiedInMemory = false;
-				var p = SaveProject (new NullProgressMonitor ());
-				projectBuilder.RefreshWithContent (p.SaveToString ());
+				if (modifiedInMemory) {
+					modifiedInMemory = false;
+					var p = SaveProject (new NullProgressMonitor ());
+					projectBuilder.RefreshWithContent (p.SaveToString ());
+				}
 			}
 			return projectBuilder;
 		}
@@ -209,6 +210,13 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (projectBuilder != null) {
 				projectBuilder.Dispose ();
 				projectBuilder = null;
+			}
+		}
+
+		public void RefreshProjectBuilder ()
+		{
+			if (projectBuilder != null) {
+				projectBuilder.Refresh ();
 			}
 		}
 
@@ -259,17 +267,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				SolutionEntityItem item = (SolutionEntityItem) Item;
 				RemoteProjectBuilder builder = GetProjectBuilder ();
 				var configs = GetConfigurations (item, configuration);
-
-				var result = builder.Run (
-					configs, null, MSBuildVerbosity.Normal,
-					new[] { "ResolveAssemblyReferences" }, new [] { "ReferencePath" }, null
-				);
-
-				List<MSBuildEvaluatedItem> items;
-				if (result.Items.TryGetValue ("ReferencePath", out items) && items != null) {
-					foreach (var i in items)
-						yield return i.ItemSpec;
-				}
+				foreach (var r in builder.ResolveAssemblyReferences (configs))
+					yield return r;
 			}
 			else {
 				CleanupProjectBuilder ();
@@ -369,7 +368,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			// Workaround for a VS issue. VS doesn't include the curly braces in the ProjectGuid
 			// of shared projects.
-			if (!itemGuid.StartsWith ("{"))
+			if (!itemGuid.StartsWith ("{", StringComparison.Ordinal))
 				itemGuid = "{" + itemGuid + "}";
 
 			itemGuid = itemGuid.ToUpper ();
@@ -380,7 +379,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			if (projectTypeGuids != null) {
 				foreach (string guid in projectTypeGuids.Split (';')) {
 					string sguid = guid.Trim ();
-					if (sguid.Length > 0 && string.Compare (sguid, TypeGuid, true) != 0)
+					if (sguid.Length > 0 && string.Compare (sguid, TypeGuid, StringComparison.OrdinalIgnoreCase) != 0)
 						subtypeGuids.Add (guid);
 				}
 			}
@@ -993,6 +992,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					var privateCopy = buildItem.GetBoolMetadata ("Private");
 					if (privateCopy != null)
 						pref.LocalCopy = privateCopy.Value;
+					ReadBuildItemMetadata (ser, buildItem, pref, typeof(ProjectReference));
 					return pref;
 				}
 				else if (dt == null && !string.IsNullOrEmpty (buildItem.Include)) {
@@ -1022,7 +1022,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool ReferenceStringHasVersion (string asmName)
 		{
 			int commaPos = asmName.IndexOf (',');
-			return commaPos >= 0 && asmName.IndexOf ("Version", commaPos) >= 0;
+			return commaPos >= 0 && asmName.IndexOf ("Version", commaPos, StringComparison.Ordinal) >= 0;
 		}
 
 		bool IsValidFile (string path)
@@ -1933,11 +1933,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		bool ParseConfigCondition (string cond, out string config, out string platform)
 		{
 			config = platform = Unspecified;
-			int i = cond.IndexOf ("==");
+			int i = cond.IndexOf ("==", StringComparison.Ordinal);
 			if (i == -1)
 				return false;
 			if (cond.Substring (0, i).Trim () == "'$(Configuration)|$(Platform)'") {
-				cond = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out cond))
+					return false;
 				i = cond.IndexOf ('|');
 				if (i != -1) {
 					config = cond.Substring (0, i);
@@ -1951,18 +1952,31 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				return true;
 			}
 			else if (cond.Substring (0, i).Trim () == "'$(Configuration)'") {
-				config = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out config))
+					return false;
 				platform = Unspecified;
 				return true;
 			}
 			else if (cond.Substring (0, i).Trim () == "'$(Platform)'") {
 				config = Unspecified;
-				platform = cond.Substring (i+2).Trim (' ','\'');
+				if (!ExtractConfigName (cond.Substring (i + 2), out platform))
+					return false;
 				if (platform == "AnyCPU")
 					platform = string.Empty;
 				return true;
 			}
 			return false;
+		}
+
+		bool ExtractConfigName (string name, out string config)
+		{
+			config = name.Trim (' ');
+			if (config.Length <= 2)
+				return false;
+			if (config [0] != '\'' || config [config.Length - 1] != '\'')
+				return false;
+			config = config.Substring (1, config.Length - 2);
+			return config.IndexOf ('\'') == -1;
 		}
 		
 		string BuildConfigCondition (string config, string platform)

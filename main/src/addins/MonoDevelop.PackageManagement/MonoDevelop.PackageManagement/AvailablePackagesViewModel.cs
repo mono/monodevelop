@@ -32,22 +32,26 @@ using System.Linq;
 
 using MonoDevelop.PackageManagement;
 using NuGet;
+using MonoDevelop.Core;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class AvailablePackagesViewModel : PackagesViewModel
 	{
+		ISolutionPackageRepository solutionPackageRepository;
 		IPackageRepository repository;
 		string errorMessage;
 		IRecentPackageRepository recentPackageRepository;
 		
-		public AvailablePackagesViewModel(
+		public AvailablePackagesViewModel (
+			IPackageManagementSolution solution,
 			IRegisteredPackageRepositories registeredPackageRepositories,
 			IRecentPackageRepository recentPackageRepository,
 			IPackageViewModelFactory packageViewModelFactory,
 			ITaskFactory taskFactory)
 			: base(registeredPackageRepositories, packageViewModelFactory, taskFactory)
 		{
+			this.solutionPackageRepository = solution.GetRepository ();
 			this.recentPackageRepository = recentPackageRepository;
 
 			IsSearchable = true;
@@ -120,29 +124,61 @@ namespace ICSharpCode.PackageManagement
 				.DistinctLast<IPackage>(PackageEqualityComparer.Id);
 		}
 
+		/// <summary>
+		/// Package prioritization:
+		/// 
+		/// Recent packages first.
+		/// Packages in solution.
+		/// Packages from active package source.
+		/// </summary>
 		protected override IEnumerable<IPackage> PrioritizePackages (IEnumerable<IPackage> packages, PackageSearchCriteria search)
 		{
-			List<IPackage> recentPackages = GetRecentPackages (search).ToList ();
+			List<IPackage> prioritizedPackages = GetPrioritizedPackages (search).ToList ();
 
-			if (PackageViewModels.Count == 0) {
-				foreach (IPackage package in recentPackages) {
-					yield return package;
-				}
+			foreach (IPackage package in prioritizedPackages) {
+				yield return package;
 			}
 
 			foreach (IPackage package in packages) {
-				if (!recentPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
+				if (!prioritizedPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
 					yield return package;
+				}
+			}
+		}
+
+		IEnumerable<IPackage> GetPrioritizedPackages (PackageSearchCriteria search)
+		{
+			if (search.IsPackageVersionSearch) {
+				yield break;
+			}
+
+			List<IPackage> prioritizedPackages = GetRecentPackages (search).ToList ();
+
+			if (PackageViewModels.Count == 0) {
+				foreach (IPackage package in prioritizedPackages) {
+					yield return package;
+				}
+
+				foreach (IPackage package in GetSolutionPackages (search)) {
+					if (!prioritizedPackages.Contains (package, PackageEqualityComparer.IdAndVersion)) {
+						prioritizedPackages.Add (package);
+						yield return package;
+					}
 				}
 			}
 		}
 
 		IEnumerable<IPackage> GetRecentPackages (PackageSearchCriteria search)
 		{
-			if (search.IsPackageVersionSearch) {
-				return Enumerable.Empty<IPackage> ();
-			}
 			return recentPackageRepository.Search (search.SearchText, IncludePrerelease);
+		}
+
+		IEnumerable<IPackage> GetSolutionPackages (PackageSearchCriteria search)
+		{
+			return solutionPackageRepository
+				.GetPackages ()
+				.Find (search.SearchText)
+				.FilterByPrerelease (IncludePrerelease);
 		}
 
 		protected override PackageViewModel CreatePackageViewModel (IPackage package, PackageSearchCriteria search)
@@ -150,6 +186,31 @@ namespace ICSharpCode.PackageManagement
 			PackageViewModel viewModel = base.CreatePackageViewModel (package, search);
 			viewModel.ShowVersionInsteadOfDownloadCount = search.IsPackageVersionSearch;
 			return viewModel;
+		}
+
+		protected override string GetWarningMessage ()
+		{
+			var aggregateRepository = repository as MonoDevelopAggregateRepository;
+			if (aggregateRepository != null) {
+				if (aggregateRepository.AllFailed ()) {
+					return GetAllPackageSourcesCouldNotBeReachedErrorMessage (aggregateRepository);
+				} else if (aggregateRepository.AnyFailures ()) {
+					return GetSomePackageSourcesCouldNotBeReachedErrorMessage (aggregateRepository);
+				}
+			}
+			return String.Empty;
+		}
+
+		string GetAllPackageSourcesCouldNotBeReachedErrorMessage (MonoDevelopAggregateRepository repository)
+		{
+			string message = GettextCatalog.GetString ("All package sources could not be reached.");
+			return new AggregateExceptionErrorMessage (message, repository.GetAggregateException ()).ToString ();
+		}
+
+		string GetSomePackageSourcesCouldNotBeReachedErrorMessage (MonoDevelopAggregateRepository repository)
+		{
+			string message = GettextCatalog.GetString ("Some package sources could not be reached.");
+			return new AggregateExceptionErrorMessage (message, repository.GetAggregateException ()).ToString ();
 		}
 	}
 }

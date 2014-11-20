@@ -76,6 +76,12 @@ namespace MonoDevelop.Ide
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Running on {0}", IdeVersionInfo.GetRuntimeInfo ());
 
+			//ensure native libs initialized before we hit anything that p/invokes
+			Platform.Initialize ();
+
+			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
+			IdeApp.Customizer.Initialize ();
+
 			Counters.Initialization.BeginTiming ();
 
 			if (options.PerfLog) {
@@ -84,9 +90,6 @@ namespace MonoDevelop.Ide
 				InstrumentationService.StartAutoSave (logFile, 1000);
 			}
 
-			//ensure native libs initialized before we hit anything that p/invokes
-			Platform.Initialize ();
-			
 			Counters.Initialization.Trace ("Initializing GTK");
 			if (Platform.IsWindows && !CheckWindowsGtk ())
 				return 1;
@@ -150,8 +153,7 @@ namespace MonoDevelop.Ide
 			Counters.Initialization.Trace ("Initializing Runtime");
 			Runtime.Initialize (true);
 
-
-			IdeApp.Customizer = options.IdeCustomizer ?? new IdeCustomizer ();
+			IdeApp.Customizer.OnCoreInitialized ();
 
 			Counters.Initialization.Trace ("Initializing theme");
 
@@ -223,15 +225,26 @@ namespace MonoDevelop.Ide
 						return 1;
 					reportedFailures = errorsList.Count;
 				}
-				
+
+				if (!CheckSCPlugin ())
+					return 1;
+
 				// no alternative for Application.ThreadException?
 				// Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 
 				Counters.Initialization.Trace ("Initializing IdeApp");
 				IdeApp.Initialize (monitor);
-				
+
 				// Load requested files
 				Counters.Initialization.Trace ("Opening Files");
+
+				// load previous combine
+				if (IdeApp.Preferences.LoadPrevSolutionOnStartup && !startupInfo.HasSolutionFile) {
+					var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
+					if (proj != null)
+						IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
+				}
+
 				IdeApp.OpenFiles (startupInfo.RequestedFileList);
 				
 				monitor.Step (1);
@@ -278,12 +291,17 @@ namespace MonoDevelop.Ide
 			AddinManager.AddExtensionNodeHandler("/MonoDevelop/Ide/InitCompleteHandlers", OnExtensionChanged);
 			StartLockupTracker ();
 			IdeApp.Run ();
+
+			IdeApp.Customizer.OnIdeShutdown ();
 			
 			// unloading services
 			if (null != socket_filename)
 				File.Delete (socket_filename);
 			lockupCheckRunning = false;
 			Runtime.Shutdown ();
+
+			IdeApp.Customizer.OnCoreShutdown ();
+
 			InstrumentationService.Stop ();
 			AddinManager.AddinLoadError -= OnAddinError;
 			
@@ -297,6 +315,8 @@ namespace MonoDevelop.Ide
 		static void StartLockupTracker ()
 		{
 			if (Platform.IsWindows)
+				return;
+			if (!string.Equals (Environment.GetEnvironmentVariable ("MD_LOCKUP_TRACKER"), "ON", StringComparison.OrdinalIgnoreCase))
 				return;
 			GLib.Timeout.Add (2000, () => {
 				lastIdle = DateTime.Now;
@@ -332,6 +352,11 @@ namespace MonoDevelop.Ide
 						gtkrc += "-vista";
 				} else if (Platform.IsMac) {
 					gtkrc += ".mac";
+
+					var osv = Platform.OSVersion;
+					if (osv.Major == 10 && osv.Minor >= 10) {
+						gtkrc += "-yosemite";
+					}
 				}
 				Environment.SetEnvironmentVariable ("GTK2_RC_FILES", PropertyService.EntryAssemblyPath.Combine (gtkrc));
 			}
@@ -538,6 +563,35 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		bool CheckSCPlugin ()
+		{
+			if (Platform.IsMac && Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin")) {
+				string message = "SCPlugin not supported";
+				string detail = "MonoDevelop has detected that SCPlugin (scplugin.tigris.org) is installed. " +
+				                "SCPlugin is a Subversion extension for Finder that is known to cause crashes in MonoDevelop and" +
+				                "other applications running on Mac OSX 10.9 (Mavericks) or upper. Please uninstall SCPlugin " +
+				                "before proceeding.";
+				var close = new AlertButton (BrandingService.BrandApplicationName (GettextCatalog.GetString ("Close MonoDevelop")));
+				var info = new AlertButton (GettextCatalog.GetString ("More Information"));
+				var cont = new AlertButton (GettextCatalog.GetString ("Continue Anyway"));
+				while (true) {
+					var res = MessageService.GenericAlert (Gtk.Stock.DialogWarning, message, BrandingService.BrandApplicationName (detail), info, cont, close);
+					if (res == close) {
+						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Closing."));
+						return false;
+					}
+					if (res == info)
+						DesktopService.ShowUrl ("https://bugzilla.xamarin.com/show_bug.cgi?id=21755");
+					if (res == cont) {
+						bool exists = Directory.Exists ("/Library/Contextual Menu Items/SCFinderPlugin.plugin");
+						LoggingService.LogInternalError ("SCPlugin detected", new Exception ("SCPlugin detected. Continuing " + (exists ? "Installed." : "Uninstalled.")));
+						return true;
+					}
+				}
+			}
+			return true;
+		}
+
 		static void SetupExceptionManager ()
 		{
 			System.Threading.Tasks.TaskScheduler.UnobservedTaskException += (sender, e) => {
@@ -586,43 +640,56 @@ namespace MonoDevelop.Ide
 			
 			LoggingService.Initialize (options.RedirectOutput);
 
+			if (customizer == null)
+				customizer = LoadBrandingCustomizer ();
 			options.IdeCustomizer = customizer;
 
 			int ret = -1;
-			bool retry = false;
-			do {
-				try {
-					var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
-					if (!Platform.IsMac && !Platform.IsWindows)
-						exename = exename.ToLower ();
-					Runtime.SetProcessName (exename);
-					var app = new IdeStartup ();
-					ret = app.Run (options);
-					break;
-				} catch (Exception ex) {
-					if (!retry && AddinManager.IsInitialized) {
-						LoggingService.LogWarning (BrandingService.ApplicationName + " failed to start. Rebuilding addins registry.", ex);
-						AddinManager.Registry.Rebuild (new Mono.Addins.ConsoleProgressStatus (true));
-						LoggingService.LogInfo ("Addin registry rebuilt. Restarting {0}.", BrandingService.ApplicationName);
-						retry = true;
-					} else {
-						LoggingService.LogFatalError (
-							string.Format (
-								"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
-								"may not be properly installed in the GAC.",
-								BrandingService.ApplicationName
-							), ex);
-						retry = false;
-					}
-				} finally {
-					Runtime.Shutdown ();
-				}
+			try {
+				var exename = Path.GetFileNameWithoutExtension (Assembly.GetEntryAssembly ().Location);
+				if (!Platform.IsMac && !Platform.IsWindows)
+					exename = exename.ToLower ();
+				Runtime.SetProcessName (exename);
+				var app = new IdeStartup ();
+				ret = app.Run (options);
+			} catch (Exception ex) {
+				LoggingService.LogFatalError (
+					string.Format (
+						"{0} failed to start. Some of the assemblies required to run {0} (for example gtk-sharp)" +
+						"may not be properly installed in the GAC.",
+						BrandingService.ApplicationName
+					), ex);
+			} finally {
+				Runtime.Shutdown ();
 			}
-			while (retry);
 
 			LoggingService.Shutdown ();
 
 			return ret;
+		}
+
+		static IdeCustomizer LoadBrandingCustomizer ()
+		{
+			var pathsString = BrandingService.GetString ("CustomizerAssemblyPath");
+			if (string.IsNullOrEmpty (pathsString))
+				return null;
+
+			var paths = pathsString.Split (new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+			var type = BrandingService.GetString ("CustomizerType");
+			if (!string.IsNullOrEmpty (type)) {
+				foreach (var path in paths) {
+					var file = BrandingService.GetFile (path.Replace ('/',Path.DirectorySeparatorChar));
+					if (File.Exists (file)) {
+						Assembly asm = Assembly.LoadFrom (file);
+						var t = asm.GetType (type, true);
+						var c = Activator.CreateInstance (t) as IdeCustomizer;
+						if (c == null)
+							throw new InvalidOperationException ("Customizer class specific in the branding file is not an IdeCustomizer subclass");
+						return c;
+					}
+				}
+			}
+			return null;
 		}
 	}
 	

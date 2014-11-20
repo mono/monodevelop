@@ -42,22 +42,17 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Pads;
 using MonoDevelop.Projects.Extensions;
 using System.Linq;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
 	public partial class ExtensibleTreeView : CompactScrolledWindow
 	{
-		internal const int TextColumn         = 0;
-		internal const int OpenIconColumn     = 1;
-		internal const int ClosedIconColumn   = 2;
-		internal const int DataItemColumn     = 3;
-		internal const int BuilderChainColumn = 4;
-		internal const int FilledColumn       = 5;
-		internal const int ShowPopupColumn    = 6;
-		internal const int OverlayBottomRightColumn = 7;
-		internal const int OverlayBottomLeftColumn  = 8;
-		internal const int OverlayTopLeftColumn     = 9;
-		internal const int OverlayTopRightColumn    = 10;
+		internal const int NodeInfoColumn = 0;
+		internal const int DataItemColumn = 1;
+		internal const int BuilderChainColumn = 2;
+		internal const int FilledColumn = 3;
+		internal const int ShowPopupColumn = 4;
 
 		NodeBuilder[] builders;
 		Dictionary<Type, NodeBuilder[]> builderChains = new Dictionary<Type, NodeBuilder[]> ();
@@ -148,15 +143,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			builderContext = new TreeBuilderContext (this);
 
 			SetBuilders (builders, options);
-			/*
-			0 -- Text
-			1 -- Icon (Open)
-			2 -- Icon (Closed)
-			3 -- Node Data
-			4 -- Builder chain
-			5 -- Expanded
-			*/
-			store = new Gtk.TreeStore (typeof(string), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image), typeof(object), typeof(object), typeof(bool), typeof(bool), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image), typeof(Xwt.Drawing.Image));
+
+			store = new Gtk.TreeStore (typeof(NodeInfo), typeof(object), typeof(object), typeof(bool), typeof(bool));
 			tree.Model = store;
 			tree.Selection.Mode = Gtk.SelectionMode.Multiple;
 
@@ -172,13 +160,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			pix_render = new ZoomableCellRendererPixbuf ();
 			pix_render.Xpad = 0;
 			complete_column.PackStart (pix_render, false);
-			complete_column.AddAttribute (pix_render, "image", OpenIconColumn);
-			complete_column.AddAttribute (pix_render, "image-expander-open", OpenIconColumn);
-			complete_column.AddAttribute (pix_render, "image-expander-closed", ClosedIconColumn);
-			complete_column.AddAttribute (pix_render, "overlay-image-bottom-left", OverlayBottomLeftColumn);
-			complete_column.AddAttribute (pix_render, "overlay-image-bottom-right", OverlayBottomRightColumn);
-			complete_column.AddAttribute (pix_render, "overlay-image-top-left", OverlayTopLeftColumn);
-			complete_column.AddAttribute (pix_render, "overlay-image-top-right", OverlayTopRightColumn);
 
 			text_render = new CustomCellRendererText (this);
 			text_render.Ypad = 0;
@@ -186,10 +167,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			text_render.EditingStarted += HandleEditingStarted;
 			text_render.Edited += HandleOnEdit;
 			text_render.EditingCanceled += HandleOnEditCancelled;
-
 			complete_column.PackStart (text_render, true);
-			complete_column.AddAttribute (text_render, "text-markup", TextColumn);
-			complete_column.AddAttribute (text_render, "show-popup-button", ShowPopupColumn);
+
+			complete_column.SetCellDataFunc (pix_render, SetIconCellData);
+			complete_column.SetCellDataFunc (text_render, SetTextCellData);
 
 			tree.AppendColumn (complete_column);
 
@@ -206,19 +187,10 @@ namespace MonoDevelop.Ide.Gui.Components
 			tree.MotionNotifyEvent += HandleMotionNotifyEvent;
 			tree.LeaveNotifyEvent += HandleLeaveNotifyEvent;
 
-			if (GtkGestures.IsSupported) {
-				tree.AddGestureMagnifyHandler ((sender, args) => {
-					Zoom += Zoom * (args.Magnification / 4d);
-				});
-			}
-
 			for (int n=3; n<16; n++) {
 				Gtk.Rc.ParseString ("style \"MonoDevelop.ExtensibleTreeView_" + n + "\" {\n GtkTreeView::expander-size = " + n + "\n }\n");
 				Gtk.Rc.ParseString ("widget \"*.MonoDevelop.ExtensibleTreeView_" + n + "\" style  \"MonoDevelop.ExtensibleTreeView_" + n + "\"\n");
 			}
-
-			if (!string.IsNullOrEmpty (Id))
-				Zoom = PropertyService.Get<double> ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, 1d);
 
 			this.Add (tree);
 			this.ShowAll ();
@@ -255,6 +227,34 @@ namespace MonoDevelop.Ide.Gui.Components
 			return true;
 		}
 #endif
+
+		void SetIconCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
+		{
+			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
+			var cell = (ZoomableCellRendererPixbuf)renderer;
+
+			cell.Image = info.Icon != null && info.Icon != CellRendererImage.NullImage && info.DisabledStyle ? info.Icon.WithAlpha (0.5) : info.Icon;
+			cell.ImageExpanderOpen = cell.Image;
+			cell.ImageExpanderClosed = info.ClosedIcon != null && info.ClosedIcon != CellRendererImage.NullImage && info.DisabledStyle ? info.ClosedIcon.WithAlpha (0.5) : info.ClosedIcon;
+			cell.OverlayBottomLeft = info.OverlayBottomLeft;
+			cell.OverlayBottomRight = info.OverlayBottomRight;
+			cell.OverlayTopLeft = info.OverlayTopLeft;
+			cell.OverlayTopRight = info.OverlayTopRight;
+		}
+
+		void SetTextCellData (Gtk.TreeViewColumn col, Gtk.CellRenderer renderer, Gtk.TreeModel model, Gtk.TreeIter it)
+		{
+			var info = (NodeInfo)model.GetValue (it, NodeInfoColumn);
+			var cell = (CustomCellRendererText)renderer;
+
+			if (info.DisabledStyle)
+				cell.TextMarkup = "<span foreground='gray'>" + info.Label + "</span>";
+			else
+				cell.TextMarkup = info.Label;
+
+			cell.StatusIcon = info.StatusIconInternal;
+			cell.ShowPopupButton = (bool)model.GetValue (it, ShowPopupColumn);
+		}
 
 		public void UpdateBuilders (NodeBuilder[] builders, TreePadOption[] options)
 		{
@@ -335,7 +335,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			var dragObjects = new object [navs.Length];
 			for (int n=0; n<navs.Length; n++)
 				dragObjects [n] = navs [n].DataItem;
-			icon = (Xwt.Drawing.Image) store.GetValue (navs[0].CurrentPosition._iter, OpenIconColumn);
+			icon = ((NodeInfo) store.GetValue (navs[0].CurrentPosition._iter, NodeInfoColumn)).Icon;
 			return dragObjects;
 		}
 
@@ -414,20 +414,74 @@ namespace MonoDevelop.Ide.Gui.Components
 		[GLib.ConnectBefore]
 		void HandleMotionNotifyEvent (object o, Gtk.MotionNotifyEventArgs args)
 		{
-			if (ShowSelectionPopupButton) {
-				text_render.PointerPosition = new Gdk.Point ((int)args.Event.XRoot, (int)args.Event.YRoot);
-				Gtk.TreePath path;
-				if (tree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path)) {
-					var area = tree.GetCellArea (path, tree.Columns[0]);
+			Gtk.TreePath path;
+			int cx, cy;
+			Gtk.TreeViewColumn col;
+			bool popupShown = false;
+
+			if (tree.GetPathAtPos ((int)args.Event.X, (int)args.Event.Y, out path, out col, out cx, out cy)) {
+				if (ShowSelectionPopupButton) {
+					text_render.PointerPosition = new Gdk.Point ((int)args.Event.XRoot, (int)args.Event.YRoot);
+					var area = tree.GetCellArea (path, tree.Columns [0]);
 					tree.QueueDrawArea (area.X, area.Y, area.Width, area.Height);
 				}
+
+				Gtk.TreeIter it;
+				if (store.GetIter (out it, path)) {
+					var info = (NodeInfo)store.GetValue (it, NodeInfoColumn);
+					if (info.StatusIconInternal != CellRendererImage.NullImage && info.StatusIconInternal != null) {
+						var cellArea = tree.GetCellArea (path, tree.Columns [0]);
+						int sp, w;
+						col.CellGetPosition (text_render, out sp, out w);
+						cellArea.X += sp;
+						cellArea.Width = w;
+						var rect = text_render.GetStatusIconArea (tree, cellArea);
+						if (cx >= rect.X && cx <= rect.Right) {
+							ShowStatusMessage (it, rect, info);
+							popupShown = true;
+						}
+					}
+				}
+			}
+			if (!popupShown)
+				HideStatusMessage ();
+		}
+
+		bool statusMessageVisible;
+		Gtk.TreeIter statusIconIter;
+		TooltipPopoverWindow statusPopover;
+
+		void ShowStatusMessage (Gtk.TreeIter it, Gdk.Rectangle rect, NodeInfo info)
+		{
+			if (statusMessageVisible && store.GetPath (it).Equals (store.GetPath (statusIconIter)))
+				return;
+			if (statusPopover != null)
+				statusPopover.Destroy ();
+			statusMessageVisible = true;
+			statusIconIter = it;
+
+			statusPopover = new TooltipPopoverWindow {
+				ShowArrow = true,
+				Text = info.StatusMessage,
+				Severity = info.StatusSeverity
+			};
+			rect.Y += 2;
+			statusPopover.ShowPopup (this, rect, PopupPosition.Bottom);
+		}
+
+		void HideStatusMessage ()
+		{
+			if (statusMessageVisible) {
+				statusMessageVisible = false;
+				statusPopover.Destroy ();
+				statusPopover = null;
 			}
 		}
 
 		[GLib.ConnectBefore]
 		void HandleLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
 		{
-
+			HideStatusMessage ();
 		}
 
 		void HandleMenuHidden (object sender, EventArgs e)
@@ -952,91 +1006,11 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		public event EventHandler CurrentItemActivated;
 
-		#region Zoom
-
-		const double ZOOM_FACTOR = 1.1f;
-		const int ZOOM_MIN_POW = -4;
-		const int ZOOM_MAX_POW = 8;
-		static readonly double ZOOM_MIN = System.Math.Pow (ZOOM_FACTOR, ZOOM_MIN_POW);
-		static readonly double ZOOM_MAX = System.Math.Pow (ZOOM_FACTOR, ZOOM_MAX_POW);
-		double zoom;
-
+		[Obsolete ("Not supported anymore")]
 		public double Zoom {
-			get {
-				 return zoom;
-			}
-			set {
-				value = System.Math.Min (ZOOM_MAX, System.Math.Max (ZOOM_MIN, value));
-				if (value > ZOOM_MAX || value < ZOOM_MIN)
-					return;
-				//snap to one, if within 0.001d
-				if ((System.Math.Abs (value - 1d)) < 0.001d) {
-					value = 1d;
-				}
-				if (zoom != value) {
-					zoom = value;
-					OnZoomChanged (value);
-				}
-			}
+			get { return 1d; }
+			set { }
 		}
-
-		void OnZoomChanged (double value)
-		{
-			pix_render.Zoom = value;
-			text_render.Zoom = value;
-
-			int expanderSize = (int) (12 * Zoom);
-			if (expanderSize < 3) expanderSize = 3;
-			if (expanderSize > 15) expanderSize = 15;
-			if (expanderSize != 12)
-				tree.Name = "MonoDevelop.ExtensibleTreeView_" + expanderSize;
-			else
-				tree.Name = "";
-			tree.ColumnsAutosize ();
-			if (!string.IsNullOrEmpty (Id)) {
-				PropertyService.Set ("MonoDevelop.Ide.ExtensibleTreeView.Zoom." + Id, Zoom);
-			}
-		}
-
-		[CommandHandler (ViewCommands.ZoomIn)]
-		public void ZoomIn ()
-		{
-			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
-			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow + 1);
-		}
-
-		[CommandHandler (ViewCommands.ZoomOut)]
-		public void ZoomOut ()
-		{
-			int oldPow = (int)System.Math.Round (System.Math.Log (zoom) / System.Math.Log (ZOOM_FACTOR));
-			Zoom = System.Math.Pow (ZOOM_FACTOR, oldPow - 1);
-		}
-
-		[CommandHandler (ViewCommands.ZoomReset)]
-		public void ZoomReset ()
-		{
-			Zoom = 1d;
-		}
-
-		[CommandUpdateHandler (ViewCommands.ZoomIn)]
-		protected void UpdateZoomIn (CommandInfo cinfo)
-		{
-			cinfo.Enabled = zoom < ZOOM_MAX - 0.000001d;
-		}
-
-		[CommandUpdateHandler (ViewCommands.ZoomOut)]
-		protected void UpdateZoomOut (CommandInfo cinfo)
-		{
-			cinfo.Enabled = zoom > ZOOM_MIN + 0.000001d;
-		}
-
-		[CommandUpdateHandler (ViewCommands.ZoomReset)]
-		protected void UpdateZoomReset (CommandInfo cinfo)
-		{
-			cinfo.Enabled = zoom != 1d;
-		}
-
-		#endregion Zoom
 
 		[CommandHandler (EditCommands.Copy)]
 		public void CopyCurrentItem ()
@@ -1194,6 +1168,11 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
+		NodeInfo GetNodeInfo (Gtk.TreeIter it)
+		{
+			return (NodeInfo)store.GetValue (it, NodeInfoColumn);
+		}
+
 		public void StartLabelEditInternal()
 		{
 			if (editingText)
@@ -1226,7 +1205,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			node.ExpandToNode (); //make sure the parent of the node that is being edited is expanded
 
 			string nodeName = node.NodeName;
-			store.SetValue (iter, ExtensibleTreeView.TextColumn, nodeName);
+
+			GetNodeInfo (iter).Label = nodeName;
+			store.EmitRowChanged (store.GetPath (iter), iter);
 
 			// Get and validate the initial text selection
 			int nameLength = nodeName != null ? nodeName.Length : 0,
@@ -1929,24 +1910,6 @@ namespace MonoDevelop.Ide.Gui.Components
 			}
 		}
 
-		protected override bool OnScrollEvent (Gdk.EventScroll evnt)
-		{
-			var modifier = !Platform.IsMac? Gdk.ModifierType.ControlMask
-				//Mac window manager already uses control-scroll, so use command
-				//Command might be either meta or mod1, depending on GTK version
-				: (Gdk.ModifierType.MetaMask | Gdk.ModifierType.Mod1Mask);
-
-			if ((evnt.State & modifier) !=0) {
-				if (evnt.Direction == Gdk.ScrollDirection.Up)
-					ZoomIn ();
-				else if (evnt.Direction == Gdk.ScrollDirection.Down)
-					ZoomOut ();
-
-				return true;
-			}
-			return base.OnScrollEvent (evnt);
-		}
-
 		protected virtual void OnNodeActivated (object sender, Gtk.RowActivatedArgs args)
 		{
 			ActivateCurrentItem ();
@@ -2245,7 +2208,6 @@ namespace MonoDevelop.Ide.Gui.Components
 
 		class CustomCellRendererText: Gtk.CellRendererText
 		{
-			double zoom;
 			Pango.Layout layout;
 			Pango.FontDescription scaledFont, customFont;
 
@@ -2257,6 +2219,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			Gdk.Rectangle buttonScreenRect;
 			Gdk.Rectangle buttonAllocation;
 			string markup;
+
+			const int StatusIconSpacing = 4;
 
 			public bool Pushed { get; set; }
 
@@ -2290,10 +2254,37 @@ namespace MonoDevelop.Ide.Gui.Components
 			[GLib.Property ("show-popup-button")]
 			public bool ShowPopupButton { get; set; }
 
+			[GLib.Property ("status-icon")]
+			public Xwt.Drawing.Image StatusIcon { get; set; }
+
 			public CustomCellRendererText (ExtensibleTreeView parent)
 			{
 				this.parent = parent;
 			}
+
+
+			void SetupLayout (Gtk.Widget widget)
+			{
+				if (scaledFont == null) {
+					if (scaledFont != null)
+						scaledFont.Dispose ();
+					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
+					scaledFont.Size = customFont.Size;
+					if (layout != null)
+						layout.FontDescription = scaledFont;
+				}
+
+				if (layout == null || layout.Context != widget.PangoContext) {
+					if (layout != null)
+						layout.Dispose ();
+					layout = new Pango.Layout (widget.PangoContext);
+					layout.FontDescription = scaledFont;
+				}
+
+				layout.SetMarkup (TextMarkup);
+			}
+
+			const int iconMode = 0;
 
 			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
@@ -2307,23 +2298,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				if ((flags & Gtk.CellRendererState.Selected) != 0)
 					st = widget.HasFocus ? Gtk.StateType.Selected : Gtk.StateType.Active;
 
-				if (scaledFont == null) {
-					if (scaledFont != null)
-						scaledFont.Dispose ();
-					scaledFont = (customFont ?? parent.Style.FontDesc).Copy ();
-					scaledFont.Size = (int)(customFont.Size * Zoom);
-					if (layout != null)
-						layout.FontDescription = scaledFont;
-				}
-
-				if (layout == null || layout.Context != widget.PangoContext) {
-					if (layout != null)
-						layout.Dispose ();
-					layout = new Pango.Layout (widget.PangoContext);
-					layout.FontDescription = scaledFont;
-				}
-
-				layout.SetMarkup (TextMarkup);
+				SetupLayout (widget);
 
 				int w, h;
 				layout.GetPixelSize (out w, out h);
@@ -2331,9 +2306,22 @@ namespace MonoDevelop.Ide.Gui.Components
 				int tx = cell_area.X + (int)Xpad;
 				int ty = cell_area.Y + (cell_area.Height - h) / 2;
 
+				bool hasStatusIcon = StatusIcon != CellRendererImage.NullImage && StatusIcon != null;
+
+				if (hasStatusIcon && iconMode != 2) {
+					var x = iconMode == 1 ? tx : tx + w + StatusIconSpacing;
+					using (var ctx = Gdk.CairoHelper.Create (window)) {
+						ctx.DrawImage (widget, StatusIcon, x, cell_area.Y + (cell_area.Height - StatusIcon.Height) / 2);
+					}
+					if (iconMode == 1)
+						tx += (int)StatusIcon.Width + StatusIconSpacing;
+				}
+
 				window.DrawLayout (widget.Style.TextGC (st), tx, ty, layout);
 
-				if (ShowPopupButton) {
+				hasStatusIcon &= iconMode == 2;
+
+				if (ShowPopupButton || hasStatusIcon) {
 					if (!bound) {
 						bound = true;
 						((Gtk.ScrolledWindow)widget.Parent).Hadjustment.ValueChanged += delegate {
@@ -2344,7 +2332,8 @@ namespace MonoDevelop.Ide.Gui.Components
 						};
 					}
 
-					if ((flags & Gtk.CellRendererState.Selected) != 0) {
+					var selected = (flags & Gtk.CellRendererState.Selected) != 0;
+					if (selected || hasStatusIcon) {
 						var icon = Pushed ? popupIconDown : popupIcon;
 						var dy = (cell_area.Height - (int)icon.Height) / 2 - 1;
 						var y = cell_area.Y + dy;
@@ -2385,23 +2374,45 @@ namespace MonoDevelop.Ide.Gui.Components
 							icon = popupIconHover;
 
 						using (var ctx = Gdk.CairoHelper.Create (window)) {
-							ctx.DrawImage (widget, icon, x, y);
+							if (ShowPopupButton && selected) {
+								if (hasStatusIcon)
+									x -= (int) icon.Width + StatusIconSpacing;
+								ctx.DrawImage (widget, icon, x, y);
+								if (hasStatusIcon)
+									x += (int) icon.Width + StatusIconSpacing;
+							}
+							if (hasStatusIcon) {
+								ctx.DrawImage (widget, StatusIcon, x, y);
+							}
 						}
 					}
 				}
 			}
 
-			public double Zoom {
-				get {
-					return zoom;
+			public Gdk.Rectangle GetStatusIconArea (Gtk.Widget widget, Gdk.Rectangle cell_area)
+			{
+				SetupLayout (widget);
+
+				int w, h;
+				layout.GetPixelSize (out w, out h);
+
+				int tx = cell_area.X + (int)Xpad;
+				if (iconMode == 0) {
+					var x = tx + w + StatusIconSpacing;
+					return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
+				} else if (iconMode == 1) {
+					var x = tx;
+					return new Gdk.Rectangle (x, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
+				} else {
+					return new Gdk.Rectangle (cell_area.Width - (int) StatusIcon.Width, cell_area.Y, (int) StatusIcon.Width, (int) cell_area.Height);
 				}
-				set {
-					if (scaledFont != null) {
-						scaledFont.Dispose ();
-						scaledFont = null;
-					}
-					zoom = value;
-				}
+			}
+
+			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				if (StatusIcon != CellRendererImage.NullImage && StatusIcon != null)
+					width += (int) StatusIcon.Width + StatusIconSpacing;
 			}
 
 			public bool PointerInButton (int px, int py)
@@ -2484,25 +2495,12 @@ namespace MonoDevelop.Ide.Gui.Components
 
 	class ZoomableCellRendererPixbuf: CellRendererImage
 	{
-		double zoom = 1f;
-
 		Dictionary<Xwt.Drawing.Image,Xwt.Drawing.Image> resizedCache = new Dictionary<Xwt.Drawing.Image, Xwt.Drawing.Image> ();
 
 		Xwt.Drawing.Image overlayBottomLeft;
 		Xwt.Drawing.Image overlayBottomRight;
 		Xwt.Drawing.Image overlayTopLeft;
 		Xwt.Drawing.Image overlayTopRight;
-
-		public double Zoom {
-			get { return zoom; }
-			set {
-				if (zoom != value) {
-					zoom = value;
-					resizedCache.Clear ();
-					Notify ("image");
-				}
-			}
-		}
 
 		public override Xwt.Drawing.Image Image {
 			get {
@@ -2578,20 +2576,7 @@ namespace MonoDevelop.Ide.Gui.Components
 			if (value == null || value == CellRendererImage.NullImage)
 				return null;
 
-			if (zoom == 1)
-				return value;
-
-			Xwt.Drawing.Image resized;
-			if (resizedCache.TryGetValue (value, out resized))
-				return resized;
-
-			int w = (int) (zoom * (double) value.Width);
-			int h = (int) (zoom * (double) value.Height);
-			if (w == 0) w = 1;
-			if (h == 0) h = 1;
-			resized = value.WithSize (w, h);
-			resizedCache [value] = resized;
-			return resized;
+			return value;
 		}
 
 		public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)

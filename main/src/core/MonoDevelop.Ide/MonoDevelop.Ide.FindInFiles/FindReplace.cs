@@ -31,6 +31,9 @@ using System.Collections.Generic;
 using MonoDevelop.Core;
 using System.Linq;
 using Gtk;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Threading;
 
 namespace MonoDevelop.Ide.FindInFiles
 {
@@ -48,9 +51,14 @@ namespace MonoDevelop.Ide.FindInFiles
 			set;
 		}
 		
+		int searchedFilesCount;
 		public int SearchedFilesCount {
-			get;
-			set;
+			get {
+				return searchedFilesCount;
+			}
+			set {
+				searchedFilesCount = value;
+			}
 		}
 		
 		public FindReplace ()
@@ -81,17 +89,17 @@ namespace MonoDevelop.Ide.FindInFiles
 			}
 			IsRunning = true;
 			FoundMatchesCount = SearchedFilesCount = 0;
-			
 			monitor.BeginTask (scope.GetDescription (filter, pattern, replacePattern), 50);
 			try {
 				int totalWork = scope.GetTotalWork (filter);
 				int step = Math.Max (1, totalWork / 50);
 				string content;
-				
-				foreach (FileProvider provider in scope.GetFiles (monitor, filter)) {
+				var results = new System.Collections.Concurrent.ConcurrentBag<SearchResult>();
+
+				Parallel.ForEach (scope.GetFiles (monitor, filter), provider => { 
 					if (monitor.IsCancelRequested)
-						yield break;
-					SearchedFilesCount++;
+						return;
+					Interlocked.Increment (ref searchedFilesCount);
 					try {
 						content = provider.ReadString ();
 						if (replacePattern != null)
@@ -100,19 +108,20 @@ namespace MonoDevelop.Ide.FindInFiles
 						Application.Invoke (delegate {
 							MessageService.ShowError (string.Format (GettextCatalog.GetString ("File {0} not found.")), provider.FileName);
 						});
-						continue;
+						return;
 					}
 					foreach (SearchResult result in FindAll (monitor, provider, content, pattern, replacePattern, filter)) {
 						if (monitor.IsCancelRequested)
-							yield break;
+							return;
 						FoundMatchesCount++;
-						yield return result;
+						results.Add (result); 
 					}
 					if (replacePattern != null)
 						provider.EndReplace ();
-					if (SearchedFilesCount % step == 0)
+					if (searchedFilesCount % step == 0)
 						monitor.Step (1); 
-				}
+				});
+				return results;
 			} finally {
 				monitor.EndTask ();
 				IsRunning = false;

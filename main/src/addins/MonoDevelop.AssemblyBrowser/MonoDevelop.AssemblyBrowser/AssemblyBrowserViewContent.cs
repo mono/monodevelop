@@ -157,7 +157,7 @@ namespace MonoDevelop.AssemblyBrowser
 		{
 			if (Ide.IdeApp.ProjectOperations.CurrentSelectedSolution == null) {
 				foreach (var assembly in defaultAssemblies) {
-					Widget.AddReferenceByAssemblyName (assembly, assembly == defaultAssemblies [0]); 
+					Widget.AddReferenceByAssemblyName (assembly); 
 				}
 			} else {
 				foreach (var project in Ide.IdeApp.ProjectOperations.CurrentSelectedSolution.GetAllProjects ()) {
@@ -169,7 +169,7 @@ namespace MonoDevelop.AssemblyBrowser
 					foreach (string file in netProject.GetReferencedAssemblies (ConfigurationSelector.Default, false)) {
 						if (!System.IO.File.Exists (file))
 							continue;
-						Widget.AddReferenceByFileName (file, false); 
+						Widget.AddReferenceByFileName (file); 
 					}
 				}
 			}

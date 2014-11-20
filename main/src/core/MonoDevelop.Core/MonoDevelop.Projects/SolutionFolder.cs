@@ -106,7 +106,10 @@ namespace MonoDevelop.Projects
 		{
 			// Since solution folders don't are not bound to a specific directory, we have to guess it.
 			// First of all try to find a common root of all child projects
-			
+
+			if (ParentSolution == null)
+				return FilePath.Null;
+
 			if (ParentFolder == null)
 				return ParentSolution.BaseDirectory;
 

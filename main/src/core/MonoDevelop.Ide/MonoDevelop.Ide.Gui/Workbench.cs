@@ -99,6 +99,15 @@ namespace MonoDevelop.Ide.Gui
 					CheckFileStatus ();
 				};
 
+				IdeApp.ProjectOperations.StartBuild += delegate {
+					SaveFileStatus ();
+				};
+
+				IdeApp.ProjectOperations.EndBuild += delegate {
+					// The file status checks outputs as well.
+					CheckFileStatus ();
+				};
+
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
 			} finally {
@@ -280,16 +289,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void LockGui ()
 		{
-			IdeApp.CommandService.LockAll ();
-			if (GuiLocked != null)
-				GuiLocked (this, EventArgs.Empty);
+			if (IdeApp.CommandService.LockAll ()) {
+				if (GuiLocked != null)
+					GuiLocked (this, EventArgs.Empty);
+			}
 		}
 		
 		public void UnlockGui ()
 		{
-			IdeApp.CommandService.UnlockAll ();
-			if (GuiUnlocked != null)
-				GuiUnlocked (this, EventArgs.Empty);
+			if (IdeApp.CommandService.UnlockAll ()) {
+				if (GuiUnlocked != null)
+					GuiUnlocked (this, EventArgs.Empty);
+			}
 		}
 		
 		public void SaveAll ()
@@ -349,10 +360,15 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return ShowPad (new PadCodon (padContent, id, label, defaultPlacement, defaultStatus, icon));
 		}
+<<<<<<< HEAD
 
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, bool bringToFront)")]
 
+=======
+
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, bool bringToFront)")]
+>>>>>>> master
 		public Document OpenDocument (FilePath fileName, bool bringToFront)
 		{
 			return OpenDocument (fileName, bringToFront ? OpenDocumentOptions.Default : OpenDocumentOptions.Default & ~OpenDocumentOptions.BringToFront);
@@ -363,18 +379,28 @@ namespace MonoDevelop.Ide.Gui
 		{
 			return OpenDocument (fileName, -1, -1, options, null, null);
 		}
+<<<<<<< HEAD
 
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
 
+=======
+
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
+>>>>>>> master
 		public Document OpenDocument (FilePath fileName, Encoding encoding, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, -1, -1, options, encoding, null);
 		}
+<<<<<<< HEAD
 
 
 		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
 
+=======
+
+		[Obsolete("Use OpenDocument (FilePath fileName, Project project, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)")]
+>>>>>>> master
 		public Document OpenDocument (FilePath fileName, int line, int column, OpenDocumentOptions options = OpenDocumentOptions.Default)
 		{
 			return OpenDocument (fileName, line, column, options, null, null);
@@ -479,7 +505,6 @@ namespace MonoDevelop.Ide.Gui
 					Counters.OpenDocumentTimer.Trace ("Look for open document");
 					foreach (Document doc in Documents) {
 						IBaseViewContent vcFound = null;
-						int vcIndex = 0;
 
 						//search all ViewContents to see if they can "re-use" this filename
 						if (doc.Window.ViewContent.CanReuseView (info.FileName))
@@ -497,7 +522,6 @@ namespace MonoDevelop.Ide.Gui
 							
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
-								doc.Window.SwitchView (vcIndex);
 								doc.Window.SelectWindow ();
 								NavigationHistoryService.LogActiveDocument ();
 							}
@@ -1084,7 +1108,7 @@ namespace MonoDevelop.Ide.Gui
 
 			foreach (var doc in list) {
 				string fileName = baseDir.Combine (doc.FileName).FullPath;
-				if (File.Exists (fileName)) {
+				if (GetDocument(fileName) == null && File.Exists (fileName)) {
 					if (doc.NotebookId != currentNotebook) {
 						if (currentNotebook != -1 || nb == null)
 							nb = container.InsertRight (null);
@@ -1187,7 +1211,6 @@ namespace MonoDevelop.Ide.Gui
 //					DateTime t = DateTime.Now;
 
 					if (fileStatus == null)
-
 						return;
 					List<FilePath> modified = new List<FilePath> ();
 					foreach (FileData fd in fileStatus) {

@@ -164,7 +164,7 @@
 			defaultHandler = "MonoDevelop.VersionControl.UnlockCommandHandler"
 			description = "Unlock files in the repository, so that other user can change them."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.Annotate"
-			_label = "Show Annotations"
+			_label = "Blame"
 			defaultHandler = "MonoDevelop.VersionControl.CurrentFileBlameHandler"
 			description = "Show the origin of each line in a file."/>
 		<Command id = "MonoDevelop.VersionControl.Commands.CreatePatch"

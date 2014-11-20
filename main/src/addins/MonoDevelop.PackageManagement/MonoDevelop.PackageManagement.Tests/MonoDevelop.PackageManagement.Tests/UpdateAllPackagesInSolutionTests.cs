@@ -253,6 +253,14 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsTrue (allowPrereleases);
 		}
+
+		[Test]
+		public void CreateActions_NoPackagesInSolution_UpdatePackageDependenciesIsTrueByDefault ()
+		{
+			CreateUpdateAllPackagesInSolution ();
+
+			Assert.IsTrue (updateAllPackagesInSolution.UpdateDependencies);
+		}
 	}
 }
 

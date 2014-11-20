@@ -59,6 +59,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return doneEvent; }
 		}
 
+		public void Ping ()
+		{
+		}
+
 		public void SetCulture (CultureInfo uiCulture)
 		{
 			BuildEngine.uiCulture = uiCulture;
@@ -108,26 +112,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			RunSTA (delegate
 			{
-				//unloading projects modifies the collection, so copy it
-				var projects = engine.GetLoadedProjects (file).ToArray ();
-
-				if (projects.Length == 0) {
-					return;
-				}
-
-				var rootElement = projects[0].Xml;
-
-				foreach (var p in projects) {
-					engine.UnloadProject (p);
-				}
-
-				//try to unload the projects' XML from the cache
-				try {
-					engine.UnloadProject (rootElement);
-				} catch (InvalidOperationException) {
-					// This could fail if something else is referencing the xml somehow.
-					// But not a big deal, it's just a cache.
-				}
+				// Unloading the project file is not enough because the project
+				// may be referencing other target files which may have
+				// changed and which are cached.
+				engine.UnloadAllProjects();
 			});
 		}
 

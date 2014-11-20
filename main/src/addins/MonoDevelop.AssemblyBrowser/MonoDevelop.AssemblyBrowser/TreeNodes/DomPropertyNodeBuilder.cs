@@ -115,6 +115,14 @@ namespace MonoDevelop.AssemblyBrowser
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), property.DeclaringType, b => b.AddProperty (property));
 		}
 		
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		{
+			if (DomMethodNodeBuilder.HandleSourceCodeEntity (navigator, data)) 
+				return null;
+			var property = CecilLoader.GetCecilObject ((IUnresolvedProperty)navigator.DataItem);
+			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), property.DeclaringType, b => b.AddProperty (property));
+		}
+
 		string IAssemblyBrowserNodeBuilder.GetDocumentationMarkup (ITreeNavigator navigator)
 		{
 			var property = (IUnresolvedProperty)navigator.DataItem;

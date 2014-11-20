@@ -558,6 +558,7 @@ namespace MonoDevelop.CSharp.Formatting
 			int lastNonWsOffset = caretOffset;
 			char lastNonWsChar = '\0';
 			outOffset = caretOffset;
+
 			int max = curLine.EndOffset;
 
 			int end = caretOffset;
@@ -573,69 +574,22 @@ namespace MonoDevelop.CSharp.Formatting
 					return false;
 			}
 
-			bool isInString = false, isInChar = false, isVerbatimString = false;
-			bool isInLineComment = false, isInBlockComment = false;
-			bool firstChar = true;
-			for (int pos = caretOffset; pos < max; pos++) {
-				if (pos == caretOffset) {
-					if (isInString || isInChar || isVerbatimString || isInLineComment || isInBlockComment) {
-						outOffset = pos;
-						return true;
-					}
-				}
-				char ch = data.GetCharAt (pos);
-				switch (ch) {
-				case '}':
-					if (firstChar && !IsSemicolonalreadyPlaced (data, caretOffset))
-						return false;
-					break;
-				case '/':
-					if (isInBlockComment) {
-						isInBlockComment &= pos <= 0 || data.GetCharAt (pos - 1) != '*';
-					} else if (!isInString && !isInChar && pos + 1 < max) {
-						char nextChar = data.GetCharAt (pos + 1);
-						if (nextChar == '/') {
-							outOffset = lastNonWsOffset;
-							return true;
-						}
-						if (!isInLineComment && nextChar == '*') {
-							outOffset = lastNonWsOffset;
-							return true;
-						}
-					}
-					break;
-				case '\\':
-					if (isInChar || (isInString && !isVerbatimString))
-						pos++;
-					break;
-				case '@':
-					if (!(isInString || isInChar || isInLineComment || isInBlockComment) && pos + 1 < max && data.GetCharAt (pos + 1) == '"') {
-						isInString = true;
-						isVerbatimString = true;
-						pos++;
-					}
-					break;
-				case '"':
-					if (!(isInChar || isInLineComment || isInBlockComment)) {
-						if (isInString && isVerbatimString && pos + 1 < max && data.GetCharAt (pos + 1) == '"') {
-							pos++;
-						} else {
-							isInString = !isInString;
-							isVerbatimString = false;
-						}
-					}
-					break;
-				case '\'':
-					if (!(isInString || isInLineComment || isInBlockComment))
-						isInChar = !isInChar;
-					break;
+			var offset = curLine.Offset;
+			string lineText = data.GetTextAt (caretOffset, max - caretOffset);
+			var lexer = new CSharpCompletionEngineBase.MiniLexer (lineText);
+			lexer.Parse ((ch, i) => {
+				if (lexer.IsInSingleComment || lexer.IsInMultiLineComment)
+					return true;
+				if (ch == '}' && lexer.IsFistNonWs && !IsSemicolonalreadyPlaced (data, caretOffset)) {
+					lastNonWsChar = ';';
+					return true;
 				}
 				if (!char.IsWhiteSpace (ch)) {
-					firstChar = false;
-					lastNonWsOffset = pos;
+					lastNonWsOffset = caretOffset + i;
 					lastNonWsChar = ch;
 				}
-			}
+				return false;
+			}); 
 			// if the line ends with ';' the line end is not the correct place for a new semicolon.
 			if (lastNonWsChar == ';')
 				return false;

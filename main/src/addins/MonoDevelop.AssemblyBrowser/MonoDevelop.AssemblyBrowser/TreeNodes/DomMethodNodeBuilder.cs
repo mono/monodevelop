@@ -131,20 +131,58 @@ namespace MonoDevelop.AssemblyBrowser
 
 		public static List<ReferenceSegment> Decompile (TextEditor data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
 		{
+			var context = new DecompilerContext (module);
+			var source = new CancellationTokenSource ();
+			context.CancellationToken = source.Token;
+			context.CurrentType = currentType;
+			context.Settings = settings;
 			try {
-
-				var context = new DecompilerContext (module);
-				var source = new CancellationTokenSource ();
-				
-				context.CancellationToken = source.Token;
-				context.CurrentType = currentType;
-				
-				context.Settings = settings;
-				
-				AstBuilder astBuilder = new AstBuilder (context);
-				
+				var astBuilder = new AstBuilder (context);
 				setData (astBuilder);
-				
+				astBuilder.RunTransformations (o => false);
+				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
+				var output = new ColoredCSharpFormatter (data.Document);
+				astBuilder.GenerateCode (output);
+				output.SetDocumentData ();
+				return output.ReferencedSegments;
+			} catch (Exception e) {
+				// exception  -> try to decompile without method bodies
+				try {
+					var astBuilder = new AstBuilder (context);
+					astBuilder.DecompileMethodBodies = false;
+					setData (astBuilder);
+					astBuilder.RunTransformations (o => false);
+					GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
+					var output = new ColoredCSharpFormatter (data.Document);
+					astBuilder.GenerateCode (output);
+					output.SetDocumentData ();
+					data.Document.Insert (data.Document.TextLength, "/* body decompilation failed: \n" + e + " */"); 
+				} catch (Exception e2) {
+					data.Text = "/* fallback decompilation failed: \n" + e2 +"*/";
+				}
+			}
+			return null;
+		}
+
+		public static List<ReferenceSegment> GetSummary (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData)
+		{
+			var types = DesktopService.GetMimeTypeInheritanceChain (data.Document.MimeType);
+			var codePolicy = MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<MonoDevelop.CSharp.Formatting.CSharpFormattingPolicy> (types);
+			var settings = DomTypeNodeBuilder.CreateDecompilerSettings (false, codePolicy);
+			return GetSummary (data, module, currentType, setData, settings);
+		}
+
+		public static List<ReferenceSegment> GetSummary (TextEditorData data, ModuleDefinition module, TypeDefinition currentType, Action<AstBuilder> setData, DecompilerSettings settings)
+		{
+			var context = new DecompilerContext (module);
+			var source = new CancellationTokenSource ();
+			context.CancellationToken = source.Token;
+			context.CurrentType = currentType;
+			context.Settings = settings;
+			try {
+				var astBuilder = new AstBuilder (context);
+				astBuilder.DecompileMethodBodies = false;
+				setData (astBuilder);
 				astBuilder.RunTransformations (o => false);
 				GeneratedCodeSettings.Default.Apply (astBuilder.SyntaxTree);
 				var output = new ColoredCSharpFormatter (data);
@@ -152,11 +190,11 @@ namespace MonoDevelop.AssemblyBrowser
 				output.SetDocumentData ();
 				return output.ReferencedSegments;
 			} catch (Exception e) {
-				data.Text = "Decompilation failed: \n" + e;
+				data.Text = "/* decompilation failed: \n" + e +"*/";
 			}
 			return null;
 		}
-		
+
 		internal static string GetAttributes (Ambience ambience, IEnumerable<IAttribute> attributes)
 		{
 			StringBuilder result = new StringBuilder ();
@@ -181,6 +219,17 @@ namespace MonoDevelop.AssemblyBrowser
 			return DomMethodNodeBuilder.Decompile (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
 		}
 		
+		List<ReferenceSegment> IAssemblyBrowserNodeBuilder.GetSummary (TextEditorData data, ITreeNavigator navigator, bool publicOnly)
+		{
+			var method = (IUnresolvedMethod)navigator.DataItem;
+			if (HandleSourceCodeEntity (navigator, data)) 
+				return null;
+			var cecilMethod = CecilLoader.GetCecilObject (method);
+			if (cecilMethod == null)
+				return null;
+			return DomMethodNodeBuilder.GetSummary (data, DomMethodNodeBuilder.GetModule (navigator), cecilMethod.DeclaringType, b => b.AddMethod (cecilMethod));
+		}
+
 		static void AppendLink (StringBuilder sb, string link, string text)
 		{
 			sb.Append ("<span style=\"text.link\"><u><a ref=\"");
