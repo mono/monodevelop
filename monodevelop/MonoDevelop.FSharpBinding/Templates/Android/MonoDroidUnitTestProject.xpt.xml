@@ -6,7 +6,7 @@
 		<Icon>monodroid-project</Icon>
 		<Image id="md-nunit-library-project" />
 		<LanguageName>F#</LanguageName>
-		<_Description>Creates an Android Unit Test Application.</_Description>
+		<_Description>Creates an Android Unit Test Project.</_Description>
 		<GroupId>monodroid-unit-test-project</GroupId>
 	</TemplateConfiguration>
 	

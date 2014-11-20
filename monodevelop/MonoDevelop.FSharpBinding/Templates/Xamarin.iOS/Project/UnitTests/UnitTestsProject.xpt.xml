@@ -7,7 +7,7 @@
 		<Image id="md-nunit-library-project" />
 		<LanguageName>F#</LanguageName>
 		<GroupId>md-unit-tests-ios-unified</GroupId>
-		<_Description><![CDATA[A unit test project for Unified iOS libraries and applications.
+		<_Description><![CDATA[A unit test project for Unified iOS libraries and apps.
 
 The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.
 

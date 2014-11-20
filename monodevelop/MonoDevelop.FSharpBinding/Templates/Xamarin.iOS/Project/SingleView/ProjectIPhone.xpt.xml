@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Single View Application</_Name>
+		<_Name>Single View App</_Name>
 		<Category>ios/app/general</Category>
 		<Icon>md-project-iphone</Icon>
 		<Image id="md-ios-single-view-app" />
@@ -9,7 +9,7 @@
 		<Wizard>MonoDevelop.IPhone.ProjectTemplateWizard</Wizard>
 		<GroupId condition="Device=IPhone">md-single-view-ios-unified</GroupId>
 		<DefaultParameters>MinimumOSVersion=8.0</DefaultParameters>
-		<_Description><![CDATA[Single view application project for iPhone and iPad with storyboard support.
+		<_Description><![CDATA[Single view app for iPhone and iPad with storyboard support.
 
 The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.
 

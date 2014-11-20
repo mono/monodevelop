@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Android Application</_Name>
+		<_Name>Android App</_Name>
 		<Category>android/app/general</Category>
 		<Icon>monodroid-project</Icon>
 		<Image id="md-android-app" />
 		<LanguageName>F#</LanguageName>
 		<Wizard>MonoDevelop.MonoDroid.ProjectTemplateWizard</Wizard>
-		<_Description>Creates an Android Application with an Activity.</_Description>
+		<_Description>Creates an Android App with an Activity.</_Description>
 		<GroupId>monodroid-project</GroupId>
 	</TemplateConfiguration>
 	

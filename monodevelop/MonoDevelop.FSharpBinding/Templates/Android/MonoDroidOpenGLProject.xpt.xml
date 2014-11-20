@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template>
 	<TemplateConfiguration>
-		<_Name>Android OpenGL Application</_Name>
+		<_Name>Android OpenGL App</_Name>
 		<Category>android/app/general</Category>
 		<Icon>monodroid-project</Icon>
 		<Image id="md-android-app" />

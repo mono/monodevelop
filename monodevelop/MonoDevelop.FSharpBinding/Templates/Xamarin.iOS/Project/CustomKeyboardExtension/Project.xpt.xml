@@ -7,7 +7,7 @@
 		<Image id="md-ios-custom-keyboard-extension" />
 		<LanguageName>F#</LanguageName>
 		<GroupId>md-custom-keyboard-extension-ios-unified</GroupId>
-		<_Description><![CDATA[A custom keyboard application extension.
+		<_Description><![CDATA[A custom keyboard app extension.
 
 The Unified API supports both 32 and 64-bit platforms, unlike the Classic API which supports only 32-bit platforms. The Unified API also removes namespace prefixes to allow better code sharing between Xamarin.Mac and Xamarin.iOS projects.
 
