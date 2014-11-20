@@ -31,7 +31,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class ProjectTemplateCategorizer
+	class ProjectTemplateCategorizer
 	{
 		List<TemplateCategory> categories;
 		TemplateCategory defaultCategory;

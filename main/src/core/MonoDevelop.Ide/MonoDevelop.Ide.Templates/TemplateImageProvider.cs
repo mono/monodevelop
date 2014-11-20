@@ -31,7 +31,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class TemplateImageProvider : IDisposable
+	class TemplateImageProvider : IDisposable
 	{
 		Dictionary<string, Image> images = new Dictionary<string, Image> ();
 		Dictionary<string, Image> fileImages = new Dictionary<string, Image> ();

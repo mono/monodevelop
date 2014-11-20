@@ -31,7 +31,7 @@ using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public interface INewProjectDialogController
+	interface INewProjectDialogController
 	{
 		IEnumerable<TemplateCategory> TemplateCategories { get; }
 		TemplateCategory SelectedSecondLevelCategory { get; }

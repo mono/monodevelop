@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class TemplateCondition
+	class TemplateCondition
 	{
 		public static readonly TemplateCondition Null = new TemplateCondition (null);
 

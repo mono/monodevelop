@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public partial class GtkNewProjectDialogBackend : INewProjectDialogBackend
+	partial class GtkNewProjectDialogBackend : INewProjectDialogBackend
 	{
 		INewProjectDialogController controller;
 

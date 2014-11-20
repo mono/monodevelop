@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class TemplateCategoryPath
+	class TemplateCategoryPath
 	{
 		string categoryPath = string.Empty;
 		string[] parts;

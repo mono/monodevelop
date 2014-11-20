@@ -32,7 +32,7 @@ using MonoDevelop.Core;
 namespace MonoDevelop.Ide.Projects
 {
 	[System.ComponentModel.ToolboxItem (true)]
-	public partial class GtkProjectConfigurationWidget : Gtk.Bin
+	partial class GtkProjectConfigurationWidget : Gtk.Bin
 	{
 		FinalProjectConfigurationPage projectConfiguration;
 

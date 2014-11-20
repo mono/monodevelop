@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Templates;
 namespace MonoDevelop.Ide.Projects
 {
 	[System.ComponentModel.ToolboxItem (true)]
-	public partial class GtkProjectFolderPreviewWidget : Gtk.Bin
+	partial class GtkProjectFolderPreviewWidget : Gtk.Bin
 	{
 		const string FolderIconId = "md-open-folder";
 		const string FileIconId = "md-empty-file-icon";

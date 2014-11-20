@@ -31,7 +31,7 @@ using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public class GtkTemplateCategoryCellRenderer : CellRendererText
+	class GtkTemplateCategoryCellRenderer : CellRendererText
 	{
 		public TemplateCategory Category { get; set; }
 		public string CategoryName { get; set; }

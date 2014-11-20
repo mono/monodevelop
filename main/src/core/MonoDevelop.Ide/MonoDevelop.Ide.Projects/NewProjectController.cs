@@ -47,7 +47,7 @@ namespace MonoDevelop.Ide.Projects
 	/// <summary>
 	/// To be renamed to NewProjectDialog
 	/// </summary>
-	public class NewProjectDialogController : INewProjectDialogController
+	class NewProjectDialogController : INewProjectDialogController
 	{
 		string chooseTemplateBannerText =  GettextCatalog.GetString ("Choose a template for your new project");
 		string configureYourProjectBannerText = GettextCatalog.GetString ("Configure your new project");

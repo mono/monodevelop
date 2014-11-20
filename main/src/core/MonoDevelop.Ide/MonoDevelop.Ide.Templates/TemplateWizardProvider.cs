@@ -31,7 +31,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class TemplateWizardProvider
+	class TemplateWizardProvider
 	{
 		WizardPage currentWizardPage;
 

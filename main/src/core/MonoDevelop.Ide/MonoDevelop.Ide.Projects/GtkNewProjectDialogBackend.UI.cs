@@ -32,7 +32,7 @@ using MonoDevelop.Ide.Templates;
 
 namespace MonoDevelop.Ide.Projects
 {
-	public partial class GtkNewProjectDialogBackend : Gtk.Dialog
+	partial class GtkNewProjectDialogBackend : Gtk.Dialog
 	{
 		Color bannerBackgroundColor = new Color (119, 130, 140);
 		Color bannerLineColor = new Color (112, 122, 131);

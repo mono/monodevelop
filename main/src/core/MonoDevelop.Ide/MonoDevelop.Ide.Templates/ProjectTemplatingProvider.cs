@@ -37,7 +37,7 @@ using MonoDevelop.Core;
 
 namespace MonoDevelop.Ide.Templates
 {
-	public class ProjectTemplatingProvider : IProjectTemplatingProvider
+	class ProjectTemplatingProvider : IProjectTemplatingProvider
 	{
 		public IEnumerable<SolutionTemplate> GetTemplates ()
 		{
