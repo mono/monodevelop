@@ -900,7 +900,7 @@ namespace MonoDevelop.Ide.Gui
 		internal object ExtendedCommandTargetChain {
 			get {
 				// Only go through the text editor chain, if the text editor is selected as subview
-				if (Window != null && Window.ActiveViewContent == Window.ViewContent)
+				if (Window != null && Window.ActiveViewContent.GetContent (typeof(IExtensibleTextEditor)) != null)
 					return editorExtension;
 				return null;
 			}
