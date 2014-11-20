@@ -49,7 +49,7 @@ using MonoDevelop.Components;
 
 namespace MonoDevelop.SourceEditor
 {
-	public class ExtensibleTextEditor : Mono.TextEditor.TextEditor
+	public class ExtensibleTextEditor : Mono.TextEditor.TextEditor, ICommandRouter
 	{
 		internal object MemoryProbe = Counters.EditorsInMemory.CreateMemoryProbe ();
 		
@@ -1039,6 +1039,15 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 #endregion
+
+		#region ICommandRouter implementation
+
+		object ICommandRouter.GetNextCommandTarget ()
+		{
+			return this.Extension;
+		}
+
+		#endregion
 		
 	}
 }
