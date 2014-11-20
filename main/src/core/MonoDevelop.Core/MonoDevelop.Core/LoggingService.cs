@@ -109,9 +109,19 @@ namespace MonoDevelop.Core
 			set { PropertyService.Set (ReportCrashesKey, value); }
 		}
 
+		public static event EventHandler<PropertyChangedEventArgs> ReportCrashesChanged {
+			add { PropertyService.AddPropertyHandler (ReportCrashesKey, value); }
+			remove { PropertyService.RemovePropertyHandler (ReportCrashesKey, value); }
+		}
+
 		public static bool? ReportUsage {
 			get { return PropertyService.Get<bool?> (ReportUsageKey); }
 			set { PropertyService.Set (ReportUsageKey, value); }
+		}
+
+		public static event EventHandler<PropertyChangedEventArgs> ReportUsageChanged {
+			add { PropertyService.AddPropertyHandler (ReportUsageKey, value); }
+			remove { PropertyService.RemovePropertyHandler (ReportUsageKey, value); }
 		}
 
 		/// <summary>

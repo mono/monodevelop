@@ -824,7 +824,8 @@ namespace SubversionAddinWindows
 		public override bool HasNeedLock (FilePath file)
 		{
 			string tmp;
-			return client.GetProperty (new SvnPathTarget (file), SvnPropertyNames.SvnNeedsLock, out tmp);
+			lock (client)
+				return client.GetProperty (new SvnPathTarget (file), SvnPropertyNames.SvnNeedsLock, out tmp);
 		}
 	}
 }

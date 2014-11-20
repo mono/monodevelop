@@ -208,25 +208,34 @@ get_mono_env_options (int *count)
 	return argv;
 }
 
-static int
+static bool
 push_env (const char *variable, const char *value)
 {
-	size_t len = strlen (value);
 	const char *current;
-	int rv;
+	size_t len;
+	char *buf;
 	
 	if ((current = getenv (variable)) && *current) {
-		char *buf = malloc (len + strlen (current) + 2);
+		len = strlen (value);
+		
+		if (!strncmp (current, value, len) && (current[len] == ':' || current[len] == '\0'))
+			return NO;
+		
+		if (!(buf = malloc (len + strlen (current) + 2)))
+			return NO;
+		
 		memcpy (buf, value, len);
 		buf[len] = ':';
 		strcpy (buf + len + 1, current);
-		rv = setenv (variable, buf, 1);
+		setenv (variable, buf, 1);
 		free (buf);
 	} else {
-		rv = setenv (variable, value, 1);
+		setenv (variable, value, 1);
 	}
+
+	//printf ("Updated the %s environment variable.\n", variable);
 	
-	return rv;
+	return YES;
 }
 
 static char *
@@ -246,84 +255,98 @@ str_append (const char *base, const char *append)
 }
 
 static char *
-launcher_variable (const char *app_name)
+generate_fallback_path (const char *contentsDir)
 {
-	char *variable = malloc (strlen (app_name) + 10);
-	const char *s = app_name;
-	char *d = variable;
-	
-	while (*s != '\0') {
-		*d++ = (*s >= 'a' && *s <= 'z') ? *s - 0x20 : *s;
-		s++;
-	}
-	
-	strcpy (d, "_LAUNCHER");
-	
-	return variable;
+	char *lib_dir;
+	char *monodevelop_bin_dir;
+	char *value;
+	char *result;
+
+	/* Inject our Resources/lib dir */
+	lib_dir = str_append (contentsDir, "/Resources/lib:");
+
+	/* Inject our Resources/lib/monodevelop/bin dir so we can load libxammac.dylib */
+	monodevelop_bin_dir = str_append (contentsDir, "/Resources/lib/monodevelop/bin:");
+
+	if (lib_dir == NULL || monodevelop_bin_dir == NULL)
+		abort ();
+
+	value = str_append (lib_dir, monodevelop_bin_dir);
+	if (value == NULL)
+		abort ();
+
+	/* Mono's lib dir, and CommandLineTool's lib dir into the DYLD_FALLBACK_LIBRARY_PATH */
+	result = str_append (value, "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib:/usr/local/lib");
+
+	free (lib_dir);
+	free (monodevelop_bin_dir);
+	free (value);
+	return result;
 }
 
-static void
-update_environment (const char *resourcesDir, const char *app)
+static bool
+update_environment (const char *contentsDir)
 {
-	char *value, *v1, *v2;
-	char *variable;
-	char buf[32];
+	bool updated = NO;
+	char *value;
 	
-    /* CommandLineTools are needed for OSX 10.9+ */
-	push_env ("DYLD_FALLBACK_LIBRARY_PATH", "/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib:/Library/Developer/CommandLineTools/usr/lib");
+	if ((value = generate_fallback_path (contentsDir))) {
+		if (push_env ("DYLD_FALLBACK_LIBRARY_PATH", value))
+			updated = YES;
+		
+		free (value);
+	}
 	
-	/* Mono "External" directory */
-	push_env ("PKG_CONFIG_PATH", "/Library/Frameworks/Mono.framework/External/pkgconfig");
+	/* Enable the use of stuff bundled into the app bundle and the Mono "External" directory */
+	if ((value = str_append (contentsDir, "/Resources/lib/pkgconfig:/Library/Frameworks/Mono.framework/External/pkgconfig"))) {
+		if (push_env ("PKG_CONFIG_PATH", value))
+			updated = YES;
+		
+		free (value);
+	}
+
+	if ((value = str_append (contentsDir, "/Resources"))) {
+		if (push_env ("MONO_GAC_PREFIX", value))
+			updated = YES;
+		
+		free (value);
+	}
 	
-	/* Enable the use of stuff bundled into the app bundle */
-	if ((v2 = str_append (resourcesDir, "/lib/pkgconfig"))) {
-		if ((v1 = str_append (resourcesDir, "/lib/pkgconfig:"))) {
-			if ((value = str_append (v1, v2))) {
-				push_env ("PKG_CONFIG_PATH", value);
-				free (value);
+	if ((value = str_append (contentsDir, "/MacOS"))) {
+		char *compat;
+		
+		// Note: older versions of Xamarin Studio incorrectly set the PATH to the Resources dir instead of the MacOS dir
+		// and older versions of mtouch relied on this broken behavior.
+		if ((compat = str_append (contentsDir, "/Resources"))) {
+			size_t compatlen = strlen (compat);
+			size_t valuelen = strlen (value);
+			char *combined;
+			
+			if ((combined = malloc (compatlen + valuelen + 2))) {
+				memcpy (combined, compat, compatlen);
+				combined[compatlen] = ':';
+				strcpy (combined + compatlen + 1, value);
+
+				if (push_env ("PATH", combined))
+					updated = YES;
+				
+				free (combined);
+			} else {
+				// if we can't combine them, set the old (incorrect) compat value
+				if (push_env ("PATH", compat))
+					updated = YES;
 			}
 			
-			free (v1);
+			free (compat);
+		} else {
+			if (push_env ("PATH", value))
+				updated = YES;
 		}
 		
-		free (v2);
-	}
-	
-	if ((value = str_append (resourcesDir, "/lib"))) {
-		push_env ("DYLD_FALLBACK_LIBRARY_PATH", value);
 		free (value);
 	}
-	
-	push_env ("MONO_GAC_PREFIX", resourcesDir);
-	
-	if ((value = str_append (resourcesDir, "/../MacOS"))) {
-		push_env ("PATH", resourcesDir);
-		free (value);
-	}
-	
-	/* Set our launcher pid so we don't recurse */
-	sprintf (buf, "%ld", (long) getpid ());
-	variable = launcher_variable (app);
-	setenv (variable, buf, 1);
-	free (variable);
-}
 
-static int
-is_launcher (const char *app)
-{
-	char *variable = launcher_variable (app);
-	const char *launcher;
-	char buf[32];
-	
-	launcher = getenv (variable);
-	free (variable);
-	
-	if (!(launcher && *launcher))
-		return 1;
-	
-	sprintf (buf, "%ld", (long) getppid ());
-	
-	return !strcmp (launcher, buf);
+	return updated;
 }
 
 static bool
@@ -360,7 +383,7 @@ int main (int argc, char **argv)
 	NSString *binDir = [[NSString alloc] initWithUTF8String: "Contents/Resources/lib/monodevelop/bin"];
 	NSString *appDir = [[NSBundle mainBundle] bundlePath];
 	// can be overridden with plist string MonoMinVersion
-	NSString *req_mono_version = @"3.0.7";
+	NSString *req_mono_version = @"3.8";
 	// can be overridden with either plist bool MonoUseSGen or MONODEVELOP_USE_SGEN env
 	bool use_sgen = YES;
 
@@ -386,12 +409,14 @@ int main (int argc, char **argv)
 	else
 		basename++;
 	
-	if (is_launcher (basename)) {
-		update_environment ([[appDir stringByAppendingPathComponent:@"Contents/Resources"] UTF8String], basename);
+	if (update_environment ([[appDir stringByAppendingPathComponent:@"Contents"] UTF8String])) {
+		//printf ("Updated the environment.\n");
 		[pool drain];
 		
 		return execv (argv[0], argv);
 	}
+
+	//printf ("Running main app.\n");
 	
 	if (getrlimit (RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < 1024) {
 		limit.rlim_cur = MIN (limit.rlim_max, 1024);

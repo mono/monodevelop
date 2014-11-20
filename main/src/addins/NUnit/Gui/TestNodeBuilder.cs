@@ -93,7 +93,7 @@ namespace MonoDevelop.NUnit
 				}
 
 				if (treeBuilder.Options ["ShowTestTime"]) {
-					nodeInfo.Label += "   Time: {0}ms" + (res.Time.TotalMilliseconds);
+					nodeInfo.Label += string.Format ("   Time: {0}ms", res.Time.TotalMilliseconds);
 				}
 			}
 		}

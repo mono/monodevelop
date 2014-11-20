@@ -26,21 +26,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using MonoMac.AppKit;
 using System.Linq;
+
+using CoreGraphics;
 
 namespace MonoDevelop.MacIntegration
 {
 	interface ILayout
 	{
 		LayoutRequest BeginLayout ();
-		void EndLayout (LayoutRequest request, PointF origin, SizeF allocation);
+		void EndLayout (LayoutRequest request, CGPoint origin, CGSize allocation);
 	}
 	
 	class LayoutRequest
 	{
-		public SizeF Size { get; set; }
+		public CGSize Size { get; set; }
 		public bool Visible { get; set; }
 		public bool ExpandWidth { get; set; }
 		public bool ExpandHeight { get; set; }
@@ -48,7 +48,7 @@ namespace MonoDevelop.MacIntegration
 	
 	abstract class LayoutBox : IEnumerable<ILayout>, ILayout
 	{
-		List<ILayout> children = new List<ILayout> ();
+		readonly List<ILayout> children = new List<ILayout> ();
 		
 		public float Spacing { get; set; }
 		public float PadLeft { get; set; }
@@ -59,11 +59,11 @@ namespace MonoDevelop.MacIntegration
 		
 		public LayoutDirection Direction { get; set; }
 		
-		public LayoutBox (LayoutDirection direction, float spacing) : this (direction, spacing, 0)
+		protected LayoutBox (LayoutDirection direction, float spacing) : this (direction, spacing, 0)
 		{
 		}
 		
-		public LayoutBox (LayoutDirection direction, float spacing, float padding)
+		protected LayoutBox (LayoutDirection direction, float spacing, float padding)
 		{
 			PadLeft = PadRight = PadTop = PadBottom = padding;
 			this.Direction = direction;
@@ -95,8 +95,8 @@ namespace MonoDevelop.MacIntegration
 		
 		public virtual LayoutRequest BeginLayout ()
 		{
-			float width = 0;
-			float height = 0;
+			nfloat width = 0;
+			nfloat height = 0;
 			
 			request.ChildRequests.Clear ();
 			request.ChildRequests.AddRange (children.Select (c => c.BeginLayout ()));
@@ -105,34 +105,32 @@ namespace MonoDevelop.MacIntegration
 				if (!r.Visible)
 					continue;
 				request.Visible = true;
-				if (r.ExpandWidth)
-					request.ExpandWidth = true;
-				if (r.ExpandHeight)
-					request.ExpandHeight = true;
+				request.ExpandWidth |= r.ExpandWidth;
+				request.ExpandHeight |= r.ExpandHeight;
 				
 				if (IsHorizontal) {
 					if (width != 0)
 						width += Spacing;
 					width += r.Size.Width;
-					height = Math.Max (height, r.Size.Height);
+					height = NMath.Max (height, r.Size.Height);
 				} else {
 					if (height != 0)
 						height += Spacing;
 					height += r.Size.Height;
-					width = Math.Max (width, r.Size.Width);
+					width = NMath.Max (width, r.Size.Width);
 				}
 			}
 			
-			request.Size = new SizeF (width + PadLeft + PadRight, height + PadTop + PadBottom);
+			request.Size = new CGSize (width + PadLeft + PadRight, height + PadTop + PadBottom);
 			return request;
 		}
 		
-		public virtual void EndLayout (LayoutRequest request, PointF origin, SizeF allocation)
+		public virtual void EndLayout (LayoutRequest request, CGPoint origin, CGSize allocation)
 		{	
 			var childRequests =  ((ContainerLayoutRequest) request).ChildRequests;
 			
-			allocation = new SizeF (allocation.Width - PadLeft - PadRight, allocation.Height - PadBottom - PadTop);
-			origin = new PointF (origin.X + PadLeft, origin.Y + PadBottom);
+			allocation = new CGSize (allocation.Width - PadLeft - PadRight, allocation.Height - PadBottom - PadTop);
+			origin = new CGPoint (origin.X + PadLeft, origin.Y + PadBottom);
 			
 			var size = request.Size;
 			size.Height -= (PadTop + PadBottom);
@@ -152,13 +150,13 @@ namespace MonoDevelop.MacIntegration
 					hExpandCount++;
 			}
 			
-			float wExpand = 0;
+			nfloat wExpand = 0;
 			if (allocation.Width > size.Width) {
 				wExpand = allocation.Width - size.Width;
 				if (wExpandCount > 0)
 					wExpand /= wExpandCount;
 			}
-			float hExpand = 0;
+			nfloat hExpand = 0;
 			if (allocation.Height > size.Height) {
 				hExpand = allocation.Height - size.Height;
 				if (hExpandCount > 0)
@@ -166,7 +164,7 @@ namespace MonoDevelop.MacIntegration
 			}
 			
 			if (Direction == LayoutDirection.Horizontal) {
-				float pos = PadLeft;
+				nfloat pos = PadLeft;
 				if (wExpandCount == 0) {
 					if (Align == LayoutAlign.End)
 						pos += wExpand;
@@ -179,18 +177,18 @@ namespace MonoDevelop.MacIntegration
 					if (!childReq.Visible)
 						continue;
 					
-					var childSize = new SizeF (childReq.Size.Width, allocation.Height);
+					var childSize = new CGSize (childReq.Size.Width, allocation.Height);
 					if (childReq.ExpandWidth) {
 						childSize.Width += wExpand;
 					} else if (hExpandCount == 0 && Align == LayoutAlign.Fill) {
 						childSize.Width += wExpand / visibleCount;
 					}
 					
-					child.EndLayout (childReq, new PointF (pos, origin.Y), childSize);
+					child.EndLayout (childReq, new CGPoint (pos, origin.Y), childSize);
 					pos += childSize.Width + Spacing;
 				}
 			} else {
-				float pos = PadBottom;
+				nfloat pos = PadBottom;
 				if (hExpandCount == 0) {
 					if (Align == LayoutAlign.End)
 						pos += hExpand;
@@ -203,14 +201,14 @@ namespace MonoDevelop.MacIntegration
 					if (!childReq.Visible)
 						continue;
 					
-					var childSize = new SizeF (allocation.Width, childReq.Size.Height);
+					var childSize = new CGSize (allocation.Width, childReq.Size.Height);
 					if (childReq.ExpandHeight) {
 						childSize.Height += hExpand;
 					} else if (hExpandCount == 0 && Align == LayoutAlign.Fill) {
 						childSize.Height += hExpand / visibleCount;
 					}
 					
-					child.EndLayout (childReq, new PointF (origin.X, pos), childSize);
+					child.EndLayout (childReq, new CGPoint (origin.X, pos), childSize);
 					pos += childSize.Height + Spacing;
 				}
 			}
@@ -236,7 +234,7 @@ namespace MonoDevelop.MacIntegration
 	
 	abstract class LayoutAlignment : ILayout
 	{
-		public LayoutAlignment ()
+		protected LayoutAlignment ()
 		{
 			XAlign = YAlign = LayoutAlign.Center;
 		}
@@ -257,16 +255,16 @@ namespace MonoDevelop.MacIntegration
 		
 		public virtual LayoutRequest BeginLayout ()
 		{
-			request.Size = new SizeF (MinWidth + PadLeft + PadRight, MinHeight + PadTop + PadBottom);
-			request.ExpandHeight = this.ExpandHeight;
-			request.ExpandWidth = this.ExpandWidth;
-			request.Visible = this.Visible;
+			request.Size = new CGSize (MinWidth + PadLeft + PadRight, MinHeight + PadTop + PadBottom);
+			request.ExpandHeight = ExpandHeight;
+			request.ExpandWidth = ExpandWidth;
+			request.Visible = Visible;
 			return request;
 		}
 		
-		public virtual void EndLayout (LayoutRequest request, PointF origin, SizeF allocation)
+		public virtual void EndLayout (LayoutRequest request, CGPoint origin, CGSize allocation)
 		{
-			var frame = new RectangleF (origin.X + PadLeft, origin.Y + PadBottom, 
+			var frame = new CGRect (origin.X + PadLeft, origin.Y + PadBottom, 
 				allocation.Width - PadLeft - PadRight, allocation.Height - PadTop - PadBottom);
 			
 			if (allocation.Height > request.Size.Height) {
@@ -294,6 +292,6 @@ namespace MonoDevelop.MacIntegration
 			OnLayoutEnded (frame);
 		}
 		
-		protected abstract void OnLayoutEnded (RectangleF frame);
+		protected abstract void OnLayoutEnded (CGRect frame);
 	}
 }

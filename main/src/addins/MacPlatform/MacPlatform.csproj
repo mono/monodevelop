@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <AssemblyName>MacPlatform</AssemblyName>
     <RootNamespace>MacPlatform</RootNamespace>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -21,7 +22,7 @@
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\MacPlatform.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\bin\MacPlatform.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,7 +34,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
     <NoWarn>1591;1573</NoWarn>
-    <DocumentationFile>..\..\..\build\AddIns\MacPlatform.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\build\bin\MacPlatform.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,8 +49,8 @@
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Web" />
     <Reference Include="System.Drawing" />
-    <Reference Include="MonoMac">
-      <HintPath>..\..\..\external\monomac\src\MonoMac.dll</HintPath>
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cairo" />
   </ItemGroup>
@@ -147,4 +148,10 @@
     <Folder Include="MacInterop\AppleEvents\" />
     <Folder Include="MacMenu\" />
   </ItemGroup>
+  <ItemGroup>
+    <LibXammac Include = "..\..\..\external\libxammac.dylib" />
+  </ItemGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="@(LibXammac)" DestinationFiles="$(OutputPath)\libxammac.dylib" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

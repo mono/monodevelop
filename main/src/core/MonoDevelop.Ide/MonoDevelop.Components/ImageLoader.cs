@@ -139,7 +139,7 @@ namespace MonoDevelop.Components
 						using (var stream = File.OpenRead (path))
 							newImage = Xwt.Drawing.Image.FromStream (stream);
 						if (Math.Abs (scaleFactor - 1) > 0.2)
-							newImage = Image.Scale (1 / scaleFactor);
+							newImage = newImage.Scale (1 / scaleFactor);
 					}
 					UpdateImage (newImage, downloaded);
 				} catch (Exception ex) {

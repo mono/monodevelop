@@ -169,6 +169,9 @@ namespace MonoDevelop.Components.Docking
 				lastFrameSize = args.Allocation.Size;
 				if (autoShowFrame != null)
 					bar.Frame.UpdateSize (bar, autoShowFrame);
+
+				UnscheduleAutoHide ();
+				AutoHide (false);
 			}
 		}
 		
@@ -271,6 +274,8 @@ namespace MonoDevelop.Components.Docking
 				GLib.Timeout.Add (200, delegate {
 					// Using a small delay because AutoShow uses an animation and setting focus may
 					// not work until the item is visible
+					if (autoShowFrame != null && autoShowFrame.ContainerWindow != null && autoShowFrame.ContainerWindow != (Gtk.Window)Toplevel)
+						autoShowFrame.ContainerWindow.Present ();
 					it.SetFocus ();
 					ScheduleAutoHide (false);
 					return false;
@@ -301,7 +306,7 @@ namespace MonoDevelop.Components.Docking
 		{
 			UnscheduleAutoShow ();
 			if (autoShowFrame != null) {
-				size = autoShowFrame.Size;
+				size = autoShowFrame.PadSize;
 				hiddenFrame = autoShowFrame;
 				autoShowFrame.Hidden += delegate {
 					hiddenFrame = null;
@@ -344,7 +349,7 @@ namespace MonoDevelop.Components.Docking
 					if (it.ShowingContextMemu)
 						return true;
 					// Don't hide the item if it has the focus. Try again later.
-					if (it.Widget.FocusChild != null && !force)
+					if (it.Widget.FocusChild != null && !force && autoShowFrame != null && ((Gtk.Window)autoShowFrame.Toplevel).HasToplevelFocus)
 						return true;
 					// Don't hide the item if the mouse pointer is still inside the window. Try again later.
 					int px, py;

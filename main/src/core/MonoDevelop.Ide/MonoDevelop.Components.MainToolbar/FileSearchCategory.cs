@@ -63,7 +63,7 @@ namespace MonoDevelop.Components.MainToolbar
 
 				foreach (Project p in projects) {
 					foreach (ProjectFile file in p.Files) {
-						if (file.Subtype != Subtype.Directory)
+						if (file.Subtype != Subtype.Directory && (file.Flags & ProjectItemFlags.Hidden) != ProjectItemFlags.Hidden)
 							yield return file;
 					}
 				}

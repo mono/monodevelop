@@ -65,6 +65,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return completionDataList; }
 			set {
 				completionDataList = value;
+				defaultComparer = null;
 			}
 		}
 
@@ -174,6 +175,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					((IDisposable)completionDataList).Dispose ();
 				CloseCompletionList ();
 				completionDataList = null;
+				defaultComparer = null;
 			}
 
 			HideDeclarationView ();
@@ -361,6 +363,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return CompletionData.Compare (a, b);
 			}
 		}
+
+		IComparer<ICompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
+		{
+			var concrete = dataList as CompletionDataList;
+			return concrete != null && concrete.Comparer != null ? concrete.Comparer : new DataItemComparer ();
+		}
 		
 		bool FillList ()
 		{
@@ -372,8 +380,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
+			var list = completionDataList as CompletionDataList;
 			if (!completionDataList.IsSorted)
-				completionDataList.Sort (new DataItemComparer ());
+				completionDataList.Sort (GetComparerForCompletionList (completionDataList));
 
 			Reposition (true);
 			return true;
@@ -673,10 +682,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			return completionDataList[n].CompletionText;
 		}
-		static DataItemComparer defaultComparer = new DataItemComparer ();
+
+		IComparer<ICompletionData> defaultComparer;
+
 		int IListDataProvider.CompareTo (int n, int m)
 		{
-			return defaultComparer.Compare (completionDataList [n], completionDataList [m]);
+			var item1 = completionDataList [n];
+			var item2 = completionDataList [m];
+			return (defaultComparer ?? (defaultComparer = GetComparerForCompletionList (completionDataList))).Compare (item1, item2);
 		}
 		
 		Xwt.Drawing.Image IListDataProvider.GetIcon (int n)

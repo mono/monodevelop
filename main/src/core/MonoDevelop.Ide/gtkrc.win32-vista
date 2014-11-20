@@ -233,6 +233,11 @@ style "notebook" = "default"
     }
 }
 
+style "wizard-dialog"
+{
+    GtkDialog::content-area-border = 0
+}
+
 style "radio-button" = "default"
 {
     GtkCheckButton::indicator-size = 15
@@ -317,6 +322,8 @@ widget "*search-entry*" style "search-entry"
 
 widget_class "*<GtkButton>"     style "button"
 widget "*.GtkToggleButton"      style "button"
+
+widget "wizard_dialog"          style "wizard-dialog"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"

@@ -1,8 +1,8 @@
 <ExtensionModel>
 	
 	<Runtime>
-		<Import assembly="MonoMac.dll" />
-		<ScanExclude path="MonoMac.dll" />
+		<Import assembly="Xamarin.Mac.dll" />
+		<ScanExclude path="Xamarin.Mac.dll" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Core/PlatformService">

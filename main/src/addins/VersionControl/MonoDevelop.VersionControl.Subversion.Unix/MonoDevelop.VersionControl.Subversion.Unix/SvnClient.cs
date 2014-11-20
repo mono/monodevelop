@@ -1157,6 +1157,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 		{
 			destroypool (pool);
 			updatemonitor = null;
+			progressData.LogTimer.Dispose ();
+			progressData = null;
 			Monitor.Exit (svn);
 		}
 
@@ -1274,10 +1276,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 			}
 
 			long totalProgress = total;
-			if (totalProgress != -1 && currentProgress >= totalProgress) {
-				progressData.LogTimer.Dispose ();
+			if (totalProgress != -1 && currentProgress >= totalProgress)
 				return;
-			}
 
 			progressData.Remainder += currentProgress % 1024;
 			if (progressData.Remainder >= 1024) {
@@ -1478,8 +1478,8 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 				lockFileList.Add (file);
 		}
 
-		bool Upgrading;
-		bool TooOld;
+		static bool Upgrading;
+		static bool TooOld;
 		internal string GetDirectoryDotSvnInternal (FilePath path)
 		{
 			if (Upgrading || TooOld)
@@ -1596,10 +1596,15 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 
 			IntPtr CollectorFunc (IntPtr baton, IntPtr apr_hash_changed_paths, svn_revnum_t revision, IntPtr author, IntPtr date, IntPtr message, IntPtr pool)
 			{
+				// Taken from https://subversion.apache.org/docs/api/1.8/group__Log.html#ga43d8607236ca1bd5c2d9b41acfb62b7e
+				// Don't hash it when it's null. 
+				if (apr_hash_changed_paths == IntPtr.Zero)
+					return IntPtr.Zero;
+
 				long time;
 				svn.time_from_cstring (out time, Marshal.PtrToStringAnsi (date), pool);
 				string smessage = "";
-				
+
 				if (message != IntPtr.Zero)
 					smessage = Marshal.PtrToStringAnsi (message);
 				
@@ -1607,7 +1612,7 @@ namespace MonoDevelop.VersionControl.Subversion.Unix
 					smessage = smessage.Trim ();
 				
 				List<RevisionPath> items = new List<RevisionPath>();
-				
+
 				IntPtr item = apr.hash_first (pool, apr_hash_changed_paths);
 				while (item != IntPtr.Zero) {
 					IntPtr nameptr, val;

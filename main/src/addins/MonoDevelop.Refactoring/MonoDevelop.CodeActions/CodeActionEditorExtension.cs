@@ -50,7 +50,7 @@ namespace MonoDevelop.CodeActions
 		const int menuTimeout = 250;
 		uint smartTagPopupTimeoutId;
 		uint menuCloseTimeoutId;
-		Menu codeActionMenu;
+		FixMenuDescriptor codeActionMenu;
 
 		public IEnumerable<CodeAction> Fixes {
 			get;
@@ -181,12 +181,55 @@ namespace MonoDevelop.CodeActions
 		{
 			return act is AnalysisContextActionProvider.AnalysisCodeAction || act.Severity == Severity.Error;
 		} 
+			
 
-		void PopupQuickFixMenu (Gdk.EventButton evt, Action<Gtk.Menu> menuAction)
+		class FixMenuEntry
 		{
-			var menu = new Gtk.Menu ();
-			menu.Events |= Gdk.EventMask.AllEventsMask;
-			Gtk.Menu fixMenu = menu;
+			public static readonly FixMenuEntry Separator = new FixMenuEntry ("-", null);
+			public readonly string Label;
+
+			public readonly System.Action Action;
+
+			public FixMenuEntry (string label, System.Action action)
+			{
+				this.Label = label;
+				this.Action = action;
+			}
+		}
+
+		class FixMenuDescriptor : FixMenuEntry
+		{
+			readonly List<FixMenuEntry> items = new List<FixMenuEntry> ();
+
+			public IReadOnlyList<FixMenuEntry> Items {
+				get {
+					return items;
+				}
+			}
+
+			public FixMenuDescriptor () : base (null, null)
+			{
+			}
+
+			public FixMenuDescriptor (string label) : base (label, null)
+			{
+			}
+
+			public void Add (FixMenuEntry entry)
+			{
+				items.Add (entry); 
+			}
+
+			public object MotionNotifyEvent {
+				get;
+				set;
+			}
+		}
+
+		void PopupQuickFixMenu (Gdk.EventButton evt, Action<FixMenuDescriptor> menuAction)
+		{
+			FixMenuDescriptor menu = new FixMenuDescriptor ();
+			var fixMenu = menu;
 			ResolveResult resolveResult;
 			ICSharpCode.NRefactory.CSharp.AstNode node;
 			int items = 0;
@@ -198,12 +241,9 @@ namespace MonoDevelop.CodeActions
 				);
 
 				foreach (var t in possibleNamespaces.Where (tp => tp.OnlyAddReference)) {
-					var menuItem = new Gtk.MenuItem (t.GetImportText ());
-					menuItem.Activated += delegate {
+					menu.Add (new FixMenuEntry (t.GetImportText (), delegate {
 						new ResolveCommandHandler.AddImport (document, resolveResult, null, t.Reference, true, node).Run ();
-						menu.Destroy ();
-					};
-					menu.Add (menuItem);
+					}));
 					items++;
 				}
 
@@ -212,12 +252,11 @@ namespace MonoDevelop.CodeActions
 					foreach (var t in possibleNamespaces.Where (tp => tp.IsAccessibleWithGlobalUsing)) {
 						string ns = t.Namespace;
 						var reference = t.Reference;
-						var menuItem = new Gtk.MenuItem (t.GetImportText ());
-						menuItem.Activated += delegate {
-							new ResolveCommandHandler.AddImport (document, resolveResult, ns, reference, true, node).Run ();
-							menu.Destroy ();
-						};
-						menu.Add (menuItem);
+						menu.Add (new FixMenuEntry (t.GetImportText (), 
+							delegate {
+								new ResolveCommandHandler.AddImport (document, resolveResult, ns, reference, true, node).Run ();
+							})
+						);
 						items++;
 					}
 				}
@@ -227,49 +266,142 @@ namespace MonoDevelop.CodeActions
 					foreach (var t in possibleNamespaces) {
 						string ns = t.Namespace;
 						var reference = t.Reference;
-						var menuItem = new Gtk.MenuItem (t.GetInsertNamespaceText (document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)));
-						menuItem.Activated += delegate {
+						menu.Add (new FixMenuEntry (t.GetInsertNamespaceText (document.Editor.GetTextBetween (node.StartLocation, node.EndLocation)),
+							delegate {
 							new ResolveCommandHandler.AddImport (document, resolveResult, ns, reference, false, node).Run ();
-							menu.Destroy ();
-						};
-						menu.Add (menuItem);
+						}));
 						items++;
 					}
 				}
 
-				if (menu.Children.Any () && Fixes.Any ()) {
-					fixMenu = new Gtk.Menu ();
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Quick Fixes"));
-					menuItem.Submenu = fixMenu;
-					menu.Add (menuItem);
+				if (menu.Items.Any () && Fixes.Any ()) {
+					fixMenu = new FixMenuDescriptor (GettextCatalog.GetString ("Quick Fixes"));
+					menu.Add (fixMenu);
 					items++;
 				}
 			}
-
 			PopulateFixes (fixMenu, ref items);
 			if (items == 0) {
-				menu.Destroy ();
 				return;
 			}
 			document.Editor.SuppressTooltips = true;
 			document.Editor.Parent.HideTooltip ();
 			if (menuAction != null)
 				menuAction (menu);
-			menu.ShowAll ();
-			menu.SelectFirst (true);
-			menu.Hidden += delegate {
-				document.Editor.SuppressTooltips = false;
-			};
 			var container = document.Editor.Parent;
 
 			var p = container.LocationToPoint (currentSmartTagBegin);
 			var rect = new Gdk.Rectangle (
 				p.X + container.Allocation.X , 
 				p.Y + (int)document.Editor.LineHeight + container.Allocation.Y, 0, 0);
-			GtkWorkarounds.ShowContextMenu (menu, document.Editor.Parent, null, rect);
+
+			ShowFixesMenu (document.Editor.Parent, rect, menu);
 		}
 
-		public void PopulateFixes (Gtk.Menu menu, ref int items)
+		bool ShowFixesMenu (Gtk.Widget parent, Gdk.Rectangle evt, FixMenuDescriptor entrySet)
+		{
+			#if MAC
+			parent.GrabFocus ();
+			int x, y;
+			x = (int)evt.X;
+			y = (int)evt.Y;
+
+			Gtk.Application.Invoke (delegate {
+			// Explicitly release the grab because the menu is shown on the mouse position, and the widget doesn't get the mouse release event
+			Gdk.Pointer.Ungrab (Gtk.Global.CurrentEventTime);
+			var menu = CreateNSMenu (entrySet);
+			var nsview = MonoDevelop.Components.Mac.GtkMacInterop.GetNSView (parent);
+			var toplevel = parent.Toplevel as Gtk.Window;
+			int trans_x, trans_y;
+			parent.TranslateCoordinates (toplevel, (int)x, (int)y, out trans_x, out trans_y);
+
+			// Window coordinates in gtk are the same for cocoa, with the exception of the Y coordinate, that has to be flipped.
+			var pt = new CoreGraphics.CGPoint ((float)trans_x, (float)trans_y);
+			int w,h;
+			toplevel.GetSize (out w, out h);
+			pt.Y = h - pt.Y;
+
+			var tmp_event = AppKit.NSEvent.MouseEvent (AppKit.NSEventType.LeftMouseDown,
+			pt,
+			0, 0,
+			MonoDevelop.Components.Mac.GtkMacInterop.GetNSWindow (toplevel).WindowNumber,
+			null, 0, 0, 0);
+
+			AppKit.NSMenu.PopUpContextMenu (menu, tmp_event, nsview);
+			});
+			#else
+			var menu = CreateGtkMenu (entrySet);
+			menu.Events |= Gdk.EventMask.AllEventsMask;
+			menu.SelectFirst (true);
+
+			menu.Hidden += delegate {
+				document.Editor.SuppressTooltips = false;
+			};
+			menu.ShowAll ();
+			menu.MotionNotifyEvent += (o, args) => {
+				if (args.Event.Window == Editor.Parent.TextArea.GdkWindow) {
+					StartMenuCloseTimer ();
+				} else {
+					CancelMenuCloseTimer ();
+				}
+			};
+
+			GtkWorkarounds.ShowContextMenu (menu, parent, null, evt);
+			#endif
+			return true;
+		}
+		#if MAC
+
+		AppKit.NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
+		{
+			var menu = new AppKit.NSMenu ();
+			foreach (var item in entrySet.Items) {
+				if (item == FixMenuEntry.Separator) {
+					menu.AddItem (AppKit.NSMenuItem.SeparatorItem);
+					continue;
+				}
+				var subMenu = item as FixMenuDescriptor;
+				if (subMenu != null) {
+					var gtkSubMenu = new AppKit.NSMenuItem (item.Label.Replace ("_", ""));
+					gtkSubMenu.Submenu = CreateNSMenu (subMenu);
+					menu.AddItem (gtkSubMenu); 
+					continue;
+				}
+				var menuItem = new AppKit.NSMenuItem (item.Label.Replace ("_", ""));
+				menuItem.Activated += delegate {
+					item.Action ();
+				};
+				menu.AddItem (menuItem); 
+			}
+			return menu;
+		}
+		#endif
+
+		static Menu CreateGtkMenu (FixMenuDescriptor entrySet)
+		{
+			var menu = new Menu ();
+			foreach (var item in entrySet.Items) {
+				if (item == FixMenuEntry.Separator) {
+					menu.Add (new SeparatorMenuItem ()); 
+					continue;
+				}
+				var subMenu = item as FixMenuDescriptor;
+				if (subMenu != null) {
+					var gtkSubMenu = new Gtk.MenuItem (item.Label);
+					gtkSubMenu.Submenu = CreateGtkMenu (subMenu);
+					menu.Add (gtkSubMenu); 
+					continue;
+				}
+				var menuItem = new Gtk.MenuItem (item.Label);
+				menuItem.Activated += delegate {
+					item.Action ();
+				};
+				menu.Add (menuItem); 
+			}
+			return menu;
+		}
+
+		void PopulateFixes (FixMenuDescriptor menu, ref int items)
 		{
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
@@ -282,7 +414,7 @@ namespace MonoDevelop.CodeActions
 				if (IsAnalysisOrErrorFix (fix_))
 					gotImportantFix = true;
 				if (!addedSeparator && gotImportantFix && !IsAnalysisOrErrorFix(fix_)) {
-					menu.Add (new Gtk.SeparatorMenuItem ());
+					menu.Add (FixMenuEntry.Separator);
 					addedSeparator = true;
 				}
 
@@ -291,12 +423,10 @@ namespace MonoDevelop.CodeActions
 				var label = (mnemonic <= 10)
 					? "_" + (mnemonic++ % 10).ToString () + " " + escapedLabel
 					: "  " + escapedLabel;
-				var thisInstanceMenuItem = new MenuItem (label);
-				thisInstanceMenuItem.Activated += new ContextActionRunner (fix, document, currentSmartTagBegin).Run;
-				thisInstanceMenuItem.Activated += delegate {
+				var thisInstanceMenuItem = new FixMenuEntry (label, delegate {
+					new ContextActionRunner (fix, document, currentSmartTagBegin).Run (null, EventArgs.Empty);
 					ConfirmUsage (fix.IdString);
-					menu.Destroy ();
-				};
+				});
 				menu.Add (thisInstanceMenuItem);
 				items++;
 			}
@@ -312,68 +442,67 @@ namespace MonoDevelop.CodeActions
 				var ir = (InspectorResults)arbitraryFixInGroup.Result;
 
 				if (first) {
-					menu.Add (new Gtk.SeparatorMenuItem ());
+					menu.Add (FixMenuEntry.Separator);
 					first = false;
 				}
 
-				var subMenu = new Gtk.Menu ();
+				var subMenu = new FixMenuDescriptor ();
 				foreach (var analysisFix_ in analysisFixGroup) {
 					var analysisFix = analysisFix_;
 					if (analysisFix.SupportsBatchRunning) {
-						var batchRunMenuItem = new Gtk.MenuItem (string.Format (GettextCatalog.GetString ("Apply in file: {0}"), analysisFix.Title));
-						batchRunMenuItem.Activated += delegate {
-							ConfirmUsage (analysisFix.IdString);
-							menu.Destroy ();
-						};
-						batchRunMenuItem.Activated += new ContextActionRunner (analysisFix, document, this.currentSmartTagBegin).BatchRun;
+						var batchRunMenuItem = new FixMenuEntry (
+							string.Format (GettextCatalog.GetString ("Apply in file: {0}"), analysisFix.Title), 
+							delegate {
+								ConfirmUsage (analysisFix.IdString);
+								new ContextActionRunner (analysisFix, document, this.currentSmartTagBegin).BatchRun (null, EventArgs.Empty);
+							}
+						);
 						subMenu.Add (batchRunMenuItem);
-						subMenu.Add (new Gtk.SeparatorMenuItem ());
+						subMenu.Add (FixMenuEntry.Separator);
 					}
 				}
 
 				var inspector = ir.Inspector;
 				if (inspector.CanSuppressWithAttribute) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with attribute"));
-					menuItem.Activated += delegate {
-						inspector.SuppressWithAttribute (document, arbitraryFixInGroup.DocumentRegion); 
-					};
+					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with attribute"),
+						delegate {
+							inspector.SuppressWithAttribute (document, arbitraryFixInGroup.DocumentRegion); 
+						});
 					subMenu.Add (menuItem);
 				}
 
 				if (inspector.CanDisableWithPragma) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Suppress with #pragma"));
-					menuItem.Activated += delegate {
-						inspector.DisableWithPragma (document, arbitraryFixInGroup.DocumentRegion); 
-					};
+					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Suppress with #pragma"),
+						delegate {
+							inspector.DisableWithPragma (document, arbitraryFixInGroup.DocumentRegion); 
+						});
 					subMenu.Add (menuItem);
 				}
 
 				if (inspector.CanDisableOnce) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Disable Once"));
-					menuItem.Activated += delegate {
-						inspector.DisableOnce (document, arbitraryFixInGroup.DocumentRegion); 
-					};
+					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("_Disable Once"),
+						delegate {
+							inspector.DisableOnce (document, arbitraryFixInGroup.DocumentRegion); 
+						});
 					subMenu.Add (menuItem);
 				}
 
 				if (inspector.CanDisableAndRestore) {
-					var menuItem = new Gtk.MenuItem (GettextCatalog.GetString ("Disable _and Restore"));
-					menuItem.Activated += delegate {
-						inspector.DisableAndRestore (document, arbitraryFixInGroup.DocumentRegion); 
-					};
+					var menuItem = new FixMenuEntry (GettextCatalog.GetString ("Disable _and Restore"),
+						delegate {
+							inspector.DisableAndRestore (document, arbitraryFixInGroup.DocumentRegion); 
+						});
 					subMenu.Add (menuItem);
 				}
 				var label = GettextCatalog.GetString ("_Options for \"{0}\"", InspectorResults.GetTitle (ir.Inspector));
-				var subMenuItem = new Gtk.MenuItem (label);
+				var subMenuItem = new FixMenuDescriptor (label);
 
-				var optionsMenuItem = new Gtk.MenuItem (GettextCatalog.GetString ("_Configure Rule"));
-				optionsMenuItem.Activated += arbitraryFixInGroup.ShowOptions;
+				var optionsMenuItem = new FixMenuEntry (GettextCatalog.GetString ("_Configure Rule"),
+					delegate {
+						arbitraryFixInGroup.ShowOptions (null, EventArgs.Empty);
+					});
+				subMenuItem.Add (optionsMenuItem);
 
-				optionsMenuItem.Activated += delegate {
-					menu.Destroy ();
-				};
-				subMenu.Add (optionsMenuItem);
-				subMenuItem.Submenu = subMenu;
 				menu.Add (subMenuItem);
 				items++;
 			}
@@ -454,9 +583,10 @@ namespace MonoDevelop.CodeActions
 					return;
 				var x = editor.ColumnToX (line, loc.Column) - editor.HAdjustment.Value + editor.TextViewMargin.TextStartPosition;
 				var y = editor.LineToY (line.LineNumber + 1) - editor.VAdjustment.Value;
-				if (args.X - x >= 0 * editor.Options.Zoom && 
-				    args.X - x < tagMarkerWidth * editor.Options.Zoom && 
-				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom) {
+				const double xAdditionalSpace = tagMarkerWidth;
+				if (args.X - x >= -xAdditionalSpace * editor.Options.Zoom && 
+					args.X - x < (tagMarkerWidth + xAdditionalSpace) * editor.Options.Zoom /*&& 
+				    args.Y - y < (editor.LineHeight / 2) * editor.Options.Zoom*/) {
 					result.Cursor = null;
 					Popup ();
 				} else {
@@ -469,13 +599,6 @@ namespace MonoDevelop.CodeActions
 				codeActionEditorExtension.smartTagPopupTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
 					codeActionEditorExtension.PopupQuickFixMenu (null, menu => {
 						codeActionEditorExtension.codeActionMenu = menu;
-						menu.MotionNotifyEvent += (o, args) => {
-							if (args.Event.Window == codeActionEditorExtension.Editor.Parent.TextArea.GdkWindow) {
-								codeActionEditorExtension.StartMenuCloseTimer ();
-							} else {
-								codeActionEditorExtension.CancelMenuCloseTimer ();
-							}
-						};
 					});
 					codeActionEditorExtension.smartTagPopupTimeoutId = 0;
 					return false;
@@ -563,10 +686,10 @@ namespace MonoDevelop.CodeActions
 		{
 			CancelMenuCloseTimer ();
 			menuCloseTimeoutId = GLib.Timeout.Add (menuTimeout, delegate {
-				if (codeActionMenu != null) {
+				/*if (codeActionMenu != null) {
 					codeActionMenu.Destroy ();
 					codeActionMenu = null;
-				}
+				}*/
 				menuCloseTimeoutId = 0;
 				return false;
 			});
@@ -610,8 +733,6 @@ namespace MonoDevelop.CodeActions
 		static readonly List<CodeAction> emptyList = new List<CodeAction> ();
 		internal List<CodeAction> GetCurrentFixes ()
 		{
-			if (QuickTaskStrip.EnableFancyFeatures && currentSmartTag == null)
-				return RefactoringService.GetValidActions (document, document.Editor.Caret.Location).Result.ToList ();
 			return currentSmartTag == null ? emptyList : currentSmartTag.fixes;
 		}
 	}

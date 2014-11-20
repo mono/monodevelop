@@ -26,7 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using MonoMac.AppKit;
+using AppKit;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -70,7 +70,7 @@ namespace MonoDevelop.MacInterop
 			var ptr = gdk_quartz_window_get_nswindow (window.GdkWindow.Handle);
 			if (ptr == IntPtr.Zero)
 				return null;
-			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSWindow;
+			return ObjCRuntime.Runtime.GetNSObject<NSWindow> (ptr);
 		}
 		
 		public static NSView GetView (Gtk.Widget widget)
@@ -78,7 +78,7 @@ namespace MonoDevelop.MacInterop
 			var ptr = gdk_quartz_window_get_nsview (widget.GdkWindow.Handle);
 			if (ptr == IntPtr.Zero)
 				return null;
-			return MonoMac.ObjCRuntime.Runtime.GetNSObject (ptr) as NSView;
+			return ObjCRuntime.Runtime.GetNSObject<NSView> (ptr);
 		}
 		
 		[DllImport (LIBQUARTZ)]

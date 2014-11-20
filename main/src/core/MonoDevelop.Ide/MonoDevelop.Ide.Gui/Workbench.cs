@@ -467,7 +467,6 @@ namespace MonoDevelop.Ide.Gui
 					Counters.OpenDocumentTimer.Trace ("Look for open document");
 					foreach (Document doc in Documents) {
 						IBaseViewContent vcFound = null;
-						int vcIndex = 0;
 
 						//search all ViewContents to see if they can "re-use" this filename
 						if (doc.Window.ViewContent.CanReuseView (info.FileName))
@@ -497,7 +496,6 @@ namespace MonoDevelop.Ide.Gui
 							
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
-								doc.Window.SwitchView (vcIndex);
 								doc.Window.SelectWindow ();
 								NavigationHistoryService.LogActiveDocument ();
 							}
@@ -1287,7 +1285,7 @@ namespace MonoDevelop.Ide.Gui
 				return fileName;
 			}
 			set {
-				fileName = ResolveSymbolicLink (value.CanonicalPath);
+				fileName = value.CanonicalPath;
 				if (fileName.IsNullOrEmpty)
 					LoggingService.LogError ("FileName == null\n" + Environment.StackTrace);
 			}
@@ -1337,36 +1335,6 @@ namespace MonoDevelop.Ide.Gui
 				this.Options |= OpenDocumentOptions.BringToFront;
 			} else {
 				this.Options &= ~OpenDocumentOptions.BringToFront;
-			}
-		}
-
-		static FilePath ResolveSymbolicLink (FilePath fileName)
-		{
-			if (fileName.IsEmpty)
-				return fileName;
-			try {
-				var alreadyVisted = new HashSet<FilePath> ();
-				while (true) {
-					if (alreadyVisted.Contains (fileName)) {
-						LoggingService.LogError ("Cyclic links detected: " + fileName);
-						return FilePath.Empty;
-					}
-					alreadyVisted.Add (fileName);
-					var linkInfo = new Mono.Unix.UnixSymbolicLinkInfo (fileName);
-					if (linkInfo.IsSymbolicLink && linkInfo.HasContents) {
-						FilePath contentsPath = linkInfo.ContentsPath;
-						if (contentsPath.IsAbsolute) {
-							fileName = linkInfo.ContentsPath;
-						} else {
-							fileName = fileName.ParentDirectory.Combine (contentsPath);
-						}
-						fileName = fileName.CanonicalPath;
-						continue;
-					}
-					return ResolveSymbolicLink (fileName.ParentDirectory).Combine (fileName.FileName).CanonicalPath;
-				}
-			} catch (Exception) {
-				return fileName;
 			}
 		}
 	}

@@ -207,21 +207,6 @@ style "tooltip"
     }
 }
 
-style "treeview" = "default"
-{
-    GtkTreeView::odd-row-color = "#f5f5f5"
-    
-    base[SELECTED] = "#c5d4e0"
-    base[ACTIVE] = "#c5d4e0"
-    text[SELECTED] = "#000"
-
-    engine "xamarin" {
-        roundness = 0
-        gradient_shades     = {1.0, 0.95, 0.95, 0.90}
-        glazestyle = 1
-    }
-}
-
 style "tree-header" = "wide"
 {
     bg[NORMAL] = "#f2f2f2"
@@ -379,7 +364,7 @@ class "GtkScrollbar" style "scrollbar"
 class "GtkProgressBar" style "progressbar"
 class "GtkScrolledWindow" style "scrolled-window"
 class "GtkNotebook" style "notebook"
-class "GtkButton" style "button"
+class "GtkButton" style "dialog-button"
 class "GtkToggleButton" style "toggle-button"
 
 class "GtkScale" style "scale"
@@ -403,7 +388,6 @@ widget "*.gtk-combobox-popup-menu*" style "combo-box-menu"
 widget_class "*<GtkToolbar>*" style "toolbar"
 widget_class "*ToolButton*"     style "toolbar-button"
 
-widget_class "*.<GtkTreeView>*"         style "treeview"
 widget_class "*.GtkTreeView.GtkButton"  style "tree-header"
 widget_class "*.GtkList.GtkButton"  style "tree-header"
 
@@ -417,7 +401,7 @@ widget_class "*.<GtkComboBoxEntry>.<GtkEntry>" style "entry"
 widget_class "*.<GtkComboBoxText>.<GtkToggleButton>" style "button"
 widget_class "*.<GtkComboBoxEntry>.<GtkToggleButton>" style "button"
 #widget_class "*.<GtkComboBoxEntry>.GtkEntry" style "entry"
-#widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "button"
+#widget_class "*.<GtkComboBoxEntry>.<GtkButton>" style "dialog-button"
 widget_class "*.<GtkComboBox>.*.GtkLabel" style "combo-box-label"
 
 # Comboboxes within toolbars

@@ -25,16 +25,12 @@
 // THE SOFTWARE.
 
 using System;
-using System.Drawing;
-using System.Linq;
-using System.Collections.Generic;
-using MonoMac.Foundation;
-using MonoMac.AppKit;
+using AppKit;
+using CoreGraphics;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
-using MonoDevelop.Components.Extensions;
 using MonoDevelop.MacInterop;
 
 namespace MonoDevelop.MacIntegration
@@ -43,13 +39,13 @@ namespace MonoDevelop.MacIntegration
 	{
 		public bool Run (AddFileDialogData data)
 		{
-			using (var panel = new NSOpenPanel () {
+			using (var panel = new NSOpenPanel {
 				CanChooseDirectories = false,
 				CanChooseFiles = true,
 			}) {
 				MacSelectFileDialogHandler.SetCommonPanelProperties (data, panel);
 				
-				var popup = new NSPopUpButton (new RectangleF (0, 0, 200, 28), false);
+				var popup = new NSPopUpButton (new CGRect (0, 0, 200, 28), false);
 				var dropdownBox = new MDBox (LayoutDirection.Horizontal, 2, 0) {
 					{ new MDLabel (GettextCatalog.GetString ("Override build action:")), true },
 					{ new MDAlignment (popup, true) { MinWidth = 200 }  }

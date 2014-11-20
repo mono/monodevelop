@@ -687,8 +687,9 @@ namespace MonoDevelop.Debugger
 		
 		void Refresh (bool resetScrollPosition)
 		{
-			foreach (ObjectValue val in new List<ObjectValue> (nodes.Keys))
+			foreach (var val in new List<ObjectValue> (nodes.Keys))
 				UnregisterValue (val);
+
 			nodes.Clear ();
 
 			// Note: this is a hack that ideally we could get rid of...
@@ -702,7 +703,7 @@ namespace MonoDevelop.Debugger
 			
 			bool showExpanders = AllowAdding;
 
-			foreach (ObjectValue val in values) {
+			foreach (var val in values) {
 				AppendValue (TreeIter.Zero, null, val);
 				if (val.HasChildren)
 					showExpanders = true;
