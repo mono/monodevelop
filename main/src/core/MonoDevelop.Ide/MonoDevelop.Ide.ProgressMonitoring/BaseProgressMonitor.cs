@@ -169,8 +169,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				OnCompleted ();
 			} catch (Exception ex) {
 				string msg = "Unhandled exception in monitor cancel event handler";
-				LoggingService.LogError (msg, ex);
-				MessageService.ShowException (ex, msg);
+				LoggingService.LogInternalError (msg, ex);
 			}
 		}
 		
@@ -334,10 +333,7 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 		protected void ShowResultDialog ()
 		{
 			if (Errors.Count == 1 && Warnings.Count == 0) {
-				if (ErrorException != null)
-					MessageService.ShowException (ErrorException, Errors[0]);
-				else
-					MessageService.ShowError (Errors[0]);
+				MessageService.ShowError (Errors[0], ErrorException);
 			}
 			else if (Errors.Count == 0 && Warnings.Count == 1) {
 				MessageService.ShowWarning (Warnings[0]);

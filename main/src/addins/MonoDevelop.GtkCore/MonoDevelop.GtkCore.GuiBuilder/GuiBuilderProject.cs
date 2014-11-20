@@ -91,7 +91,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			try {
 				gproject.Load (fileName);
 			} catch (Exception ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("The GUI designer project file '{0}' could not be loaded.", fileName));
+				MessageService.ShowError (GettextCatalog.GetString ("The GUI designer project file '{0}' could not be loaded.", fileName), ex);
 				hasError = true;
 			}
 

@@ -128,8 +128,7 @@ namespace MonoDevelop.AssemblyBrowser
 			try {
 				widget.Open (url);
 			} catch (Exception e) {
-				LoggingService.LogError ("Error while navigating to " + url, e);
-				MessageService.ShowException (e, GettextCatalog.GetString ("{0} could not be opened", url), GettextCatalog.GetString ("Error while opening assembly"));
+				MessageService.ShowError (GettextCatalog.GetString ("{0} could not be opened", url), e);
 			}
 		}
 		

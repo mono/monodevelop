@@ -1064,7 +1064,7 @@ namespace MonoDevelop.SourceEditor
 						view.Load (fileName);
 						view.WorkbenchWindow.Document.ReparseDocument ();
 					} catch (Exception ex) {
-						MessageService.ShowException (ex, "Could not remove the autosave file.");
+						LoggingService.LogError ("Could not remove the autosave file.", ex);
 					} finally {
 						RemoveMessageBar ();
 					}
@@ -1083,7 +1083,7 @@ namespace MonoDevelop.SourceEditor
 						view.WorkbenchWindow.Document.ReparseDocument ();
 						view.IsDirty = true;
 					} catch (Exception ex) {
-						MessageService.ShowException (ex, "Could not remove the autosave file.");
+						LoggingService.LogError ("Could not remove the autosave file.", ex);
 					} finally {
 						RemoveMessageBar ();
 					}
@@ -1131,7 +1131,7 @@ namespace MonoDevelop.SourceEditor
 				view.Load (view.ContentName, view.SourceEncoding, true);
 				view.WorkbenchWindow.ShowNotification = false;
 			} catch (Exception ex) {
-				MessageService.ShowException (ex, "Could not reload the file.");
+				MessageService.ShowError ("Could not reload the file.", ex);
 			} finally {
 				RemoveMessageBar ();
 			}

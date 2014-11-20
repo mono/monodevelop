@@ -61,7 +61,7 @@ namespace MonoDevelop.VersionControl.Views
 				this.vinfo = vc.GetVersionInfo (filepath, VersionInfoQueryFlags.IgnoreCache);
 			}
 			catch (Exception ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
+				MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
 			}
 			
 			// Widget setup

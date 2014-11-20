@@ -255,12 +255,8 @@ namespace MonoDevelop.Ide
 			}
 			
 			if (error != null) {
-				LoggingService.LogFatalError (null, error);
-				string message = BrandingService.BrandApplicationName (GettextCatalog.GetString (
-					"MonoDevelop failed to start. The following error has been reported: {0}",
-					error.Message
-				));
-				MessageService.ShowException (error, message);
+				string message = BrandingService.BrandApplicationName (GettextCatalog.GetString ("MonoDevelop failed to start"));
+				MessageService.ShowFatalError (message, null, error);
 				return 1;
 			}
 
@@ -615,7 +611,7 @@ namespace MonoDevelop.Ide
 			if (willShutdown)
 				LoggingService.LogFatalError (msg, ex);
 			else
-				LoggingService.LogCriticalError (msg, ex);
+				LoggingService.LogInternalError (msg, ex);
 		}
 		
 		/// <summary>SDBM-style hash, bounded to a range of 1000.</summary>

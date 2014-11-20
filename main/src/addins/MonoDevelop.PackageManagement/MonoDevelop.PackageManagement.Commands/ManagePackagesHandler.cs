@@ -29,6 +29,7 @@
 using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement.Commands
 {
@@ -42,7 +43,7 @@ namespace MonoDevelop.PackageManagement.Commands
 				var dialog = new ManagePackagesDialog (viewModels.ManagePackagesViewModel, packageEvents);
 				MessageService.ShowCustomDialog (dialog);
 			} catch (Exception ex) {
-				MessageService.ShowException (ex);
+				LoggingService.LogInternalError (ex);
 			}
 		}
 	}

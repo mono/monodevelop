@@ -155,7 +155,7 @@ namespace MonoDevelop.VersionControl.Git
 						try {
 							repo.RenameBranch (b.Name, dlg.BranchName);
 						} catch (Exception ex) {
-							MessageService.ShowException (ex, GettextCatalog.GetString ("The branch could not be renamed"));
+							MessageService.ShowError (GettextCatalog.GetString ("The branch could not be renamed"), ex);
 						}
 					}
 					repo.SetBranchTrackSource (dlg.BranchName, dlg.TrackSource);
@@ -180,7 +180,7 @@ namespace MonoDevelop.VersionControl.Git
 					repo.RemoveBranch (b.Name);
 					FillBranches ();
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The branch could not be deleted"));
+					MessageService.ShowError (GettextCatalog.GetString ("The branch could not be deleted"), ex);
 				}
 			}
 		}

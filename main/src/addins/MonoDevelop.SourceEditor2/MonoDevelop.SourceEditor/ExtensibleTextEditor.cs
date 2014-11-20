@@ -266,8 +266,7 @@ namespace MonoDevelop.SourceEditor
 		
 		void ReportExtensionError (Exception ex) 
 		{
-			MonoDevelop.Core.LoggingService.LogError ("Error in text editor extension chain", ex);
-			MessageService.ShowException (ex, "Error in text editor extension chain");
+			LoggingService.LogInternalError ("Error in text editor extension chain", ex);
 		}
 		
 		IEnumerable<char> TextWithoutCommentsAndStrings {

@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Projects
 					pf.ApplyFeature (parentCombine, entry, selectedEditors [n]);
 				}
 				catch (Exception ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
 				}
 			}
 		}

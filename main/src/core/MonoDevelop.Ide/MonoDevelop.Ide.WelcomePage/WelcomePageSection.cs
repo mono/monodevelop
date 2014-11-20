@@ -139,7 +139,7 @@ namespace MonoDevelop.Ide.WelcomePage
 					DesktopService.ShowUrl (uri);
 				}
 			} catch (Exception ex) {
-				MessageService.ShowException (ex, GettextCatalog.GetString ("Could not open the url '{0}'", uri));
+				LoggingService.LogInternalError (GettextCatalog.GetString ("Could not open the url '{0}'", uri), ex);
 			}
 		}
 	}

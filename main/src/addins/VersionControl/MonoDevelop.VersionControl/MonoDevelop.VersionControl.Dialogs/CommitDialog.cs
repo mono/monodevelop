@@ -234,7 +234,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 				try {
 					res = ext.OnBeginCommit (changeSet);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
 					res = false;
 				}
 				if (!res) {

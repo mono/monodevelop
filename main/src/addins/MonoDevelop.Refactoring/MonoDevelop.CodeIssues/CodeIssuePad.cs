@@ -36,6 +36,7 @@ using System.Threading;
 using MonoDevelop.Refactoring;
 using Xwt.Drawing;
 using IconSize = Gtk.IconSize;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -506,7 +507,7 @@ namespace MonoDevelop.CodeIssues
 								ProcessUpdateQueue ();
 							});
 						} catch (Exception e) {
-							MessageService.ShowException (e);
+							LoggingService.LogInternalError (e);
 						}
 					});
 				};

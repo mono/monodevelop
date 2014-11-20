@@ -510,11 +510,17 @@ namespace MonoDevelop.Core
 			LogUserError (message, ex);
 		}
 
+		[Obsolete ("Use LogError")]
 		public static void LogUserError (string message, Exception ex)
 		{
 			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
 		}
 
+		/// <summary>
+		/// Reports that an unexpected error has occurred, but the IDE will continue executing.
+		/// Error information is sent to the crash reporting service
+		/// </summary>
+		/// <param name="ex">Exception</param>
 		public static void LogInternalError (Exception ex)
 		{
 			if (ex != null) {
@@ -524,6 +530,12 @@ namespace MonoDevelop.Core
 			ReportUnhandledException (ex, false, true, "internal");
 		}
 
+		/// <summary>
+		/// Reports that an unexpected error has occurred, but the IDE will continue executing.
+		/// Error information is sent to the crash reporting service
+		/// </summary>
+		/// <param name="message">Error message</param>
+		/// <param name="ex">Exception</param>
 		public static void LogInternalError (string message, Exception ex)
 		{
 			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
@@ -531,13 +543,18 @@ namespace MonoDevelop.Core
 			ReportUnhandledException (ex, false, true, "internal");
 		}
 
+		[Obsolete ("Use LogInternalError")]
 		public static void LogCriticalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
-
-			ReportUnhandledException (ex, false, false, "critical");
+			LogInternalError (message, ex);
 		}
 
+		/// <summary>
+		/// Reports that a fatal error has occurred, and that the IDE will shut down.
+		/// Error information is sent to the crash reporting service
+		/// </summary>
+		/// <param name="message">Error message</param>
+		/// <param name="ex">Exception</param>
 		public static void LogFatalError (string message, Exception ex)
 		{
 			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));

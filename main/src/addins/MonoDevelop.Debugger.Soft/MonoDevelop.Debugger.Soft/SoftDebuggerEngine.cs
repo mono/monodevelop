@@ -145,8 +145,7 @@ namespace MonoDevelop.Debugger.Soft
 			
 			public void LogAndShowException (string message, Exception ex)
 			{
-				LogError (message, ex);
-				MonoDevelop.Ide.MessageService.ShowException (ex, message);
+				MonoDevelop.Ide.MessageService.ShowError (message, ex);
 			}
 
 			public void LogMessage (string messageFormat, params object[] args)

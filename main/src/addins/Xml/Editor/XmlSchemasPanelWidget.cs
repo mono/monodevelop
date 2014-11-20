@@ -419,8 +419,8 @@ namespace MonoDevelop.Xml.Editor
 			try {
 				schema = new XmlSchemaCompletionData (fileName);
 			} catch (Exception ex) {
-				string msg = GettextCatalog.GetString ("Error loading schema '{0}'.", shortName);
-				MessageService.ShowException (ex, msg);
+				string msg = GettextCatalog.GetString ("Schema '{0}' could not be loaded.", shortName);
+				MessageService.ShowError (msg, ex);
 				return;
 			}
 			

@@ -775,7 +775,7 @@ namespace MonoDevelop.Ide.Gui
 						}
 						catch (Exception ex) {
 							args.Cancel = true;
-							MessageService.ShowException (ex, GettextCatalog.GetString ("The document could not be saved."));
+							MessageService.ShowError (GettextCatalog.GetString ("The document could not be saved."), ex);
 						}
 					}
 					if (args.Cancel)

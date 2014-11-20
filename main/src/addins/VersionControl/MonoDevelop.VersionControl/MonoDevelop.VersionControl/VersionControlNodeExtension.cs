@@ -480,7 +480,7 @@ namespace MonoDevelop.VersionControl
 				if (test)
 					LoggingService.LogError (ex.ToString ());
 				else
-					MessageService.ShowException (ex, GettextCatalog.GetString ("Version control command failed."));
+					MessageService.ShowError (GettextCatalog.GetString ("Version control command failed."), ex);
 				return TestResult.Disable;
 			}
 			

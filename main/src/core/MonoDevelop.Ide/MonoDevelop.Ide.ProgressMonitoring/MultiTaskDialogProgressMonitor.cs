@@ -185,14 +185,14 @@ namespace MonoDevelop.Ide.ProgressMonitoring
 				string s = "";
 				foreach (string m in errorsMessages)
 					s += m + "\n";
-				MessageService.ShowException (errorException, s);
+				MessageService.ShowError (s, errorException);
 			}
 			
 			if (warningMessages.Count > 0) {
 				string s = "";
 				foreach (string m in warningMessages)
 					s += m + "\n";
-				MessageService.ShowError (s);
+				MessageService.ShowWarning (s);
 			}
 		}
 	}

@@ -388,7 +388,7 @@ namespace MonoDevelop.VersionControl.Views
 			diffRenderer.Reset ();
 
 			if (ddata.diffException != null) {
-				MessageService.ShowException (ddata.diffException, GettextCatalog.GetString ("Could not get diff information. ") + ddata.diffException.Message);
+				MessageService.ShowError (GettextCatalog.GetString ("Could not get diff information. "), ddata.diffException);
 			}
 			
 			TreeIter it;
