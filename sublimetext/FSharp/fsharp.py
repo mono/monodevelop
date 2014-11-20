@@ -94,8 +94,8 @@ def process_resp(data):
 
     if data['Kind'] == 'finddecl' and data['Data']:
         fname = data['Data']['File']
-        row = data['Data']['Line'] - 1
-        col = data['Data']['Column']
+        row = data['Data']['Line']
+        col = data['Data']['Column'] + 1
         w = sublime.active_window()
         # todo: don't open file if we are looking at the requested file
         target = '{0}:{1}:{2}'.format(fname, row, col)
