@@ -680,7 +680,7 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         let chunks = Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
         chunks
 
-    let scanToken (tokenizer:LineTokenizer) s =
+    let scanToken (tokenizer:FSharpLineTokenizer) s =
         match tokenizer.ScanToken(s) with
          | Some t, s -> Some(t,s)
          | _ -> None
