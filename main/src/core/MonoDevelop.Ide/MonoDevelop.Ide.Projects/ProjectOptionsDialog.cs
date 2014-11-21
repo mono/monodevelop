@@ -53,7 +53,7 @@ namespace MonoDevelop.Ide.Projects
 			if (newName == item.Name)
 				return;
 			
-			if (!FileService.IsValidFileName (newName)) {
+			if (!NewProjectConfiguration.IsValidSolutionName (newName)) {
 				MessageService.ShowError (GettextCatalog.GetString ("Illegal project name.\nOnly use letters, digits, space, '.' or '_'."));
 				return;
 			}
