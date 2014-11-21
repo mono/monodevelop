@@ -153,6 +153,8 @@ since the last request."
           (prompt (if proj (format "Path to project (default %s): " relproj)
                     "Path to project: ")))
      (list (read-file-name prompt nil (fsharp-mode/find-fsproj buffer-file-name) t))))
+
+  (setq fsharp-ac-intellisense-enabled t)
   (when (fsharp-ac--valid-project-p file)
     (fsharp-ac--reset)
     (when (not (fsharp-ac--process-live-p))
@@ -226,16 +228,18 @@ since the last request."
   "Launch the F# completion process in the background."
   (interactive)
 
-  (when (fsharp-ac--process-live-p)
-    (kill-process fsharp-ac-completion-process))
+  (when fsharp-ac-intellisense-enabled
+    (when (fsharp-ac--process-live-p)
+      (kill-process fsharp-ac-completion-process))
 
-  (condition-case nil
-      (progn
-        (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
-        (fsharp-ac--reset-timer))
-    (error
-     (setq fsharp-ac-intellisense-enabled nil)
-     (message "Failed to start fsautocomplete. Disabling intellisense."))))
+    (condition-case err
+        (progn
+          (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
+          (fsharp-ac--reset-timer))
+      (error
+       (setq fsharp-ac-intellisense-enabled nil)
+       (message "Failed to start fsautocomplete (%s). Disabling intellisense. To reenable, set fsharp-ac-intellisense-enabled to t."
+                (error-message-string err))))))
 
 (defun fsharp-ac--process-sentinel (process event)
   "Default sentinel used by `fsharp-ac--configure-proc`."
@@ -256,6 +260,9 @@ since the last request."
           fsharp-ac-verbose nil)))
 
 (defun fsharp-ac--configure-proc ()
+  (let ((fsac (car (last fsharp-ac-complete-command))))
+    (unless (file-exists-p fsac)
+      (error "%s not found" fsac)))
   (let ((proc (let (process-connection-type)
                 (apply 'start-process
                        fsharp-ac--completion-procname
@@ -276,8 +283,7 @@ since the last request."
           (add-to-list 'ac-modes 'fsharp-mode)
           (log-psendstr proc "outputmode json\n")
           proc)
-      (fsharp-ac-message-safely "Failed to launch: '%s'"
-                                (s-join " " fsharp-ac-complete-command))
+      (error "Failed to launch: '%s'" (s-join " " fsharp-ac-complete-command))
       nil)))
 
 (defun fsharp-ac--reset-timer ()
@@ -486,8 +492,7 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
 (defun fsharp-ac/complete-at-point (&optional quiet)
   (interactive)
   (when (and (fsharp-ac-can-make-request quiet)
-           (eq fsharp-ac-status 'idle)
-           fsharp-ac-intellisense-enabled)
+           (eq fsharp-ac-status 'idle))
       (fsharp-ac--ac-start)))
 
 ;;; ----------------------------------------------------------------------------
@@ -656,7 +661,8 @@ around to the start of the buffer."
                   msg))
             (error
              (fsharp-ac--log (format "Malformed JSON: %s" (buffer-substring-no-properties (point-min) (point-max))))
-             (message "Error: F# completion process produced malformed JSON."))))))))
+             (message "Error: F# completion process produced malformed JSON (%s)."
+                      (buffer-substring-no-properties (point-min) (point-max))))))))))
 
 (defun fsharp-ac-filter-output (proc str)
   "Filter STR from the completion process PROC and handle appropriately."
