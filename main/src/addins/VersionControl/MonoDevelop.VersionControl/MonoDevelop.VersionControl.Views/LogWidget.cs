@@ -374,8 +374,7 @@ namespace MonoDevelop.VersionControl.Views
 						prevRev = rev.GetPrevious ();
 					} catch (Exception e) {
 						Application.Invoke (delegate {
-							LoggingService.LogError ("Error while getting previous revision", e);
-							MessageService.ShowException (e, "Error while getting previous revision.");
+							MessageService.ShowError ("Error while getting previous revision.", e);
 						});
 						return;
 					}

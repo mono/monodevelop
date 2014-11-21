@@ -168,7 +168,7 @@ namespace MonoDevelop.Debugger
 					}
 				}
 			} catch (Exception ex) {
-				MessageService.ShowException (ex);
+				LoggingService.LogInternalError (ex);
 			}
 			
 			tree.ExpandAll ();

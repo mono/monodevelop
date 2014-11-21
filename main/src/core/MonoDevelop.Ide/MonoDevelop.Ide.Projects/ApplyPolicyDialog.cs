@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Projects
 				} else {
 					msg = GettextCatalog.GetString ("The policy set could not be applied");
 				}
-				MessageService.ShowException (ex, msg);
+				MessageService.ShowError (msg, ex);
 				Respond (Gtk.ResponseType.Cancel);
 				return;
 			}

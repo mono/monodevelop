@@ -1271,8 +1271,7 @@ namespace MonoDevelop.Ide.Gui.Components
 								handler.SetCurrentNode (nav);
 								handler.RenameItem (e.NewText);
 							} catch (Exception ex) {
-								MessageService.ShowException (ex);
-								LoggingService.LogError (ex.ToString ());
+								LoggingService.LogInternalError (ex);
 							}
 							nav.MoveToPosition (pos);
 						}
@@ -1289,7 +1288,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				builder.Update ();
 			}
 			catch (Exception ex) {
-				MessageService.ShowException (ex, "The item could not be renamed");
+				LoggingService.LogInternalError ("The item could not be renamed", ex);
 			}
 		}
 

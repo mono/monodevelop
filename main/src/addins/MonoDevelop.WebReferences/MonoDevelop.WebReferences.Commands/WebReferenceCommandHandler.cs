@@ -49,7 +49,7 @@ namespace MonoDevelop.WebReferences.Commands
 				dialog.SelectedService.GenerateFiles (project, dialog.Namespace, dialog.ReferenceName);
 				IdeApp.ProjectOperations.Save(project);
 			} catch (Exception exception) {
-				MessageService.ShowException (exception);
+				MessageService.ShowError ("The web reference could not be added", exception);
 			} finally {
 				dialog.Destroy ();
 			}
@@ -95,7 +95,7 @@ namespace MonoDevelop.WebReferences.Commands
 							items [i].Update();
 						} catch (Exception ex) {
 							DispatchService.GuiSyncDispatch (() => {
-								MessageService.ShowException (ex, GettextCatalog.GetString ("Failed to update Web Reference '{0}'", items [i].Name));
+								MessageService.ShowError (GettextCatalog.GetString ("Failed to update Web Reference '{0}'", items [i].Name), ex);
 								DisposeUpdateContext ();
 							});
 							return;
@@ -196,7 +196,7 @@ namespace MonoDevelop.WebReferences.Commands
 				refgroup.Save (item.MapFile.FilePath);
 				UpdateReferences (new [] { item });
 			} catch (Exception exception) {
-				MessageService.ShowException (exception);
+				LoggingService.LogInternalError (exception);
 			} finally {
 				dialog.Destroy ();
 			}

@@ -60,9 +60,8 @@ namespace MonoDevelop.Xml.Editor
 					
 				} catch (Exception ex) {
 					string msg = MonoDevelop.Core.GettextCatalog.GetString (
-					    "Unhandled error saving schema changes.");
-					MonoDevelop.Core.LoggingService.LogError (msg, ex);
-					MonoDevelop.Ide.MessageService.ShowException (ex, msg);
+					    "Schema changes could not be saved");
+					MonoDevelop.Ide.MessageService.ShowError (msg, ex);
 					return;
 				}
 			}

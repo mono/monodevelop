@@ -372,7 +372,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
 				}
 			}
 		}
@@ -390,7 +390,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
 				}
 			}
 		}
@@ -408,7 +408,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
 				} catch (Exception ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
 					return;
 				}
 			}

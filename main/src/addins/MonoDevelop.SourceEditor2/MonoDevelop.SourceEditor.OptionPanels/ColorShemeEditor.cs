@@ -115,7 +115,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				colorSheme.Save (fileName);
 				panel.ShowStyles ();
 			} catch (Exception ex) {
-				MessageService.ShowException (ex);
+				LoggingService.LogInternalError (ex);
 			}
 			RefreshAllColors ();
 		}

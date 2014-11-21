@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide
 					Console.WriteLine (errWriter.ToString ());
 				}
 			} catch (Exception e) {
-				MessageService.ShowException (e);
+				MessageService.ShowError (GettextCatalog.GetString ("Help Viewer could not be opened"), e);
 				useExternalMonodoc = false;
 			}
 		}

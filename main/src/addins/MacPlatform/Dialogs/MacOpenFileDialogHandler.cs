@@ -193,8 +193,7 @@ namespace MonoDevelop.MacIntegration
 				
 				GtkQuartz.FocusWindow (data.TransientFor ?? MessageService.RootWindow);
 			} catch (Exception ex) {
-				LoggingService.LogError ("Error in Open File dialog", ex);
-				MessageService.ShowException (ex);
+				LoggingService.LogInternalError ("Error in Open File dialog", ex);
 			} finally {
 				if (panel != null)
 					panel.Dispose ();

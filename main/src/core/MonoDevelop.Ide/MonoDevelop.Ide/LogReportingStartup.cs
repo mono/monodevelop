@@ -53,19 +53,19 @@ namespace MonoDevelop.Ide
 					: GettextCatalog.GetString ("An error has occurred");
 
 				if (!ShouldPromptToOptIn && enabled.GetValueOrDefault ()) {
-					message = GettextCatalog.GetString (
-						"Details of this error have been automatically sent to Xamarin for analysis.");
 					if (willShutdown) {
+						message = GettextCatalog.GetString (
+							"Details of this error have been automatically sent to Xamarin for analysis.");
 						message += GettextCatalog.GetString (" {0} will now close.", BrandingService.ApplicationName);
+						MessageService.ShowError (null, title, message, ex, false, AlertButton.Ok);
 					}
-					MessageService.ShowException (ex, message, title, AlertButton.Ok);
 					return enabled;
 				}
 
 				message = GettextCatalog.GetString (
 					"Details of errors, along with anonymous installation information, can be sent to Xamarin to " +
 					"help improve {0}. Do you wish to send this information?", BrandingService.ApplicationName);
-				var result = MessageService.ShowException (ex, message, title, doNotSend, sendOnce, alwaysSend);
+				var result = MessageService.ShowError (null, title, message, ex, false, doNotSend, sendOnce, alwaysSend);
 
 				if (result == sendOnce) {
 					return null;
