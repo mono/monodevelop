@@ -253,7 +253,7 @@ namespace MonoDevelop.Ide.Editor
 			if (Platform.IsWindows || controlLeftRightMode.Value == ControlLeftRightMode.SharpDevelop) {
 				defaultWordNavigation = WordNavigationStyle.Windows;
 			}
-			this.WordNavigationStyle = new PropertyWrapper<WordNavigationStyle> ("WordNavigationStyle", defaultWordNavigation);
+			wordNavigationStyle = new PropertyWrapper<WordNavigationStyle> ("WordNavigationStyle", defaultWordNavigation);
 			
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
