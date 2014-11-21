@@ -468,7 +468,7 @@ module internal Main =
           let text, projFile, args = getoptions file state
           let lineStr = state.Files.[file].[line - 1]
           // TODO: Deny recent typecheck results under some circumstances (after bracketed expr..)
-          let timeout = match timeout with Some x -> x | _ -> 60000
+          let timeout = match timeout with Some x -> x | _ -> 20000
           let tyResOpt = agent.GetTypedParseResultWithTimeout(projFile, file, text, [||], args, AllowStaleResults.MatchingFileName, timeout, FSharpTargetFramework.NET_4_5)
                          |> Async.RunSynchronously
           match tyResOpt with
