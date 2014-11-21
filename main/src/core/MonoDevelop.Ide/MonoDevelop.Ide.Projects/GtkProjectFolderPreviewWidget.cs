@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide.Projects
 		public GtkProjectFolderPreviewWidget ()
 		{
 			this.Build ();
-			folderTreeView.ModifyBase (Gtk.StateType.Normal, new Gdk.Color (229, 233, 239));
 
 			CreateFolderTreeViewColumns ();
 		}

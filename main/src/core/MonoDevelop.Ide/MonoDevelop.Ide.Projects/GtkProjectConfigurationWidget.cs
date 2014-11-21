@@ -39,8 +39,19 @@ namespace MonoDevelop.Ide.Projects
 		public GtkProjectConfigurationWidget ()
 		{
 			this.Build ();
-			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (229, 233, 239));
-			projectConfigurationTableEventBox.ModifyBg (StateType.Normal, new Gdk.Color (255, 255, 255));
+
+			var separatorColor = new Gdk.Color (176, 178, 181);
+			solutionNameSeparator.ModifyBg (StateType.Normal, separatorColor);
+			locationSeparator.ModifyBg (StateType.Normal, separatorColor);
+
+			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (255, 255, 255));
+
+			var leftHandBackgroundColor = new Gdk.Color (229, 233, 239);
+			leftBorderEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
+			projectConfigurationRightBorderEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
+			projectConfigurationTopEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
+			projectConfigurationTableEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
+			projectConfigurationBottomEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
 
 			projectNameTextBox.ActivatesDefault = true;
 			solutionNameTextBox.ActivatesDefault = true;
@@ -170,9 +181,9 @@ namespace MonoDevelop.Ide.Projects
 		string GetSolutionNameLabel ()
 		{
 			if (projectConfiguration.IsWorkspace) {
-				return GettextCatalog.GetString ("Workspace Name");
+				return GettextCatalog.GetString ("Workspace Name:");
 			}
-			return GettextCatalog.GetString ("Solution Name");
+			return GettextCatalog.GetString ("Solution Name:");
 		}
 	}
 }
