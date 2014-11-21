@@ -52,7 +52,7 @@ namespace ICSharpCode.PackageManagement
 		protected override void ExecuteCore()
 		{
 			Project.InstallPackage(Package, this);
-			OnParentPackageInstalled();
+			OnParentPackageInstalled ();
 		}
 
 		protected override string StartingMessageFormat {

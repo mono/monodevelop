@@ -187,9 +187,9 @@ namespace MonoDevelop.Ide.Gui.Components
 					if (!currentIter.Equals (Gtk.TreeIter.Zero)) {
 						if (!Filled)
 							continue;
-						it = store.InsertWithValues (currentIter, 0, "", null, null, dataObject, chain, false);
+						it = store.InsertWithValues (currentIter, 0, NodeInfo.Empty, dataObject, chain, false);
 					} else {
-						it = store.AppendValues ("", null, null, dataObject, chain, false);
+						it = store.AppendValues (NodeInfo.Empty, dataObject, chain, false);
 					}
 
 					pad.RegisterNode (it, dataObject, chain, true);
@@ -219,10 +219,10 @@ namespace MonoDevelop.Ide.Gui.Components
 				Gtk.TreeIter it;
 				if (!currentIter.Equals (Gtk.TreeIter.Zero)) {
 					if (!Filled) return;
-					it = store.AppendValues (currentIter, "", null, null, dataObject, chain, false);
+					it = store.AppendValues (currentIter, NodeInfo.Empty, dataObject, chain, false);
 				}
 				else
-					it = store.AppendValues ("", null, null, dataObject, chain, false);
+					it = store.AppendValues (NodeInfo.Empty, dataObject, chain, false);
 				
 				pad.RegisterNode (it, dataObject, chain, true);
 				
@@ -277,16 +277,26 @@ namespace MonoDevelop.Ide.Gui.Components
 			
 			void UpdateNode (NodeBuilder[] chain, NodeAttributes ats, object dataObject)
 			{
-				var ni = GetNodeInfo (pad, this, chain, dataObject);
-				SetNodeInfo (currentIter, ats, ni);
+				bool isNew = false;
+
+				var ni = (NodeInfo)store.GetValue (currentIter, ExtensibleTreeView.NodeInfoColumn);
+				if (ni == null || ni.IsShared) {
+					ni = new NodeInfo ();
+					isNew = true;
+				}
+				else
+					ni.Reset ();
+
+				GetNodeInfo (ni, pad, this, chain, dataObject);
+
+				if (isNew)
+					store.SetValue (currentIter, ExtensibleTreeView.NodeInfoColumn, ni);
+				else
+					store.EmitRowChanged (store.GetPath (currentIter), currentIter);
 			}
 			
-			internal static NodeInfo GetNodeInfo (ExtensibleTreeView tree, ITreeBuilder tb, NodeBuilder[] chain, object dataObject)
+			internal static NodeInfo GetNodeInfo (NodeInfo nodeInfo, ExtensibleTreeView tree, ITreeBuilder tb, NodeBuilder[] chain, object dataObject)
 			{
-				NodeInfo nodeInfo = new NodeInfo () {
-					Label = string.Empty
-				};
-				
 				NodePosition pos = tb.CurrentPosition;
 
 				foreach (NodeBuilder builder in chain) {
@@ -317,18 +327,6 @@ namespace MonoDevelop.Ide.Gui.Components
 				return nodeInfo;
 			}
 			
-			void SetNodeInfo (Gtk.TreeIter it, NodeAttributes ats, NodeInfo nodeInfo)
-			{
-				store.SetValue (it, ExtensibleTreeView.TextColumn, nodeInfo.Label);
-				store.SetValue (it, ExtensibleTreeView.OpenIconColumn, nodeInfo.Icon ?? CellRendererImage.NullImage);
-				store.SetValue (it, ExtensibleTreeView.ClosedIconColumn, nodeInfo.ClosedIcon ?? CellRendererImage.NullImage);
-				store.SetValue (it, ExtensibleTreeView.OverlayBottomLeftColumn, nodeInfo.OverlayBottomLeft ?? CellRendererImage.NullImage);
-				store.SetValue (it, ExtensibleTreeView.OverlayBottomRightColumn, nodeInfo.OverlayBottomRight ?? CellRendererImage.NullImage);
-				store.SetValue (it, ExtensibleTreeView.OverlayTopLeftColumn, nodeInfo.OverlayTopLeft ?? CellRendererImage.NullImage);
-				store.SetValue (it, ExtensibleTreeView.OverlayTopRightColumn, nodeInfo.OverlayTopRight ?? CellRendererImage.NullImage);
-				pad.Tree.QueueDraw ();
-			}
-
 			void CreateChildren (NodeBuilder[] chain, object dataObject)
 			{
 				Gtk.TreeIter it = currentIter;

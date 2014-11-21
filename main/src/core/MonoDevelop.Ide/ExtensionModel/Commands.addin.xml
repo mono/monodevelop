@@ -78,7 +78,7 @@
 			icon = "gtk-redo"
 			_description = "Redo last undone action"
 			shortcut = "Control|Shift|Z"
-			winShortcut = "Control|Y"
+			winShortcut = "Control|Y Control|Shift|Z"
 			macShortcut = "Meta|Shift|Z" />
 	<Command id = "MonoDevelop.Ide.Commands.EditCommands.SelectAll"
 			_label = "Select _All"
@@ -691,7 +691,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.OpenWindowListHandler"
 			type="radio|array"
 			_label = "Window List" />
-
+			<!--
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SplitWindowVertically"
 			defaultHandler = "MonoDevelop.Ide.Commands.SplitWindowVertically"
 			_label = "Split _Vertically" />
@@ -705,7 +705,7 @@
 			defaultHandler = "MonoDevelop.Ide.Commands.SwitchSplitWindow"
 			shortcut = "Control|M"
 			_label = "_Switch Between Splits" />
-
+			-->
 	<Command id = "MonoDevelop.Ide.Commands.WindowCommands.SwitchNextDocument"
 			defaultHandler = "MonoDevelop.Ide.Commands.SwitchNextDocument"
 			shortcut = "Control|Tab"
@@ -1021,6 +1021,22 @@
 			_description = "Cycles completing the current word from matching words in all open files"
 			macShortcut = "Ctrl|/"
 			shortcut = "Alt|/" />
+	<Command id = "MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret"
+			_label = "Find caret"
+			_description = "Animates the text editor caret to help find it"
+			shortcut = "Ctrl||"
+			macShortcut = "Meta||" />
+			
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.Toggle"
+			_label = "Toggle message bubble"
+			_description = "Toggles message bubble on/off"/>
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.HideIssues"
+			defaultHandler = "MonoDevelop.Ide.Editor.HideIssuesHandler"
+			_label = "_Hide Issues"/>
+	<Command id = "MonoDevelop.Ide.Editor.MessageBubbleCommands.ToggleIssues"
+			defaultHandler = "MonoDevelop.Ide.Editor.ToggleIssuesHandler"
+			_label = "Toggle Issues"
+			type="array"/>
 	</Category>
 </Extension>
 </ExtensionModel>

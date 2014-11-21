@@ -33,6 +33,17 @@ namespace MonoDevelop.SourceEditor
 {
 	class GenericUnderlineMarker : UnderlineTextSegmentMarker, MonoDevelop.Ide.Editor.IGenericTextSegmentMarker
 	{
+		HslColor color;
+
+		HslColor MonoDevelop.Ide.Editor.IGenericTextSegmentMarker.Color {
+			get {
+				return color;
+			}
+			set {
+				color = value;
+			}
+		}
+
 		public GenericUnderlineMarker (TextSegment segment, MonoDevelop.Ide.Editor.TextSegmentMarkerEffect effect) : base ("", segment)
 		{
 			this.effect = effect;
@@ -83,7 +94,7 @@ namespace MonoDevelop.SourceEditor
 				return;
 			
 			double height = editor.LineHeight / 5;
-			cr.SetSourceColor (Color);
+			cr.SetSourceColor (color);
 			if (effect == MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.WavedLine) {	
 				Pango.CairoHelper.ShowErrorUnderline (cr, drawFrom, y + editor.LineHeight - height, drawTo - drawFrom, height);
 			} else if (effect == MonoDevelop.Ide.Editor.TextSegmentMarkerEffect.DottedLine) {

@@ -82,7 +82,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public override void Trace (string message)
 		{
-			if (InstrumentationService.Enabled) {
+			if (Enabled) {
 				if (lastTimer != null)
 					lastTimer.Trace (message);
 				else {
@@ -103,13 +103,14 @@ namespace MonoDevelop.Core.Instrumentation
 		public ITimeTracker BeginTiming (string message)
 		{
 			ITimeTracker timer;
-			if (!InstrumentationService.Enabled) {
+			if (!Enabled) {
 				timer = dummyTimer;
 			} else {
+				var c = new TimeCounter (this);
 				lock (values) {
-					timer = lastTimer = new TimeCounter (this);
+					timer = lastTimer = c;
 					count++;
-					int i = StoreValue (message, lastTimer.TraceList);
+					int i = StoreValue (message, lastTimer);
 					lastTimer.TraceList.ValueIndex = i;
 				}
 			}
@@ -120,7 +121,7 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public void EndTiming ()
 		{
-			if (InstrumentationService.Enabled && lastTimer != null)
+			if (Enabled && lastTimer != null)
 				lastTimer.End ();
 		}
 		

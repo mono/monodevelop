@@ -42,6 +42,8 @@ namespace MonoDevelop.CSharp
 		protected override void Run ()
 		{
 			var doc = IdeApp.Workbench.ActiveDocument;
+			if (doc == null)
+				return;
 			var parsedDocument = doc.ParsedDocument;
 			if (parsedDocument == null)
 				return;

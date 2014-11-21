@@ -36,10 +36,11 @@ using Mono.TextEditor.Highlighting;
 using MonoDevelop.Ide.Fonts;
 using Gtk;
 using MonoDevelop.Components;
+using MonoDevelop.SourceEditor.Wrappers;
 
 namespace MonoDevelop.SourceEditor
 {
-	class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker
+	class MessageBubbleTextMarker : MarginMarker, IDisposable, IActionTextLineMarker, MonoDevelop.Ide.Editor.IMessageBubbleLineMarker
 	{
 		readonly MessageBubbleCache cache;
 		
@@ -51,7 +52,7 @@ namespace MonoDevelop.SourceEditor
 
 		public override bool IsVisible {
 			get { return !task.Completed; }
-			set { task.Completed = !value; }
+			set { task.Completed = !value; editor.QueueDraw (); }
 		}
 
 		public bool UseVirtualLines { get; set; }
@@ -62,6 +63,7 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		Task task;
+		Task primaryTask;
 		DocumentLine lineSegment;
 //		int editorAllocHeight = -1;
 //		int lastLineLength = -1;
@@ -96,8 +98,10 @@ namespace MonoDevelop.SourceEditor
 			return height;*/
 		}
 
-		public void SetPrimaryError (string text)
+		public void SetPrimaryError (Task task)
 		{
+			this.primaryTask = task;
+			var text = task.Description;
 			EnsureLayoutCreated (editor);
 			
 			var match = mcsErrorFormat.Match (text);
@@ -143,6 +147,15 @@ namespace MonoDevelop.SourceEditor
 
 		string initialText;
 		bool isError;
+
+		public MessageBubbleTextMarker (MessageBubbleCache cache)
+		{
+			if (cache == null)
+				throw new ArgumentNullException ("cache");
+			this.cache = cache;
+			this.IsVisible = true;
+		}
+
 		internal MessageBubbleTextMarker (MessageBubbleCache cache, Task task, DocumentLine lineSegment, bool isError, string errorMessage)
 		{
 			if (cache == null)
@@ -160,13 +173,16 @@ namespace MonoDevelop.SourceEditor
 		static System.Text.RegularExpressions.Regex mcsErrorFormat = new System.Text.RegularExpressions.Regex ("(.+)\\(CS\\d+\\)\\Z");
 		public void AddError (Task task, bool isError, string errorMessage)
 		{
+			if (this.task == null) {
+				this.task = task;
+			}
 			var match = mcsErrorFormat.Match (errorMessage);
 			if (match.Success)
 				errorMessage = match.Groups [1].Value;
 			errors.Add (new ErrorText (task, isError, errorMessage));
 			DisposeLayout ();
 		}
-		
+
 		public void DisposeLayout ()
 		{
 			layouts = null;
@@ -653,5 +669,38 @@ namespace MonoDevelop.SourceEditor
 		}
 
 		#endregion
+
+		MonoDevelop.Ide.Editor.IDocumentLine MonoDevelop.Ide.Editor.ITextLineMarker.Line {
+			get {
+				return new DocumentLineWrapper (LineSegment);
+			}
+		}
+
+		void MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.AddTask (Task task)
+		{
+			AddError (task, task.Severity == TaskSeverity.Error, task.Description);
+		}
+
+		Task MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.PrimaryTask {
+			get {
+				return primaryTask;
+			}
+			set {
+				SetPrimaryError (task);
+			}
+		}
+
+		int MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.TaskCount {
+			get {
+				return errors.Count;
+			}
+		}
+
+		IEnumerable<Task> MonoDevelop.Ide.Editor.IMessageBubbleLineMarker.Tasks {
+			get {
+				return errors.Select (e => e.Task);
+			}
+		}
+
 	}
 }

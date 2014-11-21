@@ -43,6 +43,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Components;
+using MonoDevelop.Ide.Commands;
 
 namespace MonoDevelop.NUnit
 {

@@ -186,8 +186,7 @@ namespace MonoDevelop.Ide
 			KeyBindingService.LoadCurrentBindings ("MD2");
 
 			commandService.CommandError += delegate (object sender, CommandErrorArgs args) {
-				LoggingService.LogError (args.ErrorMessage, args.Exception);
-				MessageService.ShowException (args.Exception, args.ErrorMessage);
+				LoggingService.LogInternalError (args.ErrorMessage, args.Exception);
 			};
 			
 			FileService.ErrorHandler = FileServiceErrorHandler;
@@ -225,7 +224,7 @@ namespace MonoDevelop.Ide
 			TypeSystemService.TrackFileChanges = true;
 			TypeSystemService.ParseProgressMonitorFactory = new ParseProgressMonitorFactory (); 
 
-			Customizer.Initialize ();
+			Customizer.OnIdeInitialized ();
 			
 			// Startup commands
 			Counters.Initialization.Trace ("Running Startup Commands");
@@ -287,14 +286,6 @@ namespace MonoDevelop.Ide
 				initializedEvent = null;
 			}
 			
-			// load previous combine
-			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
-				var proj = DesktopService.RecentFiles.GetProjects ().FirstOrDefault ();
-				if (proj != null) { 
-					IdeApp.Workspace.OpenWorkspaceItem (proj.FileName).WaitForCompleted ();
-				}
-			}
-			
 			//FIXME: we should really make this on-demand. consumers can display a "loading help cache" message like VS
 			MonoDevelop.Projects.HelpService.AsyncInitialize ();
 			
@@ -339,8 +330,7 @@ namespace MonoDevelop.Ide
 							Workspace.OpenWorkspaceItem (file.FileName);
 							foundSln = true;
 						} catch (Exception ex) {
-							LoggingService.LogError ("Unhandled error opening solution/workspace \"" + file.FileName + "\"", ex);
-							MessageService.ShowException (ex, "Could not load solution: " + file.FileName);
+							MessageService.ShowError (GettextCatalog.GetString ("Could not load solution: {0}", file.FileName), ex);
 						}
 					}
 				} else {
@@ -352,8 +342,7 @@ namespace MonoDevelop.Ide
 				try {
 					Workbench.OpenDocument (file.FileName, file.Line, file.Column, file.Options);
 				} catch (Exception ex) {
-					LoggingService.LogError ("Unhandled error opening file \"" + file.FileName + "\"", ex);
-					MessageService.ShowException (ex, "Could not open file: " + file.FileName);
+					MessageService.ShowError (GettextCatalog.GetString ("Could not open file: {0}", file.FileName), ex);
 				}
 			}
 			
@@ -362,7 +351,7 @@ namespace MonoDevelop.Ide
 		
 		static bool FileServiceErrorHandler (string message, Exception ex)
 		{
-			MessageService.ShowException (ex, message);
+			MessageService.ShowError (message, ex);
 			return true;
 		}
 		

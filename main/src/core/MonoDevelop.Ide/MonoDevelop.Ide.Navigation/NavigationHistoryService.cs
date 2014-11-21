@@ -182,18 +182,22 @@ namespace MonoDevelop.Ide.Navigation
 		public static void MoveForward ()
 		{
 			LogActiveDocument ();
-			history.MoveForward ();
-			SwitchToCurrent ();
-			OnHistoryChanged ();
+			if (history.CanMoveForward) {
+				history.MoveForward ();
+				SwitchToCurrent ();
+				OnHistoryChanged ();
+			}
 		}
 		
 		public static void MoveBack ()
 		{
 			// Log current point before moving back, to make sure a MoveForward will return to the same position
 			LogActiveDocument ();
-			history.MoveBack ();
-			SwitchToCurrent ();
-			OnHistoryChanged ();
+			if (history.CanMoveBack) {
+				history.MoveBack ();
+				SwitchToCurrent ();
+				OnHistoryChanged ();
+			}
 		}
 		
 		public static void MoveTo (NavigationHistoryItem item)

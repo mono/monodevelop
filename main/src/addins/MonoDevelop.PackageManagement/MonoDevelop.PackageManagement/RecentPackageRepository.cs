@@ -117,6 +117,7 @@ namespace ICSharpCode.PackageManagement
 		public IQueryable<IPackage> GetPackages()
 		{
 			//UpdatePackages();
+			RemoveInvalidPackages ();
 			return packages.AsQueryable();
 		}
 		
@@ -126,6 +127,17 @@ namespace ICSharpCode.PackageManagement
 				IEnumerable<IPackage> recentPackages = GetRecentPackages();
 				packages.AddRange(recentPackages);
 			}
+		}
+
+		void RemoveInvalidPackages ()
+		{
+			packages.RemoveAll (package => !IsValidPackage (package));
+		}
+
+		static bool IsValidPackage (IPackage package)
+		{
+			var packageFromRepository = package as IPackageFromRepository;
+			return (packageFromRepository != null) && packageFromRepository.IsValid;
 		}
 		
 		bool HasRecentPackagesBeenRead()

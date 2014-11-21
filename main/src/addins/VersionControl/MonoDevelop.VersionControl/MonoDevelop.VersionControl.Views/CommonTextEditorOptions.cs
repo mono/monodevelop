@@ -117,7 +117,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DefaultRegionsFolding = value;
 			}
 		}
 
@@ -126,7 +125,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DefaultCommentFolding = value;
 			}
 		}
 
@@ -135,7 +133,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableSemanticHighlighting = value;
 			}
 		}
 
@@ -144,7 +141,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.TabIsReindent;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.TabIsReindent = value;
 			}
 		}
 
@@ -153,7 +149,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.AutoInsertMatchingBracket = value;
 			}
 		}
 
@@ -162,7 +157,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.SmartSemicolonPlacement = value;
 			}
 		}
 
@@ -171,7 +165,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UnderlineErrors; 
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UnderlineErrors = value;
 			}
 		}
 
@@ -180,7 +173,6 @@ namespace MonoDevelop.VersionControl.Views
 				return (IndentStyle)MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.IndentStyle;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.IndentStyle = (MonoDevelop.Ide.Editor.IndentStyle)value;
 			}
 		}
 
@@ -189,7 +181,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableHighlightUsages = value;
 			}
 		}
 
@@ -199,7 +190,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.LineEndingConversion;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.LineEndingConversion = value;
 			}
 		}
 
@@ -210,7 +200,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.UseViModes = value;
 			}
 		}
 
@@ -219,7 +208,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.OnTheFlyFormatting;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.OnTheFlyFormatting = value;
 			}
 		}
 
@@ -234,7 +222,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ControlLeftRightMode;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ControlLeftRightMode = value;
 			}
 		}
 
@@ -272,19 +259,17 @@ namespace MonoDevelop.VersionControl.Views
 
 		public override bool ShowLineNumberMargin {
 			get {
-				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin;
+				return true;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowLineNumberMargin = value;
 			}
 		}
 
 		public override bool ShowFoldMargin {
 			get {
-				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowFoldMargin;
+				return false;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowFoldMargin = value;
 			}
 		}
 
@@ -293,7 +278,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.HighlightCaretLine;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.HighlightCaretLine = value;
 			}
 		}
 
@@ -302,7 +286,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting = value;
 			}
 		}
 
@@ -311,7 +294,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.HighlightMatchingBracket;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.HighlightMatchingBracket = value;
 			}
 		}
 
@@ -320,7 +302,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowRuler;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ShowRuler = value;
 			}
 		}
 
@@ -329,7 +310,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableAnimations;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableAnimations = value;
 			}
 		}
 
@@ -338,7 +318,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DrawIndentationMarkers;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.DrawIndentationMarkers = value;
 			}
 		}
 
@@ -369,7 +348,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.WrapLines;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.WrapLines = value;
 			}
 		}
 
@@ -378,7 +356,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableQuickDiff;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.EnableQuickDiff = value;
 			}
 		}
 
@@ -405,7 +382,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ColorScheme;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.ColorScheme = value;
 			}
 		}
 
@@ -414,7 +390,6 @@ namespace MonoDevelop.VersionControl.Views
 				return MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep;
 			}
 			set {
-				MonoDevelop.Ide.Editor.DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep = value;
 			}
 		}
 

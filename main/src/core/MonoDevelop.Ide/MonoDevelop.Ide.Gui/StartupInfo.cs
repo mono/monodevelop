@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui
 {
@@ -49,6 +50,12 @@ namespace MonoDevelop.Ide.Gui
 		
 		public bool HasFiles {
 			get { return requestedFileList.Count > 0; }
+		}
+
+		public bool HasSolutionFile {
+			get {
+				return requestedFileList.Any (f => File.Exists (f.FileName) && (Services.ProjectService.IsWorkspaceItemFile (f.FileName) || Services.ProjectService.IsSolutionItemFile (f.FileName)));
+			}
 		}
 		
 		/// <summary>

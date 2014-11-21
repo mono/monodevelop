@@ -571,7 +571,10 @@ namespace MonoDevelop.AspNet.WebForms
 		INamedTypeSymbol AssemblyTypeLookup (string namespac, string tagName)
 		{
 			var fullName = namespac + "." + tagName;
-			return ReflectionHelper.ParseReflectionName (fullName).Resolve (Compilation);
+			var type = ReflectionHelper.ParseReflectionName (fullName).Resolve (Compilation);
+			if (type.Kind == TypeKind.Unknown)
+				return null;
+			return type;
 		}
 
 		public string GetControlPrefix (INamedTypeSymbol control)
@@ -605,7 +608,10 @@ namespace MonoDevelop.AspNet.WebForms
 		INamedTypeSymbol GetUserControlType (string virtualPath)
 		{
 			var name = GetUserControlTypeName (virtualPath);
-			return ReflectionHelper.ParseReflectionName (name).Resolve (Compilation);
+			var type = ReflectionHelper.ParseReflectionName (name).Resolve (Compilation);
+			if (type.Kind == TypeKind.Unknown)
+				return null;
+			return type;
 		}
 	}
 

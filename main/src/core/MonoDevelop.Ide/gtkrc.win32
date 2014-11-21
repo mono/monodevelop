@@ -264,6 +264,11 @@ style "search-entry" = "wider"
     bg[NORMAL] = @base_color
 }
 
+style "wizard-dialog"
+{
+    GtkDialog::content-area-border = 0
+}
+
 style "scrollbar" = "default"
 {
     GtkRange::slider-width = 7
@@ -317,6 +322,7 @@ widget "*search-entry*" style "search-entry"
 
 widget_class "*<GtkButton>"     style "button"
 widget "*.GtkToggleButton"      style "button"
+widget "wizard_dialog"          style "wizard-dialog"
 
 widget_class "*<GtkMenu>*"      style "menu"
 widget_class "*<GtkMenuItem>*"  style "menu-item"

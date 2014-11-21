@@ -500,7 +500,7 @@ namespace Mono.TextTemplating
 				case SegmentType.Block:
 					if (helperMode)
 						//TODO: are blocks permitted after helpers?
-						throw new ParserException ("Blocks are not permitted after helpers", seg.StartLocation);
+						pt.LogError ("Blocks are not permitted after helpers", seg.TagStartLocation);
 					st = new CodeSnippetStatement (seg.Text);
 					break;
 				case SegmentType.Expression:
@@ -512,7 +512,8 @@ namespace Mono.TextTemplating
 					st = new CodeExpressionStatement (new CodeMethodInvokeExpression (writeMeth, new CodePrimitiveExpression (seg.Text)));
 					break;
 				case SegmentType.Helper:
-					type.Members.Add (CreateSnippetMember (seg.Text, location));
+					if (!string.IsNullOrEmpty (seg.Text))
+						type.Members.Add (CreateSnippetMember (seg.Text, location));
 					helperMode = true;
 					break;
 				default:
@@ -524,7 +525,9 @@ namespace Mono.TextTemplating
 						//TODO: is there a way to do this for languages that use indentation for blocks, e.g. python?
 						using (var writer = new StringWriter ()) {
 							settings.Provider.GenerateCodeFromStatement (st, writer, null);
-							type.Members.Add (CreateSnippetMember (writer.ToString (), location ));
+							var text = writer.ToString ();
+							if (!string.IsNullOrEmpty (text))
+								type.Members.Add (CreateSnippetMember (text, location));
 						}
 					} else {
 						st.LinePragma = location;
@@ -546,7 +549,7 @@ namespace Mono.TextTemplating
 			//class code and attributes from processors
 			foreach (var processor in settings.DirectiveProcessors.Values) {
 				string classCode = processor.GetClassCodeForProcessingRun ();
-				if (classCode != null)
+				if (!string.IsNullOrEmpty (classCode))
 					type.Members.Add (CreateSnippetMember (classCode));
 				var atts = processor.GetTemplateClassCustomAttributes ();
 				if (atts != null) {
@@ -605,6 +608,44 @@ namespace Mono.TextTemplating
 			};
 			if (!settings.IncludePreprocessingHelpers)
 				initializeMeth.Attributes |= MemberAttributes.Override;
+
+			//if preprocessed, pass the extension and encoding to the host
+			if (settings.IsPreprocessed && settings.HostSpecific) {
+				var hostProp = new CodePropertyReferenceExpression (new CodeThisReferenceExpression (), "Host");
+				var statements = new List<CodeStatement> ();
+
+				if (!string.IsNullOrEmpty (settings.Extension)) {
+					statements.Add (new CodeExpressionStatement (new CodeMethodInvokeExpression (
+						hostProp,
+						"SetFileExtension",
+						new CodePrimitiveExpression (settings.Extension)
+					)));
+				}
+
+				if (settings.Encoding != null) {
+					statements.Add (new CodeExpressionStatement (new CodeMethodInvokeExpression (
+						hostProp,
+						"SetOutputEncoding",
+						new CodeMethodInvokeExpression(
+							new CodeTypeReferenceExpression (typeof(Encoding)),
+							"GetEncoding",
+							new CodePrimitiveExpression (settings.Encoding.CodePage),
+							new CodePrimitiveExpression(true)
+						)
+					)));
+				}
+
+				if (statements.Count > 0) {
+					initializeMeth.Statements.Add (new CodeConditionStatement (
+						new CodeBinaryOperatorExpression (
+							hostProp,
+							CodeBinaryOperatorType.IdentityInequality,
+							new CodePrimitiveExpression (null)
+						),
+						statements.ToArray()
+					));
+				}
+			}
 			
 			//pre-init code from processors
 			foreach (var processor in settings.DirectiveProcessors.Values) {

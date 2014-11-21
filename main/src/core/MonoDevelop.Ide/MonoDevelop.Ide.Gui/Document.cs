@@ -113,19 +113,16 @@ namespace MonoDevelop.Ide.Gui
 			return null;
 		}
 		
-		public IEnumerable<T> GetContents<T> () where T : class
+		public override IEnumerable<T> GetContents<T> ()
 		{
-			//check whether the ViewContent can return the type directly
-			T ret = (T) Window.ActiveViewContent.GetContent (typeof(T));
-			if (ret != null)
-				yield return ret;
-			
-			//check the primary viewcontent
-			//not sure if this is the right thing to do, but things depend on this behaviour
-			if (Window.ViewContent != Window.ActiveViewContent) {
-				ret = (T) Window.ViewContent.GetContent (typeof(T));
-				if (ret != null)
-					yield return ret;
+			foreach (var cnt in window.ViewContent.GetContents<T> ()) {
+				yield return cnt;
+			}
+
+			foreach (var subView in window.SubViewContents) {
+				foreach (var cnt in subView.GetContents<T> ()) {
+					yield return cnt;
+				}
 			}
 		}
 
@@ -343,7 +340,7 @@ namespace MonoDevelop.Ide.Gui
 					try {
 						FileService.RequestFileEdit (Window.ViewContent.ContentName, true);
 					} catch (Exception ex) {
-						MessageService.ShowException (ex, GettextCatalog.GetString ("The file could not be saved."));
+						MessageService.ShowError (GettextCatalog.GetString ("The file could not be saved."), ex.Message, ex);
 					}
 					
 					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
@@ -622,7 +619,7 @@ namespace MonoDevelop.Ide.Gui
 
 		void InitializeExtensionChain ()
 		{
-			Editor.InitializeExtensionChain (this, Editor);
+			Editor.InitializeExtensionChain (this);
 
 			if (window is SdiWorkspaceWindow)
 				((SdiWorkspaceWindow)window).AttachToPathedDocument (GetContent<MonoDevelop.Ide.Gui.Content.IPathedDocument> ());
@@ -690,7 +687,7 @@ namespace MonoDevelop.Ide.Gui
 		TypeSystemService.ProjectContentWrapper currentWrapper;
 		internal void SetProject (Project project)
 		{
-			if (Window.ViewContent.Project == project)
+			if (Window == null || Window.ViewContent == null || Window.ViewContent.Project == project)
 				return;
 			analysisDocument = null;
 			ISupportsProjectReload pr = GetContent<ISupportsProjectReload> ();
@@ -725,9 +722,7 @@ namespace MonoDevelop.Ide.Gui
 				var wrapper = TypeSystemService.GetProjectContentWrapper (project);
 				wrapper.Loaded += HandleInLoadChanged;
 				currentWrapper = wrapper;
-				RunWhenLoaded (delegate {
-					currentWrapper.RequestLoad ();
-				});
+				currentWrapper.RequestLoad ();
 			}
 			StartReparseThread ();
 		}
@@ -805,27 +800,25 @@ namespace MonoDevelop.Ide.Gui
 			}
 		}
 
+		object reparseLock = new object();
 		internal void StartReparseThread ()
 		{
-			// Don't directly parse the document because doing it at every key press is
-			// very inefficient. Do it after a small delay instead, so several changes can
-			// be parsed at the same time.
-			string currentParseFile = FileName;
-			if (string.IsNullOrEmpty (currentParseFile))
-				return;
-			EnsureAnalysisDocumentIsOpen ();
-			CancelParseTimeout ();
-			//if (analysisDocument != null && RoslynTypeSystemService.Workspace.IsDocumentOpen (analysisDocument))
-			//	RoslynTypeSystemService.Workspace.OnDocumentTextChanged (analysisDocument, Microsoft.CodeAnalysis.Text.SourceText.From (Editor.Text), Microsoft.CodeAnalysis.PreservationMode.PreserveIdentity); 
+			lock (reparseLock) {
+				if (currentWrapper != null)
+					currentWrapper.EnsureReferencesAreLoaded ();
 
-			parseTimeout = GLib.Timeout.Add (ParseDelay, delegate {
-				var editor = Editor;
-				if (editor == null) {
-					parseTimeout = 0;
-					return false;	
+				// Don't directly parse the document because doing it at every key press is
+				// very inefficient. Do it after a small delay instead, so several changes can
+				// be parsed at the same time.
+				string currentParseFile = FileName;
+				if (string.IsNullOrEmpty (currentParseFile))
+					return;
+				CancelParseTimeout ();
+				if (IsProjectContextInUpdate) {
+					return;
 				}
-				string currentParseText = editor.Text;
-				string mimeType = editor.MimeType;
+				string currentParseText = Editor.Text;
+				string mimeType = Editor.MimeType;
 				ThreadPool.QueueUserWorkItem (delegate {
 					TypeSystemService.AddSkippedFile (currentParseFile);
 					var currentParsedDocument = TypeSystemService.ParseFile (Project, currentParseFile, mimeType, currentParseText);
@@ -833,14 +826,12 @@ namespace MonoDevelop.Ide.Gui
 						// this may be called after the document has closed, in that case the OnDocumentParsed event shouldn't be invoked.
 						if (isClosed)
 							return;
-
 						this.parsedDocument = currentParsedDocument;
 						OnDocumentParsed (EventArgs.Empty);
 					});
+					parseTimeout = 0;
 				});
-				parseTimeout = 0;
-				return false;
-			});
+			}
 		}
 		
 		/// <summary>
@@ -855,7 +846,7 @@ namespace MonoDevelop.Ide.Gui
 		internal object ExtendedCommandTargetChain {
 			get {
 				// Only go through the text editor chain, if the text editor is selected as subview
-				if (Window != null && Window.ActiveViewContent == Window.ViewContent && Editor != null)
+				if (Window != null && Window.ActiveViewContent.GetContent (typeof(TextEditor)) != null)
 					return Editor.CommandRouter;
 				return null;
 			}
@@ -908,7 +899,8 @@ namespace MonoDevelop.Ide.Gui
 		/// </summary>
 		public void DisableAutoScroll ()
 		{
-			FileSettingsStore.Remove (FileName);
+			if (IsFile)
+				FileSettingsStore.Remove (FileName);
 		}
 
 		public override OptionSet GetOptionSet ()

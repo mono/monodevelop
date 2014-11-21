@@ -664,21 +664,21 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return result;
 		}
 
-		static Cairo.Color ParseColor (string value)
+		static HslColor ParseColor (string value)
 		{
 			if (value.Length == 9 && value.StartsWith ("#", StringComparison.Ordinal)) {
 				double r = ((double) int.Parse (value.Substring (1,2), System.Globalization.NumberStyles.HexNumber)) / 255;
 				double g = ((double) int.Parse (value.Substring (3,2), System.Globalization.NumberStyles.HexNumber)) / 255;
 				double b = ((double) int.Parse (value.Substring (5,2), System.Globalization.NumberStyles.HexNumber)) / 255;
 				double a = ((double) int.Parse (value.Substring (7,2), System.Globalization.NumberStyles.HexNumber)) / 255;
-				return new Cairo.Color (r, g, b, a);
+				return new HslColor (r, g, b, a);
 			}
 			return HslColor.Parse (value);
 		}
 
-		public static Cairo.Color ParsePaletteColor (Dictionary<string, Cairo.Color> palette, string value)
+		public static HslColor ParsePaletteColor (Dictionary<string, HslColor> palette, string value)
 		{
-			Cairo.Color result;
+			HslColor result;
 			if (palette.TryGetValue (value, out result))
 				return result;
 			return ParseColor (value);
@@ -736,7 +736,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					result.CopyValues (baseScheme);
 			}
 
-			var palette = new Dictionary<string, Cairo.Color> ();
+			var palette = new Dictionary<string, HslColor> ();
 			foreach (var color in root.XPathSelectElements("palette/*")) {
 				var name = color.XPathSelectElement ("name").Value;
 				if (palette.ContainsKey (name))
@@ -786,16 +786,9 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			return result;
 		}
 
-		public static string ColorToMarkup (Cairo.Color color)
+		public static string ColorToMarkup (HslColor color)
 		{
-			var r = (byte)(color.R * byte.MaxValue);
-			var g = (byte)(color.G * byte.MaxValue);
-			var b = (byte)(color.B * byte.MaxValue);
-			var a = (byte)(color.A * byte.MaxValue);
-
-			if (a == 255)
-				return string.Format ("#{0:X2}{1:X2}{2:X2}", r, g, b);
-			return string.Format ("#{0:X2}{1:X2}{2:X2}{3:X2}", r, g, b, a);
+			return color.ToMarkup ();
 		}
 
 
@@ -894,10 +887,10 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		internal static Cairo.Color ImportVsColor (string colorString)
+		internal static HslColor ImportVsColor (string colorString)
 		{
 			if (colorString == "0x02000000")
-				return new Cairo.Color (0, 0, 0, 0);
+				return new HslColor (0, 0, 0, 0);
 			string color = "#" + colorString.Substring (8, 2) + colorString.Substring (6, 2) + colorString.Substring (4, 2);
 			return HslColor.Parse (color);
 		}
@@ -920,12 +913,14 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 		}
 
-		public static Cairo.Color AlphaBlend (Cairo.Color fore, Cairo.Color back, double alpha)
+		public static HslColor AlphaBlend (HslColor fore, HslColor back, double alpha)
 		{
-			return new Cairo.Color (
-				(1.0 - alpha) * back.R + alpha * fore.R,
-				(1.0 - alpha) * back.G + alpha * fore.G,
-				(1.0 - alpha) * back.B + alpha * fore.B);
+			var fc = (Cairo.Color)fore;
+			var bc = (Cairo.Color)back;
+			return new HslColor (
+				(1.0 - alpha) * bc.R + alpha * fc.R,
+				(1.0 - alpha) * bc.G + alpha * fc.G,
+				(1.0 - alpha) * bc.B + alpha * fc.B);
 		}
 
 		public static ColorScheme Import (string fileName, Stream stream)
@@ -1020,11 +1015,11 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 					color.Info.SetValue (result, color.Info.GetValue (defaultStyle, null), null);
 			}
 			if (result.PlainText.TransparentForeground)
-				result.PlainText.Foreground = new Cairo.Color (0, 0, 0);
+				result.PlainText.Foreground = new HslColor (0, 0, 0);
 			return result;
 		}
 
-		public Cairo.Color GetForeground (ChunkStyle chunkStyle)
+		public HslColor GetForeground (ChunkStyle chunkStyle)
 		{
 			if (chunkStyle.TransparentForeground)
 				return PlainText.Foreground;

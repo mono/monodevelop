@@ -39,6 +39,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Debugger
 {
@@ -501,8 +502,9 @@ namespace MonoDevelop.Debugger
 		
 		void Refresh (bool resetScrollPosition)
 		{
-			foreach (ObjectValue val in new List<ObjectValue> (nodes.Keys))
+			foreach (var val in new List<ObjectValue> (nodes.Keys))
 				UnregisterValue (val);
+
 			nodes.Clear ();
 
 			// Note: this is a hack that ideally we could get rid of...
@@ -516,7 +518,7 @@ namespace MonoDevelop.Debugger
 			
 			bool showExpanders = AllowAdding;
 
-			foreach (ObjectValue val in values) {
+			foreach (var val in values) {
 				AppendValue (TreeIter.Zero, null, val);
 				if (val.HasChildren)
 					showExpanders = true;
@@ -556,14 +558,14 @@ namespace MonoDevelop.Debugger
 				parent = TreeIter.Zero;
 
 			if (CanQueryDebugger && frame != null) {
-				EvaluationOptions ops = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
-				ops.AllowMethodEvaluation = true;
-				ops.AllowToStringCalls = true;
-				ops.AllowTargetInvoke = true;
-				ops.EllipsizeStrings = false;
+				var options = frame.DebuggerSession.Options.EvaluationOptions.Clone ();
+				options.AllowMethodEvaluation = true;
+				options.AllowToStringCalls = true;
+				options.AllowTargetInvoke = true;
+				options.EllipsizeStrings = false;
 
 				string oldName = val.Name;
-				val.Refresh (ops);
+				val.Refresh (options);
 
 				// Don't update the name for the values entered by the user
 				if (store.IterDepth (iter) == 0)
@@ -1065,7 +1067,7 @@ namespace MonoDevelop.Debugger
 			if (!wasHandled) {
 				string text = ctx == null ? editEntry.Text : editEntry.Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, editEntry.Text.Length)));
 				CompletionWindowManager.UpdateWordSelection (text);
-				CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifierState);
+				CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				PopupCompletion ((Entry) sender);
 			}
 		}
@@ -1087,7 +1089,7 @@ namespace MonoDevelop.Debugger
 			keyValue = args.Event.KeyValue;
 
 			if (currentCompletionData != null) {
-				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifierState);
+				wasHandled  = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifierState));
 				args.RetVal = wasHandled;
 			}
 		}

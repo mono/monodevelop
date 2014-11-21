@@ -48,7 +48,9 @@ namespace ICSharpCode.PackageManagement
 
 		public void RemoveFile(string path)
 		{
-			FileService.DeleteFile(path);
+			if (packageManagementEvents.OnFileRemoving (path)) {
+				FileService.DeleteFile (path);
+			}
 		}
 		
 		public void RemoveDirectory(string path)

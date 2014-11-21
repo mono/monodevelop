@@ -198,6 +198,26 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException ();
 		}
+
+		public FakeSolutionPackageRepository SolutionPackageRepository = new FakeSolutionPackageRepository ();
+
+		public ISolutionPackageRepository GetRepository ()
+		{
+			return SolutionPackageRepository;
+		}
+
+		public bool IsPackageRestored (string packageId, SemanticVersion packageVersion)
+		{
+			return FakeInstalledPackages.Any (package => {
+				return (package.Id == packageId) &&
+					(package.Version == packageVersion);
+			});
+		}
+
+		public void AddPackageReference (string packageId, string packageVersion)
+		{
+			SolutionPackageRepository.AddPackageReference (packageId, packageVersion);
+		}
 	}
 }
 

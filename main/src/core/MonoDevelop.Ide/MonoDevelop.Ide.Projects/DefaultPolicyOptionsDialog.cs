@@ -115,7 +115,7 @@ namespace MonoDevelop.Ide.Projects
 			align.Add (topBar);
 			
 			HeaderBox ebox = new HeaderBox ();
-			ebox.GradientBackround = true;
+			ebox.GradientBackground = true;
 			ebox.SetMargins (0, 1, 0, 0);
 			ebox.Add (align);
 			
@@ -229,7 +229,7 @@ namespace MonoDevelop.Ide.Projects
 					FillPolicySets ();
 					policiesCombo.Active = sets.IndexOf (pset);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The policy set could not be loaded"));
+					MessageService.ShowError (GettextCatalog.GetString ("The policy set could not be loaded"), ex);
 				}
 			}
 		}
@@ -279,7 +279,7 @@ namespace MonoDevelop.Ide.Projects
 					currentSet.SaveToFile (dlg.SelectedFile);
 					ExportProjectPolicyDialog.DefaultFileDialogPolicyDir = dlg.SelectedFile.ParentDirectory;
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The policy set could not be saved"));
+					MessageService.ShowError (GettextCatalog.GetString ("The policy set could not be saved"), ex.Message, ex);
 				}
 			}
 		}

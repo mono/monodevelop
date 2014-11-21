@@ -585,6 +585,7 @@ namespace MonoDevelop.Ide
 			int result = addins.IndexOf (addin);
 			if (result == -1) {
 				result = addins.Count;
+				addins.Add (addin);
 				addinIcons.Add (new Dictionary<string, string> ());
 			}
 			return result;

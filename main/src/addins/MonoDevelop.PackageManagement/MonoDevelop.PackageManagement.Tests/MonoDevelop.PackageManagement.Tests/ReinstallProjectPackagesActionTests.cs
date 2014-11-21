@@ -152,9 +152,9 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			CreateAction ();
 			AddPackageToProject ("MyPackage", "1.0");
-			FakePackage sourceRepositoryPackage = AddPackageToSourceRepository ("MyPackage", "1.0");
+			AddPackageToSourceRepository ("MyPackage", "1.0");
 			var expectedPackages = new FakePackage[] { FakePackage.CreatePackageWithVersion ("MyPackage", "1.0") };
-			ReinstallPackageOperations operations = AddReinstallOperationsToProject (expectedPackages);
+			AddReinstallOperationsToProject (expectedPackages);
 
 			action.Execute ();
 

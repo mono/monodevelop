@@ -38,6 +38,29 @@ using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Ide
 {
+	public class AlertButtonEventArgs : EventArgs
+	{
+		public AlertButton Button {
+			get;
+			private set;
+		}
+
+		public bool CloseDialog {
+			get;
+			set;
+		}
+
+		public AlertButtonEventArgs (AlertButton button, bool closeDialog)
+		{
+			Button = button;
+			CloseDialog = closeDialog;
+		}
+
+		public AlertButtonEventArgs (AlertButton button) : this (button, true)
+		{
+		}
+	}
+
 	public class AlertButton 
 	{
 		public static AlertButton Ok      = new AlertButton (Gtk.Stock.Ok, true);
@@ -152,18 +175,52 @@ namespace MonoDevelop.Ide
 		{
 			ShowError ((Window)null, primaryText);
 		}
-		public static void ShowError (Window parent, string primaryText)
+
+		public static void ShowError (string primaryText, Exception ex)
 		{
-			ShowError (parent, primaryText, null);
+			ShowError ((Window)null, primaryText, null, ex);
 		}
+
 		public static void ShowError (string primaryText, string secondaryText)
 		{
-			ShowError ((Window)null, primaryText, secondaryText);
+			ShowError ((Window)null, primaryText, secondaryText, null);
+		}
+
+		public static void ShowError (string primaryText, string secondaryText, Exception ex)
+		{
+			ShowError ((Window)null, primaryText, secondaryText, ex);
+		}
+
+		public static void ShowError (Window parent, string primaryText)
+		{
+			ShowError (parent, primaryText, null, null);
 		}
 
 		public static void ShowError (Window parent, string primaryText, string secondaryText)
 		{
-			GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, AlertButton.Ok);
+			ShowError (parent, primaryText, secondaryText, null);
+		}
+
+		public static void ShowError (Window parent, string primaryText, string secondaryText, Exception ex)
+		{
+			ShowError (parent, primaryText, secondaryText, ex, true, AlertButton.Ok);
+		}
+
+		internal static AlertButton ShowError (Window parent, string primaryText, string secondaryText, Exception ex, bool logError, params AlertButton[] buttons)
+		{
+			if (logError) {
+				string msg = string.IsNullOrEmpty (secondaryText) ? primaryText : primaryText + ". " + secondaryText;
+				LoggingService.LogError (msg, ex);
+			}
+
+			return GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, buttons);
+		}
+
+		internal static void ShowFatalError (string primaryText, string secondaryText, Exception ex)
+		{
+			string msg = string.IsNullOrEmpty (secondaryText) ? primaryText : primaryText + ". " + secondaryText;
+			LoggingService.LogFatalError (msg, ex);
+			GenericAlert (null, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, AlertButton.Ok);
 		}
 		#endregion
 		
@@ -515,6 +572,17 @@ namespace MonoDevelop.Ide
 		public bool AllowApplyToAll { get; set; }
 		public int DefaultButton { get; set; }
 		public CancellationToken CancellationToken { get; private set; }
+		public bool UseMarkup { get; set; }
+
+		public event EventHandler<AlertButtonEventArgs> AlertButtonClicked;
+
+		internal bool NotifyClicked (AlertButton button)
+		{
+			var args = new AlertButtonEventArgs (button);
+			if (AlertButtonClicked != null)
+				AlertButtonClicked (this, args);
+			return args.CloseDialog;
+		}
 		
 		public void AddOption (string id, string text, bool setByDefault)
 		{

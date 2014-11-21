@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.TextTemplating
 		{
 		}
 		
-		protected internal virtual void Initialize ()
+		public virtual void Initialize ()
 		{
 		}
 		
@@ -55,15 +55,12 @@ namespace Microsoft.VisualStudio.TextTemplating
 		
 		public void Error (string message)
 		{
-			Errors.Add (new CompilerError (null, -1, -1, null, message));
+			Errors.Add (new CompilerError ("", 0, 0, "", message));
 		}
 		
 		public void Warning (string message)
 		{
-			var err = new CompilerError (null, -1, -1, null, message) {
-				IsWarning = true,
-			};
-			Errors.Add (err);
+			Errors.Add (new CompilerError ("", 0, 0, "", message) { IsWarning = true });
 		}
 		
 		protected internal CompilerErrorCollection Errors {

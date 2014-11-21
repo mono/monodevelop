@@ -54,7 +54,7 @@ namespace MonoDevelop.Core.Instrumentation
 		static Thread autoSaveThread;
 		static bool stopping;
 		static int autoSaveInterval;
-		static List<IInstrumentationConsumer> handlers = new List<IInstrumentationConsumer> ();
+		static List<InstrumentationConsumer> handlers = new List<InstrumentationConsumer> ();
 		static bool handlersLoaded;
 		
 		static InstrumentationService ()
@@ -64,12 +64,12 @@ namespace MonoDevelop.Core.Instrumentation
 			startTime = DateTime.Now;
 		}
 		
-		static void InitializeHandlers ()
+		internal static void InitializeHandlers ()
 		{
 			if (!handlersLoaded && AddinManager.IsInitialized) {
 				lock (counters) {
 					handlersLoaded = true;
-					AddinManager.AddExtensionNodeHandler (typeof(IInstrumentationConsumer), HandleInstrumentationHandlerExtension);
+					AddinManager.AddExtensionNodeHandler (typeof(InstrumentationConsumer), HandleInstrumentationHandlerExtension);
 				}
 			}
 		}
@@ -84,26 +84,37 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		static void HandleInstrumentationHandlerExtension (object sender, ExtensionNodeEventArgs args)
 		{
-			var handler = (IInstrumentationConsumer)args.ExtensionObject;
+			var handler = (InstrumentationConsumer)args.ExtensionObject;
 			if (args.Change == ExtensionChange.Add) {
-				handlers.Add (handler);
-				lock (counters) {
-					foreach (var c in counters.Values) {
-						if (handler.SupportsCounter (c))
-							c.Handlers.Add (handler);
-					}
-				}
+				RegisterInstrumentationConsumer (handler);
 			}
 			else {
-				handlers.Remove (handler);
-				lock (counters) {
-					foreach (var c in counters.Values)
-						c.Handlers.Remove (handler);
+				UnregisterInstrumentationConsumer (handler);
+			}
+		}
+
+		public static void RegisterInstrumentationConsumer (InstrumentationConsumer consumer)
+		{
+			lock (counters) {
+				handlers.Add (consumer);
+				foreach (var c in counters.Values) {
+					if (consumer.SupportsCounter (c))
+						c.Handlers.Add (consumer);
 				}
 			}
 			UpdateCounterStatus ();
 		}
 		
+		public static void UnregisterInstrumentationConsumer (InstrumentationConsumer consumer)
+		{
+			lock (counters) {
+				handlers.Remove (consumer);
+				foreach (var c in counters.Values)
+					c.Handlers.Remove (consumer);
+			}
+			UpdateCounterStatus ();
+		}
+
 		public static int PublishService ()
 		{
 			RemotingService.RegisterRemotingChannel ();
@@ -123,7 +134,7 @@ namespace MonoDevelop.Core.Instrumentation
 				throw new InvalidOperationException ("Service not published");
 			
 			if (Platform.IsMac) {
-				var macOSDir = PropertyService.EntryAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory;
+				var macOSDir = PropertyService.EntryAssemblyPath.ParentDirectory.ParentDirectory.ParentDirectory.ParentDirectory.Combine ("MacOS");
 				var app = macOSDir.Combine ("MDMonitor.app");
 				if (Directory.Exists (app)) {
 					var psi = new ProcessStartInfo ("open", string.Format ("-n '{0}' --args -c localhost:{1} ", app, publicPort)) {
@@ -223,10 +234,15 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public static Counter CreateCounter (string name, string category, bool logMessages)
 		{
-			return CreateCounter (name, category, logMessages, false);
+			return CreateCounter (name, category, logMessages, null, false);
 		}
 		
-		static Counter CreateCounter (string name, string category, bool logMessages, bool isTimer)
+		public static Counter CreateCounter (string name, string category = null, bool logMessages = false, string id = null)
+		{
+			return CreateCounter (name, category, logMessages, id, false);
+		}
+
+		static Counter CreateCounter (string name, string category, bool logMessages, string id, bool isTimer)
 		{
 			InitializeHandlers ();
 			
@@ -241,6 +257,7 @@ namespace MonoDevelop.Core.Instrumentation
 				}
 				
 				Counter c = isTimer ? new TimerCounter (name, cat) : new Counter (name, cat);
+				c.Id = id;
 				c.LogMessages = logMessages;
 				cat.AddCounter (c);
 				
@@ -289,7 +306,12 @@ namespace MonoDevelop.Core.Instrumentation
 		
 		public static TimerCounter CreateTimerCounter (string name, string category, double minSeconds, bool logMessages)
 		{
-			TimerCounter c = (TimerCounter) CreateCounter (name, category, logMessages, true);
+			return CreateTimerCounter (name, category, minSeconds, logMessages, null);
+		}
+
+		public static TimerCounter CreateTimerCounter (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null)
+		{
+			TimerCounter c = (TimerCounter) CreateCounter (name, category, logMessages, id, true);
 			c.DisplayMode = CounterDisplayMode.Line;
 			c.LogMessages = logMessages;
 			c.MinSeconds = minSeconds;

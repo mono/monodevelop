@@ -197,12 +197,13 @@ namespace MonoDevelop.CSharpBinding
 			listWindow.CompletionWidget = widget;
 			listWindow.CodeCompletionContext = widget.CurrentCodeCompletionContext;
 			//TODO: Roslyn port!
-//			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
-//			var foundMember = t.GetMembers (m => m.Name == member).First ();
-//			var data = new MemberCompletionData (ext, foundMember, OutputFlags.ClassBrowserEntries);
-//			data.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.NamedArgument;
-//			KeyActions ka = KeyActions.Process;
-//			data.InsertCompletionText (listWindow, ref ka, key, (char)key, Gdk.ModifierType.None, true, false); 
+/*			var t = ext.DocumentContext.Compilation.FindType (new FullTypeName (type)); 
+			var foundMember = t.GetMembers (m => m.Name == member).First ();
+			var data = new MemberCompletionData (ext, foundMember, OutputFlags.ClassBrowserEntries);
+			data.DisplayFlags |= ICSharpCode.NRefactory.Completion.DisplayFlags.NamedArgument;
+			KeyActions ka = KeyActions.Process;
+			data.InsertCompletionText (listWindow, ref ka, KeyDescriptor.FromGtk (key, (char)key, Gdk.ModifierType.None), true, false); 
+			*/
 			return widget.CompletedWord;
 		}
 

@@ -346,6 +346,49 @@ namespace MonoDevelop.Projects
 			Assert.IsNull (main.Files.GetFile ("Foo.cs"));
 			Assert.IsFalse (main.References.Contains (pref));
 		}
+
+		[Test]
+		public void ProjItemsFileNameNotMatchingShproj_Bug20571 ()
+		{
+			string solFile = Util.GetSampleProject ("SharedProjectTestBug20571", "SharedProjectTest.sln");
+			Solution sol = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile);
+
+			Assert.AreEqual (3, sol.GetAllProjects ().Count);
+
+			var pc1 = (DotNetProject) sol.FindProjectByName ("Console1");
+			Assert.IsNotNull (pc1);
+
+			var pc2 = (DotNetProject) sol.FindProjectByName ("Console2");
+			Assert.IsNotNull (pc2);
+
+			var pcs = (SharedAssetsProject) sol.FindProjectByName ("Shared");
+			Assert.IsNotNull (pcs);
+
+			Assert.IsTrue (pc1.References.Any (r => r.Reference == "Shared"));
+
+			var sharedFile = pcs.ItemDirectory.Combine ("MyClass.cs");
+
+			Assert.IsTrue (pc1.Files.GetFile (sharedFile) != null);
+			Assert.IsTrue (pc2.Files.GetFile (sharedFile) == null);
+			Assert.IsTrue (pcs.Files.GetFile (sharedFile) != null);
+
+			pc2.References.Add (new ProjectReference (pcs));
+			Assert.IsTrue (pc2.Files.GetFile (sharedFile) != null);
+
+			pc2.Save (Util.GetMonitor ());
+
+			Solution sol2 = (Solution) Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), sol.FileName);
+			sol.Dispose ();
+
+			pc2 = (DotNetProject) sol2.FindProjectByName ("Console2");
+			Assert.IsNotNull (pc2);
+
+			Assert.IsTrue (pc2.References.Any (r => r.Reference == "Shared"));
+
+			Assert.IsTrue (pc2.Files.GetFile (sharedFile) != null);
+
+			sol2.Dispose ();
+		}
 	}
 }
 

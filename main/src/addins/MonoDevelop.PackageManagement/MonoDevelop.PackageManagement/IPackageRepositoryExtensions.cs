@@ -42,5 +42,10 @@ namespace ICSharpCode.PackageManagement
 		{
 			return repository.StartOperation(RepositoryOperationNames.Update, mainPackageId, mainPackageVersion);
 		}
+
+		public static IDisposable StartRestoreOperation (this IPackageRepository repository, string mainPackageId = null, string mainPackageVersion = null)
+		{
+			return repository.StartOperation (RepositoryOperationNames.Restore, mainPackageId, mainPackageVersion);
+		}
 	}
 }

@@ -35,11 +35,14 @@ namespace ICSharpCode.PackageManagement
 {
 	public abstract class ProcessPackageOperationsAction : ProcessPackageAction
 	{
+		IPackageManagementEvents packageManagementEvents;
+
 		public ProcessPackageOperationsAction(
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
 			: base(project, packageManagementEvents)
 		{
+			this.packageManagementEvents = packageManagementEvents;
 		}
 		
 		public IEnumerable<PackageOperation> Operations { get; set; }
@@ -73,6 +76,11 @@ namespace ICSharpCode.PackageManagement
 		{
 			BeforeExecute ();
 			return Operations.Where (operation => operation.Action == PackageAction.Install);
+		}
+
+		protected void OnParentPackageInstalled ()
+		{
+			packageManagementEvents.OnParentPackageInstalled (Package, Project, Operations);
 		}
 	}
 }

@@ -37,7 +37,6 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageRepositoryCache repositoryCache;
 		PackageManagementOptions options;
-		RegisteredPackageSources registeredPackageSources;
 		PackageSource activePackageSource;
 		IPackageRepository activePackageRepository;
 		
@@ -47,7 +46,6 @@ namespace ICSharpCode.PackageManagement
 		{
 			this.repositoryCache = repositoryCache;
 			this.options = options;
-			registeredPackageSources = options.PackageSources;
 		}
 		
 		public IRecentPackageRepository RecentPackageRepository {
@@ -69,7 +67,7 @@ namespace ICSharpCode.PackageManagement
 		}
 		
 		public bool HasMultiplePackageSources {
-			get { return registeredPackageSources.HasMultipleEnabledPackageSources; }
+			get { return PackageSources.HasMultipleEnabledPackageSources; }
 		}
 		
 		public PackageSource ActivePackageSource {
@@ -122,6 +120,7 @@ namespace ICSharpCode.PackageManagement
 				}
 
 				UpdateActivePackageSource ();
+				UpdateActivePackageRepository ();
 			} catch (Exception) {
 				PackageSources.AddRange (packageSourcesBackup);
 				UpdateActivePackageSource ();
@@ -147,6 +146,18 @@ namespace ICSharpCode.PackageManagement
 				if (matchedPackageSource == null) {
 					ActivePackageSource = null;
 				}
+			}
+		}
+
+		void UpdateActivePackageRepository ()
+		{
+			if (activePackageSource == null)
+				return;
+
+			if (activePackageSource.IsAggregate ()) {
+				// Force recreation of AggregateRepository to reset any
+				// failing package repositories.
+				activePackageRepository = null;
 			}
 		}
 	}

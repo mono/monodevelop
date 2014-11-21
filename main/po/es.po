@@ -1918,12 +1918,11 @@ msgstr "Disposición activa"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:6
 msgid "Apply Policy..."
-msgstr "Aplicar Pólitica"
+msgstr "Aplicar política"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:6
-#, fuzzy
 msgid "Export Policy..."
-msgstr "_Exportar..."
+msgstr "Exportar política..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:8
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:27
@@ -2968,7 +2967,7 @@ msgstr "Atajos de teclado"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:1
 msgid "Fonts"
-msgstr "Fuentes"
+msgstr "Tipografías"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:1
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:2
@@ -7299,7 +7298,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:6
 msgid "Parent Policy"
-msgstr "Pólitica Padre"
+msgstr "Política padre"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ProjectFileSelectorDialog.cs:2
 msgid "Select Project File..."
@@ -7453,23 +7452,20 @@ msgstr ""
 "'{1}'?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Fonts/FontChooserPanelWidget.cs:2
-#, fuzzy
 msgid "Select Font"
-msgstr "Anular la selección"
+msgstr "Seleccione tipografía"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Fonts/FontChooserPanelWidget.cs:2
-#, fuzzy
 msgid "Edit..."
-msgstr "Edición"
+msgstr "Editar..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Fonts/FontChooserPanelWidget.cs:2
 msgid "Font"
-msgstr "Fuente"
+msgstr "Tipografía"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Fonts.FontChooserPanelWidget.cs:2
-#, fuzzy
 msgid "_Fonts:"
-msgstr "_Comentarios:"
+msgstr "Tipogra_fías:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/GtkAlertDialog.cs:3
 #: ../src/addins/MacPlatform/Dialogs/MacAlertDialogHandler.cs:5
@@ -7543,12 +7539,11 @@ msgstr "El proyecto será guardado en"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs:1
 msgid "No policies"
-msgstr "No hay póliticas"
+msgstr "No hay políticas"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs:3
-#, fuzzy
 msgid "Policy name not specified"
-msgstr "No se proporcionó un nombre de proyecto."
+msgstr "Política sin nombre especificado"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ExportProjectPolicyDialog.cs:3
 #, fuzzy
@@ -7571,7 +7566,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.cs:2
 msgid "Export policies to a file"
-msgstr "Exportar póliticas a un archivo"
+msgstr "Exportar políticas a un archivo"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.cs:2
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs:2
@@ -7585,7 +7580,7 @@ msgstr "Archivo:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.cs:2
 msgid "Policies to export:"
-msgstr "Póliticas a exportar:"
+msgstr "Políticas a exportar:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ExportProjectPolicyDialog.cs:2
 #, fuzzy
@@ -7638,7 +7633,7 @@ msgstr "_Política:"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs:2
 msgid "Apply policies from file"
-msgstr "Aplicar póliticas desde un archivo"
+msgstr "Aplicar políticas desde un archivo"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs:2
 msgid "Policies to set or replace:"
@@ -7646,7 +7641,7 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ApplyPolicyDialog.cs:2
 msgid "_Apply policies"
-msgstr "_Aplicar póliticas"
+msgstr "_Aplicar políticas"
 
 #: ../src/core/MonoDevelop.Ide/gtk-gui/MonoDevelop.Ide.Projects.ProjectSelectorDialog.cs:2
 #, fuzzy
@@ -7747,7 +7742,7 @@ msgstr "Sus evaluaciones: {0}"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:4
 msgid "Thank you for your feedback!"
-msgstr "Gracias por sus comentarios!"
+msgstr "¡Gracias por sus comentarios!"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FeedbackDialog.cs:4
 msgid "Feedbacks sent: {0}"
@@ -7904,7 +7899,7 @@ msgstr "Detener siempre"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LogReportingStartup.cs:4
 msgid "A fatal error has occurred"
-msgstr "Se ha producido un error grave"
+msgstr "Se ha producido un error fatal"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/LogReportingStartup.cs:5
 msgid ""
@@ -7955,12 +7950,11 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/AmbienceService.cs:7
 msgid "Returns:"
-msgstr "Retorna:"
+msgstr "Devuelve:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/AmbienceService.cs:7
-#, fuzzy
 msgid "Value:"
-msgstr "Valor"
+msgstr "Valor:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/AmbienceService.cs:7
 msgid "See also:"
@@ -9410,7 +9404,7 @@ msgstr ""
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:58
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:72
 msgid "What do you want to do?"
-msgstr "¿Qué quieres hacer?"
+msgstr "¿Qué quiere hacer?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:60
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:74

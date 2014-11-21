@@ -29,16 +29,33 @@
 using System;
 using System.Collections.Generic;
 using NuGet;
+using MonoDevelop.PackageManagement;
 
 namespace ICSharpCode.PackageManagement
 {
 	public class UpdatePackageAction : ProcessPackageOperationsAction, IUpdatePackageSettings
 	{
-		public UpdatePackageAction(
+		IPackageManagementEvents packageManagementEvents;
+		IFileRemover fileRemover;
+
+		public UpdatePackageAction (
 			IPackageManagementProject project,
 			IPackageManagementEvents packageManagementEvents)
-			: base(project, packageManagementEvents)
+			: this (
+				project,
+				packageManagementEvents,
+				new FileRemover ())
 		{
+		}
+
+		public UpdatePackageAction (
+			IPackageManagementProject project,
+			IPackageManagementEvents packageManagementEvents,
+			IFileRemover fileRemover)
+			: base (project, packageManagementEvents)
+		{
+			this.packageManagementEvents = packageManagementEvents;
+			this.fileRemover = fileRemover;
 			UpdateDependencies = true;
 			UpdateIfPackageDoesNotExistInProject = true;
 		}
@@ -57,7 +74,9 @@ namespace ICSharpCode.PackageManagement
 		protected override void ExecuteCore()
 		{
 			if (ShouldUpdatePackage()) {
-				Project.UpdatePackage(Package, this);
+				using (IDisposable monitor = CreateFileMonitor ()) {
+					Project.UpdatePackage(Package, this);
+				}
 				OnParentPackageInstalled();
 			}
 		}
@@ -68,6 +87,13 @@ namespace ICSharpCode.PackageManagement
 				return PackageIdExistsInProject();
 			}
 			return true;
+		}
+
+		IDisposable CreateFileMonitor ()
+		{
+			return new PreventPackagesConfigFileBeingRemovedOnUpdateMonitor (
+				packageManagementEvents,
+				fileRemover);
 		}
 
 		protected override string StartingMessageFormat {

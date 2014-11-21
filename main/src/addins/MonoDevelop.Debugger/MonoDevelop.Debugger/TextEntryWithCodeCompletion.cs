@@ -27,6 +27,7 @@ using System;
 using Xwt;
 using MonoDevelop.Ide.CodeCompletion;
 using System.Collections.Generic;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Debugger
 {
@@ -73,7 +74,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (list != null)
-				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier);
+				args.RetVal = keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 		}
 
 		void HandleKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
@@ -83,7 +84,7 @@ namespace MonoDevelop.Debugger
 
 			string text = ctx == null ? Text : Text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, Text.Length)));
 			CompletionWindowManager.UpdateWordSelection (text);
-			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
+			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ();
 		}
 
@@ -116,19 +117,19 @@ namespace MonoDevelop.Debugger
 		{
 			#region ICompletionKeyHandler implementation
 
-			public bool PreProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction)
+			public bool PreProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
 			{
 				keyAction = KeyActions.None;
-				if (keyChar == '.') {
+				if (descriptor.KeyChar == '.') {
 					return true;
 				}
 				return false;
 			}
 
-			public bool PostProcessKey (CompletionListWindow listWindow, Gdk.Key key, char keyChar, Gdk.ModifierType modifier, out KeyActions keyAction)
+			public bool PostProcessKey (CompletionListWindow listWindow, KeyDescriptor descriptor, out KeyActions keyAction)
 			{
 				keyAction = KeyActions.None;
-				if (keyChar == '.') {
+				if (descriptor.KeyChar == '.') {
 					return true;
 				}
 				return false;

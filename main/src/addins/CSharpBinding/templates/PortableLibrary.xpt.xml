@@ -9,7 +9,7 @@
 		<_Category>C#</_Category>
 		<Icon>md-project-library</Icon>
 		<LanguageName>C#</LanguageName>
-		<_Description>Creates a C# library that can be used in Windows, Silverlight, Windows Phone, MonoTouch and Mono for Android.</_Description>
+		<_Description>Creates a C# library that can be used in Windows, Mac, Silverlight, Windows Phone, Xamarin.iOS and Xamarin.Android.</_Description>
 		<DefaultFilename>PortableLibrary</DefaultFilename>
 	</TemplateConfiguration>
 	

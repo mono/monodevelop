@@ -67,8 +67,8 @@ namespace MonoDevelop.Ide.Gui.OptionPanels
 			
 			//NOTE: order corresponds to EolMarker enum values
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Native"));
-			lineEndingCombo.AppendText (GettextCatalog.GetString ("Mac"));
-			lineEndingCombo.AppendText (GettextCatalog.GetString ("Unix"));
+			lineEndingCombo.AppendText (GettextCatalog.GetString ("Mac Classic"));
+			lineEndingCombo.AppendText (GettextCatalog.GetString ("Unix / Mac"));
 			lineEndingCombo.AppendText (GettextCatalog.GetString ("Microsoft Windows")); // Using "Windows" is too short, otherwise the translation get's confused. Mike
 		}
 		

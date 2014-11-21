@@ -34,6 +34,7 @@ using MonoDevelop.Ide.CodeCompletion;
 using MonoDevelop.DesignerSupport;
 using ICSharpCode.NRefactory.TypeSystem;
 using System.Linq;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -74,7 +75,7 @@ namespace MonoDevelop.AspNet.WebForms
 			}
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			//insert the method name
 			var buf = window.CompletionWidget;

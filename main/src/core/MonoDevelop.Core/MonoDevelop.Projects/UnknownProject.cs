@@ -50,6 +50,11 @@ namespace MonoDevelop.Projects
 			this.loadError = loadError;
 		}
 
+		public override bool SupportsConfigurations ()
+		{
+			return true;
+		}
+
 		public override IEnumerable<string> GetProjectTypes ()
 		{
 			yield return "";

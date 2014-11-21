@@ -30,6 +30,7 @@ using NUnit.Framework;
 using NuGet;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.PackageManagement.Tests
 {
@@ -85,25 +86,36 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetLabel_PackageReferenceIsNotInstalled_ReturnsPackageIdInsideErrorColouredSpan ()
+		public void GetLabel_PackageReferenceIsNotInstalled_ReturnsPackageId ()
 		{
 			CreatePackageReference (packageId: "MyPackage");
 			CreatePackageReferenceNode (installed: false);
 
 			string label = node.GetLabel ();
 
-			Assert.AreEqual ("<span color='#c99c00'>MyPackage</span>", label);
+			Assert.AreEqual ("MyPackage", label);
 		}
 
 		[Test]
-		public void GetLabel_PackageReferenceNeedsReinstallation_ReturnsPackageIdInsideErrorColouredSpan ()
+		public void GetLabel_PackageReferenceNeedsReinstallation_ReturnsPackageId ()
 		{
 			CreatePackageReference (packageId: "MyPackage", requireReinstallation: true);
 			CreatePackageReferenceNode (installed: true);
 
 			string label = node.GetLabel ();
 
-			Assert.AreEqual ("<span color='#c99c00'>MyPackage</span>", label);
+			Assert.AreEqual ("MyPackage", label);
+		}
+
+		[Test]
+		public void GetLabel_PackageReferenceIsPendingInstall_ReturnsPackageIdFollowedByInstallingText ()
+		{
+			CreatePackageReference (packageId: "MyPackage");
+			CreatePackageReferenceNode (installed: false, installPending: true);
+
+			string label = node.GetLabel ();
+
+			Assert.AreEqual ("MyPackage (installing)", label);
 		}
 
 		[Test]
@@ -118,14 +130,14 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetIconId_PackageReferenceNeedsReinstallation_ReturnsReferenceWarningIcon ()
+		public void GetIconId_PackageReferenceNeedsReinstallation_ReturnsReferenceIcon ()
 		{
 			CreatePackageReference (requireReinstallation: true);
 			CreatePackageReferenceNode ();
 
 			IconId icon = node.GetIconId ();
 
-			Assert.AreEqual (Stock.ReferenceWarning, icon);
+			Assert.AreEqual (Stock.Reference, icon);
 		}
 
 		[Test]
@@ -140,7 +152,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		}
 
 		[Test]
-		public void GetLabel_PackageReferenceNeedsReinstallationButHasUpdate_ReturnsPackageIdInsideErrorColouredSpanAndUpdatedPackageVersionInGreySpan ()
+		public void GetLabel_PackageReferenceNeedsReinstallationButHasUpdate_ReturnsPackageIdInBlackTextAndUpdatedPackageVersionInGreySpan ()
 		{
 			CreatePackageReference (
 				packageId: "MyPackage",
@@ -151,7 +163,128 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			string label = node.GetLabel ();
 
-			Assert.AreEqual ("<span color='#c99c00'>MyPackage</span> <span color='grey'>(1.2.3.4 available)</span>", label);
+			Assert.AreEqual ("MyPackage <span color='grey'>(1.2.3.4 available)</span>", label);
+		}
+
+		[Test]
+		public void IsDisabled_PackageReferenceHasInstallPending_ReturnsTrue ()
+		{
+			CreatePackageReference ();
+			CreatePackageReferenceNode (installed: false, installPending: true);
+
+			bool result = node.IsDisabled ();
+
+			Assert.IsTrue (result);
+		}
+
+		[Test]
+		public void IsDisabled_PackageReferenceIsInstalled_ReturnsFalse ()
+		{
+			CreatePackageReference ();
+			CreatePackageReferenceNode ();
+
+			bool result = node.IsDisabled ();
+
+			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public void IsDisabled_PackageReferenceIsNotInstalled_ReturnsTrue ()
+		{
+			CreatePackageReference (packageId: "MyPackage");
+			CreatePackageReferenceNode (installed: false);
+
+			bool result = node.IsDisabled ();
+
+			Assert.IsTrue (result);
+		}
+
+		[Test]
+		public void GetStatusSeverity_PackageReferenceIsInstalled_ReturnsNull ()
+		{
+			CreatePackageReference ();
+			CreatePackageReferenceNode ();
+
+			TaskSeverity? status = node.GetStatusSeverity ();
+
+			Assert.IsNull (status);
+		}
+
+		[Test]
+		public void GetStatusSeverity_PackageReferenceIsNotInstalled_ReturnsWarning ()
+		{
+			CreatePackageReference (packageId: "MyPackage");
+			CreatePackageReferenceNode (installed: false);
+
+			TaskSeverity? status = node.GetStatusSeverity ();
+
+			Assert.AreEqual (TaskSeverity.Warning, status);
+		}
+
+		[Test]
+		public void GetStatusSeverity_PackageReferenceNeedsReinstallation_ReturnsWarning ()
+		{
+			CreatePackageReference (requireReinstallation: true);
+			CreatePackageReferenceNode ();
+
+			TaskSeverity? status = node.GetStatusSeverity ();
+
+			Assert.AreEqual (TaskSeverity.Warning, status);
+		}
+
+		[Test]
+		public void GetStatusSeverity_PackageReferenceHasInstallPending_ReturnsNull ()
+		{
+			CreatePackageReference ();
+			CreatePackageReferenceNode (installed: false, installPending: true);
+
+			TaskSeverity? status = node.GetStatusSeverity ();
+
+			Assert.IsNull (status);
+		}
+
+		[Test]
+		public void GetStatusMessage_PackageReferenceIsInstalled_ReturnsNull ()
+		{
+			CreatePackageReference ();
+			CreatePackageReferenceNode ();
+
+			string message = node.GetStatusMessage ();
+
+			Assert.IsNull (message);
+		}
+
+		[Test]
+		public void GetStatusMessage_PackageReferenceIsNotInstalled_ReturnsPackageNotRestoredMessage ()
+		{
+			CreatePackageReference (packageId: "MyPackage");
+			CreatePackageReferenceNode (installed: false);
+
+			string message = node.GetStatusMessage ();
+
+			Assert.AreEqual ("Package is not restored", message);
+		}
+
+		[Test]
+		public void GetStatusMessage_PackageReferenceNeedsReinstallation_ReturnsPackageNeedsRetargetingMessage ()
+		{
+			CreatePackageReference (requireReinstallation: true);
+			CreatePackageReferenceNode ();
+
+			string message = node.GetStatusMessage ();
+
+			Assert.AreEqual ("Package needs retargeting", message);
+		}
+
+		[Test]
+		public void GetStatusMessage_PackageReferenceHasInstallPending_ReturnsNull ()
+		{
+			CreatePackageReference ();
+			CreatePackageReferenceNode (installed: false, installPending: true);
+
+			string message = node.GetStatusMessage ();
+
+			Assert.IsNull (message);
 		}
 	}
 }

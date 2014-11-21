@@ -75,6 +75,8 @@ namespace MonoDevelop.Components.DockNotebook
 
 			ShowAll ();
 
+			contentBox.NoShowAll = true;
+
 			tabStrip.DropDownButton.Sensitive = false;
 
 			tabStrip.DropDownButton.MenuCreator = delegate {
@@ -206,7 +208,7 @@ namespace MonoDevelop.Components.DockNotebook
 			}
 		}
 
-		void SelectLastActiveTab ()
+		void SelectLastActiveTab (int lastClosed)
 		{
 			if (pages.Count == 0) {
 				CurrentTab = null;
@@ -218,8 +220,12 @@ namespace MonoDevelop.Components.DockNotebook
 
 			if (pagesHistory.Count > 0)
 				CurrentTab = pagesHistory [0];
-			else
-				CurrentTab = null;
+			else {
+				if (lastClosed + 1 < pages.Count)
+					CurrentTab = pages [lastClosed + 1];
+				else
+					CurrentTab = pages [lastClosed - 1];
+			}
 		}
 
 		public int TabCount {
@@ -338,8 +344,10 @@ namespace MonoDevelop.Components.DockNotebook
 			if (animate)
 				tabStrip.StartCloseAnimation ((DockNotebookTab)tab);
 			pagesHistory.Remove (tab);
-			if (page == CurrentTabIndex)
-				SelectLastActiveTab ();
+			if (pages.Count == 1)
+				CurrentTab = null;
+			else if (page == CurrentTabIndex)
+				SelectLastActiveTab (page);
 			pages.RemoveAt (page);
 			UpdateIndexes (page);
 			tabStrip.Update ();

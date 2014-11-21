@@ -106,6 +106,21 @@ namespace MonoDevelop.Ide.Editor
 			remove { textEditorImpl.BeginMouseHover -= value; }
 		}
 
+		public event EventHandler<LineEventArgs> LineChanged {
+			add { textEditorImpl.LineChanged += value; }
+			remove { textEditorImpl.LineChanged -= value; }
+		}
+
+		public event EventHandler<LineEventArgs> LineInserted {
+			add { textEditorImpl.LineInserted += value; }
+			remove { textEditorImpl.LineInserted -= value; }
+		}
+
+		public event EventHandler<LineEventArgs> LineRemoved {
+			add { textEditorImpl.LineRemoved += value; }
+			remove { textEditorImpl.LineRemoved -= value; }
+		}
+
 		public ITextEditorOptions Options {
 			get {
 				return textEditorImpl.Options;
@@ -373,7 +388,7 @@ namespace MonoDevelop.Ide.Editor
 		public void SetCaretLocation (int line, int col, bool usePulseAnimation = false)
 		{
 			CaretLocation = new DocumentLocation (line, col);
-			ScrollTo (CaretLocation);
+			CenterTo (CaretLocation);
 			if (usePulseAnimation)
 				StartCaretPulseAnimation ();
 		}
@@ -865,12 +880,37 @@ namespace MonoDevelop.Ide.Editor
 			}
 		}
 
-		internal void InitializeExtensionChain (DocumentContext documentContext, TextEditor editor)
+		DocumentContext documentContext;
+		internal DocumentContext DocumentContext {
+			get {
+				return documentContext;
+			}
+			set {
+				documentContext = value;
+				OnDocumentContextChanged (EventArgs.Empty);
+			}
+		}
+
+		public event EventHandler DocumentContextChanged;
+
+		void OnDocumentContextChanged (EventArgs e)
+		{
+			if (DocumentContext != null) {
+				textEditorImpl.SetQuickTaskProviders (DocumentContext.GetContents<IQuickTaskProvider> ());
+				textEditorImpl.SetUsageTaskProviders (DocumentContext.GetContents<UsageProviderEditorExtension> ());
+			} else {
+				textEditorImpl.SetQuickTaskProviders (Enumerable.Empty<IQuickTaskProvider> ());
+				textEditorImpl.SetUsageTaskProviders (Enumerable.Empty<UsageProviderEditorExtension> ());
+			}
+			var handler = DocumentContextChanged;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		internal void InitializeExtensionChain (DocumentContext documentContext)
 		{
 			if (documentContext == null)
 				throw new ArgumentNullException ("documentContext");
-			if (editor == null)
-				throw new ArgumentNullException ("editor");
 			DetachExtensionChain ();
 			var extensions = ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
 			TextEditorExtension last = null;
@@ -895,9 +935,10 @@ namespace MonoDevelop.Ide.Editor
 					} else {
 						textEditorImpl.EditorExtension = last = ext;
 					}
-					ext.Initialize (editor, documentContext);
+					ext.Initialize (this, documentContext);
 				}
 			}
+			this.DocumentContext = documentContext;
 		}
 
 		void DetachExtensionChain ()

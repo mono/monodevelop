@@ -71,7 +71,7 @@ namespace Mono.MHex.Rendering
 			for (int i = 0; i < lineBytes.Length; i++) {
 				byte b = lineBytes[i];
 				char ch = (char)b;
-				if (b < 128 && (Char.IsLetterOrDigit (ch) || Char.IsPunctuation (ch))) {
+				if (!char.IsControl (ch)) {
 					sb.Append (ch);
 				} else {
 					sb.Append (".");

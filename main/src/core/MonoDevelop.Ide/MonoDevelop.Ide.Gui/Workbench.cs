@@ -99,6 +99,15 @@ namespace MonoDevelop.Ide.Gui
 					CheckFileStatus ();
 				};
 
+				IdeApp.ProjectOperations.StartBuild += delegate {
+					SaveFileStatus ();
+				};
+
+				IdeApp.ProjectOperations.EndBuild += delegate {
+					// The file status checks outputs as well.
+					CheckFileStatus ();
+				};
+
 				pads = null;	// Make sure we get an up to date pad list.
 				monitor.Step (1);
 			} finally {
@@ -280,16 +289,18 @@ namespace MonoDevelop.Ide.Gui
 		
 		public void LockGui ()
 		{
-			IdeApp.CommandService.LockAll ();
-			if (GuiLocked != null)
-				GuiLocked (this, EventArgs.Empty);
+			if (IdeApp.CommandService.LockAll ()) {
+				if (GuiLocked != null)
+					GuiLocked (this, EventArgs.Empty);
+			}
 		}
 		
 		public void UnlockGui ()
 		{
-			IdeApp.CommandService.UnlockAll ();
-			if (GuiUnlocked != null)
-				GuiUnlocked (this, EventArgs.Empty);
+			if (IdeApp.CommandService.UnlockAll ()) {
+				if (GuiUnlocked != null)
+					GuiUnlocked (this, EventArgs.Empty);
+			}
 		}
 		
 		public void SaveAll ()
@@ -473,7 +484,6 @@ namespace MonoDevelop.Ide.Gui
 					Counters.OpenDocumentTimer.Trace ("Look for open document");
 					foreach (Document doc in Documents) {
 						IBaseViewContent vcFound = null;
-						int vcIndex = 0;
 
 						//search all ViewContents to see if they can "re-use" this filename
 						if (doc.Window.ViewContent.CanReuseView (info.FileName))
@@ -492,7 +502,6 @@ namespace MonoDevelop.Ide.Gui
 							
 							if (info.Options.HasFlag (OpenDocumentOptions.BringToFront)) {
 								doc.Select ();
-								doc.Window.SwitchView (vcIndex);
 								doc.Window.SelectWindow ();
 								NavigationHistoryService.LogActiveDocument ();
 							}
@@ -775,7 +784,7 @@ namespace MonoDevelop.Ide.Gui
 						}
 						catch (Exception ex) {
 							args.Cancel = true;
-							MessageService.ShowException (ex, GettextCatalog.GetString ("The document could not be saved."));
+							MessageService.ShowError (GettextCatalog.GetString ("The document could not be saved."), ex);
 						}
 					}
 					if (args.Cancel)
@@ -1079,7 +1088,7 @@ namespace MonoDevelop.Ide.Gui
 
 			foreach (var doc in list) {
 				string fileName = baseDir.Combine (doc.FileName).FullPath;
-				if (File.Exists (fileName)) {
+				if (GetDocument(fileName) == null && File.Exists (fileName)) {
 					if (doc.NotebookId != currentNotebook) {
 						if (currentNotebook != -1 || nb == null)
 							nb = container.InsertRight (null);

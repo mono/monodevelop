@@ -74,7 +74,7 @@ namespace Mono.TextEditor
 
 		void EditorCarethandlePositionChanged (object sender, DocumentLocationEventArgs e)
 		{
-			if (!editor.Options.HighlightCaretLine || e.Location.Line == editor.Caret.Line)
+			if (!editor.GetTextEditorData ().HighlightCaretLine || e.Location.Line == editor.Caret.Line)
 				return;
 			editor.RedrawMarginLine (this, e.Location.Line);
 			editor.RedrawMarginLine (this, editor.Caret.Line);
@@ -340,7 +340,7 @@ namespace Mono.TextEditor
 			}
 
 			if (marker == null) {
-				if (editor.Options.HighlightCaretLine && editor.Caret.Line == line) {
+				if (editor.GetTextEditorData ().HighlightCaretLine && editor.Caret.Line == line) {
 					editor.TextViewMargin.DrawCaretLineMarker (cr, x, y, Width, lineHeight);
 				} else {
 					var bgGC = foldBgGC;

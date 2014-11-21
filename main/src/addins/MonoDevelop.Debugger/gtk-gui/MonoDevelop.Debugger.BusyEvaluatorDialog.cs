@@ -56,7 +56,10 @@ namespace MonoDevelop.Debugger
 			this.labelMethod = new global::Gtk.Label ();
 			this.labelMethod.Name = "labelMethod";
 			this.labelMethod.Xalign = 0F;
-			this.labelMethod.LabelProp = "<mehtod>";
+			this.labelMethod.LabelProp = "<method>";
+			this.labelMethod.Wrap = true;
+			this.labelMethod.Selectable = true;
+			this.labelMethod.MaxWidthChars = 120;
 			this.hbox1.Add (this.labelMethod);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.labelMethod]));
 			w4.Position = 1;

@@ -40,6 +40,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 	/// </summary>
 	internal class GtkAlertDialog : Gtk.Dialog
 	{
+		MessageDescription message;
 		AlertButton resultButton = null;
 		AlertButton[] buttons;
 		
@@ -87,6 +88,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 		{
 			Init ();
 			this.buttons = message.Buttons.ToArray ();
+			this.message = message;
 
 			Modal = true;
 
@@ -100,7 +102,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				primaryText = message.Text;
 				secondaryText = message.SecondaryText;
 			}
-			
+
+			if (!message.UseMarkup) {
+				primaryText = GLib.Markup.EscapeText (primaryText);
+				secondaryText = GLib.Markup.EscapeText (secondaryText);
+			}
+
 			if (!string.IsNullOrEmpty (message.Icon)) {
 				image = new ImageView ();
 				image.Yalign   = 0.00f;
@@ -110,14 +117,14 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			}
 			
 			StringBuilder markup = new StringBuilder (@"<span weight=""bold"" size=""larger"">");
-			markup.Append (GLib.Markup.EscapeText (primaryText));
+			markup.Append (primaryText);
 			markup.Append ("</span>");
 			if (!String.IsNullOrEmpty (secondaryText)) {
 				if (!String.IsNullOrEmpty (primaryText)) {
 					markup.AppendLine ();
 					markup.AppendLine ();
 				}
-				markup.Append (GLib.Markup.EscapeText (secondaryText));
+				markup.Append (secondaryText);
 			}
 			label.Markup = markup.ToString ();
 			label.Selectable = true;
@@ -171,7 +178,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					break;
 				}
 			}
-			this.Destroy ();
+			bool close = message.NotifyClicked (resultButton);
+			if (close)
+				this.Destroy ();
 		}
 	}
 }

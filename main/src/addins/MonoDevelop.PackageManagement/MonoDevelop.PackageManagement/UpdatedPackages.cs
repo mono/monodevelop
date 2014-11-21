@@ -38,19 +38,22 @@ namespace ICSharpCode.PackageManagement
 	{
 		IPackageRepository sourceRepository;
 		List<IPackageName> installedPackages;
+		IPackageConstraintProvider constraintProvider;
 
 		public UpdatedPackages (
 			IPackageManagementProject project,
 			IPackageRepository aggregateRepository)
 			: this (
 				project.GetPackageReferences (),
-				aggregateRepository)
+				aggregateRepository,
+				project.ConstraintProvider)
 		{
 		}
 
 		public UpdatedPackages (
 			IEnumerable<PackageReference> packageReferences,
-			IPackageRepository aggregrateRepository)
+			IPackageRepository aggregrateRepository,
+			IPackageConstraintProvider constraintProvider)
 		{
 			installedPackages = packageReferences
 				.Select (packageReference => new PackageName (packageReference.Id, packageReference.Version))
@@ -58,6 +61,7 @@ namespace ICSharpCode.PackageManagement
 				.ToList ();
 
 			this.sourceRepository = aggregrateRepository;
+			this.constraintProvider = constraintProvider;
 		}
 
 		public UpdatedPackages(
@@ -71,14 +75,14 @@ namespace ICSharpCode.PackageManagement
 		public IEnumerable<IPackage> GetUpdatedPackages (bool includePrerelease = false)
 		{
 			List<IPackageName> localPackages = installedPackages;
-			IEnumerable<IPackageName> distinctLocalPackages = DistinctPackages2 (localPackages);
-			return GetUpdatedPackages (sourceRepository, distinctLocalPackages, includePrerelease);
+			IEnumerable<IPackageName> distinctLocalPackages = DistinctPackages (localPackages);
+			return GetUpdatedPackages (distinctLocalPackages, includePrerelease);
 		}
 
 		/// <summary>
 		/// If we have jQuery 1.6 and 1.7 then return just jquery 1.6
 		/// </summary>
-		IEnumerable<IPackageName> DistinctPackages2 (List<IPackageName> packages)
+		IEnumerable<IPackageName> DistinctPackages (List<IPackageName> packages)
 		{
 			if (packages.Any ()) {
 				packages.Sort ((x, y) => x.Version.CompareTo (y.Version));
@@ -88,11 +92,18 @@ namespace ICSharpCode.PackageManagement
 		}
 
 		IEnumerable<IPackage> GetUpdatedPackages (
-			IPackageRepository sourceRepository,
 			IEnumerable<IPackageName> localPackages,
 			bool includePrelease)
 		{
-			return sourceRepository.GetUpdates (localPackages, includePrelease, false);
+			IEnumerable<IVersionSpec> constraints = localPackages
+				.Select (package => constraintProvider.GetConstraint (package.Id));
+
+			return sourceRepository.GetUpdates (
+				localPackages,
+				includePrelease,
+				false,
+				null,
+				constraints);
 		}
 	}
 }

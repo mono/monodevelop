@@ -4,6 +4,7 @@ using System.IO;
 
 using MonoDevelop.Core;
 using MonoDevelop.VersionControl.Subversion.Gui;
+using System.Linq;
 
 namespace MonoDevelop.VersionControl.Subversion
 {
@@ -23,8 +24,6 @@ namespace MonoDevelop.VersionControl.Subversion
 		}
 
 		public abstract SubversionBackend CreateBackend ();
-		
-		public abstract string GetPathUrl (FilePath path);
 
 		public override Repository GetRepositoryReference (FilePath path, string id)
 		{
@@ -57,17 +56,12 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public Revision[] GetHistory (Repository repo, FilePath sourcefile, Revision since)
 		{
-			List<Revision> revs = new List<Revision>();
-			
 			SvnRevision startrev = SvnRevision.Working;
 			SvnRevision sincerev = SvnRevision.First;
 			if (since != null)
 				sincerev = (SvnRevision) since;
-			
-			foreach (SvnRevision rev in Log (repo, sourcefile, startrev, sincerev))
-				revs.Add (rev);
-			
-			return revs.ToArray ();
+
+			return Log (repo, sourcefile, startrev, sincerev).ToArray ();
 		}
 
 		public abstract IEnumerable<SvnRevision> Log (Repository repo, FilePath path, SvnRevision revisionStart, SvnRevision revisionEnd);
@@ -110,9 +104,8 @@ namespace MonoDevelop.VersionControl.Subversion
 				return VersionInfo.CreateUnversioned (sourcefile, false);
 			if (!sourcefile.IsChildPathOf (srepo.RootPath))
 				return VersionInfo.CreateUnversioned (sourcefile, false);
-			
-			List<VersionInfo> statuses = new List<VersionInfo> ();
-			statuses.AddRange (Status (repo, sourcefile, SvnRevision.Head, false, false, getRemoteStatus));
+
+			var statuses = new List<VersionInfo> (Status (repo, sourcefile, SvnRevision.Head, false, false, getRemoteStatus));
 
 			if (statuses.Count == 0)
 				return VersionInfo.CreateUnversioned (sourcefile, false);
@@ -120,7 +113,7 @@ namespace MonoDevelop.VersionControl.Subversion
 			if (statuses.Count != 1)
 				return VersionInfo.CreateUnversioned (sourcefile, false);
 			
-			VersionInfo ent = (VersionInfo) statuses[0];
+			VersionInfo ent = statuses [0];
 			if (ent.IsDirectory)
 				return VersionInfo.CreateUnversioned (sourcefile, false);
 			
@@ -143,9 +136,7 @@ namespace MonoDevelop.VersionControl.Subversion
 
 		public VersionInfo[] GetDirectoryVersionInfo (Repository repo, FilePath sourcepath, bool getRemoteStatus, bool recursive)
 		{
-			List<VersionInfo> list = new List<VersionInfo> ();
-			list.AddRange (Status (repo, sourcepath, SvnRevision.Head, recursive, true, getRemoteStatus));
-			return list.ToArray ();
+			return Status (repo, sourcepath, SvnRevision.Head, recursive, true, getRemoteStatus).ToArray ();
 		}
 
 		public abstract IEnumerable<VersionInfo> Status (Repository repo, FilePath path, SvnRevision revision, bool descendDirs, bool changedItemsOnly, bool remoteStatus);

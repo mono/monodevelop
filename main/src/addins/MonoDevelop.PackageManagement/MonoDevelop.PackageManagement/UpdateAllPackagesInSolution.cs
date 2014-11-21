@@ -41,6 +41,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			this.solution = solution;
 			this.sourceRepository = sourceRepository;
+			UpdateDependencies = true;
 		}
 		
 		public override IEnumerable<UpdatePackageAction> CreateActions()

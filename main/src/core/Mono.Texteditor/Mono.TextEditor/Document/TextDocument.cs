@@ -159,7 +159,6 @@ namespace Mono.TextEditor
 		{
 			this.buffer = buffer;
 			this.splitter = splitter;
-			splitter.LineChanged += SplitterLineSegmentTreeLineChanged;
 			splitter.LineRemoved += HandleSplitterLineSegmentTreeLineRemoved;
 			foldSegmentTree.tree.NodeRemoved += HandleFoldSegmentTreetreeNodeRemoved; 
 			textSegmentMarkerTree.InstallListener (this);
@@ -190,15 +189,21 @@ namespace Mono.TextEditor
 			};
 		}
 
-		void SplitterLineSegmentTreeLineChanged (object sender, LineEventArgs e)
-		{
-			if (LineChanged != null)
-				LineChanged (this, e);
+		public event EventHandler<LineEventArgs> LineChanged {
+			add { splitter.LineChanged += value; }
+			remove { splitter.LineChanged -= value; }
 		}
-		
-		public event EventHandler<LineEventArgs> LineChanged;
-	//	public event EventHandler<LineEventArgs> LineInserted;
-		
+
+		public event EventHandler<LineEventArgs> LineInserted {
+			add { splitter.LineInserted += value; }
+			remove { splitter.LineInserted -= value; }
+		}
+
+		public event EventHandler<LineEventArgs> LineRemoved {
+			add { splitter.LineRemoved += value; }
+			remove { splitter.LineRemoved -= value; }
+		}
+
 		#region Buffer implementation
 
 		public int TextLength {

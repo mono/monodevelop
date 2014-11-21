@@ -43,6 +43,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		OneRegisteredPackageSourceHelper packageSourcesHelper;
 		RecentPackageInfo[] recentPackagesPassedToCreateRecentPackageRepository;
 		FakePackageRepository fakeAggregateRepositoryPassedToCreateRecentPackageRepository;
+		FakePackageRepository machineCache;
 
 		void CreateCache ()
 		{
@@ -57,9 +58,15 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreateCacheUsingPackageSources ()
 		{
-			nuGetPackageSource = new PackageSource ("http://nuget.org", "NuGet");
 			fakePackageRepositoryFactory = new FakePackageRepositoryFactory ();
-			cache = new PackageRepositoryCache (packageSourcesHelper.Options, fakePackageRepositoryFactory);
+			CreateCacheUsingPackageSources (fakePackageRepositoryFactory);
+		}
+
+		void CreateCacheUsingPackageSources (ISharpDevelopPackageRepositoryFactory repositoryFactory)
+		{
+			nuGetPackageSource = new PackageSource ("http://nuget.org", "NuGet");
+			machineCache = new FakePackageRepository ();
+			cache = new PackageRepositoryCache (packageSourcesHelper.Options, machineCache, repositoryFactory);
 		}
 
 		FakePackageRepository AddFakePackageRepositoryForPackageSource (string source)
@@ -408,6 +415,70 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			CollectionAssert.AreEqual (expectedInitialRepositories, actualInitialRepositories);
 			CollectionAssert.AreEqual (expectedRepositories, actualRepositories);
+		}
+
+		[Test]
+		public void CreateAggregatePriorityRepository_NoAggregatePackageSources_ReturnsPriorityPackageRepositoryThatUsesMachineCache ()
+		{
+			CreateCache ();
+			machineCache.AddFakePackageWithVersion ("MyPackage", "1.0");
+
+			IPackageRepository repository = cache.CreateAggregateWithPriorityMachineCacheRepository ();
+			bool exists = repository.Exists ("MyPackage", new SemanticVersion ("1.0"));
+
+			Assert.IsInstanceOf<PriorityPackageRepository> (repository);
+			Assert.IsTrue (exists);
+		}
+
+		[Test]
+		public void CreateAggregatePriorityRepository_NoAggregatePackageSources_ReturnsPriorityPackageRepositoryThatUsesAggregateRepository ()
+		{
+			CreatePackageSources ();
+			packageSourcesHelper.AddTwoPackageSources ("Source1", "Source2");
+			CreateCacheUsingPackageSources ();
+			fakePackageRepositoryFactory.FakeAggregateRepository.AddFakePackageWithVersion ("MyPackage", "1.0");
+
+			IPackageRepository repository = cache.CreateAggregateWithPriorityMachineCacheRepository ();
+			bool exists = repository.Exists ("MyPackage", new SemanticVersion ("1.0"));
+
+			Assert.IsTrue (exists);
+		}
+
+		[Test]
+		public void CreateAggregateRepository_OnePackageSourceHasInvalidUri_NoExceptionThrownWhenCreatingAggregateRepositoryAndSearchingForPackages ()
+		{
+			CreatePackageSources ();
+			packageSourcesHelper.RegisteredPackageSources.Clear ();
+			var invalidPackageSource = new PackageSource (String.Empty, "InvalidSource");
+			packageSourcesHelper.RegisteredPackageSources.Add (invalidPackageSource);
+			var factory = new SharpDevelopPackageRepositoryFactory ();
+			CreateCacheUsingPackageSources (factory);
+			IPackageRepository repository = cache.CreateAggregateRepository ();
+			var aggregateRepository = (MonoDevelopAggregateRepository)repository;
+
+			Assert.IsFalse (aggregateRepository.AnyFailures ());
+			Assert.DoesNotThrow (() => repository.Search ("abc", false));
+			Assert.IsTrue (aggregateRepository.AnyFailures ());
+		}
+
+		[Test]
+		public void CreateAggregateRepository_OnePackageSourceHasInvalidUriAndSearchExecutedMultipleTimes_ExceptionThrownByPackageRepositoryIsOnlyRecordedOnce ()
+		{
+			CreatePackageSources ();
+			packageSourcesHelper.RegisteredPackageSources.Clear ();
+			var invalidPackageSource = new PackageSource (String.Empty, "InvalidSource");
+			packageSourcesHelper.RegisteredPackageSources.Add (invalidPackageSource);
+			var factory = new SharpDevelopPackageRepositoryFactory ();
+			CreateCacheUsingPackageSources (factory);
+			IPackageRepository repository = cache.CreateAggregateRepository ();
+			var aggregateRepository = (MonoDevelopAggregateRepository)repository;
+
+			repository.Search ("abc", false);
+			repository.Search ("abc", false);
+			repository.Search ("abc", false);
+
+			Assert.IsTrue (aggregateRepository.AnyFailures ());
+			Assert.AreEqual (1, aggregateRepository.GetAggregateException ().InnerExceptions.Count);
 		}
 	}
 }

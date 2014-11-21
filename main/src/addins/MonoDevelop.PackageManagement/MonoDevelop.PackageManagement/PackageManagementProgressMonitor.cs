@@ -26,10 +26,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Core.ProgressMonitoring;
-using System.IO;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -120,6 +121,7 @@ namespace MonoDevelop.PackageManagement
 
 		void ReportAllWarningsButLastToConsole ()
 		{
+			warnings = warnings.Distinct ().ToList ();
 			RemoveLastItem (warnings);
 			warnings.ForEach (warning => consoleMonitor.ReportWarning (warning));
 		}

@@ -60,7 +60,7 @@ namespace MonoDevelop.PackageManagement.Tests
 
 		void CreateViewModel (FakePackageManagementSolution solution)
 		{
-			viewModelParent = CreateViewModelParent ();
+			viewModelParent = CreateViewModelParent (solution);
 			viewModel = new TestablePackageViewModel (viewModelParent, solution);
 			fakePackage = viewModel.FakePackage;
 			this.fakeSolution = solution;
@@ -69,7 +69,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			fakeUninstallPackageAction = solution.FakeProjectToReturnFromGetProject.FakeUninstallPackageAction;
 		}
 
-		AvailablePackagesViewModel CreateViewModelParent ()
+		AvailablePackagesViewModel CreateViewModelParent (FakePackageManagementSolution solution)
 		{
 			var taskFactory = new FakeTaskFactory ();
 			var registeredPackageRepositories = new FakeRegisteredPackageRepositories ();
@@ -77,6 +77,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			var recentPackageRepository = new FakeRecentPackageRepository ();
 
 			return new AvailablePackagesViewModel (
+				solution,
 				registeredPackageRepositories,
 				recentPackageRepository,
 				packageViewModelFactory,

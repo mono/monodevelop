@@ -35,6 +35,7 @@ using System.Collections.Generic;
 using Gtk;
 using Gdk;
 using Xwt.Motion;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.Components.Docking
 {
@@ -86,12 +87,19 @@ namespace MonoDevelop.Components.Docking
 			mainBox.ShowAll ();
 			mainBox.NoShowAll = true;
 			CompactGuiLevel = 2;
-			dockBarTop.UpdateVisibility ();
-			dockBarBottom.UpdateVisibility ();
-			dockBarLeft.UpdateVisibility ();
-			dockBarRight.UpdateVisibility ();
+			UpdateDockbarsVisibility ();
 
 			DefaultVisualStyle = new DockVisualStyle ();
+		}
+
+		public bool DockbarsVisible {
+			get {
+				return !OverlayWidgetVisible;
+			}
+		}
+
+		internal bool UseWindowsForTopLevelFrames {
+			get { return Platform.IsMac; }
 		}
 		
 		/// <summary>
@@ -137,6 +145,8 @@ namespace MonoDevelop.Components.Docking
 				currentOverlayPosition = Math.Max (0, Allocation.Y);
 				QueueResize ();
 			}
+
+			UpdateDockbarsVisibility ();
 		}
 
 		public void RemoveOverlayWidget (bool animate = false)
@@ -164,9 +174,19 @@ namespace MonoDevelop.Components.Docking
 					QueueResize ();
 				}
 			}
+
+			UpdateDockbarsVisibility ();
 		}
 
 		int currentOverlayPosition;
+
+		void UpdateDockbarsVisibility ()
+		{
+			dockBarTop.UpdateVisibility ();
+			dockBarBottom.UpdateVisibility ();
+			dockBarLeft.UpdateVisibility ();
+			dockBarRight.UpdateVisibility ();
+		}
 
 		void ShowOverlayWidgetAnimation (double value)
 		{
@@ -511,11 +531,31 @@ namespace MonoDevelop.Components.Docking
 			DockLayout dl;
 			if (!layouts.TryGetValue (layoutName, out dl))
 				return false;
-			
+
+			var focus = GetActiveWidget ();
+
 			container.LoadLayout (dl);
+
+			// Keep the currently focused widget when switching layouts
+			if (focus != null && focus.IsRealized && focus.Visible)
+				DockItem.SetFocus (focus);
+
 			return true;
 		}
-		
+
+		Gtk.Widget GetActiveWidget ()
+		{
+			Gtk.Widget widget = this;
+			while (widget is Gtk.Container) {
+				Gtk.Widget child = ((Gtk.Container)widget).FocusChild;
+				if (child != null)
+					widget = child;
+				else
+					break;
+			}
+			return widget;
+		}
+
 		public void CreateLayout (string name)
 		{
 			CreateLayout (name, false);
@@ -814,14 +854,36 @@ namespace MonoDevelop.Components.Docking
 			return null;
 		}
 		
-		internal void AddTopLevel (DockFrameTopLevel w, int x, int y)
+		internal void AddTopLevel (DockFrameTopLevel w, int x, int y, int width, int height)
 		{
-			w.Parent = this;
 			w.X = x;
 			w.Y = y;
-			Requisition r = w.SizeRequest ();
-			w.Allocation = new Gdk.Rectangle (Allocation.X + x, Allocation.Y + y, r.Width, r.Height);
-			topLevels.Add (w);
+
+			if (UseWindowsForTopLevelFrames) {
+				var win = new Gtk.Window (Gtk.WindowType.Toplevel);
+				win.AcceptFocus = false;
+				win.SkipTaskbarHint = true;
+				win.Decorated = false;
+				win.TypeHint = Gdk.WindowTypeHint.Toolbar;
+				w.ContainerWindow = win;
+				w.Size = new Size (width, height);
+				win.Add (w);
+				w.Show ();
+				var p = this.GetScreenCoordinates (new Gdk.Point (x, y));
+				win.Opacity = 0.0;
+				win.Move (p.X, p.Y);
+				win.Resize (width, height);
+				win.Show ();
+				Ide.DesktopService.AddChildWindow ((Gtk.Window)Toplevel, win);
+				win.AcceptFocus = true;
+				win.Opacity = 1.0;
+			} else {
+				w.Parent = this;
+				w.Size = new Size (width, height);
+				Requisition r = w.SizeRequest ();
+				w.Allocation = new Gdk.Rectangle (Allocation.X + x, Allocation.Y + y, r.Width, r.Height);
+				topLevels.Add (w);
+			}
 		}
 		
 		internal void RemoveTopLevel (DockFrameTopLevel w)
@@ -875,27 +937,29 @@ namespace MonoDevelop.Components.Docking
 			Gdk.Size sBot = GetBarFrameSize (dockBarBottom);
 			Gdk.Size sLeft = GetBarFrameSize (dockBarLeft);
 			Gdk.Size sRgt = GetBarFrameSize (dockBarRight);
-			
-			int x,y;
+
+			int x,y,w,h;
 			if (bar == dockBarLeft || bar == dockBarRight) {
-				aframe.HeightRequest = Allocation.Height - sTop.Height - sBot.Height;
-				aframe.WidthRequest = size;
+				h = Allocation.Height - sTop.Height - sBot.Height;
+				w = size;
 				y = sTop.Height;
 				if (bar == dockBarLeft)
 					x = sLeft.Width;
 				else
 					x = Allocation.Width - size - sRgt.Width;
 			} else {
-				aframe.WidthRequest = Allocation.Width - sLeft.Width - sRgt.Width;
-				aframe.HeightRequest = size;
+				w = Allocation.Width - sLeft.Width - sRgt.Width;
+				h = size;
 				x = sLeft.Width;
 				if (bar == dockBarTop)
 					y = sTop.Height;
 				else
 					y = Allocation.Height - size - sBot.Height;
 			}
-			AddTopLevel (aframe, x, y);
+
+			AddTopLevel (aframe, x, y, w, h);
 			aframe.AnimateShow ();
+
 			return aframe;
 		}
 		
@@ -957,7 +1021,11 @@ namespace MonoDevelop.Components.Docking
 					}
 					parent.Remove (item.TitleTab);
 				}
-				RemoveTopLevel (widget);
+				if (widget.ContainerWindow != null) {
+					widget.ContainerWindow.Destroy ();
+				} else
+					RemoveTopLevel (widget);
+
 				widget.Disposed = true;
 				widget.Destroy ();
 			}

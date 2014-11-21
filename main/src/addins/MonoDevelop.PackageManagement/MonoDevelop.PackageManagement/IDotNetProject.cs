@@ -46,6 +46,7 @@ namespace MonoDevelop.PackageManagement
 		void AddImportIfMissing (string name, string condition);
 		void RemoveImport (string name);
 		bool Equals (IDotNetProject project);
+		void RefreshProjectBuilder ();
 	}
 }
 

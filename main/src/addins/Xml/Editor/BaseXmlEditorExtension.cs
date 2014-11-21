@@ -65,7 +65,7 @@ namespace MonoDevelop.Xml.Editor
 		
 		MonoDevelop.Ide.Gui.Components.PadTreeView outlineTreeView;
 		TreeStore outlineTreeStore;
-		List<DotNetProject> ownerProjects;
+		List<DotNetProject> ownerProjects = new List<DotNetProject> ();
 
 		#region Setup and teardown
 
@@ -83,7 +83,13 @@ namespace MonoDevelop.Xml.Editor
 		{
 			base.Initialize ();
 
-			UpdateOwnerProjects ();
+			// Delay the execution of UpdateOwnerProjects since it may end calling Document.AttachToProject,
+			// which shouldn't be called while the extension chain is being initialized.
+			// TODO: Move handling of owner projects to Document
+			Application.Invoke (delegate {
+				UpdateOwnerProjects ();
+			});
+
 			var parser = new XmlParser (CreateRootState (), false);
 			tracker = new DocumentStateTracker<XmlParser> (parser, Editor);
 			DocumentContext.DocumentParsed += UpdateParsedDocument;
@@ -182,26 +188,17 @@ namespace MonoDevelop.Xml.Editor
 		protected ParsedDocument CU {
 			get { return lastCU; }
 		}
-		
-		protected ITextBuffer Buffer {
-			get {
-				if (DocumentContext == null)
-					throw new InvalidOperationException ("Editor extension not yet initialized");
-				return DocumentContext.GetContent<ITextBuffer> ();
-			}
-		}
-		
+
 		protected DocumentStateTracker<XmlParser> Tracker {
 			get { return tracker; }
 		}
 		
 		protected string GetBufferText (DomRegion region)
 		{
-			ITextBuffer buf = Buffer;
-			int start = buf.GetPositionFromLineColumn (region.BeginLine, region.BeginColumn);
-			int end = buf.GetPositionFromLineColumn (region.EndLine, region.EndColumn);
+			int start = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
+			int end = Editor.LocationToOffset (region.EndLine, region.EndColumn);
 			if (end > start && start >= 0)
-				return buf.GetText (start, end);
+				return Editor.GetTextBetween (start, end);
 			return null;
 		}
 		
@@ -230,12 +227,12 @@ namespace MonoDevelop.Xml.Editor
 		{
 		}
 		
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			if (Editor.Options.IndentStyle == IndentStyle.Smart) {
 				var newLine = Editor.CaretLine + 1;
-				var ret = base.KeyPress (key, keyChar, modifier);
-				if (key == Gdk.Key.Return && Editor.CaretLine == newLine) {
+				var ret = base.KeyPress (descriptor);
+				if (descriptor.SpecialKey == SpecialKey.Return && Editor.CaretLine == newLine) {
 					string indent = GetLineIndent (newLine);
 					var oldIndent = Editor.GetLineIndent (newLine);
 					var seg = Editor.GetLine (newLine);
@@ -252,7 +249,7 @@ namespace MonoDevelop.Xml.Editor
 				}
 				return ret;
 			}
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 		
 		#region Code completion
@@ -856,8 +853,11 @@ namespace MonoDevelop.Xml.Editor
 		
 		void UpdatePath ()
 		{
-			List<XObject> l = GetCurrentPath ();
+			//update timeout could get called after disposed
+			if (tracker == null)
+				return;
 
+			List<XObject> l = GetCurrentPath ();
 			
 			//build the list
 			var path = new List<PathEntry> ();

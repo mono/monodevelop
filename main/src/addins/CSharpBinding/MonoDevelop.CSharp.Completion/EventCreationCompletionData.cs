@@ -37,6 +37,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor.Util;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.CSharp.Completion
 {
@@ -78,7 +79,7 @@ namespace MonoDevelop.CSharp.Completion
 			this.initialOffset = editor.CaretOffset;
 		}
 
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			// insert add/remove event handler code after +=/-=
 			editor.ReplaceText (initialOffset, editor.CaretOffset - initialOffset, this.DisplayText + (AddSemicolon ? ";" : ""));

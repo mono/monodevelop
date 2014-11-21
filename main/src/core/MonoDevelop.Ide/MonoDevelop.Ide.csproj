@@ -1999,6 +1999,24 @@
     <EmbeddedResource Include="icons\light\catchpoint-disabled-16%402x.png">
       <LogicalName>catchpoint-disabled-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-information-16.png">
+      <LogicalName>project-status-information-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-information-16%402x.png">
+      <LogicalName>project-status-information-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-warning-16.png">
+      <LogicalName>project-status-warning-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-warning-16%402x.png">
+      <LogicalName>project-status-warning-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-error-16.png">
+      <LogicalName>project-status-error-light-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\project-status-error-16%402x.png">
+      <LogicalName>project-status-error-light-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
@@ -2045,7 +2063,6 @@
     <Compile Include="MonoDevelop.Ide.Gui.Content\IBookmarkBuffer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IClipboardHandler.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Content\IPrintable.cs" />
-    <Compile Include="MonoDevelop.Ide.Gui.Content\ITextBuffer.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\CommonAboutDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\DirtyFilesDialog.cs" />
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewLayoutDialog.cs" />
@@ -2878,6 +2895,11 @@
     <Compile Include="MonoDevelop.Ide.Editor.Util\SimpleBracketMatcher.cs" />
     <Compile Include="MonoDevelop.Ide.Editor.Util\SimpleReadonlyDocument.cs" />
     <Compile Include="MonoDevelop.Ide.Editor\Commands\DynamicAbbrevHandler.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\ModifierKeys.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\SpecialKey.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor.Extension\KeyDescriptor.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\MessageBubbles\MessageBubbleCommands.cs" />
+    <Compile Include="MonoDevelop.Ide.Editor\LineEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />
@@ -2922,12 +2944,16 @@
     <Folder Include="MonoDevelop.Ide.TextEditing\" />
     <Folder Include="MonoDevelop.Ide.Editor.Util\" />
     <Folder Include="MonoDevelop.Ide.Editor\Commands\" />
+    <Folder Include="MonoDevelop.Ide.Editor\MessageBubbles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc.win32">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="gtkrc.mac">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="gtkrc.mac-yosemite">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="gtkrc">

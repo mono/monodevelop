@@ -78,9 +78,7 @@ namespace Stetic
 			TopLevelWindow window = container as TopLevelWindow;
 			
 			if (window != null) {
-				preview = Stetic.Metacity.Preview.Create (window);
-				if (preview == null)
-					preview = Stetic.Windows.Preview.Create (window);
+				preview = Stetic.Windows.Preview.Create (window);
 				if (preview == null) {
 					// Use a regular box.
 					EventBox eventBox = new EventBox ();
@@ -660,8 +658,7 @@ namespace Stetic
 				PropagateExpose (cw, ev);*/
 
 			Gdk.Rectangle rect = child.Allocation;
-			if (Stetic.Metacity.Preview.ThemeError) 
-				GdkWindow.DrawRectangle (this.Style.BackgroundGC (StateType.Normal), true, rect.X, rect.Y, rect.Width, rect.Height);
+			GdkWindow.DrawRectangle (this.Style.BackgroundGC (StateType.Normal), true, rect.X, rect.Y, rect.Width, rect.Height);
 			
 			Pixbuf sh = Shadow.AddShadow (rect.Width, rect.Height);
 			GdkWindow.DrawPixbuf (this.Style.BackgroundGC (StateType.Normal), sh, 0, 0, rect.X - 5, rect.Y - 5, sh.Width, sh.Height, RgbDither.None, 0, 0); 

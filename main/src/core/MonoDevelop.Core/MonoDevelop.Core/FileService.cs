@@ -566,6 +566,36 @@ namespace MonoDevelop.Core
 				}
 			}
 		}
+
+		/// <summary>
+		/// Renames a directory
+		/// </summary>
+		/// <param name="sourceDir">Source directory</param>
+		/// <param name="destDir">Destination directory</param>
+		/// <remarks>
+		/// It works like Directory.Move, but it supports changing the case of a directory name in case-insensitive file systems
+		/// </remarks>
+		public static void SystemDirectoryRename (string sourceDir, string destDir)
+		{
+			if (Directory.Exists (destDir) && string.Equals (Path.GetFullPath (sourceDir), Path.GetFullPath (destDir), StringComparison.CurrentCultureIgnoreCase)) {
+				// If the destination directory exists but we can't find it with the provided name casing, then it means we are just changing the case
+				var existingDir = Directory.GetDirectories (Path.GetDirectoryName (destDir), Path.GetFileName (destDir)).FirstOrDefault ();
+				if (existingDir == null || (Path.GetFileName (existingDir) == Path.GetFileName (sourceDir))) {
+					var temp = destDir + ".renaming";
+					int n = 0;
+					while (Directory.Exists (temp) || File.Exists (temp))
+						temp = destDir + ".renaming_" + (n++);
+					Directory.Move (sourceDir, temp);
+					try {
+						Directory.Move (temp, destDir);
+					} catch {
+						Directory.Move (temp, sourceDir);
+					}
+					return;
+				}
+			}
+			Directory.Move (sourceDir, destDir);
+		}
 		
 		/// <summary>
 		/// Removes the directory if it's empty.

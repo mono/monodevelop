@@ -279,6 +279,39 @@ namespace MonoDevelop.MacIntegration
 					win.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
 				};
 			}
+
+			PatchGtkTheme ();
+		}
+
+		// This will dynamically generate a gtkrc for certain widgets using system control colors.
+		void PatchGtkTheme ()
+		{
+			NSControlTint tint = NSColor.CurrentControlTint;
+			NSColor text = NSColor.SelectedMenuItemText.UsingColorSpace (NSColorSpace.GenericRGBColorSpace);
+			NSColor color = tint == NSControlTint.Blue ? NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.GenericRGBColorSpace) : NSColor.SelectedMenuItem.UsingColorSpace (NSColorSpace.DeviceWhite);
+
+			string gtkrc = String.Format (@"
+				style ""treeview"" = ""default"" {{
+					GtkTreeView::odd-row-color = ""#f5f5f5""
+
+					base[SELECTED] = ""{0}""
+					base[ACTIVE] = ""{0}""
+					text[SELECTED] = ""{1}""
+					text[ACTIVE] = ""{1}""
+					engine ""xamarin"" {{
+						roundness = 0
+						gradient_shades = {{ 1.0, 0.95, 0.95, 0.90 }}
+						glazestyle = 1
+					}}
+				}}
+
+				widget_class ""*.<GtkTreeView>*"" style ""treeview""
+				",
+				ConvertColorToHex (color),
+				ConvertColorToHex (text)
+			);
+
+			Gtk.Rc.ParseString (gtkrc);
 		}
 
 		void GlobalSetup ()
@@ -349,7 +382,7 @@ namespace MonoDevelop.MacIntegration
 								if (!Int32.TryParse (qs ["column"], out column))
 									column = 1;
 
-								return new FileOpenInformation (fileUri.AbsolutePath,
+								return new FileOpenInformation (Uri.UnescapeDataString(fileUri.AbsolutePath),
 									line, column, OpenDocumentOptions.DefaultInternal);
 							} catch (Exception ex) {
 								LoggingService.LogError ("Invalid TextMate URI: " + url, ex);
@@ -649,6 +682,24 @@ namespace MonoDevelop.MacIntegration
 			return new Cairo.Color (r, g, b, a);
 		}
 
+		static string ConvertColorToHex (NSColor color)
+		{
+			nfloat r, g, b, a;
+
+			if (color.ColorSpaceName == NSColorSpace.DeviceWhite) {
+				a = 1.0f;
+				r = g = b = color.WhiteComponent;
+			} else {
+				color.GetRgba (out r, out g, out b, out a);
+			}
+
+			return String.Format ("#{0}{1}{2}",
+				((int)(r * 255)).ToString ("x2"),
+				((int)(g * 255)).ToString ("x2"),
+				((int)(b * 255)).ToString ("x2")
+			);
+		}
+
 		internal static int GetTitleBarHeight ()
 		{
 			var frame = new CGRect (0, 0, 100, 100);
@@ -733,8 +784,52 @@ namespace MonoDevelop.MacIntegration
 		{
 			var toplevels = GtkQuartz.GetToplevels ();
 
-			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal)
-				&& !t.Key.DebugDescription.StartsWith ("<NSStatusBarWindow", StringComparison.Ordinal));
+			// When we're looking for modal windows that don't belong to GTK, exclude
+			// NSStatusBarWindow (which is visible on Mavericks when we're in fullscreen) and
+			// NSToolbarFullscreenWindow (which is visible on Yosemite in fullscreen).
+			return toplevels.Any (t => t.Key.IsVisible && (t.Value == null || t.Value.Modal) &&
+				!(t.Key.DebugDescription.StartsWith("<NSStatusBarWindow", StringComparison.Ordinal) ||
+				  t.Key.DebugDescription.StartsWith ("<NSToolbarFullScreenWindow", StringComparison.Ordinal)));
+		}
+
+		public override void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			NSWindow w = GtkQuartz.GetWindow (parent);
+			child.Realize ();
+			NSWindow overlay = GtkQuartz.GetWindow (child);
+			overlay.SetExcludedFromWindowsMenu (true);
+			w.AddChildWindow (overlay, NSWindowOrderingMode.Above);
+		}
+
+		public override void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		{
+			if (window.GdkWindow == null)
+				return; // Not yet realized
+
+			NSWindow w = GtkQuartz.GetWindow (window);
+			var dr = FromDesktopRect (new Gdk.Rectangle (x, y, width, height));
+			var r = w.FrameRectFor (dr);
+			w.SetFrame (r, true);
+			base.PlaceWindow (window, x, y, width, height);
+		}
+
+		static CGRect FromDesktopRect (Gdk.Rectangle r)
+		{
+			var desktopBounds = CalcDesktopBounds ();
+			r.Y = desktopBounds.Height - r.Y - r.Height;
+			if (desktopBounds.Y < 0)
+				r.Y += desktopBounds.Y;
+			return new CGRect (desktopBounds.X + r.X, r.Y, r.Width, r.Height);
+		}
+
+		static Gdk.Rectangle CalcDesktopBounds ()
+		{
+			var desktopBounds = new Gdk.Rectangle ();
+			foreach (var s in NSScreen.Screens) {
+				var r = s.Frame;
+				desktopBounds = desktopBounds.Union (new Gdk.Rectangle ((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height));
+			}
+			return desktopBounds;
 		}
 	}
 }

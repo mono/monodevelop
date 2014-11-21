@@ -38,6 +38,7 @@ namespace MonoDevelop.PackageManagement
 	public class PackageRestorer
 	{
 		List<ProjectPackageReferenceFile> packageReferenceFiles;
+		IDotNetProject singleProject;
 
 		public PackageRestorer (Solution solution)
 			: this (solution.GetAllDotNetProjects ())
@@ -47,6 +48,7 @@ namespace MonoDevelop.PackageManagement
 		public PackageRestorer (DotNetProject project)
 			: this (new [] { project })
 		{
+			singleProject = new DotNetProjectProxy (project);
 		}
 
 		public PackageRestorer (IEnumerable<DotNetProject> projects)
@@ -88,7 +90,11 @@ namespace MonoDevelop.PackageManagement
 		void RestoreWithProgressMonitor (ProgressMonitorStatusMessage progressMessage)
 		{
 			var runner = new PackageRestoreRunner ();
-			runner.Run (progressMessage);
+			if (singleProject != null) {
+				runner.Run (singleProject, progressMessage);
+			} else {
+				runner.Run (progressMessage);
+			}
 			RestoreFailed = runner.RestoreFailed;
 		}
 	}

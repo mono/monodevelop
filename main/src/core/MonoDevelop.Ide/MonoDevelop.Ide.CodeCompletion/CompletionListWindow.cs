@@ -33,6 +33,8 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp.Completion;
+using ICSharpCode.NRefactory.Completion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
 {
@@ -64,6 +66,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 			get { return completionDataList; }
 			set {
 				completionDataList = value;
+				defaultComparer = null;
 			}
 		}
 
@@ -91,7 +94,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 						List.QueueDraw ();
 					};
 					previewEntry.KeyPressEvent += delegate(object o, KeyPressEventArgs args) {
-						var keyAction = PreProcessKey (args.Event.Key, (char)args.Event.KeyValue, args.Event.State);
+						var keyAction = PreProcessKey (KeyDescriptor.FromGtk (args.Event.Key, (char)args.Event.KeyValue, args.Event.State));
 						if (keyAction.HasFlag (KeyActions.Complete))
 							CompleteWord ();
 
@@ -173,6 +176,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 					((IDisposable)completionDataList).Dispose ();
 				CloseCompletionList ();
 				completionDataList = null;
+				defaultComparer = null;
 			}
 
 			HideDeclarationView ();
@@ -185,21 +189,21 @@ namespace MonoDevelop.Ide.CodeCompletion
 			base.OnDestroyed ();
 		}
 
-		public void PostProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public void PostProcessKeyEvent (KeyDescriptor descriptor)
 		{
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
 			foreach (var handler in CompletionDataList.KeyHandler) {
-				if (handler.PostProcessKey (this, key, keyChar, modifier, out ka)) {
+				if (handler.PostProcessKey (this, descriptor, out ka)) {
 					keyHandled = true;
 					break;
 				}
 			}
 			
 			if (!keyHandled)
-				ka = PostProcessKey (key, keyChar, modifier);
+				ka = PostProcessKey (descriptor);
 			if ((ka & KeyActions.Complete) != 0) 
-				CompleteWord (ref ka, key, keyChar, modifier);
+				CompleteWord (ref ka, descriptor);
 			if ((ka & KeyActions.CloseWindow) != 0)
 				CompletionWindowManager.HideWindow ();
 		}
@@ -211,9 +215,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			List.QueueDraw ();
 		}
 		
-		public bool PreProcessKeyEvent (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public bool PreProcessKeyEvent (KeyDescriptor descriptor)
 		{
-			if (key == Gdk.Key.Escape) {
+			if (descriptor.SpecialKey == SpecialKey.Escape) {
 				CompletionWindowManager.HideWindow ();
 				return true;
 			}
@@ -221,25 +225,24 @@ namespace MonoDevelop.Ide.CodeCompletion
 			KeyActions ka = KeyActions.None;
 			bool keyHandled = false;
 			foreach (ICompletionKeyHandler handler in CompletionDataList.KeyHandler) {
-				if (handler.PreProcessKey (this, key, keyChar, modifier, out ka)) {
+				if (handler.PreProcessKey (this, descriptor, out ka)) {
 					keyHandled = true;
 					break;
 				}
 			}
 			
 			if (!keyHandled)
-				ka = PreProcessKey (key, keyChar, modifier);
+				ka = PreProcessKey (descriptor);
 			if ((ka & KeyActions.Complete) != 0)
-				CompleteWord (ref ka, key, keyChar, modifier);
+				CompleteWord (ref ka, descriptor);
 
 			if ((ka & KeyActions.CloseWindow) != 0)
 				CompletionWindowManager.HideWindow ();
 
 			if ((ka & KeyActions.Ignore) != 0)
 				return true;
-			
 			if ((ka & KeyActions.Process) != 0) {
-				if (key == Gdk.Key.Left || key == Gdk.Key.Right) {
+				if (descriptor.SpecialKey == SpecialKey.Left || descriptor.SpecialKey == SpecialKey.Right) {
 					// Close if there's a modifier active EXCEPT lock keys and Modifiers
 					// Makes an exception for Mod1Mask (usually alt), shift, control, meta and super
 					// This prevents the window from closing if the num/scroll/caps lock are active
@@ -248,13 +251,13 @@ namespace MonoDevelop.Ide.CodeCompletion
 //					if ((modifier & ~(Gdk.ModifierType.LockMask | (Gdk.ModifierType.ModifierMask & ~(Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)))) != 0) {
 					// this version doesn't work for my system - seems that I've a modifier active
 					// that gdk doesn't know about. How about the 2nd version - should close on left/rigt + shift/mod1/control/meta/super
-					if ((modifier & (Gdk.ModifierType.ShiftMask | Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask | Gdk.ModifierType.SuperMask)) != 0) {
+					if ((descriptor.ModifierKeys & (ModifierKeys.Shift | ModifierKeys.Alt | ModifierKeys.Control | ModifierKeys.Command)) != 0) {
 						CompletionWindowManager.HideWindow ();
 						return false;
 					}
 					
 					if (declarationviewwindow != null && declarationviewwindow.Multiple) {
-						if (key == Gdk.Key.Left)
+						if (descriptor.SpecialKey == SpecialKey.Left)
 							declarationviewwindow.OverloadLeft ();
 						else
 							declarationviewwindow.OverloadRight ();
@@ -360,6 +363,12 @@ namespace MonoDevelop.Ide.CodeCompletion
 				return CompletionData.Compare (a, b);
 			}
 		}
+
+		IComparer<ICompletionData> GetComparerForCompletionList (ICompletionDataList dataList)
+		{
+			var concrete = dataList as CompletionDataList;
+			return concrete != null && concrete.Comparer != null ? concrete.Comparer : new DataItemComparer ();
+		}
 		
 		bool FillList ()
 		{
@@ -371,8 +380,9 @@ namespace MonoDevelop.Ide.CodeCompletion
 			//sort, sinking obsolete items to the bottoms
 			//the string comparison is ordinal as that makes it an order of magnitude faster, which 
 			//which makes completion triggering noticeably more responsive
+			var list = completionDataList as CompletionDataList;
 			if (!completionDataList.IsSorted)
-				completionDataList.Sort (new DataItemComparer ());
+				completionDataList.Sort (GetComparerForCompletionList (completionDataList));
 
 			Reposition (true);
 			return true;
@@ -432,10 +442,10 @@ namespace MonoDevelop.Ide.CodeCompletion
 		public bool CompleteWord ()
 		{
 			KeyActions ka = KeyActions.None;
-			return CompleteWord (ref ka, (Gdk.Key)0, '\0', Gdk.ModifierType.None);
+			return CompleteWord (ref ka, KeyDescriptor.Empty);
 		}
 		
-		public bool CompleteWord (ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public bool CompleteWord (ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			if (SelectedItem == -1 || completionDataList == null)
 				return false;
@@ -445,10 +455,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 			// first close the completion list, then insert the text.
 			// this is required because that's the logical event chain, otherwise things could be messed up
 			CloseCompletionList ();
-			var cdItem = (CompletionData)item;
+/*			var cdItem = (CompletionData)item;
 			cdItem.InsertCompletionText (this, ref ka, closeChar, keyChar, modifier);
 			AddWordToHistory (PartialWord, cdItem.CompletionText);
 			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
+			*/
+			((CompletionData)item).InsertCompletionText (this, ref ka, descriptor);
+			AddWordToHistory (PartialWord, item.CompletionText);
+			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
 			return true;
 		}
 		
@@ -673,10 +687,14 @@ namespace MonoDevelop.Ide.CodeCompletion
 		{
 			return ((CompletionData)completionDataList[n]).CompletionText;
 		}
-		static DataItemComparer defaultComparer = new DataItemComparer ();
+
+		IComparer<ICompletionData> defaultComparer;
+
 		int IListDataProvider.CompareTo (int n, int m)
 		{
-			return defaultComparer.Compare (completionDataList [n], completionDataList [m]);
+			var item1 = completionDataList [n];
+			var item2 = completionDataList [m];
+			return (defaultComparer ?? (defaultComparer = GetComparerForCompletionList (completionDataList))).Compare (item1, item2);
 		}
 		
 		Xwt.Drawing.Image IListDataProvider.GetIcon (int n)

@@ -53,6 +53,7 @@ namespace ICSharpCode.PackageManagement
 		IQueryable<IPackage> GetPackages();
 		IEnumerable<IPackage> GetPackagesInReverseDependencyOrder();
 		string GetInstallPath(IPackage package);
+		ISolutionPackageRepository GetRepository ();
 		
 		bool IsOpen { get; }
 		string FileName { get; }

@@ -52,6 +52,7 @@ using MonoDevelop.AspNet.WebForms.Dom;
 using MonoDevelop.Xml.Parser;
 using MonoDevelop.Xml.Dom;
 using Microsoft.CodeAnalysis;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AspNet.WebForms
 {
@@ -131,9 +132,8 @@ namespace MonoDevelop.AspNet.WebForms
 		protected override ICompletionDataList HandleCodeCompletion (CodeCompletionContext completionContext,
 		                                                            bool forced, ref int triggerWordLength)
 		{
-			ITextBuffer buf = Buffer;
 			// completionChar may be a space even if the current char isn't, when ctrl-space is fired t
-			char currentChar = completionContext.TriggerOffset < 1? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 1);
+			char currentChar = completionContext.TriggerOffset < 1? ' ' : Editor.GetCharAt (completionContext.TriggerOffset - 1);
 			//char previousChar = completionContext.TriggerOffset < 2? ' ' : buf.GetCharAt (completionContext.TriggerOffset - 2);
 			
 			
@@ -300,20 +300,20 @@ namespace MonoDevelop.AspNet.WebForms
 			return documentBuilder.HandleCompletion (defaultEditor, defaultDocumentContext, completionContext, documentInfo, localDocumentInfo, completionChar, ref triggerWordLength);
 		}
 
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			Tracker.UpdateEngine ();
 			bool isAspExprState = Tracker.Engine.CurrentState is WebFormsExpressionState;
 			if (documentBuilder == null || !isAspExprState)
-				return base.KeyPress (key, keyChar, modifier);
+				return base.KeyPress (descriptor);
 			InitializeCodeCompletion ('\0');
 			DocumentContext = localDocumentInfo.HiddenDocument;
 			Editor = localDocumentInfo.HiddenDocument.Editor;
 			CompletionWidget = documentBuilder.CreateCompletionWidget (localDocumentInfo.HiddenDocument.Editor, localDocumentInfo.HiddenDocument, localDocumentInfo);
 			bool result;
 			try {
-				result = base.KeyPress (key, keyChar, modifier);
-				if (PropertyService.Get ("EnableParameterInsight", true) && (keyChar == ',' || keyChar == ')') && CanRunParameterCompletionCommand ()) {
+				result = base.KeyPress (descriptor);
+				if (PropertyService.Get ("EnableParameterInsight", true) && (descriptor.KeyChar == ',' || descriptor.KeyChar == ')') && CanRunParameterCompletionCommand ()) {
 					RunParameterCompletionCommand ();
 				}
 			} finally {

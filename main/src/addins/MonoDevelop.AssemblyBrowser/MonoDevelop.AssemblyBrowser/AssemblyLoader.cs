@@ -75,9 +75,14 @@ namespace MonoDevelop.AssemblyBrowser
 			if (!File.Exists (fileName))
 				throw new ArgumentException ("File doesn't exist.", "fileName");
 			this.assemblyLoaderTask = Task.Factory.StartNew<AssemblyDefinition> (() => {
-				return AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters () {
-					AssemblyResolver = this
-				});
+				try {
+					return AssemblyDefinition.ReadAssembly (FileName, new ReaderParameters {
+						AssemblyResolver = this
+					});
+				} catch (Exception e) {
+					LoggingService.LogError ("Error while reading assembly " + FileName, e);
+					return null;
+				}
 			}, src.Token);
 			
 			this.unresolvedAssembly = new Lazy<IUnresolvedAssembly> (delegate {
@@ -93,25 +98,25 @@ namespace MonoDevelop.AssemblyBrowser
 		#region IAssemblyResolver implementation
 		AssemblyDefinition IAssemblyResolver.Resolve (AssemblyNameReference name)
 		{
-			var loader = widget.AddReferenceByAssemblyName (name, false);
+			var loader = widget.AddReferenceByAssemblyName (name);
 			return loader != null ? loader.Assembly : null;
 		}
 		
 		AssemblyDefinition IAssemblyResolver.Resolve (AssemblyNameReference name, ReaderParameters parameters)
 		{
-			var loader = widget.AddReferenceByAssemblyName (name, false);
+			var loader = widget.AddReferenceByAssemblyName (name);
 			return loader != null ? loader.Assembly : null;
 		}
 		
 		AssemblyDefinition IAssemblyResolver.Resolve (string fullName)
 		{
-			var loader = widget.AddReferenceByAssemblyName (fullName, false);
+			var loader = widget.AddReferenceByAssemblyName (fullName);
 			return loader != null ? loader.Assembly : null;
 		}
 		
 		AssemblyDefinition IAssemblyResolver.Resolve (string fullName, ReaderParameters parameters)
 		{
-			var loader = widget.AddReferenceByAssemblyName (fullName, false);
+			var loader = widget.AddReferenceByAssemblyName (fullName);
 			return loader != null ? loader.Assembly : null;
 		}
 		#endregion

@@ -4,10 +4,14 @@
 		<Import assembly="MonoDevelop.PackageManagement.dll" />
 		<Import assembly="Microsoft.Web.XmlTransform.dll" />
 		<Import assembly="NuGet.Core.dll" />
-		<Import file="NuGet.exe" />
 	</Runtime>
 
 	<Extension path = "/MonoDevelop/Ide/Commands">
+		<Command
+			id = "MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
+			_description = "Add NuGet packages to the project"
+			_label = "Add NuGet _Packages..."
+			defaultHandler = "MonoDevelop.PackageManagement.Commands.AddPackagesHandler" />
 		<Command
 			id = "MonoDevelop.PackageManagement.Commands.AddPackages"
 			_description = "Add packages to the project"
@@ -15,14 +19,14 @@
 			defaultHandler = "MonoDevelop.PackageManagement.Commands.AddPackagesHandler" />
 		<Command
 			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
-			_description = "Restore missing packages"
-			_label = "_Restore Packages"
+			_description = "Restore missing NuGet packages"
+			_label = "_Restore NuGet Packages"
 			defaultHandler = "MonoDevelop.PackageManagement.Commands.RestorePackagesHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.Restore"
 			_description="Restore missing packages"
 			_label="_Restore"
-			defaultHandler="MonoDevelop.PackageManagement.Commands.RestorePackagesHandler" />
+			defaultHandler="MonoDevelop.PackageManagement.Commands.RestorePackagesInProjectHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.PackageReferenceNodeCommands.ShowPackageVersion"
 			_description="Current package version"
@@ -42,8 +46,8 @@
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInProjectHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
-			_description="Update all packages in the solution"
-			_label="_Update Packages"
+			_description="Update all NuGet packages in the solution"
+			_label="_Update NuGet Packages"
 			defaultHandler="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolutionHandler" />
 		<Command
 			id="MonoDevelop.PackageManagement.Commands.ReinstallAllPackagesInProject"
@@ -53,18 +57,11 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/MainMenu/Project">
-		<CommandItem
-			id="MonoDevelop.PackageManagement.Commands.AddPackages"
-			insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
-			insertbefore="ExportSeparator" />
-		<CommandItem
-			id = "MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
-			insertafter="MonoDevelop.PackageManagement.Commands.AddPackages"
-			insertbefore="ExportSeparator" />
-		<CommandItem
-			id = "MonoDevelop.PackageManagement.Commands.RestorePackages"
-			insertafter="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution"
-			insertbefore="ExportSeparator" />
+		<SeparatorItem insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddReference" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.AddNuGetPackages" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.UpdateAllPackagesInSolution" />
+		<CommandItem id="MonoDevelop.PackageManagement.Commands.RestorePackages" />
+		<SeparatorItem />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
@@ -93,7 +90,7 @@
 	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad/Add">
 		<Condition id="ItemType" value="Project">
 			<CommandItem
-				id="MonoDevelop.PackageManagement.Commands.AddPackages"
+				id="MonoDevelop.PackageManagement.Commands.AddNuGetPackages"
 				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
 				insertbefore="MonoDevelop.WebReferences.WebReferenceCommands.Add" />
 		</Condition>
@@ -107,7 +104,7 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
-		<Section id="NuGetPackageManagement" _label="Packages">
+		<Section id="NuGetPackageManagement" _label="NuGet" insertafter="VersionControl">
 			<Section id="General" _label="General" fill="true" class="MonoDevelop.PackageManagement.Gui.PackageManagementOptionsPanel" icon="md-prefs-package" />
 			<Section id="PackageSources" _label="Sources" fill="true" class="MonoDevelop.PackageManagement.Gui.PackageSourcesOptionsPanel" icon="md-prefs-package-source" />
 		</Section>

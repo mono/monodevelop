@@ -479,7 +479,7 @@ namespace MonoDevelop.Ide
 						Items.Remove (it);
 						it.Dispose ();
 					} catch (Exception ex) {
-						MessageService.ShowException (ex, GettextCatalog.GetString ("Could not close solution '{0}'.", it.Name));
+						MessageService.ShowError (GettextCatalog.GetString ("Could not close solution '{0}'.", it.Name), ex);
 					}
 				}
 			}
@@ -523,7 +523,9 @@ namespace MonoDevelop.Ide
 			}
 			return true;
 		}
-		
+
+		bool openingItem;
+
 		public IAsyncOperation OpenWorkspaceItem (string filename)
 		{
 			return OpenWorkspaceItem (filename, true);
@@ -536,6 +538,9 @@ namespace MonoDevelop.Ide
 		
 		public IAsyncOperation OpenWorkspaceItem (string filename, bool closeCurrent, bool loadPreferences)
 		{
+			if (openingItem)
+				return MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Failure;
+
 			if (filename.StartsWith ("file://", StringComparison.Ordinal))
 				filename = new Uri(filename).LocalPath;
 
@@ -553,6 +558,9 @@ namespace MonoDevelop.Ide
 
 			using (var monitor = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				bool reloading = IsReloading;
+
+				openingItem = true;
+				IdeApp.Workbench.LockGui ();
 
 				DispatchService.BackgroundDispatch (delegate {
 					BackgroundLoadWorkspace (monitor, filename, loadPreferences, reloading);
@@ -629,6 +637,8 @@ namespace MonoDevelop.Ide
 				timer.End ();
 				return;
 			} finally {
+				Gtk.Application.Invoke ((s,o) => IdeApp.Workbench.UnlockGui ());
+				openingItem = false;
 				if (reloading)
 					SetReloading (false);
 			}

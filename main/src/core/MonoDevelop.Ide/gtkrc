@@ -228,6 +228,11 @@ style "combo-box" = "default"
     }
 }
 
+style "wizard-dialog"
+{
+    GtkDialog::content-area-border = 0
+}
+
 style "combo-box-entry" = "combo-box"
 {
     engine "xamarin" {
@@ -353,6 +358,7 @@ class "GtkScale" style "scale"
 #widget "*GtkEntry" style "entry"
 widget "*search-entry*" style "search-entry"
 widget "*GtkTextView"   style "entry"
+widget "wizard_dialog"  style "wizard-dialog"
 
 widget_class "*<GtkButton>"     style "button"
 widget_class "*<GtkToggleButton>" style "toggle-button"

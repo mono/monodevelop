@@ -88,10 +88,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			PropertyService.PropertyChanged += HandlePropertyChanged;
 			DefaultMSBuildVerbosity = PropertyService.Get ("MonoDevelop.Ide.MSBuildVerbosity", MSBuildVerbosity.Normal);
 
-			Runtime.ShuttingDown += delegate {
-				ShutDown = true;
-				CleanProjectBuilders ();
-			};
+			Runtime.ShuttingDown += (sender, e) => ShutDown = true;
 
 			const string gppPath = "/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders";
 			globalPropertyProviders = AddinManager.GetExtensionObjects<IMSBuildGlobalPropertyProvider> (gppPath);
@@ -501,6 +498,8 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			extn = fname.Substring (last_dot + 1);
 			return true;
 		}
+
+		static bool runLocal = false;
 		
 		internal static RemoteProjectBuilder GetProjectBuilder (TargetRuntime runtime, string minToolsVersion, string file, string solutionFile)
 		{
@@ -537,6 +536,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				//always start the remote process explicitly, even if it's using the current runtime and fx
 				//else it won't pick up the assembly redirects from the builder exe
 				var exe = GetExeLocation (runtime, toolsVersion);
+
 				MonoDevelop.Core.Execution.RemotingService.RegisterRemotingChannel ();
 				var pinfo = new ProcessStartInfo (exe) {
 					UseShellExecute = false,
@@ -547,22 +547,30 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 				runtime.GetToolsExecutionEnvironment ().MergeTo (pinfo);
 				
 				Process p = null;
+
 				try {
-					p = runtime.ExecuteAssembly (pinfo);
-					p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
-					string responseKey = "[MonoDevelop]";
-					string sref;
-					while (true) {
-						sref = p.StandardError.ReadLine ();
-						if (sref.StartsWith (responseKey, StringComparison.Ordinal)) {
-							sref = sref.Substring (responseKey.Length);
-							break;
+					IBuildEngine engine;
+					if (!runLocal) {
+						p = runtime.ExecuteAssembly (pinfo);
+						p.StandardInput.WriteLine (Process.GetCurrentProcess ().Id.ToString ());
+						string responseKey = "[MonoDevelop]";
+						string sref;
+						while (true) {
+							sref = p.StandardError.ReadLine ();
+							if (sref.StartsWith (responseKey, StringComparison.Ordinal)) {
+								sref = sref.Substring (responseKey.Length);
+								break;
+							}
 						}
+						byte[] data = Convert.FromBase64String (sref);
+						MemoryStream ms = new MemoryStream (data);
+						BinaryFormatter bf = new BinaryFormatter ();
+						engine = (IBuildEngine)bf.Deserialize (ms);
+					} else {
+						var asm = System.Reflection.Assembly.LoadFrom (exe);
+						var t = asm.GetType ("MonoDevelop.Projects.Formats.MSBuild.BuildEngine");
+						engine = (IBuildEngine)Activator.CreateInstance (t);
 					}
-					byte[] data = Convert.FromBase64String (sref);
-					MemoryStream ms = new MemoryStream (data);
-					BinaryFormatter bf = new BinaryFormatter ();
-					var engine = (IBuildEngine)bf.Deserialize (ms);
 					engine.SetCulture (GettextCatalog.UICulture);
 					engine.SetGlobalProperties (GetCoreGlobalProperties (solutionFile));
 					foreach (var gpp in globalPropertyProviders)
@@ -572,13 +580,19 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 					if (p != null) {
 						try {
 							p.Kill ();
-						} catch { }
+						} catch {
+						}
 					}
 					throw;
 				}
-				
+
+
 				builders [builderKey] = builder;
 				builder.ReferenceCount = 1;
+				builder.Disconnected += delegate {
+					lock (builders)
+						builders.Remove (builderKey);
+				};
 				return new RemoteProjectBuilder (file, builder);
 			}
 		}
@@ -623,45 +637,11 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 		internal static void ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
 			lock (builders) {
-				if (engine.ReferenceCount > 0) {
-					if (--engine.ReferenceCount == 0) {
-						engine.ReleaseTime = DateTime.Now.AddSeconds (3);
-						ScheduleProjectBuilderCleanup (engine.ReleaseTime.AddMilliseconds (500));
-					}
-				}
-			}
-		}
-		
-		static DateTime nextCleanup = DateTime.MinValue;
-		
-		static void ScheduleProjectBuilderCleanup (DateTime cleanupTime)
-		{
-			lock (builders) {
-				if (cleanupTime < nextCleanup)
+				if (--engine.ReferenceCount != 0)
 					return;
-				nextCleanup = cleanupTime;
-				System.Threading.ThreadPool.QueueUserWorkItem (delegate {
-					DateTime tnow = DateTime.Now;
-					while (tnow < nextCleanup) {
-						System.Threading.Thread.Sleep ((int)(nextCleanup - tnow).TotalMilliseconds);
-						CleanProjectBuilders ();
-						tnow = DateTime.Now;
-					}
-				});
+				builders.Remove (builders.First (kvp => kvp.Value == engine).Key);
 			}
-		}
-		
-		static void CleanProjectBuilders ()
-		{
-			lock (builders) {
-				DateTime tnow = DateTime.Now;
-				foreach (var val in new Dictionary<string,RemoteBuildEngine> (builders)) {
-					if (val.Value.ReferenceCount == 0 && val.Value.ReleaseTime <= tnow) {
-						builders.Remove (val.Key);
-						val.Value.Dispose ();
-					}
-				}
-			}
+			engine.Dispose ();
 		}
 
 		static Dictionary<string, string> cultureNamesTable;

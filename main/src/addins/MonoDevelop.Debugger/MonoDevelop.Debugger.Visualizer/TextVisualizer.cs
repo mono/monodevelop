@@ -106,12 +106,12 @@ namespace MonoDevelop.Debugger.Visualizer
 
 		void PopulateTextView (ObjectValue value)
 		{
-			var ops = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
-			ops.AllowTargetInvoke = true;
-			ops.ChunkRawStrings = true;
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowTargetInvoke = true;
+			options.ChunkRawStrings = true;
 
 			if (value.TypeName == "string") {
-				rawString = value.GetRawValue (ops) as RawValueString;
+				rawString = value.GetRawValue (options) as RawValueString;
 				length = rawString.Length;
 				offset = 0;
 
@@ -125,7 +125,7 @@ namespace MonoDevelop.Debugger.Visualizer
 					};
 				}
 			} else if (value.TypeName == "char[]") {
-				rawArray = value.GetRawValue (ops) as RawValueArray;
+				rawArray = value.GetRawValue (options) as RawValueArray;
 				length = rawArray.Length;
 				offset = 0;
 
@@ -173,12 +173,15 @@ namespace MonoDevelop.Debugger.Visualizer
 		
 		public override bool StoreValue (ObjectValue val)
 		{
+			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
+			options.AllowTargetInvoke = true;
+
 			switch (val.TypeName) {
 			case "char[]":
-				val.SetRawValue (textView.Buffer.Text.ToCharArray ());
+				val.SetRawValue (textView.Buffer.Text.ToCharArray (), options);
 				return true;
 			case "string":
-				val.SetRawValue (textView.Buffer.Text);
+				val.SetRawValue (textView.Buffer.Text, options);
 				return true;
 			default:
 				return false;

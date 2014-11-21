@@ -51,7 +51,17 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				return FakePackages.FirstOrDefault (package => package.Id == packageId);
 			};
 
+			UpdatePackageAction = (package, updateAction) => {
+				PackagePassedToUpdatePackage = package;
+				PackageOperationsPassedToUpdatePackage = updateAction.Operations;
+				UpdateDependenciesPassedToUpdatePackage = updateAction.UpdateDependencies;
+				AllowPrereleaseVersionsPassedToUpdatePackage = updateAction.AllowPrereleaseVersions;
+				IsUpdatePackageCalled = true;
+			};
+
 			this.Name = name;
+
+			ConstraintProvider = NullConstraintProvider.Instance;
 		}
 
 		public FakeUninstallPackageAction FakeUninstallPackageAction;
@@ -156,12 +166,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 
 		public void UpdatePackage (IPackage package, UpdatePackageAction updateAction)
 		{
-			PackagePassedToUpdatePackage = package;
-			PackageOperationsPassedToUpdatePackage = updateAction.Operations;
-			UpdateDependenciesPassedToUpdatePackage = updateAction.UpdateDependencies;
-			AllowPrereleaseVersionsPassedToUpdatePackage = updateAction.AllowPrereleaseVersions;
-			IsUpdatePackageCalled = true;
+			UpdatePackageAction (package, updateAction);
 		}
+
+		public Action<IPackage, UpdatePackageAction> UpdatePackageAction;
 
 		public FakeInstallPackageAction LastInstallPackageCreated;
 
@@ -246,6 +254,11 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public void AddFakePackageToSourceRepository (string packageId)
 		{
 			FakeSourceRepository.AddFakePackage (packageId);
+		}
+
+		public FakePackage AddFakePackageToSourceRepository (string packageId, string version)
+		{
+			return FakeSourceRepository.AddFakePackageWithVersion (packageId, version);
 		}
 
 		public void UpdatePackages (UpdatePackagesAction action)
@@ -364,6 +377,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			throw new NotImplementedException ();
 		}
+
+		public IPackageConstraintProvider ConstraintProvider { get; set; }
 	}
 }
 

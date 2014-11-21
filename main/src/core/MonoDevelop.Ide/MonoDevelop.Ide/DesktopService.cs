@@ -60,6 +60,7 @@ namespace MonoDevelop.Ide
 				platformService = new DefaultPlatformService ();
 				LoggingService.LogFatalError ("A platform service implementation has not been found.");
 			}
+			PlatformService.Initialize ();
 			if (PlatformService.CanOpenTerminal)
 				Runtime.ProcessService.SetExternalConsoleHandler (PlatformService.StartConsoleProcess);
 			
@@ -87,6 +88,21 @@ namespace MonoDevelop.Ide
 			}
 		}
 
+		public static void SetGlobalProgress (double progress)
+		{
+			platformService.SetGlobalProgressBar (progress);
+		}
+
+		public static void ShowGlobalProgressIndeterminate ()
+		{
+			platformService.ShowGlobalProgressBarIndeterminate ();
+		}
+
+		public static void ShowGlobalProgressError ()
+		{
+			platformService.ShowGlobalProgressBarError ();
+		}
+
 		public static IEnumerable<DesktopApplication> GetApplications (string filename)
 		{
 			return PlatformService.GetApplications (filename);
@@ -101,10 +117,7 @@ namespace MonoDevelop.Ide
 			get { return PlatformService.Name; }
 		}
 
-		/// <summary>
-		/// Used in the text editor. Valid values are found in MonoDevelop.SourceEditor.ControlLeftRightMode in the
-		/// source editor project.
-		/// </summary>
+		[Obsolete]
 		public static string DefaultControlLeftRightBehavior {
 			get {
 				return PlatformService.DefaultControlLeftRightBehavior;
@@ -311,6 +324,21 @@ namespace MonoDevelop.Ide
 		public static bool IsModalDialogRunning ()
 		{
 			return PlatformService.IsModalDialogRunning ();
+		}
+
+		internal static void AddChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			PlatformService.AddChildWindow (parent, child);
+		}
+
+		internal static void RemoveChildWindow (Gtk.Window parent, Gtk.Window child)
+		{
+			PlatformService.RemoveChildWindow (parent, child);
+		}
+
+		internal static void PlaceWindow (Gtk.Window window, int x, int y, int width, int height)
+		{
+			PlatformService.PlaceWindow (window, x, y, width, height);
 		}
 	}
 }

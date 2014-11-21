@@ -31,10 +31,18 @@ using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.Editor
 {
-	public enum ControlLeftRightMode {
+	[Obsolete ("Use WordNavigationStyle")]
+	public enum ControlLeftRightMode
+	{
 		MonoDevelop,
 		Emacs,
 		SharpDevelop
+	}
+
+	public enum WordNavigationStyle
+	{
+		Unix,
+		Windows
 	}
 
 	public enum LineEndingConversion {
@@ -77,14 +85,157 @@ namespace MonoDevelop.Ide.Editor
 			instance = new DefaultSourceEditorOptions (policy);
 			MonoDevelop.Projects.Policies.PolicyService.DefaultPolicies.PolicyChanged += instance.HandlePolicyChanged;
 
-			PlainEditor = new DefaultSourceEditorOptions (policy) /*{
-				ShowLineNumberMargin = false,
-				ShowFoldMargin = false,
-				ShowIconMargin = false,
-				ShowRuler = false,
+			PlainEditor = new PlainEditorOptions ();
+		}
 
-				ShowWhitespaces = ShowWhitespaces.Never,
-			}*/;
+		class PlainEditorOptions : ITextEditorOptions
+		{
+			#region IDisposable implementation
+
+			void IDisposable.Dispose ()
+			{
+				// nothing
+			}
+
+			#endregion
+
+			#region ITextEditorOptions implementation
+
+			WordFindStrategy ITextEditorOptions.WordFindStrategy {
+				get {
+					return DefaultSourceEditorOptions.Instance.WordFindStrategy;
+				}
+			}
+
+			bool ITextEditorOptions.TabsToSpaces {
+				get {
+					return DefaultSourceEditorOptions.Instance.TabsToSpaces;
+				}
+			}
+
+			int ITextEditorOptions.IndentationSize {
+				get {
+					return DefaultSourceEditorOptions.Instance.IndentationSize;
+				}
+			}
+
+			int ITextEditorOptions.TabSize {
+				get {
+					return DefaultSourceEditorOptions.Instance.TabSize;
+				}
+			}
+
+			bool ITextEditorOptions.ShowIconMargin {
+				get {
+					return false;
+				}
+			}
+
+			bool ITextEditorOptions.ShowLineNumberMargin {
+				get {
+					return false;
+				}
+			}
+
+			bool ITextEditorOptions.ShowFoldMargin {
+				get {
+					return false;
+				}
+			}
+
+			bool ITextEditorOptions.HighlightCaretLine {
+				get {
+					return DefaultSourceEditorOptions.Instance.HighlightCaretLine;
+				}
+			}
+
+			int ITextEditorOptions.RulerColumn {
+				get {
+					return DefaultSourceEditorOptions.Instance.RulerColumn;
+				}
+			}
+
+			bool ITextEditorOptions.ShowRuler {
+				get {
+					return false;
+				}
+			}
+
+			IndentStyle ITextEditorOptions.IndentStyle {
+				get {
+					return DefaultSourceEditorOptions.Instance.IndentStyle;
+				}
+			}
+
+			bool ITextEditorOptions.OverrideDocumentEolMarker {
+				get {
+					return false;
+				}
+			}
+
+			bool ITextEditorOptions.EnableSyntaxHighlighting {
+				get {
+					return DefaultSourceEditorOptions.Instance.EnableSyntaxHighlighting;
+				}
+			}
+
+			bool ITextEditorOptions.RemoveTrailingWhitespaces {
+				get {
+					return DefaultSourceEditorOptions.Instance.RemoveTrailingWhitespaces;
+				}
+			}
+
+			bool ITextEditorOptions.WrapLines {
+				get {
+					return DefaultSourceEditorOptions.Instance.WrapLines;
+				}
+			}
+
+			string ITextEditorOptions.FontName {
+				get {
+					return DefaultSourceEditorOptions.Instance.FontName;
+				}
+			}
+
+			string ITextEditorOptions.GutterFontName {
+				get {
+					return DefaultSourceEditorOptions.Instance.GutterFontName;
+				}
+			}
+
+			string ITextEditorOptions.ColorScheme {
+				get {
+					return DefaultSourceEditorOptions.Instance.ColorScheme;
+				}
+			}
+
+			string ITextEditorOptions.DefaultEolMarker {
+				get {
+					return DefaultSourceEditorOptions.Instance.DefaultEolMarker;
+				}
+			}
+
+			bool ITextEditorOptions.GenerateFormattingUndoStep {
+				get {
+					return DefaultSourceEditorOptions.Instance.GenerateFormattingUndoStep;
+				}
+			}
+
+			ShowWhitespaces ITextEditorOptions.ShowWhitespaces {
+				get {
+					return ShowWhitespaces.Never;
+				}
+			}
+
+			IncludeWhitespaces ITextEditorOptions.IncludeWhitespaces {
+				get {
+					return DefaultSourceEditorOptions.Instance.IncludeWhitespaces;
+				}
+			}
+
+			#endregion
+
+
 		}
 
 		void HandlePolicyChanged (object sender, MonoDevelop.Projects.Policies.PolicyChangedEventArgs args)
@@ -97,6 +248,13 @@ namespace MonoDevelop.Ide.Editor
 		{
 			var defaultControlMode = (ControlLeftRightMode)Enum.Parse (typeof(ControlLeftRightMode), DesktopService.DefaultControlLeftRightBehavior);
 			controlLeftRightMode = new PropertyWrapper<ControlLeftRightMode> ("ControlLeftRightMode", defaultControlMode);
+			
+			WordNavigationStyle defaultWordNavigation = WordNavigationStyle.Unix;
+			if (Platform.IsWindows || controlLeftRightMode.Value == ControlLeftRightMode.SharpDevelop) {
+				defaultWordNavigation = WordNavigationStyle.Windows;
+			}
+			wordNavigationStyle = new PropertyWrapper<WordNavigationStyle> ("WordNavigationStyle", defaultWordNavigation);
+			
 			UpdateStylePolicy (currentPolicy);
 			FontService.RegisterFontChangedCallback ("Editor", UpdateFont);
 			FontService.RegisterFontChangedCallback ("MessageBubbles", UpdateFont);
@@ -310,6 +468,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		PropertyWrapper<ControlLeftRightMode> controlLeftRightMode;
+		[Obsolete("Use WordNavigationStyle")]
 		public ControlLeftRightMode ControlLeftRightMode {
 			get {
 				return controlLeftRightMode;
@@ -319,19 +478,29 @@ namespace MonoDevelop.Ide.Editor
 					OnChanged (EventArgs.Empty);
 			}
 		}
+		
+		PropertyWrapper<WordNavigationStyle> wordNavigationStyle;
+		public WordNavigationStyle WordNavigationStyle {
+			get {
+				return wordNavigationStyle;
+			}
+			set {
+				if (wordNavigationStyle.Set (value))
+					OnChanged (EventArgs.Empty);
+			}
+		}
 
 		public WordFindStrategy WordFindStrategy {
 			get {
 				if (useViModes) {
 					return WordFindStrategy.Vim;
 				}
-				switch (ControlLeftRightMode) {
-				case ControlLeftRightMode.Emacs:
-					return WordFindStrategy.Emacs;
-				case ControlLeftRightMode.SharpDevelop:
+				switch (WordNavigationStyle) {
+				case WordNavigationStyle.Windows:
 					return WordFindStrategy.SharpDevelop;
+				default:
+					return WordFindStrategy.Emacs;
 				}
-				return WordFindStrategy.MonoDevelop;
 			}
 			set {
 				throw new System.NotImplementedException ();

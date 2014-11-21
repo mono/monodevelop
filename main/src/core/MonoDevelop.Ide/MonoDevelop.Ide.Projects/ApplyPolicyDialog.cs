@@ -81,7 +81,7 @@ namespace MonoDevelop.Ide.Projects
 				} else {
 					msg = GettextCatalog.GetString ("The policy set could not be applied");
 				}
-				MessageService.ShowException (ex, msg);
+				MessageService.ShowError (msg, ex);
 				Respond (Gtk.ResponseType.Cancel);
 				return;
 			}
@@ -107,7 +107,12 @@ namespace MonoDevelop.Ide.Projects
 		
 		void UpdateContentLabels ()
 		{
-			PolicySet pset = GetPolicySet (false);
+			PolicySet pset = null;
+			try {
+				pset = GetPolicySet (false);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Policy file could not be loaded", ex);
+			}
 			tree.SetPolicies (pset);
 			if (tree.HasPolicies) {
 				buttonOk.Sensitive = true;

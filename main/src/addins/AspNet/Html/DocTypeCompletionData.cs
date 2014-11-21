@@ -29,6 +29,7 @@
 using System;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.AspNet.Html
 {
@@ -61,7 +62,7 @@ namespace MonoDevelop.AspNet.Html
 			get { return name; }
 		}
 		
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
 		{
 			var buf = window.CompletionWidget;
 			if (buf != null) {

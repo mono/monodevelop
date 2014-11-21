@@ -642,7 +642,17 @@ namespace MonoDevelop.Components.Commands
 		{
 			SetBinding (args.Command, args.OldKeyBinding, args.NewKeyBinding);
 		}
-		
+
+		void OnAlternateKeyBindingChanged (object sender, AlternateKeyBindingChangedEventArgs args)
+		{
+			var upperBound = Math.Max (args.NewKeyBinding != null ? args.NewKeyBinding.Length : 0, args.OldKeyBinding != null ? args.OldKeyBinding.Length : 0);
+			for (int i = 0; i < upperBound; i++) {
+				SetBinding (args.Command, 
+					args.OldKeyBinding != null && i < args.OldKeyBinding.Length ? args.OldKeyBinding[i] : null,
+					args.NewKeyBinding != null && i < args.NewKeyBinding.Length ? args.NewKeyBinding[i] : null );
+			}
+		}
+
 		public bool CommandIsRegistered (Command command)
 		{
 			return commands.Contains (command);
@@ -656,36 +666,48 @@ namespace MonoDevelop.Components.Commands
 			}
 			
 			SetBinding (command, null, command.KeyBinding);
+			foreach (var binding in command.AlternateKeyBindings) {
+				SetBinding (command, null, binding);
+			}
+
 			command.KeyBindingChanged += OnKeyBindingChanged;
+			command.AlternateKeyBindingChanged += OnAlternateKeyBindingChanged;
 			commands.Add (command);
 		}
-		
+
+
 		public void UnregisterCommand (Command command)
 		{
-			List<Command> list;
-			int refs;
-			
 			if (!commands.Contains (command)) {
 				Console.WriteLine ("WARNING: trying to unregister unknown command {0}", command);
 				return;
 			}
 			
 			command.KeyBindingChanged -= OnKeyBindingChanged;
+			command.AlternateKeyBindingChanged -= OnAlternateKeyBindingChanged;
 			commands.Remove (command);
-			
-			if (command.KeyBinding == null)
-				return;
 
-			list = bindings[command.KeyBinding];
+			RemoveKeyBinding (command, command.KeyBinding);
+			foreach (var altBinding in command.AlternateKeyBindings) {
+				RemoveKeyBinding (command, altBinding);
+			}
+		}
+
+		void RemoveKeyBinding (Command command, KeyBinding bindingToRemove)
+		{
+			if (bindingToRemove == null)
+				return;
+			var list = bindings [bindingToRemove];
+			int refs;
 			list.Remove (command);
 			if (list.Count == 0)
-				bindings.Remove (command.KeyBinding);
-			
-			if (!command.KeyBinding.Chord.IsEmpty && chords.ContainsKey (command.KeyBinding.Chord)) {
-				if ((refs = chords[command.KeyBinding.Chord] - 1) == 0)
-					chords.Remove (command.KeyBinding.Chord);
+				bindings.Remove (bindingToRemove);
+
+			if (!bindingToRemove.Chord.IsEmpty && chords.ContainsKey (bindingToRemove.Chord)) {
+				if ((refs = chords [bindingToRemove.Chord] - 1) == 0)
+					chords.Remove (bindingToRemove.Chord);
 				else
-					chords[command.KeyBinding.Chord] = refs;
+					chords [bindingToRemove.Chord] = refs;
 			}
 		}
 		

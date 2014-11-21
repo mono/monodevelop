@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Gui.Components;
+using MonoDevelop.Ide.Tasks;
 
 namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 {
@@ -90,22 +91,10 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			nodeInfo.Label = GLib.Markup.EscapeText (nodeInfo.Label);
 
 			if (!pref.IsValid) {
-				nodeInfo.Label = "<span color='red'>" + nodeInfo.Label + "</span>";
-				nodeInfo.Icon = Context.GetIcon ("md-reference-warning");
+				nodeInfo.StatusSeverity = TaskSeverity.Error;
+				nodeInfo.DisabledStyle = true;
+				nodeInfo.StatusMessage = pref.ValidationErrorMessage;
 			}
-		}
-		
-		public override bool HasChildNodes (MonoDevelop.Ide.Gui.Components.ITreeBuilder builder, object dataObject)
-		{
-			ProjectReference pref = (ProjectReference) dataObject;
-			return !pref.IsValid;
-		}
-
-		public override void BuildChildNodes (MonoDevelop.Ide.Gui.Components.ITreeBuilder treeBuilder, object dataObject)
-		{
-			ProjectReference pref = (ProjectReference) dataObject;
-			if (!pref.IsValid)
-				treeBuilder.AddChild (new TreeViewItem (pref.ValidationErrorMessage, Stock.Warning));
 		}
 		
 		public override void OnNodeAdded (object dataObject)

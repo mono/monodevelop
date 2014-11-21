@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "console-with-libs", "console-with-libs\console-with-libs.csproj", "{EAB80A13-FC3E-4E53-8950-E6B9F19E4C90}"
@@ -27,7 +27,6 @@ Global
 		{EAB80A13-FC3E-4E53-8950-E6B9F19E4C90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = console-with-libs\console-with-libs.csproj
 		name = console-with-libs
 	EndGlobalSection
 EndGlobal

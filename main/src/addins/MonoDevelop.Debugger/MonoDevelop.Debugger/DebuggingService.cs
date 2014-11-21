@@ -39,6 +39,7 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Projects;
 using MonoDevelop.Debugger.Viewers;
 using ICSharpCode.NRefactory.Semantics;
+using ICSharpCode.NRefactory.TypeSystem;
 
 /*
  * Some places we should be doing some error handling we used to toss
@@ -187,9 +188,9 @@ namespace MonoDevelop.Debugger
 			MessageService.ShowCustomDialog (dlg);
 		}
 		
-		public static bool ShowBreakpointProperties (ref BreakEvent bp)
+		public static bool ShowBreakpointProperties (ref BreakEvent bp, BreakpointType breakpointType = BreakpointType.Location)
 		{
-			using (var dlg = new BreakpointPropertiesDialog (bp)) {
+			using (var dlg = new BreakpointPropertiesDialog (bp, breakpointType)) {
 				Xwt.Command response = dlg.Run ();
 				if (bp == null)
 					bp = dlg.GetBreakEvent ();
@@ -565,12 +566,11 @@ namespace MonoDevelop.Debugger
 		
 		static bool ExceptionHandler (Exception ex)
 		{
-			LoggingService.LogError ("Error in debugger", ex);
 			Gtk.Application.Invoke (delegate {
 				if (ex is DebuggerException)
 					MessageService.ShowError (ex.Message);
 				else
-					MessageService.ShowException (ex);
+					MessageService.ShowError ("Debugger operation failed", ex);
 			});
 			return true;
 		}
@@ -987,7 +987,7 @@ namespace MonoDevelop.Debugger
 					if (ns != null)
 						return ns.NamespaceName;
 					var result = rr as TypeResolveResult;
-					if (result != null && !result.IsError)
+					if (result != null && !result.IsError && !(result.Type.Kind == TypeKind.Dynamic && result.Type.FullName == "dynamic"))
 						return result.Type.FullName;
 				}
 			}

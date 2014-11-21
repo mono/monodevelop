@@ -32,12 +32,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Diagnostics;
-
-#if ENABLE_RAYGUN
-using System.Threading;
-using Mindscape.Raygun4Net;
-#endif
-
+using Mono.Addins;
+using MonoDevelop.Core.LogReporting;
 using MonoDevelop.Core.Logging;
 using Mono.Unix.Native;
 
@@ -49,9 +45,6 @@ namespace MonoDevelop.Core
 		const string ReportCrashesKey = "MonoDevelop.LogAgent.ReportCrashes";
 		const string ReportUsageKey = "MonoDevelop.LogAgent.ReportUsage";
 
-#if ENABLE_RAYGUN
-		static RaygunClient raygunClient;
-#endif
 		static List<ILogger> loggers = new List<ILogger> ();
 		static RemoteLogger remoteLogger;
 		static DateTime timestamp;
@@ -65,6 +58,8 @@ namespace MonoDevelop.Core
 		// Second parameter is the exception
 		// Thirdparameter shows if the exception is fatal or not
 		public static Func<bool?, Exception, bool, bool?> UnhandledErrorOccured;
+
+		static List<CrashReporter> customCrashReporters = new List<CrashReporter> ();
 
 		static LoggingService ()
 		{
@@ -102,13 +97,6 @@ namespace MonoDevelop.Core
 
 			timestamp = DateTime.Now;
 
-#if ENABLE_RAYGUN
-			string raygunKey = BrandingService.GetString ("RaygunApiKey");
-			if (raygunKey != null) {
-				raygunClient = new RaygunClient (raygunKey);
-			}
-#endif
-
 			//remove the default trace listener on .NET, it throws up horrible dialog boxes for asserts
 			Debug.Listeners.Clear ();
 
@@ -121,9 +109,19 @@ namespace MonoDevelop.Core
 			set { PropertyService.Set (ReportCrashesKey, value); }
 		}
 
+		public static event EventHandler<PropertyChangedEventArgs> ReportCrashesChanged {
+			add { PropertyService.AddPropertyHandler (ReportCrashesKey, value); }
+			remove { PropertyService.RemovePropertyHandler (ReportCrashesKey, value); }
+		}
+
 		public static bool? ReportUsage {
 			get { return PropertyService.Get<bool?> (ReportUsageKey); }
 			set { PropertyService.Set (ReportUsageKey, value); }
+		}
+
+		public static event EventHandler<PropertyChangedEventArgs> ReportUsageChanged {
+			add { PropertyService.AddPropertyHandler (ReportUsageKey, value); }
+			remove { PropertyService.RemovePropertyHandler (ReportUsageKey, value); }
 		}
 
 		/// <summary>
@@ -186,6 +184,18 @@ namespace MonoDevelop.Core
 			RestoreOutputRedirection ();
 		}
 
+		public static void RegisterCrashReporter (CrashReporter reporter)
+		{
+			lock (customCrashReporters)
+				customCrashReporters.Add (reporter);
+		}
+
+		public static void UnregisterCrashReporter (CrashReporter reporter)
+		{
+			lock (customCrashReporters)
+				customCrashReporters.Remove (reporter);
+		}
+
 		internal static void ReportUnhandledException (Exception ex, bool willShutDown)
 		{
 			ReportUnhandledException (ex, willShutDown, false, null);
@@ -215,22 +225,10 @@ namespace MonoDevelop.Core
 				if (ReportCrashes.HasValue && !ReportCrashes.Value)
 					return;
 
-				var customData = new Hashtable ();
-				foreach (var cd in SystemInformation.GetDescription ())
-					customData[cd.Title ?? ""] = cd.Description;
-
-#if ENABLE_RAYGUN
-				if (raygunClient != null) {
-					ThreadPool.QueueUserWorkItem (delegate {
-						try {
-							raygunClient.Send (ex, tags, customData, Runtime.Version.ToString ());
-						} catch {
-							// If we get here then things have gone really wrong - we can't log anything or
-							// attempt to report anything. Drop any exception that ends up here.
-						}
-					});
+				lock (customCrashReporters) {
+					foreach (var cr in customCrashReporters.Concat (AddinManager.GetExtensionObjects<CrashReporter> (true)))
+						cr.ReportCrash (ex, willShutDown, tags);
 				}
-#endif
 
 				//ensure we don't lose the setting
 				if (ReportCrashes != oldReportCrashes) {
@@ -512,11 +510,17 @@ namespace MonoDevelop.Core
 			LogUserError (message, ex);
 		}
 
+		[Obsolete ("Use LogError")]
 		public static void LogUserError (string message, Exception ex)
 		{
 			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
 		}
 
+		/// <summary>
+		/// Reports that an unexpected error has occurred, but the IDE will continue executing.
+		/// Error information is sent to the crash reporting service
+		/// </summary>
+		/// <param name="ex">Exception</param>
 		public static void LogInternalError (Exception ex)
 		{
 			if (ex != null) {
@@ -526,6 +530,12 @@ namespace MonoDevelop.Core
 			ReportUnhandledException (ex, false, true, "internal");
 		}
 
+		/// <summary>
+		/// Reports that an unexpected error has occurred, but the IDE will continue executing.
+		/// Error information is sent to the crash reporting service
+		/// </summary>
+		/// <param name="message">Error message</param>
+		/// <param name="ex">Exception</param>
 		public static void LogInternalError (string message, Exception ex)
 		{
 			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
@@ -533,13 +543,18 @@ namespace MonoDevelop.Core
 			ReportUnhandledException (ex, false, true, "internal");
 		}
 
+		[Obsolete ("Use LogInternalError")]
 		public static void LogCriticalError (string message, Exception ex)
 		{
-			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
-
-			ReportUnhandledException (ex, false, false, "critical");
+			LogInternalError (message, ex);
 		}
 
+		/// <summary>
+		/// Reports that a fatal error has occurred, and that the IDE will shut down.
+		/// Error information is sent to the crash reporting service
+		/// </summary>
+		/// <param name="message">Error message</param>
+		/// <param name="ex">Exception</param>
 		public static void LogFatalError (string message, Exception ex)
 		{
 			Log (LogLevel.Error, message + (ex != null? Environment.NewLine + ex : string.Empty));
@@ -549,5 +564,4 @@ namespace MonoDevelop.Core
 
 #endregion
 	}
-
 }

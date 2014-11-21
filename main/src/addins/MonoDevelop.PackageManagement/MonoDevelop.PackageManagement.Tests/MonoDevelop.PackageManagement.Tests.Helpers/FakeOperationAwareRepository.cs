@@ -34,11 +34,13 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 	{
 		public string OperationStarted;
 		public string MainPackageIdForOperationStarted;
+		public string MainPackageVersionForOperationStarted;
 
 		public IDisposable StartOperation (string operationName, string mainPackageId, string mainPackageVersion)
 		{
 			OperationStarted = operationName;
 			MainPackageIdForOperationStarted = mainPackageId;
+			MainPackageVersionForOperationStarted = mainPackageVersion;
 			return this;
 		}
 
@@ -46,6 +48,14 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			Assert.AreEqual (expectedOperationName, OperationStarted);
 			Assert.AreEqual (expectedMainPackageId, MainPackageIdForOperationStarted);
+			AssertOperationIsDisposed ();
+		}
+
+		public void AssertOperationWasStartedAndDisposed (string expectedOperationName, string expectedMainPackageId, string expectedMainPackageVersion)
+		{
+			Assert.AreEqual (expectedOperationName, OperationStarted);
+			Assert.AreEqual (expectedMainPackageId, MainPackageIdForOperationStarted);
+			Assert.AreEqual (expectedMainPackageVersion, MainPackageVersionForOperationStarted);
 			AssertOperationIsDisposed ();
 		}
 

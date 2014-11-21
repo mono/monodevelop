@@ -132,7 +132,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				}
 				return true;
 			} catch (Exception ex) {
-				MessageService.ShowException (ex);
+				LoggingService.LogInternalError (ex);
 				return false;
 			}
 		}

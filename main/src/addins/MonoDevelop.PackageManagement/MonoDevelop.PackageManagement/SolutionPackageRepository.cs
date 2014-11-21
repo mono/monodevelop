@@ -115,5 +115,30 @@ namespace ICSharpCode.PackageManagement
 		{
 			return repository.GetPackages();
 		}
+
+		public bool IsRestored (PackageReference packageReference)
+		{
+			if (packageReference.Version == null) {
+				return false;
+			}
+
+			return CreateLocalPackageRepository ()
+				.GetPackageLookupPaths (packageReference.Id, packageReference.Version)
+				.Any ();
+		}
+
+		protected virtual LocalPackageRepository CreateLocalPackageRepository ()
+		{
+			return new LocalPackageRepository (packagePathResolver, fileSystem);
+		}
+
+		public IEnumerable<PackageReference> GetPackageReferences ()
+		{
+			var sharedRepository = Repository as SharedPackageRepository;
+			if (sharedRepository != null) {
+				return sharedRepository.PackageReferenceFile.GetPackageReferences ();
+			}
+			return Enumerable.Empty <PackageReference> ();
+		}
 	}
 }

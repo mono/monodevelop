@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Editor;
 using MonoDevelop.Xml.Completion;
 using MonoDevelop.Xml.Dom;
 using MonoDevelop.Xml.Parser;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Xml.Editor
 {
@@ -608,17 +609,17 @@ namespace MonoDevelop.Xml.Editor
 		
 		#region Smart indent
 		
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			bool result;
 			
 
-			if (Editor.Options.IndentStyle == IndentStyle.Smart && key == Gdk.Key.Return) {
-				result = base.KeyPress (key, keyChar, modifier);
+			if (Editor.Options.IndentStyle == IndentStyle.Smart && descriptor.SpecialKey == SpecialKey.Return) {
+				result = base.KeyPress (descriptor);
 				SmartIndentLine (Editor.CaretLine);
 				return result;
 			}
-			return base.KeyPress (key, keyChar, modifier);
+			return base.KeyPress (descriptor);
 		}
 		
 		void SmartIndentLine (int line)
@@ -721,13 +722,9 @@ namespace MonoDevelop.Xml.Editor
 
 				} catch (Exception ex) {
 					LoggingService.LogError ("Could not open document.", ex);
-
 					MessageService.ShowException (ex, "Could not open document.");
-
 				}
-
 			}
-
 		}
 		
 		[CommandUpdateHandler (XmlCommands.OpenStylesheet)]
@@ -761,9 +758,7 @@ namespace MonoDevelop.Xml.Editor
 				}
 			} catch (Exception ex) {
 				MonoDevelop.Core.LoggingService.LogError ("Could not open document.", ex);
-
 				MessageService.ShowException (ex, "Could not open document.");
-
 			}
 		}
 		

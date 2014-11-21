@@ -34,6 +34,7 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using System.Linq;
 
 namespace MonoDevelop.Debugger
 {
@@ -63,7 +64,9 @@ namespace MonoDevelop.Debugger
 		StopEvaluation,
 		RunToCursor,
 		SetNextStatement,
-		ShowNextStatement
+		ShowNextStatement,
+		NewCatchpoint,
+		NewFunctionBreakpoint
 	}
 
 	class DebugHandler: CommandHandler
@@ -535,7 +538,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 	}
-	
+
 	class NewBreakpointHandler: CommandHandler
 	{
 		protected override void Run ()
@@ -548,11 +551,62 @@ namespace MonoDevelop.Debugger
 					breakpoints.Add (bp);
 			}
 		}
-		
+
 		protected override void Update (CommandInfo info)
 		{
 			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
 			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
+		}
+	}
+
+	class NewFunctionBreakpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			BreakEvent bp = null;
+			if (DebuggingService.ShowBreakpointProperties (ref bp, BreakpointType.Function)) {
+				var breakpoints = DebuggingService.Breakpoints;
+
+				lock (breakpoints)
+					breakpoints.Add (bp);
+			}
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Breakpoints);
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
+		}
+	}
+
+	class NewCatchpointHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			BreakEvent bp = null;
+			if (DebuggingService.ShowBreakpointProperties (ref bp, BreakpointType.Catchpoint)) {
+				var breakpoints = DebuggingService.Breakpoints;
+
+				lock (breakpoints)
+					breakpoints.Add (bp);
+			}
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			info.Visible = DebuggingService.IsFeatureSupported (DebuggerFeatures.Catchpoints);
+			info.Enabled = !DebuggingService.Breakpoints.IsReadOnly;
+		}
+	}
+
+	class ShowBreakpointsHandler: CommandHandler
+	{
+		protected override void Run ()
+		{
+			var breakpointsPad = IdeApp.Workbench.Pads.FirstOrDefault (p => p.Id == "MonoDevelop.Debugger.BreakpointPad");
+			if (breakpointsPad != null) {
+				breakpointsPad.BringToFront ();
+			}
 		}
 	}
 
@@ -695,8 +749,12 @@ namespace MonoDevelop.Debugger
 
 			try {
 				DebuggingService.SetNextStatement (doc.FileName, doc.Editor.CaretLine, doc.Editor.CaretColumn);
-			} catch (NotSupportedException) {
-				MessageService.ShowError ("Unable to set the next statement to this location.");
+			} catch (Exception e) {
+				if (e is NotSupportedException || e.InnerException is NotSupportedException) {
+					MessageService.ShowError ("Unable to set the next statement to this location.");
+				} else {
+					throw;
+				}
 			}
 		}
 	}

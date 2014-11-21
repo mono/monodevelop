@@ -79,7 +79,6 @@ namespace MonoDevelop.VersionControl
 				path = file.FilePath;
 				isDir = false;
 				pentry = file.Project;
-				versionInfo = file.ExtendedProperties [typeof(VersionInfo)] as VersionInfo;
 			} else if (obj is SystemFile) {
 				SystemFile file = (SystemFile)obj;
 				path = file.Path;

@@ -137,6 +137,10 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		{
 			return EqualsAction (project);
 		}
+
+		public void RefreshProjectBuilder ()
+		{
+		}
 	}
 }
 

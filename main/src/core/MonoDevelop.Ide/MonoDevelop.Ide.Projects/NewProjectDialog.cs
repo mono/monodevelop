@@ -487,6 +487,8 @@ namespace MonoDevelop.Ide.Projects {
 					newItem = item.CreateWorkspaceItem (cinfo);
 				else
 					newItem = item.CreateProject (parentFolder, cinfo);
+				if (newItem == null)
+					return false;
 			} catch (UserException ex) {
 				MessageService.ShowError (ex.Message, ex.Details);
 				return false;

@@ -117,6 +117,8 @@ namespace Stetic
 					} catch {
 						// Not a valid image
 						return WidgetUtils.MissingIcon;
+					} finally {
+						s.Dispose ();
 					}
 					
 				case ImageSource.Theme:

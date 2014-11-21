@@ -357,6 +357,7 @@ namespace MonoDevelop.Ide.Gui
 				box.PackStart (toolbar.Container, false, false, 0);
 				box.ReorderChild (toolbar.Container, 0);
 				toolbar.Visible = (targetView == ActiveViewContent);
+				PathWidgetEnabled = !toolbar.Visible;
 			}
 			return toolbar;
 		}
@@ -654,6 +655,12 @@ namespace MonoDevelop.Ide.Gui
 				return;
 			pathDoc.PathChanged += HandlePathChange;
 			this.pathDoc = pathDoc;
+
+			// If a toolbar is already being shown, we don't show the pathbar yet
+			DocumentToolbar toolbar;
+			if (documentToolbars.TryGetValue (ActiveViewContent, out toolbar) && toolbar.Visible)
+				return;
+
 			PathWidgetEnabled = true;
 			pathBar.SetPath (pathDoc.CurrentPath);
 		}
@@ -670,7 +677,8 @@ namespace MonoDevelop.Ide.Gui
 		void HandlePathChange (object sender, MonoDevelop.Ide.Gui.Content.DocumentPathChangedEventArgs args)
 		{
 			var pathDoc = (MonoDevelop.Ide.Gui.Content.IPathedDocument) sender;
-			pathBar.SetPath (pathDoc.CurrentPath);
+			if (pathBar != null)
+				pathBar.SetPath (pathDoc.CurrentPath);
 //			pathBar.SetActive (pathDoc.SelectedIndex);
 		}
 		
@@ -726,11 +734,15 @@ namespace MonoDevelop.Ide.Gui
 				pathedDocument = (IPathedDocument) viewContents[newIndex].GetContent (typeof(IPathedDocument));
 			}
 
-			if (pathedDocument != null)
+			var toolbarVisible = false;
+			foreach (var t in documentToolbars) {
+				toolbarVisible = ActiveViewContent == t.Key;
+				t.Value.Container.Visible = toolbarVisible;
+			}
+
+			if (pathedDocument != null && !toolbarVisible)
 				AttachToPathedDocument (pathedDocument);
 
-			foreach (var t in documentToolbars)
-				t.Value.Container.Visible = ActiveViewContent == t.Key;
 			if (subViewContent != null)
 				subViewContent.Selected ();
 

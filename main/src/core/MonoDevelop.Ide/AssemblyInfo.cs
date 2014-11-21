@@ -16,3 +16,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("UnitTests")]
 [assembly: InternalsVisibleTo("MonoDevelop.SourceEditor")]
 [assembly: InternalsVisibleTo("Xamarin.OSXEditor")]
+[assembly: InternalsVisibleTo("MonoDevelop.Refactoring")]

@@ -207,13 +207,14 @@ namespace Stetic.Editor
 		{
 			try {
 				Gdk.Pixbuf pix = new Gdk.Pixbuf (stream);
-				stream.Close ();
 				string txt = name + "\n<span foreground='darkgrey' size='x-small'>" + pix.Width + " x " + pix.Height + "</span>";
 				pix = GetThumbnail (pix);
 				resourceListStore.AppendValues (pix, txt, name);
 				resources [name] = pix;
 			} catch {
 				// Doesn't look like a valid image. Just ignore it.
+			} finally {
+				stream.Dispose ();
 			}
 		}
 		

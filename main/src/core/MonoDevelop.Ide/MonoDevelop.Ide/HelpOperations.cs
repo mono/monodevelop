@@ -54,7 +54,7 @@ namespace MonoDevelop.Ide
 
 			if (Platform.IsMac) {
 				var url = topic != null ? "monodoc://" + System.Web.HttpUtility.UrlEncode (topic) : null;
-				var mdapp = new FilePath (typeof (HelpOperations).Assembly.Location).ParentDirectory.Combine ("..", "..", "..", "MonoDoc.app").FullPath;
+				var mdapp = new FilePath (typeof (HelpOperations).Assembly.Location).ParentDirectory.Combine ("..", "..", "..", "..", "MacOS", "MonoDoc.app").FullPath;
 				if (Directory.Exists (mdapp)) {
 					builder.AddQuoted ("-a", mdapp, url, "--args");
 					AddDirArgs (builder);
@@ -222,7 +222,7 @@ namespace MonoDevelop.Ide
 					Console.WriteLine (errWriter.ToString ());
 				}
 			} catch (Exception e) {
-				MessageService.ShowException (e);
+				MessageService.ShowError (GettextCatalog.GetString ("Help Viewer could not be opened"), e);
 				useExternalMonodoc = false;
 			}
 		}

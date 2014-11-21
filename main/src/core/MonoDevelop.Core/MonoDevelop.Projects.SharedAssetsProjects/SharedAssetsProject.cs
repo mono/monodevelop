@@ -39,6 +39,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		Solution currentSolution;
 		IDotNetLanguageBinding languageBinding;
 		string languageName;
+		FilePath projItemsPath;
 
 		public SharedAssetsProject ()
 		{
@@ -59,7 +60,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		{
 			var list = base.OnGetItemFiles (includeReferencedFiles);
 			if (!string.IsNullOrEmpty (FileName))
-				list.Add (FileName.ChangeExtension (".projitems"));
+				list.Add (ProjItemsPath);
 			return list;
 		}
 
@@ -69,6 +70,15 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		}
 
 		public string DefaultNamespace { get; set; }
+
+		public FilePath ProjItemsPath {
+			get {
+				return !projItemsPath.IsNull ? projItemsPath : FileName.ChangeExtension (".projitems");
+			}
+			set {
+				projItemsPath = value;
+			}
+		}
 
 		public override IEnumerable<string> GetProjectTypes ()
 		{
@@ -191,6 +201,14 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 
 		void ProcessProject (DotNetProject p)
 		{
+			// When the projitems file name doesn't match the shproj file name, the reference we add to the referencing projects
+			// uses the projitems name, not the shproj name. Here we detect such case and re-add the references using the correct name
+			var referencesToFix = p.References.Where (r => r.GetItemsProjectPath () == ProjItemsPath && r.Reference != Name).ToList ();
+			foreach (var r in referencesToFix) {
+				p.References.Remove (r);
+				p.References.Add (new ProjectReference (this));
+			}
+
 			foreach (var pref in p.References.Where (r => r.ReferenceType == ReferenceType.Project && r.Reference == Name))
 				ProcessNewReference (pref);
 		}
@@ -198,7 +216,7 @@ namespace MonoDevelop.Projects.SharedAssetsProjects
 		void ProcessNewReference (ProjectReference pref)
 		{
 			pref.Flags = ProjectItemFlags.DontPersist;
-			pref.SetItemsProjectPath (Path.ChangeExtension (FileName, ".projitems"));
+			pref.SetItemsProjectPath (ProjItemsPath);
 			foreach (var f in Files) {
 				if (pref.OwnerProject.Files.GetFile (f.FilePath) == null) {
 					var cf = (ProjectFile)f.Clone ();

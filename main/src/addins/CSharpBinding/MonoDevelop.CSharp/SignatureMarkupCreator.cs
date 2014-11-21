@@ -1728,7 +1728,12 @@ namespace MonoDevelop.CSharp
 			return AlphaBlend ((Gdk.Color)((HslColor)color), (Gdk.Color)((HslColor)color2), alpha);
 		}
 
-		public string GetArrayIndexerMarkup (IArrayTypeSymbol arrayType)
+		HslColor AlphaBlend (HslColor color, HslColor color2, double alpha)
+		{
+			return (HslColor)AlphaBlend ((Gdk.Color )color, (Gdk.Color)color2, alpha);
+		}
+
+		public string GetArrayIndexerMarkup (ArrayType arrayType)
 		{
 			if (arrayType == null)
 				throw new ArgumentNullException ("arrayType");

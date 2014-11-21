@@ -63,6 +63,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			this.Version = new SemanticVersion (version);
 			this.Listed = true;
 			this.IsLatestVersion = true;
+			IsValid = true;
 		}
 
 		public static FakePackage CreatePackageWithVersion (string version)
@@ -228,6 +229,8 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 		public Uri GalleryUrl { get; set; }
 
 		public bool DevelopmentDependency { get; set; }
+
+		public bool IsValid { get; set; }
 	}
 }
 

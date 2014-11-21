@@ -271,7 +271,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		public DefaultParsedDocument (string fileName) : base (fileName)
 		{
-			
+			Flags |= ParsedDocumentFlags.NonSerializable;
 		}
 		
 		#region IUnresolvedFile implementation

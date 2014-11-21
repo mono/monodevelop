@@ -249,7 +249,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				else {
 					foreach (var project in ReferenceFinder.GetAllReferencingProjects (solution, sourceProject)) {
 						if (entity.Accessibility == Accessibility.Internal || entity.Accessibility == Accessibility.ProtectedAndInternal) {
-							if (!entity.ParentAssembly.InternalsVisibleTo (TypeSystemService.GetProjectContentWrapper (project).Compilation.MainAssembly))
+							var wrapper = TypeSystemService.GetProjectContentWrapper (project);
+							if (wrapper == null)
+								continue;
+							if (!entity.ParentAssembly.InternalsVisibleTo (wrapper.Compilation.MainAssembly))
 								continue;
 						}
 						AddProject (project);

@@ -835,14 +835,12 @@ namespace MonoDevelop.Projects.Formats.MSBuild {
 			if (!StartHandlerHasExecuted)
 				return;
 
-			if (EventArgs is ProjectStartedEventArgs)
-				ConsoleLogger.ProjectFinishedHandler (null, finished_args as ProjectFinishedEventArgs);
-			else if (EventArgs is TargetStartedEventArgs)
-				ConsoleLogger.TargetFinishedHandler (null, finished_args as TargetFinishedEventArgs);
-			else if (EventArgs is TaskStartedEventArgs)
-				ConsoleLogger.TaskFinishedHandler (null, finished_args as TaskFinishedEventArgs);
-			else if (!(EventArgs is BuildStartedEventArgs))
-				throw new InvalidOperationException ("Unexpected event on the stack, type: " + EventArgs.GetType ());
+			if (EventArgs is ProjectStartedEventArgs && finished_args is ProjectFinishedEventArgs)
+				ConsoleLogger.ProjectFinishedHandler (null, (ProjectFinishedEventArgs) finished_args);
+			else if (EventArgs is TargetStartedEventArgs && finished_args is TargetFinishedEventArgs)
+				ConsoleLogger.TargetFinishedHandler (null, (TargetFinishedEventArgs)finished_args);
+			else if (EventArgs is TaskStartedEventArgs && finished_args is TaskFinishedEventArgs)
+				ConsoleLogger.TaskFinishedHandler (null, (TaskFinishedEventArgs)finished_args);
 		}
 	}
 

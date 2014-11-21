@@ -70,6 +70,7 @@ namespace MonoDevelop.CSharpBinding.Refactoring
 			var config = solution.AddConfiguration ("", true); 
 			solution.DefaultSolutionFolder.AddItem (project);
 			RoslynTypeSystemService.Load (solution);
+			
 			content.Project = project;
 
 			tww.ViewContent = content;

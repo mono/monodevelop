@@ -221,5 +221,15 @@ namespace ICSharpCode.PackageManagement
 		public bool DevelopmentDependency {
 			get { return package.DevelopmentDependency; }
 		}
+
+		public bool IsValid {
+			get {
+				var zipPackage = package as OptimizedZipPackage;
+				if (zipPackage != null) {
+					return zipPackage.IsValid;
+				}
+				return true;
+			}
+		}
 	}
 }

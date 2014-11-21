@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 using Mono.Addins;
 
-
 namespace MonoDevelop.Ide.Fonts
 {
 	[ExtensionNode (Description="A template for color and syntax shemes.")]
@@ -53,6 +52,9 @@ namespace MonoDevelop.Ide.Fonts
 		[NodeAttribute("defaultMac", "Default mac font to use.")]
 		string fontDescriptionMac;
 
+		[NodeAttribute("defaultMacYosemite", "Default Mac font to use for OSX 10.10 or later.")]
+		string fontDescriptionMacYosemite;
+
 		[NodeAttribute("defaultWindows", "Default windows font to use.")]
 		string fontDescriptionWindows;
 
@@ -60,8 +62,15 @@ namespace MonoDevelop.Ide.Fonts
 			get {
 				if (MonoDevelop.Core.Platform.IsWindows)
 					return string.IsNullOrEmpty (fontDescriptionWindows) ? fontDescription : fontDescriptionWindows;
-				if (MonoDevelop.Core.Platform.IsMac)
+				if (MonoDevelop.Core.Platform.IsMac) {
+					if (MonoDevelop.Core.Platform.OSVersion >= MonoDevelop.Core.MacSystemInformation.Yosemite) {
+						if (!string.IsNullOrEmpty (fontDescriptionMacYosemite)) {
+							return fontDescriptionMacYosemite;
+						}
+					}
+
 					return string.IsNullOrEmpty (fontDescriptionMac) ? fontDescription : fontDescriptionMac;
+				}
 				return fontDescription;
 			}
 		}

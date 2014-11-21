@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.CodeCompletion;
+using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Debugger
 {
@@ -262,7 +263,7 @@ namespace MonoDevelop.Debugger
 				text = text.Substring (Math.Max (0, Math.Min (ctx.TriggerOffset, text.Length)));
 
 			CompletionWindowManager.UpdateWordSelection (text);
-			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
+			CompletionWindowManager.PostProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier));
 			PopupCompletion ();
 		}
 
@@ -280,7 +281,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			if (currentCompletionData != null) {
-				if ((keyHandled = CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier)))
+				if ((keyHandled = CompletionWindowManager.PreProcessKeyEvent (KeyDescriptor.FromGtk (key, keyChar, modifier))))
 					return true;
 			}
 

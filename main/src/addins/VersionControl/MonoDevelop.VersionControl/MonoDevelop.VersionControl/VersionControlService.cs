@@ -372,7 +372,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					PrepareCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
 				}
 			}
 		}
@@ -390,7 +390,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					BeginCommit (null, new CommitEventArgs (repo, changeSet, false));
 				} catch (Exception ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
 				}
 			}
 		}
@@ -408,7 +408,7 @@ namespace MonoDevelop.VersionControl
 				try {
 					EndCommit (null, new CommitEventArgs (repo, changeSet, success));
 				} catch (Exception ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
 					return;
 				}
 			}
@@ -437,6 +437,12 @@ namespace MonoDevelop.VersionControl
 					FileStatusChanged (null, args);
 			}
 		}
+
+		static bool ShouldAddFile (ProjectFileEventInfo info)
+		{
+			const ProjectItemFlags ignoreFlags = ProjectItemFlags.DontPersist | ProjectItemFlags.Hidden;
+			return (info.ProjectFile.Flags & ignoreFlags) != ignoreFlags;
+		}
 		
 		//static void OnFileChanged (object s, ProjectFileEventArgs args)
 		//{
@@ -454,7 +460,8 @@ namespace MonoDevelop.VersionControl
 					Repository repo = GetRepository (repoFiles.Key);
 					if (repo == null)
 						continue;
-					var versionInfos = repo.GetVersionInfo (repoFiles.Select (f => f.ProjectFile.FilePath), VersionInfoQueryFlags.IgnoreCache);
+					var filePaths = repoFiles.Where (ShouldAddFile).Select (f => f.ProjectFile.FilePath);
+					var versionInfos = repo.GetVersionInfo (filePaths, VersionInfoQueryFlags.IgnoreCache);
 					FilePath[] paths = versionInfos.Where (i => i.CanAdd).Select (i => i.LocalPath).ToArray ();
 					if (paths.Length > 0) {
 						if (monitor == null)

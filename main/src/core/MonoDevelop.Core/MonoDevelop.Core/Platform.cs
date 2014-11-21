@@ -35,11 +35,16 @@ namespace MonoDevelop.Core
 	{
 		public readonly static bool IsWindows;
 		public readonly static bool IsMac;
-		
+		public readonly static bool IsLinux;
+
+		public static Version OSVersion { get; private set; }
+
 		static Platform ()
 		{
 			IsWindows = Path.DirectorySeparatorChar == '\\';
 			IsMac = !IsWindows && IsRunningOnMac ();
+			IsLinux = !IsMac && !IsWindows;
+			OSVersion = Environment.OSVersion.Version;
 
 			// needed to make sure various p/invokes work
 			if (Platform.IsWindows) {
@@ -83,11 +88,30 @@ namespace MonoDevelop.Core
 		static void InitMacFoundation ()
 		{
 			dlopen ("/System/Library/Frameworks/Foundation.framework/Foundation", 0x1);
+			OSVersion = new Version (Gestalt ("sys1"), Gestalt ("sys2"), Gestalt ("sys3"));
 		}
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		static extern bool SetDllDirectory (string lpPathName);
+
+		[System.Runtime.InteropServices.DllImport ("/System/Library/Frameworks/Carbon.framework/Versions/Current/Carbon")]
+		static extern int Gestalt (int selector, out int result);
+
+		//TODO: there are other gestalt selectors that return info we might want to display
+		//mac API for obtaining info about the system
+		static int Gestalt (string selector)
+		{
+			System.Diagnostics.Debug.Assert (selector != null && selector.Length == 4);
+			int cc = selector[3] | (selector[2] << 8) | (selector[1] << 16) | (selector[0] << 24);
+			int result;
+			int ret = Gestalt (cc, out result);
+			if (ret != 0) {
+				LoggingService.LogError ("Error reading gestalt for selector '{0}': {1}", selector, ret);
+				return 0;
+			}
+			return result;
+		}
 
 		static void InitWindowsNativeLibs ()
 		{

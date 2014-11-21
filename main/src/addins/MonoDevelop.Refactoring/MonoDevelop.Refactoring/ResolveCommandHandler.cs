@@ -193,9 +193,12 @@ namespace MonoDevelop.Refactoring
 
 			var unit = SyntaxTree.Parse (CreateStub (doc, offset), doc.FileName);
 
+			var parsedDocument = doc.ParsedDocument;
+			if (parsedDocument == null)
+				return null;
 			return ResolveAtLocation.Resolve (
 				doc.Compilation, 
-				doc.ParsedDocument.ParsedFile as CSharpUnresolvedFile,
+				parsedDocument.ParsedFile as CSharpUnresolvedFile,
 				unit,
 				location, 
 				out node);
@@ -328,14 +331,14 @@ namespace MonoDevelop.Refactoring
 				if (OnlyAddReference)
 					return GettextCatalog.GetString (
 						"Reference '{0}'", 
-						GetLibraryName ());
+						GetLibraryName ().Replace ("_", "__"));
 				if (Reference != null) 
-					return GettextCatalog.GetString (
-						"Reference '{0}' and use '{1}'", 
-						GetLibraryName (),
-						string.Format ("using {0};", Namespace));
+						return GettextCatalog.GetString (
+							"Reference '{0}' and use '{1}'", 
+							GetLibraryName (),
+						string.Format ("using {0};", Namespace.Replace ("_", "__")));
 
-				return string.Format ("using {0};", Namespace);
+				return string.Format ("using {0};", Namespace.Replace ("_", "__"));
 			}
 
 			public string GetInsertNamespaceText (string member)
@@ -343,10 +346,10 @@ namespace MonoDevelop.Refactoring
 				if (Reference != null) 
 					return GettextCatalog.GetString (
 						"Reference '{0}' and use '{1}'", 
-						GetLibraryName (),
-						Namespace + "." + member
+						GetLibraryName ().Replace ("_", "__"),
+						(Namespace + "." + member).Replace ("_", "__")
 					);
-				return Namespace + "." + member;
+				return (Namespace + "." + member).Replace ("_", "__");
 			}
 
 

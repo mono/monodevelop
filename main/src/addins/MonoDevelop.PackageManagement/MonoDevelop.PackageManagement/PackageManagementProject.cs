@@ -253,5 +253,15 @@ namespace ICSharpCode.PackageManagement
 		{
 			return projectManager.LocalRepository.Exists (packageReference.Id, packageReference.Version);
 		}
+
+		public IPackageConstraintProvider ConstraintProvider {
+			get {
+				var constraintProvider = projectManager.LocalRepository as IPackageConstraintProvider;
+				if (constraintProvider != null) {
+					return constraintProvider;
+				}
+				return NullConstraintProvider.Instance;
+			}
+		}
 	}
 }

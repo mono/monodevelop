@@ -26,6 +26,8 @@
 using System;
 using MonoDevelop.Core.Text;
 using MonoDevelop.Ide.Editor;
+using MonoDevelop.Components;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -66,7 +68,12 @@ namespace MonoDevelop.Ide.Editor
 	{
 		TextSegmentMarkerEffect Effect { get; }
 
-		Cairo.Color Color { get; set; }
+		HslColor Color { get; set; }
+	}
+
+	public interface IErrorMarker : ITextSegmentMarker
+	{
+		Error Error { get; }
 	}
 
 	public interface ISmartTagMarker : ITextSegmentMarker

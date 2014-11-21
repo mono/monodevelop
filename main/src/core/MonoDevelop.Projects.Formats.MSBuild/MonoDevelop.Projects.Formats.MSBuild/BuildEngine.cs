@@ -60,6 +60,10 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 			get { return doneEvent; }
 		}
 
+		public void Ping ()
+		{
+		}
+
 		public void SetCulture (CultureInfo uiCulture)
 		{
 			BuildEngine.uiCulture = uiCulture;

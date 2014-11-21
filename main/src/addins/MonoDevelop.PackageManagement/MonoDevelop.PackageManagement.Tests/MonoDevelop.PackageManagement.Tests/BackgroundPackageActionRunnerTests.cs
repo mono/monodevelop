@@ -85,7 +85,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			return action;
 		}
 
-		void AddInstallActionWithPowerShellScript (string packageId = "Test")
+		FakeInstallPackageAction AddInstallActionWithPowerShellScript (string packageId = "Test")
 		{
 			FakeInstallPackageAction action = AddInstallAction ();
 			var package = new FakePackage (packageId);
@@ -94,6 +94,7 @@ namespace MonoDevelop.PackageManagement.Tests
 			operations.Add (new PackageOperation (package, PackageAction.Install));
 			action.Operations = operations;
 			action.Package = package;
+			return action;
 		}
 
 		void AddInstallActionWithLicenseToAccept (string packageId = "Test")
@@ -127,6 +128,20 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.Package = new FakePackage ();
 			action.Logger = new FakeLogger ();
 			actions.Add (action);
+			return action;
+		}
+
+		FakeInstallPackageAction AddInstallActionWithMSBuildTargetsFile (
+			string packageId = "Test",
+			PackageAction packageAction = PackageAction.Install)
+		{
+			FakeInstallPackageAction action = AddInstallAction ();
+			var package = new FakePackage (packageId);
+			package.AddFile (@"build\net40\" + packageId + ".targets");
+			var operations = new List<PackageOperation> ();
+			operations.Add (new PackageOperation (package, packageAction));
+			action.Operations = operations;
+			action.Package = package;
 			return action;
 		}
 
@@ -432,6 +447,50 @@ namespace MonoDevelop.PackageManagement.Tests
 			progressMonitor.AssertMessageIsLogged ("Download1");
 			progressMonitor.AssertMessageIsLogged ("Download2");
 			progressMonitor.AssertMessageIsNotLogged ("Download2" + Environment.NewLine + "Download2");
+		}
+
+		[Test]
+		public void Run_OneInstallActionWithPackageOperationWithCustomMSBuildTask_TypeSystemIsRefreshed ()
+		{
+			CreateRunner ();
+			FakeInstallPackageAction action = AddInstallActionWithMSBuildTargetsFile ();
+			action.ExecuteAction = () => {
+				packageManagementEvents.OnParentPackageInstalled (action.Package, action.Project, action.Operations);
+			};
+
+			Run ();
+
+			Assert.IsTrue (runner.EventsMonitor.IsTypeSystemRefreshed);
+			Assert.AreEqual (action.Project, runner.EventsMonitor.ProjectsPassedToReconnectAssemblyReferences [0]);
+			Assert.IsNotNull (action.Project);
+		}
+
+		[Test]
+		public void Run_OneUninstallActionWithPackageOperationWithCustomMSBuildTask_TypeSystemIsNotRefreshed ()
+		{
+			CreateRunner ();
+			FakeInstallPackageAction action = AddInstallActionWithMSBuildTargetsFile ("Test", PackageAction.Uninstall);
+			action.ExecuteAction = () => {
+				packageManagementEvents.OnParentPackageInstalled (action.Package, action.Project, action.Operations);
+			};
+
+			Run ();
+
+			Assert.IsFalse (runner.EventsMonitor.IsTypeSystemRefreshed);
+		}
+
+		[Test]
+		public void Run_OneInstallActionNoCustomMSBuildTask_TypeSystemIsNotRefreshed ()
+		{
+			CreateRunner ();
+			FakeInstallPackageAction action = AddInstallActionWithPowerShellScript ();
+			action.ExecuteAction = () => {
+				packageManagementEvents.OnParentPackageInstalled (action.Package, action.Project, action.Operations);
+			};
+
+			Run ();
+
+			Assert.IsFalse (runner.EventsMonitor.IsTypeSystemRefreshed);
 		}
 	}
 }

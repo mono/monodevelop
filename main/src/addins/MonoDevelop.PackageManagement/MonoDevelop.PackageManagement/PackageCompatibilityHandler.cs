@@ -32,7 +32,7 @@ namespace MonoDevelop.PackageManagement
 {
 	public class PackageCompatibilityHandler
 	{
-		public PackageCompatibilityHandler (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
+		public void MonitorTargetFrameworkChanges (ProjectTargetFrameworkMonitor projectTargetFrameworkMonitor)
 		{
 			projectTargetFrameworkMonitor.ProjectTargetFrameworkChanged += ProjectTargetFrameworkChanged;
 		}

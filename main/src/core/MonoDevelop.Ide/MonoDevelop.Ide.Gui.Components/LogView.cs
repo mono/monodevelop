@@ -36,10 +36,12 @@ using System.IO;
 using System.Text.RegularExpressions;
 using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide.Commands;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Gui.Components
 {
-	public class LogView : MonoDevelop.Components.CompactScrolledWindow
+	public class LogView : Gtk.VBox
 	{
 		TextBuffer buffer;
 		TextView textEditorControl;
@@ -127,6 +129,9 @@ namespace MonoDevelop.Ide.Gui.Components
 				return base.OnButtonPressEvent (evnt);
 			}
 		}
+		HBox searchBox = new HBox ();
+		MonoDevelop.Components.SearchEntry searchEntry = new MonoDevelop.Components.SearchEntry ();
+		MonoDevelop.Components.CompactScrolledWindow scrollView = new MonoDevelop.Components.CompactScrolledWindow ();
 
 		public LogView ()
 		{
@@ -134,8 +139,9 @@ namespace MonoDevelop.Ide.Gui.Components
 			textEditorControl = new LogTextView (buffer);
 			textEditorControl.Editable = false;
 			
-			ShadowType = ShadowType.None;
-			Add (textEditorControl);
+			scrollView.ShadowType = ShadowType.None;
+			scrollView.Add (textEditorControl);
+			PackEnd (scrollView, true, true, 0);
 
 			bold = new TextTag ("bold");
 			bold.Weight = Weight.Bold;
@@ -165,6 +171,8 @@ namespace MonoDevelop.Ide.Gui.Components
 			IdeApp.Preferences.CustomOutputPadFontChanged += HandleCustomFontChanged;
 			
 			outputDispatcher = new GLib.TimeoutHandler (outputDispatchHandler);
+
+			InitSearchWidget ();
 		}
 
 		[CommandHandler (Ide.Commands.EditCommands.Copy)]
@@ -182,7 +190,198 @@ namespace MonoDevelop.Ide.Gui.Components
 				clipboard.Text = text;
 			}
 		}
-		
+
+		#region Searching
+		Button buttonSearchForward;
+		Button buttonSearchBackward;
+		Button closeButton;
+
+		static string currentSearchPattern;
+
+		void InitSearchWidget ()
+		{
+			searchBox.BorderWidth = 4;
+			searchBox.PackStart (new Label (GettextCatalog.GetString ("Search:")), false, false, 4);
+			searchBox.PackStart (searchEntry, true, true, 0);
+			closeButton = new Button ();
+			closeButton.CanFocus = true;
+			closeButton.Relief = ReliefStyle.None;
+			closeButton.Image = ImageService.GetImage ("gtk-close", IconSize.Menu);
+			closeButton.Clicked += delegate {
+				HideSearchBox ();
+			};
+			searchBox.PackEnd (closeButton, false, false, 0);
+
+			buttonSearchForward = new Button ();
+			buttonSearchForward.CanFocus = true;
+			buttonSearchForward.Relief = ReliefStyle.None;
+			buttonSearchForward.TooltipText = GettextCatalog.GetString ("Find next {0}", GetShortcut (SearchCommands.FindNext));
+			buttonSearchForward.Image = ImageService.GetImage ("gtk-go-down", IconSize.Menu);
+			buttonSearchForward.Clicked += delegate {
+				FindNext ();
+			};
+			searchBox.PackEnd (buttonSearchForward, false, false, 0);
+
+			buttonSearchBackward = new Button ();
+			buttonSearchBackward.CanFocus = true;
+			buttonSearchBackward.Relief = ReliefStyle.None;
+			buttonSearchBackward.TooltipText = GettextCatalog.GetString ("Find previous {0}", GetShortcut (SearchCommands.FindPrevious));
+			buttonSearchBackward.Image = ImageService.GetImage ("gtk-go-up", IconSize.Menu);
+			buttonSearchBackward.Clicked += delegate {
+				FindPrev ();
+			};
+			searchBox.PackEnd (buttonSearchBackward, false, false, 0);
+
+			searchEntry.Ready = true;
+			searchEntry.Visible = true;
+			searchEntry.Entry.KeyPressEvent += delegate (object o, KeyPressEventArgs args) {
+				switch (args.Event.Key) {
+				case Gdk.Key.Escape:
+					HideSearchBox ();
+					break;
+				}
+			};
+
+			textEditorControl.KeyPressEvent += delegate (object o, KeyPressEventArgs args) {
+				switch (args.Event.Key) {
+				case Gdk.Key.Escape:
+					HideSearchBox ();
+					break;
+				}
+			};
+			searchEntry.Entry.Changed += delegate {
+				currentSearchPattern = searchEntry.Entry.Text;
+			};
+			searchEntry.Entry.Activated += delegate {
+				FindNext ();
+			};
+		}
+
+		void UpdateSearchEntrySearchPattern ()
+		{
+			searchEntry.Entry.Text = currentSearchPattern ?? "";
+		}
+
+		void ShowSearchBox ()
+		{
+			UpdateSearchEntrySearchPattern ();
+			PackStart (searchBox, false, true, 0);
+			searchBox.ShowAll ();
+			searchEntry.Entry.GrabFocus ();
+		}
+
+		void HideSearchBox ()
+		{
+			Remove (searchBox);
+			textEditorControl.GrabFocus ();
+		}
+
+		[CommandHandler (SearchCommands.Find)]
+		void Find ()
+		{
+			ShowSearchBox ();
+		}
+
+		static StringComparison GetComparer ()
+		{
+			if (PropertyService.Get ("AutoSetPatternCasing", true)) {
+				if (currentSearchPattern != null && currentSearchPattern.Any (Char.IsUpper))
+					return StringComparison.Ordinal;
+			}
+
+			return StringComparison.OrdinalIgnoreCase;
+		}
+
+		[CommandHandler (SearchCommands.FindNext)]
+		void FindNext ()
+		{
+			if (string.IsNullOrEmpty (currentSearchPattern))
+				return;
+			int searchPosition = buffer.CursorPosition;
+			TextIter start;
+			TextIter end;
+
+			if (buffer.HasSelection && buffer.GetSelectionBounds (out start, out end))
+				searchPosition = end.Offset;
+
+			var comparer = GetComparer ();
+			var text = buffer.Text;
+			var idx = text.IndexOf (currentSearchPattern, searchPosition, comparer);
+			if (idx < 0) {
+				idx = text.IndexOf (currentSearchPattern, 0, searchPosition, comparer);
+			}
+
+			if (idx >= 0) {
+				var iter = buffer.GetIterAtOffset (idx + currentSearchPattern.Length);
+				buffer.PlaceCursor (iter);
+				buffer.SelectRange (buffer.GetIterAtOffset (idx), iter); 
+				textEditorControl.ScrollToIter (iter, 0, false, 0, 0);
+			}
+		}
+
+		[CommandHandler (SearchCommands.FindNextSelection)]
+		void FindNextSelection ()
+		{
+			SetSearchPatternToSelection ();
+			UpdateSearchEntrySearchPattern ();
+			FindNext ();
+		}
+
+		[CommandHandler (SearchCommands.FindPrevious)]
+		void FindPrev ()
+		{
+			if (string.IsNullOrEmpty (currentSearchPattern))
+				return;
+			int searchPosition = buffer.CursorPosition;
+			TextIter start;
+			TextIter end;
+
+			if (buffer.HasSelection && buffer.GetSelectionBounds (out start, out end))
+				searchPosition = start.Offset;
+
+			var comparer = GetComparer ();
+			var text = buffer.Text;
+			var idx = text.LastIndexOf (currentSearchPattern, searchPosition, comparer);
+			if (idx < 0) {
+				idx = text.LastIndexOf (currentSearchPattern, text.Length, text.Length - searchPosition, comparer);
+			}
+
+			if (idx >= 0) {
+				var iter = buffer.GetIterAtOffset (idx + currentSearchPattern.Length);
+				buffer.PlaceCursor (iter);
+				buffer.SelectRange (buffer.GetIterAtOffset (idx), iter); 
+				textEditorControl.ScrollToIter (iter, 0, false, 0, 0);
+			}
+
+		}
+
+		[CommandHandler (SearchCommands.FindPreviousSelection)]
+		void FindPreviousSelection ()
+		{
+			SetSearchPatternToSelection ();
+			UpdateSearchEntrySearchPattern ();
+			FindPrev ();
+		}
+
+		void SetSearchPatternToSelection ()
+		{
+			TextIter start;
+			TextIter end;
+
+			if (buffer.HasSelection && buffer.GetSelectionBounds (out start, out end))
+				currentSearchPattern = buffer.GetText (start, end, false);
+		}
+
+		static string GetShortcut (object commandId)
+		{
+			var key = IdeApp.CommandService.GetCommand (commandId).AccelKey;
+			if (string.IsNullOrEmpty (key))
+				return "";
+			var nextShortcut = KeyBindingManager.BindingToDisplayLabel (key, false);
+			return "(" + nextShortcut + ")";
+		}
+		#endregion
+
 		public LogViewProgressMonitor GetProgressMonitor ()
 		{
 			return new LogViewProgressMonitor (this);
@@ -329,7 +528,7 @@ namespace MonoDevelop.Ide.Gui.Components
 				buffer.Delete (ref start, ref end);
 			}
 
-			bool scrollToEnd = Vadjustment.Value >= Vadjustment.Upper - 2 * Vadjustment.PageSize;
+			bool scrollToEnd = scrollView.Vadjustment.Value >= scrollView.Vadjustment.Upper - 2 * scrollView.Vadjustment.PageSize;
 			TextIter it = buffer.EndIter;
 
 			if (extraTag != null)

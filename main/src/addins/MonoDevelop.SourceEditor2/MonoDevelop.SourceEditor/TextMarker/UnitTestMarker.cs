@@ -27,11 +27,18 @@ namespace MonoDevelop.SourceEditor
 
 		void IUnitTestMarker.UpdateState ()
 		{
-			textEditor.RedrawMarginLine (textEditor.ActionMargin, LineSegment.LineNumber); 
+			var line = LineSegment;
+			if (line == null)
+				return;
+			textEditor.RedrawMarginLine (textEditor.ActionMargin, line.LineNumber); 
 		}
 
 		public UnitTestMarker (ExtensibleTextEditor textEditor, UnitTestMarkerHost host, UnitTestLocation unitTest)
 		{
+			if (textEditor == null)
+				throw new ArgumentNullException ("textEditor");
+			if (host == null)
+				throw new ArgumentNullException ("host");
 			this.textEditor = textEditor;
 			this.host = host;
 			this.unitTest = unitTest;

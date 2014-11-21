@@ -30,6 +30,40 @@ namespace MonoDevelop.Ide.Editor
 {
 	interface IEditorActionHost
 	{
+		void SwitchCaretMode ();
+
+		void InsertTab ();
+
+		void RemoveTab ();
+
+		void InsertNewLine ();
+
+		void DeletePreviousWord ();
+
+		void DeleteNextWord ();
+
+		void DeletePreviousSubword ();
+
+		void DeleteNextSubword ();
+
+		void StartCaretPulseAnimation ();
+
+		void RecenterEditor ();
+
+		void JoinLines ();
+
+		void MoveNextSubWord ();
+
+		void MovePrevSubWord ();
+
+		void MoveNextWord ();
+
+		void MovePrevWord ();
+
+		void PageUp ();
+
+		void PageDown ();
+
 		void MoveCaretDown ();
 
 		void MoveCaretUp ();
@@ -51,7 +85,9 @@ namespace MonoDevelop.Ide.Editor
 		void Delete ();
 
 		void ClipboardCopy ();
+
 		void ClipboardCut ();
+
 		void ClipboardPaste ();
 
 		void SelectAll ();
@@ -61,5 +97,27 @@ namespace MonoDevelop.Ide.Editor
 		void Undo ();
 
 		void Redo ();
+
+		void DeleteCurrentLine ();
+
+		void DeleteCurrentLineToEnd ();
+
+		void ScrollLineUp ();
+
+		void ScrollLineDown ();
+
+		void ScrollPageUp ();
+
+		void ScrollPageDown ();
+
+		void MoveBlockUp ();
+
+		void MoveBlockDown ();
+
+		void ToggleBlockSelectionMode ();
+
+		void IndentSelection ();
+
+		void UnIndentSelection ();
 	}
 }

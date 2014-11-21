@@ -38,7 +38,7 @@ namespace MonoDevelop.PackageManagement.Tests
 	[TestFixture]
 	public class SolutionPackageRepositoryTests
 	{
-		SolutionPackageRepository repository;
+		TestableSolutionPackageRepository repository;
 		TestablePackageManagementOptions options;
 		FakeSolution solution;
 		FakePackageRepositoryFactory fakeRepositoryFactory;
@@ -63,7 +63,7 @@ namespace MonoDevelop.PackageManagement.Tests
 		void CreateRepository (ISolution solution, TestablePackageManagementOptions options)
 		{
 			CreateFakeRepositoryFactory ();
-			repository = new SolutionPackageRepository (solution, fakeRepositoryFactory, options);
+			repository = new TestableSolutionPackageRepository (solution, fakeRepositoryFactory, options);
 		}
 
 		void CreateRepository (ISolution solution)
@@ -88,6 +88,30 @@ namespace MonoDevelop.PackageManagement.Tests
 		{
 			FakeSharedPackageRepository sharedRepository = fakeRepositoryFactory.FakeSharedRepository;
 			return sharedRepository.AddFakePackageWithVersion (packageId, version);
+		}
+
+		PackageReference CreatePackageReference (string packageId, string packageVersion)
+		{
+			SemanticVersion version = null;
+			if (packageVersion != null) {
+				version = new SemanticVersion (packageVersion);
+			}
+
+			return new PackageReference (
+				packageId,
+				version,
+				null,
+				null,
+				false,
+				false
+			);
+		}
+
+		void AddFileToLocalRepositoryLookupPath (PackageReference packageReference, string filePath)
+		{
+			filePath = filePath.ToNativePath ();
+			var packageName = new PackageName (packageReference.Id, packageReference.Version);
+			repository.LocalPackageRepository.AddPackageLookupPath (packageName, filePath);
 		}
 
 		[Test]
@@ -242,6 +266,45 @@ namespace MonoDevelop.PackageManagement.Tests
 			};
 
 			PackageCollectionAssert.AreEqual (expectedPackages, packages);
+		}
+
+		[Test]
+		public void IsRestored_PackageReferenceHasNullVersion_ReturnsFalse ()
+		{
+			CreateSolution (@"d:\projects\myproject\myproject.sln");
+			CreateRepository (solution);
+			PackageReference packageReference = CreatePackageReference ("MyPackage", null);
+
+			bool restored = repository.IsRestored (packageReference);
+
+			Assert.IsFalse (restored);
+		}
+
+		[Test]
+		public void IsRestored_OnePackageLookupPathForPackageReference_ReturnTrue ()
+		{
+			CreateSolution (@"d:\projects\myproject\myproject.sln");
+			CreateRepository (solution);
+			PackageReference packageReference = CreatePackageReference ("MyPackage", "1.2.3.4");
+			AddFileToLocalRepositoryLookupPath (
+				packageReference,
+				@"d:\projects\myproject\packages\MyPackage.1.2.3.4\MyPackage.1.2.3.4.nupkg");
+
+			bool restored = repository.IsRestored (packageReference);
+
+			Assert.IsTrue (restored);
+		}
+
+		[Test]
+		public void IsRestored_NoPackageLookupPathsForPackageReference_ReturnFalse ()
+		{
+			CreateSolution (@"d:\projects\myproject\myproject.sln");
+			CreateRepository (solution);
+			PackageReference packageReference = CreatePackageReference ("MyPackage", "1.2.3.4");
+
+			bool restored = repository.IsRestored (packageReference);
+
+			Assert.IsFalse (restored);
 		}
 	}
 }

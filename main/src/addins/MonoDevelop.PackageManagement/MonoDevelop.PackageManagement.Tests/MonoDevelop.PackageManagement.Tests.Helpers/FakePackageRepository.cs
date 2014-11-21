@@ -42,7 +42,7 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 			get { return PackagesAdded [0]; }
 		}
 
-		public IQueryable<IPackage> GetPackages ()
+		public virtual IQueryable<IPackage> GetPackages ()
 		{
 			return FakePackages.AsQueryable ();
 		}

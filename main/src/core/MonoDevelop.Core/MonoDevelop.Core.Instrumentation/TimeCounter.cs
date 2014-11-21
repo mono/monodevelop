@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace MonoDevelop.Core.Instrumentation
 {
@@ -55,12 +56,25 @@ namespace MonoDevelop.Core.Instrumentation
 		TimerTraceList traceList;
 		TimerTrace lastTrace;
 		TimerCounter counter;
+		object linkedTrackers;
 		
 		internal TimeCounter (TimerCounter counter)
 		{
 			this.counter = counter;
 			traceList = new TimerTraceList ();
 			Begin ();
+		}
+
+		public void AddHandlerTracker (IDisposable t)
+		{
+			if (linkedTrackers == null)
+				linkedTrackers = t;
+			else if (!(linkedTrackers is List<IDisposable>)) {
+				var list = new List<IDisposable> ();
+				list.Add ((IDisposable)linkedTrackers);
+				list.Add (t);
+			} else
+				((List<IDisposable>)linkedTrackers).Add (t);
 		}
 		
 		internal TimerTraceList TraceList {
@@ -98,6 +112,13 @@ namespace MonoDevelop.Core.Instrumentation
 			else
 				counter.AddTime (traceList.TotalTime);
 			counter = null;
+
+			if (linkedTrackers is List<IDisposable>) {
+				foreach (var t in (List<IDisposable>)linkedTrackers)
+					t.Dispose ();
+			} else if (linkedTrackers != null)
+				((IDisposable)linkedTrackers).Dispose ();
+
 		}
 		
 		void IDisposable.Dispose ()

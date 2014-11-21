@@ -58,6 +58,26 @@ namespace MonoDevelop.Ide.WelcomePage
 			Add (box);
 			Show ();
 			UpdateProjectBar ();
+
+			IdeApp.Workbench.GuiLocked += HandleGuiLocked;
+			IdeApp.Workbench.GuiUnlocked += HandleGuiUnlocked;
+		}
+
+		protected override void OnDestroyed ()
+		{
+			base.OnDestroyed ();
+			IdeApp.Workbench.GuiLocked -= HandleGuiLocked;
+			IdeApp.Workbench.GuiUnlocked -= HandleGuiUnlocked;
+		}
+
+		void HandleGuiUnlocked (object sender, EventArgs e)
+		{
+			Sensitive = true;
+		}
+
+		void HandleGuiLocked (object sender, EventArgs e)
+		{
+			Sensitive = false;
 		}
 
 		public void UpdateProjectBar ()
@@ -109,7 +129,7 @@ namespace MonoDevelop.Ide.WelcomePage
 		public WelcomePageProjectBar ()
 		{
 			SetPadding (3, 3, 12, 12);
-			GradientBackround = true;
+			GradientBackground = true;
 
 			HBox box = new HBox (false, 6);
 			box.PackStart (messageLabel = new Gtk.Label () { Xalign = 0 }, true, true, 0);

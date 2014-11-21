@@ -144,16 +144,7 @@ namespace MonoDevelop.PackageManagement.NodeBuilders
 
 		bool IsPackagesConfigFileChanged (FileEventArgs fileEventArgs)
 		{
-			return fileEventArgs.Any (file => IsPackagesConfigFileName (file.FileName));
-		}
-
-		bool IsPackagesConfigFileName (FilePath filePath)
-		{
-			if (filePath == null) {
-				return false;
-			}
-
-			return Constants.PackageReferenceFile.Equals (filePath.FileName, StringComparison.OrdinalIgnoreCase);
+			return fileEventArgs.Any (file => file.FileName.IsPackagesConfigFileName ());
 		}
 	}
 }

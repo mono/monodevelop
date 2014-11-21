@@ -31,6 +31,20 @@ using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide.Commands;
 using System.Collections;
 using System.Collections.Generic;
+using MonoDevelop.Ide.TypeSystem;
+using System.IO;
+using MonoDevelop.Core.Text;
+using System.Text;
+using Gtk;
+using ICSharpCode.NRefactory.TypeSystem;
+using System.Linq;
+using MonoDevelop.Ide.Editor.Extension;
+using ICSharpCode.NRefactory.Refactoring;
+using MonoDevelop.Components;
+using MonoDevelop.Core;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Threading;
 
 namespace MonoDevelop.Ide.Editor
 {
@@ -38,11 +52,12 @@ namespace MonoDevelop.Ide.Editor
 	/// The TextEditor object needs to be available through IBaseViewContent.GetContent therefore we need to insert a 
 	/// decorator in between.
 	/// </summary>
-	class TextEditorViewContent : IViewContent, ICommandRouter
+	class TextEditorViewContent : IViewContent, ICommandRouter, IQuickTaskProvider
 	{
 		readonly TextEditor textEditor;
 		readonly ITextEditorImpl textEditorImpl;
 
+		DocumentContext currentContext;
 		MonoDevelop.Projects.Policies.PolicyContainer policyContainer;
 
 		public TextEditorViewContent (TextEditor textEditor, ITextEditorImpl textEditorImpl)
@@ -57,6 +72,12 @@ namespace MonoDevelop.Ide.Editor
 			this.textEditor.TextChanged += HandleTextChanged;
 			DefaultSourceEditorOptions.Instance.Changed += UpdateTextEditorOptions;
 			this.textEditorImpl.DirtyChanged += HandleDirtyChanged;
+			this.textEditor.DocumentContextChanged += delegate {
+				if (currentContext != null)
+					currentContext.DocumentParsed -= HandleDocumentParsed;
+				currentContext = textEditor.DocumentContext;
+				currentContext.DocumentParsed += HandleDocumentParsed;
+			};
 		}
 
 		void HandleDirtyChanged (object sender, EventArgs e)
@@ -127,7 +148,187 @@ namespace MonoDevelop.Ide.Editor
 			textEditor.Options = DefaultSourceEditorOptions.Instance.WithTextStyle (currentPolicy);
 		}
 
-		#region IViewContent implementation
+		void HandleDocumentParsed (object sender, EventArgs e)
+		{
+			var ctx = (DocumentContext)sender;
+			UpdateErrorUndelines (ctx.ParsedDocument);
+			UpdateQuickTasks (ctx.ParsedDocument);
+			UpdateFoldings (ctx.ParsedDocument);
+		}
+
+		#region Error handling
+		List<IErrorMarker> errors = new List<IErrorMarker> ();
+		uint resetTimerId;
+
+		void RemoveErrorUndelinesResetTimerId ()
+		{
+			if (resetTimerId > 0) {
+				GLib.Source.Remove (resetTimerId);
+				resetTimerId = 0;
+			}
+		}
+
+		void RemoveErrorUnderlines ()
+		{
+			errors.ForEach (err => textEditor.RemoveMarker (err));
+			errors.Clear ();
+		}
+
+		void UnderLineError (Error info)
+		{
+			var error = TextMarkerFactory.CreateErrorMarker (textEditor, info);
+			textEditor.AddMarker (error); 
+			errors.Add (error);
+		}
+
+		void UpdateErrorUndelines (ParsedDocument parsedDocument)
+		{
+			if (!DefaultSourceEditorOptions.Instance.UnderlineErrors || parsedDocument == null)
+				return;
+
+			Application.Invoke (delegate {
+				RemoveErrorUndelinesResetTimerId ();
+				const uint timeout = 500;
+				resetTimerId = GLib.Timeout.Add (timeout, delegate {
+					RemoveErrorUnderlines ();
+
+					// Else we underline the error
+					if (parsedDocument.Errors != null) {
+						foreach (var error in parsedDocument.Errors) {
+							UnderLineError (error);
+						}
+					}
+					resetTimerId = 0;
+					return false;
+				});
+			});
+		}
+		#endregion
+		HashSet<string> symbols = new HashSet<string> ();
+		CancellationTokenSource src = new CancellationTokenSource ();
+		void UpdateFoldings (ParsedDocument parsedDocument, bool firstTime = false)
+		{
+			if (parsedDocument == null || !textEditor.Options.ShowFoldMargin)
+				return;
+			// don't update parsed documents that contain errors - the foldings from there may be invalid.
+			if (parsedDocument.HasErrors)
+				return;
+			src.Cancel ();
+			src = new CancellationTokenSource ();
+			var token = src.Token;
+			var caretLocation = textEditor.CaretLocation;
+			System.Action action = delegate {
+				try {
+					var foldSegments = new List<IFoldSegment> ();
+					bool updateSymbols = parsedDocument.Defines.Count != symbols.Count;
+					if (!updateSymbols) {
+						foreach (PreProcessorDefine define in parsedDocument.Defines) {
+							if (token.IsCancellationRequested)
+								return;
+							if (!symbols.Contains (define.Define)) {
+								updateSymbols = true;
+								break;
+							}
+						}
+					}
+					if (updateSymbols) {
+						symbols.Clear ();
+						foreach (PreProcessorDefine define in parsedDocument.Defines) {
+							symbols.Add (define.Define);
+						}
+					}
+					foreach (FoldingRegion region in parsedDocument.Foldings) {
+						if (token.IsCancellationRequested)
+							return;
+						var type = FoldingType.Unknown;
+						bool setFolded = false;
+						bool folded = false;
+						//decide whether the regions should be folded by default
+						switch (region.Type) {
+						case FoldType.Member:
+							type = FoldingType.TypeMember;
+							break;
+						case FoldType.Type:
+							type = FoldingType.TypeDefinition;
+							break;
+						case FoldType.UserRegion:
+							type = FoldingType.Region;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultRegionsFolding;
+							folded = true;
+							break;
+						case FoldType.Comment:
+							type = FoldingType.Comment;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+							folded = true;
+							break;
+						case FoldType.CommentInsideMember:
+							type = FoldingType.Comment;
+							setFolded = DefaultSourceEditorOptions.Instance.DefaultCommentFolding;
+							folded = false;
+							break;
+						case FoldType.Undefined:
+							setFolded = true;
+							folded = region.IsFoldedByDefault;
+							break;
+						}
+						var start = textEditor.LocationToOffset (region.Region.Begin);
+						var end = textEditor.LocationToOffset (region.Region.End);
+						var marker = textEditor.CreateFoldSegment (start, end - start);
+						foldSegments.Add (marker);
+						marker.CollapsedText = region.Name;
+						marker.FoldingType = type;
+						//and, if necessary, set its fold state
+						if (marker != null && setFolded && firstTime) {
+							// only fold on document open, later added folds are NOT folded by default.
+							marker.IsCollapsed = folded;
+							continue;
+						}
+						if (marker != null && region.Region.IsInside (caretLocation.Line, caretLocation.Column))
+							marker.IsCollapsed = false;
+					}
+					if (firstTime) {
+						textEditor.SetFoldings (foldSegments);
+					} else {
+						Application.Invoke (delegate {
+							if (!token.IsCancellationRequested)
+								textEditor.SetFoldings (foldSegments);
+						});
+					}
+				}
+				catch (Exception ex) {
+					LoggingService.LogError ("Unhandled exception in ParseInformationUpdaterWorkerThread", ex);
+				}
+			};
+			if (firstTime) {
+				action ();
+				return;
+			}
+			Task.Factory.StartNew (action);
+		}
+
+		void RunFirstTimeFoldUpdate (string text)
+		{
+			if (string.IsNullOrEmpty (text)) 
+				return;
+			ParsedDocument parsedDocument = null;
+
+			var foldingParser = TypeSystemService.GetFoldingParser (textEditor.MimeType);
+			if (foldingParser != null) {
+				parsedDocument = foldingParser.Parse (textEditor.FileName, text);
+			} else {
+				var normalParser = TypeSystemService.GetParser (textEditor.MimeType);
+				if (normalParser != null) {
+					using (var sr = new StringReader (text))
+						parsedDocument = normalParser.Parse (true, textEditor.FileName, sr, null);
+				}
+			}
+			if (parsedDocument != null) {
+				UpdateFoldings (parsedDocument, true);
+			}
+		}
+
+
+		#region IViewFContent implementation
 
 		event EventHandler IViewContent.ContentNameChanged {
 			add {
@@ -168,16 +369,29 @@ namespace MonoDevelop.Ide.Editor
 		void IViewContent.Load (FileOpenInformation fileOpenInformation)
 		{
 			textEditorImpl.Load (fileOpenInformation);
+			RunFirstTimeFoldUpdate (textEditor.Text);
 		}
 		
 		void IViewContent.Load (string fileName)
 		{
 			textEditorImpl.Load (new FileOpenInformation (fileName));
+			RunFirstTimeFoldUpdate (textEditor.Text);
 		}
 
 		void IViewContent.LoadNew (System.IO.Stream content, string mimeType)
 		{
-			textEditorImpl.LoadNew (content, mimeType);
+			textEditor.MimeType = mimeType;
+			string text = null;
+			if (content != null) {
+				Encoding encoding;
+				bool hadBom;
+				text = TextFileUtility.GetText (content, out encoding, out hadBom);
+				textEditor.Text = text;
+				textEditor.Encoding = encoding;
+				textEditor.UseBOM = hadBom;
+			}
+			RunFirstTimeFoldUpdate (text);
+			textEditorImpl.InformLoadComplete ();
 		}
 
 		void IViewContent.Save (FileSaveInformation fileSaveInformation)
@@ -296,6 +510,29 @@ namespace MonoDevelop.Ide.Editor
 			return textEditorImpl.GetContent (type);
 		}
 
+		public virtual IEnumerable<T> GetContents<T> () where T : class
+		{
+			if (typeof(T) == typeof(TextEditor)) {
+				yield return (T)(object)textEditor;
+				yield break;
+			}
+			var result = this as T;
+			if (result != null) {
+				yield return result;
+			}
+			var ext = textEditorImpl.EditorExtension;
+			while (ext != null) {
+				result = ext as T;
+				if (result != null) {
+					yield return result;
+				}
+				ext = ext.Next;
+			}
+			foreach (var cnt in textEditorImpl.GetContents<T> ()) {
+				yield return cnt;
+			}
+		}
+
 		bool IBaseViewContent.CanReuseView (string fileName)
 		{
 			return textEditorImpl.CanReuseView (fileName);
@@ -336,6 +573,7 @@ namespace MonoDevelop.Ide.Editor
 			DefaultSourceEditorOptions.Instance.Changed -= UpdateTextEditorOptions;
 			RemovePolicyChangeHandler ();
 			RemoveAutoSaveTimer ();
+			RemoveErrorUndelinesResetTimerId ();
 			textEditorImpl.Dispose ();
 		}
 
@@ -521,7 +759,436 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 		}
+
+		[CommandHandler (EditCommands.InsertGuid)]
+		void InsertGuid ()
+		{
+			textEditor.InsertAtCaret (Guid.NewGuid ().ToString ());
+		}
+
+		[CommandUpdateHandler (MessageBubbleCommands.Toggle)]
+		public void OnUpdateToggleErrorTextMarker (CommandInfo info)
+		{
+			var line = textEditor.GetLine (textEditor.CaretLine);
+			if (line == null) {
+				info.Visible = false;
+				return;
+			}
+
+			var marker = (IMessageBubbleLineMarker)textEditor.GetLineMarkers (line).FirstOrDefault (m => m is IMessageBubbleLineMarker);
+			info.Visible = marker != null;
+		}
+
+		[CommandHandler (MessageBubbleCommands.Toggle)]
+		public void OnToggleErrorTextMarker ()
+		{
+			var line = textEditor.GetLine (textEditor.CaretLine);
+			if (line == null)
+				return;
+			var marker = (IMessageBubbleLineMarker)textEditor.GetLineMarkers (line).FirstOrDefault (m => m is IMessageBubbleLineMarker);
+			if (marker != null) {
+				marker.IsVisible = !marker.IsVisible;
+			}
+		}
 		#endregion
 	
+		#region IQuickTaskProvider implementation
+		readonly List<QuickTask> tasks = new List<QuickTask> ();
+
+		public event EventHandler TasksUpdated;
+
+		protected virtual void OnTasksUpdated (EventArgs e)
+		{
+			EventHandler handler = this.TasksUpdated;
+			if (handler != null)
+				handler (this, e);
+		}
+
+		public IEnumerable<QuickTask> QuickTasks {
+			get {
+				return tasks;
+			}
+		}
+
+		void UpdateQuickTasks (ParsedDocument doc)
+		{
+			tasks.Clear ();
+			if (doc != null) {
+				foreach (var cmt in doc.TagComments) {
+					var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
+					tasks.Add (newTask);
+				}
+
+				foreach (var error in doc.Errors) {
+					var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
+					tasks.Add (newTask);
+				}
+			}
+			OnTasksUpdated (EventArgs.Empty);
+		}
+		#endregion
+
+		#region Key bindings
+
+		[CommandHandler (TextEditorCommands.LineEnd)]
+		void OnLineEnd ()
+		{
+			EditActions.MoveCaretToLineEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.LineStart)]
+		void OnLineStart ()
+		{
+			EditActions.MoveCaretToLineStart (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteLeftChar)]
+		void OnDeleteLeftChar ()
+		{
+			EditActions.Backspace (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteRightChar)]
+		void OnDeleteRightChar ()
+		{
+			EditActions.Delete (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.CharLeft)]
+		void OnCharLeft ()
+		{
+			EditActions.MoveCaretLeft (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.CharRight)]
+		void OnCharRight ()
+		{
+			EditActions.MoveCaretRight (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.LineUp)]
+		void OnLineUp ()
+		{
+			EditActions.MoveCaretUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.LineDown)]
+		void OnLineDown ()
+		{
+			EditActions.MoveCaretDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DocumentStart)]
+		void OnDocumentStart ()
+		{
+			EditActions.MoveCaretToDocumentStart (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DocumentEnd)]
+		void OnDocumentEnd ()
+		{
+			EditActions.MoveCaretToDocumentEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.PageUp)]
+		void OnPageUp ()
+		{
+			EditActions.PageUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.PageDown)]
+		void OnPageDown ()
+		{
+			EditActions.PageDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteLine)]
+		void OnDeleteLine ()
+		{
+			EditActions.DeleteCurrentLine (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteToLineEnd)]
+		void OnDeleteToLineEnd ()
+		{
+			EditActions.DeleteCurrentLineToEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ScrollLineUp)]
+		void OnScrollLineUp ()
+		{
+			EditActions.ScrollLineUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ScrollLineDown)]
+		void OnScrollLineDown ()
+		{
+			EditActions.ScrollLineDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ScrollPageUp)]
+		void OnScrollPageUp ()
+		{
+			EditActions.ScrollPageUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ScrollPageDown)]
+		void OnScrollPageDown ()
+		{
+			EditActions.ScrollPageDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.GotoMatchingBrace)]
+		void OnGotoMatchingBrace ()
+		{
+			EditActions.GotoMatchingBrace (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveLeft)]
+		void OnSelectionMoveLeft ()
+		{
+			EditActions.SelectionMoveLeft (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveRight)]
+		void OnSelectionMoveRight ()
+		{
+			EditActions.SelectionMoveRight (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MovePrevWord)]
+		void OnMovePrevWord ()
+		{
+			EditActions.MovePrevWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MoveNextWord)]
+		void OnMoveNextWord ()
+		{
+			EditActions.MoveNextWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMovePrevWord)]
+		void OnSelectionMovePrevWord ()
+		{
+			EditActions.SelectionMovePrevWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveNextWord)]
+		void OnSelectionMoveNextWord ()
+		{
+			EditActions.SelectionMoveNextWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MovePrevSubword)]
+		void OnMovePrevSubword ()
+		{
+			EditActions.MovePrevSubWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MoveNextSubword)]
+		void OnMoveNextSubword ()
+		{
+			EditActions.MoveNextSubWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMovePrevSubword)]
+		void OnSelectionMovePrevSubword ()
+		{
+			EditActions.SelectionMovePrevSubWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveNextSubword)]
+		void OnSelectionMoveNextSubword ()
+		{
+			EditActions.SelectionMoveNextSubWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveUp)]
+		void OnSelectionMoveUp ()
+		{
+			EditActions.SelectionMoveUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveDown)]
+		void OnSelectionMoveDown ()
+		{
+			EditActions.SelectionMoveDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveHome)]
+		void OnSelectionMoveHome ()
+		{
+			EditActions.SelectionMoveLineStart (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveEnd)]
+		void OnSelectionMoveEnd ()
+		{
+			EditActions.SelectionMoveLineEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveToDocumentStart)]
+		void OnSelectionMoveToDocumentStart ()
+		{
+			EditActions.SelectionMoveToDocumentStart (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ExpandSelectionToLine)]
+		void OnExpandSelectionToLine ()
+		{
+			EditActions.ExpandSelectionToLine (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionMoveToDocumentEnd)]
+		void OnSelectionMoveToDocumentEnd ()
+		{
+			EditActions.SelectionMoveToDocumentEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SwitchCaretMode)]
+		void OnSwitchCaretMode ()
+		{
+			EditActions.SwitchCaretMode (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.InsertTab)]
+		void OnInsertTab ()
+		{
+			EditActions.InsertTab (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.RemoveTab)]
+		void OnRemoveTab ()
+		{
+			EditActions.RemoveTab (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.InsertNewLine)]
+		void OnInsertNewLine ()
+		{
+			EditActions.InsertNewLine (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.InsertNewLineAtEnd)]
+		void OnInsertNewLineAtEnd ()
+		{
+			EditActions.InsertNewLineAtEnd (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.InsertNewLinePreserveCaretPosition)]
+		void OnInsertNewLinePreserveCaretPosition ()
+		{
+			EditActions.InsertNewLinePreserveCaretPosition (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.CompleteStatement)]
+		void OnCompleteStatement ()
+		{
+			var doc = IdeApp.Workbench.ActiveDocument;
+			var generator = CodeGenerator.CreateGenerator (doc);
+			if (generator != null) {
+				generator.CompleteStatement (doc);
+			}
+		}
+
+		[CommandHandler (TextEditorCommands.DeletePrevWord)]
+		void OnDeletePrevWord ()
+		{
+			EditActions.DeletePreviousWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteNextWord)]
+		void OnDeleteNextWord ()
+		{
+			EditActions.DeleteNextWord (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeletePrevSubword)]
+		void OnDeletePrevSubword ()
+		{
+			EditActions.DeletePreviousSubword (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DeleteNextSubword)]
+		void OnDeleteNextSubword ()
+		{
+			EditActions.DeleteNextSubword (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionPageDownAction)]
+		void OnSelectionPageDownAction ()
+		{
+			EditActions.SelectionPageDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.SelectionPageUpAction)]
+		void OnSelectionPageUpAction ()
+		{
+			EditActions.SelectionPageUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.PulseCaret)]
+		void OnPulseCaretCommand ()
+		{
+			EditActions.StartCaretPulseAnimation (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.TransposeCharacters)]
+		void TransposeCharacters ()
+		{
+			EditActions.TransposeCharacters (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.DuplicateLine)]
+		void DuplicateLine ()
+		{	
+			EditActions.DuplicateCurrentLine (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.RecenterEditor)]
+		void RecenterEditor ()
+		{
+			EditActions.RecenterEditor (textEditor);
+		}
+
+		[CommandHandler (EditCommands.JoinWithNextLine)]
+		void JoinLines ()
+		{
+			EditActions.JoinLines (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MoveBlockUp)]
+		void OnMoveBlockUp ()
+		{
+			EditActions.MoveBlockUp (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.MoveBlockDown)]
+		void OnMoveBlockDown ()
+		{
+			EditActions.MoveBlockDown (textEditor);
+		}
+
+		[CommandHandler (TextEditorCommands.ToggleBlockSelectionMode)]
+		void OnToggleBlockSelectionMode ()
+		{
+			EditActions.ToggleBlockSelectionMode (textEditor);
+		}
+
+		[CommandHandler (EditCommands.IndentSelection)]
+		void IndentSelection ()
+		{
+			EditActions.IndentSelection (textEditor);
+		}
+
+		[CommandHandler (EditCommands.UnIndentSelection)]
+		void UnIndentSelection ()
+		{
+			EditActions.UnIndentSelection (textEditor);
+		}
+
+		#endregion
+
 	}
 }

@@ -33,8 +33,6 @@ namespace MonoDevelop.SourceEditor
 	public enum SourceEditorCommands
 	{
 		MarkerOperations,
-		PulseCaret,
-		ToggleErrorTextMarker,
 
 		NextIssue,
 		PrevIssue,

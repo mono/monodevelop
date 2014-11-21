@@ -201,6 +201,12 @@ namespace Mono.TextTemplating
             {
                 map[name] = location;
             }
+
+			//keep this alive as long as the app domain is alive
+			public override object InitializeLifetimeService ()
+			{
+				return null;
+			}
 		}
 	}
 }

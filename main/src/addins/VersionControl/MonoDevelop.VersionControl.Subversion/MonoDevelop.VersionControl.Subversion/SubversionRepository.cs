@@ -198,10 +198,7 @@ namespace MonoDevelop.VersionControl.Subversion
 		
 		protected override void OnCommit (ChangeSet changeSet, IProgressMonitor monitor)
 		{
-			List<FilePath> list = new List<FilePath> ();
-			foreach (ChangeSetItem it in changeSet.Items)
-				list.Add (it.LocalPath);
-			Svn.Commit (list.ToArray (), changeSet.GlobalComment, monitor);
+			Svn.Commit (changeSet.Items.Select (it => it.LocalPath).ToArray (), changeSet.GlobalComment, monitor);
 		}
 
 		void CreateDirectory (string[] paths, string message, IProgressMonitor monitor)
@@ -293,10 +290,10 @@ namespace MonoDevelop.VersionControl.Subversion
 		public string Root {
 			get {
 				try {
-					UriBuilder ub = new UriBuilder (Url);
-					ub.Path = string.Empty;
-					ub.Query = string.Empty;
-					return ub.ToString ();
+					return new UriBuilder (Url) {
+						Path = string.Empty,
+						Query = string.Empty
+					}.ToString ();
 				} catch {
 					return string.Empty;
 				}

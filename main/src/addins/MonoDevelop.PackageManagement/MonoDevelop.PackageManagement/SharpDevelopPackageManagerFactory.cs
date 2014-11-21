@@ -80,5 +80,16 @@ namespace ICSharpCode.PackageManagement
 		{
 			return projectSystemFactory.CreateProjectSystem(project);
 		}
+
+		public IPackageManager CreatePackageManager (
+			IPackageRepository sourceRepository,
+			ISolutionPackageRepository solutionPackageRepository)
+		{
+			return new PackageManager (
+				sourceRepository,
+				solutionPackageRepository.PackagePathResolver,
+				solutionPackageRepository.FileSystem,
+				solutionPackageRepository.Repository);
+		}
 	}
 }

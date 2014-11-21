@@ -99,7 +99,7 @@ namespace MonoDevelop.Debugger.Tests
 			case "Mono.Debugger.Soft":
 				runtime = Runtime.SystemAssemblyService.GetTargetRuntimes ()
 					.OfType<MonoTargetRuntime> ()
-					.OrderByDescending(o => o.Version)
+					.OrderByDescending (o => o.Version == "Unknown" ? null : o.Version)//Prefer known version over Unknown
 					.FirstOrDefault ();
 				break;
 			default:
@@ -358,7 +358,7 @@ namespace MonoDevelop.Debugger.Tests
 			Session.SetNextStatement (SourceFile.Name, line, column);
 		}
 
-		public void AddCatchpoint(string exceptionName, bool includeSubclasses)
+		public void AddCatchpoint (string exceptionName, bool includeSubclasses)
 		{
 			Session.Breakpoints.Add (new Catchpoint (exceptionName, includeSubclasses));
 		}
@@ -396,6 +396,15 @@ namespace MonoDevelop.Debugger.Tests
 			var result = val.GetChild (name, ops);
 
 			return result != null ? result.Sync () : null;
+		}
+
+		public static ObjectValue[] GetAllChildrenSync (this ObjectValue val)
+		{
+			var children = val.GetAllChildren ();
+			foreach (var child in children) {
+				child.Sync ();
+			}
+			return children;
 		}
 	}
 }

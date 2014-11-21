@@ -80,6 +80,13 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
+		public void RunAndWait (ProgressMonitorStatusMessage progressMessage, IEnumerable<IPackageAction> actions)
+		{
+			AddInstallActionsToPendingQueue (actions);
+			packageManagementEvents.OnPackageOperationsStarting ();
+			DispatchService.BackgroundDispatchAndWait (() => RunActionsWithProgressMonitor (progressMessage, actions.ToList ()));
+		}
+
 		void RunActionsWithProgressMonitor (ProgressMonitorStatusMessage progressMessage, IList<IPackageAction> installPackageActions)
 		{
 			using (IProgressMonitor monitor = progressMonitorFactory.CreateProgressMonitor (progressMessage.Status)) {

@@ -121,6 +121,8 @@ namespace MonoDevelop.Ide.FindInFiles
 				foreach (Project project in IdeApp.Workspace.GetAllProjects ()) {
 					monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 					foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+						if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
+							continue;
 						if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.FilePath))
 							continue;
 						if (alreadyVisited.Contains (file.Name))
@@ -163,9 +165,10 @@ namespace MonoDevelop.Ide.FindInFiles
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Looking in project '{0}'", project.Name));
 				var alreadyVisited = new HashSet<string> ();
 				foreach (ProjectFile file in project.Files.Where (f => filterOptions.NameMatches (f.Name) && File.Exists (f.Name))) {
+					if ((file.Flags & ProjectItemFlags.Hidden) == ProjectItemFlags.Hidden)
+						continue;
 					if (!IncludeBinaryFiles && !DesktopService.GetFileIsText (file.Name))
 						continue;
-
 					if (alreadyVisited.Contains (file.Name))
 						continue;
 					alreadyVisited.Add (file.Name);

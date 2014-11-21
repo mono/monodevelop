@@ -94,17 +94,17 @@ namespace MonoDevelop.Ide.Editor.Extension
 		CancellationTokenSource parameterHintingSrc = new CancellationTokenSource ();
 		// When a key is pressed, and before the key is processed by the editor, this method will be invoked.
 		// Return true if the key press should be processed by the editor.
-		public override bool KeyPress (Gdk.Key key, char keyChar, Gdk.ModifierType modifier)
+		public override bool KeyPress (KeyDescriptor descriptor)
 		{
 			bool res;
 			if (currentCompletionContext != null) {
-				if (CompletionWindowManager.PreProcessKeyEvent (key, keyChar, modifier)) {
-					CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
+				if (CompletionWindowManager.PreProcessKeyEvent (descriptor)) {
+					CompletionWindowManager.PostProcessKeyEvent (descriptor);
 					autoHideCompletionWindow = true;
 					// in named parameter case leave the parameter window open.
-					autoHideParameterWindow = keyChar != ':';
+					autoHideParameterWindow = descriptor.KeyChar != ':';
 					if (!autoHideParameterWindow && ParameterInformationWindowManager.IsWindowVisible)
-						ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, key, modifier);
+						ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, descriptor);
 					
 					return false;
 				}
@@ -112,25 +112,25 @@ namespace MonoDevelop.Ide.Editor.Extension
 			}
 			
 			if (ParameterInformationWindowManager.IsWindowVisible) {
-				if (ParameterInformationWindowManager.ProcessKeyEvent (this, CompletionWidget, key, modifier))
+				if (ParameterInformationWindowManager.ProcessKeyEvent (this, CompletionWidget, descriptor))
 					return false;
 				autoHideCompletionWindow = autoHideParameterWindow = false;
 			}
 			
 			//			int oldPos = Editor.CursorPosition;
 			//			int oldLen = Editor.TextLength;
-			res = base.KeyPress (key, keyChar, modifier);
+			res = base.KeyPress (descriptor);
 			
-			CompletionWindowManager.PostProcessKeyEvent (key, keyChar, modifier);
+			CompletionWindowManager.PostProcessKeyEvent (descriptor);
 			
-			var ignoreMods = Gdk.ModifierType.ControlMask | Gdk.ModifierType.MetaMask
-					| Gdk.ModifierType.Mod1Mask | Gdk.ModifierType.SuperMask;
+			var ignoreMods = ModifierKeys.Control | ModifierKeys.Alt
+				| ModifierKeys.Command;
 			// Handle parameter completion
 			if (ParameterInformationWindowManager.IsWindowVisible) {
-				ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, key, modifier);
+				ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, descriptor);
 			}
 
-			if ((modifier & ignoreMods) != 0)
+			if ((descriptor.ModifierKeys & ignoreMods) != 0)
 				return res;
 			
 			// don't complete on block selection
@@ -138,7 +138,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				return res;
 			
 			// Handle code completion
-			if (keyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
+			if (descriptor.KeyChar != '\0' && CompletionWidget != null && !CompletionWindowManager.IsVisible) {
 				currentCompletionContext = CompletionWidget.CurrentCodeCompletionContext;
 				completionTokenSrc.Cancel ();
 				completionTokenSrc = new CancellationTokenSource ();
@@ -169,7 +169,6 @@ namespace MonoDevelop.Ide.Editor.Extension
 			
 			if (/*EnableParameterInsight &&*/ CompletionWidget != null) {
 				CodeCompletionContext ctx = CompletionWidget.CurrentCodeCompletionContext;
-
 				parameterHintingSrc.Cancel ();
 				parameterHintingSrc = new CancellationTokenSource ();
 				var token = parameterHintingSrc.Token;
@@ -320,7 +319,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 			cp = ParameterCompletionCommand (ctx);
 			if (cp != null) {
 				ParameterInformationWindowManager.ShowWindow (this, CompletionWidget, ctx, cp);
-				ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, Gdk.Key.F, Gdk.ModifierType.None);
+				ParameterInformationWindowManager.PostProcessKeyEvent (this, CompletionWidget, KeyDescriptor.FromGtk (Gdk.Key.F, 'f', Gdk.ModifierType.None));
 			}
 		}
 		

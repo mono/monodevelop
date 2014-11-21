@@ -632,6 +632,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			foreach (PanelInstance pi in page.Panels) {
 				if (pi.Widget == null) {
 					pi.Widget = pi.Panel.CreatePanelWidget ();
+					if (pi.Widget == null)
+						continue;
+
 					//HACK: work around bug 469427 - broken themes match on widget names
 					if (pi.Widget.Name.IndexOf ("Panel") > 0)
 						pi.Widget.Name = pi.Widget.Name.Replace ("Panel", "_");
@@ -703,10 +706,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 				}*/
 				Gtk.Notebook nb = new Notebook ();
 				nb.Show ();
-				Gtk.Label blab = new Gtk.Label (GettextCatalog.GetString ("General"));
-				blab.Show ();
-				box.BorderWidth = 9;
-				nb.InsertPage (box, blab, -1);
+				if (box.Children.Length > 0) {
+					Gtk.Label blab = new Gtk.Label (GettextCatalog.GetString ("General"));
+					blab.Show ();
+					box.BorderWidth = 9;
+					nb.InsertPage (box, blab, -1);
+				}
 				foreach (PanelInstance pi in tabPanels) {
 					Gtk.Label lab = new Gtk.Label (GettextCatalog.GetString (pi.Node.Label));
 					lab.Show ();

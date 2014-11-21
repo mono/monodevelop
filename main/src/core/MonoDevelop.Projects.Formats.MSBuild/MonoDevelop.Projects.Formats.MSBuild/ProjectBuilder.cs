@@ -161,12 +161,22 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 
 			foreach (var pc in configurations) {
 				var p = buildEngine.Engine.GetLoadedProject (pc.ProjectFile);
+
+				if (p != null && pc.ProjectFile == file) {
+					// building the project may create new items and/or modify some properties,
+					// so we always need to use a new instance of the project when building
+					buildEngine.Engine.UnloadProject (p);
+					p = null;
+				}
+
+				Environment.CurrentDirectory = Path.GetDirectoryName (file);
+
 				if (p == null) {
 					p = new Project (buildEngine.Engine);
 					var content = buildEngine.GetUnsavedProjectContent (pc.ProjectFile);
-					if (content == null)
+					if (content == null) {
 						p.Load (pc.ProjectFile);
-					else {
+					} else {
 						p.FullFileName = pc.ProjectFile;
 
 						if (HasXbuildFileBug ()) {
@@ -179,6 +189,7 @@ namespace MonoDevelop.Projects.Formats.MSBuild
 						}
 					}
 				}
+
 				p.GlobalProperties.SetProperty ("Configuration", pc.Configuration);
 				if (!string.IsNullOrEmpty (pc.Platform))
 					p.GlobalProperties.SetProperty ("Platform", pc.Platform);

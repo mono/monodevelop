@@ -167,12 +167,14 @@ namespace MonoDevelop.VersionControl
 				LoggingService.LogError ("VersionControl returned {0} items for {1}", infos.Length, localPath);
 				LoggingService.LogError ("The infos were: {0}", string.Join (" ::: ", infos.Select (i => i.LocalPath)));
 			}
-			try {
+			// HACK: This was slowing down the IDE a lot in case in the eventuality of submodules.
+			return infos [0];
+			/*try {
 				return infos.Single ();
 			} catch (InvalidOperationException) {
 				// Workaround for #17216.
 				return infos [0];
-			}
+			}*/
 		}
 		
 		/// <summary>
@@ -372,6 +374,25 @@ namespace MonoDevelop.VersionControl
 			} catch (Exception ex) {
 				LoggingService.LogError ("Version control status query failed", ex);
 
+				//Release all items in current batch
+				foreach (var item in recursiveDirectoryQueryQueueClone)
+					item.ResetEvent.Set ();
+
+				lock (queryLock) {
+					queryRunning = false;
+						
+					fileQueryQueue.Clear ();
+					filesInQueryQueue.Clear ();
+
+					directoriesInQueryQueue.Clear ();
+					directoryQueryQueue.Clear ();
+
+					recursiveDirectoryQueryQueueClone = recursiveDirectoryQueryQueue.ToArray ();
+					recursiveDirectoriesInQueryQueue.Clear ();
+					recursiveDirectoryQueryQueue.Clear ();
+				}
+
+				//Release newly pending
 				foreach (var item in recursiveDirectoryQueryQueueClone)
 					item.ResetEvent.Set ();
 			}
@@ -566,7 +587,7 @@ namespace MonoDevelop.VersionControl
 		
 		protected virtual void OnMoveDirectory (FilePath localSrcPath, FilePath localDestPath, bool force, IProgressMonitor monitor)
 		{
-			Directory.Move (localSrcPath, localDestPath);
+			FileService.SystemDirectoryRename (localSrcPath, localDestPath);
 		}
 		
 		// Deletes a file or directory. This method may be called for versioned and unversioned

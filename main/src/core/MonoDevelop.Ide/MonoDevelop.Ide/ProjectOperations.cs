@@ -658,7 +658,7 @@ namespace MonoDevelop.Ide
 				try {
 					res = AddWorkspaceItem (parentWorkspace, dlg.SelectedFile);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile));
+					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile), ex);
 				}
 			}
 
@@ -712,7 +712,7 @@ namespace MonoDevelop.Ide
 				try {
 					res = AddSolutionItem (parentFolder, dlg.SelectedFile);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex, GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile));
+					MessageService.ShowError (GettextCatalog.GetString ("The file '{0}' could not be loaded.", dlg.SelectedFile), ex);
 				}
 			}
 			
@@ -1538,8 +1538,8 @@ namespace MonoDevelop.Ide
 							}
 						}
 						catch (Exception ex) {
-							MessageService.ShowException (ex, GettextCatalog.GetString (
-								"An error occurred while attempt to move/copy that file. Please check your permissions."));
+							MessageService.ShowError (GettextCatalog.GetString (
+								"An error occurred while attempt to move/copy that file. Please check your permissions."), ex);
 							newFileList.Add (null);
 						}
 					} finally {

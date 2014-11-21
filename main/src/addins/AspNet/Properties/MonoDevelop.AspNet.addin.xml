@@ -1,6 +1,13 @@
 <ExtensionModel>
 	
 	<Runtime>
+		<Import assembly = "System.Web.Helpers.dll" />
+		<Import assembly = "System.Web.Mvc.dll" />
+		<Import assembly = "System.Web.Razor.dll" />
+		<Import assembly = "System.Web.WebPages.Deployment.dll" />
+		<Import assembly = "System.Web.WebPages.dll" />
+		<Import assembly = "System.Web.WebPages.Razor.dll" />
+
 		<Import file = "Html/Schemas/xhtml1-strict.xsd" />
 		<Import file = "Html/Schemas/xhtml1-transitional.xsd" />
 		<Import file = "Html/Schemas/xhtml1-frameset.xsd" />
