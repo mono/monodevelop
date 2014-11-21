@@ -908,26 +908,26 @@ namespace MonoDevelop.SourceEditor
 			widget.TextEditor.VAdjustment.Value = settings.vAdjustment;
 			widget.TextEditor.HAdjustment.Value = settings.hAdjustment;
 			
-			foreach (var f in widget.TextEditor.Document.FoldSegments) {
-				bool isFolded;
-				if (settings.FoldingStates.TryGetValue (f.Offset, out isFolded))
-					f.IsFolded = isFolded;
-			}
+//			foreach (var f in widget.TextEditor.Document.FoldSegments) {
+//				bool isFolded;
+//				if (settings.FoldingStates.TryGetValue (f.Offset, out isFolded))
+//					f.IsFolded = isFolded;
+//			}
 		}
 		
 		internal void StoreSettings ()
 		{
-			var foldingStates = new Dictionary<int, bool> ();
-			foreach (var f in widget.TextEditor.Document.FoldSegments) {
-				foldingStates [f.Offset] = f.IsFolded;
-			}
+//			var foldingStates = new Dictionary<int, bool> ();
+//			foreach (var f in widget.TextEditor.Document.FoldSegments) {
+//				foldingStates [f.Offset] = f.IsFolded;
+//			}
 			if (string.IsNullOrEmpty (ContentName))
 				return;
 			FileSettingsStore.Store (ContentName, new FileSettingsStore.Settings () {
 				CaretOffset = widget.TextEditor.Caret.Offset,
 				vAdjustment = widget.TextEditor.VAdjustment.Value,
-				hAdjustment = widget.TextEditor.HAdjustment.Value,
-				FoldingStates = foldingStates
+				hAdjustment = widget.TextEditor.HAdjustment.Value//,
+//				FoldingStates = foldingStates
 			});
 		}
 
