@@ -340,11 +340,12 @@ namespace MonoDevelop.CodeActions
 			menu.SelectFirst (true);
 
 			menu.Hidden += delegate {
-				document.Editor.SuppressTooltips = false;
+//				document.Editor.SuppressTooltips = false;
 			};
 			menu.ShowAll ();
 			menu.MotionNotifyEvent += (o, args) => {
-				if (args.Event.Window == Editor.Parent.TextArea.GdkWindow) {
+				Gtk.Widget widget = Editor;
+				if (args.Event.Window == widget.GdkWindow) {
 					StartMenuCloseTimer ();
 				} else {
 					CancelMenuCloseTimer ();

@@ -1042,7 +1042,7 @@ namespace MonoDevelop.SourceEditor
 			RunAction (SelectionActions.MovePageUp);
 		}
 		
-		[CommandHandler (MonoDevelop.SourceEditor.SourceEditorCommands.PulseCaret)]
+		[CommandHandler (MonoDevelop.Ide.Commands.TextEditorCommands.PulseCaret)]
 		internal void OnPulseCaretCommand ()
 		{
 			StartCaretPulseAnimation ();

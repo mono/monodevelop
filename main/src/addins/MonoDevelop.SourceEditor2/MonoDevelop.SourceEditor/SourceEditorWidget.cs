@@ -67,8 +67,9 @@ namespace MonoDevelop.SourceEditor
 		
 //		bool shouldShowclassBrowser;
 //		bool canShowClassBrowser;
-		ISourceEditorOptions options {
+		Mono.TextEditor.ITextEditorOptions options {
 			get {
+				
 				return textEditor.Options;
 			}
 		}
