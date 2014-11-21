@@ -2856,7 +2856,6 @@
     <Compile Include="MonoDevelop.Ide.CustomTools\MSBuildCustomTool.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkMacInterop.cs" />
     <Compile Include="MonoDevelop.Components\Control.cs" />
-    <Compile Include="MonoDevelop.Ide.Templates\ProjectConfiguration.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\SolutionTemplate.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateCategory.cs" />
     <Compile Include="MonoDevelop.Ide.Templates\TemplateWizard.cs" />
@@ -2901,6 +2900,7 @@
     <Compile Include="MonoDevelop.Components\Mac\NSViewContainer.cs" />
     <Compile Include="MonoDevelop.Components\Mac\GtkEmbed.cs" />
     <Compile Include="MonoDevelop.Components\Mac\WidgetWithNativeWindow.cs" />
+    <Compile Include="MonoDevelop.Ide.Projects\NewProjectConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile.am" />

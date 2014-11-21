@@ -1,5 +1,5 @@
 ﻿//
-// ProjectConfiguration.cs
+// NewProjectConfiguration.cs
 //
 // Author:
 //       Todd Berman  <tberman@off.net>
@@ -37,13 +37,13 @@ using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
-namespace MonoDevelop.Ide.Templates
+namespace MonoDevelop.Ide.Projects
 {
-	public class ProjectConfiguration
+	public class NewProjectConfiguration
 	{
 		string projectName = String.Empty;
 
-		public ProjectConfiguration ()
+		public NewProjectConfiguration ()
 		{
 			SolutionName = String.Empty;
 			Location = String.Empty;

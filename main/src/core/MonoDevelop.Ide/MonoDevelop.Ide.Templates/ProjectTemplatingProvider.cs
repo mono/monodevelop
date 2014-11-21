@@ -32,6 +32,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 using MonoDevelop.Core;
 
@@ -51,12 +52,12 @@ namespace MonoDevelop.Ide.Templates
 			return template is DefaultSolutionTemplate;
 		}
 
-		public ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, ProjectConfiguration config, SolutionFolder parentFolder)
+		public ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
 			return ProcessTemplate ((DefaultSolutionTemplate)template, config, parentFolder);
 		}
 
-		ProcessedTemplateResult ProcessTemplate (DefaultSolutionTemplate template, ProjectConfiguration config, SolutionFolder parentFolder)
+		ProcessedTemplateResult ProcessTemplate (DefaultSolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
 			IWorkspaceFileObject newItem = null;
 			ProjectCreateInformation cinfo = CreateProjectCreateInformation (config, parentFolder);
@@ -69,7 +70,7 @@ namespace MonoDevelop.Ide.Templates
 			return new DefaultProcessedTemplateResult (template.Template, newItem, cinfo.ProjectBasePath);
 		}
 
-		ProjectCreateInformation CreateProjectCreateInformation (ProjectConfiguration config, SolutionFolder parentFolder)
+		ProjectCreateInformation CreateProjectCreateInformation (NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
 			ProjectCreateInformation cinfo = new ProjectCreateInformation ();
 			cinfo.SolutionPath = FileService.ResolveFullPath (config.SolutionLocation);

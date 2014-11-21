@@ -29,6 +29,7 @@ using System.Linq;
 using Mono.Addins;
 using MonoDevelop.Components;
 using MonoDevelop.Ide.Codons;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects;
 using Xwt.Drawing;
 
@@ -98,7 +99,7 @@ namespace MonoDevelop.Ide.Templates
 			return templateCategorizer.GetCategorizedTemplates ();
 		}
 
-		public ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, ProjectConfiguration config, SolutionFolder parentFolder)
+		public ProcessedTemplateResult ProcessTemplate (SolutionTemplate template, NewProjectConfiguration config, SolutionFolder parentFolder)
 		{
 			IProjectTemplatingProvider provider = GetTemplatingProviderForTemplate (template);
 			if (provider != null) {

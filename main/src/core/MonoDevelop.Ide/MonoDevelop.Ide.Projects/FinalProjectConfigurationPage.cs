@@ -35,11 +35,11 @@ namespace MonoDevelop.Ide.Projects
 	{
 		static readonly string WorkplaceTemplateId = "MonoDevelop.Workspace";
 
-		ProjectConfiguration config;
+		NewProjectConfiguration config;
 		SolutionTemplate template;
 		bool valid;
 
-		public FinalProjectConfigurationPage (ProjectConfiguration config)
+		public FinalProjectConfigurationPage (NewProjectConfiguration config)
 		{
 			this.config = config;
 		}

@@ -24,13 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using MonoDevelop.Ide.Projects;
 
 namespace MonoDevelop.Ide.Templates
 {
 	public interface IVersionControlProjectTemplateHandler
 	{
-		void Run (ProjectConfiguration config);
+		void Run (NewProjectConfiguration config);
 	}
 }
 

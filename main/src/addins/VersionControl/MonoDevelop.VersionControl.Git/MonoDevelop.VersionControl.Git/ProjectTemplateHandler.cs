@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.IO;
+using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core;
 
@@ -32,7 +33,7 @@ namespace MonoDevelop.VersionControl.Git
 {
 	public class ProjectTemplateHandler : IVersionControlProjectTemplateHandler
 	{
-		public void Run (ProjectConfiguration config)
+		public void Run (NewProjectConfiguration config)
 		{
 			if (config.UseGit) {
 				if (config.CreateGitIgnoreFile) {

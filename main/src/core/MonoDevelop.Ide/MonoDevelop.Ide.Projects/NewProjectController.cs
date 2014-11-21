@@ -39,7 +39,6 @@ using Mono.Addins;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Projects;
-using ProjectConfiguration = MonoDevelop.Ide.Templates.ProjectConfiguration;
 using Xwt.Drawing;
 
 namespace MonoDevelop.Ide.Projects
@@ -68,7 +67,7 @@ namespace MonoDevelop.Ide.Projects
 		IVersionControlProjectTemplateHandler versionControlHandler;
 		TemplateImageProvider imageProvider = new TemplateImageProvider ();
 
-		ProjectConfiguration projectConfiguration = new ProjectConfiguration () {
+		NewProjectConfiguration projectConfiguration = new NewProjectConfiguration () {
 			CreateProjectDirectoryInsideSolutionDirectory = true
 		};
 

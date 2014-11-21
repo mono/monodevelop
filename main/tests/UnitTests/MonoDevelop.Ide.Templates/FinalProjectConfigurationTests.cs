@@ -26,6 +26,7 @@
 
 using System.IO;
 using System.Linq;
+using MonoDevelop.Ide.Projects;
 using NUnit.Framework;
 
 namespace MonoDevelop.Ide.Templates
@@ -33,11 +34,11 @@ namespace MonoDevelop.Ide.Templates
 	[TestFixture]
 	public class FinalProjectConfigurationTests
 	{
-		ProjectConfiguration config;
+		NewProjectConfiguration config;
 
 		void CreateProjectConfig (string location)
 		{
-			config = new ProjectConfiguration {
+			config = new NewProjectConfiguration {
 				Location = ToNativePath (location)
 			};
 		}
