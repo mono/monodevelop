@@ -104,9 +104,12 @@ module internal CommandInput =
       - quit the program
     declarations ""filename""
       - get information about top-level declarations in a file with location
-    parse ""<filename>"" [full]
-      - trigger (full) background parse request; should be
+    parse ""<filename>"" [sync]
+      - trigger full background parse request; should be
         followed by content of a file (ended with <<EOF>>)
+        Optional 'sync' is used to force the parse to occur
+        synchronously for testing purposes. Not intended for
+        use in production.
     completion ""<filename>"" <line> <col> [timeout]
       - trigger completion request for the specified location
     helptext <candidate>
