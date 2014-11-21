@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		[Test]
-		public void NewSolutionWithoutAnyProjectsAndDoNotCreateProjectDirectoryInsideSolutionDirectory ()
+		public void NewSolutionWithoutAnyProjectsAndCreateProjectDirectoryInsideSolutionDirectory ()
 		{
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "MySolution";
@@ -220,6 +220,7 @@ namespace MonoDevelop.Ide.Templates
 			CreateProjectConfig (@"d:\projects");
 			config.SolutionName = "a" + Path.GetInvalidPathChars ().First ();
 			config.ProjectName = string.Empty;
+			config.CreateSolution = true;
 			config.IsNewSolutionWithoutProjects = true;
 
 			bool result = config.IsValid ();
@@ -238,6 +239,57 @@ namespace MonoDevelop.Ide.Templates
 			bool result = config.IsValid ();
 
 			Assert.IsFalse (result);
+		}
+
+		[Test]
+		public void CreateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.CreateSolution = true;
+			config.ProjectName = "b";
+
+			config.SolutionName = "a";
+			Assert.IsTrue (config.IsValid ());
+			config.SolutionName = "a&b";
+			Assert.IsFalse (config.IsValid ());
+			config.SolutionName = "a*b";
+			Assert.IsFalse (config.IsValid ());
+			config.SolutionName = "a;b";
+			Assert.IsFalse (config.IsValid ());
+		}
+
+		[Test]
+		public void CreateSolutionWithoutSeparateSolutionDirectoryWhenInvalidSolutionNameCharactersCauseConfigToBeInvalid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.CreateSolution = true;
+			config.CreateProjectDirectoryInsideSolutionDirectory = false;
+			config.ProjectName = "b";
+
+			config.SolutionName = "a";
+			Assert.IsTrue (config.IsValid ());
+			config.SolutionName = "a&b";
+			Assert.IsFalse (config.IsValid ());
+			config.SolutionName = "a*b";
+			Assert.IsFalse (config.IsValid ());
+			config.SolutionName = "a;b";
+			Assert.IsFalse (config.IsValid ());
+		}
+
+		[Test]
+		public void InvalidProjectNameCharactersCauseConfigToBeInvalid ()
+		{
+			CreateProjectConfig (@"d:\projects");
+			config.SolutionName = "a";
+
+			config.ProjectName = "a";
+			Assert.IsTrue (config.IsValid ());
+			config.ProjectName = "a&b";
+			Assert.IsFalse (config.IsValid ());
+			config.ProjectName = "a*b";
+			Assert.IsFalse (config.IsValid ());
+			config.ProjectName = "a;b";
+			Assert.IsFalse (config.IsValid ());
 		}
 	}
 }

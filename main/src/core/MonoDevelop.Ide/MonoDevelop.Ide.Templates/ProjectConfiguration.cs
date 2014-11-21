@@ -141,17 +141,29 @@ namespace MonoDevelop.Ide.Templates
 				return true;
 			}
 
-			if (CreateSeparateSolutionDirectory && !FileService.IsValidPath (solution)) {
+			if (CreateSolution && !IsValidSolutionName (solution)) {
 				return true;
 			} else if (IsNewSolutionWithoutProjects) {
 				return false;
 			}
 
-			string location = ProjectLocation;
+			return !IsValidProjectName (name) || 
+				!FileService.IsValidPath (ProjectLocation);
+		}
 
-			return !FileService.IsValidFileName (name) ||
-				name.IndexOf (' ') >= 0 ||
-				!FileService.IsValidPath (location);
+		static readonly char [] InvalidProjectNameCharacters = "&*;".ToCharArray ();
+
+		public static bool IsValidProjectName (string name)
+		{
+			return IsValidSolutionName (name) &&
+				name.IndexOf (' ') < 0;
+		}
+
+		public static bool IsValidSolutionName (string name)
+		{
+			return FileService.IsValidPath (name) && 
+				FileService.IsValidFileName (name) && 
+				name.IndexOfAny (InvalidProjectNameCharacters) < 0;
 		}
 
 		bool CreateSeparateSolutionDirectory {
