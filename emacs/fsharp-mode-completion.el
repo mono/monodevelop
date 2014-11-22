@@ -116,7 +116,7 @@ since the last request."
   (when (or (/= (buffer-chars-modified-tick) fsharp-ac-last-parsed-ticks)
             force-sync)
     (save-restriction
-      (let ((file (file-truename (buffer-file-name))))
+      (let ((file (fsharp-ac--buffer-truename)))
         (widen)
         (fsharp-ac--log (format "Parsing \"%s\"\n" file))
         (process-send-string
@@ -144,13 +144,20 @@ since the last request."
 ;;; ----------------------------------------------------------------------------
 ;;; File Parsing and loading
 
+(defun fsharp-ac--buffer-truename (&optional buf)
+  "Get the truename of BUF, or the current buffer by default.
+For indirect buffers return the truename of the base buffer."
+  (if (buffer-base-buffer buf)
+      (file-truename (buffer-file-name (buffer-base-buffer buf)))
+    (file-truename (buffer-file-name buf))))
+
 (defun fsharp-ac/load-project (file)
   "Load the specified fsproj FILE as a project."
   (interactive
   ;; Prompt user for an fsproj, searching for a default.
    (let* ((proj (fsharp-mode/find-fsproj buffer-file-name))
-          (relproj (file-relative-name proj (file-name-directory buffer-file-name)))
-          (prompt (if proj (format "Path to project (default %s): " relproj)
+          (relproj (when proj (file-relative-name proj (file-name-directory buffer-file-name))))
+          (prompt (if relproj (format "Path to project (default %s): " relproj)
                     "Path to project: ")))
      (list (read-file-name prompt nil (fsharp-mode/find-fsproj buffer-file-name) t))))
 
@@ -329,7 +336,7 @@ since the last request."
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request
       "completion"
-      (file-truename (buffer-file-name))
+      (fsharp-ac--buffer-truename)
       (line-number-at-pos)
       (current-column)))
 
@@ -403,7 +410,7 @@ since the last request."
 (defun fsharp-ac-can-make-request (&optional quiet)
   "Test whether it is possible to make a request with the compiler binding.
 The current buffer must be an F# file that exists on disk."
-  (let ((file (file-truename (buffer-file-name))))
+  (let ((file (fsharp-ac--buffer-truename)))
     (cond
      ((null file)
       (unless quiet
@@ -443,7 +450,7 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
   (when (fsharp-ac-can-make-request quiet)
      (fsharp-ac-parse-current-buffer)
      (fsharp-ac-send-pos-request "tooltip"
-                                 (file-truename (buffer-file-name))
+                                 (fsharp-ac--buffer-truename)
                                  (line-number-at-pos)
                                  (current-column))))
 
@@ -453,7 +460,7 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
   (when (fsharp-ac-can-make-request)
     (fsharp-ac-parse-current-buffer)
     (fsharp-ac-send-pos-request "finddecl"
-                                (file-truename (buffer-file-name))
+                                (fsharp-ac--buffer-truename)
                                 (line-number-at-pos)
                                 (current-column))))
 
@@ -557,7 +564,7 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
          (ofaces (mapcar (lambda (o) (overlay-get o 'face))
                          (overlays-in beg end)))
          )
-    (unless (or (not (string= (file-truename buffer-file-name)
+    (unless (or (not (string= (fsharp-ac--buffer-truename)
                               (file-truename file)))
              (and (eq face 'fsharp-warning-face)
                  (memq 'fsharp-error-face ofaces)))
