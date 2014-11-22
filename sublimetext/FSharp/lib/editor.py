@@ -2,17 +2,20 @@
 # All rights reserved. Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.)
 
+import sublime
+
+import logging
+
 from FSharp.fsac import server
 from FSharp.fsac.client import FsacClient
 from FSharp.fsac.request import CompilerLocationRequest
 from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.request import ParseRequest
-from FSharp.sublime_plugin_lib import PluginLogger
 from FSharp.lib.project import FSharpFile
 from FSharp.lib.project import FSharpProjectFile
 
 
-_logger = PluginLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class Editor(object):
@@ -40,16 +43,32 @@ class Editor(object):
     def refresh(self, fs_file):
         assert isinstance(fs_file, FSharpFile), 'wrong argument: %s' % fs_file
         # todo: run in alternate thread
+
         if not self.project_file:
             self.project_file = FSharpProjectFile.from_path(fs_file.path)
+            self.set_project()
             return
+
         if not self.project_file.governs(fs_file.path):
             new_project_file = FSharpProjectFile.from_path(fs_file.path)
             self.project_file = new_project_file
-        self.set_project()
+            self.set_project()
+            return
 
     def set_project(self):
         self.fsac.send_request(ProjectRequest(self.project_file.path))
 
     def parse_file(self, fs_file, content):
         self.fsac.send_request(ParseRequest(fs_file.path, content))
+
+    def parse_view(self, view):
+        # todo: what about unsaved files?
+        fs_file = FSharpFile(view)
+        if not fs_file.is_fsharp_file:
+            return
+        self.refresh(fs_file)
+        # todo: very inneficient
+        if fs_file.is_code:
+            content = view.substr(sublime.Region (0, view.size()))
+            self.parse_file(fs_file, content)
+
