@@ -43,8 +43,7 @@ class ProjectTracker (sublime_plugin.EventListener):
         if not FSharpFile(view).is_code_file:
             return
         _logger.debug ('activated file: %s', view.file_name())
-        if view.is_dirty():
-            editor_context.parse_view(view)
+        editor_context.parse_view(view)
 
     def on_idle(self, view):
         editor_context.parse_view(view)

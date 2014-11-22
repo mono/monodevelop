@@ -13,6 +13,8 @@ from FSharp.fsac.request import ProjectRequest
 from FSharp.fsac.request import ParseRequest
 from FSharp.lib.project import FSharpFile
 from FSharp.lib.project import FSharpProjectFile
+from FSharp.lib import response_processor
+from FSharp.lib.response_processor import ON_COMPILER_PATH_AVAILABLE
 
 
 _logger = logging.getLogger(__name__)
@@ -27,6 +29,11 @@ class Editor(object):
         self.compilers_path = None
         self.project_file = None
         self.fsac.send_request (CompilerLocationRequest())
+        response_processor.add_listener(ON_COMPILER_PATH_AVAILABLE,
+                                        self.on_compiler_path_available)
+
+    def on_compiler_path_available(self, data):
+        self.compilers_path = data['response'].compilers_path
 
     @property
     def compiler_path(self):
