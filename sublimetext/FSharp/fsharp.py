@@ -50,13 +50,9 @@ class fs_dot(sublime_plugin.WindowCommand):
         view = self.window.active_view()
         pt = view.sel()[0].b
         view.run_command('insert', {'characters': '.'})
-        editor_context.parse_view(view)
         view.sel().clear()
         view.sel().add(sublime.Region(pt + 1))
-        action = lambda: self.window.run_command('fs_run_fsac', {
-            "cmd": "completion"
-            })
-        sublime.set_timeout(action, 75)
+        self.window.run_command('fs_run_fsac', { "cmd": "completion" })
 
 
 class fs_run_fsac(sublime_plugin.WindowCommand):
@@ -157,8 +153,9 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         except TypeError as e:
             return
         else:
-            editor_context.fsac.send_request(CompletionRequest(fname, row + 1, col))
+            # raise first, because the event listener drains the completions queue
             raise_event(ON_COMPLETIONS_REQUESTED, {})
+            editor_context.fsac.send_request(CompletionRequest(fname, row + 1, col))
             self.window.run_command('auto_complete')
 
     def do_tooltip(self):
@@ -233,33 +230,3 @@ class fs_show_options(sublime_plugin.WindowCommand):
         key = list(sorted(fs_show_options.ITEMS.keys()))[idx]
         cmd = fs_show_options.ITEMS[key]
         self.window.run_command('fs_run_fsac', {'cmd': cmd})
-
-
-class FSharpAutocomplete(sublime_plugin.EventListener):
-    WAIT_ON_COMPLETIONS = False
-
-    @staticmethod
-    def on_completions_requested(data):
-        FSharpAutocomplete.WAIT_ON_COMPLETIONS = True
-
-    def on_query_completions(self, view, prefix, locations):
-        if not FSharpAutocomplete.WAIT_ON_COMPLETIONS:
-            return []
-        try:
-            data = completions_queue.get(block=True, timeout=1)
-            data = json.loads(data.decode('utf-8'))
-            return [[i, i] for i in data['Data']]
-        except:
-            return []
-        finally:
-            FSharpAutocomplete.WAIT_ON_COMPLETIONS = False
-            def drain(q):
-                while True:
-                    try:
-                       d = q.get(block=True, timeout=3)
-                    except:
-                        break
-            sublime.set_timeout_async(lambda: drain(completions_queue), 0)
-
-
-add_listener(ON_COMPLETIONS_REQUESTED, FSharpAutocomplete.on_completions_requested)

@@ -75,6 +75,10 @@ def process_resp(data):
                       )
         return
 
+    if data['Kind'] == 'ERROR':
+        _logger.error(str(data))
+        return
+
     if data['Kind'] == 'tooltip' and data['Data']:
         v = sublime.active_window().active_view()
         word = v.substr(v.word(v.sel()[0].b))
@@ -85,7 +89,8 @@ def process_resp(data):
         return
 
     if data['Kind'] == 'INFO' and data['Data']:
-        print(str(data))
+        _logger.info(str(data))
+        print("FSharp:", data['Data'])
         return
 
     if data['Kind'] == 'finddecl' and data['Data']:
