@@ -96,6 +96,7 @@ namespace MonoDevelop.Ide.Projects
 			this.browseButton.CanFocus = true;
 			this.browseButton.Name = "browseButton";
 			this.browseButton.UseUnderline = true;
+			this.browseButton.BorderWidth = ((uint)(1));
 			this.browseButton.Label = global::Mono.Unix.Catalog.GetString ("Browse...");
 			this.projectConfigurationTable.Add (this.browseButton);
 			global::Gtk.Table.TableChild w3 = ((global::Gtk.Table.TableChild)(this.projectConfigurationTable [this.browseButton]));

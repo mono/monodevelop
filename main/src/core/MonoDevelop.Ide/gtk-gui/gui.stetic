@@ -11557,6 +11557,7 @@ Visual Studio generates a default ID for embedded resources, instead of simply u
                         <property name="Type">TextOnly</property>
                         <property name="Label" translatable="yes">Browse...</property>
                         <property name="UseUnderline">True</property>
+                        <property name="BorderWidth">1</property>
                       </widget>
                       <packing>
                         <property name="TopAttach">3</property>
