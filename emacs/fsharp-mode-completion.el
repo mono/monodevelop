@@ -87,6 +87,8 @@ If set to nil, display in a help buffer instead.")
 (defvar fsharp-ac-verbose nil)
 (defvar fsharp-ac-current-candidate nil)
 (defvar fsharp-ac-current-helptext (make-hash-table :test 'equal))
+(defvar fsharp-ac-last-parsed-ticks 0
+  "BUFFER's tick counter, when the file was parsed.")
 
 (defconst fsharp-ac--log-buf "*fsharp-debug*")
 (defconst fsharp-ac--completion-procname "fsharp-complete")
@@ -508,9 +510,6 @@ prevent usage errors being displayed by FSHARP-DOC-MODE."
 (defstruct fsharp-error start end face text file)
 
 (defvar fsharp-ac-errors)
-
-(defvar fsharp-ac-last-parsed-ticks 0
-  "BUFFER's tick counter, when the file was parsed.")
 
 (defun fsharp-ac--parse-current-file ()
   (when (and (eq major-mode 'fsharp-mode)

@@ -112,9 +112,14 @@ module Emacs =
     | _ -> @"emacs"
 
   let compileOpts =
-    sprintf """--batch --eval "(package-initialize)" --eval "(add-to-list 'load-path \"%s\")" --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile %s"""
+    [ for f in srcFiles do
+        yield sprintf """--batch --eval "(package-initialize)" --eval "(add-to-list 'load-path \"%s\")" --eval "(setq byte-compile-error-on-warn t)" -f batch-byte-compile %s"""
+                ((Path.GetFullPath emacsd).Replace(@"\", @"\\").TrimEnd('\\'))
+                f ]
+
+  let checkDeclareOpts =
+    sprintf """--batch --eval "(package-initialize)" --eval "(when (check-declare-directory \"%s\") (kill-emacs 1)))" """
       ((Path.GetFullPath emacsd).Replace(@"\", @"\\").TrimEnd('\\'))
-      (String.concat " " [ for f in srcFiles do yield f ])
 
   let makeLoad glob =
     [ for f in glob do yield "-l " + f ]
@@ -133,7 +138,8 @@ Target "EmacsTest" (fun _ ->
       // AppVeyor doesn't currently run the integration tests
       if buildServer <> AppVeyor then
         yield Emacs.exe, loadFiles + " --batch -f run-fsharp-integration-tests"
-      yield Emacs.exe, Emacs.compileOpts ]
+      yield! [ for opts in Emacs.compileOpts do yield Emacs.exe, opts ]
+      yield Emacs.exe, Emacs.checkDeclareOpts ]
 
   ProcessTestRunner.RunConsoleTests
     (fun p -> { p with WorkingDir = Emacs.emacsd })
