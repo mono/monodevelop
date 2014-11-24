@@ -244,7 +244,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 		}
 
-		public override string DebugType {
+		public string DebugType {
 			get {
 				return debugType;
 			}
