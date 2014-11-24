@@ -28,6 +28,7 @@ using System;
 using ICSharpCode.PackageManagement;
 using MonoDevelop.Ide;
 using Xwt;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -50,7 +51,7 @@ namespace MonoDevelop.PackageManagement
 				} while (configurePackageSources);
 
 			} catch (Exception ex) {
-				MessageService.ShowException (ex);
+				LoggingService.LogInternalError (ex);
 			}
 		}
 

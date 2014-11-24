@@ -355,7 +355,7 @@ namespace MonoDevelop.Ide.Gui
 					try {
 						FileService.RequestFileEdit (Window.ViewContent.ContentName, true);
 					} catch (Exception ex) {
-						MessageService.ShowException (ex, GettextCatalog.GetString ("The file could not be saved."));
+						MessageService.ShowError (GettextCatalog.GetString ("The file could not be saved."), ex.Message, ex);
 					}
 					
 					FileAttributes attr = FileAttributes.ReadOnly | FileAttributes.Directory | FileAttributes.Offline | FileAttributes.System;
@@ -900,7 +900,7 @@ namespace MonoDevelop.Ide.Gui
 		internal object ExtendedCommandTargetChain {
 			get {
 				// Only go through the text editor chain, if the text editor is selected as subview
-				if (Window != null && Window.ActiveViewContent == Window.ViewContent)
+				if (Window != null && Window.ActiveViewContent.GetContent (typeof(IExtensibleTextEditor)) != null)
 					return editorExtension;
 				return null;
 			}

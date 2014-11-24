@@ -276,7 +276,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				codeBinder.UpdateField (args.Component, args.OldName);
 			}
 			catch (Exception ex) {
-				MessageService.ShowException (ex);
+				LoggingService.LogInternalError (ex);
 			}
 		}
 		

@@ -34,6 +34,7 @@ using System.IO;
 
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace CBinding.Parser
 {
@@ -80,7 +81,8 @@ namespace CBinding.Parser
 						parent = new Namespace (namespaceTag, project, ctags_output);
 					
 				} catch (IOException ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
+					return false;
 				}
 				
 				return true;
@@ -107,7 +109,8 @@ namespace CBinding.Parser
 						parent = new Class (classTag, project, ctags_output);
 					
 				} catch (IOException ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
+					return false;
 				}
 				
 				return true;
@@ -134,7 +137,8 @@ namespace CBinding.Parser
 						parent = new Structure (classTag, project, ctags_output);
 					
 				} catch (IOException ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
+					return false;
 				}
 				
 				return true;
@@ -161,7 +165,8 @@ namespace CBinding.Parser
 						parent = new Enumeration (enumTag, project, ctags_output);
 					
 				} catch (IOException ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
+					return false;
 				}
 				
 				return true;
@@ -188,7 +193,8 @@ namespace CBinding.Parser
 						parent = new Union (unionTag, project, ctags_output);
 					
 				} catch (IOException ex) {
-					MessageService.ShowException (ex);
+					LoggingService.LogInternalError (ex);
+					return false;
 				}
 				
 				return true;
