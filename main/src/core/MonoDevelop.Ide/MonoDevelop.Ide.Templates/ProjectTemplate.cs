@@ -183,12 +183,16 @@ namespace MonoDevelop.Ide.Templates
 
 			XmlElement xmlConfiguration = xmlDocument.DocumentElement ["TemplateConfiguration"];
 
+			// Get legacy category.
+			if (xmlConfiguration ["_Category"] != null) {
+				category = xmlConfiguration ["_Category"].InnerText;
+			}
+
 			if (xmlConfiguration ["Category"] != null) {
 				category = xmlConfiguration ["Category"].InnerText;
-			}
-			else
+			} else if (category == null) {
 				LoggingService.LogWarning (string.Format ("Category missing in project template {0}", codon.Id));
-
+			}
 
 			if (!string.IsNullOrEmpty (overrideLanguage)) {
 				this.languagename = overrideLanguage;

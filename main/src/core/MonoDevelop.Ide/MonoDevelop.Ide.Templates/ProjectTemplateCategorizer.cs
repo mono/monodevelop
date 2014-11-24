@@ -35,11 +35,33 @@ namespace MonoDevelop.Ide.Templates
 	{
 		List<TemplateCategory> categories;
 		TemplateCategory defaultCategory;
+		Dictionary<string, TemplateCategory> mappedCategories = new Dictionary<string, TemplateCategory> ();
 
 		public ProjectTemplateCategorizer (IEnumerable<TemplateCategory> categories)
 		{
 			this.categories = categories.Select (category => category.Clone ()).ToList ();
+			PopulateMappedCategories ();
 			defaultCategory = GetDefaultCategory ();
+		}
+
+		void PopulateMappedCategories ()
+		{
+			foreach (TemplateCategory topLevelCategory in categories) {
+				foreach (TemplateCategory secondLevelCategory in topLevelCategory.Categories) {
+					foreach (TemplateCategory thirdLevelCategory in secondLevelCategory.Categories) {
+						if (!String.IsNullOrEmpty (thirdLevelCategory.MappedCategories)) {
+							AddMappedCategory (thirdLevelCategory);
+						}
+					}
+				}
+			}
+		}
+
+		void AddMappedCategory (TemplateCategory category)
+		{
+			foreach (string mappedCategory in category.MappedCategories.Split (new [] { ';' }, StringSplitOptions.RemoveEmptyEntries)) {
+				mappedCategories.Add (mappedCategory, category);
+			}
 		}
 
 		TemplateCategory GetDefaultCategory ()
@@ -89,10 +111,14 @@ namespace MonoDevelop.Ide.Templates
 			return null;
 		}
 
-		static TemplateCategory GetCategory (SolutionTemplate template, IEnumerable<TemplateCategory> categories)
+		TemplateCategory GetCategory (SolutionTemplate template, IEnumerable<TemplateCategory> currentCategories)
 		{
 			TemplateCategory match = null;
-			IEnumerable<TemplateCategory> currentCategories = categories;
+
+			match = GetMappedCategory (template);
+			if (match != null) {
+				return match;
+			}
 
 			var path = new TemplateCategoryPath (template.Category);
 			foreach (string part in path.GetParts ()) {
@@ -106,6 +132,15 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			return match;
+		}
+
+		TemplateCategory GetMappedCategory (SolutionTemplate template)
+		{
+			TemplateCategory category = null;
+			if (mappedCategories.TryGetValue (template.Category, out category)) {
+				return category;
+			}
+			return null;
 		}
 
 		void LogUsingDefaultCategory (SolutionTemplate template)

@@ -34,18 +34,22 @@ namespace MonoDevelop.Ide.Codons
 	[ExtensionNode (Description="A template category.")]
 	internal class TemplateCategoryCodon : ExtensionNode
 	{
-		[NodeAttribute ("name", "Name of the template.", Localizable=true)]
+		[NodeAttribute ("name", "Name of the category.", Localizable=true)]
 		string name;
 
-		[NodeAttribute("icon", "Icon for the template.")]
+		[NodeAttribute("icon", "Icon for the category.")]
 		string icon;
 
 		[NodeAttribute ("default", "Category is the default for templates.")]
 		string isDefault;
 
+		[NodeAttribute ("mappedCategories", "Legacy categories that will be used for mapping templates.")]
+		string mappedCategories;
+
 		public TemplateCategory ToTemplateCategory ()
 		{
 			var category = new TemplateCategory (Id, name, icon);
+			category.MappedCategories = mappedCategories;
 			category.IsDefault = IsDefaultCategory ();
 
 			AddChildren (category);

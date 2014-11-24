@@ -423,6 +423,42 @@ namespace MonoDevelop.Ide.Templates
 			Assert.AreEqual (1, categorizedTemplates.Count);
 			Assert.AreEqual (1, appCategory.Categories.Count ());
 		}
+
+		[Test]
+		public void GetCategorizedTemplates_TemplateUsesGoogleGlassLegacyCategory_TemplateIsMappedToNewCategories ()
+		{
+			TemplateCategory topLevelCategory = AddTemplateCategory ("android");
+			TemplateCategory secondLevelCategory = AddTemplateCategory ("app", topLevelCategory);
+			TemplateCategory category = AddTemplateCategory ("general", secondLevelCategory);
+			category.MappedCategories = "C#/Glass";
+			CreateCategorizer ();
+			SolutionTemplate template = AddTemplate ("template-id", "C#/Glass");
+
+			CategorizeTemplates ();
+
+			TemplateCategory appCategory = categorizedTemplates.First ().Categories.First ();
+			TemplateCategory generalCategory = appCategory.Categories.First ();
+			Assert.That (generalCategory.Templates.ToList (), Contains.Item (template));
+		}
+
+		[Test]
+		public void GetCategorizedTemplates_TwoLegacyCategoriesMappedToNewCategory_TemplatesAreMappedToNewCategories ()
+		{
+			TemplateCategory topLevelCategory = AddTemplateCategory ("android");
+			TemplateCategory secondLevelCategory = AddTemplateCategory ("app", topLevelCategory);
+			TemplateCategory category = AddTemplateCategory ("general", secondLevelCategory);
+			category.MappedCategories = "C#/Android;VBNet/Android";
+			CreateCategorizer ();
+			SolutionTemplate csharpTemplate = AddTemplate ("template-id", "C#/Android");
+			SolutionTemplate vbnetTemplate = AddTemplate ("template-id2", "VBNet/Android");
+
+			CategorizeTemplates ();
+
+			TemplateCategory appCategory = categorizedTemplates.First ().Categories.First ();
+			TemplateCategory generalCategory = appCategory.Categories.First ();
+			Assert.That (generalCategory.Templates.ToList (), Contains.Item (csharpTemplate));
+			Assert.That (generalCategory.Templates.ToList (), Contains.Item (vbnetTemplate));
+		}
 	}
 }
 
