@@ -5,6 +5,7 @@
 import sublime
 
 import logging
+import os
 
 from FSharp.fsac import server
 from FSharp.fsac.client import FsacClient
