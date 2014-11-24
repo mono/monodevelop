@@ -91,6 +91,9 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
             self.do_tooltip()
             return
 
+        if cmd == 'run-file':
+            self.do_run_file()
+
     def get_active_file_name(self):
         try:
             fname = self.window.active_view ().file_name ()
@@ -170,6 +173,16 @@ class fs_run_fsac(sublime_plugin.WindowCommand):
         else:
             editor_context.fsac.send_request(TooltipRequest(fname, row + 1, col))
 
+    def do_run_file(self):
+        try:
+            fname = self.window.active_view().file_name()
+        except AttributeError:
+            return
+        else:
+            self.window.run_command('fs_run_interpreter', {
+                'fname': fname
+                })
+
 
 class fs_go_to_location (sublime_plugin.WindowCommand):
     def run(self, loc):
@@ -217,6 +230,7 @@ class fs_show_options(sublime_plugin.WindowCommand):
     ITEMS = {
         'F#: Show Declarations': 'declarations',
         'F#: Show Tooltip': 'tooltip',
+        'F#: Run File': 'run-file',
     }
 
     def run(self):
@@ -230,3 +244,12 @@ class fs_show_options(sublime_plugin.WindowCommand):
         key = list(sorted(fs_show_options.ITEMS.keys()))[idx]
         cmd = fs_show_options.ITEMS[key]
         self.window.run_command('fs_run_fsac', {'cmd': cmd})
+
+
+class fs_run_interpreter(sublime_plugin.WindowCommand):
+    def run(self, fname):
+        assert os.path.exists(fname), 'file name `fname` must exist'
+        self.window.run_command('fs_exec', {
+            'shell_cmd': '"{}" "{}"'.format(editor_context.interpreter_path, fname),
+            'working_dir': os.path.dirname(fname)
+            })
