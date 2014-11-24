@@ -51,5 +51,5 @@ class FsacClient(object):
         self.server.stop()
 
     def send_request(self, request):
-        _logger.debug('sending request: %s', request)
+        _logger.debug('sending request: %s', str(request)[:100])
         self.requests.put(request.encode())

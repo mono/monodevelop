@@ -6,12 +6,15 @@ import logging.config
 
 import sublime
 
+from FSharp.lib.editor import Editor
+from FSharp.lib.response_processor import process_resp
+
 
 LOGGER_PATH = os.path.join(os.path.dirname(__file__), 'fsharp.log')
-# CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'log.conf')
+
 
 logger = logging.getLogger('FSharp')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
 
 handler = logging.handlers.RotatingFileHandler(LOGGER_PATH, 'a', 2**13)
 handler.setLevel(logging.DEBUG)
@@ -23,3 +26,10 @@ logger.handlers = []
 logger.addHandler(handler)
 
 logger.debug('top-level logger initialized')
+
+logger.debug('starting editor context...')
+editor_context = Editor(process_resp)
+
+
+def plugin_unloaded():
+    editor_context.fsac.stop()
