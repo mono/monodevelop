@@ -1035,6 +1035,8 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);
 			store.SetValue (it, ValueButtonTextColumn, valueButton);
 			store.SetValue (it, ViewerButtonVisibleColumn, showViewerButton);
+			if (ValidObjectForPreviewIcon (it))
+				store.SetValue (it, PreviewIconColumn, "md-empty");
 
 			if (!val.IsNull && DebuggingService.HasGetConverter<Xwt.Drawing.Color> (val))
 				store.SetValue (it, ColorPreviewColumn, DebuggingService.GetGetConverter<Xwt.Drawing.Color> (val).GetValue (val));
@@ -1391,6 +1393,7 @@ namespace MonoDevelop.Debugger
 
 		enum PreviewButtonIcons
 		{
+			None,
 			Hidden,
 			RowHover,
 			Hover,
@@ -1400,19 +1403,27 @@ namespace MonoDevelop.Debugger
 		PreviewButtonIcons currentIcon;
 		TreeIter currentHoverIter = TreeIter.Zero;
 
+		bool ValidObjectForPreviewIcon (TreeIter it)
+		{
+			var obj = Model.GetValue (it, ObjectColumn) as ObjectValue;
+			if (obj == null) {
+				return false;
+			} else {
+				if (obj.IsPrimitive && obj.TypeName != "string")
+					return false;
+				if (obj.IsNull)
+					return false;
+				if (string.IsNullOrEmpty (obj.TypeName))
+					return false;
+			}
+			return true;
+		}
+
 		void SetPreviewButtonIcon (PreviewButtonIcons icon, TreeIter it = default(TreeIter))
 		{
 			if (!it.Equals (TreeIter.Zero)) {
-				var obj = Model.GetValue (it, ObjectColumn) as ObjectValue;
-				if (obj == null) {
-					icon = PreviewButtonIcons.Hidden;
-				} else {
-					if (obj.IsPrimitive && obj.TypeName != "string")
-						icon = PreviewButtonIcons.Hidden;
-					if (obj.IsNull)
-						icon = PreviewButtonIcons.Hidden;
-					if (string.IsNullOrEmpty (obj.TypeName))
-						icon = PreviewButtonIcons.Hidden;
+				if (!ValidObjectForPreviewIcon (it)) {
+					icon = PreviewButtonIcons.None;
 				}
 			}
 			if (PreviewWindowManager.IsVisible && icon != PreviewButtonIcons.Active) {
@@ -1420,11 +1431,14 @@ namespace MonoDevelop.Debugger
 			}
 			if (currentIcon != icon || !currentHoverIter.Equals (it)) {
 				if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
-					store.SetValue (currentHoverIter, PreviewIconColumn, null);
+					store.SetValue (currentHoverIter, PreviewIconColumn, "md-empty");
 				}
 				switch (icon) {
-				case PreviewButtonIcons.Hidden:
+				case PreviewButtonIcons.None:
 					store.SetValue (it, PreviewIconColumn, null);
+					break;
+				case PreviewButtonIcons.Hidden:
+					store.SetValue (it, PreviewIconColumn, "md-empty");
 					break;
 				case PreviewButtonIcons.RowHover:
 					store.SetValue (it, PreviewIconColumn, "md-preview-normal");
