@@ -2,7 +2,7 @@
 
 (defun wait-for-condition (fun)
   "Wait up to 5 seconds for (fun) to return non-nil"
-  (with-timeout (5)
+  (with-timeout (10)
     (while (not (funcall fun))
       (sleep-for 1))))
 
@@ -24,7 +24,7 @@
 
     ; Close any buffer associated with the loaded project
     (mapc (lambda (buf)
-            (when (member (buffer-file-name buf) fsharp-ac-project-files)
+            (when (gethash (buffer-file-name buf) fsharp-ac--project-files)
               (switch-to-buffer buf)
               (revert-buffer t t)
               (kill-buffer buf)))
@@ -47,26 +47,29 @@
           (wait-for-condition (lambda () (not (process-live-p
                                           inf-fsharp-process)))))))))
 
-(defun load-project-and-wait (file)
-  (fsharp-ac/load-project file)
-  (wait-for-condition (lambda () fsharp-ac-project-files)))
+(defun find-file-and-wait-for-project-load (file)
+  (find-file file)
+  (wait-for-condition (lambda () (and (gethash (fsharp-ac--buffer-truename) fsharp-ac--project-files)
+                                 (/= 0 (hash-table-count fsharp-ac--project-data))))))
 
 (ert-deftest check-project-files ()
   "Check the program files are set correctly"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (find-file "test/Test1/Program.fs")
-     (wait-for-condition (lambda () fsharp-ac-project-files))
-     (should-match "Test1/Program.fs" (s-join "" fsharp-ac-project-files))
-     (should-match "Test1/FileTwo.fs" (s-join "" fsharp-ac-project-files))
-     (should-match "Test1/bin/Debug/Test1.exe" fsharp-ac--output-file))))
+     (find-file-and-wait-for-project-load "test/Test1/Program.fs")
+     (let ((project (gethash (fsharp-ac--buffer-truename) fsharp-ac--project-files))
+           (projectfiles))
+       (maphash (lambda (k _) (add-to-list 'projectfiles k)) fsharp-ac--project-files)
+       (should-match "Test1/Program.fs" (s-join "" projectfiles))
+       (should-match "Test1/FileTwo.fs" (s-join "" projectfiles))
+       (should-match "Test1/bin/Debug/Test1.exe"
+                     (gethash "Output" (gethash project fsharp-ac--project-data)))))))
 
 (ert-deftest check-completion ()
   "Check completion-at-point works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (find-file "test/Test1/Program.fs")
-     (load-project-and-wait "Test1.fsproj")
+     (find-file-and-wait-for-project-load "test/Test1/Program.fs")
      (search-forward "X.func")
      (delete-backward-char 2)
      (auto-complete)
@@ -78,13 +81,12 @@
   "Check jump to definition works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (find-file "test/Test1/Program.fs")
-     (load-project-and-wait "Test1.fsproj")
+     (find-file-and-wait-for-project-load "test/Test1/Program.fs")
      (search-forward "X.func")
      (backward-char 2)
      (fsharp-ac-parse-current-buffer t)
      (fsharp-ac/gotodefn-at-point)
-     (wait-for-condition (lambda () (not (eq (point) 88))))
+     (wait-for-condition (lambda () (/= (point) 88)))
      (should= (point) 18))))
 
 (ert-deftest check-tooltip ()
@@ -94,8 +96,7 @@
      (let ((tiptext)
            (fsharp-ac-use-popup t))
        (noflet ((fsharp-ac/show-popup (s) (setq tiptext s)))
-         (find-file "test/Test1/Program.fs")
-         (load-project-and-wait "Test1.fsproj")
+         (find-file-and-wait-for-project-load "test/Test1/Program.fs")
          (search-forward "X.func")
          (backward-char 2)
          (fsharp-ac-parse-current-buffer t)
@@ -108,8 +109,7 @@
   "Check error underlining works"
   (fsharp-mode-wrapper '("Program.fs")
    (lambda ()
-     (find-file "test/Test1/Program.fs")
-     (load-project-and-wait "Test1.fsproj")
+     (find-file-and-wait-for-project-load "test/Test1/Program.fs")
      (search-forward "X.func")
      (delete-backward-char 1)
      (backward-char)
@@ -127,7 +127,7 @@
      (let ((tiptext)
            (fsharp-ac-use-popup t))
        (noflet ((fsharp-ac/show-popup (s) (setq tiptext s)))
-         (find-file "test/Test1/Script.fsx")
+         (find-file-and-wait-for-project-load "test/Test1/Script.fsx")
          (fsharp-ac-parse-current-buffer t)
          (search-forward "XA.fun")
          (fsharp-ac/show-tooltip-at-point)
@@ -148,3 +148,24 @@
      (switch-to-buffer inferior-fsharp-buffer-name)
      (wait-for-condition (lambda () (search-backward "579" nil t)))
      (should-match "579" (buffer-substring-no-properties (point-min) (point-max))))))
+
+(ert-deftest check-multi-project ()
+  "Check that we can get intellisense for multiple projects at once"
+  (fsharp-mode-wrapper '("FileTwo.fs" "Main.fs")
+   (lambda ()
+     (find-file-and-wait-for-project-load "test/Test1/FileTwo.fs")
+     (find-file-and-wait-for-project-load "../Test2/Main.fs")
+
+     (switch-to-buffer "FileTwo.fs")
+     (search-forward "   y")
+     (fsharp-ac-parse-current-buffer t)
+     (fsharp-ac/gotodefn-at-point)
+     (wait-for-condition (lambda () (/= (point) 159)))
+     (should= (point) 137)
+
+     (switch-to-buffer "Main.fs")
+     (search-forward "\" val2")
+     (fsharp-ac-parse-current-buffer t)
+     (fsharp-ac/gotodefn-at-point)
+     (wait-for-condition (lambda () (/= (point) 113)))
+     (should= (point) 24))))

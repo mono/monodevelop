@@ -81,8 +81,10 @@ If set to nil, display in a help buffer instead.")
 (defvar fsharp-ac-debug nil)
 (defvar fsharp-ac-status 'idle)
 (defvar fsharp-ac-completion-process nil)
-(defvar fsharp-ac-project-files nil)
-(defvar fsharp-ac--output-file nil)
+(defvar fsharp-ac--project-data (make-hash-table :test 'equal)
+  "Data returned by fsautocomplete for loaded projects.")
+(defvar fsharp-ac--project-files (make-hash-table :test 'equal)
+  "Reverse mapping from files to the project that contains them.")
 (defvar fsharp-ac-idle-timer nil)
 (defvar fsharp-ac-verbose nil)
 (defvar fsharp-ac-current-candidate nil)
@@ -163,9 +165,8 @@ For indirect buffers return the truename of the base buffer."
                     "Path to project: ")))
      (list (read-file-name prompt nil (fsharp-mode/find-fsproj buffer-file-name) t))))
 
-  (setq fsharp-ac-intellisense-enabled t)
   (when (fsharp-ac--valid-project-p file)
-    (fsharp-ac--reset)
+    (setq fsharp-ac-intellisense-enabled t)
     (when (not (fsharp-ac--process-live-p))
       (fsharp-ac/start-process))
     ;; Load given project.
@@ -201,14 +202,18 @@ For indirect buffers return the truename of the base buffer."
                        (downcase (file-name-extension file)))))
 
 (defun fsharp-ac--in-project-p (file)
-  (member file fsharp-ac-project-files))
+  (gethash file fsharp-ac--project-files))
 
 (defun fsharp-ac--reset ()
-  (setq fsharp-ac-project-files nil
-        fsharp-ac--output-file nil
-        fsharp-ac-status 'idle
+  (when fsharp-ac-idle-timer
+    (cancel-timer fsharp-ac-idle-timer))
+  (setq fsharp-ac-status 'idle
+        fsharp-ac-idle-timer nil
+        fsharp-ac-completion-process nil
         fsharp-ac-current-candidate nil)
-  (clrhash fsharp-ac-current-helptext)
+  (-each (list fsharp-ac-current-helptext
+               fsharp-ac--project-data
+               fsharp-ac--project-files) 'clrhash)
   (fsharp-ac-clear-errors))
 
 ;;; ----------------------------------------------------------------------------
@@ -231,7 +236,8 @@ For indirect buffers return the truename of the base buffer."
     (log-psendstr fsharp-ac-completion-process "quit\n")
     (sleep-for 1)
     (when (fsharp-ac--process-live-p)
-      (kill-process fsharp-ac-completion-process))))
+      (kill-process fsharp-ac-completion-process)))
+  (fsharp-ac--reset))
 
 (defun fsharp-ac/start-process ()
   "Launch the F# completion process in the background."
@@ -243,6 +249,7 @@ For indirect buffers return the truename of the base buffer."
 
     (condition-case err
         (progn
+          (fsharp-ac--reset)
           (setq fsharp-ac-completion-process (fsharp-ac--configure-proc))
           (fsharp-ac--reset-timer))
       (error
@@ -261,12 +268,7 @@ For indirect buffers return the truename of the base buffer."
                 (setq fsharp-ac-last-parsed-ticks 0)
                 (fsharp-ac-clear-errors))))
           (buffer-list))
-    (setq fsharp-ac-status 'idle
-          fsharp-ac-completion-process nil
-          fsharp-ac-project-files nil
-          fsharp-ac--output-file nil
-          fsharp-ac-idle-timer nil
-          fsharp-ac-verbose nil)))
+    (fsharp-ac--reset)))
 
 (defun fsharp-ac--configure-proc ()
   (let ((fsac (car (last fsharp-ac-complete-command))))
@@ -284,9 +286,6 @@ For indirect buffers return the truename of the base buffer."
           (set-process-coding-system proc 'utf-8-auto)
           (set-process-filter proc 'fsharp-ac-filter-output)
           (set-process-query-on-exit-flag proc nil)
-          (setq fsharp-ac-status 'idle
-                fsharp-ac--output-file nil
-                fsharp-ac-project-files nil)
           (with-current-buffer (process-buffer proc)
             (delete-region (point-min) (point-max)))
           (add-to-list 'ac-modes 'fsharp-mode)
@@ -758,11 +757,20 @@ display a short summary in the minibuffer."
         (princ str)))))
 
 (defun fsharp-ac-handle-project (data)
-  (let ((files (gethash "Files" data))
-        (output (gethash "Output" data)))
-    (setq fsharp-ac--output-file (file-truename output))
-    (setq fsharp-ac-project-files (-map 'file-truename files))
-    (fsharp-ac-parse-file (car (last fsharp-ac-project-files)))))
+  (let* ((project (gethash "Project" data))
+         (files (gethash "Files" data))
+         (oldprojdata (gethash project fsharp-ac--project-data)))
+    ;; Remove any files previously associated with this
+    ;; project as if reloading, they may have changed
+    (when oldprojdata
+      (-each (gethash "Files" oldprojdata)
+        (lambda (f) (remhash f fsharp-ac--project-files))))
+
+    (puthash project data fsharp-ac--project-data)
+    (-map (lambda (f) (puthash f project fsharp-ac--project-files)) files)
+
+    (when (not oldprojdata)
+      (fsharp-ac-message-safely "Loaded F# project '%s'" (file-relative-name project)))))
 
 (defun fsharp-ac-handle-process-error (str)
   (unless (s-matches? "Could not get type information" str)

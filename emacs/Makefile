@@ -75,7 +75,7 @@ integration-test : $(ac_exe) packages
 	HOME=$(tmp_d) ;\
 	$(emacs) $(load_files) --batch -f run-fsharp-integration-tests
 
-test-all : unit-test integration-test check-compile
+test-all : unit-test integration-test check-compile check-declares
 
 packages :
 	HOME=$(tmp_d) ;\

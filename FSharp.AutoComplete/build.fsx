@@ -139,7 +139,9 @@ Target "EmacsTest" (fun _ ->
       if buildServer <> AppVeyor then
         yield Emacs.exe, loadFiles + " --batch -f run-fsharp-integration-tests"
       yield! [ for opts in Emacs.compileOpts do yield Emacs.exe, opts ]
-      yield Emacs.exe, Emacs.checkDeclareOpts ]
+      // AppVeyor also fails to run check-declare-directory
+      if buildServer <> AppVeyor then
+        yield Emacs.exe, Emacs.checkDeclareOpts ]
 
   ProcessTestRunner.RunConsoleTests
     (fun p -> { p with WorkingDir = Emacs.emacsd })
