@@ -1797,13 +1797,14 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("\"b\"", children [1].Value);
 			} else {
 				// when AllowTargetInvokes is disabled, it also disables debugger proxies
-				Assert.AreEqual (6, children.Length);
+				Assert.AreEqual (7, children.Length);
 				Assert.AreEqual ("Comparer", children [0].Name);
 				Assert.AreEqual ("Count", children [1].Name);
 				Assert.AreEqual ("Keys", children [2].Name);
 				Assert.AreEqual ("Values", children [3].Name);
 				Assert.AreEqual ("Static members", children [4].Name);
 				Assert.AreEqual ("Non-public members", children [5].Name);
+				Assert.AreEqual ("IEnumerator", children [6].Name);
 			}
 
 			val = Eval ("stringList");
@@ -1821,11 +1822,12 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("\"ccc\"", children [2].Value);
 			} else {
 				// when AllowTargetInvokes is disabled, it also disables debugger proxies
-				Assert.AreEqual (4, children.Length);
+				Assert.AreEqual (5, children.Length);
 				Assert.AreEqual ("Capacity", children [0].Name);
 				Assert.AreEqual ("Count", children [1].Name);
 				Assert.AreEqual ("Static members", children [2].Name);
 				Assert.AreEqual ("Non-public members", children [3].Name);
+				Assert.AreEqual ("IEnumerator", children [4].Name);
 			}
 
 			val = Eval ("alist");
@@ -1843,7 +1845,7 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("3", children [2].Value);
 			} else {
 				// when AllowTargetInvokes is disabled, it also disables debugger proxies
-				Assert.AreEqual (8, children.Length);
+				Assert.AreEqual (9, children.Length);
 				Assert.AreEqual ("Capacity", children [0].Name);
 				Assert.AreEqual ("Count", children [1].Name);
 				Assert.AreEqual ("IsFixedSize", children [2].Name);
@@ -1852,6 +1854,7 @@ namespace MonoDevelop.Debugger.Tests
 				Assert.AreEqual ("SyncRoot", children [5].Name);
 				Assert.AreEqual ("Static members", children [6].Name);
 				Assert.AreEqual ("Non-public members", children [7].Name);
+				Assert.AreEqual ("IEnumerator", children [8].Name);
 			}
 		}
 
