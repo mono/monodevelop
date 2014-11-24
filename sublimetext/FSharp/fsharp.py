@@ -248,8 +248,18 @@ class fs_show_options(sublime_plugin.WindowCommand):
 
 class fs_run_interpreter(sublime_plugin.WindowCommand):
     def run(self, fname):
-        assert os.path.exists(fname), 'file name `fname` must exist'
+        assert fname, 'bad argument'
+
+        f  = FSharpFile (fname)
+        if not os.path.exists(f.path):
+            _logger.debug('file must be saved first: %s', f.path)
+            return
+
+        if not f.is_script_file:
+            _logger.debug('not a script file: %s', f.path)
+            return
+
         self.window.run_command('fs_exec', {
-            'shell_cmd': '"{}" "{}"'.format(editor_context.interpreter_path, fname),
-            'working_dir': os.path.dirname(fname)
+            'shell_cmd': '"{}" "{}"'.format(editor_context.interpreter_path, f.path),
+            'working_dir': os.path.dirname(f.path)
             })
