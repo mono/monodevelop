@@ -14,6 +14,7 @@ from FSharp.fsac.response import CompilerLocationResponse
 from FSharp.fsac.response import DeclarationsResponse
 from FSharp.fsac.response import ProjectResponse
 from FSharp.fsac.response import ErrorInfo
+from FSharp.sublime_plugin_lib.panels import OutputPanel
 
 
 _logger = logging.getLogger(__name__)
@@ -82,10 +83,9 @@ def process_resp(data):
     if data['Kind'] == 'tooltip' and data['Data']:
         v = sublime.active_window().active_view()
         word = v.substr(v.word(v.sel()[0].b))
-        sublime.active_window().run_command ('fs_show_data', {
-            "data": [[data['Data'],
-            'tooltip ({})'.format(word)]]
-            })
+        panel = OutputPanel('fs.out')
+        panel.write(data['Data'])
+        panel.show()
         return
 
     if data['Kind'] == 'INFO' and data['Data']:
