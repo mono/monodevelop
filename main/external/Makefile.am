@@ -11,10 +11,12 @@ all: Xamarin.Mac.dll
 Xamarin.Mac.dll: /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/i386/full/Xamarin.Mac.dll
 	cp -p $< $@
 	cp -p $<.mdb $@.mdb
+	cp -p /Library/Frameworks/Xamarin.Mac.framework/Versions/Current/lib/libxammac.dylib .
 
 clean:
 	$(MAKE) -C monomac/src clean
 	rm -f Xamarin.Mac.dll*
+	rm -f libxammac.dylib
 endif
 
 install:

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.IO;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.SourceEditor.OptionPanels
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.SourceEditor.OptionPanels
 				style.FileName = fileName;
 				Mono.TextEditor.Highlighting.SyntaxModeService.AddStyle (style);
 			} catch (Exception ex) {
-				MonoDevelop.Ide.MessageService.ShowException (ex);
+				LoggingService.LogInternalError (ex);
 			}
 		}
 	}

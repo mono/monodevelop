@@ -393,7 +393,7 @@ namespace MonoDevelop.Core.Assemblies
 				try {
 					RunInitialization ();
 				} catch (Exception ex) {
-					LoggingService.LogFatalError ("Unhandled exception in SystemAssemblyService background initialisation thread.", ex);
+					LoggingService.LogInternalError ("Unhandled exception in SystemAssemblyService background initialisation thread.", ex);
 				} finally {
 					lock (initEventLock) {
 						initializing = false;

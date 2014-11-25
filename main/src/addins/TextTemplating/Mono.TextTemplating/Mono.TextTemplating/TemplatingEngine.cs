@@ -604,7 +604,7 @@ namespace Mono.TextTemplating
 			var initializeMeth = new CodeMemberMethod {
 				Name = "Initialize",
 				ReturnType = new CodeTypeReference (typeof (void), CodeTypeReferenceOptions.GlobalReference),
-				Attributes = MemberAttributes.Family
+				Attributes = MemberAttributes.Public
 			};
 			if (!settings.IncludePreprocessingHelpers)
 				initializeMeth.Attributes |= MemberAttributes.Override;
