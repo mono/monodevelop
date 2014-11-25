@@ -18,6 +18,7 @@ p.project "Test1.fsproj"
 p.parse "FileTwo.fs"
 p.parse "Script.fsx"
 p.parse "Program.fs"
+Threading.Thread.Sleep(8000)
 p.completion "Script.fsx" 6 15
 p.completion "Program.fs" 8 19
 p.completion "Program.fs" 4 22
