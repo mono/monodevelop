@@ -383,7 +383,7 @@ namespace MonoDevelop.VersionControl.Views
 					if (text == null) {
 						lines = new [] { " Binary files differ" };
 					} else {
-						var changedDocument = new Mono.TextEditor.TextDocument (text);
+						var changedDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (text);
 						if (prevRev == null) {
 							lines = new string [changedDocument.LineCount];
 							for (int i = 0; i < changedDocument.LineCount; i++) {
@@ -410,7 +410,7 @@ namespace MonoDevelop.VersionControl.Views
 								}
 							}
 
-							var originalDocument = new Mono.TextEditor.TextDocument (prevRevisionText);
+							var originalDocument = Mono.TextEditor.TextDocument.CreateImmutableDocument (prevRevisionText);
 							originalDocument.FileName = "Revision " + prevRev;
 							changedDocument.FileName = "Revision " + rev;
 							lines = Mono.TextEditor.Utils.Diff.GetDiffString (originalDocument, changedDocument).Split ('\n');
