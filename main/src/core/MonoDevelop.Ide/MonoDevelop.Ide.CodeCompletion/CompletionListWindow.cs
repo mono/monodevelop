@@ -33,7 +33,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Components;
 using System.Linq;
 using ICSharpCode.NRefactory6.CSharp.Completion;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
@@ -461,8 +460,8 @@ namespace MonoDevelop.Ide.CodeCompletion
 			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, cdItem.CompletionText));
 			*/
 			((CompletionData)item).InsertCompletionText (this, ref ka, descriptor);
-			AddWordToHistory (PartialWord, item.CompletionText);
-			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.CompletionText));
+			AddWordToHistory (PartialWord, item.DisplayText);
+			OnWordCompleted (new CodeCompletionContextEventArgs (CompletionWidget, CodeCompletionContext, item.DisplayText));
 			return true;
 		}
 		

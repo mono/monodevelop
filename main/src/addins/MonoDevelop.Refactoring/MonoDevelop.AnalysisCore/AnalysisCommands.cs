@@ -68,7 +68,7 @@ namespace MonoDevelop.AnalysisCore
 				return;
 			}
 			var fixes = codeActionExtension.GetCurrentFixes ();
-			info.Enabled = fixes.Any ();
+			info.Enabled = !fixes.IsEmpty;
 		}
 		
 		protected override void Run ()

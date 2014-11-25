@@ -43,20 +43,16 @@ namespace MonoDevelop.CSharp.Completion
 
 		public bool GenerateBody { get; set; }
 
-		public CreateOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, ISymbol member) : base (ext, member)
+		public CreateOverrideCompletionData (CSharpCompletionTextEditorExtension ext, int declarationBegin, ITypeSymbol currentType, Microsoft.CodeAnalysis.ISymbol member) : base (ext, member)
 		{
 			this.declarationBegin = declarationBegin;
 			this.GenerateBody = true;
 		}
 
-<<< HEAD:main/src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CreateOverrideCompletionData.cs
 
 		/*
-		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
-=======
-		
+
 		public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, KeyDescriptor descriptor)
->>>>>>> xs6-editor:main/src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/NewOverrideCompletionData.cs
 		{
 			var editor = ext.Editor;
 			var generator = CodeGenerator.CreateGenerator (ext.Editor, ext.DocumentContext);

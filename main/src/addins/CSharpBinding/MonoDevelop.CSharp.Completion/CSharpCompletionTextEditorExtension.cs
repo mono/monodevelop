@@ -70,7 +70,8 @@ namespace MonoDevelop.CSharp.Completion
 		}
 */
 		SyntaxTree unit;
-		static readonly SyntaxTree emptyUnit = new SyntaxTree ();
+		static readonly SyntaxTree emptyUnit = CSharpSyntaxTree.ParseText ("");
+
 		SyntaxTree Unit {
 			get {
 				return unit ?? emptyUnit;
@@ -80,29 +81,12 @@ namespace MonoDevelop.CSharp.Completion
 			}
 		}
 
-
-		public ICompilation UnresolvedFileCompilation {
-			get;
-			set;
-		}
-		
-		public CSharpUnresolvedFile CSharpUnresolvedFile {
-			get;
-			set;
-		}
-		
 		public ParsedDocument ParsedDocument {
 			get {
 				return DocumentContext.ParsedDocument;
 			}
 		}
-		
-		public ICompilation Compilation {
-			get {
-				return DocumentContext.Compilation;
-			}
-		}
-		
+		 
 		public MonoDevelop.Projects.Project Project {
 			get {
 				return DocumentContext.Project;
@@ -153,9 +137,9 @@ namespace MonoDevelop.CSharp.Completion
 			var parsedDocument = DocumentContext.ParsedDocument;
 			if (parsedDocument != null) {
 				this.Unit = parsedDocument.GetAst<SyntaxTree> ();
-				this.UnresolvedFileCompilation = DocumentContext.Compilation;
-				this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
-				Editor.CaretPositionChanged += HandlePositionChanged;
+//					this.UnresolvedFileCompilation = DocumentContext.Compilation;
+//					this.CSharpUnresolvedFile = parsedDocument.ParsedFile as CSharpUnresolvedFile;
+//					Editor.CaretPositionChanged += HandlePositionChanged;
 			}
 			
 			if (addEventHandlersInInitialization)

@@ -1733,7 +1733,7 @@ namespace MonoDevelop.CSharp
 			return (HslColor)AlphaBlend ((Gdk.Color )color, (Gdk.Color)color2, alpha);
 		}
 
-		public string GetArrayIndexerMarkup (ArrayType arrayType)
+		public string GetArrayIndexerMarkup (IArrayTypeSymbol arrayType)
 		{
 			if (arrayType == null)
 				throw new ArgumentNullException ("arrayType");

@@ -146,12 +146,11 @@ namespace MonoDevelop.CSharp.Completion
 //				return sig.GetKeywordTooltip (title, null);
 //			}
 
-
-			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, Gdk.Key closeChar, char keyChar, Gdk.ModifierType modifier)
+			public override void InsertCompletionText (CompletionListWindow window, ref KeyActions ka, MonoDevelop.Ide.Editor.Extension.KeyDescriptor descriptor)
 			{
 				var currentWord = GetCurrentWord (window);
 				var text = CompletionText;
-				if (keyChar != '>')
+				if (descriptor.KeyChar != '>')
 					text += ">";
 				window.CompletionWidget.SetCompletionText (window.CodeCompletionContext, currentWord, text);
 			}

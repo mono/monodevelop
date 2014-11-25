@@ -143,7 +143,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				completionTokenSrc.Cancel ();
 				completionTokenSrc = new CancellationTokenSource ();
 				var token = completionTokenSrc.Token;
-				var task = HandleCodeCompletionAsync (currentCompletionContext, keyChar, token);
+				var task = HandleCodeCompletionAsync (currentCompletionContext, descriptor.KeyChar, token);
 				if (task != null) {
 					task.ContinueWith ((Task<ICompletionDataList> rt, object completionList) => {
 						if (rt.Result == null)
@@ -157,7 +157,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 								currentCompletionContext.TriggerWordLength = triggerWordLength;
 							}
 							if (completionList != null) {
-								if (!CompletionWindowManager.ShowWindow (this, keyChar, rt.Result, CompletionWidget, currentCompletionContext))
+								if (!CompletionWindowManager.ShowWindow (this, descriptor.KeyChar, rt.Result, CompletionWidget, currentCompletionContext))
 									currentCompletionContext = null;
 							} else {
 								currentCompletionContext = null;
@@ -173,7 +173,7 @@ namespace MonoDevelop.Ide.Editor.Extension
 				parameterHintingSrc = new CancellationTokenSource ();
 				var token = parameterHintingSrc.Token;
 
-				var task = HandleParameterCompletionAsync (ctx, keyChar, token);
+				var task = HandleParameterCompletionAsync (ctx, descriptor.KeyChar, token);
 				if (task != null) {
 					task.ContinueWith ((Task<ParameterHintingResult> rt, object completionList) => {
 						if (rt.Result != null) {

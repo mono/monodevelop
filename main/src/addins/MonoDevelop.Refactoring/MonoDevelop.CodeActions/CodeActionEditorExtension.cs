@@ -298,8 +298,8 @@ namespace MonoDevelop.CodeActions
 		{
 			FixMenuDescriptor menu = new FixMenuDescriptor ();
 			var fixMenu = menu;
-			ResolveResult resolveResult;
-			ICSharpCode.NRefactory.CSharp.AstNode node;
+			//ResolveResult resolveResult;
+			//ICSharpCode.NRefactory.CSharp.AstNode node;
 			int items = 0;
 			
 			var possibleNamespaces = MonoDevelop.Refactoring.ResolveCommandHandler.GetPossibleNamespaces (
@@ -332,20 +332,21 @@ namespace MonoDevelop.CodeActions
 					foreach (var t in possibleNamespaces) {
 						string ns = t.Namespace;
 						var reference = t.Reference;
-						var node = possibleNamespaces.Node;
-						menu.Add (new FixMenuEntry (t.GetInsertNamespaceText (Editor.GetTextBetween (node.Span.Start, node.Span.End))),
+						var node2 = possibleNamespaces.Node;
+						menu.Add (new FixMenuEntry (t.GetInsertNamespaceText (Editor.GetTextBetween (node2.Span.Start, node2.Span.End)),
 							delegate {
-								new ResolveCommandHandler.AddImport (Editor, DocumentContext, possibleNamespaces.ResolveResult, ns, reference, false, node).Run ();
-						}));
+								new ResolveCommandHandler.AddImport (Editor, DocumentContext, possibleNamespaces.ResolveResult, ns, reference, false, node2).Run ();
+							})
+						);
 						items++;
 					}
 				}
-
+				/*
 				if (menu.Children.Any () && Fixes != null && !Fixes.IsEmpty) {
 					fixMenu = new FixMenuDescriptor (GettextCatalog.GetString ("Quick Fixes"));
 					menu.Add (fixMenu);
 					items++;
-				}
+				}*/
 			}
 			PopulateFixes (fixMenu, ref items);
 			if (items == 0) {
@@ -418,7 +419,6 @@ namespace MonoDevelop.CodeActions
 			#endif
 			return true;
 		}
-		#if MAC
 
 		TextSpan GetTextSpan (CodeAction action)
 		{
@@ -427,6 +427,8 @@ namespace MonoDevelop.CodeActions
 				return TextSpan.FromBounds (0, 0);
 			return nrc.TextSpan;
 		}
+
+		#if MAC
 
 		AppKit.NSMenu CreateNSMenu (FixMenuDescriptor entrySet)
 		{
@@ -478,7 +480,7 @@ namespace MonoDevelop.CodeActions
 		}
 
 		void PopulateFixes (FixMenuDescriptor menu, ref int items)
-		{
+		{/*
 			int mnemonic = 1;
 			bool gotImportantFix = false, addedSeparator = false;
 			var fixesAdded = new List<string> ();
@@ -544,7 +546,7 @@ namespace MonoDevelop.CodeActions
 
 			foreach (var fix_ in Fixes.CodeDiagnosticActions) {
 				var fix = fix_;
-				var subMenu = new Menu ();
+		//		var subMenu = new Menu ();
 
 				var inspector = fix.Item1.GetCodeDiagnosticDescriptor (null);
 				if (inspector.CanSuppressWithAttribute) {
@@ -596,8 +598,8 @@ namespace MonoDevelop.CodeActions
 				items++;
 			}
 
+		}*/
 		}
-
 		class ContextActionRunner
 		{
 			readonly CodeAction act;

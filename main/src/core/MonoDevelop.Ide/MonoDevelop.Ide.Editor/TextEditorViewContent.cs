@@ -815,12 +815,12 @@ namespace MonoDevelop.Ide.Editor
 			tasks.Clear ();
 			if (doc != null) {
 				foreach (var cmt in doc.TagComments) {
-					var newTask = new QuickTask (cmt.Text, cmt.Region.Begin, Severity.Hint);
+					var newTask = new QuickTask (cmt.Text, textEditor.LocationToOffset (cmt.Region.Begin.Line, cmt.Region.Begin.Column), Severity.Hint);
 					tasks.Add (newTask);
 				}
 
 				foreach (var error in doc.Errors) {
-					var newTask = new QuickTask (error.Message, error.Region.Begin, error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
+					var newTask = new QuickTask (error.Message, textEditor.LocationToOffset (error.Region.Begin.Line, error.Region.Begin.Column), error.ErrorType == ErrorType.Error ? Severity.Error : Severity.Warning);
 					tasks.Add (newTask);
 				}
 			}

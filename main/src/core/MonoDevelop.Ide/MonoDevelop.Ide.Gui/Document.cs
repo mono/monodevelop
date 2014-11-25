@@ -718,12 +718,6 @@ namespace MonoDevelop.Ide.Gui
 				currentWrapper.Loaded -= HandleInLoadChanged;
 				currentWrapper = null;
 			}
-			if (project != null) {
-				var wrapper = TypeSystemService.GetProjectContentWrapper (project);
-				wrapper.Loaded += HandleInLoadChanged;
-				currentWrapper = wrapper;
-				currentWrapper.RequestLoad ();
-			}
 			StartReparseThread ();
 		}
 

@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using ICSharpCode.NRefactory6.CSharp.Completion;
-using ICSharpCode.NRefactory.Completion;
 using MonoDevelop.Ide.Editor.Extension;
 
 namespace MonoDevelop.Ide.CodeCompletion
