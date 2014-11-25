@@ -68,12 +68,12 @@ namespace MonoDevelop.VersionControl
 			get {
 				if (versionInfo == null) {
 					try {
-						versionInfo = repository.GetVersionInfo (path, VersionInfoQueryFlags.IgnoreCache);
+						versionInfo = Repository.GetVersionInfo (Path, VersionInfoQueryFlags.IgnoreCache);
 						if (versionInfo == null)
-							versionInfo = new VersionInfo (path, "", isDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
+							versionInfo = new VersionInfo (Path, "", IsDirectory, VersionStatus.Unversioned, null, VersionStatus.Unversioned, null);
 					} catch (Exception ex) {
 						LoggingService.LogError ("Version control query failed", ex);
-						versionInfo = VersionInfo.CreateUnversioned (path, isDirectory);
+						versionInfo = VersionInfo.CreateUnversioned (Path, IsDirectory);
 					}
 				}
 				return versionInfo;
