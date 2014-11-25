@@ -1440,6 +1440,8 @@ namespace MonoDevelop.Debugger
 				if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
 					store.SetValue (currentHoverIter, PreviewIconColumn, "md-empty");
 				}
+			}
+			if (!it.Equals (TreeIter.Zero) && store.IterIsValid (it)) {
 				switch (icon) {
 				case PreviewButtonIcons.None:
 					store.SetValue (it, PreviewIconColumn, null);
@@ -1459,6 +1461,9 @@ namespace MonoDevelop.Debugger
 				}
 				currentIcon = icon;
 				currentHoverIter = it;
+			} else {
+				currentIcon = PreviewButtonIcons.None;
+				currentHoverIter = TreeIter.Zero;
 			}
 		}
 
