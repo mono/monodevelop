@@ -76,6 +76,7 @@ namespace MonoDevelop.Projects
 	public abstract class DotNetConfigurationParameters : ConfigurationParameters
 	{
 		public abstract bool NoStdLib { get; set; }
+		public virtual string DebugType { get { return ""; } set {} }
 	}
 
 }
