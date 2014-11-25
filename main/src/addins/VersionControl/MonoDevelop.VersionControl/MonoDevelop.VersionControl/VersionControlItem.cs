@@ -33,43 +33,35 @@ namespace MonoDevelop.VersionControl
 {
 	public class VersionControlItem
 	{
-		FilePath path;
-		bool isDirectory;
-		IWorkspaceObject workspaceObject;
-		Repository repository;
 		VersionInfo versionInfo;
 
 		public VersionControlItem (Repository repository, IWorkspaceObject workspaceObject, FilePath path, bool isDirectory, VersionInfo versionInfo)
 		{
-			this.path = path;
-			this.repository = repository;
-			this.workspaceObject = workspaceObject;
-			this.isDirectory = isDirectory;
+			Path = path;
+			Repository = repository;
+			WorkspaceObject = workspaceObject;
+			IsDirectory = isDirectory;
 			this.versionInfo = versionInfo;
 		}
 		
 		public IWorkspaceObject WorkspaceObject {
-			get {
-				return workspaceObject;
-			}
+			get;
+			private set;
 		}
 		
 		public Repository Repository {
-			get {
-				return repository;
-			}
+			get;
+			private set;
 		}
 		
 		public FilePath Path {
-			get {
-				return path;
-			}
+			get;
+			private set;
 		}
 		
 		public bool IsDirectory {
-			get {
-				return isDirectory;
-			}
+			get;
+			private set;
 		}
 		
 		public VersionInfo VersionInfo {

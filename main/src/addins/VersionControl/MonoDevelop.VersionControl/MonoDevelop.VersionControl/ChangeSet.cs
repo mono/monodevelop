@@ -8,7 +8,6 @@ namespace MonoDevelop.VersionControl
 {
 	public class ChangeSet
 	{
-		string globalComment = string.Empty;
 		// Commits should be atomic and small. Therefore having a List instead
 		// of a HashSet should be faster in most cases.
 		List<ChangeSetItem> items = new List<ChangeSetItem> ();
@@ -27,6 +26,7 @@ namespace MonoDevelop.VersionControl
 				basePath = bp + System.IO.Path.DirectorySeparatorChar;
 
 			this.basePath = basePath;
+			GlobalComment = "";
 		}
 		
 		public IDictionary ExtendedProperties {
@@ -38,8 +38,8 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		public string GlobalComment {
-			get { return globalComment; }
-			set { globalComment = value; }
+			get;
+			set;
 		}
 		
 		public bool IsEmpty {

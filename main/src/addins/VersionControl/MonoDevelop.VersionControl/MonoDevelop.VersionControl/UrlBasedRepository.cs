@@ -7,7 +7,6 @@ namespace MonoDevelop.VersionControl
 	public abstract class UrlBasedRepository: Repository, ICustomDataItem
 	{
 		string url;
-		Uri uri;
 		
 		protected UrlBasedRepository ()
 		{
@@ -43,7 +42,7 @@ namespace MonoDevelop.VersionControl
 			if (url == null)
 				return;
 
-			Uri.TryCreate (url, UriKind.Absolute, out uri);
+			Uri.TryCreate (url, UriKind.Absolute, out Uri);
 		}
 		
 		public override void CopyConfigurationFrom (Repository other)
@@ -83,13 +82,14 @@ namespace MonoDevelop.VersionControl
 		}
 		
 		internal Uri Uri {
-			get { return uri; }
+			get;
+			private set;
 		}
 		
 		public virtual string Protocol {
 			get {
-				if (uri != null)
-					return uri.Scheme;
+				if (Uri != null)
+					return Uri.Scheme;
 				else
 					return null;
 			}
