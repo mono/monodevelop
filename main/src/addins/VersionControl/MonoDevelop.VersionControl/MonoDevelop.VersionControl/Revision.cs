@@ -1,4 +1,6 @@
 using System;
+using System.Text;
+using Mono.TextEditor;
 
 namespace MonoDevelop.VersionControl
 {
@@ -69,6 +71,34 @@ namespace MonoDevelop.VersionControl
 		
 		public virtual string ShortName {
 			get { return Name; }
+		}
+
+		internal static string FormatMessage (string msg)
+		{
+			StringBuilder sb = new StringBuilder ();
+			bool wasWs = false;
+			foreach (char ch in msg) {
+				if (ch == ' ' || ch == '\t') {
+					if (!wasWs)
+						sb.Append (' ');
+					wasWs = true;
+					continue;
+				}
+				wasWs = false;
+				sb.Append (ch);
+			}
+
+			var doc = TextDocument.CreateImmutableDocument (sb.ToString());
+			foreach (var line in doc.Lines) {
+				string text = doc.GetTextAt (line.Offset, line.Length).Trim ();
+				int idx = text.IndexOf (':');
+				if (text.StartsWith ("*", StringComparison.Ordinal) && idx >= 0 && idx < text.Length - 1) {
+					int offset = line.EndOffsetIncludingDelimiter;
+					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.TextLength - offset);
+					break;
+				}
+			}
+			return msg.TrimStart (' ', '\t');
 		}
 	}
 	

@@ -494,7 +494,7 @@ namespace MonoDevelop.VersionControl.Views
 			if (string.IsNullOrEmpty (rev.Message)) {
 				renderer.Text = GettextCatalog.GetString ("(No message)");
 			} else {
-				string message = BlameWidget.FormatMessage (rev.Message);
+				string message = Revision.FormatMessage (rev.Message);
 				int idx = message.IndexOf ('\n');
 				if (idx > 0)
 					message = message.Substring (0, idx);
