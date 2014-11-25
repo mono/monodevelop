@@ -49,7 +49,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 			if (label.SizeRequest ().Width > 500) {
 				label.WidthRequest = 500;
 				label.Wrap = true;
-				label.LineWrapMode = Pango.WrapMode.Word;
+				label.LineWrapMode = Pango.WrapMode.WordChar;
 			} else {
 				label.Justify = Gtk.Justification.Center;
 			}
@@ -57,7 +57,7 @@ namespace MonoDevelop.Debugger.PreviewVisualizers
 				label.Justify = Gtk.Justification.Left;
 				var line15 = label.Layout.GetLine (15);
 				if (line15 != null) {
-					label.Text = value.Substring (0, line15.StartIndex).TrimEnd ('\r', '\n') + "\n...";
+					label.Text = value.Substring (0, line15.StartIndex).TrimEnd ('\r', '\n') + "\n…";
 				}
 			}
 			label.Show ();

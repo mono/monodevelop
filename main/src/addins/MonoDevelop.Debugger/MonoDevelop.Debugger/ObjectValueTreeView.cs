@@ -1409,10 +1409,17 @@ namespace MonoDevelop.Debugger
 			if (obj == null) {
 				return false;
 			} else {
-				if (obj.IsPrimitive && obj.TypeName != "string")
-					return false;
 				if (obj.IsNull)
 					return false;
+				if (obj.IsPrimitive) {
+					if (obj.TypeName != "string") {
+						return false;
+					} else {
+						if (obj.Value.Length < DebuggingService.DebuggerSession.EvaluationOptions.EllipsizedLength + 3) {//3=2x"(qoute) and 1x "…"
+							return false;
+						}
+					}
+				}
 				if (string.IsNullOrEmpty (obj.TypeName))
 					return false;
 			}

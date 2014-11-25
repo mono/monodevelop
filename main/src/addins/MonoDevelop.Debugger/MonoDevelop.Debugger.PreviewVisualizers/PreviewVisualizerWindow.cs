@@ -44,6 +44,7 @@ namespace MonoDevelop.Debugger
 		public void Show (ObjectValue val, Gtk.Widget invokingWidget, Rectangle previewButtonArea)
 		{
 			Theme.SetFlatColor (new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0));
+			Theme.Padding = 0;
 			ShowArrow = true;
 			var mainBox = new VBox ();
 			var headerTable = new Table (1, 3, false);
@@ -62,10 +63,15 @@ namespace MonoDevelop.Debugger
 			headerTable.Attach (hb, 0, 1, 0, 1);
 
 			var headerTitle = new Label ();
-			headerTitle.UseMarkup = true;
-			headerTitle.Markup = "<b>" + val.TypeName.Split ('.').LastOrDefault ().Replace ("<", "&lt;").Replace (">", "&gt;") + "</b>";
-
-			headerTable.Attach (headerTitle, 1, 2, 0, 1);
+			headerTitle.ModifyFg (StateType.Normal, new Color (64, 64, 64));
+			var font = headerTitle.Style.FontDescription.Copy ();
+			font.Size = (int)(12 * Pango.Scale.PangoScale);
+			font.Weight = Pango.Weight.Bold;
+			headerTitle.ModifyFont (font);
+			headerTitle.Text = val.TypeName.Split ('.').LastOrDefault ();
+			var vbTitle = new VBox ();
+			vbTitle.PackStart (headerTitle, false, false, 3);
+			headerTable.Attach (vbTitle, 1, 2, 0, 1);
 
 			if (DebuggingService.HasValueVisualizers (val)) {
 				var openButton = new Button ();
@@ -76,10 +82,10 @@ namespace MonoDevelop.Debugger
 					DebuggingService.ShowValueVisualizer (val);
 				};
 				var hbox = new HBox ();
-				hbox.PackEnd (openButton, false, false, 0);
+				hbox.PackEnd (openButton, false, false, 2);
 				headerTable.Attach (hbox, 2, 3, 0, 1);
 			} else {
-				headerTable.Attach (new Label (), 2, 3, 0, 1);
+				headerTable.Attach (new Label (), 2, 3, 0, 1, AttachOptions.Fill | AttachOptions.Expand, AttachOptions.Fill | AttachOptions.Expand, 10, 0);
 			}
 			mainBox.PackStart (headerTable);
 			mainBox.ShowAll ();
@@ -96,7 +102,11 @@ namespace MonoDevelop.Debugger
 			if (widget == null) {
 				widget = new GenericPreviewVisualizer ().GetVisualizerWidget (val);
 			}
-			mainBox.PackStart (widget);
+			var alignment = new Alignment (0, 0, 1, 1);
+			alignment.SetPadding (1, 3, 3, 3);
+			alignment.Show ();
+			alignment.Add (widget);
+			mainBox.PackStart (alignment);
 			ContentBox.Add (mainBox);
 			ShowPopup (invokingWidget, previewButtonArea, PopupPosition.Left);
 		}
