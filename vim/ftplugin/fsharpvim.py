@@ -53,7 +53,7 @@ class FSAutoComplete:
             self.logfile = None
 
         command = ['mono', dir + '/bin/fsautocomplete.exe']
-        opts = { 'stdin': PIPE, 'stdout': PIPE, 'universal_newlines': True }
+        opts = { 'stdin': PIPE, 'stdout': PIPE, 'stderr': PIPE, 'universal_newlines': True }
         try:
             self.p = Popen(command, **opts)
         except WindowsError:
