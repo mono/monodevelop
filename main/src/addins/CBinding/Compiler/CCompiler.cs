@@ -125,7 +125,7 @@ namespace CBinding
 				while ((line = proc.StandardOutput.ReadLine ()) != null)
 					output.WriteLine (line);
 			} catch (Exception ex) {
-				MessageService.ShowException (ex, "You need to have pkg-config installed");
+				MessageService.ShowError ("You need to have pkg-config installed");
 			} finally {
 				proc.Close ();
 				Environment.SetEnvironmentVariable ("PKG_CONFIG_PATH", originalPkgConfigPath);

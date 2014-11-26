@@ -87,8 +87,7 @@ namespace MonoDevelop.CodeIssues
 						AnalyzeFile (slice, slice.GetJobs ().SelectMany (job => job.GetIssueProviders (slice.File)));
 					}
 				} catch (Exception e) {
-					LoggingService.LogError ("Unhandled exception", e);
-					MessageService.ShowException (e);
+					LoggingService.LogInternalError (e);
 				}
 			}
 		}

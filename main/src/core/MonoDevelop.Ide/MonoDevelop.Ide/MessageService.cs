@@ -174,18 +174,52 @@ namespace MonoDevelop.Ide
 		{
 			ShowError ((Window)null, primaryText);
 		}
-		public static void ShowError (Window parent, string primaryText)
+
+		public static void ShowError (string primaryText, Exception ex)
 		{
-			ShowError (parent, primaryText, null);
+			ShowError ((Window)null, primaryText, null, ex);
 		}
+
 		public static void ShowError (string primaryText, string secondaryText)
 		{
-			ShowError ((Window)null, primaryText, secondaryText);
+			ShowError ((Window)null, primaryText, secondaryText, null);
+		}
+
+		public static void ShowError (string primaryText, string secondaryText, Exception ex)
+		{
+			ShowError ((Window)null, primaryText, secondaryText, ex);
+		}
+
+		public static void ShowError (Window parent, string primaryText)
+		{
+			ShowError (parent, primaryText, null, null);
 		}
 
 		public static void ShowError (Window parent, string primaryText, string secondaryText)
 		{
-			GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, AlertButton.Ok);
+			ShowError (parent, primaryText, secondaryText, null);
+		}
+
+		public static void ShowError (Window parent, string primaryText, string secondaryText, Exception ex)
+		{
+			ShowError (parent, primaryText, secondaryText, ex, true, AlertButton.Ok);
+		}
+
+		internal static AlertButton ShowError (Window parent, string primaryText, string secondaryText, Exception ex, bool logError, params AlertButton[] buttons)
+		{
+			if (logError) {
+				string msg = string.IsNullOrEmpty (secondaryText) ? primaryText : primaryText + ". " + secondaryText;
+				LoggingService.LogError (msg, ex);
+			}
+
+			return GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, buttons);
+		}
+
+		internal static void ShowFatalError (string primaryText, string secondaryText, Exception ex)
+		{
+			string msg = string.IsNullOrEmpty (secondaryText) ? primaryText : primaryText + ". " + secondaryText;
+			LoggingService.LogFatalError (msg, ex);
+			GenericAlert (null, MonoDevelop.Ide.Gui.Stock.Error, primaryText, secondaryText, AlertButton.Ok);
 		}
 		#endregion
 		

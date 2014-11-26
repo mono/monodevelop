@@ -632,6 +632,9 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			foreach (PanelInstance pi in page.Panels) {
 				if (pi.Widget == null) {
 					pi.Widget = pi.Panel.CreatePanelWidget ();
+					if (pi.Widget == null)
+						continue;
+
 					//HACK: work around bug 469427 - broken themes match on widget names
 					if (pi.Widget.Name.IndexOf ("Panel") > 0)
 						pi.Widget.Name = pi.Widget.Name.Replace ("Panel", "_");

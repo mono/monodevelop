@@ -173,8 +173,7 @@ namespace MonoDevelop.Ide.Templates
 				} catch (Exception ex) {
 					if (!IdeApp.IsInitialized)
 						throw;
-					LoggingService.LogError (string.Format ("File {0} could not be written.", resourceTemplate.Name), ex);
-					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", resourceTemplate.Name));
+					MessageService.ShowError (GettextCatalog.GetString ("File {0} could not be written.", resourceTemplate.Name), ex);
 				}
 			}
 
@@ -186,8 +185,7 @@ namespace MonoDevelop.Ide.Templates
 				} catch (Exception ex) {
 					if (!IdeApp.IsInitialized)
 						throw;
-					LoggingService.LogError (string.Format ("File {0} could not be written.", fileTemplate.Name), ex);
-					MessageService.ShowException (ex, GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name));
+					MessageService.ShowError (GettextCatalog.GetString ("File {0} could not be written.", fileTemplate.Name), ex);
 				}
 			}
 		}

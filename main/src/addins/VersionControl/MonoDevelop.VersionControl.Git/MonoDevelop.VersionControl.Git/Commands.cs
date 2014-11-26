@@ -31,6 +31,7 @@ using MonoDevelop.Projects;
 using System.Linq;
 using MonoDevelop.Ide.ProgressMonitoring;
 using System.Threading;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -142,7 +143,7 @@ namespace MonoDevelop.VersionControl.Git
 							using (var gm = new GitMonitor (monitor))
 								stashes.Create (gm, comment);
 						} catch (Exception ex) {
-							MessageService.ShowException (ex);
+							MessageService.ShowError (GettextCatalog.GetString ("Stash operation failed"), ex);
 						}
 						finally {
 							monitor.Dispose ();
@@ -170,7 +171,7 @@ namespace MonoDevelop.VersionControl.Git
 						result = stashes.Pop (gm);
 					GitService.ReportStashResult (monitor, result);
 				} catch (Exception ex) {
-					MessageService.ShowException (ex);
+					MessageService.ShowError (GettextCatalog.GetString ("Stash operation failed"), ex);
 				}
 				finally {
 					monitor.Dispose ();

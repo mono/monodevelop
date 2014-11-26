@@ -347,7 +347,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 							doc.Save ();
 						}
 					} catch (Exception ex) {
-						MessageService.ShowException (ex, GettextCatalog.GetString ("Save operation failed."));
+						MessageService.ShowError (GettextCatalog.GetString ("Save operation failed."), ex);
 						return;
 					}
 				}
