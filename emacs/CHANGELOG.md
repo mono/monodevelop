@@ -1,3 +1,16 @@
+## 1.5.0 (2014-11-25)
+
+Incorporate FSharp.AutoComplete version 0.13.3, which has corrected help text for the parse command and uses FCS 0.0.79.
+
+Features:
+  - #235: Support multiple projects simultaneously
+
+Bugfixes:
+  - #824: Emacs should give a better error message if fsautocomplete not found
+  - #808: C-c C-p gives an error if no project file above current file's directory
+  - #790: Can't make fsac requests in indirect buffers
+  - #754: Compiler warnings when installing fsharp-mode from MELPA
+
 ## 1.4.2 (2014-10-30)
 
 Incorporate FSharp.AutoComplete version 0.13.2, which returns more information if the project parsing fails.
