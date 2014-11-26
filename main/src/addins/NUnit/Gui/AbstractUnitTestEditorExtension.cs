@@ -79,21 +79,26 @@ namespace MonoDevelop.NUnit
 			ThreadPool.QueueUserWorkItem (delegate {
 				if (token.IsCancellationRequested)
 					return;
-				var foundTests = GatherUnitTests (token).Result;
-				if (foundTests == null)
-					return;
-				Application.Invoke (delegate {
-					foreach (var oldMarker in currentMarker)
-						Editor.RemoveMarker (oldMarker);
-					currentMarker = new List<IUnitTestMarker> ();
-					foreach (var foundTest in foundTests) {
-						if (token.IsCancellationRequested)
-							return;
-						var unitTestMarker = TextMarkerFactory.CreateUnitTestMarker (Editor, new UnitTestMarkerHostImpl (this), foundTest);
-						currentMarker.Add (unitTestMarker);
-						Editor.AddMarker (foundTest.LineNumber, unitTestMarker);
-					}
-				});
+				GatherUnitTests (token).ContinueWith (task => {
+					var foundTests = task.Result;
+					if (foundTests == null)
+						return;
+					Application.Invoke (delegate {
+						foreach (var oldMarker in currentMarker)
+							Editor.RemoveMarker (oldMarker);
+						currentMarker = new List<IUnitTestMarker> ();
+						foreach (var foundTest in foundTests) {
+							if (token.IsCancellationRequested)
+								return;
+							var unitTestMarker = TextMarkerFactory.CreateUnitTestMarker (Editor, new UnitTestMarkerHostImpl (this), foundTest);
+							currentMarker.Add (unitTestMarker);
+							Editor.AddMarker (foundTest.LineNumber, unitTestMarker);
+						}
+					});
+
+				}, TaskContinuationOptions.ExecuteSynchronously | 
+					TaskContinuationOptions.NotOnCanceled | 
+					TaskContinuationOptions.NotOnFaulted);
 			});
 		}
 
