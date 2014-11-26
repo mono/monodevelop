@@ -243,10 +243,10 @@ namespace MonoDevelop.Debugger
 						layout.GetPixelSize (out w, out h);
 						int xpad = (int)Xpad;
 						cr.RoundedRectangle (
-							cell_area.X + xpad,
-							cell_area.Y + TopBottomPadding,
-							w + (cell_area.Height - 2 * TopBottomPadding),
-							cell_area.Height - TopBottomPadding * 2,
+							cell_area.X + xpad + 0.5,
+							cell_area.Y + TopBottomPadding + 0.5,
+							w + (cell_area.Height - 2 * TopBottomPadding) - 1,
+							cell_area.Height - TopBottomPadding * 2 - 1,
 							(cell_area.Height - (TopBottomPadding * 2)) / 2);
 						cr.LineWidth = 1;
 						cr.SetSourceRGB (233 / 255.0, 242 / 255.0, 252 / 255.0);
