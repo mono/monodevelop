@@ -295,12 +295,16 @@ namespace MonoDevelop.CSharp.ClassOutline
 			var analysisDocument = DocumentContext.AnalysisDocument;
 			if (analysisDocument == null)
 				return;
-			lastCU = analysisDocument.GetSemanticModelAsync ().Result;
-			//limit update rate to 3s
-			if (!refreshingOutline) {
-				refreshingOutline = true;
-				refillOutlineStoreId = GLib.Timeout.Add (3000, RefillOutlineStore);
-			}
+			analysisDocument.GetSemanticModelAsync ().ContinueWith (cu => {
+				lastCU = cu.Result;
+				//limit update rate to 3s
+				if (!refreshingOutline) {
+					refreshingOutline = true;
+					refillOutlineStoreId = GLib.Timeout.Add (3000, RefillOutlineStore);
+				}
+			}, System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously | 
+				System.Threading.Tasks.TaskContinuationOptions.NotOnCanceled | 
+				System.Threading.Tasks.TaskContinuationOptions.NotOnFaulted);
 		}
 
 		bool RefillOutlineStore ()

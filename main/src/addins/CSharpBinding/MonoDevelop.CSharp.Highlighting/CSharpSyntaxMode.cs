@@ -75,20 +75,21 @@ namespace MonoDevelop.CSharp.Highlighting
 				return;
 			var cancellationToken = src.Token;
 			System.Threading.Tasks.Task.Factory.StartNew (delegate {
-				var newResolverTask = analysisDocument.GetSemanticModelAsync (cancellationToken);
-				if (newResolverTask == null)
-					return;
-				var newResolver = newResolverTask.Result;
-				if (newResolver == null)
-					return;
-				if (!cancellationToken.IsCancellationRequested) {
-					Gtk.Application.Invoke (delegate {
-						if (cancellationToken.IsCancellationRequested)
-							return;
-						resolver = newResolver;
-						UpdateSemanticHighlighting ();
-					});
-				}
+				analysisDocument.GetSemanticModelAsync (cancellationToken).ContinueWith (newResolverTask => {
+					var newResolver = newResolverTask.Result;
+					if (newResolver == null)
+						return;
+					if (!cancellationToken.IsCancellationRequested) {
+						Gtk.Application.Invoke (delegate {
+							if (cancellationToken.IsCancellationRequested)
+								return;
+							resolver = newResolver;
+							UpdateSemanticHighlighting ();
+						});
+					}
+				}, System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously | 
+					System.Threading.Tasks.TaskContinuationOptions.NotOnCanceled | 
+					System.Threading.Tasks.TaskContinuationOptions.NotOnFaulted);
 			}, cancellationToken);
 		}
 

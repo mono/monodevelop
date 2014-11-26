@@ -64,24 +64,28 @@ namespace MonoDevelop.CSharp
 			if (newResolverTask == null)
 				return;
 			System.Threading.Tasks.Task.Factory.StartNew (delegate {
-				var newResolver = newResolverTask.Result;
-				if (newResolver == null)
-					return;
-				var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
-				try {
-					visitor.Visit (newResolver.SyntaxTree.GetRoot ());
-				} catch (Exception ex) {
-					LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
-					return;
-				}
-				if (!cancellationToken.IsCancellationRequested) {
-					Gtk.Application.Invoke (delegate {
-						if (cancellationToken.IsCancellationRequested)
-							return;
-						quickTasks = visitor.QuickTasks;
-						OnTasksUpdated (EventArgs.Empty);
-					});
-				}
+				newResolverTask.ContinueWith (task => {
+					var newResolver = task.Result;
+					if (newResolver == null)
+						return;
+					var visitor = new QuickTaskVisitor (newResolver, cancellationToken);
+					try {
+						visitor.Visit (newResolver.SyntaxTree.GetRoot ());
+					} catch (Exception ex) {
+						LoggingService.LogError ("Error while analyzing the file for the semantic highlighting.", ex);
+						return;
+					}
+					if (!cancellationToken.IsCancellationRequested) {
+						Gtk.Application.Invoke (delegate {
+							if (cancellationToken.IsCancellationRequested)
+								return;
+							quickTasks = visitor.QuickTasks;
+							OnTasksUpdated (EventArgs.Empty);
+						});
+					}
+				}, System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously | 
+					System.Threading.Tasks.TaskContinuationOptions.NotOnCanceled | 
+					System.Threading.Tasks.TaskContinuationOptions.NotOnFaulted);
 			});
 		}
 

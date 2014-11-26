@@ -286,6 +286,8 @@ namespace MonoDevelop.CSharp.Completion
 				// list.CloseOnSquareBrackets = completionResult.CloseOnSquareBrackets;
 				if (ctrlSpace)
 					list.AutoCompleteUniqueMatch = true;
+			} catch (TaskCanceledException e) {
+				return null;
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while getting C# recommendations", e); 
 			}
