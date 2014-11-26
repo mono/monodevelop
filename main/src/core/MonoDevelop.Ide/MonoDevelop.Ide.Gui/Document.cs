@@ -789,8 +789,9 @@ namespace MonoDevelop.Ide.Gui
 		{
 			if (analysisDocument == null && Project != null) {
 				analysisDocument = RoslynTypeSystemService.GetDocument (this.Project, this.FileName);
-				if (analysisDocument != null)
+				if (analysisDocument != null) {
 					RoslynTypeSystemService.Workspace.InformDocumentOpen (analysisDocument, Editor);
+				}
 			}
 		}
 
@@ -798,6 +799,7 @@ namespace MonoDevelop.Ide.Gui
 		internal void StartReparseThread ()
 		{
 			lock (reparseLock) {
+				EnsureAnalysisDocumentIsOpen ();
 				if (currentWrapper != null)
 					currentWrapper.EnsureReferencesAreLoaded ();
 
