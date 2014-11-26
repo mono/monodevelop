@@ -119,6 +119,12 @@ namespace MonoDevelop.NUnit
 			}
 		}
 
+		public bool IsComposite {
+			get {
+				return Passed + ErrorsAndFailures + TestsNotRun + Inconclusive > 1;
+			}
+		}
+
 		public int Passed {
 			get;
 			set;
