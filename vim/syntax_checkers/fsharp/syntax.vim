@@ -12,7 +12,7 @@ function! SyntaxCheckers_fsharp_syntax_IsAvailable() dict
 endfunction
 
 function! SyntaxCheckers_fsharp_syntax_GetLocList() dict
-    return fsharpbinding#python#FindErrors()
+    return fsharpbinding#python#CurrentErrors()
 endfunction
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({

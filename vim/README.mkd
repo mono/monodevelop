@@ -40,16 +40,18 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 ###Commands
 
 #####General
-* `:ParseProject` reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
-* `:BuildProject` calls xbuild on the fsproj for the current file (if any).
-* `leader<t>` echoes the type of the expression currently pointed to by the cursor.
+* `:make` Calls xbuild on the fsproj for the current file (if any).
+* `:ParseProject` Reparses all the project files and dependencies (this is done automatically when opening a .fs or .fsi file).
+* `:BuildProject` Calls xbuild on the fsproj for the current file (if any). Can also take a path to the proj file to build.
+* `:RunProject` Runs the project for the current file (if any). 
+* `leader<t>` Echoes the type of the expression currently pointed to by the cursor.
 * `leader<d>` _go to declaration_. Opens a new tab if the declaration is outside of the current file and there isn't already a tab open with the target in the active window.
-* `leader<s>` takes you back from where _go to declaration_ was triggered.
+* `leader<s>` Takes you back from where _go to declaration_ was triggered.
 
 #####FSharp Interactive
-* `:FsiEval` evaluates an fsharp expression in the fsi 
-* `:FsiReset` resets the current fsharp interactive
-* `:FsiRead` displays any lines written by the fsi but not yet output as vim messages 
+* `:FsiEval` Evaluates an fsharp expression in the fsi 
+* `:FsiReset` Resets the current fsharp interactive
+* `:FsiRead` Displays any lines written by the fsi but not yet output as vim messages 
 * `Alt-Enter` Send either the current selection or the current line to the fsharp interactive and echoes the output.
 * `Ctrl-Alt-Enter` Send either the current selection or the current line to the fsharp interactive but does not output the result as vim messages.
 
@@ -57,18 +59,11 @@ Omnicomplete triggers the fsharp autocomplete process. (suggestion: install [sup
 
 > Interactive syntax/type checking requires [syntastic][syntastic]
 
-By default your F# files will be syntax/type checked on every open/save of a
-vim buffer.  In case you prefer your changes to be checked continuously
-*on-the-fly* you can do so with a *autocommand* in your `.vimrc` like this:
+By default your F# files will be syntax/type checked on every open/save of a vim buffer as well as after 500ms of inactivity in Normal mode.  
+In case you would prefer not to have you errors checked continuously add the following to your vimrc:
 
 ~~~.vim
-" set the update interval to your preference
-set updatetime=500
-
-augroup fsharp_au
-  au!
-  au CursorHold *.fs,*.fsi,*.fsx SyntasticCheck
-augroup END
+let g:fsharp_only_check_errors_on_write = 1
 ~~~
 
 ###Settings

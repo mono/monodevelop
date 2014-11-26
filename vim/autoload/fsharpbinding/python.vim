@@ -96,6 +96,7 @@ if first.startswith('Multiple') or first.startswith('type'):
 else:
     vim.command('echo "%s"' % first)
 EOF
+    let b:fsharp_buffer_changed = 0
 endfunction
 
 
@@ -104,28 +105,6 @@ endfunction
 
 " fsautocomplete format
 " {"StartLine":4,"StartLineAlternate":5,"EndLine":4,"EndLineAlternate":5,"StartColumn":0,"EndColumn":4,"Severity":"Error","Message":"The value or constructor 'asdf' is not defined","Subcategory":"typecheck","FileName":"/Users/karlnilsson/code/kjnilsson/fsharp-vim/test.fsx"}
-function! fsharpbinding#python#FindErrors()
-    let result = []
-    let buf = bufnr('%')
-    try
-        let errs = pyeval('fsautocomplete.errors(vim.current.buffer.name, True, vim.current.buffer)')
-        for e in errs
-            call add(result,
-                \{'lnum': e['StartLineAlternate'],
-                \ 'col': e['StartColumn'],
-                \ 'type': e['Severity'][0],
-                \ 'text': e['Message'],
-                \ 'hl': '\%' . e['StartLineAlternate'] . 'l\%>' . e['StartColumn'] .  'c\%<' . (e['EndColumn'] + 1) . 'c',
-                \ 'bufnr': buf,
-                \ 'valid': 1 })
-        endfor
-    catch
-        echohl WarningMsg "failed to parse file"
-    endtry
-    return result
-endfunction
-
-"TODO refactor
 function! fsharpbinding#python#CurrentErrors()
     let result = []
     let buf = bufnr('%')
@@ -179,6 +158,7 @@ fsautocomplete.parse(b.name, True, b)
 vim.command('return %s' % fsautocomplete.complete(b.name, row, col, vim.eval('a:base')))
 EOF
     endif
+    let b:fsharp_buffer_changed = 0
 endfunction
 
 
@@ -224,6 +204,7 @@ function! fsharpbinding#python#OnBufWritePre()
     python << EOF
 fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
 EOF
+    let b:fsharp_buffer_changed = 0
 endfunction
 
 function! fsharpbinding#python#OnInsertLeave()
@@ -246,11 +227,11 @@ function! fsharpbinding#python#OnCursorHold()
 endfunction
 
 function! fsharpbinding#python#OnTextChanged()
+    let b:fsharp_buffer_changed = 1
     "TODO: make an parse_async that writes to the server on a background thread
     python << EOF
 fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
 EOF
-    let b:fsharp_buffer_changed = 1
 endfunction
 
 function! fsharpbinding#python#OnTextChangedI()
