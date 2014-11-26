@@ -50,6 +50,7 @@
     <Import file = "Templates/Android/MonoDroidActivity.xft.xml" />
     <Import file = "Templates/Android/MonoDroidApplication/AboutAssets.txt" />
     <Import file = "Templates/Android/MonoDroidApplication/AboutResources.txt" />
+    <Import file = "Templates/Android/MonoDroidApplication/AndroidManifest.xml" />
     <Import file = "Templates/Android/MonoDroidApplication/MainActivity.fs" />
     <Import file = "Templates/Android/MonoDroidApplication/AssemblyInfo.fs" />
     <Import file = "Templates/Android/MonoDroidApplication/Resource.fs" />
