@@ -1438,7 +1438,9 @@ namespace MonoDevelop.Debugger
 			}
 			if (currentIcon != icon || !currentHoverIter.Equals (it)) {
 				if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
-					store.SetValue (currentHoverIter, PreviewIconColumn, "md-empty");
+					if (ValidObjectForPreviewIcon (currentHoverIter)) {
+						store.SetValue (currentHoverIter, PreviewIconColumn, "md-empty");
+					}
 				}
 			}
 			if (!it.Equals (TreeIter.Zero) && store.IterIsValid (it)) {
