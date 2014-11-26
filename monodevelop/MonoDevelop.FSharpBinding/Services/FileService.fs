@@ -8,6 +8,7 @@ open MonoDevelop.Ide.Gui
 open MonoDevelop.Core
 open MonoDevelop.Ide.TypeSystem
 open FSharp.CompilerBinding
+open ExtCore.Control
 type Version = int
 
 type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Document seq) =

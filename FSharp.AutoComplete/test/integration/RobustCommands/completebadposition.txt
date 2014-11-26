@@ -2,7 +2,7 @@ DATA: project
 <absolute path removed>/test/integration/RobustCommands/Project/FileTwo.fs
 <absolute path removed>/test/integration/RobustCommands/Project/Program.fs
 <<EOF>>
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 <<EOF>>

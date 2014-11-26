@@ -1,2 +1,0 @@
-ERROR: Project file 'Malformed.fsproj' is invalid
-<<EOF>>

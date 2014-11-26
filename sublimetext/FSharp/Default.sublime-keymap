@@ -1,3 +1,4 @@
 [
-	{"keys": ["ctrl+.", "ctrl+."], "command": "fs_show_main_menu"}
+	{"keys": ["ctrl+.", "ctrl+."], "command": "fs_show_options"},
+	{"keys": ["ctrl+.", "ctrl+o"], "command": "show_panel", "args": {"panel": "output.fs.out", "toggle": true}}
 ]

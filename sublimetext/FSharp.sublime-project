@@ -2,17 +2,23 @@
 	"build_systems":
 	[
 		{
-			"name": "FSharp: Debug",
+			"name": "Run",
 			"working_dir": "${project_path}/FSharp",
 			"shell_cmd": "./build.sh",
-			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\FSharp\\bin\\Build.ps1\"" }
-		},
+			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\bin\\Build.ps1\"" },
 
-		{
-			"name": "FSharp: Release",
-			"working_dir": "${project_path}/FSharp",
-			"shell_cmd": "./build.sh --release release",
-			"windows": { "shell_cmd": "powershell -noninteractive -file \"$project_path\\FSharp\\bin\\Build.ps1\" -release -dontupload" }
+			"variants": [
+				{
+					"name": "FSharp: Test (All)",
+					"target": "run_fsharp_tests",
+				},
+
+				{
+					"name": "FSharp: Test (This File Only)",
+					"target": "run_fsharp_tests",
+					"active_file_only": true
+				}
+			]
 		}
 	],
 
@@ -29,14 +35,6 @@
 		{
 			"follow_symlinks": true,
 			"path": "."
-		},
-		{
-			"follow_symlinks": true,
-			"path": "./FSharp"
-		},
-		{
-			"follow_symlinks": true,
-			"path": "./FSharp_Tests"
 		}
 	]
 }

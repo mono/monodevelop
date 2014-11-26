@@ -15,35 +15,48 @@ open MonoDevelop.Ide
 open MonoDevelop.Core
 open MonoDevelop.Projects
 open Microsoft.FSharp.Compiler.SourceCodeServices
-open FSharp.CompilerBinding
+open ExtCore
+open ExtCore.Caching
+open ExtCore.Control
+
+module Option =
+    let tryCast<'a> (o: obj): 'a option = 
+        match o with
+        | null -> None
+        | :? 'a as a -> Some a
+        | _ -> Printf.kprintf System.Diagnostics.Debug.Fail "Cannot cast %O to %O" (o.GetType()) typeof<'a>.Name
+               None
 
 /// Formatting of tool-tip information displayed in F# IntelliSense
 module internal TipFormatter =
 
-  /// A standard memoization function
-  let memoize f =
-      let d = new Collections.Generic.Dictionary<_,_>(HashIdentity.Structural)
-      fun x -> if d.ContainsKey x then d.[x] else let res = f x in d.[x] <- res; res
+  ///lru based memoize
+  let memoize f n =
+      let lru = ref (LruCache.create n)
+      fun x -> match (!lru).TryFind x with
+               | Some entry, cache ->
+                   lru := cache
+                   entry
+               | None, cache ->
+                   let res = f x
+                   lru := cache.Add (x, res)
+                   LoggingService.LogInfo <| sprintf "cache contains %i entries\n%A" (!lru).Count ( (!lru).ToArray () |> Array.map (fst >> Path.GetFileName))
+                   res
 
-  /// Memoize the objects that manage access to XML files.
+  /// Memoize the objects that manage access to XML files, keeping only 20 most used
   // @todo consider if this needs to be a weak table in some way
   let xmlDocProvider =
       memoize (fun x ->
-          try ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x)
-          with exn -> null)
+          try Some (ICSharpCode.NRefactory.Documentation.XmlDocumentationProvider(x))
+          with exn -> None) 20u
 
-  let tryExists s = try if File.Exists s then Some s else None with _ -> None
+  let tryExt file ext = Option.condition File.Exists (Path.ChangeExtension(file,ext))
 
   /// Return the XmlDocumentationProvider for an assembly
   let findXmlDocProviderForAssembly file  =
-      maybe {let! xmlFile =
-                match tryExists (Path.ChangeExtension(file,"xml")) with
-                | Some x -> Some x
-                | None -> tryExists (Path.ChangeExtension(file,"XML"))
-             let docReader = xmlDocProvider xmlFile
-             if docReader = null then return! None
-             else return docReader}
-
+      maybe {let! xmlFile = Option.coalesce (tryExt file "xml") (tryExt file "XML")
+             return! xmlDocProvider xmlFile }
+            
   let findXmlDocProviderForEntity (file, key:string)  =
       maybe {let! docReader = findXmlDocProviderForAssembly file
              let doc = docReader.GetDocumentation key
@@ -157,8 +170,8 @@ module internal TipFormatter =
   /// Format some of the data returned by the F# compiler
   let private buildFormatComment cmt =
     match cmt with
-    | XmlCommentText(s) -> Tooltips.getTooltip Styles.simpleMarkup <| s.Trim()
-    | XmlCommentSignature(file,key) ->
+    | FSharpXmlDoc.Text(s) -> Tooltips.getTooltip Styles.simpleMarkup <| s.Trim()
+    | FSharpXmlDoc.XmlDocFileSignature(file,key) ->
         match findDocForEntity (file, key) with
         | None -> String.Empty
         | Some doc -> Tooltips.getTooltip Styles.simpleMarkup doc
@@ -168,14 +181,14 @@ module internal TipFormatter =
   let private buildFormatElement el =
     let signatureB, commentB = StringBuilder(), StringBuilder()
     match el with
-    | ToolTipElementNone -> ()
-    | ToolTipElement(it, comment) ->
+    | FSharpToolTipElement.None -> ()
+    | FSharpToolTipElement.Single(it, comment) ->
         Debug.WriteLine("DataTipElement: " + it)
         signatureB.Append(GLib.Markup.EscapeText (it)) |> ignore
         let html = buildFormatComment comment
         if not (String.IsNullOrWhiteSpace html) then
             commentB.Append(html) |> ignore
-    | ToolTipElementGroup(items) ->
+    | FSharpToolTipElement.Group(items) ->
         let items, msg =
           if items.Length > 10 then
             (items |> Seq.take 10 |> List.ofSeq), sprintf "   <i>(+%d other overloads)</i>" (items.Length - 10)
@@ -190,7 +203,7 @@ module internal TipFormatter =
                   commentB.AppendLine(html) |> ignore
                   commentB.Append(GLib.Markup.EscapeText "\n")  |> ignore )
         if msg <> null then signatureB.Append(msg) |> ignore
-    | ToolTipElementCompositionError(err) ->
+    | FSharpToolTipElement.CompositionError(err) ->
         signatureB.Append("Composition error: " + GLib.Markup.EscapeText(err)) |> ignore
     signatureB.ToString().Trim(), commentB.ToString().Trim()
 
@@ -199,7 +212,7 @@ module internal TipFormatter =
   // TODO: Use the current projects policy to get line length
   // Document.Project.Policies.Get<TextStylePolicy>(types) or fall back to:
   // MonoDevelop.Projects.Policies.PolicyService.GetDefaultPolicy<TextStylePolicy (types)
-  let formatTip (ToolTipText(list)) =
+  let formatTip (FSharpToolTipText(list)) =
       [ for item in list ->
           let signature, summary = buildFormatElement item
           signature, summary ]
@@ -207,9 +220,9 @@ module internal TipFormatter =
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromComment paramName comment =
     match comment with
-    | XmlCommentText(s) -> Tooltips.getParameterTip Styles.simpleMarkup s paramName
-    // For 'XmlCommentSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
-    | XmlCommentSignature(file,key) ->
+    | FSharpXmlDoc.Text(s) -> Tooltips.getParameterTip Styles.simpleMarkup s paramName
+    // For 'FSharpXmlDoc.XmlDocFileSignature' we can get documentation from 'xml' files, and via MonoDoc on Mono
+    | FSharpXmlDoc.XmlDocFileSignature(file,key) ->
         maybe {let! docReader = findXmlDocProviderForAssembly file
                let doc = docReader.GetDocumentation(key)
                if String.IsNullOrEmpty doc then return! None else
@@ -220,13 +233,13 @@ module internal TipFormatter =
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
   let private extractParamTipFromElement paramName element =
       match element with
-      | ToolTipElementNone -> None
-      | ToolTipElement (it, comment) -> extractParamTipFromComment paramName comment
-      | ToolTipElementGroup items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
-      | ToolTipElementCompositionError err -> None
+      | FSharpToolTipElement.None -> None
+      | FSharpToolTipElement.Single (it, comment) -> extractParamTipFromComment paramName comment
+      | FSharpToolTipElement.Group items -> List.tryPick (snd >> extractParamTipFromComment paramName) items
+      | FSharpToolTipElement.CompositionError err -> None
 
   /// For elements with XML docs, the parameter descriptions are buried in the XML. Fetch it.
-  let extractParamTip paramName (ToolTipText elements) =
+  let extractParamTip paramName (FSharpToolTipText elements) =
       List.tryPick (extractParamTipFromElement paramName) elements
 
 
@@ -243,8 +256,8 @@ module internal MonoDevelop =
         let files = CompilerArguments.getSourceFiles(project.Items) |> Array.ofList
         let fileName = project.FileName.ToString()
         let arguments =
-            maybe {let! projConfig = project.GetConfiguration(config) |> tryCast<DotNetProjectConfiguration>
-                   let! fsconfig = projConfig.CompilationParameters |> tryCast<FSharpCompilerParameters>
+            maybe {let! projConfig = project.GetConfiguration(config) |> Option.tryCast<DotNetProjectConfiguration>
+                   let! fsconfig = projConfig.CompilationParameters |> Option.tryCast<FSharpCompilerParameters>
                    let args = CompilerArguments.generateCompilerOptions(project,
                                                                         fsconfig,
                                                                         None,

@@ -113,7 +113,7 @@
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="FsUnit.NUnit">
-      <HintPath>..\packages\FsUnit.1.2.1.0\Lib\Net40\FsUnit.NUnit.dll</HintPath>
+      <HintPath>..\packages\FsUnit.1.3.0.1\Lib\Net40\FsUnit.NUnit.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
@@ -128,13 +128,14 @@
       <HintPath>..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Compiler.Service">
-      <HintPath>..\packages\FSharp.Compiler.Service.0.0.57\lib\net40\FSharp.Compiler.Service.dll</HintPath>
+      <HintPath>..\packages\FSharp.Compiler.Service.0.0.79\lib\net40\FSharp.Compiler.Service.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestBase.fs" />
     <Compile Include="TestWorkbenchWindow.fs" />
     <Compile Include="TestViewContent.fs" />
+    <Compile Include="TestHelpers.fs" />
     <Compile Include="DebuggerExpressionResolver.fs" />
     <Compile Include="Checker.fs" />
     <Compile Include="IndentationTrackerTests.fs" />

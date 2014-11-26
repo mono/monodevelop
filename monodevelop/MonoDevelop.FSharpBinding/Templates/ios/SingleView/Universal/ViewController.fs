@@ -3,24 +3,23 @@ namespace ${Namespace}
 open System
 open System.Drawing
 
-open MonoTouch.Foundation
 open MonoTouch.UIKit
+open MonoTouch.Foundation
 
 [<Register ("${SafeProjectName}ViewController")>]
 type ${SafeProjectName}ViewController () =
     inherit UIViewController ()
 
-    override x.DidReceiveMemoryWarning () =
-        // Releases the view if it doesn't have a superview.
+    // Release any cached data, images, etc that aren't in use.
+    override this.DidReceiveMemoryWarning () =
         base.DidReceiveMemoryWarning ()
-        // Release any cached data, images, etc that aren't in use.
 
-    override x.ViewDidLoad () =
+    // Perform any additional setup after loading the view, typically from a nib.
+    override this.ViewDidLoad () =
         base.ViewDidLoad ()
-        // Perform any additional setup after loading the view, typically from a nib.
 
-    override x.ShouldAutorotateToInterfaceOrientation (toInterfaceOrientation) =
-        // Return true for supported orientations
+    // Return true for supported orientations
+    override this.ShouldAutorotateToInterfaceOrientation (toInterfaceOrientation) =
         if UIDevice.CurrentDevice.UserInterfaceIdiom = UIUserInterfaceIdiom.Phone then
            toInterfaceOrientation <> UIInterfaceOrientation.PortraitUpsideDown
         else

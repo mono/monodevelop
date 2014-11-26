@@ -12,6 +12,7 @@ open Fantomas
 open Fantomas.FormatConfig
 open Microsoft.FSharp.Compiler
 open FSharp.CompilerBinding
+open ExtCore.Control
 
 type FormattingOption = 
     | Document

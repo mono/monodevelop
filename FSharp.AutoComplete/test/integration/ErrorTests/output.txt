@@ -2,7 +2,7 @@ DATA: project
 <absolute path removed>/test/integration/ErrorTests/FileTwo.fs
 <absolute path removed>/test/integration/ErrorTests/Program.fs
 <<EOF>>
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 [4:14-4:21] ERROR The namespace or module 'FileTwo' is not defined
@@ -15,7 +15,7 @@ but here has type
 DATA: completion
 func
 <<EOF>>
-INFO: Background parsing started
+INFO: Synchronous parsing started
 <<EOF>>
 DATA: errors
 [8:12-8:19] ERROR The value or constructor 'unnamed' is not defined

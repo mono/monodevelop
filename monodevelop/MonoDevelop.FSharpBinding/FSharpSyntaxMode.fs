@@ -9,10 +9,52 @@ open Mono.TextEditor.Highlighting
 open Microsoft.FSharp.Compiler
 open Microsoft.FSharp.Compiler.SourceCodeServices
 open FSharp.CompilerBinding
+open ExtCore.Control
 
 module FSharpSyntaxModeInternals =
     let contains predicate sequence =
         sequence |> Seq.exists predicate
+
+    [<Literal>]
+    let tripleString = "\"\"\""
+    [<Literal>]
+    let verbatimString = "@\""
+    [<Literal>]
+    let normalString = "\""
+    [<Literal>]
+    let escapeString = "\\\""
+    [<Literal>]
+    let openBlockComment = "(*"
+    [<Literal>]
+    let closeBlockComment = "*)"
+
+    type AbstractStringSpan() =
+        inherit Span()
+        do 
+            base.Color <- "String"
+            base.Rule <- "String"
+
+    type StringSpan() =
+        inherit AbstractStringSpan()
+
+    type CommentSpan() =
+        inherit Span()
+        do
+            base.Color <- "Comment"
+            base.Rule <- "Comment"
+
+    type LineCommentSpan() =
+        inherit CommentSpan()
+        do
+            base.StopAtEol <- true
+
+    type PreprocessorSpan() =
+        inherit Span()
+        do 
+            base.StopAtEol <- true
+            base.TagColor <- "Preprocessor"
+            base.Rule <- "Preprocessor"
+            
 
     type AbstractBlockSpan () =
         inherit Span()
@@ -41,11 +83,88 @@ module FSharpSyntaxModeInternals =
     type ElseBlockSpan() =
         inherit AbstractBlockSpan(Begin = Regex("#else"))
 
+    type SpanParserState =  
+        | General
+        | TripleString
+        | String
+        | Comment
+
+    let (|FoundTripleStringBegin|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(tripleString) && state <> TripleString) then
+            let newState = TripleString
+            let spanBegin = StringSpan(),i,len
+            let newi = i+3
+            FoundTripleStringBegin(newState, spanBegin, newi) |> Some
+        else
+            None
+
+    let (|FoundTripleStringEnd|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(tripleString) && state = TripleString) then
+            let newState = General
+            let spanEnd = curSpan, i, len
+            let newi = i+3
+            FoundTripleStringEnd(newState, spanEnd, newi) |> Some
+        else
+            None
+            
+    let (|FoundVerbatimStringBegin|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(verbatimString) && state = General) then
+            let newState = String
+            let spanBegin = StringSpan(),i,len
+            let newi = i+2
+            FoundVerbatimStringBegin(newState, spanBegin, newi) |> Some
+        else
+            None     
+            
+    let (|FoundNormalStringBegin|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(normalString) && state = General) then
+            let newState = String
+            let spanBegin = StringSpan(),i,len
+            let newi = i
+            FoundNormalStringBegin(newState, spanBegin, newi) |> Some
+        else
+            None 
+
+    let (|FoundEscapeString|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(escapeString) && (state = String || state=TripleString)) then
+            FoundEscapeString |> Some
+        else
+            None
+            
+    let (|FoundNormalStringEnd|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(normalString) && state = String) then
+            let newState = General
+            let spanEnd = curSpan, i, len
+            let newi = i
+            FoundNormalStringEnd(newState, spanEnd, newi) |> Some
+        else
+            None
+
+    let (|FoundBlockCommentBegin|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(openBlockComment) && state = General) then
+            let newState = Comment
+            let spanBegin = CommentSpan(),i,len
+            let newi = i+2
+            FoundBlockCommentBegin(newState, spanBegin, newi) |> Some
+        else
+            None 
+            
+    let (|FoundBlockCommentEnd|_|) (subText: string,curSpan, state: SpanParserState,i:int,len:int) =
+        if (subText.StartsWith(closeBlockComment) && state = Comment) then
+            let newState = General
+            let spanEnd = curSpan, i, len
+            let newi = i+2
+            FoundBlockCommentEnd(newState, spanEnd, newi) |> Some
+        else
+            None
+    
+
     type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string list) =
         inherit SyntaxMode.SpanParser(mode, spanStack)
-        do
-            LoggingService.LogInfo("Creating FSharpSpanParser()")
-
+        do LoggingService.LogDebug ("Creating FSharpSpanParser()")
+        
+        
+        member val private State = General with get, set
         member private this.ScanPreProcessorElse(i: byref<int>) =
             if not (spanStack |> contains (fun span -> span.GetType() = typeof<IfBlockSpan>)) then
                 i <- i + "#else".Length
@@ -69,12 +188,42 @@ module FSharpSyntaxModeInternals =
             this.FoundSpanBegin.Invoke(span, i,len)
             i <- i + endIdx
 
+        member private this.SpanBegin(newState,spanBegin, newi, i:byref<int>) =
+            this.FoundSpanBegin.Invoke(spanBegin)
+            this.State <- newState
+            i <- newi
+
+        member private this.SpanEnd(newState,spanEnd, newi, i:byref<int>) =
+            this.FoundSpanEnd.Invoke(spanEnd)
+            this.State <- newState
+            i <- newi
+
         override this.ScanSpan( i) : bool =
             try 
                 let textOffset = i - this.StartOffset
                 let currentText = this.CurText
-                if (textOffset < this.CurText.Length && this.CurRule.Name <> "Comment" &&
-                    this.CurRule.Name <> "String" && this.CurRule.Name <> "VerbatimString" &&
+                let endIdx = this.CurText.Length
+                let len = endIdx - textOffset
+                let subText = currentText.Substring(textOffset)
+                match (subText, this.CurSpan, this.State, i,len) with
+                | FoundTripleStringBegin (newState,spanBegin, newi) ->
+                    this.SpanBegin(newState,spanBegin,newi,&i)
+                | FoundTripleStringEnd (newState,spanEnd,newi) ->
+                    this.SpanEnd(newState,spanEnd,newi,&i)
+                | FoundVerbatimStringBegin (newState,spanBegin, newi) ->
+                    this.SpanBegin(newState,spanBegin,newi,&i)
+                | FoundEscapeString -> i <- i + 1
+                | FoundNormalStringBegin (newState, spanBegin, newi) ->
+                    this.SpanBegin(newState,spanBegin,newi,&i)
+                | FoundNormalStringEnd(newState,spanEnd,newi) ->
+                    this.SpanEnd(newState,spanEnd,newi,&i)
+                | FoundBlockCommentBegin(newState,spanBegin,newi) ->
+                    this.SpanBegin(newState,spanBegin,newi, &i)
+                | FoundBlockCommentEnd(newState,spanEnd,newi) ->
+                    this.SpanEnd(newState,spanEnd,newi, &i)
+                | _ ->()
+                if (textOffset < this.CurText.Length && this.State <> Comment &&
+                    this.State <> String &&
                     this.CurText.[textOffset] = '#' && this.IsFirstNonWsChar(textOffset)) then
 
                     if currentText.Substring(textOffset).StartsWith("#else") then
@@ -90,14 +239,22 @@ module FSharpSyntaxModeInternals =
                         this.FoundSpanBegin.Invoke(span, i + textOffset, 6)
                         this.FoundSpanEnd.Invoke(span, i + textOffset + 6,0)
                         true
-                    elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
+                    elif (this.CurSpan = null || (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code")) then
+                        let spanLength = 
+                            match currentText.Substring(textOffset).IndexOf(Environment.NewLine) with
+                            | -1 -> currentText.Substring(textOffset).Length
+                            | value -> value
+                        this.FoundSpanBegin.Invoke(PreprocessorSpan(), i + textOffset,spanLength)
+                        i <- i + spanLength
                         base.ScanSpan(&i)
                     else
                         false
                 elif (this.CurSpan <> null && this.CurSpan.Color <> "Excluded Code") then
-                    base.ScanSpan(&i)
+                    false
+                    //base.ScanSpan(&i)
                 else
-                    base.ScanSpan(&i)
+                    false
+                    //base.ScanSpan(&i)
             with
             | exn -> 
                 LoggingService.LogError("An error occurred in FSharpSpanParser.ScanSpan", exn)
@@ -109,30 +266,30 @@ open MonoDevelop.FSharp.FSharpSymbolHelper
 module internal Patterns =
     type TokenSymbol = 
         {
-            TokenInfo : TokenInformation;
+            TokenInfo : FSharpTokenInfo;
             SymbolUse: FSharpSymbolUse option
-            ExtraColorInfo: (Microsoft.FSharp.Compiler.Range.range * TokenColorKind) option
+            ExtraColorInfo: (Range.range * FSharpTokenColorKind) option
         }
 
     let (|Keyword|_|) ts =
-        if (ts.TokenInfo.ColorClass) = TokenColorKind.Keyword || 
-           (ts.ExtraColorInfo.IsSome && (snd ts.ExtraColorInfo.Value) = TokenColorKind.Keyword)  then Some(Keyword)
+        if (ts.TokenInfo.ColorClass) = FSharpTokenColorKind.Keyword || 
+           (ts.ExtraColorInfo.IsSome && (snd ts.ExtraColorInfo.Value) = FSharpTokenColorKind.Keyword)  then Some(Keyword)
         else None
 
     let (|Comment|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.Comment then Some Comment
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.Comment then Some Comment
         else None
 
     let (|StringLiteral|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.String then Some StringLiteral
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.String then Some StringLiteral
         else None
 
     let (|NumberLiteral|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.Number then Some NumberLiteral
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.Number then Some NumberLiteral
         else None
 
     let (|PreprocessorKeyword|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.PreprocessorKeyword then Some PreprocessorKeyword
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.PreprocessorKeyword then Some PreprocessorKeyword
         else None
 
     let (|Punctuation|_|) (ts:TokenSymbol) =
@@ -150,7 +307,23 @@ module internal Patterns =
         | Parser.tokenId.TOKEN_SEMICOLON
         | Parser.tokenId.TOKEN_COMMA
         | Parser.tokenId.TOKEN_DOT
-        | Parser.tokenId.TOKEN_BAR -> Some Punctuation
+        | Parser.tokenId.TOKEN_DOT_DOT
+        | Parser.tokenId.TOKEN_INT32_DOT_DOT
+        | Parser.tokenId.TOKEN_UNDERSCORE
+        | Parser.tokenId.TOKEN_BAR
+        | Parser.tokenId.TOKEN_BAR_RBRACK
+        | Parser.tokenId.TOKEN_LBRACK_LESS
+        | Parser.tokenId.TOKEN_COLON_GREATER
+        | Parser.tokenId.TOKEN_COLON_QMARK_GREATER
+        | Parser.tokenId.TOKEN_COLON_QMARK
+        | Parser.tokenId.TOKEN_INFIX_BAR_OP
+        | Parser.tokenId.TOKEN_INFIX_COMPARE_OP
+        | Parser.tokenId.TOKEN_COLON_COLON
+        | Parser.tokenId.TOKEN_AMP_AMP
+        | Parser.tokenId.TOKEN_PREFIX_OP
+        | Parser.tokenId.TOKEN_COLON_EQUALS
+        | Parser.tokenId.TOKEN_BAR_BAR
+            -> Some Punctuation
         | _ -> None
 
     let (|PunctuationBrackets|_|) (ts:TokenSymbol) =
@@ -161,29 +334,38 @@ module internal Patterns =
         | Parser.tokenId.TOKEN_LBRACK
         | Parser.tokenId.TOKEN_RBRACK
         | Parser.tokenId.TOKEN_LBRACE
-        | Parser.tokenId.TOKEN_RBRACE -> Some PunctuationBrackets
+        | Parser.tokenId.TOKEN_RBRACE 
+        | Parser.tokenId.TOKEN_LBRACK_LESS
+        | Parser.tokenId.TOKEN_GREATER_RBRACK
+        | Parser.tokenId.TOKEN_LESS
+        | Parser.tokenId.TOKEN_GREATER
+        | Parser.tokenId.TOKEN_LBRACK_BAR
+        | Parser.tokenId.TOKEN_BAR_RBRACK -> Some PunctuationBrackets
         | _ -> None
 
     let private isIdentifier =
         function
-        | TokenColorKind.Identifier
-        | TokenColorKind.UpperIdentifier -> true
+        | FSharpTokenColorKind.Identifier
+        | FSharpTokenColorKind.UpperIdentifier -> true
         | _ -> false
 
     let isSimpleToken tck =
         match tck with
-        | TokenColorKind.Identifier
-        | TokenColorKind.UpperIdentifier -> false
+        | FSharpTokenColorKind.Identifier
+        | FSharpTokenColorKind.UpperIdentifier -> false
         | _ -> true
 
-    let (|Identifier|_|) ts =
-        match isIdentifier ts.TokenInfo.ColorClass with
-        | true -> Identifier Some ts.SymbolUse
-        | false -> None
-
     let (|IdentifierSymbol|_|) ts =
+        if isIdentifier ts.TokenInfo.ColorClass && ts.SymbolUse.IsSome then
+            IdentifierSymbol(ts.SymbolUse.Value) |> Some
+        else None
+
+    let (|Namespace|_|) ts =
         match ts with
-        | Identifier symbolUse when symbolUse.IsSome -> IdentifierSymbol(symbolUse.Value) |> Some
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | ExtendedPatterns.Namespace -> Some Namespace
+            | _ -> None
         | _ -> None
 
     let (|Class|_|) ts =
@@ -191,6 +373,55 @@ module internal Patterns =
         | IdentifierSymbol symbolUse -> 
             match symbolUse.Symbol with
             | ExtendedPatterns.Class -> Some Class
+            | _ -> None
+        | _ -> None
+
+    let (|Property|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | ExtendedPatterns.Property -> Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+
+    let (|Field|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | CorePatterns.Field _ -> Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+
+    let (|Function|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse with
+            | ExtendedPatterns.Function
+            | ExtendedPatterns.ClosureOrNested ->  Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+
+    let (|Val|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse with
+            | ExtendedPatterns.Val -> Some symbolUse.IsFromDefinition
+            | _ -> None
+        | _ -> None
+
+    let (|Delegate|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse -> 
+            match symbolUse.Symbol with
+            | ExtendedPatterns.Delegate -> Some Delegate
+            | _ -> None
+        | _ -> None
+
+    let (|Event|_|) ts =
+        match ts with
+        | IdentifierSymbol symbolUse ->
+            match symbolUse.Symbol with
+            | ExtendedPatterns.Event -> Some symbolUse.IsFromDefinition
             | _ -> None
         | _ -> None
 
@@ -277,15 +508,12 @@ module internal Patterns =
     let (|ComputationExpression|_|) ts =
         if isIdentifier ts.TokenInfo.ColorClass then
             match ts.SymbolUse with
-            | Some symbolUse ->
-                match symbolUse.IsFromComputationExpression with
-                | true -> Some(ComputationExpression)
-                | false -> None
-            | None -> None
+            | Some symbolUse when symbolUse.IsFromComputationExpression -> Some ComputationExpression
+            | _ -> None
         else None
 
     let (|UnusedCode|_|) ts =
-        if ts.TokenInfo.ColorClass = TokenColorKind.InactiveCode then Some UnusedCode
+        if ts.TokenInfo.ColorClass = FSharpTokenColorKind.InactiveCode then Some UnusedCode
         else None
 
     let isAbstractBlockSpan (span: Span) =
@@ -315,7 +543,8 @@ module internal Patterns =
 
     let (|ExcludedCode|StringCode|PreProcessorCode|CommentCode|OtherCode|) (document: TextDocument,line: DocumentLine,offset,length, style: Highlighting.ColorScheme) =
         let docText = document.GetTextAt(offset,length)
-        if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
+        //if docText.StartsWith("#if") || docText.StartsWith("#else") || docText.StartsWith("#endif") then
+        if docText.StartsWith("#") then
             PreProcessorCode style.Preprocessor.Name
         elif (hasSpans(line)) then
             if not (lineStartsWithAbstractBlockSpan line.StartSpan)  then
@@ -342,9 +571,10 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     let mutable semanticHighlightingEnabled = PropertyService.Get ("EnableSemanticHighlighting", true)
     let mutable symbolsInFile: FSharpSymbolUse[] option = None
 
-    let HandlePropertyChanged (eventArgs: PropertyChangedEventArgs) =
-        if eventArgs.Key = "EnableSemanticHighlighting" then
-            semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true)
+    let handlePropertyChanged =
+        EventHandler<PropertyChangedEventArgs>
+            (fun o eventArgs -> if eventArgs.Key = "EnableSemanticHighlighting" then
+                                    semanticHighlightingEnabled <- PropertyService.Get ("EnableSemanticHighlighting", true))
 
     let getDefineSymbols (project: MonoDevelop.Projects.Project option) =
         [ let workspace = IdeApp.Workspace
@@ -365,24 +595,28 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         if doc <> null && doc.Project <> null then Some doc.Project else
         let view = doc.Annotation<MonoDevelop.SourceEditor.SourceEditorView>()
         if view <> null && view.Project <> null then Some view.Project
-        else IdeApp.Workspace.GetProjectsContainingFile(doc.FileName.ToString()) |> Seq.tryHead
+        else let projects = IdeApp.Workspace.GetProjectsContainingFile(doc.FileName.ToString())
+             if Seq.isEmpty projects then None
+             else Seq.head projects |> Some
 
     let project = getProject document
 
     let sourceTokenizer= SourceTokenizer(getDefineSymbols project, document.FileName.FileName)
 
-    let handleConfigurationChanged(_) =
-        for doc in IdeApp.Workbench.Documents do
-            let data = doc.Editor
-            if data <> null then
-                // Force Syntax Mode Reparse
-                if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
-                    let sm = data.Document.SyntaxMode :?> SyntaxMode
-                    sm.UpdateDocumentHighlighting()
-                    SyntaxModeService.WaitUpdate(data.Document)
-                data.Parent.TextViewMargin.PurgeLayoutCache()
-                doc.ReparseDocument()
-                data.Parent.QueueDraw()
+    let handleConfigurationChanged =
+        EventHandler
+            (fun o e ->
+                for doc in IdeApp.Workbench.Documents do
+                    let data = doc.Editor
+                    if data <> null then
+                        // Force Syntax Mode Reparse
+                        if typeof<SyntaxMode>.IsAssignableFrom(data.Document.SyntaxMode.GetType()) then
+                            let sm = data.Document.SyntaxMode :?> SyntaxMode
+                            sm.UpdateDocumentHighlighting()
+                            SyntaxModeService.WaitUpdate(data.Document)
+                        data.Parent.TextViewMargin.PurgeLayoutCache()
+                        doc.ReparseDocument()
+                        data.Parent.QueueDraw())
 
     let getAndProcessSymbols (pd:ParseAndCheckResults) =
         async {let! symbols = pd.GetAllUsesOfAllSymbolsInFile()
@@ -393,29 +627,31 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
                   document.Editor.Parent.TextViewMargin <> null
                then Gtk.Application.Invoke (fun _ _ -> document.Editor.Parent.TextViewMargin.PurgeLayoutCache ()
                                                        document.Editor.Parent.QueueDraw())}
-    let handleDocumentParsed(_) =
-        if document <> null && not document.IsProjectContextInUpdate && semanticHighlightingEnabled then
-            let localParsedDocument = document.ParsedDocument
-            if localParsedDocument <> null then
-                localParsedDocument.Ast 
-                |> tryCast<ParseAndCheckResults>
-                |> Option.iter (getAndProcessSymbols >> Async.Start)
+    let handleDocumentParsed =
+        EventHandler
+            (fun _ _ ->
+                if document <> null && not document.IsProjectContextInUpdate && semanticHighlightingEnabled then
+                    let localParsedDocument = document.ParsedDocument
+                    if localParsedDocument <> null then
+                        localParsedDocument.Ast 
+                        |> Option.tryCast<ParseAndCheckResults>
+                        |> Option.iter (getAndProcessSymbols >> Async.Start))
 
-    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Microsoft.FSharp.Compiler.Range.range * TokenColorKind)[] option) (token: TokenInformation) =
+    let makeChunk (lineNumber: int) (style: ColorScheme) (offset:int) (extraColorInfo: (Range.range * FSharpTokenColorKind)[] option) (token: FSharpTokenInfo) =
         let symbol =
             if isSimpleToken token.ColorClass then None else
             match symbolsInFile with
             | None -> None
             | Some(symbols) ->
                 symbols
-                |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.StartColumn = token.LeftColumn)
+                |> Seq.tryFind (fun s -> s.RangeAlternate.StartLine = lineNumber && s.RangeAlternate.EndColumn = token.RightColumn+1)
 
         let extraColor =
             match extraColorInfo with
             | None -> None
             | Some(extraColourInfo) ->
                 extraColourInfo
-                |> Array.tryFind (fun (rng, _) -> rng.StartLine = lineNumber && rng.StartColumn = token.LeftColumn)
+                |> Array.tryFind (fun (rng, _) -> rng.StartLine = lineNumber && rng.EndColumn = token.RightColumn+1)
 
         let tokenSymbol = { TokenInfo = token; SymbolUse = symbol; ExtraColorInfo = extraColor }
         let chunkStyle =
@@ -428,14 +664,15 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             | NumberLiteral -> style.Number
             | PunctuationBrackets -> style.PunctuationForBrackets
             | Punctuation -> style.Punctuation
-            | Module
-            | ActivePatternCase
-            | Record
-            | Union
-            | TypeAbbreviation
-            | Class -> style.UserTypes
-            | UnionCase
-            | Enum -> style.UserTypesEnums
+            | Module|ActivePatternCase|Record|Union|TypeAbbreviation|Class -> style.UserTypes
+            | Namespace -> style.KeywordNamespace
+            | Property fromDef -> if fromDef then style.UserPropertyDeclaration else style.UserPropertyUsage
+            | Field fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
+            | Function fromDef -> if fromDef then style.UserMethodDeclaration else style.UserMethodUsage
+            | Val fromDef -> if fromDef then style.UserFieldDeclaration else style.UserFieldUsage
+            | UnionCase | Enum -> style.UserTypesEnums
+            | Delegate -> style.UserTypesDelegatess
+            | Event fromDef -> if fromDef then style.UserEventDeclaration else style.UserEventUsage
             | Interface -> style.UserTypesInterfaces
             | ValueType -> style.UserTypesValueTypes
             | PreprocessorKeyword -> style.Preprocessor
@@ -443,35 +680,27 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
         let chunks = Chunk(offset + token.LeftColumn, token.RightColumn - token.LeftColumn + 1, chunkStyle.Name)
         chunks
 
+    let scanToken (tokenizer:FSharpLineTokenizer) s =
+        match tokenizer.ScanToken(s) with
+         | Some t, s -> Some(t,s)
+         | _ -> None
+
     let getLexedTokens (style, line:DocumentLine, offset, lineText, extraColorInfo) =
         let tokenizer = sourceTokenizer.CreateLineTokenizer(lineText)
-        Seq.unfold (fun s -> match tokenizer.ScanToken(s) with
-                             | Some t, s -> Some(t,s)
-                             | _         -> None) 0L
-        |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
-
-    let getLexedChunks (style,line: DocumentLine,offset, lineText, extraColorInfo) =
-        getLexedTokens(style,line,offset,lineText,extraColorInfo)
+        let tokens = 
+            Seq.unfold (scanToken tokenizer) 0L
+            |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
+            |> List.ofSeq
+        tokens |> Seq.ofList
 
     do
-        LoggingService.LogInfo("Creating FSharpSyntaxMode()")
-        PropertyService.PropertyChanged.Add HandlePropertyChanged
-        document.DocumentParsed.Add(handleDocumentParsed)
-        let provider = ResourceStreamProvider(this.GetType().Assembly, "FSharpSyntaxMode.xml")
-        use reader = provider.Open()
-        let baseMode = SyntaxMode.Read(reader)
-        let rules = baseMode.Rules
-        this.rules <- ResizeArray<_>(rules)
-        this.keywords <- ResizeArray<_>(baseMode.Keywords)
-        this.spans <- baseMode.Spans
-        this.matches <- baseMode.Matches
-        this.prevMarker <- baseMode.PrevMarker
-        this.SemanticRules <-  ResizeArray<_>(baseMode.SemanticRules)
-        this.keywordTable <- baseMode.keywordTable
-        this.properties <- baseMode.Properties
-        this.keywords <- baseMode.keywords
-        if IdeApp.Workspace <> null then
-            IdeApp.Workspace.ActiveConfigurationChanged.Add handleConfigurationChanged
+        LoggingService.LogDebug ("Creating FSharpSyntaxMode()")
+
+    let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
+    let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
+    let configHandler =
+        maybe { let! workspace = IdeApp.Workspace |> Option.ofNull
+                return workspace.ActiveConfigurationChanged.Subscribe handleConfigurationChanged }
 
     override this.CreateSpanParser(line, spanStack) =
         let ss =
@@ -487,15 +716,29 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
     override this.GetChunks(style, line, offset, length) =
         try
             let extraColorInfo =
-                if (document <> null && document.ParsedDocument <> null) then 
-                    (document.ParsedDocument.Ast :?> ParseAndCheckResults).GetExtraColorizations() 
-                else None
+                maybe { let! document = Option.ofNull document
+                        let! parsedDocument = Option.ofNull document.ParsedDocument
+                        let! pc = Option.tryCast<ParseAndCheckResults> document.ParsedDocument.Ast
+                        return! pc.GetExtraColorizations() }
+
             match (this.Document, line, offset, length, style) with
             | ExcludedCode styleName -> Seq.singleton(Chunk(offset,length,styleName))
             | PreProcessorCode _ -> base.GetChunks(style,line,offset,length)
-            | OtherCode (_,lineText) when semanticHighlightingEnabled -> getLexedChunks(style,line,offset,lineText,extraColorInfo)
+            | OtherCode (_,lineText) when semanticHighlightingEnabled -> 
+                let tokens = getLexedTokens(style,line,offset,lineText,extraColorInfo)
+                if (tokens |> Seq.isEmpty || (tokens |> Seq.last).EndOffset < offset + lineText.Length ) then
+                    base.GetChunks(style,line,offset,length)
+                else
+                    tokens
+            | CommentCode styleName -> Seq.singleton(Chunk(offset,length, styleName ))
             | _ -> base.GetChunks(style,line,offset,length)
         with
             | exn ->
                 LoggingService.LogError("Error in FSharpSyntaxMode.GetChunks", exn)
                 base.GetChunks(style,line,offset,length)
+
+    interface IDisposable with
+        member x.Dispose () =
+            propertyChangedHandler.Dispose ()
+            documentParsedHandler.Dispose ()
+            configHandler |> Option.iter (fun ch -> ch.Dispose ())

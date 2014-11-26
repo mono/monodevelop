@@ -1,8 +1,9 @@
 namespace ${Namespace}
 
 open System
-open MonoTouch.UIKit
-open MonoTouch.Foundation
+
+open UIKit
+open Foundation
 
 [<Register ("AppDelegate")>]
 type AppDelegate () =

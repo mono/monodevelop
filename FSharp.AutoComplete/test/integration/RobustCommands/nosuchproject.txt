@@ -1,2 +1,2 @@
-ERROR: File 'NoSuchProject.fsproj' does not exist
+ERROR: File '<absolute path removed>/test/integration/RobustCommands/NoSuchProject.fsproj' does not exist
 <<EOF>>

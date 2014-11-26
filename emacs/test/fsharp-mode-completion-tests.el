@@ -13,7 +13,7 @@
     "A message for jumping to a definition in another file")
 
 (check "jumping to local definition should not change buffer"
-  (let ((f (concat fs-file-dir "Program.fs")))
+  (let ((f (file-truename (concat fs-file-dir "Program.fs"))))
     (stubbing-process-functions
      (using-file f
                  (fsharp-ac-filter-output nil finddeclstr1)
@@ -27,7 +27,7 @@
 
 (check "jumping to definition in another file should open that file"
   (let ((f1 (concat fs-file-dir "Program.fs"))
-        (f2 (concat fs-file-dir "FileTwo.fs")))
+        (f2 (file-truename (concat fs-file-dir "FileTwo.fs"))))
       (stubbing-process-functions
        (using-file f1
          (fsharp-ac-filter-output nil finddeclstr2)
@@ -102,9 +102,8 @@
   (declare (indent 2))
   `(check ,(concat "check project loading " desc)
      (stubbing-process-functions
-      (flet ((fsharp-ac/start-process ())
-             (process-send-string (proc cmd))
-             (file-exists-p (_) ,exists))
+      (noflet ((fsharp-ac/start-process ())
+               (file-exists-p (_) ,exists))
         ,@body))))
 
 (check-project-loading "returns nil if not fsproj"
@@ -127,21 +126,17 @@ Stubs out functions that call on the ac process."
   (declare (indent 1))
   `(check ,(concat "process handler " desc)
      (setq major-mode 'fsharp-mode)
-       (flet ((log-to-proc-buf (p s))
-              (fsharp-ac-parse-current-buffer () t)
-              (process-send-string   (p s))
-              (fsharp-ac-can-make-request () t)
-              (expand-file-name (x &rest _) x)
-              (process-buffer (proc) "*fsharp-complete*")
-              (process-mark (proc) (point-max)))
-         ,@body)))
+     (stubbing-process-functions
+      (noflet ((fsharp-ac-can-make-request (&optional _) t)
+               (file-truename (x &rest _) x))
+         ,@body))))
 
 (defmacro stub-fn (sym var &rest body)
   "Stub the given unary function, with the argument to the
 function bound to VAR in BODY. "
   (declare (indent 2))
   `(let (,var)
-     (flet ((,sym (x &rest xs) (setq ,var x)))
+     (noflet ((,sym (x &rest xs) (setq ,var x)))
        ,@body)))
 
 (check-handler "prints message on error"
@@ -157,7 +152,7 @@ function bound to VAR in BODY. "
 
 (check-handler "uses popup in terminal if tooltip is requested"
   (let ((fsharp-ac-use-popup t))
-    (flet ((display-graphic-p () nil))
+    (noflet ((display-graphic-p () nil))
       (stub-fn popup-tip tip
         (fsharp-ac/show-tooltip-at-point)
         (fsharp-ac-filter-output nil tooltip-msg)
@@ -165,7 +160,7 @@ function bound to VAR in BODY. "
 
 (check-handler "uses pos-tip in GUI if tooltip is requested"
   (let ((fsharp-ac-use-popup t))
-    (flet ((display-graphic-p () t))
+    (noflet ((display-graphic-p () t))
       (stub-fn pos-tip-show tip
         (fsharp-ac/show-tooltip-at-point)
         (fsharp-ac-filter-output nil tooltip-msg)
@@ -214,4 +209,96 @@ function bound to VAR in BODY. "
 (check-residue "raw residue, raw previous" "System.``Hello Console``.``Wr$ it.eL" "``Wr$ it.eL")
 (check-residue "raw residue, trailing dot" "System.Console.``WriteL." "``WriteL.")
 
+;;; Warnings when intellisense requests made without bg process
 
+(check "no error message in a script if bg process running"
+ (stubbing-process-functions
+  (stub-fn message msg
+   (using-temp-file "test.fsx"
+    (fsharp-ac-can-make-request)
+    (should (null msg))))))
+
+(check "error message in a script if no bg process running"
+ (stubbing-process-functions
+  (stub-fn message msg
+   (noflet ((fsharp-ac--process-live-p ()))
+     (using-temp-file "test.fsx"
+       (fsharp-ac-can-make-request)
+       (should-match "not running" msg))))))
+
+(check "no error message in a script if no bg process running and quiet mode selected"
+ (stubbing-process-functions
+  (stub-fn message msg
+   (noflet ((fsharp-ac--process-live-p ()))
+     (using-temp-file "test.fsx"
+       (fsharp-ac-can-make-request t)
+       (should (null msg)))))))
+
+(check "no error message if project file loaded"
+  (let ((f (concat fs-file-dir "Program.fs")))
+    (stubbing-process-functions
+     (stub-fn fsharp-ac-message-safely msg
+       (using-file f
+         (noflet ((fsharp-ac--in-project-p (file) t))
+           (fsharp-ac-can-make-request)
+           (should (null msg))))))))
+
+(check "error message if no project file loaded"
+  (let ((f (concat fs-file-dir "Program.fs")))
+    (stubbing-process-functions
+     (stub-fn fsharp-ac-message-safely msg
+       (using-file f
+         (noflet ((fsharp-ac--in-project-p (file)))
+           (fsharp-ac-can-make-request)
+           (should-match "not part of the loaded project" msg)))))))
+
+(check "no error message if failed request from doc mode"
+  (stubbing-process-functions
+   (stub-fn message msg
+     (noflet ((fsharp-ac--process-live-p ()))
+       (using-temp-file "test.fsx"
+         (fsharp-doc-show-tooltip)
+         (should (null msg)))))))
+
+(check "no error message if failed request from parsing"
+  (stubbing-process-functions
+   (stub-fn message msg
+     (noflet ((fsharp-ac--process-live-p ()))
+       (using-temp-file "test.fsx"
+         (fsharp-ac--parse-current-file)
+         (should (null msg)))))))
+
+(check "no error message if failed request from electric dot"
+  (stubbing-process-functions
+   (stub-fn message msg
+     (noflet ((fsharp-ac--process-live-p ()))
+       (using-temp-file "test.fsx"
+         (fsharp-ac/electric-dot)
+         (should (null msg)))))))
+
+;;; Only parse if the file has changed
+
+(check "do not reparse if file has not changed"
+  (let ((counter 0))
+    (noflet ((process-send-string (_ _) (setq counter (+ counter 1)))
+             (process-live-p (p) t)
+              (fsharp-ac--process-live-p () t)
+              (start-process (&rest args))
+              (set-process-filter (&rest args))
+              (set-process-query-on-exit-flag (&rest args))
+;              (process-send-string (&rest args))
+              (process-buffer (proc) fsharp-ac--completion-bufname)
+              (process-mark (proc) (point-max))
+              ;(fsharp-ac-parse-current-buffer () t)
+              (log-to-proc-buf (p s)))
+       (using-temp-file "test.fsx"
+         (should= counter 0)
+         (fsharp-ac-parse-current-buffer)
+         (should= counter 1)
+         (fsharp-ac-parse-current-buffer)
+         (should= counter 1)
+         (insert "let x = 1\n")
+         (fsharp-ac-parse-current-buffer)
+         (should= counter 2)
+         (fsharp-ac-parse-current-buffer)
+         (should= counter 2)))))

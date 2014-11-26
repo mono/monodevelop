@@ -1,3 +1,32 @@
+## 1.4.2 (2014-10-30)
+
+Incorporate FSharp.AutoComplete version 0.13.2, which returns more information if the project parsing fails.
+
+Features:
+  - #811: Return exception message on project parsing fail
+
+## 1.4.1 (2014-10-30)
+
+Incorporate FSharp.AutoComplete version 0.13.1, which contains a fix for goto definition.
+
+Bugfixes:
+  - #787: Correct off-by-one error in fsac goto definition
+
+## 1.4.0 (2014-10-26)
+
+The main feature of this release is that the project parsing logic has
+been moved to FSharp.Compiler.Service as part of fixing #728.
+
+Features:
+  - #319: Better error feedback when no completion data available
+  - #720: Rationalise emacs testing, also fixed #453
+
+Bugfixes:
+  - #765: Do not offer completions in irrelevant locations (strings/comments)
+  - #721: Tests for Emacs syntax highlighting, and resultant fixes
+  - #248: Run executable file now uses output from FSharp.AutoComplete
+  - #728: Fix project support on Windows
+
 ## 1.3.0 (2014-08-28)
 
 Changes by @rneatherway unless otherwise noted.

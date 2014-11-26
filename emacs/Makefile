@@ -16,7 +16,6 @@ emacs            = emacs
 load_files       = $(patsubst %,-l %, $(utils))
 load_unit_tests  = $(patsubst %,-l %, $(unit_tests))
 load_integration_tests = $(patsubst %,-l %, $(integration_tests))
-emacs_opts       = --batch -f run-fsharp-tests
 
 # HACK: Vars for manually building the ac binary.
 # We should be really able to use the top-level makefile for this...
@@ -69,25 +68,29 @@ clean-elc :
 
 test unit-test :
 	HOME=$(tmp_d) ;\
-	$(emacs) $(load_files) $(load_unit_tests) $(emacs_opts)
+	$(emacs) $(load_files) --batch -f run-fsharp-unit-tests
 
 integration-test : $(ac_exe) packages
-	cd $(test_d) ;\
 	HOME=$(tmp_d) ;\
-	$(emacs) $(load_files) $(load_integration_tests) $(emacs_opts)
+	$(emacs) $(load_files) --batch -f run-fsharp-integration-tests
 
-test-all : unit-test integration-test
+test-all : unit-test integration-test check-compile
 
 packages :
 	HOME=$(tmp_d) ;\
 	$(emacs) $(load_files) --batch -f load-packages
 
-# Use for informal check that byte-compilation
-# is going through cleanly
 byte-compile : packages
 	HOME=$(tmp_d) ;\
 	$(emacs) -batch --eval "(package-initialize)"\
           --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
+          -f batch-byte-compile $(src_files)
+
+check-compile : packages
+	HOME=$(tmp_d) ;\
+	$(emacs) -batch --eval "(package-initialize)"\
+          --eval "(add-to-list 'load-path \"$(base_d)/emacs\")" \
+	  --eval '(setq byte-compile-error-on-warn t)' \
           -f batch-byte-compile $(src_files)
 
 run : $(ac_exe) packages

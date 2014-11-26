@@ -24,37 +24,8 @@ let b = (fun a ->
   let b = a
 """
 
-    let createDoc (text:string)=
-        let workbenchWindow = TestWorkbenchWindow()
-        let viewContent = new TestViewContent()
-
-        let project = new DotNetAssemblyProject ("F#", Name="test", FileName = FilePath("test.fsproj"))
-        let projectConfig = project.AddNewConfiguration("Debug")
-
-        TypeSystemService.LoadProject (project) |> ignore
-
-        viewContent.Project <- project
-
-        workbenchWindow.SetViewContent(viewContent)
-        viewContent.ContentName <- "/users/a.fs"
-        viewContent.GetTextEditorData().Document.MimeType <- "text/x-fsharp"
-        let doc = Document(workbenchWindow)
-        let textBuf = viewContent :> IEditableTextBuffer 
-        textBuf.Text <- text
-        textBuf.CursorPosition <- 0
-
-        let pfile = doc.Project.AddFile("/users/a.fs")
-
-        let textEditorCompletion = new FSharpTextEditorCompletion()
-        textEditorCompletion.Initialize(doc)
-        viewContent.Contents.Add(textEditorCompletion)
-
-        try doc.UpdateParseDocument() |> ignore
-        with exn -> Diagnostics.Debug.WriteLine(exn.ToString())
-        doc
-
     let docWithCaret (content:string) = 
-        let d = createDoc(content.Replace("§", ""))
+        let d = fst(TestHelpers.createDoc(content.Replace("§", "")) [])
         do match content.IndexOf('§') with
            | -1 -> ()
            | x  -> let l = d.Editor.OffsetToLocation(x)
@@ -73,7 +44,7 @@ let b = (fun a ->
     [<TestFixtureSetUp>]
     override x.Setup() =
         base.Setup()
-        doc <- createDoc(content)
+        doc <- fst(TestHelpers.createDoc(content) [])
 
     
     [<Test>]

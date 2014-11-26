@@ -15,12 +15,6 @@ open Newtonsoft.Json.Converters
 
 module FsParser = Microsoft.FSharp.Compiler.Parser
 
-// --------------------------------------------------------------------------------------
-// IntelliSense agent - provides easier an access to F# IntelliSense service
-// We're using a simple agent, because requests should be done from a single thread
-// --------------------------------------------------------------------------------------
-
-
 /// The possible types of output
 type OutputMode =
   | Json
@@ -29,7 +23,7 @@ type OutputMode =
 /// Represents information needed to call the F# IntelliSense service
 /// (including project/script options, file name and source)
 type internal RequestOptions(opts, file, src) =
-  member x.Options : ProjectOptions = opts
+  member x.Options : FSharpProjectOptions = opts
   member x.FileName : string = file
   member x.Source : string = src
   member x.WithSource(source) =
@@ -38,7 +32,7 @@ type internal RequestOptions(opts, file, src) =
   override x.ToString() =
     sprintf "FileName: '%s'\nSource length: '%d'\nOptions: %s, %A, %A, %b, %b"
       x.FileName x.Source.Length x.Options.ProjectFileName x.Options.ProjectFileNames
-      x.Options.ProjectOptions x.Options.IsIncompleteTypeCheckEnvironment
+      x.Options.OtherOptions x.Options.IsIncompleteTypeCheckEnvironment
       x.Options.UseScriptResolutionRules
 
 type ResponseMsg<'T> =
@@ -54,15 +48,24 @@ type Location =
     Column: int
   }
 
-type SeverityConverter() =
+type ProjectResponse =
+  {
+    Project: string
+    Files: List<string>
+    Output: string
+    References: List<string>
+    Framework: string
+  }
+
+type FSharpErrorSeverityConverter() =
   inherit JsonConverter()
 
-  override x.CanConvert(t:System.Type) = t = typeof<Severity>
+  override x.CanConvert(t:System.Type) = t = typeof<FSharpErrorSeverity>
  
   override x.WriteJson(writer, value, serializer) =
-    match value :?> Severity with
-    | Severity.Error -> serializer.Serialize(writer, "Error")
-    | Severity.Warning -> serializer.Serialize(writer, "Warning")
+    match value :?> FSharpErrorSeverity with
+    | FSharpErrorSeverity.Error -> serializer.Serialize(writer, "Error")
+    | FSharpErrorSeverity.Warning -> serializer.Serialize(writer, "Warning")
  
   override x.ReadJson(reader, t, _, serializer) =
     raise (System.NotSupportedException())
@@ -101,9 +104,12 @@ module internal CommandInput =
       - quit the program
     declarations ""filename""
       - get information about top-level declarations in a file with location
-    parse ""<filename>"" [full]
-      - trigger (full) background parse request; should be
+    parse ""<filename>"" [sync]
+      - trigger full background parse request; should be
         followed by content of a file (ended with <<EOF>>)
+        Optional 'sync' is used to force the parse to occur
+        synchronously for testing purposes. Not intended for
+        use in production.
     completion ""<filename>"" <line> <col> [timeout]
       - trigger completion request for the specified location
     helptext <candidate>
@@ -268,10 +274,10 @@ module internal CommandInput =
 /// Represents current state
 type internal State =
   {
-    Files : Map<string,string[]>
-    Project : Option<ProjectParser.ProjectResolver>
+    Files : Map<string,string[]> //filename -> lines
+    Projects : Map<string, FSharpProjectFileInfo>
     OutputMode : OutputMode
-    HelpText : Map<String, ToolTipText>
+    HelpText : Map<String, FSharpToolTipText>
   }
 
 /// Contains main loop of the application
@@ -293,13 +299,13 @@ module internal Main =
 
    member x.Quit() = agent.PostAndReply(fun ch -> Choice2Of2 ch)
 
-  let initialState = { Files = Map.empty; Project = None; OutputMode = Text; HelpText = Map.empty }
+  let initialState = { Files = Map.empty; Projects = Map.empty; OutputMode = Text; HelpText = Map.empty }
 
   let printAgent = new PrintingAgent()
 
   let jsonConverters =
     [|
-     new SeverityConverter() :> JsonConverter;
+     new FSharpErrorSeverityConverter() :> JsonConverter;
      new RangeConverter() :> JsonConverter
     |]
 
@@ -330,13 +336,23 @@ module internal Main =
       if not ok then printMsg "ERROR" "Position is out of range"
       ok
 
-    let getoptions file =
+    let getoptions file state =
+      // TODO: Clean up the API these options are being generated to call
+      //
+      // That API is in FSharp.CompilerBinding.LanguageService.
+      // 1. It expects a Target Framework, but *only* for FSI as
+      //    FCS is *rumoured* not to return references including FSharp.Core
+      //    and it uses the framework to guess where it is.
+      //    We will just use 4.5.
+      // 2. The CompileFiles just get added to the options, so we will do that
+      //    here and then pass in an empty array of CompileFiles.
       let text = String.concat "\n" state.Files.[file]
-      let projFile, files, args, framework =
-          match state.Project with
-          | None -> file, [|file|], [||], FSharpTargetFramework.NET_4_0
-          | Some p -> ProjectParser.getFileName p, ProjectParser.getFiles p, ProjectParser.getOptions p, ProjectParser.getFrameworkVersion p
-      text, projFile, files, args, framework
+      let project = Map.tryFind file state.Projects
+      let projFile, args =
+          match project with
+          | None -> file, [|file|]
+          | Some p -> p.Directory + "/Project.fsproj", Array.ofList p.Options
+      text, projFile, args
 
     // Debug.print "main state is:\nproject: %b\nfiles: %A\nmode: %A"
     //             (Option.isSome state.Project)
@@ -349,16 +365,13 @@ module internal Main =
     | Parse(file,kind) ->
         // Trigger parse request for a particular file
         let lines = readInput [] |> Array.ofList
-        let text = String.concat "\n" lines
         let file = Path.GetFullPath file
-        let projFile, files, args, framework =
-          match state.Project with
-          | None -> file, [|file|], [||], FSharpTargetFramework.NET_4_0
-          | Some p -> ProjectParser.getFileName p, ProjectParser.getFiles p, ProjectParser.getOptions p, ProjectParser.getFrameworkVersion p
+        let state' =  { state with Files = Map.add file lines state.Files }
+        let text, projFile, args = getoptions file state'
 
         let task =
           async {
-            let! results = agent.ParseAndCheckFileInProject(projFile, file, text, files, args, framework, true)
+            let! results = agent.ParseAndCheckFileInProject(projFile, file, text, [||], args, FSharpTargetFramework.NET_4_5, true)
             match results.GetErrors() with
             | None -> ()
             | Some errs ->
@@ -368,34 +381,50 @@ module internal Main =
                 sb.AppendLine("DATA: errors") |> ignore
                 for e in errs do
                   sb.AppendLine(sprintf "[%d:%d-%d:%d] %s %s" e.StartLineAlternate e.StartColumn e.EndLineAlternate e.EndColumn
-                                  (if e.Severity = Severity.Error then "ERROR" else "WARNING") e.Message)
+                                  (if e.Severity = FSharpErrorSeverity.Error then "ERROR" else "WARNING") e.Message)
                   |> ignore
                 sb.Append("<<EOF>>") |> ignore
                 printAgent.WriteLine(sb.ToString())
 
               | Json -> prAsJson { Kind = "errors"; Data = errs }
           }
-        printMsg "INFO" "Background parsing started"
-        match kind with
-        | Synchronous -> Async.RunSynchronously task
-        | Normal -> Async.StartImmediate task
 
-        main { state with Files = Map.add file lines state.Files }
+        match kind with
+        | Synchronous -> printMsg "INFO" "Synchronous parsing started"
+                         Async.RunSynchronously task
+        | Normal -> printMsg "INFO" "Background parsing started"
+                    Async.StartImmediate task
+
+
+        main state'
 
     | Project file ->
         // Load project file and store in state
+        let file = Path.GetFullPath file
         if File.Exists file then
-          match ProjectParser.load file with
-          | Some p -> 
-              let files =
-                [ for f in ProjectParser.getFiles p do
-                    yield IO.Path.Combine(ProjectParser.getDirectory p, f) ]
-              match state.OutputMode with
-              | Text -> printAgent.WriteLine(sprintf "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files))
-              | Json -> prAsJson { Kind = "project"; Data = files }
-              main { state with Project = Some p }
-          | None   -> printMsg "ERROR" (sprintf "Project file '%s' is invalid" file)
-                      main state
+          try
+            let p = SourceCodeServices.FSharpProjectFileInfo.Parse(file)
+            let files =
+              [ for f in p.CompileFiles do
+                  yield IO.Path.Combine(p.Directory, f) ]
+            // TODO: Handle these options more gracefully
+            let targetFilename = match p.OutputFile with Some p -> p | None -> "Unknown"
+            let framework = match p.FrameworkVersion with Some p -> p | None -> "Unknown"
+            match state.OutputMode with
+            | Text -> printAgent.WriteLine(sprintf "DATA: project\n%s\n<<EOF>>" (String.concat "\n" files))
+            | Json -> prAsJson { Kind = "project"
+                                 Data = { Project = file
+                                          Files = files
+                                          Output = targetFilename
+                                          References = List.sort p.References
+                                          Framework = framework } }
+            let projects =
+              files
+              |> List.fold (fun s f -> Map.add f p s) state.Projects
+            main { state with Projects = projects }
+          with e ->
+            printMsg "ERROR" (sprintf "Project file '%s' is invalid: '%s'" file e.Message)
+            main state
         else
           printMsg "ERROR" (sprintf "File '%s' does not exist" file)
           main state
@@ -403,8 +432,8 @@ module internal Main =
     | Declarations file ->
         let file = Path.GetFullPath file
         if parsed file then
-          let text, projFile, files, args, framework = getoptions file
-          let parseResult = agent.ParseFileInProject(projFile, file, text, files, args, framework) |> Async.RunSynchronously
+          let text, projFile, args = getoptions file state
+          let parseResult = agent.ParseFileInProject(projFile, file, text, [||], args, FSharpTargetFramework.NET_4_5) |> Async.RunSynchronously
           let decls = parseResult.GetNavigationItems().Declarations 
           match state.OutputMode with
           | Text ->
@@ -436,11 +465,11 @@ module internal Main =
     | PosCommand(cmd, file, line, col, timeout) ->
         let file = Path.GetFullPath file
         if parsed file && posok file line col then
-          let text, projFile, files, args, framework = getoptions file
+          let text, projFile, args = getoptions file state
           let lineStr = state.Files.[file].[line - 1]
           // TODO: Deny recent typecheck results under some circumstances (after bracketed expr..)
           let timeout = match timeout with Some x -> x | _ -> 20000
-          let tyResOpt = agent.GetTypedParseResultWithTimeout(projFile, file, text, files, args, AllowStaleResults.MatchingFileName, timeout, framework)
+          let tyResOpt = agent.GetTypedParseResultWithTimeout(projFile, file, text, [||], args, AllowStaleResults.MatchingFileName, timeout, FSharpTargetFramework.NET_4_5)
                          |> Async.RunSynchronously
           match tyResOpt with
           | None -> printMsg "ERROR" "Timeout when fetching typed parse result"; main state
@@ -459,9 +488,9 @@ module internal Main =
                       main state
                   | Json ->
 
-                      let ds = List.sortBy (fun (d: Declaration) -> d.Name)
+                      let ds = List.sortBy (fun (d: FSharpDeclarationListItem) -> d.Name)
                                  [ for d in decls.Items do yield d ]
-                      match List.tryFind (fun (d: Declaration) -> d.Name.StartsWith residue) ds with
+                      match List.tryFind (fun (d: FSharpDeclarationListItem) -> d.Name.StartsWith residue) ds with
                       | None -> ()
                       | Some d -> let tip = TipFormatter.formatTip d.DescriptionText
                                   let helptext = Map.add d.Name tip Map.empty
@@ -471,7 +500,7 @@ module internal Main =
                                  Data = [ for d in decls.Items do yield d.Name ] }
 
                       let helptext =
-                        Seq.fold (fun m (d: Declaration) -> Map.add d.Name d.DescriptionText m) Map.empty decls.Items
+                        Seq.fold (fun m (d: FSharpDeclarationListItem) -> Map.add d.Name d.DescriptionText m) Map.empty decls.Items
 
                       main { state with HelpText = helptext }
               | None -> 
@@ -487,8 +516,8 @@ module internal Main =
               | None -> printMsg "INFO" "No tooltip information"
               | Some (tip,_) ->
                 match tip with
-                | ToolTipText(elems) when elems |> List.forall (function
-                  ToolTipElementNone -> true | _ -> false) ->
+                | FSharpToolTipText(elems) when elems |> List.forall (function
+                  FSharpToolTipElement.None -> true | _ -> false) ->
                   printMsg "INFO" "No tooltip information"
                 | _ ->
                     match state.OutputMode with
@@ -501,11 +530,11 @@ module internal Main =
               main state
           
           | FindDeclaration ->
-            let declarations = tyRes.GetDeclarationLocation(line + 1,col,lineStr)
+            let declarations = tyRes.GetDeclarationLocation(line,col,lineStr)
                                |> Async.RunSynchronously
             match declarations with
-            | FindDeclResult.DeclNotFound _ -> printMsg "ERROR" "Could not find declaration"
-            | FindDeclResult.DeclFound range ->
+            | FSharpFindDeclResult.DeclNotFound _ -> printMsg "ERROR" "Could not find declaration"
+            | FSharpFindDeclResult.DeclFound range ->
               
               match state.OutputMode with
               | Text -> printAgent.WriteLine(sprintf "DATA: finddecl\n%s:%d:%d\n<<EOF>>" range.FileName range.StartLine range.StartColumn)

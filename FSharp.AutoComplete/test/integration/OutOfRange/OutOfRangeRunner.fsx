@@ -16,7 +16,6 @@ let p = new FSharpAutoCompleteWrapper()
 p.parse "Script.fsx"
 p.completion "Script.fsx" 6 16
 p.completion "Script.fsx" 6 15
-p.completion "Script.fsx" 6 14
 p.tooltip "Script.fsx" 6 13
 p.tooltip "Script.fsx" 6 14
 p.tooltip "Script.fsx" 6 15
