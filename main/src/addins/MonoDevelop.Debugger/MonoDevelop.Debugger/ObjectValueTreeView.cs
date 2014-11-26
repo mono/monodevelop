@@ -235,27 +235,31 @@ namespace MonoDevelop.Debugger
 					return;
 				}
 				using (var cr = Gdk.CairoHelper.Create (window)) {
-					int xpad = (int)Xpad;
-					cr.RoundedRectangle (
-						cell_area.X + xpad,
-						cell_area.Y + TopBottomPadding,
-						cell_area.Width - 2 * xpad,
-						cell_area.Height - TopBottomPadding * 2,
-						(cell_area.Height - (TopBottomPadding * 2)) / 2);
-					cr.LineWidth = 1;
-					cr.SetSourceRGB (233 / 255.0, 242 / 255.0, 252 / 255.0);
-					cr.FillPreserve ();
-					cr.SetSourceRGB (82 / 255.0, 148 / 255.0, 235 / 255.0);
-					cr.Stroke ();
 					using (var layout = new Pango.Layout (widget.PangoContext)) {
 						layout.SetText (Text);
 						layout.FontDescription = FontDesc;
 						layout.FontDescription.Family = Family;
-						Pango.Rectangle ink_rect, logical_rect;
-						layout.GetPixelExtents (out ink_rect, out logical_rect);
+						int w, h;
+						layout.GetPixelSize (out w, out h);
+						int xpad = (int)Xpad;
+						cr.RoundedRectangle (
+							cell_area.X + xpad,
+							cell_area.Y + TopBottomPadding,
+							w + (cell_area.Height - 2 * TopBottomPadding),
+							cell_area.Height - TopBottomPadding * 2,
+							(cell_area.Height - (TopBottomPadding * 2)) / 2);
+						cr.LineWidth = 1;
+						cr.SetSourceRGB (233 / 255.0, 242 / 255.0, 252 / 255.0);
+						cr.FillPreserve ();
+						cr.SetSourceRGB (82 / 255.0, 148 / 255.0, 235 / 255.0);
+						cr.Stroke ();
+
+						int YOffset = (cell_area.Height - h) / 2;
+						if (((ObjectValueTreeView)widget).CompactView)
+							YOffset += 1;
 						window.DrawLayoutWithColors (widget.Style.TextGC (StateType.Normal),
-							cell_area.X + cell_area.Height / 2 + xpad,
-							cell_area.Y + 1 + TopBottomPadding,
+							cell_area.X + (cell_area.Height - TopBottomPadding * 2 + 1) / 2 + xpad,
+							cell_area.Y + YOffset,
 							layout, new Gdk.Color (82, 148, 235), new Gdk.Color (233, 242, 252));
 					}
 				}
@@ -263,6 +267,7 @@ namespace MonoDevelop.Debugger
 
 			public override void GetSize (Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				x_offset = y_offset = 0;
 				if (string.IsNullOrEmpty (Text)) {
 					width = 0;
@@ -273,10 +278,9 @@ namespace MonoDevelop.Debugger
 					layout.SetText (Text);
 					layout.FontDescription = FontDesc;
 					layout.FontDescription.Family = Family;
-					height = cell_area.Height;
 					int w, h;
 					layout.GetPixelSize (out w, out h);
-					width = w + h + 4 * (int)Xpad;
+					width = w + (height - 2 * TopBottomPadding) + 2 * (int)Xpad;
 				}
 			}
 		}
