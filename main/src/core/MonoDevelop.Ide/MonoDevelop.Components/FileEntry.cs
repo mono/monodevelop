@@ -34,17 +34,18 @@ namespace MonoDevelop.Components
 	[ToolboxItem (true)]
 	public class FileEntry : BaseFileEntry
 	{
-		public FileEntry () : base ("")
+		public FileEntry () : this ("")
 		{
 		}
 
 		public FileEntry (string name) : base (name)
 		{
+			Action = Gtk.FileChooserAction.Open;
 		}
 
 		protected override string ShowBrowseDialog (string name, string startIn)
 		{
-			var fd = new SelectFileDialog (name);
+			var fd = new SelectFileDialog (name, Action);
 			if (startIn != null)
 				fd.CurrentFolder = startIn;
 
@@ -55,5 +56,7 @@ namespace MonoDevelop.Components
 				return fd.SelectedFile;
 			return null;
 		}
+
+		public Gtk.FileChooserAction Action { get; set; }
 	}
 }
