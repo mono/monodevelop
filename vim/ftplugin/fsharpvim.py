@@ -28,16 +28,22 @@ class Interaction:
             self.logfile.write("> " + txt)
             self.logfile.flush()
 
+    def read(self):
+        self.event.wait(self._timeOut)
+        if self.debug:
+            self.logfile.write('msg received %s\n' % self.data)
+        return self.data
+
     def send(self, command):
         self.data = None
         self.event.clear()
         self._write(command)
-        self.event.wait(self._timeOut)
+        return self.read()
 
-        if self.debug:
-            self.logfile.write('msg received %s\n' % self.data)
-
-        return self.data
+    def send_async(self, command):
+        self.data = None
+        self.event.clear()
+        self._write(command)
 
     # only on worker thread
     def update(self, data):
@@ -168,6 +174,13 @@ class FSAutoComplete:
             self.send(line + "\n")
         msg = self._errors.send("<<EOF>>\n")
         return msg
+
+    def errors_current(self):
+        msg = self._errors.read()
+        if msg == None:
+            return []
+        else:
+            return msg
 
     def tooltip(self, fn, line, column):
         msg = self._tooltip.send('tooltip "%s" %d %d 500\n' % (fn, line, column))

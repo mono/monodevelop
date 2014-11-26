@@ -16,6 +16,8 @@ let s:candidates = [ 'fsi',
             \ 'fsharpi',
             \ 'fsharpi.exe' ]
 
+let g:fsharp_onfly_error_check = 1
+
 if !exists('g:fsharp_interactive_bin')
     let g:fsharp_interactive_bin = ''
     for c in s:candidates
@@ -83,7 +85,12 @@ EOF
         au!
         " closing the scratch window after leaving insert mode
         " is common practice
+        au BufWritePre *.fs,*.fsi,*.fsx call fsharpbinding#python#OnBufWritePre() "fsi.cd
+        au TextChanged *.fs,*.fsi,*.fsx call fsharpbinding#python#OnTextChanged() "fsi.cd
+        au TextChangedI *.fs,*.fsi,*.fsx call fsharpbinding#python#OnTextChangedI() "fsi.cd
+        au CursorHold *.fs,*.fsi,*.fsx call fsharpbinding#python#OnCursorHold() "fsi.cd
         au BufEnter *.fs,*.fsi,*.fsx call fsharpbinding#python#OnBufEnter() "fsi.cd
+        au InsertLeave *.fs,*.fsi,*.fsx call fsharpbinding#python#OnInsertLeave() "fsi.cd
         au InsertLeave *.fs? if pumvisible() == 0|pclose|endif
     augroup END
 

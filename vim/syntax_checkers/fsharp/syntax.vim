@@ -2,6 +2,7 @@ if exists('g:loaded_syntastic_fsharp_syntax_checker')
     finish
 endif
 let g:loaded_syntastic_fsharp_syntax_checker = 1
+let g:fsharp_only_check_errors_on_write = 0
 
 let s:save_cpo = &cpo
 set cpo&vim

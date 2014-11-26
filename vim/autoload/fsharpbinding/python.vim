@@ -125,6 +125,27 @@ function! fsharpbinding#python#FindErrors()
     return result
 endfunction
 
+"TODO refactor
+function! fsharpbinding#python#CurrentErrors()
+    let result = []
+    let buf = bufnr('%')
+    try
+        let errs = pyeval('fsautocomplete.errors_current()')
+        for e in errs
+            call add(result,
+                \{'lnum': e['StartLineAlternate'],
+                \ 'col': e['StartColumn'],
+                \ 'type': e['Severity'][0],
+                \ 'text': e['Message'],
+                \ 'hl': '\%' . e['StartLineAlternate'] . 'l\%>' . e['StartColumn'] .  'c\%<' . (e['EndColumn'] + 1) . 'c',
+                \ 'bufnr': buf,
+                \ 'valid': 1 })
+        endfor
+    catch
+        echohl WarningMsg "failed to parse file"
+    endtry
+    return result
+endfunction
 
 function! fsharpbinding#python#Complete(findstart, base)
     let line = getline('.')
@@ -198,7 +219,46 @@ else:
 EOF
 endfunction
 
+function! fsharpbinding#python#OnBufWritePre()
+    "ensure a parse has been requested before BufWritePost is called
+    python << EOF
+fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
+EOF
+endfunction
+
+function! fsharpbinding#python#OnInsertLeave()
+    if exists ("b:fsharp_buffer_changed") != 0 
+        if b:fsharp_buffer_changed == 1
+    python << EOF
+fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
+EOF
+        endif
+    endif
+endfunction
+
+function! fsharpbinding#python#OnCursorHold()
+    if exists ("g:fsharp_only_check_errors_on_write") != 0 
+        if g:fsharp_only_check_errors_on_write != 1 
+            exec "SyntasticCheck"
+        endif
+    endif
+    let b:fsharp_buffer_changed = 0
+endfunction
+
+function! fsharpbinding#python#OnTextChanged()
+    "TODO: make an parse_async that writes to the server on a background thread
+    python << EOF
+fsautocomplete.parse(vim.current.buffer.name, True, vim.current.buffer)
+EOF
+    let b:fsharp_buffer_changed = 1
+endfunction
+
+function! fsharpbinding#python#OnTextChangedI()
+    let b:fsharp_buffer_changed = 1
+endfunction
+
 function! fsharpbinding#python#OnBufEnter()
+    set updatetime=500
 python << EOF
 file_dir = vim.eval("expand('%:p:h')")
 fsi.cd(file_dir)
