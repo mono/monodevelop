@@ -38,6 +38,7 @@ using MonoDevelop.Core;
 using MonoDevelop.AnalysisCore.Gui;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace MonoDevelop.CodeIssues
 {
@@ -49,9 +50,15 @@ namespace MonoDevelop.CodeIssues
 			if (!AnalysisOptions.EnableFancyFeatures || input.Project == null || !input.IsCompileableInProject || input.AnalysisDocument == null)
 				return Enumerable.Empty<Result> ();
 
-			var compilation = input.GetCompilationAsync (cancellationToken).Result;
-			var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
 			try {
+				var task = input.GetCompilationAsync (cancellationToken);
+				if (!task.IsCompleted)
+					task.Wait (cancellationToken);
+				if (task.IsCanceled)
+					return Enumerable.Empty<Result> ();
+				var compilation = task.Result;
+				var language = CodeRefactoringService.MimeTypeToLanguage (analysisDocument.Editor.MimeType);
+
 				var options = new AnalyzerOptions(new AdditionalStream[0], new Dictionary<string, string> ());
 				var providers = new List<DiagnosticAnalyzer> ();
 				var alreadyAdded = new HashSet<Type>();
@@ -71,7 +78,13 @@ namespace MonoDevelop.CodeIssues
 					CancellationToken.None
 				);
 
-				var model = compilation.GetSemanticModel (input.AnalysisDocument.GetSyntaxTreeAsync ().Result);
+				var syntaxTreeTask = input.AnalysisDocument.GetSyntaxTreeAsync ();
+				if (!syntaxTreeTask.IsCompleted)
+					syntaxTreeTask.Wait ();
+				if (syntaxTreeTask.IsCanceled)
+					return Enumerable.Empty<Result> ();
+
+				var model = compilation.GetSemanticModel (syntaxTreeTask.Result);
 				model.GetDiagnostics ();
 				model.GetSyntaxDiagnostics ();
 				model.GetDeclarationDiagnostics ();
@@ -86,6 +99,8 @@ namespace MonoDevelop.CodeIssues
 //						Console.WriteLine (diagnostic.Id + "/" + res.Region +"/" + analysisDocument.Editor.GetTextAt (line));
 						return res;
 					});
+			} catch (OperationCanceledException) {
+				return Enumerable.Empty<Result> ();
 			} catch (Exception e) {
 				LoggingService.LogError ("Error while running diagnostics.", e); 
 				return Enumerable.Empty<Result> ();
