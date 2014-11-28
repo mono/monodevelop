@@ -78,6 +78,12 @@ let g:fsharpbinding_debug = 1
 This will create two log files `log.txt` and `log2.txt` in your temporary folder
 (i.e. `/tmp/`).
 
+You can set the msbuild/xbuild path. On windows it is very likely you need to do this unless msbuild is in your path.
+
+~~~.vim
+let g:fsharp_xbuild_path = "/path/to/xbuild/or/msbuild"
+~~~
+
 
 [syntastic]: https://github.com/scrooloose/syntastic
 [airline]: https://github.com/bling/vim-airline

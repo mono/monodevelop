@@ -250,7 +250,7 @@ EOF
     "set makeprg
     if !filereadable(expand("%:p:h")."/Makefile")
         if exists('b:proj_file')
-            let &l:makeprg='xbuild ' . b:proj_file . ' /verbosity:quiet /nologo /p:Configuration=Debug'
+            let &l:makeprg=g:fsharp_xbuild_path . ' ' . b:proj_file . ' /verbosity:quiet /nologo /p:Configuration=Debug'
             setlocal errorformat=\ %#%f(%l\\\,%c):\ %m
         endif
     endif
