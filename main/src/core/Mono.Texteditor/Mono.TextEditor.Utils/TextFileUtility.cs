@@ -61,10 +61,10 @@ namespace Mono.TextEditor.Utils
 			// Encoding verifiers
 			var verifierList = new List<Verifier> () {
 				new Utf8Verifier (),
+				new GB18030CodePageVerifier (),
 				new WindowsCodePageVerifier (),
 				new UnicodeVerifier (),
 				new BigEndianUnicodeVerifier (),
-				new GB18030CodePageVerifier (),
 				new CodePage858Verifier ()
 			};
 
