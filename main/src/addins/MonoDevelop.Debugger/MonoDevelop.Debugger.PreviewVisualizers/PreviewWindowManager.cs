@@ -27,6 +27,7 @@ using System;
 using MonoDevelop.Ide;
 using Mono.Debugging.Client;
 using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.Debugger
 {
@@ -67,9 +68,17 @@ namespace MonoDevelop.Debugger
 				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
 				IdeApp.Workbench.RootWindow.FocusOutEvent += HandleFocusOutEvent;
 			}
+			IdeApp.CommandService.KeyPressed += HandleKeyPressed;
 			DebuggingService.StoppedEvent += delegate {
 				DestroyWindow ();
 			};
+		}
+
+		static void HandleKeyPressed (object sender, KeyPressArgs e)
+		{
+			if (e.Key == Gdk.Key.Escape) {
+				DestroyWindow ();
+			}
 		}
 
 		static void HandleFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
