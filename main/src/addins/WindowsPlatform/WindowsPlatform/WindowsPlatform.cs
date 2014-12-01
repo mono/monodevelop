@@ -115,7 +115,11 @@ namespace MonoDevelop.Platform
 		
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
-			string ext = Path.GetExtension (uri).ToLower ();
+			string ext = Path.GetExtension (uri);
+			if (ext == null)
+				return null;
+
+			ext = ext.ToLower ();
 			
 			RegistryKey typeKey = Registry.ClassesRoot.OpenSubKey (ext, false);
 			if (typeKey == null)
