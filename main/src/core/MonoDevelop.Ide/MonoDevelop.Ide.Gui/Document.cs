@@ -632,33 +632,35 @@ namespace MonoDevelop.Ide.Gui
 
 		void InitializeExtensionChain ()
 		{
-			DetachExtensionChain ();
-			var editor = GetContent<IExtensibleTextEditor> ();
+			if (IsFile) {
+				DetachExtensionChain ();
+				var editor = GetContent<IExtensibleTextEditor> ();
 
-			ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
-			editorExtension = null;
-			TextEditorExtension last = null;
-			var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
-			foreach (TextEditorExtensionNode extNode in extensions) {
-				if (!extNode.Supports (FileName, mimetypeChain))
-					continue;
-				TextEditorExtension ext;
-				try {
-					ext = (TextEditorExtension)extNode.CreateInstance ();
-				} catch (Exception e) {
-					LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type +")", e); 
-					continue;
-				}
-				if (ext.ExtendsEditor (this, editor)) {
-					if (last != null) {
-						ext.Next = last.Next;
-						last.Next = ext;
-						last = ext;
-					} else {
-						editorExtension = last = ext;
-						last.Next = editor.AttachExtension (editorExtension);
+				ExtensionNodeList extensions = window.ExtensionContext.GetExtensionNodes ("/MonoDevelop/Ide/TextEditorExtensions", typeof(TextEditorExtensionNode));
+				editorExtension = null;
+				TextEditorExtension last = null;
+				var mimetypeChain = DesktopService.GetMimeTypeInheritanceChainForFile (FileName).ToArray ();
+				foreach (TextEditorExtensionNode extNode in extensions) {
+					if (!extNode.Supports (FileName, mimetypeChain))
+						continue;
+					TextEditorExtension ext;
+					try {
+						ext = (TextEditorExtension)extNode.CreateInstance ();
+					} catch (Exception e) {
+						LoggingService.LogError ("Error while creating text editor extension :" + extNode.Id + "(" + extNode.Type + ")", e); 
+						continue;
 					}
-					ext.Initialize (this);
+					if (ext.ExtendsEditor (this, editor)) {
+						if (last != null) {
+							ext.Next = last.Next;
+							last.Next = ext;
+							last = ext;
+						} else {
+							editorExtension = last = ext;
+							last.Next = editor.AttachExtension (editorExtension);
+						}
+						ext.Initialize (this);
+					}
 				}
 			}
 			if (window is SdiWorkspaceWindow)
