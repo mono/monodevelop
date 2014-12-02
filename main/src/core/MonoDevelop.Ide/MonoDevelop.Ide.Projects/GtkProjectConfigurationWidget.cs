@@ -46,7 +46,7 @@ namespace MonoDevelop.Ide.Projects
 
 			eventBox.ModifyBg (StateType.Normal, new Gdk.Color (255, 255, 255));
 
-			var leftHandBackgroundColor = new Gdk.Color (229, 233, 239);
+			var leftHandBackgroundColor = new Gdk.Color (225, 228, 232);
 			leftBorderEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
 			projectConfigurationRightBorderEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
 			projectConfigurationTopEventBox.ModifyBg (StateType.Normal, leftHandBackgroundColor);
