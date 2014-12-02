@@ -102,13 +102,6 @@ namespace MonoDevelop.Platform
 			IntPtr handle = GdkWin32.HgdiobjGet (IdeApp.Workbench.RootWindow.GdkWindow);
 			TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.Error, handle);
 			TaskbarManager.Instance.SetProgressValue (1, 1, handle);
-
-			// Added a timeout to removing the red progress bar. This is to fix the dependency on a status bar update
-			// that won't happen until the status bar receives another update.
-			GLib.Timeout.Add (500, delegate {
-				TaskbarManager.Instance.SetProgressState (TaskbarProgressBarState.NoProgress, handle);
-				return false;
-			});
 		}
 
 		public override object GetFileAttributes (string fileName)
