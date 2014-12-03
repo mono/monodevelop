@@ -27,6 +27,7 @@
         <Translation isoCode="sl" />
         <Translation isoCode="sv" />
         <Translation isoCode="tr" />
+        <Translation isoCode="uk" />
         <Translation isoCode="zh_CN" />
         <Translation isoCode="zh_TW" />
         <Translation isoCode="ko" />
@@ -70,6 +71,7 @@
     <GettextTranslation Include="sl.po" />
     <GettextTranslation Include="sv.po" />
     <GettextTranslation Include="tr.po" />
+    <GettextTranslation Include="uk.po" />
     <GettextTranslation Include="zh_CN.po" />
     <GettextTranslation Include="zh_TW.po" />
     <GettextTranslation Include="ko.po" />
