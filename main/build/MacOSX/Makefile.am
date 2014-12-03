@@ -50,7 +50,7 @@ app: monostub native-init.a
 	@echo "Building the native executable"
 	@echo ""
 
-	$(XAMARIN_MAC)/bin/mmp --output $(abspath $(MAC_APP_DIR)/../) --name $(APP_NAME) --no-root-assembly --profile=xammac --link_flags="-force_load native-init.a" --use-system-mono --arch i386
+	$(XAMARIN_MAC)/bin/mmp --output $(abspath $(MAC_APP_DIR)/../) --name $(APP_NAME) --no-root-assembly --embed-mono:false --target-framework=4.0 --link_flags="-force_load native-init.a" -r $(XAMARIN_MAC)/lib/reference/full/Xamarin.Mac.dll --arch i386
 
 #	@echo ""
 #	@echo "Copying install prefix into app bundle"
