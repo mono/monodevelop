@@ -675,10 +675,7 @@ namespace MonoDevelop.VersionControl
 		// it can be a list of files to compare.
 		public DiffInfo[] PathDiff (ChangeSet cset, bool remoteDiff)
 		{
-			List<FilePath> paths = new List<FilePath> ();
-			foreach (ChangeSetItem item in cset.Items)
-				paths.Add (item.LocalPath);
-			return PathDiff (cset.BaseLocalPath, paths.ToArray (), remoteDiff);
+			return PathDiff (cset.BaseLocalPath, cset.Items.Select (i => i.LocalPath).ToArray (), remoteDiff);
 		}
 		
 		/// <summary>
@@ -862,27 +859,26 @@ namespace MonoDevelop.VersionControl
 	
 	public class DiffInfo
 	{
-		FilePath fileName;
-		FilePath basePath;
-		string content;
-		
 		public DiffInfo (FilePath basePath, FilePath fileName, string content)
 		{
-			this.basePath = basePath;
-			this.fileName = fileName;
-			this.content = content.Replace ("\r","");
+			BasePath = basePath;
+			FileName = fileName;
+			Content = content.Replace ("\r","");
 		}
 		
 		public FilePath FileName {
-			get { return fileName; }
+			get;
+			private set;
 		}
 		
 		public string Content {
-			get { return content; }
+			get;
+			private set;
 		}
 		
 		public FilePath BasePath {
-			get { return basePath; }
+			get;
+			private set;
 		}
 	}
 
