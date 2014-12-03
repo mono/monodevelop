@@ -293,6 +293,7 @@ namespace MonoDevelop.Debugger
 			EnableSearch = false;
 			AllowPopupMenu = true;
 			Selection.Mode = Gtk.SelectionMode.Multiple;
+			Selection.Changed += HandleSelectionChanged;
 			ResetColumnSizes ();
 			
 			Pango.FontDescription newFont = Style.FontDescription.Copy ();
@@ -393,6 +394,15 @@ namespace MonoDevelop.Debugger
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
+		}
+
+		void HandleSelectionChanged (object sender, EventArgs e)
+		{
+			if (Selection.IterIsSelected (currentHoverIter)) {
+				SetPreviewButtonIcon (PreviewButtonIcons.Selected, currentHoverIter);
+			} else {
+				SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
+			}
 		}
 
 		void HandlePreviewWindowClosed (object sender, EventArgs e)
@@ -1401,9 +1411,11 @@ namespace MonoDevelop.Debugger
 			Hidden,
 			RowHover,
 			Hover,
-			Active
+			Active,
+			Selected,
 		}
 
+		PreviewButtonIcons iconBeforeSelected;
 		PreviewButtonIcons currentIcon;
 		TreeIter currentHoverIter = TreeIter.Zero;
 
@@ -1448,6 +1460,20 @@ namespace MonoDevelop.Debugger
 				}
 			}
 			if (!it.Equals (TreeIter.Zero) && store.IterIsValid (it)) {
+				if (icon == PreviewButtonIcons.Selected) {
+					if ((currentIcon == PreviewButtonIcons.Active ||
+					    currentIcon == PreviewButtonIcons.Hover ||
+					    currentIcon == PreviewButtonIcons.RowHover) && it.Equals (TreeIter.Zero)) {
+						iconBeforeSelected = currentIcon;
+					}
+				} else if (icon == PreviewButtonIcons.Active ||
+				           icon == PreviewButtonIcons.Hover ||
+				           icon == PreviewButtonIcons.RowHover) {
+					iconBeforeSelected = icon;
+					if (Selection.IterIsSelected (it)) {
+						icon = PreviewButtonIcons.Selected;
+					}
+				}
 				switch (icon) {
 				case PreviewButtonIcons.None:
 					store.SetValue (it, PreviewIconColumn, null);
@@ -1463,6 +1489,9 @@ namespace MonoDevelop.Debugger
 					break;
 				case PreviewButtonIcons.Active:
 					store.SetValue (it, PreviewIconColumn, "md-preview-active");
+					break;
+				case PreviewButtonIcons.Selected:
+					store.SetValue (it, PreviewIconColumn, "md-preview-selected");
 					break;
 				}
 				currentIcon = icon;
@@ -1646,7 +1675,7 @@ namespace MonoDevelop.Debugger
 				if (cr == crpViewer) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					DebuggingService.ShowValueVisualizer (val);
-				} else if (cr == crtExp && (store.GetValue (it, PreviewIconColumn) as string) == "md-preview-hover") {
+				} else if (cr == crtExp) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					var rect = GetCellRendererArea (path, col, cr);
 					using (var layout = new Pango.Layout (PangoContext)) {
@@ -1660,8 +1689,11 @@ namespace MonoDevelop.Debugger
 						ConvertTreeToWidgetCoords (rect.X, rect.Y, out rect.X, out rect.Y);
 						rect.X += (int)Hadjustment.Value;
 						rect.Y += (int)Vadjustment.Value;
-						DebuggingService.ShowPreviewVisualizer (val, this, rect);
-						SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+						if (rect.X < evnt.X &&
+						    rect.X + 16 > evnt.X) {
+							DebuggingService.ShowPreviewVisualizer (val, this, rect);
+							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+						}
 					}
 				} else if (cr == crtValue) {
 					if ((Platform.IsMac && ((evnt.State & Gdk.ModifierType.Mod2Mask) > 0)) ||

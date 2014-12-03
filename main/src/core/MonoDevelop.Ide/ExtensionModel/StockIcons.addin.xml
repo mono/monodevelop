@@ -156,6 +156,7 @@
 	<StockIcon stockid="md-preview-active" resource="preview-active-16.png" size="Menu" />
 	<StockIcon stockid="md-preview-hover" resource="preview-hover-16.png" size="Menu" />
 	<StockIcon stockid="md-preview-normal" resource="preview-normal-16.png" size="Menu" />
+	<StockIcon stockid="md-preview-selected" resource="preview-selected-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-16.png" size="Menu" />
 	<StockIcon stockid="md-project" resource="project-light-32.png" size="Dnd" />
 	<StockIcon stockid="md-project-status-information" resource="project-status-information-light-16.png" size="Menu" />

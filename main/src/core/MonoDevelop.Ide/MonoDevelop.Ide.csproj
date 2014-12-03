@@ -2000,6 +2000,12 @@
     <EmbeddedResource Include="icons\light\project-status-error-16%402x.png">
       <LogicalName>project-status-error-light-16@2x.png</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preview-selected-16.png">
+      <LogicalName>preview-selected-16.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="icons\light\preview-selected-16%402x.png">
+      <LogicalName>preview-selected-16@2x.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Ide.Commands\CustomStringTagProvider.cs" />
