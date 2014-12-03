@@ -394,6 +394,7 @@ namespace MonoDevelop.Debugger
 			createMsg = GettextCatalog.GetString ("Click here to add a new watch");
 			CompletionWindowManager.WindowClosed += HandleCompletionWindowClosed;
 			PreviewWindowManager.WindowClosed += HandlePreviewWindowClosed;
+			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
 		}
 
 		void HandleSelectionChanged (object sender, EventArgs e)
@@ -402,6 +403,40 @@ namespace MonoDevelop.Debugger
 				SetPreviewButtonIcon (PreviewButtonIcons.Selected, currentHoverIter);
 			} else {
 				SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
+			}
+		}
+
+		void HandleScrollAdjustmentsSet (object o, ScrollAdjustmentsSetArgs args)
+		{
+			Hadjustment.ValueChanged += UpdatePreviewPosition;
+			Vadjustment.ValueChanged += UpdatePreviewPosition;
+		}
+
+		void UpdatePreviewPosition (object sender, EventArgs e)
+		{
+			UpdatePreviewPosition ();
+		}
+
+		void UpdatePreviewPosition ()
+		{
+			if (startPreviewCaret.IsEmpty)
+				return;
+			var newCaret = new Gdk.Rectangle (
+				               (int)(startPreviewCaret.Left + (startHAdj - Hadjustment.Value)),
+				               (int)(startPreviewCaret.Top + (startVAdj - Vadjustment.Value)),
+				               startPreviewCaret.Width,
+				               startPreviewCaret.Height);
+			var treeViewRectangle = new Gdk.Rectangle (
+				                        this.VisibleRect.X - (int)Hadjustment.Value,
+				                        this.VisibleRect.Y - (int)Vadjustment.Value,
+				                        this.VisibleRect.Width,
+				                        this.VisibleRect.Height);
+			if (treeViewRectangle.Contains (new Gdk.Point (
+				    newCaret.X + newCaret.Width / 2,
+				    newCaret.Y + newCaret.Height / 2 - 30))) {
+				PreviewWindowManager.RepositionWindow (newCaret);
+			} else {
+				PreviewWindowManager.DestroyWindow ();
 			}
 		}
 
@@ -431,6 +466,9 @@ namespace MonoDevelop.Debugger
 			valueCol.RemoveNotification ("width", OnColumnWidthChanged);
 			expCol.RemoveNotification ("width", OnColumnWidthChanged);
 
+			Hadjustment.ValueChanged -= UpdatePreviewPosition;
+			Vadjustment.ValueChanged -= UpdatePreviewPosition;
+
 			values.Clear ();
 			valueNames.Clear ();
 			Frame = null;
@@ -445,6 +483,7 @@ namespace MonoDevelop.Debugger
 		{
 			base.OnSizeAllocated (allocation);
 			AdjustColumnSizes ();
+			UpdatePreviewPosition ();
 		}
 		
 		protected override void OnShown ()
@@ -1653,6 +1692,10 @@ namespace MonoDevelop.Debugger
 			return new Gdk.Rectangle (rect.X + x, rect.Y, width, rect.Height);
 		}
 
+		Gdk.Rectangle startPreviewCaret;
+		double startHAdj;
+		double startVAdj;
+
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			allowStoreColumnSizes = true;
@@ -1677,21 +1720,23 @@ namespace MonoDevelop.Debugger
 					DebuggingService.ShowValueVisualizer (val);
 				} else if (cr == crtExp) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
-					var rect = GetCellRendererArea (path, col, cr);
+					startPreviewCaret = GetCellRendererArea (path, col, cr);
+					startHAdj = Hadjustment.Value;
+					startVAdj = Vadjustment.Value;
 					using (var layout = new Pango.Layout (PangoContext)) {
 						layout.FontDescription = crtExp.FontDesc.Copy ();
 						layout.FontDescription.Family = crtExp.Family;
 						layout.SetText ((string)store.GetValue (it, NameColumn));
 						int w, h;
 						layout.GetPixelSize (out w, out h);
-						rect.X += (int)(w + cr.Xpad * 3);
-						rect.Width = 16;
-						ConvertTreeToWidgetCoords (rect.X, rect.Y, out rect.X, out rect.Y);
-						rect.X += (int)Hadjustment.Value;
-						rect.Y += (int)Vadjustment.Value;
-						if (rect.X < evnt.X &&
-						    rect.X + 16 > evnt.X) {
-							DebuggingService.ShowPreviewVisualizer (val, this, rect);
+						startPreviewCaret.X += (int)(w + cr.Xpad * 3);
+						startPreviewCaret.Width = 16;
+						ConvertTreeToWidgetCoords (startPreviewCaret.X, startPreviewCaret.Y, out startPreviewCaret.X, out startPreviewCaret.Y);
+						startPreviewCaret.X += (int)Hadjustment.Value;
+						startPreviewCaret.Y += (int)Vadjustment.Value;
+						if (startPreviewCaret.X < evnt.X &&
+						    startPreviewCaret.X + 16 > evnt.X) {
+							DebuggingService.ShowPreviewVisualizer (val, this, startPreviewCaret);
 							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
 						}
 					}

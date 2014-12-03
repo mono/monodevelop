@@ -55,11 +55,11 @@ namespace MonoDevelop.Debugger
 			OnWindowClosed (EventArgs.Empty);
 		}
 
-		public static void RepositionWindow ()
+		public static void RepositionWindow (Gdk.Rectangle? newCaret = null)
 		{
 			if (!IsVisible)
 				return;
-			wnd.RepositionWindow ();
+			wnd.RepositionWindow (newCaret);
 		}
 
 		static PreviewWindowManager ()
