@@ -235,7 +235,10 @@ namespace MonoDevelop.CSharp.Refactoring.CodeActions
 				if (sharedResolver == null)
 					return null;
 				return new MDRefactoringContext (document, sharedResolver, loc, cancellationToken);
-			}, TaskContinuationOptions.ExecuteSynchronously);
+				// Do not add TaskContinuationOptions.ExecuteSynchronously
+				// https://bugzilla.xamarin.com/show_bug.cgi?id=25065
+				// adding ExecuteSynchronously appears to create a deadlock situtation in TypeSystemParser.Parse()
+			});
 		}
 
 		internal MDRefactoringContext (Document document, CSharpAstResolver resolver, TextLocation loc, CancellationToken cancellationToken = default (CancellationToken)) : base (resolver, cancellationToken)
