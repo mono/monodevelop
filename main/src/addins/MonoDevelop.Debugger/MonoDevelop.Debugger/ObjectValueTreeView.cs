@@ -401,13 +401,15 @@ namespace MonoDevelop.Debugger
 
 		void HandleSelectionChanged (object sender, EventArgs e)
 		{
-			if (Selection.IterIsSelected (currentHoverIter)) {
-				SetPreviewButtonIcon (PreviewButtonIcons.Selected, currentHoverIter);
-			} else {
-				SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
+			if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
+				if (Selection.IterIsSelected (currentHoverIter)) {
+					SetPreviewButtonIcon (PreviewButtonIcons.Selected, currentHoverIter);
+				} else {
+					SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
+				}
 			}
 			foreach (var s in evalSpinnersIcons) {
-				if (Selection.IterIsSelected (s.Key)) {
+				if (store.IterIsValid (s.Key) && Selection.IterIsSelected (s.Key)) {
 					if (!s.Value) {
 						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-selected-16", IconSize.Menu);
 						evalSpinnersIcons [s.Key] = true;
