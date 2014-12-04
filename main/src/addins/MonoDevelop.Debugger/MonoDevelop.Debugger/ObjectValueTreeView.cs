@@ -397,12 +397,27 @@ namespace MonoDevelop.Debugger
 			ScrollAdjustmentsSet += HandleScrollAdjustmentsSet;
 		}
 
+		Dictionary<TreeIter, bool> evalSpinnersIcons = new Dictionary<TreeIter, bool>();
+
 		void HandleSelectionChanged (object sender, EventArgs e)
 		{
 			if (Selection.IterIsSelected (currentHoverIter)) {
 				SetPreviewButtonIcon (PreviewButtonIcons.Selected, currentHoverIter);
 			} else {
 				SetPreviewButtonIcon (iconBeforeSelected, currentHoverIter);
+			}
+			foreach (var s in evalSpinnersIcons) {
+				if (Selection.IterIsSelected (s.Key)) {
+					if (!s.Value) {
+						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-selected-16", IconSize.Menu);
+						evalSpinnersIcons [s.Key] = true;
+					}
+				} else {
+					if (s.Value) {
+						store.LoadIcon (s.Key, EvaluateStatusIconColumn, "md-spinner-normal-16", IconSize.Menu);
+						evalSpinnersIcons [s.Key] = false;
+					}
+				}
 			}
 		}
 
@@ -1043,7 +1058,14 @@ namespace MonoDevelop.Debugger
 				canEdit = false;
 			} else if (val.IsEvaluating) {
 				strval = GettextCatalog.GetString ("Evaluating...");
-				evaluateStatusIcon = "md-spinner-14";
+
+				if (Selection.IterIsSelected (it)) {
+					evalSpinnersIcons [it] = true;
+					evaluateStatusIcon = "md-spinner-selected-16";
+				} else {
+					evalSpinnersIcons [it] = false;
+					evaluateStatusIcon = "md-spinner-normal-16";
+				}
 				valueColor = disabledColor;
 				if (val.IsEvaluatingGroup) {
 					nameColor = disabledColor;
@@ -1083,6 +1105,9 @@ namespace MonoDevelop.Debugger
 			store.SetValue (it, IconColumn, icon);
 			store.SetValue (it, NameColorColumn, nameColor);
 			store.SetValue (it, ValueColorColumn, valueColor);
+			if (evaluateStatusIcon != "md-spinner-normal-16" && evaluateStatusIcon != "md-spinner-selected-16") {
+				evalSpinnersIcons.Remove (it);
+			}
 			store.SetValue (it, EvaluateStatusIconVisibleColumn, evaluateStatusIcon != null);
 			store.LoadIcon (it, EvaluateStatusIconColumn, evaluateStatusIcon, IconSize.Menu);
 			store.SetValue (it, ValueButtonVisibleColumn, valueButton != null);

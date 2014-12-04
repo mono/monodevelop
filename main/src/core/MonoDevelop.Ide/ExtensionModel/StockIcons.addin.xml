@@ -295,6 +295,8 @@
 
 	<!-- Spinners -->
 	<StockIcon stockid="md-spinner-14" animation="res:spinner-light-14-1.png;60;res:spinner-light-14-2.png;60;res:spinner-light-14-3.png;60;res:spinner-light-14-4.png;60;res:spinner-light-14-5.png;60" size="Menu" />
+	<StockIcon stockid="md-spinner-normal-16" animation="res:spinner-normal-light-1-16.png;60;res:spinner-normal-light-2-16.png;60;res:spinner-normal-light-3-16.png;60;res:spinner-normal-light-4-16.png;60;res:spinner-normal-light-5-16.png;60" size="Menu" />
+	<StockIcon stockid="md-spinner-selected-16" animation="res:spinner-selected-light-1-16.png;60;res:spinner-selected-light-2-16.png;60;res:spinner-selected-light-3-16.png;60;res:spinner-selected-light-4-16.png;60;res:spinner-selected-light-5-16.png;60" size="Menu" />
 	<StockIcon stockid="md-spinner-18" animation="res:spinner-light-18-1.png;60;res:spinner-light-18-2.png;60;res:spinner-light-18-3.png;60;res:spinner-light-18-4.png;60;res:spinner-light-18-5.png;60" size="Button" />
 
 	<!-- Overlays -->
