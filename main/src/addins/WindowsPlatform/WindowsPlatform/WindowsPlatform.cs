@@ -67,7 +67,7 @@ namespace MonoDevelop.Platform
 		{
 			// Only initialize elements for Win7+.
 			if (TaskbarManager.IsPlatformSupported) {
-				TaskbarManager.Instance.ApplicationId = BrandingService.ProfileDirectoryName + "." + IdeApp.Version;
+				TaskbarManager.Instance.ApplicationId = BrandingService.ProfileDirectoryName;
 			}
 		}
 
