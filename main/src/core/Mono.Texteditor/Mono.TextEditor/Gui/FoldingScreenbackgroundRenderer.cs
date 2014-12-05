@@ -139,7 +139,7 @@ namespace Mono.TextEditor
 				}
 
 				y = editor.LineToY (segment.StartLine.LineNumber);
-				var yEnd = editor.LineToY (segment.EndLine.LineNumber + 1);
+				var yEnd = editor.LineToY (segment.EndLine.LineNumber + 1) + (segment.EndLine.LineNumber == editor.LineCount ? editor.LineHeight : 0);
 				if (yEnd == 0)
 					yEnd = editor.VAdjustment.Upper;
 				rectangleHeight = yEnd - y;
