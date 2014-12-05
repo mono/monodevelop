@@ -38,6 +38,15 @@ namespace Mono.TextTemplating.Tests
 	public class GenerationTests
 	{	
 		[Test]
+		public void TemplateGeneratorTest ()
+		{
+			var gen = new TemplateGenerator ();
+			string tmp = null;
+			gen.ProcessTemplate (null, "<#@ template language=\"C#\" #>", ref tmp, out tmp);
+			Assert.AreEqual (0, gen.Errors.Count, "ProcessTemplate");
+		}
+
+		[Test]
 		public void Generate ()
 		{
 			string Input = ParsingTests.ParseSample1;
@@ -163,7 +172,7 @@ foo
             return this.GenerationEnvironment.ToString();
         }
         
-        protected override void Initialize() {
+        public override void Initialize() {
             base.Initialize();
         }
     }

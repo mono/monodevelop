@@ -789,7 +789,7 @@ namespace MonoDevelop.Ide
 			ImageLoader loader;
 			if (!gravatars.TryGetValue (key, out loader) || (!loader.Downloading && loader.Image == null)) {
 				var cacheFile = UserProfile.Current.TempDir.Combine ("Gravatars", key);
-				string url = "https://www.gravatar.com/avatar/" + hash + "?d=404&s=" + size;
+				string url = "https://www.gravatar.com/avatar/" + hash + "?d=mm&s=" + size;
 				gravatars[key] = loader = new ImageLoader (cacheFile, url, scaleFactor);
 			}
 

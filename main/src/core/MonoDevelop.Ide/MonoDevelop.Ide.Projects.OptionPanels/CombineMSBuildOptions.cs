@@ -37,16 +37,15 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 
 		public override Gtk.Widget CreatePanelWidget ()
 		{
-			var box = new Xwt.VBox ();
-			box.Spacing = 6;
-			box.Margin = 12;
-
 			bool byDefault, require;
 			MSBuildProjectService.CheckHandlerUsesMSBuildEngine (ConfiguredProject, out byDefault, out require);
-			if (require) {
-				box.Visible = false;
-				return box.ToGtkWidget ();
-			}
+			if (require)
+				return null;
+
+			var box = new Xwt.VBox {
+				Spacing = 6,
+				Margin = 12
+			};
 
 			box.PackStart (new Xwt.Label {
 				Markup = "<b>Build Engine</b>"
