@@ -41,7 +41,7 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 	public class QuickTaskStrip : VBox
 	{
 		// move that one to AnalysisOptions when the new features are enabled by default.
-		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", false);
+		public readonly static PropertyWrapper<bool> EnableFancyFeatures = new PropertyWrapper<bool> ("MonoDevelop.AnalysisCore.AnalysisEnabled", true);
 		public readonly static bool MergeScrollBarAndQuickTasks = !Platform.IsMac;
 
 		static QuickTaskStrip ()
@@ -203,53 +203,53 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 		
 		#region Command handlers
 		[CommandHandler (ScrollbarCommand.Top)]
-		void GotoTop ()
+		internal void GotoTop ()
 		{
 			VAdjustment.Value = VAdjustment.Lower;
 		}
-		
+
 		[CommandHandler (ScrollbarCommand.Bottom)]
-		void GotoBottom ()
+		internal void GotoBottom ()
 		{
 			VAdjustment.Value = Math.Max (VAdjustment.Lower, VAdjustment.Upper - VAdjustment.PageSize / 2);
 		}
-		
+
 		[CommandHandler (ScrollbarCommand.PgUp)]
-		void GotoPgUp ()
+		internal void GotoPgUp ()
 		{
 			VAdjustment.Value = Math.Max (VAdjustment.Lower, VAdjustment.Value - VAdjustment.PageSize);
 		}
-		
+
 		[CommandHandler (ScrollbarCommand.PgDown)]
-		void GotoPgDown ()
+		internal void GotoPgDown ()
 		{
 			VAdjustment.Value = Math.Min (VAdjustment.Upper, VAdjustment.Value + VAdjustment.PageSize);
 		}	
 
 		[CommandUpdateHandler (ScrollbarCommand.ShowTasks)]
-		void UpdateShowMap (CommandInfo info)
+		internal void UpdateShowMap (CommandInfo info)
 		{
 			info.Visible = EnableFancyFeatures;
 			info.Checked = ScrollBarMode == ScrollBarMode.Overview;
 		}
-		
+
 		[CommandHandler (ScrollbarCommand.ShowTasks)]
-		void ShowMap ()
+		internal void ShowMap ()
 		{
-			 ScrollBarMode = ScrollBarMode.Overview; 
+			ScrollBarMode = ScrollBarMode.Overview; 
 		}
-		
+
 		[CommandUpdateHandler (ScrollbarCommand.ShowMinimap)]
-		void UpdateShowFull (CommandInfo info)
+		internal void UpdateShowFull (CommandInfo info)
 		{
 			info.Visible = EnableFancyFeatures;
 			info.Checked = ScrollBarMode == ScrollBarMode.Minimap;
 		}
-		
+
 		[CommandHandler (ScrollbarCommand.ShowMinimap)]
-		void ShowFull ()
+		internal void ShowFull ()
 		{
-			 ScrollBarMode = ScrollBarMode.Minimap; 
+			ScrollBarMode = ScrollBarMode.Minimap; 
 		}
 
 		internal enum HoverMode { NextMessage, NextWarning, NextError }
@@ -260,8 +260,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			foreach (var task in AllTasks.OrderBy (t => t.Location) ) {
 				bool isNextTask = task.Location > curLoc;
 				if (mode == HoverMode.NextMessage ||
-				    mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
-				    mode == HoverMode.NextError && task.Severity == Severity.Error) {
+					mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
+					mode == HoverMode.NextError && task.Severity == Severity.Error) {
 					if (isNextTask)
 						return task;
 					if (firstTask == null)
@@ -278,8 +278,8 @@ namespace MonoDevelop.SourceEditor.QuickTasks
 			foreach (var task in AllTasks.OrderByDescending (t => t.Location) ) {
 				bool isNextTask = task.Location < curLoc;
 				if (mode == HoverMode.NextMessage ||
-				    mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
-				    mode == HoverMode.NextError && task.Severity == Severity.Error) {
+					mode == HoverMode.NextWarning && task.Severity == Severity.Warning ||
+					mode == HoverMode.NextError && task.Severity == Severity.Error) {
 					if (isNextTask)
 						return task;
 					if (firstTask == null)

@@ -5,39 +5,32 @@ namespace MonoDevelop.VersionControl
 {
 	public class VersionInfo
 	{
-		FilePath localPath;
-		string repositoryPath;
- 		bool isDirectory;
-		VersionStatus status = VersionStatus.Unversioned;
-		Revision revision;
-		VersionStatus remoteStatus = VersionStatus.Versioned;
-		Revision remoteRevision;
 		bool opsLoaded;
 		VersionControlOperation operations;
 		Repository ownerRepository;
 
 		public VersionInfo (FilePath localPath, string repositoryPath, bool isDirectory, VersionStatus status, Revision revision, VersionStatus remoteStatus, Revision remoteRevision)
 		{
-			this.localPath = localPath;
-			this.repositoryPath = repositoryPath;
-			this.isDirectory = isDirectory;
-			this.status = status;
-			this.revision = revision;
-			this.remoteStatus = remoteStatus;
-			this.remoteRevision = remoteRevision;
+			this.LocalPath = localPath;
+			this.RepositoryPath = repositoryPath;
+			this.IsDirectory = isDirectory;
+			this.Status = status;
+			this.Revision = revision;
+			this.RemoteStatus = remoteStatus;
+			this.RemoteRevision = remoteRevision;
 		}
 
 		public bool Equals (VersionInfo obj)
 		{
 			if (obj == null)
 				return false;
-			return localPath == obj.localPath &&
-				repositoryPath == obj.repositoryPath &&
-				isDirectory == obj.isDirectory &&
-				status == obj.status &&
-				revision == obj.revision &&
-				remoteStatus == obj.remoteStatus &&
-				remoteRevision == obj.remoteRevision &&
+			return LocalPath == obj.LocalPath &&
+				RepositoryPath == obj.RepositoryPath &&
+				IsDirectory == obj.IsDirectory &&
+				Status == obj.Status &&
+				Revision == obj.Revision &&
+				RemoteStatus == obj.RemoteStatus &&
+				RemoteRevision == obj.RemoteRevision &&
 				AllowedOperations == obj.AllowedOperations;
 		}
 		
@@ -55,55 +48,60 @@ namespace MonoDevelop.VersionControl
 		internal bool RequiresRefresh { get; set; }
 		
 		public bool IsVersioned {
-			get { return (status & VersionStatus.Versioned) != 0; }
+			get { return (Status & VersionStatus.Versioned) != 0; }
 		}
 		
 		public bool HasLocalChanges {
-			get { return (status & VersionStatus.LocalChangesMask) != 0; }
+			get { return (Status & VersionStatus.LocalChangesMask) != 0; }
 		}
 		
 		public bool HasRemoteChanges {
-			get { return (remoteStatus & VersionStatus.LocalChangesMask) != 0; }
+			get { return (RemoteStatus & VersionStatus.LocalChangesMask) != 0; }
 		}
 		
 		public bool HasLocalChange (VersionStatus changeKind)
 		{
-			return (status & changeKind) != 0;
+			return (Status & changeKind) != 0;
 		}
 		
 		public bool HasRemoteChange (VersionStatus changeKind)
 		{
-			return (remoteStatus & changeKind) != 0;
+			return (RemoteStatus & changeKind) != 0;
 		}
 		
 		public FilePath LocalPath {
-			get { return localPath; }
+			get;
+			private set;
 		}
 		
 		public string RepositoryPath {
-			get { return repositoryPath; }
+			get;
+			private set;
 		}
 		
  		public bool IsDirectory {
-			get { return isDirectory; }
+			get;
+			private set;
 		}
  		
 		public VersionStatus Status {
-			get { return status; }
+			get;
+			private set;
 		}
 		
 		public Revision Revision {
-			get { return revision; }
+			get;
+			private set;
 		}
 
 		public VersionStatus RemoteStatus {
-			get { return remoteStatus; }
-			internal set { remoteStatus = value; }
+			get;
+			internal set;
 		}
 		
 		public Revision RemoteRevision {
-			get { return remoteRevision; }
-			internal set { remoteRevision = value; }
+			get;
+			internal set;
 		}
 		
 		public VersionControlOperation AllowedOperations {

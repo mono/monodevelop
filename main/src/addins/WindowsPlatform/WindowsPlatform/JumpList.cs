@@ -50,14 +50,17 @@ namespace MonoDevelop.Platform
 			}
 		}
 
+		object sync = new object();
 		private void OnRecentFilesChanged (object sender, EventArgs args)
 		{
 			// This event fires several times for a single change. Rather than performing the update
 			// several times we will restart the timer which has a 1 second delay on it. 
 			// While this means the update won't make it to the JumpList immediately it is significantly
 			// better for performance.
-			this.updateTimer.Stop ();
-			this.updateTimer.Start ();
+			lock (sync) {
+				this.updateTimer.Stop ();
+				this.updateTimer.Start ();
+			}
 		}
 
 		private void OnUpdateTimerEllapsed (object sender, EventArgs args)

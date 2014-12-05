@@ -40,7 +40,8 @@ namespace MonoDevelop.Ide.Projects
 		{
 			this.Build ();
 			this.policyProvider = policyProvider;
-			
+
+			fileEntry.Action = FileChooserAction.Save;
 			fileEntry.DefaultPath = DefaultFileDialogPolicyDir;
 			if (policyProvider is SolutionItem)
 				fileEntry.Path = ((SolutionItem)policyProvider).Name + ".mdpolicy";
@@ -123,7 +124,12 @@ namespace MonoDevelop.Ide.Projects
 				
 				PolicySet pset = CreatePolicySet ();
 				pset.Name = file.FileName;
-				pset.SaveToFile (file);
+				try {
+					pset.SaveToFile (file);
+				} catch (Exception ex) {
+					MessageService.ShowError ("The policy file could not be saved", ex);
+					return;
+				}
 			}
 			Respond (Gtk.ResponseType.Ok);
 		}

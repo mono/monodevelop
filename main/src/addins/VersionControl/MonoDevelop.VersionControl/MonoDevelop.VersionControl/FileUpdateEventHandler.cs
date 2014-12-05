@@ -32,27 +32,26 @@ namespace MonoDevelop.VersionControl
 	
 	public class FileUpdateEventInfo
 	{
-		FilePath filePath;
-		Repository repo;
-		bool isDirectory;
-
 		public FileUpdateEventInfo (Repository repo, FilePath filePath, bool isDirectory)
 		{
-			this.filePath = filePath;
-			this.repo = repo;
-			this.isDirectory = isDirectory;
+			FilePath = filePath;
+			Repository = repo;
+			IsDirectory = isDirectory;
 		}
 		
 		public FilePath FilePath {
-			get { return filePath; }
+			get;
+			private set;
 		}
 		
 		public Repository Repository {
-			get { return repo; }
+			get;
+			private set;
 		}
 		
 		public bool IsDirectory {
-			get { return isDirectory; }
+			get;
+			private set;
 		}
 	}
 }

@@ -33,7 +33,6 @@ using Mono.TextEditor;
 using MonoDevelop.Ide;
 using System.Threading;
 using MonoDevelop.Core;
-using System.Text;
 using MonoDevelop.Components.Commands;
 
 namespace MonoDevelop.VersionControl.Views
@@ -335,35 +334,6 @@ namespace MonoDevelop.VersionControl.Views
 			}
 			if (lastFold > 0) 
 				line = Editor.Document.OffsetToLineNumber (lastFold);
-		}
-
-		internal static string FormatMessage (string msg)
-		{
-			StringBuilder sb = new StringBuilder ();
-			bool wasWs = false;
-			foreach (char ch in msg) {
-				if (ch == ' ' || ch == '\t') {
-					if (!wasWs)
-						sb.Append (' ');
-					wasWs = true;
-					continue;
-				}
-				wasWs = false;
-				sb.Append (ch);
-			}
-			
-			var doc = new TextDocument ();
-			doc.Text = sb.ToString ();
-			for (int i = 1; i <= doc.LineCount; i++) {
-				string text = doc.GetLineText (i).Trim ();
-				int idx = text.IndexOf (':');
-				if (text.StartsWith ("*", StringComparison.Ordinal) && idx >= 0 && idx < text.Length - 1) {
-					int offset = doc.GetLine (i).EndOffsetIncludingDelimiter;
-					msg = text.Substring (idx + 1) + doc.GetTextAt (offset, doc.TextLength - offset);
-					break;
-				}
-			}
-			return msg.TrimStart (' ', '\t');
 		}
 
 		class BlameRenderer : DrawingArea 
@@ -780,11 +750,11 @@ namespace MonoDevelop.VersionControl.Views
 							line++;
 							widget.JumpOverFoldings (ref line);
 						}
-						
+
 						if (ann != null && line - lineStart > 1) {
 							string msg = GetCommitMessage (lineStart, false);
 							if (!string.IsNullOrEmpty (msg)) {
-								msg = FormatMessage (msg);
+								msg = Revision.FormatMessage (msg);
 
 								layout.SetText (msg);
 								layout.Width = (int)(Allocation.Width * Pango.Scale.PangoScale);

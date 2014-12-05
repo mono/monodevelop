@@ -1039,6 +1039,6 @@ namespace MonoDevelop.SourceEditor
 		}
 		
 #endregion
-		
+	
 	}
 }
