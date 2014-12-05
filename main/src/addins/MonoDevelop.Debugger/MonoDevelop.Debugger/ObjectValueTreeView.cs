@@ -450,7 +450,7 @@ namespace MonoDevelop.Debugger
 				                        this.VisibleRect.Height);
 			if (treeViewRectangle.Contains (new Gdk.Point (
 				    newCaret.X + newCaret.Width / 2,
-				    newCaret.Y + newCaret.Height / 2 - 30))) {
+				    newCaret.Y + newCaret.Height / 2 - (CompactView ? 0 : 30)))) {
 				PreviewWindowManager.RepositionWindow (newCaret);
 			} else {
 				PreviewWindowManager.DestroyWindow ();
@@ -1510,18 +1510,19 @@ namespace MonoDevelop.Debugger
 
 		void SetPreviewButtonIcon (PreviewButtonIcons icon, TreeIter it = default(TreeIter))
 		{
+			if (PreviewWindowManager.IsVisible) {
+				return;
+			}
 			if (!it.Equals (TreeIter.Zero)) {
 				if (!ValidObjectForPreviewIcon (it)) {
 					icon = PreviewButtonIcons.None;
 				}
 			}
-			if (PreviewWindowManager.IsVisible && icon != PreviewButtonIcons.Active) {
-				return;
-			}
-			if (currentIcon != icon || !currentHoverIter.Equals (it)) {
+			if (!currentHoverIter.Equals (it)) {
 				if (!currentHoverIter.Equals (TreeIter.Zero) && store.IterIsValid (currentHoverIter)) {
 					if (ValidObjectForPreviewIcon (currentHoverIter)) {
-						store.SetValue (currentHoverIter, PreviewIconColumn, "md-empty");
+						if ((string)store.GetValue (currentHoverIter, PreviewIconColumn) != "md-empty")
+							store.SetValue (currentHoverIter, PreviewIconColumn, "md-empty");
 					}
 				}
 			}
@@ -1540,24 +1541,32 @@ namespace MonoDevelop.Debugger
 						icon = PreviewButtonIcons.Selected;
 					}
 				}
+
 				switch (icon) {
 				case PreviewButtonIcons.None:
-					store.SetValue (it, PreviewIconColumn, null);
+					if (store.GetValue (it, PreviewIconColumn) != null)
+						store.SetValue (it, PreviewIconColumn, null);
 					break;
 				case PreviewButtonIcons.Hidden:
-					store.SetValue (it, PreviewIconColumn, "md-empty");
+					if ((string)store.GetValue (it, PreviewIconColumn) != "md-empty")
+						store.SetValue (it, PreviewIconColumn, "md-empty");
 					break;
 				case PreviewButtonIcons.RowHover:
-					store.SetValue (it, PreviewIconColumn, "md-preview-normal");
+					if ((string)store.GetValue (it, PreviewIconColumn) != "md-preview-normal")
+						store.SetValue (it, PreviewIconColumn, "md-preview-normal");
 					break;
 				case PreviewButtonIcons.Hover:
-					store.SetValue (it, PreviewIconColumn, "md-preview-hover");
+					if ((string)store.GetValue (it, PreviewIconColumn) != "md-preview-hover")
+						store.SetValue (it, PreviewIconColumn, "md-preview-hover");
 					break;
 				case PreviewButtonIcons.Active:
-					store.SetValue (it, PreviewIconColumn, "md-preview-active");
+					if ((string)store.GetValue (it, PreviewIconColumn) != "md-preview-active")
+						store.SetValue (it, PreviewIconColumn, "md-preview-active");
 					break;
 				case PreviewButtonIcons.Selected:
-					store.SetValue (it, PreviewIconColumn, "md-preview-selected");
+					if ((string)store.GetValue (it, PreviewIconColumn) != "md-preview-selected") {
+						store.SetValue (it, PreviewIconColumn, "md-preview-selected");
+					}
 					break;
 				}
 				currentIcon = icon;
@@ -1726,18 +1735,11 @@ namespace MonoDevelop.Debugger
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
 			allowStoreColumnSizes = true;
-			bool retval = base.OnButtonPressEvent (evnt);
-			PreviewWindowManager.DestroyWindow ();
-
-			//HACK: show context menu in release event instead of show event to work around gtk bug
-			if (evnt.TriggersContextMenu ()) {
-			//	ShowPopup (evnt);
-				return true;
-			}
 
 			TreeViewColumn col;
 			CellRenderer cr;
 			TreePath path;
+			bool closePreviewWindow = true;
 			
 			if (CanQueryDebugger && evnt.Button == 1 && GetCellAtPos ((int)evnt.X, (int)evnt.Y, out path, out col, out cr)) {
 				TreeIter it;
@@ -1745,7 +1747,7 @@ namespace MonoDevelop.Debugger
 				if (cr == crpViewer) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					DebuggingService.ShowValueVisualizer (val);
-				} else if (cr == crtExp) {
+				} else if (cr == crtExp && !PreviewWindowManager.IsVisible && ValidObjectForPreviewIcon (it)) {
 					var val = (ObjectValue)store.GetValue (it, ObjectColumn);
 					startPreviewCaret = GetCellRendererArea (path, col, cr);
 					startHAdj = Hadjustment.Value;
@@ -1763,8 +1765,13 @@ namespace MonoDevelop.Debugger
 						startPreviewCaret.Y += (int)Vadjustment.Value;
 						if (startPreviewCaret.X < evnt.X &&
 						    startPreviewCaret.X + 16 > evnt.X) {
+							if (CompactView) {
+								SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+							} else {
+								SetPreviewButtonIcon (PreviewButtonIcons.Selected, it);
+							}
 							DebuggingService.ShowPreviewVisualizer (val, this, startPreviewCaret);
-							SetPreviewButtonIcon (PreviewButtonIcons.Active, it);
+							closePreviewWindow = false;
 						}
 					}
 				} else if (cr == crtValue) {
@@ -1796,6 +1803,17 @@ namespace MonoDevelop.Debugger
 						}
 					}
 				}
+			}
+
+			if (closePreviewWindow) {
+				PreviewWindowManager.DestroyWindow ();
+			}
+
+			bool retval = base.OnButtonPressEvent (evnt);
+			//HACK: show context menu in release event instead of show event to work around gtk bug
+			if (evnt.TriggersContextMenu ()) {
+				//	ShowPopup (evnt);
+				return true;
 			}
 			
 			return retval;

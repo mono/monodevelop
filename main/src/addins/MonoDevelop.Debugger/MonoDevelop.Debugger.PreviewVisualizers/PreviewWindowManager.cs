@@ -52,6 +52,7 @@ namespace MonoDevelop.Debugger
 
 		static void HandleDestroyed (object sender, EventArgs e)
 		{
+			wnd = null;
 			OnWindowClosed (EventArgs.Empty);
 		}
 
@@ -66,7 +67,6 @@ namespace MonoDevelop.Debugger
 		{
 			if (IdeApp.Workbench != null) {
 				IdeApp.Workbench.RootWindow.Destroyed += (sender, e) => DestroyWindow ();
-				IdeApp.Workbench.RootWindow.FocusOutEvent += HandleFocusOutEvent;
 			}
 			IdeApp.CommandService.KeyPressed += HandleKeyPressed;
 			DebuggingService.StoppedEvent += delegate {
@@ -77,13 +77,6 @@ namespace MonoDevelop.Debugger
 		static void HandleKeyPressed (object sender, KeyPressArgs e)
 		{
 			if (e.Key == Gdk.Key.Escape) {
-				DestroyWindow ();
-			}
-		}
-
-		static void HandleFocusOutEvent (object o, Gtk.FocusOutEventArgs args)
-		{
-			if (IdeApp.Workbench.RootWindow == null || !IdeApp.Workbench.RootWindow.HasFocus) {
 				DestroyWindow ();
 			}
 		}
