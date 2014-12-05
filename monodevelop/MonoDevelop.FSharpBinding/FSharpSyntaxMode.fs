@@ -161,9 +161,7 @@ module FSharpSyntaxModeInternals =
 
     type FSharpSpanParser(mode:SyntaxMode, spanStack, defines: string list) =
         inherit SyntaxMode.SpanParser(mode, spanStack)
-        do LoggingService.LogDebug ("Creating FSharpSpanParser()")
-        
-        
+
         member val private State = General with get, set
         member private this.ScanPreProcessorElse(i: byref<int>) =
             if not (spanStack |> contains (fun span -> span.GetType() = typeof<IfBlockSpan>)) then
@@ -692,9 +690,6 @@ type FSharpSyntaxMode(document: MonoDevelop.Ide.Gui.Document) as this =
             |> Seq.map (makeChunk line.LineNumber style offset extraColorInfo)
             |> List.ofSeq
         tokens |> Seq.ofList
-
-    do
-        LoggingService.LogDebug ("Creating FSharpSyntaxMode()")
 
     let propertyChangedHandler = PropertyService.PropertyChanged.Subscribe handlePropertyChanged
     let documentParsedHandler = document.DocumentParsed.Subscribe handleDocumentParsed
