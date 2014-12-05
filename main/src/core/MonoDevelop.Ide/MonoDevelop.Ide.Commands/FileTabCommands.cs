@@ -45,6 +45,7 @@ namespace MonoDevelop.Ide.Commands
 		CopyPathName,
 		ToggleMaximize,
 		ReopenClosedTab,
+		CloseAllExceptPinned
 	}
 	
 	class CloseAllHandler : CommandHandler
@@ -75,6 +76,29 @@ namespace MonoDevelop.Ide.Commands
 				var w1 = (SdiWorkspaceWindow) doc.Window;
 				if (w1.TabControl == activeNotebook && doc != active)
 					doc.Close ();
+			}
+		}
+	}
+
+	class CloseAllExceptPinnedHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			var active = IdeApp.Workbench.ActiveDocument;
+			if (active == null)
+				return;
+
+			var deleteCache = new System.Collections.Generic.List<Document>();
+			var w1 = (SdiWorkspaceWindow) active.Window;
+			foreach (var item in w1.TabControl.Tabs.Where(s => !s.IsPinned)) {
+				var workspaceWindow = item.Content as SdiWorkspaceWindow; 
+				if (workspaceWindow != null && workspaceWindow.Document != null)
+					deleteCache.Add (workspaceWindow.Document);
+			}
+
+			foreach (Document doc in IdeApp.Workbench.Documents.ToArray ()) {
+				if (deleteCache.Exists(d => d == doc))
+					doc.Close();
 			}
 		}
 	}

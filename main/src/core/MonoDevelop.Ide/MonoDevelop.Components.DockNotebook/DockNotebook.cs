@@ -358,11 +358,11 @@ namespace MonoDevelop.Components.DockNotebook
 				return;
 			if (value) {
 				if (stickedPages.Count > 0) 
-					ReorderTab (sender, normalPages.Count > 0  ? normalPages[0] : stickedPages [stickedPages.Count - 1]);
+					ReorderTab (sender, normalPages.Count > 0  ? normalPages[0] : stickedPages [stickedPages.Count - 1], false);
 				 else 
-					ReorderTab (sender, pages[0]);
+					ReorderTab (sender, pages[0], false);
 			} else {
-				ReorderTab (sender, pages[pages.Count - 1]);
+				ReorderTab (sender, stickedPages.Count>0 ? stickedPages[stickedPages.Count - 1] : normalPages[0], false);
 			}
 		}
 
@@ -393,8 +393,11 @@ namespace MonoDevelop.Components.DockNotebook
 				PageRemoved (this, EventArgs.Empty);
 		}
 
-		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab)
+		internal void ReorderTab (DockNotebookTab tab, DockNotebookTab targetTab, bool pinCheck = true)
 		{
+			if (pinCheck && tab.IsPinned != targetTab.IsPinned)
+				return;
+
 			if (tab == targetTab)
 				return;
 			int targetPos = targetTab.Index;
