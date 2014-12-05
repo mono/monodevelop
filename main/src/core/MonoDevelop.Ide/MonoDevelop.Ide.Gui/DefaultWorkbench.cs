@@ -1163,6 +1163,11 @@ namespace MonoDevelop.Ide.Gui
 			((SdiWorkspaceWindow)e.Tab.Content).CloseWindow (false, true);
 		}
 
+		internal void PinnedClicked (object o, TabEventArgs e)
+		{
+			((SdiWorkspaceWindow)e.Tab.Content).PinWindow (false, true);
+		}
+
 		internal void RemoveTab (DockNotebook tabControl, int pageNum, bool animate)
 		{
 			try {
@@ -1405,6 +1410,7 @@ namespace MonoDevelop.Ide.Gui
 			SwitchPage += window.OnActiveWindowChanged;
 			PageRemoved += window.OnActiveWindowChanged;
 			TabClosed += window.CloseClicked;
+			TabPinned += window.PinnedClicked;
 			TabActivated += delegate {
 				window.ToggleFullViewMode ();
 			};

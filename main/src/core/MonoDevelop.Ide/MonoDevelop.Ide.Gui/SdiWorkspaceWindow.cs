@@ -450,6 +450,11 @@ namespace MonoDevelop.Ide.Gui
 			return CloseWindow (force, false);
 		}
 
+		public bool PinWindow (bool force, bool animate)
+		{
+			return true;
+		}
+
 		public bool CloseWindow (bool force, bool animate)
 		{
 			bool wasActive = workbench.ActiveWorkbenchWindow == this;

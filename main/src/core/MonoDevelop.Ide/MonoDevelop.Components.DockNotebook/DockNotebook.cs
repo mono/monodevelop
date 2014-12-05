@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
+using System.Linq;
 
 namespace MonoDevelop.Components.DockNotebook
 {
@@ -39,8 +40,26 @@ namespace MonoDevelop.Components.DockNotebook
 
 	class DockNotebook : Gtk.VBox
 	{
+
 		List<DockNotebookTab> pages = new List<DockNotebookTab> ();
+		List<DockNotebookTab> stickedPages { 
+			get { return (from pin in pages
+			         where pin.IsPinned
+			         orderby pin.Index
+				select pin).ToList (); 
+			} 
+		}
+
+		List<DockNotebookTab> normalPages { 
+			get { return (from pin in pages
+				where !pin.IsPinned
+				orderby pin.Index
+				select pin).ToList (); 
+			} 
+		}
+
 		List<DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
+
 		TabStrip tabStrip;
 		Gtk.EventBox contentBox;
 		ReadOnlyCollection<DockNotebookTab> pagesCol;
@@ -136,6 +155,7 @@ namespace MonoDevelop.Components.DockNotebook
 
 		public event TabsReorderedHandler TabsReordered;
 		public event EventHandler<TabEventArgs> TabClosed;
+		public event EventHandler<TabEventArgs> TabPinned;
 		public event EventHandler<TabEventArgs> TabActivated;
 
 		public event EventHandler PageAdded;
@@ -321,6 +341,8 @@ namespace MonoDevelop.Components.DockNotebook
 			if (PageAdded != null)
 				PageAdded (this, EventArgs.Empty);
 
+			tab.OnPreChangedSpinned = OnTabSpinned;
+
 			return tab;
 		}
 
@@ -328,6 +350,20 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			for (int n=startIndex; n < pages.Count; n++)
 				((DockNotebookTab)pages [n]).Index = n;
+		}
+
+		void OnTabSpinned (DockNotebookTab sender, bool value)
+		{
+			if (pages.Count == 1)
+				return;
+			if (value) {
+				if (stickedPages.Count > 0) 
+					ReorderTab (sender, normalPages.Count > 0  ? normalPages[0] : stickedPages [stickedPages.Count - 1]);
+				 else 
+					ReorderTab (sender, pages[0]);
+			} else {
+				ReorderTab (sender, pages[pages.Count - 1]);
+			}
 		}
 
 		public DockNotebookTab GetTab (int n)
@@ -378,6 +414,12 @@ namespace MonoDevelop.Components.DockNotebook
 		{
 			if (TabClosed != null)
 				TabClosed (this, new TabEventArgs () { Tab = tab });
+		}
+
+		internal void OnPinTab (DockNotebookTab tab)
+		{
+			if (TabPinned != null)
+				TabPinned (this, new TabEventArgs () { Tab = tab });
 		}
 
 		internal void OnActivateTab (DockNotebookTab tab)
