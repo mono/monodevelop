@@ -948,8 +948,7 @@ namespace MonoDevelop.Components.DockNotebook
 			ctx.ClosePath ();
 			using (var gr = new LinearGradient (tabBounds.X, TopBarPadding, tabBounds.X, allocation.Bottom)) {
 				if (tab.IsPinned) {
-					gr.AddColorStop (0, CairoExtensions.ParseColor ("A2D3FF").MultiplyAlpha (tab.Opacity));
-					gr.AddColorStop (1, CairoExtensions.ParseColor ("8DB5DA").MultiplyAlpha (tab.Opacity));
+					gr.AddColorStop (0, CairoExtensions.ParseColor ("B4D6F5").MultiplyAlpha (tab.Opacity));
 				} else {
 					if (active) {
 						gr.AddColorStop (0, Styles.BreadcrumbGradientStartColor.MultiplyAlpha (tab.Opacity));

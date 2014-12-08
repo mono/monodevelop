@@ -31,8 +31,8 @@ namespace MonoDevelop.Components.DockNotebook
 {
 	class DockNotebookTab: IAnimatable
 	{
-		public System.Action<DockNotebookTab,bool> OnChangingSpinned;
-		public System.Action<DockNotebookTab,bool> OnChangedSpinned;
+		public System.Action<DockNotebookTab,bool> OnChangingPinned;
+		public System.Action<DockNotebookTab,bool> OnChangedPinned;
 
 		DockNotebook notebook;
 		readonly TabStrip strip;
@@ -66,11 +66,11 @@ namespace MonoDevelop.Components.DockNotebook
 		public bool IsPinned { 
 			get { return isPinned; }
 			set { 
-				if (OnChangingSpinned != null)
-					OnChangingSpinned (this, value);
+				if (OnChangingPinned != null)
+					OnChangingPinned (this, value);
 				isPinned = value;
-				if (OnChangedSpinned != null)
-					OnChangedSpinned (this, value);
+				if (OnChangedPinned != null)
+					OnChangedPinned (this, value);
 			}
 		}
 

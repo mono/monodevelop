@@ -332,7 +332,7 @@ namespace MonoDevelop.Components.DockNotebook
 			if (PageAdded != null)
 				PageAdded (this, EventArgs.Empty);
 
-			tab.OnChangingSpinned = OnTabSpinned;
+			tab.OnChangingPinned = OnTabPinned;
 
 			return tab;
 		}
@@ -343,7 +343,7 @@ namespace MonoDevelop.Components.DockNotebook
 				((DockNotebookTab)pages [n]).Index = n;
 		}
 
-		void OnTabSpinned (DockNotebookTab sender, bool value)
+		void OnTabPinned (DockNotebookTab sender, bool value)
 		{
 			if (pages.Count == 1)
 				return;
