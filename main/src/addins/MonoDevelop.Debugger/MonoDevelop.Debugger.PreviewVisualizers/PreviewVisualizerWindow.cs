@@ -36,13 +36,12 @@ namespace MonoDevelop.Debugger
 {
 	public class PreviewVisualizerWindow : PopoverWindow
 	{
-		public PreviewVisualizerWindow ()
+		public PreviewVisualizerWindow (ObjectValue val, Gtk.Widget invokingWidget) : base (Gtk.WindowType.Toplevel)
 		{
-			TransientFor = IdeApp.Workbench.RootWindow;
-		}
+			this.TypeHint = WindowTypeHint.PopupMenu;
+			this.Decorated = false;
+			TransientFor = (Gtk.Window) invokingWidget.Toplevel;
 
-		public void Show (ObjectValue val, Gtk.Widget invokingWidget, Rectangle previewButtonArea)
-		{
 			Theme.SetFlatColor (new Cairo.Color (245 / 256.0, 245 / 256.0, 245 / 256.0));
 			Theme.Padding = 0;
 			ShowArrow = true;
@@ -65,7 +64,6 @@ namespace MonoDevelop.Debugger
 			var headerTitle = new Label ();
 			headerTitle.ModifyFg (StateType.Normal, new Color (64, 64, 64));
 			var font = headerTitle.Style.FontDescription.Copy ();
-			font.Size = (int)(12 * Pango.Scale.PangoScale);
 			font.Weight = Pango.Weight.Bold;
 			headerTitle.ModifyFont (font);
 			headerTitle.Text = val.TypeName.Split ('.').LastOrDefault ();
@@ -108,7 +106,6 @@ namespace MonoDevelop.Debugger
 			alignment.Add (widget);
 			mainBox.PackStart (alignment);
 			ContentBox.Add (mainBox);
-			ShowPopup (invokingWidget, previewButtonArea, PopupPosition.Left);
 		}
 	}
 }

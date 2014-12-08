@@ -44,8 +44,8 @@ namespace MonoDevelop.Debugger
 		public static void Show (ObjectValue val, Control widget, Gdk.Rectangle previewButtonArea)
 		{
 			DestroyWindow ();
-			wnd = new PreviewVisualizerWindow ();
-			wnd.Show (val, widget, previewButtonArea);
+			wnd = new PreviewVisualizerWindow (val, widget);
+			wnd.ShowPopup (widget, previewButtonArea, PopupPosition.Left);
 			wnd.Destroyed += HandleDestroyed;
 			OnWindowShown (EventArgs.Empty);
 		}
