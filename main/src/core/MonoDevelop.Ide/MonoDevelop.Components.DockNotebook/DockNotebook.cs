@@ -43,19 +43,10 @@ namespace MonoDevelop.Components.DockNotebook
 
 		List<DockNotebookTab> pages = new List<DockNotebookTab> ();
 		List<DockNotebookTab> stickedPages { 
-			get { return (from pin in pages
-			         where pin.IsPinned
-			         orderby pin.Index
-				select pin).ToList (); 
-			} 
+			get { return pages.Where(p => p.IsPinned).OrderBy(p=> p.Index).ToList (); }
 		}
-
 		List<DockNotebookTab> normalPages { 
-			get { return (from pin in pages
-				where !pin.IsPinned
-				orderby pin.Index
-				select pin).ToList (); 
-			} 
+			get { return pages.Where(p => !p.IsPinned).OrderBy(p=> p.Index).ToList (); }
 		}
 
 		List<DockNotebookTab> pagesHistory = new List<DockNotebookTab> ();
@@ -341,7 +332,7 @@ namespace MonoDevelop.Components.DockNotebook
 			if (PageAdded != null)
 				PageAdded (this, EventArgs.Empty);
 
-			tab.OnPreChangedSpinned = OnTabSpinned;
+			tab.OnChangingSpinned = OnTabSpinned;
 
 			return tab;
 		}
