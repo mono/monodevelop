@@ -271,6 +271,7 @@ if [ x$select == xyes -o ! -a profiles/$profile ]; then
 fi
 
 if test `uname` = "Darwin"; then
+	profile="mac"
 	# if building on bots or in default environment, fix up paths to use system Mono
 	if test "x$BUILD_REVISION" != "x" -o "x$DYLD_FALLBACK_LIBRARY_PATH" = "x"; then
 		export DYLD_FALLBACK_LIBRARY_PATH="/Library/Frameworks/Mono.framework/Versions/Current/lib:/lib:/usr/lib"
