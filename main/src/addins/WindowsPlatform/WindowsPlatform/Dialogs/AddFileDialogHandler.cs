@@ -43,7 +43,7 @@ namespace MonoDevelop.Platform
 		{
 			var parent = data.TransientFor ?? MessageService.RootWindow;
 			var dialog = new CommonOpenFileDialog ();
-			SelectFileDialogHandler.SetCommonFormProperties (data, dialog);
+			dialog.SetCommonFormProperties (data);
 
 			var buildActionCombo = new CommonFileDialogComboBox ();
 			var group = new CommonFileDialogGroupBox ("overridebuildaction", "Override build action:"); 
@@ -62,7 +62,7 @@ namespace MonoDevelop.Platform
 			if (!GdkWin32.RunModalWin32Dialog (dialog, parent))
 				return false;
 
-			SelectFileDialogHandler.GetCommonFormProperties (data, dialog);
+			dialog.GetCommonFormProperties (data);
 			var idx = buildActionCombo.SelectedIndex;
 			if (idx > 0)
 				data.OverrideAction = buildActionCombo.Items [idx].Text;
