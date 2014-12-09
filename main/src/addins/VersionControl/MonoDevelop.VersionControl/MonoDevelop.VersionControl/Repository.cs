@@ -88,14 +88,8 @@ namespace MonoDevelop.VersionControl
 		// Version control system that manages this repository
 		public VersionControlSystem VersionControlSystem {
 			get {
-				if (vcs == null && vcsName != null) {
-					foreach (VersionControlSystem v in VersionControlService.GetVersionControlSystems ()) {
-						if (v.Id == vcsName) {
-							vcs = v;
-							break;
-						}
-					}
-				}
+				if (vcs == null && vcsName != null)
+					vcs = VersionControlService.GetVersionControlSystems ().FirstOrDefault (v => v.Id == vcsName);
 				return vcs;
 			}
 			
@@ -711,7 +705,7 @@ namespace MonoDevelop.VersionControl
 		static protected DiffInfo[] GenerateUnifiedDiffInfo (string diffContent, FilePath basePath, FilePath[] localPaths)
 		{
 			basePath = basePath.FullPath;
-			ArrayList list = new ArrayList ();
+			var list = new List<DiffInfo> ();
 			using (StringReader sr = new StringReader (diffContent)) {
 				string line;
 				StringBuilder content = new StringBuilder ();
@@ -760,7 +754,7 @@ namespace MonoDevelop.VersionControl
 					list.Add (new DiffInfo (basePath, fileName, content.ToString ()));
 				}
 			}
-			return (DiffInfo[]) list.ToArray (typeof(DiffInfo));
+			return list.ToArray ();
 		}
 		
 		/// <summary>
