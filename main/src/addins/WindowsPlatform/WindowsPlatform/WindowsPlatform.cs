@@ -33,6 +33,7 @@ using System;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using Microsoft.Win32;
@@ -330,11 +331,8 @@ namespace MonoDevelop.Platform
 				yield break;
 			string defaultApp = GetDefaultApp (extension);
 
-			foreach (var app in GetAppsByProgID (extension, defaultApp))
-				yield return app;
-
-			foreach (var app in GetAppsByExeName (extension, defaultApp))
-				yield return app;
+			return GetAppsByProgID (extension, defaultApp)
+				.Concat (GetAppsByExeName (extension, defaultApp));
 		}
 
 		const string assocBaseKey = @"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\";
